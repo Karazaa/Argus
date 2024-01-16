@@ -67,8 +67,10 @@ Argus/Build/*/**
 Argus/Saved/*
 
 # Compiled source files for the engine to use
-Intermediate/*
+Argus/Intermediate/*
 Argus/Plugins/*/Intermediate/*
 
 # Cache files for the editor to use
 Argus/DerivedDataCache/*
+
+Argus/Argus.unrealvs
