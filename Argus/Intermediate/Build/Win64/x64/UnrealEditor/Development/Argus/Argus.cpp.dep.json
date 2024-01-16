@@ -1,0 +1,14 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "d:\\gamedevelopment\\argus\\argus\\source\\argus\\argus.cpp",
+        "ProvidedModule": "",
+        "PCH": "d:\\gamedevelopment\\argus\\argus\\intermediate\\build\\win64\\x64\\arguseditor\\development\\engine\\sharedpch.engine.cpp20.h.pch",
+        "Includes": [
+            "d:\\gamedevelopment\\argus\\argus\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\argus\\definitions.argus.h",
+            "d:\\gamedevelopment\\argus\\argus\\source\\argus\\argus.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}
