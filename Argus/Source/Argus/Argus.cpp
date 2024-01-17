@@ -8,5 +8,5 @@ IMPLEMENT_PRIMARY_GAME_MODULE(ArgusModule, Argus, "Argus" );
 
 void ArgusModule::StartupModule() 
 {
-	UE_LOG(ArgusLog, Display, TEXT("Argus module starting up."));
+	UE_LOG(ArgusLog, Warning, TEXT("Argus module starting up."));
 }
