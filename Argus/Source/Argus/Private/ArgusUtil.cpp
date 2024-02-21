@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusUtil.h"
 
