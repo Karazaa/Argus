@@ -4,21 +4,31 @@
 
 #include "CoreMinimal.h"
 #include <bitset>
+#include <optional>
 
 class ArgusEntity
 {
 public:
-	static void FlushAllEntities();
-private:
-	static constexpr uint16 k_maxEntities = MAX_uint16;
-	static std::bitset<k_maxEntities> s_takenEntityIds;
+	static ArgusEntity					CreateEntity(uint16 lowestId = 0u);
+	static bool							DoesEntityExist(uint16 id);
+	static std::optional<ArgusEntity>	RetrieveEntity(uint16 id);
+	static void							FlushAllEntities();
 
-	static uint16 GetLowestValidId(uint16 lowestId);
+private:
+	static constexpr uint16				k_maxEntities = MAX_uint16;
+	static std::bitset<k_maxEntities>	s_takenEntityIds;
+
+	static uint16						GetLowestValidId(uint16 lowestId);
 	
 public:
-	ArgusEntity();
-	ArgusEntity(uint16 lowestId);
-	uint16 GetId();
+	ArgusEntity(const ArgusEntity& other);
+	ArgusEntity& operator=(ArgusEntity other);
+
+	uint16	GetId() const;
+
 private:
+	ArgusEntity();
+	ArgusEntity(uint16 id);
+
 	uint16 m_id;
 };

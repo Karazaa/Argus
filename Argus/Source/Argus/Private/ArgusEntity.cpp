@@ -5,38 +5,67 @@
 
 std::bitset<ArgusEntity::k_maxEntities> ArgusEntity::s_takenEntityIds = std::bitset<ArgusEntity::k_maxEntities>();
 
+ArgusEntity ArgusEntity::CreateEntity(uint16 lowestId)
+{
+	return ArgusEntity(GetLowestValidId(lowestId));
+}
+
+bool ArgusEntity::DoesEntityExist(uint16 id)
+{
+	return s_takenEntityIds[id];
+}
+
+std::optional<ArgusEntity> ArgusEntity::RetrieveEntity(uint16 id)
+{
+	if (s_takenEntityIds[id])
+	{
+		return ArgusEntity(id);
+	}
+
+	return std::nullopt;
+}
+
 void ArgusEntity::FlushAllEntities()
 {
 	s_takenEntityIds.reset();
 }
 
-uint16 ArgusEntity::GetLowestValidId(uint16 lowestPotentialId)
+uint16 ArgusEntity::GetLowestValidId(uint16 lowestId)
 {
-	while (s_takenEntityIds[lowestPotentialId] && lowestPotentialId < k_maxEntities)
+	while (s_takenEntityIds[lowestId] && lowestId < k_maxEntities)
 	{
-		lowestPotentialId++;
+		lowestId++;
 	}
 
-	if (s_takenEntityIds[lowestPotentialId])
+	if (s_takenEntityIds[lowestId])
 	{
 		UE_LOG(ArgusGameLog, Error, TEXT("[ECS] Exceeded the maximum number of allowed entities!"));
 	}
 
-	s_takenEntityIds.set(lowestPotentialId);
-	return lowestPotentialId;
+	s_takenEntityIds.set(lowestId);
+	return lowestId;
 }
 
-ArgusEntity::ArgusEntity()
+ArgusEntity::ArgusEntity(const ArgusEntity& other)
 {
-	m_id = ArgusEntity::GetLowestValidId(0);
+	m_id = other.GetId();
 }
 
-ArgusEntity::ArgusEntity(uint16 lowestPotentialId)
+ArgusEntity& ArgusEntity::operator=(ArgusEntity other)
 {
-	m_id = ArgusEntity::GetLowestValidId(lowestPotentialId);
+	m_id = other.GetId();
+	return *this;
 }
 
-uint16 ArgusEntity::GetId()
+ArgusEntity::ArgusEntity() : m_id(0)
+{
+}
+
+ArgusEntity::ArgusEntity(uint16 id) : m_id(id)
+{
+}
+
+uint16 ArgusEntity::GetId() const
 {
 	return m_id;
 }
