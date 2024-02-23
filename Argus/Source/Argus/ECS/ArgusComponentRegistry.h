@@ -2,12 +2,20 @@
 
 #pragma once
 
+#include "ArgusComponentDefinitions.h"
 #include "CoreMinimal.h"
 #include <optional>
 
 class ArgusComponentRegistry
 {
 public:
-	template<class Component>
-	static std::optional<Component> GetComponent(uint16 entityId);
+	template<class ArgusComponent>
+	static ArgusComponent* GetComponent(uint16 entityId)
+	{
+		return nullptr;
+	}
+private:
+
+	// TODO JAMES: Clean up exaple health component used for testing.
+	static HealthComponent m_healthComponentExample;
 };

@@ -70,4 +70,18 @@ bool ArgusEntityRetrieveEntityTest::RunTest(const FString& Parameters)
 	return true;
 }
 
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityGetHealthComponentTest, "Argus.Entity.GetHealthComponent", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+bool ArgusEntityGetHealthComponentTest::RunTest(const FString& Parameters)
+{
+	ArgusEntity::FlushAllEntities();
+
+	ArgusEntity entity = ArgusEntity::CreateEntity();
+	HealthComponent* p_healthComponent = entity.GetComponent<HealthComponent>();
+
+	// TODO JAMES: Finish flushing this test out.
+	TestFalse(TEXT("Creating an entity, attempting to retrieve health component"), p_healthComponent != nullptr);
+
+	return true;
+}
+
 #endif //WITH_AUTOMATION_TESTS

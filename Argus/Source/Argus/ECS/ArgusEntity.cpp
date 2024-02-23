@@ -70,9 +70,3 @@ uint16 ArgusEntity::GetId() const
 {
 	return m_id;
 }
-
-template<class Component>
-std::optional<Component> ArgusEntity::GetComponent()
-{
-	return ArgusComponentRegistry::GetComponent(m_id);
-}

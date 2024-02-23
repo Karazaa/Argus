@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "ArgusComponentRegistry.h"
 #include "CoreMinimal.h"
 #include <bitset>
 #include <optional>
@@ -26,8 +27,11 @@ public:
 
 	uint16	GetId() const;
 
-	template<class Component>
-	std::optional<Component> GetComponent();
+	template<class ArgusComponent>
+	ArgusComponent* GetComponent()
+	{
+		return ArgusComponentRegistry::GetComponent<ArgusComponent>(m_id);
+	}
 
 private:
 	ArgusEntity();
