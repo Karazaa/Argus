@@ -26,6 +26,9 @@ public:
 
 	uint16	GetId() const;
 
+	template<class Component>
+	std::optional<Component> GetComponent();
+
 private:
 	ArgusEntity();
 	ArgusEntity(uint16 id);

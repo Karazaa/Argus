@@ -1,6 +1,7 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusEntity.h"
+#include "ArgusComponentRegistry.h"
 #include "ArgusUtil.h"
 
 std::bitset<ArgusEntity::k_maxEntities> ArgusEntity::s_takenEntityIds = std::bitset<ArgusEntity::k_maxEntities>();
@@ -68,4 +69,10 @@ ArgusEntity::ArgusEntity(uint16 id) : m_id(id)
 uint16 ArgusEntity::GetId() const
 {
 	return m_id;
+}
+
+template<class Component>
+std::optional<Component> ArgusEntity::GetComponent()
+{
+	return ArgusComponentRegistry::GetComponent(m_id);
 }
