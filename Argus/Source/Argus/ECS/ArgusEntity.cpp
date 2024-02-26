@@ -1,10 +1,9 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusEntity.h"
-#include "ArgusComponentRegistry.h"
 #include "ArgusUtil.h"
 
-std::bitset<ArgusEntity::k_maxEntities> ArgusEntity::s_takenEntityIds = std::bitset<ArgusEntity::k_maxEntities>();
+std::bitset<ArgusECSConstants::k_maxEntities> ArgusEntity::s_takenEntityIds = std::bitset<ArgusECSConstants::k_maxEntities>();
 
 ArgusEntity ArgusEntity::CreateEntity(uint16 lowestId)
 {
@@ -28,19 +27,20 @@ std::optional<ArgusEntity> ArgusEntity::RetrieveEntity(uint16 id)
 
 void ArgusEntity::FlushAllEntities()
 {
+	ArgusComponentRegistry::FlushAllComponents();
 	s_takenEntityIds.reset();
 }
 
 uint16 ArgusEntity::GetLowestValidId(uint16 lowestId)
 {
-	while (s_takenEntityIds[lowestId] && lowestId < k_maxEntities)
+	while (s_takenEntityIds[lowestId] && lowestId < ArgusECSConstants::k_maxEntities)
 	{
 		lowestId++;
 	}
 
 	if (s_takenEntityIds[lowestId])
 	{
-		UE_LOG(ArgusGameLog, Error, TEXT("[ECS] Exceeded the maximum number of allowed entities!"));
+		UE_LOG(ArgusGameLog, Error, TEXT("[ECS] Exceeded the maximum number of allowed entities."));
 	}
 
 	s_takenEntityIds.set(lowestId);

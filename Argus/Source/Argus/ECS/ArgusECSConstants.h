@@ -4,13 +4,7 @@
 
 #include "CoreMinimal.h"
 
-class HealthComponent
+namespace ArgusECSConstants
 {
-public:
-	uint32 m_health = 1000u;
-
-	void Reset()
-	{
-		m_health = 1000u;
-	}
-};
+	static constexpr uint16	k_maxEntities = MAX_uint16;
+}

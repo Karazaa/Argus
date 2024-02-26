@@ -2,10 +2,14 @@
 
 #include "ArgusComponentRegistry.h"
 
-HealthComponent ArgusComponentRegistry::m_healthComponentExample = HealthComponent();
+HealthComponent ArgusComponentRegistry::s_healthComponents[ArgusECSConstants::k_maxEntities];
+std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isHealthComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
 
-template<>
-HealthComponent* ArgusComponentRegistry::GetComponent(uint16 entityId)
+void ArgusComponentRegistry::FlushAllComponents()
 {
-	return &m_healthComponentExample;
+	s_isHealthComponentActive.reset();
+	for (int i = 0; i < ArgusECSConstants::k_maxEntities; ++i)
+	{
+		s_healthComponents[i].Reset();
+	}
 }

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "ArgusComponentRegistry.h"
+#include "ArgusECSConstants.h"
 #include "CoreMinimal.h"
 #include <bitset>
 #include <optional>
@@ -16,8 +17,7 @@ public:
 	static void							FlushAllEntities();
 
 private:
-	static constexpr uint16				k_maxEntities = MAX_uint16;
-	static std::bitset<k_maxEntities>	s_takenEntityIds;
+	static std::bitset<ArgusECSConstants::k_maxEntities>	s_takenEntityIds;
 
 	static uint16						GetLowestValidId(uint16 lowestId);
 	
@@ -31,6 +31,12 @@ public:
 	ArgusComponent* GetComponent()
 	{
 		return ArgusComponentRegistry::GetComponent<ArgusComponent>(m_id);
+	}
+
+	template<class ArgusComponent>
+	ArgusComponent* AddComponent()
+	{
+		return ArgusComponentRegistry::AddComponent<ArgusComponent>(m_id);
 	}
 
 private:

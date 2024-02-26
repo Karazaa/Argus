@@ -5,7 +5,7 @@
 
 #if WITH_AUTOMATION_TESTS
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityGetIdTest, "Argus.Entity.GetId", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityGetIdTest, "Argus.ECS.Entity.GetId", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusEntityGetIdTest::RunTest(const FString& Parameters)
 {
 	ArgusEntity::FlushAllEntities();
@@ -16,7 +16,7 @@ bool ArgusEntityGetIdTest::RunTest(const FString& Parameters)
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityAutoIncrementIdTest, "Argus.Entity.AutoIncrementId", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityAutoIncrementIdTest, "Argus.ECS.Entity.AutoIncrementId", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusEntityAutoIncrementIdTest::RunTest(const FString& Parameters)
 {
 	ArgusEntity::FlushAllEntities();
@@ -29,7 +29,7 @@ bool ArgusEntityAutoIncrementIdTest::RunTest(const FString& Parameters)
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityCopyEntityTest, "Argus.Entity.CopyEntity", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityCopyEntityTest, "Argus.ECS.Entity.CopyEntity", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusEntityCopyEntityTest::RunTest(const FString& Parameters)
 {
 	ArgusEntity::FlushAllEntities();
@@ -43,7 +43,7 @@ bool ArgusEntityCopyEntityTest::RunTest(const FString& Parameters)
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityDoesEntityExistTest, "Argus.Entity.DoesEntityExist", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityDoesEntityExistTest, "Argus.ECS.Entity.DoesEntityExist", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusEntityDoesEntityExistTest::RunTest(const FString& Parameters)
 {
 	ArgusEntity::FlushAllEntities();
@@ -54,7 +54,7 @@ bool ArgusEntityDoesEntityExistTest::RunTest(const FString& Parameters)
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityRetrieveEntityTest, "Argus.Entity.RetrieveEntity", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityRetrieveEntityTest, "Argus.ECS.Entity.RetrieveEntity", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusEntityRetrieveEntityTest::RunTest(const FString& Parameters)
 {
 	ArgusEntity::FlushAllEntities();
@@ -70,16 +70,19 @@ bool ArgusEntityRetrieveEntityTest::RunTest(const FString& Parameters)
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityGetHealthComponentTest, "Argus.Entity.GetHealthComponent", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
-bool ArgusEntityGetHealthComponentTest::RunTest(const FString& Parameters)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityAddGetHealthComponentTest, "Argus.ECS.Entity.AddGetHealthComponent", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+bool ArgusEntityAddGetHealthComponentTest::RunTest(const FString& Parameters)
 {
 	ArgusEntity::FlushAllEntities();
 
 	ArgusEntity entity = ArgusEntity::CreateEntity();
 	HealthComponent* p_healthComponent = entity.GetComponent<HealthComponent>();
 
-	// TODO JAMES: Finish flushing this test out.
-	TestFalse(TEXT("Creating an entity, attempting to retrieve health component"), p_healthComponent != nullptr);
+	TestTrue(TEXT("Creating an entity, attempting to retrieve health component before adding it."), p_healthComponent == nullptr);
+
+	p_healthComponent = entity.AddComponent<HealthComponent>();
+
+	TestTrue(TEXT("Creating an entity, attempting to retrieve health component after adding it."), p_healthComponent != nullptr);
 
 	return true;
 }
