@@ -74,3 +74,5 @@ Argus/Plugins/*/Intermediate/*
 Argus/DerivedDataCache/*
 
 Argus/Argus.unrealvs
+
+Argus/Plugins/ArgusCodeGenerator/obj/*
