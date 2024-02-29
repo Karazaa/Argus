@@ -4,7 +4,7 @@
 
 #include "ArgusECSConstants.h"
 #include "ArgusUtil.h"
-#include "ComponentDefinitions/ArgusComponentDefinitions.h"
+#include "ComponentDefinitions/HealthComponent.h"
 #include <bitset>
 
 class ArgusComponentRegistry
