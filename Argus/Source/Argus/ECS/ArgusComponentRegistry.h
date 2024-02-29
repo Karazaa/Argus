@@ -2,10 +2,9 @@
 
 #pragma once
 
-#include "ArgusComponentDefinitions.h"
 #include "ArgusECSConstants.h"
 #include "ArgusUtil.h"
-#include "CoreMinimal.h"
+#include "ComponentDefinitions/ArgusComponentDefinitions.h"
 #include <bitset>
 
 class ArgusComponentRegistry
