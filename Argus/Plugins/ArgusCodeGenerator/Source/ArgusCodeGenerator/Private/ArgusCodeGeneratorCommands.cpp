@@ -6,7 +6,7 @@
 
 void FArgusCodeGeneratorCommands::RegisterCommands()
 {
-	UI_COMMAND(PluginAction, "ArgusCodeGenerator", "Execute ArgusCodeGenerator action", EUserInterfaceActionType::Button, FInputChord());
+	UI_COMMAND(PluginAction, "ArgusCodeGenerator", "Generate Argus C++ Classes", EUserInterfaceActionType::Button, FInputChord());
 }
 
 #undef LOCTEXT_NAMESPACE
