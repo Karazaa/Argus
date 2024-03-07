@@ -1,8 +1,9 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusCodeGenerator.h"
 #include "ArgusCodeGeneratorStyle.h"
 #include "ArgusCodeGeneratorCommands.h"
+#include "ArgusComponentRegistryCodeGenerator.h"
 #include "Misc/MessageDialog.h"
 #include "ToolMenus.h"
 
@@ -55,7 +56,7 @@ void FArgusCodeGeneratorModule::PluginButtonClicked()
 	//				   );
 	//FMessageDialog::Open(EAppMsgType::Ok, DialogText);
 
-	UE_LOG(ArgusCodeGeneratorLog, Warning, TEXT("[%s] Pressed the plugin button!"), ARGUS_FUNCNAME);
+	ArgusComponentRegistryCodeGenerator::GenerateComponentRegistry();
 }
 
 void FArgusCodeGeneratorModule::RegisterMenus()
