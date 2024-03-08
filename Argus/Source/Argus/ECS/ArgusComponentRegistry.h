@@ -4,8 +4,9 @@
 
 #include "ArgusECSConstants.h"
 #include "ArgusUtil.h"
-#include "ComponentDefinitions/HealthComponent.h"
 #include <bitset>
+
+#include "ComponentDefinitions/HealthComponent.h"
 
 class ArgusComponentRegistry
 {
@@ -24,12 +25,16 @@ public:
 
 	static void FlushAllComponents();
 
+	// Begin component specific template specifiers.
+
+// HealthComponent ======================================================================================================
+public:
 	template<>
 	inline HealthComponent* GetComponent<HealthComponent>(uint16 entityId)
 	{
 		if (entityId >= ArgusECSConstants::k_maxEntities)
 		{
-			UE_LOG(ArgusGameLog, Error, TEXT("[ECS] Invalid entity id %d, used when getting HealthComponent."), entityId);
+			UE_LOG(ArgusGameLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(HealthComponent));
 			return nullptr;
 		}
 
@@ -46,13 +51,13 @@ public:
 	{
 		if (entityId >= ArgusECSConstants::k_maxEntities)
 		{
-			UE_LOG(ArgusGameLog, Error, TEXT("[ECS] Invalid entity id %d, used when adding HealthComponent."), entityId);
+			UE_LOG(ArgusGameLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(HealthComponent));
 			return nullptr;
 		}
 
 		if (s_isHealthComponentActive[entityId])
 		{
-			UE_LOG(ArgusGameLog, Warning, TEXT("[ECS] Attempting to add a HealthComponent to entity %d, which already has one."), entityId);
+			UE_LOG(ArgusGameLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(HealthComponent), entityId);
 			return &s_healthComponents[entityId];
 		}
 
