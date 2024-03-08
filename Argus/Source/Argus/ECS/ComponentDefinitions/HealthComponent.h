@@ -14,3 +14,8 @@ public:
 		m_health = 1000u;
 	}
 };
+
+class DamageComponent
+{
+
+};
