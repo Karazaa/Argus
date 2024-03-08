@@ -7,10 +7,15 @@
 #include <fstream>
 
 // Constants for file parsing
-static constexpr std::string s_classDelimiter = "class";
-static const size_t s_classDelimiterLength = s_classDelimiter.length();
-static constexpr char s_inheritanceDelimiter = ':';
-static constexpr char s_openBracketDelimiter = '{';
+const char* ArgusComponentRegistryCodeGenerator::s_componentDefinitionSuffix = "Source/Argus/ECS/ComponentDefinitions";
+const char* ArgusComponentRegistryCodeGenerator::s_templateDirectorySuffix = "Plugins/ArgusCodeGenerator/Source/ArgusCodeGenerator/Private/Templates";
+const char* ArgusComponentRegistryCodeGenerator::s_argusComponentRegistryHeaderTemplateFilename = "ArgusComponentRegistryHeaderTemplate.txt";
+const char* ArgusComponentRegistryCodeGenerator::s_argusComponentRegistryCppTemplateFilename = "ArgusComponentRegistryCppTemplate.txt";
+const char* ArgusComponentRegistryCodeGenerator::s_componentHeaderTemplateFilename = "ComponentHeaderTemplate.txt";
+const char* ArgusComponentRegistryCodeGenerator::s_componentCppTemplateFilename = "ComponentCppTemplate.txt";
+const char* ArgusComponentRegistryCodeGenerator::s_classDelimiter = "class";
+const char  ArgusComponentRegistryCodeGenerator::s_inheritanceDelimiter = ':';
+const char  ArgusComponentRegistryCodeGenerator::s_openBracketDelimiter = '{';
 
 void ArgusComponentRegistryCodeGenerator::GenerateComponentRegistry()
 {
@@ -21,7 +26,7 @@ void ArgusComponentRegistryCodeGenerator::GenerateComponentRegistry()
 
 	// Construct a file path to component definitions
 	FString componentDefinitionsDirectory = *projectDirectory;
-	componentDefinitionsDirectory.Append("Source/Argus/ECS/ComponentDefinitions");
+	componentDefinitionsDirectory.Append(s_componentDefinitionSuffix);
 	FPaths::MakeStandardFilename(componentDefinitionsDirectory);
 	const std::string finalizedComponentDefinitionsDirectory = std::string(TCHAR_TO_UTF8(*componentDefinitionsDirectory));
 
@@ -33,12 +38,13 @@ void ArgusComponentRegistryCodeGenerator::GenerateComponentRegistry()
 		ParseComponentNamesFromFile(entry.path().string(), componentNames);
 	}
 
-	// TODO JAMES: Now that we are parsing the component names into a vector, we need to parse from template txt files to do string replacements.
+	// TODO JAMES: Now that we are parsing the component names into a vector, we need to parse from template .txt files to do string replacements.
 	// TODO JAMES: After doing proper string replacements, we then need to write to the out files.
 }
 
 void ArgusComponentRegistryCodeGenerator::ParseComponentNamesFromFile(const std::string& filePath, std::vector<std::string>& outComponentNames)
 {
+	const size_t classDelimiterLength = std::strlen(s_classDelimiter);
 	std::ifstream inStream = std::ifstream(filePath);
 	const FString ueFilePath = FString(filePath.c_str());
 	if (!inStream.is_open())
@@ -57,7 +63,7 @@ void ArgusComponentRegistryCodeGenerator::ParseComponentNamesFromFile(const std:
 		{
 			continue;
 		}
-		const size_t postClassStartIndex = classDelimiterIndex + s_classDelimiterLength;
+		const size_t postClassStartIndex = classDelimiterIndex + classDelimiterLength;
 
 		const size_t inheritanceDelimiterIndex = lineText.find(s_inheritanceDelimiter);
 		if (inheritanceDelimiterIndex != std::string::npos)
