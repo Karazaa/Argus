@@ -22,4 +22,5 @@ private:
 	static const char s_openBracketDelimiter;
 
 	static void ParseComponentNamesFromFile(const std::string& filePath, std::vector<std::string>& outComponentNames);
+	static void ParseIncludeStatementsFromFile(const std::string& filePath, std::vector<std::string>& outIncludeLines);
 };

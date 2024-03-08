@@ -2,6 +2,7 @@
 
 #include "ArgusComponentRegistry.h"
 
+// HealthComponent
 HealthComponent ArgusComponentRegistry::s_healthComponents[ArgusECSConstants::k_maxEntities];
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isHealthComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
 

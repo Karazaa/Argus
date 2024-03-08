@@ -33,9 +33,12 @@ void ArgusComponentRegistryCodeGenerator::GenerateComponentRegistry()
 	// Iterate over ComponentDefinitions files.
 	UE_LOG(ArgusCodeGeneratorLog, Warning, TEXT("[%s] Printing out found component definition paths from directory: %s"), ARGUS_FUNCNAME, *componentDefinitionsDirectory);
 	std::vector<std::string> componentNames = std::vector<std::string>();
+	std::vector<std::string> includeStatements = std::vector<std::string>();
 	for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(finalizedComponentDefinitionsDirectory))
 	{
-		ParseComponentNamesFromFile(entry.path().string(), componentNames);
+		const std::string filePath = entry.path().string();
+		ParseComponentNamesFromFile(filePath, componentNames);
+		ParseIncludeStatementsFromFile(filePath, includeStatements);
 	}
 
 	// TODO JAMES: Now that we are parsing the component names into a vector, we need to parse from template .txt files to do string replacements.
@@ -86,4 +89,9 @@ void ArgusComponentRegistryCodeGenerator::ParseComponentNamesFromFile(const std:
 		std::erase(lineText, ' ');
 		outComponentNames.push_back(lineText);
 	}
+}
+
+void ArgusComponentRegistryCodeGenerator::ParseIncludeStatementsFromFile(const std::string& filePath, std::vector<std::string>& outIncludeLines)
+{
+
 }

@@ -28,6 +28,9 @@ public:
 	// Begin component specific template specifiers.
 
 // HealthComponent ======================================================================================================
+private:
+	static HealthComponent									s_healthComponents[ArgusECSConstants::k_maxEntities];
+	static std::bitset<ArgusECSConstants::k_maxEntities>	s_isHealthComponentActive;
 public:
 	template<>
 	inline HealthComponent* GetComponent<HealthComponent>(uint16 entityId)
@@ -65,8 +68,4 @@ public:
 		s_isHealthComponentActive.set(entityId);
 		return &s_healthComponents[entityId];
 	}
-
-private:
-	static HealthComponent									s_healthComponents[ArgusECSConstants::k_maxEntities];
-	static std::bitset<ArgusECSConstants::k_maxEntities>	s_isHealthComponentActive;
 };
