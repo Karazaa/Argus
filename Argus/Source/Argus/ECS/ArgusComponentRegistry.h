@@ -64,7 +64,7 @@ public:
 			return &s_healthComponents[entityId];
 		}
 
-		s_healthComponents[entityId].Reset();
+		s_healthComponents[entityId] = HealthComponent();
 		s_isHealthComponentActive.set(entityId);
 		return &s_healthComponents[entityId];
 	}

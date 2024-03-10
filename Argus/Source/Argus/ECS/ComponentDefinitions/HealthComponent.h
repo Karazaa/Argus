@@ -8,14 +8,4 @@ class HealthComponent
 {
 public:
 	uint32 m_health = 1000u;
-
-	void Reset()
-	{
-		m_health = 1000u;
-	}
-};
-
-class DamageComponent
-{
-
 };

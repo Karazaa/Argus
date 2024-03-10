@@ -9,11 +9,13 @@
 // Constants for file parsing
 const char* ArgusComponentRegistryCodeGenerator::s_componentDefinitionDirectoryName = "ComponentDefinitions";
 const char* ArgusComponentRegistryCodeGenerator::s_componentDefinitionSuffix = "Source/Argus/ECS/ComponentDefinitions";
-const char* ArgusComponentRegistryCodeGenerator::s_templateDirectorySuffix = "Plugins/ArgusCodeGenerator/Source/ArgusCodeGenerator/Private/Templates";
+const char* ArgusComponentRegistryCodeGenerator::s_templateDirectorySuffix = "Plugins/ArgusCodeGenerator/Source/ArgusCodeGenerator/Private/Templates/";
 const char* ArgusComponentRegistryCodeGenerator::s_argusComponentRegistryHeaderTemplateFilename = "ArgusComponentRegistryHeaderTemplate.txt";
 const char* ArgusComponentRegistryCodeGenerator::s_argusComponentRegistryCppTemplateFilename = "ArgusComponentRegistryCppTemplate.txt";
 const char* ArgusComponentRegistryCodeGenerator::s_componentHeaderTemplateFilename = "ComponentHeaderTemplate.txt";
-const char* ArgusComponentRegistryCodeGenerator::s_componentCppTemplateFilename = "ComponentCppTemplate.txt";
+const char* ArgusComponentRegistryCodeGenerator::s_componentCppTemplateDefinitionsFilename = "ComponentCppTemplateDefinitions.txt";
+const char* ArgusComponentRegistryCodeGenerator::s_componentCppTemplateFlushFilename = "ComponentCppTemplateFlush.txt";
+const char* ArgusComponentRegistryCodeGenerator::s_componentCppTemplateResetFilename = "ComponentCppTemplateReset.txt";
 const char* ArgusComponentRegistryCodeGenerator::s_classDelimiter = "class";
 const char  ArgusComponentRegistryCodeGenerator::s_inheritanceDelimiter = ':';
 const char  ArgusComponentRegistryCodeGenerator::s_openBracketDelimiter = '{';
@@ -32,15 +34,28 @@ void ArgusComponentRegistryCodeGenerator::GenerateComponentRegistry()
 	const std::string finalizedComponentDefinitionsDirectory = std::string(TCHAR_TO_UTF8(*componentDefinitionsDirectory));
 
 	// Iterate over ComponentDefinitions files.
-	UE_LOG(ArgusCodeGeneratorLog, Warning, TEXT("[%s] Printing out found component definition paths from directory: %s"), ARGUS_FUNCNAME, *componentDefinitionsDirectory);
-	std::vector<std::string> componentNames = std::vector<std::string>();
-	std::vector<std::string> includeStatements = std::vector<std::string>();
+	UE_LOG(ArgusCodeGeneratorLog, Warning, TEXT("[%s] Printing out found component definition paths from directory: %s"), ARGUS_FUNCNAME, *componentDefinitionsDirectory)
+	ParseComponentRegistryHeaderTemplateParams params;
+	params.inComponentNames = std::vector<std::string>();
+	params.inIncludeStatements = std::vector<std::string>();
 	for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(finalizedComponentDefinitionsDirectory))
 	{
 		const std::string filePath = entry.path().string();
-		ParseComponentNamesFromFile(filePath, componentNames);
-		ParseIncludeStatementsFromFile(filePath, includeStatements);
+		ParseComponentNamesFromFile(filePath, params.inComponentNames);
+		ParseIncludeStatementsFromFile(filePath, params.inIncludeStatements);
 	}
+
+	// Construct a directory path to component templates
+	FString templateDirectory = *projectDirectory;
+	templateDirectory.Append(s_templateDirectorySuffix);
+	FPaths::MakeStandardFilename(templateDirectory);
+	const char* cStrTemplateDirectory = TCHAR_TO_UTF8(*templateDirectory);
+
+	params.argusComponentRegistryHeaderTemplateFilePath = std::string(cStrTemplateDirectory).append(s_argusComponentRegistryHeaderTemplateFilename);
+	params.componentHeaderTemplateFilePath = std::string(cStrTemplateDirectory).append(s_componentHeaderTemplateFilename);
+
+	std::vector<std::string> outParsedHeaderFileContents = std::vector<std::string>();
+	ParseComponentRegistryHeaderTemplate(params, outParsedHeaderFileContents);
 
 	// TODO JAMES: Now that we are parsing the component names into a vector, we need to parse from template .txt files to do string replacements.
 	// TODO JAMES: After doing proper string replacements, we then need to write to the out files.
@@ -103,11 +118,38 @@ void ArgusComponentRegistryCodeGenerator::ParseIncludeStatementsFromFile(const s
 
 void ArgusComponentRegistryCodeGenerator::ParseComponentRegistryHeaderTemplate(const ParseComponentRegistryHeaderTemplateParams& params, std::vector<std::string>& outFileContents)
 {
-	std::ifstream inStream = std::ifstream(params.argusComponentRegistryHeaderTemplateFilePath);
-	const FString ueFilePath = FString(params.argusComponentRegistryHeaderTemplateFilePath.c_str());
+	std::ifstream inStream = std::ifstream(params.componentHeaderTemplateFilePath);
+	const FString ueFilePath = FString(params.componentHeaderTemplateFilePath.c_str());
 	if (!inStream.is_open())
 	{
 		UE_LOG(ArgusCodeGeneratorLog, Warning, TEXT("[%s] Failed to read from template file: %s"), ARGUS_FUNCNAME, *ueFilePath);
 		return;
+	}
+
+	std::vector<std::string> rawLines = std::vector<std::string>();
+	std::string lineText;
+	while (std::getline(inStream, lineText))
+	{
+		rawLines.push_back(lineText);
+	}
+
+	std::vector<std::string> parsedLines = std::vector<std::string>();
+	for (std::string component : params.inComponentNames)
+	{
+
+	}
+
+	std::ifstream inHeaderStream = std::ifstream(params.argusComponentRegistryHeaderTemplateFilePath);
+	const FString ueHeaderFilePath = FString(params.argusComponentRegistryHeaderTemplateFilePath.c_str());
+	if (!inStream.is_open())
+	{
+		UE_LOG(ArgusCodeGeneratorLog, Warning, TEXT("[%s] Failed to read from template file: %s"), ARGUS_FUNCNAME, *ueFilePath);
+		return;
+	}
+
+	std::string headerLineText;
+	while (std::getline(inStream, headerLineText))
+	{
+
 	}
 }

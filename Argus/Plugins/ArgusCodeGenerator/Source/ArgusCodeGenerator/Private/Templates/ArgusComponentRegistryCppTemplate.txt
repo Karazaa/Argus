@@ -4,14 +4,16 @@
 #include "ArgusComponentRegistry.h"
 
 // Begin component specific definitions
-
 @@@@@
 
 void ArgusComponentRegistry::FlushAllComponents()
 {
-	s_is######Active.reset();
+	// Begin flush active component bitsets
+	#####
+
+	// Begin flush component values
 	for (int i = 0; i < ArgusECSConstants::k_maxEntities; ++i)
 	{
-		s_######s[i].Reset();
+		$$$$$
 	}
 }

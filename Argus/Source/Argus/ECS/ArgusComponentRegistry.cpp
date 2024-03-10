@@ -11,6 +11,6 @@ void ArgusComponentRegistry::FlushAllComponents()
 	s_isHealthComponentActive.reset();
 	for (int i = 0; i < ArgusECSConstants::k_maxEntities; ++i)
 	{
-		s_healthComponents[i].Reset();
+		s_healthComponents[i] = HealthComponent();
 	}
 }

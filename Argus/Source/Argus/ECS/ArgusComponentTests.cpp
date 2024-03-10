@@ -22,7 +22,7 @@ bool ArgusComponentHealthComponentPersistenceTest::RunTest(const FString& Parame
 	p_healthComponent = entity.GetComponent<HealthComponent>();
 
 	TestEqual(TEXT("Creating a HealthComponent, setting it to 500, then checking the value is 500 on retrieval."), p_healthComponent->m_health, 500u);
-	p_healthComponent->Reset();
+	*p_healthComponent = HealthComponent();
 	TestEqual(TEXT("Creating a HealthComponent, setting it to 500, resetting it, then checking the value is 1000 after reset."), p_healthComponent->m_health, 1000u);
 
 	return true;

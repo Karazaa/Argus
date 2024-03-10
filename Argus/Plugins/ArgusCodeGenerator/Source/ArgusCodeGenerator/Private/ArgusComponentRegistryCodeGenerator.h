@@ -17,7 +17,9 @@ private:
 	static const char* s_argusComponentRegistryHeaderTemplateFilename;
 	static const char* s_argusComponentRegistryCppTemplateFilename;
 	static const char* s_componentHeaderTemplateFilename;
-	static const char* s_componentCppTemplateFilename;
+	static const char* s_componentCppTemplateDefinitionsFilename;
+	static const char* s_componentCppTemplateFlushFilename;
+	static const char* s_componentCppTemplateResetFilename;
 	static const char* s_classDelimiter;
 	static const char s_inheritanceDelimiter;
 	static const char s_openBracketDelimiter;
