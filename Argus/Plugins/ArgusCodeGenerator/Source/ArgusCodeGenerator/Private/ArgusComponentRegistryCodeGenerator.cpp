@@ -5,10 +5,12 @@
 #include "Misc/Paths.h"
 #include <filesystem>
 #include <fstream>
+#include <regex>
 
 // Constants for file parsing
 const char* ArgusComponentRegistryCodeGenerator::s_componentDefinitionDirectoryName = "ComponentDefinitions";
-const char* ArgusComponentRegistryCodeGenerator::s_componentDefinitionSuffix = "Source/Argus/ECS/ComponentDefinitions";
+const char* ArgusComponentRegistryCodeGenerator::s_componentDefinitionDirectorySuffix = "Source/Argus/ECS/ComponentDefinitions";
+const char* ArgusComponentRegistryCodeGenerator::s_componentRegistryDirectorySuffix = "Source/Argus/ECS/";
 const char* ArgusComponentRegistryCodeGenerator::s_templateDirectorySuffix = "Plugins/ArgusCodeGenerator/Source/ArgusCodeGenerator/Private/Templates/";
 const char* ArgusComponentRegistryCodeGenerator::s_argusComponentRegistryHeaderTemplateFilename = "ArgusComponentRegistryHeaderTemplate.txt";
 const char* ArgusComponentRegistryCodeGenerator::s_argusComponentRegistryCppTemplateFilename = "ArgusComponentRegistryCppTemplate.txt";
@@ -16,6 +18,7 @@ const char* ArgusComponentRegistryCodeGenerator::s_componentHeaderTemplateFilena
 const char* ArgusComponentRegistryCodeGenerator::s_componentCppTemplateDefinitionsFilename = "ComponentCppTemplateDefinitions.txt";
 const char* ArgusComponentRegistryCodeGenerator::s_componentCppTemplateFlushFilename = "ComponentCppTemplateFlush.txt";
 const char* ArgusComponentRegistryCodeGenerator::s_componentCppTemplateResetFilename = "ComponentCppTemplateReset.txt";
+const char* ArgusComponentRegistryCodeGenerator::s_argusComponentRegistryHeaderFilename = "ArgusComponentRegistry.h";
 const char* ArgusComponentRegistryCodeGenerator::s_classDelimiter = "class";
 const char  ArgusComponentRegistryCodeGenerator::s_inheritanceDelimiter = ':';
 const char  ArgusComponentRegistryCodeGenerator::s_openBracketDelimiter = '{';
@@ -29,7 +32,7 @@ void ArgusComponentRegistryCodeGenerator::GenerateComponentRegistry()
 
 	// Construct a file path to component definitions
 	FString componentDefinitionsDirectory = *projectDirectory;
-	componentDefinitionsDirectory.Append(s_componentDefinitionSuffix);
+	componentDefinitionsDirectory.Append(s_componentDefinitionDirectorySuffix);
 	FPaths::MakeStandardFilename(componentDefinitionsDirectory);
 	const std::string finalizedComponentDefinitionsDirectory = std::string(TCHAR_TO_UTF8(*componentDefinitionsDirectory));
 
@@ -54,11 +57,18 @@ void ArgusComponentRegistryCodeGenerator::GenerateComponentRegistry()
 	params.argusComponentRegistryHeaderTemplateFilePath = std::string(cStrTemplateDirectory).append(s_argusComponentRegistryHeaderTemplateFilename);
 	params.componentHeaderTemplateFilePath = std::string(cStrTemplateDirectory).append(s_componentHeaderTemplateFilename);
 
+	// Parse header file
 	std::vector<std::string> outParsedHeaderFileContents = std::vector<std::string>();
 	ParseComponentRegistryHeaderTemplate(params, outParsedHeaderFileContents);
 
-	// TODO JAMES: Now that we are parsing the component names into a vector, we need to parse from template .txt files to do string replacements.
-	// TODO JAMES: After doing proper string replacements, we then need to write to the out files.
+	// Construct a directory path to component templates
+	FString registryDirectory = *projectDirectory;
+	registryDirectory.Append(s_componentRegistryDirectorySuffix);
+	FPaths::MakeStandardFilename(registryDirectory);
+	const char* cStrRegistryDirectory = TCHAR_TO_UTF8(*registryDirectory);
+
+	// Write out header file
+	WriteOutComponentRegistryHeader(std::string(cStrRegistryDirectory).append(s_argusComponentRegistryHeaderFilename), outParsedHeaderFileContents);
 }
 
 void ArgusComponentRegistryCodeGenerator::ParseComponentNamesFromFile(const std::string& filePath, std::vector<std::string>& outComponentNames)
@@ -105,6 +115,7 @@ void ArgusComponentRegistryCodeGenerator::ParseComponentNamesFromFile(const std:
 		std::erase(lineText, ' ');
 		outComponentNames.push_back(lineText);
 	}
+	inStream.close();
 }
 
 void ArgusComponentRegistryCodeGenerator::ParseIncludeStatementsFromFile(const std::string& filePath, std::vector<std::string>& outIncludeStatements)
@@ -132,24 +143,63 @@ void ArgusComponentRegistryCodeGenerator::ParseComponentRegistryHeaderTemplate(c
 	{
 		rawLines.push_back(lineText);
 	}
+	inStream.close();
 
 	std::vector<std::string> parsedLines = std::vector<std::string>();
 	for (std::string component : params.inComponentNames)
 	{
-
+		for (std::string rawLine : rawLines)
+		{
+			parsedLines.push_back(std::regex_replace(rawLine, std::regex("#####"), component));
+		}
 	}
 
 	std::ifstream inHeaderStream = std::ifstream(params.argusComponentRegistryHeaderTemplateFilePath);
 	const FString ueHeaderFilePath = FString(params.argusComponentRegistryHeaderTemplateFilePath.c_str());
-	if (!inStream.is_open())
+	if (!inHeaderStream.is_open())
 	{
 		UE_LOG(ArgusCodeGeneratorLog, Warning, TEXT("[%s] Failed to read from template file: %s"), ARGUS_FUNCNAME, *ueFilePath);
 		return;
 	}
 
 	std::string headerLineText;
-	while (std::getline(inStream, headerLineText))
+	while (std::getline(inHeaderStream, headerLineText))
 	{
-
+		if (headerLineText.find("@@@@@") != std::string::npos)
+		{
+			for (std::string includeStatement : params.inIncludeStatements)
+			{
+				outFileContents.push_back(includeStatement);
+			}
+		}
+		else if (headerLineText.find("#####") != std::string::npos)
+		{
+			for (std::string parsedLine : parsedLines)
+			{
+				outFileContents.push_back(parsedLine);
+			}
+		}
+		else
+		{
+			outFileContents.push_back(headerLineText);
+		}
 	}
+	inHeaderStream.close();
+}
+
+void ArgusComponentRegistryCodeGenerator::WriteOutComponentRegistryHeader(const std::string& filePath, const std::vector<std::string>& outFileContents)
+{
+	std::ofstream outStream = std::ofstream(filePath, std::ofstream::out | std::ofstream::trunc);
+	const FString ueFilePath = FString(filePath.c_str());
+	if (!outStream.is_open())
+	{
+		UE_LOG(ArgusCodeGeneratorLog, Warning, TEXT("[%s] Failed to write to output file: %s"), ARGUS_FUNCNAME, *ueFilePath);
+		return;
+	}
+
+	for (std::string line : outFileContents)
+	{
+		outStream << line << std::endl;
+	}
+	outStream.close();
 }

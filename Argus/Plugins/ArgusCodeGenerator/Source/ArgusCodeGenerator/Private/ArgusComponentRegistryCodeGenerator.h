@@ -12,7 +12,8 @@ public:
 private:
 	// Constants for file parsing
 	static const char* s_componentDefinitionDirectoryName;
-	static const char* s_componentDefinitionSuffix;
+	static const char* s_componentDefinitionDirectorySuffix;
+	static const char* s_componentRegistryDirectorySuffix;
 	static const char* s_templateDirectorySuffix;
 	static const char* s_argusComponentRegistryHeaderTemplateFilename;
 	static const char* s_argusComponentRegistryCppTemplateFilename;
@@ -20,6 +21,7 @@ private:
 	static const char* s_componentCppTemplateDefinitionsFilename;
 	static const char* s_componentCppTemplateFlushFilename;
 	static const char* s_componentCppTemplateResetFilename;
+	static const char* s_argusComponentRegistryHeaderFilename;
 	static const char* s_classDelimiter;
 	static const char s_inheritanceDelimiter;
 	static const char s_openBracketDelimiter;
@@ -35,4 +37,5 @@ private:
 		std::vector<std::string> inIncludeStatements;
 	};
 	static void ParseComponentRegistryHeaderTemplate(const ParseComponentRegistryHeaderTemplateParams& params, std::vector<std::string>& outFileContents);
+	static void WriteOutComponentRegistryHeader(const std::string& filePath, const std::vector<std::string>& outFileContents);
 };
