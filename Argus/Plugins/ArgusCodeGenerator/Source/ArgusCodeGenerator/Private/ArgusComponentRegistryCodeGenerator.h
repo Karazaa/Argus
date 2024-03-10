@@ -11,6 +11,7 @@ public:
 	static void GenerateComponentRegistry();
 private:
 	// Constants for file parsing
+	static const char* s_componentDefinitionDirectoryName;
 	static const char* s_componentDefinitionSuffix;
 	static const char* s_templateDirectorySuffix;
 	static const char* s_argusComponentRegistryHeaderTemplateFilename;
@@ -22,5 +23,14 @@ private:
 	static const char s_openBracketDelimiter;
 
 	static void ParseComponentNamesFromFile(const std::string& filePath, std::vector<std::string>& outComponentNames);
-	static void ParseIncludeStatementsFromFile(const std::string& filePath, std::vector<std::string>& outIncludeLines);
+	static void ParseIncludeStatementsFromFile(const std::string& filePath, std::vector<std::string>& outIncludeStatements);
+
+	struct ParseComponentRegistryHeaderTemplateParams
+	{
+		std::string argusComponentRegistryHeaderTemplateFilePath;
+		std::string componentHeaderTemplateFilePath;
+		std::vector<std::string> inComponentNames;
+		std::vector<std::string> inIncludeStatements;
+	};
+	static void ParseComponentRegistryHeaderTemplate(const ParseComponentRegistryHeaderTemplateParams& params, std::vector<std::string>& outFileContents);
 };

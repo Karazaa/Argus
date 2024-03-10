@@ -7,6 +7,7 @@
 #include <fstream>
 
 // Constants for file parsing
+const char* ArgusComponentRegistryCodeGenerator::s_componentDefinitionDirectoryName = "ComponentDefinitions";
 const char* ArgusComponentRegistryCodeGenerator::s_componentDefinitionSuffix = "Source/Argus/ECS/ComponentDefinitions";
 const char* ArgusComponentRegistryCodeGenerator::s_templateDirectorySuffix = "Plugins/ArgusCodeGenerator/Source/ArgusCodeGenerator/Private/Templates";
 const char* ArgusComponentRegistryCodeGenerator::s_argusComponentRegistryHeaderTemplateFilename = "ArgusComponentRegistryHeaderTemplate.txt";
@@ -52,7 +53,7 @@ void ArgusComponentRegistryCodeGenerator::ParseComponentNamesFromFile(const std:
 	const FString ueFilePath = FString(filePath.c_str());
 	if (!inStream.is_open())
 	{
-		UE_LOG(ArgusCodeGeneratorLog, Warning, TEXT("[%s] Faile to read from file: %s"), ARGUS_FUNCNAME, *ueFilePath);
+		UE_LOG(ArgusCodeGeneratorLog, Warning, TEXT("[%s] Failed to read from file: %s"), ARGUS_FUNCNAME, *ueFilePath);
 		return;
 	}
 
@@ -91,7 +92,22 @@ void ArgusComponentRegistryCodeGenerator::ParseComponentNamesFromFile(const std:
 	}
 }
 
-void ArgusComponentRegistryCodeGenerator::ParseIncludeStatementsFromFile(const std::string& filePath, std::vector<std::string>& outIncludeLines)
+void ArgusComponentRegistryCodeGenerator::ParseIncludeStatementsFromFile(const std::string& filePath, std::vector<std::string>& outIncludeStatements)
 {
+	const size_t componentDefinitionIndex = filePath.find(s_componentDefinitionDirectoryName);
+	std::string includeStatement = "#include \"";
+	includeStatement.append(filePath.substr(componentDefinitionIndex));
+	includeStatement.append("\"");
+	outIncludeStatements.push_back(includeStatement);
+}
 
+void ArgusComponentRegistryCodeGenerator::ParseComponentRegistryHeaderTemplate(const ParseComponentRegistryHeaderTemplateParams& params, std::vector<std::string>& outFileContents)
+{
+	std::ifstream inStream = std::ifstream(params.argusComponentRegistryHeaderTemplateFilePath);
+	const FString ueFilePath = FString(params.argusComponentRegistryHeaderTemplateFilePath.c_str());
+	if (!inStream.is_open())
+	{
+		UE_LOG(ArgusCodeGeneratorLog, Warning, TEXT("[%s] Failed to read from template file: %s"), ARGUS_FUNCNAME, *ueFilePath);
+		return;
+	}
 }
