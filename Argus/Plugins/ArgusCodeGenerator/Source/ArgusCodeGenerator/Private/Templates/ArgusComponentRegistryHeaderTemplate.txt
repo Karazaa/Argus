@@ -30,5 +30,4 @@ public:
 	// Begin component specific template specifiers.
 	
 	#####
-
 };

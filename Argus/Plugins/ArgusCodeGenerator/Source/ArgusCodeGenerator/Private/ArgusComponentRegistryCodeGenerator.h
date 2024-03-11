@@ -44,6 +44,5 @@ private:
 	static void ParseComponentRegistryHeaderTemplate(const ParseComponentRegistryTemplateParams& params, std::vector<std::string>& outFileContents);
 	static void ParseComponentRegistryCppTemplate(const ParseComponentRegistryTemplateParams& params, std::vector<std::string>& outFileContents);
 	static void ParseComponentSpecificTemplate(const std::string& filePath, const std::vector<std::string>& componentNames, std::vector<std::string>& outFileContents);
-	static void WriteOutComponentRegistryHeader(const std::string& filePath, const std::vector<std::string>& inFileContents);
-	static void WriteOutComponentRegistryCpp(const std::string& filePath, const std::vector<std::string>& inFileContents);
+	static void WriteOutFile(const std::string& filePath, const std::vector<std::string>& inFileContents);
 };

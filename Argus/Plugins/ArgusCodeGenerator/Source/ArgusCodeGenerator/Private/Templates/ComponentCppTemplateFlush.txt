@@ -1,1 +1,1 @@
-		s_healthComponents[i] = HealthComponent();
+		s_#####s[i] = #####();

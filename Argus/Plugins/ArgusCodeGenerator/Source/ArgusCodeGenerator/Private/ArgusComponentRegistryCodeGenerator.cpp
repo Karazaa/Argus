@@ -77,8 +77,8 @@ void ArgusComponentRegistryCodeGenerator::GenerateComponentRegistry()
 	const char* cStrRegistryDirectory = TCHAR_TO_UTF8(*registryDirectory);
 
 	// Write out header and cpp file
-	WriteOutComponentRegistryHeader(std::string(cStrRegistryDirectory).append(s_argusComponentRegistryHeaderFilename), outParsedHeaderFileContents);
-	WriteOutComponentRegistryCpp(std::string(cStrRegistryDirectory).append(s_argusComponentRegistryCppFilename), outParsedCppFileContents);
+	WriteOutFile(std::string(cStrRegistryDirectory).append(s_argusComponentRegistryHeaderFilename), outParsedHeaderFileContents);
+	WriteOutFile(std::string(cStrRegistryDirectory).append(s_argusComponentRegistryCppFilename), outParsedCppFileContents);
 }
 
 void ArgusComponentRegistryCodeGenerator::ParseComponentNamesFromFile(const std::string& filePath, std::vector<std::string>& outComponentNames)
@@ -263,7 +263,7 @@ void ArgusComponentRegistryCodeGenerator::ParseComponentSpecificTemplate(const s
 	}
 }
 
-void ArgusComponentRegistryCodeGenerator::WriteOutComponentRegistryHeader(const std::string& filePath, const std::vector<std::string>& inFileContents)
+void ArgusComponentRegistryCodeGenerator::WriteOutFile(const std::string& filePath, const std::vector<std::string>& inFileContents)
 {
 	std::ofstream outStream = std::ofstream(filePath, std::ofstream::out | std::ofstream::trunc);
 	const FString ueFilePath = FString(filePath.c_str());
@@ -278,9 +278,4 @@ void ArgusComponentRegistryCodeGenerator::WriteOutComponentRegistryHeader(const 
 		outStream << line << std::endl;
 	}
 	outStream.close();
-}
-
-void ArgusComponentRegistryCodeGenerator::WriteOutComponentRegistryCpp(const std::string& filePath, const std::vector<std::string>& inFileContents)
-{
-
 }
