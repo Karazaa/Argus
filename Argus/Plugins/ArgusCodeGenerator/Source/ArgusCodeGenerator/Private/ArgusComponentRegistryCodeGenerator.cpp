@@ -19,6 +19,7 @@ const char* ArgusComponentRegistryCodeGenerator::s_componentCppTemplateDefinitio
 const char* ArgusComponentRegistryCodeGenerator::s_componentCppTemplateFlushFilename = "ComponentCppTemplateFlush.txt";
 const char* ArgusComponentRegistryCodeGenerator::s_componentCppTemplateResetFilename = "ComponentCppTemplateReset.txt";
 const char* ArgusComponentRegistryCodeGenerator::s_argusComponentRegistryHeaderFilename = "ArgusComponentRegistry.h";
+const char* ArgusComponentRegistryCodeGenerator::s_argusComponentRegistryCppFilename = "ArgusComponentRegistry.cpp";
 const char* ArgusComponentRegistryCodeGenerator::s_classDelimiter = "class";
 const char  ArgusComponentRegistryCodeGenerator::s_inheritanceDelimiter = ':';
 const char  ArgusComponentRegistryCodeGenerator::s_openBracketDelimiter = '{';
@@ -38,7 +39,7 @@ void ArgusComponentRegistryCodeGenerator::GenerateComponentRegistry()
 
 	// Iterate over ComponentDefinitions files.
 	UE_LOG(ArgusCodeGeneratorLog, Warning, TEXT("[%s] Printing out found component definition paths from directory: %s"), ARGUS_FUNCNAME, *componentDefinitionsDirectory)
-	ParseComponentRegistryHeaderTemplateParams params;
+	ParseComponentRegistryTemplateParams params;
 	params.inComponentNames = std::vector<std::string>();
 	params.inIncludeStatements = std::vector<std::string>();
 	for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(finalizedComponentDefinitionsDirectory))
@@ -55,11 +56,19 @@ void ArgusComponentRegistryCodeGenerator::GenerateComponentRegistry()
 	const char* cStrTemplateDirectory = TCHAR_TO_UTF8(*templateDirectory);
 
 	params.argusComponentRegistryHeaderTemplateFilePath = std::string(cStrTemplateDirectory).append(s_argusComponentRegistryHeaderTemplateFilename);
+	params.argusComponentRegistryCppTemplateFilePath = std::string(cStrTemplateDirectory).append(s_argusComponentRegistryCppTemplateFilename);
 	params.componentHeaderTemplateFilePath = std::string(cStrTemplateDirectory).append(s_componentHeaderTemplateFilename);
+	params.componentCppTemplateDefinitionsFilePath = std::string(cStrTemplateDirectory).append(s_componentCppTemplateDefinitionsFilename);
+	params.componentCppTemplateResetFilePath = std::string(cStrTemplateDirectory).append(s_componentCppTemplateResetFilename);
+	params.componentCppTemplateFlushFilePath = std::string(cStrTemplateDirectory).append(s_componentCppTemplateFlushFilename);
 
 	// Parse header file
 	std::vector<std::string> outParsedHeaderFileContents = std::vector<std::string>();
 	ParseComponentRegistryHeaderTemplate(params, outParsedHeaderFileContents);
+
+	// Parse cpp file
+	std::vector<std::string> outParsedCppFileContents = std::vector<std::string>();
+	ParseComponentRegistryCppTemplate(params, outParsedCppFileContents);
 
 	// Construct a directory path to component templates
 	FString registryDirectory = *projectDirectory;
@@ -67,8 +76,9 @@ void ArgusComponentRegistryCodeGenerator::GenerateComponentRegistry()
 	FPaths::MakeStandardFilename(registryDirectory);
 	const char* cStrRegistryDirectory = TCHAR_TO_UTF8(*registryDirectory);
 
-	// Write out header file
+	// Write out header and cpp file
 	WriteOutComponentRegistryHeader(std::string(cStrRegistryDirectory).append(s_argusComponentRegistryHeaderFilename), outParsedHeaderFileContents);
+	WriteOutComponentRegistryCpp(std::string(cStrRegistryDirectory).append(s_argusComponentRegistryCppFilename), outParsedCppFileContents);
 }
 
 void ArgusComponentRegistryCodeGenerator::ParseComponentNamesFromFile(const std::string& filePath, std::vector<std::string>& outComponentNames)
@@ -78,7 +88,7 @@ void ArgusComponentRegistryCodeGenerator::ParseComponentNamesFromFile(const std:
 	const FString ueFilePath = FString(filePath.c_str());
 	if (!inStream.is_open())
 	{
-		UE_LOG(ArgusCodeGeneratorLog, Warning, TEXT("[%s] Failed to read from file: %s"), ARGUS_FUNCNAME, *ueFilePath);
+		UE_LOG(ArgusCodeGeneratorLog, Error, TEXT("[%s] Failed to read from file: %s"), ARGUS_FUNCNAME, *ueFilePath);
 		return;
 	}
 
@@ -127,38 +137,17 @@ void ArgusComponentRegistryCodeGenerator::ParseIncludeStatementsFromFile(const s
 	outIncludeStatements.push_back(includeStatement);
 }
 
-void ArgusComponentRegistryCodeGenerator::ParseComponentRegistryHeaderTemplate(const ParseComponentRegistryHeaderTemplateParams& params, std::vector<std::string>& outFileContents)
+void ArgusComponentRegistryCodeGenerator::ParseComponentRegistryHeaderTemplate(const ParseComponentRegistryTemplateParams& params, std::vector<std::string>& outFileContents)
 {
-	std::ifstream inStream = std::ifstream(params.componentHeaderTemplateFilePath);
-	const FString ueFilePath = FString(params.componentHeaderTemplateFilePath.c_str());
-	if (!inStream.is_open())
-	{
-		UE_LOG(ArgusCodeGeneratorLog, Warning, TEXT("[%s] Failed to read from template file: %s"), ARGUS_FUNCNAME, *ueFilePath);
-		return;
-	}
-
-	std::vector<std::string> rawLines = std::vector<std::string>();
-	std::string lineText;
-	while (std::getline(inStream, lineText))
-	{
-		rawLines.push_back(lineText);
-	}
-	inStream.close();
-
+	// Parse per component template into one section
 	std::vector<std::string> parsedLines = std::vector<std::string>();
-	for (std::string component : params.inComponentNames)
-	{
-		for (std::string rawLine : rawLines)
-		{
-			parsedLines.push_back(std::regex_replace(rawLine, std::regex("#####"), component));
-		}
-	}
+	ParseComponentSpecificTemplate(params.componentHeaderTemplateFilePath, params.inComponentNames, parsedLines);
 
 	std::ifstream inHeaderStream = std::ifstream(params.argusComponentRegistryHeaderTemplateFilePath);
 	const FString ueHeaderFilePath = FString(params.argusComponentRegistryHeaderTemplateFilePath.c_str());
 	if (!inHeaderStream.is_open())
 	{
-		UE_LOG(ArgusCodeGeneratorLog, Warning, TEXT("[%s] Failed to read from template file: %s"), ARGUS_FUNCNAME, *ueFilePath);
+		UE_LOG(ArgusCodeGeneratorLog, Error, TEXT("[%s] Failed to read from template file: %s"), ARGUS_FUNCNAME, *ueHeaderFilePath);
 		return;
 	}
 
@@ -187,19 +176,111 @@ void ArgusComponentRegistryCodeGenerator::ParseComponentRegistryHeaderTemplate(c
 	inHeaderStream.close();
 }
 
-void ArgusComponentRegistryCodeGenerator::WriteOutComponentRegistryHeader(const std::string& filePath, const std::vector<std::string>& outFileContents)
+void ArgusComponentRegistryCodeGenerator::ParseComponentRegistryCppTemplate(const ParseComponentRegistryTemplateParams& params, std::vector<std::string>& outFileContents)
+{
+	// Parse definitions template into one section
+	std::vector<std::string> parsedDefinitionLines = std::vector<std::string>();
+	ParseComponentSpecificTemplate(params.componentCppTemplateDefinitionsFilePath, params.inComponentNames, parsedDefinitionLines);
+
+	// Parse reset template into one section
+	std::vector<std::string> parsedResetLines = std::vector<std::string>();
+	ParseComponentSpecificTemplate(params.componentCppTemplateResetFilePath, params.inComponentNames, parsedResetLines);
+
+	// Parse reset template into one section
+	std::vector<std::string> parsedFlushLines = std::vector<std::string>();
+	ParseComponentSpecificTemplate(params.componentCppTemplateFlushFilePath, params.inComponentNames, parsedFlushLines);
+
+	// Parse per component template into one section
+	std::vector<std::string> parsedLines = std::vector<std::string>();
+	ParseComponentSpecificTemplate(params.componentHeaderTemplateFilePath, params.inComponentNames, parsedLines);
+
+	std::ifstream inCppStream = std::ifstream(params.argusComponentRegistryCppTemplateFilePath);
+	const FString ueCppFilePath = FString(params.argusComponentRegistryCppTemplateFilePath.c_str());
+	if (!inCppStream.is_open())
+	{
+		UE_LOG(ArgusCodeGeneratorLog, Error, TEXT("[%s] Failed to read from template file: %s"), ARGUS_FUNCNAME, *ueCppFilePath);
+		return;
+	}
+
+	std::string cppLineText;
+	while (std::getline(inCppStream, cppLineText))
+	{
+		if (cppLineText.find("@@@@@") != std::string::npos)
+		{
+			for (std::string parsedLine : parsedDefinitionLines)
+			{
+				outFileContents.push_back(parsedLine);
+			}
+		}
+		else if (cppLineText.find("#####") != std::string::npos)
+		{
+			for (std::string parsedLine : parsedResetLines)
+			{
+				outFileContents.push_back(parsedLine);
+			}
+		}
+		else if (cppLineText.find("$$$$$") != std::string::npos)
+		{
+			for (std::string parsedLine : parsedFlushLines)
+			{
+				outFileContents.push_back(parsedLine);
+			}
+		}
+		else
+		{
+			outFileContents.push_back(cppLineText);
+		}
+	}
+	inCppStream.close();
+}
+
+void ArgusComponentRegistryCodeGenerator::ParseComponentSpecificTemplate(const std::string& filePath, const std::vector<std::string>& componentNames, std::vector<std::string>& outFileContents)
+{
+	// Read from definitions template
+	std::ifstream inStream = std::ifstream(filePath);
+	const FString ueFilePath = FString(filePath.c_str());
+	if (!inStream.is_open())
+	{
+		UE_LOG(ArgusCodeGeneratorLog, Error, TEXT("[%s] Failed to read from template file: %s"), ARGUS_FUNCNAME, *ueFilePath);
+		return;
+	}
+
+	std::vector<std::string> rawLines = std::vector<std::string>();
+	std::string lineText;
+	while (std::getline(inStream, lineText))
+	{
+		rawLines.push_back(lineText);
+	}
+	inStream.close();
+
+	// Parse per component template into one section
+	for (std::string component : componentNames)
+	{
+		for (std::string rawLine : rawLines)
+		{
+			outFileContents.push_back(std::regex_replace(rawLine, std::regex("#####"), component));
+		}
+	}
+}
+
+void ArgusComponentRegistryCodeGenerator::WriteOutComponentRegistryHeader(const std::string& filePath, const std::vector<std::string>& inFileContents)
 {
 	std::ofstream outStream = std::ofstream(filePath, std::ofstream::out | std::ofstream::trunc);
 	const FString ueFilePath = FString(filePath.c_str());
 	if (!outStream.is_open())
 	{
-		UE_LOG(ArgusCodeGeneratorLog, Warning, TEXT("[%s] Failed to write to output file: %s"), ARGUS_FUNCNAME, *ueFilePath);
+		UE_LOG(ArgusCodeGeneratorLog, Error, TEXT("[%s] Failed to write to output file: %s"), ARGUS_FUNCNAME, *ueFilePath);
 		return;
 	}
 
-	for (std::string line : outFileContents)
+	for (std::string line : inFileContents)
 	{
 		outStream << line << std::endl;
 	}
 	outStream.close();
+}
+
+void ArgusComponentRegistryCodeGenerator::WriteOutComponentRegistryCpp(const std::string& filePath, const std::vector<std::string>& inFileContents)
+{
+
 }

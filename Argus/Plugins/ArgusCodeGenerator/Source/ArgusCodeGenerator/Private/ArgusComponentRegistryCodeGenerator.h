@@ -22,6 +22,7 @@ private:
 	static const char* s_componentCppTemplateFlushFilename;
 	static const char* s_componentCppTemplateResetFilename;
 	static const char* s_argusComponentRegistryHeaderFilename;
+	static const char* s_argusComponentRegistryCppFilename;
 	static const char* s_classDelimiter;
 	static const char s_inheritanceDelimiter;
 	static const char s_openBracketDelimiter;
@@ -29,13 +30,20 @@ private:
 	static void ParseComponentNamesFromFile(const std::string& filePath, std::vector<std::string>& outComponentNames);
 	static void ParseIncludeStatementsFromFile(const std::string& filePath, std::vector<std::string>& outIncludeStatements);
 
-	struct ParseComponentRegistryHeaderTemplateParams
+	struct ParseComponentRegistryTemplateParams
 	{
 		std::string argusComponentRegistryHeaderTemplateFilePath;
 		std::string componentHeaderTemplateFilePath;
+		std::string argusComponentRegistryCppTemplateFilePath;
+		std::string componentCppTemplateDefinitionsFilePath;
+		std::string componentCppTemplateFlushFilePath;
+		std::string componentCppTemplateResetFilePath;
 		std::vector<std::string> inComponentNames;
 		std::vector<std::string> inIncludeStatements;
 	};
-	static void ParseComponentRegistryHeaderTemplate(const ParseComponentRegistryHeaderTemplateParams& params, std::vector<std::string>& outFileContents);
-	static void WriteOutComponentRegistryHeader(const std::string& filePath, const std::vector<std::string>& outFileContents);
+	static void ParseComponentRegistryHeaderTemplate(const ParseComponentRegistryTemplateParams& params, std::vector<std::string>& outFileContents);
+	static void ParseComponentRegistryCppTemplate(const ParseComponentRegistryTemplateParams& params, std::vector<std::string>& outFileContents);
+	static void ParseComponentSpecificTemplate(const std::string& filePath, const std::vector<std::string>& componentNames, std::vector<std::string>& outFileContents);
+	static void WriteOutComponentRegistryHeader(const std::string& filePath, const std::vector<std::string>& inFileContents);
+	static void WriteOutComponentRegistryCpp(const std::string& filePath, const std::vector<std::string>& inFileContents);
 };
