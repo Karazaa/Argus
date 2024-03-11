@@ -6,5 +6,5 @@
 
 namespace ArgusECSConstants
 {
-	static constexpr uint16	k_maxEntities = MAX_uint16;
+	static constexpr uint16	k_maxEntities = 10000u;
 }

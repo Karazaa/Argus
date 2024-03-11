@@ -28,4 +28,15 @@ bool ArgusComponentHealthComponentPersistenceTest::RunTest(const FString& Parame
 	return true;
 }
 
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentComponentSizeTest, "Argus.ECS.Component.ComponentSizeTest", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+bool ArgusComponentComponentSizeTest::RunTest(const FString& Parameters)
+{
+	ArgusEntity::FlushAllEntities();
+
+	UE_LOG(ArgusGameLog, Warning, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(HealthComponent), sizeof(HealthComponent));
+	UE_LOG(ArgusGameLog, Warning, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), sizeof(TransformComponent));
+
+	TestTrue(TEXT("Printing out component sizes"), true);
+	return true;
+}
 #endif //WITH_AUTOMATION_TESTS

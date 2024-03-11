@@ -27,7 +27,7 @@ private:
 	static const char s_inheritanceDelimiter;
 	static const char s_openBracketDelimiter;
 
-	static void ParseComponentNamesFromFile(const std::string& filePath, std::vector<std::string>& outComponentNames);
+	static bool ParseComponentNamesFromFile(const std::string& filePath, std::vector<std::string>& outComponentNames);
 	static void ParseIncludeStatementsFromFile(const std::string& filePath, std::vector<std::string>& outIncludeStatements);
 
 	struct ParseComponentRegistryTemplateParams
@@ -41,8 +41,8 @@ private:
 		std::vector<std::string> inComponentNames;
 		std::vector<std::string> inIncludeStatements;
 	};
-	static void ParseComponentRegistryHeaderTemplate(const ParseComponentRegistryTemplateParams& params, std::vector<std::string>& outFileContents);
-	static void ParseComponentRegistryCppTemplate(const ParseComponentRegistryTemplateParams& params, std::vector<std::string>& outFileContents);
-	static void ParseComponentSpecificTemplate(const std::string& filePath, const std::vector<std::string>& componentNames, std::vector<std::string>& outFileContents);
-	static void WriteOutFile(const std::string& filePath, const std::vector<std::string>& inFileContents);
+	static bool ParseComponentRegistryHeaderTemplate(const ParseComponentRegistryTemplateParams& params, std::vector<std::string>& outFileContents);
+	static bool ParseComponentRegistryCppTemplate(const ParseComponentRegistryTemplateParams& params, std::vector<std::string>& outFileContents);
+	static bool ParseComponentSpecificTemplate(const std::string& filePath, const std::vector<std::string>& componentNames, std::vector<std::string>& outFileContents);
+	static bool WriteOutFile(const std::string& filePath, const std::vector<std::string>& inFileContents);
 };
