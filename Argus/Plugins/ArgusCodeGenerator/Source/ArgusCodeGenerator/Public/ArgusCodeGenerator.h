@@ -8,7 +8,7 @@
 #define ARGUS_NAMEOF(x) TEXT(#x)
 #define ARGUS_FUNCNAME TEXT(__FUNCTION__)
 
-DECLARE_LOG_CATEGORY_EXTERN(ArgusCodeGeneratorLog, Warning, All);
+DECLARE_LOG_CATEGORY_EXTERN(ArgusCodeGeneratorLog, Display, All);
 
 class FToolBarBuilder;
 class FMenuBuilder;

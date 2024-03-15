@@ -4,8 +4,7 @@
 
 #include "CoreMinimal.h"
 
-class TransformComponent
+struct TransformComponent
 {
-public:
 	FTransform m_transform = FTransform::Identity;
 };

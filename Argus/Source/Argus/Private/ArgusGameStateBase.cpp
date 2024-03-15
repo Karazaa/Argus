@@ -5,5 +5,5 @@
 
 void AArgusGameStateBase::HandleBeginPlay()
 {
-	UE_LOG(ArgusGameLog, Warning, TEXT("Argus game state base handling BeginPlay."));
+	UE_LOG(ArgusGameLog, Display, TEXT("Argus game state base handling BeginPlay."));
 }

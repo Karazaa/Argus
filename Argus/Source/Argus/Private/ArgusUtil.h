@@ -7,7 +7,7 @@
 #define ARGUS_NAMEOF(x) TEXT(#x)
 #define ARGUS_FUNCNAME TEXT(__FUNCTION__)
 
-DECLARE_LOG_CATEGORY_EXTERN(ArgusGameLog, Warning, All);
+DECLARE_LOG_CATEGORY_EXTERN(ArgusGameLog, Display, All);
 
 namespace ArgusUtil
 {

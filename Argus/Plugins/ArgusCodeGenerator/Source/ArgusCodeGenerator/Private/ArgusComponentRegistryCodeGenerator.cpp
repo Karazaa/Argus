@@ -20,13 +20,11 @@ const char* ArgusComponentRegistryCodeGenerator::s_componentCppTemplateFlushFile
 const char* ArgusComponentRegistryCodeGenerator::s_componentCppTemplateResetFilename = "ComponentCppTemplateReset.txt";
 const char* ArgusComponentRegistryCodeGenerator::s_argusComponentRegistryHeaderFilename = "ArgusComponentRegistry.h";
 const char* ArgusComponentRegistryCodeGenerator::s_argusComponentRegistryCppFilename = "ArgusComponentRegistry.cpp";
-const char* ArgusComponentRegistryCodeGenerator::s_classDelimiter = "class";
-const char  ArgusComponentRegistryCodeGenerator::s_inheritanceDelimiter = ':';
-const char  ArgusComponentRegistryCodeGenerator::s_openBracketDelimiter = '{';
+const char* ArgusComponentRegistryCodeGenerator::s_structDelimiter = "struct";
 
 void ArgusComponentRegistryCodeGenerator::GenerateComponentRegistry()
 {
-	UE_LOG(ArgusCodeGeneratorLog, Warning, TEXT("[%s] Starting generation of Argus ECS Component code."), ARGUS_FUNCNAME)
+	UE_LOG(ArgusCodeGeneratorLog, Display, TEXT("[%s] Starting generation of Argus ECS Component code."), ARGUS_FUNCNAME)
 
 	// Get a path to base project directory
 	FString projectDirectory = FPaths::GetProjectFilePath();
@@ -65,7 +63,7 @@ void ArgusComponentRegistryCodeGenerator::GenerateComponentRegistry()
 	params.componentCppTemplateResetFilePath = std::string(cStrTemplateDirectory).append(s_componentCppTemplateResetFilename);
 	params.componentCppTemplateFlushFilePath = std::string(cStrTemplateDirectory).append(s_componentCppTemplateFlushFilename);
 
-	UE_LOG(ArgusCodeGeneratorLog, Warning, TEXT("[%s] Parsing from template files to generate component implementations."), ARGUS_FUNCNAME)
+	UE_LOG(ArgusCodeGeneratorLog, Display, TEXT("[%s] Parsing from template files to generate component implementations."), ARGUS_FUNCNAME)
 	// Parse header file
 	std::vector<std::string> outParsedHeaderFileContents = std::vector<std::string>();
 	didSucceed &= ParseComponentRegistryHeaderTemplate(params, outParsedHeaderFileContents);
@@ -86,13 +84,13 @@ void ArgusComponentRegistryCodeGenerator::GenerateComponentRegistry()
 	
 	if (didSucceed)
 	{
-		UE_LOG(ArgusCodeGeneratorLog, Warning, TEXT("[%s] Successfully wrote out Argus ECS Component implementations."), ARGUS_FUNCNAME)
+		UE_LOG(ArgusCodeGeneratorLog, Display, TEXT("[%s] Successfully wrote out Argus ECS Component implementations."), ARGUS_FUNCNAME)
 	}
 }
 
 bool ArgusComponentRegistryCodeGenerator::ParseComponentNamesFromFile(const std::string& filePath, std::vector<std::string>& outComponentNames)
 {
-	const size_t classDelimiterLength = std::strlen(s_classDelimiter);
+	const size_t classDelimiterLength = std::strlen(s_structDelimiter);
 	std::ifstream inStream = std::ifstream(filePath);
 	const FString ueFilePath = FString(filePath.c_str());
 	if (!inStream.is_open())
@@ -101,26 +99,26 @@ bool ArgusComponentRegistryCodeGenerator::ParseComponentNamesFromFile(const std:
 		return false;
 	}
 
-	UE_LOG(ArgusCodeGeneratorLog, Warning, TEXT("[%s] Reading from file: %s"), ARGUS_FUNCNAME, *ueFilePath);
+	UE_LOG(ArgusCodeGeneratorLog, Display, TEXT("[%s] Reading from file: %s"), ARGUS_FUNCNAME, *ueFilePath);
 
 	std::string lineText;
 	while (std::getline(inStream, lineText))
 	{
-		const size_t classDelimiterIndex = lineText.find(s_classDelimiter);
+		const size_t classDelimiterIndex = lineText.find(s_structDelimiter);
 		if (classDelimiterIndex == std::string::npos)
 		{
 			continue;
 		}
 		const size_t postClassStartIndex = classDelimiterIndex + classDelimiterLength;
 
-		const size_t inheritanceDelimiterIndex = lineText.find(s_inheritanceDelimiter);
+		const size_t inheritanceDelimiterIndex = lineText.find(':');
 		if (inheritanceDelimiterIndex != std::string::npos)
 		{
 			lineText = lineText.substr(postClassStartIndex, inheritanceDelimiterIndex - postClassStartIndex);
 		}
 		else
 		{
-			const size_t openBracketDelimiterIndex = lineText.find(s_openBracketDelimiter);
+			const size_t openBracketDelimiterIndex = lineText.find('{');
 			if (openBracketDelimiterIndex != std::string::npos)
 			{
 				lineText = lineText.substr(postClassStartIndex, openBracketDelimiterIndex - postClassStartIndex);
@@ -178,6 +176,10 @@ bool ArgusComponentRegistryCodeGenerator::ParseComponentRegistryHeaderTemplate(c
 			{
 				outFileContents.push_back(parsedLine);
 			}
+		}
+		else if (headerLineText.find("%%%%%") != std::string::npos)
+		{
+			outFileContents.push_back(std::regex_replace(headerLineText, std::regex("%%%%%"), std::to_string(params.inComponentNames.size())));
 		}
 		else
 		{

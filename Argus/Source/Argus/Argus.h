@@ -2,7 +2,7 @@
 #pragma once
 #include "CoreMinimal.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(ArgusLog, Warning, All);
+DECLARE_LOG_CATEGORY_EXTERN(ArgusLog, Display, All);
 
 class ArgusModule : public IModuleInterface
 {

@@ -23,9 +23,7 @@ private:
 	static const char* s_componentCppTemplateResetFilename;
 	static const char* s_argusComponentRegistryHeaderFilename;
 	static const char* s_argusComponentRegistryCppFilename;
-	static const char* s_classDelimiter;
-	static const char s_inheritanceDelimiter;
-	static const char s_openBracketDelimiter;
+	static const char* s_structDelimiter;
 
 	static bool ParseComponentNamesFromFile(const std::string& filePath, std::vector<std::string>& outComponentNames);
 	static void ParseIncludeStatementsFromFile(const std::string& filePath, std::vector<std::string>& outIncludeStatements);

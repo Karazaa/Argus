@@ -4,8 +4,7 @@
 
 #include "CoreMinimal.h"
 
-class HealthComponent
+struct HealthComponent
 {
-public:
 	uint32 m_health = 1000u;
 };

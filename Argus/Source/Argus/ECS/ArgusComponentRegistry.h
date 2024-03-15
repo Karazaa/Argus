@@ -14,19 +14,21 @@
 class ArgusComponentRegistry
 {
 public:
-	template<class ArgusComponent>
+	template<typename ArgusComponent>
 	static ArgusComponent* GetComponent(uint16 entityId)
 	{
 		return nullptr;
 	}
 
-	template<class ArgusComponent>
+	template<typename ArgusComponent>
 	static ArgusComponent* AddComponent(uint16 entityId)
 	{
 		return nullptr;
 	}
 
 	static void FlushAllComponents();
+
+	static constexpr uint32 k_numComponentTypes = 2;
 
 	// Begin component specific template specifiers.
 	
