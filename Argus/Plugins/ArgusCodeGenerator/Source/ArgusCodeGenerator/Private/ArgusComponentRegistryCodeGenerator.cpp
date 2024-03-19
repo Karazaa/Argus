@@ -11,6 +11,7 @@
 const char* ArgusComponentRegistryCodeGenerator::s_componentDefinitionDirectoryName = "ComponentDefinitions";
 const char* ArgusComponentRegistryCodeGenerator::s_componentDefinitionDirectorySuffix = "Source/Argus/ECS/ComponentDefinitions";
 const char* ArgusComponentRegistryCodeGenerator::s_componentRegistryDirectorySuffix = "Source/Argus/ECS/";
+const char* ArgusComponentRegistryCodeGenerator::s_ecsTestsDirectorySuffix = "Source/Argus/ECS/Tests";
 const char* ArgusComponentRegistryCodeGenerator::s_templateDirectorySuffix = "Plugins/ArgusCodeGenerator/Source/ArgusCodeGenerator/Private/Templates/";
 const char* ArgusComponentRegistryCodeGenerator::s_argusComponentRegistryHeaderTemplateFilename = "ArgusComponentRegistryHeaderTemplate.txt";
 const char* ArgusComponentRegistryCodeGenerator::s_argusComponentRegistryCppTemplateFilename = "ArgusComponentRegistryCppTemplate.txt";
@@ -18,8 +19,11 @@ const char* ArgusComponentRegistryCodeGenerator::s_componentHeaderTemplateFilena
 const char* ArgusComponentRegistryCodeGenerator::s_componentCppTemplateDefinitionsFilename = "ComponentCppTemplateDefinitions.txt";
 const char* ArgusComponentRegistryCodeGenerator::s_componentCppTemplateFlushFilename = "ComponentCppTemplateFlush.txt";
 const char* ArgusComponentRegistryCodeGenerator::s_componentCppTemplateResetFilename = "ComponentCppTemplateReset.txt";
+const char* ArgusComponentRegistryCodeGenerator::s_argusComponentSizeTestsTemplateFilename = "ArgusComponentSizeTestsTemplate.txt";
+const char* ArgusComponentRegistryCodeGenerator::s_perComponentSizeTestsTemplateFilename = "PerComponentSizeTestsTemplate.txt";
 const char* ArgusComponentRegistryCodeGenerator::s_argusComponentRegistryHeaderFilename = "ArgusComponentRegistry.h";
 const char* ArgusComponentRegistryCodeGenerator::s_argusComponentRegistryCppFilename = "ArgusComponentRegistry.cpp";
+const char* ArgusComponentRegistryCodeGenerator::s_argusComponentSizeTestsFilename = "ArgusComponentSizeTests.cpp";
 const char* ArgusComponentRegistryCodeGenerator::s_structDelimiter = "struct";
 
 void ArgusComponentRegistryCodeGenerator::GenerateComponentRegistry()
@@ -40,7 +44,7 @@ void ArgusComponentRegistryCodeGenerator::GenerateComponentRegistry()
 	bool didSucceed = true;
 
 	// Iterate over ComponentDefinitions files.
-	ParseComponentRegistryTemplateParams params;
+	ParseComponentTemplateParams params;
 	params.inComponentNames = std::vector<std::string>();
 	params.inIncludeStatements = std::vector<std::string>();
 	for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(finalizedComponentDefinitionsDirectory))
@@ -62,6 +66,8 @@ void ArgusComponentRegistryCodeGenerator::GenerateComponentRegistry()
 	params.componentCppTemplateDefinitionsFilePath = std::string(cStrTemplateDirectory).append(s_componentCppTemplateDefinitionsFilename);
 	params.componentCppTemplateResetFilePath = std::string(cStrTemplateDirectory).append(s_componentCppTemplateResetFilename);
 	params.componentCppTemplateFlushFilePath = std::string(cStrTemplateDirectory).append(s_componentCppTemplateFlushFilename);
+	params.argusComponentSizeTestsTemplateFilePath = std::string(cStrTemplateDirectory).append(s_argusComponentSizeTestsTemplateFilename);
+	params.perComponentSizeTestsTemplateFilePath = std::string(cStrTemplateDirectory).append(s_perComponentSizeTestsTemplateFilename);
 
 	UE_LOG(ArgusCodeGeneratorLog, Display, TEXT("[%s] Parsing from template files to generate component implementations."), ARGUS_FUNCNAME)
 	// Parse header file
@@ -71,6 +77,10 @@ void ArgusComponentRegistryCodeGenerator::GenerateComponentRegistry()
 	// Parse cpp file
 	std::vector<std::string> outParsedCppFileContents = std::vector<std::string>();
 	didSucceed &= ParseComponentRegistryCppTemplate(params, outParsedCppFileContents);
+
+	// Parse tests file
+	std::vector<std::string> outParsedTestsFileContents = std::vector<std::string>();
+	didSucceed &= ParseComponentSizeTestsTemplate(params, outParsedTestsFileContents);
 
 	// Construct a directory path to component templates
 	FString registryDirectory = *projectDirectory;
@@ -145,11 +155,12 @@ void ArgusComponentRegistryCodeGenerator::ParseIncludeStatementsFromFile(const s
 	outIncludeStatements.push_back(includeStatement);
 }
 
-bool ArgusComponentRegistryCodeGenerator::ParseComponentRegistryHeaderTemplate(const ParseComponentRegistryTemplateParams& params, std::vector<std::string>& outFileContents)
+bool ArgusComponentRegistryCodeGenerator::ParseComponentRegistryHeaderTemplate(const ParseComponentTemplateParams& params, std::vector<std::string>& outFileContents)
 {
+	bool didSucceed = true;
+
 	// Parse per component template into one section
 	std::vector<std::string> parsedLines = std::vector<std::string>();
-	bool didSucceed = true;
 	didSucceed &= ParseComponentSpecificTemplate(params.componentHeaderTemplateFilePath, params.inComponentNames, parsedLines);
 
 	std::ifstream inHeaderStream = std::ifstream(params.argusComponentRegistryHeaderTemplateFilePath);
@@ -190,9 +201,10 @@ bool ArgusComponentRegistryCodeGenerator::ParseComponentRegistryHeaderTemplate(c
 	return didSucceed;
 }
 
-bool ArgusComponentRegistryCodeGenerator::ParseComponentRegistryCppTemplate(const ParseComponentRegistryTemplateParams& params, std::vector<std::string>& outFileContents)
+bool ArgusComponentRegistryCodeGenerator::ParseComponentRegistryCppTemplate(const ParseComponentTemplateParams& params, std::vector<std::string>& outFileContents)
 {
 	bool didSucceed = true;
+
 	// Parse definitions template into one section
 	std::vector<std::string> parsedDefinitionLines = std::vector<std::string>();
 	didSucceed &= ParseComponentSpecificTemplate(params.componentCppTemplateDefinitionsFilePath, params.inComponentNames, parsedDefinitionLines);
@@ -247,6 +259,41 @@ bool ArgusComponentRegistryCodeGenerator::ParseComponentRegistryCppTemplate(cons
 		}
 	}
 	inCppStream.close();
+	return didSucceed;
+}
+
+bool ArgusComponentRegistryCodeGenerator::ParseComponentSizeTestsTemplate(const ParseComponentTemplateParams& params, std::vector<std::string>& outFileContents)
+{
+	bool didSucceed = true;
+
+	// Parse per component template into one section
+	std::vector<std::string> parsedLines = std::vector<std::string>();
+	didSucceed &= ParseComponentSpecificTemplate(params.perComponentSizeTestsTemplateFilePath, params.inComponentNames, parsedLines);
+
+	std::ifstream inTestsStream = std::ifstream(params.argusComponentSizeTestsTemplateFilePath);
+	const FString ueTestsFilePath = FString(params.argusComponentSizeTestsTemplateFilePath.c_str());
+	if (!inTestsStream.is_open())
+	{
+		UE_LOG(ArgusCodeGeneratorLog, Error, TEXT("[%s] Failed to read from template file: %s"), ARGUS_FUNCNAME, *ueTestsFilePath);
+		return false;
+	}
+
+	std::string testsLineText;
+	while (std::getline(inTestsStream, testsLineText))
+	{
+		if (testsLineText.find("#####") != std::string::npos)
+		{
+			for (std::string parsedLine : parsedLines)
+			{
+				outFileContents.push_back(parsedLine);
+			}
+		}
+		else
+		{
+			outFileContents.push_back(testsLineText);
+		}
+	}
+	inTestsStream.close();
 	return didSucceed;
 }
 
