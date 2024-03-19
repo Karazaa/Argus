@@ -1,3 +1,4 @@
+	// ##### =================================================================================================
 	const size_t #####Size = sizeof(#####);
 	netSize += #####Size;
 	UE_LOG(ArgusGameLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(#####), #####Size);

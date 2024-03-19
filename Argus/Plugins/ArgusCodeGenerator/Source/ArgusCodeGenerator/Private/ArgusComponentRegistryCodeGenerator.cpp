@@ -11,7 +11,7 @@
 const char* ArgusComponentRegistryCodeGenerator::s_componentDefinitionDirectoryName = "ComponentDefinitions";
 const char* ArgusComponentRegistryCodeGenerator::s_componentDefinitionDirectorySuffix = "Source/Argus/ECS/ComponentDefinitions";
 const char* ArgusComponentRegistryCodeGenerator::s_componentRegistryDirectorySuffix = "Source/Argus/ECS/";
-const char* ArgusComponentRegistryCodeGenerator::s_ecsTestsDirectorySuffix = "Source/Argus/ECS/Tests";
+const char* ArgusComponentRegistryCodeGenerator::s_ecsTestsDirectorySuffix = "Tests/";
 const char* ArgusComponentRegistryCodeGenerator::s_templateDirectorySuffix = "Plugins/ArgusCodeGenerator/Source/ArgusCodeGenerator/Private/Templates/";
 const char* ArgusComponentRegistryCodeGenerator::s_argusComponentRegistryHeaderTemplateFilename = "ArgusComponentRegistryHeaderTemplate.txt";
 const char* ArgusComponentRegistryCodeGenerator::s_argusComponentRegistryCppTemplateFilename = "ArgusComponentRegistryCppTemplate.txt";
@@ -82,15 +82,20 @@ void ArgusComponentRegistryCodeGenerator::GenerateComponentRegistry()
 	std::vector<std::string> outParsedTestsFileContents = std::vector<std::string>();
 	didSucceed &= ParseComponentSizeTestsTemplate(params, outParsedTestsFileContents);
 
-	// Construct a directory path to component templates
+	// Construct a directory path to registry location and to tests location. 
 	FString registryDirectory = *projectDirectory;
 	registryDirectory.Append(s_componentRegistryDirectorySuffix);
+	FString testsDirectory = *registryDirectory;
+	testsDirectory.Append(s_ecsTestsDirectorySuffix);
 	FPaths::MakeStandardFilename(registryDirectory);
+	FPaths::MakeStandardFilename(testsDirectory);
 	const char* cStrRegistryDirectory = TCHAR_TO_UTF8(*registryDirectory);
+	const char* cStrTestsDirectory = TCHAR_TO_UTF8(*testsDirectory);
 
-	// Write out header and cpp file
+	// Write out header, cpp, and tests file
 	didSucceed &= WriteOutFile(std::string(cStrRegistryDirectory).append(s_argusComponentRegistryHeaderFilename), outParsedHeaderFileContents);
 	didSucceed &= WriteOutFile(std::string(cStrRegistryDirectory).append(s_argusComponentRegistryCppFilename), outParsedCppFileContents);
+	didSucceed &= WriteOutFile(std::string(cStrTestsDirectory).append(s_argusComponentSizeTestsFilename), outParsedTestsFileContents);
 	
 	if (didSucceed)
 	{
