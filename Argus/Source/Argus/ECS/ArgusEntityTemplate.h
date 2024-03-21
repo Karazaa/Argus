@@ -1,5 +1,6 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
+#include "ArgusECSConstants.h"
 #include "DataComponentDefinitions/ComponentData.h"
 #include "ArgusEntityTemplate.generated.h"
 
@@ -8,6 +9,10 @@ class UArgusEntityTemplate : public UDataAsset
 {
 	GENERATED_BODY()
 
+public:
 	UPROPERTY(EditAnywhere)
-	TArray<UComponentData*> m_componentData;
+	UEntityPriority EntityPriority;
+
+	UPROPERTY(EditAnywhere)
+	TArray<UComponentData*> ComponentData;
 };
