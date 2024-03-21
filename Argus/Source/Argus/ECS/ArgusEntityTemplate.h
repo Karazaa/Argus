@@ -15,4 +15,6 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	TArray<UComponentData*> ComponentData;
+
+	void MakeEntity();
 };

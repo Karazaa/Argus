@@ -8,6 +8,9 @@ class ARGUS_API UHealthComponentData : public UComponentData
 {
 	GENERATED_BODY()
 
+public:
 	UPROPERTY(EditAnywhere)
 	uint32 Health = 1000u;
+
+	void InstantiateComponentForEntity(ArgusEntity& entity) override;
 };
