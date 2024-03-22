@@ -1,6 +1,7 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "../ArgusEntityTemplate.h"
+#include "../DataComponentDefinitions/HealthComponentData.h"
 #include "Misc/AutomationTest.h"
 
 #if WITH_AUTOMATION_TESTS
@@ -10,11 +11,22 @@ bool ArgusEntityTemplateInstantiateEntityTest::RunTest(const FString& Parameters
 {
 	ArgusEntity::FlushAllEntities();
 
-	FString filePath = FPaths::ProjectContentDir();
-	filePath.Append("ECSData/EntityTemplates/ExampleEntityTemplate.uasset");
+	const uint16 targetId = static_cast<uint16>(UEntityPriority::MediumPriority);
+	TestFalse(TEXT("Validating that there isn't an entity yet."), ArgusEntity::DoesEntityExist(targetId));
 
-	UArgusEntityTemplate* entityTemplate = LoadObject<UArgusEntityTemplate>(NULL, *filePath, NULL, LOAD_None, NULL);
+	UHealthComponentData* healthComponentData = NewObject<UHealthComponentData>();
+	healthComponentData->Health = 5000u;
 
+	UArgusEntityTemplate* entityTemplate = NewObject<UArgusEntityTemplate>();
+	entityTemplate->EntityPriority = UEntityPriority::MediumPriority;
+	entityTemplate->ComponentData.Add(healthComponentData);
+
+	ArgusEntity newEntity = entityTemplate->MakeEntity();
+
+	TestTrue(TEXT("Validating that an entity has been created"), ArgusEntity::DoesEntityExist(targetId));
+	uint32 healthValue = newEntity.GetComponent<HealthComponent>()->m_health;
+
+	TestEqual(TEXT("Validating that a health component exists with the proper value."), healthValue, 5000u);
 	return true;
 }
 

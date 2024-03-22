@@ -1,8 +1,9 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusEntityTemplate.h"
+#include "DataComponentDefinitions/ComponentData.h"
 
-void UArgusEntityTemplate::MakeEntity()
+ArgusEntity UArgusEntityTemplate::MakeEntity()
 {
 	ArgusEntity entity = ArgusEntity::CreateEntity(static_cast<uint16>(EntityPriority));
 
@@ -10,4 +11,6 @@ void UArgusEntityTemplate::MakeEntity()
 	{
 		componentData->InstantiateComponentForEntity(entity);
 	}
+
+	return entity;
 }
