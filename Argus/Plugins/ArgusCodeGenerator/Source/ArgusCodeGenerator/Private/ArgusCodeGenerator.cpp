@@ -4,10 +4,9 @@
 #include "ArgusCodeGeneratorStyle.h"
 #include "ArgusCodeGeneratorCommands.h"
 #include "ArgusComponentRegistryCodeGenerator.h"
+#include "ArgusDataAssetComponentCodeGenerator.h"
 #include "Misc/MessageDialog.h"
 #include "ToolMenus.h"
-
-DEFINE_LOG_CATEGORY(ArgusCodeGeneratorLog);
 
 static const FName ArgusCodeGeneratorTabName("ArgusCodeGenerator");
 
@@ -48,15 +47,8 @@ void FArgusCodeGeneratorModule::ShutdownModule()
 
 void FArgusCodeGeneratorModule::PluginButtonClicked()
 {
-	//// Put your "OnButtonClicked" stuff here
-	//FText DialogText = FText::Format(
-	//						LOCTEXT("PluginButtonDialogText", "Add code to {0} in {1} to override this button's actions"),
-	//						FText::FromString(TEXT("FArgusCodeGeneratorModule::PluginButtonClicked()")),
-	//						FText::FromString(TEXT("ArgusCodeGenerator.cpp"))
-	//				   );
-	//FMessageDialog::Open(EAppMsgType::Ok, DialogText);
-
 	ArgusComponentRegistryCodeGenerator::GenerateComponentRegistry();
+	ArgusDataAssetComponentCodeGenerator::GenerateDataAssetComponents();
 }
 
 void FArgusCodeGeneratorModule::RegisterMenus()

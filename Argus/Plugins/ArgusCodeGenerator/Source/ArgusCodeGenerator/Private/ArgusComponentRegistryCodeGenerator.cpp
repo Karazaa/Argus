@@ -1,15 +1,13 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusComponentRegistryCodeGenerator.h"
-#include "ArgusCodeGenerator.h"
-#include "Misc/Paths.h"
+#include "ArgusCodeGeneratorUtil.h"
 #include <filesystem>
 #include <fstream>
 #include <regex>
 
 // Constants for file parsing
 const char* ArgusComponentRegistryCodeGenerator::s_componentDefinitionDirectoryName = "ComponentDefinitions";
-const char* ArgusComponentRegistryCodeGenerator::s_componentDefinitionDirectorySuffix = "Source/Argus/ECS/ComponentDefinitions";
 const char* ArgusComponentRegistryCodeGenerator::s_componentRegistryDirectorySuffix = "Source/Argus/ECS/";
 const char* ArgusComponentRegistryCodeGenerator::s_ecsTestsDirectorySuffix = "Tests/";
 const char* ArgusComponentRegistryCodeGenerator::s_templateDirectorySuffix = "Plugins/ArgusCodeGenerator/Source/ArgusCodeGenerator/Private/Templates/";
@@ -30,17 +28,10 @@ void ArgusComponentRegistryCodeGenerator::GenerateComponentRegistry()
 {
 	UE_LOG(ArgusCodeGeneratorLog, Display, TEXT("[%s] Starting generation of Argus ECS Component code."), ARGUS_FUNCNAME)
 
-	// Get a path to base project directory
-	FString projectDirectory = FPaths::GetProjectFilePath();
-	FString cleanFilename =  FPaths::GetCleanFilename(projectDirectory);
-	projectDirectory.RemoveFromEnd(cleanFilename);
+	FString projectDirectory = ArgusCodeGeneratorUtil::GetProjectDirectory();
+	FString componentDefinitionsDirectory = ArgusCodeGeneratorUtil::GetComponentDefinitionsDirectory();
 
-	// Construct a file path to component definitions
-	FString componentDefinitionsDirectory = *projectDirectory;
-	componentDefinitionsDirectory.Append(s_componentDefinitionDirectorySuffix);
-	FPaths::MakeStandardFilename(componentDefinitionsDirectory);
 	const std::string finalizedComponentDefinitionsDirectory = std::string(TCHAR_TO_UTF8(*componentDefinitionsDirectory));
-
 	bool didSucceed = true;
 
 	// Iterate over ComponentDefinitions files.
@@ -93,9 +84,9 @@ void ArgusComponentRegistryCodeGenerator::GenerateComponentRegistry()
 	const char* cStrTestsDirectory = TCHAR_TO_UTF8(*testsDirectory);
 
 	// Write out header, cpp, and tests file
-	didSucceed &= WriteOutFile(std::string(cStrRegistryDirectory).append(s_argusComponentRegistryHeaderFilename), outParsedHeaderFileContents);
-	didSucceed &= WriteOutFile(std::string(cStrRegistryDirectory).append(s_argusComponentRegistryCppFilename), outParsedCppFileContents);
-	didSucceed &= WriteOutFile(std::string(cStrTestsDirectory).append(s_argusComponentSizeTestsFilename), outParsedTestsFileContents);
+	didSucceed &= ArgusCodeGeneratorUtil::WriteOutFile(std::string(cStrRegistryDirectory).append(s_argusComponentRegistryHeaderFilename), outParsedHeaderFileContents);
+	didSucceed &= ArgusCodeGeneratorUtil::WriteOutFile(std::string(cStrRegistryDirectory).append(s_argusComponentRegistryCppFilename), outParsedCppFileContents);
+	didSucceed &= ArgusCodeGeneratorUtil::WriteOutFile(std::string(cStrTestsDirectory).append(s_argusComponentSizeTestsFilename), outParsedTestsFileContents);
 	
 	if (didSucceed)
 	{
@@ -166,7 +157,7 @@ bool ArgusComponentRegistryCodeGenerator::ParseComponentRegistryHeaderTemplate(c
 
 	// Parse per component template into one section
 	std::vector<std::string> parsedLines = std::vector<std::string>();
-	didSucceed &= ParseComponentSpecificTemplate(params.componentHeaderTemplateFilePath, params.inComponentNames, parsedLines);
+	didSucceed &= ArgusCodeGeneratorUtil::ParseComponentSpecificTemplate(params.componentHeaderTemplateFilePath, params.inComponentNames, parsedLines);
 
 	std::ifstream inHeaderStream = std::ifstream(params.argusComponentRegistryHeaderTemplateFilePath);
 	const FString ueHeaderFilePath = FString(params.argusComponentRegistryHeaderTemplateFilePath.c_str());
@@ -212,19 +203,19 @@ bool ArgusComponentRegistryCodeGenerator::ParseComponentRegistryCppTemplate(cons
 
 	// Parse definitions template into one section
 	std::vector<std::string> parsedDefinitionLines = std::vector<std::string>();
-	didSucceed &= ParseComponentSpecificTemplate(params.componentCppTemplateDefinitionsFilePath, params.inComponentNames, parsedDefinitionLines);
+	didSucceed &= ArgusCodeGeneratorUtil::ParseComponentSpecificTemplate(params.componentCppTemplateDefinitionsFilePath, params.inComponentNames, parsedDefinitionLines);
 
 	// Parse reset template into one section
 	std::vector<std::string> parsedResetLines = std::vector<std::string>();
-	didSucceed &= ParseComponentSpecificTemplate(params.componentCppTemplateResetFilePath, params.inComponentNames, parsedResetLines);
+	didSucceed &= ArgusCodeGeneratorUtil::ParseComponentSpecificTemplate(params.componentCppTemplateResetFilePath, params.inComponentNames, parsedResetLines);
 
 	// Parse reset template into one section
 	std::vector<std::string> parsedFlushLines = std::vector<std::string>();
-	didSucceed &= ParseComponentSpecificTemplate(params.componentCppTemplateFlushFilePath, params.inComponentNames, parsedFlushLines);
+	didSucceed &= ArgusCodeGeneratorUtil::ParseComponentSpecificTemplate(params.componentCppTemplateFlushFilePath, params.inComponentNames, parsedFlushLines);
 
 	// Parse per component template into one section
 	std::vector<std::string> parsedLines = std::vector<std::string>();
-	didSucceed &= ParseComponentSpecificTemplate(params.componentHeaderTemplateFilePath, params.inComponentNames, parsedLines);
+	didSucceed &= ArgusCodeGeneratorUtil::ParseComponentSpecificTemplate(params.componentHeaderTemplateFilePath, params.inComponentNames, parsedLines);
 
 	std::ifstream inCppStream = std::ifstream(params.argusComponentRegistryCppTemplateFilePath);
 	const FString ueCppFilePath = FString(params.argusComponentRegistryCppTemplateFilePath.c_str());
@@ -273,7 +264,7 @@ bool ArgusComponentRegistryCodeGenerator::ParseComponentSizeTestsTemplate(const 
 
 	// Parse per component template into one section
 	std::vector<std::string> parsedLines = std::vector<std::string>();
-	didSucceed &= ParseComponentSpecificTemplate(params.perComponentSizeTestsTemplateFilePath, params.inComponentNames, parsedLines);
+	didSucceed &= ArgusCodeGeneratorUtil::ParseComponentSpecificTemplate(params.perComponentSizeTestsTemplateFilePath, params.inComponentNames, parsedLines);
 
 	std::ifstream inTestsStream = std::ifstream(params.argusComponentSizeTestsTemplateFilePath);
 	const FString ueTestsFilePath = FString(params.argusComponentSizeTestsTemplateFilePath.c_str());
@@ -300,52 +291,4 @@ bool ArgusComponentRegistryCodeGenerator::ParseComponentSizeTestsTemplate(const 
 	}
 	inTestsStream.close();
 	return didSucceed;
-}
-
-bool ArgusComponentRegistryCodeGenerator::ParseComponentSpecificTemplate(const std::string& filePath, const std::vector<std::string>& componentNames, std::vector<std::string>& outFileContents)
-{
-	// Read from definitions template
-	std::ifstream inStream = std::ifstream(filePath);
-	const FString ueFilePath = FString(filePath.c_str());
-	if (!inStream.is_open())
-	{
-		UE_LOG(ArgusCodeGeneratorLog, Error, TEXT("[%s] Failed to read from template file: %s"), ARGUS_FUNCNAME, *ueFilePath);
-		return false;
-	}
-
-	std::vector<std::string> rawLines = std::vector<std::string>();
-	std::string lineText;
-	while (std::getline(inStream, lineText))
-	{
-		rawLines.push_back(lineText);
-	}
-	inStream.close();
-
-	// Parse per component template into one section
-	for (std::string component : componentNames)
-	{
-		for (std::string rawLine : rawLines)
-		{
-			outFileContents.push_back(std::regex_replace(rawLine, std::regex("#####"), component));
-		}
-	}
-	return true;
-}
-
-bool ArgusComponentRegistryCodeGenerator::WriteOutFile(const std::string& filePath, const std::vector<std::string>& inFileContents)
-{
-	std::ofstream outStream = std::ofstream(filePath, std::ofstream::out | std::ofstream::trunc);
-	const FString ueFilePath = FString(filePath.c_str());
-	if (!outStream.is_open())
-	{
-		UE_LOG(ArgusCodeGeneratorLog, Error, TEXT("[%s] Failed to write to output file: %s"), ARGUS_FUNCNAME, *ueFilePath);
-		return false;
-	}
-
-	for (std::string line : inFileContents)
-	{
-		outStream << line << std::endl;
-	}
-	outStream.close();
-	return true;
 }

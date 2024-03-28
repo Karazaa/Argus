@@ -12,7 +12,6 @@ public:
 private:
 	// Constants for file parsing
 	static const char* s_componentDefinitionDirectoryName;
-	static const char* s_componentDefinitionDirectorySuffix;
 	static const char* s_componentRegistryDirectorySuffix;
 	static const char* s_ecsTestsDirectorySuffix;
 	static const char* s_templateDirectorySuffix;
@@ -48,6 +47,4 @@ private:
 	static bool ParseComponentRegistryHeaderTemplate(const ParseComponentTemplateParams& params, std::vector<std::string>& outFileContents);
 	static bool ParseComponentRegistryCppTemplate(const ParseComponentTemplateParams& params, std::vector<std::string>& outFileContents);
 	static bool ParseComponentSizeTestsTemplate(const ParseComponentTemplateParams& params, std::vector<std::string>& outFileContents);
-	static bool ParseComponentSpecificTemplate(const std::string& filePath, const std::vector<std::string>& componentNames, std::vector<std::string>& outFileContents);
-	static bool WriteOutFile(const std::string& filePath, const std::vector<std::string>& inFileContents);
 };

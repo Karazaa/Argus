@@ -1,5 +1,7 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
+#pragma once
+
 #include "ComponentData.h"
 #include "HealthComponentData.generated.h"
 
