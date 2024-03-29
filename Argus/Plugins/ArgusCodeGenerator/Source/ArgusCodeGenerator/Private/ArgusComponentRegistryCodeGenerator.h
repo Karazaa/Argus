@@ -2,16 +2,16 @@
 
 #pragma once
 
+#include "ArgusCodeGeneratorUtil.h"
 #include <string>
 #include <vector>
 
 class ArgusComponentRegistryCodeGenerator 
 {
 public:
-	static void GenerateComponentRegistry();
+	static void GenerateComponentRegistry(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData);
 private:
 	// Constants for file parsing
-	static const char* s_componentDefinitionDirectoryName;
 	static const char* s_componentRegistryDirectorySuffix;
 	static const char* s_ecsTestsDirectorySuffix;
 	static const char* s_templateDirectorySuffix;
@@ -26,10 +26,6 @@ private:
 	static const char* s_argusComponentRegistryHeaderFilename;
 	static const char* s_argusComponentRegistryCppFilename;
 	static const char* s_argusComponentSizeTestsFilename;
-	static const char* s_structDelimiter;
-
-	static bool ParseComponentNamesFromFile(const std::string& filePath, std::vector<std::string>& outComponentNames);
-	static void ParseIncludeStatementsFromFile(const std::string& filePath, std::vector<std::string>& outIncludeStatements);
 
 	struct ParseComponentTemplateParams
 	{

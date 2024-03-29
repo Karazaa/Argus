@@ -47,8 +47,10 @@ void FArgusCodeGeneratorModule::ShutdownModule()
 
 void FArgusCodeGeneratorModule::PluginButtonClicked()
 {
-	ArgusComponentRegistryCodeGenerator::GenerateComponentRegistry();
-	ArgusDataAssetComponentCodeGenerator::GenerateDataAssetComponents();
+	ArgusCodeGeneratorUtil::ParseComponentDataOutput parsedComponentData;
+	ArgusCodeGeneratorUtil::ParseComponentData(parsedComponentData);
+	ArgusComponentRegistryCodeGenerator::GenerateComponentRegistry(parsedComponentData);
+	ArgusDataAssetComponentCodeGenerator::GenerateDataAssetComponents(parsedComponentData);
 }
 
 void FArgusCodeGeneratorModule::RegisterMenus()

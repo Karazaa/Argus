@@ -1,13 +1,11 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusComponentRegistryCodeGenerator.h"
-#include "ArgusCodeGeneratorUtil.h"
 #include <filesystem>
 #include <fstream>
 #include <regex>
 
 // Constants for file parsing
-const char* ArgusComponentRegistryCodeGenerator::s_componentDefinitionDirectoryName = "ComponentDefinitions";
 const char* ArgusComponentRegistryCodeGenerator::s_componentRegistryDirectorySuffix = "Source/Argus/ECS/";
 const char* ArgusComponentRegistryCodeGenerator::s_ecsTestsDirectorySuffix = "Tests/";
 const char* ArgusComponentRegistryCodeGenerator::s_templateDirectorySuffix = "Plugins/ArgusCodeGenerator/Source/ArgusCodeGenerator/Private/Templates/";
@@ -22,28 +20,19 @@ const char* ArgusComponentRegistryCodeGenerator::s_perComponentSizeTestsTemplate
 const char* ArgusComponentRegistryCodeGenerator::s_argusComponentRegistryHeaderFilename = "ArgusComponentRegistry.h";
 const char* ArgusComponentRegistryCodeGenerator::s_argusComponentRegistryCppFilename = "ArgusComponentRegistry.cpp";
 const char* ArgusComponentRegistryCodeGenerator::s_argusComponentSizeTestsFilename = "ArgusComponentSizeTests.cpp";
-const char* ArgusComponentRegistryCodeGenerator::s_structDelimiter = "struct";
 
-void ArgusComponentRegistryCodeGenerator::GenerateComponentRegistry()
+void ArgusComponentRegistryCodeGenerator::GenerateComponentRegistry(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData)
 {
 	UE_LOG(ArgusCodeGeneratorLog, Display, TEXT("[%s] Starting generation of Argus ECS Component code."), ARGUS_FUNCNAME)
 
 	FString projectDirectory = ArgusCodeGeneratorUtil::GetProjectDirectory();
-	FString componentDefinitionsDirectory = ArgusCodeGeneratorUtil::GetComponentDefinitionsDirectory();
 
-	const std::string finalizedComponentDefinitionsDirectory = std::string(TCHAR_TO_UTF8(*componentDefinitionsDirectory));
 	bool didSucceed = true;
 
 	// Iterate over ComponentDefinitions files.
 	ParseComponentTemplateParams params;
-	params.inComponentNames = std::vector<std::string>();
-	params.inIncludeStatements = std::vector<std::string>();
-	for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(finalizedComponentDefinitionsDirectory))
-	{
-		const std::string filePath = entry.path().string();
-		didSucceed &= ParseComponentNamesFromFile(filePath, params.inComponentNames);
-		ParseIncludeStatementsFromFile(filePath, params.inIncludeStatements);
-	}
+	params.inComponentNames = parsedComponentData.m_componentNames;
+	params.inIncludeStatements = parsedComponentData.m_componentRegistryIncludeStatements;
 
 	// Construct a directory path to component templates
 	FString templateDirectory = *projectDirectory;
@@ -92,63 +81,6 @@ void ArgusComponentRegistryCodeGenerator::GenerateComponentRegistry()
 	{
 		UE_LOG(ArgusCodeGeneratorLog, Display, TEXT("[%s] Successfully wrote out Argus ECS Component implementations."), ARGUS_FUNCNAME)
 	}
-}
-
-bool ArgusComponentRegistryCodeGenerator::ParseComponentNamesFromFile(const std::string& filePath, std::vector<std::string>& outComponentNames)
-{
-	const size_t classDelimiterLength = std::strlen(s_structDelimiter);
-	std::ifstream inStream = std::ifstream(filePath);
-	const FString ueFilePath = FString(filePath.c_str());
-	if (!inStream.is_open())
-	{
-		UE_LOG(ArgusCodeGeneratorLog, Error, TEXT("[%s] Failed to read from file: %s"), ARGUS_FUNCNAME, *ueFilePath);
-		return false;
-	}
-
-	UE_LOG(ArgusCodeGeneratorLog, Display, TEXT("[%s] Reading from file: %s"), ARGUS_FUNCNAME, *ueFilePath);
-
-	std::string lineText;
-	while (std::getline(inStream, lineText))
-	{
-		const size_t classDelimiterIndex = lineText.find(s_structDelimiter);
-		if (classDelimiterIndex == std::string::npos)
-		{
-			continue;
-		}
-		const size_t postClassStartIndex = classDelimiterIndex + classDelimiterLength;
-
-		const size_t inheritanceDelimiterIndex = lineText.find(':');
-		if (inheritanceDelimiterIndex != std::string::npos)
-		{
-			lineText = lineText.substr(postClassStartIndex, inheritanceDelimiterIndex - postClassStartIndex);
-		}
-		else
-		{
-			const size_t openBracketDelimiterIndex = lineText.find('{');
-			if (openBracketDelimiterIndex != std::string::npos)
-			{
-				lineText = lineText.substr(postClassStartIndex, openBracketDelimiterIndex - postClassStartIndex);
-			}
-			else
-			{
-				lineText = lineText.substr(postClassStartIndex, lineText.length() - 1);
-			}
-		}
-
-		std::erase(lineText, ' ');
-		outComponentNames.push_back(lineText);
-	}
-	inStream.close();
-	return true;
-}
-
-void ArgusComponentRegistryCodeGenerator::ParseIncludeStatementsFromFile(const std::string& filePath, std::vector<std::string>& outIncludeStatements)
-{
-	const size_t componentDefinitionIndex = filePath.find(s_componentDefinitionDirectoryName);
-	std::string includeStatement = "#include \"";
-	includeStatement.append(filePath.substr(componentDefinitionIndex));
-	includeStatement.append("\"");
-	outIncludeStatements.push_back(includeStatement);
 }
 
 bool ArgusComponentRegistryCodeGenerator::ParseComponentRegistryHeaderTemplate(const ParseComponentTemplateParams& params, std::vector<std::string>& outFileContents)
