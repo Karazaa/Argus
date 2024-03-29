@@ -1,7 +1,7 @@
 @echo off
 
-if not exist "D:\dfp-PaganIdol\Common\UE5\Engine\Build\BatchFiles\GenerateProjectFiles.bat" goto Error_BatchFileInWrongLocation
-call "D:\dfp-PaganIdol\Common\UE5\Engine\Build\BatchFiles\GenerateProjectFiles.bat" -projectfiles -project="D:\GameDevelopment\Argus\Argus\Argus.uproject" -game -engine -dotnet %*
+if not exist "C:\GameDevelopment\UE5\Engine\Build\BatchFiles\GenerateProjectFiles.bat" goto Error_BatchFileInWrongLocation
+call "C:\GameDevelopment\UE5\Engine\Build\BatchFiles\GenerateProjectFiles.bat" -projectfiles -project="C:\GameDevelopment\Argus\Argus\Argus.uproject" -game -engine -dotnet %*
 exit /B %ERRORLEVEL%
 
 :Error_BatchFileInWrongLocation
