@@ -15,10 +15,17 @@ public:
 	static FString GetProjectDirectory();
 	static FString GetComponentDefinitionsDirectory();
 
+	struct ComponentVariableData
+	{
+		std::string m_typeName = "";
+		std::string m_varName = "";
+		std::string m_defaultValue = "";
+	};
 	struct ParseComponentDataOutput
 	{
 		std::vector<std::string> m_componentNames;
 		std::vector<std::string> m_componentRegistryIncludeStatements;
+		std::vector< std::vector<ComponentVariableData> > m_componentVariableData;
 	};
 	static bool ParseComponentData(ParseComponentDataOutput& output);
 	static bool ParseComponentDataFromFile(const std::string& filePath, ParseComponentDataOutput& output);
@@ -29,4 +36,8 @@ private:
 	static const char* s_componentDefinitionDirectoryName;
 	static const char* s_componentDefinitionDirectorySuffix;
 	static const char* s_structDelimiter;
+	static const char* s_varDelimiter;
+
+	static bool ParseStructDeclarations(std::string lineText, ParseComponentDataOutput& output);
+	static bool ParseVariableDeclarations(std::string lineText, ParseComponentDataOutput& output);
 };

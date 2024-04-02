@@ -10,6 +10,7 @@ DEFINE_LOG_CATEGORY(ArgusCodeGeneratorLog);
 const char* ArgusCodeGeneratorUtil::s_componentDefinitionDirectoryName = "ComponentDefinitions";
 const char* ArgusCodeGeneratorUtil::s_componentDefinitionDirectorySuffix = "Source/Argus/ECS/ComponentDefinitions";
 const char* ArgusCodeGeneratorUtil::s_structDelimiter = "struct";
+const char* ArgusCodeGeneratorUtil::s_varDelimiter = "m_";
 
 FString ArgusCodeGeneratorUtil::GetProjectDirectory()
 {
@@ -53,7 +54,6 @@ bool ArgusCodeGeneratorUtil::ParseComponentDataFromFile(const std::string& fileP
 	includeStatement.append("\"");
 	output.m_componentRegistryIncludeStatements.push_back(includeStatement);
 
-	const size_t structDelimiterLength = std::strlen(s_structDelimiter);
 	std::ifstream inStream = std::ifstream(filePath);
 	const FString ueFilePath = FString(filePath.c_str());
 	if (!inStream.is_open())
@@ -67,33 +67,17 @@ bool ArgusCodeGeneratorUtil::ParseComponentDataFromFile(const std::string& fileP
 	std::string lineText;
 	while (std::getline(inStream, lineText))
 	{
-		const size_t classDelimiterIndex = lineText.find(s_structDelimiter);
-		if (classDelimiterIndex == std::string::npos)
+		// Handle lines that declare structs
+		if (ParseStructDeclarations(lineText, output))
 		{
 			continue;
 		}
-		const size_t postClassStartIndex = classDelimiterIndex + structDelimiterLength;
 
-		const size_t inheritanceDelimiterIndex = lineText.find(':');
-		if (inheritanceDelimiterIndex != std::string::npos)
+		// Handle lines that contain variable declarations.
+		if (ParseVariableDeclarations(lineText, output))
 		{
-			lineText = lineText.substr(postClassStartIndex, inheritanceDelimiterIndex - postClassStartIndex);
+			continue;
 		}
-		else
-		{
-			const size_t openBracketDelimiterIndex = lineText.find('{');
-			if (openBracketDelimiterIndex != std::string::npos)
-			{
-				lineText = lineText.substr(postClassStartIndex, openBracketDelimiterIndex - postClassStartIndex);
-			}
-			else
-			{
-				lineText = lineText.substr(postClassStartIndex, lineText.length() - 1);
-			}
-		}
-
-		std::erase(lineText, ' ');
-		output.m_componentNames.push_back(lineText);
 	}
 	inStream.close();
 	return true;
@@ -144,5 +128,82 @@ bool ArgusCodeGeneratorUtil::WriteOutFile(const std::string& filePath, const std
 		outStream << line << std::endl;
 	}
 	outStream.close();
+	return true;
+}
+
+bool ArgusCodeGeneratorUtil::ParseStructDeclarations(std::string lineText, ParseComponentDataOutput& output)
+{
+	const size_t structDelimiterLength = std::strlen(s_structDelimiter);
+	const size_t classDelimiterIndex = lineText.find(s_structDelimiter);
+	if (classDelimiterIndex == std::string::npos)
+	{
+		return false;
+	}
+
+	const size_t postClassStartIndex = classDelimiterIndex + structDelimiterLength;
+
+	const size_t inheritanceDelimiterIndex = lineText.find(':');
+	if (inheritanceDelimiterIndex != std::string::npos)
+	{
+		lineText = lineText.substr(postClassStartIndex, inheritanceDelimiterIndex - postClassStartIndex);
+	}
+	else
+	{
+		const size_t openBracketDelimiterIndex = lineText.find('{');
+		if (openBracketDelimiterIndex != std::string::npos)
+		{
+			lineText = lineText.substr(postClassStartIndex, openBracketDelimiterIndex - postClassStartIndex);
+		}
+		else
+		{
+			lineText = lineText.substr(postClassStartIndex, lineText.length() - 1);
+		}
+	}
+
+	std::erase(lineText, ' ');
+	output.m_componentNames.push_back(lineText);
+	output.m_componentVariableData.push_back(std::vector<ComponentVariableData>());
+	return true;
+}
+
+bool ArgusCodeGeneratorUtil::ParseVariableDeclarations(std::string lineText, ParseComponentDataOutput& output)
+{
+	const size_t variableDelimiterIndex = lineText.find(s_varDelimiter);
+	if (variableDelimiterIndex == std::string::npos)
+	{
+		return false;
+	}
+	ComponentVariableData variableData;
+	variableData.m_typeName = lineText.substr(0, variableDelimiterIndex);
+
+	const size_t equalDelimiterIndex = lineText.find('=');
+	const size_t endDelimiterIndex = lineText.find(';');
+	if (equalDelimiterIndex != std::string::npos)
+	{
+		variableData.m_varName = lineText.substr(variableDelimiterIndex, equalDelimiterIndex - variableDelimiterIndex);
+		if (endDelimiterIndex != std::string::npos)
+		{
+			variableData.m_defaultValue = lineText.substr(equalDelimiterIndex + 1, endDelimiterIndex - (equalDelimiterIndex + 1));
+		}
+		else
+		{
+			variableData.m_defaultValue = "";
+		}
+	}
+	else if (endDelimiterIndex != std::string::npos)
+	{
+		variableData.m_varName = lineText.substr(variableDelimiterIndex, endDelimiterIndex - variableDelimiterIndex);
+		variableData.m_defaultValue = "";
+	}
+	else
+	{
+		return false;
+	}
+
+	std::erase(variableData.m_typeName, ' ');
+	std::erase(variableData.m_varName, ' ');
+	std::erase(variableData.m_defaultValue, ' ');
+
+	output.m_componentVariableData.back().push_back(variableData);
 	return true;
 }
