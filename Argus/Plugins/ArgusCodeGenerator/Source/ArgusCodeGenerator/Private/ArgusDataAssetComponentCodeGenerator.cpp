@@ -9,6 +9,7 @@ const char* ArgusDataAssetComponentCodeGenerator::s_componentDataHeaderTemplateF
 const char* ArgusDataAssetComponentCodeGenerator::s_componentDataCppTemplateFilename = "ComponentDataCppTemplate.txt";
 const char* ArgusDataAssetComponentCodeGenerator::s_componentDataHeaderSuffix = "Data.h";
 const char* ArgusDataAssetComponentCodeGenerator::s_componentDataCppSuffix = "Data.cpp";
+const char* ArgusDataAssetComponentCodeGenerator::s_propertyMacro = "\tUPROPERTY(EditAnywhere)";
 
 void ArgusDataAssetComponentCodeGenerator::GenerateDataAssetComponents(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData)
 {
@@ -62,15 +63,28 @@ bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetHeaderFileTemplateWithR
 		{
 			for (int i = 0; i < parsedComponentData.m_componentNames.size(); ++i)
 			{
-
+				for (int j = 0; j < parsedComponentData.m_componentVariableData[i].size(); ++j)
+				{
+					outParsedFileContents[i].m_lines.push_back(s_propertyMacro);
+					std::string variable = parsedComponentData.m_componentVariableData[i][j].m_typeName;
+					variable.append(" ");
+					variable.append(parsedComponentData.m_componentVariableData[i][j].m_varName);
+					if (!parsedComponentData.m_componentVariableData[i][j].m_defaultValue.empty())
+					{
+						variable.append(" = ");
+						variable.append(parsedComponentData.m_componentVariableData[i][j].m_defaultValue);
+					}
+					variable.append(";");
+					outParsedFileContents[i].m_lines.push_back(variable);
+				}
 			}
 		}
 		else if (headerLineText.find("#####") != std::string::npos)
 		{
 			for (int i = 0; i < parsedComponentData.m_componentNames.size(); ++i)
 			{
-				std::string perComponentHeaderLinText = headerLineText;
-				outParsedFileContents[i].m_lines.push_back(std::regex_replace(perComponentHeaderLinText, std::regex("#####"), parsedComponentData.m_componentNames[i]));
+				std::string perComponentHeaderLineText = headerLineText;
+				outParsedFileContents[i].m_lines.push_back(std::regex_replace(perComponentHeaderLineText, std::regex("#####"), parsedComponentData.m_componentNames[i]));
 			}
 		}
 		else
@@ -88,10 +102,59 @@ bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetHeaderFileTemplateWithR
 
 bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetCppFileTemplateWithReplacements(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData, std::string& templateFilePath, std::vector<FileWriteData>& outParsedFileContents)
 {
+	std::ifstream inCppStream = std::ifstream(templateFilePath);
+	const FString ueCppFilePath = FString(templateFilePath.c_str());
+	if (!inCppStream.is_open())
+	{
+		UE_LOG(ArgusCodeGeneratorLog, Error, TEXT("[%s] Failed to read from template file: %s"), ARGUS_FUNCNAME, *ueCppFilePath);
+		return false;
+	}
 
 	for (int i = 0; i < parsedComponentData.m_componentNames.size(); ++i)
 	{
-
+		FileWriteData writeData;
+		writeData.m_filename = parsedComponentData.m_componentNames[i];
+		writeData.m_filename.append(s_componentDataCppSuffix);
+		outParsedFileContents.push_back(writeData);
 	}
+
+	std::string cppLineText;
+	while (std::getline(inCppStream, cppLineText))
+	{
+		if (cppLineText.find("@@@@@") != std::string::npos)
+		{
+			for (int i = 0; i < parsedComponentData.m_componentNames.size(); ++i)
+			{
+				for (int j = 0; j < parsedComponentData.m_componentVariableData[i].size(); ++j)
+				{
+					std::string variableAssignment = "\t";
+					variableAssignment.append(parsedComponentData.m_componentNames[i]);
+					variableAssignment.append("Ref->");
+					variableAssignment.append(parsedComponentData.m_componentVariableData[i][j].m_varName);
+					variableAssignment.append(" = ");
+					variableAssignment.append(parsedComponentData.m_componentVariableData[i][j].m_varName);
+					variableAssignment.append(";");
+					outParsedFileContents[i].m_lines.push_back(variableAssignment);
+				}
+			}
+		}
+		else if (cppLineText.find("#####") != std::string::npos)
+		{
+			for (int i = 0; i < parsedComponentData.m_componentNames.size(); ++i)
+			{
+				std::string perComponentCppLineText = cppLineText;
+				outParsedFileContents[i].m_lines.push_back(std::regex_replace(perComponentCppLineText, std::regex("#####"), parsedComponentData.m_componentNames[i]));
+			}
+		}
+		else
+		{
+			for (int i = 0; i < parsedComponentData.m_componentNames.size(); ++i)
+			{
+				outParsedFileContents[i].m_lines.push_back(cppLineText);
+			}
+		}
+	}
+	inCppStream.close();
+
 	return true;
 }

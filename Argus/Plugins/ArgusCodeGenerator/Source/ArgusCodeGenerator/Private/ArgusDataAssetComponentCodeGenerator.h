@@ -12,6 +12,7 @@ private:
 	static const char* s_componentDataCppTemplateFilename;
 	static const char* s_componentDataHeaderSuffix;
 	static const char* s_componentDataCppSuffix;
+	static const char* s_propertyMacro;
 
 	struct FileWriteData
 	{
