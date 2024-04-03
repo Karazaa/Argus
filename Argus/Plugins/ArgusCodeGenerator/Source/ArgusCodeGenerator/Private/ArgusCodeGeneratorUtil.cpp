@@ -9,6 +9,7 @@ DEFINE_LOG_CATEGORY(ArgusCodeGeneratorLog);
 
 const char* ArgusCodeGeneratorUtil::s_componentDefinitionDirectoryName = "ComponentDefinitions";
 const char* ArgusCodeGeneratorUtil::s_componentDefinitionDirectorySuffix = "Source/Argus/ECS/ComponentDefinitions";
+const char* ArgusCodeGeneratorUtil::s_templateDirectorySuffix = "Plugins/ArgusCodeGenerator/Source/ArgusCodeGenerator/Private/Templates/";
 const char* ArgusCodeGeneratorUtil::s_structDelimiter = "struct";
 const char* ArgusCodeGeneratorUtil::s_varDelimiter = "m_";
 
@@ -19,6 +20,15 @@ FString ArgusCodeGeneratorUtil::GetProjectDirectory()
 	projectDirectory.RemoveFromEnd(cleanFilename);
 
 	return projectDirectory;
+}
+
+FString ArgusCodeGeneratorUtil::GetTemplateDirectory()
+{
+	FString templateDirectory = *GetProjectDirectory();
+	templateDirectory.Append(s_templateDirectorySuffix);
+	FPaths::MakeStandardFilename(templateDirectory);
+
+	return templateDirectory;
 }
 
 FString ArgusCodeGeneratorUtil::GetComponentDefinitionsDirectory()

@@ -8,7 +8,6 @@
 // Constants for file parsing
 const char* ArgusComponentRegistryCodeGenerator::s_componentRegistryDirectorySuffix = "Source/Argus/ECS/";
 const char* ArgusComponentRegistryCodeGenerator::s_ecsTestsDirectorySuffix = "Tests/";
-const char* ArgusComponentRegistryCodeGenerator::s_templateDirectorySuffix = "Plugins/ArgusCodeGenerator/Source/ArgusCodeGenerator/Private/Templates/";
 const char* ArgusComponentRegistryCodeGenerator::s_argusComponentRegistryHeaderTemplateFilename = "ArgusComponentRegistryHeaderTemplate.txt";
 const char* ArgusComponentRegistryCodeGenerator::s_argusComponentRegistryCppTemplateFilename = "ArgusComponentRegistryCppTemplate.txt";
 const char* ArgusComponentRegistryCodeGenerator::s_componentHeaderTemplateFilename = "ComponentHeaderTemplate.txt";
@@ -23,10 +22,7 @@ const char* ArgusComponentRegistryCodeGenerator::s_argusComponentSizeTestsFilena
 
 void ArgusComponentRegistryCodeGenerator::GenerateComponentRegistry(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData)
 {
-	UE_LOG(ArgusCodeGeneratorLog, Display, TEXT("[%s] Starting generation of Argus ECS Component code."), ARGUS_FUNCNAME)
-
-	FString projectDirectory = ArgusCodeGeneratorUtil::GetProjectDirectory();
-
+	UE_LOG(ArgusCodeGeneratorLog, Display, TEXT("[%s] Starting generation of Argus ECS component code."), ARGUS_FUNCNAME)
 	bool didSucceed = true;
 
 	// Iterate over ComponentDefinitions files.
@@ -35,10 +31,7 @@ void ArgusComponentRegistryCodeGenerator::GenerateComponentRegistry(const ArgusC
 	params.inIncludeStatements = parsedComponentData.m_componentRegistryIncludeStatements;
 
 	// Construct a directory path to component templates
-	FString templateDirectory = *projectDirectory;
-	templateDirectory.Append(s_templateDirectorySuffix);
-	FPaths::MakeStandardFilename(templateDirectory);
-	const char* cStrTemplateDirectory = TCHAR_TO_UTF8(*templateDirectory);
+	const char* cStrTemplateDirectory = TCHAR_TO_UTF8(*ArgusCodeGeneratorUtil::GetTemplateDirectory());
 
 	params.argusComponentRegistryHeaderTemplateFilePath = std::string(cStrTemplateDirectory).append(s_argusComponentRegistryHeaderTemplateFilename);
 	params.argusComponentRegistryCppTemplateFilePath = std::string(cStrTemplateDirectory).append(s_argusComponentRegistryCppTemplateFilename);
@@ -52,18 +45,18 @@ void ArgusComponentRegistryCodeGenerator::GenerateComponentRegistry(const ArgusC
 	UE_LOG(ArgusCodeGeneratorLog, Display, TEXT("[%s] Parsing from template files to generate component implementations."), ARGUS_FUNCNAME)
 	// Parse header file
 	std::vector<std::string> outParsedHeaderFileContents = std::vector<std::string>();
-	didSucceed &= ParseComponentRegistryHeaderTemplate(params, outParsedHeaderFileContents);
+	didSucceed &= ParseComponentRegistryHeaderTemplateWithReplacements(params, outParsedHeaderFileContents);
 
 	// Parse cpp file
 	std::vector<std::string> outParsedCppFileContents = std::vector<std::string>();
-	didSucceed &= ParseComponentRegistryCppTemplate(params, outParsedCppFileContents);
+	didSucceed &= ParseComponentRegistryCppTemplateWithReplacements(params, outParsedCppFileContents);
 
 	// Parse tests file
 	std::vector<std::string> outParsedTestsFileContents = std::vector<std::string>();
-	didSucceed &= ParseComponentSizeTestsTemplate(params, outParsedTestsFileContents);
+	didSucceed &= ParseComponentSizeTestsTemplateWithReplacements(params, outParsedTestsFileContents);
 
 	// Construct a directory path to registry location and to tests location. 
-	FString registryDirectory = *projectDirectory;
+	FString registryDirectory = ArgusCodeGeneratorUtil::GetProjectDirectory();
 	registryDirectory.Append(s_componentRegistryDirectorySuffix);
 	FString testsDirectory = *registryDirectory;
 	testsDirectory.Append(s_ecsTestsDirectorySuffix);
@@ -79,11 +72,11 @@ void ArgusComponentRegistryCodeGenerator::GenerateComponentRegistry(const ArgusC
 	
 	if (didSucceed)
 	{
-		UE_LOG(ArgusCodeGeneratorLog, Display, TEXT("[%s] Successfully wrote out Argus ECS Component implementations."), ARGUS_FUNCNAME)
+		UE_LOG(ArgusCodeGeneratorLog, Display, TEXT("[%s] Successfully wrote out Argus ECS component implementations."), ARGUS_FUNCNAME)
 	}
 }
 
-bool ArgusComponentRegistryCodeGenerator::ParseComponentRegistryHeaderTemplate(const ParseComponentTemplateParams& params, std::vector<std::string>& outFileContents)
+bool ArgusComponentRegistryCodeGenerator::ParseComponentRegistryHeaderTemplateWithReplacements(const ParseComponentTemplateParams& params, std::vector<std::string>& outFileContents)
 {
 	bool didSucceed = true;
 
@@ -129,7 +122,7 @@ bool ArgusComponentRegistryCodeGenerator::ParseComponentRegistryHeaderTemplate(c
 	return didSucceed;
 }
 
-bool ArgusComponentRegistryCodeGenerator::ParseComponentRegistryCppTemplate(const ParseComponentTemplateParams& params, std::vector<std::string>& outFileContents)
+bool ArgusComponentRegistryCodeGenerator::ParseComponentRegistryCppTemplateWithReplacements(const ParseComponentTemplateParams& params, std::vector<std::string>& outFileContents)
 {
 	bool didSucceed = true;
 
@@ -190,7 +183,7 @@ bool ArgusComponentRegistryCodeGenerator::ParseComponentRegistryCppTemplate(cons
 	return didSucceed;
 }
 
-bool ArgusComponentRegistryCodeGenerator::ParseComponentSizeTestsTemplate(const ParseComponentTemplateParams& params, std::vector<std::string>& outFileContents)
+bool ArgusComponentRegistryCodeGenerator::ParseComponentSizeTestsTemplateWithReplacements(const ParseComponentTemplateParams& params, std::vector<std::string>& outFileContents)
 {
 	bool didSucceed = true;
 
