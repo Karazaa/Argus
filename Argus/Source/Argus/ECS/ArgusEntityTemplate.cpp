@@ -14,3 +14,15 @@ ArgusEntity UArgusEntityTemplate::MakeEntity()
 
 	return entity;
 }
+
+#if WITH_EDITOR
+void UArgusEntityTemplate::PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent)
+{
+	// Sudo code
+
+	// Somehow get the object being added from FPropertyChangedEvent.
+	// Iterate over existing ComponentData entries.
+	// Call a UComponentData virtual method that checks if the newly added asset is the same type.
+	// If any are the same type. Error out.
+}
+#endif

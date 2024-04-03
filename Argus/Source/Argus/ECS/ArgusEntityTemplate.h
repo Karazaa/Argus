@@ -21,4 +21,8 @@ public:
 	TArray<UComponentData*> ComponentData;
 
 	ArgusEntity MakeEntity();
+
+#if WITH_EDITOR
+	virtual void PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent) override;
+#endif
 };
