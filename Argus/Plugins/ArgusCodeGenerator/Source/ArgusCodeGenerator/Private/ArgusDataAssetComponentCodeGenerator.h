@@ -8,6 +8,7 @@ class ArgusDataAssetComponentCodeGenerator
 public:
 	static void GenerateDataAssetComponents(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData);
 private:
+	static const char* s_componentDataDirectorySuffix;
 	static const char* s_componentDataHeaderTemplateFilename;
 	static const char* s_componentDataCppTemplateFilename;
 	static const char* s_componentDataHeaderSuffix;

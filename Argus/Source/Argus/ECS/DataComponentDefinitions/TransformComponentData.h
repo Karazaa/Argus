@@ -4,16 +4,16 @@
 #pragma once
 
 #include "ComponentData.h"
-#include "HealthComponentData.generated.h"
+#include "TransformComponentData.generated.h"
 
 UCLASS()
-class ARGUS_API UHealthComponentData : public UComponentData
+class ARGUS_API UTransformComponentData : public UComponentData
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere)
-	uint32 m_health = 1000u;
+	FTransform m_transform = FTransform::Identity;
 
 	void InstantiateComponentForEntity(ArgusEntity& entity) override;
 };

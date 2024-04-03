@@ -15,7 +15,7 @@ bool ArgusEntityTemplateInstantiateEntityTest::RunTest(const FString& Parameters
 	TestFalse(TEXT("Validating that there isn't an entity yet."), ArgusEntity::DoesEntityExist(targetId));
 
 	UHealthComponentData* healthComponentData = NewObject<UHealthComponentData>();
-	healthComponentData->Health = 5000u;
+	healthComponentData->m_health = 5000u;
 
 	UArgusEntityTemplate* entityTemplate = NewObject<UArgusEntityTemplate>();
 	entityTemplate->EntityPriority = UEntityPriority::MediumPriority;

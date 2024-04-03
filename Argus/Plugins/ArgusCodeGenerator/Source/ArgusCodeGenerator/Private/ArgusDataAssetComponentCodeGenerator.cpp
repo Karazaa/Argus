@@ -5,6 +5,7 @@
 #include <fstream>
 #include <regex>
 
+const char* ArgusDataAssetComponentCodeGenerator::s_componentDataDirectorySuffix = "Source/Argus/ECS/DataComponentDefinitions/";
 const char* ArgusDataAssetComponentCodeGenerator::s_componentDataHeaderTemplateFilename = "ComponentDataHeaderTemplate.txt";
 const char* ArgusDataAssetComponentCodeGenerator::s_componentDataCppTemplateFilename = "ComponentDataCppTemplate.txt";
 const char* ArgusDataAssetComponentCodeGenerator::s_componentDataHeaderSuffix = "Data.h";
@@ -31,6 +32,22 @@ void ArgusDataAssetComponentCodeGenerator::GenerateDataAssetComponents(const Arg
 	// Parse cpp file
 	std::vector<FileWriteData> outParsedCppFileContents = std::vector<FileWriteData>();
 	didSucceed &= ParseDataAssetCppFileTemplateWithReplacements(parsedComponentData, componentDataCppTemplateFilePath, outParsedCppFileContents);
+
+	// Construct a directory path to registry location and to tests location. 
+	FString componentDataDirectory = ArgusCodeGeneratorUtil::GetProjectDirectory();
+	componentDataDirectory.Append(s_componentDataDirectorySuffix);
+	FPaths::MakeStandardFilename(componentDataDirectory);
+	const char* cStrComponentDataDirectory = TCHAR_TO_UTF8(*componentDataDirectory);
+
+	// Write out header and cpp files.
+	for (int i = 0; i < outParsedHeaderFileContents.size(); ++i)
+	{
+		didSucceed &= ArgusCodeGeneratorUtil::WriteOutFile(std::string(cStrComponentDataDirectory).append(outParsedHeaderFileContents[i].m_filename), outParsedHeaderFileContents[i].m_lines);
+	}
+	for (int i = 0; i < outParsedCppFileContents.size(); ++i)
+	{
+		didSucceed &= ArgusCodeGeneratorUtil::WriteOutFile(std::string(cStrComponentDataDirectory).append(outParsedCppFileContents[i].m_filename), outParsedCppFileContents[i].m_lines);
+	}
 
 	if (didSucceed)
 	{
