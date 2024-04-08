@@ -3,8 +3,24 @@
 
 #include "HealthComponentData.h"
 
-void UHealthComponentData::InstantiateComponentForEntity(ArgusEntity& entity)
+void UHealthComponentData::InstantiateComponentForEntity(ArgusEntity& entity) const
 {
 	HealthComponent* HealthComponentRef = entity.AddComponent<HealthComponent>();
 	HealthComponentRef->m_health = m_health;
+}
+
+bool UHealthComponentData::MatchesType(UComponentData* other) const
+{
+	if (!other)
+	{
+		return false;
+	}
+
+	const UHealthComponentData* otherComponentData = Cast<UHealthComponentData>(other);
+	if (!otherComponentData)
+	{
+		return false;
+	}
+
+	return true;
 }

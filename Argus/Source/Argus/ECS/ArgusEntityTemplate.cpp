@@ -1,6 +1,7 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusEntityTemplate.h"
+#include "ArgusUtil.h"
 #include "DataComponentDefinitions/ComponentData.h"
 
 ArgusEntity UArgusEntityTemplate::MakeEntity()
@@ -18,11 +19,31 @@ ArgusEntity UArgusEntityTemplate::MakeEntity()
 #if WITH_EDITOR
 void UArgusEntityTemplate::PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent)
 {
-	// Sudo code
+	const FString propertyName = propertyChangedEvent.GetPropertyName().ToString();
+	const FString componentDataPropertyName = ARGUS_NAMEOF(ComponentData);
 
-	// Somehow get the object being added from FPropertyChangedEvent.
-	// Iterate over existing ComponentData entries.
-	// Call a UComponentData virtual method that checks if the newly added asset is the same type.
-	// If any are the same type. Error out.
+	if (propertyName.Equals(componentDataPropertyName))
+	{
+		const int32 arrayIndex = propertyChangedEvent.GetArrayIndex(propertyName);
+		const UComponentData* modifiedComponent = ComponentData[arrayIndex];
+		if (modifiedComponent)
+		{
+			for (int i = 0; i < ComponentData.Num(); ++i)
+			{
+				if (i == arrayIndex)
+				{
+					continue;
+				}
+
+				if (modifiedComponent->MatchesType(ComponentData[i]))
+				{
+					// TODO JAMES: Error
+					UE_LOG(ArgusGameLog, Error, TEXT("[%s] Found duplicate component type when assigning to an ArgusEntityTemplate. An ArgusEntity can only have one instance of a component type."), ARGUS_FUNCNAME);
+					ComponentData[arrayIndex] = nullptr;
+					return;
+				}
+			}
+		}
+	}
 }
 #endif

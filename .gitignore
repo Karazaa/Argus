@@ -76,3 +76,4 @@ Argus/DerivedDataCache/*
 Argus/Argus.unrealvs
 
 Argus/Plugins/ArgusCodeGenerator/obj/*
+Argus/enc_temp_folder/

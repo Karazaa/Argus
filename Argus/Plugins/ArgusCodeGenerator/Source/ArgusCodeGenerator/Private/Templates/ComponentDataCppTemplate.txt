@@ -3,8 +3,24 @@
 
 #include "#####Data.h"
 
-void U#####Data::InstantiateComponentForEntity(ArgusEntity& entity)
+void U#####Data::InstantiateComponentForEntity(ArgusEntity& entity) const
 {
 	#####* #####Ref = entity.AddComponent<#####>();
 	@@@@@
+}
+
+bool U#####Data::MatchesType(UComponentData* other) const
+{
+	if (!other)
+	{
+		return false;
+	}
+
+	const U#####Data* otherComponentData = Cast<U#####Data>(other);
+	if (!otherComponentData)
+	{
+		return false;
+	}
+
+	return true;
 }

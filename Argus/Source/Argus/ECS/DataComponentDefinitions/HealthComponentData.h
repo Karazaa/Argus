@@ -15,5 +15,6 @@ public:
 	UPROPERTY(EditAnywhere)
 	uint32 m_health = 1000u;
 
-	void InstantiateComponentForEntity(ArgusEntity& entity) override;
+	void InstantiateComponentForEntity(ArgusEntity& entity) const override;
+	bool MatchesType(UComponentData* other) const override;
 };
