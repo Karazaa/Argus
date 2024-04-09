@@ -19,6 +19,11 @@ ArgusEntity UArgusEntityTemplate::MakeEntity()
 #if WITH_EDITOR
 void UArgusEntityTemplate::PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent)
 {
+	if (propertyChangedEvent.ChangeType != EPropertyChangeType::ValueSet)
+	{
+		return;
+	}
+
 	const FString propertyName = propertyChangedEvent.GetPropertyName().ToString();
 	const FString componentDataPropertyName = ARGUS_NAMEOF(ComponentData);
 
