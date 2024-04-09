@@ -26,27 +26,28 @@ void UArgusEntityTemplate::PostEditChangeProperty(FPropertyChangedEvent& propert
 
 	const FString propertyName = propertyChangedEvent.GetPropertyName().ToString();
 	const FString componentDataPropertyName = ARGUS_NAMEOF(ComponentData);
-
-	if (propertyName.Equals(componentDataPropertyName))
+	if (!propertyName.Equals(componentDataPropertyName))
 	{
-		const int32 arrayIndex = propertyChangedEvent.GetArrayIndex(propertyName);
-		const UComponentData* modifiedComponent = ComponentData[arrayIndex];
-		if (modifiedComponent)
-		{
-			for (int i = 0; i < ComponentData.Num(); ++i)
-			{
-				if (i == arrayIndex)
-				{
-					continue;
-				}
+		return;
+	}
 
-				if (modifiedComponent->MatchesType(ComponentData[i]))
-				{
-					// TODO JAMES: Error
-					UE_LOG(ArgusGameLog, Error, TEXT("[%s] Found duplicate component type when assigning to an ArgusEntityTemplate. An ArgusEntity can only have one instance of a component type."), ARGUS_FUNCNAME);
-					ComponentData[arrayIndex] = nullptr;
-					return;
-				}
+	const int32 arrayIndex = propertyChangedEvent.GetArrayIndex(propertyName);
+	const UComponentData* modifiedComponent = ComponentData[arrayIndex];
+	if (modifiedComponent)
+	{
+		for (int i = 0; i < ComponentData.Num(); ++i)
+		{
+			if (i == arrayIndex)
+			{
+				continue;
+			}
+
+			if (modifiedComponent->MatchesType(ComponentData[i]))
+			{
+				// TODO JAMES: Error
+				UE_LOG(ArgusGameLog, Error, TEXT("[%s] Found duplicate component type when assigning to an ArgusEntityTemplate. An ArgusEntity can only have one instance of a component type."), ARGUS_FUNCNAME);
+				ComponentData[arrayIndex] = nullptr;
+				return;
 			}
 		}
 	}
