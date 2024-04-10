@@ -4,6 +4,7 @@
 #pragma once
 
 #include "ComponentData.h"
+#include "..\ComponentDefinitions\HealthComponent.h"
 #include "HealthComponentData.generated.h"
 
 UCLASS()

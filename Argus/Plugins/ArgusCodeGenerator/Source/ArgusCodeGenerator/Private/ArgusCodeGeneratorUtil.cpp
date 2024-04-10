@@ -61,8 +61,12 @@ bool ArgusCodeGeneratorUtil::ParseComponentDataFromFile(const std::string& fileP
 {
 	const size_t componentDefinitionIndex = filePath.find(s_componentDefinitionDirectoryName);
 	std::string includeStatement = "#include \"";
-	includeStatement.append(filePath.substr(componentDefinitionIndex));
+	std::string dataAssetIncludeStatement = "#include \"..\\";
+	std::string componentPath = filePath.substr(componentDefinitionIndex);
+	includeStatement.append(componentPath);
 	includeStatement.append("\"");
+	dataAssetIncludeStatement.append(componentPath);
+	dataAssetIncludeStatement.append("\"");
 	output.m_componentRegistryIncludeStatements.push_back(includeStatement);
 
 	std::ifstream inStream = std::ifstream(filePath);
@@ -79,7 +83,7 @@ bool ArgusCodeGeneratorUtil::ParseComponentDataFromFile(const std::string& fileP
 	while (std::getline(inStream, lineText))
 	{
 		// Handle lines that declare structs
-		if (ParseStructDeclarations(lineText, output))
+		if (ParseStructDeclarations(lineText, dataAssetIncludeStatement, output))
 		{
 			continue;
 		}
@@ -142,7 +146,7 @@ bool ArgusCodeGeneratorUtil::WriteOutFile(const std::string& filePath, const std
 	return true;
 }
 
-bool ArgusCodeGeneratorUtil::ParseStructDeclarations(std::string lineText, ParseComponentDataOutput& output)
+bool ArgusCodeGeneratorUtil::ParseStructDeclarations(std::string lineText, const std::string& componentDataAssetIncludeStatement, ParseComponentDataOutput& output)
 {
 	const size_t structDelimiterLength = std::strlen(s_structDelimiter);
 	const size_t classDelimiterIndex = lineText.find(s_structDelimiter);
@@ -173,6 +177,7 @@ bool ArgusCodeGeneratorUtil::ParseStructDeclarations(std::string lineText, Parse
 
 	std::erase(lineText, ' ');
 	output.m_componentNames.push_back(lineText);
+	output.m_componentDataAssetIncludeStatements.push_back(componentDataAssetIncludeStatement);
 	output.m_componentVariableData.push_back(std::vector<ComponentVariableData>());
 	return true;
 }

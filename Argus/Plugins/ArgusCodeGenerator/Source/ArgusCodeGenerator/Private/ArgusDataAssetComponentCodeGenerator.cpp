@@ -97,6 +97,13 @@ bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetHeaderFileTemplateWithR
 				}
 			}
 		}
+		else if (headerLineText.find("$$$$$") != std::string::npos)
+		{
+			for (int i = 0; i < parsedComponentData.m_componentDataAssetIncludeStatements.size(); ++i)
+			{
+				outParsedFileContents[i].m_lines.push_back(parsedComponentData.m_componentDataAssetIncludeStatements[i]);
+			}
+		}
 		else if (headerLineText.find("#####") != std::string::npos)
 		{
 			for (int i = 0; i < parsedComponentData.m_componentNames.size(); ++i)

@@ -28,6 +28,7 @@ public:
 	{
 		std::vector<std::string> m_componentNames;
 		std::vector<std::string> m_componentRegistryIncludeStatements;
+		std::vector<std::string> m_componentDataAssetIncludeStatements;
 		std::vector< std::vector<ComponentVariableData> > m_componentVariableData;
 	};
 	static bool ParseComponentData(ParseComponentDataOutput& output);
@@ -42,6 +43,6 @@ private:
 	static const char* s_structDelimiter;
 	static const char* s_varDelimiter;
 
-	static bool ParseStructDeclarations(std::string lineText, ParseComponentDataOutput& output);
+	static bool ParseStructDeclarations(std::string lineText, const std::string& componentDataAssetIncludeStatement, ParseComponentDataOutput& output);
 	static bool ParseVariableDeclarations(std::string lineText, ParseComponentDataOutput& output);
 };
