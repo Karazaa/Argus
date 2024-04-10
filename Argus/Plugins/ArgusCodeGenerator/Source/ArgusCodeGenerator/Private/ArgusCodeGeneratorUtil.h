@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include <string>
+#include <vector>
 
 #define ARGUS_NAMEOF(x) TEXT(#x)
 #define ARGUS_FUNCNAME TEXT(__FUNCTION__)

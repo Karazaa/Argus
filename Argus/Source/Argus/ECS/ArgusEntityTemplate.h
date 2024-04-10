@@ -4,6 +4,7 @@
 
 #include "ArgusECSConstants.h"
 #include "ArgusEntity.h"
+#include "Engine/DataAsset.h"
 #include "ArgusEntityTemplate.generated.h"
 
 class UComponentData;

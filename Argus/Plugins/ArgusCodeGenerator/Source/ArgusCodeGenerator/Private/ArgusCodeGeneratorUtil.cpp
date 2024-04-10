@@ -1,6 +1,7 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusCodeGeneratorUtil.h"
+#include "Misc/Paths.h"
 #include <filesystem>
 #include <fstream>
 #include <regex>
