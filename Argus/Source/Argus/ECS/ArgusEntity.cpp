@@ -52,10 +52,15 @@ ArgusEntity::ArgusEntity(const ArgusEntity& other)
 	m_id = other.GetId();
 }
 
-ArgusEntity& ArgusEntity::operator=(ArgusEntity other)
+ArgusEntity& ArgusEntity::operator=(const ArgusEntity& other)
 {
 	m_id = other.GetId();
 	return *this;
+}
+
+bool ArgusEntity::operator==(const ArgusEntity& other) const
+{
+	return m_id == other.GetId();
 }
 
 ArgusEntity::ArgusEntity() : m_id(0)

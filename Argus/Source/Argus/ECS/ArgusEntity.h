@@ -23,18 +23,19 @@ private:
 	
 public:
 	ArgusEntity(const ArgusEntity& other);
-	ArgusEntity& operator=(ArgusEntity other);
+	ArgusEntity& operator=(const ArgusEntity& other);
+	bool operator==(const ArgusEntity& other) const;
 
 	uint16	GetId() const;
 
 	template<class ArgusComponent>
-	ArgusComponent* GetComponent()
+	ArgusComponent* GetComponent() const
 	{
 		return ArgusComponentRegistry::GetComponent<ArgusComponent>(m_id);
 	}
 
 	template<class ArgusComponent>
-	ArgusComponent* AddComponent()
+	ArgusComponent* AddComponent() const
 	{
 		return ArgusComponentRegistry::AddComponent<ArgusComponent>(m_id);
 	}
