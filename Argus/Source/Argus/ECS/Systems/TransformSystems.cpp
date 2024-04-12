@@ -16,7 +16,7 @@ void TransformSystems::FindNearestEntityAndTarget(const ArgusEntity& fromEntity,
 {
 	const FVector fromLocation = fromTransformComponent->m_transform.GetLocation();
 	float minDistSquared = FLT_MAX;
-	ArgusEntity minDistEntity = fromEntity;
+	uint32 minDistEntityId = ArgusECSConstants::k_maxEntities;
 
 	for (uint32 i = 0; i < ArgusECSConstants::k_maxEntities; ++i)
 	{
@@ -42,7 +42,7 @@ void TransformSystems::FindNearestEntityAndTarget(const ArgusEntity& fromEntity,
 		if (distSquared < minDistSquared)
 		{
 			minDistSquared = distSquared;
-			minDistEntity = potentialEntity.value();
+			minDistEntityId = i;
 		}
 	}
 
@@ -55,5 +55,5 @@ void TransformSystems::FindNearestEntityAndTarget(const ArgusEntity& fromEntity,
 			return;
 		}
 	}
-	targetingComponent->m_targetEntityId = minDistEntity.GetId();
+	targetingComponent->m_targetEntityId = minDistEntityId;
 }
