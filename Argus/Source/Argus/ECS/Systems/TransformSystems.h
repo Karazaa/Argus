@@ -5,6 +5,7 @@
 
 class TransformSystems
 {
+public:
 	static void RunSystems(const ArgusEntity& entity);
 	static void FindNearestEntityAndTarget(const ArgusEntity& fromEntity, TransformComponent* fromTransformComponent);
 };

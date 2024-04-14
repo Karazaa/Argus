@@ -76,13 +76,13 @@ bool ArgusEntityAddGetHealthComponentTest::RunTest(const FString& Parameters)
 	ArgusEntity::FlushAllEntities();
 
 	ArgusEntity entity = ArgusEntity::CreateEntity();
-	HealthComponent* p_healthComponent = entity.GetComponent<HealthComponent>();
+	HealthComponent* healthComponent = entity.GetComponent<HealthComponent>();
 
-	TestTrue(TEXT("Creating an entity, attempting to retrieve health component before adding it."), p_healthComponent == nullptr);
+	TestTrue(TEXT("Creating an entity, attempting to retrieve health component before adding it."), healthComponent == nullptr);
 
-	p_healthComponent = entity.AddComponent<HealthComponent>();
+	healthComponent = entity.AddComponent<HealthComponent>();
 
-	TestTrue(TEXT("Creating an entity, attempting to retrieve health component after adding it."), p_healthComponent != nullptr);
+	TestTrue(TEXT("Creating an entity, attempting to retrieve health component after adding it."), healthComponent != nullptr);
 
 	return true;
 }
