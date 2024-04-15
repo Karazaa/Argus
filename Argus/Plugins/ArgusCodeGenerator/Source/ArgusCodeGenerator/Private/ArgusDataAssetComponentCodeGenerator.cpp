@@ -52,6 +52,7 @@ void ArgusDataAssetComponentCodeGenerator::GenerateDataAssetComponents(const Arg
 
 	if (didSucceed)
 	{
+		DeleteObsoleteFiles(parsedComponentData, cStrComponentDataDirectory);
 		UE_LOG(ArgusCodeGeneratorLog, Display, TEXT("[%s] Successfully wrote out Argus ECS static data asset code."), ARGUS_FUNCNAME)
 	}
 }
@@ -182,4 +183,38 @@ bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetCppFileTemplateWithRepl
 	inCppStream.close();
 
 	return true;
+}
+
+void ArgusDataAssetComponentCodeGenerator::DeleteObsoleteFiles(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData, const char* componentDataDirectory)
+{
+	const std::string finalizedComponentDataDefinitionsDirectory = std::string(componentDataDirectory);
+	std::vector<std::string> filesToDelete = std::vector<std::string>();
+
+	for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(finalizedComponentDataDefinitionsDirectory))
+	{
+		const std::string filePath = entry.path().string();
+		bool foundValidComponentName = false;
+		for (int i = 0; i < parsedComponentData.m_componentNames.size(); ++i)
+		{
+			const size_t componentNameIndex = filePath.find(parsedComponentData.m_componentNames[i]);
+			const size_t componentDataIndex = filePath.find("/ComponentData.h");
+			if (componentNameIndex != std::string::npos || componentDataIndex != std::string::npos)
+			{
+				foundValidComponentName = true;
+				break;
+			}
+		}
+
+		if (foundValidComponentName)
+		{
+			continue;
+		}
+
+		filesToDelete.push_back(filePath);
+	}
+
+	for (int i = 0; i < filesToDelete.size(); ++i)
+	{
+		std::remove(filesToDelete[i].c_str());
+	}
 }
