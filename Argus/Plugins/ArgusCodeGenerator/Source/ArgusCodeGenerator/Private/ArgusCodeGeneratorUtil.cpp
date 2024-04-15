@@ -220,6 +220,15 @@ bool ArgusCodeGeneratorUtil::ParseVariableDeclarations(std::string lineText, Par
 	std::erase(variableData.m_varName, ' ');
 	std::erase(variableData.m_defaultValue, ' ');
 
+	for (int i = 0; i < output.m_componentVariableData.back().size(); ++i)
+	{
+		const size_t variableNameIndex = variableData.m_varName.find(output.m_componentVariableData.back()[i].m_varName);
+		if (variableNameIndex != std::string::npos)
+		{
+			return false;
+		}
+	}
+
 	output.m_componentVariableData.back().push_back(variableData);
 	return true;
 }

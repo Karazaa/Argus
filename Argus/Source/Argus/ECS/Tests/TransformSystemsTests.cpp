@@ -28,7 +28,7 @@ bool TransformSystemsFindNearestEntityAndTargetTest::RunTest(const FString& Para
 	closeTransformComponent->m_transform = FTransform(FVector(50.0f, 0.0f, 0.0f));
 	fartherTransformComponent->m_transform = FTransform(FVector(100.0f, 0.0f, 0.0f));
 
-	TestEqual(TEXT("Testing that the default targeting ID is invalid."), sourceTargetingComponent->m_targetEntityId, ArgusECSConstants::k_maxEntities);
+	TestTrue(TEXT("Testing that the default targeting ID is invalid."), sourceTargetingComponent->HasNoTarget());
 
 	TransformSystems::FindNearestEntityAndTarget(sourceEntity, sourceTransformComponent);
 
