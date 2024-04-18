@@ -4,17 +4,21 @@
 #pragma once
 
 #include "ComponentData.h"
-#include "..\ComponentDefinitions\TargetingComponent.h"
-#include "TargetingComponentData.generated.h"
+#include "..\ComponentDefinitions\IdentityComponent.h"
+#include "IdentityComponentData.generated.h"
 
 UCLASS()
-class ARGUS_API UTargetingComponentData : public UComponentData
+class ARGUS_API UIdentityComponentData : public UComponentData
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere)
-	uint32 m_targetEntityId = ArgusECSConstants::k_maxEntities;
+	EFaction m_faction;
+	UPROPERTY(EditAnywhere)
+	uint8 m_allies;
+	UPROPERTY(EditAnywhere)
+	uint8 m_enemies;
 
 	void InstantiateComponentForEntity(ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;

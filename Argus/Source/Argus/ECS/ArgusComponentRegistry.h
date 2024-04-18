@@ -9,6 +9,7 @@
 
 // Begin component specific includes.
 #include "ComponentDefinitions\HealthComponent.h"
+#include "ComponentDefinitions\IdentityComponent.h"
 #include "ComponentDefinitions\TargetingComponent.h"
 #include "ComponentDefinitions\TransformComponent.h"
 
@@ -29,7 +30,7 @@ public:
 
 	static void FlushAllComponents();
 
-	static constexpr uint32 k_numComponentTypes = 3;
+	static constexpr uint32 k_numComponentTypes = 4;
 
 	// Begin component specific template specifiers.
 	
@@ -73,6 +74,47 @@ public:
 		s_HealthComponents[entityId] = HealthComponent();
 		s_isHealthComponentActive.set(entityId);
 		return &s_HealthComponents[entityId];
+	}
+// IdentityComponent ======================================================================================================
+private:
+	static IdentityComponent s_IdentityComponents[ArgusECSConstants::k_maxEntities];
+	static std::bitset<ArgusECSConstants::k_maxEntities> s_isIdentityComponentActive;
+public:
+	template<>
+	inline IdentityComponent* GetComponent<IdentityComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			UE_LOG(ArgusGameLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(IdentityComponent));
+			return nullptr;
+		}
+
+		if (!s_isIdentityComponentActive[entityId])
+		{
+			return nullptr;
+		}
+
+		return &s_IdentityComponents[entityId];
+	}
+
+	template<>
+	inline IdentityComponent* AddComponent<IdentityComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			UE_LOG(ArgusGameLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(IdentityComponent));
+			return nullptr;
+		}
+
+		if (s_isIdentityComponentActive[entityId])
+		{
+			UE_LOG(ArgusGameLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(IdentityComponent), entityId);
+			return &s_IdentityComponents[entityId];
+		}
+
+		s_IdentityComponents[entityId] = IdentityComponent();
+		s_isIdentityComponentActive.set(entityId);
+		return &s_IdentityComponents[entityId];
 	}
 // TargetingComponent ======================================================================================================
 private:
