@@ -27,4 +27,26 @@ struct IdentityComponent
 
 	ARGUS_PROPERTY(EditAnywhere, meta = (Bitmask, BitmaskEnum = EFaction))
 	uint8 m_enemies = 0u;
+
+	void AddEnemyFaction(EFaction enemyFaction)
+	{
+		if (enemyFaction == m_faction)
+		{
+			return;
+		}
+
+		m_allies &= ~((uint8)enemyFaction);
+		m_enemies |= ((uint8)enemyFaction);
+	}
+
+	void AddAllyFaction(EFaction allyFaction)
+	{
+		m_enemies &= ~((uint8)allyFaction);
+		m_allies |= ((uint8)allyFaction);
+	}
+
+	bool IsInFactionMask(uint8 factionMask)
+	{
+		return factionMask & ((uint8)m_faction);
+	}
 };
