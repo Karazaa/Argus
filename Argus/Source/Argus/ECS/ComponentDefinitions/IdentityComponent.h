@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "ArgusUtil.h"
 
 UENUM(meta = (Bitflags, UseEnumValuesAsMaskValuesInEditor = "true"))
 enum class EFaction : uint8
@@ -21,8 +21,10 @@ ENUM_CLASS_FLAGS(EFaction);
 struct IdentityComponent
 {
 	EFaction m_faction;
-	// UPROPERTY(EditAnywhere, meta = (Bitmask, BitmaskEnum = EFaction))
+
+	ARGUS_PROPERTY(EditAnywhere, meta = (Bitmask, BitmaskEnum = EFaction))
 	uint8 m_allies;
-	// UPROPERTY(EditAnywhere, meta = (Bitmask, BitmaskEnum = EFaction))
+
+	ARGUS_PROPERTY(EditAnywhere, meta = (Bitmask, BitmaskEnum = EFaction))
 	uint8 m_enemies;
 };

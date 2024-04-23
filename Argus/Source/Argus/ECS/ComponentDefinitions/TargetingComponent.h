@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "ArgusUtil.h"
 #include "../ArgusECSConstants.h"
 
 struct TargetingComponent
