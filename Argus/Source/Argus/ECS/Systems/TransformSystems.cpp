@@ -1,6 +1,7 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "TransformSystems.h"
+#include "ArgusUtil.h"
 #include "../ComponentDefinitions/TargetingComponent.h"
 #include "../ComponentDefinitions/TransformComponent.h"
 
@@ -14,6 +15,12 @@ void TransformSystems::RunSystems(const ArgusEntity& entity)
 
 void TransformSystems::FindNearestEntityAndTarget(const ArgusEntity& fromEntity, TransformComponent* fromTransformComponent)
 {
+	if (!fromTransformComponent)
+	{
+		UE_LOG(ArgusGameLog, Error, TEXT("[%s] Null %s passed for entity %d."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), fromEntity.GetId());
+		return;
+	}
+
 	const FVector fromLocation = fromTransformComponent->m_transform.GetLocation();
 	float minDistSquared = FLT_MAX;
 	uint32 minDistEntityId = ArgusECSConstants::k_maxEntities;

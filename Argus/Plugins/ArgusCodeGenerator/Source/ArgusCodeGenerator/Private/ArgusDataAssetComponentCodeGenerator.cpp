@@ -12,6 +12,8 @@ const char* ArgusDataAssetComponentCodeGenerator::s_componentDataCppTemplateFile
 const char* ArgusDataAssetComponentCodeGenerator::s_componentDataHeaderSuffix = "Data.h";
 const char* ArgusDataAssetComponentCodeGenerator::s_componentDataCppSuffix = "Data.cpp";
 const char* ArgusDataAssetComponentCodeGenerator::s_propertyMacro = "\tUPROPERTY(EditAnywhere)";
+const char* ArgusDataAssetComponentCodeGenerator::s_upropertyPrefix = "UPROPERTY";
+const char* ArgusDataAssetComponentCodeGenerator::s_argusPropertyPrefix = "ARGUS_PROPERTY";
 
 void ArgusDataAssetComponentCodeGenerator::GenerateDataAssetComponents(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData)
 {
@@ -84,7 +86,16 @@ bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetHeaderFileTemplateWithR
 			{
 				for (int j = 0; j < parsedComponentData.m_componentVariableData[i].size(); ++j)
 				{
-					outParsedFileContents[i].m_lines.push_back(s_propertyMacro);
+					if (!parsedComponentData.m_componentVariableData[i][j].m_propertyMacro.empty())
+					{
+						std::string overridePropertyText = std::regex_replace(parsedComponentData.m_componentVariableData[i][j].m_propertyMacro, std::regex(s_argusPropertyPrefix), s_upropertyPrefix);
+						outParsedFileContents[i].m_lines.push_back(overridePropertyText);
+					}
+					else
+					{
+						outParsedFileContents[i].m_lines.push_back(s_propertyMacro);
+					}
+
 					std::string variable = parsedComponentData.m_componentVariableData[i][j].m_typeName;
 					variable.append(" ");
 					variable.append(parsedComponentData.m_componentVariableData[i][j].m_varName);

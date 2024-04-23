@@ -12,6 +12,7 @@ const char* ArgusCodeGeneratorUtil::s_componentDefinitionDirectoryName = "Compon
 const char* ArgusCodeGeneratorUtil::s_componentDefinitionDirectorySuffix = "Source/Argus/ECS/ComponentDefinitions";
 const char* ArgusCodeGeneratorUtil::s_templateDirectorySuffix = "Plugins/ArgusCodeGenerator/Source/ArgusCodeGenerator/Private/Templates/";
 const char* ArgusCodeGeneratorUtil::s_structDelimiter = "struct";
+const char* ArgusCodeGeneratorUtil::s_propertyDelimiter = "ARGUS_PROPERTY";
 const char* ArgusCodeGeneratorUtil::s_varDelimiter = "m_";
 
 FString ArgusCodeGeneratorUtil::GetProjectDirectory()
@@ -80,17 +81,23 @@ bool ArgusCodeGeneratorUtil::ParseComponentDataFromFile(const std::string& fileP
 	UE_LOG(ArgusCodeGeneratorLog, Display, TEXT("[%s] Reading from file: %s"), ARGUS_FUNCNAME, *ueFilePath);
 
 	std::string lineText;
+	bool didParsePropertyDeclaration = false;
 	while (std::getline(inStream, lineText))
 	{
-		// Handle lines that declare structs
 		if (ParseStructDeclarations(lineText, dataAssetIncludeStatement, output))
 		{
 			continue;
 		}
 
-		// Handle lines that contain variable declarations.
-		if (ParseVariableDeclarations(lineText, output))
+		if (ParseVariableDeclarations(lineText, didParsePropertyDeclaration, output))
 		{
+			didParsePropertyDeclaration = false;
+			continue;
+		}
+
+		if (ParsePropertyMacro(lineText, output))
+		{
+			didParsePropertyDeclaration = true;
 			continue;
 		}
 	}
@@ -182,7 +189,21 @@ bool ArgusCodeGeneratorUtil::ParseStructDeclarations(std::string lineText, const
 	return true;
 }
 
-bool ArgusCodeGeneratorUtil::ParseVariableDeclarations(std::string lineText, ParseComponentDataOutput& output)
+bool ArgusCodeGeneratorUtil::ParsePropertyMacro(std::string lineText, ParseComponentDataOutput& output)
+{
+	const size_t propertyDelimiterIndex = lineText.find(s_propertyDelimiter);
+	if (propertyDelimiterIndex == std::string::npos)
+	{
+		return false;
+	}
+	ComponentVariableData variableData;
+	variableData.m_propertyMacro = lineText;
+	output.m_componentVariableData.back().push_back(variableData);
+
+	return true;
+}
+
+bool ArgusCodeGeneratorUtil::ParseVariableDeclarations(std::string lineText, bool withProperty, ParseComponentDataOutput& output)
 {
 	const size_t variableDelimiterIndex = lineText.find(s_varDelimiter);
 	if (variableDelimiterIndex == std::string::npos)
@@ -220,15 +241,26 @@ bool ArgusCodeGeneratorUtil::ParseVariableDeclarations(std::string lineText, Par
 	std::erase(variableData.m_varName, ' ');
 	std::erase(variableData.m_defaultValue, ' ');
 
-	for (int i = 0; i < output.m_componentVariableData.back().size(); ++i)
+	const int componentVariableCount = output.m_componentVariableData.back().size();
+	if (withProperty && componentVariableCount)
 	{
-		const size_t variableNameIndex = variableData.m_varName.find(output.m_componentVariableData.back()[i].m_varName);
-		if (variableNameIndex != std::string::npos)
-		{
-			return false;
-		}
+		const int index = componentVariableCount - 1;
+		output.m_componentVariableData.back()[index].m_typeName = variableData.m_typeName;
+		output.m_componentVariableData.back()[index].m_varName = variableData.m_varName;
+		output.m_componentVariableData.back()[index].m_defaultValue = variableData.m_defaultValue;
 	}
+	else
+	{
+		for (int i = 0; i < output.m_componentVariableData.back().size(); ++i)
+		{
+			const size_t variableNameIndex = variableData.m_varName.find(output.m_componentVariableData.back()[i].m_varName);
+			if (variableNameIndex != std::string::npos)
+			{
+				return false;
+			}
+		}
 
-	output.m_componentVariableData.back().push_back(variableData);
+		output.m_componentVariableData.back().push_back(variableData);
+	}
 	return true;
 }

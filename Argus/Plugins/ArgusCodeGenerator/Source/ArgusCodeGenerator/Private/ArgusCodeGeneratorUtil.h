@@ -23,6 +23,7 @@ public:
 		std::string m_typeName = "";
 		std::string m_varName = "";
 		std::string m_defaultValue = "";
+		std::string m_propertyMacro = "";
 	};
 	struct ParseComponentDataOutput
 	{
@@ -41,8 +42,10 @@ private:
 	static const char* s_componentDefinitionDirectorySuffix;
 	static const char* s_templateDirectorySuffix;
 	static const char* s_structDelimiter;
+	static const char* s_propertyDelimiter;
 	static const char* s_varDelimiter;
 
 	static bool ParseStructDeclarations(std::string lineText, const std::string& componentDataAssetIncludeStatement, ParseComponentDataOutput& output);
-	static bool ParseVariableDeclarations(std::string lineText, ParseComponentDataOutput& output);
+	static bool ParsePropertyMacro(std::string lineText, ParseComponentDataOutput& output);
+	static bool ParseVariableDeclarations(std::string lineText, bool withProperty, ParseComponentDataOutput& output);
 };

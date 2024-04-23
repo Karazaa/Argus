@@ -20,11 +20,11 @@ ENUM_CLASS_FLAGS(EFaction);
 
 struct IdentityComponent
 {
-	EFaction m_faction;
+	EFaction m_faction = EFaction::None;
 
 	ARGUS_PROPERTY(EditAnywhere, meta = (Bitmask, BitmaskEnum = EFaction))
-	uint8 m_allies;
+	uint8 m_allies = 0u;
 
 	ARGUS_PROPERTY(EditAnywhere, meta = (Bitmask, BitmaskEnum = EFaction))
-	uint8 m_enemies;
+	uint8 m_enemies = 0u;
 };

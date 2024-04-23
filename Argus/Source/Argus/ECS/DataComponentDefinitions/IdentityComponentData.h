@@ -14,11 +14,11 @@ class ARGUS_API UIdentityComponentData : public UComponentData
 
 public:
 	UPROPERTY(EditAnywhere)
-	EFaction m_faction;
-	UPROPERTY(EditAnywhere)
-	uint8 m_allies;
-	UPROPERTY(EditAnywhere)
-	uint8 m_enemies;
+	EFaction m_faction = EFaction::None;
+	UPROPERTY(EditAnywhere, meta = (Bitmask, BitmaskEnum = EFaction))
+	uint8 m_allies = 0u;
+	UPROPERTY(EditAnywhere, meta = (Bitmask, BitmaskEnum = EFaction))
+	uint8 m_enemies = 0u;
 
 	void InstantiateComponentForEntity(ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;
