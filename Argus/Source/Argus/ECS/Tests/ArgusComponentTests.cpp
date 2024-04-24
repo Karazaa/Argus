@@ -5,7 +5,7 @@
 
 #if WITH_AUTOMATION_TESTS
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentHealthComponentPersistenceTest, "Argus.ECS.Component.HealthComponent.PersistenceTest", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentHealthComponentPersistenceTest, "Argus.ECS.Component.HealthComponent.Persistence", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusComponentHealthComponentPersistenceTest::RunTest(const FString& Parameters)
 {
 	ArgusEntity::FlushAllEntities();
@@ -28,7 +28,7 @@ bool ArgusComponentHealthComponentPersistenceTest::RunTest(const FString& Parame
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentTargetingComponentHasNoTargetTest, "Argus.ECS.Component.TargetingComponent.HasNoTargetTest", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentTargetingComponentHasNoTargetTest, "Argus.ECS.Component.TargetingComponent.HasNoTarget", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusComponentTargetingComponentHasNoTargetTest::RunTest(const FString& Parameters)
 {
 	ArgusEntity::FlushAllEntities();
@@ -74,6 +74,71 @@ bool ArgusComponentIdentityComponentIsInFactionMaskTest::RunTest(const FString& 
 
 	TestTrue(TEXT("Creating an IdentityComponent with faction A and confirming that it is present in a full faction mask."), identityComponent->IsInFactionMask(factionMask));
 
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentIdentityComponentAddAllyFactionTest, "Argus.ECS.Component.IdentityComponent.AddAllyFaction", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+bool ArgusComponentIdentityComponentAddAllyFactionTest::RunTest(const FString& Parameters)
+{
+	ArgusEntity::FlushAllEntities();
+
+	ArgusEntity entity1 = ArgusEntity::CreateEntity();
+	ArgusEntity entity2 = ArgusEntity::CreateEntity();
+	IdentityComponent* identityComponent1 = entity1.AddComponent<IdentityComponent>();
+	IdentityComponent* identityComponent2 = entity2.AddComponent<IdentityComponent>();
+
+	if (!identityComponent1 || !identityComponent2)
+	{
+		return false;
+	}
+
+	identityComponent1->m_faction = EFaction::FactionA;
+	identityComponent2->m_faction = EFaction::FactionB;
+
+	identityComponent1->AddAllyFaction(EFaction::FactionB);
+
+	TestTrue(TEXT("Creating two Identity Components, adding one as the ally of another, and then testing to make sure it is in the ally faction mask."), identityComponent2->IsInFactionMask(identityComponent1->m_allies));
+
+	identityComponent1->AddEnemyFaction(EFaction::FactionB);
+	identityComponent1->AddAllyFaction(EFaction::FactionB);
+
+	TestTrue(TEXT("Creating two Identity Components, adding one as the enemy and then ally of another, and then testing to make sure it is in the ally faction mask."), identityComponent2->IsInFactionMask(identityComponent1->m_allies));
+	TestFalse(TEXT("Creating two Identity Components, adding one as the enemy and then ally of another, and then testing to make sure it is not in the enemy faction mask."), identityComponent2->IsInFactionMask(identityComponent1->m_enemies));
+
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentIdentityComponentAddEnemyFactionTest, "Argus.ECS.Component.IdentityComponent.AddEnemyFaction", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+bool ArgusComponentIdentityComponentAddEnemyFactionTest::RunTest(const FString& Parameters)
+{
+	ArgusEntity::FlushAllEntities();
+
+	ArgusEntity entity1 = ArgusEntity::CreateEntity();
+	ArgusEntity entity2 = ArgusEntity::CreateEntity();
+	IdentityComponent* identityComponent1 = entity1.AddComponent<IdentityComponent>();
+	IdentityComponent* identityComponent2 = entity2.AddComponent<IdentityComponent>();
+
+	if (!identityComponent1 || !identityComponent2)
+	{
+		return false;
+	}
+
+	identityComponent1->m_faction = EFaction::FactionA;
+	identityComponent2->m_faction = EFaction::FactionB;
+
+	identityComponent1->AddEnemyFaction(EFaction::FactionA);
+
+	TestFalse(TEXT("Creating two Identity Components, adding one as the enemy of itself, and then testing to make sure it is not in the enemy mask."), identityComponent1->IsInFactionMask(identityComponent1->m_enemies));
+
+	identityComponent1->AddEnemyFaction(EFaction::FactionB);
+
+	TestTrue(TEXT("Creating two Identity Components, adding one as the enemy of another, and then testing to make sure it is in the enemy faction mask."), identityComponent2->IsInFactionMask(identityComponent1->m_enemies));
+
+	identityComponent1->AddAllyFaction(EFaction::FactionB);
+	identityComponent1->AddEnemyFaction(EFaction::FactionB);
+
+	TestTrue(TEXT("Creating two Identity Components, adding one as the ally and then enemy of another, and then testing to make sure it is in the enemy faction mask."), identityComponent2->IsInFactionMask(identityComponent1->m_enemies));
+	TestFalse(TEXT("Creating two Identity Components, adding one as the ally and then enemy of another, and then testing to make sure it is not in the ally faction mask."), identityComponent2->IsInFactionMask(identityComponent1->m_allies));
 	return true;
 }
 #endif //WITH_AUTOMATION_TESTS
