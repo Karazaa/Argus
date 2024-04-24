@@ -16,6 +16,8 @@ public:
 	static std::optional<ArgusEntity>	RetrieveEntity(uint16 id);
 	static void							FlushAllEntities();
 
+	static const ArgusEntity			s_emptyEntity;
+
 private:
 	static std::bitset<ArgusECSConstants::k_maxEntities>	s_takenEntityIds;
 

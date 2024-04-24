@@ -1,6 +1,7 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusGameModeBase.h"
+#include "../ECS/ArgusEntity.h"
 #include "ArgusGameStateBase.h"
 #include "ArgusUtil.h"
 
@@ -12,5 +13,7 @@ AArgusGameModeBase::AArgusGameModeBase()
 
 void AArgusGameModeBase::StartPlay()
 {
+	ArgusEntity::FlushAllEntities();
+	Super::StartPlay();
 	UE_LOG(ArgusGameLog, Display, TEXT("Argus game mode base starting play."));
 }

@@ -3,6 +3,7 @@
 #include "ArgusEntity.h"
 #include "ArgusUtil.h"
 
+const ArgusEntity ArgusEntity::s_emptyEntity = ArgusEntity();
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusEntity::s_takenEntityIds = std::bitset<ArgusECSConstants::k_maxEntities>();
 
 ArgusEntity ArgusEntity::CreateEntity(uint16 lowestId)
