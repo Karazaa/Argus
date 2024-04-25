@@ -2,9 +2,24 @@
 
 #include "TargetingSystems.h"
 
-void TargetingSystems::RunSystems(const ArgusEntity& entity)
+void TargetingSystems::RunSystems(float deltaTime)
 {
+	for (uint32 i = 0; i < ArgusECSConstants::k_maxEntities; ++i)
+	{
+		std::optional<ArgusEntity> potentialEntity = ArgusEntity::RetrieveEntity(i);
+		if (!potentialEntity.has_value())
+		{
+			continue;
+		}
 
+		TargetingComponent* targetingComponent = potentialEntity->GetComponent<TargetingComponent>();
+		if (!targetingComponent)
+		{
+			continue;
+		}
+
+		// TODO JAMES: Run individual systems per entity below.
+	}
 }
 
 void TargetingSystems::TargetNearestEntityMatchingFactionMask(const ArgusEntity& fromEntity, TransformComponent* fromTransformComponent, uint8 factionMask)

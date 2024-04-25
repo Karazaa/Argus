@@ -1,11 +1,24 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "TransformSystems.h"
-#include "ArgusUtil.h"
-#include "../ComponentDefinitions/TargetingComponent.h"
-#include "../ComponentDefinitions/TransformComponent.h"
+#include "../ArgusEntity.h"
 
-void TransformSystems::RunSystems(const ArgusEntity& entity)
+void TransformSystems::RunSystems(float deltaTime)
 {
+	for (uint32 i = 0; i < ArgusECSConstants::k_maxEntities; ++i)
+	{
+		std::optional<ArgusEntity> potentialEntity = ArgusEntity::RetrieveEntity(i);
+		if (!potentialEntity.has_value())
+		{
+			continue;
+		}
 
+		TransformComponent* transformComponent = potentialEntity->GetComponent<TransformComponent>();
+		if (!transformComponent)
+		{
+			continue;
+		}
+
+		// TODO JAMES: Run individual systems per entity below.
+	}
 }

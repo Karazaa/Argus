@@ -16,6 +16,10 @@ void AArgusActor::BeginPlay()
 	if (m_entityTemplate)
 	{
 		m_entity = m_entityTemplate->MakeEntity();
+		if (TransformComponent* transformComponent = m_entity.GetComponent<TransformComponent>())
+		{
+			transformComponent->m_transform = GetActorTransform();
+		}
 	}
 }
 

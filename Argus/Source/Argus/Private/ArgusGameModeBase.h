@@ -4,12 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-
+#include "../ECS/ArgusSystemsManager.h"
 #include "ArgusGameModeBase.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class AArgusGameModeBase : public AGameModeBase
 {
@@ -18,4 +15,10 @@ class AArgusGameModeBase : public AGameModeBase
 public:
 	AArgusGameModeBase();
 	virtual void StartPlay() override;
+
+protected:
+	virtual void Tick(float deltaTime) override;
+
+private:
+	ArgusSystemsManager m_argusSystemsManager = ArgusSystemsManager();
 };
