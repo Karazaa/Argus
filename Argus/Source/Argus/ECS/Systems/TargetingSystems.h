@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "../ArgusEntity.h"
+#include "ArgusEntity.h"
 
 class TargetingSystems
 {

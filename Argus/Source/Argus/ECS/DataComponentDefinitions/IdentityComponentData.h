@@ -4,7 +4,6 @@
 #pragma once
 
 #include "ComponentData.h"
-#include "..\ComponentDefinitions\IdentityComponent.h"
 #include "IdentityComponentData.generated.h"
 
 UCLASS()

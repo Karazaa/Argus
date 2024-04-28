@@ -1,7 +1,7 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
-#include "../ArgusEntityTemplate.h"
-#include "../DataComponentDefinitions/HealthComponentData.h"
+#include "ArgusEntityTemplate.h"
+#include "DataComponentDefinitions/HealthComponentData.h"
 #include "Misc/AutomationTest.h"
 
 #if WITH_AUTOMATION_TESTS

@@ -4,7 +4,6 @@
 #pragma once
 
 #include "ComponentData.h"
-#include "..\ComponentDefinitions\TargetingComponent.h"
 #include "TargetingComponentData.generated.h"
 
 UCLASS()

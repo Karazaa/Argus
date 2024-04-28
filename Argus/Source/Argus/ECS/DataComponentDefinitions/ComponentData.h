@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "../ArgusEntity.h"
+#include "ArgusEntity.h"
 #include "Engine/DataAsset.h"
 #include "ComponentData.generated.h"
 

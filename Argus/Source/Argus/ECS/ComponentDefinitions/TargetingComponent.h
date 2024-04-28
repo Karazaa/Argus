@@ -3,7 +3,7 @@
 #pragma once
 
 #include "ArgusUtil.h"
-#include "../ArgusECSConstants.h"
+#include "ArgusECSConstants.h"
 
 struct TargetingComponent
 {

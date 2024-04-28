@@ -8,9 +8,6 @@
 #include "ArgusGameStateBase.generated.h"
 
 
-/**
- * 
- */
 UCLASS()
 class AArgusGameStateBase : public AGameStateBase
 {

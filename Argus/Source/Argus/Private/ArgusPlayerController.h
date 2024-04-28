@@ -10,5 +10,7 @@ UCLASS()
 class AArgusPlayerController : public APlayerController
 {
 	GENERATED_BODY()
-	
+
+protected:
+	virtual void BeginPlay() override;
 };

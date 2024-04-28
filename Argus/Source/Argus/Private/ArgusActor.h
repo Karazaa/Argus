@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "../ECS/ArgusEntityTemplate.h"
+#include "ArgusEntityTemplate.h"
 #include "ArgusActor.generated.h"
 
 UCLASS()

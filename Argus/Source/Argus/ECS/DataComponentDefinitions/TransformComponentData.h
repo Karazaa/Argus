@@ -4,7 +4,6 @@
 #pragma once
 
 #include "ComponentData.h"
-#include "..\ComponentDefinitions\TransformComponent.h"
 #include "TransformComponentData.generated.h"
 
 UCLASS()

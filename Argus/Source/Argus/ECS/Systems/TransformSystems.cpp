@@ -1,7 +1,7 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "TransformSystems.h"
-#include "../ArgusEntity.h"
+#include "ArgusEntity.h"
 
 void TransformSystems::RunSystems(float deltaTime)
 {

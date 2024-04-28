@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-#include "../ECS/ArgusSystemsManager.h"
+#include "ArgusSystemsManager.h"
 #include "ArgusGameModeBase.generated.h"
 
 UCLASS()

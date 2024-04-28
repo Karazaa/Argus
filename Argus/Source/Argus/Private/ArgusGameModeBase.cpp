@@ -1,7 +1,7 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusGameModeBase.h"
-#include "../ECS/ArgusEntity.h"
+#include "ArgusEntity.h"
 #include "ArgusGameStateBase.h"
 #include "ArgusUtil.h"
 
