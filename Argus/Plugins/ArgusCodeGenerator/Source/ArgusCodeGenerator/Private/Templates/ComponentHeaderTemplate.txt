@@ -39,3 +39,24 @@ public:
 		s_is#####Active.set(entityId);
 		return &s_#####s[entityId];
 	}
+
+	template<>
+	inline #####* GetOrAddComponent<#####>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			UE_LOG(ArgusGameLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(#####));
+			return nullptr;
+		}
+
+		if (s_is#####Active[entityId])
+		{
+			return &s_#####s[entityId];
+		}
+		else
+		{
+			s_#####s[entityId] = #####();
+			s_is#####Active.set(entityId);
+			return &s_#####s[entityId];
+		}
+	}

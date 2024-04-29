@@ -87,4 +87,22 @@ bool ArgusEntityAddGetHealthComponentTest::RunTest(const FString& Parameters)
 	return true;
 }
 
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityGetOrAddComponentTest, "Argus.ECS.Entity.GetOrAddComponentTest", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+bool ArgusEntityGetOrAddComponentTest::RunTest(const FString& Parameters)
+{
+	ArgusEntity::FlushAllEntities();
+
+	ArgusEntity entity = ArgusEntity::CreateEntity();
+	HealthComponent* healthComponent = entity.GetOrAddComponent<HealthComponent>();
+
+	TestFalse(TEXT("Creating an entity, calling get or add health component and making sure a component is added."), healthComponent == nullptr);
+
+	healthComponent->m_health = 400u;
+	healthComponent = entity.GetOrAddComponent<HealthComponent>();
+
+	TestEqual(TEXT("Creating an entity, calling get or add health component twice and making sure the same component is returned."), healthComponent->m_health, 400u);
+
+	return true;
+}
+
 #endif //WITH_AUTOMATION_TESTS

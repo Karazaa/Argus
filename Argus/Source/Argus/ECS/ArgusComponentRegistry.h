@@ -28,6 +28,12 @@ public:
 		return nullptr;
 	}
 
+	template<typename ArgusComponent>
+	static ArgusComponent* GetOrAddComponent(uint16 entityId)
+	{
+		return nullptr;
+	}
+
 	static void FlushAllComponents();
 
 	static constexpr uint32 k_numComponentTypes = 4;
@@ -75,6 +81,27 @@ public:
 		s_isHealthComponentActive.set(entityId);
 		return &s_HealthComponents[entityId];
 	}
+
+	template<>
+	inline HealthComponent* GetOrAddComponent<HealthComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			UE_LOG(ArgusGameLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(HealthComponent));
+			return nullptr;
+		}
+
+		if (s_isHealthComponentActive[entityId])
+		{
+			return &s_HealthComponents[entityId];
+		}
+		else
+		{
+			s_HealthComponents[entityId] = HealthComponent();
+			s_isHealthComponentActive.set(entityId);
+			return &s_HealthComponents[entityId];
+		}
+	}
 // IdentityComponent ======================================================================================================
 private:
 	static IdentityComponent s_IdentityComponents[ArgusECSConstants::k_maxEntities];
@@ -115,6 +142,27 @@ public:
 		s_IdentityComponents[entityId] = IdentityComponent();
 		s_isIdentityComponentActive.set(entityId);
 		return &s_IdentityComponents[entityId];
+	}
+
+	template<>
+	inline IdentityComponent* GetOrAddComponent<IdentityComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			UE_LOG(ArgusGameLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(IdentityComponent));
+			return nullptr;
+		}
+
+		if (s_isIdentityComponentActive[entityId])
+		{
+			return &s_IdentityComponents[entityId];
+		}
+		else
+		{
+			s_IdentityComponents[entityId] = IdentityComponent();
+			s_isIdentityComponentActive.set(entityId);
+			return &s_IdentityComponents[entityId];
+		}
 	}
 // TargetingComponent ======================================================================================================
 private:
@@ -157,6 +205,27 @@ public:
 		s_isTargetingComponentActive.set(entityId);
 		return &s_TargetingComponents[entityId];
 	}
+
+	template<>
+	inline TargetingComponent* GetOrAddComponent<TargetingComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			UE_LOG(ArgusGameLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(TargetingComponent));
+			return nullptr;
+		}
+
+		if (s_isTargetingComponentActive[entityId])
+		{
+			return &s_TargetingComponents[entityId];
+		}
+		else
+		{
+			s_TargetingComponents[entityId] = TargetingComponent();
+			s_isTargetingComponentActive.set(entityId);
+			return &s_TargetingComponents[entityId];
+		}
+	}
 // TransformComponent ======================================================================================================
 private:
 	static TransformComponent s_TransformComponents[ArgusECSConstants::k_maxEntities];
@@ -197,5 +266,26 @@ public:
 		s_TransformComponents[entityId] = TransformComponent();
 		s_isTransformComponentActive.set(entityId);
 		return &s_TransformComponents[entityId];
+	}
+
+	template<>
+	inline TransformComponent* GetOrAddComponent<TransformComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			UE_LOG(ArgusGameLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(TransformComponent));
+			return nullptr;
+		}
+
+		if (s_isTransformComponentActive[entityId])
+		{
+			return &s_TransformComponents[entityId];
+		}
+		else
+		{
+			s_TransformComponents[entityId] = TransformComponent();
+			s_isTransformComponentActive.set(entityId);
+			return &s_TransformComponents[entityId];
+		}
 	}
 };

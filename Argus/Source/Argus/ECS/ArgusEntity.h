@@ -42,6 +42,12 @@ public:
 		return ArgusComponentRegistry::AddComponent<ArgusComponent>(m_id);
 	}
 
+	template<class ArgusComponent>
+	ArgusComponent* GetOrAddComponent() const
+	{
+		return ArgusComponentRegistry::GetOrAddComponent<ArgusComponent>(m_id);
+	}
+
 private:
 	ArgusEntity();
 	ArgusEntity(uint16 id);

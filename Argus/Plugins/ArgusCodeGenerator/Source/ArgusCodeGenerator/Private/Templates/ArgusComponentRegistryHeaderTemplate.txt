@@ -25,6 +25,12 @@ public:
 		return nullptr;
 	}
 
+	template<typename ArgusComponent>
+	static ArgusComponent* GetOrAddComponent(uint16 entityId)
+	{
+		return nullptr;
+	}
+
 	static void FlushAllComponents();
 
 	static constexpr uint32 k_numComponentTypes = %%%%%;
