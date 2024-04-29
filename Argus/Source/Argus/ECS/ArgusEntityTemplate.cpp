@@ -10,6 +10,11 @@ ArgusEntity UArgusEntityTemplate::MakeEntity()
 
 	for (UComponentData* componentData : ComponentData)
 	{
+		if (!componentData)
+		{
+			continue;
+		}
+
 		componentData->InstantiateComponentForEntity(entity);
 	}
 
@@ -44,7 +49,6 @@ void UArgusEntityTemplate::PostEditChangeProperty(FPropertyChangedEvent& propert
 
 			if (modifiedComponent->MatchesType(ComponentData[i]))
 			{
-				// TODO JAMES: Error
 				UE_LOG(ArgusGameLog, Error, TEXT("[%s] Found duplicate component type when assigning to an ArgusEntityTemplate. An ArgusEntity can only have one instance of a component type."), ARGUS_FUNCNAME);
 				ComponentData[arrayIndex] = nullptr;
 				return;
