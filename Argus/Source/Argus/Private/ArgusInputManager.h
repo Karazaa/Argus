@@ -3,15 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ArgusInputManager.generated.h"
+#include "UObject/SoftObjectPtr.h"
 
+class UArgusInputActionSet;
 class UInputComponent;
 
-UCLASS()
-class ARGUS_API UArgusInputManager : public UDataAsset
+class ArgusInputManager
 {
-	GENERATED_BODY()
-
 public:
-	void SetupInputComponent(TObjectPtr<UInputComponent>& inputComponent);
+	void SetupInputComponent(TObjectPtr<UInputComponent>& inputComponent, TSoftObjectPtr<UArgusInputActionSet>& argusInputActionSet);
 };

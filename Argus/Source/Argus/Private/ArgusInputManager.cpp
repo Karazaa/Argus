@@ -1,11 +1,12 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusInputManager.h"
+#include "ArgusInputActionSet.h"
 #include "ArgusUtil.h"
 #include "EnhancedInputComponent.h"
 #include "Components/InputComponent.h"
 
-void UArgusInputManager::SetupInputComponent(TObjectPtr<UInputComponent>& inputComponent)
+void ArgusInputManager::SetupInputComponent(TObjectPtr<UInputComponent>& inputComponent, TSoftObjectPtr<UArgusInputActionSet>& argusInputActionSet)
 {
 	if (!inputComponent)
 	{
@@ -20,5 +21,13 @@ void UArgusInputManager::SetupInputComponent(TObjectPtr<UInputComponent>& inputC
 		return;
 	}
 
+	UArgusInputActionSet* actionSet = argusInputActionSet.LoadSynchronous();
+	if (!actionSet)
+	{
+		UE_LOG(ArgusGameLog, Error, TEXT("[%s] Failed to retrieve input action set, %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(argusInputActionSet));
+		return;
+	}
+
 	// TODO JAMES: Bind actions.
+	// enhancedInputComponent->BindAction()
 }
