@@ -6,7 +6,7 @@
 #include "EnhancedInputComponent.h"
 #include "Components/InputComponent.h"
 
-void ArgusInputManager::SetupInputComponent(TObjectPtr<UInputComponent>& inputComponent, TSoftObjectPtr<UArgusInputActionSet>& argusInputActionSet)
+void UArgusInputManager::SetupInputComponent(TObjectPtr<UInputComponent>& inputComponent, TSoftObjectPtr<UArgusInputActionSet>& argusInputActionSet)
 {
 	if (!inputComponent)
 	{
@@ -28,6 +28,23 @@ void ArgusInputManager::SetupInputComponent(TObjectPtr<UInputComponent>& inputCo
 		return;
 	}
 
-	// TODO JAMES: Bind actions.
-	// enhancedInputComponent->BindAction()
+	if (const UInputAction* selectAction = actionSet->m_selectAction.LoadSynchronous())
+	{
+		enhancedInputComponent->BindAction(selectAction, ETriggerEvent::Triggered, this, &UArgusInputManager::OnSelect);
+	}
+
+	if (const UInputAction* moveToAction = actionSet->m_moveToAction.LoadSynchronous())
+	{
+		enhancedInputComponent->BindAction(moveToAction, ETriggerEvent::Triggered, this, &UArgusInputManager::OnMoveTo);
+	}	
+}
+
+void UArgusInputManager::OnSelect(const FInputActionValue& value)
+{
+	UE_LOG(ArgusGameLog, Display, TEXT("[%s] was called!"), ARGUS_FUNCNAME);
+}
+
+void UArgusInputManager::OnMoveTo(const FInputActionValue& value)
+{
+	UE_LOG(ArgusGameLog, Display, TEXT("[%s] was called!"), ARGUS_FUNCNAME);
 }

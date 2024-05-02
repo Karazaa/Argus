@@ -4,12 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "UObject/SoftObjectPtr.h"
+#include "ArgusInputManager.generated.h"
 
+struct FInputActionValue;
 class UArgusInputActionSet;
 class UInputComponent;
 
-class ArgusInputManager
+UCLASS()
+class UArgusInputManager : public UObject
 {
+	GENERATED_BODY()
 public:
 	void SetupInputComponent(TObjectPtr<UInputComponent>& inputComponent, TSoftObjectPtr<UArgusInputActionSet>& argusInputActionSet);
+	void OnSelect(const FInputActionValue& value);
+	void OnMoveTo(const FInputActionValue& value);
 };

@@ -6,6 +6,7 @@
 #include "ArgusInputManager.h"
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "InputMappingContext.h"
 #include "ArgusPlayerController.generated.h"
 
 UCLASS()
@@ -15,9 +16,12 @@ class AArgusPlayerController : public APlayerController
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TSoftObjectPtr<UInputMappingContext> m_argusInputMappingContext = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TSoftObjectPtr<UArgusInputActionSet> m_argusInputActionSet = nullptr;
 
-	ArgusInputManager m_argusInputManager = ArgusInputManager();
+	TObjectPtr<UArgusInputManager> m_argusInputManager = nullptr;
 
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
