@@ -2,9 +2,9 @@
 
 #pragma once
 
-#include "ArgusECSConstants.h"
 #include "ArgusEntity.h"
 #include "Engine/DataAsset.h"
+#include "UObject/SoftObjectPtr.h"
 #include "ArgusEntityTemplate.generated.h"
 
 class UComponentData;
@@ -16,10 +16,10 @@ class UArgusEntityTemplate : public UDataAsset
 
 public:
 	UPROPERTY(EditAnywhere)
-	UEntityPriority EntityPriority;
+	UEntityPriority m_entityPriority;
 
 	UPROPERTY(EditAnywhere)
-	TArray<UComponentData*> ComponentData;
+	TArray<TSoftObjectPtr<UComponentData>> m_componentData;
 
 	ArgusEntity MakeEntity();
 

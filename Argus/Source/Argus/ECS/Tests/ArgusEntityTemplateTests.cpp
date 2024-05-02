@@ -18,8 +18,8 @@ bool ArgusEntityTemplateInstantiateEntityTest::RunTest(const FString& Parameters
 	healthComponentData->m_health = 5000u;
 
 	UArgusEntityTemplate* entityTemplate = NewObject<UArgusEntityTemplate>();
-	entityTemplate->EntityPriority = UEntityPriority::MediumPriority;
-	entityTemplate->ComponentData.Add(healthComponentData);
+	entityTemplate->m_entityPriority = UEntityPriority::MediumPriority;
+	entityTemplate->m_componentData.Add(healthComponentData);
 
 	ArgusEntity newEntity = entityTemplate->MakeEntity();
 

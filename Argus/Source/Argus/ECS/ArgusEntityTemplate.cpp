@@ -6,10 +6,11 @@
 
 ArgusEntity UArgusEntityTemplate::MakeEntity()
 {
-	ArgusEntity entity = ArgusEntity::CreateEntity(static_cast<uint16>(EntityPriority));
+	ArgusEntity entity = ArgusEntity::CreateEntity(static_cast<uint16>(m_entityPriority));
 
-	for (UComponentData* componentData : ComponentData)
+	for (TSoftObjectPtr<UComponentData> componentDataSoftObjectPtr : m_componentData)
 	{
+		UComponentData* componentData = componentDataSoftObjectPtr.LoadSynchronous();
 		if (!componentData)
 		{
 			continue;
@@ -30,27 +31,27 @@ void UArgusEntityTemplate::PostEditChangeProperty(FPropertyChangedEvent& propert
 	}
 
 	const FString propertyName = propertyChangedEvent.GetPropertyName().ToString();
-	const FString componentDataPropertyName = ARGUS_NAMEOF(ComponentData);
+	const FString componentDataPropertyName = ARGUS_NAMEOF(m_componentData);
 	if (!propertyName.Equals(componentDataPropertyName))
 	{
 		return;
 	}
 
 	const int32 arrayIndex = propertyChangedEvent.GetArrayIndex(propertyName);
-	const UComponentData* modifiedComponent = ComponentData[arrayIndex];
+	const UComponentData* modifiedComponent = m_componentData[arrayIndex].LoadSynchronous();
 	if (modifiedComponent)
 	{
-		for (int i = 0; i < ComponentData.Num(); ++i)
+		for (int i = 0; i < m_componentData.Num(); ++i)
 		{
 			if (i == arrayIndex)
 			{
 				continue;
 			}
 
-			if (modifiedComponent->MatchesType(ComponentData[i]))
+			if (modifiedComponent->MatchesType(m_componentData[i].LoadSynchronous()))
 			{
 				UE_LOG(ArgusGameLog, Error, TEXT("[%s] Found duplicate component type when assigning to an ArgusEntityTemplate. An ArgusEntity can only have one instance of a component type."), ARGUS_FUNCNAME);
-				ComponentData[arrayIndex] = nullptr;
+				m_componentData[arrayIndex] = nullptr;
 				return;
 			}
 		}
