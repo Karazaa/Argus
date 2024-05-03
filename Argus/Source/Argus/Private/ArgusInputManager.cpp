@@ -1,23 +1,30 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusInputManager.h"
-#include "ArgusInputActionSet.h"
+#include "ArgusPlayerController.h"
 #include "ArgusUtil.h"
-#include "EnhancedInputComponent.h"
 #include "Components/InputComponent.h"
+#include "EnhancedInputComponent.h"
 
-void UArgusInputManager::SetupInputComponent(TObjectPtr<UInputComponent>& inputComponent, TSoftObjectPtr<UArgusInputActionSet>& argusInputActionSet)
+void UArgusInputManager::SetupInputComponent(TWeakObjectPtr<AArgusPlayerController> owningPlayerController, TSoftObjectPtr<UArgusInputActionSet>& argusInputActionSet)
 {
-	if (!inputComponent)
+	if (!owningPlayerController.IsValid())
 	{
-		UE_LOG(ArgusGameLog, Error, TEXT("[%s] Null input component, %s, passed into %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(inputComponent), ARGUS_FUNCNAME);
+		UE_LOG(ArgusGameLog, Error, TEXT("[%s] %s is setting up an InputComponent without a valid owning %s"), ARGUS_FUNCNAME, ARGUS_NAMEOF(UArgusInputManager), ARGUS_NAMEOF(AArgusPlayerController));
+		return;
+	}
+	m_owningPlayerController = owningPlayerController;
+
+	if (!m_owningPlayerController->InputComponent)
+	{
+		UE_LOG(ArgusGameLog, Error, TEXT("[%s] Null input component, %s, assigned to %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(m_owningPlayerController->InputComponent), ARGUS_NAMEOF(m_owningPlayerController));
 		return;
 	}
 
-	UEnhancedInputComponent* enhancedInputComponent = Cast<UEnhancedInputComponent>(inputComponent.Get());
+	UEnhancedInputComponent* enhancedInputComponent = Cast<UEnhancedInputComponent>(m_owningPlayerController->InputComponent.Get());
 	if (!enhancedInputComponent)
 	{
-		UE_LOG(ArgusGameLog, Error, TEXT("[%s] Failed to cast input component, %s, to a %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(inputComponent), ARGUS_NAMEOF(UEnhancedInputComponent));
+		UE_LOG(ArgusGameLog, Error, TEXT("[%s] Failed to cast input component, %s, to a %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(m_owningPlayerController->InputComponent), ARGUS_NAMEOF(UEnhancedInputComponent));
 		return;
 	}
 
@@ -41,10 +48,30 @@ void UArgusInputManager::SetupInputComponent(TObjectPtr<UInputComponent>& inputC
 
 void UArgusInputManager::OnSelect(const FInputActionValue& value)
 {
-	UE_LOG(ArgusGameLog, Display, TEXT("[%s] was called!"), ARGUS_FUNCNAME);
+	if (!m_owningPlayerController.IsValid())
+	{
+		UE_LOG(ArgusGameLog, Error, TEXT("[%s] Null %s, assigned in %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(m_owningPlayerController), ARGUS_NAMEOF(UArgusInputManager));
+		return;
+	}
+
+	FHitResult hitResult;
+	if (m_owningPlayerController->GetMouseProjectionLocation(hitResult))
+	{
+		UE_LOG(ArgusGameLog, Display, TEXT("[%s] was called! Mouse projection worldspace location is (%f, %f, %f)"), ARGUS_FUNCNAME, hitResult.Location.X, hitResult.Location.Y, hitResult.Location.Z);
+	}
 }
 
 void UArgusInputManager::OnMoveTo(const FInputActionValue& value)
 {
-	UE_LOG(ArgusGameLog, Display, TEXT("[%s] was called!"), ARGUS_FUNCNAME);
+	if (!m_owningPlayerController.IsValid())
+	{
+		UE_LOG(ArgusGameLog, Error, TEXT("[%s] Null %s, assigned in %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(m_owningPlayerController), ARGUS_NAMEOF(UArgusInputManager));
+		return;
+	}
+
+	FHitResult hitResult;
+	if (m_owningPlayerController->GetMouseProjectionLocation(hitResult))
+	{
+		UE_LOG(ArgusGameLog, Display, TEXT("[%s] was called! Mouse projection worldspace location is (%f, %f, %f)"), ARGUS_FUNCNAME, hitResult.Location.X, hitResult.Location.Y, hitResult.Location.Z);
+	}
 }

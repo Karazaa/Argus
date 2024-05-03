@@ -8,14 +8,17 @@
 
 struct FInputActionValue;
 class UArgusInputActionSet;
-class UInputComponent;
+class AArgusPlayerController;
 
 UCLASS()
 class UArgusInputManager : public UObject
 {
 	GENERATED_BODY()
 public:
-	void SetupInputComponent(TObjectPtr<UInputComponent>& inputComponent, TSoftObjectPtr<UArgusInputActionSet>& argusInputActionSet);
+	void SetupInputComponent(TWeakObjectPtr<AArgusPlayerController> owningPlayerController, TSoftObjectPtr<UArgusInputActionSet>& argusInputActionSet);
 	void OnSelect(const FInputActionValue& value);
 	void OnMoveTo(const FInputActionValue& value);
+
+private:
+	TWeakObjectPtr<AArgusPlayerController> m_owningPlayerController = nullptr;
 };

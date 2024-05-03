@@ -9,6 +9,27 @@
 #include "EnhancedInputSubsystems.h"
 #include "Kismet/GameplayStatics.h"
 
+const float AArgusPlayerController::k_cameraTraceLength = 5000.0f;
+
+bool AArgusPlayerController::GetMouseProjectionLocation(FHitResult& outHitResult) const
+{
+	FVector worldSpaceLocation = FVector::ZeroVector;
+	FVector worldSpaceDirection = FVector::ZeroVector;
+
+	bool outcome = DeprojectMousePositionToWorld(worldSpaceLocation, worldSpaceDirection);
+	FVector traceEndpoint = worldSpaceLocation + (worldSpaceDirection * k_cameraTraceLength);
+
+	UWorld* world = GetWorld();
+	if (!world)
+	{
+		UE_LOG(ArgusGameLog, Error, TEXT("[%s] Failed to get %s reference."), ARGUS_FUNCNAME, ARGUS_NAMEOF(UWorld));
+		return false;
+	}
+
+	outcome &= world->LineTraceSingleByChannel(outHitResult, worldSpaceLocation, traceEndpoint, ECC_WorldStatic);
+	return outcome;
+}
+
 void AArgusPlayerController::BeginPlay()
 {
 	AActor* argusCameraActor = UGameplayStatics::GetActorOfClass(GetWorld(), AArgusCameraActor::StaticClass());
@@ -37,5 +58,5 @@ void AArgusPlayerController::SetupInputComponent()
 		}
 	}
 
-	m_argusInputManager->SetupInputComponent(InputComponent, m_argusInputActionSet);
+	m_argusInputManager->SetupInputComponent(this, m_argusInputActionSet);
 }

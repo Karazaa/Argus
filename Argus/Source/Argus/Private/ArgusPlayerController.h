@@ -5,6 +5,7 @@
 #include "ArgusInputActionSet.h"
 #include "ArgusInputManager.h"
 #include "CoreMinimal.h"
+#include "Engine/HitResult.h"
 #include "GameFramework/PlayerController.h"
 #include "InputMappingContext.h"
 #include "ArgusPlayerController.generated.h"
@@ -13,6 +14,11 @@ UCLASS()
 class AArgusPlayerController : public APlayerController
 {
 	GENERATED_BODY()
+
+public:
+	static const float k_cameraTraceLength;
+
+	bool GetMouseProjectionLocation(FHitResult& outHitResult) const;
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
