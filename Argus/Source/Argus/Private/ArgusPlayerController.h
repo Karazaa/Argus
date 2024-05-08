@@ -18,6 +18,7 @@ class AArgusPlayerController : public APlayerController
 public:
 	static const float k_cameraTraceLength;
 
+	void ProcessPlayerInput();
 	bool GetMouseProjectionLocation(FHitResult& outHitResult) const;
 
 protected:

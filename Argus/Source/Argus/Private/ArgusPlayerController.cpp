@@ -11,6 +11,14 @@
 
 const float AArgusPlayerController::k_cameraTraceLength = 5000.0f;
 
+void AArgusPlayerController::ProcessPlayerInput()
+{
+	if (m_argusInputManager)
+	{
+		m_argusInputManager->ProcessPlayerInput();
+	}
+}
+
 bool AArgusPlayerController::GetMouseProjectionLocation(FHitResult& outHitResult) const
 {
 	FVector worldSpaceLocation = FVector::ZeroVector;

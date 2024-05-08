@@ -3,7 +3,9 @@
 #include "ArgusGameModeBase.h"
 #include "ArgusEntity.h"
 #include "ArgusGameStateBase.h"
+#include "ArgusPlayerController.h"
 #include "ArgusUtil.h"
+#include "EngineUtils.h"
 
 AArgusGameModeBase::AArgusGameModeBase()
 {
@@ -24,5 +26,16 @@ void AArgusGameModeBase::StartPlay()
 void AArgusGameModeBase::Tick(float deltaTime)
 {
 	Super::Tick(deltaTime);
+
+	// Process player input
+	for (AArgusPlayerController* argusPlayerController : TActorRange<AArgusPlayerController>((GetWorld())))
+	{
+		if (argusPlayerController)
+		{
+			argusPlayerController->ProcessPlayerInput();
+		}
+	}
+
+	// Run all ECS systems.
 	m_argusSystemsManager.RunSystems(deltaTime);
 }

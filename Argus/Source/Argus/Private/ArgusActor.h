@@ -14,6 +14,7 @@ class AArgusActor : public AActor
 	
 public:	
 	AArgusActor();
+	ArgusEntity GetEntity();
 
 protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)

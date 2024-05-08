@@ -1,10 +1,16 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusInputManager.h"
+#include "ArgusActor.h"
 #include "ArgusPlayerController.h"
 #include "ArgusUtil.h"
 #include "Components/InputComponent.h"
 #include "EnhancedInputComponent.h"
+
+void UArgusInputManager::ProcessPlayerInput()
+{
+	// TODO JAMES: Something lol
+}
 
 void UArgusInputManager::SetupInputComponent(TWeakObjectPtr<AArgusPlayerController> owningPlayerController, TSoftObjectPtr<UArgusInputActionSet>& argusInputActionSet)
 {
@@ -48,6 +54,8 @@ void UArgusInputManager::SetupInputComponent(TWeakObjectPtr<AArgusPlayerControll
 
 void UArgusInputManager::OnSelect(const FInputActionValue& value)
 {
+	m_selectedEntities.Empty();
+
 	if (!m_owningPlayerController.IsValid())
 	{
 		UE_LOG(ArgusGameLog, Error, TEXT("[%s] Null %s, assigned in %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(m_owningPlayerController), ARGUS_NAMEOF(UArgusInputManager));
@@ -58,6 +66,13 @@ void UArgusInputManager::OnSelect(const FInputActionValue& value)
 	if (m_owningPlayerController->GetMouseProjectionLocation(hitResult))
 	{
 		UE_LOG(ArgusGameLog, Display, TEXT("[%s] was called! Mouse projection worldspace location is (%f, %f, %f)"), ARGUS_FUNCNAME, hitResult.Location.X, hitResult.Location.Y, hitResult.Location.Z);
+	}
+
+	if (AArgusActor* argusActor = Cast<AArgusActor>(hitResult.GetActor()))
+	{
+		ArgusEntity entity = argusActor->GetEntity();
+		UE_LOG(ArgusGameLog, Display, TEXT("[%s] selected an %s with ID %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(AArgusActor), entity.GetId());
+		m_selectedEntities.Add(entity);
 	}
 }
 
@@ -73,5 +88,11 @@ void UArgusInputManager::OnMoveTo(const FInputActionValue& value)
 	if (m_owningPlayerController->GetMouseProjectionLocation(hitResult))
 	{
 		UE_LOG(ArgusGameLog, Display, TEXT("[%s] was called! Mouse projection worldspace location is (%f, %f, %f)"), ARGUS_FUNCNAME, hitResult.Location.X, hitResult.Location.Y, hitResult.Location.Z);
+
+		const int numSelectedEntities = m_selectedEntities.Num();
+		if (numSelectedEntities)
+		{
+			UE_LOG(ArgusGameLog, Display, TEXT("[%s] was called while %d entities were selected."), ARGUS_FUNCNAME, numSelectedEntities);
+		}
 	}
 }

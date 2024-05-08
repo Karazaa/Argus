@@ -9,6 +9,11 @@ AArgusActor::AArgusActor()
 	SetRootComponent(CreateDefaultSubobject<USceneComponent>(FName("RootSceneComponent")));
 }
 
+ArgusEntity AArgusActor::GetEntity()
+{
+	return m_entity;
+}
+
 void AArgusActor::BeginPlay()
 {
 	Super::BeginPlay();
