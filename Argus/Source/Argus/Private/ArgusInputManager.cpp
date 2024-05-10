@@ -139,15 +139,26 @@ void UArgusInputManager::OnSelectInternal(bool isAdditive)
 	}
 
 	if (AArgusActor* argusActor = Cast<AArgusActor>(hitResult.GetActor()))
-	{
-		if (!isAdditive)
-		{
-			m_selectedArgusActors.Empty();
-		}
-		
+	{		
 		ArgusEntity entity = argusActor->GetEntity();
 		UE_LOG(ArgusGameLog, Display, TEXT("[%s] selected an %s with ID %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(AArgusActor), entity.GetId());
-		m_selectedArgusActors.Emplace(argusActor);
+
+		if (isAdditive)
+		{
+			if (m_selectedArgusActors.Contains(argusActor))
+			{
+				m_selectedArgusActors.Remove(argusActor);
+			}
+			else
+			{
+				m_selectedArgusActors.Emplace(argusActor);
+			}
+		}
+		else
+		{
+			m_selectedArgusActors.Empty();
+			m_selectedArgusActors.Emplace(argusActor);
+		}
 	}
 }
 
