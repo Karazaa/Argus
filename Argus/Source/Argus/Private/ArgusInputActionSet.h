@@ -17,5 +17,8 @@ public:
 	TSoftObjectPtr<UInputAction> m_selectAction = nullptr;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TSoftObjectPtr<UInputAction> m_selectAdditiveAction = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TSoftObjectPtr<UInputAction> m_moveToAction = nullptr;
 };

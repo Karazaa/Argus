@@ -2,14 +2,15 @@
 
 #pragma once
 
-#include "ArgusEntity.h"
+#include "ArgusActor.h"
 #include "CoreMinimal.h"
 #include "UObject/SoftObjectPtr.h"
 #include "ArgusInputManager.generated.h"
 
 struct FInputActionValue;
-class UArgusInputActionSet;
 class AArgusPlayerController;
+class UArgusInputActionSet;
+class UEnhancedInputComponent;
 
 UCLASS()
 class UArgusInputManager : public UObject
@@ -19,9 +20,15 @@ public:
 	void ProcessPlayerInput();
 	void SetupInputComponent(TWeakObjectPtr<AArgusPlayerController> owningPlayerController, TSoftObjectPtr<UArgusInputActionSet>& argusInputActionSet);
 	void OnSelect(const FInputActionValue& value);
+	void OnSelectAdditive(const FInputActionValue& value);
 	void OnMoveTo(const FInputActionValue& value);
 
 private:
 	TWeakObjectPtr<AArgusPlayerController> m_owningPlayerController = nullptr;
-	TArray<ArgusEntity> m_selectedEntities;
+	TSet<TWeakObjectPtr<AArgusActor>> m_selectedArgusActors;
+
+	void BindActions(TSoftObjectPtr<UArgusInputActionSet>& argusInputActionSet, TWeakObjectPtr<UEnhancedInputComponent>& enhancedInputComponent);
+	void OnSelectInternal(bool isAdditive);
+
+	bool ValidateOwningPlayerController();
 };
