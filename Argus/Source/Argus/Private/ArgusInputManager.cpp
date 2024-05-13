@@ -7,11 +7,6 @@
 #include "Components/InputComponent.h"
 #include "EnhancedInputComponent.h"
 
-void UArgusInputManager::ProcessPlayerInput()
-{
-	// TODO JAMES: Something lol
-}
-
 void UArgusInputManager::SetupInputComponent(TWeakObjectPtr<AArgusPlayerController> owningPlayerController, TSoftObjectPtr<UArgusInputActionSet>& argusInputActionSet)
 {
 	if (!owningPlayerController.IsValid())
@@ -45,39 +40,27 @@ void UArgusInputManager::SetupInputComponent(TWeakObjectPtr<AArgusPlayerControll
 
 void UArgusInputManager::OnSelect(const FInputActionValue& value)
 {
-	OnSelectInternal(false);
+	m_inputEventsThisFrame.Emplace(InputType::Select);
 }
 
 void UArgusInputManager::OnSelectAdditive(const FInputActionValue& value)
 {
-	OnSelectInternal(true);
+	m_inputEventsThisFrame.Emplace(InputType::SelectAdditive);
 }
 
 void UArgusInputManager::OnMoveTo(const FInputActionValue& value)
 {
-	if (!ValidateOwningPlayerController())
-	{
-		return;
-	}
+	m_inputEventsThisFrame.Emplace(InputType::MoveTo);
+}
 
-	FHitResult hitResult;
-	if (m_owningPlayerController->GetMouseProjectionLocation(hitResult))
+void UArgusInputManager::ProcessPlayerInput()
+{
+	const int inputsEventsThisFrameCount = m_inputEventsThisFrame.Num();
+	for (int i = 0; i < inputsEventsThisFrameCount; ++i)
 	{
-		UE_LOG
-		(
-			ArgusGameLog, Display, TEXT("[%s] was called! Mouse projection worldspace location is (%f, %f, %f)"), 
-			ARGUS_FUNCNAME, 
-			hitResult.Location.X, 
-			hitResult.Location.Y, 
-			hitResult.Location.Z
-		);
-
-		const int numSelectedEntities = m_selectedArgusActors.Num();
-		if (numSelectedEntities)
-		{
-			UE_LOG(ArgusGameLog, Display, TEXT("[%s] was called while %d entities were selected."), ARGUS_FUNCNAME, numSelectedEntities);
-		}
+		ProcessInputEvent(m_inputEventsThisFrame[i]);
 	}
+	m_inputEventsThisFrame.Empty();
 }
 
 void UArgusInputManager::BindActions(TSoftObjectPtr<UArgusInputActionSet>& argusInputActionSet, TWeakObjectPtr<UEnhancedInputComponent>& enhancedInputComponent)
@@ -86,9 +69,9 @@ void UArgusInputManager::BindActions(TSoftObjectPtr<UArgusInputActionSet>& argus
 	{
 		UE_LOG
 		(
-			ArgusGameLog, Error, TEXT("[%s] Failed to cast input component, %s, to a %s."), 
-			ARGUS_FUNCNAME, 
-			ARGUS_NAMEOF(m_owningPlayerController->InputComponent), 
+			ArgusGameLog, Error, TEXT("[%s] Failed to cast input component, %s, to a %s."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(m_owningPlayerController->InputComponent),
 			ARGUS_NAMEOF(UEnhancedInputComponent)
 		);
 		return;
@@ -117,51 +100,6 @@ void UArgusInputManager::BindActions(TSoftObjectPtr<UArgusInputActionSet>& argus
 	}
 }
 
-void UArgusInputManager::OnSelectInternal(bool isAdditive)
-{
-	if (!ValidateOwningPlayerController())
-	{
-		return;
-	}
-
-	FHitResult hitResult;
-	if (m_owningPlayerController->GetMouseProjectionLocation(hitResult))
-	{
-		UE_LOG
-		(
-			ArgusGameLog, Display, TEXT("[%s] was called! Mouse projection worldspace location is (%f, %f, %f). Is Additive? %s"), 
-			ARGUS_FUNCNAME, 
-			hitResult.Location.X, 
-			hitResult.Location.Y, 
-			hitResult.Location.Z, 
-			isAdditive ? TEXT("Yes") : TEXT("No")
-		);
-	}
-
-	if (AArgusActor* argusActor = Cast<AArgusActor>(hitResult.GetActor()))
-	{		
-		ArgusEntity entity = argusActor->GetEntity();
-		UE_LOG(ArgusGameLog, Display, TEXT("[%s] selected an %s with ID %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(AArgusActor), entity.GetId());
-
-		if (isAdditive)
-		{
-			if (m_selectedArgusActors.Contains(argusActor))
-			{
-				m_selectedArgusActors.Remove(argusActor);
-			}
-			else
-			{
-				m_selectedArgusActors.Emplace(argusActor);
-			}
-		}
-		else
-		{
-			m_selectedArgusActors.Empty();
-			m_selectedArgusActors.Emplace(argusActor);
-		}
-	}
-}
-
 bool UArgusInputManager::ValidateOwningPlayerController()
 {
 	if (!m_owningPlayerController.IsValid())
@@ -171,4 +109,113 @@ bool UArgusInputManager::ValidateOwningPlayerController()
 	}
 
 	return true;
+}
+
+void UArgusInputManager::ProcessInputEvent(InputType inputType)
+{
+	switch (inputType)
+	{
+		case InputType::Select:
+			ProcessSelectInputEvent(false);
+			break;
+		case InputType::SelectAdditive:
+			ProcessSelectInputEvent(true);
+			break;
+		case InputType::MoveTo:
+			ProcessMoveToInputEvent();
+			break;
+		default:
+			break;
+	}
+}
+
+void UArgusInputManager::ProcessSelectInputEvent(bool isAdditive)
+{
+	if (!ValidateOwningPlayerController())
+	{
+		return;
+	}
+
+	FHitResult hitResult;
+	if (!m_owningPlayerController->GetMouseProjectionLocation(hitResult))
+	{
+		return;
+	}
+
+	if (AArgusActor* argusActor = Cast<AArgusActor>(hitResult.GetActor()))
+	{
+		if (isAdditive)
+		{
+			if (m_selectedArgusActors.Contains(argusActor))
+			{
+				argusActor->SetSelectionState(false);
+				m_selectedArgusActors.Remove(argusActor);
+			}
+			else
+			{
+				argusActor->SetSelectionState(true);
+				m_selectedArgusActors.Emplace(argusActor);
+			}
+		}
+		else
+		{
+			bool alreadySelected = false;
+			for (TWeakObjectPtr<AArgusActor>& selectedActor : m_selectedArgusActors)
+			{
+				if (selectedActor.GetEvenIfUnreachable() == argusActor)
+				{
+					alreadySelected = true;
+				}
+				else if (selectedActor.IsValid())
+				{
+					selectedActor->SetSelectionState(false);
+				}
+			}
+			m_selectedArgusActors.Empty();
+
+			if (!alreadySelected)
+			{
+				argusActor->SetSelectionState(true);
+			}
+			m_selectedArgusActors.Emplace(argusActor);
+		}
+
+		UE_LOG
+		(
+			ArgusGameLog, Display, TEXT("[%s] selected an %s with ID %d. Is additive? %s"),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(AArgusActor),
+			argusActor->GetEntity().GetId(),
+			isAdditive ? TEXT("Yes") : TEXT("No")
+		);
+	}
+}
+
+void UArgusInputManager::ProcessMoveToInputEvent()
+{
+	if (!ValidateOwningPlayerController())
+	{
+		return;
+	}
+
+	FHitResult hitResult;
+	if (!m_owningPlayerController->GetMouseProjectionLocation(hitResult))
+	{
+		return;
+	}
+
+	UE_LOG
+	(
+		ArgusGameLog, Display, TEXT("[%s] Move To input occurred. Mouse projection worldspace location is (%f, %f, %f)"),
+		ARGUS_FUNCNAME,
+		hitResult.Location.X,
+		hitResult.Location.Y,
+		hitResult.Location.Z
+	);
+
+	const int numSelectedEntities = m_selectedArgusActors.Num();
+	if (numSelectedEntities)
+	{
+		UE_LOG(ArgusGameLog, Display, TEXT("[%s] Move To input executed while %d entities were selected."), ARGUS_FUNCNAME, numSelectedEntities);
+	}
 }

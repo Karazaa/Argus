@@ -45,7 +45,7 @@ struct IdentityComponent
 		m_allies |= ((uint8)allyFaction);
 	}
 
-	bool IsInFactionMask(uint8 factionMask)
+	bool IsInFactionMask(uint8 factionMask) const
 	{
 		return factionMask & ((uint8)m_faction);
 	}

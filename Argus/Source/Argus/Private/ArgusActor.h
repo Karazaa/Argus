@@ -16,7 +16,14 @@ public:
 	AArgusActor();
 	ArgusEntity GetEntity();
 
+	void SetSelectionState(bool isSelected);
+
 protected:
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnSelected();
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnDeselected();
+
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	TObjectPtr<UArgusEntityTemplate> m_entityTemplate = nullptr;
 
@@ -25,4 +32,5 @@ protected:
 
 private:
 	ArgusEntity m_entity = ArgusEntity::s_emptyEntity;
+	bool m_isSelected = false;
 };

@@ -17,18 +17,30 @@ class UArgusInputManager : public UObject
 {
 	GENERATED_BODY()
 public:
-	void ProcessPlayerInput();
 	void SetupInputComponent(TWeakObjectPtr<AArgusPlayerController> owningPlayerController, TSoftObjectPtr<UArgusInputActionSet>& argusInputActionSet);
 	void OnSelect(const FInputActionValue& value);
 	void OnSelectAdditive(const FInputActionValue& value);
 	void OnMoveTo(const FInputActionValue& value);
 
+	void ProcessPlayerInput();
+
 private:
+	enum class InputType : uint8
+	{
+		None,
+		Select,
+		SelectAdditive,
+		MoveTo
+	};
+
 	TWeakObjectPtr<AArgusPlayerController> m_owningPlayerController = nullptr;
 	TSet<TWeakObjectPtr<AArgusActor>> m_selectedArgusActors;
+	TArray<InputType> m_inputEventsThisFrame;
 
 	void BindActions(TSoftObjectPtr<UArgusInputActionSet>& argusInputActionSet, TWeakObjectPtr<UEnhancedInputComponent>& enhancedInputComponent);
-	void OnSelectInternal(bool isAdditive);
-
 	bool ValidateOwningPlayerController();
+
+	void ProcessInputEvent(InputType inputEvent);
+	void ProcessSelectInputEvent(bool isAdditive);
+	void ProcessMoveToInputEvent();
 };

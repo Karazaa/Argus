@@ -32,7 +32,7 @@ void AArgusGameModeBase::Tick(float deltaTime)
 	{
 		if (argusPlayerController)
 		{
-			argusPlayerController->ProcessPlayerInput();
+			argusPlayerController->ProcessArgusPlayerInput();
 		}
 	}
 

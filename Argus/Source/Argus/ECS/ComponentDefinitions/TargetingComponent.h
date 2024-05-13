@@ -9,5 +9,8 @@ struct TargetingComponent
 {
 	uint32 m_targetEntityId = ArgusECSConstants::k_maxEntities;
 
-	bool HasNoTarget() const { return m_targetEntityId >= ArgusECSConstants::k_maxEntities; }
+	bool HasNoTarget() const 
+	{ 
+		return m_targetEntityId >= ArgusECSConstants::k_maxEntities; 
+	}
 };

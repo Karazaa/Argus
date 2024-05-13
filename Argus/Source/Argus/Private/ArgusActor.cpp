@@ -14,6 +14,25 @@ ArgusEntity AArgusActor::GetEntity()
 	return m_entity;
 }
 
+void AArgusActor::SetSelectionState(bool isSelected)
+{
+	if (isSelected == m_isSelected)
+	{
+		return;
+	}
+
+	m_isSelected = isSelected;
+
+	if (m_isSelected)
+	{
+		OnSelected();
+	}
+	else
+	{
+		OnDeselected();
+	}
+}
+
 void AArgusActor::BeginPlay()
 {
 	Super::BeginPlay();

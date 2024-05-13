@@ -11,7 +11,7 @@
 
 const float AArgusPlayerController::k_cameraTraceLength = 5000.0f;
 
-void AArgusPlayerController::ProcessPlayerInput()
+void AArgusPlayerController::ProcessArgusPlayerInput()
 {
 	if (m_argusInputManager)
 	{
