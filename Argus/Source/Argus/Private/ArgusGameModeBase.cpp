@@ -27,8 +27,10 @@ void AArgusGameModeBase::Tick(float deltaTime)
 {
 	Super::Tick(deltaTime);
 
+	UWorld* worldPointer = GetWorld();
+
 	// Process player input
-	for (AArgusPlayerController* argusPlayerController : TActorRange<AArgusPlayerController>((GetWorld())))
+	for (AArgusPlayerController* argusPlayerController : TActorRange<AArgusPlayerController>(worldPointer))
 	{
 		if (argusPlayerController)
 		{
@@ -37,5 +39,5 @@ void AArgusGameModeBase::Tick(float deltaTime)
 	}
 
 	// Run all ECS systems.
-	m_argusSystemsManager.RunSystems(deltaTime);
+	m_argusSystemsManager.RunSystems(worldPointer, deltaTime);
 }

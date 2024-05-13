@@ -2,8 +2,12 @@
 
 #pragma once
 
+#include "CoreMinimal.h"
+
+class UWorld;
+
 class ArgusSystemsManager
 {
 public:
-	static void RunSystems(float deltaTime);
+	static void RunSystems(TWeakObjectPtr<UWorld> worldPointer, float deltaTime);
 };
