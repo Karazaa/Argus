@@ -7,6 +7,7 @@ void UTargetingComponentData::InstantiateComponentForEntity(ArgusEntity& entity)
 {
 	TargetingComponent* TargetingComponentRef = entity.AddComponent<TargetingComponent>();
 	TargetingComponentRef->m_targetEntityId = m_targetEntityId;
+	TargetingComponentRef->m_targetLocation = m_targetLocation;
 }
 
 bool UTargetingComponentData::MatchesType(UComponentData* other) const

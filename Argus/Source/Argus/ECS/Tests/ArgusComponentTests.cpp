@@ -28,8 +28,8 @@ bool ArgusComponentHealthComponentPersistenceTest::RunTest(const FString& Parame
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentTargetingComponentHasNoTargetTest, "Argus.ECS.Component.TargetingComponent.HasNoTarget", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
-bool ArgusComponentTargetingComponentHasNoTargetTest::RunTest(const FString& Parameters)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentTargetingComponentHasEntityTargetTest, "Argus.ECS.Component.TargetingComponent.HasEntityTarget", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+bool ArgusComponentTargetingComponentHasEntityTargetTest::RunTest(const FString& Parameters)
 {
 	ArgusEntity::FlushAllEntities();
 
@@ -42,12 +42,12 @@ bool ArgusComponentTargetingComponentHasNoTargetTest::RunTest(const FString& Par
 		return false;
 	}
 
-	TestTrue(TEXT("Creating a TargetingComponent and confirming that it does not have a target."), targetingComponent->HasNoTarget());
+	TestFalse(TEXT("Creating a TargetingComponent and confirming that it does not have a target."), targetingComponent->HasEntityTarget());
 	
 	targetingComponent->m_targetEntityId = entity2.GetId();
 
 	TestEqual(TEXT("Creating a TargetingComponent, setting target to another entity, then checking the value is the right ID"), targetingComponent->m_targetEntityId, entity2.GetId());
-	TestFalse(TEXT("Creating a TargetingComponent, setting target to another entity, and confirming that it does have a target."), targetingComponent->HasNoTarget());
+	TestTrue(TEXT("Creating a TargetingComponent, setting target to another entity, and confirming that it does have a target."), targetingComponent->HasEntityTarget());
 
 	return true;
 }

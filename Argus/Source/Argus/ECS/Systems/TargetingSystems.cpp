@@ -4,7 +4,7 @@
 
 void TargetingSystems::RunSystems(float deltaTime)
 {
-	for (uint32 i = 0; i < ArgusECSConstants::k_maxEntities; ++i)
+	for (uint16 i = 0; i < ArgusECSConstants::k_maxEntities; ++i)
 	{
 		std::optional<ArgusEntity> potentialEntity = ArgusEntity::RetrieveEntity(i);
 		if (!potentialEntity.has_value())
@@ -32,9 +32,9 @@ void TargetingSystems::TargetNearestEntityMatchingFactionMask(const ArgusEntity&
 
 	const FVector fromLocation = fromTransformComponent->m_transform.GetLocation();
 	float minDistSquared = FLT_MAX;
-	uint32 minDistEntityId = ArgusECSConstants::k_maxEntities;
+	uint16 minDistEntityId = ArgusECSConstants::k_maxEntities;
 
-	for (uint32 i = 0; i < ArgusECSConstants::k_maxEntities; ++i)
+	for (uint16 i = 0; i < ArgusECSConstants::k_maxEntities; ++i)
 	{
 		std::optional<ArgusEntity> potentialEntity = ArgusEntity::RetrieveEntity(i);
 		if (!potentialEntity.has_value())

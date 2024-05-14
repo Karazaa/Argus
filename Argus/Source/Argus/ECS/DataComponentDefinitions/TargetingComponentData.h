@@ -12,8 +12,8 @@ class ARGUS_API UTargetingComponentData : public UComponentData
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere)
-	uint32 m_targetEntityId = ArgusECSConstants::k_maxEntities;
+	uint16 m_targetEntityId = ArgusECSConstants::k_maxEntities;
+	TOptional<FVector> m_targetLocation = TOptional<FVector>();
 
 	void InstantiateComponentForEntity(ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;

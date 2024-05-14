@@ -29,6 +29,10 @@ bool ArgusComponentComponentSizeTest::RunTest(const FString& Parameters)
 	const size_t TargetingComponentSize = sizeof(TargetingComponent);
 	netSize += TargetingComponentSize;
 	UE_LOG(ArgusGameLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(TargetingComponent), TargetingComponentSize);
+	// TaskComponent =================================================================================================
+	const size_t TaskComponentSize = sizeof(TaskComponent);
+	netSize += TaskComponentSize;
+	UE_LOG(ArgusGameLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(TaskComponent), TaskComponentSize);
 	// TransformComponent =================================================================================================
 	const size_t TransformComponentSize = sizeof(TransformComponent);
 	netSize += TransformComponentSize;

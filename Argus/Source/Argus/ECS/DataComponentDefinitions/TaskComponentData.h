@@ -4,18 +4,16 @@
 #pragma once
 
 #include "ComponentData.h"
-#include "NavigationComponentData.generated.h"
+#include "TaskComponentData.generated.h"
 
 UCLASS()
-class ARGUS_API UNavigationComponentData : public UComponentData
+class ARGUS_API UTaskComponentData : public UComponentData
 {
 	GENERATED_BODY()
 
 public:
-	std::vector<FVector> m_navigationPoints = std::vector<FVector>();
-	uint16 m_lastPointIndex = 0u;
 	UPROPERTY(EditAnywhere)
-	float m_navigationSpeedUnitsPerSecond = 100.0f;
+	ETask m_currentTask = ETask::None;
 
 	void InstantiateComponentForEntity(ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;

@@ -12,7 +12,6 @@ class ARGUS_API UTransformComponentData : public UComponentData
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere)
 	FTransform m_transform = FTransform::Identity;
 
 	void InstantiateComponentForEntity(ArgusEntity& entity) const override;

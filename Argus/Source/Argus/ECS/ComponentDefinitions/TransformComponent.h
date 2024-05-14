@@ -6,5 +6,6 @@
 
 struct TransformComponent
 {
+	ARGUS_IGNORE()
 	FTransform m_transform = FTransform::Identity;
 };

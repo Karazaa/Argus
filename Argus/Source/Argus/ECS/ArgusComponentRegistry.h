@@ -12,6 +12,7 @@
 #include "ComponentDefinitions\IdentityComponent.h"
 #include "ComponentDefinitions\NavigationComponent.h"
 #include "ComponentDefinitions\TargetingComponent.h"
+#include "ComponentDefinitions\TaskComponent.h"
 #include "ComponentDefinitions\TransformComponent.h"
 
 class ArgusComponentRegistry
@@ -37,7 +38,7 @@ public:
 
 	static void FlushAllComponents();
 
-	static constexpr uint32 k_numComponentTypes = 5;
+	static constexpr uint32 k_numComponentTypes = 6;
 
 	// Begin component specific template specifiers.
 	
@@ -287,6 +288,68 @@ public:
 			s_TargetingComponents[entityId] = TargetingComponent();
 			s_isTargetingComponentActive.set(entityId);
 			return &s_TargetingComponents[entityId];
+		}
+	}
+// TaskComponent ======================================================================================================
+private:
+	static TaskComponent s_TaskComponents[ArgusECSConstants::k_maxEntities];
+	static std::bitset<ArgusECSConstants::k_maxEntities> s_isTaskComponentActive;
+public:
+	template<>
+	inline TaskComponent* GetComponent<TaskComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			UE_LOG(ArgusGameLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(TaskComponent));
+			return nullptr;
+		}
+
+		if (!s_isTaskComponentActive[entityId])
+		{
+			return nullptr;
+		}
+
+		return &s_TaskComponents[entityId];
+	}
+
+	template<>
+	inline TaskComponent* AddComponent<TaskComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			UE_LOG(ArgusGameLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(TaskComponent));
+			return nullptr;
+		}
+
+		if (s_isTaskComponentActive[entityId])
+		{
+			UE_LOG(ArgusGameLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TaskComponent), entityId);
+			return &s_TaskComponents[entityId];
+		}
+
+		s_TaskComponents[entityId] = TaskComponent();
+		s_isTaskComponentActive.set(entityId);
+		return &s_TaskComponents[entityId];
+	}
+
+	template<>
+	inline TaskComponent* GetOrAddComponent<TaskComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			UE_LOG(ArgusGameLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(TaskComponent));
+			return nullptr;
+		}
+
+		if (s_isTaskComponentActive[entityId])
+		{
+			return &s_TaskComponents[entityId];
+		}
+		else
+		{
+			s_TaskComponents[entityId] = TaskComponent();
+			s_isTaskComponentActive.set(entityId);
+			return &s_TaskComponents[entityId];
 		}
 	}
 // TransformComponent ======================================================================================================

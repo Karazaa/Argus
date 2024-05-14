@@ -16,6 +16,9 @@ std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isNaviga
 // TargetingComponent
 TargetingComponent ArgusComponentRegistry::s_TargetingComponents[ArgusECSConstants::k_maxEntities];
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isTargetingComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
+// TaskComponent
+TaskComponent ArgusComponentRegistry::s_TaskComponents[ArgusECSConstants::k_maxEntities];
+std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isTaskComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
 // TransformComponent
 TransformComponent ArgusComponentRegistry::s_TransformComponents[ArgusECSConstants::k_maxEntities];
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isTransformComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
@@ -27,6 +30,7 @@ void ArgusComponentRegistry::FlushAllComponents()
 	s_isIdentityComponentActive.reset();
 	s_isNavigationComponentActive.reset();
 	s_isTargetingComponentActive.reset();
+	s_isTaskComponentActive.reset();
 	s_isTransformComponentActive.reset();
 
 	// Begin flush component values
@@ -36,6 +40,7 @@ void ArgusComponentRegistry::FlushAllComponents()
 		s_IdentityComponents[i] = IdentityComponent();
 		s_NavigationComponents[i] = NavigationComponent();
 		s_TargetingComponents[i] = TargetingComponent();
+		s_TaskComponents[i] = TaskComponent();
 		s_TransformComponents[i] = TransformComponent();
 	}
 }

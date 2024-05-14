@@ -37,7 +37,7 @@ bool TargetingSystemsTargetNearestEntityMatchingFactionMaskTest::RunTest(const F
 	sourceIdentityComponent->AddEnemyFaction(EFaction::FactionB);
 	sourceIdentityComponent->AddEnemyFaction(EFaction::FactionC);
 
-	TestTrue(TEXT("Testing that the default targeting ID is invalid."), sourceTargetingComponent->HasNoTarget());
+	TestFalse(TEXT("Testing that the default targeting ID is invalid."), sourceTargetingComponent->HasEntityTarget());
 
 	TargetingSystems::TargetNearestEntityMatchingFactionMask(sourceEntity, sourceTransformComponent, sourceIdentityComponent->m_enemies);
 

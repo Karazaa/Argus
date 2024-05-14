@@ -17,7 +17,7 @@ void NavigationSystems::RunSystems(TWeakObjectPtr<UWorld> worldPointer, float de
 		return;
 	}
 
-	for (uint32 i = 0; i < ArgusECSConstants::k_maxEntities; ++i)
+	for (uint16 i = 0; i < ArgusECSConstants::k_maxEntities; ++i)
 	{
 		std::optional<ArgusEntity> potentialEntity = ArgusEntity::RetrieveEntity(i);
 		if (!potentialEntity.has_value())
