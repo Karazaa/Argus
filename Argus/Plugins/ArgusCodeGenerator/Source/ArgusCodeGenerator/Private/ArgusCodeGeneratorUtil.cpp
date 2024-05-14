@@ -8,11 +8,12 @@
 
 DEFINE_LOG_CATEGORY(ArgusCodeGeneratorLog);
 
+const char* ArgusCodeGeneratorUtil::s_propertyDelimiter = "ARGUS_PROPERTY";
+const char* ArgusCodeGeneratorUtil::s_propertyIgnoreDelimiter = "ARGUS_IGNORE";
 const char* ArgusCodeGeneratorUtil::s_componentDefinitionDirectoryName = "ComponentDefinitions";
 const char* ArgusCodeGeneratorUtil::s_componentDefinitionDirectorySuffix = "Source/Argus/ECS/ComponentDefinitions";
 const char* ArgusCodeGeneratorUtil::s_templateDirectorySuffix = "Plugins/ArgusCodeGenerator/Source/ArgusCodeGenerator/Private/Templates/";
 const char* ArgusCodeGeneratorUtil::s_structDelimiter = "struct";
-const char* ArgusCodeGeneratorUtil::s_propertyDelimiter = "ARGUS_PROPERTY";
 const char* ArgusCodeGeneratorUtil::s_varDelimiter = "m_";
 
 FString ArgusCodeGeneratorUtil::GetProjectDirectory()
@@ -192,10 +193,12 @@ bool ArgusCodeGeneratorUtil::ParseStructDeclarations(std::string lineText, const
 bool ArgusCodeGeneratorUtil::ParsePropertyMacro(std::string lineText, ParseComponentDataOutput& output)
 {
 	const size_t propertyDelimiterIndex = lineText.find(s_propertyDelimiter);
-	if (propertyDelimiterIndex == std::string::npos)
+	const size_t propertyIgnoreDelimiterIndex = lineText.find(s_propertyIgnoreDelimiter);
+	if (propertyDelimiterIndex == std::string::npos && propertyIgnoreDelimiterIndex == std::string::npos)
 	{
 		return false;
 	}
+
 	ComponentVariableData variableData;
 	variableData.m_propertyMacro = lineText;
 	output.m_componentVariableData.back().push_back(variableData);

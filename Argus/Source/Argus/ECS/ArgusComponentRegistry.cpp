@@ -10,6 +10,9 @@ std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isHealth
 // IdentityComponent
 IdentityComponent ArgusComponentRegistry::s_IdentityComponents[ArgusECSConstants::k_maxEntities];
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isIdentityComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
+// NavigationComponent
+NavigationComponent ArgusComponentRegistry::s_NavigationComponents[ArgusECSConstants::k_maxEntities];
+std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isNavigationComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
 // TargetingComponent
 TargetingComponent ArgusComponentRegistry::s_TargetingComponents[ArgusECSConstants::k_maxEntities];
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isTargetingComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
@@ -22,6 +25,7 @@ void ArgusComponentRegistry::FlushAllComponents()
 	// Begin flush active component bitsets
 	s_isHealthComponentActive.reset();
 	s_isIdentityComponentActive.reset();
+	s_isNavigationComponentActive.reset();
 	s_isTargetingComponentActive.reset();
 	s_isTransformComponentActive.reset();
 
@@ -30,6 +34,7 @@ void ArgusComponentRegistry::FlushAllComponents()
 	{
 		s_HealthComponents[i] = HealthComponent();
 		s_IdentityComponents[i] = IdentityComponent();
+		s_NavigationComponents[i] = NavigationComponent();
 		s_TargetingComponents[i] = TargetingComponent();
 		s_TransformComponents[i] = TransformComponent();
 	}

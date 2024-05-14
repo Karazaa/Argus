@@ -13,7 +13,6 @@ const char* ArgusDataAssetComponentCodeGenerator::s_componentDataHeaderSuffix = 
 const char* ArgusDataAssetComponentCodeGenerator::s_componentDataCppSuffix = "Data.cpp";
 const char* ArgusDataAssetComponentCodeGenerator::s_propertyMacro = "\tUPROPERTY(EditAnywhere)";
 const char* ArgusDataAssetComponentCodeGenerator::s_upropertyPrefix = "UPROPERTY";
-const char* ArgusDataAssetComponentCodeGenerator::s_argusPropertyPrefix = "ARGUS_PROPERTY";
 
 void ArgusDataAssetComponentCodeGenerator::GenerateDataAssetComponents(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData)
 {
@@ -88,8 +87,12 @@ bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetHeaderFileTemplateWithR
 				{
 					if (!parsedComponentData.m_componentVariableData[i][j].m_propertyMacro.empty())
 					{
-						std::string overridePropertyText = std::regex_replace(parsedComponentData.m_componentVariableData[i][j].m_propertyMacro, std::regex(s_argusPropertyPrefix), s_upropertyPrefix);
-						outParsedFileContents[i].m_lines.push_back(overridePropertyText);
+						const size_t propertyIgnoreDelimiterIndex = parsedComponentData.m_componentVariableData[i][j].m_propertyMacro.find(ArgusCodeGeneratorUtil::s_propertyIgnoreDelimiter);
+						if (propertyIgnoreDelimiterIndex == std::string::npos)
+						{
+							std::string overridePropertyText = std::regex_replace(parsedComponentData.m_componentVariableData[i][j].m_propertyMacro, std::regex(ArgusCodeGeneratorUtil::s_propertyDelimiter), s_upropertyPrefix);
+							outParsedFileContents[i].m_lines.push_back(overridePropertyText);
+						}
 					}
 					else
 					{

@@ -21,6 +21,10 @@ bool ArgusComponentComponentSizeTest::RunTest(const FString& Parameters)
 	const size_t IdentityComponentSize = sizeof(IdentityComponent);
 	netSize += IdentityComponentSize;
 	UE_LOG(ArgusGameLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(IdentityComponent), IdentityComponentSize);
+	// NavigationComponent =================================================================================================
+	const size_t NavigationComponentSize = sizeof(NavigationComponent);
+	netSize += NavigationComponentSize;
+	UE_LOG(ArgusGameLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(NavigationComponent), NavigationComponentSize);
 	// TargetingComponent =================================================================================================
 	const size_t TargetingComponentSize = sizeof(TargetingComponent);
 	netSize += TargetingComponentSize;

@@ -14,6 +14,9 @@ DECLARE_LOG_CATEGORY_EXTERN(ArgusCodeGeneratorLog, Display, All);
 class ArgusCodeGeneratorUtil
 {
 public:
+	static const char* s_propertyDelimiter;
+	static const char* s_propertyIgnoreDelimiter;
+
 	static FString GetProjectDirectory();
 	static FString GetTemplateDirectory();
 	static FString GetComponentDefinitionsDirectory();
@@ -42,7 +45,6 @@ private:
 	static const char* s_componentDefinitionDirectorySuffix;
 	static const char* s_templateDirectorySuffix;
 	static const char* s_structDelimiter;
-	static const char* s_propertyDelimiter;
 	static const char* s_varDelimiter;
 
 	static bool ParseStructDeclarations(std::string lineText, const std::string& componentDataAssetIncludeStatement, ParseComponentDataOutput& output);

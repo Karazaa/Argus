@@ -9,6 +9,7 @@
 
 // Macro used for code generation that allows for the creation of UPROPERTY macros on component data fields.
 #define ARGUS_PROPERTY(...)
+#define ARGUS_IGNORE()
 
 DECLARE_LOG_CATEGORY_EXTERN(ArgusGameLog, Display, All);
 

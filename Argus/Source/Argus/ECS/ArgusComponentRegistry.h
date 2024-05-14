@@ -10,6 +10,7 @@
 // Begin component specific includes.
 #include "ComponentDefinitions\HealthComponent.h"
 #include "ComponentDefinitions\IdentityComponent.h"
+#include "ComponentDefinitions\NavigationComponent.h"
 #include "ComponentDefinitions\TargetingComponent.h"
 #include "ComponentDefinitions\TransformComponent.h"
 
@@ -36,7 +37,7 @@ public:
 
 	static void FlushAllComponents();
 
-	static constexpr uint32 k_numComponentTypes = 4;
+	static constexpr uint32 k_numComponentTypes = 5;
 
 	// Begin component specific template specifiers.
 	
@@ -162,6 +163,68 @@ public:
 			s_IdentityComponents[entityId] = IdentityComponent();
 			s_isIdentityComponentActive.set(entityId);
 			return &s_IdentityComponents[entityId];
+		}
+	}
+// NavigationComponent ======================================================================================================
+private:
+	static NavigationComponent s_NavigationComponents[ArgusECSConstants::k_maxEntities];
+	static std::bitset<ArgusECSConstants::k_maxEntities> s_isNavigationComponentActive;
+public:
+	template<>
+	inline NavigationComponent* GetComponent<NavigationComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			UE_LOG(ArgusGameLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(NavigationComponent));
+			return nullptr;
+		}
+
+		if (!s_isNavigationComponentActive[entityId])
+		{
+			return nullptr;
+		}
+
+		return &s_NavigationComponents[entityId];
+	}
+
+	template<>
+	inline NavigationComponent* AddComponent<NavigationComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			UE_LOG(ArgusGameLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(NavigationComponent));
+			return nullptr;
+		}
+
+		if (s_isNavigationComponentActive[entityId])
+		{
+			UE_LOG(ArgusGameLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(NavigationComponent), entityId);
+			return &s_NavigationComponents[entityId];
+		}
+
+		s_NavigationComponents[entityId] = NavigationComponent();
+		s_isNavigationComponentActive.set(entityId);
+		return &s_NavigationComponents[entityId];
+	}
+
+	template<>
+	inline NavigationComponent* GetOrAddComponent<NavigationComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			UE_LOG(ArgusGameLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(NavigationComponent));
+			return nullptr;
+		}
+
+		if (s_isNavigationComponentActive[entityId])
+		{
+			return &s_NavigationComponents[entityId];
+		}
+		else
+		{
+			s_NavigationComponents[entityId] = NavigationComponent();
+			s_isNavigationComponentActive.set(entityId);
+			return &s_NavigationComponents[entityId];
 		}
 	}
 // TargetingComponent ======================================================================================================
