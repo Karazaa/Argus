@@ -27,6 +27,7 @@ public:
 	ArgusEntity(const ArgusEntity& other);
 	ArgusEntity& operator=(const ArgusEntity& other);
 	bool operator==(const ArgusEntity& other) const;
+	operator bool() const;
 
 	uint16	GetId() const;
 

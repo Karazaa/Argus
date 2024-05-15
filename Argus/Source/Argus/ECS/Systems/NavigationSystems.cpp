@@ -1,19 +1,11 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "NavigationSystems.h"
-#include "ArgusEntity.h"
 
 void NavigationSystems::RunSystems(TWeakObjectPtr<UWorld> worldPointer, float deltaTime)
 {
-	if (!worldPointer.IsValid())
+	if (!IsWorldPointerValidCheck(worldPointer))
 	{
-		UE_LOG
-		(
-			ArgusGameLog, Error, TEXT("[%s] was invoked with an invalid %s, %s."),
-			ARGUS_FUNCNAME,
-			ARGUS_NAMEOF(TWeakObjectPtr<UWorld>),
-			ARGUS_NAMEOF(worldPointer)
-		);
 		return;
 	}
 
@@ -25,10 +17,69 @@ void NavigationSystems::RunSystems(TWeakObjectPtr<UWorld> worldPointer, float de
 			continue;
 		}
 
-		NavigationComponent* targetingComponent = potentialEntity->GetComponent<NavigationComponent>();
-		if (!targetingComponent)
+		NavigationComponent* navigationComponent = potentialEntity->GetComponent<NavigationComponent>();
+		if (!navigationComponent)
 		{
 			continue;
 		}
+
+		ProcessNavigationTaskCommands(worldPointer, potentialEntity.value(), navigationComponent);
 	}
+}
+
+void NavigationSystems::ProcessNavigationTaskCommands(TWeakObjectPtr<UWorld> worldPointer, ArgusEntity sourceEntity, NavigationComponent* sourceNavigationComponent)
+{
+	if (!IsWorldPointerValidCheck(worldPointer))
+	{
+		return;
+	}
+
+	if (!sourceEntity)
+	{
+		UE_LOG(ArgusGameLog, Error, TEXT("[%s] Invalid %s passed for %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(sourceEntity));
+		return;
+	}
+
+	if (!sourceNavigationComponent)
+	{
+		UE_LOG(ArgusGameLog, Error, TEXT("[%s] Null %s passed for entity %d."), ARGUS_FUNCNAME, ARGUS_NAMEOF(NavigationComponent), sourceEntity.GetId());
+		return;
+	}
+
+	TaskComponent* taskComponent = sourceEntity.GetComponent<TaskComponent>();
+	if (!taskComponent)
+	{
+		return;
+	}
+
+	switch (taskComponent->m_currentTask)
+	{
+		case ETask::ProcessMoveToLocationCommand:
+			// TODO JAMES: Generate nav path to location
+			taskComponent->m_currentTask = ETask::MoveToLocation;
+			break;
+		case ETask::ProcessMoveToEntityCommand:
+			// TODO JAMES: Generate nav path to entity.
+			taskComponent->m_currentTask = ETask::MoveToEntity;
+			break;
+		default:
+			break;
+	}
+}
+
+bool NavigationSystems::IsWorldPointerValidCheck(TWeakObjectPtr<UWorld> worldPointer)
+{
+	if (!worldPointer.IsValid())
+	{
+		UE_LOG
+		(
+			ArgusGameLog, Error, TEXT("[%s] was invoked with an invalid %s, %s."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(TWeakObjectPtr<UWorld>),
+			ARGUS_NAMEOF(worldPointer)
+		);
+		return false;
+	}
+
+	return true;
 }

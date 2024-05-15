@@ -13,12 +13,17 @@ ArgusEntity ArgusEntity::CreateEntity(uint16 lowestId)
 
 bool ArgusEntity::DoesEntityExist(uint16 id)
 {
+	if (id >= ArgusECSConstants::k_maxEntities)
+	{
+		return false;
+	}
+
 	return s_takenEntityIds[id];
 }
 
 std::optional<ArgusEntity> ArgusEntity::RetrieveEntity(uint16 id)
 {
-	if (s_takenEntityIds[id])
+	if (id < ArgusECSConstants::k_maxEntities && s_takenEntityIds[id])
 	{
 		return ArgusEntity(id);
 	}
@@ -34,7 +39,7 @@ void ArgusEntity::FlushAllEntities()
 
 uint16 ArgusEntity::GetLowestValidId(uint16 lowestId)
 {
-	while (s_takenEntityIds[lowestId] && lowestId < ArgusECSConstants::k_maxEntities)
+	while (lowestId < ArgusECSConstants::k_maxEntities && s_takenEntityIds[lowestId])
 	{
 		lowestId++;
 	}
@@ -64,7 +69,12 @@ bool ArgusEntity::operator==(const ArgusEntity& other) const
 	return m_id == other.GetId();
 }
 
-ArgusEntity::ArgusEntity() : m_id(0)
+ArgusEntity::operator bool() const
+{
+	return DoesEntityExist(m_id);
+}
+
+ArgusEntity::ArgusEntity() : m_id(ArgusECSConstants::k_maxEntities)
 {
 }
 

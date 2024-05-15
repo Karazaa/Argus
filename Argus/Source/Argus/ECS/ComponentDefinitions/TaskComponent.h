@@ -7,9 +7,11 @@
 UENUM()
 enum class ETask : uint8
 {
-	None = 0,
-	MoveToLocation = 1,
-	MoveToTarget = 2,
+	None,
+	ProcessMoveToLocationCommand,
+	ProcessMoveToEntityCommand,
+	MoveToLocation,
+	MoveToEntity,
 };
 
 struct TaskComponent

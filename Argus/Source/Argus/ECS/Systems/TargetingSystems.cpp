@@ -22,15 +22,21 @@ void TargetingSystems::RunSystems(float deltaTime)
 	}
 }
 
-void TargetingSystems::TargetNearestEntityMatchingFactionMask(const ArgusEntity& fromEntity, TransformComponent* fromTransformComponent, uint8 factionMask)
+void TargetingSystems::TargetNearestEntityMatchingFactionMask(ArgusEntity sourceEntity, TransformComponent* sourceTransformComponent, uint8 factionMask)
 {
-	if (!fromTransformComponent)
+	if (!sourceEntity)
 	{
-		UE_LOG(ArgusGameLog, Error, TEXT("[%s] Null %s passed for entity %d."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), fromEntity.GetId());
+		UE_LOG(ArgusGameLog, Error, TEXT("[%s] Invalid %s passed for %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(sourceEntity));
 		return;
 	}
 
-	const FVector fromLocation = fromTransformComponent->m_transform.GetLocation();
+	if (!sourceTransformComponent)
+	{
+		UE_LOG(ArgusGameLog, Error, TEXT("[%s] Null %s passed for entity %d."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), sourceEntity.GetId());
+		return;
+	}
+
+	const FVector fromLocation = sourceTransformComponent->m_transform.GetLocation();
 	float minDistSquared = FLT_MAX;
 	uint16 minDistEntityId = ArgusECSConstants::k_maxEntities;
 
@@ -42,7 +48,7 @@ void TargetingSystems::TargetNearestEntityMatchingFactionMask(const ArgusEntity&
 			continue;
 		}
 
-		if (i == fromEntity.GetId())
+		if (i == sourceEntity.GetId())
 		{
 			continue;
 		}
@@ -73,10 +79,10 @@ void TargetingSystems::TargetNearestEntityMatchingFactionMask(const ArgusEntity&
 		}
 	}
 
-	TargetingComponent* targetingComponent = fromEntity.GetComponent<TargetingComponent>();
+	TargetingComponent* targetingComponent = sourceEntity.GetComponent<TargetingComponent>();
 	if (!targetingComponent)
 	{
-		targetingComponent = fromEntity.AddComponent<TargetingComponent>();
+		targetingComponent = sourceEntity.AddComponent<TargetingComponent>();
 		if (!targetingComponent)
 		{
 			return;

@@ -204,18 +204,67 @@ void UArgusInputManager::ProcessMoveToInputEvent()
 		return;
 	}
 
+	FVector targetLocation = hitResult.Location;
 	UE_LOG
 	(
 		ArgusGameLog, Display, TEXT("[%s] Move To input occurred. Mouse projection worldspace location is (%f, %f, %f)"),
 		ARGUS_FUNCNAME,
-		hitResult.Location.X,
-		hitResult.Location.Y,
-		hitResult.Location.Z
+		targetLocation.X,
+		targetLocation.Y,
+		targetLocation.Z
 	);
 
-	const int numSelectedEntities = m_selectedArgusActors.Num();
-	if (numSelectedEntities)
+	ETask inputTask = ETask::ProcessMoveToLocationCommand;
+	ArgusEntity targetEntity = ArgusEntity::s_emptyEntity;
+	if (AArgusActor* argusActor = Cast<AArgusActor>(hitResult.GetActor()))
 	{
-		UE_LOG(ArgusGameLog, Display, TEXT("[%s] Move To input executed while %d entities were selected."), ARGUS_FUNCNAME, numSelectedEntities);
+		targetEntity = argusActor->GetEntity();
+		if (targetEntity && targetEntity.GetComponent<TransformComponent>())
+		{
+			inputTask = ETask::ProcessMoveToEntityCommand;
+		}
+	}
+
+	const uint32 numSelectedActors = m_selectedArgusActors.Num();
+	for (TWeakObjectPtr<AArgusActor>& selectedActor : m_selectedArgusActors)
+	{
+		if (!selectedActor.IsValid())
+		{
+			continue;
+		}
+
+		ArgusEntity selectedEntity = selectedActor->GetEntity();
+		if (!selectedEntity)
+		{
+			continue;
+		}
+
+		TaskComponent* taskComponent = selectedEntity.GetComponent<TaskComponent>();
+		TargetingComponent* targetingComponent = selectedEntity.GetComponent<TargetingComponent>();
+
+		if (!taskComponent || !targetingComponent)
+		{
+			continue;
+		}
+
+		if (inputTask == ETask::ProcessMoveToEntityCommand)
+		{
+			if (targetEntity == selectedEntity)
+			{
+				taskComponent->m_currentTask = ETask::None;
+			}
+			else
+			{
+				taskComponent->m_currentTask = inputTask;
+				targetingComponent->m_targetEntityId = targetEntity.GetId();
+				targetingComponent->m_targetLocation.Reset();
+			}
+		}
+		else if (inputTask == ETask::ProcessMoveToLocationCommand)
+		{
+			taskComponent->m_currentTask = inputTask;
+			targetingComponent->m_targetEntityId = ArgusEntity::s_emptyEntity.GetId();
+			targetingComponent->m_targetLocation = targetLocation;
+		}
 	}
 }

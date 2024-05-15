@@ -8,5 +8,5 @@ class TargetingSystems
 {
 public:
 	static void RunSystems(float deltaTime);
-	static void TargetNearestEntityMatchingFactionMask(const ArgusEntity& fromEntity, TransformComponent* fromTransformComponent, uint8 factionMask);
+	static void TargetNearestEntityMatchingFactionMask(ArgusEntity sourceEntity, TransformComponent* sourceTransformComponent, uint8 factionMask);
 };
