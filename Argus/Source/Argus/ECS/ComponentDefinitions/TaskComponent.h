@@ -12,6 +12,7 @@ enum class ETask : uint8
 	ProcessMoveToEntityCommand,
 	MoveToLocation,
 	MoveToEntity,
+	FailedToFindPath,
 };
 
 struct TaskComponent
