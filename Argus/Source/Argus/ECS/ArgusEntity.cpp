@@ -39,7 +39,12 @@ void ArgusEntity::FlushAllEntities()
 
 uint16 ArgusEntity::GetLowestValidId(uint16 lowestId)
 {
-	while (lowestId < ArgusECSConstants::k_maxEntities && s_takenEntityIds[lowestId])
+	if (lowestId >= ArgusECSConstants::k_maxEntities)
+	{
+		return ArgusECSConstants::k_maxEntities;
+	}
+
+	while (lowestId < (ArgusECSConstants::k_maxEntities - 1) && s_takenEntityIds[lowestId])
 	{
 		lowestId++;
 	}
