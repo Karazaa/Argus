@@ -12,7 +12,83 @@ bool ArgusEntityGetIdTest::RunTest(const FString& Parameters)
 
 	ArgusEntity entity = ArgusEntity::CreateEntity(20u);
 	TestEqual(TEXT("Testing ArgusEntity creation and ID storage."), entity.GetId(), 20u);
-	
+
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityAssignmentOperatorTest, "Argus.ECS.Entity.AssignmentOperator", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+bool ArgusEntityAssignmentOperatorTest::RunTest(const FString& Parameters)
+{
+	ArgusEntity::FlushAllEntities();
+
+	ArgusEntity entity0 = ArgusEntity::CreateEntity(20u);
+	ArgusEntity entity1 = ArgusEntity::CreateEntity(30u);
+
+	TestEqual(TEXT("Testing creation of ArgusEntity."), entity1.GetId(), 30u);
+
+	entity1 = entity0;
+
+	TestEqual(TEXT("Testing assigment of ArgusEntity."), entity1.GetId(), 20u);
+
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityEqualsOperatorTest, "Argus.ECS.Entity.EqualsOperator", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+bool ArgusEntityEqualsOperatorTest::RunTest(const FString& Parameters)
+{
+	ArgusEntity::FlushAllEntities();
+
+	ArgusEntity entity0 = ArgusEntity::CreateEntity(20u);
+	ArgusEntity entity1 = ArgusEntity::CreateEntity(30u);
+
+	TestFalse(TEXT("Testing creation of two ArgusEntities with different IDs and the equals operator returning false."), entity0 == entity1);
+
+	entity1 = entity0;
+
+	TestTrue(TEXT("Testing creation of two ArgusEntities with the same ID and the equals operator returning true."), entity0 == entity1);
+
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityBoolOperatorTest, "Argus.ECS.Entity.BoolOperator", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+bool ArgusEntityBoolOperatorTest::RunTest(const FString& Parameters)
+{
+	ArgusEntity::FlushAllEntities();
+
+	TestFalse(TEXT("Testing bool operator of empty entity returns false."), ArgusEntity::s_emptyEntity);
+
+	ArgusEntity entity = ArgusEntity::CreateEntity(20u);
+
+	TestTrue(TEXT("Testing bool operator of non-empty entity returns true."), entity);
+
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityFlushAllEntitiesTest, "Argus.ECS.Entity.FlushAllEntities", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+bool ArgusEntityFlushAllEntitiesTest::RunTest(const FString& Parameters)
+{
+	ArgusEntity::FlushAllEntities();
+
+	ArgusEntity entity = ArgusEntity::CreateEntity(20u);
+	TestTrue(TEXT("Testing if entity exists after creation."), entity);
+
+	ArgusEntity::FlushAllEntities();
+
+	TestFalse(TEXT("Testing that entity no longer exists after flushing all entities."), entity);
+
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityCopyConstructorTest, "Argus.ECS.Entity.CopyConstructor", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+bool ArgusEntityCopyConstructorTest::RunTest(const FString& Parameters)
+{
+	ArgusEntity::FlushAllEntities();
+
+	ArgusEntity entity0 = ArgusEntity::CreateEntity(20u);
+	ArgusEntity entity1 = ArgusEntity(entity0);
+
+	TestEqual(TEXT("Testing if copy constructor successfully copies one ArgusEntity to another."), entity0, entity1);
+
 	return true;
 }
 

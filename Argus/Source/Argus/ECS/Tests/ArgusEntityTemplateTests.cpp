@@ -6,7 +6,7 @@
 
 #if WITH_AUTOMATION_TESTS
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityTemplateInstantiateEntityTest, "Argus.ECS.EntityTemplate.InstantiateEntityTest", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityTemplateInstantiateEntityTest, "Argus.ECS.EntityTemplate.InstantiateEntity", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusEntityTemplateInstantiateEntityTest::RunTest(const FString& Parameters)
 {
 	ArgusEntity::FlushAllEntities();
