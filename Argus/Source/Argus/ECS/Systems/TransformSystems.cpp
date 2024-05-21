@@ -13,34 +13,41 @@ void TransformSystems::RunSystems(float deltaTime)
 			continue;
 		}
 
-		TransformComponent* transformComponent = potentialEntity->GetComponent<TransformComponent>();
-		if (!transformComponent)
+		TransformSystemsComponentArgs components;
+		components.taskComponent = potentialEntity->GetComponent<TaskComponent>();
+		components.transformComponent = potentialEntity->GetComponent<TransformComponent>();
+		components.navigationComponent = potentialEntity->GetComponent<NavigationComponent>();
+		if (!components.taskComponent || !components.transformComponent || !components.navigationComponent)
 		{
 			continue;
 		}
 
-		ProcessMovementTaskCommands(deltaTime, potentialEntity.value(), transformComponent);
+		ProcessMovementTaskCommands(deltaTime, components);
 	}
 }
 
-void TransformSystems::ProcessMovementTaskCommands(float deltaTime, ArgusEntity movingEntity, TransformComponent* moverTransformComponent)
+bool TransformSystems::TransformSystemsComponentArgs::AreComponentsValidCheck() const
 {
-	if (!movingEntity || !moverTransformComponent)
+	if (!taskComponent || !navigationComponent || !transformComponent)
+	{
+		UE_LOG(ArgusGameLog, Error, TEXT("[%s] Transform Systems were run with invalid component arguments passed."), ARGUS_FUNCNAME);
+		return false;
+	}
+	return true;
+}
+
+void TransformSystems::ProcessMovementTaskCommands(float deltaTime, const TransformSystemsComponentArgs& components)
+{
+	if (!components.AreComponentsValidCheck())
 	{
 		return;
 	}
 
-	TaskComponent* taskComponent = movingEntity.GetComponent<TaskComponent>();
-	if (!taskComponent)
-	{
-		return;
-	}
-
-	switch (taskComponent->m_currentTask)
+	switch (components.taskComponent->m_currentTask)
 	{
 		case ETask::MoveToLocation:
 		{
-			MoveAlongNavigationPath(deltaTime, movingEntity, moverTransformComponent);
+			MoveAlongNavigationPath(deltaTime, components);
 			break;
 		}
 		default:
@@ -48,21 +55,15 @@ void TransformSystems::ProcessMovementTaskCommands(float deltaTime, ArgusEntity 
 	}
 }
 
-void TransformSystems::MoveAlongNavigationPath(float deltaTime, ArgusEntity movingEntity, TransformComponent* moverTransformComponent)
+void TransformSystems::MoveAlongNavigationPath(float deltaTime, const TransformSystemsComponentArgs& components)
 {
-	if (!movingEntity || !moverTransformComponent)
+	if (!components.AreComponentsValidCheck())
 	{
 		return;
 	}
 
-	NavigationComponent* navigationComponent = movingEntity.GetComponent<NavigationComponent>();
-	if (!navigationComponent)
-	{
-		return;
-	}
-
-	const uint16 lastPointIndex = navigationComponent->m_lastPointIndex;
-	const uint16 numNavigationPoints = navigationComponent->m_navigationPoints.size();
+	const uint16 lastPointIndex = components.navigationComponent->m_lastPointIndex;
+	const uint16 numNavigationPoints = components.navigationComponent->m_navigationPoints.size();
 
 	if (lastPointIndex >= numNavigationPoints - 1)
 	{
@@ -70,29 +71,26 @@ void TransformSystems::MoveAlongNavigationPath(float deltaTime, ArgusEntity movi
 		return;
 	}
 
-	const FVector currentLocation = moverTransformComponent->m_transform.GetLocation();
-	const FVector upcomingPoint = navigationComponent->m_navigationPoints[lastPointIndex + 1];
+	const FVector currentLocation = components.transformComponent->m_transform.GetLocation();
+	const FVector upcomingPoint = components.navigationComponent->m_navigationPoints[lastPointIndex + 1];
 	const FVector positionDifference = upcomingPoint - currentLocation;
 	const FVector positionDifferenceNormalized = positionDifference.GetSafeNormal();
-	const FVector translationThisFrame = positionDifferenceNormalized * navigationComponent->m_navigationSpeedUnitsPerSecond * deltaTime;
+	const FVector translationThisFrame = positionDifferenceNormalized * components.navigationComponent->m_navigationSpeedUnitsPerSecond * deltaTime;
 
-	FaceEntityTowardsLocationXY(moverTransformComponent, positionDifference);
+	FaceEntityTowardsLocationXY(components.transformComponent, positionDifference);
 
 	if (translationThisFrame.SquaredLength() > positionDifference.SquaredLength())
 	{
-		moverTransformComponent->m_transform.SetLocation(upcomingPoint);
-		navigationComponent->m_lastPointIndex++;
-		if (navigationComponent->m_lastPointIndex == numNavigationPoints - 1)
+		components.transformComponent->m_transform.SetLocation(upcomingPoint);
+		components.navigationComponent->m_lastPointIndex++;
+		if (components.navigationComponent->m_lastPointIndex == numNavigationPoints - 1)
 		{
-			if (TaskComponent* taskComponent = movingEntity.GetComponent<TaskComponent>())
-			{
-				taskComponent->m_currentTask = ETask::None;
-			}
+			components.taskComponent->m_currentTask = ETask::None;
 		}
 	}
 	else
 	{
-		moverTransformComponent->m_transform.SetLocation(currentLocation + translationThisFrame);
+		components.transformComponent->m_transform.SetLocation(currentLocation + translationThisFrame);
 	}
 }
 
@@ -100,6 +98,7 @@ void TransformSystems::FaceEntityTowardsLocationXY(TransformComponent* transform
 {
 	if (!transformComponent)
 	{
+		UE_LOG(ArgusGameLog, Error, TEXT("[%s] Transform Systems were run with invalid component arguments passed."), ARGUS_FUNCNAME);
 		return;
 	}
 

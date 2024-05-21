@@ -7,12 +7,20 @@
 class NavigationSystems
 {
 public:
-	static void RunSystems(TWeakObjectPtr<UWorld> worldPointer, float deltaTime);
-	static void ProcessNavigationTaskCommands(TWeakObjectPtr<UWorld> worldPointer, ArgusEntity sourceEntity, NavigationComponent* sourceNavigationComponent);
-	static void NavigateFromEntityToLocation(TWeakObjectPtr<UWorld> worldPointer, ArgusEntity sourceEntity, NavigationComponent* sourceNavigationComponent, FVector targetLocation);
+	static void RunSystems(TWeakObjectPtr<UWorld> worldPointer);
+
+	struct NavigationSystemsComponentArgs
+	{
+		TaskComponent* taskComponent = nullptr;
+		NavigationComponent* navigationComponent = nullptr;
+		TargetingComponent* targetingComponent = nullptr;
+		TransformComponent* transformComponent = nullptr;
+
+		bool AreComponentsValidCheck() const;
+	};
+	static void ProcessNavigationTaskCommands(TWeakObjectPtr<UWorld> worldPointer, const NavigationSystemsComponentArgs& components);
+	static void NavigateFromEntityToLocation(TWeakObjectPtr<UWorld> worldPointer, FVector targetLocation, const NavigationSystemsComponentArgs& components);
 
 private:
 	static bool IsWorldPointerValidCheck(TWeakObjectPtr<UWorld> worldPointer);
-	static bool IsSourceEntityValidCheck(ArgusEntity sourceEntity);
-	static bool IsSourceNavigationComponentValidCheck(NavigationComponent* sourceNavigationComponent);
 };

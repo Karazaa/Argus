@@ -7,7 +7,7 @@
 #include "NavigationSystem.h"
 #include "NavigationSystemTypes.h"
 
-void NavigationSystems::RunSystems(TWeakObjectPtr<UWorld> worldPointer, float deltaTime)
+void NavigationSystems::RunSystems(TWeakObjectPtr<UWorld> worldPointer)
 {
 	if (!IsWorldPointerValidCheck(worldPointer))
 	{
@@ -22,65 +22,68 @@ void NavigationSystems::RunSystems(TWeakObjectPtr<UWorld> worldPointer, float de
 			continue;
 		}
 
-		NavigationComponent* navigationComponent = potentialEntity->GetComponent<NavigationComponent>();
-		if (!navigationComponent)
+		NavigationSystemsComponentArgs components;
+		components.taskComponent = potentialEntity->GetComponent<TaskComponent>();
+		components.navigationComponent = potentialEntity->GetComponent<NavigationComponent>();
+		components.targetingComponent = potentialEntity->GetComponent<TargetingComponent>();
+		components.transformComponent = potentialEntity->GetComponent<TransformComponent>();
+		if (!components.taskComponent || !components.navigationComponent || !components.targetingComponent || !components.transformComponent)
 		{
 			continue;
 		}
 
-		ProcessNavigationTaskCommands(worldPointer, potentialEntity.value(), navigationComponent);
+		ProcessNavigationTaskCommands(worldPointer, components);
 	}
 }
 
-void NavigationSystems::ProcessNavigationTaskCommands(TWeakObjectPtr<UWorld> worldPointer, ArgusEntity sourceEntity, NavigationComponent* sourceNavigationComponent)
+bool NavigationSystems::NavigationSystemsComponentArgs::AreComponentsValidCheck() const
 {
-	if (!IsWorldPointerValidCheck(worldPointer) || !IsSourceEntityValidCheck(sourceEntity) || !IsSourceNavigationComponentValidCheck(sourceNavigationComponent))
+	if (!taskComponent || !navigationComponent || !targetingComponent || !transformComponent)
+	{
+		UE_LOG(ArgusGameLog, Error, TEXT("[%s] Navigation Systems were run with invalid component arguments passed."), ARGUS_FUNCNAME);
+		return false;
+	}
+
+	return true;
+}
+
+void NavigationSystems::ProcessNavigationTaskCommands(TWeakObjectPtr<UWorld> worldPointer, const NavigationSystemsComponentArgs& components)
+{
+	if (!IsWorldPointerValidCheck(worldPointer) || !components.AreComponentsValidCheck())
 	{
 		return;
 	}
 
-	TaskComponent* taskComponent = sourceEntity.GetComponent<TaskComponent>();
-	if (!taskComponent)
-	{
-		return;
-	}
-
-	switch (taskComponent->m_currentTask)
+	switch (components.taskComponent->m_currentTask)
 	{
 		case ETask::ProcessMoveToLocationCommand:
 		{
-			taskComponent->m_currentTask = ETask::MoveToLocation;
-			TargetingComponent* targetingComponent = sourceEntity.GetComponent<TargetingComponent>();
-			if (!targetingComponent || !targetingComponent->HasLocationTarget())
+			components.taskComponent->m_currentTask = ETask::MoveToLocation;
+			
+			if (!components.targetingComponent->HasLocationTarget())
 			{
 				return;
 			}
-			NavigateFromEntityToLocation(worldPointer, sourceEntity, sourceNavigationComponent, targetingComponent->m_targetLocation.GetValue());
+			NavigateFromEntityToLocation(worldPointer, components.targetingComponent->m_targetLocation.GetValue(), components);
 			break;
 		}
 		case ETask::ProcessMoveToEntityCommand:
 			// TODO JAMES: Generate nav path to entity.
-			taskComponent->m_currentTask = ETask::MoveToEntity;
+			components.taskComponent->m_currentTask = ETask::MoveToEntity;
 			break;
 		default:
 			break;
 	}
 }
 
-void NavigationSystems::NavigateFromEntityToLocation(TWeakObjectPtr<UWorld> worldPointer, ArgusEntity sourceEntity, NavigationComponent* sourceNavigationComponent, FVector targetLocation)
+void NavigationSystems::NavigateFromEntityToLocation(TWeakObjectPtr<UWorld> worldPointer, FVector targetLocation, const NavigationSystemsComponentArgs& components)
 {
-	if (!IsWorldPointerValidCheck(worldPointer) || !IsSourceEntityValidCheck(sourceEntity) || !IsSourceNavigationComponentValidCheck(sourceNavigationComponent))
+	if (!IsWorldPointerValidCheck(worldPointer) || !components.AreComponentsValidCheck())
 	{
 		return;
 	}
 
-	sourceNavigationComponent->ResetPath();
-
-	TransformComponent* transformComponent = sourceEntity.GetComponent<TransformComponent>();
-	if (!transformComponent)
-	{
-		return;
-	}
+	components.navigationComponent->ResetPath();
 
 	UNavigationSystemV1* unrealNavigationSystem = UNavigationSystemV1::GetCurrent(worldPointer.Get());
 	if (!unrealNavigationSystem)
@@ -89,32 +92,28 @@ void NavigationSystems::NavigateFromEntityToLocation(TWeakObjectPtr<UWorld> worl
 		return;
 	}
 
-	FPathFindingQuery pathFindingQuery = FPathFindingQuery(nullptr, *(unrealNavigationSystem->MainNavData), transformComponent->m_transform.GetLocation(), targetLocation);
+	FPathFindingQuery pathFindingQuery = FPathFindingQuery(nullptr, *(unrealNavigationSystem->MainNavData), components.transformComponent->m_transform.GetLocation(), targetLocation);
 	pathFindingQuery.SetNavAgentProperties(FNavAgentProperties(ArgusECSConstants::k_defaultPathFindingAgentRadius, ArgusECSConstants::k_defaultPathFindingAgentHeight));
 	FPathFindingResult pathFindingResult = unrealNavigationSystem->FindPathSync(pathFindingQuery);
 
 	if (!pathFindingResult.IsSuccessful() || !pathFindingResult.Path)
 	{
-		TaskComponent* taskComponent = sourceEntity.GetComponent<TaskComponent>();
-		if (taskComponent)
-		{
-			taskComponent->m_currentTask = ETask::FailedToFindPath;
-		}
+		components.taskComponent->m_currentTask = ETask::FailedToFindPath;
 		return;
 	}
 
 	TArray<FNavPathPoint>& pathPoints = pathFindingResult.Path->GetPathPoints();
 	int numPathPoints = pathPoints.Num();
-	sourceNavigationComponent->m_navigationPoints.reserve(numPathPoints);
+	components.navigationComponent->m_navigationPoints.reserve(numPathPoints);
 
 	for (int i = 0; i < numPathPoints; ++i)
 	{
-		sourceNavigationComponent->m_navigationPoints.emplace_back(pathPoints[i].Location);
+		components.navigationComponent->m_navigationPoints.emplace_back(pathPoints[i].Location);
 
-		DrawDebugSphere(worldPointer.Get(), sourceNavigationComponent->m_navigationPoints[i], 20.0f, 20, FColor::Magenta, false, 3.0f, 0, 5.0f);
+		DrawDebugSphere(worldPointer.Get(), components.navigationComponent->m_navigationPoints[i], 20.0f, 20, FColor::Magenta, false, 3.0f, 0, 5.0f);
 		if ((i + 1) < numPathPoints)
 		{
-			DrawDebugLine(worldPointer.Get(), sourceNavigationComponent->m_navigationPoints[i], pathPoints[i + 1].Location, FColor::Magenta, false, 3.0f, 0, 5.0f);
+			DrawDebugLine(worldPointer.Get(), components.navigationComponent->m_navigationPoints[i], pathPoints[i + 1].Location, FColor::Magenta, false, 3.0f, 0, 5.0f);
 		}
 	}
 }
@@ -133,25 +132,5 @@ bool NavigationSystems::IsWorldPointerValidCheck(TWeakObjectPtr<UWorld> worldPoi
 		return false;
 	}
 
-	return true;
-}
-
-bool NavigationSystems::IsSourceEntityValidCheck(ArgusEntity sourceEntity)
-{
-	if (!sourceEntity)
-	{
-		UE_LOG(ArgusGameLog, Error, TEXT("[%s] Invalid %s passed for %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(sourceEntity));
-		return false;
-	}
-	return true;
-}
-
-bool NavigationSystems::IsSourceNavigationComponentValidCheck(NavigationComponent* sourceNavigationComponent)
-{
-	if (!sourceNavigationComponent)
-	{
-		UE_LOG(ArgusGameLog, Error, TEXT("[%s] Null %s passed for source entity."), ARGUS_FUNCNAME, ARGUS_NAMEOF(NavigationComponent));
-		return false;
-	}
 	return true;
 }

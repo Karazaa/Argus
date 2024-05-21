@@ -21,7 +21,7 @@ void ArgusSystemsManager::RunSystems(TWeakObjectPtr<UWorld> worldPointer, float 
 		return;
 	}
 
-	NavigationSystems::RunSystems(worldPointer, deltaTime);
+	NavigationSystems::RunSystems(worldPointer);
 	TargetingSystems::RunSystems(deltaTime);
 	TransformSystems::RunSystems(deltaTime);
 }
