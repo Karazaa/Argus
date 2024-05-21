@@ -74,6 +74,8 @@ void NavigationSystems::NavigateFromEntityToLocation(TWeakObjectPtr<UWorld> worl
 		return;
 	}
 
+	sourceNavigationComponent->ResetPath();
+
 	TransformComponent* transformComponent = sourceEntity.GetComponent<TransformComponent>();
 	if (!transformComponent)
 	{
@@ -107,7 +109,7 @@ void NavigationSystems::NavigateFromEntityToLocation(TWeakObjectPtr<UWorld> worl
 
 	for (int i = 0; i < numPathPoints; ++i)
 	{
-		sourceNavigationComponent->m_navigationPoints[i] = pathPoints[i].Location;
+		sourceNavigationComponent->m_navigationPoints.emplace_back(pathPoints[i].Location);
 
 		DrawDebugSphere(worldPointer.Get(), sourceNavigationComponent->m_navigationPoints[i], 20.0f, 20, FColor::Magenta, false, 3.0f, 0, 5.0f);
 		if ((i + 1) < numPathPoints)

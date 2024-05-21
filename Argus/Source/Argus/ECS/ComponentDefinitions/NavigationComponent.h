@@ -12,4 +12,10 @@ struct NavigationComponent
 	ARGUS_IGNORE()
 	uint16 m_lastPointIndex = 0u;
 	float  m_navigationSpeedUnitsPerSecond = 100.0f;
+
+	void ResetPath()
+	{
+		m_navigationPoints.clear();
+		m_lastPointIndex = 0u;
+	}
 };
