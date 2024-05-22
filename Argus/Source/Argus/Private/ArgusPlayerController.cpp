@@ -56,6 +56,7 @@ void AArgusPlayerController::SetupInputComponent()
 			UE_LOG(ArgusGameLog, Error, TEXT("[%s] Failed to initialize %s when setting up input."), ARGUS_FUNCNAME, ARGUS_NAMEOF(m_argusInputManager));
 			return;
 		}
+		m_argusInputManager->AddToRoot();
 	}
 
 	if (UEnhancedInputLocalPlayerSubsystem* enhancedInputSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))

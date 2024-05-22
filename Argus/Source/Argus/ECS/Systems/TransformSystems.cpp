@@ -46,10 +46,8 @@ void TransformSystems::ProcessMovementTaskCommands(float deltaTime, const Transf
 	switch (components.taskComponent->m_currentTask)
 	{
 		case ETask::MoveToLocation:
-		{
 			MoveAlongNavigationPath(deltaTime, components);
 			break;
-		}
 		default:
 			break;
 	}
@@ -86,6 +84,7 @@ void TransformSystems::MoveAlongNavigationPath(float deltaTime, const TransformS
 		if (components.navigationComponent->m_lastPointIndex == numNavigationPoints - 1)
 		{
 			components.taskComponent->m_currentTask = ETask::None;
+			components.navigationComponent->ResetPath();
 		}
 	}
 	else
