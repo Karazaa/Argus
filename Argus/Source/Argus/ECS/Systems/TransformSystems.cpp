@@ -7,16 +7,16 @@ void TransformSystems::RunSystems(float deltaTime)
 {
 	for (uint16 i = 0; i < ArgusECSConstants::k_maxEntities; ++i)
 	{
-		std::optional<ArgusEntity> potentialEntity = ArgusEntity::RetrieveEntity(i);
-		if (!potentialEntity.has_value())
+		ArgusEntity potentialEntity = ArgusEntity::RetrieveEntity(i);
+		if (!potentialEntity)
 		{
 			continue;
 		}
 
 		TransformSystemsComponentArgs components;
-		components.m_taskComponent = potentialEntity->GetComponent<TaskComponent>();
-		components.m_transformComponent = potentialEntity->GetComponent<TransformComponent>();
-		components.m_navigationComponent = potentialEntity->GetComponent<NavigationComponent>();
+		components.m_taskComponent = potentialEntity.GetComponent<TaskComponent>();
+		components.m_transformComponent = potentialEntity.GetComponent<TransformComponent>();
+		components.m_navigationComponent = potentialEntity.GetComponent<NavigationComponent>();
 		if (!components.m_taskComponent || !components.m_transformComponent || !components.m_navigationComponent)
 		{
 			continue;
@@ -65,7 +65,7 @@ void TransformSystems::MoveAlongNavigationPath(float deltaTime, const TransformS
 
 	if (lastPointIndex >= numNavigationPoints - 1)
 	{
-		// TODO JAMES: Something went wrong
+		UE_LOG(ArgusGameLog, Error, TEXT("[%s] %s exceeded %s putting pathfinding in an invalid state."), ARGUS_FUNCNAME, ARGUS_NAMEOF(lastPointIndex), ARGUS_NAMEOF(numNavigationPoints));
 		return;
 	}
 

@@ -64,6 +64,17 @@ bool ArgusEntityBoolOperatorTest::RunTest(const FString& Parameters)
 	return true;
 }
 
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityCreateInvalidEntityTest, "Argus.ECS.Entity.CreateInvalidEntity", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+bool ArgusEntityCreateInvalidEntityTest::RunTest(const FString& Parameters)
+{
+	ArgusEntity::FlushAllEntities();
+
+	ArgusEntity entity = ArgusEntity::CreateEntity(ArgusECSConstants::k_maxEntities);
+	TestFalse(TEXT("Testing that creating an entity with invalid ID makes an invalid entity."), entity);
+
+	return true;
+}
+
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityFlushAllEntitiesTest, "Argus.ECS.Entity.FlushAllEntities", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusEntityFlushAllEntitiesTest::RunTest(const FString& Parameters)
 {
@@ -126,6 +137,8 @@ bool ArgusEntityDoesEntityExistTest::RunTest(const FString& Parameters)
 
 	ArgusEntity entity0 = ArgusEntity::CreateEntity(20u);
 	TestTrue(TEXT("Testing if entity exists after creation."), ArgusEntity::DoesEntityExist(20u));
+	TestFalse(TEXT("Testing that entity that doesn't exist isn't falsely listed as existing"), ArgusEntity::DoesEntityExist(30u));
+	TestFalse(TEXT("Testing that invalid entity ID isn't falsely listed as existing"), ArgusEntity::DoesEntityExist(ArgusECSConstants::k_maxEntities));
 
 	return true;
 }
@@ -136,12 +149,14 @@ bool ArgusEntityRetrieveEntityTest::RunTest(const FString& Parameters)
 	ArgusEntity::FlushAllEntities();
 
 	ArgusEntity::CreateEntity(20u);
-	std::optional<ArgusEntity> existingEntity = ArgusEntity::RetrieveEntity(20u);
-	std::optional<ArgusEntity> fakeEntity = ArgusEntity::RetrieveEntity(30u);
+	ArgusEntity existingEntity = ArgusEntity::RetrieveEntity(20u);
+	ArgusEntity fakeEntity = ArgusEntity::RetrieveEntity(30u);
+	ArgusEntity outOfRangeEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_maxEntities);
 
-	TestTrue(TEXT("Creating an entity, attempting to retrieve it, and testing that the returned optional has value."), existingEntity.has_value());
-	TestEqual(TEXT("Testing if retrieved optional has correct value."), existingEntity->GetId(), 20u);
-	TestFalse(TEXT("Making sure retrieving a fake entity doesn't return anything."), fakeEntity.has_value());
+	TestTrue(TEXT("Creating an entity, attempting to retrieve it, and testing that the returned entity is valid."), existingEntity);
+	TestEqual(TEXT("Testing if retrieved entity has correct value."), existingEntity.GetId(), 20u);
+	TestFalse(TEXT("Making sure retrieving a fake entity doesn't return a valid entity."), fakeEntity);
+	TestFalse(TEXT("Making sure retrieving an out of range ID doesn't return a valid entity."), fakeEntity);
 
 	return true;
 }

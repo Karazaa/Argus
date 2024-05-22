@@ -18,17 +18,17 @@ void NavigationSystems::RunSystems(TWeakObjectPtr<UWorld> worldPointer)
 
 	for (uint16 i = 0; i < ArgusECSConstants::k_maxEntities; ++i)
 	{
-		std::optional<ArgusEntity> potentialEntity = ArgusEntity::RetrieveEntity(i);
-		if (!potentialEntity.has_value())
+		ArgusEntity potentialEntity = ArgusEntity::RetrieveEntity(i);
+		if (!potentialEntity)
 		{
 			continue;
 		}
 
 		NavigationSystemsComponentArgs components;
-		components.m_taskComponent = potentialEntity->GetComponent<TaskComponent>();
-		components.m_navigationComponent = potentialEntity->GetComponent<NavigationComponent>();
-		components.m_targetingComponent = potentialEntity->GetComponent<TargetingComponent>();
-		components.m_transformComponent = potentialEntity->GetComponent<TransformComponent>();
+		components.m_taskComponent = potentialEntity.GetComponent<TaskComponent>();
+		components.m_navigationComponent = potentialEntity.GetComponent<NavigationComponent>();
+		components.m_targetingComponent = potentialEntity.GetComponent<TargetingComponent>();
+		components.m_transformComponent = potentialEntity.GetComponent<TransformComponent>();
 		if (!components.m_taskComponent || !components.m_navigationComponent || !components.m_targetingComponent || !components.m_transformComponent)
 		{
 			continue;

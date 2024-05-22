@@ -6,14 +6,17 @@ void TargetingSystems::RunSystems(float deltaTime)
 {
 	for (uint16 i = 0; i < ArgusECSConstants::k_maxEntities; ++i)
 	{
-		std::optional<ArgusEntity> potentialEntity = ArgusEntity::RetrieveEntity(i);
-		if (!potentialEntity.has_value())
+		ArgusEntity potentialEntity = ArgusEntity::RetrieveEntity(i);
+		if (!potentialEntity)
 		{
 			continue;
 		}
 
-		TargetingComponent* targetingComponent = potentialEntity->GetComponent<TargetingComponent>();
-		if (!targetingComponent)
+		TargetingSystemsComponentArgs components;
+		components.m_targetingComponent = potentialEntity.GetComponent<TargetingComponent>();
+		components.m_transformComponent = potentialEntity.GetComponent<TransformComponent>();
+
+		if (!components.m_targetingComponent || !components.m_transformComponent)
 		{
 			continue;
 		}
@@ -45,8 +48,8 @@ void TargetingSystems::TargetNearestEntityMatchingFactionMask(uint16 sourceEntit
 	uint16 minDistEntityId = ArgusECSConstants::k_maxEntities;
 	for (uint16 i = 0; i < ArgusECSConstants::k_maxEntities; ++i)
 	{
-		std::optional<ArgusEntity> potentialEntity = ArgusEntity::RetrieveEntity(i);
-		if (!potentialEntity.has_value())
+		ArgusEntity potentialEntity = ArgusEntity::RetrieveEntity(i);
+		if (!potentialEntity)
 		{
 			continue;
 		}
@@ -56,13 +59,13 @@ void TargetingSystems::TargetNearestEntityMatchingFactionMask(uint16 sourceEntit
 			continue;
 		}
 
-		TransformComponent* otherTransfromComponent = potentialEntity->GetComponent<TransformComponent>();
+		TransformComponent* otherTransfromComponent = potentialEntity.GetComponent<TransformComponent>();
 		if (!otherTransfromComponent)
 		{
 			continue;
 		}
 
-		IdentityComponent* otherIdentityComponent = potentialEntity->GetComponent<IdentityComponent>();
+		IdentityComponent* otherIdentityComponent = potentialEntity.GetComponent<IdentityComponent>();
 		if (!otherIdentityComponent)
 		{
 			continue;

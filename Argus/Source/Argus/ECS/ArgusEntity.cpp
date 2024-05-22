@@ -21,14 +21,14 @@ bool ArgusEntity::DoesEntityExist(uint16 id)
 	return s_takenEntityIds[id];
 }
 
-std::optional<ArgusEntity> ArgusEntity::RetrieveEntity(uint16 id)
+ArgusEntity ArgusEntity::RetrieveEntity(uint16 id)
 {
 	if (id < ArgusECSConstants::k_maxEntities && s_takenEntityIds[id])
 	{
 		return ArgusEntity(id);
 	}
 
-	return std::nullopt;
+	return ArgusEntity::s_emptyEntity;
 }
 
 void ArgusEntity::FlushAllEntities()

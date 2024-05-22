@@ -6,14 +6,13 @@
 #include "ArgusECSConstants.h"
 #include "CoreMinimal.h"
 #include <bitset>
-#include <optional>
 
 class ArgusEntity
 {
 public:
 	static ArgusEntity					CreateEntity(uint16 lowestId = 0u);
 	static bool							DoesEntityExist(uint16 id);
-	static std::optional<ArgusEntity>	RetrieveEntity(uint16 id);
+	static ArgusEntity					RetrieveEntity(uint16 id);
 	static void							FlushAllEntities();
 
 	static const ArgusEntity			s_emptyEntity;
