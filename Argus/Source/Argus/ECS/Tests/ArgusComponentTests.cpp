@@ -42,12 +42,31 @@ bool ArgusComponentTargetingComponentHasEntityTargetTest::RunTest(const FString&
 		return false;
 	}
 
-	TestFalse(TEXT("Creating a TargetingComponent and confirming that it does not have a target."), targetingComponent->HasEntityTarget());
+	TestFalse(TEXT("Creating a TargetingComponent and confirming that it does not have an entity target."), targetingComponent->HasEntityTarget());
 	
 	targetingComponent->m_targetEntityId = entity2.GetId();
 
-	TestEqual(TEXT("Creating a TargetingComponent, setting target to another entity, then checking the value is the right ID"), targetingComponent->m_targetEntityId, entity2.GetId());
 	TestTrue(TEXT("Creating a TargetingComponent, setting target to another entity, and confirming that it does have a target."), targetingComponent->HasEntityTarget());
+	TestEqual(TEXT("Creating a TargetingComponent, setting target to another entity, then checking the value is the right ID."), targetingComponent->m_targetEntityId, entity2.GetId());
+
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentTargetingComponentHasLocationTargetTest, "Argus.ECS.Component.TargetingComponent.HasLocationTarget", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+bool ArgusComponentTargetingComponentHasLocationTargetTest::RunTest(const FString& Parameters)
+{
+	ArgusEntity::FlushAllEntities();
+
+	ArgusEntity entity = ArgusEntity::CreateEntity();
+	TargetingComponent* targetingComponent = entity.AddComponent<TargetingComponent>();
+	const FVector targetLocation = FVector(10.0f, 10.0f, 10.0f);
+
+	TestFalse(TEXT("Creating a TargetingComponent and confirming that it does not have a location target."), targetingComponent->HasLocationTarget());
+
+	targetingComponent->m_targetLocation = targetLocation;
+
+	TestTrue(TEXT("Creating a TargetingComponent, setting target to a location, and confirming that it does have a target."), targetingComponent->HasLocationTarget());
+	TestEqual(TEXT("Creating a TargetingComponent, setting target to a location, then checking the value is the right location."), targetingComponent->m_targetLocation.GetValue(), targetLocation);
 
 	return true;
 }
