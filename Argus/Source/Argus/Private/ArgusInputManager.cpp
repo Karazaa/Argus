@@ -7,6 +7,8 @@
 #include "Components/InputComponent.h"
 #include "EnhancedInputComponent.h"
 
+static TAutoConsoleVariable<bool> CVarEnableInputLogging(TEXT("Argus.Input.EnableInputLogging"), false, TEXT(""));
+
 void UArgusInputManager::SetupInputComponent(TWeakObjectPtr<AArgusPlayerController> owningPlayerController, TSoftObjectPtr<UArgusInputActionSet>& argusInputActionSet)
 {
 	if (!owningPlayerController.IsValid())
@@ -180,14 +182,17 @@ void UArgusInputManager::ProcessSelectInputEvent(bool isAdditive)
 			m_selectedArgusActors.Emplace(argusActor);
 		}
 
-		UE_LOG
-		(
-			ArgusGameLog, Display, TEXT("[%s] selected an %s with ID %d. Is additive? %s"),
-			ARGUS_FUNCNAME,
-			ARGUS_NAMEOF(AArgusActor),
-			argusActor->GetEntity().GetId(),
-			isAdditive ? TEXT("Yes") : TEXT("No")
-		);
+		if (CVarEnableInputLogging.GetValueOnGameThread())
+		{
+			UE_LOG
+			(
+				ArgusGameLog, Display, TEXT("[%s] selected an %s with ID %d. Is additive? %s"),
+				ARGUS_FUNCNAME,
+				ARGUS_NAMEOF(AArgusActor),
+				argusActor->GetEntity().GetId(),
+				isAdditive ? TEXT("Yes") : TEXT("No")
+			);
+		}
 	}
 }
 
@@ -205,14 +210,18 @@ void UArgusInputManager::ProcessMoveToInputEvent()
 	}
 
 	FVector targetLocation = hitResult.Location;
-	UE_LOG
-	(
-		ArgusGameLog, Display, TEXT("[%s] Move To input occurred. Mouse projection worldspace location is (%f, %f, %f)"),
-		ARGUS_FUNCNAME,
-		targetLocation.X,
-		targetLocation.Y,
-		targetLocation.Z
-	);
+
+	if (CVarEnableInputLogging.GetValueOnGameThread())
+	{
+		UE_LOG
+		(
+			ArgusGameLog, Display, TEXT("[%s] Move To input occurred. Mouse projection worldspace location is (%f, %f, %f)"),
+			ARGUS_FUNCNAME,
+			targetLocation.X,
+			targetLocation.Y,
+			targetLocation.Z
+		);
+	}
 
 	ETask inputTask = ETask::ProcessMoveToLocationCommand;
 	ArgusEntity targetEntity = ArgusEntity::s_emptyEntity;

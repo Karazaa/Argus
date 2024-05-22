@@ -7,6 +7,8 @@
 #include "NavigationSystem.h"
 #include "NavigationSystemTypes.h"
 
+static TAutoConsoleVariable<bool> CVarShowNavigationDebug(TEXT("Argus.Navigation.ShowNavigationDebug"), false, TEXT(""));
+
 void NavigationSystems::RunSystems(TWeakObjectPtr<UWorld> worldPointer)
 {
 	if (!IsWorldPointerValidCheck(worldPointer))
@@ -110,10 +112,13 @@ void NavigationSystems::NavigateFromEntityToLocation(TWeakObjectPtr<UWorld> worl
 	{
 		components.navigationComponent->m_navigationPoints.emplace_back(pathPoints[i].Location);
 
-		DrawDebugSphere(worldPointer.Get(), components.navigationComponent->m_navigationPoints[i], 20.0f, 20, FColor::Magenta, false, 3.0f, 0, 5.0f);
-		if ((i + 1) < numPathPoints)
+		if (CVarShowNavigationDebug.GetValueOnGameThread())
 		{
-			DrawDebugLine(worldPointer.Get(), components.navigationComponent->m_navigationPoints[i], pathPoints[i + 1].Location, FColor::Magenta, false, 3.0f, 0, 5.0f);
+			DrawDebugSphere(worldPointer.Get(), components.navigationComponent->m_navigationPoints[i], 20.0f, 20, FColor::Magenta, false, 3.0f, 0, 5.0f);
+			if ((i + 1) < numPathPoints)
+			{
+				DrawDebugLine(worldPointer.Get(), components.navigationComponent->m_navigationPoints[i], pathPoints[i + 1].Location, FColor::Magenta, false, 3.0f, 0, 5.0f);
+			}
 		}
 	}
 }
