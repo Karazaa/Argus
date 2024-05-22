@@ -2,6 +2,7 @@
 
 #include "TransformSystems.h"
 #include "ArgusEntity.h"
+#include "Math/UnrealMathUtility.h"
 
 void TransformSystems::RunSystems(float deltaTime)
 {
@@ -75,9 +76,9 @@ void TransformSystems::MoveAlongNavigationPath(float deltaTime, const TransformS
 	const FVector positionDifferenceNormalized = positionDifference.GetSafeNormal();
 	const FVector translationThisFrame = positionDifferenceNormalized * components.m_navigationComponent->m_navigationSpeedUnitsPerSecond * deltaTime;
 
-	FaceEntityTowardsLocationXY(components.m_transformComponent, positionDifference);
+	FaceTowardsLocationXY(components.m_transformComponent, positionDifference);
 
-	if (translationThisFrame.SquaredLength() > positionDifference.SquaredLength())
+	if (translationThisFrame.SquaredLength() >= positionDifference.SquaredLength())
 	{
 		components.m_transformComponent->m_transform.SetLocation(upcomingPoint);
 		components.m_navigationComponent->m_lastPointIndex++;
@@ -93,8 +94,13 @@ void TransformSystems::MoveAlongNavigationPath(float deltaTime, const TransformS
 	}
 }
 
-void TransformSystems::FaceEntityTowardsLocationXY(TransformComponent* transformComponent, FVector vectorFromTransformToTarget)
+void TransformSystems::FaceTowardsLocationXY(TransformComponent* transformComponent, FVector vectorFromTransformToTarget)
 {
+	if (FMath::IsNearlyZero(vectorFromTransformToTarget.X + vectorFromTransformToTarget.Y))
+	{
+		return;
+	}
+
 	if (!transformComponent)
 	{
 		UE_LOG(ArgusGameLog, Error, TEXT("[%s] Transform Systems were run with invalid component arguments passed."), ARGUS_FUNCNAME);

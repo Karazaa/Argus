@@ -19,5 +19,5 @@ public:
 	};
 	static void ProcessMovementTaskCommands(float deltaTime, const TransformSystemsComponentArgs& components);
 	static void MoveAlongNavigationPath(float deltaTime, const TransformSystemsComponentArgs& components);
-	static void FaceEntityTowardsLocationXY(TransformComponent* transformComponent, FVector vectorFromTransformToTarget);
+	static void FaceTowardsLocationXY(TransformComponent* transformComponent, FVector vectorFromTransformToTarget);
 };
