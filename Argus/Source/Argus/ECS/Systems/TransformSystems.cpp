@@ -14,10 +14,10 @@ void TransformSystems::RunSystems(float deltaTime)
 		}
 
 		TransformSystemsComponentArgs components;
-		components.taskComponent = potentialEntity->GetComponent<TaskComponent>();
-		components.transformComponent = potentialEntity->GetComponent<TransformComponent>();
-		components.navigationComponent = potentialEntity->GetComponent<NavigationComponent>();
-		if (!components.taskComponent || !components.transformComponent || !components.navigationComponent)
+		components.m_taskComponent = potentialEntity->GetComponent<TaskComponent>();
+		components.m_transformComponent = potentialEntity->GetComponent<TransformComponent>();
+		components.m_navigationComponent = potentialEntity->GetComponent<NavigationComponent>();
+		if (!components.m_taskComponent || !components.m_transformComponent || !components.m_navigationComponent)
 		{
 			continue;
 		}
@@ -28,7 +28,7 @@ void TransformSystems::RunSystems(float deltaTime)
 
 bool TransformSystems::TransformSystemsComponentArgs::AreComponentsValidCheck() const
 {
-	if (!taskComponent || !navigationComponent || !transformComponent)
+	if (!m_taskComponent || !m_navigationComponent || !m_transformComponent)
 	{
 		UE_LOG(ArgusGameLog, Error, TEXT("[%s] Transform Systems were run with invalid component arguments passed."), ARGUS_FUNCNAME);
 		return false;
@@ -43,7 +43,7 @@ void TransformSystems::ProcessMovementTaskCommands(float deltaTime, const Transf
 		return;
 	}
 
-	switch (components.taskComponent->m_currentTask)
+	switch (components.m_taskComponent->m_currentTask)
 	{
 		case ETask::MoveToLocation:
 			MoveAlongNavigationPath(deltaTime, components);
@@ -60,8 +60,8 @@ void TransformSystems::MoveAlongNavigationPath(float deltaTime, const TransformS
 		return;
 	}
 
-	const uint16 lastPointIndex = components.navigationComponent->m_lastPointIndex;
-	const uint16 numNavigationPoints = components.navigationComponent->m_navigationPoints.size();
+	const uint16 lastPointIndex = components.m_navigationComponent->m_lastPointIndex;
+	const uint16 numNavigationPoints = components.m_navigationComponent->m_navigationPoints.size();
 
 	if (lastPointIndex >= numNavigationPoints - 1)
 	{
@@ -69,27 +69,27 @@ void TransformSystems::MoveAlongNavigationPath(float deltaTime, const TransformS
 		return;
 	}
 
-	const FVector currentLocation = components.transformComponent->m_transform.GetLocation();
-	const FVector upcomingPoint = components.navigationComponent->m_navigationPoints[lastPointIndex + 1];
+	const FVector currentLocation = components.m_transformComponent->m_transform.GetLocation();
+	const FVector upcomingPoint = components.m_navigationComponent->m_navigationPoints[lastPointIndex + 1];
 	const FVector positionDifference = upcomingPoint - currentLocation;
 	const FVector positionDifferenceNormalized = positionDifference.GetSafeNormal();
-	const FVector translationThisFrame = positionDifferenceNormalized * components.navigationComponent->m_navigationSpeedUnitsPerSecond * deltaTime;
+	const FVector translationThisFrame = positionDifferenceNormalized * components.m_navigationComponent->m_navigationSpeedUnitsPerSecond * deltaTime;
 
-	FaceEntityTowardsLocationXY(components.transformComponent, positionDifference);
+	FaceEntityTowardsLocationXY(components.m_transformComponent, positionDifference);
 
 	if (translationThisFrame.SquaredLength() > positionDifference.SquaredLength())
 	{
-		components.transformComponent->m_transform.SetLocation(upcomingPoint);
-		components.navigationComponent->m_lastPointIndex++;
-		if (components.navigationComponent->m_lastPointIndex == numNavigationPoints - 1)
+		components.m_transformComponent->m_transform.SetLocation(upcomingPoint);
+		components.m_navigationComponent->m_lastPointIndex++;
+		if (components.m_navigationComponent->m_lastPointIndex == numNavigationPoints - 1)
 		{
-			components.taskComponent->m_currentTask = ETask::None;
-			components.navigationComponent->ResetPath();
+			components.m_taskComponent->m_currentTask = ETask::None;
+			components.m_navigationComponent->ResetPath();
 		}
 	}
 	else
 	{
-		components.transformComponent->m_transform.SetLocation(currentLocation + translationThisFrame);
+		components.m_transformComponent->m_transform.SetLocation(currentLocation + translationThisFrame);
 	}
 }
 

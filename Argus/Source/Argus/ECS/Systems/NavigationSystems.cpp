@@ -25,11 +25,11 @@ void NavigationSystems::RunSystems(TWeakObjectPtr<UWorld> worldPointer)
 		}
 
 		NavigationSystemsComponentArgs components;
-		components.taskComponent = potentialEntity->GetComponent<TaskComponent>();
-		components.navigationComponent = potentialEntity->GetComponent<NavigationComponent>();
-		components.targetingComponent = potentialEntity->GetComponent<TargetingComponent>();
-		components.transformComponent = potentialEntity->GetComponent<TransformComponent>();
-		if (!components.taskComponent || !components.navigationComponent || !components.targetingComponent || !components.transformComponent)
+		components.m_taskComponent = potentialEntity->GetComponent<TaskComponent>();
+		components.m_navigationComponent = potentialEntity->GetComponent<NavigationComponent>();
+		components.m_targetingComponent = potentialEntity->GetComponent<TargetingComponent>();
+		components.m_transformComponent = potentialEntity->GetComponent<TransformComponent>();
+		if (!components.m_taskComponent || !components.m_navigationComponent || !components.m_targetingComponent || !components.m_transformComponent)
 		{
 			continue;
 		}
@@ -40,7 +40,7 @@ void NavigationSystems::RunSystems(TWeakObjectPtr<UWorld> worldPointer)
 
 bool NavigationSystems::NavigationSystemsComponentArgs::AreComponentsValidCheck() const
 {
-	if (!taskComponent || !navigationComponent || !targetingComponent || !transformComponent)
+	if (!m_taskComponent || !m_navigationComponent || !m_targetingComponent || !m_transformComponent)
 	{
 		UE_LOG(ArgusGameLog, Error, TEXT("[%s] Navigation Systems were run with invalid component arguments passed."), ARGUS_FUNCNAME);
 		return false;
@@ -56,22 +56,22 @@ void NavigationSystems::ProcessNavigationTaskCommands(TWeakObjectPtr<UWorld> wor
 		return;
 	}
 
-	switch (components.taskComponent->m_currentTask)
+	switch (components.m_taskComponent->m_currentTask)
 	{
 		case ETask::ProcessMoveToLocationCommand:
 		{
-			components.taskComponent->m_currentTask = ETask::MoveToLocation;
+			components.m_taskComponent->m_currentTask = ETask::MoveToLocation;
 			
-			if (!components.targetingComponent->HasLocationTarget())
+			if (!components.m_targetingComponent->HasLocationTarget())
 			{
 				return;
 			}
-			NavigateFromEntityToLocation(worldPointer, components.targetingComponent->m_targetLocation.GetValue(), components);
+			NavigateFromEntityToLocation(worldPointer, components.m_targetingComponent->m_targetLocation.GetValue(), components);
 			break;
 		}
 		case ETask::ProcessMoveToEntityCommand:
 			// TODO JAMES: Generate nav path to entity.
-			components.taskComponent->m_currentTask = ETask::MoveToEntity;
+			components.m_taskComponent->m_currentTask = ETask::MoveToEntity;
 			break;
 		default:
 			break;
@@ -85,7 +85,7 @@ void NavigationSystems::NavigateFromEntityToLocation(TWeakObjectPtr<UWorld> worl
 		return;
 	}
 
-	components.navigationComponent->ResetPath();
+	components.m_navigationComponent->ResetPath();
 
 	UNavigationSystemV1* unrealNavigationSystem = UNavigationSystemV1::GetCurrent(worldPointer.Get());
 	if (!unrealNavigationSystem)
@@ -94,30 +94,30 @@ void NavigationSystems::NavigateFromEntityToLocation(TWeakObjectPtr<UWorld> worl
 		return;
 	}
 
-	FPathFindingQuery pathFindingQuery = FPathFindingQuery(nullptr, *(unrealNavigationSystem->MainNavData), components.transformComponent->m_transform.GetLocation(), targetLocation);
+	FPathFindingQuery pathFindingQuery = FPathFindingQuery(nullptr, *(unrealNavigationSystem->MainNavData), components.m_transformComponent->m_transform.GetLocation(), targetLocation);
 	pathFindingQuery.SetNavAgentProperties(FNavAgentProperties(ArgusECSConstants::k_defaultPathFindingAgentRadius, ArgusECSConstants::k_defaultPathFindingAgentHeight));
 	FPathFindingResult pathFindingResult = unrealNavigationSystem->FindPathSync(pathFindingQuery);
 
 	if (!pathFindingResult.IsSuccessful() || !pathFindingResult.Path)
 	{
-		components.taskComponent->m_currentTask = ETask::FailedToFindPath;
+		components.m_taskComponent->m_currentTask = ETask::FailedToFindPath;
 		return;
 	}
 
 	TArray<FNavPathPoint>& pathPoints = pathFindingResult.Path->GetPathPoints();
 	int numPathPoints = pathPoints.Num();
-	components.navigationComponent->m_navigationPoints.reserve(numPathPoints);
+	components.m_navigationComponent->m_navigationPoints.reserve(numPathPoints);
 
 	for (int i = 0; i < numPathPoints; ++i)
 	{
-		components.navigationComponent->m_navigationPoints.emplace_back(pathPoints[i].Location);
+		components.m_navigationComponent->m_navigationPoints.emplace_back(pathPoints[i].Location);
 
 		if (CVarShowNavigationDebug.GetValueOnGameThread())
 		{
-			DrawDebugSphere(worldPointer.Get(), components.navigationComponent->m_navigationPoints[i], 20.0f, 20, FColor::Magenta, false, 3.0f, 0, 5.0f);
+			DrawDebugSphere(worldPointer.Get(), components.m_navigationComponent->m_navigationPoints[i], 20.0f, 20, FColor::Magenta, false, 3.0f, 0, 5.0f);
 			if ((i + 1) < numPathPoints)
 			{
-				DrawDebugLine(worldPointer.Get(), components.navigationComponent->m_navigationPoints[i], pathPoints[i + 1].Location, FColor::Magenta, false, 3.0f, 0, 5.0f);
+				DrawDebugLine(worldPointer.Get(), components.m_navigationComponent->m_navigationPoints[i], pathPoints[i + 1].Location, FColor::Magenta, false, 3.0f, 0, 5.0f);
 			}
 		}
 	}

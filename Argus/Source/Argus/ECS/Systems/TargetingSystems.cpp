@@ -22,24 +22,27 @@ void TargetingSystems::RunSystems(float deltaTime)
 	}
 }
 
-void TargetingSystems::TargetNearestEntityMatchingFactionMask(ArgusEntity sourceEntity, TransformComponent* sourceTransformComponent, uint8 factionMask)
+bool TargetingSystems::TargetingSystemsComponentArgs::AreComponentsValidCheck() const
 {
-	if (!sourceEntity)
+	if (!m_targetingComponent || !m_transformComponent)
 	{
-		UE_LOG(ArgusGameLog, Error, TEXT("[%s] Invalid %s passed for %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(sourceEntity));
+		UE_LOG(ArgusGameLog, Error, TEXT("[%s] Targeting Systems were run with invalid component arguments passed."), ARGUS_FUNCNAME);
+		return false;
+	}
+
+	return true;
+}
+
+void TargetingSystems::TargetNearestEntityMatchingFactionMask(uint16 sourceEntityID, uint8 factionMask, const TargetingSystemsComponentArgs& components)
+{
+	if (!components.AreComponentsValidCheck())
+	{
 		return;
 	}
 
-	if (!sourceTransformComponent)
-	{
-		UE_LOG(ArgusGameLog, Error, TEXT("[%s] Null %s passed for entity %d."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), sourceEntity.GetId());
-		return;
-	}
-
-	const FVector fromLocation = sourceTransformComponent->m_transform.GetLocation();
+	const FVector fromLocation = components.m_transformComponent->m_transform.GetLocation();
 	float minDistSquared = FLT_MAX;
 	uint16 minDistEntityId = ArgusECSConstants::k_maxEntities;
-
 	for (uint16 i = 0; i < ArgusECSConstants::k_maxEntities; ++i)
 	{
 		std::optional<ArgusEntity> potentialEntity = ArgusEntity::RetrieveEntity(i);
@@ -48,7 +51,7 @@ void TargetingSystems::TargetNearestEntityMatchingFactionMask(ArgusEntity source
 			continue;
 		}
 
-		if (i == sourceEntity.GetId())
+		if (i == sourceEntityID)
 		{
 			continue;
 		}
@@ -78,15 +81,5 @@ void TargetingSystems::TargetNearestEntityMatchingFactionMask(ArgusEntity source
 			minDistEntityId = i;
 		}
 	}
-
-	TargetingComponent* targetingComponent = sourceEntity.GetComponent<TargetingComponent>();
-	if (!targetingComponent)
-	{
-		targetingComponent = sourceEntity.AddComponent<TargetingComponent>();
-		if (!targetingComponent)
-		{
-			return;
-		}
-	}
-	targetingComponent->m_targetEntityId = minDistEntityId;
+	components.m_targetingComponent->m_targetEntityId = minDistEntityId;
 }

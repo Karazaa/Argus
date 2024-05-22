@@ -11,10 +11,10 @@ public:
 
 	struct NavigationSystemsComponentArgs
 	{
-		TaskComponent* taskComponent = nullptr;
-		NavigationComponent* navigationComponent = nullptr;
-		TargetingComponent* targetingComponent = nullptr;
-		const TransformComponent* transformComponent = nullptr;
+		TaskComponent* m_taskComponent = nullptr;
+		NavigationComponent* m_navigationComponent = nullptr;
+		TargetingComponent* m_targetingComponent = nullptr;
+		const TransformComponent* m_transformComponent = nullptr;
 
 		bool AreComponentsValidCheck() const;
 	};

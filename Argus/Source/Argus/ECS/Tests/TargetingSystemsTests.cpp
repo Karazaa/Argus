@@ -20,7 +20,7 @@ bool TargetingSystemsTargetNearestEntityMatchingFactionMaskTest::RunTest(const F
 	IdentityComponent* sourceIdentityComponent = sourceEntity.AddComponent<IdentityComponent>();
 	IdentityComponent* closeIdentityComponent = closeEntity.AddComponent<IdentityComponent>();
 	IdentityComponent* fartherIdentityComponent = fartherEntity.AddComponent<IdentityComponent>();
-	const TargetingComponent* sourceTargetingComponent = sourceEntity.AddComponent<TargetingComponent>();
+	TargetingComponent* sourceTargetingComponent = sourceEntity.AddComponent<TargetingComponent>();
 
 	if (!sourceTransformComponent || !closeTransformComponent || !fartherTransformComponent || 
 		!sourceIdentityComponent || !closeIdentityComponent || !fartherIdentityComponent || !sourceTargetingComponent)
@@ -37,28 +37,33 @@ bool TargetingSystemsTargetNearestEntityMatchingFactionMaskTest::RunTest(const F
 	sourceIdentityComponent->AddEnemyFaction(EFaction::FactionB);
 	sourceIdentityComponent->AddEnemyFaction(EFaction::FactionC);
 
+	TargetingSystems::TargetingSystemsComponentArgs components;
+	components.m_targetingComponent = sourceTargetingComponent;
+	components.m_transformComponent = sourceTransformComponent;
+
+
 	TestFalse(TEXT("Testing that the default targeting ID is invalid."), sourceTargetingComponent->HasEntityTarget());
 
-	TargetingSystems::TargetNearestEntityMatchingFactionMask(sourceEntity, sourceTransformComponent, sourceIdentityComponent->m_enemies);
+	TargetingSystems::TargetNearestEntityMatchingFactionMask(sourceEntity.GetId(), sourceIdentityComponent->m_enemies, components);
 
 	TestEqual(TEXT("Testing that the source entity is targeting the correct entity after running TargetNearestEntityMatchingFactionMask."), sourceTargetingComponent->m_targetEntityId, closeEntity.GetId());
 
 	fartherTransformComponent->m_transform.SetLocation(FVector(49.0f, 0.0f, 0.0f));
-	TargetingSystems::TargetNearestEntityMatchingFactionMask(sourceEntity, sourceTransformComponent, sourceIdentityComponent->m_enemies);
+	TargetingSystems::TargetNearestEntityMatchingFactionMask(sourceEntity.GetId(), sourceIdentityComponent->m_enemies, components);
 
 	TestEqual(TEXT("Testing that the source entity is targeting the correct entity after changing locations and running TargetNearestEntityMatchingFactionMask."), sourceTargetingComponent->m_targetEntityId, fartherEntity.GetId());
 
 	fartherTransformComponent->m_transform.SetLocation(FVector(50.0f, 0.0f, 0.0f));
-	TargetingSystems::TargetNearestEntityMatchingFactionMask(sourceEntity, sourceTransformComponent, sourceIdentityComponent->m_enemies);
+	TargetingSystems::TargetNearestEntityMatchingFactionMask(sourceEntity.GetId(), sourceIdentityComponent->m_enemies, components);
 
 	TestEqual(TEXT("Testing that the source entity is targeting the correct entity using tiebreaking rules after running TargetNearestEntityMatchingFactionMask"), sourceTargetingComponent->m_targetEntityId, closeEntity.GetId());
 
 	sourceIdentityComponent->AddAllyFaction(EFaction::FactionB);
-	TargetingSystems::TargetNearestEntityMatchingFactionMask(sourceEntity, sourceTransformComponent, sourceIdentityComponent->m_enemies);
+	TargetingSystems::TargetNearestEntityMatchingFactionMask(sourceEntity.GetId(), sourceIdentityComponent->m_enemies, components);
 
 	TestEqual(TEXT("Testing that the source entity is targeting the correct entity after changing enemy faction mask"), sourceTargetingComponent->m_targetEntityId, fartherEntity.GetId());
 
-	TargetingSystems::TargetNearestEntityMatchingFactionMask(sourceEntity, sourceTransformComponent, sourceIdentityComponent->m_allies);
+	TargetingSystems::TargetNearestEntityMatchingFactionMask(sourceEntity.GetId(), sourceIdentityComponent->m_allies, components);
 
 	TestEqual(TEXT("Testing that the source entity is targeting the correct entity after changing ally faction mask"), sourceTargetingComponent->m_targetEntityId, closeEntity.GetId());
 

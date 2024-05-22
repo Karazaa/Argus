@@ -9,5 +9,12 @@ class TargetingSystems
 public:
 	static void RunSystems(float deltaTime);
 
-	static void TargetNearestEntityMatchingFactionMask(ArgusEntity sourceEntity, TransformComponent* sourceTransformComponent, uint8 factionMask);
+	struct TargetingSystemsComponentArgs
+	{
+		TargetingComponent* m_targetingComponent = nullptr;
+		const TransformComponent* m_transformComponent = nullptr;
+
+		bool AreComponentsValidCheck() const;
+	};
+	static void TargetNearestEntityMatchingFactionMask(uint16 sourceEntityID, uint8 factionMask, const TargetingSystemsComponentArgs& components);
 };

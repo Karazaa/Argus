@@ -11,9 +11,9 @@ public:
 
 	struct TransformSystemsComponentArgs
 	{
-		TaskComponent* taskComponent = nullptr;
-		TransformComponent* transformComponent = nullptr;
-		NavigationComponent* navigationComponent = nullptr;
+		TaskComponent* m_taskComponent = nullptr;
+		TransformComponent* m_transformComponent = nullptr;
+		NavigationComponent* m_navigationComponent = nullptr;
 
 		bool AreComponentsValidCheck() const;
 	};
