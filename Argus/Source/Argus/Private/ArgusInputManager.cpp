@@ -115,6 +115,8 @@ bool UArgusInputManager::ValidateOwningPlayerController()
 
 void UArgusInputManager::ProcessInputEvent(InputType inputType)
 {
+	ARGUS_TRACE(UArgusInputManager::ProcessInputEvent)
+
 	switch (inputType)
 	{
 		case InputType::Select:

@@ -4,6 +4,8 @@
 
 void TargetingSystems::RunSystems(float deltaTime)
 {
+	ARGUS_TRACE(TargetingSystems::RunSystems)
+
 	for (uint16 i = 0; i < ArgusECSConstants::k_maxEntities; ++i)
 	{
 		ArgusEntity potentialEntity = ArgusEntity::RetrieveEntity(i);

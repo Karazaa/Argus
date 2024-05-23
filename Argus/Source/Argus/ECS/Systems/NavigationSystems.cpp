@@ -11,6 +11,8 @@ static TAutoConsoleVariable<bool> CVarShowNavigationDebug(TEXT("Argus.Navigation
 
 void NavigationSystems::RunSystems(TWeakObjectPtr<UWorld> worldPointer)
 {
+	ARGUS_TRACE(NavigationSystems::RunSystems)
+
 	if (!IsWorldPointerValidCheck(worldPointer))
 	{
 		return;

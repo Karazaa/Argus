@@ -9,6 +9,8 @@
 
 void ArgusSystemsManager::RunSystems(TWeakObjectPtr<UWorld> worldPointer, float deltaTime)
 {
+	ARGUS_TRACE(ArgusSystemsManager::RunSystems)
+
 	if (!worldPointer.IsValid())
 	{
 		UE_LOG

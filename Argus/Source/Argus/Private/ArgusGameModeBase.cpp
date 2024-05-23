@@ -25,6 +25,8 @@ void AArgusGameModeBase::StartPlay()
 
 void AArgusGameModeBase::Tick(float deltaTime)
 {
+	ARGUS_TRACE(AArgusGameModeBase::Tick)
+
 	Super::Tick(deltaTime);
 
 	UWorld* worldPointer = GetWorld();

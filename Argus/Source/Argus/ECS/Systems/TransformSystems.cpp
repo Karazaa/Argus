@@ -6,6 +6,8 @@
 
 void TransformSystems::RunSystems(float deltaTime)
 {
+	ARGUS_TRACE(TransformSystems::RunSystems)
+
 	for (uint16 i = 0; i < ArgusECSConstants::k_maxEntities; ++i)
 	{
 		ArgusEntity potentialEntity = ArgusEntity::RetrieveEntity(i);
