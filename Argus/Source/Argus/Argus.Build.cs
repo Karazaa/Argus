@@ -12,7 +12,7 @@ public class Argus : ModuleRules
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
-        PrivateIncludePaths.Add("Argus/ECS/");
+        PrivateIncludePaths.AddRange(new string[] { "Argus/ECS/", "Argus/Utilities/", "Argus/UnrealObjects/" });
 
         // Uncomment if you are using Slate UI
         // PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
