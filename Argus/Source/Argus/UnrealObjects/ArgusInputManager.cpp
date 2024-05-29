@@ -2,12 +2,11 @@
 
 #include "ArgusInputManager.h"
 #include "ArgusActor.h"
+#include "ArgusLogging.h"
+#include "ArgusMacros.h"
 #include "ArgusPlayerController.h"
-#include "ArgusUtil.h"
 #include "Components/InputComponent.h"
 #include "EnhancedInputComponent.h"
-
-static TAutoConsoleVariable<bool> CVarEnableInputLogging(TEXT("Argus.Input.EnableInputLogging"), false, TEXT(""));
 
 void UArgusInputManager::SetupInputComponent(TWeakObjectPtr<AArgusPlayerController> owningPlayerController, TSoftObjectPtr<UArgusInputActionSet>& argusInputActionSet)
 {
@@ -15,7 +14,7 @@ void UArgusInputManager::SetupInputComponent(TWeakObjectPtr<AArgusPlayerControll
 	{
 		UE_LOG
 		(
-			ArgusGameLog, Error, TEXT("[%s] %s is setting up an InputComponent without a valid owning %s"), 
+			ArgusInputLog, Error, TEXT("[%s] %s is setting up an InputComponent without a valid owning %s"),
 			ARGUS_FUNCNAME, 
 			ARGUS_NAMEOF(UArgusInputManager), 
 			ARGUS_NAMEOF(AArgusPlayerController)
@@ -28,7 +27,7 @@ void UArgusInputManager::SetupInputComponent(TWeakObjectPtr<AArgusPlayerControll
 	{
 		UE_LOG
 		(
-			ArgusGameLog, Error, TEXT("[%s] Null input component, %s, assigned to %s."), 
+			ArgusInputLog, Error, TEXT("[%s] Null input component, %s, assigned to %s."),
 			ARGUS_FUNCNAME, 
 			ARGUS_NAMEOF(m_owningPlayerController->InputComponent), 
 			ARGUS_NAMEOF(m_owningPlayerController)
@@ -71,7 +70,7 @@ void UArgusInputManager::BindActions(TSoftObjectPtr<UArgusInputActionSet>& argus
 	{
 		UE_LOG
 		(
-			ArgusGameLog, Error, TEXT("[%s] Failed to cast input component, %s, to a %s."),
+			ArgusInputLog, Error, TEXT("[%s] Failed to cast input component, %s, to a %s."),
 			ARGUS_FUNCNAME,
 			ARGUS_NAMEOF(m_owningPlayerController->InputComponent),
 			ARGUS_NAMEOF(UEnhancedInputComponent)
@@ -82,7 +81,7 @@ void UArgusInputManager::BindActions(TSoftObjectPtr<UArgusInputActionSet>& argus
 	const UArgusInputActionSet* actionSet = argusInputActionSet.LoadSynchronous();
 	if (!actionSet)
 	{
-		UE_LOG(ArgusGameLog, Error, TEXT("[%s] Failed to retrieve input action set, %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(argusInputActionSet));
+		UE_LOG(ArgusInputLog, Error, TEXT("[%s] Failed to retrieve input action set, %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(argusInputActionSet));
 		return;
 	}
 
@@ -106,7 +105,7 @@ bool UArgusInputManager::ValidateOwningPlayerController()
 {
 	if (!m_owningPlayerController.IsValid())
 	{
-		UE_LOG(ArgusGameLog, Error, TEXT("[%s] Null %s, assigned in %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(m_owningPlayerController), ARGUS_NAMEOF(UArgusInputManager));
+		UE_LOG(ArgusInputLog, Error, TEXT("[%s] Null %s, assigned in %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(m_owningPlayerController), ARGUS_NAMEOF(UArgusInputManager));
 		return false;
 	}
 
@@ -184,11 +183,11 @@ void UArgusInputManager::ProcessSelectInputEvent(bool isAdditive)
 			m_selectedArgusActors.Emplace(argusActor);
 		}
 
-		if (CVarEnableInputLogging.GetValueOnGameThread())
+		if (CVarEnableVerboseArgusInputLogging.GetValueOnGameThread())
 		{
 			UE_LOG
 			(
-				ArgusGameLog, Display, TEXT("[%s] selected an %s with ID %d. Is additive? %s"),
+				ArgusInputLog, Display, TEXT("[%s] selected an %s with ID %d. Is additive? %s"),
 				ARGUS_FUNCNAME,
 				ARGUS_NAMEOF(AArgusActor),
 				argusActor->GetEntity().GetId(),
@@ -213,11 +212,11 @@ void UArgusInputManager::ProcessMoveToInputEvent()
 
 	FVector targetLocation = hitResult.Location;
 
-	if (CVarEnableInputLogging.GetValueOnGameThread())
+	if (CVarEnableVerboseArgusInputLogging.GetValueOnGameThread())
 	{
 		UE_LOG
 		(
-			ArgusGameLog, Display, TEXT("[%s] Move To input occurred. Mouse projection worldspace location is (%f, %f, %f)"),
+			ArgusInputLog, Display, TEXT("[%s] Move To input occurred. Mouse projection worldspace location is (%f, %f, %f)"),
 			ARGUS_FUNCNAME,
 			targetLocation.X,
 			targetLocation.Y,

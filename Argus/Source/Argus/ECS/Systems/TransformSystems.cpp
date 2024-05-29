@@ -33,7 +33,7 @@ bool TransformSystems::TransformSystemsComponentArgs::AreComponentsValidCheck() 
 {
 	if (!m_taskComponent || !m_navigationComponent || !m_transformComponent)
 	{
-		UE_LOG(ArgusGameLog, Error, TEXT("[%s] Transform Systems were run with invalid component arguments passed."), ARGUS_FUNCNAME);
+		UE_LOG(ArgusECSLog, Error, TEXT("[%s] Transform Systems were run with invalid component arguments passed."), ARGUS_FUNCNAME);
 		return false;
 	}
 	return true;
@@ -68,7 +68,7 @@ void TransformSystems::MoveAlongNavigationPath(float deltaTime, const TransformS
 
 	if (lastPointIndex >= numNavigationPoints - 1)
 	{
-		UE_LOG(ArgusGameLog, Error, TEXT("[%s] %s exceeded %s putting pathfinding in an invalid state."), ARGUS_FUNCNAME, ARGUS_NAMEOF(lastPointIndex), ARGUS_NAMEOF(numNavigationPoints));
+		UE_LOG(ArgusECSLog, Error, TEXT("[%s] %s exceeded %s putting pathfinding in an invalid state."), ARGUS_FUNCNAME, ARGUS_NAMEOF(lastPointIndex), ARGUS_NAMEOF(numNavigationPoints));
 		return;
 	}
 
@@ -105,7 +105,7 @@ void TransformSystems::FaceTowardsLocationXY(TransformComponent* transformCompon
 
 	if (!transformComponent)
 	{
-		UE_LOG(ArgusGameLog, Error, TEXT("[%s] Transform Systems were run with invalid component arguments passed."), ARGUS_FUNCNAME);
+		UE_LOG(ArgusECSLog, Error, TEXT("[%s] Transform Systems were run with invalid component arguments passed."), ARGUS_FUNCNAME);
 		return;
 	}
 

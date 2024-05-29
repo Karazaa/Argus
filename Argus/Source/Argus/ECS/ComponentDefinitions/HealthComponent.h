@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "ArgusUtil.h"
+#include "CoreMinimal.h"
 
 struct HealthComponent
 {

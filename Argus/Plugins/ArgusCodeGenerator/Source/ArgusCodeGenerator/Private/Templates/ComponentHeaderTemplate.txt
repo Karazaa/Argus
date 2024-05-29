@@ -8,7 +8,7 @@ public:
 	{
 		if (entityId >= ArgusECSConstants::k_maxEntities)
 		{
-			UE_LOG(ArgusGameLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(#####));
+			UE_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(#####));
 			return nullptr;
 		}
 
@@ -25,13 +25,13 @@ public:
 	{
 		if (entityId >= ArgusECSConstants::k_maxEntities)
 		{
-			UE_LOG(ArgusGameLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(#####));
+			UE_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(#####));
 			return nullptr;
 		}
 
 		if (s_is#####Active[entityId])
 		{
-			UE_LOG(ArgusGameLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(#####), entityId);
+			UE_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(#####), entityId);
 			return &s_#####s[entityId];
 		}
 
@@ -45,7 +45,7 @@ public:
 	{
 		if (entityId >= ArgusECSConstants::k_maxEntities)
 		{
-			UE_LOG(ArgusGameLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(#####));
+			UE_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(#####));
 			return nullptr;
 		}
 

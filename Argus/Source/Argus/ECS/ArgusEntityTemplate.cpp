@@ -1,7 +1,8 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusEntityTemplate.h"
-#include "ArgusUtil.h"
+#include "ArgusLogging.h"
+#include "ArgusMacros.h"
 #include "DataComponentDefinitions/ComponentData.h"
 
 ArgusEntity UArgusEntityTemplate::MakeEntity()
@@ -50,7 +51,7 @@ void UArgusEntityTemplate::PostEditChangeProperty(FPropertyChangedEvent& propert
 
 			if (modifiedComponent->MatchesType(m_componentData[i].LoadSynchronous()))
 			{
-				UE_LOG(ArgusGameLog, Error, TEXT("[%s] Found duplicate component type when assigning to an ArgusEntityTemplate. An ArgusEntity can only have one instance of a component type."), ARGUS_FUNCNAME);
+				UE_LOG(ArgusECSLog, Error, TEXT("[%s] Found duplicate component type when assigning to an ArgusEntityTemplate. An ArgusEntity can only have one instance of a component type."), ARGUS_FUNCNAME);
 				m_componentData[arrayIndex] = nullptr;
 				return;
 			}

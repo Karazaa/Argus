@@ -1,7 +1,8 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusEntity.h"
-#include "ArgusUtil.h"
+#include "ArgusLogging.h"
+#include "ArgusMacros.h"
 
 const ArgusEntity ArgusEntity::s_emptyEntity = ArgusEntity();
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusEntity::s_takenEntityIds = std::bitset<ArgusECSConstants::k_maxEntities>();
@@ -51,7 +52,7 @@ uint16 ArgusEntity::GetLowestValidId(uint16 lowestId)
 
 	if (s_takenEntityIds[lowestId])
 	{
-		UE_LOG(ArgusGameLog, Error, TEXT("[ECS] Exceeded the maximum number of allowed entities."));
+		UE_LOG(ArgusECSLog, Error, TEXT("[ECS] Exceeded the maximum number of allowed entities."));
 	}
 
 	s_takenEntityIds.set(lowestId);

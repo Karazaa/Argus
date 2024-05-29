@@ -4,7 +4,7 @@
 #pragma once
 
 #include "ArgusECSConstants.h"
-#include "ArgusUtil.h"
+#include "ArgusLogging.h"
 #include <bitset>
 
 // Begin component specific includes.
@@ -52,7 +52,7 @@ public:
 	{
 		if (entityId >= ArgusECSConstants::k_maxEntities)
 		{
-			UE_LOG(ArgusGameLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(HealthComponent));
+			UE_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(HealthComponent));
 			return nullptr;
 		}
 
@@ -69,13 +69,13 @@ public:
 	{
 		if (entityId >= ArgusECSConstants::k_maxEntities)
 		{
-			UE_LOG(ArgusGameLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(HealthComponent));
+			UE_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(HealthComponent));
 			return nullptr;
 		}
 
 		if (s_isHealthComponentActive[entityId])
 		{
-			UE_LOG(ArgusGameLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(HealthComponent), entityId);
+			UE_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(HealthComponent), entityId);
 			return &s_HealthComponents[entityId];
 		}
 
@@ -89,7 +89,7 @@ public:
 	{
 		if (entityId >= ArgusECSConstants::k_maxEntities)
 		{
-			UE_LOG(ArgusGameLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(HealthComponent));
+			UE_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(HealthComponent));
 			return nullptr;
 		}
 
@@ -114,7 +114,7 @@ public:
 	{
 		if (entityId >= ArgusECSConstants::k_maxEntities)
 		{
-			UE_LOG(ArgusGameLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(IdentityComponent));
+			UE_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(IdentityComponent));
 			return nullptr;
 		}
 
@@ -131,13 +131,13 @@ public:
 	{
 		if (entityId >= ArgusECSConstants::k_maxEntities)
 		{
-			UE_LOG(ArgusGameLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(IdentityComponent));
+			UE_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(IdentityComponent));
 			return nullptr;
 		}
 
 		if (s_isIdentityComponentActive[entityId])
 		{
-			UE_LOG(ArgusGameLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(IdentityComponent), entityId);
+			UE_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(IdentityComponent), entityId);
 			return &s_IdentityComponents[entityId];
 		}
 
@@ -151,7 +151,7 @@ public:
 	{
 		if (entityId >= ArgusECSConstants::k_maxEntities)
 		{
-			UE_LOG(ArgusGameLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(IdentityComponent));
+			UE_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(IdentityComponent));
 			return nullptr;
 		}
 
@@ -176,7 +176,7 @@ public:
 	{
 		if (entityId >= ArgusECSConstants::k_maxEntities)
 		{
-			UE_LOG(ArgusGameLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(NavigationComponent));
+			UE_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(NavigationComponent));
 			return nullptr;
 		}
 
@@ -193,13 +193,13 @@ public:
 	{
 		if (entityId >= ArgusECSConstants::k_maxEntities)
 		{
-			UE_LOG(ArgusGameLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(NavigationComponent));
+			UE_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(NavigationComponent));
 			return nullptr;
 		}
 
 		if (s_isNavigationComponentActive[entityId])
 		{
-			UE_LOG(ArgusGameLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(NavigationComponent), entityId);
+			UE_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(NavigationComponent), entityId);
 			return &s_NavigationComponents[entityId];
 		}
 
@@ -213,7 +213,7 @@ public:
 	{
 		if (entityId >= ArgusECSConstants::k_maxEntities)
 		{
-			UE_LOG(ArgusGameLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(NavigationComponent));
+			UE_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(NavigationComponent));
 			return nullptr;
 		}
 
@@ -238,7 +238,7 @@ public:
 	{
 		if (entityId >= ArgusECSConstants::k_maxEntities)
 		{
-			UE_LOG(ArgusGameLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(TargetingComponent));
+			UE_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(TargetingComponent));
 			return nullptr;
 		}
 
@@ -255,13 +255,13 @@ public:
 	{
 		if (entityId >= ArgusECSConstants::k_maxEntities)
 		{
-			UE_LOG(ArgusGameLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(TargetingComponent));
+			UE_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(TargetingComponent));
 			return nullptr;
 		}
 
 		if (s_isTargetingComponentActive[entityId])
 		{
-			UE_LOG(ArgusGameLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TargetingComponent), entityId);
+			UE_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TargetingComponent), entityId);
 			return &s_TargetingComponents[entityId];
 		}
 
@@ -275,7 +275,7 @@ public:
 	{
 		if (entityId >= ArgusECSConstants::k_maxEntities)
 		{
-			UE_LOG(ArgusGameLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(TargetingComponent));
+			UE_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(TargetingComponent));
 			return nullptr;
 		}
 
@@ -300,7 +300,7 @@ public:
 	{
 		if (entityId >= ArgusECSConstants::k_maxEntities)
 		{
-			UE_LOG(ArgusGameLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(TaskComponent));
+			UE_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(TaskComponent));
 			return nullptr;
 		}
 
@@ -317,13 +317,13 @@ public:
 	{
 		if (entityId >= ArgusECSConstants::k_maxEntities)
 		{
-			UE_LOG(ArgusGameLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(TaskComponent));
+			UE_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(TaskComponent));
 			return nullptr;
 		}
 
 		if (s_isTaskComponentActive[entityId])
 		{
-			UE_LOG(ArgusGameLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TaskComponent), entityId);
+			UE_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TaskComponent), entityId);
 			return &s_TaskComponents[entityId];
 		}
 
@@ -337,7 +337,7 @@ public:
 	{
 		if (entityId >= ArgusECSConstants::k_maxEntities)
 		{
-			UE_LOG(ArgusGameLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(TaskComponent));
+			UE_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(TaskComponent));
 			return nullptr;
 		}
 
@@ -362,7 +362,7 @@ public:
 	{
 		if (entityId >= ArgusECSConstants::k_maxEntities)
 		{
-			UE_LOG(ArgusGameLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(TransformComponent));
+			UE_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(TransformComponent));
 			return nullptr;
 		}
 
@@ -379,13 +379,13 @@ public:
 	{
 		if (entityId >= ArgusECSConstants::k_maxEntities)
 		{
-			UE_LOG(ArgusGameLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(TransformComponent));
+			UE_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(TransformComponent));
 			return nullptr;
 		}
 
 		if (s_isTransformComponentActive[entityId])
 		{
-			UE_LOG(ArgusGameLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), entityId);
+			UE_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), entityId);
 			return &s_TransformComponents[entityId];
 		}
 
@@ -399,7 +399,7 @@ public:
 	{
 		if (entityId >= ArgusECSConstants::k_maxEntities)
 		{
-			UE_LOG(ArgusGameLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(TransformComponent));
+			UE_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(TransformComponent));
 			return nullptr;
 		}
 

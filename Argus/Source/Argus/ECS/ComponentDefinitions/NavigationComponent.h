@@ -2,7 +2,8 @@
 
 #pragma once
 
-#include "ArgusUtil.h"
+#include "ArgusMacros.h"
+#include "CoreMinimal.h"
 #include <vector>
 
 struct NavigationComponent

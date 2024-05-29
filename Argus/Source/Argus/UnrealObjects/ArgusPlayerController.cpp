@@ -3,7 +3,8 @@
 #include "ArgusPlayerController.h"
 #include "ArgusCameraActor.h"
 #include "ArgusInputManager.h"
-#include "ArgusUtil.h"
+#include "ArgusLogging.h"
+#include "ArgusMacros.h"
 #include "Engine/LocalPlayer.h"
 #include "Engine/World.h"
 #include "EnhancedInputSubsystems.h"
@@ -30,7 +31,7 @@ bool AArgusPlayerController::GetMouseProjectionLocation(FHitResult& outHitResult
 	UWorld* world = GetWorld();
 	if (!world)
 	{
-		UE_LOG(ArgusGameLog, Error, TEXT("[%s] Failed to get %s reference."), ARGUS_FUNCNAME, ARGUS_NAMEOF(UWorld));
+		UE_LOG(ArgusUnrealObjectsLog, Error, TEXT("[%s] Failed to get %s reference."), ARGUS_FUNCNAME, ARGUS_NAMEOF(UWorld));
 		return false;
 	}
 
@@ -53,7 +54,7 @@ void AArgusPlayerController::SetupInputComponent()
 		m_argusInputManager = NewObject<UArgusInputManager>();
 		if (!m_argusInputManager)
 		{
-			UE_LOG(ArgusGameLog, Error, TEXT("[%s] Failed to initialize %s when setting up input."), ARGUS_FUNCNAME, ARGUS_NAMEOF(m_argusInputManager));
+			UE_LOG(ArgusUnrealObjectsLog, Error, TEXT("[%s] Failed to initialize %s when setting up input."), ARGUS_FUNCNAME, ARGUS_NAMEOF(m_argusInputManager));
 			return;
 		}
 		m_argusInputManager->AddToRoot();

@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "ArgusUtil.h"
 #include "ArgusECSConstants.h"
+#include "ArgusMacros.h"
 #include "Misc/Optional.h"
 
 struct TargetingComponent
