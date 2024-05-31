@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "HAL/IConsoleManager.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(ArgusECSLog, Display, All);
 DECLARE_LOG_CATEGORY_EXTERN(ArgusInputLog, Display, All);
