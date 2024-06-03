@@ -4,103 +4,77 @@
 #include "Engine/World.h"
 #include "Kismet/GameplayStatics.h"
 
-AArgus_FunctionalTest_Navigation::AArgus_FunctionalTest_Navigation(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
+bool AArgus_FunctionalTest_Navigation::DidArgusFunctionalTestSucceed()
 {
-	ArgusEntity::FlushAllEntities();
-}
-
-void AArgus_FunctionalTest_Navigation::BeginPlay()
-{
-	Super::BeginPlay();
-	SetActorTickEnabled(true);
-}
-
-void AArgus_FunctionalTest_Navigation::Tick(float deltaSeconds)
-{
-	Super::Tick(deltaSeconds);
-
-	if (!bIsRunning && GetWorld()->HasBegunPlay())
+	if (FVector::DistSquared(m_argusActor->GetActorLocation(), m_goalActor->GetActorLocation()) < FMath::Square(m_successDistance))
 	{
-		StartNavigationTest();
+		m_testSucceededMessage = TEXT("Argus Actor successfully reached goal target!");
+		return true;
 	}
 
-	CheckIfSucceeded();
+	return false;
 }
 
-void AArgus_FunctionalTest_Navigation::OnTimeout()
+bool AArgus_FunctionalTest_Navigation::DidArgusFunctionalTestFail()
 {
-	Super::OnTimeout();
-	ExitTest();
-}
-
-void AArgus_FunctionalTest_Navigation::StartNavigationTest()
-{
-	RunTest();
-
 	if (!m_argusActor.IsValid())
 	{
-		FinishTest(EFunctionalTestResult::Failed, TEXT("Failed test due to invalid setup. m_argusActor must be a valid reference."));
-		ExitTest();
-		return;
+		m_testFailedMessage = TEXT("Failed test due to invalid setup. m_argusActor must be a valid reference.");
+		return true;
 	}
 
 	if (!m_goalActor.IsValid())
 	{
-		FinishTest(EFunctionalTestResult::Failed, TEXT("Failed test due to invalid setup. m_goalActor must be a valid reference."));
-		ExitTest();
-		return;
+		m_testFailedMessage = TEXT("Failed test due to invalid setup. m_goalActor must be a valid reference.");
+		return true;
 	}
 
 	ArgusEntity argusEntity = m_argusActor->GetEntity();
 	if (!argusEntity)
 	{
-		FinishTest(EFunctionalTestResult::Failed, TEXT("Failed test due to ArgusActor not having a valid backing ArgusEntity."));
-		ExitTest();
-		return;
+		m_testFailedMessage = TEXT("Failed test due to ArgusActor not having a valid backing ArgusEntity.");
+		return true;
 	}
 
 	TaskComponent* taskComponent = argusEntity.GetComponent<TaskComponent>();
 	if (!taskComponent)
 	{
-		FinishTest(EFunctionalTestResult::Failed, TEXT("Failed test due to ArgusActor not having a valid backing Task Component."));
-		ExitTest();
-		return;
+		m_testFailedMessage = TEXT("Failed test due to ArgusActor not having a valid backing Task Component.");
+		return true;
 	}
 
 	TargetingComponent* targetingComponent = argusEntity.GetComponent<TargetingComponent>();
 	if (!targetingComponent)
 	{
-		FinishTest(EFunctionalTestResult::Failed, TEXT("Failed test due to ArgusActor not having a valid backing Targeting Component."));
-		ExitTest();
+		m_testFailedMessage = TEXT("Failed test due to ArgusActor not having a valid backing Targeting Component.");
+		return true;
+	}
+
+	return false;
+}
+
+void AArgus_FunctionalTest_Navigation::StartArgusFunctionalTest()
+{
+	Super::StartArgusFunctionalTest();
+
+	if (DidArgusFunctionalTestFail())
+	{
+		ConcludeFailedArgusFunctionalTest();
 		return;
 	}
 
-	targetingComponent->m_targetLocation = m_goalActor->GetActorLocation();
-	taskComponent->m_currentTask = ETask::ProcessMoveToLocationCommand;
-}
+	ArgusEntity argusEntity = m_argusActor->GetEntity();
+	TaskComponent* taskComponent = argusEntity.GetComponent<TaskComponent>();
+	TargetingComponent* targetingComponent = argusEntity.GetComponent<TargetingComponent>();
 
-void AArgus_FunctionalTest_Navigation::CheckIfSucceeded()
-{
-	if (!m_argusActor.IsValid() || !m_goalActor.IsValid())
+	if (taskComponent && targetingComponent)
 	{
-		FinishTest(EFunctionalTestResult::Failed, TEXT("Failed test due to resetting actor references."));
-		ExitTest();
-		return;
+		targetingComponent->m_targetLocation = m_goalActor->GetActorLocation();
+		taskComponent->m_currentTask = ETask::ProcessMoveToLocationCommand;
 	}
-
-	if (FVector::DistSquared(m_argusActor->GetActorLocation(), m_goalActor->GetActorLocation()) < FMath::Square(m_successDistance))
+	else
 	{
-		FinishTest(EFunctionalTestResult::Succeeded, TEXT("ArgusActor successfully reached goal actor!"));
-		ExitTest();
-	}
-}
-
-void AArgus_FunctionalTest_Navigation::ExitTest()
-{
-	ArgusEntity::FlushAllEntities();
-	APlayerController* playerController = UGameplayStatics::GetPlayerController(this, 0);
-	if (playerController)
-	{
-		playerController->ConsoleCommand("quit");
+		m_testFailedMessage = TEXT("Failed test due to invalid setup. Missing ArgusEntity Componentns.");
+		ConcludeFailedArgusFunctionalTest();
 	}
 }

@@ -3,18 +3,17 @@
 #pragma once
 
 #include "ArgusActor.h"
+#include "ArgusFunctionalTest.h"
 #include "CoreMinimal.h"
 #include "FunctionalTest.h"
 #include "Argus_FunctionalTest_Navigation.generated.h"
 
 UCLASS()
-class ARGUS_API AArgus_FunctionalTest_Navigation : public AFunctionalTest
+class ARGUS_API AArgus_FunctionalTest_Navigation : public AArgusFunctionalTest
 {
 	GENERATED_BODY()
 
 public:
-	AArgus_FunctionalTest_Navigation(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
-
 	UPROPERTY(EditAnywhere)
 	TWeakObjectPtr<AArgusActor> m_argusActor = nullptr;
 
@@ -25,13 +24,7 @@ public:
 	float m_successDistance = 0.0f;
 
 protected:
-	virtual bool IsReady_Implementation() override { return true; }
-	virtual void BeginPlay() override;
-	virtual void Tick(float deltaSeconds) override;
-	virtual void OnTimeout() override;
-
-private:
-	void StartNavigationTest();
-	void CheckIfSucceeded();
-	void ExitTest();
+	virtual bool DidArgusFunctionalTestSucceed() override;
+	virtual bool DidArgusFunctionalTestFail() override;
+	virtual void StartArgusFunctionalTest() override;
 };
