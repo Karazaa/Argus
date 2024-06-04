@@ -37,6 +37,7 @@ void NavigationSystems::RunSystems(TWeakObjectPtr<UWorld> worldPointer)
 		}
 
 		ProcessNavigationTaskCommands(worldPointer, components);
+		RecalculateMoveToEntityPaths(worldPointer, components);
 	}
 }
 
@@ -61,28 +62,60 @@ void NavigationSystems::ProcessNavigationTaskCommands(TWeakObjectPtr<UWorld> wor
 	switch (components.m_taskComponent->m_currentTask)
 	{
 		case ETask::ProcessMoveToLocationCommand:
-		{
 			components.m_taskComponent->m_currentTask = ETask::MoveToLocation;
-			
-			if (!components.m_targetingComponent->HasLocationTarget())
-			{
-				return;
-			}
 			NavigateFromEntityToLocation(worldPointer, components.m_targetingComponent->m_targetLocation.GetValue(), components);
 			break;
-		}
+
 		case ETask::ProcessMoveToEntityCommand:
-			// TODO JAMES: Generate nav path to entity.
 			components.m_taskComponent->m_currentTask = ETask::MoveToEntity;
+			NavigateFromEntityToEntity(worldPointer, ArgusEntity::RetrieveEntity(components.m_targetingComponent->m_targetEntityId), components);
 			break;
+
 		default:
 			break;
 	}
 }
 
-void NavigationSystems::NavigateFromEntityToLocation(TWeakObjectPtr<UWorld> worldPointer, FVector targetLocation, const NavigationSystemsComponentArgs& components)
+void NavigationSystems::RecalculateMoveToEntityPaths(TWeakObjectPtr<UWorld> worldPointer, const NavigationSystemsComponentArgs& components)
 {
 	if (!IsWorldPointerValidCheck(worldPointer) || !components.AreComponentsValidCheck())
+	{
+		return;
+	}
+
+	if (components.m_taskComponent->m_currentTask != ETask::MoveToEntity)
+	{
+		return;
+	}
+
+	ArgusEntity targetEntity = ArgusEntity::RetrieveEntity(components.m_targetingComponent->m_targetEntityId);
+	if (!targetEntity)
+	{
+		return;
+	}
+
+	// TODO JAMES: Finish move to entity recalculcations.
+}
+
+void NavigationSystems::NavigateFromEntityToEntity(TWeakObjectPtr<UWorld> worldPointer, ArgusEntity targetEntity, const NavigationSystemsComponentArgs& components)
+{
+	if (!targetEntity)
+	{
+		return;
+	}
+
+	const TransformComponent* targetEntityTransform = targetEntity.GetComponent<TransformComponent>();
+	if (!targetEntityTransform)
+	{
+		return;
+	}
+
+	NavigateFromEntityToLocation(worldPointer, targetEntityTransform->m_transform.GetLocation(), components);
+}
+
+void NavigationSystems::NavigateFromEntityToLocation(TWeakObjectPtr<UWorld> worldPointer, std::optional<FVector> targetLocation, const NavigationSystemsComponentArgs& components)
+{
+	if (!IsWorldPointerValidCheck(worldPointer) || !components.AreComponentsValidCheck() || !targetLocation.has_value())
 	{
 		return;
 	}
@@ -96,7 +129,13 @@ void NavigationSystems::NavigateFromEntityToLocation(TWeakObjectPtr<UWorld> worl
 		return;
 	}
 
-	FPathFindingQuery pathFindingQuery = FPathFindingQuery(nullptr, *(unrealNavigationSystem->MainNavData), components.m_transformComponent->m_transform.GetLocation(), targetLocation);
+	FPathFindingQuery pathFindingQuery = FPathFindingQuery
+	(
+		nullptr, 
+		*(unrealNavigationSystem->MainNavData), 
+		components.m_transformComponent->m_transform.GetLocation(), 
+		targetLocation.value()
+	);
 	pathFindingQuery.SetNavAgentProperties(FNavAgentProperties(ArgusECSConstants::k_defaultPathFindingAgentRadius, ArgusECSConstants::k_defaultPathFindingAgentHeight));
 	FPathFindingResult pathFindingResult = unrealNavigationSystem->FindPathSync(pathFindingQuery);
 
@@ -107,20 +146,21 @@ void NavigationSystems::NavigateFromEntityToLocation(TWeakObjectPtr<UWorld> worl
 	}
 
 	TArray<FNavPathPoint>& pathPoints = pathFindingResult.Path->GetPathPoints();
-	int numPathPoints = pathPoints.Num();
+	const int numPathPoints = pathPoints.Num();
 	components.m_navigationComponent->m_navigationPoints.reserve(numPathPoints);
-
 	for (int i = 0; i < numPathPoints; ++i)
 	{
 		components.m_navigationComponent->m_navigationPoints.emplace_back(pathPoints[i].Location);
 
-		if (CVarShowNavigationDebug.GetValueOnGameThread())
+		if (!CVarShowNavigationDebug.GetValueOnGameThread())
 		{
-			DrawDebugSphere(worldPointer.Get(), components.m_navigationComponent->m_navigationPoints[i], 20.0f, 20, FColor::Magenta, false, 3.0f, 0, 5.0f);
-			if ((i + 1) < numPathPoints)
-			{
-				DrawDebugLine(worldPointer.Get(), components.m_navigationComponent->m_navigationPoints[i], pathPoints[i + 1].Location, FColor::Magenta, false, 3.0f, 0, 5.0f);
-			}
+			continue;
+		}
+
+		DrawDebugSphere(worldPointer.Get(), components.m_navigationComponent->m_navigationPoints[i], 20.0f, 20, FColor::Magenta, false, 3.0f, 0, 5.0f);
+		if ((i + 1) < numPathPoints)
+		{
+			DrawDebugLine(worldPointer.Get(), components.m_navigationComponent->m_navigationPoints[i], pathPoints[i + 1].Location, FColor::Magenta, false, 3.0f, 0, 5.0f);
 		}
 	}
 }

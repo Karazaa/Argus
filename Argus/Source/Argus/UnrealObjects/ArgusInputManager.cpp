@@ -145,55 +145,31 @@ void UArgusInputManager::ProcessSelectInputEvent(bool isAdditive)
 		return;
 	}
 
-	if (AArgusActor* argusActor = Cast<AArgusActor>(hitResult.GetActor()))
+	AArgusActor* argusActor = Cast<AArgusActor>(hitResult.GetActor());
+	if (!argusActor)
 	{
-		if (isAdditive)
-		{
-			if (m_selectedArgusActors.Contains(argusActor))
-			{
-				argusActor->SetSelectionState(false);
-				m_selectedArgusActors.Remove(argusActor);
-			}
-			else
-			{
-				argusActor->SetSelectionState(true);
-				m_selectedArgusActors.Emplace(argusActor);
-			}
-		}
-		else
-		{
-			bool alreadySelected = false;
-			for (TWeakObjectPtr<AArgusActor>& selectedActor : m_selectedArgusActors)
-			{
-				if (selectedActor.GetEvenIfUnreachable() == argusActor)
-				{
-					alreadySelected = true;
-				}
-				else if (selectedActor.IsValid())
-				{
-					selectedActor->SetSelectionState(false);
-				}
-			}
-			m_selectedArgusActors.Empty();
+		return;
+	}
 
-			if (!alreadySelected)
-			{
-				argusActor->SetSelectionState(true);
-			}
-			m_selectedArgusActors.Emplace(argusActor);
-		}
+	if (isAdditive)
+	{
+		AddSelectedActorAdditive(argusActor);
+	}
+	else
+	{
+		AddSelectedActorExclusive(argusActor);
+	}
 
-		if (CVarEnableVerboseArgusInputLogging.GetValueOnGameThread())
-		{
-			UE_LOG
-			(
-				ArgusInputLog, Display, TEXT("[%s] selected an %s with ID %d. Is additive? %s"),
-				ARGUS_FUNCNAME,
-				ARGUS_NAMEOF(AArgusActor),
-				argusActor->GetEntity().GetId(),
-				isAdditive ? TEXT("Yes") : TEXT("No")
-			);
-		}
+	if (CVarEnableVerboseArgusInputLogging.GetValueOnGameThread())
+	{
+		UE_LOG
+		(
+			ArgusInputLog, Display, TEXT("[%s] selected an %s with ID %d. Is additive? %s"),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(AArgusActor),
+			argusActor->GetEntity().GetId(),
+			isAdditive ? TEXT("Yes") : TEXT("No")
+		);
 	}
 }
 
@@ -211,7 +187,6 @@ void UArgusInputManager::ProcessMoveToInputEvent()
 	}
 
 	FVector targetLocation = hitResult.Location;
-
 	if (CVarEnableVerboseArgusInputLogging.GetValueOnGameThread())
 	{
 		UE_LOG
@@ -243,38 +218,90 @@ void UArgusInputManager::ProcessMoveToInputEvent()
 			continue;
 		}
 
-		ArgusEntity selectedEntity = selectedActor->GetEntity();
-		if (!selectedEntity)
-		{
-			continue;
-		}
+		ProcessMoveToInputEventPerSelectedActor(selectedActor.Get(), inputTask, targetEntity, targetLocation);
+	}
+}
 
-		TaskComponent* taskComponent = selectedEntity.GetComponent<TaskComponent>();
-		TargetingComponent* targetingComponent = selectedEntity.GetComponent<TargetingComponent>();
+void UArgusInputManager::ProcessMoveToInputEventPerSelectedActor(AArgusActor* argusActor, ETask inputTask, ArgusEntity targetEntity, FVector targetLocation)
+{
+	ArgusEntity selectedEntity = argusActor->GetEntity();
+	if (!selectedEntity)
+	{
+		return;
+	}
 
-		if (!taskComponent || !targetingComponent)
-		{
-			continue;
-		}
+	TaskComponent* taskComponent = selectedEntity.GetComponent<TaskComponent>();
+	TargetingComponent* targetingComponent = selectedEntity.GetComponent<TargetingComponent>();
 
-		if (inputTask == ETask::ProcessMoveToEntityCommand)
+	if (!taskComponent || !targetingComponent)
+	{
+		return;
+	}
+
+	if (inputTask == ETask::ProcessMoveToEntityCommand)
+	{
+		if (targetEntity == selectedEntity)
 		{
-			if (targetEntity == selectedEntity)
-			{
-				taskComponent->m_currentTask = ETask::None;
-			}
-			else
-			{
-				taskComponent->m_currentTask = inputTask;
-				targetingComponent->m_targetEntityId = targetEntity.GetId();
-				targetingComponent->m_targetLocation.Reset();
-			}
+			taskComponent->m_currentTask = ETask::None;
 		}
-		else if (inputTask == ETask::ProcessMoveToLocationCommand)
+		else
 		{
 			taskComponent->m_currentTask = inputTask;
-			targetingComponent->m_targetEntityId = ArgusEntity::s_emptyEntity.GetId();
-			targetingComponent->m_targetLocation = targetLocation;
+			targetingComponent->m_targetEntityId = targetEntity.GetId();
+			targetingComponent->m_targetLocation.Reset();
 		}
+	}
+	else if (inputTask == ETask::ProcessMoveToLocationCommand)
+	{
+		taskComponent->m_currentTask = inputTask;
+		targetingComponent->m_targetEntityId = ArgusEntity::s_emptyEntity.GetId();
+		targetingComponent->m_targetLocation = targetLocation;
+	}
+}
+
+void UArgusInputManager::AddSelectedActorExclusive(AArgusActor* argusActor)
+{
+	if (!argusActor)
+	{
+		return;
+	}
+
+	bool alreadySelected = false;
+	for (TWeakObjectPtr<AArgusActor>& selectedActor : m_selectedArgusActors)
+	{
+		if (selectedActor.Get() == argusActor)
+		{
+			alreadySelected = true;
+		}
+		else if (selectedActor.IsValid())
+		{
+			selectedActor->SetSelectionState(false);
+		}
+	}
+	m_selectedArgusActors.Empty();
+
+	if (!alreadySelected)
+	{
+		argusActor->SetSelectionState(true);
+	}
+	m_selectedArgusActors.Emplace(argusActor);
+}
+
+void UArgusInputManager::AddSelectedActorAdditive(AArgusActor* argusActor)
+{
+	if (!argusActor)
+	{
+		return;
+	}
+
+	if (m_selectedArgusActors.Contains(argusActor))
+	{
+		argusActor->SetSelectionState(false);
+		m_selectedArgusActors.Remove(argusActor);
+	}
+	else
+	{
+		argusActor->SetSelectionState(true);
+		m_selectedArgusActors.Emplace(argusActor);
 	}
 }

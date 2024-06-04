@@ -43,4 +43,7 @@ private:
 	void ProcessInputEvent(InputType inputEvent);
 	void ProcessSelectInputEvent(bool isAdditive);
 	void ProcessMoveToInputEvent();
+	void ProcessMoveToInputEventPerSelectedActor(AArgusActor* argusActor, ETask inputTask, ArgusEntity targetEntity, FVector targetLocation);
+	void AddSelectedActorExclusive(AArgusActor* argusActor);
+	void AddSelectedActorAdditive(AArgusActor* argusActor);
 };
