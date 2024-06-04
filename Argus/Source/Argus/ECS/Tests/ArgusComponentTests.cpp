@@ -160,4 +160,42 @@ bool ArgusComponentIdentityComponentAddEnemyFactionTest::RunTest(const FString& 
 	TestFalse(TEXT("Creating two Identity Components, adding one as the ally and then enemy of another, and then testing to make sure it is not in the ally faction mask."), identityComponent2->IsInFactionMask(identityComponent1->m_allies));
 	return true;
 }
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentTaskComponentIsExecutingMoveTaskTest, "Argus.ECS.Component.TaskComponent.IsExecutingMoveTask", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+bool ArgusComponentTaskComponentIsExecutingMoveTaskTest::RunTest(const FString& Parameters)
+{
+	ArgusEntity::FlushAllEntities();
+
+	ArgusEntity entity = ArgusEntity::CreateEntity();
+	TaskComponent* taskComponent = entity.AddComponent<TaskComponent>();
+
+	if (!taskComponent)
+	{
+		return false;
+	}
+
+	TestFalse(TEXT("Creating an entity, giving it a task component, and checking if default task is a move task."), taskComponent->IsExecutingMoveTask());
+
+	taskComponent->m_currentTask = ETask::ProcessMoveToLocationCommand;
+
+	TestFalse(TEXT("Creating an entity, giving it a task component, setting task to ProcessMoveToLocationCommand, and checking if that is considered a move task."), taskComponent->IsExecutingMoveTask());
+
+	taskComponent->m_currentTask = ETask::ProcessMoveToEntityCommand;
+
+	TestFalse(TEXT("Creating an entity, giving it a task component, setting task to ProcessMoveToEntityCommand, and checking if that is considered a move task."), taskComponent->IsExecutingMoveTask());
+
+	taskComponent->m_currentTask = ETask::FailedToFindPath;
+
+	TestFalse(TEXT("Creating an entity, giving it a task component, setting task to FailedToFindPath, and checking if that is considered a move task."), taskComponent->IsExecutingMoveTask());
+
+	taskComponent->m_currentTask = ETask::MoveToLocation;
+
+	TestTrue(TEXT("Creating an entity, giving it a task component, setting task to MoveToEntity, and validating that it is considered a move task."), taskComponent->IsExecutingMoveTask());
+
+	taskComponent->m_currentTask = ETask::MoveToEntity;
+
+	TestTrue(TEXT("Creating an entity, giving it a task component, setting task to MoveToEntity, and validating that it is considered a move task."), taskComponent->IsExecutingMoveTask());
+
+	return true;
+}
 #endif //WITH_AUTOMATION_TESTS
