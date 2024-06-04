@@ -94,11 +94,27 @@ void NavigationSystems::RecalculateMoveToEntityPaths(TWeakObjectPtr<UWorld> worl
 		return;
 	}
 
-	// TODO JAMES: Finish move to entity recalculcations.
+	TaskComponent* targetEntityTaskComponent = targetEntity.GetComponent<TaskComponent>();
+	if (!targetEntityTaskComponent)
+	{
+		return;
+	}
+
+	if (!targetEntityTaskComponent->IsExecutingMoveTask())
+	{
+		return;
+	}
+
+	NavigateFromEntityToEntity(worldPointer, targetEntity, components);
 }
 
 void NavigationSystems::NavigateFromEntityToEntity(TWeakObjectPtr<UWorld> worldPointer, ArgusEntity targetEntity, const NavigationSystemsComponentArgs& components)
 {
+	if (!IsWorldPointerValidCheck(worldPointer) || !components.AreComponentsValidCheck())
+	{
+		return;
+	}
+
 	if (!targetEntity)
 	{
 		return;

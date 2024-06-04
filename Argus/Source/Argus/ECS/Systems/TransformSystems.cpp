@@ -49,6 +49,7 @@ void TransformSystems::ProcessMovementTaskCommands(float deltaTime, const Transf
 	switch (components.m_taskComponent->m_currentTask)
 	{
 		case ETask::MoveToLocation:
+		case ETask::MoveToEntity:
 			MoveAlongNavigationPath(deltaTime, components);
 			break;
 		default:

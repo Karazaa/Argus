@@ -19,4 +19,9 @@ enum class ETask : uint8
 struct TaskComponent
 {
 	ETask m_currentTask = ETask::None;
+
+	bool IsExecutingMoveTask() const
+	{
+		return m_currentTask == ETask::MoveToLocation || m_currentTask == ETask::MoveToEntity;
+	}
 };
