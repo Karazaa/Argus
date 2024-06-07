@@ -6,10 +6,15 @@
 
 bool AArgus_FunctionalTest_Navigation::DidArgusFunctionalTestSucceed()
 {
-	if (FVector::DistSquared(m_argusActor->GetActorLocation(), m_goalActor->GetActorLocation()) < FMath::Square(m_successDistance))
+	if (DidCurrentTestStepSucceed())
 	{
-		m_testSucceededMessage = TEXT("Argus Actor successfully reached goal target!");
-		return true;
+		if (m_testStepIndex >= k_totalNumSteps - 1)
+		{
+			return true;
+		}
+
+		m_testStepIndex++;
+		StartNextTestStep();
 	}
 
 	return false;
@@ -56,7 +61,26 @@ bool AArgus_FunctionalTest_Navigation::DidArgusFunctionalTestFail()
 void AArgus_FunctionalTest_Navigation::StartArgusFunctionalTest()
 {
 	Super::StartArgusFunctionalTest();
+	StartNextTestStep();
+}
 
+void AArgus_FunctionalTest_Navigation::StartNextTestStep()
+{
+	switch (m_testStepIndex)
+	{
+		case 0:
+			StartNavigationToLocationStep();
+			break;
+		case 1:
+			StartNavigationToEntityStep();
+			break;
+		default:
+			break;
+	}
+}
+
+void AArgus_FunctionalTest_Navigation::StartNavigationToLocationStep()
+{
 	if (DidArgusFunctionalTestFail())
 	{
 		ConcludeFailedArgusFunctionalTest();
@@ -77,4 +101,39 @@ void AArgus_FunctionalTest_Navigation::StartArgusFunctionalTest()
 		m_testFailedMessage = TEXT("Failed test due to invalid setup. Missing ArgusEntity Componentns.");
 		ConcludeFailedArgusFunctionalTest();
 	}
+}
+
+void AArgus_FunctionalTest_Navigation::StartNavigationToEntityStep()
+{
+
+}
+
+bool AArgus_FunctionalTest_Navigation::DidCurrentTestStepSucceed()
+{
+	switch (m_testStepIndex)
+	{
+		case 0:
+			return DidNavigationToLocationStepSucceed();
+		case 1:
+			return DidNavigationToEntityStepSucceed();
+		default:
+			break;
+	}
+	return false;
+}
+
+bool AArgus_FunctionalTest_Navigation::DidNavigationToLocationStepSucceed()
+{
+	if (FVector::DistSquared(m_argusActor->GetActorLocation(), m_goalActor->GetActorLocation()) < FMath::Square(m_successDistance))
+	{
+		m_testSucceededMessage = TEXT("Argus Actor successfully reached goal target!");
+		return true;
+	}
+
+	return false;
+}
+
+bool AArgus_FunctionalTest_Navigation::DidNavigationToEntityStepSucceed()
+{
+	return true;
 }

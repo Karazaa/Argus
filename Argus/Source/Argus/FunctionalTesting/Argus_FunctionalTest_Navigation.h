@@ -27,4 +27,16 @@ protected:
 	virtual bool DidArgusFunctionalTestSucceed() override;
 	virtual bool DidArgusFunctionalTestFail() override;
 	virtual void StartArgusFunctionalTest() override;
+
+private:
+	static constexpr uint8 k_totalNumSteps = 2;
+	uint8 m_testStepIndex = 0;
+
+	void StartNextTestStep();
+	void StartNavigationToLocationStep();
+	void StartNavigationToEntityStep();
+
+	bool DidCurrentTestStepSucceed();
+	bool DidNavigationToLocationStepSucceed();
+	bool DidNavigationToEntityStepSucceed();
 };
