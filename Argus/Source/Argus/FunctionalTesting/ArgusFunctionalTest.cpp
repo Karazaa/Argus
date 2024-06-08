@@ -42,9 +42,26 @@ void AArgusFunctionalTest::OnTimeout()
 	ExitArgusFunctionalTest();
 }
 
+bool AArgusFunctionalTest::DidArgusFunctionalTestSucceed()
+{
+	if (DidCurrentTestStepSucceed())
+	{
+		if (m_testStepIndex >= GetTotalNumTestSteps() - 1)
+		{
+			return true;
+		}
+
+		m_testStepIndex++;
+		StartNextTestStep();
+	}
+
+	return false;
+}
+
 void AArgusFunctionalTest::StartArgusFunctionalTest()
 {
 	RunTest();
+	StartNextTestStep();
 }
 
 void AArgusFunctionalTest::ConcludeSuccessfulArgusFunctionalTest()

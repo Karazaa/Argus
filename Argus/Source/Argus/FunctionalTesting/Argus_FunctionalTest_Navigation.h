@@ -13,6 +13,9 @@ class ARGUS_API AArgus_FunctionalTest_Navigation : public AArgusFunctionalTest
 {
 	GENERATED_BODY()
 
+private:
+	static constexpr uint8 k_totalNumSteps = 2;
+
 public:
 	UPROPERTY(EditAnywhere)
 	TWeakObjectPtr<AArgusActor> m_argusActor = nullptr;
@@ -24,19 +27,14 @@ public:
 	float m_successDistance = 0.0f;
 
 protected:
-	virtual bool DidArgusFunctionalTestSucceed() override;
-	virtual bool DidArgusFunctionalTestFail() override;
-	virtual void StartArgusFunctionalTest() override;
+	virtual bool  DidArgusFunctionalTestFail() override;
+	virtual bool  DidCurrentTestStepSucceed() override;
+	virtual void  StartNextTestStep() override;
+	virtual uint8 GetTotalNumTestSteps() override { return k_totalNumSteps; }
 
 private:
-	static constexpr uint8 k_totalNumSteps = 2;
-	uint8 m_testStepIndex = 0;
-
-	void StartNextTestStep();
 	void StartNavigationToLocationStep();
 	void StartNavigationToEntityStep();
-
-	bool DidCurrentTestStepSucceed();
 	bool DidNavigationToLocationStepSucceed();
 	bool DidNavigationToEntityStepSucceed();
 };

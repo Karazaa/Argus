@@ -4,22 +4,6 @@
 #include "Engine/World.h"
 #include "Kismet/GameplayStatics.h"
 
-bool AArgus_FunctionalTest_Navigation::DidArgusFunctionalTestSucceed()
-{
-	if (DidCurrentTestStepSucceed())
-	{
-		if (m_testStepIndex >= k_totalNumSteps - 1)
-		{
-			return true;
-		}
-
-		m_testStepIndex++;
-		StartNextTestStep();
-	}
-
-	return false;
-}
-
 bool AArgus_FunctionalTest_Navigation::DidArgusFunctionalTestFail()
 {
 	if (!m_argusActor.IsValid())
@@ -58,10 +42,18 @@ bool AArgus_FunctionalTest_Navigation::DidArgusFunctionalTestFail()
 	return false;
 }
 
-void AArgus_FunctionalTest_Navigation::StartArgusFunctionalTest()
+bool AArgus_FunctionalTest_Navigation::DidCurrentTestStepSucceed()
 {
-	Super::StartArgusFunctionalTest();
-	StartNextTestStep();
+	switch (m_testStepIndex)
+	{
+		case 0:
+			return DidNavigationToLocationStepSucceed();
+		case 1:
+			return DidNavigationToEntityStepSucceed();
+		default:
+			break;
+	}
+	return false;
 }
 
 void AArgus_FunctionalTest_Navigation::StartNextTestStep()
@@ -81,6 +73,8 @@ void AArgus_FunctionalTest_Navigation::StartNextTestStep()
 
 void AArgus_FunctionalTest_Navigation::StartNavigationToLocationStep()
 {
+	StartStep(TEXT("Navigate to Location"));
+
 	if (DidArgusFunctionalTestFail())
 	{
 		ConcludeFailedArgusFunctionalTest();
@@ -105,21 +99,8 @@ void AArgus_FunctionalTest_Navigation::StartNavigationToLocationStep()
 
 void AArgus_FunctionalTest_Navigation::StartNavigationToEntityStep()
 {
-
-}
-
-bool AArgus_FunctionalTest_Navigation::DidCurrentTestStepSucceed()
-{
-	switch (m_testStepIndex)
-	{
-		case 0:
-			return DidNavigationToLocationStepSucceed();
-		case 1:
-			return DidNavigationToEntityStepSucceed();
-		default:
-			break;
-	}
-	return false;
+	FinishStep();
+	StartStep(TEXT("Navigate to Entity"));
 }
 
 bool AArgus_FunctionalTest_Navigation::DidNavigationToLocationStepSucceed()
