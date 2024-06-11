@@ -6,10 +6,10 @@
 #include "ArgusFunctionalTest.h"
 #include "CoreMinimal.h"
 #include "FunctionalTest.h"
-#include "Argus_FunctionalTest_Navigation.generated.h"
+#include "NavigationFunctionalTest.generated.h"
 
 UCLASS()
-class ARGUS_API AArgus_FunctionalTest_Navigation : public AArgusFunctionalTest
+class ARGUS_API ANavigationFunctionalTest : public AArgusFunctionalTest
 {
 	GENERATED_BODY()
 
@@ -18,7 +18,7 @@ private:
 	static constexpr uint8       k_totalNumSteps = 2;
 
 public:
-	AArgus_FunctionalTest_Navigation(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+	ANavigationFunctionalTest(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	UPROPERTY(EditAnywhere)
 	TWeakObjectPtr<AArgusActor> m_argusActor = nullptr;

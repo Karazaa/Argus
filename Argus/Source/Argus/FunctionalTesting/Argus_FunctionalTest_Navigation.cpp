@@ -1,15 +1,15 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
-#include "Argus_FunctionalTest_Navigation.h"
+#include "NavigationFunctionalTest.h"
 #include "Engine/World.h"
 #include "Kismet/GameplayStatics.h"
 
-AArgus_FunctionalTest_Navigation::AArgus_FunctionalTest_Navigation(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
+ANavigationFunctionalTest::ANavigationFunctionalTest(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 	TestLabel = k_testName;
 }
 
-bool AArgus_FunctionalTest_Navigation::DidArgusFunctionalTestFail()
+bool ANavigationFunctionalTest::DidArgusFunctionalTestFail()
 {
 	if (!m_argusActor.IsValid())
 	{
@@ -53,7 +53,7 @@ bool AArgus_FunctionalTest_Navigation::DidArgusFunctionalTestFail()
 	return false;
 }
 
-bool AArgus_FunctionalTest_Navigation::DidCurrentTestStepSucceed()
+bool ANavigationFunctionalTest::DidCurrentTestStepSucceed()
 {
 	switch (m_testStepIndex)
 	{
@@ -67,7 +67,7 @@ bool AArgus_FunctionalTest_Navigation::DidCurrentTestStepSucceed()
 	return false;
 }
 
-void AArgus_FunctionalTest_Navigation::StartNextTestStep()
+void ANavigationFunctionalTest::StartNextTestStep()
 {
 	switch (m_testStepIndex)
 	{
@@ -82,7 +82,7 @@ void AArgus_FunctionalTest_Navigation::StartNextTestStep()
 	}
 }
 
-void AArgus_FunctionalTest_Navigation::StartNavigationToLocationStep()
+void ANavigationFunctionalTest::StartNavigationToLocationStep()
 {
 	StartStep(TEXT("Navigate to Location"));
 
@@ -108,7 +108,7 @@ void AArgus_FunctionalTest_Navigation::StartNavigationToLocationStep()
 	}
 }
 
-void AArgus_FunctionalTest_Navigation::StartNavigationToEntityStep()
+void ANavigationFunctionalTest::StartNavigationToEntityStep()
 {
 	FinishStep();
 	StartStep(TEXT("Navigate to Entity"));
@@ -140,7 +140,7 @@ void AArgus_FunctionalTest_Navigation::StartNavigationToEntityStep()
 	}
 }
 
-bool AArgus_FunctionalTest_Navigation::DidNavigationToLocationStepSucceed()
+bool ANavigationFunctionalTest::DidNavigationToLocationStepSucceed()
 {
 	if (FVector::DistSquared(m_argusActor->GetActorLocation(), m_goalLocationActor->GetActorLocation()) < FMath::Square(m_successDistance))
 	{
@@ -150,7 +150,7 @@ bool AArgus_FunctionalTest_Navigation::DidNavigationToLocationStepSucceed()
 	return false;
 }
 
-bool AArgus_FunctionalTest_Navigation::DidNavigationToEntityStepSucceed()
+bool ANavigationFunctionalTest::DidNavigationToEntityStepSucceed()
 {
 	if (FVector::DistSquared(m_argusActor->GetActorLocation(), m_goalEntityActor->GetActorLocation()) < FMath::Square(m_successDistance))
 	{
