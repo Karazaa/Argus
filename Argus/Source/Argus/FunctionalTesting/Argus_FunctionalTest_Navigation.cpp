@@ -4,6 +4,11 @@
 #include "Engine/World.h"
 #include "Kismet/GameplayStatics.h"
 
+AArgus_FunctionalTest_Navigation::AArgus_FunctionalTest_Navigation(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
+{
+	TestLabel = k_testName;
+}
+
 bool AArgus_FunctionalTest_Navigation::DidArgusFunctionalTestFail()
 {
 	if (!m_argusActor.IsValid())
@@ -12,9 +17,15 @@ bool AArgus_FunctionalTest_Navigation::DidArgusFunctionalTestFail()
 		return true;
 	}
 
-	if (!m_goalActor.IsValid())
+	if (!m_goalLocationActor.IsValid())
 	{
-		m_testFailedMessage = TEXT("Failed test due to invalid setup. m_goalActor must be a valid reference.");
+		m_testFailedMessage = TEXT("Failed test due to invalid setup. m_goalLocationActor must be a valid reference.");
+		return true;
+	}
+
+	if (!m_goalEntityActor.IsValid())
+	{
+		m_testFailedMessage = TEXT("Failed test due to invalid setup. m_goalEntityActor must be a valid reference.");
 		return true;
 	}
 
@@ -87,12 +98,12 @@ void AArgus_FunctionalTest_Navigation::StartNavigationToLocationStep()
 
 	if (taskComponent && targetingComponent)
 	{
-		targetingComponent->m_targetLocation = m_goalActor->GetActorLocation();
+		targetingComponent->m_targetLocation = m_goalLocationActor->GetActorLocation();
 		taskComponent->m_currentTask = ETask::ProcessMoveToLocationCommand;
 	}
 	else
 	{
-		m_testFailedMessage = TEXT("Failed test due to invalid setup. Missing ArgusEntity Componentns.");
+		m_testFailedMessage = TEXT("Failed test due to invalid setup. Missing ArgusEntity Components.");
 		ConcludeFailedArgusFunctionalTest();
 	}
 }
@@ -101,13 +112,38 @@ void AArgus_FunctionalTest_Navigation::StartNavigationToEntityStep()
 {
 	FinishStep();
 	StartStep(TEXT("Navigate to Entity"));
+
+	if (DidArgusFunctionalTestFail())
+	{
+		ConcludeFailedArgusFunctionalTest();
+		return;
+	}
+
+	ArgusEntity argusEntity = m_argusActor->GetEntity();
+	TaskComponent* taskComponent = argusEntity.GetComponent<TaskComponent>();
+	TargetingComponent* targetingComponent = argusEntity.GetComponent<TargetingComponent>();
+	ArgusEntity goalEntity = m_goalEntityActor->GetEntity();
+	TaskComponent* goalTaskComponent = goalEntity.GetComponent<TaskComponent>();
+	TargetingComponent* goalTargetingComponent = goalEntity.GetComponent<TargetingComponent>();
+
+	if (taskComponent && targetingComponent && goalTaskComponent && goalTargetingComponent)
+	{
+		goalTargetingComponent->m_targetLocation = m_goalLocationActor->GetActorLocation();
+		goalTaskComponent->m_currentTask = ETask::ProcessMoveToLocationCommand;
+		targetingComponent->m_targetEntityId = goalEntity.GetId();
+		taskComponent->m_currentTask = ETask::ProcessMoveToEntityCommand;
+	}
+	else
+	{
+		m_testFailedMessage = TEXT("Failed test due to invalid setup. Missing ArgusEntity Components.");
+		ConcludeFailedArgusFunctionalTest();
+	}
 }
 
 bool AArgus_FunctionalTest_Navigation::DidNavigationToLocationStepSucceed()
 {
-	if (FVector::DistSquared(m_argusActor->GetActorLocation(), m_goalActor->GetActorLocation()) < FMath::Square(m_successDistance))
+	if (FVector::DistSquared(m_argusActor->GetActorLocation(), m_goalLocationActor->GetActorLocation()) < FMath::Square(m_successDistance))
 	{
-		m_testSucceededMessage = TEXT("Argus Actor successfully reached goal target!");
 		return true;
 	}
 
@@ -116,5 +152,11 @@ bool AArgus_FunctionalTest_Navigation::DidNavigationToLocationStepSucceed()
 
 bool AArgus_FunctionalTest_Navigation::DidNavigationToEntityStepSucceed()
 {
-	return true;
+	if (FVector::DistSquared(m_argusActor->GetActorLocation(), m_goalEntityActor->GetActorLocation()) < FMath::Square(m_successDistance))
+	{
+		m_testSucceededMessage = TEXT("Argus Actor successfully reached goal targets!");
+		return true;
+	}
+
+	return false;
 }
