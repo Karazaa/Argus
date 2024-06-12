@@ -40,6 +40,7 @@
 *.sdf
 *.VC.db
 *.VC.opendb
+*.vsconfig*
 
 # Precompiled Assets
 Argus/SourceArt/**/*.png
