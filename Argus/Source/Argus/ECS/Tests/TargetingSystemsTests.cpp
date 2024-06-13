@@ -41,31 +41,106 @@ bool TargetingSystemsTargetNearestEntityMatchingFactionMaskTest::RunTest(const F
 	components.m_targetingComponent = sourceTargetingComponent;
 	components.m_transformComponent = sourceTransformComponent;
 
-
-	TestFalse(TEXT("Testing that the default targeting ID is invalid."), sourceTargetingComponent->HasEntityTarget());
+#pragma region Test no target by default
+	TestFalse
+	(
+		FString::Printf(TEXT("[%s] Testing that a new %s would not have a target by default."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TargetingComponent)),
+		sourceTargetingComponent->HasEntityTarget()
+	);
+#pragma endregion
 
 	TargetingSystems::TargetNearestEntityMatchingFactionMask(sourceEntity.GetId(), sourceIdentityComponent->m_enemies, components);
 
-	TestEqual(TEXT("Testing that the source entity is targeting the correct entity after running TargetNearestEntityMatchingFactionMask."), sourceTargetingComponent->m_targetEntityId, closeEntity.GetId());
+#pragma region Test target closest enemy
+	TestEqual
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Testing that %s is targeting %s after running %s."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(sourceEntity),
+			ARGUS_NAMEOF(closeEntity),
+			ARGUS_NAMEOF(TargetingSystems::TargetNearestEntityMatchingFactionMask)
+		),
+		sourceTargetingComponent->m_targetEntityId,
+		closeEntity.GetId()
+	);
+#pragma endregion
 
 	fartherTransformComponent->m_transform.SetLocation(FVector(49.0f, 0.0f, 0.0f));
 	TargetingSystems::TargetNearestEntityMatchingFactionMask(sourceEntity.GetId(), sourceIdentityComponent->m_enemies, components);
 
-	TestEqual(TEXT("Testing that the source entity is targeting the correct entity after changing locations and running TargetNearestEntityMatchingFactionMask."), sourceTargetingComponent->m_targetEntityId, fartherEntity.GetId());
+#pragma region Test target farther enemy after moving
+	TestEqual
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Testing that %s is targeting %s after changing locations and running %s."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(sourceTargetingComponent),
+			ARGUS_NAMEOF(fartherEntity),
+			ARGUS_NAMEOF(TargetingSystems::TargetNearestEntityMatchingFactionMask)
+		),
+		sourceTargetingComponent->m_targetEntityId,
+		fartherEntity.GetId()
+	);
+#pragma endregion
 
 	fartherTransformComponent->m_transform.SetLocation(FVector(50.0f, 0.0f, 0.0f));
 	TargetingSystems::TargetNearestEntityMatchingFactionMask(sourceEntity.GetId(), sourceIdentityComponent->m_enemies, components);
 
-	TestEqual(TEXT("Testing that the source entity is targeting the correct entity using tiebreaking rules after running TargetNearestEntityMatchingFactionMask"), sourceTargetingComponent->m_targetEntityId, closeEntity.GetId());
+#pragma region Test tiebreaking
+	TestEqual
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Testing that %s is targeting %s using tiebreaking rules after running %s"),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(sourceTargetingComponent),
+			ARGUS_NAMEOF(closeEntity),
+			ARGUS_NAMEOF(TargetingSystems::TargetNearestEntityMatchingFactionMask)
+		),
+		sourceTargetingComponent->m_targetEntityId,
+		closeEntity.GetId()
+	);
+#pragma endregion
 
 	sourceIdentityComponent->AddAllyFaction(EFaction::FactionB);
 	TargetingSystems::TargetNearestEntityMatchingFactionMask(sourceEntity.GetId(), sourceIdentityComponent->m_enemies, components);
 
-	TestEqual(TEXT("Testing that the source entity is targeting the correct entity after changing enemy faction mask"), sourceTargetingComponent->m_targetEntityId, fartherEntity.GetId());
+#pragma region Test targeting nearest enemy after changing factions
+	TestEqual
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Testing that %s is targeting %s after changing enemy faction mask and running %s"),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(sourceTargetingComponent),
+			ARGUS_NAMEOF(fartherEntity),
+			ARGUS_NAMEOF(TargetingSystems::TargetNearestEntityMatchingFactionMask)
+		),
+		sourceTargetingComponent->m_targetEntityId,
+		fartherEntity.GetId()
+	);
+#pragma endregion
 
 	TargetingSystems::TargetNearestEntityMatchingFactionMask(sourceEntity.GetId(), sourceIdentityComponent->m_allies, components);
 
-	TestEqual(TEXT("Testing that the source entity is targeting the correct entity after changing ally faction mask"), sourceTargetingComponent->m_targetEntityId, closeEntity.GetId());
+#pragma region Test targeting after changing ally faction.
+	TestEqual
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Testing that %s is targeting %s after changing ally faction mask and running %s"),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(sourceTargetingComponent),
+			ARGUS_NAMEOF(closeEntity),
+			ARGUS_NAMEOF(TargetingSystems::TargetNearestEntityMatchingFactionMask)
+		),
+		sourceTargetingComponent->m_targetEntityId,
+		closeEntity.GetId()
+	);
+#pragma endregion
 
 	return true;
 }
