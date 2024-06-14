@@ -17,7 +17,7 @@ bool ArgusEntityTemplateInstantiateEntityTest::RunTest(const FString& Parameters
 
 	TestFalse
 	(
-		FString::Printf(TEXT("Validating that there isn't an entity yet.")),
+		FString::Printf(TEXT("[%s] Validating that there isn't an entity yet."), ARGUS_FUNCNAME),
 		ArgusEntity::DoesEntityExist(targetId)
 	);
 
