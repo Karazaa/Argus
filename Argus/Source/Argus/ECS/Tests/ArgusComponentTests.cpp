@@ -8,6 +8,9 @@
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentHealthComponentPersistenceTest, "Argus.ECS.Component.HealthComponent.Persistence", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusComponentHealthComponentPersistenceTest::RunTest(const FString& Parameters)
 {
+	const uint32 expectedSetHealthValue = 500u;
+	const uint32 expectedPostResetHealthValue = 1000u;
+
 	ArgusEntity::FlushAllEntities();
 
 	ArgusEntity entity = ArgusEntity::CreateEntity();
@@ -18,12 +21,24 @@ bool ArgusComponentHealthComponentPersistenceTest::RunTest(const FString& Parame
 		return false;
 	}
 
-	healthComponent->m_health = 500u;
+	healthComponent->m_health = expectedSetHealthValue;
 	healthComponent = entity.GetComponent<HealthComponent>();
 
-	TestEqual(TEXT("Creating a HealthComponent, setting it to 500, then checking the value is 500 on retrieval."), healthComponent->m_health, 500u);
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Creating a %s, setting it to %d, then checking the value is %d on retrieval."), ARGUS_FUNCNAME, ARGUS_NAMEOF(HealthComponent), expectedSetHealthValue, expectedSetHealthValue), 
+		healthComponent->m_health, 
+		expectedSetHealthValue
+	);
+
 	*healthComponent = HealthComponent();
-	TestEqual(TEXT("Creating a HealthComponent, setting it to 500, resetting it, then checking the value is 1000 after reset."), healthComponent->m_health, 1000u);
+
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Creating a %s, setting it to %d, resetting it, then checking the value is %d after reset."), ARGUS_FUNCNAME, ARGUS_NAMEOF(HealthComponent), expectedSetHealthValue, expectedPostResetHealthValue), 
+		healthComponent->m_health,
+		expectedPostResetHealthValue
+	);
 
 	return true;
 }
@@ -42,12 +57,25 @@ bool ArgusComponentTargetingComponentHasEntityTargetTest::RunTest(const FString&
 		return false;
 	}
 
-	TestFalse(TEXT("Creating a TargetingComponent and confirming that it does not have an entity target."), targetingComponent->HasEntityTarget());
+	TestFalse
+	(
+		FString::Printf(TEXT("[%s] Creating a %s and confirming that it does not have an entity target."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TargetingComponent)),
+		targetingComponent->HasEntityTarget()
+	);
 	
 	targetingComponent->m_targetEntityId = entity2.GetId();
 
-	TestTrue(TEXT("Creating a TargetingComponent, setting target to another entity, and confirming that it does have a target."), targetingComponent->HasEntityTarget());
-	TestEqual(TEXT("Creating a TargetingComponent, setting target to another entity, then checking the value is the right ID."), targetingComponent->m_targetEntityId, entity2.GetId());
+	TestTrue
+	(
+		FString::Printf(TEXT("[%s] Creating a %s, setting target to another entity, and confirming that it does have a target."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TargetingComponent)),
+		targetingComponent->HasEntityTarget()
+	);
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Creating a %s, setting target to another entity, then checking the value is the right ID."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TargetingComponent)), 
+		targetingComponent->m_targetEntityId, 
+		entity2.GetId()
+	);
 
 	return true;
 }
@@ -61,12 +89,25 @@ bool ArgusComponentTargetingComponentHasLocationTargetTest::RunTest(const FStrin
 	TargetingComponent* targetingComponent = entity.AddComponent<TargetingComponent>();
 	const FVector targetLocation = FVector(10.0f, 10.0f, 10.0f);
 
-	TestFalse(TEXT("Creating a TargetingComponent and confirming that it does not have a location target."), targetingComponent->HasLocationTarget());
+	TestFalse
+	(
+		FString::Printf(TEXT("[%s] Creating a %s and confirming that it does not have a location target."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TargetingComponent)), 
+		targetingComponent->HasLocationTarget()
+	);
 
 	targetingComponent->m_targetLocation = targetLocation;
 
-	TestTrue(TEXT("Creating a TargetingComponent, setting target to a location, and confirming that it does have a target."), targetingComponent->HasLocationTarget());
-	TestEqual(TEXT("Creating a TargetingComponent, setting target to a location, then checking the value is the right location."), targetingComponent->m_targetLocation.GetValue(), targetLocation);
+	TestTrue
+	(
+		FString::Printf(TEXT("[%s] Creating a %s, setting target to a location, and confirming that it does have a target."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TargetingComponent)),
+		targetingComponent->HasLocationTarget()
+	);
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Creating a %s, setting target to a location, then checking the value is the right location."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TargetingComponent)), 
+		targetingComponent->m_targetLocation.GetValue(),
+		targetLocation
+	);
 
 	return true;
 }
@@ -87,11 +128,19 @@ bool ArgusComponentIdentityComponentIsInFactionMaskTest::RunTest(const FString& 
 	identityComponent->m_faction = EFaction::FactionA;
 	uint8 factionMask = 0u;
 
-	TestFalse(TEXT("Creating an IdentityComponent with faction A and confirming that it is not present in an empty faction mask."), identityComponent->IsInFactionMask(factionMask));
+	TestFalse
+	(
+		FString::Printf(TEXT("[%s] Creating an %s with %s and confirming that it is not present in an empty faction mask."), ARGUS_FUNCNAME, ARGUS_NAMEOF(IdentityComponent), ARGUS_NAMEOF(EFaction::FactionA)),
+		identityComponent->IsInFactionMask(factionMask)
+	);
 
 	factionMask = 0xFF;
 
-	TestTrue(TEXT("Creating an IdentityComponent with faction A and confirming that it is present in a full faction mask."), identityComponent->IsInFactionMask(factionMask));
+	TestTrue
+	(
+		FString::Printf(TEXT("[%s] Creating an %s with %s and confirming that it is present in a full faction mask."), ARGUS_FUNCNAME, ARGUS_NAMEOF(IdentityComponent), ARGUS_NAMEOF(EFaction::FactionA)),
+		identityComponent->IsInFactionMask(factionMask)
+	);
 
 	return true;
 }
@@ -116,13 +165,25 @@ bool ArgusComponentIdentityComponentAddAllyFactionTest::RunTest(const FString& P
 
 	identityComponent1->AddAllyFaction(EFaction::FactionB);
 
-	TestTrue(TEXT("Creating two Identity Components, adding one as the ally of another, and then testing to make sure it is in the ally faction mask."), identityComponent2->IsInFactionMask(identityComponent1->m_allies));
+	TestTrue
+	(
+		FString::Printf(TEXT("[%s] Creating two %ss, adding one as the ally of another, and then testing to make sure it is in the ally faction mask."), ARGUS_FUNCNAME, ARGUS_NAMEOF(IdentityComponent)),
+		identityComponent2->IsInFactionMask(identityComponent1->m_allies)
+	);
 
 	identityComponent1->AddEnemyFaction(EFaction::FactionB);
 	identityComponent1->AddAllyFaction(EFaction::FactionB);
 
-	TestTrue(TEXT("Creating two Identity Components, adding one as the enemy and then ally of another, and then testing to make sure it is in the ally faction mask."), identityComponent2->IsInFactionMask(identityComponent1->m_allies));
-	TestFalse(TEXT("Creating two Identity Components, adding one as the enemy and then ally of another, and then testing to make sure it is not in the enemy faction mask."), identityComponent2->IsInFactionMask(identityComponent1->m_enemies));
+	TestTrue
+	(
+		FString::Printf(TEXT("[%s] Creating two %ss, adding one as the enemy and then ally of another, and then testing to make sure it is in the ally faction mask."), ARGUS_FUNCNAME, ARGUS_NAMEOF(IdentityComponent)),
+		identityComponent2->IsInFactionMask(identityComponent1->m_allies)
+	);
+	TestFalse
+	(
+		FString::Printf(TEXT("[%s] Creating two %ss, adding one as the enemy and then ally of another, and then testing to make sure it is not in the enemy faction mask."), ARGUS_FUNCNAME, ARGUS_NAMEOF(IdentityComponent)),
+		identityComponent2->IsInFactionMask(identityComponent1->m_enemies)
+	);
 
 	return true;
 }
@@ -147,17 +208,33 @@ bool ArgusComponentIdentityComponentAddEnemyFactionTest::RunTest(const FString& 
 
 	identityComponent1->AddEnemyFaction(EFaction::FactionA);
 
-	TestFalse(TEXT("Creating two Identity Components, adding one as the enemy of itself, and then testing to make sure it is not in the enemy mask."), identityComponent1->IsInFactionMask(identityComponent1->m_enemies));
+	TestFalse
+	(
+		FString::Printf(TEXT("[%s] Creating two %ss, adding one as the enemy of itself, and then testing to make sure it is not in the enemy mask."), ARGUS_FUNCNAME, ARGUS_NAMEOF(IdentityComponent)),
+		identityComponent1->IsInFactionMask(identityComponent1->m_enemies)
+	);
 
 	identityComponent1->AddEnemyFaction(EFaction::FactionB);
 
-	TestTrue(TEXT("Creating two Identity Components, adding one as the enemy of another, and then testing to make sure it is in the enemy faction mask."), identityComponent2->IsInFactionMask(identityComponent1->m_enemies));
+	TestTrue
+	(
+		FString::Printf(TEXT("[%s] Creating two %ss, adding one as the enemy of another, and then testing to make sure it is in the enemy faction mask."), ARGUS_FUNCNAME, ARGUS_NAMEOF(IdentityComponent)),
+		identityComponent2->IsInFactionMask(identityComponent1->m_enemies)
+	);
 
 	identityComponent1->AddAllyFaction(EFaction::FactionB);
 	identityComponent1->AddEnemyFaction(EFaction::FactionB);
 
-	TestTrue(TEXT("Creating two Identity Components, adding one as the ally and then enemy of another, and then testing to make sure it is in the enemy faction mask."), identityComponent2->IsInFactionMask(identityComponent1->m_enemies));
-	TestFalse(TEXT("Creating two Identity Components, adding one as the ally and then enemy of another, and then testing to make sure it is not in the ally faction mask."), identityComponent2->IsInFactionMask(identityComponent1->m_allies));
+	TestTrue
+	(
+		FString::Printf(TEXT("[%s] Creating two %ss, adding one as the ally and then enemy of another, and then testing to make sure it is in the enemy faction mask."), ARGUS_FUNCNAME, ARGUS_NAMEOF(IdentityComponent)),
+		identityComponent2->IsInFactionMask(identityComponent1->m_enemies)
+	);
+	TestFalse
+	(
+		FString::Printf(TEXT("[%s] Creating two %ss, adding one as the ally and then enemy of another, and then testing to make sure it is not in the ally faction mask."), ARGUS_FUNCNAME, ARGUS_NAMEOF(IdentityComponent)),
+		identityComponent2->IsInFactionMask(identityComponent1->m_allies)
+	);
 	return true;
 }
 
@@ -174,27 +251,51 @@ bool ArgusComponentTaskComponentIsExecutingMoveTaskTest::RunTest(const FString& 
 		return false;
 	}
 
-	TestFalse(TEXT("Creating an entity, giving it a task component, and checking if default task is a move task."), taskComponent->IsExecutingMoveTask());
+	TestFalse
+	(
+		FString::Printf(TEXT("[%s] Creating an %s, giving it a %s, and checking if default task is a move task."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(TaskComponent)),
+		taskComponent->IsExecutingMoveTask()
+	);
 
 	taskComponent->m_currentTask = ETask::ProcessMoveToLocationCommand;
 
-	TestFalse(TEXT("Creating an entity, giving it a task component, setting task to ProcessMoveToLocationCommand, and checking if that is considered a move task."), taskComponent->IsExecutingMoveTask());
+	TestFalse
+	(
+		FString::Printf(TEXT("[%s] Creating an %s, giving it a %s, setting task to %s, and checking if that is considered a move task."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(TaskComponent), ARGUS_NAMEOF(ETask::ProcessMoveToLocationCommand)),
+		taskComponent->IsExecutingMoveTask()
+	);
 
 	taskComponent->m_currentTask = ETask::ProcessMoveToEntityCommand;
 
-	TestFalse(TEXT("Creating an entity, giving it a task component, setting task to ProcessMoveToEntityCommand, and checking if that is considered a move task."), taskComponent->IsExecutingMoveTask());
+	TestFalse
+	(
+		FString::Printf(TEXT("[%s] Creating an %s, giving it a %s, setting task to %s, and checking if that is considered a move task."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(TaskComponent), ARGUS_NAMEOF(ETask::ProcessMoveToEntityCommand)),
+		taskComponent->IsExecutingMoveTask()
+	);
 
 	taskComponent->m_currentTask = ETask::FailedToFindPath;
 
-	TestFalse(TEXT("Creating an entity, giving it a task component, setting task to FailedToFindPath, and checking if that is considered a move task."), taskComponent->IsExecutingMoveTask());
+	TestFalse
+	(
+		FString::Printf(TEXT("[%s] Creating an %s, giving it a %s, setting task to %s, and checking if that is considered a move task."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(TaskComponent), ARGUS_NAMEOF(ETask::FailedToFindPath)),
+		taskComponent->IsExecutingMoveTask()
+	);
 
 	taskComponent->m_currentTask = ETask::MoveToLocation;
 
-	TestTrue(TEXT("Creating an entity, giving it a task component, setting task to MoveToEntity, and validating that it is considered a move task."), taskComponent->IsExecutingMoveTask());
+	TestTrue
+	(
+		FString::Printf(TEXT("[%s] Creating an %s, giving it a %s, setting task to %s, and validating that it is considered a move task."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(TaskComponent), ARGUS_NAMEOF(ETask::MoveToLocation)),
+		taskComponent->IsExecutingMoveTask()
+	);
 
 	taskComponent->m_currentTask = ETask::MoveToEntity;
 
-	TestTrue(TEXT("Creating an entity, giving it a task component, setting task to MoveToEntity, and validating that it is considered a move task."), taskComponent->IsExecutingMoveTask());
+	TestTrue
+	(
+		FString::Printf(TEXT("[%s] Creating an %s, giving it a %s, setting task to %s, and validating that it is considered a move task."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(TaskComponent), ARGUS_NAMEOF(ETask::MoveToEntity)),
+		taskComponent->IsExecutingMoveTask()
+	);
 
 	return true;
 }

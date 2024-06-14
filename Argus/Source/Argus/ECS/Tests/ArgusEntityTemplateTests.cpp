@@ -9,13 +9,20 @@
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityTemplateInstantiateEntityTest, "Argus.ECS.EntityTemplate.InstantiateEntity", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusEntityTemplateInstantiateEntityTest::RunTest(const FString& Parameters)
 {
+	const uint32 expectedHealthValue = 5000u;
+
 	ArgusEntity::FlushAllEntities();
 
 	const uint16 targetId = static_cast<uint16>(UEntityPriority::MediumPriority);
-	TestFalse(TEXT("Validating that there isn't an entity yet."), ArgusEntity::DoesEntityExist(targetId));
+
+	TestFalse
+	(
+		FString::Printf(TEXT("Validating that there isn't an entity yet.")),
+		ArgusEntity::DoesEntityExist(targetId)
+	);
 
 	UHealthComponentData* healthComponentData = NewObject<UHealthComponentData>();
-	healthComponentData->m_health = 5000u;
+	healthComponentData->m_health = expectedHealthValue;
 
 	UArgusEntityTemplate* entityTemplate = NewObject<UArgusEntityTemplate>();
 	entityTemplate->m_entityPriority = UEntityPriority::MediumPriority;
@@ -23,10 +30,21 @@ bool ArgusEntityTemplateInstantiateEntityTest::RunTest(const FString& Parameters
 
 	ArgusEntity newEntity = entityTemplate->MakeEntity();
 
-	TestTrue(TEXT("Validating that an entity has been created"), ArgusEntity::DoesEntityExist(targetId));
+	TestTrue
+	(
+		FString::Printf(TEXT("[%s] Validating that an %s has been created."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity)),
+		ArgusEntity::DoesEntityExist(targetId)
+	);
+
 	uint32 healthValue = newEntity.GetComponent<HealthComponent>()->m_health;
 
-	TestEqual(TEXT("Validating that a health component exists with the proper value."), healthValue, 5000u);
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Validating that a %s exists with the proper value, %d."), ARGUS_FUNCNAME, ARGUS_NAMEOF(HealthComponent), expectedHealthValue),
+		healthValue,
+		expectedHealthValue
+	);
+
 	return true;
 }
 
