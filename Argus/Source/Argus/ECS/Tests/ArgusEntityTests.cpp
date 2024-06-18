@@ -17,9 +17,9 @@ bool ArgusEntityGetIdTest::RunTest(const FString& Parameters)
 #pragma region Test creating an entity with a specific ID
 	TestEqual
 	(
-		FString::Printf(TEXT("[%s] Testing %s creation and ID storage."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity)), 
+		FString::Printf(TEXT("[%s] Testing that creating an %s via %s allows for ID retrieval via %s"), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(ArgusEntity::CreateEntity), ARGUS_NAMEOF(ArgusEntity::GetId)),
 		entity.GetId(), 
-		expectedEntityID
+		expectedEntityId
 	);
 #pragma endregion
 
@@ -51,7 +51,7 @@ bool ArgusEntityAssignmentOperatorTest::RunTest(const FString& Parameters)
 #pragma region Test assigning one ArgusEntity to another
 	TestEqual
 	(
-		TEXT("Testing assigment of ArgusEntity."), 
+		FString::Printf(TEXT("[%s] Testing assigment of %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity)),
 		entity1.GetId(), 
 		initialEntityId
 	);
@@ -65,14 +65,26 @@ bool ArgusEntityEqualsOperatorTest::RunTest(const FString& Parameters)
 {
 	ArgusEntity::FlushAllEntities();
 
-	ArgusEntity entity0 = ArgusEntity::CreateEntity(20u);
-	ArgusEntity entity1 = ArgusEntity::CreateEntity(30u);
+	ArgusEntity entity0 = ArgusEntity::CreateEntity();
+	ArgusEntity entity1 = ArgusEntity::CreateEntity();
 
-	TestFalse(TEXT("Testing creation of two ArgusEntities with different IDs and the equals operator returning false."), entity0 == entity1);
+#pragma region Test creating two ArgusEntities with different IDs causes them to not be ==
+	TestFalse
+	(
+		FString::Printf(TEXT("[%s] Testing creation of two %s with different IDs and the equals operator returning false."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity)),
+		entity0 == entity1
+	);
+#pragma endregion
 
 	entity1 = entity0;
 
-	TestTrue(TEXT("Testing creation of two ArgusEntities with the same ID and the equals operator returning true."), entity0 == entity1);
+#pragma region Test creating two ArgusEntities with the same ID causes them to be ==
+	TestTrue
+	(
+		FString::Printf(TEXT("[%s] Testing creation of two %s with the same ID and the equals operator returning true."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity)),
+		entity0 == entity1
+	);
+#pragma endregion
 
 	return true;
 }
@@ -82,11 +94,23 @@ bool ArgusEntityBoolOperatorTest::RunTest(const FString& Parameters)
 {
 	ArgusEntity::FlushAllEntities();
 
-	TestFalse(TEXT("Testing bool operator of empty entity returns false."), ArgusEntity::s_emptyEntity);
+#pragma region Test that the bool operator of an empty ArgusEntity returns false
+	TestFalse
+	(
+		FString::Printf(TEXT("[%s] Testing bool operator of empty %s returns false."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity)),
+		ArgusEntity::s_emptyEntity
+	);
+#pragma endregion
 
-	ArgusEntity entity = ArgusEntity::CreateEntity(20u);
+	ArgusEntity entity = ArgusEntity::CreateEntity();
 
-	TestTrue(TEXT("Testing bool operator of non-empty entity returns true."), entity);
+#pragma region Test that the bool operator of a non empty ArgusEntity returns true
+	TestTrue
+	(
+		FString::Printf(TEXT("[%s] Testing bool operator of non-empty %s returns true."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity)),
+		entity
+	);
+#pragma endregion
 
 	return true;
 }
@@ -97,7 +121,14 @@ bool ArgusEntityCreateInvalidEntityTest::RunTest(const FString& Parameters)
 	ArgusEntity::FlushAllEntities();
 
 	ArgusEntity entity = ArgusEntity::CreateEntity(ArgusECSConstants::k_maxEntities);
-	TestFalse(TEXT("Testing that creating an entity with invalid ID makes an invalid entity."), entity);
+
+#pragma region Test that the bool operator of an invalid ArgusEntity returns false
+	TestFalse
+	(
+		FString::Printf(TEXT("[%s] Testing that calling %s with invalid ID makes an invalid %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity::CreateEntity), ARGUS_NAMEOF(ArgusEntity)),
+		entity
+	);
+#pragma endregion
 
 	return true;
 }
@@ -107,12 +138,25 @@ bool ArgusEntityFlushAllEntitiesTest::RunTest(const FString& Parameters)
 {
 	ArgusEntity::FlushAllEntities();
 
-	ArgusEntity entity = ArgusEntity::CreateEntity(20u);
-	TestTrue(TEXT("Testing if entity exists after creation."), entity);
+	ArgusEntity entity = ArgusEntity::CreateEntity();
+
+#pragma region Test that the bool operator of an ArgusEntity is true after creation
+	TestTrue
+	(
+		FString::Printf(TEXT("[%s] Testing if %s exists after creation."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity)),
+		entity
+	);
+#pragma endregion
 
 	ArgusEntity::FlushAllEntities();
 
-	TestFalse(TEXT("Testing that entity no longer exists after flushing all entities."), entity);
+#pragma region Test that flushing all entities invalidates existing ArgusEntities
+	TestFalse
+	(
+		FString::Printf(TEXT("[%s] Testing that %s no longer exists after calling %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(ArgusEntity::FlushAllEntities)),
+		entity
+	);
+#pragma endregion
 
 	return true;
 }
@@ -122,10 +166,17 @@ bool ArgusEntityCopyConstructorTest::RunTest(const FString& Parameters)
 {
 	ArgusEntity::FlushAllEntities();
 
-	ArgusEntity entity0 = ArgusEntity::CreateEntity(20u);
+	ArgusEntity entity0 = ArgusEntity::CreateEntity();
 	ArgusEntity entity1 = ArgusEntity(entity0);
 
-	TestEqual(TEXT("Testing if copy constructor successfully copies one ArgusEntity to another."), entity0, entity1);
+#pragma region Test that the copy constructor copies one ArgusEntity to another
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Testing if copy constructor successfully copies one %s to another."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity)),
+		entity0, 
+		entity1
+	);
+#pragma endregion
 
 	return true;
 }
@@ -137,8 +188,24 @@ bool ArgusEntityAutoIncrementIdTest::RunTest(const FString& Parameters)
 
 	ArgusEntity entity0 = ArgusEntity::CreateEntity();
 	ArgusEntity entity1 = ArgusEntity::CreateEntity();
-	TestEqual(TEXT("Testing ArgusEntity0 Id is 0."), entity0.GetId(), 0u);
-	TestEqual(TEXT("Testing ArgusEntity1 Id is 1 after auto increment."), entity1.GetId(), 1u);
+
+#pragma region Test that creating an ArgusEntity with none existing assigns the ID of 0
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Testing %s Id is 0."), ARGUS_FUNCNAME, ARGUS_NAMEOF(entity0)),
+		entity0.GetId(), 
+		0u
+	);
+#pragma endregion
+
+#pragma region Test that the next ArgusEntity created has an id of 1
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Testing %s Id is 1 after auto increment."), ARGUS_FUNCNAME, ARGUS_NAMEOF(entity1)),
+		entity1.GetId(), 
+		1u
+	);
+#pragma endregion
 
 	return true;
 }
@@ -146,13 +213,31 @@ bool ArgusEntityAutoIncrementIdTest::RunTest(const FString& Parameters)
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityCopyEntityTest, "Argus.ECS.Entity.CopyEntity", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusEntityCopyEntityTest::RunTest(const FString& Parameters)
 {
+	const uint32 expectedId = 20u;
+
 	ArgusEntity::FlushAllEntities();
 
-	ArgusEntity entity0 = ArgusEntity::CreateEntity(20u);
+	ArgusEntity entity0 = ArgusEntity::CreateEntity(expectedId);
 	ArgusEntity entity1 = entity0;
 	ArgusEntity entity2 = ArgusEntity(entity0);
-	TestEqual(TEXT("Testing ArgusEntity1 Id is 20 after assignment."), entity1.GetId(), 20u);
-	TestEqual(TEXT("Testing ArgusEntity2 Id is 20 after copy constructor."), entity1.GetId(), 20u);
+
+#pragma region Test that the copy operator successfully copies from one ArgusEntity to another
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Testing %s Id is %d after assignment."), ARGUS_FUNCNAME, ARGUS_NAMEOF(entity0), expectedId),
+		entity1.GetId(), 
+		expectedId
+	);
+#pragma endregion
+
+#pragma region Test that the copy constructor successfully copies from one ArgusEntity to another
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Testing %s Id is %d after copy constructor."), ARGUS_FUNCNAME, ARGUS_NAMEOF(entity2), expectedId),
+		entity2.GetId(),
+		expectedId
+	);
+#pragma endregion
 
 	return true;
 }
@@ -160,12 +245,36 @@ bool ArgusEntityCopyEntityTest::RunTest(const FString& Parameters)
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityDoesEntityExistTest, "Argus.ECS.Entity.DoesEntityExist", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusEntityDoesEntityExistTest::RunTest(const FString& Parameters)
 {
+	const uint32 expectedId = 20u;
+	const uint32 fakeId = 30u;
+
 	ArgusEntity::FlushAllEntities();
 
-	ArgusEntity entity0 = ArgusEntity::CreateEntity(20u);
-	TestTrue(TEXT("Testing if entity exists after creation."), ArgusEntity::DoesEntityExist(20u));
-	TestFalse(TEXT("Testing that entity that doesn't exist isn't falsely listed as existing"), ArgusEntity::DoesEntityExist(30u));
-	TestFalse(TEXT("Testing that invalid entity ID isn't falsely listed as existing"), ArgusEntity::DoesEntityExist(ArgusECSConstants::k_maxEntities));
+	ArgusEntity entity0 = ArgusEntity::CreateEntity(expectedId);
+
+#pragma region Test that an ArgusEntity exists after being created
+	TestTrue
+	(
+		FString::Printf(TEXT("[%s] Testing if %s returns true on a currently used ID."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity::DoesEntityExist)),
+		ArgusEntity::DoesEntityExist(expectedId)
+	);
+#pragma endregion
+
+#pragma region Test that an ArgusEntity that does not exists is not listed as existing
+	TestFalse
+	(
+		FString::Printf(TEXT("[%s] Testing if %s return false on a currently unused ID."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity::DoesEntityExist)),
+		ArgusEntity::DoesEntityExist(fakeId)
+	);
+#pragma endregion
+
+#pragma region Test that an invalid entity ID is not listed as existing
+	TestFalse
+	(
+		FString::Printf(TEXT("[%s] Testing if %s returns false on and ID of "), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity::DoesEntityExist), ARGUS_NAMEOF(ArgusECSConstants::k_maxEntities)),
+		ArgusEntity::DoesEntityExist(ArgusECSConstants::k_maxEntities)
+	);
+#pragma endregion
 
 	return true;
 }
@@ -173,17 +282,48 @@ bool ArgusEntityDoesEntityExistTest::RunTest(const FString& Parameters)
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityRetrieveEntityTest, "Argus.ECS.Entity.RetrieveEntity", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusEntityRetrieveEntityTest::RunTest(const FString& Parameters)
 {
+	const uint32 expectedId = 20u;
+	const uint32 fakeId = 30u;
+
 	ArgusEntity::FlushAllEntities();
 
-	ArgusEntity::CreateEntity(20u);
-	ArgusEntity existingEntity = ArgusEntity::RetrieveEntity(20u);
-	ArgusEntity fakeEntity = ArgusEntity::RetrieveEntity(30u);
+	ArgusEntity::CreateEntity(expectedId);
+	ArgusEntity existingEntity = ArgusEntity::RetrieveEntity(expectedId);
+	ArgusEntity fakeEntity = ArgusEntity::RetrieveEntity(fakeId);
 	ArgusEntity outOfRangeEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_maxEntities);
 
-	TestTrue(TEXT("Creating an entity, attempting to retrieve it, and testing that the returned entity is valid."), existingEntity);
-	TestEqual(TEXT("Testing if retrieved entity has correct value."), existingEntity.GetId(), 20u);
-	TestFalse(TEXT("Making sure retrieving a fake entity doesn't return a valid entity."), fakeEntity);
-	TestFalse(TEXT("Making sure retrieving an out of range ID doesn't return a valid entity."), fakeEntity);
+#pragma region Test creating an ArgusEntity, retrieving it, and that its bool operator returns true
+	TestTrue
+	(
+		FString::Printf(TEXT("[%s] Creating an %s, attempting to retrieve it, and testing that the returned %s is valid."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(ArgusEntity)),
+		existingEntity
+	);
+#pragma endregion
+
+#pragma region Test that a retrieved ArgusEntity has the correct ID
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Testing if retrieved %s has correct value %d."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), expectedId),
+		existingEntity.GetId(), 
+		expectedId
+	);
+#pragma endregion
+
+#pragma region Test that retrieving a fake ArgusEntity does not return a valid ArgusEntity
+	TestFalse
+	(
+		FString::Printf(TEXT("[%s] Making sure retrieving a fake %s doesn't return a valid %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(ArgusEntity)),
+		fakeEntity
+	);
+#pragma endregion
+
+#pragma region Test that attempting to retrieve an out of range entity ID does not return a valid ArgusEntity
+	TestFalse
+	(
+		FString::Printf(TEXT("[%s] Making sure retrieving an ID of %s doesn't return a valid %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusECSConstants::k_maxEntities), ARGUS_NAMEOF(ArgusEntity)),
+		outOfRangeEntity
+	);
+#pragma endregion
 
 	return true;
 }
@@ -196,11 +336,23 @@ bool ArgusEntityAddGetHealthComponentTest::RunTest(const FString& Parameters)
 	ArgusEntity entity = ArgusEntity::CreateEntity();
 	HealthComponent* healthComponent = entity.GetComponent<HealthComponent>();
 
-	TestTrue(TEXT("Creating an entity, attempting to retrieve health component before adding it."), healthComponent == nullptr);
+#pragma region Test creating an empty ArgusEntity and attempting to retrieve a non-existent HealthComponent
+	TestTrue
+	(
+		FString::Printf(TEXT("[%s] Creating an %s, attempting to retrieve %s before adding it."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(HealthComponent)),
+		healthComponent == nullptr
+	);
+#pragma endregion
 
 	healthComponent = entity.AddComponent<HealthComponent>();
 
-	TestTrue(TEXT("Creating an entity, attempting to retrieve health component after adding it."), healthComponent != nullptr);
+#pragma region Test adding a HealthComponent and then retrieving it
+	TestTrue
+	(
+		FString::Printf(TEXT("[%s] Creating an %s, attempting to retrieve %s after adding it."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(HealthComponent)),
+		healthComponent != nullptr
+	);
+#pragma endregion
 
 	return true;
 }
@@ -213,12 +365,25 @@ bool ArgusEntityGetOrAddComponentTest::RunTest(const FString& Parameters)
 	ArgusEntity entity = ArgusEntity::CreateEntity();
 	HealthComponent* healthComponent = entity.GetOrAddComponent<HealthComponent>();
 
-	TestFalse(TEXT("Creating an entity, calling get or add health component and making sure a component is added."), healthComponent == nullptr);
+#pragma region Test creating an ArgusEntity, getting or adding a HealthComponent and making sure a component is added
+	TestFalse
+	(
+		FString::Printf(TEXT("[%s] Creating an %s, calling %s and making sure a %s is added."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(ArgusEntity::GetOrAddComponent), ARGUS_NAMEOF(HealthComponent)),
+		healthComponent == nullptr
+	);
+#pragma endregion
 
 	healthComponent->m_health = 400u;
 	healthComponent = entity.GetOrAddComponent<HealthComponent>();
 
-	TestEqual(TEXT("Creating an entity, calling get or add health component twice and making sure the same component is returned."), healthComponent->m_health, 400u);
+#pragma region Test crreating an ArgusEntity. getting or adding a HealthComponent twice, and making sure the same component is returned
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Creating an %s, calling %s twice and making sure the same %s is returned."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(ArgusEntity::GetOrAddComponent), ARGUS_NAMEOF(HealthComponent)),
+		healthComponent->m_health, 
+		400u
+	);
+#pragma endregion
 
 	return true;
 }

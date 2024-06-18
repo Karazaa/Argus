@@ -17,23 +17,51 @@ bool TransformSystemsFaceTowardsLocationXYTest::RunTest(const FString& Parameter
 		return false;
 	}
 
-	TestEqual(TEXT("Creating an entity with a default forward transform."), transformComponent->m_transform.GetRotation().GetForwardVector(), FVector(1.0f, 0.0f, 0.0f));
+#pragma region
+	TestEqual
+	(
+		TEXT("Creating an entity with a default forward transform."), 
+		transformComponent->m_transform.GetRotation().GetForwardVector(), 
+		FVector(1.0f, 0.0f, 0.0f)
+	);
+#pragma endregion
 
 	FVector targetLocation = FVector(-1.0f, 0.0f, 10.0f);
 	const FVector expectedForward = FVector(-1.0f, 0.0f, 0.0f);
 	TransformSystems::FaceTowardsLocationXY(transformComponent, targetLocation);
 
-	TestEqual(TEXT("Facing entity towards target and confirming it has the proper forward vector."), transformComponent->m_transform.GetRotation().GetForwardVector(), expectedForward);
+#pragma region
+	TestEqual
+	(
+		TEXT("Facing entity towards target and confirming it has the proper forward vector."),
+		transformComponent->m_transform.GetRotation().GetForwardVector(), 
+		expectedForward
+	);
+#pragma endregion
 
 	targetLocation.X = -0.5f;
 	targetLocation.Z = 100.0f;
 	TransformSystems::FaceTowardsLocationXY(transformComponent, targetLocation);
 
-	TestEqual(TEXT("Facing entity towards coincident vector and confirming it does not change facing."), transformComponent->m_transform.GetRotation().GetForwardVector(), expectedForward);
+#pragma region
+	TestEqual
+	(
+		TEXT("Facing entity towards coincident vector and confirming it does not change facing."), 
+		transformComponent->m_transform.GetRotation().GetForwardVector(), 
+		expectedForward
+	);
+#pragma endregion
 
 	TransformSystems::FaceTowardsLocationXY(transformComponent, FVector::ZeroVector);
 
-	TestEqual(TEXT("Facing entity towards zero vector and confirming it does not change facing."), transformComponent->m_transform.GetRotation().GetForwardVector(), expectedForward);
+#pragma region
+	TestEqual
+	(
+		TEXT("Facing entity towards zero vector and confirming it does not change facing."), 
+		transformComponent->m_transform.GetRotation().GetForwardVector(), 
+		expectedForward
+	);
+#pragma endregion
 
 	return true;
 }
@@ -66,35 +94,159 @@ bool TransformSystemsMoveAlongPathTest::RunTest(const FString& Parameters)
 	components.m_navigationComponent->m_navigationPoints.push_back(point2);
 	components.m_navigationComponent->m_navigationPoints.push_back(point3);
 
-	TestEqual(TEXT("Creating initial entity and confirming transform location."), components.m_transformComponent->m_transform.GetLocation(), FVector::ZeroVector);
-	TestEqual(TEXT("Creating initial entity and confirming transform rotation."), components.m_transformComponent->m_transform.GetRotation().GetForwardVector(), FVector::ForwardVector);
+#pragma region
+	TestEqual
+	(
+		TEXT("Creating initial entity and confirming transform location."), 
+		components.m_transformComponent->m_transform.GetLocation(), 
+		FVector::ZeroVector
+	);
+#pragma endregion
+
+#pragma region
+	TestEqual
+	(
+		TEXT("Creating initial entity and confirming transform rotation."), 
+		components.m_transformComponent->m_transform.GetRotation().GetForwardVector(), 
+		FVector::ForwardVector
+	);
+#pragma endregion
 
 	TransformSystems::MoveAlongNavigationPath(1.0f, components);
 
-	TestEqual(TEXT("Checking navigation index after moving along path for one second."), components.m_navigationComponent->m_lastPointIndex, 0u);
-	TestEqual(TEXT("Checking location after moving along path for one second."), components.m_transformComponent->m_transform.GetLocation(), FVector(-1.0f, 0.0f, 0.0f));
-	TestEqual(TEXT("Checking rotation after moving along path for one second."), components.m_transformComponent->m_transform.GetRotation().GetForwardVector(), FVector(-1.0f, 0.0f, 0.0f));
+#pragma region
+	TestEqual
+	(
+		TEXT("Checking navigation index after moving along path for one second."), 
+		components.m_navigationComponent->m_lastPointIndex, 
+		0u
+	);
+#pragma endregion
+
+#pragma region
+	TestEqual
+	(
+		TEXT("Checking location after moving along path for one second."), 
+		components.m_transformComponent->m_transform.GetLocation(), 
+		FVector(-1.0f, 0.0f, 0.0f)
+	);
+#pragma endregion
+
+#pragma region
+	TestEqual
+	(
+		TEXT("Checking rotation after moving along path for one second."), 
+		components.m_transformComponent->m_transform.GetRotation().GetForwardVector(), 
+		FVector(-1.0f, 0.0f, 0.0f)
+	);
+#pragma endregion
 
 	TransformSystems::MoveAlongNavigationPath(1.0f, components);
 
-	TestEqual(TEXT("Checking navigation index after moving along path for two seconds."), components.m_navigationComponent->m_lastPointIndex, 1u);
-	TestEqual(TEXT("Checking location after moving along path for two seconds."), components.m_transformComponent->m_transform.GetLocation(), point1);
-	TestEqual(TEXT("Checking rotation after moving along path for two seconds."), components.m_transformComponent->m_transform.GetRotation().GetForwardVector(), FVector(-1.0f, 0.0f, 0.0f));
+#pragma region
+	TestEqual
+	(
+		TEXT("Checking navigation index after moving along path for two seconds."), 
+		components.m_navigationComponent->m_lastPointIndex, 
+		1u
+	);
+#pragma endregion
+
+#pragma region
+	TestEqual
+	(
+		TEXT("Checking location after moving along path for two seconds."), 
+		components.m_transformComponent->m_transform.GetLocation(), 
+		point1
+	);
+#pragma endregion
+
+#pragma region
+	TestEqual
+	(
+		TEXT("Checking rotation after moving along path for two seconds."), 
+		components.m_transformComponent->m_transform.GetRotation().GetForwardVector(), 
+		FVector(-1.0f, 0.0f, 0.0f)
+	);
+#pragma endregion
 
 	TransformSystems::MoveAlongNavigationPath(1.0f, components);
 
-	TestEqual(TEXT("Checking navigation index after moving along path for three seconds."), components.m_navigationComponent->m_lastPointIndex, 2u);
-	TestEqual(TEXT("Checking location after moving along path for three seconds."), components.m_transformComponent->m_transform.GetLocation(), point2);
-	TestEqual(TEXT("Checking rotation after moving along path for three seconds."), components.m_transformComponent->m_transform.GetRotation().GetForwardVector(), FVector(-1.0f, 0.0f, 0.0f));
+#pragma region
+	TestEqual
+	(
+		TEXT("Checking navigation index after moving along path for three seconds."), 
+		components.m_navigationComponent->m_lastPointIndex, 
+		2u
+	);
+#pragma endregion
+
+#pragma region
+	TestEqual
+	(
+		TEXT("Checking location after moving along path for three seconds."), 
+		components.m_transformComponent->m_transform.GetLocation(),
+		point2
+	);
+#pragma endregion
+
+#pragma region
+	TestEqual
+	(
+		TEXT("Checking rotation after moving along path for three seconds."), 
+		components.m_transformComponent->m_transform.GetRotation().GetForwardVector(), 
+		FVector(-1.0f, 0.0f, 0.0f)
+	);
+#pragma endregion
 
 	TransformSystems::MoveAlongNavigationPath(1.0f, components);
 
-	TestEqual(TEXT("Checking navigation index after moving along path for four seconds."), components.m_navigationComponent->m_lastPointIndex, 0u);
+#pragma region
+	TestEqual
+	(
+		TEXT("Checking navigation index after moving along path for four seconds."), 
+		components.m_navigationComponent->m_lastPointIndex, 
+		0u
+	);
+#pragma endregion
+
 	const uint16 numPathPoints = components.m_navigationComponent->m_navigationPoints.size();
-	TestEqual(TEXT("Checking navigation path point count after moving along path for four seconds."), numPathPoints, 0u);
-	TestEqual(TEXT("Checking current task after moving along path for four seconds."), components.m_taskComponent->m_currentTask, ETask::None);
-	TestEqual(TEXT("Checking location after moving along path for four seconds."), components.m_transformComponent->m_transform.GetLocation(), point3);
-	TestEqual(TEXT("Checking rotation after moving along path for three seconds."), components.m_transformComponent->m_transform.GetRotation().GetForwardVector(), FVector(0.0f, -1.0f, 0.0f));
+	
+#pragma region
+	TestEqual
+	(
+		TEXT("Checking navigation path point count after moving along path for four seconds."), 
+		numPathPoints, 
+		0u
+	);
+#pragma endregion
+
+#pragma region
+	TestEqual
+	(
+		TEXT("Checking current task after moving along path for four seconds."), 
+		components.m_taskComponent->m_currentTask, 
+		ETask::None
+	);
+#pragma endregion
+
+#pragma region
+	TestEqual
+	(
+		TEXT("Checking location after moving along path for four seconds."), 
+		components.m_transformComponent->m_transform.GetLocation(), 
+		point3
+	);
+#pragma endregion
+
+#pragma region
+	TestEqual
+	(
+		TEXT("Checking rotation after moving along path for three seconds."), 
+		components.m_transformComponent->m_transform.GetRotation().GetForwardVector(), 
+		FVector(0.0f, -1.0f, 0.0f)
+	);
+#pragma endregion
 
 	return true;
 }
