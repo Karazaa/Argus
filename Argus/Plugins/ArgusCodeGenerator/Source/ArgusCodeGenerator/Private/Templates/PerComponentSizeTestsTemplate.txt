@@ -1,4 +1,5 @@
-	// ##### =================================================================================================
+#pragma region #####
 	const size_t #####Size = sizeof(#####);
 	netSize += #####Size;
 	UE_LOG(ArgusECSLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(#####), #####Size);
+#pragma endregion

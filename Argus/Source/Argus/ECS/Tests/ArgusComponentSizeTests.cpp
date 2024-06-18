@@ -13,30 +13,36 @@ bool ArgusComponentComponentSizeTest::RunTest(const FString& Parameters)
 
 	size_t netSize = 0;
 
-	// HealthComponent =================================================================================================
+#pragma region HealthComponent
 	const size_t HealthComponentSize = sizeof(HealthComponent);
 	netSize += HealthComponentSize;
 	UE_LOG(ArgusECSLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(HealthComponent), HealthComponentSize);
-	// IdentityComponent =================================================================================================
+#pragma endregion
+#pragma region IdentityComponent
 	const size_t IdentityComponentSize = sizeof(IdentityComponent);
 	netSize += IdentityComponentSize;
 	UE_LOG(ArgusECSLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(IdentityComponent), IdentityComponentSize);
-	// NavigationComponent =================================================================================================
+#pragma endregion
+#pragma region NavigationComponent
 	const size_t NavigationComponentSize = sizeof(NavigationComponent);
 	netSize += NavigationComponentSize;
 	UE_LOG(ArgusECSLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(NavigationComponent), NavigationComponentSize);
-	// TargetingComponent =================================================================================================
+#pragma endregion
+#pragma region TargetingComponent
 	const size_t TargetingComponentSize = sizeof(TargetingComponent);
 	netSize += TargetingComponentSize;
 	UE_LOG(ArgusECSLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(TargetingComponent), TargetingComponentSize);
-	// TaskComponent =================================================================================================
+#pragma endregion
+#pragma region TaskComponent
 	const size_t TaskComponentSize = sizeof(TaskComponent);
 	netSize += TaskComponentSize;
 	UE_LOG(ArgusECSLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(TaskComponent), TaskComponentSize);
-	// TransformComponent =================================================================================================
+#pragma endregion
+#pragma region TransformComponent
 	const size_t TransformComponentSize = sizeof(TransformComponent);
 	netSize += TransformComponentSize;
 	UE_LOG(ArgusECSLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), TransformComponentSize);
+#pragma endregion
 
 	netSize *= ArgusECSConstants::k_maxEntities;
 	netSize /= 1024;

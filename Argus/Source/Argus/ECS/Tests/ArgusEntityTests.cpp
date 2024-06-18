@@ -8,10 +8,20 @@
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityGetIdTest, "Argus.ECS.Entity.GetId", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusEntityGetIdTest::RunTest(const FString& Parameters)
 {
+	const uint32 expectedEntityId = 20u;
+
 	ArgusEntity::FlushAllEntities();
 
-	ArgusEntity entity = ArgusEntity::CreateEntity(20u);
-	TestEqual(TEXT("Testing ArgusEntity creation and ID storage."), entity.GetId(), 20u);
+	ArgusEntity entity = ArgusEntity::CreateEntity(expectedEntityId);
+
+#pragma region Test creating an entity with a specific ID
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Testing %s creation and ID storage."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity)), 
+		entity.GetId(), 
+		expectedEntityID
+	);
+#pragma endregion
 
 	return true;
 }
@@ -19,16 +29,33 @@ bool ArgusEntityGetIdTest::RunTest(const FString& Parameters)
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityAssignmentOperatorTest, "Argus.ECS.Entity.AssignmentOperator", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusEntityAssignmentOperatorTest::RunTest(const FString& Parameters)
 {
+	const uint32 initialEntityId = 20u;
+	const uint32 assignedEntityId = 30u;
+
 	ArgusEntity::FlushAllEntities();
 
-	ArgusEntity entity0 = ArgusEntity::CreateEntity(20u);
-	ArgusEntity entity1 = ArgusEntity::CreateEntity(30u);
+	ArgusEntity entity0 = ArgusEntity::CreateEntity(initialEntityId);
+	ArgusEntity entity1 = ArgusEntity::CreateEntity(assignedEntityId);
 
-	TestEqual(TEXT("Testing creation of ArgusEntity."), entity1.GetId(), 30u);
+#pragma region Test creating an entity with a specific ID
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Testing creation of %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity)),
+		entity1.GetId(), 
+		assignedEntityId
+	);
+#pragma endregion
 
 	entity1 = entity0;
 
-	TestEqual(TEXT("Testing assigment of ArgusEntity."), entity1.GetId(), 20u);
+#pragma region Test assigning one ArgusEntity to another
+	TestEqual
+	(
+		TEXT("Testing assigment of ArgusEntity."), 
+		entity1.GetId(), 
+		initialEntityId
+	);
+#pragma endregion
 
 	return true;
 }

@@ -156,7 +156,7 @@ bool ArgusComponentIdentityComponentIsInFactionMaskTest::RunTest(const FString& 
 
 	factionMask = 0xFF;
 
-#pragma region Test that the IdentityComponent's faction is present in a full faction mask.
+#pragma region Test that the faction is present in a full faction mask.
 	TestTrue
 	(
 		FString::Printf(TEXT("[%s] Creating an %s with %s and confirming that it is present in a full faction mask."), ARGUS_FUNCNAME, ARGUS_NAMEOF(IdentityComponent), ARGUS_NAMEOF(EFaction::FactionA)),
