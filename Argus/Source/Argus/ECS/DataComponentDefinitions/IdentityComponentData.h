@@ -13,10 +13,10 @@ class ARGUS_API UIdentityComponentData : public UComponentData
 
 public:
 	UPROPERTY(EditAnywhere)
-	EFaction m_faction = EFaction::None;
-	UPROPERTY(EditAnywhere, meta = (Bitmask, BitmaskEnum = EFaction))
+	ETeam m_team = ETeam::None;
+	UPROPERTY(EditAnywhere, meta = (Bitmask, BitmaskEnum = ETeam))
 	uint8 m_allies = 0u;
-	UPROPERTY(EditAnywhere, meta = (Bitmask, BitmaskEnum = EFaction))
+	UPROPERTY(EditAnywhere, meta = (Bitmask, BitmaskEnum = ETeam))
 	uint8 m_enemies = 0u;
 
 	void InstantiateComponentForEntity(ArgusEntity& entity) const override;

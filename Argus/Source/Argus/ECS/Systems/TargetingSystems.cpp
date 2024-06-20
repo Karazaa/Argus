@@ -38,7 +38,7 @@ bool TargetingSystems::TargetingSystemsComponentArgs::AreComponentsValidCheck() 
 	return true;
 }
 
-void TargetingSystems::TargetNearestEntityMatchingFactionMask(uint16 sourceEntityID, uint8 factionMask, const TargetingSystemsComponentArgs& components)
+void TargetingSystems::TargetNearestEntityMatchingTeamMask(uint16 sourceEntityID, uint8 TeamMask, const TargetingSystemsComponentArgs& components)
 {
 	if (!components.AreComponentsValidCheck())
 	{
@@ -73,7 +73,7 @@ void TargetingSystems::TargetNearestEntityMatchingFactionMask(uint16 sourceEntit
 			continue;
 		}
 
-		if (!otherIdentityComponent->IsInFactionMask(factionMask))
+		if (!otherIdentityComponent->IsInTeamMask(TeamMask))
 		{
 			continue;
 		}

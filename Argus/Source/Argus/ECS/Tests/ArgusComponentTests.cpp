@@ -130,8 +130,8 @@ bool ArgusComponentTargetingComponentHasLocationTargetTest::RunTest(const FStrin
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentIdentityComponentIsInFactionMaskTest, "Argus.ECS.Component.IdentityComponent.IsInFactionMask", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
-bool ArgusComponentIdentityComponentIsInFactionMaskTest::RunTest(const FString& Parameters)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentIdentityComponentIsInTeamMaskTest, "Argus.ECS.Component.IdentityComponent.IsInTeamMask", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+bool ArgusComponentIdentityComponentIsInTeamMaskTest::RunTest(const FString& Parameters)
 {
 	ArgusEntity::FlushAllEntities();
 
@@ -143,32 +143,32 @@ bool ArgusComponentIdentityComponentIsInFactionMaskTest::RunTest(const FString& 
 		return false;
 	}
 
-	identityComponent->m_faction = EFaction::FactionA;
-	uint8 factionMask = 0u;
+	identityComponent->m_team = ETeam::TeamA;
+	uint8 teamMask = 0u;
 
-#pragma region Test creating an IdentityComponent of faction A and confirming that it is not present in an empty faction mask.
+#pragma region Test creating an IdentityComponent of team A and confirming that it is not present in an empty Team mask.
 	TestFalse
 	(
-		FString::Printf(TEXT("[%s] Creating an %s with %s and confirming that it is not present in an empty faction mask."), ARGUS_FUNCNAME, ARGUS_NAMEOF(IdentityComponent), ARGUS_NAMEOF(EFaction::FactionA)),
-		identityComponent->IsInFactionMask(factionMask)
+		FString::Printf(TEXT("[%s] Creating an %s with %s and confirming that it is not present in an empty team mask."), ARGUS_FUNCNAME, ARGUS_NAMEOF(IdentityComponent), ARGUS_NAMEOF(ETeam::TeamA)),
+		identityComponent->IsInTeamMask(teamMask)
 	);
 #pragma endregion
 
-	factionMask = 0xFF;
+	teamMask = 0xFF;
 
-#pragma region Test that the faction is present in a full faction mask.
+#pragma region Test that the team is present in a full team mask.
 	TestTrue
 	(
-		FString::Printf(TEXT("[%s] Creating an %s with %s and confirming that it is present in a full faction mask."), ARGUS_FUNCNAME, ARGUS_NAMEOF(IdentityComponent), ARGUS_NAMEOF(EFaction::FactionA)),
-		identityComponent->IsInFactionMask(factionMask)
+		FString::Printf(TEXT("[%s] Creating an %s with %s and confirming that it is present in a full team mask."), ARGUS_FUNCNAME, ARGUS_NAMEOF(IdentityComponent), ARGUS_NAMEOF(ETeam::TeamA)),
+		identityComponent->IsInTeamMask(teamMask)
 	);
 #pragma endregion
 
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentIdentityComponentAddAllyFactionTest, "Argus.ECS.Component.IdentityComponent.AddAllyFaction", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
-bool ArgusComponentIdentityComponentAddAllyFactionTest::RunTest(const FString& Parameters)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentIdentityComponentAddAllyTeamTest, "Argus.ECS.Component.IdentityComponent.AddAllyTeam", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+bool ArgusComponentIdentityComponentAddAllyTeamTest::RunTest(const FString& Parameters)
 {
 	ArgusEntity::FlushAllEntities();
 
@@ -182,43 +182,43 @@ bool ArgusComponentIdentityComponentAddAllyFactionTest::RunTest(const FString& P
 		return false;
 	}
 
-	identityComponent1->m_faction = EFaction::FactionA;
-	identityComponent2->m_faction = EFaction::FactionB;
+	identityComponent1->m_team = ETeam::TeamA;
+	identityComponent2->m_team = ETeam::TeamB;
 
-	identityComponent1->AddAllyFaction(EFaction::FactionB);
+	identityComponent1->AddAllyTeam(ETeam::TeamB);
 
-#pragma region Test creating an IdentityComponent of faction A, adding it as an ally of another IdentityComponent, and then validating that it is in the ally faction mask.
+#pragma region Test creating an IdentityComponent of Team A, adding it as an ally of another IdentityComponent, and then validating that it is in the ally Team mask.
 	TestTrue
 	(
-		FString::Printf(TEXT("[%s] Creating two %ss, adding one as the ally of another, and then testing to make sure it is in the ally faction mask."), ARGUS_FUNCNAME, ARGUS_NAMEOF(IdentityComponent)),
-		identityComponent2->IsInFactionMask(identityComponent1->m_allies)
+		FString::Printf(TEXT("[%s] Creating two %ss, adding one as the ally of another, and then testing to make sure it is in the ally Team mask."), ARGUS_FUNCNAME, ARGUS_NAMEOF(IdentityComponent)),
+		identityComponent2->IsInTeamMask(identityComponent1->m_allies)
 	);
 #pragma endregion
 
-	identityComponent1->AddEnemyFaction(EFaction::FactionB);
-	identityComponent1->AddAllyFaction(EFaction::FactionB);
+	identityComponent1->AddEnemyTeam(ETeam::TeamB);
+	identityComponent1->AddAllyTeam(ETeam::TeamB);
 
-#pragma region Test adding enemy and then ally and making sure it is in the ally faction mask.
+#pragma region Test adding enemy and then ally and making sure it is in the ally Team mask.
 	TestTrue
 	(
-		FString::Printf(TEXT("[%s] Creating two %ss, adding one as the enemy and then ally of another, and then testing to make sure it is in the ally faction mask."), ARGUS_FUNCNAME, ARGUS_NAMEOF(IdentityComponent)),
-		identityComponent2->IsInFactionMask(identityComponent1->m_allies)
+		FString::Printf(TEXT("[%s] Creating two %ss, adding one as the enemy and then ally of another, and then testing to make sure it is in the ally Team mask."), ARGUS_FUNCNAME, ARGUS_NAMEOF(IdentityComponent)),
+		identityComponent2->IsInTeamMask(identityComponent1->m_allies)
 	);
 #pragma endregion
 
-#pragma region Test adding enemy then ally and making sure it is not in the enemy faction mask.
+#pragma region Test adding enemy then ally and making sure it is not in the enemy Team mask.
 	TestFalse
 	(
-		FString::Printf(TEXT("[%s] Creating two %ss, adding one as the enemy and then ally of another, and then testing to make sure it is not in the enemy faction mask."), ARGUS_FUNCNAME, ARGUS_NAMEOF(IdentityComponent)),
-		identityComponent2->IsInFactionMask(identityComponent1->m_enemies)
+		FString::Printf(TEXT("[%s] Creating two %ss, adding one as the enemy and then ally of another, and then testing to make sure it is not in the enemy Team mask."), ARGUS_FUNCNAME, ARGUS_NAMEOF(IdentityComponent)),
+		identityComponent2->IsInTeamMask(identityComponent1->m_enemies)
 	);
 #pragma endregion
 
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentIdentityComponentAddEnemyFactionTest, "Argus.ECS.Component.IdentityComponent.AddEnemyFaction", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
-bool ArgusComponentIdentityComponentAddEnemyFactionTest::RunTest(const FString& Parameters)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentIdentityComponentAddEnemyTeamTest, "Argus.ECS.Component.IdentityComponent.AddEnemyTeam", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+bool ArgusComponentIdentityComponentAddEnemyTeamTest::RunTest(const FString& Parameters)
 {
 	ArgusEntity::FlushAllEntities();
 
@@ -232,45 +232,45 @@ bool ArgusComponentIdentityComponentAddEnemyFactionTest::RunTest(const FString& 
 		return false;
 	}
 
-	identityComponent1->m_faction = EFaction::FactionA;
-	identityComponent2->m_faction = EFaction::FactionB;
+	identityComponent1->m_team = ETeam::TeamA;
+	identityComponent2->m_team = ETeam::TeamB;
 
-	identityComponent1->AddEnemyFaction(EFaction::FactionA);
+	identityComponent1->AddEnemyTeam(ETeam::TeamA);
 
 #pragma region Test creating two IdentityComponents, adding one as the enemy of itself, and then validating that it is not in its own enemy mask.
 	TestFalse
 	(
 		FString::Printf(TEXT("[%s] Creating two %ss, adding one as the enemy of itself, and then testing to make sure it is not in the enemy mask."), ARGUS_FUNCNAME, ARGUS_NAMEOF(IdentityComponent)),
-		identityComponent1->IsInFactionMask(identityComponent1->m_enemies)
+		identityComponent1->IsInTeamMask(identityComponent1->m_enemies)
 	);
 #pragma endregion
 
-	identityComponent1->AddEnemyFaction(EFaction::FactionB);
+	identityComponent1->AddEnemyTeam(ETeam::TeamB);
 
 #pragma region Test adding an enemy and then validating that it is in the enemy mask.
 	TestTrue
 	(
-		FString::Printf(TEXT("[%s] Creating two %ss, adding one as the enemy of another, and then testing to make sure it is in the enemy faction mask."), ARGUS_FUNCNAME, ARGUS_NAMEOF(IdentityComponent)),
-		identityComponent2->IsInFactionMask(identityComponent1->m_enemies)
+		FString::Printf(TEXT("[%s] Creating two %ss, adding one as the enemy of another, and then testing to make sure it is in the enemy Team mask."), ARGUS_FUNCNAME, ARGUS_NAMEOF(IdentityComponent)),
+		identityComponent2->IsInTeamMask(identityComponent1->m_enemies)
 	);
 #pragma endregion
 
-	identityComponent1->AddAllyFaction(EFaction::FactionB);
-	identityComponent1->AddEnemyFaction(EFaction::FactionB);
+	identityComponent1->AddAllyTeam(ETeam::TeamB);
+	identityComponent1->AddEnemyTeam(ETeam::TeamB);
 
-#pragma region Test adding a different faction as enemy and validating presence in the enemy mask.
+#pragma region Test adding a different Team as enemy and validating presence in the enemy mask.
 	TestTrue
 	(
-		FString::Printf(TEXT("[%s] Creating two %ss, adding one as the ally and then enemy of another, and then testing to make sure it is in the enemy faction mask."), ARGUS_FUNCNAME, ARGUS_NAMEOF(IdentityComponent)),
-		identityComponent2->IsInFactionMask(identityComponent1->m_enemies)
+		FString::Printf(TEXT("[%s] Creating two %ss, adding one as the ally and then enemy of another, and then testing to make sure it is in the enemy Team mask."), ARGUS_FUNCNAME, ARGUS_NAMEOF(IdentityComponent)),
+		identityComponent2->IsInTeamMask(identityComponent1->m_enemies)
 	);
 #pragma endregion
 
-#pragma region Test adding an ally and then that as an enemy and making sure the faction is no longer present in the ally mask.
+#pragma region Test adding an ally and then that as an enemy and making sure the Team is no longer present in the ally mask.
 	TestFalse
 	(
-		FString::Printf(TEXT("[%s] Creating two %ss, adding one as the ally and then enemy of another, and then testing to make sure it is not in the ally faction mask."), ARGUS_FUNCNAME, ARGUS_NAMEOF(IdentityComponent)),
-		identityComponent2->IsInFactionMask(identityComponent1->m_allies)
+		FString::Printf(TEXT("[%s] Creating two %ss, adding one as the ally and then enemy of another, and then testing to make sure it is not in the ally Team mask."), ARGUS_FUNCNAME, ARGUS_NAMEOF(IdentityComponent)),
+		identityComponent2->IsInTeamMask(identityComponent1->m_allies)
 	);
 #pragma endregion
 

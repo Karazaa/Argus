@@ -16,5 +16,5 @@ public:
 
 		bool AreComponentsValidCheck() const;
 	};
-	static void TargetNearestEntityMatchingFactionMask(uint16 sourceEntityID, uint8 factionMask, const TargetingSystemsComponentArgs& components);
+	static void TargetNearestEntityMatchingTeamMask(uint16 sourceEntityID, uint8 teamMask, const TargetingSystemsComponentArgs& components);
 };

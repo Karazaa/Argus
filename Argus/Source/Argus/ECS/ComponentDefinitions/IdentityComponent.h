@@ -6,48 +6,48 @@
 #include "CoreMinimal.h"
 
 UENUM(meta = (Bitflags, UseEnumValuesAsMaskValuesInEditor = "true"))
-enum class EFaction : uint8
+enum class ETeam : uint8
 {
 	None = 0,
-	FactionA = 1 << 0,
-	FactionB = 1 << 1,
-	FactionC = 1 << 2,
-	FactionD = 1 << 3,
-	FactionE = 1 << 4,
-	FactionF = 1 << 5,
-	FactionG = 1 << 7
+	TeamA = 1 << 0,
+	TeamB = 1 << 1,
+	TeamC = 1 << 2,
+	TeamD = 1 << 3,
+	TeamE = 1 << 4,
+	TeamF = 1 << 5,
+	TeamG = 1 << 7
 };
-ENUM_CLASS_FLAGS(EFaction);
+ENUM_CLASS_FLAGS(ETeam);
 
 struct IdentityComponent
 {
-	EFaction m_faction = EFaction::None;
+	ETeam m_team = ETeam::None;
 
-	ARGUS_PROPERTY(EditAnywhere, meta = (Bitmask, BitmaskEnum = EFaction))
+	ARGUS_PROPERTY(EditAnywhere, meta = (Bitmask, BitmaskEnum = ETeam))
 	uint8 m_allies = 0u;
 
-	ARGUS_PROPERTY(EditAnywhere, meta = (Bitmask, BitmaskEnum = EFaction))
+	ARGUS_PROPERTY(EditAnywhere, meta = (Bitmask, BitmaskEnum = ETeam))
 	uint8 m_enemies = 0u;
 
-	void AddEnemyFaction(EFaction enemyFaction)
+	void AddEnemyTeam(ETeam enemyTeam)
 	{
-		if (enemyFaction == m_faction)
+		if (enemyTeam == m_team)
 		{
 			return;
 		}
 
-		m_allies &= ~((uint8)enemyFaction);
-		m_enemies |= ((uint8)enemyFaction);
+		m_allies &= ~((uint8)enemyTeam);
+		m_enemies |= ((uint8)enemyTeam);
 	}
 
-	void AddAllyFaction(EFaction allyFaction)
+	void AddAllyTeam(ETeam allyTeam)
 	{
-		m_enemies &= ~((uint8)allyFaction);
-		m_allies |= ((uint8)allyFaction);
+		m_enemies &= ~((uint8)allyTeam);
+		m_allies |= ((uint8)allyTeam);
 	}
 
-	bool IsInFactionMask(uint8 factionMask) const
+	bool IsInTeamMask(uint8 teamMask) const
 	{
-		return factionMask & ((uint8)m_faction);
+		return teamMask & ((uint8)m_team);
 	}
 };

@@ -6,8 +6,8 @@
 
 #if WITH_AUTOMATION_TESTS
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(TargetingSystemsTargetNearestEntityMatchingFactionMaskTest, "Argus.ECS.Systems.TargetingSystems.TargetNearestEntityMatchingFactionMask", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
-bool TargetingSystemsTargetNearestEntityMatchingFactionMaskTest::RunTest(const FString& Parameters)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(TargetingSystemsTargetNearestEntityMatchingTeamMaskTest, "Argus.ECS.Systems.TargetingSystems.TargetNearestEntityMatchingTeamMask", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+bool TargetingSystemsTargetNearestEntityMatchingTeamMaskTest::RunTest(const FString& Parameters)
 {
 	ArgusEntity::FlushAllEntities();
 
@@ -31,11 +31,11 @@ bool TargetingSystemsTargetNearestEntityMatchingFactionMaskTest::RunTest(const F
 	sourceTransformComponent->m_transform = FTransform(FVector(0.0f, 0.0f, 0.0f));
 	closeTransformComponent->m_transform = FTransform(FVector(50.0f, 0.0f, 0.0f));
 	fartherTransformComponent->m_transform = FTransform(FVector(100.0f, 0.0f, 0.0f));
-	sourceIdentityComponent->m_faction = EFaction::FactionA;
-	closeIdentityComponent->m_faction = EFaction::FactionB;
-	fartherIdentityComponent->m_faction = EFaction::FactionC;
-	sourceIdentityComponent->AddEnemyFaction(EFaction::FactionB);
-	sourceIdentityComponent->AddEnemyFaction(EFaction::FactionC);
+	sourceIdentityComponent->m_team = ETeam::TeamA;
+	closeIdentityComponent->m_team = ETeam::TeamB;
+	fartherIdentityComponent->m_team = ETeam::TeamC;
+	sourceIdentityComponent->AddEnemyTeam(ETeam::TeamB);
+	sourceIdentityComponent->AddEnemyTeam(ETeam::TeamC);
 
 	TargetingSystems::TargetingSystemsComponentArgs components;
 	components.m_targetingComponent = sourceTargetingComponent;
@@ -49,7 +49,7 @@ bool TargetingSystemsTargetNearestEntityMatchingFactionMaskTest::RunTest(const F
 	);
 #pragma endregion
 
-	TargetingSystems::TargetNearestEntityMatchingFactionMask(sourceEntity.GetId(), sourceIdentityComponent->m_enemies, components);
+	TargetingSystems::TargetNearestEntityMatchingTeamMask(sourceEntity.GetId(), sourceIdentityComponent->m_enemies, components);
 
 #pragma region Test target closest enemy
 	TestEqual
@@ -60,7 +60,7 @@ bool TargetingSystemsTargetNearestEntityMatchingFactionMaskTest::RunTest(const F
 			ARGUS_FUNCNAME,
 			ARGUS_NAMEOF(sourceEntity),
 			ARGUS_NAMEOF(closeEntity),
-			ARGUS_NAMEOF(TargetingSystems::TargetNearestEntityMatchingFactionMask)
+			ARGUS_NAMEOF(TargetingSystems::TargetNearestEntityMatchingTeamMask)
 		),
 		sourceTargetingComponent->m_targetEntityId,
 		closeEntity.GetId()
@@ -68,7 +68,7 @@ bool TargetingSystemsTargetNearestEntityMatchingFactionMaskTest::RunTest(const F
 #pragma endregion
 
 	fartherTransformComponent->m_transform.SetLocation(FVector(49.0f, 0.0f, 0.0f));
-	TargetingSystems::TargetNearestEntityMatchingFactionMask(sourceEntity.GetId(), sourceIdentityComponent->m_enemies, components);
+	TargetingSystems::TargetNearestEntityMatchingTeamMask(sourceEntity.GetId(), sourceIdentityComponent->m_enemies, components);
 
 #pragma region Test target farther enemy after moving
 	TestEqual
@@ -79,7 +79,7 @@ bool TargetingSystemsTargetNearestEntityMatchingFactionMaskTest::RunTest(const F
 			ARGUS_FUNCNAME,
 			ARGUS_NAMEOF(sourceTargetingComponent),
 			ARGUS_NAMEOF(fartherEntity),
-			ARGUS_NAMEOF(TargetingSystems::TargetNearestEntityMatchingFactionMask)
+			ARGUS_NAMEOF(TargetingSystems::TargetNearestEntityMatchingTeamMask)
 		),
 		sourceTargetingComponent->m_targetEntityId,
 		fartherEntity.GetId()
@@ -87,7 +87,7 @@ bool TargetingSystemsTargetNearestEntityMatchingFactionMaskTest::RunTest(const F
 #pragma endregion
 
 	fartherTransformComponent->m_transform.SetLocation(FVector(50.0f, 0.0f, 0.0f));
-	TargetingSystems::TargetNearestEntityMatchingFactionMask(sourceEntity.GetId(), sourceIdentityComponent->m_enemies, components);
+	TargetingSystems::TargetNearestEntityMatchingTeamMask(sourceEntity.GetId(), sourceIdentityComponent->m_enemies, components);
 
 #pragma region Test tiebreaking
 	TestEqual
@@ -98,44 +98,44 @@ bool TargetingSystemsTargetNearestEntityMatchingFactionMaskTest::RunTest(const F
 			ARGUS_FUNCNAME,
 			ARGUS_NAMEOF(sourceTargetingComponent),
 			ARGUS_NAMEOF(closeEntity),
-			ARGUS_NAMEOF(TargetingSystems::TargetNearestEntityMatchingFactionMask)
+			ARGUS_NAMEOF(TargetingSystems::TargetNearestEntityMatchingTeamMask)
 		),
 		sourceTargetingComponent->m_targetEntityId,
 		closeEntity.GetId()
 	);
 #pragma endregion
 
-	sourceIdentityComponent->AddAllyFaction(EFaction::FactionB);
-	TargetingSystems::TargetNearestEntityMatchingFactionMask(sourceEntity.GetId(), sourceIdentityComponent->m_enemies, components);
+	sourceIdentityComponent->AddAllyTeam(ETeam::TeamB);
+	TargetingSystems::TargetNearestEntityMatchingTeamMask(sourceEntity.GetId(), sourceIdentityComponent->m_enemies, components);
 
-#pragma region Test targeting nearest enemy after changing factions
+#pragma region Test targeting nearest enemy after changing Teams
 	TestEqual
 	(
 		FString::Printf
 		(
-			TEXT("[%s] Testing that %s is targeting %s after changing enemy faction mask and running %s"),
+			TEXT("[%s] Testing that %s is targeting %s after changing enemy Team mask and running %s"),
 			ARGUS_FUNCNAME,
 			ARGUS_NAMEOF(sourceTargetingComponent),
 			ARGUS_NAMEOF(fartherEntity),
-			ARGUS_NAMEOF(TargetingSystems::TargetNearestEntityMatchingFactionMask)
+			ARGUS_NAMEOF(TargetingSystems::TargetNearestEntityMatchingTeamMask)
 		),
 		sourceTargetingComponent->m_targetEntityId,
 		fartherEntity.GetId()
 	);
 #pragma endregion
 
-	TargetingSystems::TargetNearestEntityMatchingFactionMask(sourceEntity.GetId(), sourceIdentityComponent->m_allies, components);
+	TargetingSystems::TargetNearestEntityMatchingTeamMask(sourceEntity.GetId(), sourceIdentityComponent->m_allies, components);
 
-#pragma region Test targeting after changing ally faction.
+#pragma region Test targeting after changing ally Team.
 	TestEqual
 	(
 		FString::Printf
 		(
-			TEXT("[%s] Testing that %s is targeting %s after changing ally faction mask and running %s"),
+			TEXT("[%s] Testing that %s is targeting %s after changing ally Team mask and running %s"),
 			ARGUS_FUNCNAME,
 			ARGUS_NAMEOF(sourceTargetingComponent),
 			ARGUS_NAMEOF(closeEntity),
-			ARGUS_NAMEOF(TargetingSystems::TargetNearestEntityMatchingFactionMask)
+			ARGUS_NAMEOF(TargetingSystems::TargetNearestEntityMatchingTeamMask)
 		),
 		sourceTargetingComponent->m_targetEntityId,
 		closeEntity.GetId()
