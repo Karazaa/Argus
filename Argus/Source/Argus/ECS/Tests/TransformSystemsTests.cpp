@@ -9,6 +9,12 @@
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(TransformSystemsFaceTowardsLocationXYTest, "Argus.ECS.Systems.TransformSystems.FaceTowardsLocationXY", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool TransformSystemsFaceTowardsLocationXYTest::RunTest(const FString& Parameters)
 {
+	const FVector expectedFirstTargetLocation = FVector(-1.0f, 0.0f, 10.0f);
+	const FVector expectedSecondTargetLocation = FVector(-0.5f, 0.0f, 100.0f);
+	const FVector expectedForward = FVector(-1.0f, 0.0f, 0.0f);
+
+	ArgusEntity::FlushAllEntities();
+
 	ArgusEntity entity = ArgusEntity::CreateEntity();
 	TransformComponent* transformComponent = entity.AddComponent<TransformComponent>();
 
@@ -17,36 +23,32 @@ bool TransformSystemsFaceTowardsLocationXYTest::RunTest(const FString& Parameter
 		return false;
 	}
 
-#pragma region
+#pragma region Test creating an entity with a default forward transform.
 	TestEqual
 	(
-		TEXT("Creating an entity with a default forward transform."), 
+		FString::Printf(TEXT("[%s] Test creating an %s and validating that its default forward vector equals {%f, %f, %f}"), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), FVector::ForwardVector.X, FVector::ForwardVector.Y, FVector::ForwardVector.Z),
 		transformComponent->m_transform.GetRotation().GetForwardVector(), 
-		FVector(1.0f, 0.0f, 0.0f)
+		FVector::ForwardVector
 	);
 #pragma endregion
 
-	FVector targetLocation = FVector(-1.0f, 0.0f, 10.0f);
-	const FVector expectedForward = FVector(-1.0f, 0.0f, 0.0f);
-	TransformSystems::FaceTowardsLocationXY(transformComponent, targetLocation);
+	TransformSystems::FaceTowardsLocationXY(transformComponent, expectedFirstTargetLocation);
 
-#pragma region
+#pragma region Test facing an entity towards a direction and confirming it has the proper forward vector
 	TestEqual
 	(
-		TEXT("Facing entity towards target and confirming it has the proper forward vector."),
+		FString::Printf(TEXT("[%s] Test facing %s towards target and confirming it has the proper forward vector, {%f, %f, %f}."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), expectedForward.X, expectedForward.Y, expectedForward.Z),
 		transformComponent->m_transform.GetRotation().GetForwardVector(), 
 		expectedForward
 	);
 #pragma endregion
 
-	targetLocation.X = -0.5f;
-	targetLocation.Z = 100.0f;
-	TransformSystems::FaceTowardsLocationXY(transformComponent, targetLocation);
+	TransformSystems::FaceTowardsLocationXY(transformComponent, expectedSecondTargetLocation);
 
-#pragma region
+#pragma region Test facing an entity towards a coincident vector and confirm that it does not change facing
 	TestEqual
 	(
-		TEXT("Facing entity towards coincident vector and confirming it does not change facing."), 
+		FString::Printf(TEXT("[%s] Test facing %s towards coincident vector and confirming it does not change facing."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity)),
 		transformComponent->m_transform.GetRotation().GetForwardVector(), 
 		expectedForward
 	);
@@ -54,10 +56,10 @@ bool TransformSystemsFaceTowardsLocationXYTest::RunTest(const FString& Parameter
 
 	TransformSystems::FaceTowardsLocationXY(transformComponent, FVector::ZeroVector);
 
-#pragma region
+#pragma region Test facing an entity towards a zero vector and confirming it does not change facing
 	TestEqual
 	(
-		TEXT("Facing entity towards zero vector and confirming it does not change facing."), 
+		FString::Printf(TEXT("[%s] Test facing %s towards %s and confirming it does not change facing."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(FVector::ZeroVector)),
 		transformComponent->m_transform.GetRotation().GetForwardVector(), 
 		expectedForward
 	);
@@ -69,6 +71,19 @@ bool TransformSystemsFaceTowardsLocationXYTest::RunTest(const FString& Parameter
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(TransformSystemsMoveAlongPathTest, "Argus.ECS.Systems.TransformSystems.MoveAlongPath", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool TransformSystemsMoveAlongPathTest::RunTest(const FString& Parameters)
 {
+	const FVector point0				= FVector(0.0f, 0.0f, 0.0f);
+	const FVector expectedTestLocation0 = FVector(-1.0f, 0.0f, 0.0f);
+	const FVector expectedTestForward0	= FVector(-1.0f, 0.0f, 0.0f);
+	const FVector point1				= FVector(-2.0f, 0.0f, 0.0f);
+	const FVector point2				= FVector(-2.5f, 0.0f, 0.0f);
+	const FVector point3				= FVector(-2.5f, -0.5f, 0.1f);
+	const FVector expectedTestForward1	= FVector(0.0f, -1.0f, 0.0f);
+	const float navigationSpeedUnitsPerSecond = 1.0f;
+	const float deltaSecondsPerStep = 1.0f;
+	const uint32 numExpectedPathPointsAtConclusion = 0u;
+
+	ArgusEntity::FlushAllEntities();
+
 	ArgusEntity entity = ArgusEntity::CreateEntity();
 	TransformSystems::TransformSystemsComponentArgs components;
 
@@ -83,168 +98,167 @@ bool TransformSystemsMoveAlongPathTest::RunTest(const FString& Parameters)
 
 	components.m_taskComponent->m_currentTask = ETask::MoveToLocation;
 	components.m_navigationComponent->m_navigationSpeedUnitsPerSecond = 1.0f;
-
-	FVector point0 = FVector(0.0f, 0.0f, 0.0f);
-	FVector point1 = FVector(-2.0f, 0.0f, 0.0f);
-	FVector point2 = FVector(-2.5f, 0.0f, 0.0f);
-	FVector point3 = FVector(-2.5f, -0.5f, 0.1f);
 	components.m_navigationComponent->m_navigationPoints.reserve(4);
 	components.m_navigationComponent->m_navigationPoints.push_back(point0);
 	components.m_navigationComponent->m_navigationPoints.push_back(point1);
 	components.m_navigationComponent->m_navigationPoints.push_back(point2);
 	components.m_navigationComponent->m_navigationPoints.push_back(point3);
+	float secondCounter = 0.0f;
 
-#pragma region
+#pragma region Test creating an initial entity at a specific location
 	TestEqual
 	(
-		TEXT("Creating initial entity and confirming transform location."), 
+		FString::Printf(TEXT("[%s] Test creating initial %s and confirming %s location is {%f, %f, %f}"), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(TransformComponent), FVector::ZeroVector.X, FVector::ZeroVector.Y, FVector::ZeroVector.Z),
 		components.m_transformComponent->m_transform.GetLocation(), 
 		FVector::ZeroVector
 	);
 #pragma endregion
 
-#pragma region
+#pragma region Test forward vector of initial entity
 	TestEqual
 	(
-		TEXT("Creating initial entity and confirming transform rotation."), 
+		FString::Printf(TEXT("[%s] Test initial %s %s forward vector is {%f, %f, %f}."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(TransformComponent), FVector::ForwardVector.X, FVector::ForwardVector.Y, FVector::ForwardVector.Z),
 		components.m_transformComponent->m_transform.GetRotation().GetForwardVector(), 
 		FVector::ForwardVector
 	);
 #pragma endregion
 
-	TransformSystems::MoveAlongNavigationPath(1.0f, components);
+	TransformSystems::MoveAlongNavigationPath(deltaSecondsPerStep, components);
+	secondCounter += deltaSecondsPerStep;
 
-#pragma region
+#pragma region Test navigation index after moving along path for one second
 	TestEqual
 	(
-		TEXT("Checking navigation index after moving along path for one second."), 
+		FString::Printf(TEXT("[%s] Test %s after moving along path for %f seconds."), ARGUS_FUNCNAME, ARGUS_NAMEOF(components.m_navigationComponent->m_lastPointIndex), secondCounter),
 		components.m_navigationComponent->m_lastPointIndex, 
 		0u
 	);
 #pragma endregion
 
-#pragma region
+#pragma region Test location after moving along path for one second
 	TestEqual
 	(
-		TEXT("Checking location after moving along path for one second."), 
+		FString::Printf(TEXT("[%s] Test that %s location is {%f, %f, %f} after moving along path for %f seconds."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), expectedTestLocation0.X, expectedTestLocation0.Y, expectedTestLocation0.Z, secondCounter),
 		components.m_transformComponent->m_transform.GetLocation(), 
-		FVector(-1.0f, 0.0f, 0.0f)
+		expectedTestLocation0
 	);
 #pragma endregion
 
-#pragma region
+#pragma region Test rotation after moving along path for one second
 	TestEqual
 	(
-		TEXT("Checking rotation after moving along path for one second."), 
+		FString::Printf(TEXT("[%s] Test that %s forward vector is {%f, %f, %f} after moving along path for %f seconds."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), expectedTestForward0.X, expectedTestForward0.Y, expectedTestForward0.Z, secondCounter),
 		components.m_transformComponent->m_transform.GetRotation().GetForwardVector(), 
-		FVector(-1.0f, 0.0f, 0.0f)
+		expectedTestForward0
 	);
 #pragma endregion
 
-	TransformSystems::MoveAlongNavigationPath(1.0f, components);
+	TransformSystems::MoveAlongNavigationPath(deltaSecondsPerStep, components);
+	secondCounter += deltaSecondsPerStep;
 
-#pragma region
+#pragma region Test navigation index after moving along path for two seconds
 	TestEqual
 	(
-		TEXT("Checking navigation index after moving along path for two seconds."), 
+		FString::Printf(TEXT("[%s] Test %s after moving along path for %f seconds."), ARGUS_FUNCNAME, ARGUS_NAMEOF(components.m_navigationComponent->m_lastPointIndex), secondCounter),
 		components.m_navigationComponent->m_lastPointIndex, 
 		1u
 	);
 #pragma endregion
 
-#pragma region
+#pragma region Test location after moving along path for two seconds
 	TestEqual
 	(
-		TEXT("Checking location after moving along path for two seconds."), 
+		FString::Printf(TEXT("[%s] Test that %s location is {%f, %f, %f} after moving along path for %f seconds."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), point1.X, point1.Y, point1.Z, secondCounter),
 		components.m_transformComponent->m_transform.GetLocation(), 
 		point1
 	);
 #pragma endregion
 
-#pragma region
+#pragma region Test rotation after moving along path for two seconds
 	TestEqual
 	(
-		TEXT("Checking rotation after moving along path for two seconds."), 
+		FString::Printf(TEXT("[%s] Test that %s forward vector is {%f, %f, %f} after moving along path for %f seconds."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), expectedTestForward0.X, expectedTestForward0.Y, expectedTestForward0.Z, secondCounter),
 		components.m_transformComponent->m_transform.GetRotation().GetForwardVector(), 
-		FVector(-1.0f, 0.0f, 0.0f)
+		expectedTestForward0
 	);
 #pragma endregion
 
-	TransformSystems::MoveAlongNavigationPath(1.0f, components);
+	TransformSystems::MoveAlongNavigationPath(deltaSecondsPerStep, components);
+	secondCounter += deltaSecondsPerStep;
 
-#pragma region
+#pragma region Test navigation index after moving along path for three seconds
 	TestEqual
 	(
-		TEXT("Checking navigation index after moving along path for three seconds."), 
+		FString::Printf(TEXT("[%s] Test %s after moving along path for %f seconds."), ARGUS_FUNCNAME, ARGUS_NAMEOF(components.m_navigationComponent->m_lastPointIndex), secondCounter),
 		components.m_navigationComponent->m_lastPointIndex, 
 		2u
 	);
 #pragma endregion
 
-#pragma region
+#pragma region Test location after moving along path for three seconds
 	TestEqual
 	(
-		TEXT("Checking location after moving along path for three seconds."), 
+		FString::Printf(TEXT("[%s] Test that %s location is {%f, %f, %f} after moving along path for %f seconds."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), point2.X, point2.Y, point2.Z, secondCounter),
 		components.m_transformComponent->m_transform.GetLocation(),
 		point2
 	);
 #pragma endregion
 
-#pragma region
+#pragma region Test rotation after moving along path for three seconds
 	TestEqual
 	(
-		TEXT("Checking rotation after moving along path for three seconds."), 
+		FString::Printf(TEXT("[%s] Test that %s forward vector is {%f, %f, %f} after moving along path for %f seconds."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), expectedTestForward0.X, expectedTestForward0.Y, expectedTestForward0.Z, secondCounter),
 		components.m_transformComponent->m_transform.GetRotation().GetForwardVector(), 
-		FVector(-1.0f, 0.0f, 0.0f)
+		expectedTestForward0
 	);
 #pragma endregion
 
-	TransformSystems::MoveAlongNavigationPath(1.0f, components);
+	TransformSystems::MoveAlongNavigationPath(deltaSecondsPerStep, components);
+	secondCounter += deltaSecondsPerStep;
+	const uint16 numPathPoints = components.m_navigationComponent->m_navigationPoints.size();
 
-#pragma region
+#pragma region Test navigation index after moving along path for four seconds
 	TestEqual
 	(
-		TEXT("Checking navigation index after moving along path for four seconds."), 
+		FString::Printf(TEXT("[%s] Test %s after moving along path for %f seconds."), ARGUS_FUNCNAME, ARGUS_NAMEOF(components.m_navigationComponent->m_lastPointIndex), secondCounter),
 		components.m_navigationComponent->m_lastPointIndex, 
 		0u
 	);
 #pragma endregion
-
-	const uint16 numPathPoints = components.m_navigationComponent->m_navigationPoints.size();
 	
-#pragma region
+#pragma region Test navigation path count after moving along path for four seconds
 	TestEqual
 	(
-		TEXT("Checking navigation path point count after moving along path for four seconds."), 
+		FString::Printf(TEXT("[%s] Test that %s path point count is %d after moving along path for %f seconds."), ARGUS_FUNCNAME, ARGUS_NAMEOF(NavigationComponent), numExpectedPathPointsAtConclusion, secondCounter),
 		numPathPoints, 
-		0u
+		numExpectedPathPointsAtConclusion
 	);
 #pragma endregion
 
-#pragma region
+#pragma region Test current task after moving along path for four seconds
 	TestEqual
 	(
-		TEXT("Checking current task after moving along path for four seconds."), 
+		FString::Printf(TEXT("[%s] Test that %s current task is %s after moving along path for %f seconds."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TaskComponent), ARGUS_NAMEOF(ETask::None), secondCounter),
 		components.m_taskComponent->m_currentTask, 
 		ETask::None
 	);
 #pragma endregion
 
-#pragma region
+#pragma region Test location after moving along path for four seconds
 	TestEqual
 	(
-		TEXT("Checking location after moving along path for four seconds."), 
+		FString::Printf(TEXT("[%s] Test that %s location is {%f, %f, %f} after moving along path for %f seconds."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), point3.X, point3.Y, point3.Z, secondCounter),
 		components.m_transformComponent->m_transform.GetLocation(), 
 		point3
 	);
 #pragma endregion
 
-#pragma region
+#pragma region Test rotation after moving along path for four seconds
 	TestEqual
 	(
-		TEXT("Checking rotation after moving along path for three seconds."), 
+		FString::Printf(TEXT("[%s] Test that %s forward vector is {%f, %f, %f} after moving along path for %f seconds."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), expectedTestForward1.X, expectedTestForward1.Y, expectedTestForward1.Z, secondCounter),
 		components.m_transformComponent->m_transform.GetRotation().GetForwardVector(), 
-		FVector(0.0f, -1.0f, 0.0f)
+		expectedTestForward1
 	);
 #pragma endregion
 
