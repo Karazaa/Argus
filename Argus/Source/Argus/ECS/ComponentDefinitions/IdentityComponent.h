@@ -29,6 +29,8 @@ struct IdentityComponent
 	ARGUS_PROPERTY(EditAnywhere, meta = (Bitmask, BitmaskEnum = ETeam))
 	uint8 m_enemies = 0u;
 
+	uint8 m_faction = 0u;
+
 	void AddEnemyTeam(ETeam enemyTeam)
 	{
 		if (enemyTeam == m_team)

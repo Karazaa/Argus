@@ -9,6 +9,7 @@ void UIdentityComponentData::InstantiateComponentForEntity(ArgusEntity& entity) 
 	IdentityComponentRef->m_team = m_team;
 	IdentityComponentRef->m_allies = m_allies;
 	IdentityComponentRef->m_enemies = m_enemies;
+	IdentityComponentRef->m_faction = m_faction;
 }
 
 bool UIdentityComponentData::MatchesType(UComponentData* other) const
