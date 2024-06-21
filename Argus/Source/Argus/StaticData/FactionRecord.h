@@ -2,12 +2,11 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "Engine/DataAsset.h"
+#include "ArgusStaticRecord.h"
 #include "FactionRecord.generated.h"
 
 UCLASS()
-class UFactionRecord : public UDataAsset
+class ARGUS_API UFactionRecord : public UArgusStaticRecord
 {
 	GENERATED_BODY()
 };

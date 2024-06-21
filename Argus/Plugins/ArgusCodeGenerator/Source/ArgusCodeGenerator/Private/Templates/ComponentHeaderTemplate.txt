@@ -1,4 +1,4 @@
-// ##### ======================================================================================================
+#pragma region #####
 private:
 	static ##### s_#####s[ArgusECSConstants::k_maxEntities];
 	static std::bitset<ArgusECSConstants::k_maxEntities> s_is#####Active;
@@ -60,3 +60,4 @@ public:
 			return &s_#####s[entityId];
 		}
 	}
+#pragma endregion

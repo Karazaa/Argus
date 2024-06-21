@@ -2,8 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "Engine/DataAsset.h"
 #include "FactionRecord.h"
 #include "FactionRecordDatabase.generated.h"
 
@@ -11,7 +9,10 @@ UCLASS()
 class UFactionRecordDatabase : public UDataAsset
 {
 	GENERATED_BODY()
+
 public:
 	UPROPERTY(EditAnywhere)
 	TMap<uint8, TSoftObjectPtr<UFactionRecord>> m_factionRecords;
+
+	const UFactionRecord* GetRecord(uint8 id) const;
 };

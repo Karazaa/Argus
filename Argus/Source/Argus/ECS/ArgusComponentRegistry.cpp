@@ -4,24 +4,30 @@
 #include "ArgusComponentRegistry.h"
 
 // Begin component specific definitions
-// HealthComponent
+#pragma region HealthComponent
 HealthComponent ArgusComponentRegistry::s_HealthComponents[ArgusECSConstants::k_maxEntities];
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isHealthComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
-// IdentityComponent
+#pragma endregion
+#pragma region IdentityComponent
 IdentityComponent ArgusComponentRegistry::s_IdentityComponents[ArgusECSConstants::k_maxEntities];
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isIdentityComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
-// NavigationComponent
+#pragma endregion
+#pragma region NavigationComponent
 NavigationComponent ArgusComponentRegistry::s_NavigationComponents[ArgusECSConstants::k_maxEntities];
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isNavigationComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
-// TargetingComponent
+#pragma endregion
+#pragma region TargetingComponent
 TargetingComponent ArgusComponentRegistry::s_TargetingComponents[ArgusECSConstants::k_maxEntities];
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isTargetingComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
-// TaskComponent
+#pragma endregion
+#pragma region TaskComponent
 TaskComponent ArgusComponentRegistry::s_TaskComponents[ArgusECSConstants::k_maxEntities];
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isTaskComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
-// TransformComponent
+#pragma endregion
+#pragma region TransformComponent
 TransformComponent ArgusComponentRegistry::s_TransformComponents[ArgusECSConstants::k_maxEntities];
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isTransformComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
+#pragma endregion
 
 void ArgusComponentRegistry::FlushAllComponents()
 {

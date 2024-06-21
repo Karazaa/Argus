@@ -42,7 +42,7 @@ public:
 
 	// Begin component specific template specifiers.
 	
-// HealthComponent ======================================================================================================
+#pragma region HealthComponent
 private:
 	static HealthComponent s_HealthComponents[ArgusECSConstants::k_maxEntities];
 	static std::bitset<ArgusECSConstants::k_maxEntities> s_isHealthComponentActive;
@@ -104,7 +104,8 @@ public:
 			return &s_HealthComponents[entityId];
 		}
 	}
-// IdentityComponent ======================================================================================================
+#pragma endregion
+#pragma region IdentityComponent
 private:
 	static IdentityComponent s_IdentityComponents[ArgusECSConstants::k_maxEntities];
 	static std::bitset<ArgusECSConstants::k_maxEntities> s_isIdentityComponentActive;
@@ -166,7 +167,8 @@ public:
 			return &s_IdentityComponents[entityId];
 		}
 	}
-// NavigationComponent ======================================================================================================
+#pragma endregion
+#pragma region NavigationComponent
 private:
 	static NavigationComponent s_NavigationComponents[ArgusECSConstants::k_maxEntities];
 	static std::bitset<ArgusECSConstants::k_maxEntities> s_isNavigationComponentActive;
@@ -228,7 +230,8 @@ public:
 			return &s_NavigationComponents[entityId];
 		}
 	}
-// TargetingComponent ======================================================================================================
+#pragma endregion
+#pragma region TargetingComponent
 private:
 	static TargetingComponent s_TargetingComponents[ArgusECSConstants::k_maxEntities];
 	static std::bitset<ArgusECSConstants::k_maxEntities> s_isTargetingComponentActive;
@@ -290,7 +293,8 @@ public:
 			return &s_TargetingComponents[entityId];
 		}
 	}
-// TaskComponent ======================================================================================================
+#pragma endregion
+#pragma region TaskComponent
 private:
 	static TaskComponent s_TaskComponents[ArgusECSConstants::k_maxEntities];
 	static std::bitset<ArgusECSConstants::k_maxEntities> s_isTaskComponentActive;
@@ -352,7 +356,8 @@ public:
 			return &s_TaskComponents[entityId];
 		}
 	}
-// TransformComponent ======================================================================================================
+#pragma endregion
+#pragma region TransformComponent
 private:
 	static TransformComponent s_TransformComponents[ArgusECSConstants::k_maxEntities];
 	static std::bitset<ArgusECSConstants::k_maxEntities> s_isTransformComponentActive;
@@ -414,4 +419,5 @@ public:
 			return &s_TransformComponents[entityId];
 		}
 	}
+#pragma endregion
 };
