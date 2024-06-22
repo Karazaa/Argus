@@ -11,9 +11,16 @@ UCLASS()
 class ARGUS_API UArgusGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
+
+private:
+	static UArgusStaticDatabase* s_staticDatabaseLoadedReference;
 	
 public:
+	static UArgusStaticDatabase* GetStaticDatabase();
+
 	UPROPERTY(EditAnywhere)
-	TSoftObjectPtr<UArgusStaticDatabase> m_staticDatabase;
+	TObjectPtr<UArgusStaticDatabase> m_staticDatabase;
 	
+	virtual void Init() override;
+	virtual void Shutdown() override;
 };
