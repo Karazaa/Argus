@@ -9,4 +9,8 @@ UCLASS()
 class ARGUS_API UFactionRecord : public UArgusStaticRecord
 {
 	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere)
+	FString m_factionName;
 };

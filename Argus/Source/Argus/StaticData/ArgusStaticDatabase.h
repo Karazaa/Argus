@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "ArgusLogging.h"
+#include "ArgusMacros.h"
 #include "FactionRecordDatabase.h"
 #include "ArgusStaticDatabase.generated.h"
 
@@ -26,6 +28,14 @@ public:
 		UFactionRecordDatabase* factionRecordDatabase = m_factionRecordDatabase.LoadSynchronous();
 		if (!factionRecordDatabase)
 		{
+			UE_LOG
+			(
+				ArgusStaticDataLog, Error,
+				TEXT("[%s] Could not retrieve %s. %s might not be properly assigned."),
+				ARGUS_FUNCNAME,
+				ARGUS_NAMEOF(UFactionRecordDatabase),
+				ARGUS_NAMEOF(m_factionRecordDatabase)
+			);
 			return nullptr;
 		}
 

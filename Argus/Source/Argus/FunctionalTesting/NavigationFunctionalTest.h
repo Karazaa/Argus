@@ -4,8 +4,6 @@
 
 #include "ArgusActor.h"
 #include "ArgusFunctionalTest.h"
-#include "CoreMinimal.h"
-#include "FunctionalTest.h"
 #include "NavigationFunctionalTest.generated.h"
 
 UCLASS()

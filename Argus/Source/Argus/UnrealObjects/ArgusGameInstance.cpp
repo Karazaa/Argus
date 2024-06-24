@@ -1,12 +1,26 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusGameInstance.h"
+#include "ArgusLogging.h"
+#include "ArgusMacros.h"
 
 UArgusStaticDatabase* UArgusGameInstance::s_staticDatabaseLoadedReference = nullptr;
 
-UArgusStaticDatabase* UArgusGameInstance::GetStaticDatabase()
+const UArgusStaticDatabase* UArgusGameInstance::GetStaticDatabase()
 {
-	// TODO JAMES: Definitely error on nullptr here.
+	if (!s_staticDatabaseLoadedReference)
+	{
+		UE_LOG
+		(
+			ArgusStaticDataLog, Error, 
+			TEXT("[%s] No %s has been assigned to yet! Accessing database berfore %s has been called."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(s_staticDatabaseLoadedReference),
+			ARGUS_NAMEOF(UArgusGameInstance::Init)
+		);
+		return nullptr;
+	}
+
 	return s_staticDatabaseLoadedReference;
 }
 

@@ -16,7 +16,7 @@ private:
 	static UArgusStaticDatabase* s_staticDatabaseLoadedReference;
 	
 public:
-	static UArgusStaticDatabase* GetStaticDatabase();
+	static const UArgusStaticDatabase* GetStaticDatabase();
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UArgusStaticDatabase> m_staticDatabase;

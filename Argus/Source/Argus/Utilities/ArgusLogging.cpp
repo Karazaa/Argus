@@ -4,4 +4,5 @@
 
 DEFINE_LOG_CATEGORY(ArgusECSLog);
 DEFINE_LOG_CATEGORY(ArgusInputLog);
+DEFINE_LOG_CATEGORY(ArgusStaticDataLog);
 DEFINE_LOG_CATEGORY(ArgusUnrealObjectsLog);
