@@ -23,6 +23,7 @@ void AArgusFunctionalTest::Tick(float deltaSeconds)
 	if (!bIsRunning && GetWorld()->HasBegunPlay())
 	{
 		StartArgusFunctionalTest();
+		return;
 	}
 
 	if (DidArgusFunctionalTestFail())

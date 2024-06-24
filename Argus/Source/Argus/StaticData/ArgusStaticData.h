@@ -6,8 +6,15 @@
 
 class ArgusStaticData
 {
+public:
 	template<typename ArgusStaticRecord>
 	static const ArgusStaticRecord* GetRecord(uint8 id)
+	{
+		return nullptr;
+	}
+
+	template<>
+	inline const UFactionRecord* GetRecord(uint8 id)
 	{
 		const UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
 
@@ -16,6 +23,6 @@ class ArgusStaticData
 			return nullptr;
 		}
 
-		return staticDatabase->GetRecord<ArgusStaticRecord>();
+		return staticDatabase->GetRecord<UFactionRecord>(id);
 	}
 };

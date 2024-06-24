@@ -26,4 +26,8 @@ protected:
 	virtual bool    DidCurrentTestStepSucceed()		override;
 	virtual void    StartNextTestStep()				override;
 	virtual uint8   GetTotalNumTestSteps()			override { return k_totalNumSteps; }
+
+private:
+	bool DidFactionTestStepSucceed();
+	void StartFactionTestStep();
 };
