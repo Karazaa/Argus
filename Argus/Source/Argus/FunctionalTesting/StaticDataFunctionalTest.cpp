@@ -11,7 +11,8 @@ AStaticDataFunctionalTest::AStaticDataFunctionalTest(const FObjectInitializer& O
 
 bool AStaticDataFunctionalTest::DidArgusFunctionalTestFail()
 {
-	if (!m_factionRecord.IsValid())
+	const UFactionRecord* expectedFactionRecord = m_factionRecord.LoadSynchronous();
+	if (!expectedFactionRecord)
 	{
 		m_testFailedMessage = FString::Printf
 		(
@@ -67,7 +68,20 @@ bool AStaticDataFunctionalTest::DidFactionTestStepSucceed()
 	const bool matchId = expectedFactionRecord->m_id == retrievedFactionRecord->m_id;
 	const bool matchFactionName = expectedFactionRecord->m_factionName == retrievedFactionRecord->m_factionName;
 
-	return matchId && matchFactionName;
+	if (matchId && matchFactionName)
+	{
+		m_testSucceededMessage = FString::Printf
+		(
+			TEXT("[%s] Successfully loaded %s and validated data."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(m_factionRecord)
+		);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 void AStaticDataFunctionalTest::StartFactionTestStep()
