@@ -22,7 +22,7 @@ const char* ArgusComponentRegistryCodeGenerator::s_argusComponentRegistryCppFile
 const char* ArgusComponentRegistryCodeGenerator::s_argusComponentSizeTestsFilename = "ArgusComponentSizeTests.cpp";
 const char* ArgusComponentRegistryCodeGenerator::s_componentRegistryTemplateDirectorySuffix = "ComponentRegistry/";
 
-void ArgusComponentRegistryCodeGenerator::GenerateComponentRegistry(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData)
+void ArgusComponentRegistryCodeGenerator::GenerateComponentRegistryCode(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData)
 {
 	UE_LOG(ArgusCodeGeneratorLog, Display, TEXT("[%s] Starting generation of Argus ECS component code."), ARGUS_FUNCNAME)
 	bool didSucceed = true;
@@ -32,7 +32,7 @@ void ArgusComponentRegistryCodeGenerator::GenerateComponentRegistry(const ArgusC
 	params.inComponentNames = parsedComponentData.m_componentNames;
 	params.inIncludeStatements = parsedComponentData.m_componentRegistryIncludeStatements;
 
-	// Construct a directory path to component templates
+	// Construct a directory path to component registry templates
 	const char* cStrTemplateDirectory = TCHAR_TO_UTF8(*ArgusCodeGeneratorUtil::GetTemplateDirectory(s_componentRegistryTemplateDirectorySuffix));
 
 	params.argusComponentRegistryHeaderTemplateFilePath = std::string(cStrTemplateDirectory).append(s_argusComponentRegistryHeaderTemplateFilename);

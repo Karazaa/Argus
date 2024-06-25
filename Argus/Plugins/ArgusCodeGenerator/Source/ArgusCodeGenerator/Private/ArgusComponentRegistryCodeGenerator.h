@@ -9,7 +9,8 @@
 class ArgusComponentRegistryCodeGenerator 
 {
 public:
-	static void GenerateComponentRegistry(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData);
+	static void GenerateComponentRegistryCode(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData);
+
 private:
 	// Constants for file parsing
 	static const char* s_componentRegistryDirectorySuffix;

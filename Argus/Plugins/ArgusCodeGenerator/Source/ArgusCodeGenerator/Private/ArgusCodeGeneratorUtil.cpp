@@ -137,6 +137,11 @@ bool ArgusCodeGeneratorUtil::ParseComponentSpecificTemplate(const std::string& f
 	return true;
 }
 
+bool ArgusCodeGeneratorUtil::ParseStaticDataRecords(ParseStaticDataRecordsOutput& output)
+{
+	return true;
+}
+
 bool ArgusCodeGeneratorUtil::WriteOutFile(const std::string& filePath, const std::vector<std::string>& inFileContents)
 {
 	std::ofstream outStream = std::ofstream(filePath, std::ofstream::out | std::ofstream::trunc);

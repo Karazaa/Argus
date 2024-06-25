@@ -15,12 +15,12 @@ const char* ArgusDataAssetComponentCodeGenerator::s_propertyMacro = "\tUPROPERTY
 const char* ArgusDataAssetComponentCodeGenerator::s_upropertyPrefix = "UPROPERTY";
 const char* ArgusDataAssetComponentCodeGenerator::s_dataAssetComponentTemplateDirectorySuffix = "ComponentDataAssets/";
 
-void ArgusDataAssetComponentCodeGenerator::GenerateDataAssetComponents(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData)
+void ArgusDataAssetComponentCodeGenerator::GenerateDataAssetComponentsCode(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData)
 {
 	UE_LOG(ArgusCodeGeneratorLog, Display, TEXT("[%s] Starting generation of Argus ECS static data asset code."), ARGUS_FUNCNAME)
 	bool didSucceed = true;
 
-	// Construct a directory path to component templates
+	// Construct a directory path to data asset component templates
 	const char* cStrTemplateDirectory = TCHAR_TO_UTF8(*ArgusCodeGeneratorUtil::GetTemplateDirectory(s_dataAssetComponentTemplateDirectorySuffix));
 
 	std::string componentDataHeaderTemplateFilePath = std::string(cStrTemplateDirectory).append(s_componentDataHeaderTemplateFilename);

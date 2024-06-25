@@ -35,9 +35,16 @@ public:
 		std::vector<std::string> m_componentDataAssetIncludeStatements;
 		std::vector< std::vector<ComponentVariableData> > m_componentVariableData;
 	};
+	struct ParseStaticDataRecordsOutput
+	{
+		std::vector<std::string> m_staticDataRecordNames;
+	};
 	static bool ParseComponentData(ParseComponentDataOutput& output);
 	static bool ParseComponentDataFromFile(const std::string& filePath, ParseComponentDataOutput& output);
 	static bool ParseComponentSpecificTemplate(const std::string& filePath, const std::vector<std::string>& componentNames, std::vector<std::string>& outFileContents);
+	static bool ParseStaticDataRecords(ParseStaticDataRecordsOutput& output);
+
+
 	static bool WriteOutFile(const std::string& filePath, const std::vector<std::string>& inFileContents);
 
 private:
