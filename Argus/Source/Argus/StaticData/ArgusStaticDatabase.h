@@ -13,32 +13,9 @@ class UArgusStaticDatabase : public UDataAsset
 	GENERATED_BODY()
 
 public:
-	template<typename ArgusStaticRecord>
-	const ArgusStaticRecord* GetRecord(uint8 id) const
-	{
-		return nullptr;
-	}
+	const UFactionRecord* GetUFactionRecord(uint8 id) const;
 
+protected:
 	UPROPERTY(EditAnywhere)
 	TSoftObjectPtr<UFactionRecordDatabase> m_factionRecordDatabase;
-
-	template<>
-	inline const UFactionRecord* GetRecord(uint8 id) const
-	{
-		UFactionRecordDatabase* factionRecordDatabase = m_factionRecordDatabase.LoadSynchronous();
-		if (!factionRecordDatabase)
-		{
-			UE_LOG
-			(
-				ArgusStaticDataLog, Error,
-				TEXT("[%s] Could not retrieve %s. %s might not be properly assigned."),
-				ARGUS_FUNCNAME,
-				ARGUS_NAMEOF(UFactionRecordDatabase),
-				ARGUS_NAMEOF(m_factionRecordDatabase)
-			);
-			return nullptr;
-		}
-
-		return factionRecordDatabase->GetRecord(id);
-	}
 };

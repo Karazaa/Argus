@@ -23,6 +23,6 @@ public:
 			return nullptr;
 		}
 
-		return staticDatabase->GetRecord<UFactionRecord>(id);
+		return staticDatabase->GetUFactionRecord(id);
 	}
 };
