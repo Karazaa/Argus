@@ -11,8 +11,9 @@ class UFactionRecordDatabase : public UDataAsset
 	GENERATED_BODY()
 
 public:
+	const UFactionRecord* GetRecord(uint8 id) const;
+
+protected:
 	UPROPERTY(EditAnywhere)
 	TMap<uint8, TSoftObjectPtr<UFactionRecord>> m_factionRecords;
-
-	const UFactionRecord* GetRecord(uint8 id) const;
 };
