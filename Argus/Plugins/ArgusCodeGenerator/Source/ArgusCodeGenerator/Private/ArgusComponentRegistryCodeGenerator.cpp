@@ -20,6 +20,7 @@ const char* ArgusComponentRegistryCodeGenerator::s_perComponentSizeTestsTemplate
 const char* ArgusComponentRegistryCodeGenerator::s_argusComponentRegistryHeaderFilename = "ArgusComponentRegistry.h";
 const char* ArgusComponentRegistryCodeGenerator::s_argusComponentRegistryCppFilename = "ArgusComponentRegistry.cpp";
 const char* ArgusComponentRegistryCodeGenerator::s_argusComponentSizeTestsFilename = "ArgusComponentSizeTests.cpp";
+const char* ArgusComponentRegistryCodeGenerator::s_componentRegistryTemplateDirectorySuffix = "ComponentRegistry/";
 
 void ArgusComponentRegistryCodeGenerator::GenerateComponentRegistry(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData)
 {
@@ -32,7 +33,7 @@ void ArgusComponentRegistryCodeGenerator::GenerateComponentRegistry(const ArgusC
 	params.inIncludeStatements = parsedComponentData.m_componentRegistryIncludeStatements;
 
 	// Construct a directory path to component templates
-	const char* cStrTemplateDirectory = TCHAR_TO_UTF8(*ArgusCodeGeneratorUtil::GetTemplateDirectory());
+	const char* cStrTemplateDirectory = TCHAR_TO_UTF8(*ArgusCodeGeneratorUtil::GetTemplateDirectory(s_componentRegistryTemplateDirectorySuffix));
 
 	params.argusComponentRegistryHeaderTemplateFilePath = std::string(cStrTemplateDirectory).append(s_argusComponentRegistryHeaderTemplateFilename);
 	params.argusComponentRegistryCppTemplateFilePath = std::string(cStrTemplateDirectory).append(s_argusComponentRegistryCppTemplateFilename);

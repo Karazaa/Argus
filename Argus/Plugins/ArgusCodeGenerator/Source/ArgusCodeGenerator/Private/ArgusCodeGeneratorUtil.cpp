@@ -25,10 +25,11 @@ FString ArgusCodeGeneratorUtil::GetProjectDirectory()
 	return projectDirectory;
 }
 
-FString ArgusCodeGeneratorUtil::GetTemplateDirectory()
+FString ArgusCodeGeneratorUtil::GetTemplateDirectory(const char* subdirectorySuffix)
 {
 	FString templateDirectory = *GetProjectDirectory();
 	templateDirectory.Append(s_templateDirectorySuffix);
+	templateDirectory.Append(subdirectorySuffix);
 	FPaths::MakeStandardFilename(templateDirectory);
 
 	return templateDirectory;

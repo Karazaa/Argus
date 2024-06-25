@@ -13,6 +13,7 @@ const char* ArgusDataAssetComponentCodeGenerator::s_componentDataHeaderSuffix = 
 const char* ArgusDataAssetComponentCodeGenerator::s_componentDataCppSuffix = "Data.cpp";
 const char* ArgusDataAssetComponentCodeGenerator::s_propertyMacro = "\tUPROPERTY(EditAnywhere)";
 const char* ArgusDataAssetComponentCodeGenerator::s_upropertyPrefix = "UPROPERTY";
+const char* ArgusDataAssetComponentCodeGenerator::s_dataAssetComponentTemplateDirectorySuffix = "ComponentDataAssets/";
 
 void ArgusDataAssetComponentCodeGenerator::GenerateDataAssetComponents(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData)
 {
@@ -20,7 +21,7 @@ void ArgusDataAssetComponentCodeGenerator::GenerateDataAssetComponents(const Arg
 	bool didSucceed = true;
 
 	// Construct a directory path to component templates
-	const char* cStrTemplateDirectory = TCHAR_TO_UTF8(*ArgusCodeGeneratorUtil::GetTemplateDirectory());
+	const char* cStrTemplateDirectory = TCHAR_TO_UTF8(*ArgusCodeGeneratorUtil::GetTemplateDirectory(s_dataAssetComponentTemplateDirectorySuffix));
 
 	std::string componentDataHeaderTemplateFilePath = std::string(cStrTemplateDirectory).append(s_componentDataHeaderTemplateFilename);
 	std::string componentDataCppTemplateFilePath = std::string(cStrTemplateDirectory).append(s_componentDataCppTemplateFilename);

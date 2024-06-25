@@ -25,6 +25,7 @@ private:
 	static const char* s_argusComponentRegistryHeaderFilename;
 	static const char* s_argusComponentRegistryCppFilename;
 	static const char* s_argusComponentSizeTestsFilename;
+	static const char* s_componentRegistryTemplateDirectorySuffix;
 
 	struct ParseComponentTemplateParams
 	{

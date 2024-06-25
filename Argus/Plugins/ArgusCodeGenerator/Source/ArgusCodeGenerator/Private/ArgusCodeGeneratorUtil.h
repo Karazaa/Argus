@@ -18,7 +18,7 @@ public:
 	static const char* s_propertyIgnoreDelimiter;
 
 	static FString GetProjectDirectory();
-	static FString GetTemplateDirectory();
+	static FString GetTemplateDirectory(const char* subdirectorySuffix);
 	static FString GetComponentDefinitionsDirectory();
 
 	struct ComponentVariableData

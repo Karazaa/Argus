@@ -15,6 +15,7 @@ private:
 	static const char* s_componentDataCppSuffix;
 	static const char* s_propertyMacro;
 	static const char* s_upropertyPrefix;
+	static const char* s_dataAssetComponentTemplateDirectorySuffix;
 
 	struct FileWriteData
 	{
