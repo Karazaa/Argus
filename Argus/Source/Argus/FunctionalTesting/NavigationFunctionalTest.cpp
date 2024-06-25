@@ -13,40 +13,73 @@ bool ANavigationFunctionalTest::DidArgusFunctionalTestFail()
 {
 	if (!m_argusActor.IsValid())
 	{
-		m_testFailedMessage = TEXT("Failed test due to invalid setup. m_argusActor must be a valid reference.");
+		m_testFailedMessage = FString::Printf
+		(
+			TEXT("[%s] Failed test due to invalid setup. %s must be a valid reference."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(m_argusActor)
+		);
 		return true;
 	}
 
 	if (!m_goalLocationActor.IsValid())
 	{
-		m_testFailedMessage = TEXT("Failed test due to invalid setup. m_goalLocationActor must be a valid reference.");
+		m_testFailedMessage = FString::Printf
+		(
+			TEXT("[%s] Failed test due to invalid setup. %s must be a valid reference."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(m_goalLocationActor)
+		);
 		return true;
 	}
 
 	if (!m_goalEntityActor.IsValid())
 	{
-		m_testFailedMessage = TEXT("Failed test due to invalid setup. m_goalEntityActor must be a valid reference.");
+		m_testFailedMessage = FString::Printf
+		(
+			TEXT("[%s] Failed test due to invalid setup. %s must be a valid reference."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(m_goalEntityActor)
+		);
 		return true;
 	}
 
 	ArgusEntity argusEntity = m_argusActor->GetEntity();
 	if (!argusEntity)
 	{
-		m_testFailedMessage = TEXT("Failed test due to ArgusActor not having a valid backing ArgusEntity.");
+		m_testFailedMessage = FString::Printf
+		(
+			TEXT("[%s] Failed test due to %s not having a valid backing %s."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(m_argusActor),
+			ARGUS_NAMEOF(ArgusEntity)
+		);
 		return true;
 	}
 
 	TaskComponent* taskComponent = argusEntity.GetComponent<TaskComponent>();
 	if (!taskComponent)
 	{
-		m_testFailedMessage = TEXT("Failed test due to ArgusActor not having a valid backing Task Component.");
+		m_testFailedMessage = FString::Printf
+		(
+			TEXT("[%s] Failed test due to %s not having a valid backing %s."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(argusEntity),
+			ARGUS_NAMEOF(TaskComponent)
+		);
 		return true;
 	}
 
 	TargetingComponent* targetingComponent = argusEntity.GetComponent<TargetingComponent>();
 	if (!targetingComponent)
 	{
-		m_testFailedMessage = TEXT("Failed test due to ArgusActor not having a valid backing Targeting Component.");
+		m_testFailedMessage = FString::Printf
+		(
+			TEXT("[%s] Failed test due to %s not having a valid backing %s."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(argusEntity),
+			ARGUS_NAMEOF(TargetingComponent)
+		);
 		return true;
 	}
 
@@ -103,7 +136,12 @@ void ANavigationFunctionalTest::StartNavigationToLocationStep()
 	}
 	else
 	{
-		m_testFailedMessage = TEXT("Failed test due to invalid setup. Missing ArgusEntity Components.");
+		m_testFailedMessage = FString::Printf
+		(
+			TEXT("[%s] Failed test due to invalid setup. Missing %s Components."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(ArgusEntity)
+		);
 		ConcludeFailedArgusFunctionalTest();
 	}
 }
@@ -135,7 +173,12 @@ void ANavigationFunctionalTest::StartNavigationToEntityStep()
 	}
 	else
 	{
-		m_testFailedMessage = TEXT("Failed test due to invalid setup. Missing ArgusEntity Components.");
+		m_testFailedMessage = FString::Printf
+		(
+			TEXT("[%s] Failed test due to invalid setup. Missing %s Components."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(ArgusEntity)
+		);
 		ConcludeFailedArgusFunctionalTest();
 	}
 }
@@ -154,7 +197,12 @@ bool ANavigationFunctionalTest::DidNavigationToEntityStepSucceed()
 {
 	if (FVector::DistSquared(m_argusActor->GetActorLocation(), m_goalEntityActor->GetActorLocation()) < FMath::Square(m_successDistance))
 	{
-		m_testSucceededMessage = TEXT("Argus Actor successfully reached goal targets!");
+		m_testSucceededMessage = FString::Printf
+		(
+			TEXT("[%s] %s successfully reached goal targets!"),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(m_argusActor)
+		);
 		return true;
 	}
 

@@ -4,7 +4,7 @@
 
 const UFactionRecord* UArgusStaticDatabase::GetUFactionRecord(uint8 id) const
 {
-	UFactionRecordDatabase* factionRecordDatabase = m_factionRecordDatabase.LoadSynchronous();
+	const UFactionRecordDatabase* factionRecordDatabase = m_factionRecordDatabase.LoadSynchronous();
 	if (!factionRecordDatabase)
 	{
 		UE_LOG
