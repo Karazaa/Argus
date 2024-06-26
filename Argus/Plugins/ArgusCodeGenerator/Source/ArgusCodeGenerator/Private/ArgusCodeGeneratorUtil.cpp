@@ -12,6 +12,8 @@ const char* ArgusCodeGeneratorUtil::s_propertyDelimiter = "ARGUS_PROPERTY";
 const char* ArgusCodeGeneratorUtil::s_propertyIgnoreDelimiter = "ARGUS_IGNORE";
 const char* ArgusCodeGeneratorUtil::s_componentDefinitionDirectoryName = "ComponentDefinitions";
 const char* ArgusCodeGeneratorUtil::s_componentDefinitionDirectorySuffix = "Source/Argus/ECS/ComponentDefinitions";
+const char* ArgusCodeGeneratorUtil::s_staticDataRecordDefinitionsDirectoryName = "RecordDefinitions";
+const char* ArgusCodeGeneratorUtil::s_staticDataRecordDefinitionsDirectorySuffix = "Source/Argus/StaticData/RecordDefinitions";
 const char* ArgusCodeGeneratorUtil::s_templateDirectorySuffix = "Plugins/ArgusCodeGenerator/Source/ArgusCodeGenerator/Private/Templates/";
 const char* ArgusCodeGeneratorUtil::s_structDelimiter = "struct";
 const char* ArgusCodeGeneratorUtil::s_varDelimiter = "m_";
@@ -42,6 +44,15 @@ FString ArgusCodeGeneratorUtil::GetComponentDefinitionsDirectory()
 	FPaths::MakeStandardFilename(componentDefinitionsDirectory);
 
 	return componentDefinitionsDirectory;
+}
+
+FString ArgusCodeGeneratorUtil::GetStaticDataRecordDefinitionsDirectory()
+{
+	FString recordDefinitionsDirectory = *GetProjectDirectory();
+	recordDefinitionsDirectory.Append(s_staticDataRecordDefinitionsDirectorySuffix);
+	FPaths::MakeStandardFilename(recordDefinitionsDirectory);
+
+	return recordDefinitionsDirectory;
 }
 
 bool ArgusCodeGeneratorUtil::ParseComponentData(ParseComponentDataOutput& output)
@@ -139,7 +150,17 @@ bool ArgusCodeGeneratorUtil::ParseComponentSpecificTemplate(const std::string& f
 
 bool ArgusCodeGeneratorUtil::ParseStaticDataRecords(ParseStaticDataRecordsOutput& output)
 {
-	return true;
+	bool didSucceed = true;
+
+	FString recordDefinitionsDirectory = ArgusCodeGeneratorUtil::GetStaticDataRecordDefinitionsDirectory();
+	const std::string finalizedRecordDefinitionsDirectory = std::string(TCHAR_TO_UTF8(*recordDefinitionsDirectory));
+
+	for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(finalizedRecordDefinitionsDirectory))
+	{
+		const std::string filePath = entry.path().string();
+	}
+
+	return didSucceed;
 }
 
 bool ArgusCodeGeneratorUtil::WriteOutFile(const std::string& filePath, const std::vector<std::string>& inFileContents)

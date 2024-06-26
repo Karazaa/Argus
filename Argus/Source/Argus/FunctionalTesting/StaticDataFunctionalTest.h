@@ -3,7 +3,7 @@
 #pragma once
 
 #include "ArgusFunctionalTest.h"
-#include "FactionRecord.h"
+#include "RecordDefinitions/FactionRecord.h"
 #include "StaticDataFunctionalTest.generated.h"
 
 UCLASS()

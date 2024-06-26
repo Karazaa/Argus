@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "FactionRecord.h"
+#include "RecordDefinitions/FactionRecord.h"
 #include "FactionRecordDatabase.generated.h"
 
 UCLASS()

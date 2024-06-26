@@ -20,6 +20,7 @@ public:
 	static FString GetProjectDirectory();
 	static FString GetTemplateDirectory(const char* subdirectorySuffix);
 	static FString GetComponentDefinitionsDirectory();
+	static FString GetStaticDataRecordDefinitionsDirectory();
 
 	struct ComponentVariableData
 	{
@@ -50,6 +51,8 @@ public:
 private:
 	static const char* s_componentDefinitionDirectoryName;
 	static const char* s_componentDefinitionDirectorySuffix;
+	static const char* s_staticDataRecordDefinitionsDirectoryName;
+	static const char* s_staticDataRecordDefinitionsDirectorySuffix;
 	static const char* s_templateDirectorySuffix;
 	static const char* s_structDelimiter;
 	static const char* s_varDelimiter;
