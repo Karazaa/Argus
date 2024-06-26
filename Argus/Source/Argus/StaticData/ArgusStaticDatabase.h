@@ -13,7 +13,8 @@ class UArgusStaticDatabase : public UDataAsset
 	GENERATED_BODY()
 
 public:
-	const UFactionRecord* GetUFactionRecord(uint8 id) const;
+	const UFactionRecord* GetUFactionRecord(uint32 id) const;
+	const uint32 GetIdFromRecordSoftPtr(const TSoftObjectPtr<UFactionRecord>& UFactionRecord) const;
 
 protected:
 	UPROPERTY(EditAnywhere)

@@ -11,9 +11,10 @@ class UFactionRecordDatabase : public UDataAsset
 	GENERATED_BODY()
 
 public:
-	const UFactionRecord* GetRecord(uint8 id) const;
+	const UFactionRecord* GetRecord(uint32 id) const;
+	const uint32 GetIdFromRecordSoftPtr(const TSoftObjectPtr<UFactionRecord>& UFactionRecord) const;
 
 protected:
 	UPROPERTY(EditAnywhere)
-	TMap<uint8, TSoftObjectPtr<UFactionRecord>> m_factionRecords;
+	TArray<TSoftObjectPtr<UFactionRecord>> m_factionRecords;
 };

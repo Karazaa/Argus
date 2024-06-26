@@ -4,9 +4,9 @@
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
 
-const UFactionRecord* UFactionRecordDatabase::GetRecord(uint8 id) const
+const UFactionRecord* UFactionRecordDatabase::GetRecord(uint32 id) const
 {
-	if (!m_factionRecords.Contains(id))
+	if (static_cast<uint32>(m_factionRecords.Num()) <= id)
 	{
 		UE_LOG
 		(
@@ -21,5 +21,29 @@ const UFactionRecord* UFactionRecordDatabase::GetRecord(uint8 id) const
 		return nullptr;
 	}
 
-	return m_factionRecords[id].LoadSynchronous();
+	if (id == 0u)
+	{
+		return nullptr;
+	}
+
+	UFactionRecord* record = m_factionRecords[id].LoadSynchronous();
+	if (record)
+	{
+		record->m_id = id;
+	}
+
+	return record;
+}
+
+const uint32 UFactionRecordDatabase::GetIdFromRecordSoftPtr(const TSoftObjectPtr<UFactionRecord>& UFactionRecord) const
+{
+	for (int i = 0; i < m_factionRecords.Num(); ++i)
+	{
+		if (m_factionRecords[i] == UFactionRecord)
+		{
+			return i;
+		}
+	}
+
+	return 0u;
 }

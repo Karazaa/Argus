@@ -12,6 +12,5 @@ class UArgusStaticRecord : public UDataAsset
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere)
 	uint32 m_id;
 };
