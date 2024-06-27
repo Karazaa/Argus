@@ -16,6 +16,7 @@ class ArgusCodeGeneratorUtil
 public:
 	static const char* s_propertyDelimiter;
 	static const char* s_propertyIgnoreDelimiter;
+	static const char* s_propertyStaticDataDelimiter;
 
 	static FString GetProjectDirectory();
 	static FString GetTemplateDirectory(const char* subdirectorySuffix);
@@ -28,6 +29,7 @@ public:
 		std::string m_varName = "";
 		std::string m_defaultValue = "";
 		std::string m_propertyMacro = "";
+		std::string m_staticDataTypeName = "";
 	};
 	struct ParseComponentDataOutput
 	{

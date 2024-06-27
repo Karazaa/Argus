@@ -13,13 +13,13 @@ class ARGUS_API UIdentityComponentData : public UComponentData
 
 public:
 	UPROPERTY(EditAnywhere)
+	TSoftObjectPtr<UFactionRecord> m_faction;
+	UPROPERTY(EditAnywhere)
 	ETeam m_team = ETeam::None;
 	UPROPERTY(EditAnywhere, meta = (Bitmask, BitmaskEnum = ETeam))
 	uint8 m_allies = 0u;
 	UPROPERTY(EditAnywhere, meta = (Bitmask, BitmaskEnum = ETeam))
 	uint8 m_enemies = 0u;
-	UPROPERTY(EditAnywhere)
-	uint8 m_faction = 0u;
 
 	void InstantiateComponentForEntity(ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;

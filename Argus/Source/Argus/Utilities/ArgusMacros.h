@@ -16,3 +16,4 @@
 // Macro used for code generation that allows for the creation of UPROPERTY macros on component data fields.
 #define ARGUS_PROPERTY(...)
 #define ARGUS_IGNORE()
+#define ARGUS_STATIC_DATA(x)

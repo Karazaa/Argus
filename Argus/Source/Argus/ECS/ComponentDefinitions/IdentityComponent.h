@@ -4,6 +4,7 @@
 
 #include "ArgusMacros.h"
 #include "CoreMinimal.h"
+#include "RecordDefinitions/FactionRecord.h"
 
 UENUM(meta = (Bitflags, UseEnumValuesAsMaskValuesInEditor = "true"))
 enum class ETeam : uint8
@@ -21,6 +22,9 @@ ENUM_CLASS_FLAGS(ETeam);
 
 struct IdentityComponent
 {
+	ARGUS_STATIC_DATA(UFactionRecord)
+	uint32 m_faction = 0u;
+
 	ETeam m_team = ETeam::None;
 
 	ARGUS_PROPERTY(EditAnywhere, meta = (Bitmask, BitmaskEnum = ETeam))
@@ -28,8 +32,6 @@ struct IdentityComponent
 
 	ARGUS_PROPERTY(EditAnywhere, meta = (Bitmask, BitmaskEnum = ETeam))
 	uint8 m_enemies = 0u;
-
-	uint8 m_faction = 0u;
 
 	void AddEnemyTeam(ETeam enemyTeam)
 	{

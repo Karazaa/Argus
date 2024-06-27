@@ -86,10 +86,20 @@ bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetHeaderFileTemplateWithR
 			{
 				for (int j = 0; j < parsedComponentData.m_componentVariableData[i].size(); ++j)
 				{
+					std::string variable = "";
 					if (!parsedComponentData.m_componentVariableData[i][j].m_propertyMacro.empty())
 					{
 						const size_t propertyIgnoreDelimiterIndex = parsedComponentData.m_componentVariableData[i][j].m_propertyMacro.find(ArgusCodeGeneratorUtil::s_propertyIgnoreDelimiter);
-						if (propertyIgnoreDelimiterIndex == std::string::npos)
+						const size_t propertyStaticDataDelimiterIndex = parsedComponentData.m_componentVariableData[i][j].m_propertyMacro.find(ArgusCodeGeneratorUtil::s_propertyStaticDataDelimiter);
+
+						if (propertyStaticDataDelimiterIndex != std::string::npos)
+						{
+							const size_t lineSize = parsedComponentData.m_componentVariableData[i][j].m_propertyMacro.length();
+							const size_t startIndex = parsedComponentData.m_componentVariableData[i][j].m_propertyMacro.find('(') + 1;
+							variable = parsedComponentData.m_componentVariableData[i][j].m_propertyMacro.substr(startIndex, (lineSize - 1) - startIndex);
+							outParsedFileContents[i].m_lines.push_back(s_propertyMacro);
+						}
+						else if (propertyIgnoreDelimiterIndex == std::string::npos)
 						{
 							std::string overridePropertyText = std::regex_replace(parsedComponentData.m_componentVariableData[i][j].m_propertyMacro, std::regex(ArgusCodeGeneratorUtil::s_propertyDelimiter), s_upropertyPrefix);
 							outParsedFileContents[i].m_lines.push_back(overridePropertyText);
@@ -100,13 +110,22 @@ bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetHeaderFileTemplateWithR
 						outParsedFileContents[i].m_lines.push_back(s_propertyMacro);
 					}
 
-					std::string variable = parsedComponentData.m_componentVariableData[i][j].m_typeName;
-					variable.append(" ");
-					variable.append(parsedComponentData.m_componentVariableData[i][j].m_varName);
-					if (!parsedComponentData.m_componentVariableData[i][j].m_defaultValue.empty())
+					if (variable.empty())
 					{
-						variable.append(" = ");
-						variable.append(parsedComponentData.m_componentVariableData[i][j].m_defaultValue);
+						variable = parsedComponentData.m_componentVariableData[i][j].m_typeName;
+						variable.append(" ");
+						variable.append(parsedComponentData.m_componentVariableData[i][j].m_varName);
+						if (!parsedComponentData.m_componentVariableData[i][j].m_defaultValue.empty())
+						{
+							variable.append(" = ");
+							variable.append(parsedComponentData.m_componentVariableData[i][j].m_defaultValue);
+						}
+					}
+					else
+					{
+						variable = std::regex_replace("\tTSoftObjectPtr<XXXXX>", std::regex("XXXXX"), variable);
+						variable.append(" ");
+						variable.append(parsedComponentData.m_componentVariableData[i][j].m_varName);
 					}
 					variable.append(";");
 					outParsedFileContents[i].m_lines.push_back(variable);
@@ -173,8 +192,19 @@ bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetCppFileTemplateWithRepl
 					variableAssignment.append("Ref->");
 					variableAssignment.append(parsedComponentData.m_componentVariableData[i][j].m_varName);
 					variableAssignment.append(" = ");
-					variableAssignment.append(parsedComponentData.m_componentVariableData[i][j].m_varName);
+
+					const size_t propertyStaticDataDelimiterIndex = parsedComponentData.m_componentVariableData[i][j].m_propertyMacro.find(ArgusCodeGeneratorUtil::s_propertyStaticDataDelimiter);
+					if (propertyStaticDataDelimiterIndex != std::string::npos)
+					{
+						std::string staticDataStatement = std::regex_replace("ArgusStaticData::GetIdFromRecordSoftPtr(XXXXX)", std::regex("XXXXX"), parsedComponentData.m_componentVariableData[i][j].m_varName);
+						variableAssignment.append(staticDataStatement);
+					}
+					else
+					{
+						variableAssignment.append(parsedComponentData.m_componentVariableData[i][j].m_varName);
+					}
 					variableAssignment.append(";");
+
 					outParsedFileContents[i].m_lines.push_back(variableAssignment);
 				}
 			}

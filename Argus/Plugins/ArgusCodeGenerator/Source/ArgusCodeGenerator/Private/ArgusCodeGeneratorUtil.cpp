@@ -10,6 +10,7 @@ DEFINE_LOG_CATEGORY(ArgusCodeGeneratorLog);
 
 const char* ArgusCodeGeneratorUtil::s_propertyDelimiter = "ARGUS_PROPERTY";
 const char* ArgusCodeGeneratorUtil::s_propertyIgnoreDelimiter = "ARGUS_IGNORE";
+const char* ArgusCodeGeneratorUtil::s_propertyStaticDataDelimiter = "ARGUS_STATIC_DATA";
 const char* ArgusCodeGeneratorUtil::s_componentDefinitionDirectoryName = "ComponentDefinitions";
 const char* ArgusCodeGeneratorUtil::s_componentDefinitionDirectorySuffix = "Source/Argus/ECS/ComponentDefinitions";
 const char* ArgusCodeGeneratorUtil::s_staticDataRecordDefinitionsDirectoryName = "RecordDefinitions";
@@ -221,7 +222,10 @@ bool ArgusCodeGeneratorUtil::ParsePropertyMacro(std::string lineText, ParseCompo
 {
 	const size_t propertyDelimiterIndex = lineText.find(s_propertyDelimiter);
 	const size_t propertyIgnoreDelimiterIndex = lineText.find(s_propertyIgnoreDelimiter);
-	if (propertyDelimiterIndex == std::string::npos && propertyIgnoreDelimiterIndex == std::string::npos)
+	const size_t propertyStaticDataDelimiterIndex = lineText.find(s_propertyStaticDataDelimiter);
+	if (propertyDelimiterIndex == std::string::npos && 
+		propertyIgnoreDelimiterIndex == std::string::npos &&
+		propertyStaticDataDelimiterIndex == std::string::npos)
 	{
 		return false;
 	}
