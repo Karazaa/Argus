@@ -10,9 +10,11 @@ struct NavigationComponent
 {
 	ARGUS_IGNORE()
 	std::vector<FVector> m_navigationPoints = std::vector<FVector>();
+
+	float  m_navigationSpeedUnitsPerSecond = 100.0f;
+
 	ARGUS_IGNORE()
 	uint16 m_lastPointIndex = 0u;
-	float  m_navigationSpeedUnitsPerSecond = 100.0f;
 
 	void ResetPath()
 	{

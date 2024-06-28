@@ -9,18 +9,18 @@
 struct TargetingComponent
 {
 	ARGUS_IGNORE()
-	uint16 m_targetEntityId = ArgusECSConstants::k_maxEntities;
-
-	ARGUS_IGNORE()
 	TOptional<FVector> m_targetLocation = TOptional<FVector>();
 
-	bool HasEntityTarget() const 
-	{
-		return m_targetEntityId < ArgusECSConstants::k_maxEntities; 
-	}
+	ARGUS_IGNORE()
+	uint16 m_targetEntityId = ArgusECSConstants::k_maxEntities;
 
 	bool HasLocationTarget() const
 	{
 		return m_targetLocation.IsSet();
+	}
+
+	bool HasEntityTarget() const
+	{
+		return m_targetEntityId < ArgusECSConstants::k_maxEntities;
 	}
 };
