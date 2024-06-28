@@ -17,13 +17,14 @@ public:
 	static const char* s_propertyDelimiter;
 	static const char* s_propertyIgnoreDelimiter;
 	static const char* s_propertyStaticDataDelimiter;
+	static const char* s_uePropertyDelimiter;
 
 	static FString GetProjectDirectory();
 	static FString GetTemplateDirectory(const char* subdirectorySuffix);
 	static FString GetComponentDefinitionsDirectory();
 	static FString GetStaticDataRecordDefinitionsDirectory();
 
-	struct ComponentVariableData
+	struct ParsedVariableData
 	{
 		std::string m_typeName = "";
 		std::string m_varName = "";
@@ -36,16 +37,19 @@ public:
 		std::vector<std::string> m_componentNames;
 		std::vector<std::string> m_componentRegistryIncludeStatements;
 		std::vector<std::string> m_componentDataAssetIncludeStatements;
-		std::vector< std::vector<ComponentVariableData> > m_componentVariableData;
+		std::vector< std::vector<ParsedVariableData> > m_componentVariableData;
 	};
 	struct ParseStaticDataRecordsOutput
 	{
+		std::vector<std::string> m_staticDataIncludeStatements;
 		std::vector<std::string> m_staticDataRecordNames;
+		std::vector< std::vector<ParsedVariableData> > m_staticDataRecordVariableData;
 	};
 	static bool ParseComponentData(ParseComponentDataOutput& output);
 	static bool ParseComponentDataFromFile(const std::string& filePath, ParseComponentDataOutput& output);
 	static bool ParseComponentSpecificTemplate(const std::string& filePath, const std::vector<std::string>& componentNames, std::vector<std::string>& outFileContents);
 	static bool ParseStaticDataRecords(ParseStaticDataRecordsOutput& output);
+	static bool ParseStaticDataDataRecordsFromFile(const std::string& filePath, ParseStaticDataRecordsOutput& output);
 
 
 	static bool WriteOutFile(const std::string& filePath, const std::vector<std::string>& inFileContents);
@@ -57,9 +61,11 @@ private:
 	static const char* s_staticDataRecordDefinitionsDirectorySuffix;
 	static const char* s_templateDirectorySuffix;
 	static const char* s_structDelimiter;
+	static const char* s_argusAPIDelimiter;
 	static const char* s_varDelimiter;
 
 	static bool ParseStructDeclarations(std::string lineText, const std::string& componentDataAssetIncludeStatement, ParseComponentDataOutput& output);
-	static bool ParsePropertyMacro(std::string lineText, ParseComponentDataOutput& output);
-	static bool ParseVariableDeclarations(std::string lineText, bool withProperty, ParseComponentDataOutput& output);
+	static bool ParsePropertyMacro(std::string lineText, std::vector < std::vector<ParsedVariableData> >& parsedVariableData);
+	static bool ParseVariableDeclarations(std::string lineText, bool withProperty, std::vector < std::vector<ParsedVariableData> >& parsedVariableData);
+	static bool ParseRecordClassDeclarations(std::string lineText, ParseStaticDataRecordsOutput& output);
 };
