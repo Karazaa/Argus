@@ -19,12 +19,7 @@ private:
 	static const char* s_upropertyPrefix;
 	static const char* s_dataAssetComponentTemplateDirectorySuffix;
 
-	struct FileWriteData
-	{
-		std::string m_filename = "";
-		std::vector<std::string> m_lines = std::vector<std::string>();
-	};
-	static bool ParseDataAssetHeaderFileTemplateWithReplacements(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData, std::string& templateFilePath, std::vector<FileWriteData>& outParsedFileContents);
-	static bool ParseDataAssetCppFileTemplateWithReplacements(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData, std::string& templateFilePath, std::vector<FileWriteData>& outParsedFileContents);
+	static bool ParseDataAssetHeaderFileTemplateWithReplacements(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData, std::string& templateFilePath, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents);
+	static bool ParseDataAssetCppFileTemplateWithReplacements(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData, std::string& templateFilePath, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents);
 	static void DeleteObsoleteFiles(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData, const char* componentDataDirectory);
 };

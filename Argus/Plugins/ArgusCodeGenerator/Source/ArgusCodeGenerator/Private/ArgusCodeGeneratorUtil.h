@@ -45,6 +45,12 @@ public:
 		std::vector<std::string> m_staticDataRecordNames;
 		std::vector< std::vector<ParsedVariableData> > m_staticDataRecordVariableData;
 	};
+	struct FileWriteData
+	{
+		std::string m_filename = "";
+		std::vector<std::string> m_lines = std::vector<std::string>();
+	};
+
 	static bool ParseComponentData(ParseComponentDataOutput& output);
 	static bool ParseComponentDataFromFile(const std::string& filePath, ParseComponentDataOutput& output);
 	static bool ParseComponentSpecificTemplate(const std::string& filePath, const std::vector<std::string>& componentNames, std::vector<std::string>& outFileContents);

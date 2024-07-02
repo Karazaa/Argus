@@ -11,4 +11,7 @@ public:
 
 private:
 	static const char* s_staticDataTemplateDirectorySuffix;
+	static const char* s_argusStaticDataTemplateFileName;
+
+	static bool ParseArgusStaticDataTemplate(const ArgusCodeGeneratorUtil::ParseStaticDataRecordsOutput& parsedStaticDataRecords, std::string& templateFilePath, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outFileContents);
 };

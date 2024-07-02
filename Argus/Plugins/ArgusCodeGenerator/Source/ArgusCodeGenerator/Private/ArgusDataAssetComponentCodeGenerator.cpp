@@ -26,14 +26,14 @@ void ArgusDataAssetComponentCodeGenerator::GenerateDataAssetComponentsCode(const
 	std::string componentDataHeaderTemplateFilePath = std::string(cStrTemplateDirectory).append(s_componentDataHeaderTemplateFilename);
 	std::string componentDataCppTemplateFilePath = std::string(cStrTemplateDirectory).append(s_componentDataCppTemplateFilename);
 
-	UE_LOG(ArgusCodeGeneratorLog, Display, TEXT("[%s] Parsing from template files to generate static data asset code."), ARGUS_FUNCNAME)
+	UE_LOG(ArgusCodeGeneratorLog, Display, TEXT("[%s] Parsing from template files to generate component static data asset code."), ARGUS_FUNCNAME)
 
 	// Parse header file
-	std::vector<FileWriteData> outParsedHeaderFileContents = std::vector<FileWriteData>();
+	std::vector<ArgusCodeGeneratorUtil::FileWriteData> outParsedHeaderFileContents = std::vector<ArgusCodeGeneratorUtil::FileWriteData>();
 	didSucceed &= ParseDataAssetHeaderFileTemplateWithReplacements(parsedComponentData, componentDataHeaderTemplateFilePath, outParsedHeaderFileContents);
 
 	// Parse cpp file
-	std::vector<FileWriteData> outParsedCppFileContents = std::vector<FileWriteData>();
+	std::vector<ArgusCodeGeneratorUtil::FileWriteData> outParsedCppFileContents = std::vector<ArgusCodeGeneratorUtil::FileWriteData>();
 	didSucceed &= ParseDataAssetCppFileTemplateWithReplacements(parsedComponentData, componentDataCppTemplateFilePath, outParsedCppFileContents);
 
 	// Construct a directory path to registry location and to tests location. 
@@ -59,7 +59,7 @@ void ArgusDataAssetComponentCodeGenerator::GenerateDataAssetComponentsCode(const
 	}
 }
 
-bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetHeaderFileTemplateWithReplacements(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData, std::string& templateFilePath, std::vector<FileWriteData>& outParsedFileContents)
+bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetHeaderFileTemplateWithReplacements(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData, std::string& templateFilePath, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents)
 {
 	std::ifstream inHeaderStream = std::ifstream(templateFilePath);
 	const FString ueHeaderFilePath = FString(templateFilePath.c_str());
@@ -71,7 +71,7 @@ bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetHeaderFileTemplateWithR
 
 	for (int i = 0; i < parsedComponentData.m_componentNames.size(); ++i)
 	{
-		FileWriteData writeData;
+		ArgusCodeGeneratorUtil::FileWriteData writeData;
 		writeData.m_filename = parsedComponentData.m_componentNames[i];
 		writeData.m_filename.append(s_componentDataHeaderSuffix);
 		outParsedFileContents.push_back(writeData);
@@ -160,7 +160,7 @@ bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetHeaderFileTemplateWithR
 	return true;
 }
 
-bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetCppFileTemplateWithReplacements(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData, std::string& templateFilePath, std::vector<FileWriteData>& outParsedFileContents)
+bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetCppFileTemplateWithReplacements(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData, std::string& templateFilePath, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents)
 {
 	std::ifstream inCppStream = std::ifstream(templateFilePath);
 	const FString ueCppFilePath = FString(templateFilePath.c_str());
@@ -172,7 +172,7 @@ bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetCppFileTemplateWithRepl
 
 	for (int i = 0; i < parsedComponentData.m_componentNames.size(); ++i)
 	{
-		FileWriteData writeData;
+		ArgusCodeGeneratorUtil::FileWriteData writeData;
 		writeData.m_filename = parsedComponentData.m_componentNames[i];
 		writeData.m_filename.append(s_componentDataCppSuffix);
 		outParsedFileContents.push_back(writeData);
