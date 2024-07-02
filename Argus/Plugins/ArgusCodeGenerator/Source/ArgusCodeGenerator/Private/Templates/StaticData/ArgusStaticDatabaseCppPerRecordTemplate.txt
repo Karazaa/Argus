@@ -1,0 +1,39 @@
+#pragma region #####
+const #####* UArgusStaticDatabase::Get#####(uint32 id) const
+{
+	const #####Database* #####Database = m_#####Database.LoadSynchronous();
+	if (!#####Database)
+	{
+		UE_LOG
+		(
+			ArgusStaticDataLog, Error,
+			TEXT("[%s] Could not retrieve %s. %s might not be properly assigned."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(#####Database),
+			ARGUS_NAMEOF(m_#####Database)
+		);
+		return nullptr;
+	}
+
+	return #####Database->GetRecord(id);
+}
+
+const uint32 UArgusStaticDatabase::GetIdFromRecordSoftPtr(const TSoftObjectPtr<#####>& #####) const
+{
+	const #####Database* #####Database = m_#####Database.LoadSynchronous();
+	if (!#####Database)
+	{
+		UE_LOG
+		(
+			ArgusStaticDataLog, Error,
+			TEXT("[%s] Could not retrieve %s. %s might not be properly assigned."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(#####Database),
+			ARGUS_NAMEOF(m_#####Database)
+		);
+		return 0u;
+	}
+
+	return #####Database->GetIdFromRecordSoftPtr(#####);
+}
+#pragma endregion

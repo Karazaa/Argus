@@ -1,0 +1,49 @@
+// Copyright Karazaa. This is a part of an RTS project called Argus.
+
+$$$$$
+#include "ArgusLogging.h"
+#include "ArgusMacros.h"
+
+const #####* #####Database::GetRecord(uint32 id) const
+{
+	if (static_cast<uint32>(m_#####s.Num()) <= id)
+	{
+		UE_LOG
+		(
+			ArgusStaticDataLog, Error,
+			TEXT("[%s] Could not find %s %d in %s."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(id),
+			id,
+			ARGUS_NAMEOF(#####Database)
+		);
+
+		return nullptr;
+	}
+
+	if (id == 0u)
+	{
+		return nullptr;
+	}
+
+	#####* record = m_#####s[id].LoadSynchronous();
+	if (record)
+	{
+		record->m_id = id;
+	}
+
+	return record;
+}
+
+const uint32 #####Database::GetIdFromRecordSoftPtr(const TSoftObjectPtr<#####>& #####) const
+{
+	for (int i = 0; i < m_#####s.Num(); ++i)
+	{
+		if (m_#####s[i] == #####)
+		{
+			return i;
+		}
+	}
+
+	return 0u;
+}

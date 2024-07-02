@@ -1,0 +1,9 @@
+#pragma region #####
+public:
+	const #####* Get#####(uint32 id) const;
+	const uint32 GetIdFromRecordSoftPtr(const TSoftObjectPtr<#####>& #####) const;
+
+protected:
+	UPROPERTY(EditAnywhere)
+	TSoftObjectPtr<#####Database> m_#####Database;
+#pragma endregion

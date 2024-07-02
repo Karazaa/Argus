@@ -1,0 +1,26 @@
+#pragma region #####
+	template<>
+	inline const #####* GetRecord(uint32 id)
+	{
+		const UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
+
+		if (!staticDatabase)
+		{
+			return nullptr;
+		}
+
+		return staticDatabase->Get#####(id);
+	}
+
+	static const uint32 GetIdFromRecordSoftPtr(const TSoftObjectPtr<#####>& #####)
+	{
+		const UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
+
+		if (!staticDatabase)
+		{
+			return 0u;
+		}
+
+		return staticDatabase->GetIdFromRecordSoftPtr(#####);
+	}
+#pragma endregion

@@ -4,7 +4,7 @@
 
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
-#include "FactionRecordDatabase.h"
+#include "RecordDatabases/FactionRecordDatabase.h"
 #include "ArgusStaticDatabase.generated.h"
 
 UCLASS()
