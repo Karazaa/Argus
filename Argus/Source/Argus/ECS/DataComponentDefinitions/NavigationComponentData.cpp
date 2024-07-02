@@ -8,8 +8,8 @@ void UNavigationComponentData::InstantiateComponentForEntity(ArgusEntity& entity
 {
 	NavigationComponent* NavigationComponentRef = entity.AddComponent<NavigationComponent>();
 	NavigationComponentRef->m_navigationPoints = m_navigationPoints;
-	NavigationComponentRef->m_lastPointIndex = m_lastPointIndex;
 	NavigationComponentRef->m_navigationSpeedUnitsPerSecond = m_navigationSpeedUnitsPerSecond;
+	NavigationComponentRef->m_lastPointIndex = m_lastPointIndex;
 }
 
 bool UNavigationComponentData::MatchesType(UComponentData* other) const

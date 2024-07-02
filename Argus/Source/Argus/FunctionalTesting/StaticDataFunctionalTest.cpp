@@ -58,17 +58,19 @@ bool AStaticDataFunctionalTest::DidFactionTestStepSucceed()
 	}
 
 	const UFactionRecord* expectedFactionRecord = m_factionRecord.LoadSynchronous();
-	const UFactionRecord* retrievedFactionRecord = ArgusStaticData::GetRecord<UFactionRecord>(expectedFactionRecord->m_id);
+	const uint32 expectedFactionId = ArgusStaticData::GetIdFromRecordSoftPtr(m_factionRecord);
 
+	const UFactionRecord* retrievedFactionRecord = ArgusStaticData::GetRecord<UFactionRecord>(expectedFactionId);
 	if (!retrievedFactionRecord)
 	{
 		return false;
 	}
+	const uint32 retrievedFactionId = retrievedFactionRecord->m_id;
 
-	const bool matchId = expectedFactionRecord->m_id == retrievedFactionRecord->m_id;
-	const bool matchFactionName = expectedFactionRecord->m_factionName == retrievedFactionRecord->m_factionName;
+	const bool matchesName = expectedFactionRecord->m_factionName == retrievedFactionRecord->m_factionName;
+	const bool matchesId = expectedFactionId == retrievedFactionId;
 
-	if (matchId && matchFactionName)
+	if (matchesName && matchesId)
 	{
 		m_testSucceededMessage = FString::Printf
 		(

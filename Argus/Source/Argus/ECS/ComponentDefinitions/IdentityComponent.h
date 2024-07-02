@@ -23,7 +23,7 @@ ENUM_CLASS_FLAGS(ETeam);
 struct IdentityComponent
 {
 	ARGUS_STATIC_DATA(UFactionRecord)
-	uint32 m_faction = 0u;
+	uint32 m_factionId = 0u;
 
 	ETeam m_team = ETeam::None;
 

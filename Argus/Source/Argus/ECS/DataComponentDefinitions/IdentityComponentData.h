@@ -13,7 +13,7 @@ class ARGUS_API UIdentityComponentData : public UComponentData
 
 public:
 	UPROPERTY(EditAnywhere)
-	TSoftObjectPtr<UFactionRecord> m_faction;
+	TSoftObjectPtr<UFactionRecord> m_factionId;
 	UPROPERTY(EditAnywhere)
 	ETeam m_team = ETeam::None;
 	UPROPERTY(EditAnywhere, meta = (Bitmask, BitmaskEnum = ETeam))
