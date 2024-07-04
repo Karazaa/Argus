@@ -13,6 +13,9 @@ const char* ArgusStaticDataCodeGenerator::s_staticDataDirectorySuffix = "Source/
 const char* ArgusStaticDataCodeGenerator::s_argusStaticDataTemplateFileName = "ArgusStaticDataTemplate.txt";
 const char* ArgusStaticDataCodeGenerator::s_argusStaticDataPerRecordTemplateFileName = "ArgusStaticDataPerRecordTemplate.txt";
 const char* ArgusStaticDataCodeGenerator::s_argusStaticDataFileName = "ArgusStaticData.h";
+const char* ArgusStaticDataCodeGenerator::s_recordDatabaseDirectorySuffix = "RecordDatabases/";
+const char* ArgusStaticDataCodeGenerator::s_recordDatabaseHeaderTemplateFileName = "RecordDatabaseHeaderTemplate.txt";
+const char* ArgusStaticDataCodeGenerator::s_recordDatabaseCppTemplateFileName = "RecordDatabaseCppTemplate.txt";
 
 void ArgusStaticDataCodeGenerator::GenerateStaticDataCode(const ArgusCodeGeneratorUtil::ParseStaticDataRecordsOutput& parsedStaticDataRecords)
 {
@@ -26,10 +29,18 @@ void ArgusStaticDataCodeGenerator::GenerateStaticDataCode(const ArgusCodeGenerat
 	parseArgusStaticDataTemplateParams.templateFilePath = std::string(cStrTemplateDirectory).append(s_argusStaticDataTemplateFileName);
 	parseArgusStaticDataTemplateParams.perRecordTemplateFilePath = std::string(cStrTemplateDirectory).append(s_argusStaticDataPerRecordTemplateFileName);
 
+	ParseTemplateParams parseRecordDatabaseHeaderTemplateParams;
+	parseRecordDatabaseHeaderTemplateParams.templateFilePath = std::string(cStrTemplateDirectory).append(s_recordDatabaseHeaderTemplateFileName);
+
+	ParseTemplateParams parseRecordDatabaseCppTemplateParams;
+	parseRecordDatabaseCppTemplateParams.templateFilePath = std::string(cStrTemplateDirectory).append(s_recordDatabaseCppTemplateFileName);
+
 	UE_LOG(ArgusCodeGeneratorLog, Display, TEXT("[%s] Parsing from template files to generate non-ECS Static Data code."), ARGUS_FUNCNAME)
 
 	std::vector<ArgusCodeGeneratorUtil::FileWriteData> outParsedArgusStaticDataContents = std::vector<ArgusCodeGeneratorUtil::FileWriteData>();
 	didSucceed &= ParseArgusStaticDataTemplate(parsedStaticDataRecords, parseArgusStaticDataTemplateParams, outParsedArgusStaticDataContents);
+	didSucceed &= ParseRecordDatabaseHeaderTemplate(parsedStaticDataRecords, parseRecordDatabaseHeaderTemplateParams, outParsedArgusStaticDataContents);
+	didSucceed &= ParseRecordDatabaseCppTemplate(parsedStaticDataRecords, parseRecordDatabaseCppTemplateParams, outParsedArgusStaticDataContents);
 
 	FString staticDataDirectory = ArgusCodeGeneratorUtil::GetProjectDirectory();
 	staticDataDirectory.Append(s_staticDataDirectorySuffix);
@@ -62,12 +73,107 @@ bool ArgusStaticDataCodeGenerator::ParseArgusStaticDataTemplate(const ArgusCodeG
 	{
 		if (templateLineText.find("@@@@@") != std::string::npos)
 		{
-			ParsePerRecordTemplate(parsedStaticDataRecords, templateParams, outParsedFileContents[0]);
+			ParsePerRecordTemplate(parsedStaticDataRecords, templateParams, outParsedFileContents.back());
 		}
 		else
 		{
-			outParsedFileContents[0].m_lines.push_back(templateLineText);
+			outParsedFileContents.back().m_lines.push_back(templateLineText);
 		}
+	}
+
+	inTemplateStream.close();
+	return true;
+}
+
+bool ArgusStaticDataCodeGenerator::ParseRecordDatabaseHeaderTemplate(const ArgusCodeGeneratorUtil::ParseStaticDataRecordsOutput& parsedStaticDataRecords, ParseTemplateParams& templateParams, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents)
+{
+	std::ifstream inTemplateStream = std::ifstream(templateParams.templateFilePath);
+	const FString ueTemplateFilePath = FString(templateParams.templateFilePath.c_str());
+	if (!inTemplateStream.is_open())
+	{
+		UE_LOG(ArgusCodeGeneratorLog, Error, TEXT("[%s] Failed to read from template file: %s"), ARGUS_FUNCNAME, *ueTemplateFilePath);
+		return false;
+	}
+
+	std::vector<std::string> fileContents;
+	std::string templateLineText;
+	while (std::getline(inTemplateStream, templateLineText))
+	{
+		fileContents.push_back(templateLineText);
+	}
+	inTemplateStream.close();
+
+	for (int i = 0; i < parsedStaticDataRecords.m_staticDataRecordNames.size(); ++i)
+	{
+		ArgusCodeGeneratorUtil::FileWriteData writeData;
+		// TODO JAMES: Construct output file name.
+
+		for (int j = 0; j < fileContents.size(); ++j)
+		{
+			if (fileContents[j].find("$$$$$") != std::string::npos)
+			{
+				// TODO JAMES: Write include statement from parsed records
+			}
+			else if (fileContents[j].find("%%%%%") != std::string::npos)
+			{
+				// TODO JAMES: Do gross string splicing to output generated file name
+			}
+			else if (fileContents[j].find("#####") != std::string::npos)
+			{
+				// TODO JAMES: Direct name replacement.
+			}
+			else
+			{
+				writeData.m_lines.push_back(fileContents[j]);
+			}
+		}
+
+		// TODO JAMES: uncomment: outParsedFileContents.push_back(writeData);
+	}
+
+	return true;
+}
+
+bool ArgusStaticDataCodeGenerator::ParseRecordDatabaseCppTemplate(const ArgusCodeGeneratorUtil::ParseStaticDataRecordsOutput& parsedStaticDataRecords, ParseTemplateParams& templateParams, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents)
+{
+	std::ifstream inTemplateStream = std::ifstream(templateParams.templateFilePath);
+	const FString ueTemplateFilePath = FString(templateParams.templateFilePath.c_str());
+	if (!inTemplateStream.is_open())
+	{
+		UE_LOG(ArgusCodeGeneratorLog, Error, TEXT("[%s] Failed to read from template file: %s"), ARGUS_FUNCNAME, *ueTemplateFilePath);
+		return false;
+	}
+
+	std::vector<std::string> fileContents;
+	std::string templateLineText;
+	while (std::getline(inTemplateStream, templateLineText))
+	{
+		fileContents.push_back(templateLineText);
+	}
+	inTemplateStream.close();
+
+	for (int i = 0; i < parsedStaticDataRecords.m_staticDataRecordNames.size(); ++i)
+	{
+		ArgusCodeGeneratorUtil::FileWriteData writeData;
+		// TODO JAMES: Construct output file name.
+
+		for (int j = 0; j < fileContents.size(); ++j)
+		{
+			if (fileContents[j].find("$$$$$") != std::string::npos)
+			{
+				// TODO JAMES: Write include statement from parsed records
+			}
+			else if (fileContents[j].find("#####") != std::string::npos)
+			{
+				// TODO JAMES: Direct name replacement.
+			}
+			else
+			{
+				writeData.m_lines.push_back(fileContents[j]);
+			}
+		}
+
+		// TODO JAMES: uncomment: outParsedFileContents.push_back(writeData);
 	}
 
 	return true;
@@ -90,6 +196,7 @@ bool ArgusStaticDataCodeGenerator::ParsePerRecordTemplate(const ArgusCodeGenerat
 	{
 		fileContents.push_back(templateLineText);
 	}
+	inPerRecordTemplateStream.close();
 
 	for (int i = 0; i < parsedStaticDataRecords.m_staticDataRecordNames.size(); ++i)
 	{
