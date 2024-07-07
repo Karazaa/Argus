@@ -17,8 +17,10 @@ private:
 	static const char* s_argusStaticDataFileName;
 	static const char* s_argusStaticDatabaseHeaderTemplateFileName;
 	static const char* s_argusStaticDatabaseHeaderPerRecordTemplateFileName;
+	static const char* s_argusStaticDatabaseHeaderFileName;
 	static const char* s_argusStaticDatabaseCppTemplateFileName;
 	static const char* s_argusStaticDatabaseCppPerRecordTemplateFileName;
+	static const char* s_argusStaticDatabaseCppFileName;
 	static const char* s_recordDatabaseDirectorySuffix;
 	static const char* s_recordDatabaseHeaderTemplateFileName;
 	static const char* s_recordDatabaseCppTemplateFileName;

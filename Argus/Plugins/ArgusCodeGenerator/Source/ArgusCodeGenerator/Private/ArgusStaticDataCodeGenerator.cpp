@@ -14,8 +14,10 @@ const char* ArgusStaticDataCodeGenerator::s_argusStaticDataTemplateFileName = "A
 const char* ArgusStaticDataCodeGenerator::s_argusStaticDataPerRecordTemplateFileName = "ArgusStaticDataPerRecordTemplate.txt";
 const char* ArgusStaticDataCodeGenerator::s_argusStaticDatabaseHeaderTemplateFileName = "ArgusStaticDatabaseHeaderTemplate.txt";
 const char* ArgusStaticDataCodeGenerator::s_argusStaticDatabaseHeaderPerRecordTemplateFileName = "ArgusStaticDatabaseHeaderPerRecordTemplate.txt";
+const char* ArgusStaticDataCodeGenerator::s_argusStaticDatabaseHeaderFileName = "ArgusStaticDatabase.h";
 const char* ArgusStaticDataCodeGenerator::s_argusStaticDatabaseCppTemplateFileName = "ArgusStaticDatabaseCppTemplate.txt";
 const char* ArgusStaticDataCodeGenerator::s_argusStaticDatabaseCppPerRecordTemplateFileName = "ArgusStaticDatabaseCppPerRecordTemplate.txt";
+const char* ArgusStaticDataCodeGenerator::s_argusStaticDatabaseCppFileName = "ArgusStaticDatabase.cpp";
 const char* ArgusStaticDataCodeGenerator::s_argusStaticDataFileName = "ArgusStaticData.h";
 const char* ArgusStaticDataCodeGenerator::s_recordDatabaseDirectorySuffix = "RecordDatabases/";
 const char* ArgusStaticDataCodeGenerator::s_recordDatabaseHeaderTemplateFileName = "RecordDatabaseHeaderTemplate.txt";
@@ -225,6 +227,32 @@ bool ArgusStaticDataCodeGenerator::ParseArgusStaticDatabaseHeaderTemplate(const 
 	}
 	inTemplateStream.close();
 
+	ArgusCodeGeneratorUtil::FileWriteData writeData;
+	writeData.m_filename = s_argusStaticDatabaseHeaderFileName;
+	for (int i = 0; i < fileContents.size(); ++i)
+	{
+		if (fileContents[i].find("@@@@@") != std::string::npos)
+		{
+			ParsePerRecordTemplate(parsedStaticDataRecords, templateParams, writeData);
+		}
+		else if (fileContents[i].find("$$$$$") != std::string::npos)
+		{
+			for (int j = 0; j < headerFilePaths.size(); ++j)
+			{
+				std::string includeStatement = "#include \"";
+				std::string filePath = headerFilePaths[j];
+				filePath.append(".h");
+				includeStatement.append(filePath).append("\"");
+				writeData.m_lines.push_back(includeStatement);
+			}
+		}
+		else
+		{
+			writeData.m_lines.push_back((fileContents[i]));
+		}
+	}
+
+	outParsedFileContents.push_back(writeData);
 	return true;
 }
 
@@ -246,6 +274,21 @@ bool ArgusStaticDataCodeGenerator::ParseArgusStaticDatabaseCppTemplate(const Arg
 	}
 	inTemplateStream.close();
 
+	ArgusCodeGeneratorUtil::FileWriteData writeData;
+	writeData.m_filename = s_argusStaticDatabaseCppFileName;
+	for (int i = 0; i < fileContents.size(); ++i)
+	{
+		if (fileContents[i].find("@@@@@") != std::string::npos)
+		{
+			ParsePerRecordTemplate(parsedStaticDataRecords, templateParams, writeData);
+		}
+		else
+		{
+			writeData.m_lines.push_back((fileContents[i]));
+		}
+	}
+
+	outParsedFileContents.push_back(writeData);
 	return true;
 }
 
