@@ -3,6 +3,7 @@
 #pragma once
 
 #include "ArgusStaticRecord.h"
+#include "Math/Color.h"
 #include "FactionRecord.generated.h"
 
 UCLASS(BlueprintType)
