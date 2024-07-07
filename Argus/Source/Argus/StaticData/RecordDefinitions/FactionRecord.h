@@ -5,12 +5,12 @@
 #include "ArgusStaticRecord.h"
 #include "FactionRecord.generated.h"
 
-UCLASS()
+UCLASS(BlueprintType)
 class ARGUS_API UFactionRecord : public UArgusStaticRecord
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FString m_factionName;
 };

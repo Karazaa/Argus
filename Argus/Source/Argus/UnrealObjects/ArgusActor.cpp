@@ -1,6 +1,7 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusActor.h"
+#include "ArgusStaticData.h"
 
 AArgusActor::AArgusActor()
 {
@@ -43,6 +44,14 @@ void AArgusActor::BeginPlay()
 		if (TransformComponent* transformComponent = m_entity.GetComponent<TransformComponent>())
 		{
 			transformComponent->m_transform = GetActorTransform();
+		}
+
+		if (IdentityComponent* identityComponent = m_entity.GetComponent<IdentityComponent>())
+		{
+			if (const UFactionRecord* factionRecord = ArgusStaticData::GetRecord<UFactionRecord>(identityComponent->m_factionId))
+			{
+				OnPopulateFaction(factionRecord);
+			}
 		}
 	}
 }

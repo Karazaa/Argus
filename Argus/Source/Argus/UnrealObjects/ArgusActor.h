@@ -7,6 +7,8 @@
 #include "ArgusEntityTemplate.h"
 #include "ArgusActor.generated.h"
 
+class UFactionRecord;
+
 UCLASS()
 class AArgusActor : public AActor
 {
@@ -23,6 +25,8 @@ protected:
 	void OnSelected();
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnDeselected();
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnPopulateFaction(const UFactionRecord* factionRecord);
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	TObjectPtr<UArgusEntityTemplate> m_entityTemplate = nullptr;
