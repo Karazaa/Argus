@@ -20,6 +20,8 @@ public:
 	void SetupInputComponent(TWeakObjectPtr<AArgusPlayerController> owningPlayerController, TSoftObjectPtr<UArgusInputActionSet>& argusInputActionSet);
 	void OnSelect(const FInputActionValue& value);
 	void OnSelectAdditive(const FInputActionValue& value);
+	void OnMarqueeSelect(const FInputActionValue& value);
+	void OnMarqueeSelectAdditive(const FInputActionValue& value);
 	void OnMoveTo(const FInputActionValue& value);
 
 	void ProcessPlayerInput();
@@ -30,6 +32,8 @@ private:
 		None,
 		Select,
 		SelectAdditive,
+		MarqueeSelect,
+		MarqueeSelectAdditive,
 		MoveTo
 	};
 
@@ -42,6 +46,7 @@ private:
 
 	void ProcessInputEvent(InputType inputEvent);
 	void ProcessSelectInputEvent(bool isAdditive);
+	void ProcessMarqueeSelectInputEvent(bool isAdditive);
 	void ProcessMoveToInputEvent();
 	void ProcessMoveToInputEventPerSelectedActor(AArgusActor* argusActor, ETask inputTask, ArgusEntity targetEntity, FVector targetLocation);
 	void AddSelectedActorExclusive(AArgusActor* argusActor);

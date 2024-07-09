@@ -49,6 +49,16 @@ void UArgusInputManager::OnSelectAdditive(const FInputActionValue& value)
 	m_inputEventsThisFrame.Emplace(InputType::SelectAdditive);
 }
 
+void UArgusInputManager::OnMarqueeSelect(const FInputActionValue& value)
+{
+	m_inputEventsThisFrame.Emplace(InputType::MarqueeSelect);
+}
+
+void UArgusInputManager::OnMarqueeSelectAdditive(const FInputActionValue& value)
+{
+	m_inputEventsThisFrame.Emplace(InputType::MarqueeSelectAdditive);
+}
+
 void UArgusInputManager::OnMoveTo(const FInputActionValue& value)
 {
 	m_inputEventsThisFrame.Emplace(InputType::MoveTo);
@@ -95,6 +105,16 @@ void UArgusInputManager::BindActions(TSoftObjectPtr<UArgusInputActionSet>& argus
 		enhancedInputComponent->BindAction(selectAdditiveAction, ETriggerEvent::Triggered, this, &UArgusInputManager::OnSelectAdditive);
 	}
 
+	if (const UInputAction* marqueeSelectAction = actionSet->m_marqueeSelectAction.LoadSynchronous())
+	{
+		enhancedInputComponent->BindAction(marqueeSelectAction, ETriggerEvent::Triggered, this, &UArgusInputManager::OnMarqueeSelect);
+	}
+
+	if (const UInputAction* marqueeSelectAdditiveAction = actionSet->m_marqueeSelectAdditiveAction.LoadSynchronous())
+	{
+		enhancedInputComponent->BindAction(marqueeSelectAdditiveAction, ETriggerEvent::Triggered, this, &UArgusInputManager::OnMarqueeSelectAdditive);
+	}
+
 	if (const UInputAction* moveToAction = actionSet->m_moveToAction.LoadSynchronous())
 	{
 		enhancedInputComponent->BindAction(moveToAction, ETriggerEvent::Triggered, this, &UArgusInputManager::OnMoveTo);
@@ -123,6 +143,12 @@ void UArgusInputManager::ProcessInputEvent(InputType inputType)
 			break;
 		case InputType::SelectAdditive:
 			ProcessSelectInputEvent(true);
+			break;
+		case InputType::MarqueeSelect:
+			ProcessMarqueeSelectInputEvent(false);
+			break;
+		case InputType::MarqueeSelectAdditive:
+			ProcessMarqueeSelectInputEvent(true);
 			break;
 		case InputType::MoveTo:
 			ProcessMoveToInputEvent();
@@ -168,6 +194,30 @@ void UArgusInputManager::ProcessSelectInputEvent(bool isAdditive)
 			ARGUS_FUNCNAME,
 			ARGUS_NAMEOF(AArgusActor),
 			argusActor->GetEntity().GetId(),
+			isAdditive ? TEXT("Yes") : TEXT("No")
+		);
+	}
+}
+
+void UArgusInputManager::ProcessMarqueeSelectInputEvent(bool isAdditive)
+{
+	if (!ValidateOwningPlayerController())
+	{
+		return;
+	}
+
+	FHitResult hitResult;
+	if (!m_owningPlayerController->GetMouseProjectionLocation(hitResult))
+	{
+		return;
+	}
+
+	if (CVarEnableVerboseArgusInputLogging.GetValueOnGameThread())
+	{
+		UE_LOG
+		(
+			ArgusInputLog, Display, TEXT("[%s] Did a Marquee Select. Is additive? %s"),
+			ARGUS_FUNCNAME,
 			isAdditive ? TEXT("Yes") : TEXT("No")
 		);
 	}
