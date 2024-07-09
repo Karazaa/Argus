@@ -1,6 +1,7 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusGameInstance.h"
+#include "ArgusActor.h"
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
 
@@ -32,4 +33,37 @@ void UArgusGameInstance::Init()
 void UArgusGameInstance::Shutdown()
 {
 	s_staticDatabaseLoadedReference = nullptr;
+	m_argusEntityActorMap.Empty();
+}
+
+void UArgusGameInstance::RegisterArgusEntityActor(const TWeakObjectPtr<AArgusActor> argusActor)
+{
+	if (!argusActor.IsValid())
+	{
+		return;
+	}
+
+	uint16 entityId = argusActor->GetEntity().GetId();
+	if (m_argusEntityActorMap.Contains(entityId))
+	{
+		return;
+	}
+
+	m_argusEntityActorMap.Emplace(entityId, argusActor);
+}
+
+void UArgusGameInstance::DeregisterArgusEntityActor(const TWeakObjectPtr<AArgusActor> argusActor)
+{
+	if (!argusActor.IsValid())
+	{
+		return;
+	}
+
+	uint16 entityId = argusActor->GetEntity().GetId();
+	if (!m_argusEntityActorMap.Contains(entityId))
+	{
+		return;
+	}
+
+	m_argusEntityActorMap.Remove(entityId);
 }

@@ -1,7 +1,9 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusActor.h"
+#include "ArgusGameInstance.h"
 #include "ArgusStaticData.h"
+#include "Engine/World.h"
 
 AArgusActor::AArgusActor()
 {
@@ -10,7 +12,7 @@ AArgusActor::AArgusActor()
 	SetRootComponent(CreateDefaultSubobject<USceneComponent>(FName("RootSceneComponent")));
 }
 
-ArgusEntity AArgusActor::GetEntity()
+ArgusEntity AArgusActor::GetEntity() const
 {
 	return m_entity;
 }
@@ -38,22 +40,62 @@ void AArgusActor::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	if (m_entityTemplate)
+	if (!m_entityTemplate)
 	{
-		m_entity = m_entityTemplate->MakeEntity();
-		if (TransformComponent* transformComponent = m_entity.GetComponent<TransformComponent>())
-		{
-			transformComponent->m_transform = GetActorTransform();
-		}
+		return;
+	}
 
-		if (IdentityComponent* identityComponent = m_entity.GetComponent<IdentityComponent>())
+	m_entity = m_entityTemplate->MakeEntity();
+	if (TransformComponent* transformComponent = m_entity.GetComponent<TransformComponent>())
+	{
+		transformComponent->m_transform = GetActorTransform();
+	}
+
+	if (const IdentityComponent* identityComponent = m_entity.GetComponent<IdentityComponent>())
+	{
+		if (const UFactionRecord* factionRecord = ArgusStaticData::GetRecord<UFactionRecord>(identityComponent->m_factionId))
 		{
-			if (const UFactionRecord* factionRecord = ArgusStaticData::GetRecord<UFactionRecord>(identityComponent->m_factionId))
-			{
-				OnPopulateFaction(factionRecord);
-			}
+			OnPopulateFaction(factionRecord);
 		}
 	}
+
+	const UWorld* world = GetWorld();
+	if (!world)
+	{
+		return;
+	}
+
+	UArgusGameInstance* gameInstance = world->GetGameInstance<UArgusGameInstance>();
+	if (!gameInstance)
+	{
+		return;
+	}
+
+	gameInstance->RegisterArgusEntityActor(this);
+}
+
+void AArgusActor::EndPlay(const EEndPlayReason::Type endPlayReason)
+{
+	Super::EndPlay(endPlayReason);
+
+	if (m_entity)
+	{
+		return;
+	}
+
+	const UWorld* world = GetWorld();
+	if (!world)
+	{
+		return;
+	}
+
+	UArgusGameInstance* gameInstance = world->GetGameInstance<UArgusGameInstance>();
+	if (!gameInstance)
+	{
+		return;
+	}
+
+	gameInstance->DeregisterArgusEntityActor(this);
 }
 
 void AArgusActor::Tick(float deltaTime)

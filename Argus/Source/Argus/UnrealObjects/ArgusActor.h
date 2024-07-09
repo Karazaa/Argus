@@ -16,7 +16,7 @@ class AArgusActor : public AActor
 	
 public:	
 	AArgusActor();
-	ArgusEntity GetEntity();
+	ArgusEntity GetEntity() const;
 
 	void SetSelectionState(bool isSelected);
 
@@ -32,6 +32,7 @@ protected:
 	TObjectPtr<UArgusEntityTemplate> m_entityTemplate = nullptr;
 
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type endPlayReason) override;
 	virtual void Tick(float deltaTime) override;
 
 private:

@@ -3,24 +3,32 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ArgusEntity.h"
 #include "ArgusStaticDatabase.h"
 #include "Engine/GameInstance.h"
 #include "ArgusGameInstance.generated.h"
+
+class AArgusActor;
 
 UCLASS()
 class ARGUS_API UArgusGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
-
-private:
-	static UArgusStaticDatabase* s_staticDatabaseLoadedReference;
 	
 public:
 	static const UArgusStaticDatabase* GetStaticDatabase();
-
-	UPROPERTY(EditAnywhere)
-	TObjectPtr<UArgusStaticDatabase> m_staticDatabase;
 	
 	virtual void Init() override;
 	virtual void Shutdown() override;
+	void RegisterArgusEntityActor(const TWeakObjectPtr<AArgusActor> argusActor);
+	void DeregisterArgusEntityActor(const TWeakObjectPtr<AArgusActor> argusActor);
+
+protected:
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UArgusStaticDatabase> m_staticDatabase;
+
+private:
+	static UArgusStaticDatabase* s_staticDatabaseLoadedReference;
+
+	TMap<uint16, TWeakObjectPtr<AArgusActor>> m_argusEntityActorMap;
 };
