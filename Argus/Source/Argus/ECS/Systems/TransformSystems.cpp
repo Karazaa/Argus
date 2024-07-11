@@ -118,3 +118,33 @@ void TransformSystems::FaceTowardsLocationXY(TransformComponent* transformCompon
 	
 	transformComponent->m_transform.SetRotation(FRotationMatrix::MakeFromXZ(vectorFromTransformToTarget, FVector::UpVector).ToQuat());
 }
+
+void TransformSystems::FindEntitiesWithinXYBounds(FVector2D minXY, FVector2D maxXY, TArray<ArgusEntity>& outEntitiesWithinBounds)
+{
+	ARGUS_TRACE(TransformSystems::FindEntitiesWithinXYBounds)
+
+	for (uint16 i = 0; i < ArgusECSConstants::k_maxEntities; ++i)
+	{
+		ArgusEntity potentialEntity = ArgusEntity::RetrieveEntity(i);
+		if (!potentialEntity)
+		{
+			continue;
+		}
+
+		TransformComponent* transformComponent = potentialEntity.GetComponent<TransformComponent>();
+		if (!transformComponent)
+		{
+			continue;
+		}
+
+		FVector location = transformComponent->m_transform.GetLocation();
+
+		if (location.X >= minXY.X &&
+			location.X <= maxXY.X &&
+			location.Y >= minXY.Y &&
+			location.Y <= maxXY.Y)
+		{
+			outEntitiesWithinBounds.Emplace(potentialEntity);
+		}
+	}
+}

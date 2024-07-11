@@ -20,4 +20,5 @@ public:
 	static void ProcessMovementTaskCommands(float deltaTime, const TransformSystemsComponentArgs& components);
 	static void MoveAlongNavigationPath(float deltaTime, const TransformSystemsComponentArgs& components);
 	static void FaceTowardsLocationXY(TransformComponent* transformComponent, FVector vectorFromTransformToTarget);
+	static void FindEntitiesWithinXYBounds(FVector2D minXY, FVector2D maxXY, TArray<ArgusEntity>& outEntitiesWithinBounds);
 };

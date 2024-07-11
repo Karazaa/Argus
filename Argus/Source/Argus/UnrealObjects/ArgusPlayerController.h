@@ -10,6 +10,9 @@
 #include "InputMappingContext.h"
 #include "ArgusPlayerController.generated.h"
 
+class AArgusActor;
+class ArgusEntity;
+
 UCLASS()
 class AArgusPlayerController : public APlayerController
 {
@@ -20,6 +23,7 @@ public:
 
 	void ProcessArgusPlayerInput();
 	bool GetMouseProjectionLocation(FHitResult& outHitResult) const;
+	bool GetArgusActorsFromArgusEntities(const TArray<ArgusEntity>& inArgusEntities, TArray<AArgusActor*>& outArgusActors) const;
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

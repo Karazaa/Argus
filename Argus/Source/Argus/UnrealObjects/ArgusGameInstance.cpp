@@ -43,7 +43,7 @@ void UArgusGameInstance::RegisterArgusEntityActor(const TWeakObjectPtr<AArgusAct
 		return;
 	}
 
-	uint16 entityId = argusActor->GetEntity().GetId();
+	const uint16 entityId = argusActor->GetEntity().GetId();
 	if (m_argusEntityActorMap.Contains(entityId))
 	{
 		return;
@@ -59,11 +59,22 @@ void UArgusGameInstance::DeregisterArgusEntityActor(const TWeakObjectPtr<AArgusA
 		return;
 	}
 
-	uint16 entityId = argusActor->GetEntity().GetId();
+	const uint16 entityId = argusActor->GetEntity().GetId();
 	if (!m_argusEntityActorMap.Contains(entityId))
 	{
 		return;
 	}
 
 	m_argusEntityActorMap.Remove(entityId);
+}
+
+AArgusActor* UArgusGameInstance::GetArgusActorFromArgusEntity(const ArgusEntity& argusEntity) const
+{
+	const uint16 entityId = argusEntity.GetId();
+	if (!m_argusEntityActorMap.Contains(entityId))
+	{
+		return nullptr;
+	}
+
+	return m_argusEntityActorMap[entityId].Get();
 }

@@ -3,12 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ArgusEntity.h"
 #include "ArgusStaticDatabase.h"
 #include "Engine/GameInstance.h"
 #include "ArgusGameInstance.generated.h"
 
 class AArgusActor;
+class ArgusEntity;
 
 UCLASS()
 class ARGUS_API UArgusGameInstance : public UGameInstance
@@ -20,8 +20,10 @@ public:
 	
 	virtual void Init() override;
 	virtual void Shutdown() override;
+
 	void RegisterArgusEntityActor(const TWeakObjectPtr<AArgusActor> argusActor);
 	void DeregisterArgusEntityActor(const TWeakObjectPtr<AArgusActor> argusActor);
+	AArgusActor* GetArgusActorFromArgusEntity(const ArgusEntity& argusEntity) const;
 
 protected:
 	UPROPERTY(EditAnywhere)

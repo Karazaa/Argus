@@ -2,6 +2,7 @@
 
 #include "ArgusPlayerController.h"
 #include "ArgusCameraActor.h"
+#include "ArgusGameInstance.h"
 #include "ArgusInputManager.h"
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
@@ -37,6 +38,30 @@ bool AArgusPlayerController::GetMouseProjectionLocation(FHitResult& outHitResult
 
 	outcome &= world->LineTraceSingleByChannel(outHitResult, worldSpaceLocation, traceEndpoint, ECC_WorldStatic);
 	return outcome;
+}
+
+bool AArgusPlayerController::GetArgusActorsFromArgusEntities(const TArray<ArgusEntity>& inArgusEntities, TArray<AArgusActor*>& outArgusActors) const
+{
+	outArgusActors.SetNumZeroed(inArgusEntities.Num());
+
+	const UWorld* world = GetWorld();
+	if (!world)
+	{
+		return false;
+	}
+
+	const UArgusGameInstance* gameInstance = world->GetGameInstance<UArgusGameInstance>();
+	if (!gameInstance)
+	{
+		return false;
+	}
+
+	for (int i = 0; i < inArgusEntities.Num(); ++i)
+	{
+		outArgusActors[i] = gameInstance->GetArgusActorFromArgusEntity(inArgusEntities[i]);
+	}
+
+	return true;
 }
 
 void AArgusPlayerController::BeginPlay()

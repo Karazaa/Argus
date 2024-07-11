@@ -51,4 +51,6 @@ private:
 	void ProcessMoveToInputEventPerSelectedActor(AArgusActor* argusActor, ETask inputTask, ArgusEntity targetEntity, FVector targetLocation);
 	void AddSelectedActorExclusive(AArgusActor* argusActor);
 	void AddSelectedActorAdditive(AArgusActor* argusActor);
+
+	FVector m_cachedLastSelectInputWorldspaceLocation = FVector::ZeroVector;
 };
