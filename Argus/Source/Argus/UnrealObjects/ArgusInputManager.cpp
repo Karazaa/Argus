@@ -67,6 +67,8 @@ void UArgusInputManager::OnMoveTo(const FInputActionValue& value)
 
 void UArgusInputManager::ProcessPlayerInput()
 {
+	ARGUS_TRACE(UArgusInputManager::ProcessPlayerInput)
+
 	const int inputsEventsThisFrameCount = m_inputEventsThisFrame.Num();
 	for (int i = 0; i < inputsEventsThisFrameCount; ++i)
 	{
@@ -250,19 +252,11 @@ void UArgusInputManager::ProcessMarqueeSelectInputEvent(bool isAdditive)
 
 	if (!isAdditive && numFoundEntities > 0)
 	{
-		for (TWeakObjectPtr<AArgusActor>& selectedActor : m_selectedArgusActors)
-		{
-			if (selectedActor.IsValid())
-			{
-				selectedActor->SetSelectionState(false);
-			}
-		}
-		m_selectedArgusActors.Empty();
+		AddMarqueeSelectedActorsExclusive(actorsWithinBounds);
 	}
-
-	for (int i = 0; i < numFoundEntities; ++i)
-	{		
-		AddSelectedActorAdditive(actorsWithinBounds[i]);
+	else
+	{
+		AddMarqueeSelectedActorsAdditive(actorsWithinBounds);
 	}
 }
 
@@ -396,5 +390,35 @@ void UArgusInputManager::AddSelectedActorAdditive(AArgusActor* argusActor)
 	{
 		argusActor->SetSelectionState(true);
 		m_selectedArgusActors.Emplace(argusActor);
+	}
+}
+
+void UArgusInputManager::AddMarqueeSelectedActorsExclusive(const TArray<AArgusActor*>& marqueeSelectedActors)
+{
+	for (TWeakObjectPtr<AArgusActor>& selectedActor : m_selectedArgusActors)
+	{
+		if (selectedActor.IsValid())
+		{
+			selectedActor->SetSelectionState(false);
+		}
+	}
+	m_selectedArgusActors.Empty();
+
+	AddMarqueeSelectedActorsAdditive(marqueeSelectedActors);
+}
+
+void UArgusInputManager::AddMarqueeSelectedActorsAdditive(const TArray<AArgusActor*>& marqueeSelectedActors)
+{
+	const uint32 selectedActorsNum = marqueeSelectedActors.Num();
+	const uint32 existingSelectedActorNum = m_selectedArgusActors.Num();
+	m_selectedArgusActors.Reserve(selectedActorsNum + existingSelectedActorNum);
+
+	for (uint32 i = 0u; i < selectedActorsNum; ++i)
+	{
+		if (marqueeSelectedActors[i])
+		{
+			marqueeSelectedActors[i]->SetSelectionState(true);
+			m_selectedArgusActors.Emplace(marqueeSelectedActors[i]);
+		}
 	}
 }

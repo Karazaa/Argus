@@ -54,6 +54,8 @@ bool NavigationSystems::NavigationSystemsComponentArgs::AreComponentsValidCheck(
 
 void NavigationSystems::ProcessNavigationTaskCommands(TWeakObjectPtr<UWorld> worldPointer, const NavigationSystemsComponentArgs& components)
 {
+	ARGUS_TRACE(NavigationSystems::ProcessNavigationTaskCommands)
+
 	if (!IsWorldPointerValidCheck(worldPointer) || !components.AreComponentsValidCheck())
 	{
 		return;
@@ -78,6 +80,8 @@ void NavigationSystems::ProcessNavigationTaskCommands(TWeakObjectPtr<UWorld> wor
 
 void NavigationSystems::RecalculateMoveToEntityPaths(TWeakObjectPtr<UWorld> worldPointer, const NavigationSystemsComponentArgs& components)
 {
+	ARGUS_TRACE(NavigationSystems::RecalculateMoveToEntityPaths)
+
 	if (!IsWorldPointerValidCheck(worldPointer) || !components.AreComponentsValidCheck())
 	{
 		return;

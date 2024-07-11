@@ -41,6 +41,8 @@ bool TransformSystems::TransformSystemsComponentArgs::AreComponentsValidCheck() 
 
 void TransformSystems::ProcessMovementTaskCommands(float deltaTime, const TransformSystemsComponentArgs& components)
 {
+	ARGUS_TRACE(TransformSystems::ProcessMovementTaskCommands)
+
 	if (!components.AreComponentsValidCheck())
 	{
 		return;
