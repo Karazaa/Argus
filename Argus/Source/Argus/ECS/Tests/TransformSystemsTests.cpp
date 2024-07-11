@@ -265,4 +265,83 @@ bool TransformSystemsMoveAlongPathTest::RunTest(const FString& Parameters)
 	return true;
 }
 
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(TransformSystemsFindEntitiesWithinXYBoundsTest, "Argus.ECS.Systems.TransformSystems.FindEntitiesWithinXYBounds", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+bool TransformSystemsFindEntitiesWithinXYBoundsTest::RunTest(const FString& Parameters)
+{
+	ArgusEntity::FlushAllEntities();
+
+	ArgusEntity entity0 = ArgusEntity::CreateEntity();
+	ArgusEntity entity1 = ArgusEntity::CreateEntity();
+	ArgusEntity entity2 = ArgusEntity::CreateEntity();
+	ArgusEntity entity3 = ArgusEntity::CreateEntity();
+	TransformComponent* transformComponent0 = entity0.AddComponent<TransformComponent>();
+	TransformComponent* transformComponent1 = entity1.AddComponent<TransformComponent>();
+	TransformComponent* transformComponent2 = entity2.AddComponent<TransformComponent>();
+	TransformComponent* transformComponent3 = entity3.AddComponent<TransformComponent>();
+
+	transformComponent0->m_transform.SetLocation(FVector(0.0f, 0.0f, 0.0f));
+	transformComponent1->m_transform.SetLocation(FVector(-10.0f, -10.0f, 0.0f));
+	transformComponent2->m_transform.SetLocation(FVector(50.0f, 50.0f, 5000.0f));
+	transformComponent3->m_transform.SetLocation(FVector(100.0f, 100.0f, 100.0f));
+
+	TArray<ArgusEntity> foundEntities;
+	foundEntities.Reserve(4);
+
+	FVector2D minXY = FVector2D(-200.0f, -200.0f);
+	FVector2D maxXY = FVector2D(-100.0f, -100.0f);
+
+	TransformSystems::FindEntitiesWithinXYBounds(minXY, maxXY, foundEntities);
+
+#pragma region Test no entities found after searching far away from spawned entities
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s]"), ARGUS_FUNCNAME),
+		foundEntities.Num(),
+		0
+	);
+#pragma endregion
+
+	minXY.X = 0.0f;
+	minXY.Y = 0.0f;
+	maxXY.X = 100.0f;
+	maxXY.Y = 100.0f;
+	foundEntities.Empty();
+	TransformSystems::FindEntitiesWithinXYBounds(minXY, maxXY, foundEntities);
+
+#pragma region Test that Entity0 was found after searching in a bounding box that includes them
+	TestTrue
+	(
+		FString::Printf(TEXT("[%s]"), ARGUS_FUNCNAME),
+		foundEntities.Contains(entity0)
+	);
+#pragma endregion
+
+#pragma region Test that Entity2 was found after searching in a bounding box that includes them
+	TestTrue
+	(
+		FString::Printf(TEXT("[%s]"), ARGUS_FUNCNAME),
+		foundEntities.Contains(entity2)
+	);
+#pragma endregion
+
+#pragma region Test that Entity3 was found after searching in a bounding box that includes them
+	TestTrue
+	(
+		FString::Printf(TEXT("[%s]"), ARGUS_FUNCNAME),
+		foundEntities.Contains(entity3)
+	);
+#pragma endregion
+
+#pragma region Test num positive entities found after searching in a bounding box that includes them
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s]"), ARGUS_FUNCNAME),
+		foundEntities.Num(),
+		3
+	);
+#pragma endregion
+
+	return true;
+}
+
 #endif //WITH_AUTOMATION_TESTS
