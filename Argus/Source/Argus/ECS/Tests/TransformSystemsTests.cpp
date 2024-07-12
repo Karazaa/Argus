@@ -268,6 +268,17 @@ bool TransformSystemsMoveAlongPathTest::RunTest(const FString& Parameters)
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(TransformSystemsFindEntitiesWithinXYBoundsTest, "Argus.ECS.Systems.TransformSystems.FindEntitiesWithinXYBounds", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool TransformSystemsFindEntitiesWithinXYBoundsTest::RunTest(const FString& Parameters)
 {
+	const FVector	location0					= FVector	(0.0f, 0.0f, 0.0f);
+	const FVector	location1					= FVector	(-10.0f, -10.0f, 0.0f);
+	const FVector	location2					= FVector	(50.0f, 50.0f, 5000.0f);
+	const FVector	location3					= FVector	(100.0f, 100.0f, 100.0f);
+	const FVector2D intentionalMissMinXY		= FVector2D	(-200.0f, -200.0f);
+	const FVector2D intentionalMissMaxXY		= FVector2D	(-100.0f, -100.0f);
+	const FVector2D validHitMinXY				= FVector2D	(0.0f, 0.0f);
+	const FVector2D validHitMaxXY				= FVector2D	(100.0f, 100.0f);
+	const uint32	totalNumEntities			= 4u;
+	const uint32	initialNumExpectedEntities	= 0u;
+	const uint32	expectedNumHitEntities		= 3u;
 	ArgusEntity::FlushAllEntities();
 
 	ArgusEntity entity0 = ArgusEntity::CreateEntity();
@@ -279,39 +290,53 @@ bool TransformSystemsFindEntitiesWithinXYBoundsTest::RunTest(const FString& Para
 	TransformComponent* transformComponent2 = entity2.AddComponent<TransformComponent>();
 	TransformComponent* transformComponent3 = entity3.AddComponent<TransformComponent>();
 
-	transformComponent0->m_transform.SetLocation(FVector(0.0f, 0.0f, 0.0f));
-	transformComponent1->m_transform.SetLocation(FVector(-10.0f, -10.0f, 0.0f));
-	transformComponent2->m_transform.SetLocation(FVector(50.0f, 50.0f, 5000.0f));
-	transformComponent3->m_transform.SetLocation(FVector(100.0f, 100.0f, 100.0f));
+	transformComponent0->m_transform.SetLocation(location0);
+	transformComponent1->m_transform.SetLocation(location1);
+	transformComponent2->m_transform.SetLocation(location2);
+	transformComponent3->m_transform.SetLocation(location3);
 
 	TArray<ArgusEntity> foundEntities;
-	foundEntities.Reserve(4);
+	foundEntities.Reserve(totalNumEntities);
 
-	FVector2D minXY = FVector2D(-200.0f, -200.0f);
-	FVector2D maxXY = FVector2D(-100.0f, -100.0f);
+	FVector2D minXY = intentionalMissMinXY;
+	FVector2D maxXY = intentionalMissMaxXY;
 
 	TransformSystems::FindEntitiesWithinXYBounds(minXY, maxXY, foundEntities);
 
 #pragma region Test no entities found after searching far away from spawned entities
 	TestEqual
 	(
-		FString::Printf(TEXT("[%s]"), ARGUS_FUNCNAME),
+		FString::Printf
+		(
+			TEXT("[%s] Test that %d %s are found when querying bounds {%f, %f}-{%f, %f}"), 
+			ARGUS_FUNCNAME,
+			initialNumExpectedEntities,
+			ARGUS_NAMEOF(ArgusEntity),
+			minXY.X, minXY.Y,
+			maxXY.X, maxXY.Y
+		),
 		foundEntities.Num(),
-		0
+		initialNumExpectedEntities
 	);
 #pragma endregion
 
-	minXY.X = 0.0f;
-	minXY.Y = 0.0f;
-	maxXY.X = 100.0f;
-	maxXY.Y = 100.0f;
+	minXY = validHitMinXY;
+	maxXY = validHitMaxXY;
 	foundEntities.Empty();
 	TransformSystems::FindEntitiesWithinXYBounds(minXY, maxXY, foundEntities);
 
 #pragma region Test that Entity0 was found after searching in a bounding box that includes them
 	TestTrue
 	(
-		FString::Printf(TEXT("[%s]"), ARGUS_FUNCNAME),
+		FString::Printf
+		(
+			TEXT("[%s] Test that an %s with location {%f, %f, %f} is found when searching bounds {%f, %f}-{%f, %f}"), 
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(ArgusEntity),
+			location0.X, location0.Y, location0.Z,
+			minXY.X, minXY.Y,
+			maxXY.X, maxXY.Y
+		),
 		foundEntities.Contains(entity0)
 	);
 #pragma endregion
@@ -319,7 +344,15 @@ bool TransformSystemsFindEntitiesWithinXYBoundsTest::RunTest(const FString& Para
 #pragma region Test that Entity2 was found after searching in a bounding box that includes them
 	TestTrue
 	(
-		FString::Printf(TEXT("[%s]"), ARGUS_FUNCNAME),
+		FString::Printf
+		(
+			TEXT("[%s] Test that an %s with location {%f, %f, %f} is found when searching bounds {%f, %f}-{%f, %f}"), 
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(ArgusEntity),
+			location2.X, location2.Y, location2.Z,
+			minXY.X, minXY.Y,
+			maxXY.X, maxXY.Y
+		),
 		foundEntities.Contains(entity2)
 	);
 #pragma endregion
@@ -327,7 +360,15 @@ bool TransformSystemsFindEntitiesWithinXYBoundsTest::RunTest(const FString& Para
 #pragma region Test that Entity3 was found after searching in a bounding box that includes them
 	TestTrue
 	(
-		FString::Printf(TEXT("[%s]"), ARGUS_FUNCNAME),
+		FString::Printf
+		(
+			TEXT("[%s] Test that an %s with location {%f, %f, %f} is found when searching bounds {%f, %f}-{%f, %f}"), 
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(ArgusEntity),
+			location3.X, location3.Y, location3.Z,
+			minXY.X, minXY.Y,
+			maxXY.X, maxXY.Y
+		),
 		foundEntities.Contains(entity3)
 	);
 #pragma endregion
@@ -335,9 +376,17 @@ bool TransformSystemsFindEntitiesWithinXYBoundsTest::RunTest(const FString& Para
 #pragma region Test num positive entities found after searching in a bounding box that includes them
 	TestEqual
 	(
-		FString::Printf(TEXT("[%s]"), ARGUS_FUNCNAME),
+		FString::Printf
+		(
+			TEXT("[%s] Test that %d %s are found when querying bounds {%f, %f}-{%f, %f}"), 
+			ARGUS_FUNCNAME,
+			expectedNumHitEntities,
+			ARGUS_NAMEOF(ArgusEntity),
+			minXY.X, minXY.Y,
+			maxXY.X, maxXY.Y
+		),
 		foundEntities.Num(),
-		3
+		expectedNumHitEntities
 	);
 #pragma endregion
 
