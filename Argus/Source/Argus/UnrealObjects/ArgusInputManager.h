@@ -23,6 +23,7 @@ public:
 	void OnMarqueeSelect(const FInputActionValue& value);
 	void OnMarqueeSelectAdditive(const FInputActionValue& value);
 	void OnMoveTo(const FInputActionValue& value);
+	void OnSetWaypoint(const FInputActionValue& value);
 
 	void ProcessPlayerInput();
 
@@ -34,7 +35,8 @@ private:
 		SelectAdditive,
 		MarqueeSelect,
 		MarqueeSelectAdditive,
-		MoveTo
+		MoveTo,
+		SetWaypoint
 	};
 
 	TWeakObjectPtr<AArgusPlayerController> m_owningPlayerController = nullptr;
@@ -49,6 +51,8 @@ private:
 	void ProcessMarqueeSelectInputEvent(bool isAdditive);
 	void ProcessMoveToInputEvent();
 	void ProcessMoveToInputEventPerSelectedActor(AArgusActor* argusActor, ETask inputTask, ArgusEntity targetEntity, FVector targetLocation);
+	void ProcessSetWaypointInputEvent();
+
 	void AddSelectedActorExclusive(AArgusActor* argusActor);
 	void AddSelectedActorAdditive(AArgusActor* argusActor);
 	void AddMarqueeSelectedActorsExclusive(const TArray<AArgusActor*>& marqueeSelectedActors);

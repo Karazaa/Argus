@@ -65,6 +65,11 @@ void UArgusInputManager::OnMoveTo(const FInputActionValue& value)
 	m_inputEventsThisFrame.Emplace(InputType::MoveTo);
 }
 
+void UArgusInputManager::OnSetWaypoint(const FInputActionValue& value)
+{
+	m_inputEventsThisFrame.Emplace(InputType::SetWaypoint);
+}
+
 void UArgusInputManager::ProcessPlayerInput()
 {
 	ARGUS_TRACE(UArgusInputManager::ProcessPlayerInput)
@@ -122,6 +127,11 @@ void UArgusInputManager::BindActions(TSoftObjectPtr<UArgusInputActionSet>& argus
 	{
 		enhancedInputComponent->BindAction(moveToAction, ETriggerEvent::Triggered, this, &UArgusInputManager::OnMoveTo);
 	}
+
+	if (const UInputAction* setWaypointAction = actionSet->m_setWaypointAction.LoadSynchronous())
+	{
+		enhancedInputComponent->BindAction(setWaypointAction, ETriggerEvent::Triggered, this, &UArgusInputManager::OnSetWaypoint);
+	}
 }
 
 bool UArgusInputManager::ValidateOwningPlayerController()
@@ -155,6 +165,9 @@ void UArgusInputManager::ProcessInputEvent(InputType inputType)
 			break;
 		case InputType::MoveTo:
 			ProcessMoveToInputEvent();
+			break;
+		case InputType::SetWaypoint:
+			ProcessSetWaypointInputEvent();
 			break;
 		default:
 			break;
@@ -344,6 +357,22 @@ void UArgusInputManager::ProcessMoveToInputEventPerSelectedActor(AArgusActor* ar
 		targetingComponent->m_targetEntityId = ArgusEntity::s_emptyEntity.GetId();
 		targetingComponent->m_targetLocation = targetLocation;
 	}
+}
+
+void UArgusInputManager::ProcessSetWaypointInputEvent()
+{
+	if (!ValidateOwningPlayerController())
+	{
+		return;
+	}
+
+	FHitResult hitResult;
+	if (!m_owningPlayerController->GetMouseProjectionLocation(hitResult))
+	{
+		return;
+	}
+
+	FVector targetLocation = hitResult.Location;
 }
 
 void UArgusInputManager::AddSelectedActorExclusive(AArgusActor* argusActor)
