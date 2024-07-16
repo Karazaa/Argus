@@ -6,7 +6,7 @@
 #include "Engine/DataAsset.h"
 #include "ComponentData.generated.h"
 
-UCLASS()
+UCLASS(abstract)
 class UComponentData : public UDataAsset
 {
 	GENERATED_BODY()
