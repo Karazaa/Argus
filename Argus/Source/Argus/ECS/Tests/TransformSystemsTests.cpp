@@ -90,6 +90,7 @@ bool TransformSystemsMoveAlongPathTest::RunTest(const FString& Parameters)
 	components.m_taskComponent = entity.AddComponent<TaskComponent>();
 	components.m_transformComponent = entity.AddComponent<TransformComponent>();
 	components.m_navigationComponent = entity.AddComponent<NavigationComponent>();
+	components.m_targetingComponent = entity.AddComponent<TargetingComponent>();
 
 	if (!components.AreComponentsValidCheck())
 	{
