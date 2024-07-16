@@ -14,6 +14,7 @@ public:
 		TaskComponent* m_taskComponent = nullptr;
 		TransformComponent* m_transformComponent = nullptr;
 		NavigationComponent* m_navigationComponent = nullptr;
+		TargetingComponent* m_targetingComponent = nullptr;
 
 		bool AreComponentsValidCheck() const;
 	};

@@ -4,12 +4,16 @@
 
 #include "ArgusMacros.h"
 #include "CoreMinimal.h"
+#include <queue>
 #include <vector>
 
 struct NavigationComponent
 {
 	ARGUS_IGNORE()
 	std::vector<FVector> m_navigationPoints = std::vector<FVector>();
+
+	ARGUS_IGNORE()
+	std::queue<FVector> m_queuedWaypoints = std::queue<FVector>();
 
 	float  m_navigationSpeedUnitsPerSecond = 100.0f;
 

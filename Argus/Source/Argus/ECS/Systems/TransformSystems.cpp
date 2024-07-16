@@ -20,7 +20,8 @@ void TransformSystems::RunSystems(float deltaTime)
 		components.m_taskComponent = potentialEntity.GetComponent<TaskComponent>();
 		components.m_transformComponent = potentialEntity.GetComponent<TransformComponent>();
 		components.m_navigationComponent = potentialEntity.GetComponent<NavigationComponent>();
-		if (!components.m_taskComponent || !components.m_transformComponent || !components.m_navigationComponent)
+		components.m_targetingComponent = potentialEntity.GetComponent<TargetingComponent>();
+		if (!components.m_taskComponent || !components.m_transformComponent || !components.m_navigationComponent || !components.m_targetingComponent)
 		{
 			continue;
 		}
@@ -31,7 +32,7 @@ void TransformSystems::RunSystems(float deltaTime)
 
 bool TransformSystems::TransformSystemsComponentArgs::AreComponentsValidCheck() const
 {
-	if (!m_taskComponent || !m_navigationComponent || !m_transformComponent)
+	if (!m_taskComponent || !m_navigationComponent || !m_transformComponent || !m_targetingComponent)
 	{
 		UE_LOG(ArgusECSLog, Error, TEXT("[%s] Transform Systems were run with invalid component arguments passed."), ARGUS_FUNCNAME);
 		return false;
@@ -89,8 +90,18 @@ void TransformSystems::MoveAlongNavigationPath(float deltaTime, const TransformS
 		components.m_navigationComponent->m_lastPointIndex++;
 		if (components.m_navigationComponent->m_lastPointIndex == numNavigationPoints - 1)
 		{
-			components.m_taskComponent->m_currentTask = ETask::None;
-			components.m_navigationComponent->ResetPath();
+			if (components.m_navigationComponent->m_queuedWaypoints.size() == 0)
+			{
+				components.m_taskComponent->m_currentTask = ETask::None;
+				components.m_navigationComponent->ResetPath();
+			}
+			else
+			{
+				components.m_taskComponent->m_currentTask = ETask::ProcessMoveToLocationCommand;
+				components.m_navigationComponent->ResetPath();
+				components.m_targetingComponent->m_targetLocation = components.m_navigationComponent->m_queuedWaypoints.front();
+				components.m_navigationComponent->m_queuedWaypoints.pop();
+			}
 		}
 	}
 	else

@@ -310,7 +310,6 @@ void UArgusInputManager::ProcessMoveToInputEvent()
 		}
 	}
 
-	const uint32 numSelectedActors = m_selectedArgusActors.Num();
 	for (TWeakObjectPtr<AArgusActor>& selectedActor : m_selectedArgusActors)
 	{
 		if (!selectedActor.IsValid())
@@ -324,6 +323,11 @@ void UArgusInputManager::ProcessMoveToInputEvent()
 
 void UArgusInputManager::ProcessMoveToInputEventPerSelectedActor(AArgusActor* argusActor, ETask inputTask, ArgusEntity targetEntity, FVector targetLocation)
 {
+	if (!argusActor)
+	{
+		return;
+	}
+
 	ArgusEntity selectedEntity = argusActor->GetEntity();
 	if (!selectedEntity)
 	{
@@ -373,6 +377,69 @@ void UArgusInputManager::ProcessSetWaypointInputEvent()
 	}
 
 	FVector targetLocation = hitResult.Location;
+	if (CVarEnableVerboseArgusInputLogging.GetValueOnGameThread())
+	{
+		UE_LOG
+		(
+			ArgusInputLog, Display, TEXT("[%s] Set Waypoint input occurred. Mouse projection worldspace location is (%f, %f, %f)"),
+			ARGUS_FUNCNAME,
+			targetLocation.X,
+			targetLocation.Y,
+			targetLocation.Z
+		);
+	}
+
+	for (TWeakObjectPtr<AArgusActor>& selectedActor : m_selectedArgusActors)
+	{
+		if (!selectedActor.IsValid())
+		{
+			continue;
+		}
+
+		ProcessSetWaypointInputEventPerSelectedActor(selectedActor.Get(), targetLocation);
+	}
+}
+
+void UArgusInputManager::ProcessSetWaypointInputEventPerSelectedActor(AArgusActor* argusActor, FVector targetLocation)
+{
+	if (!argusActor)
+	{
+		return;
+	}
+
+	ArgusEntity selectedEntity = argusActor->GetEntity();
+	if (!selectedEntity)
+	{
+		return;
+	}
+
+	TaskComponent* taskComponent = selectedEntity.GetComponent<TaskComponent>();
+	TargetingComponent* targetingComponent = selectedEntity.GetComponent<TargetingComponent>();
+	NavigationComponent* navigationComponent = selectedEntity.GetComponent<NavigationComponent>();
+
+	if (!taskComponent || !targetingComponent || !navigationComponent)
+	{
+		return;
+	}
+
+	switch (taskComponent->m_currentTask)
+	{
+		case ETask::None:
+		case ETask::FailedToFindPath:
+		case ETask::ProcessMoveToEntityCommand:
+		case ETask::MoveToEntity:
+			taskComponent->m_currentTask = ETask::ProcessMoveToLocationCommand;
+			targetingComponent->m_targetEntityId = ArgusEntity::s_emptyEntity.GetId();
+			targetingComponent->m_targetLocation = targetLocation;
+			break;
+		case ETask::ProcessMoveToLocationCommand:
+		case ETask::MoveToLocation:
+			taskComponent->m_currentTask = ETask::ProcessMoveToLocationCommand;
+			navigationComponent->m_queuedWaypoints.push(targetLocation);
+			break;
+		default:
+			break;
+	}
 }
 
 void UArgusInputManager::AddSelectedActorExclusive(AArgusActor* argusActor)
