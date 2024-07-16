@@ -336,12 +336,14 @@ void UArgusInputManager::ProcessMoveToInputEventPerSelectedActor(AArgusActor* ar
 
 	TaskComponent* taskComponent = selectedEntity.GetComponent<TaskComponent>();
 	TargetingComponent* targetingComponent = selectedEntity.GetComponent<TargetingComponent>();
+	NavigationComponent* navigationComponent = selectedEntity.GetComponent<NavigationComponent>();
 
-	if (!taskComponent || !targetingComponent)
+	if (!taskComponent || !targetingComponent || !navigationComponent)
 	{
 		return;
 	}
 
+	navigationComponent->ResetQueuedWaypoints();
 	if (inputTask == ETask::ProcessMoveToEntityCommand)
 	{
 		if (targetEntity == selectedEntity)
@@ -431,6 +433,7 @@ void UArgusInputManager::ProcessSetWaypointInputEventPerSelectedActor(AArgusActo
 			taskComponent->m_currentTask = ETask::ProcessMoveToLocationCommand;
 			targetingComponent->m_targetEntityId = ArgusEntity::s_emptyEntity.GetId();
 			targetingComponent->m_targetLocation = targetLocation;
+			navigationComponent->ResetQueuedWaypoints();
 			break;
 		case ETask::ProcessMoveToLocationCommand:
 		case ETask::MoveToLocation:

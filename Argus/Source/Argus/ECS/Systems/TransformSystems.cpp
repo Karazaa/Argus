@@ -84,29 +84,17 @@ void TransformSystems::MoveAlongNavigationPath(float deltaTime, const TransformS
 
 	FaceTowardsLocationXY(components.m_transformComponent, positionDifference);
 
-	if (translationThisFrame.SquaredLength() >= positionDifference.SquaredLength())
-	{
-		components.m_transformComponent->m_transform.SetLocation(upcomingPoint);
-		components.m_navigationComponent->m_lastPointIndex++;
-		if (components.m_navigationComponent->m_lastPointIndex == numNavigationPoints - 1)
-		{
-			if (components.m_navigationComponent->m_queuedWaypoints.size() == 0)
-			{
-				components.m_taskComponent->m_currentTask = ETask::None;
-				components.m_navigationComponent->ResetPath();
-			}
-			else
-			{
-				components.m_taskComponent->m_currentTask = ETask::ProcessMoveToLocationCommand;
-				components.m_navigationComponent->ResetPath();
-				components.m_targetingComponent->m_targetLocation = components.m_navigationComponent->m_queuedWaypoints.front();
-				components.m_navigationComponent->m_queuedWaypoints.pop();
-			}
-		}
-	}
-	else
+	if (translationThisFrame.SquaredLength() < positionDifference.SquaredLength())
 	{
 		components.m_transformComponent->m_transform.SetLocation(currentLocation + translationThisFrame);
+		return;
+	}
+
+	components.m_transformComponent->m_transform.SetLocation(upcomingPoint);
+	components.m_navigationComponent->m_lastPointIndex++;
+	if (components.m_navigationComponent->m_lastPointIndex == numNavigationPoints - 1)
+	{
+		OnCompleteNavigationPath(components);
 	}
 }
 
@@ -159,5 +147,21 @@ void TransformSystems::FindEntitiesWithinXYBounds(FVector2D minXY, FVector2D max
 		{
 			outEntitiesWithinBounds.Emplace(potentialEntity);
 		}
+	}
+}
+
+void TransformSystems::OnCompleteNavigationPath(const TransformSystemsComponentArgs& components)
+{
+	if (components.m_navigationComponent->m_queuedWaypoints.size() == 0)
+	{
+		components.m_taskComponent->m_currentTask = ETask::None;
+		components.m_navigationComponent->ResetPath();
+	}
+	else
+	{
+		components.m_taskComponent->m_currentTask = ETask::ProcessMoveToLocationCommand;
+		components.m_navigationComponent->ResetPath();
+		components.m_targetingComponent->m_targetLocation = components.m_navigationComponent->m_queuedWaypoints.front();
+		components.m_navigationComponent->m_queuedWaypoints.pop();
 	}
 }

@@ -25,4 +25,12 @@ struct NavigationComponent
 		m_navigationPoints.clear();
 		m_lastPointIndex = 0u;
 	}
+
+	void ResetQueuedWaypoints()
+	{
+		while (m_queuedWaypoints.size() > 0)
+		{
+			m_queuedWaypoints.pop();
+		}
+	}
 };
