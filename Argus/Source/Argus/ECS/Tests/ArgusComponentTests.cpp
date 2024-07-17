@@ -350,4 +350,160 @@ bool ArgusComponentTaskComponentIsExecutingMoveTaskTest::RunTest(const FString& 
 
 	return true;
 }
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentNavigationComponentResetPathTest, "Argus.ECS.Component.NavigationComponent.ResetPath", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+bool ArgusComponentNavigationComponentResetPathTest::RunTest(const FString& Parameters)
+{
+	const FVector	point0				= FVector(0.0f, 1.0f, 2.0f);
+	const FVector	point1				= FVector(1.0f, 2.0f, 3.0f);
+	const FVector	point2				= FVector(2.0f, 3.0f, 4.0f);
+	const int32		numPoints			= 3;
+	const int32		indexThroughPath	= 1;
+
+	ArgusEntity::FlushAllEntities();
+
+	ArgusEntity entity = ArgusEntity::CreateEntity();
+	NavigationComponent* navigationComponent = entity.AddComponent<NavigationComponent>();
+
+	if (!navigationComponent)
+	{
+		return false;
+	}
+
+	navigationComponent->m_navigationPoints.reserve(numPoints);
+	navigationComponent->m_navigationPoints[0] = point0;
+	navigationComponent->m_navigationPoints[1] = point1;
+	navigationComponent->m_navigationPoints[2] = point2;
+	navigationComponent->m_lastPointIndex = indexThroughPath;
+
+#pragma region Test size of navigation path
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Testing that %s has a size of %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(navigationComponent->m_navigationPoints), numPoints),
+		navigationComponent->m_navigationPoints.size(),
+		numPoints
+	);
+#pragma endregion
+
+#pragma region Test last point index of navigation component
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Testing that %s has a value of %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(navigationComponent->m_lastPointIndex), indexThroughPath),
+		navigationComponent->m_lastPointIndex,
+		indexThroughPath
+	);
+#pragma endregion
+
+#pragma region Test first point of navigation path
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Testing that the first point of the navigation path is {%f, %f, %f}"), ARGUS_FUNCNAME, point0.X, point0.Y, point0.Z),
+		navigationComponent->m_navigationPoints[0],
+		point0
+	);
+#pragma endregion
+
+#pragma region Test second point of navigation path
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Testing that the second point of the navigation path is {%f, %f, %f}"), ARGUS_FUNCNAME, point1.X, point1.Y, point1.Z),
+		navigationComponent->m_navigationPoints[1],
+		point1
+	);
+#pragma endregion
+
+#pragma region Test third point of navigation path
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Testing that the third point of the navigation path is {%f, %f, %f}"), ARGUS_FUNCNAME, point2.X, point2.Y, point2.Z),
+		navigationComponent->m_navigationPoints[2],
+		point2
+	);
+#pragma endregion
+
+	navigationComponent->ResetPath();
+
+#pragma region Test size of navigation path
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Testing that %s has a size of %d after path reset"), ARGUS_FUNCNAME, ARGUS_NAMEOF(navigationComponent->m_navigationPoints), 0),
+		navigationComponent->m_navigationPoints.size(),
+		0
+	);
+#pragma endregion
+
+#pragma region Test last point index of navigation component
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Testing that %s has a value of %d after path reset"), ARGUS_FUNCNAME, ARGUS_NAMEOF(navigationComponent->m_lastPointIndex), 0),
+		navigationComponent->m_lastPointIndex,
+		0
+	);
+#pragma endregion
+
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentNavigationComponentResetQueuedWaypointsTest, "Argus.ECS.Component.NavigationComponent.ResetQueuedWaypoints", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+bool ArgusComponentNavigationComponentResetQueuedWaypointsTest::RunTest(const FString& Parameters)
+{
+	const FVector	point0		= FVector(0.0f, 1.0f, 2.0f);
+	const FVector	point1		= FVector(1.0f, 2.0f, 3.0f);
+	const FVector	point2		= FVector(2.0f, 3.0f, 4.0f);
+	const int32		numPoints	= 3;
+
+	ArgusEntity::FlushAllEntities();
+
+	ArgusEntity entity = ArgusEntity::CreateEntity();
+	NavigationComponent* navigationComponent = entity.AddComponent<NavigationComponent>();
+
+	if (!navigationComponent)
+	{
+		return false;
+	}
+
+	navigationComponent->m_queuedWaypoints.push(point0);
+	navigationComponent->m_queuedWaypoints.push(point1);
+	navigationComponent->m_queuedWaypoints.push(point2);
+
+#pragma region Test size of queued waypoints
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Testing that %s has a size of %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(navigationComponent->m_queuedWaypoints), numPoints),
+		navigationComponent->m_queuedWaypoints.size(),
+		numPoints
+	);
+#pragma endregion
+
+#pragma region Test first element of queued waypoints
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Testing that the first queued waypoint is {%f, %f, %f}"), ARGUS_FUNCNAME, point0.X, point0.Y, point0.Z),
+		navigationComponent->m_queuedWaypoints.front(),
+		point0
+	);
+#pragma endregion
+
+#pragma region Test last element of queued waypoints
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Testing that the last queued waypoint is {%f, %f, %f}"), ARGUS_FUNCNAME, point2.X, point2.Y, point2.Z),
+		navigationComponent->m_queuedWaypoints.back(),
+		point2
+	);
+#pragma endregion
+
+	navigationComponent->ResetQueuedWaypoints();
+
+#pragma region Test size of queued waypoints
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Testing that %s has a size of %d after being reset"), ARGUS_FUNCNAME, ARGUS_NAMEOF(navigationComponent->m_queuedWaypoints), 0),
+		navigationComponent->m_queuedWaypoints.size(),
+		0
+	);
+#pragma endregion
+
+	return true;
+}
 #endif //WITH_AUTOMATION_TESTS
