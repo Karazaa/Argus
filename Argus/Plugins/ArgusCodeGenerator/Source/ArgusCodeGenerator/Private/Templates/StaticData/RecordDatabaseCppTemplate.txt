@@ -5,9 +5,9 @@ $$$$$
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
 
-const #####* #####Database::GetRecord(uint32 id) const
+const #####* #####Database::GetRecord(uint32 id)
 {
-	if (static_cast<uint32>(m_#####s.Num()) <= id)
+	if (static_cast<uint32>(m_#####sPersistent.Num()) <= id)
 	{
 		UE_LOG
 		(
@@ -27,13 +27,17 @@ const #####* #####Database::GetRecord(uint32 id) const
 		return nullptr;
 	}
 
-	#####* record = m_#####s[id].LoadSynchronous();
-	if (record)
+	if (!m_#####sPersistent[id])
 	{
-		record->m_id = id;
+		m_#####sPersistent[id] = m_#####s[id].LoadSynchronous();
 	}
 
-	return record;
+	if (m_#####sPersistent[id])
+	{
+		m_#####sPersistent[id]->m_id = id;
+	}
+
+	return m_#####sPersistent[id];
 }
 
 const uint32 #####Database::GetIdFromRecordSoftPtr(const TSoftObjectPtr<#####>& #####) const
@@ -47,4 +51,9 @@ const uint32 #####Database::GetIdFromRecordSoftPtr(const TSoftObjectPtr<#####>& 
 	}
 
 	return 0u;
+}
+
+void #####Database::ResizePersistentObjectPointerArray()
+{
+	m_#####sPersistent.SetNumZeroed(m_#####s.Num());
 }

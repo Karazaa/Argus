@@ -4,41 +4,51 @@
 #include "ArgusStaticDatabase.h"
 
 #pragma region UFactionRecord
-const UFactionRecord* UArgusStaticDatabase::GetUFactionRecord(uint32 id) const
+const UFactionRecord* UArgusStaticDatabase::GetUFactionRecord(uint32 id)
 {
-	const UFactionRecordDatabase* UFactionRecordDatabase = m_UFactionRecordDatabase.LoadSynchronous();
-	if (!UFactionRecordDatabase)
+	if (!m_UFactionRecordDatabasePersistent)
+	{
+		m_UFactionRecordDatabasePersistent = m_UFactionRecordDatabase.LoadSynchronous();
+		m_UFactionRecordDatabasePersistent->ResizePersistentObjectPointerArray();
+	}
+
+	if (!m_UFactionRecordDatabasePersistent)
 	{
 		UE_LOG
 		(
 			ArgusStaticDataLog, Error,
 			TEXT("[%s] Could not retrieve %s. %s might not be properly assigned."),
 			ARGUS_FUNCNAME,
-			ARGUS_NAMEOF(UFactionRecordDatabase),
+			ARGUS_NAMEOF(m_UFactionRecordDatabasePersistent),
 			ARGUS_NAMEOF(m_UFactionRecordDatabase)
 		);
 		return nullptr;
 	}
 
-	return UFactionRecordDatabase->GetRecord(id);
+	return m_UFactionRecordDatabasePersistent->GetRecord(id);
 }
 
-const uint32 UArgusStaticDatabase::GetIdFromRecordSoftPtr(const TSoftObjectPtr<UFactionRecord>& UFactionRecord) const
+const uint32 UArgusStaticDatabase::GetIdFromRecordSoftPtr(const TSoftObjectPtr<UFactionRecord>& UFactionRecord)
 {
-	const UFactionRecordDatabase* UFactionRecordDatabase = m_UFactionRecordDatabase.LoadSynchronous();
-	if (!UFactionRecordDatabase)
+	if (!m_UFactionRecordDatabasePersistent)
+	{
+		m_UFactionRecordDatabasePersistent = m_UFactionRecordDatabase.LoadSynchronous();
+		m_UFactionRecordDatabasePersistent->ResizePersistentObjectPointerArray();
+	}
+
+	if (!m_UFactionRecordDatabasePersistent)
 	{
 		UE_LOG
 		(
 			ArgusStaticDataLog, Error,
 			TEXT("[%s] Could not retrieve %s. %s might not be properly assigned."),
 			ARGUS_FUNCNAME,
-			ARGUS_NAMEOF(UFactionRecordDatabase),
+			ARGUS_NAMEOF(m_UFactionRecordDatabasePersistent),
 			ARGUS_NAMEOF(m_UFactionRecordDatabase)
 		);
 		return 0u;
 	}
 
-	return UFactionRecordDatabase->GetIdFromRecordSoftPtr(UFactionRecord);
+	return m_UFactionRecordDatabasePersistent->GetIdFromRecordSoftPtr(UFactionRecord);
 }
 #pragma endregion

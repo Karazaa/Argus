@@ -5,9 +5,9 @@
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
 
-const UFactionRecord* UFactionRecordDatabase::GetRecord(uint32 id) const
+const UFactionRecord* UFactionRecordDatabase::GetRecord(uint32 id)
 {
-	if (static_cast<uint32>(m_UFactionRecords.Num()) <= id)
+	if (static_cast<uint32>(m_UFactionRecordsPersistent.Num()) <= id)
 	{
 		UE_LOG
 		(
@@ -27,13 +27,17 @@ const UFactionRecord* UFactionRecordDatabase::GetRecord(uint32 id) const
 		return nullptr;
 	}
 
-	UFactionRecord* record = m_UFactionRecords[id].LoadSynchronous();
-	if (record)
+	if (!m_UFactionRecordsPersistent[id])
 	{
-		record->m_id = id;
+		m_UFactionRecordsPersistent[id] = m_UFactionRecords[id].LoadSynchronous();
 	}
 
-	return record;
+	if (m_UFactionRecordsPersistent[id])
+	{
+		m_UFactionRecordsPersistent[id]->m_id = id;
+	}
+
+	return m_UFactionRecordsPersistent[id];
 }
 
 const uint32 UFactionRecordDatabase::GetIdFromRecordSoftPtr(const TSoftObjectPtr<UFactionRecord>& UFactionRecord) const
@@ -47,4 +51,9 @@ const uint32 UFactionRecordDatabase::GetIdFromRecordSoftPtr(const TSoftObjectPtr
 	}
 
 	return 0u;
+}
+
+void UFactionRecordDatabase::ResizePersistentObjectPointerArray()
+{
+	m_UFactionRecordsPersistent.SetNumZeroed(m_UFactionRecords.Num());
 }

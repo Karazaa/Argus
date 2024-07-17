@@ -16,7 +16,7 @@ class ARGUS_API UArgusGameInstance : public UGameInstance
 	GENERATED_BODY()
 	
 public:
-	static const UArgusStaticDatabase* GetStaticDatabase();
+	static UArgusStaticDatabase* GetStaticDatabase();
 	
 	virtual void Init() override;
 	virtual void Shutdown() override;

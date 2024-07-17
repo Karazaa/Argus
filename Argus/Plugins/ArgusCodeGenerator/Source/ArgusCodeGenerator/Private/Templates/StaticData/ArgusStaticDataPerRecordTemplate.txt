@@ -2,7 +2,7 @@
 	template<>
 	inline const #####* GetRecord(uint32 id)
 	{
-		const UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
+		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
 
 		if (!staticDatabase)
 		{
@@ -14,7 +14,7 @@
 
 	static const uint32 GetIdFromRecordSoftPtr(const TSoftObjectPtr<#####>& #####)
 	{
-		const UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
+		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
 
 		if (!staticDatabase)
 		{

@@ -7,7 +7,7 @@
 
 UArgusStaticDatabase* UArgusGameInstance::s_staticDatabaseLoadedReference = nullptr;
 
-const UArgusStaticDatabase* UArgusGameInstance::GetStaticDatabase()
+UArgusStaticDatabase* UArgusGameInstance::GetStaticDatabase()
 {
 	if (!s_staticDatabaseLoadedReference)
 	{

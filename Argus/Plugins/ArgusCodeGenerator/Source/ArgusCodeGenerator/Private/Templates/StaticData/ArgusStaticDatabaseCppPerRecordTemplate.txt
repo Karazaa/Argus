@@ -1,39 +1,49 @@
 #pragma region #####
-const #####* UArgusStaticDatabase::Get#####(uint32 id) const
+const #####* UArgusStaticDatabase::Get#####(uint32 id)
 {
-	const #####Database* #####Database = m_#####Database.LoadSynchronous();
-	if (!#####Database)
+	if (!m_#####DatabasePersistent)
+	{
+		m_#####DatabasePersistent = m_#####Database.LoadSynchronous();
+		m_#####DatabasePersistent->ResizePersistentObjectPointerArray();
+	}
+
+	if (!m_#####DatabasePersistent)
 	{
 		UE_LOG
 		(
 			ArgusStaticDataLog, Error,
 			TEXT("[%s] Could not retrieve %s. %s might not be properly assigned."),
 			ARGUS_FUNCNAME,
-			ARGUS_NAMEOF(#####Database),
+			ARGUS_NAMEOF(m_#####DatabasePersistent),
 			ARGUS_NAMEOF(m_#####Database)
 		);
 		return nullptr;
 	}
 
-	return #####Database->GetRecord(id);
+	return m_#####DatabasePersistent->GetRecord(id);
 }
 
-const uint32 UArgusStaticDatabase::GetIdFromRecordSoftPtr(const TSoftObjectPtr<#####>& #####) const
+const uint32 UArgusStaticDatabase::GetIdFromRecordSoftPtr(const TSoftObjectPtr<#####>& #####)
 {
-	const #####Database* #####Database = m_#####Database.LoadSynchronous();
-	if (!#####Database)
+	if (!m_#####DatabasePersistent)
+	{
+		m_#####DatabasePersistent = m_#####Database.LoadSynchronous();
+		m_#####DatabasePersistent->ResizePersistentObjectPointerArray();
+	}
+
+	if (!m_#####DatabasePersistent)
 	{
 		UE_LOG
 		(
 			ArgusStaticDataLog, Error,
 			TEXT("[%s] Could not retrieve %s. %s might not be properly assigned."),
 			ARGUS_FUNCNAME,
-			ARGUS_NAMEOF(#####Database),
+			ARGUS_NAMEOF(m_#####DatabasePersistent),
 			ARGUS_NAMEOF(m_#####Database)
 		);
 		return 0u;
 	}
 
-	return #####Database->GetIdFromRecordSoftPtr(#####);
+	return m_#####DatabasePersistent->GetIdFromRecordSoftPtr(#####);
 }
 #pragma endregion

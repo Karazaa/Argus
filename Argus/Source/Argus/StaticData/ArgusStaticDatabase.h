@@ -15,11 +15,13 @@ class UArgusStaticDatabase : public UDataAsset
 
 #pragma region UFactionRecord
 public:
-	const UFactionRecord* GetUFactionRecord(uint32 id) const;
-	const uint32 GetIdFromRecordSoftPtr(const TSoftObjectPtr<UFactionRecord>& UFactionRecord) const;
+	const UFactionRecord* GetUFactionRecord(uint32 id);
+	const uint32 GetIdFromRecordSoftPtr(const TSoftObjectPtr<UFactionRecord>& UFactionRecord);
 
 protected:
 	UPROPERTY(EditAnywhere)
 	TSoftObjectPtr<UFactionRecordDatabase> m_UFactionRecordDatabase;
+	UPROPERTY(Transient)
+	TObjectPtr<UFactionRecordDatabase> m_UFactionRecordDatabasePersistent;
 #pragma endregion
 };

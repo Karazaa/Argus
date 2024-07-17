@@ -12,10 +12,14 @@ class #####Database : public UDataAsset
 	GENERATED_BODY()
 
 public:
-	const #####* GetRecord(uint32 id) const;
+	const #####* GetRecord(uint32 id);
 	const uint32 GetIdFromRecordSoftPtr(const TSoftObjectPtr<#####>& #####) const;
+	void ResizePersistentObjectPointerArray();
 
 protected:
 	UPROPERTY(EditAnywhere)
 	TArray<TSoftObjectPtr<#####>> m_#####s;
+
+	UPROPERTY(Transient)
+	TArray<TObjectPtr<#####>> m_#####sPersistent;
 };

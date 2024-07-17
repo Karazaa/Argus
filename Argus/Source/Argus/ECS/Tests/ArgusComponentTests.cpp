@@ -370,7 +370,7 @@ bool ArgusComponentNavigationComponentResetPathTest::RunTest(const FString& Para
 		return false;
 	}
 
-	navigationComponent->m_navigationPoints.reserve(numPoints);
+	navigationComponent->m_navigationPoints.resize(numPoints);
 	navigationComponent->m_navigationPoints[0] = point0;
 	navigationComponent->m_navigationPoints[1] = point1;
 	navigationComponent->m_navigationPoints[2] = point2;
