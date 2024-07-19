@@ -5,6 +5,7 @@
 #include "ArgusGameInstance.h"
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
+#include "Engine/World.h"
 
 ARetrieveArgusActorFromEntityFunctionalTest::ARetrieveArgusActorFromEntityFunctionalTest(const FObjectInitializer& ObjectInitializer)
 {
