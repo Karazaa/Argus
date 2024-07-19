@@ -29,10 +29,10 @@ protected:
 	virtual uint8   GetTotalNumTestSteps()			override { return k_totalNumSteps; }
 
 private:
-	bool DidRetrieveArgusActorFromEntityTestStepSucceed();
-	bool DidRemoveArgusActorFromEntityMapTestStepSucceed();
 	void StartRetrieveArgusActorFromEntityTestStep();
 	void StartRemoveArgusActorFromEntityMapTestStep();
+	bool DidRetrieveArgusActorFromEntityTestStepSucceed();
+	bool DidRemoveArgusActorFromEntityMapTestStepSucceed();
 
 	ArgusEntity m_cachedArgusEntity = ArgusEntity::s_emptyEntity;
 };

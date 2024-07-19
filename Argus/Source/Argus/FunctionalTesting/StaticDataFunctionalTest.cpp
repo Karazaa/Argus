@@ -50,6 +50,11 @@ bool AStaticDataFunctionalTest::DidCurrentTestStepSucceed()
 	return false;
 }
 
+void AStaticDataFunctionalTest::StartFactionTestStep()
+{
+	StartStep(TEXT("Test retrieve faction data."));
+}
+
 bool AStaticDataFunctionalTest::DidFactionTestStepSucceed()
 {
 	if (DidArgusFunctionalTestFail())
@@ -84,9 +89,4 @@ bool AStaticDataFunctionalTest::DidFactionTestStepSucceed()
 	{
 		return false;
 	}
-}
-
-void AStaticDataFunctionalTest::StartFactionTestStep()
-{
-	StartStep(TEXT("Test retrieve faction data."));
 }

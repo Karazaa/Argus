@@ -41,6 +41,17 @@ bool ARetrieveArgusActorFromEntityFunctionalTest::DidCurrentTestStepSucceed()
 	return false;
 }
 
+void ARetrieveArgusActorFromEntityFunctionalTest::StartRetrieveArgusActorFromEntityTestStep()
+{
+	StartStep(TEXT("Test retrieve ArgusActor from ArgusEntity."));
+}
+
+void ARetrieveArgusActorFromEntityFunctionalTest::StartRemoveArgusActorFromEntityMapTestStep()
+{
+	m_argusActorToFind->Destroy();
+	StartStep(TEXT("Test remove ArgusActor from ArgusEntity map."));
+}
+
 bool ARetrieveArgusActorFromEntityFunctionalTest::DidRetrieveArgusActorFromEntityTestStepSucceed()
 {
 	if (!m_argusActorToFind.IsValid())
@@ -148,15 +159,4 @@ bool ARetrieveArgusActorFromEntityFunctionalTest::DidRemoveArgusActorFromEntityM
 	}
 
 	return false;
-}
-
-void ARetrieveArgusActorFromEntityFunctionalTest::StartRetrieveArgusActorFromEntityTestStep()
-{
-	StartStep(TEXT("Test retrieve ArgusActor from ArgusEntity."));
-}
-
-void ARetrieveArgusActorFromEntityFunctionalTest::StartRemoveArgusActorFromEntityMapTestStep()
-{
-	m_argusActorToFind->Destroy();
-	StartStep(TEXT("Test remove ArgusActor from ArgusEntity map."));
 }

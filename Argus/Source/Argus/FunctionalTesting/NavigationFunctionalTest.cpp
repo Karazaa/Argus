@@ -91,9 +91,11 @@ bool ANavigationFunctionalTest::DidCurrentTestStepSucceed()
 	switch (m_testStepIndex)
 	{
 		case 0:
-			return DidNavigationToLocationStepSucceed();
+			return DidNavigationToLocationTestStepSucceed();
 		case 1:
-			return DidNavigationToEntityStepSucceed();
+			return DidNavigationToEntityTestStepSucceed();
+		case 2:
+			return DidNavigationThroughWaypointsTestStepSucceed();
 		default:
 			break;
 	}
@@ -105,17 +107,20 @@ void ANavigationFunctionalTest::StartNextTestStep()
 	switch (m_testStepIndex)
 	{
 		case 0:
-			StartNavigationToLocationStep();
+			StartNavigationToLocationTestStep();
 			break;
 		case 1:
-			StartNavigationToEntityStep();
+			StartNavigationToEntityTestStep();
+			break;
+		case 2:
+			StartNavigationThroughWaypointsTestStep();
 			break;
 		default:
 			break;
 	}
 }
 
-void ANavigationFunctionalTest::StartNavigationToLocationStep()
+void ANavigationFunctionalTest::StartNavigationToLocationTestStep()
 {
 	StartStep(TEXT("Navigate to Location"));
 
@@ -146,9 +151,8 @@ void ANavigationFunctionalTest::StartNavigationToLocationStep()
 	}
 }
 
-void ANavigationFunctionalTest::StartNavigationToEntityStep()
+void ANavigationFunctionalTest::StartNavigationToEntityTestStep()
 {
-	FinishStep();
 	StartStep(TEXT("Navigate to Entity"));
 
 	if (DidArgusFunctionalTestFail())
@@ -183,7 +187,12 @@ void ANavigationFunctionalTest::StartNavigationToEntityStep()
 	}
 }
 
-bool ANavigationFunctionalTest::DidNavigationToLocationStepSucceed()
+void ANavigationFunctionalTest::StartNavigationThroughWaypointsTestStep()
+{
+	StartStep(TEXT("Navigate through waypoints."));
+}
+
+bool ANavigationFunctionalTest::DidNavigationToLocationTestStepSucceed()
 {
 	if (FVector::DistSquared(m_argusActor->GetActorLocation(), m_goalLocationActor->GetActorLocation()) < FMath::Square(m_successDistance))
 	{
@@ -193,7 +202,7 @@ bool ANavigationFunctionalTest::DidNavigationToLocationStepSucceed()
 	return false;
 }
 
-bool ANavigationFunctionalTest::DidNavigationToEntityStepSucceed()
+bool ANavigationFunctionalTest::DidNavigationToEntityTestStepSucceed()
 {
 	if (FVector::DistSquared(m_argusActor->GetActorLocation(), m_goalEntityActor->GetActorLocation()) < FMath::Square(m_successDistance))
 	{
@@ -207,4 +216,9 @@ bool ANavigationFunctionalTest::DidNavigationToEntityStepSucceed()
 	}
 
 	return false;
+}
+
+bool ANavigationFunctionalTest::DidNavigationThroughWaypointsTestStepSucceed()
+{
+	return true;
 }

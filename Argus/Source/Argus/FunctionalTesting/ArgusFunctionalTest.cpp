@@ -53,6 +53,7 @@ bool AArgusFunctionalTest::DidArgusFunctionalTestSucceed()
 		}
 
 		m_testStepIndex++;
+		FinishStep();
 		StartNextTestStep();
 	}
 
