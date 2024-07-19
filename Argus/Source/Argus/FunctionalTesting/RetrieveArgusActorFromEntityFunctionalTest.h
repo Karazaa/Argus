@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "ArgusEntity.h"
 #include "ArgusFunctionalTest.h"
 #include "RetrieveArgusActorFromEntityFunctionalTest.generated.h"
 
@@ -14,7 +15,7 @@ class ARGUS_API ARetrieveArgusActorFromEntityFunctionalTest : public AArgusFunct
 
 private:
 	static constexpr const char* k_testName = "Argus.FunctionalTest.RetrieveArgusActorFromEntity";
-	static constexpr uint8       k_totalNumSteps = 1;
+	static constexpr uint8       k_totalNumSteps = 2;
 
 public:
 	ARetrieveArgusActorFromEntityFunctionalTest(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
@@ -23,12 +24,15 @@ public:
 	TWeakObjectPtr<AArgusActor> m_argusActorToFind = nullptr;
 
 protected:
-	virtual bool    DidArgusFunctionalTestFail()	override;
 	virtual bool    DidCurrentTestStepSucceed()		override;
 	virtual void    StartNextTestStep()				override;
 	virtual uint8   GetTotalNumTestSteps()			override { return k_totalNumSteps; }
 
 private:
 	bool DidRetrieveArgusActorFromEntityTestStepSucceed();
+	bool DidRemoveArgusActorFromEntityMapTestStepSucceed();
 	void StartRetrieveArgusActorFromEntityTestStep();
+	void StartRemoveArgusActorFromEntityMapTestStep();
+
+	ArgusEntity m_cachedArgusEntity = ArgusEntity::s_emptyEntity;
 };

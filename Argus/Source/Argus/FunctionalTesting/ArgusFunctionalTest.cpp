@@ -73,7 +73,7 @@ void AArgusFunctionalTest::ConcludeSuccessfulArgusFunctionalTest()
 
 void AArgusFunctionalTest::ConcludeFailedArgusFunctionalTest()
 {
-	FinishTest(EFunctionalTestResult::Succeeded, *m_testFailedMessage);
+	FinishTest(EFunctionalTestResult::Failed, *m_testFailedMessage);
 	ExitArgusFunctionalTest();
 }
 
