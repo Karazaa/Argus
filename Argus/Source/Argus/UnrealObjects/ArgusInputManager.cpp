@@ -2,6 +2,7 @@
 
 #include "ArgusInputManager.h"
 #include "ArgusActor.h"
+#include "ArgusInputActionSet.h"
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
 #include "ArgusPlayerController.h"
