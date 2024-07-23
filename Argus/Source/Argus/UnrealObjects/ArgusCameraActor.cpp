@@ -8,3 +8,8 @@ AArgusCameraActor::AArgusCameraActor()
 	PrimaryActorTick.bCanEverTick = true;
 	SetRootComponent(CreateDefaultSubobject<UCameraComponent>(FName("CameraComponent")));
 }
+
+void AArgusCameraActor::UpdateCamera()
+{
+
+}

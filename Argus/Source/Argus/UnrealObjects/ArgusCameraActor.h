@@ -13,5 +13,6 @@ class AArgusCameraActor : public AActor
 	
 public:	
 	AArgusCameraActor();
+	void UpdateCamera();
 
 };

@@ -14,12 +14,24 @@
 
 const float AArgusPlayerController::k_cameraTraceLength = 5000.0f;
 
+void AArgusPlayerController::UpdateCamera()
+{
+	if (!m_argusCameraActor)
+	{
+		return;
+	}
+
+	m_argusCameraActor->UpdateCamera();
+}
+
 void AArgusPlayerController::ProcessArgusPlayerInput()
 {
-	if (m_argusInputManager)
+	if (!m_argusInputManager)
 	{
-		m_argusInputManager->ProcessPlayerInput();
+		return;
 	}
+
+	m_argusInputManager->ProcessPlayerInput();
 }
 
 bool AArgusPlayerController::GetMouseProjectionLocation(FHitResult& outHitResult) const

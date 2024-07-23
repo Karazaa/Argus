@@ -30,11 +30,12 @@ void AArgusGameModeBase::Tick(float deltaTime)
 
 	UWorld* worldPointer = GetWorld();
 
-	// Process player input
+	// Update camera and process player input
 	for (AArgusPlayerController* argusPlayerController : TActorRange<AArgusPlayerController>(worldPointer))
 	{
 		if (argusPlayerController)
 		{
+			argusPlayerController->UpdateCamera();
 			argusPlayerController->ProcessArgusPlayerInput();
 		}
 	}
