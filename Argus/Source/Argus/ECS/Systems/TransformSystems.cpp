@@ -100,7 +100,7 @@ void TransformSystems::MoveAlongNavigationPath(float deltaTime, const TransformS
 
 void TransformSystems::FaceTowardsLocationXY(TransformComponent* transformComponent, FVector vectorFromTransformToTarget)
 {
-	if (FMath::IsNearlyZero(vectorFromTransformToTarget.X + vectorFromTransformToTarget.Y))
+	if (vectorFromTransformToTarget.Equals(FVector::ZeroVector))
 	{
 		return;
 	}
