@@ -2,8 +2,6 @@
 
 #pragma once
 
-#include "ArgusInputActionSet.h"
-#include "ArgusInputManager.h"
 #include "CoreMinimal.h"
 #include "Engine/HitResult.h"
 #include "GameFramework/PlayerController.h"
@@ -11,7 +9,10 @@
 #include "ArgusPlayerController.generated.h"
 
 class AArgusActor;
+class AArgusCameraActor;
 class ArgusEntity;
+class UArgusInputActionSet;
+class UArgusInputManager;
 
 UCLASS()
 class AArgusPlayerController : public APlayerController
@@ -32,6 +33,7 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TSoftObjectPtr<UArgusInputActionSet> m_argusInputActionSet = nullptr;
 
+	TObjectPtr<AArgusCameraActor> m_argusCameraActor = nullptr;
 	TObjectPtr<UArgusInputManager> m_argusInputManager = nullptr;
 
 	virtual void BeginPlay() override;

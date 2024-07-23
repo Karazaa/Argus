@@ -3,6 +3,7 @@
 #include "ArgusPlayerController.h"
 #include "ArgusCameraActor.h"
 #include "ArgusGameInstance.h"
+#include "ArgusInputActionSet.h"
 #include "ArgusInputManager.h"
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
@@ -66,8 +67,14 @@ bool AArgusPlayerController::GetArgusActorsFromArgusEntities(const TArray<ArgusE
 
 void AArgusPlayerController::BeginPlay()
 {
-	AActor* argusCameraActor = UGameplayStatics::GetActorOfClass(GetWorld(), AArgusCameraActor::StaticClass());
-	SetViewTarget(argusCameraActor);
+	m_argusCameraActor = Cast<AArgusCameraActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AArgusCameraActor::StaticClass()));
+	if (!m_argusCameraActor)
+	{
+		UE_LOG(ArgusUnrealObjectsLog, Error, TEXT("[%s] Failed to get %s reference."), ARGUS_FUNCNAME, ARGUS_NAMEOF(AArgusCameraActor));
+		return;
+	}
+
+	SetViewTarget(m_argusCameraActor);
 }
 
 void AArgusPlayerController::SetupInputComponent()
