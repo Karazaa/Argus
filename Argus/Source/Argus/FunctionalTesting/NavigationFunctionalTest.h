@@ -43,4 +43,8 @@ private:
 	bool DidNavigationToLocationTestStepSucceed();
 	bool DidNavigationToEntityTestStepSucceed();
 	bool DidNavigationThroughWaypointsTestStepSucceed();
+
+	FVector m_waypoint0 = FVector::ZeroVector;
+	FVector m_waypoint1 = FVector::ZeroVector;
+	FVector m_waypoint2 = FVector::ZeroVector;
 };

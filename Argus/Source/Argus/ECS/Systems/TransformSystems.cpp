@@ -112,7 +112,7 @@ void TransformSystems::FaceTowardsLocationXY(TransformComponent* transformCompon
 	}
 
 	vectorFromTransformToTarget.Z = 0;
-	if (FVector::Coincident(vectorFromTransformToTarget.GetSafeNormal(), transformComponent->m_transform.GetRotation().GetForwardVector()))
+	if (vectorFromTransformToTarget.GetSafeNormal().Equals(transformComponent->m_transform.GetRotation().GetForwardVector()))
 	{
 		return;
 	}

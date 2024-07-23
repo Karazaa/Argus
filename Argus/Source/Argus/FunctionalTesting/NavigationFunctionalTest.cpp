@@ -83,6 +83,19 @@ bool ANavigationFunctionalTest::DidArgusFunctionalTestFail()
 		return true;
 	}
 
+	NavigationComponent* navigationComponent = argusEntity.GetComponent<NavigationComponent>();
+	if (!navigationComponent)
+	{
+		m_testFailedMessage = FString::Printf
+		(
+			TEXT("[%s] Failed test due to %s not having a valid backing %s."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(argusEntity),
+			ARGUS_NAMEOF(navigationComponent)
+		);
+		return true;
+	}
+
 	return false;
 }
 
@@ -189,7 +202,47 @@ void ANavigationFunctionalTest::StartNavigationToEntityTestStep()
 
 void ANavigationFunctionalTest::StartNavigationThroughWaypointsTestStep()
 {
+	const float waypointDistanceOffset = 300.0f;
+
 	StartStep(TEXT("Navigate through waypoints."));
+
+	if (DidArgusFunctionalTestFail())
+	{
+		ConcludeFailedArgusFunctionalTest();
+		return;
+	}
+
+	FVector location = m_goalLocationActor->GetActorLocation();
+	m_waypoint0 = location;
+	m_waypoint1 = location;
+	m_waypoint2 = location;
+
+	m_waypoint0.X += waypointDistanceOffset;
+	m_waypoint1.Y += waypointDistanceOffset;
+	m_waypoint2.X -= waypointDistanceOffset;
+
+	ArgusEntity argusEntity = m_argusActor->GetEntity();
+	TaskComponent* taskComponent = argusEntity.GetComponent<TaskComponent>();
+	TargetingComponent* targetingComponent = argusEntity.GetComponent<TargetingComponent>();
+	NavigationComponent* navigationComponent = argusEntity.GetComponent<NavigationComponent>();
+
+	if (taskComponent && targetingComponent && navigationComponent)
+	{
+		targetingComponent->m_targetLocation = m_waypoint0;
+		navigationComponent->m_queuedWaypoints.push(m_waypoint1);
+		navigationComponent->m_queuedWaypoints.push(m_waypoint2);
+		taskComponent->m_currentTask = ETask::ProcessMoveToLocationCommand;
+	}
+	else
+	{
+		m_testFailedMessage = FString::Printf
+		(
+			TEXT("[%s] Failed test due to invalid setup. Missing %s Components."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(ArgusEntity)
+		);
+		ConcludeFailedArgusFunctionalTest();
+	}
 }
 
 bool ANavigationFunctionalTest::DidNavigationToLocationTestStepSucceed()
@@ -206,6 +259,16 @@ bool ANavigationFunctionalTest::DidNavigationToEntityTestStepSucceed()
 {
 	if (FVector::DistSquared(m_argusActor->GetActorLocation(), m_goalEntityActor->GetActorLocation()) < FMath::Square(m_successDistance))
 	{
+		return true;
+	}
+
+	return false;
+}
+
+bool ANavigationFunctionalTest::DidNavigationThroughWaypointsTestStepSucceed()
+{
+	if (FVector::DistSquared(m_argusActor->GetActorLocation(), m_waypoint2) < FMath::Square(m_successDistance))
+	{
 		m_testSucceededMessage = FString::Printf
 		(
 			TEXT("[%s] %s successfully reached goal targets!"),
@@ -216,9 +279,4 @@ bool ANavigationFunctionalTest::DidNavigationToEntityTestStepSucceed()
 	}
 
 	return false;
-}
-
-bool ANavigationFunctionalTest::DidNavigationThroughWaypointsTestStepSucceed()
-{
-	return true;
 }

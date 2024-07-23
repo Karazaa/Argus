@@ -11,7 +11,9 @@ bool TransformSystemsFaceTowardsLocationXYTest::RunTest(const FString& Parameter
 {
 	const FVector expectedFirstTargetLocation = FVector(-1.0f, 0.0f, 10.0f);
 	const FVector expectedSecondTargetLocation = FVector(-0.5f, 0.0f, 100.0f);
+	const FVector expectedThirdTargetLocation = FVector(0.5f, 0.0f, 100.0f);
 	const FVector expectedForward = FVector(-1.0f, 0.0f, 0.0f);
+	const FVector secondExpectedForward = FVector(1.0f, 0.0f, 0.0f);
 
 	ArgusEntity::FlushAllEntities();
 
@@ -62,6 +64,17 @@ bool TransformSystemsFaceTowardsLocationXYTest::RunTest(const FString& Parameter
 		FString::Printf(TEXT("[%s] Test facing %s towards %s and confirming it does not change facing."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(FVector::ZeroVector)),
 		transformComponent->m_transform.GetRotation().GetForwardVector(), 
 		expectedForward
+	);
+#pragma endregion
+
+	TransformSystems::FaceTowardsLocationXY(transformComponent, expectedThirdTargetLocation);
+
+#pragma region Test facing an entity towards a direction and confirming it has the proper forward vector
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Test facing %s towards target and confirming it has the proper forward vector, {%f, %f, %f}."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), secondExpectedForward.X, secondExpectedForward.Y, secondExpectedForward.Z),
+		transformComponent->m_transform.GetRotation().GetForwardVector(),
+		secondExpectedForward
 	);
 #pragma endregion
 
