@@ -9,31 +9,32 @@ AArgusCameraActor::AArgusCameraActor()
 	SetRootComponent(CreateDefaultSubobject<UCameraComponent>(FName("CameraComponent")));
 }
 
-void AArgusCameraActor::UpdateCamera(FVector2D screenSpaceMousePosition, FVector2D screenSpaceXYBounds)
+void AArgusCameraActor::UpdateCamera(FVector2D screenSpaceMousePosition, FVector2D screenSpaceXYBounds, float deltaTime)
 {
-	const float paddingAmountX = screenSpaceXYBounds.X * 0.2f;
-	const float paddingAmountY = screenSpaceXYBounds.Y * 0.2f;
+	const float paddingAmountX = screenSpaceXYBounds.X * m_screenMovePaddingProportion;
+	const float scaledVelocity = m_cameraMoveVelocity * deltaTime;
+	const float paddingAmountY = screenSpaceXYBounds.Y * m_screenMovePaddingProportion;
 
-	bool moveLeft = false;
-	bool moveRight = false;
-	bool moveUp = false;
-	bool moveDown = false;
-
+	const FVector currentLocation = GetActorLocation();
+	FVector translation = FVector::ZeroVector;
+	
 	if (screenSpaceMousePosition.X < paddingAmountX)
 	{
-		moveLeft = true;
+		translation += m_moveRightDir * (-1.0f * scaledVelocity);
 	}
 	else if (screenSpaceMousePosition.X > screenSpaceXYBounds.X - paddingAmountX)
 	{
-		moveRight = true;
+		translation += m_moveRightDir * scaledVelocity;
 	}
 
 	if (screenSpaceMousePosition.Y < paddingAmountY)
 	{
-		moveUp = true;
+		translation += m_moveUpDir * scaledVelocity;
 	}
 	else if (screenSpaceMousePosition.Y > screenSpaceXYBounds.Y - paddingAmountY)
 	{
-		moveDown = true;
+		translation += m_moveUpDir * (-1.0f * scaledVelocity);
 	}
+
+	SetActorLocation(currentLocation + translation);
 }

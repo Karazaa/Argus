@@ -22,7 +22,7 @@ class AArgusPlayerController : public APlayerController
 public:
 	static const float k_cameraTraceLength;
 
-	void UpdateCamera();
+	void UpdateCamera(float deltaTime);
 	void ProcessArgusPlayerInput();
 	bool GetMouseProjectionLocation(FHitResult& outHitResult) const;
 	bool GetArgusActorsFromArgusEntities(const TArray<ArgusEntity>& inArgusEntities, TArray<AArgusActor*>& outArgusActors) const;

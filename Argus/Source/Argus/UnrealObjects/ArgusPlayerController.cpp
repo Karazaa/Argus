@@ -15,7 +15,7 @@
 
 const float AArgusPlayerController::k_cameraTraceLength = 5000.0f;
 
-void AArgusPlayerController::UpdateCamera()
+void AArgusPlayerController::UpdateCamera(float deltaTime)
 {
 	if (!m_argusCameraActor)
 	{
@@ -38,7 +38,7 @@ void AArgusPlayerController::UpdateCamera()
 	{
 		if (const FSceneViewport* const gameViewport = localPlayer->ViewportClient->GetGameViewport())
 		{
-			m_argusCameraActor->UpdateCamera(ScreenPosition, FVector2D(gameViewport->GetSizeXY()));
+			m_argusCameraActor->UpdateCamera(ScreenPosition, FVector2D(gameViewport->GetSizeXY()), deltaTime);
 		}
 	}
 }
