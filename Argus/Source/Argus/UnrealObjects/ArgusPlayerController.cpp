@@ -11,6 +11,7 @@
 #include "Engine/World.h"
 #include "EnhancedInputSubsystems.h"
 #include "Kismet/GameplayStatics.h"
+#include "Slate/SceneViewport.h"
 
 const float AArgusPlayerController::k_cameraTraceLength = 5000.0f;
 
@@ -21,7 +22,25 @@ void AArgusPlayerController::UpdateCamera()
 		return;
 	}
 
-	m_argusCameraActor->UpdateCamera();
+	ULocalPlayer* const localPlayer = GetLocalPlayer();
+	if (!localPlayer)
+	{
+		return;
+	}
+
+	if (!localPlayer->ViewportClient)
+	{
+		return;
+	}
+
+	FVector2D ScreenPosition;
+	if (localPlayer->ViewportClient->GetMousePosition(ScreenPosition))
+	{
+		if (const FSceneViewport* const gameViewport = localPlayer->ViewportClient->GetGameViewport())
+		{
+			m_argusCameraActor->UpdateCamera(ScreenPosition, FVector2D(gameViewport->GetSizeXY()));
+		}
+	}
 }
 
 void AArgusPlayerController::ProcessArgusPlayerInput()

@@ -13,6 +13,6 @@ class AArgusCameraActor : public AActor
 	
 public:	
 	AArgusCameraActor();
-	void UpdateCamera();
+	void UpdateCamera(FVector2D screenSpaceMousePosition, FVector2D screenSpaceXYBounds);
 
 };
