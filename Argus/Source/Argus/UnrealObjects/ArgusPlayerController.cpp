@@ -22,7 +22,7 @@ void AArgusPlayerController::UpdateCamera(float deltaTime)
 		return;
 	}
 
-	ULocalPlayer* const localPlayer = GetLocalPlayer();
+	const ULocalPlayer* const localPlayer = GetLocalPlayer();
 	if (!localPlayer)
 	{
 		return;
