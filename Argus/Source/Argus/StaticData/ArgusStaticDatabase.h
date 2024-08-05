@@ -6,6 +6,7 @@
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
 #include "RecordDatabases/FactionRecordDatabase.h"
+#include "RecordDatabases/TeamColorRecordDatabase.h"
 #include "ArgusStaticDatabase.generated.h"
 
 UCLASS()
@@ -23,5 +24,16 @@ protected:
 	TSoftObjectPtr<UFactionRecordDatabase> m_UFactionRecordDatabase;
 	UPROPERTY(Transient)
 	TObjectPtr<UFactionRecordDatabase> m_UFactionRecordDatabasePersistent;
+#pragma endregion
+#pragma region UTeamColorRecord
+public:
+	const UTeamColorRecord* GetUTeamColorRecord(uint32 id);
+	const uint32 GetIdFromRecordSoftPtr(const TSoftObjectPtr<UTeamColorRecord>& UTeamColorRecord);
+
+protected:
+	UPROPERTY(EditAnywhere)
+	TSoftObjectPtr<UTeamColorRecordDatabase> m_UTeamColorRecordDatabase;
+	UPROPERTY(Transient)
+	TObjectPtr<UTeamColorRecordDatabase> m_UTeamColorRecordDatabasePersistent;
 #pragma endregion
 };

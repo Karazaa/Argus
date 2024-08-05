@@ -52,3 +52,52 @@ const uint32 UArgusStaticDatabase::GetIdFromRecordSoftPtr(const TSoftObjectPtr<U
 	return m_UFactionRecordDatabasePersistent->GetIdFromRecordSoftPtr(UFactionRecord);
 }
 #pragma endregion
+#pragma region UTeamColorRecord
+const UTeamColorRecord* UArgusStaticDatabase::GetUTeamColorRecord(uint32 id)
+{
+	if (!m_UTeamColorRecordDatabasePersistent)
+	{
+		m_UTeamColorRecordDatabasePersistent = m_UTeamColorRecordDatabase.LoadSynchronous();
+		m_UTeamColorRecordDatabasePersistent->ResizePersistentObjectPointerArray();
+	}
+
+	if (!m_UTeamColorRecordDatabasePersistent)
+	{
+		UE_LOG
+		(
+			ArgusStaticDataLog, Error,
+			TEXT("[%s] Could not retrieve %s. %s might not be properly assigned."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(m_UTeamColorRecordDatabasePersistent),
+			ARGUS_NAMEOF(m_UTeamColorRecordDatabase)
+		);
+		return nullptr;
+	}
+
+	return m_UTeamColorRecordDatabasePersistent->GetRecord(id);
+}
+
+const uint32 UArgusStaticDatabase::GetIdFromRecordSoftPtr(const TSoftObjectPtr<UTeamColorRecord>& UTeamColorRecord)
+{
+	if (!m_UTeamColorRecordDatabasePersistent)
+	{
+		m_UTeamColorRecordDatabasePersistent = m_UTeamColorRecordDatabase.LoadSynchronous();
+		m_UTeamColorRecordDatabasePersistent->ResizePersistentObjectPointerArray();
+	}
+
+	if (!m_UTeamColorRecordDatabasePersistent)
+	{
+		UE_LOG
+		(
+			ArgusStaticDataLog, Error,
+			TEXT("[%s] Could not retrieve %s. %s might not be properly assigned."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(m_UTeamColorRecordDatabasePersistent),
+			ARGUS_NAMEOF(m_UTeamColorRecordDatabase)
+		);
+		return 0u;
+	}
+
+	return m_UTeamColorRecordDatabasePersistent->GetIdFromRecordSoftPtr(UTeamColorRecord);
+}
+#pragma endregion

@@ -40,4 +40,30 @@ public:
 		return staticDatabase->GetIdFromRecordSoftPtr(UFactionRecord);
 	}
 #pragma endregion
+#pragma region UTeamColorRecord
+	template<>
+	inline const UTeamColorRecord* GetRecord(uint32 id)
+	{
+		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
+
+		if (!staticDatabase)
+		{
+			return nullptr;
+		}
+
+		return staticDatabase->GetUTeamColorRecord(id);
+	}
+
+	static const uint32 GetIdFromRecordSoftPtr(const TSoftObjectPtr<UTeamColorRecord>& UTeamColorRecord)
+	{
+		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
+
+		if (!staticDatabase)
+		{
+			return 0u;
+		}
+
+		return staticDatabase->GetIdFromRecordSoftPtr(UTeamColorRecord);
+	}
+#pragma endregion
 };
