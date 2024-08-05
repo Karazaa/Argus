@@ -27,6 +27,8 @@ protected:
 	void OnDeselected();
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnPopulateFaction(const UFactionRecord* factionRecord);
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnPopulateTeam(FColor teamColor);
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	TObjectPtr<UArgusEntityTemplate> m_entityTemplate = nullptr;

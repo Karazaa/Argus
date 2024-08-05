@@ -2,6 +2,7 @@
 
 #include "ArgusActor.h"
 #include "ArgusGameInstance.h"
+#include "ArgusGameModeBase.h"
 #include "ArgusStaticData.h"
 #include "Engine/World.h"
 
@@ -46,9 +47,26 @@ void AArgusActor::BeginPlay()
 	}
 
 	m_entity = m_entityTemplate->MakeEntity();
+	if (!m_entity)
+	{
+		return;
+	}
+
 	if (TransformComponent* transformComponent = m_entity.GetComponent<TransformComponent>())
 	{
 		transformComponent->m_transform = GetActorTransform();
+	}
+
+	const UWorld* world = GetWorld();
+	if (!world)
+	{
+		return;
+	}
+
+	AArgusGameModeBase* gameMode = Cast<AArgusGameModeBase>(world->GetAuthGameMode());
+	if (!gameMode)
+	{
+		return;
 	}
 
 	if (const IdentityComponent* identityComponent = m_entity.GetComponent<IdentityComponent>())
@@ -57,12 +75,8 @@ void AArgusActor::BeginPlay()
 		{
 			OnPopulateFaction(factionRecord);
 		}
-	}
 
-	const UWorld* world = GetWorld();
-	if (!world)
-	{
-		return;
+		OnPopulateTeam(gameMode->GetTeamColor(identityComponent->m_team));
 	}
 
 	UArgusGameInstance* gameInstance = world->GetGameInstance<UArgusGameInstance>();
@@ -78,7 +92,7 @@ void AArgusActor::EndPlay(const EEndPlayReason::Type endPlayReason)
 {
 	Super::EndPlay(endPlayReason);
 
-	if (m_entity)
+	if (!m_entity)
 	{
 		return;
 	}
@@ -102,7 +116,12 @@ void AArgusActor::Tick(float deltaTime)
 {
 	Super::Tick(deltaTime);
 
-	if (TransformComponent* transformComponent = m_entity.GetComponent<TransformComponent>())
+	if (!m_entity)
+	{
+		return;
+	}
+
+	if (const TransformComponent* transformComponent = m_entity.GetComponent<TransformComponent>())
 	{
 		SetActorTransform(transformComponent->m_transform);
 	}
