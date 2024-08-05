@@ -30,7 +30,7 @@ void ArgusStaticDataCodeGenerator::GenerateStaticDataCode(const ArgusCodeGenerat
 	bool didSucceed = true;
 
 	// Construct a directory path to static data templates
-	const char* cStrTemplateDirectory = TCHAR_TO_UTF8(*ArgusCodeGeneratorUtil::GetTemplateDirectory(s_staticDataTemplateDirectorySuffix));
+	const char* cStrTemplateDirectory = ARGUS_FSTRING_TO_CHAR(ArgusCodeGeneratorUtil::GetTemplateDirectory(s_staticDataTemplateDirectorySuffix));
 
 	ParseTemplateParams parseArgusStaticDataTemplateParams;
 	parseArgusStaticDataTemplateParams.templateFilePath = std::string(cStrTemplateDirectory).append(s_argusStaticDataTemplateFileName);
@@ -63,7 +63,7 @@ void ArgusStaticDataCodeGenerator::GenerateStaticDataCode(const ArgusCodeGenerat
 	FString staticDataDirectory = ArgusCodeGeneratorUtil::GetProjectDirectory();
 	staticDataDirectory.Append(s_staticDataDirectorySuffix);
 	FPaths::MakeStandardFilename(staticDataDirectory);
-	const char* cStrStaticDataDirectory = TCHAR_TO_UTF8(*staticDataDirectory);
+	const char* cStrStaticDataDirectory = ARGUS_FSTRING_TO_CHAR(staticDataDirectory);
 
 	// Write out header and cpp files.
 	for (int i = 0; i < outParsedArgusStaticDataContents.size(); ++i)

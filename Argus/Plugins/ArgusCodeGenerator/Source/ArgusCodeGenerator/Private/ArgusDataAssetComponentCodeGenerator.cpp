@@ -21,7 +21,7 @@ void ArgusDataAssetComponentCodeGenerator::GenerateDataAssetComponentsCode(const
 	bool didSucceed = true;
 
 	// Construct a directory path to data asset component templates
-	const char* cStrTemplateDirectory = TCHAR_TO_UTF8(*ArgusCodeGeneratorUtil::GetTemplateDirectory(s_dataAssetComponentTemplateDirectorySuffix));
+	const char* cStrTemplateDirectory = ARGUS_FSTRING_TO_CHAR(ArgusCodeGeneratorUtil::GetTemplateDirectory(s_dataAssetComponentTemplateDirectorySuffix));
 
 	std::string componentDataHeaderTemplateFilePath = std::string(cStrTemplateDirectory).append(s_componentDataHeaderTemplateFilename);
 	std::string componentDataCppTemplateFilePath = std::string(cStrTemplateDirectory).append(s_componentDataCppTemplateFilename);
@@ -40,7 +40,7 @@ void ArgusDataAssetComponentCodeGenerator::GenerateDataAssetComponentsCode(const
 	FString componentDataDirectory = ArgusCodeGeneratorUtil::GetProjectDirectory();
 	componentDataDirectory.Append(s_componentDataDirectorySuffix);
 	FPaths::MakeStandardFilename(componentDataDirectory);
-	const char* cStrComponentDataDirectory = TCHAR_TO_UTF8(*componentDataDirectory);
+	const char* cStrComponentDataDirectory = ARGUS_FSTRING_TO_CHAR(componentDataDirectory);
 
 	// Write out header and cpp files.
 	for (int i = 0; i < outParsedHeaderFileContents.size(); ++i)

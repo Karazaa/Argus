@@ -8,6 +8,7 @@
 
 #define ARGUS_NAMEOF(x) TEXT(#x)
 #define ARGUS_FUNCNAME TEXT(__FUNCTION__)
+#define ARGUS_FSTRING_TO_CHAR(fstring) (ANSICHAR*)StringCast<ANSICHAR, 256>(static_cast<const TCHAR*>(*fstring)).Get();
 
 DECLARE_LOG_CATEGORY_EXTERN(ArgusCodeGeneratorLog, Display, All);
 

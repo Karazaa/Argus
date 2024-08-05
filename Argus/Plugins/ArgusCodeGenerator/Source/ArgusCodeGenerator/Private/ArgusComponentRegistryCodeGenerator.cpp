@@ -33,7 +33,7 @@ void ArgusComponentRegistryCodeGenerator::GenerateComponentRegistryCode(const Ar
 	params.inIncludeStatements = parsedComponentData.m_componentRegistryIncludeStatements;
 
 	// Construct a directory path to component registry templates
-	const char* cStrTemplateDirectory = TCHAR_TO_UTF8(*ArgusCodeGeneratorUtil::GetTemplateDirectory(s_componentRegistryTemplateDirectorySuffix));
+	const char* cStrTemplateDirectory = ARGUS_FSTRING_TO_CHAR(ArgusCodeGeneratorUtil::GetTemplateDirectory(s_componentRegistryTemplateDirectorySuffix));
 
 	params.argusComponentRegistryHeaderTemplateFilePath = std::string(cStrTemplateDirectory).append(s_argusComponentRegistryHeaderTemplateFilename);
 	params.argusComponentRegistryCppTemplateFilePath = std::string(cStrTemplateDirectory).append(s_argusComponentRegistryCppTemplateFilename);
@@ -64,8 +64,8 @@ void ArgusComponentRegistryCodeGenerator::GenerateComponentRegistryCode(const Ar
 	testsDirectory.Append(s_ecsTestsDirectorySuffix);
 	FPaths::MakeStandardFilename(registryDirectory);
 	FPaths::MakeStandardFilename(testsDirectory);
-	const char* cStrRegistryDirectory = TCHAR_TO_UTF8(*registryDirectory);
-	const char* cStrTestsDirectory = TCHAR_TO_UTF8(*testsDirectory);
+	const char* cStrRegistryDirectory = ARGUS_FSTRING_TO_CHAR(registryDirectory);
+	const char* cStrTestsDirectory = ARGUS_FSTRING_TO_CHAR(testsDirectory);
 
 	// Write out header, cpp, and tests file
 	didSucceed &= ArgusCodeGeneratorUtil::WriteOutFile(std::string(cStrRegistryDirectory).append(s_argusComponentRegistryHeaderFilename), outParsedHeaderFileContents);
