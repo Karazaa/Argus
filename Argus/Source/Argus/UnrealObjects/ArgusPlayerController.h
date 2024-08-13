@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "ComponentDefinitions/IdentityComponent.h"
 #include "CoreMinimal.h"
 #include "Engine/HitResult.h"
 #include "GameFramework/PlayerController.h"
@@ -26,8 +27,14 @@ public:
 	void ProcessArgusPlayerInput();
 	bool GetMouseProjectionLocation(FHitResult& outHitResult) const;
 	bool GetArgusActorsFromArgusEntities(const TArray<ArgusEntity>& inArgusEntities, TArray<AArgusActor*>& outArgusActors) const;
+	void FilterArgusActorsToPlayerTeam(TArray<AArgusActor*>& argusActors) const;
+	bool IsArgusActorOnPlayerTeam(const AArgusActor* const actor) const;
+
 
 protected:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	ETeam m_playerTeam = ETeam::TeamA;
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TSoftObjectPtr<UInputMappingContext> m_argusInputMappingContext = nullptr;
 

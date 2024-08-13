@@ -195,6 +195,11 @@ void UArgusInputManager::ProcessSelectInputEvent(bool isAdditive)
 		return;
 	}
 
+	if (!m_owningPlayerController->IsArgusActorOnPlayerTeam(argusActor))
+	{
+		return;
+	}
+
 	if (isAdditive)
 	{
 		AddSelectedActorAdditive(argusActor);
@@ -244,8 +249,14 @@ void UArgusInputManager::ProcessMarqueeSelectInputEvent(bool isAdditive)
 	TArray<ArgusEntity> entitiesWithinBounds;
 	TArray<AArgusActor*> actorsWithinBounds;
 	TransformSystems::FindEntitiesWithinXYBounds(minXY, maxXY, entitiesWithinBounds);
-	const int numFoundEntities = entitiesWithinBounds.Num();
 
+	if (!m_owningPlayerController->GetArgusActorsFromArgusEntities(entitiesWithinBounds, actorsWithinBounds))
+	{
+		return;
+	}
+	m_owningPlayerController->FilterArgusActorsToPlayerTeam(actorsWithinBounds);
+	
+	const int numFoundEntities = actorsWithinBounds.Num();
 	if (CVarEnableVerboseArgusInputLogging.GetValueOnGameThread())
 	{
 		UE_LOG
@@ -257,11 +268,6 @@ void UArgusInputManager::ProcessMarqueeSelectInputEvent(bool isAdditive)
 			numFoundEntities,
 			isAdditive ? TEXT("Yes") : TEXT("No")
 		);
-	}
-
-	if (!m_owningPlayerController->GetArgusActorsFromArgusEntities(entitiesWithinBounds, actorsWithinBounds))
-	{
-		return;
 	}
 
 	if (!isAdditive && numFoundEntities > 0)

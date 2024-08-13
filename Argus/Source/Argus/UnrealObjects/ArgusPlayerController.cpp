@@ -7,6 +7,7 @@
 #include "ArgusInputManager.h"
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
+#include "Engine/GameViewportClient.h"
 #include "Engine/LocalPlayer.h"
 #include "Engine/World.h"
 #include "EnhancedInputSubsystems.h"
@@ -94,6 +95,47 @@ bool AArgusPlayerController::GetArgusActorsFromArgusEntities(const TArray<ArgusE
 	}
 
 	return true;
+}
+
+void AArgusPlayerController::FilterArgusActorsToPlayerTeam(TArray<AArgusActor*>& argusActors) const
+{
+	argusActors = argusActors.FilterByPredicate
+	(
+		[this](AArgusActor* actorToCheck) 
+		{
+			if (!actorToCheck)
+			{
+				return false;
+			}
+
+			return IsArgusActorOnPlayerTeam(actorToCheck);
+		}
+	);
+}
+
+bool AArgusPlayerController::IsArgusActorOnPlayerTeam(const AArgusActor* const actor) const
+{
+	if (!actor)
+	{
+		UE_LOG(ArgusUnrealObjectsLog, Error, TEXT("[%s] Passed %s is null."), ARGUS_FUNCNAME, ARGUS_NAMEOF(AArgusActor*));
+		return false;
+	}
+
+	ArgusEntity entity = actor->GetEntity();
+	if (!entity)
+	{
+		UE_LOG(ArgusUnrealObjectsLog, Error, TEXT("[%s] Could not retrieve %s from %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(AArgusActor*));
+		return false;
+	}
+
+	const IdentityComponent* identityComponent = entity.GetComponent<IdentityComponent>();
+	if (!identityComponent)
+	{
+		UE_LOG(ArgusUnrealObjectsLog, Error, TEXT("[%s] Could not retrieve %s from %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(IdentityComponent), ARGUS_NAMEOF(ArgusEntity));
+		return false;
+	}
+
+	return identityComponent->m_team == m_playerTeam;
 }
 
 void AArgusPlayerController::BeginPlay()
