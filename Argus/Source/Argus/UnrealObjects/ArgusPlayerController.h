@@ -7,6 +7,7 @@
 #include "Engine/HitResult.h"
 #include "GameFramework/PlayerController.h"
 #include "InputMappingContext.h"
+
 #include "ArgusPlayerController.generated.h"
 
 class AArgusActor;
@@ -25,8 +26,13 @@ public:
 
 	void UpdateCamera(float deltaTime);
 	void ProcessArgusPlayerInput();
+
+	AArgusCameraActor* GetArgusCamera() const { return m_argusCameraActor; };
+	TOptional<FVector2D> GetScreenSpaceBounds() const;
+	TOptional<FVector2D> GetMouseScreenSpaceLocation() const;
 	bool GetMouseProjectionLocation(FHitResult& outHitResult) const;
 	bool GetArgusActorsFromArgusEntities(const TArray<ArgusEntity>& inArgusEntities, TArray<AArgusActor*>& outArgusActors) const;
+
 	void FilterArgusActorsToPlayerTeam(TArray<AArgusActor*>& argusActors) const;
 	bool IsArgusActorOnPlayerTeam(const AArgusActor* const actor) const;
 

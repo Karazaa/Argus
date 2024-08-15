@@ -23,24 +23,12 @@ void AArgusPlayerController::UpdateCamera(float deltaTime)
 		return;
 	}
 
-	const ULocalPlayer* const localPlayer = GetLocalPlayer();
-	if (!localPlayer)
-	{
-		return;
-	}
+	const TOptional<FVector2D> screenPosition = GetMouseScreenSpaceLocation();
+	const TOptional<FVector2D> screenBounds = GetScreenSpaceBounds();
 
-	if (!localPlayer->ViewportClient)
+	if (screenPosition && screenBounds)
 	{
-		return;
-	}
-
-	FVector2D ScreenPosition;
-	if (localPlayer->ViewportClient->GetMousePosition(ScreenPosition))
-	{
-		if (const FSceneViewport* const gameViewport = localPlayer->ViewportClient->GetGameViewport())
-		{
-			m_argusCameraActor->UpdateCamera(ScreenPosition, FVector2D(gameViewport->GetSizeXY()), deltaTime);
-		}
+		m_argusCameraActor->UpdateCamera(screenPosition.GetValue(), screenBounds.GetValue(), deltaTime);
 	}
 }
 
@@ -52,6 +40,54 @@ void AArgusPlayerController::ProcessArgusPlayerInput()
 	}
 
 	m_argusInputManager->ProcessPlayerInput();
+}
+
+TOptional<FVector2D> AArgusPlayerController::GetScreenSpaceBounds() const
+{
+	TOptional<FVector2D> output;
+
+	const ULocalPlayer* const localPlayer = GetLocalPlayer();
+	if (!localPlayer)
+	{
+		return output;
+	}
+
+	if (!localPlayer->ViewportClient)
+	{
+		return output;
+	}
+
+	FVector2D ScreenBounds;
+	if (const FSceneViewport* const gameViewport = localPlayer->ViewportClient->GetGameViewport())
+	{
+		output = gameViewport->GetSizeXY();
+	}
+
+	return output;
+}
+
+TOptional<FVector2D> AArgusPlayerController::GetMouseScreenSpaceLocation() const
+{
+	TOptional<FVector2D> output;
+
+	const ULocalPlayer* const localPlayer = GetLocalPlayer();
+	if (!localPlayer)
+	{
+		return output;
+	}
+
+	if (!localPlayer->ViewportClient)
+	{
+		return output;
+	}
+
+	FVector2D screenPosition;
+	if (localPlayer->ViewportClient->GetMousePosition(screenPosition))
+	{
+		output = screenPosition;
+	}
+
+	return output;
 }
 
 bool AArgusPlayerController::GetMouseProjectionLocation(FHitResult& outHitResult) const
