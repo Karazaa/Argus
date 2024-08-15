@@ -43,32 +43,37 @@ void UArgusInputManager::SetupInputComponent(TWeakObjectPtr<AArgusPlayerControll
 
 void UArgusInputManager::OnSelect(const FInputActionValue& value)
 {
-	m_inputEventsThisFrame.Emplace(InputType::Select);
+	m_inputEventsThisFrame.Emplace(InputCache(InputType::Select, value));
 }
 
 void UArgusInputManager::OnSelectAdditive(const FInputActionValue& value)
 {
-	m_inputEventsThisFrame.Emplace(InputType::SelectAdditive);
+	m_inputEventsThisFrame.Emplace(InputCache(InputType::SelectAdditive, value));
 }
 
 void UArgusInputManager::OnMarqueeSelect(const FInputActionValue& value)
 {
-	m_inputEventsThisFrame.Emplace(InputType::MarqueeSelect);
+	m_inputEventsThisFrame.Emplace(InputCache(InputType::MarqueeSelect, value));
 }
 
 void UArgusInputManager::OnMarqueeSelectAdditive(const FInputActionValue& value)
 {
-	m_inputEventsThisFrame.Emplace(InputType::MarqueeSelectAdditive);
+	m_inputEventsThisFrame.Emplace(InputCache(InputType::MarqueeSelectAdditive, value));
 }
 
 void UArgusInputManager::OnMoveTo(const FInputActionValue& value)
 {
-	m_inputEventsThisFrame.Emplace(InputType::MoveTo);
+	m_inputEventsThisFrame.Emplace(InputCache(InputType::MoveTo, value));
 }
 
 void UArgusInputManager::OnSetWaypoint(const FInputActionValue& value)
 {
-	m_inputEventsThisFrame.Emplace(InputType::SetWaypoint);
+	m_inputEventsThisFrame.Emplace(InputCache(InputType::SetWaypoint, value));
+}
+
+void UArgusInputManager::OnZoom(const FInputActionValue& value)
+{
+	m_inputEventsThisFrame.Emplace(InputCache(InputType::Zoom, value));
 }
 
 void UArgusInputManager::ProcessPlayerInput()
@@ -133,6 +138,11 @@ void UArgusInputManager::BindActions(TSoftObjectPtr<UArgusInputActionSet>& argus
 	{
 		enhancedInputComponent->BindAction(setWaypointAction, ETriggerEvent::Triggered, this, &UArgusInputManager::OnSetWaypoint);
 	}
+
+	if (const UInputAction* zoomAction = actionSet->m_zoomAction.LoadSynchronous())
+	{
+		enhancedInputComponent->BindAction(zoomAction, ETriggerEvent::Triggered, this, &UArgusInputManager::OnZoom);
+	}
 }
 
 bool UArgusInputManager::ValidateOwningPlayerController()
@@ -146,11 +156,11 @@ bool UArgusInputManager::ValidateOwningPlayerController()
 	return true;
 }
 
-void UArgusInputManager::ProcessInputEvent(InputType inputType)
+void UArgusInputManager::ProcessInputEvent(const InputCache& inputType)
 {
 	ARGUS_TRACE(UArgusInputManager::ProcessInputEvent)
 
-	switch (inputType)
+	switch (inputType.m_type)
 	{
 		case InputType::Select:
 			ProcessSelectInputEvent(false);
@@ -169,6 +179,9 @@ void UArgusInputManager::ProcessInputEvent(InputType inputType)
 			break;
 		case InputType::SetWaypoint:
 			ProcessSetWaypointInputEvent();
+			break;
+		case InputType::Zoom:
+			ProcessZoomInpuEvent(inputType.m_value);
 			break;
 		default:
 			break;
@@ -450,6 +463,22 @@ void UArgusInputManager::ProcessSetWaypointInputEventPerSelectedActor(AArgusActo
 		default:
 			break;
 	}
+}
+
+void UArgusInputManager::ProcessZoomInpuEvent(const FInputActionValue& value)
+{
+	const float zoomValue = value.Get<float>();
+	if (CVarEnableVerboseArgusInputLogging.GetValueOnGameThread())
+	{
+		UE_LOG
+		(
+			ArgusInputLog, Display, TEXT("[%s] Zoom with a value of %f occurred."),
+			ARGUS_FUNCNAME,
+			zoomValue
+		);
+	}
+
+	// TODO JAMES: Tell camera about zoom value.
 }
 
 void UArgusInputManager::AddSelectedActorExclusive(AArgusActor* argusActor)

@@ -4,6 +4,7 @@
 
 #include "ArgusActor.h"
 #include "CoreMinimal.h"
+#include "InputActionValue.h"
 #include "UObject/SoftObjectPtr.h"
 #include "ArgusInputManager.generated.h"
 
@@ -24,6 +25,7 @@ public:
 	void OnMarqueeSelectAdditive(const FInputActionValue& value);
 	void OnMoveTo(const FInputActionValue& value);
 	void OnSetWaypoint(const FInputActionValue& value);
+	void OnZoom(const FInputActionValue& value);
 
 	void ProcessPlayerInput();
 
@@ -36,23 +38,33 @@ private:
 		MarqueeSelect,
 		MarqueeSelectAdditive,
 		MoveTo,
-		SetWaypoint
+		SetWaypoint,
+		Zoom
+	};
+
+	struct InputCache
+	{
+		const InputType m_type;
+		const FInputActionValue m_value;
+
+		InputCache(const InputType type, const FInputActionValue value) : m_type(type), m_value(value) { }
 	};
 
 	TWeakObjectPtr<AArgusPlayerController> m_owningPlayerController = nullptr;
 	TSet<TWeakObjectPtr<AArgusActor>> m_selectedArgusActors;
-	TArray<InputType> m_inputEventsThisFrame;
+	TArray<InputCache> m_inputEventsThisFrame;
 
 	void BindActions(TSoftObjectPtr<UArgusInputActionSet>& argusInputActionSet, TWeakObjectPtr<UEnhancedInputComponent>& enhancedInputComponent);
 	bool ValidateOwningPlayerController();
 
-	void ProcessInputEvent(InputType inputEvent);
+	void ProcessInputEvent(const InputCache& inputEvent);
 	void ProcessSelectInputEvent(bool isAdditive);
 	void ProcessMarqueeSelectInputEvent(bool isAdditive);
 	void ProcessMoveToInputEvent();
 	void ProcessMoveToInputEventPerSelectedActor(AArgusActor* argusActor, ETask inputTask, ArgusEntity targetEntity, FVector targetLocation);
 	void ProcessSetWaypointInputEvent();
 	void ProcessSetWaypointInputEventPerSelectedActor(AArgusActor* argusActor, FVector targetLocation);
+	void ProcessZoomInpuEvent(const FInputActionValue& value);
 
 	void AddSelectedActorExclusive(AArgusActor* argusActor);
 	void AddSelectedActorAdditive(AArgusActor* argusActor);
