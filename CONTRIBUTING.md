@@ -1,0 +1,1 @@
+Hit me up, https://github.com/Karazaa, if you'd like to contribute. Commits made by folks other than me will need to be submitted via Pull Request and approved by me. Happy to welcome on other contributors/maintainers who'd like to partner up. 
