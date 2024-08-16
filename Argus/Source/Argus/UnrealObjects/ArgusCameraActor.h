@@ -13,7 +13,14 @@ class AArgusCameraActor : public AActor
 	
 public:	
 	AArgusCameraActor();
-	void UpdateCamera(FVector2D screenSpaceMousePosition, FVector2D screenSpaceXYBounds, float deltaTime);
+
+	struct UpdateCameraPanningParameters
+	{
+		TOptional<FVector2D> m_screenSpaceMousePosition;
+		TOptional<FVector2D> m_screenSpaceXYBounds;
+	};
+	void UpdateCameraPanning(const UpdateCameraPanningParameters& cameraParameters, float deltaTime);
+	void UpdateCameraZoom(float inputZoomValue);
 
 protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)

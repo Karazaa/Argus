@@ -2,6 +2,7 @@
 
 #include "ArgusInputManager.h"
 #include "ArgusActor.h"
+#include "ArgusCameraActor.h"
 #include "ArgusInputActionSet.h"
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
@@ -41,6 +42,7 @@ void UArgusInputManager::SetupInputComponent(TWeakObjectPtr<AArgusPlayerControll
 	BindActions(argusInputActionSet, enhancedInputComponent);
 }
 
+#pragma region Input Action Delegates
 void UArgusInputManager::OnSelect(const FInputActionValue& value)
 {
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::Select, value));
@@ -75,17 +77,32 @@ void UArgusInputManager::OnZoom(const FInputActionValue& value)
 {
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::Zoom, value));
 }
+#pragma endregion
 
-void UArgusInputManager::ProcessPlayerInput()
+void UArgusInputManager::ProcessPlayerInput(TObjectPtr<AArgusCameraActor>& argusCamera, const AArgusCameraActor::UpdateCameraPanningParameters& updateCameraParameters, float deltaTime)
 {
 	ARGUS_TRACE(UArgusInputManager::ProcessPlayerInput)
 
 	const int inputsEventsThisFrameCount = m_inputEventsThisFrame.Num();
 	for (int i = 0; i < inputsEventsThisFrameCount; ++i)
 	{
-		ProcessInputEvent(m_inputEventsThisFrame[i]);
+		ProcessInputEvent(argusCamera, m_inputEventsThisFrame[i]);
 	}
 	m_inputEventsThisFrame.Empty();
+
+	if (!argusCamera)
+	{
+		UE_LOG
+		(
+			ArgusInputLog, Error, TEXT("[%s] Did not recieve valid reference to %s. Unable to call %s as a result."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(AArgusCameraActor),
+			ARGUS_NAMEOF(AArgusCameraActor::UpdateCameraPanning)
+		);
+		return;
+	}
+
+	argusCamera->UpdateCameraPanning(updateCameraParameters, deltaTime);
 }
 
 void UArgusInputManager::BindActions(TSoftObjectPtr<UArgusInputActionSet>& argusInputActionSet, TWeakObjectPtr<UEnhancedInputComponent>& enhancedInputComponent)
@@ -156,7 +173,7 @@ bool UArgusInputManager::ValidateOwningPlayerController()
 	return true;
 }
 
-void UArgusInputManager::ProcessInputEvent(const InputCache& inputType)
+void UArgusInputManager::ProcessInputEvent(TObjectPtr<AArgusCameraActor>& argusCamera, const InputCache& inputType)
 {
 	ARGUS_TRACE(UArgusInputManager::ProcessInputEvent)
 
@@ -181,13 +198,14 @@ void UArgusInputManager::ProcessInputEvent(const InputCache& inputType)
 			ProcessSetWaypointInputEvent();
 			break;
 		case InputType::Zoom:
-			ProcessZoomInpuEvent(inputType.m_value);
+			ProcessZoomInpuEvent(argusCamera, inputType.m_value);
 			break;
 		default:
 			break;
 	}
 }
 
+#pragma region Input Event Processing
 void UArgusInputManager::ProcessSelectInputEvent(bool isAdditive)
 {
 	if (!ValidateOwningPlayerController())
@@ -465,7 +483,7 @@ void UArgusInputManager::ProcessSetWaypointInputEventPerSelectedActor(AArgusActo
 	}
 }
 
-void UArgusInputManager::ProcessZoomInpuEvent(const FInputActionValue& value)
+void UArgusInputManager::ProcessZoomInpuEvent(TObjectPtr<AArgusCameraActor>& argusCamera, const FInputActionValue& value)
 {
 	const float zoomValue = value.Get<float>();
 	if (CVarEnableVerboseArgusInputLogging.GetValueOnGameThread())
@@ -478,8 +496,21 @@ void UArgusInputManager::ProcessZoomInpuEvent(const FInputActionValue& value)
 		);
 	}
 
-	// TODO JAMES: Tell camera about zoom value.
+	if (!argusCamera)
+	{
+		UE_LOG
+		(
+			ArgusInputLog, Error, TEXT("[%s] Did not recieve a valid reference to %s. Cannot call %s."), 
+			ARGUS_FUNCNAME, 
+			ARGUS_NAMEOF(AArgusCameraActor),
+			ARGUS_NAMEOF(AArgusCameraActor::UpdateCameraZoom)
+		);
+		return;
+	}
+
+	argusCamera->UpdateCameraZoom(zoomValue);
 }
+#pragma endregion
 
 void UArgusInputManager::AddSelectedActorExclusive(AArgusActor* argusActor)
 {

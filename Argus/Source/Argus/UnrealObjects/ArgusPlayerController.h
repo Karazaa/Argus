@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "ArgusCameraActor.h"
 #include "ComponentDefinitions/IdentityComponent.h"
 #include "CoreMinimal.h"
 #include "Engine/HitResult.h"
@@ -11,7 +12,6 @@
 #include "ArgusPlayerController.generated.h"
 
 class AArgusActor;
-class AArgusCameraActor;
 class ArgusEntity;
 class UArgusInputActionSet;
 class UArgusInputManager;
@@ -24,12 +24,10 @@ class AArgusPlayerController : public APlayerController
 public:
 	static const float k_cameraTraceLength;
 
-	void UpdateCamera(float deltaTime);
-	void ProcessArgusPlayerInput();
+	void ProcessArgusPlayerInput(float deltaTime);
 
-	AArgusCameraActor* GetArgusCamera() const { return m_argusCameraActor; };
-	TOptional<FVector2D> GetScreenSpaceBounds() const;
-	TOptional<FVector2D> GetMouseScreenSpaceLocation() const;
+	AArgusCameraActor::UpdateCameraPanningParameters GetScreenSpaceInputValues() const;
+
 	bool GetMouseProjectionLocation(FHitResult& outHitResult) const;
 	bool GetArgusActorsFromArgusEntities(const TArray<ArgusEntity>& inArgusEntities, TArray<AArgusActor*>& outArgusActors) const;
 

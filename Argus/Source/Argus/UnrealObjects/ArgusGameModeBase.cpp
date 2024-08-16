@@ -35,8 +35,7 @@ void AArgusGameModeBase::Tick(float deltaTime)
 	{
 		if (argusPlayerController)
 		{
-			argusPlayerController->UpdateCamera(deltaTime);
-			argusPlayerController->ProcessArgusPlayerInput();
+			argusPlayerController->ProcessArgusPlayerInput(deltaTime);
 		}
 	}
 

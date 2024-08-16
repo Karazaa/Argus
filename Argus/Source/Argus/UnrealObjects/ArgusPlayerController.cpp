@@ -16,59 +16,19 @@
 
 const float AArgusPlayerController::k_cameraTraceLength = 5000.0f;
 
-void AArgusPlayerController::UpdateCamera(float deltaTime)
-{
-	if (!m_argusCameraActor)
-	{
-		return;
-	}
-
-	const TOptional<FVector2D> screenPosition = GetMouseScreenSpaceLocation();
-	const TOptional<FVector2D> screenBounds = GetScreenSpaceBounds();
-
-	if (screenPosition && screenBounds)
-	{
-		m_argusCameraActor->UpdateCamera(screenPosition.GetValue(), screenBounds.GetValue(), deltaTime);
-	}
-}
-
-void AArgusPlayerController::ProcessArgusPlayerInput()
+void AArgusPlayerController::ProcessArgusPlayerInput(float deltaTime)
 {
 	if (!m_argusInputManager)
 	{
 		return;
 	}
 
-	m_argusInputManager->ProcessPlayerInput();
+	m_argusInputManager->ProcessPlayerInput(m_argusCameraActor, GetScreenSpaceInputValues(), deltaTime);
 }
 
-TOptional<FVector2D> AArgusPlayerController::GetScreenSpaceBounds() const
+AArgusCameraActor::UpdateCameraPanningParameters AArgusPlayerController::GetScreenSpaceInputValues() const
 {
-	TOptional<FVector2D> output;
-
-	const ULocalPlayer* const localPlayer = GetLocalPlayer();
-	if (!localPlayer)
-	{
-		return output;
-	}
-
-	if (!localPlayer->ViewportClient)
-	{
-		return output;
-	}
-
-	FVector2D ScreenBounds;
-	if (const FSceneViewport* const gameViewport = localPlayer->ViewportClient->GetGameViewport())
-	{
-		output = gameViewport->GetSizeXY();
-	}
-
-	return output;
-}
-
-TOptional<FVector2D> AArgusPlayerController::GetMouseScreenSpaceLocation() const
-{
-	TOptional<FVector2D> output;
+	AArgusCameraActor::UpdateCameraPanningParameters output;
 
 	const ULocalPlayer* const localPlayer = GetLocalPlayer();
 	if (!localPlayer)
@@ -84,7 +44,11 @@ TOptional<FVector2D> AArgusPlayerController::GetMouseScreenSpaceLocation() const
 	FVector2D screenPosition;
 	if (localPlayer->ViewportClient->GetMousePosition(screenPosition))
 	{
-		output = screenPosition;
+		output.m_screenSpaceMousePosition = screenPosition;
+	}
+	if (const FSceneViewport* const gameViewport = localPlayer->ViewportClient->GetGameViewport())
+	{
+		output.m_screenSpaceXYBounds = gameViewport->GetSizeXY();
 	}
 
 	return output;
