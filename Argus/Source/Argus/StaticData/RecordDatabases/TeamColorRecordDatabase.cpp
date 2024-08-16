@@ -9,17 +9,22 @@ const UTeamColorRecord* UTeamColorRecordDatabase::GetRecord(uint32 id)
 {
 	if (static_cast<uint32>(m_UTeamColorRecordsPersistent.Num()) <= id)
 	{
-		UE_LOG
-		(
-			ArgusStaticDataLog, Error,
-			TEXT("[%s] Could not find %s %d in %s."),
-			ARGUS_FUNCNAME,
-			ARGUS_NAMEOF(id),
-			id,
-			ARGUS_NAMEOF(UTeamColorRecordDatabase)
-		);
+		ResizePersistentObjectPointerArray();
+		
+		if (static_cast<uint32>(m_UTeamColorRecordsPersistent.Num()) <= id)
+		{
+			UE_LOG
+			(
+				ArgusStaticDataLog, Error,
+				TEXT("[%s] Could not find %s %d in %s."),
+				ARGUS_FUNCNAME,
+				ARGUS_NAMEOF(id),
+				id,
+				ARGUS_NAMEOF(UTeamColorRecordDatabase)
+			);
 
-		return nullptr;
+			return nullptr;
+		}
 	}
 
 	if (id == 0u)
