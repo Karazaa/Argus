@@ -27,10 +27,23 @@ protected:
 	float m_screenMovePaddingProportion = 0.2f;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	float m_cameraMoveVelocity = 500.0f;
+	float m_desiredVerticalVelocity = 500.0f;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	float m_verticalAcceleration = 5.0f;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	float m_desiredHorizontalVelocity = 500.0f;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	float m_horizontalAcceleration = 5.0f;
 
 private:
+	float m_currentVerticalVelocity = 0.0f;
+	float m_currentHorizontalVelocity = 0.0f;
+
+
 	// TODO JAMES: Do these for real.
-	FVector m_moveUpDir = FVector::ForwardVector;
-	FVector m_moveRightDir = FVector::RightVector;
+	FVector m_moveUpDir		= FVector::ForwardVector;
+	FVector m_moveRightDir	= FVector::RightVector;
 };
