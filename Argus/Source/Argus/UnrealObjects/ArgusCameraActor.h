@@ -19,28 +19,42 @@ public:
 		TOptional<FVector2D> m_screenSpaceMousePosition;
 		TOptional<FVector2D> m_screenSpaceXYBounds;
 	};
-	void UpdateCameraPanning(const UpdateCameraPanningParameters& cameraParameters, float deltaTime);
-	void UpdateCameraZoom(float inputZoomValue);
+
+	void UpdateCamera(const UpdateCameraPanningParameters& cameraParameters, const float deltaTime);
+	void UpdateCameraZoom(const float inputZoomValue);
 
 protected:
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	float m_screenMovePaddingProportion = 0.2f;
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Panning")
+	float m_verticalScreenMovePaddingProportion = 0.2f;
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Panning")
+	float m_horizontalScreenMovePaddingProportion = 0.2f;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Panning")
 	float m_desiredVerticalVelocity = 500.0f;
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Panning")
 	float m_verticalAcceleration = 5.0f;
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Panning")
 	float m_desiredHorizontalVelocity = 500.0f;
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Panning")
 	float m_horizontalAcceleration = 5.0f;
 
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Zoom")
+	float m_desiredZoomVelocity = 500.0f;
+
+	virtual void BeginPlay() override;
+
 private:
+	void UpdateCameraPanning(const UpdateCameraPanningParameters& cameraParameters, const float deltaTime);
+	void UpdateCameraZoomInternal(const float deltaTime);
+
 	float m_currentVerticalVelocity = 0.0f;
 	float m_currentHorizontalVelocity = 0.0f;
+	float m_zoomInputThisFrame = 0.0f;
+	FVector m_zoomTargetLocation = FVector::ZeroVector;
 
 
 	// TODO JAMES: Do these for real.

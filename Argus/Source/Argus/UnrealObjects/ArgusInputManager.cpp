@@ -97,12 +97,12 @@ void UArgusInputManager::ProcessPlayerInput(TObjectPtr<AArgusCameraActor>& argus
 			ArgusInputLog, Error, TEXT("[%s] Did not recieve valid reference to %s. Unable to call %s as a result."),
 			ARGUS_FUNCNAME,
 			ARGUS_NAMEOF(AArgusCameraActor),
-			ARGUS_NAMEOF(AArgusCameraActor::UpdateCameraPanning)
+			ARGUS_NAMEOF(AArgusCameraActor::UpdateCamera)
 		);
 		return;
 	}
 
-	argusCamera->UpdateCameraPanning(updateCameraParameters, deltaTime);
+	argusCamera->UpdateCamera(updateCameraParameters, deltaTime);
 }
 
 void UArgusInputManager::BindActions(TSoftObjectPtr<UArgusInputActionSet>& argusInputActionSet, TWeakObjectPtr<UEnhancedInputComponent>& enhancedInputComponent)

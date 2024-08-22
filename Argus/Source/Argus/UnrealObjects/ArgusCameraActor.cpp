@@ -10,7 +10,29 @@ AArgusCameraActor::AArgusCameraActor()
 	SetRootComponent(CreateDefaultSubobject<UCameraComponent>(FName("CameraComponent")));
 }
 
-void AArgusCameraActor::UpdateCameraPanning(const UpdateCameraPanningParameters& cameraParameters, float deltaTime)
+void AArgusCameraActor::UpdateCamera(const UpdateCameraPanningParameters& cameraParameters, const float deltaTime)
+{
+	ARGUS_TRACE(AArgusCameraActor::UpdateCamera)
+
+	UpdateCameraPanning(cameraParameters, deltaTime);
+	UpdateCameraZoomInternal(deltaTime);
+
+	m_zoomInputThisFrame = 0.0f;
+}
+
+void AArgusCameraActor::UpdateCameraZoom(const float inputZoomValue)
+{
+	m_zoomInputThisFrame += inputZoomValue;
+}
+
+void AArgusCameraActor::BeginPlay()
+{
+	Super::BeginPlay();
+
+	m_zoomTargetLocation = GetActorLocation();
+}
+
+void AArgusCameraActor::UpdateCameraPanning(const UpdateCameraPanningParameters& cameraParameters, const float deltaTime)
 {
 	ARGUS_TRACE(AArgusCameraActor::UpdateCameraPanning)
 
@@ -19,14 +41,12 @@ void AArgusCameraActor::UpdateCameraPanning(const UpdateCameraPanningParameters&
 		return;
 	}
 
-	const float paddingAmountX = cameraParameters.m_screenSpaceXYBounds->X * m_screenMovePaddingProportion;
-	const float paddingAmountY = cameraParameters.m_screenSpaceXYBounds->Y * m_screenMovePaddingProportion;
-
-	const FVector currentLocation = GetActorLocation();
-	FVector translation = FVector::ZeroVector;
-
+	const float paddingAmountX = cameraParameters.m_screenSpaceXYBounds->X * m_horizontalScreenMovePaddingProportion;
+	const float paddingAmountY = cameraParameters.m_screenSpaceXYBounds->Y * m_verticalScreenMovePaddingProportion;
 	float desiredVerticalVelocity = 0.0f;
 	float desiredHorizontalVelocity = 0.0f;
+
+	FVector translation = FVector::ZeroVector;
 
 	// UP
 	if (cameraParameters.m_screenSpaceMousePosition->Y < paddingAmountY)
@@ -40,7 +60,7 @@ void AArgusCameraActor::UpdateCameraPanning(const UpdateCameraPanningParameters&
 	}
 	m_currentVerticalVelocity = FMath::FInterpTo(m_currentVerticalVelocity, desiredVerticalVelocity, deltaTime, m_verticalAcceleration);
 	translation += m_moveUpDir * (m_currentVerticalVelocity * deltaTime);
-	
+
 	// LEFT
 	if (cameraParameters.m_screenSpaceMousePosition->X < paddingAmountX)
 	{
@@ -54,10 +74,17 @@ void AArgusCameraActor::UpdateCameraPanning(const UpdateCameraPanningParameters&
 	m_currentHorizontalVelocity = FMath::FInterpTo(m_currentHorizontalVelocity, desiredHorizontalVelocity, deltaTime, m_horizontalAcceleration);
 	translation += m_moveRightDir * (m_currentHorizontalVelocity * deltaTime);
 
-	SetActorLocation(currentLocation + translation);
+	SetActorLocation(GetActorLocation() + translation);
 }
 
-void AArgusCameraActor::UpdateCameraZoom(float inputZoomValue)
+void AArgusCameraActor::UpdateCameraZoomInternal(const float deltaTime)
 {
+	ARGUS_TRACE(AArgusCameraActor::UpdateCameraZoom)
 
+	if (!FMath::IsNearlyZero(FMath::Sign(m_zoomInputThisFrame)))
+	{
+		m_zoomTargetLocation += GetActorForwardVector() * m_zoomInputThisFrame * m_desiredZoomVelocity;
+	}
+
+	SetActorLocation(FMath::VInterpTo(GetActorLocation(), m_zoomTargetLocation, deltaTime, m_zoomAcceleration));
 }
