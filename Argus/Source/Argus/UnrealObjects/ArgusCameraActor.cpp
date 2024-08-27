@@ -28,8 +28,7 @@ void AArgusCameraActor::UpdateCameraZoom(const float inputZoomValue)
 void AArgusCameraActor::BeginPlay()
 {
 	Super::BeginPlay();
-
-	m_zoomTargetLocation = GetActorLocation();
+	m_cameraPositionWithoutZoom = GetActorLocation();
 }
 
 void AArgusCameraActor::UpdateCameraPanning(const UpdateCameraPanningParameters& cameraParameters, const float deltaTime)
@@ -74,7 +73,7 @@ void AArgusCameraActor::UpdateCameraPanning(const UpdateCameraPanningParameters&
 	m_currentHorizontalVelocity = FMath::FInterpTo(m_currentHorizontalVelocity, desiredHorizontalVelocity, deltaTime, m_horizontalAcceleration);
 	translation += m_moveRightDir * (m_currentHorizontalVelocity * deltaTime);
 
-	SetActorLocation(GetActorLocation() + translation);
+	m_cameraPositionWithoutZoom += translation;
 }
 
 void AArgusCameraActor::UpdateCameraZoomInternal(const float deltaTime)
@@ -83,8 +82,8 @@ void AArgusCameraActor::UpdateCameraZoomInternal(const float deltaTime)
 
 	if (!FMath::IsNearlyZero(FMath::Sign(m_zoomInputThisFrame)))
 	{
-		m_zoomTargetLocation += GetActorForwardVector() * m_zoomInputThisFrame * m_desiredZoomVelocity;
+		m_zoomTargetTranslation += GetActorForwardVector() * m_zoomInputThisFrame * m_desiredZoomVelocity;
 	}
 
-	SetActorLocation(FMath::VInterpTo(GetActorLocation(), m_zoomTargetLocation, deltaTime, m_zoomAcceleration));
+	SetActorLocation(FMath::VInterpTo(GetActorLocation(), m_cameraPositionWithoutZoom + m_zoomTargetTranslation, deltaTime, m_zoomAcceleration));
 }

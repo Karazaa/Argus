@@ -22,8 +22,6 @@ class AArgusPlayerController : public APlayerController
 	GENERATED_BODY()
 
 public:
-	static const float k_cameraTraceLength;
-
 	void ProcessArgusPlayerInput(float deltaTime);
 
 	AArgusCameraActor::UpdateCameraPanningParameters GetScreenSpaceInputValues() const;

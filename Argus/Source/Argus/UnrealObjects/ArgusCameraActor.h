@@ -12,6 +12,8 @@ class AArgusCameraActor : public AActor
 	GENERATED_BODY()
 	
 public:	
+	static constexpr float k_cameraTraceLength = 10000.0f;
+
 	AArgusCameraActor();
 
 	struct UpdateCameraPanningParameters
@@ -45,6 +47,15 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Zoom")
 	float m_desiredZoomVelocity = 500.0f;
 
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Zoom")
+	float m_zoomAcceleration = 5.0f;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Zoom")
+	float m_minZoomDistanceToGround = 100.0f;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Zoom")
+	float m_maxZoomDistanceToGround = 10000.0f;
+
 	virtual void BeginPlay() override;
 
 private:
@@ -54,7 +65,8 @@ private:
 	float m_currentVerticalVelocity = 0.0f;
 	float m_currentHorizontalVelocity = 0.0f;
 	float m_zoomInputThisFrame = 0.0f;
-	FVector m_zoomTargetLocation = FVector::ZeroVector;
+	FVector m_zoomTargetTranslation = FVector::ZeroVector;
+	FVector m_cameraPositionWithoutZoom = FVector::ZeroVector;
 
 
 	// TODO JAMES: Do these for real.

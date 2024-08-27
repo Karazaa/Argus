@@ -14,8 +14,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "Slate/SceneViewport.h"
 
-const float AArgusPlayerController::k_cameraTraceLength = 5000.0f;
-
 void AArgusPlayerController::ProcessArgusPlayerInput(float deltaTime)
 {
 	if (!m_argusInputManager)
@@ -60,7 +58,7 @@ bool AArgusPlayerController::GetMouseProjectionLocation(FHitResult& outHitResult
 	FVector worldSpaceDirection = FVector::ZeroVector;
 
 	bool outcome = DeprojectMousePositionToWorld(worldSpaceLocation, worldSpaceDirection);
-	FVector traceEndpoint = worldSpaceLocation + (worldSpaceDirection * k_cameraTraceLength);
+	FVector traceEndpoint = worldSpaceLocation + (worldSpaceDirection * AArgusCameraActor::k_cameraTraceLength);
 
 	UWorld* world = GetWorld();
 	if (!world)
