@@ -1,8 +1,11 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusCameraActor.h"
+#include "ArgusLogging.h"
 #include "ArgusMacros.h"
 #include "Camera/CameraComponent.h"
+#include "Engine/HitResult.h"
+#include "Engine/World.h"
 
 AArgusCameraActor::AArgusCameraActor()
 {
@@ -80,10 +83,34 @@ void AArgusCameraActor::UpdateCameraZoomInternal(const float deltaTime)
 {
 	ARGUS_TRACE(AArgusCameraActor::UpdateCameraZoom)
 
+	FVector forwardVector = GetActorForwardVector();
 	if (!FMath::IsNearlyZero(FMath::Sign(m_zoomInputThisFrame)))
 	{
-		m_zoomTargetTranslation += GetActorForwardVector() * m_zoomInputThisFrame * m_desiredZoomVelocity;
+		m_zoomTargetTranslation += forwardVector * m_zoomInputThisFrame * m_desiredZoomVelocity;
 	}
 
-	SetActorLocation(FMath::VInterpTo(GetActorLocation(), m_cameraPositionWithoutZoom + m_zoomTargetTranslation, deltaTime, m_zoomAcceleration));
+	FVector proposedPosition = m_cameraPositionWithoutZoom + m_zoomTargetTranslation;	
+	const FVector traceEndpoint = proposedPosition + (forwardVector * AArgusCameraActor::k_cameraTraceLength);
+
+	FHitResult hitResult;
+	UWorld* world = GetWorld();
+	if (!world)
+	{
+		UE_LOG(ArgusUnrealObjectsLog, Error, TEXT("[%s] Failed to get %s reference."), ARGUS_FUNCNAME, ARGUS_NAMEOF(UWorld));
+		return;
+	}
+
+	if (world->LineTraceSingleByChannel(hitResult, proposedPosition, traceEndpoint, ECC_WorldStatic))
+	{
+		if (hitResult.Distance < m_minZoomDistanceToGround)
+		{
+			proposedPosition = hitResult.Location + (-forwardVector * m_minZoomDistanceToGround);
+		}
+		else if (hitResult.Distance > m_maxZoomDistanceToGround)
+		{
+			proposedPosition = hitResult.Location + (-forwardVector * m_maxZoomDistanceToGround);
+		}
+	}
+
+	SetActorLocation(FMath::VInterpTo(GetActorLocation(), proposedPosition, deltaTime, m_zoomAcceleration));
 }
