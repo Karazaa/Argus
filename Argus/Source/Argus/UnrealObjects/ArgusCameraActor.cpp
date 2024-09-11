@@ -82,17 +82,6 @@ void AArgusCameraActor::UpdateCameraPanning(const UpdateCameraPanningParameters&
 void AArgusCameraActor::UpdateCameraZoomInternal(const float deltaTime)
 {
 	ARGUS_TRACE(AArgusCameraActor::UpdateCameraZoom)
-
-	FVector forwardVector = GetActorForwardVector();
-	if (!FMath::IsNearlyZero(FMath::Sign(m_zoomInputThisFrame)))
-	{
-		m_zoomTargetTranslation += forwardVector * m_zoomInputThisFrame * m_desiredZoomVelocity;
-	}
-
-	FVector proposedPosition = m_cameraPositionWithoutZoom + m_zoomTargetTranslation;	
-	const FVector traceEndpoint = proposedPosition + (forwardVector * AArgusCameraActor::k_cameraTraceLength);
-
-	FHitResult hitResult;
 	UWorld* world = GetWorld();
 	if (!world)
 	{
@@ -100,16 +89,44 @@ void AArgusCameraActor::UpdateCameraZoomInternal(const float deltaTime)
 		return;
 	}
 
+	FVector proposedZoomUpdateThisFrame = FVector::ZeroVector;
+	FVector proposedPosition = m_cameraPositionWithoutZoom + m_zoomTargetTranslation;
+	const FVector forwardVector = GetActorForwardVector();
+	const FVector traceEndpoint = proposedPosition + (forwardVector * AArgusCameraActor::k_cameraTraceLength);
+	if (!FMath::IsNearlyZero(FMath::Sign(m_zoomInputThisFrame)))
+	{
+		proposedZoomUpdateThisFrame = forwardVector * m_zoomInputThisFrame * m_desiredZoomVelocity;
+	}
+
+	FHitResult hitResult;
 	if (world->LineTraceSingleByChannel(hitResult, proposedPosition, traceEndpoint, ECC_WorldStatic))
 	{
-		if (hitResult.Distance < m_minZoomDistanceToGround)
+		const float distanceUpdateThisFrame = -m_zoomInputThisFrame * m_desiredZoomVelocity;
+
+		// Camera is too close to terrain
+		if ((distanceUpdateThisFrame + hitResult.Distance) < m_minZoomDistanceToGround)
 		{
 			proposedPosition = hitResult.Location + (-forwardVector * m_minZoomDistanceToGround);
+			m_zoomTargetTranslation = proposedPosition - m_cameraPositionWithoutZoom;
 		}
-		else if (hitResult.Distance > m_maxZoomDistanceToGround)
+		// Camera is too far from terrain
+		else if ((distanceUpdateThisFrame + hitResult.Distance) > m_maxZoomDistanceToGround)
 		{
 			proposedPosition = hitResult.Location + (-forwardVector * m_maxZoomDistanceToGround);
+			m_zoomTargetTranslation = proposedPosition - m_cameraPositionWithoutZoom;
 		}
+		// Camera is neither too far nor too close to terrain
+		else
+		{
+			m_zoomTargetTranslation += proposedZoomUpdateThisFrame;
+			proposedPosition = m_cameraPositionWithoutZoom + m_zoomTargetTranslation;
+		}
+	}
+	// Camera can't find any terrain
+	else
+	{
+		m_zoomTargetTranslation += proposedZoomUpdateThisFrame;
+		proposedPosition = m_cameraPositionWithoutZoom + m_zoomTargetTranslation;
 	}
 
 	SetActorLocation(FMath::VInterpTo(GetActorLocation(), proposedPosition, deltaTime, m_zoomAcceleration));
