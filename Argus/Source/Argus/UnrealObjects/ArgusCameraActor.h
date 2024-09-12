@@ -22,8 +22,12 @@ public:
 		TOptional<FVector2D> m_screenSpaceXYBounds;
 	};
 
+	void ForceSetCameraPositionWithoutZoom(const FVector& position);
 	void UpdateCamera(const UpdateCameraPanningParameters& cameraParameters, const float deltaTime);
 	void UpdateCameraZoom(const float inputZoomValue);
+
+	const FVector& GetPanUpVector() { return m_moveUpDir; }
+	const FVector& GetPanRightVector() { return m_moveRightDir; }
 
 protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Panning")

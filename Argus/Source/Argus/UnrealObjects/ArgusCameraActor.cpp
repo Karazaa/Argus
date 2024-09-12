@@ -13,6 +13,14 @@ AArgusCameraActor::AArgusCameraActor()
 	SetRootComponent(CreateDefaultSubobject<UCameraComponent>(FName("CameraComponent")));
 }
 
+void AArgusCameraActor::ForceSetCameraPositionWithoutZoom(const FVector& position)
+{
+	m_cameraPositionWithoutZoom = position;
+	m_currentVerticalVelocity = 0.0f;
+	m_currentHorizontalVelocity = 0.0f;
+	SetActorLocation(position);
+}
+
 void AArgusCameraActor::UpdateCamera(const UpdateCameraPanningParameters& cameraParameters, const float deltaTime)
 {
 	ARGUS_TRACE(AArgusCameraActor::UpdateCamera)

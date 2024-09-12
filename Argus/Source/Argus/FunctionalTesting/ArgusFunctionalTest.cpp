@@ -19,6 +19,7 @@ void AArgusFunctionalTest::BeginPlay()
 void AArgusFunctionalTest::Tick(float deltaSeconds)
 {
 	Super::Tick(deltaSeconds);
+	m_currentDeltaSeconds = deltaSeconds;
 
 	if (!bIsRunning && GetWorld()->HasBegunPlay())
 	{
@@ -52,8 +53,21 @@ bool AArgusFunctionalTest::DidArgusFunctionalTestSucceed()
 			return true;
 		}
 
+		if (m_secondsBetweenSteps > 0.0f && !m_delayBetweenStepsTimer.IsSet())
+		{
+			m_delayBetweenStepsTimer = m_secondsBetweenSteps;
+			return false;
+		}
+
+		if (m_delayBetweenStepsTimer.IsSet() && m_delayBetweenStepsTimer.GetValue() > 0.0f)
+		{
+			m_delayBetweenStepsTimer = m_delayBetweenStepsTimer.GetValue() - m_currentDeltaSeconds;
+			return false;
+		}
+
 		m_testStepIndex++;
 		FinishStep();
+		m_delayBetweenStepsTimer.Reset();
 		StartNextTestStep();
 	}
 
