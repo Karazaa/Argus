@@ -28,6 +28,8 @@ public:
 
 	const FVector& GetPanUpVector() { return m_moveUpDir; }
 	const FVector& GetPanRightVector() { return m_moveRightDir; }
+	const FVector& GetZoomTargetTranslation() { return m_zoomTargetTranslation; }
+	const FVector& GetCameraPositionWithoutZoom() { return m_cameraPositionWithoutZoom; }
 
 protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Panning")

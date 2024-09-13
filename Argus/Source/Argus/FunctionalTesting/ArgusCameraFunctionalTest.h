@@ -14,7 +14,7 @@ class ARGUS_API AArgusCameraFunctionalTest : public AArgusFunctionalTest
 
 private:
 	static constexpr const char* k_testName = "Argus.FunctionalTest.ArgusCamera";
-	static constexpr uint8       k_totalNumSteps = 4;
+	static constexpr uint8       k_totalNumSteps = 6;
 
 public:
 	AArgusCameraFunctionalTest(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
@@ -39,11 +39,16 @@ private:
 	void StartPanRightTestStep();
 	void StartPanUpTestStep();
 	void StartPanDownTestStep();
+	void StartZoomInTestStep();
+	void StartZoomOutTestStep();
 	bool DidPanLeftTestStepSucceed(const FVector& locationDifference);
 	bool DidPanRightTestStepSucceed(const FVector& locationDifference);
 	bool DidPanUpTestStepSucceed(const FVector& locationDifference);
 	bool DidPanDownTestStepSucceed(const FVector& locationDifference);
+	bool DidZoomInTestStepSucceed();
+	bool DidZoomOutTestStepSucceed();
+
+	bool UpdateCameraZoomAndCheckAtBoundaries(const FVector& initialZoomTargetTranslation);
 
 	FVector m_testStartingLocation = FVector::ZeroVector;
-	TOptional<float> m_stepDelayTimer;
 };
