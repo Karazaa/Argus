@@ -6,6 +6,7 @@
 #include "ArgusECSConstants.h"
 #include "ArgusLogging.h"
 #include <bitset>
+#include <unordered_map>
 
 // Begin component specific includes.
 #include "ComponentDefinitions\HealthComponent.h"
@@ -14,6 +15,7 @@
 #include "ComponentDefinitions\TargetingComponent.h"
 #include "ComponentDefinitions\TaskComponent.h"
 #include "ComponentDefinitions\TransformComponent.h"
+#include "DynamicAllocComponentDefinitions\SpatialPartitioningComponent.h"
 
 class ArgusComponentRegistry
 {
@@ -38,7 +40,7 @@ public:
 
 	static void FlushAllComponents();
 
-	static constexpr uint32 k_numComponentTypes = 6;
+	static constexpr uint32 k_numComponentTypes = 7;
 
 	// Begin component specific template specifiers.
 	
@@ -418,6 +420,62 @@ public:
 			s_isTransformComponentActive.set(entityId);
 			return &s_TransformComponents[entityId];
 		}
+	}
+#pragma endregion
+#pragma region SpatialPartitioningComponent
+private:
+	static std::unordered_map<uint16, SpatialPartitioningComponent> s_SpatialPartitioningComponents;
+public:
+	template<>
+	inline SpatialPartitioningComponent* GetComponent<SpatialPartitioningComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			UE_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(SpatialPartitioningComponent));
+			return nullptr;
+		}
+
+		if (!s_SpatialPartitioningComponents.contains(entityId))
+		{
+			return nullptr;
+		}
+
+		return &s_SpatialPartitioningComponents[entityId];
+	}
+
+	template<>
+	inline SpatialPartitioningComponent* AddComponent<SpatialPartitioningComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			UE_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(SpatialPartitioningComponent));
+			return nullptr;
+		}
+
+		if (s_SpatialPartitioningComponents.contains(entityId))
+		{
+			UE_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(SpatialPartitioningComponent), entityId);
+			return &s_SpatialPartitioningComponents[entityId];
+		}
+
+		s_SpatialPartitioningComponents[entityId] = SpatialPartitioningComponent();
+		return &s_SpatialPartitioningComponents[entityId];
+	}
+
+	template<>
+	inline SpatialPartitioningComponent* GetOrAddComponent<SpatialPartitioningComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			UE_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(SpatialPartitioningComponent));
+			return nullptr;
+		}
+
+		if (!s_SpatialPartitioningComponents.contains(entityId))
+		{
+			s_SpatialPartitioningComponents[entityId] = SpatialPartitioningComponent();
+		}
+		return &s_SpatialPartitioningComponents[entityId];
 	}
 #pragma endregion
 };

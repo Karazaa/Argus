@@ -28,6 +28,9 @@ std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isTaskCo
 TransformComponent ArgusComponentRegistry::s_TransformComponents[ArgusECSConstants::k_maxEntities];
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isTransformComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
 #pragma endregion
+#pragma region SpatialPartitioningComponent
+std::unordered_map<uint16, SpatialPartitioningComponent> ArgusComponentRegistry::s_SpatialPartitioningComponents;
+#pragma endregion
 
 void ArgusComponentRegistry::FlushAllComponents()
 {
@@ -49,4 +52,6 @@ void ArgusComponentRegistry::FlushAllComponents()
 		s_TaskComponents[i] = TaskComponent();
 		s_TransformComponents[i] = TransformComponent();
 	}
+
+	s_SpatialPartitioningComponents.clear();
 }

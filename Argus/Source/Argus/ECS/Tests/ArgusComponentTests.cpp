@@ -47,6 +47,48 @@ bool ArgusComponentHealthComponentPersistenceTest::RunTest(const FString& Parame
 	return true;
 }
 
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentSpatialPartitioningComponentPersistenceTest, "Argus.ECS.Component.SpatialPartitioningComponent.Persistence", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+bool ArgusComponentSpatialPartitioningComponentPersistenceTest::RunTest(const FString& Parameters)
+{
+	const float expectedSetDummyValue = 500.0f;
+	const float expectedPostResetDummyValue = 0.0f;
+
+	ArgusEntity::FlushAllEntities();
+
+	ArgusEntity entity = ArgusEntity::CreateEntity();
+	SpatialPartitioningComponent* spatialPartitioningComponent = entity.AddComponent<SpatialPartitioningComponent>();
+
+	if (!spatialPartitioningComponent)
+	{
+		return false;
+	}
+
+	spatialPartitioningComponent->m_dummyValue = expectedSetDummyValue;
+	spatialPartitioningComponent = entity.GetComponent<SpatialPartitioningComponent>();
+
+#pragma region Test SpatialPartitioningComponent setting dummy value.
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Creating a %s, setting it to %d, then checking the value is %d on retrieval."), ARGUS_FUNCNAME, ARGUS_NAMEOF(SpatialPartitioningComponent), expectedSetDummyValue, expectedSetDummyValue),
+		spatialPartitioningComponent->m_dummyValue,
+		expectedSetDummyValue
+	);
+#pragma endregion
+
+	*spatialPartitioningComponent = SpatialPartitioningComponent();
+
+#pragma region Test that resetting a SpatialPartitioningComponent returns to the default value.
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Creating a %s, setting it to %d, resetting it, then checking the value is %d after reset."), ARGUS_FUNCNAME, ARGUS_NAMEOF(HealthComponent), expectedSetDummyValue, expectedPostResetDummyValue),
+		spatialPartitioningComponent->m_dummyValue,
+		expectedPostResetDummyValue
+	);
+#pragma endregion
+
+	return true;
+}
+
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentTargetingComponentHasEntityTargetTest, "Argus.ECS.Component.TargetingComponent.HasEntityTarget", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusComponentTargetingComponentHasEntityTargetTest::RunTest(const FString& Parameters)
 {
