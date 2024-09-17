@@ -5,6 +5,7 @@
 
 // Begin component specific definitions
 @@@@@
+^^^^^
 
 void ArgusComponentRegistry::FlushAllComponents()
 {
@@ -16,4 +17,6 @@ void ArgusComponentRegistry::FlushAllComponents()
 	{
 		$$$$$
 	}
+
+	&&&&&
 }

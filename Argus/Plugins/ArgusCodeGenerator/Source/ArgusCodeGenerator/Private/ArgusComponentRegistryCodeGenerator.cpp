@@ -30,6 +30,7 @@ void ArgusComponentRegistryCodeGenerator::GenerateComponentRegistryCode(const Ar
 	// Iterate over ComponentDefinitions files.
 	ParseComponentTemplateParams params;
 	params.inComponentNames = parsedComponentData.m_componentNames;
+	params.inDynamicAllocComponentNames = parsedComponentData.m_dynamicAllocComponentNames;
 	params.inIncludeStatements = parsedComponentData.m_componentRegistryIncludeStatements;
 
 	// Construct a directory path to component registry templates
@@ -111,9 +112,17 @@ bool ArgusComponentRegistryCodeGenerator::ParseComponentRegistryHeaderTemplateWi
 				outFileContents.push_back(parsedLine);
 			}
 		}
+		else if (headerLineText.find("^^^^^") != std::string::npos)
+		{
+			continue;
+		}
+		else if (headerLineText.find("&&&&&") != std::string::npos)
+		{
+			continue;
+		}
 		else if (headerLineText.find("%%%%%") != std::string::npos)
 		{
-			outFileContents.push_back(std::regex_replace(headerLineText, std::regex("%%%%%"), std::to_string(params.inComponentNames.size())));
+			outFileContents.push_back(std::regex_replace(headerLineText, std::regex("%%%%%"), std::to_string(params.inComponentNames.size() + params.inDynamicAllocComponentNames.size())));
 		}
 		else
 		{
@@ -175,6 +184,14 @@ bool ArgusComponentRegistryCodeGenerator::ParseComponentRegistryCppTemplateWithR
 			{
 				outFileContents.push_back(parsedLine);
 			}
+		}
+		else if (cppLineText.find("^^^^^") != std::string::npos)
+		{
+			continue;
+		}
+		else if (cppLineText.find("&&&&&") != std::string::npos)
+		{
+			continue;
 		}
 		else
 		{

@@ -39,6 +39,7 @@ private:
 		std::string argusComponentSizeTestsTemplateFilePath = "";
 		std::string perComponentSizeTestsTemplateFilePath = "";
 		std::vector<std::string> inComponentNames = std::vector<std::string>();
+		std::vector<std::string> inDynamicAllocComponentNames = std::vector<std::string>();
 		std::vector<std::string> inIncludeStatements = std::vector<std::string>();
 	};
 	static bool ParseComponentRegistryHeaderTemplateWithReplacements(const ParseComponentTemplateParams& params, std::vector<std::string>& outFileContents);
