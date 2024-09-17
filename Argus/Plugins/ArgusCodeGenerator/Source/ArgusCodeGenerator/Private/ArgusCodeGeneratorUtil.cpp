@@ -14,6 +14,8 @@ const char* ArgusCodeGeneratorUtil::s_propertyStaticDataDelimiter = "ARGUS_STATI
 const char* ArgusCodeGeneratorUtil::s_uePropertyDelimiter = "UPROPERTY";
 const char* ArgusCodeGeneratorUtil::s_componentDefinitionDirectoryName = "ComponentDefinitions";
 const char* ArgusCodeGeneratorUtil::s_componentDefinitionDirectorySuffix = "Source/Argus/ECS/ComponentDefinitions";
+const char* ArgusCodeGeneratorUtil::s_dynamicAllocComponentDefinitionDirectoryName = "DynamicAllocComponentDefinitions";
+const char* ArgusCodeGeneratorUtil::s_dynamicAllocComponentDefinitionDirectorySuffix = "Source/Argus/ECS/DynamicAllocComponentDefinitions";
 const char* ArgusCodeGeneratorUtil::s_staticDataRecordDefinitionsDirectoryName = "RecordDefinitions";
 const char* ArgusCodeGeneratorUtil::s_staticDataRecordDefinitionsDirectorySuffix = "Source/Argus/StaticData/RecordDefinitions";
 const char* ArgusCodeGeneratorUtil::s_templateDirectorySuffix = "Plugins/ArgusCodeGenerator/Source/ArgusCodeGenerator/Private/Templates/";
@@ -49,6 +51,15 @@ FString ArgusCodeGeneratorUtil::GetComponentDefinitionsDirectory()
 	return componentDefinitionsDirectory;
 }
 
+FString ArgusCodeGeneratorUtil::GetDynamicAllocComponentDefinitionsDirectory()
+{
+	FString dynamicAllocComponentDefinitionsDirectory = *GetProjectDirectory();
+	dynamicAllocComponentDefinitionsDirectory.Append(s_dynamicAllocComponentDefinitionDirectorySuffix);
+	FPaths::MakeStandardFilename(dynamicAllocComponentDefinitionsDirectory);
+
+	return dynamicAllocComponentDefinitionsDirectory;
+}
+
 FString ArgusCodeGeneratorUtil::GetStaticDataRecordDefinitionsDirectory()
 {
 	FString recordDefinitionsDirectory = *GetProjectDirectory();
@@ -68,15 +79,24 @@ bool ArgusCodeGeneratorUtil::ParseComponentData(ParseComponentDataOutput& output
 	for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(finalizedComponentDefinitionsDirectory))
 	{
 		const std::string filePath = entry.path().string();
-		didSucceed &= ParseComponentDataFromFile(filePath, output);
+		didSucceed &= ParseComponentDataFromFile(filePath, output, false);
+	}
+
+	FString dynamicAllocComponentDefinitionsDirectory = ArgusCodeGeneratorUtil::GetDynamicAllocComponentDefinitionsDirectory();
+	const std::string finalizedDynamicAllocComponentDefinitionsDirectory = std::string(TCHAR_TO_UTF8(*dynamicAllocComponentDefinitionsDirectory));
+
+	for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(finalizedDynamicAllocComponentDefinitionsDirectory))
+	{
+		const std::string filePath = entry.path().string();
+		didSucceed &= ParseComponentDataFromFile(filePath, output, true);
 	}
 
 	return didSucceed;
 }
 
-bool ArgusCodeGeneratorUtil::ParseComponentDataFromFile(const std::string& filePath, ParseComponentDataOutput& output)
+bool ArgusCodeGeneratorUtil::ParseComponentDataFromFile(const std::string& filePath, ParseComponentDataOutput& output, bool isDynamicallyAllocated)
 {
-	const size_t componentDefinitionIndex = filePath.find(s_componentDefinitionDirectoryName);
+	const size_t componentDefinitionIndex = filePath.find(isDynamicallyAllocated ? s_dynamicAllocComponentDefinitionDirectoryName : s_componentDefinitionDirectoryName);
 	std::string includeStatement = "#include \"";
 	std::string dataAssetIncludeStatement = "#include \"..\\";
 	std::string componentPath = filePath.substr(componentDefinitionIndex);
@@ -84,7 +104,15 @@ bool ArgusCodeGeneratorUtil::ParseComponentDataFromFile(const std::string& fileP
 	includeStatement.append("\"");
 	dataAssetIncludeStatement.append(componentPath);
 	dataAssetIncludeStatement.append("\"");
-	output.m_componentRegistryIncludeStatements.push_back(includeStatement);
+
+	if (isDynamicallyAllocated)
+	{
+		output.m_dynamicAllocComponentRegistryIncludeStatements.push_back(includeStatement);
+	}
+	else
+	{
+		output.m_componentRegistryIncludeStatements.push_back(includeStatement);
+	}
 
 	std::ifstream inStream = std::ifstream(filePath);
 	const FString ueFilePath = FString(filePath.c_str());
@@ -100,18 +128,24 @@ bool ArgusCodeGeneratorUtil::ParseComponentDataFromFile(const std::string& fileP
 	bool didParsePropertyDeclaration = false;
 	while (std::getline(inStream, lineText))
 	{
-		if (ParseStructDeclarations(lineText, dataAssetIncludeStatement, output))
+		const size_t commentDelimeter = lineText.find("//");
+		if (commentDelimeter != std::string::npos)
 		{
 			continue;
 		}
 
-		if (ParseVariableDeclarations(lineText, didParsePropertyDeclaration, output.m_componentVariableData))
+		if (ParseStructDeclarations(lineText, dataAssetIncludeStatement, output, isDynamicallyAllocated))
+		{
+			continue;
+		}
+
+		if (ParseVariableDeclarations(lineText, didParsePropertyDeclaration, isDynamicallyAllocated ? output.m_dynamicAllocComponentVariableData : output.m_componentVariableData))
 		{
 			didParsePropertyDeclaration = false;
 			continue;
 		}
 
-		if (ParsePropertyMacro(lineText, output.m_componentVariableData))
+		if (ParsePropertyMacro(lineText, isDynamicallyAllocated ? output.m_dynamicAllocComponentVariableData : output.m_componentVariableData))
 		{
 			didParsePropertyDeclaration = true;
 			continue;
@@ -229,7 +263,7 @@ bool ArgusCodeGeneratorUtil::WriteOutFile(const std::string& filePath, const std
 	return true;
 }
 
-bool ArgusCodeGeneratorUtil::ParseStructDeclarations(std::string lineText, const std::string& componentDataAssetIncludeStatement, ParseComponentDataOutput& output)
+bool ArgusCodeGeneratorUtil::ParseStructDeclarations(std::string lineText, const std::string& componentDataAssetIncludeStatement, ParseComponentDataOutput& output, bool isDynamicallyAllocated)
 {
 	const size_t structDelimiterLength = std::strlen(s_structDelimiter);
 	const size_t structDelimiterIndex = lineText.find(s_structDelimiter);
@@ -259,9 +293,18 @@ bool ArgusCodeGeneratorUtil::ParseStructDeclarations(std::string lineText, const
 	}
 
 	std::erase(lineText, ' ');
-	output.m_componentNames.push_back(lineText);
-	output.m_componentDataAssetIncludeStatements.push_back(componentDataAssetIncludeStatement);
-	output.m_componentVariableData.push_back(std::vector<ParsedVariableData>());
+	if (isDynamicallyAllocated)
+	{
+		output.m_dynamicAllocComponentNames.push_back(lineText);
+		output.m_dynamicAllocComponentDataAssetIncludeStatements.push_back(componentDataAssetIncludeStatement);
+		output.m_dynamicAllocComponentVariableData.push_back(std::vector<ParsedVariableData>());
+	}
+	else
+	{
+		output.m_componentNames.push_back(lineText);
+		output.m_componentDataAssetIncludeStatements.push_back(componentDataAssetIncludeStatement);
+		output.m_componentVariableData.push_back(std::vector<ParsedVariableData>());
+	}
 	return true;
 }
 

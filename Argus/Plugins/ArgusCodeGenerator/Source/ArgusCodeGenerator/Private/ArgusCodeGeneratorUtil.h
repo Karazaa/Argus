@@ -23,6 +23,7 @@ public:
 	static FString GetProjectDirectory();
 	static FString GetTemplateDirectory(const char* subdirectorySuffix);
 	static FString GetComponentDefinitionsDirectory();
+	static FString GetDynamicAllocComponentDefinitionsDirectory();
 	static FString GetStaticDataRecordDefinitionsDirectory();
 
 	struct ParsedVariableData
@@ -39,6 +40,11 @@ public:
 		std::vector<std::string> m_componentRegistryIncludeStatements;
 		std::vector<std::string> m_componentDataAssetIncludeStatements;
 		std::vector< std::vector<ParsedVariableData> > m_componentVariableData;
+
+		std::vector<std::string> m_dynamicAllocComponentNames;
+		std::vector<std::string> m_dynamicAllocComponentRegistryIncludeStatements;
+		std::vector<std::string> m_dynamicAllocComponentDataAssetIncludeStatements;
+		std::vector< std::vector<ParsedVariableData> > m_dynamicAllocComponentVariableData;
 	};
 	struct ParseStaticDataRecordsOutput
 	{
@@ -53,7 +59,7 @@ public:
 	};
 
 	static bool ParseComponentData(ParseComponentDataOutput& output);
-	static bool ParseComponentDataFromFile(const std::string& filePath, ParseComponentDataOutput& output);
+	static bool ParseComponentDataFromFile(const std::string& filePath, ParseComponentDataOutput& output, bool isDynamicallyAllocated);
 	static bool ParseComponentSpecificTemplate(const std::string& filePath, const std::vector<std::string>& componentNames, std::vector<std::string>& outFileContents);
 	static bool ParseStaticDataRecords(ParseStaticDataRecordsOutput& output);
 	static bool ParseStaticDataDataRecordsFromFile(const std::string& filePath, ParseStaticDataRecordsOutput& output);
@@ -64,6 +70,8 @@ public:
 private:
 	static const char* s_componentDefinitionDirectoryName;
 	static const char* s_componentDefinitionDirectorySuffix;
+	static const char* s_dynamicAllocComponentDefinitionDirectoryName;
+	static const char* s_dynamicAllocComponentDefinitionDirectorySuffix;
 	static const char* s_staticDataRecordDefinitionsDirectoryName;
 	static const char* s_staticDataRecordDefinitionsDirectorySuffix;
 	static const char* s_templateDirectorySuffix;
@@ -71,7 +79,7 @@ private:
 	static const char* s_argusAPIDelimiter;
 	static const char* s_varDelimiter;
 
-	static bool ParseStructDeclarations(std::string lineText, const std::string& componentDataAssetIncludeStatement, ParseComponentDataOutput& output);
+	static bool ParseStructDeclarations(std::string lineText, const std::string& componentDataAssetIncludeStatement, ParseComponentDataOutput& output, bool isDynamicallyAllocated);
 	static bool ParsePropertyMacro(std::string lineText, std::vector < std::vector<ParsedVariableData> >& parsedVariableData);
 	static bool ParseVariableDeclarations(std::string lineText, bool withProperty, std::vector < std::vector<ParsedVariableData> >& parsedVariableData);
 	static bool ParseRecordClassDeclarations(std::string lineText, ParseStaticDataRecordsOutput& output);
