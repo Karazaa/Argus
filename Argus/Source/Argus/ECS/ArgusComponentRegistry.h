@@ -15,6 +15,8 @@
 #include "ComponentDefinitions\TargetingComponent.h"
 #include "ComponentDefinitions\TaskComponent.h"
 #include "ComponentDefinitions\TransformComponent.h"
+
+// Begin dynamically allocated component specific includes.
 #include "DynamicAllocComponentDefinitions\SpatialPartitioningComponent.h"
 
 class ArgusComponentRegistry
@@ -422,6 +424,9 @@ public:
 		}
 	}
 #pragma endregion
+	
+	// Begin dynamically allocated component specific template specifiers.
+
 #pragma region SpatialPartitioningComponent
 private:
 	static std::unordered_map<uint16, SpatialPartitioningComponent> s_SpatialPartitioningComponents;

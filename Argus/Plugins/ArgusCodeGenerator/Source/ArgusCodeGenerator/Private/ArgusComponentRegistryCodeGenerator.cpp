@@ -35,7 +35,7 @@ void ArgusComponentRegistryCodeGenerator::GenerateComponentRegistryCode(const Ar
 	params.inComponentNames = parsedComponentData.m_componentNames;
 	params.inDynamicAllocComponentNames = parsedComponentData.m_dynamicAllocComponentNames;
 	params.inIncludeStatements = parsedComponentData.m_componentRegistryIncludeStatements;
-	params.inDynamicAllocIncludeStatements = parsedComponentData.m_dynamicAllocComponentDataAssetIncludeStatements;
+	params.inDynamicAllocIncludeStatements = parsedComponentData.m_dynamicAllocComponentRegistryIncludeStatements;
 
 	// Construct a directory path to component registry templates
 	const char* cStrTemplateDirectory = ARGUS_FSTRING_TO_CHAR(ArgusCodeGeneratorUtil::GetTemplateDirectory(s_componentRegistryTemplateDirectorySuffix));
