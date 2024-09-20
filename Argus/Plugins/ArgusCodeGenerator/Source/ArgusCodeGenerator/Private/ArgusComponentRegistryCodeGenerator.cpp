@@ -12,9 +12,12 @@ const char* ArgusComponentRegistryCodeGenerator::s_ecsTestsDirectorySuffix = "Te
 const char* ArgusComponentRegistryCodeGenerator::s_argusComponentRegistryHeaderTemplateFilename = "ArgusComponentRegistryHeaderTemplate.txt";
 const char* ArgusComponentRegistryCodeGenerator::s_argusComponentRegistryCppTemplateFilename = "ArgusComponentRegistryCppTemplate.txt";
 const char* ArgusComponentRegistryCodeGenerator::s_componentHeaderTemplateFilename = "ComponentHeaderTemplate.txt";
+const char* ArgusComponentRegistryCodeGenerator::s_dynamicAllocComponentHeaderTemplateFilename = "DynamicAllocComponentHeaderTemplate.txt";
 const char* ArgusComponentRegistryCodeGenerator::s_componentCppTemplateDefinitionsFilename = "ComponentCppTemplateDefinitions.txt";
+const char* ArgusComponentRegistryCodeGenerator::s_dynamicAllocComponentCppTemplateDefinitionsFilename = "DynamicAllocComponentCppTemplateDefinitions.txt";
 const char* ArgusComponentRegistryCodeGenerator::s_componentCppTemplateFlushFilename = "ComponentCppTemplateFlush.txt";
 const char* ArgusComponentRegistryCodeGenerator::s_componentCppTemplateResetFilename = "ComponentCppTemplateReset.txt";
+const char* ArgusComponentRegistryCodeGenerator::s_dynamicAllocComponentCppTemplateResetFilename = "DynamicAllocComponentCppTemplateReset.txt";
 const char* ArgusComponentRegistryCodeGenerator::s_argusComponentSizeTestsTemplateFilename = "ArgusComponentSizeTestsTemplate.txt";
 const char* ArgusComponentRegistryCodeGenerator::s_perComponentSizeTestsTemplateFilename = "PerComponentSizeTestsTemplate.txt";
 const char* ArgusComponentRegistryCodeGenerator::s_argusComponentRegistryHeaderFilename = "ArgusComponentRegistry.h";
@@ -32,6 +35,7 @@ void ArgusComponentRegistryCodeGenerator::GenerateComponentRegistryCode(const Ar
 	params.inComponentNames = parsedComponentData.m_componentNames;
 	params.inDynamicAllocComponentNames = parsedComponentData.m_dynamicAllocComponentNames;
 	params.inIncludeStatements = parsedComponentData.m_componentRegistryIncludeStatements;
+	params.inDynamicAllocIncludeStatements = parsedComponentData.m_dynamicAllocComponentDataAssetIncludeStatements;
 
 	// Construct a directory path to component registry templates
 	const char* cStrTemplateDirectory = ARGUS_FSTRING_TO_CHAR(ArgusCodeGeneratorUtil::GetTemplateDirectory(s_componentRegistryTemplateDirectorySuffix));
@@ -39,9 +43,12 @@ void ArgusComponentRegistryCodeGenerator::GenerateComponentRegistryCode(const Ar
 	params.argusComponentRegistryHeaderTemplateFilePath = std::string(cStrTemplateDirectory).append(s_argusComponentRegistryHeaderTemplateFilename);
 	params.argusComponentRegistryCppTemplateFilePath = std::string(cStrTemplateDirectory).append(s_argusComponentRegistryCppTemplateFilename);
 	params.componentHeaderTemplateFilePath = std::string(cStrTemplateDirectory).append(s_componentHeaderTemplateFilename);
+	params.dynamicAllocComponentHeaderTemplateFilePath = std::string(cStrTemplateDirectory).append(s_dynamicAllocComponentHeaderTemplateFilename);
 	params.componentCppTemplateDefinitionsFilePath = std::string(cStrTemplateDirectory).append(s_componentCppTemplateDefinitionsFilename);
+	params.dynamicAllocComponentCppTemplateDefinitionsFilePath = std::string(cStrTemplateDirectory).append(s_dynamicAllocComponentCppTemplateDefinitionsFilename);
 	params.componentCppTemplateResetFilePath = std::string(cStrTemplateDirectory).append(s_componentCppTemplateResetFilename);
 	params.componentCppTemplateFlushFilePath = std::string(cStrTemplateDirectory).append(s_componentCppTemplateFlushFilename);
+	params.dynamicAllocComponentCppTemplateResetFilePath = std::string(cStrTemplateDirectory).append(s_dynamicAllocComponentCppTemplateResetFilename);
 	params.argusComponentSizeTestsTemplateFilePath = std::string(cStrTemplateDirectory).append(s_argusComponentSizeTestsTemplateFilename);
 	params.perComponentSizeTestsTemplateFilePath = std::string(cStrTemplateDirectory).append(s_perComponentSizeTestsTemplateFilename);
 
@@ -87,6 +94,10 @@ bool ArgusComponentRegistryCodeGenerator::ParseComponentRegistryHeaderTemplateWi
 	std::vector<std::string> parsedLines = std::vector<std::string>();
 	didSucceed &= ArgusCodeGeneratorUtil::ParseComponentSpecificTemplate(params.componentHeaderTemplateFilePath, params.inComponentNames, parsedLines);
 
+	// Parse per dynamic alloc component template into one section
+	std::vector<std::string> parsedDynamicAllocLines = std::vector<std::string>();
+	didSucceed &= ArgusCodeGeneratorUtil::ParseComponentSpecificTemplate(params.dynamicAllocComponentHeaderTemplateFilePath, params.inDynamicAllocComponentNames, parsedDynamicAllocLines);
+
 	std::ifstream inHeaderStream = std::ifstream(params.argusComponentRegistryHeaderTemplateFilePath);
 	const FString ueHeaderFilePath = FString(params.argusComponentRegistryHeaderTemplateFilePath.c_str());
 	if (!inHeaderStream.is_open())
@@ -105,6 +116,17 @@ bool ArgusComponentRegistryCodeGenerator::ParseComponentRegistryHeaderTemplateWi
 				outFileContents.push_back(includeStatement);
 			}
 		}
+		else if (headerLineText.find("^^^^^") != std::string::npos)
+		{
+			for (std::string includeStatement : params.inDynamicAllocIncludeStatements)
+			{
+				outFileContents.push_back(includeStatement);
+			}
+		}
+		else if (headerLineText.find("%%%%%") != std::string::npos)
+		{
+			outFileContents.push_back(std::regex_replace(headerLineText, std::regex("%%%%%"), std::to_string(params.inComponentNames.size() + params.inDynamicAllocComponentNames.size())));
+		}
 		else if (headerLineText.find("#####") != std::string::npos)
 		{
 			for (std::string parsedLine : parsedLines)
@@ -112,17 +134,12 @@ bool ArgusComponentRegistryCodeGenerator::ParseComponentRegistryHeaderTemplateWi
 				outFileContents.push_back(parsedLine);
 			}
 		}
-		else if (headerLineText.find("^^^^^") != std::string::npos)
-		{
-			continue;
-		}
 		else if (headerLineText.find("&&&&&") != std::string::npos)
 		{
-			continue;
-		}
-		else if (headerLineText.find("%%%%%") != std::string::npos)
-		{
-			outFileContents.push_back(std::regex_replace(headerLineText, std::regex("%%%%%"), std::to_string(params.inComponentNames.size() + params.inDynamicAllocComponentNames.size())));
+			for (std::string parsedLine : parsedDynamicAllocLines)
+			{
+				outFileContents.push_back(parsedLine);
+			}
 		}
 		else
 		{
@@ -141,17 +158,21 @@ bool ArgusComponentRegistryCodeGenerator::ParseComponentRegistryCppTemplateWithR
 	std::vector<std::string> parsedDefinitionLines = std::vector<std::string>();
 	didSucceed &= ArgusCodeGeneratorUtil::ParseComponentSpecificTemplate(params.componentCppTemplateDefinitionsFilePath, params.inComponentNames, parsedDefinitionLines);
 
+	// Parse dynamic alloc definitions template into one section
+	std::vector<std::string> parsedDynamicAllocDefinitionLines = std::vector<std::string>();
+	didSucceed &= ArgusCodeGeneratorUtil::ParseComponentSpecificTemplate(params.dynamicAllocComponentCppTemplateDefinitionsFilePath, params.inDynamicAllocComponentNames, parsedDynamicAllocDefinitionLines);
+
 	// Parse reset template into one section
 	std::vector<std::string> parsedResetLines = std::vector<std::string>();
 	didSucceed &= ArgusCodeGeneratorUtil::ParseComponentSpecificTemplate(params.componentCppTemplateResetFilePath, params.inComponentNames, parsedResetLines);
 
-	// Parse reset template into one section
+	// Parse flush template into one section
 	std::vector<std::string> parsedFlushLines = std::vector<std::string>();
 	didSucceed &= ArgusCodeGeneratorUtil::ParseComponentSpecificTemplate(params.componentCppTemplateFlushFilePath, params.inComponentNames, parsedFlushLines);
 
-	// Parse per component template into one section
-	std::vector<std::string> parsedLines = std::vector<std::string>();
-	didSucceed &= ArgusCodeGeneratorUtil::ParseComponentSpecificTemplate(params.componentHeaderTemplateFilePath, params.inComponentNames, parsedLines);
+	// Parse reset template into one section
+	std::vector<std::string> parsedDynamicAllocResetLines = std::vector<std::string>();
+	didSucceed &= ArgusCodeGeneratorUtil::ParseComponentSpecificTemplate(params.dynamicAllocComponentCppTemplateResetFilePath, params.inDynamicAllocComponentNames, parsedDynamicAllocResetLines);
 
 	std::ifstream inCppStream = std::ifstream(params.argusComponentRegistryCppTemplateFilePath);
 	const FString ueCppFilePath = FString(params.argusComponentRegistryCppTemplateFilePath.c_str());
@@ -171,6 +192,13 @@ bool ArgusComponentRegistryCodeGenerator::ParseComponentRegistryCppTemplateWithR
 				outFileContents.push_back(parsedLine);
 			}
 		}
+		else if (cppLineText.find("^^^^^") != std::string::npos)
+		{
+			for (std::string parsedLine : parsedDynamicAllocDefinitionLines)
+			{
+				outFileContents.push_back(parsedLine);
+			}
+		}
 		else if (cppLineText.find("#####") != std::string::npos)
 		{
 			for (std::string parsedLine : parsedResetLines)
@@ -185,13 +213,12 @@ bool ArgusComponentRegistryCodeGenerator::ParseComponentRegistryCppTemplateWithR
 				outFileContents.push_back(parsedLine);
 			}
 		}
-		else if (cppLineText.find("^^^^^") != std::string::npos)
-		{
-			continue;
-		}
 		else if (cppLineText.find("&&&&&") != std::string::npos)
 		{
-			continue;
+			for (std::string parsedLine : parsedDynamicAllocResetLines)
+			{
+				outFileContents.push_back(parsedLine);
+			}
 		}
 		else
 		{

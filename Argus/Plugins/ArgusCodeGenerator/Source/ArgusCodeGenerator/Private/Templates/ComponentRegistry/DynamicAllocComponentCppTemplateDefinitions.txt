@@ -1,0 +1,3 @@
+#pragma region #####
+std::unordered_map<uint16, #####> ArgusComponentRegistry::s_#####s;
+#pragma endregion

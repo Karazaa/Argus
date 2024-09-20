@@ -18,9 +18,12 @@ private:
 	static const char* s_argusComponentRegistryHeaderTemplateFilename;
 	static const char* s_argusComponentRegistryCppTemplateFilename;
 	static const char* s_componentHeaderTemplateFilename;
+	static const char* s_dynamicAllocComponentHeaderTemplateFilename;
 	static const char* s_componentCppTemplateDefinitionsFilename;
+	static const char* s_dynamicAllocComponentCppTemplateDefinitionsFilename;
 	static const char* s_componentCppTemplateFlushFilename;
 	static const char* s_componentCppTemplateResetFilename;
+	static const char* s_dynamicAllocComponentCppTemplateResetFilename;
 	static const char* s_argusComponentSizeTestsTemplateFilename;
 	static const char* s_perComponentSizeTestsTemplateFilename;
 	static const char* s_argusComponentRegistryHeaderFilename;
@@ -32,15 +35,19 @@ private:
 	{
 		std::string argusComponentRegistryHeaderTemplateFilePath = "";
 		std::string componentHeaderTemplateFilePath = "";
+		std::string dynamicAllocComponentHeaderTemplateFilePath = "";
 		std::string argusComponentRegistryCppTemplateFilePath = "";
 		std::string componentCppTemplateDefinitionsFilePath = "";
+		std::string dynamicAllocComponentCppTemplateDefinitionsFilePath = "";
 		std::string componentCppTemplateFlushFilePath = "";
 		std::string componentCppTemplateResetFilePath = "";
+		std::string dynamicAllocComponentCppTemplateResetFilePath = "";
 		std::string argusComponentSizeTestsTemplateFilePath = "";
 		std::string perComponentSizeTestsTemplateFilePath = "";
 		std::vector<std::string> inComponentNames = std::vector<std::string>();
 		std::vector<std::string> inDynamicAllocComponentNames = std::vector<std::string>();
 		std::vector<std::string> inIncludeStatements = std::vector<std::string>();
+		std::vector<std::string> inDynamicAllocIncludeStatements = std::vector<std::string>();
 	};
 	static bool ParseComponentRegistryHeaderTemplateWithReplacements(const ParseComponentTemplateParams& params, std::vector<std::string>& outFileContents);
 	static bool ParseComponentRegistryCppTemplateWithReplacements(const ParseComponentTemplateParams& params, std::vector<std::string>& outFileContents);
