@@ -263,6 +263,54 @@ bool ArgusCodeGeneratorUtil::WriteOutFile(const std::string& filePath, const std
 	return true;
 }
 
+void ArgusCodeGeneratorUtil::CombineStaticAndDynamicComponentData(const ParseComponentDataOutput& input, CombinedComponentDataOutput& output)
+{
+	output.m_componentNames.clear();
+	output.m_componentNames.reserve(input.m_componentNames.size() + input.m_dynamicAllocComponentNames.size());
+	output.m_componentRegistryIncludeStatements.clear();
+	output.m_componentRegistryIncludeStatements.reserve(input.m_componentRegistryIncludeStatements.size() + input.m_dynamicAllocComponentRegistryIncludeStatements.size());
+	output.m_componentDataAssetIncludeStatements.clear();
+	output.m_componentDataAssetIncludeStatements.reserve(input.m_componentDataAssetIncludeStatements.size() + input.m_dynamicAllocComponentDataAssetIncludeStatements.size());
+	output.m_componentVariableData.clear();
+	output.m_componentVariableData.reserve(input.m_componentVariableData.size() + input.m_dynamicAllocComponentVariableData.size());
+
+	for (int i = 0; i < input.m_componentNames.size(); ++i)
+	{
+		output.m_componentNames.emplace_back(input.m_componentNames[i]);
+	}
+	for (int i = 0; i < input.m_dynamicAllocComponentNames.size(); ++i)
+	{
+		output.m_componentNames.emplace_back(input.m_dynamicAllocComponentNames[i]);
+	}
+
+	for (int i = 0; i < input.m_componentRegistryIncludeStatements.size(); ++i)
+	{
+		output.m_componentRegistryIncludeStatements.emplace_back(input.m_componentRegistryIncludeStatements[i]);
+	}
+	for (int i = 0; i < input.m_dynamicAllocComponentRegistryIncludeStatements.size(); ++i)
+	{
+		output.m_componentRegistryIncludeStatements.emplace_back(input.m_dynamicAllocComponentRegistryIncludeStatements[i]);
+	}
+
+	for (int i = 0; i < input.m_componentDataAssetIncludeStatements.size(); ++i)
+	{
+		output.m_componentDataAssetIncludeStatements.emplace_back(input.m_componentDataAssetIncludeStatements[i]);
+	}
+	for (int i = 0; i < input.m_dynamicAllocComponentDataAssetIncludeStatements.size(); ++i)
+	{
+		output.m_componentDataAssetIncludeStatements.emplace_back(input.m_dynamicAllocComponentDataAssetIncludeStatements[i]);
+	}
+
+	for (int i = 0; i < input.m_componentVariableData.size(); ++i)
+	{
+		output.m_componentVariableData.emplace_back(input.m_componentVariableData[i]);
+	}
+	for (int i = 0; i < input.m_dynamicAllocComponentVariableData.size(); ++i)
+	{
+		output.m_componentVariableData.emplace_back(input.m_dynamicAllocComponentVariableData[i]);
+	}
+}
+
 bool ArgusCodeGeneratorUtil::ParseStructDeclarations(std::string lineText, const std::string& componentDataAssetIncludeStatement, ParseComponentDataOutput& output, bool isDynamicallyAllocated)
 {
 	const size_t structDelimiterLength = std::strlen(s_structDelimiter);

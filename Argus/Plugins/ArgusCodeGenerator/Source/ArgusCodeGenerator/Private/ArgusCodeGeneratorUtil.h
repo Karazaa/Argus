@@ -46,6 +46,13 @@ public:
 		std::vector<std::string> m_dynamicAllocComponentDataAssetIncludeStatements;
 		std::vector< std::vector<ParsedVariableData> > m_dynamicAllocComponentVariableData;
 	};
+	struct CombinedComponentDataOutput
+	{
+		std::vector<std::string> m_componentNames;
+		std::vector<std::string> m_componentRegistryIncludeStatements;
+		std::vector<std::string> m_componentDataAssetIncludeStatements;
+		std::vector< std::vector<ParsedVariableData> > m_componentVariableData;
+	};
 	struct ParseStaticDataRecordsOutput
 	{
 		std::vector<std::string> m_staticDataIncludeStatements;
@@ -64,8 +71,9 @@ public:
 	static bool ParseStaticDataRecords(ParseStaticDataRecordsOutput& output);
 	static bool ParseStaticDataDataRecordsFromFile(const std::string& filePath, ParseStaticDataRecordsOutput& output);
 
-
 	static bool WriteOutFile(const std::string& filePath, const std::vector<std::string>& inFileContents);
+
+	static void CombineStaticAndDynamicComponentData(const ParseComponentDataOutput& input, CombinedComponentDataOutput& output);
 
 private:
 	static const char* s_componentDefinitionDirectoryName;

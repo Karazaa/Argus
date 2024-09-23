@@ -28,13 +28,16 @@ void ArgusDataAssetComponentCodeGenerator::GenerateDataAssetComponentsCode(const
 
 	UE_LOG(ArgusCodeGeneratorLog, Display, TEXT("[%s] Parsing from template files to generate component static data asset code."), ARGUS_FUNCNAME)
 
+	ArgusCodeGeneratorUtil::CombinedComponentDataOutput combinedComponentData;
+	ArgusCodeGeneratorUtil::CombineStaticAndDynamicComponentData(parsedComponentData, combinedComponentData);
+
 	// Parse header file
 	std::vector<ArgusCodeGeneratorUtil::FileWriteData> outParsedHeaderFileContents = std::vector<ArgusCodeGeneratorUtil::FileWriteData>();
-	didSucceed &= ParseDataAssetHeaderFileTemplateWithReplacements(parsedComponentData, componentDataHeaderTemplateFilePath, outParsedHeaderFileContents);
+	didSucceed &= ParseDataAssetHeaderFileTemplateWithReplacements(combinedComponentData, componentDataHeaderTemplateFilePath, outParsedHeaderFileContents);
 
 	// Parse cpp file
 	std::vector<ArgusCodeGeneratorUtil::FileWriteData> outParsedCppFileContents = std::vector<ArgusCodeGeneratorUtil::FileWriteData>();
-	didSucceed &= ParseDataAssetCppFileTemplateWithReplacements(parsedComponentData, componentDataCppTemplateFilePath, outParsedCppFileContents);
+	didSucceed &= ParseDataAssetCppFileTemplateWithReplacements(combinedComponentData, componentDataCppTemplateFilePath, outParsedCppFileContents);
 
 	// Construct a directory path to registry location and to tests location. 
 	FString componentDataDirectory = ArgusCodeGeneratorUtil::GetProjectDirectory();
@@ -54,12 +57,12 @@ void ArgusDataAssetComponentCodeGenerator::GenerateDataAssetComponentsCode(const
 
 	if (didSucceed)
 	{
-		DeleteObsoleteFiles(parsedComponentData, cStrComponentDataDirectory);
+		DeleteObsoleteFiles(combinedComponentData, cStrComponentDataDirectory);
 		UE_LOG(ArgusCodeGeneratorLog, Display, TEXT("[%s] Successfully wrote out Argus ECS static data asset code."), ARGUS_FUNCNAME)
 	}
 }
 
-bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetHeaderFileTemplateWithReplacements(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData, std::string& templateFilePath, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents)
+bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetHeaderFileTemplateWithReplacements(const ArgusCodeGeneratorUtil::CombinedComponentDataOutput& parsedComponentData, std::string& templateFilePath, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents)
 {
 	std::ifstream inHeaderStream = std::ifstream(templateFilePath);
 	const FString ueHeaderFilePath = FString(templateFilePath.c_str());
@@ -160,7 +163,7 @@ bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetHeaderFileTemplateWithR
 	return true;
 }
 
-bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetCppFileTemplateWithReplacements(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData, std::string& templateFilePath, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents)
+bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetCppFileTemplateWithReplacements(const ArgusCodeGeneratorUtil::CombinedComponentDataOutput& parsedComponentData, std::string& templateFilePath, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents)
 {
 	std::ifstream inCppStream = std::ifstream(templateFilePath);
 	const FString ueCppFilePath = FString(templateFilePath.c_str());
@@ -230,7 +233,7 @@ bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetCppFileTemplateWithRepl
 	return true;
 }
 
-void ArgusDataAssetComponentCodeGenerator::DeleteObsoleteFiles(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData, const char* componentDataDirectory)
+void ArgusDataAssetComponentCodeGenerator::DeleteObsoleteFiles(const ArgusCodeGeneratorUtil::CombinedComponentDataOutput& parsedComponentData, const char* componentDataDirectory)
 {
 	const std::string finalizedComponentDataDefinitionsDirectory = std::string(componentDataDirectory);
 	std::vector<std::string> filesToDelete = std::vector<std::string>();
