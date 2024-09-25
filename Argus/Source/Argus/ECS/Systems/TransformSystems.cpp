@@ -4,10 +4,11 @@
 #include "ArgusEntity.h"
 #include "Math/UnrealMathUtility.h"
 
-void TransformSystems::RunSystems(float deltaTime)
+bool TransformSystems::RunSystems(float deltaTime)
 {
 	ARGUS_TRACE(TransformSystems::RunSystems)
 
+	bool didMovementUpdateThisFrame = false;
 	for (uint16 i = 0; i < ArgusECSConstants::k_maxEntities; ++i)
 	{
 		ArgusEntity potentialEntity = ArgusEntity::RetrieveEntity(i);
@@ -26,8 +27,10 @@ void TransformSystems::RunSystems(float deltaTime)
 			continue;
 		}
 
-		ProcessMovementTaskCommands(deltaTime, components);
+		didMovementUpdateThisFrame |= ProcessMovementTaskCommands(deltaTime, components);
 	}
+
+	return didMovementUpdateThisFrame;
 }
 
 bool TransformSystems::TransformSystemsComponentArgs::AreComponentsValidCheck() const
@@ -40,13 +43,13 @@ bool TransformSystems::TransformSystemsComponentArgs::AreComponentsValidCheck() 
 	return true;
 }
 
-void TransformSystems::ProcessMovementTaskCommands(float deltaTime, const TransformSystemsComponentArgs& components)
+bool TransformSystems::ProcessMovementTaskCommands(float deltaTime, const TransformSystemsComponentArgs& components)
 {
 	ARGUS_TRACE(TransformSystems::ProcessMovementTaskCommands)
 
 	if (!components.AreComponentsValidCheck())
 	{
-		return;
+		return false;
 	}
 
 	switch (components.m_taskComponent->m_currentTask)
@@ -54,9 +57,9 @@ void TransformSystems::ProcessMovementTaskCommands(float deltaTime, const Transf
 		case ETask::MoveToLocation:
 		case ETask::MoveToEntity:
 			MoveAlongNavigationPath(deltaTime, components);
-			break;
+			return true;
 		default:
-			break;
+			return false;
 	}
 }
 

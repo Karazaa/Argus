@@ -7,7 +7,7 @@
 class TransformSystems
 {
 public:
-	static void RunSystems(float deltaTime);
+	static bool RunSystems(float deltaTime);
 
 	struct TransformSystemsComponentArgs
 	{
@@ -18,7 +18,7 @@ public:
 
 		bool AreComponentsValidCheck() const;
 	};
-	static void ProcessMovementTaskCommands(float deltaTime, const TransformSystemsComponentArgs& components);
+	static bool ProcessMovementTaskCommands(float deltaTime, const TransformSystemsComponentArgs& components);
 	static void MoveAlongNavigationPath(float deltaTime, const TransformSystemsComponentArgs& components);
 	static void FaceTowardsLocationXY(TransformComponent* transformComponent, FVector vectorFromTransformToTarget);
 	static void FindEntitiesWithinXYBounds(FVector2D minXY, FVector2D maxXY, TArray<ArgusEntity>& outEntitiesWithinBounds);

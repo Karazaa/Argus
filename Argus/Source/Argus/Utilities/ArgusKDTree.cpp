@@ -46,7 +46,7 @@ void ArgusKDTree::ClearNodeRecursive(ArgusKDTreeNode* node)
 
 void ArgusKDTree::FlushAllNodes()
 {
-	ARGUS_TRACE(KDTree::FlushAllNodes)
+	ARGUS_TRACE(ArgusKDTree::FlushAllNodes)
 
 	if (m_rootNode)
 	{
@@ -137,7 +137,7 @@ ArgusKDTree::~ArgusKDTree()
 
 void ArgusKDTree::InsertArgusEntityIntoKDTree(const ArgusEntity& entityToRepresent)
 {
-	ARGUS_TRACE(KDTree::InsertArgusEntityIntoKDTree)
+	ARGUS_TRACE(ArgusKDTree::InsertArgusEntityIntoKDTree)
 
 	if (!entityToRepresent)
 	{
@@ -162,7 +162,7 @@ void ArgusKDTree::InsertArgusEntityIntoKDTree(const ArgusEntity& entityToReprese
 
 void ArgusKDTree::RebuildKDTreeForAllArgusEntities()
 {
-	ARGUS_TRACE(KDTree::RebuildKDTreeForAllArgusEntities)
+	ARGUS_TRACE(ArgusKDTree::RebuildKDTreeForAllArgusEntities)
 
 	FlushAllNodes();
 	for (uint16 i = 0; i < ArgusECSConstants::k_maxEntities; ++i)
