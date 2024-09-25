@@ -50,39 +50,35 @@ bool ArgusComponentHealthComponentPersistenceTest::RunTest(const FString& Parame
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentSpatialPartitioningComponentPersistenceTest, "Argus.ECS.Component.SpatialPartitioningComponent.Persistence", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusComponentSpatialPartitioningComponentPersistenceTest::RunTest(const FString& Parameters)
 {
-	const float expectedSetDummyValue = 500.0f;
-	const float expectedPostResetDummyValue = 0.0f;
-
 	ArgusEntity::FlushAllEntities();
 
 	ArgusEntity entity = ArgusEntity::CreateEntity();
 	SpatialPartitioningComponent* spatialPartitioningComponent = entity.AddComponent<SpatialPartitioningComponent>();
+	entity.AddComponent<TransformComponent>();
 
 	if (!spatialPartitioningComponent)
 	{
 		return false;
 	}
 
-	spatialPartitioningComponent->m_dummyValue = expectedSetDummyValue;
+	spatialPartitioningComponent->m_argusKDTree.InsertArgusEntityIntoKDTree(entity);
 	spatialPartitioningComponent = entity.GetComponent<SpatialPartitioningComponent>();
 
-#pragma region Test SpatialPartitioningComponent setting dummy value.
-	TestEqual
+#pragma region Test SpatialPartitioningComponent by inserting the source entity into the KD Tree.
+	TestTrue
 	(
-		FString::Printf(TEXT("[%s] Creating a %s, setting it to %d, then checking the value is %d on retrieval."), ARGUS_FUNCNAME, ARGUS_NAMEOF(SpatialPartitioningComponent), expectedSetDummyValue, expectedSetDummyValue),
-		spatialPartitioningComponent->m_dummyValue,
-		expectedSetDummyValue
+		FString::Printf(TEXT("[%s] Creating a %s, inserting an %s, then checking that it is still there after retrieval."), ARGUS_FUNCNAME, ARGUS_NAMEOF(SpatialPartitioningComponent), ARGUS_NAMEOF(ArgusEntity)),
+		spatialPartitioningComponent->m_argusKDTree.DoesArgusEntityExistInKDTree(entity)
 	);
 #pragma endregion
 
 	*spatialPartitioningComponent = SpatialPartitioningComponent();
 
 #pragma region Test that resetting a SpatialPartitioningComponent returns to the default value.
-	TestEqual
+	TestFalse
 	(
-		FString::Printf(TEXT("[%s] Creating a %s, setting it to %d, resetting it, then checking the value is %d after reset."), ARGUS_FUNCNAME, ARGUS_NAMEOF(HealthComponent), expectedSetDummyValue, expectedPostResetDummyValue),
-		spatialPartitioningComponent->m_dummyValue,
-		expectedPostResetDummyValue
+		FString::Printf(TEXT("[%s] Creating a %s, inserting an %s, resetting it, then checking the inserted %s is not present."), ARGUS_FUNCNAME, ARGUS_NAMEOF(SpatialPartitioningComponent), ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(ArgusEntity)),
+		spatialPartitioningComponent->m_argusKDTree.DoesArgusEntityExistInKDTree(entity)
 	);
 #pragma endregion
 

@@ -2,10 +2,12 @@
 
 #pragma once
 
+#include "ArgusKDTree.h"
+#include "ArgusMacros.h"
 #include "CoreMinimal.h"
 
 struct SpatialPartitioningComponent
 {
-	// Spatial Partitioning data structures go here!
-	float m_dummyValue = 0.0f;
+	ARGUS_IGNORE()
+	ArgusKDTree m_argusKDTree;
 };

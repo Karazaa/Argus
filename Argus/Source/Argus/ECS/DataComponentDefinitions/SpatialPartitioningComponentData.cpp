@@ -7,7 +7,7 @@
 void USpatialPartitioningComponentData::InstantiateComponentForEntity(ArgusEntity& entity) const
 {
 	SpatialPartitioningComponent* SpatialPartitioningComponentRef = entity.AddComponent<SpatialPartitioningComponent>();
-	SpatialPartitioningComponentRef->m_dummyValue = m_dummyValue;
+	SpatialPartitioningComponentRef->m_argusKDTree = m_argusKDTree;
 }
 
 bool USpatialPartitioningComponentData::MatchesType(UComponentData* other) const

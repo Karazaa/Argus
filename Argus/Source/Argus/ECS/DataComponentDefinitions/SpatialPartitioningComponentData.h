@@ -12,8 +12,7 @@ class ARGUS_API USpatialPartitioningComponentData : public UComponentData
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere)
-	float m_dummyValue = 0.0f;
+	ArgusKDTree m_argusKDTree;
 
 	void InstantiateComponentForEntity(ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;
