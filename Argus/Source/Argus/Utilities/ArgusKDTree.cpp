@@ -65,25 +65,25 @@ void ArgusKDTree::InsertNodeIntoKDTreeRecursive(ArgusKDTreeNode* iterationNode, 
 
 	uint16 dimension = depth % 3u;
 
-	float interationNodeValue = 0.0f;
+	float iterationNodeValue = 0.0f;
 	float noteToInsertValue = 0.0f;
 	switch (dimension)
 	{
 		case 0:
-			interationNodeValue = iterationNode->m_worldSpaceLocation.X;
+			iterationNodeValue = iterationNode->m_worldSpaceLocation.X;
 			noteToInsertValue = nodeToInsert->m_worldSpaceLocation.X;
 			break;
 		case 1:
-			interationNodeValue = iterationNode->m_worldSpaceLocation.Y;
+			iterationNodeValue = iterationNode->m_worldSpaceLocation.Y;
 			noteToInsertValue = nodeToInsert->m_worldSpaceLocation.Y;
 			break;
 		case 2:
-			interationNodeValue = iterationNode->m_worldSpaceLocation.Z;
+			iterationNodeValue = iterationNode->m_worldSpaceLocation.Z;
 			noteToInsertValue = nodeToInsert->m_worldSpaceLocation.Z;
 			break;
 	}
 
-	if (noteToInsertValue < interationNodeValue)
+	if (noteToInsertValue < iterationNodeValue)
 	{
 		if (!iterationNode->m_leftChild)
 		{
@@ -128,6 +128,51 @@ bool ArgusKDTree::SearchForEntityIdRecursive(ArgusKDTreeNode* node, uint16 entit
 	}
 
 	return false;
+}
+
+uint16 ArgusKDTree::FindArgusEntityIdClosestToLocationRecursive(ArgusKDTreeNode* iterationNode, const FVector& targetLocation, uint16 depth) const
+{
+	if (!iterationNode)
+	{
+		return ArgusECSConstants::k_maxEntities;
+	}
+
+	uint16 dimension = depth % 3u;
+
+	ArgusKDTreeNode* firstBranch = nullptr;
+	ArgusKDTreeNode* secondBranch = nullptr;
+
+	float iterationNodeValue = 0.0f;
+	float targetLocationValue = 0.0f;
+	switch (dimension)
+	{
+		case 0:
+			iterationNodeValue = iterationNode->m_worldSpaceLocation.X;
+			targetLocationValue = targetLocation.X;
+			break;
+		case 1:
+			iterationNodeValue = iterationNode->m_worldSpaceLocation.Y;
+			targetLocationValue = targetLocation.Y;
+			break;
+		case 2:
+			iterationNodeValue = iterationNode->m_worldSpaceLocation.Z;
+			targetLocationValue = targetLocation.Z;
+			break;
+	}
+
+	if (targetLocationValue < iterationNodeValue)
+	{
+		firstBranch = iterationNode->m_leftChild;
+		secondBranch = iterationNode->m_rightChild;
+	}
+	else
+	{
+		firstBranch = iterationNode->m_rightChild;
+		secondBranch = iterationNode->m_leftChild;
+	}
+
+	// TODO JAMES: Finish the rest of this method.
+	return 0u;
 }
 
 ArgusKDTree::~ArgusKDTree()
@@ -179,4 +224,14 @@ bool ArgusKDTree::DoesArgusEntityExistInKDTree(const ArgusEntity& entityToRepres
 	}
 
 	return SearchForEntityIdRecursive(m_rootNode, entityToRepresent.GetId());
+}
+
+uint16 ArgusKDTree::FindArgusEntityIdClosestToLocation(const FVector& location) const
+{
+	if (!m_rootNode)
+	{
+		return ArgusECSConstants::k_maxEntities;
+	}
+
+	return FindArgusEntityIdClosestToLocationRecursive(m_rootNode, location, 0u);
 }

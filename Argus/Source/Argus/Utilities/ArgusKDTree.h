@@ -29,6 +29,8 @@ private:
 
 	bool SearchForEntityIdRecursive(ArgusKDTreeNode* node, uint16 entityId) const;
 
+	uint16 FindArgusEntityIdClosestToLocationRecursive(ArgusKDTreeNode* iterationNode, const FVector& targetLocation, uint16 depth) const;
+
 public:
 	~ArgusKDTree();
 
@@ -36,4 +38,6 @@ public:
 	void RebuildKDTreeForAllArgusEntities();
 
 	bool DoesArgusEntityExistInKDTree(const ArgusEntity& entityToRepresent) const;
+
+	uint16 FindArgusEntityIdClosestToLocation(const FVector& location) const;
 };
