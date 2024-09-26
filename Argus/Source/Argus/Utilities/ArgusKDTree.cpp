@@ -105,7 +105,7 @@ void ArgusKDTree::InsertNodeIntoKDTreeRecursive(ArgusKDTreeNode* iterationNode, 
 	}
 }
 
-bool ArgusKDTree::SearchForEntityIdRecursive(ArgusKDTreeNode* node, uint16 entityId) const
+bool ArgusKDTree::SearchForEntityIdRecursive(const ArgusKDTreeNode* node, uint16 entityId) const
 {
 	if (!node)
 	{
@@ -130,11 +130,11 @@ bool ArgusKDTree::SearchForEntityIdRecursive(ArgusKDTreeNode* node, uint16 entit
 	return false;
 }
 
-uint16 ArgusKDTree::FindArgusEntityIdClosestToLocationRecursive(ArgusKDTreeNode* iterationNode, const FVector& targetLocation, uint16 depth) const
+const ArgusKDTree::ArgusKDTreeNode* ArgusKDTree::FindArgusEntityIdClosestToLocationRecursive(const ArgusKDTreeNode* iterationNode, const FVector& targetLocation, uint16 depth) const
 {
 	if (!iterationNode)
 	{
-		return ArgusECSConstants::k_maxEntities;
+		return nullptr;
 	}
 
 	uint16 dimension = depth % 3u;
@@ -171,8 +171,40 @@ uint16 ArgusKDTree::FindArgusEntityIdClosestToLocationRecursive(ArgusKDTreeNode*
 		secondBranch = iterationNode->m_leftChild;
 	}
 
-	// TODO JAMES: Finish the rest of this method.
-	return 0u;
+	const ArgusKDTreeNode* potentialNearestNeighboor = FindArgusEntityIdClosestToLocationRecursive(firstBranch, targetLocation, depth + 1);
+	potentialNearestNeighboor = ChooseNodeCloserToTarget(iterationNode, potentialNearestNeighboor, targetLocation);
+
+	const float potentialDistanceSquared = FVector::DistSquared(potentialNearestNeighboor->m_worldSpaceLocation, targetLocation);
+	const float distanceAlongDimensionSquared = FMath::Square(iterationNodeValue - targetLocationValue);
+
+	if (potentialDistanceSquared > distanceAlongDimensionSquared)
+	{
+		potentialNearestNeighboor = FindArgusEntityIdClosestToLocationRecursive(secondBranch, targetLocation, depth + 1);
+		potentialNearestNeighboor = ChooseNodeCloserToTarget(iterationNode, potentialNearestNeighboor, targetLocation);
+	}
+
+	return potentialNearestNeighboor;
+}
+
+const ArgusKDTree::ArgusKDTreeNode* ArgusKDTree::ChooseNodeCloserToTarget(const ArgusKDTreeNode* node0, const ArgusKDTreeNode* node1, const FVector& targetLocation) const
+{
+	if (!node0)
+	{
+		return node1;
+	}
+	if (!node1)
+	{
+		return node0;
+	}
+
+	if (FVector::DistSquared(node0->m_worldSpaceLocation, targetLocation) > FVector::DistSquared(node1->m_worldSpaceLocation, targetLocation))
+	{
+		return node1;
+	}
+	else
+	{
+		return node0;
+	}
 }
 
 ArgusKDTree::~ArgusKDTree()
@@ -233,5 +265,12 @@ uint16 ArgusKDTree::FindArgusEntityIdClosestToLocation(const FVector& location) 
 		return ArgusECSConstants::k_maxEntities;
 	}
 
-	return FindArgusEntityIdClosestToLocationRecursive(m_rootNode, location, 0u);
+	const ArgusKDTreeNode* foundNode = FindArgusEntityIdClosestToLocationRecursive(m_rootNode, location, 0u);
+
+	if (!foundNode)
+	{
+		return ArgusECSConstants::k_maxEntities;
+	}
+
+	return foundNode->m_entityId;
 }

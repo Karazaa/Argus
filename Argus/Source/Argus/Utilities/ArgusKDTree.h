@@ -27,9 +27,10 @@ private:
 	void FlushAllNodes();
 	void InsertNodeIntoKDTreeRecursive(ArgusKDTreeNode* iterationNode, ArgusKDTreeNode* nodeToInsert, uint16 depth);
 
-	bool SearchForEntityIdRecursive(ArgusKDTreeNode* node, uint16 entityId) const;
+	bool SearchForEntityIdRecursive(const ArgusKDTreeNode* node, uint16 entityId) const;
 
-	uint16 FindArgusEntityIdClosestToLocationRecursive(ArgusKDTreeNode* iterationNode, const FVector& targetLocation, uint16 depth) const;
+	const ArgusKDTreeNode* FindArgusEntityIdClosestToLocationRecursive(const ArgusKDTreeNode* iterationNode, const FVector& targetLocation, uint16 depth) const;
+	const ArgusKDTreeNode* ChooseNodeCloserToTarget(const ArgusKDTreeNode* node0, const ArgusKDTreeNode* node1, const FVector& targetLocation) const;
 
 public:
 	~ArgusKDTree();
