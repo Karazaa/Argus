@@ -101,7 +101,7 @@ void ArgusKDTree::InsertNodeIntoKDTreeRecursive(ArgusKDTreeNode* iterationNode, 
 			return;
 		}
 
-		InsertNodeIntoKDTreeRecursive(iterationNode->m_leftChild, nodeToInsert, depth + 1u);
+		InsertNodeIntoKDTreeRecursive(iterationNode->m_rightChild, nodeToInsert, depth + 1u);
 	}
 }
 
