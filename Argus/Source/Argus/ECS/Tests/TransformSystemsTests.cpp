@@ -100,6 +100,7 @@ bool TransformSystemsMoveAlongPathTest::RunTest(const FString& Parameters)
 	ArgusEntity entity = ArgusEntity::CreateEntity();
 	TransformSystems::TransformSystemsComponentArgs components;
 
+	components.m_entity = entity;
 	components.m_taskComponent = entity.AddComponent<TaskComponent>();
 	components.m_transformComponent = entity.AddComponent<TransformComponent>();
 	components.m_navigationComponent = entity.AddComponent<NavigationComponent>();
