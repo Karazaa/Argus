@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ArgusECSConstants.h"
 
 class ArgusEntity;
 
@@ -28,8 +29,8 @@ private:
 
 	bool SearchForEntityIdRecursive(const ArgusKDTreeNode* node, uint16 entityId) const;
 
-	const ArgusKDTreeNode* FindArgusEntityIdClosestToLocationRecursive(const ArgusKDTreeNode* iterationNode, const FVector& targetLocation, uint16 depth) const;
-	const ArgusKDTreeNode* ChooseNodeCloserToTarget(const ArgusKDTreeNode* node0, const ArgusKDTreeNode* node1, const FVector& targetLocation) const;
+	const ArgusKDTreeNode* FindArgusEntityIdClosestToLocationRecursive(const ArgusKDTreeNode* iterationNode, const FVector& targetLocation, uint16 entityIdToIgnore, uint16 depth) const;
+	const ArgusKDTreeNode* ChooseNodeCloserToTarget(const ArgusKDTreeNode* node0, const ArgusKDTreeNode* node1, const FVector& targetLocation, uint16 entityIdToIgnore) const;
 
 public:
 	~ArgusKDTree();
@@ -40,5 +41,6 @@ public:
 
 	bool DoesArgusEntityExistInKDTree(const ArgusEntity& entityToRepresent) const;
 
-	uint16 FindArgusEntityIdClosestToLocation(const FVector& location) const;
+	uint16 FindArgusEntityIdClosestToLocation(const FVector& location, uint16 entityIdToIgnore = ArgusECSConstants::k_maxEntities) const;
+	uint16 FindOtherArgusEntityIdClosestArgusEntity(const ArgusEntity& entityToSearchAround) const;
 };

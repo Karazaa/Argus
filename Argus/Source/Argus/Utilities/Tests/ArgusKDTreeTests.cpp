@@ -5,23 +5,30 @@
 
 #if WITH_AUTOMATION_TESTS
 
+const FVector location0 = FVector(50.0f, 50.0f, 0.0f);
+const FVector location1 = FVector(10.0f, 50.0f, 0.0f);
+const FVector location2 = FVector(100.0f, 50.0f, 0.0f);
+const FVector location3 = FVector(10.0f, 70.0f, 0.0f);
+const FVector location4 = FVector(100.0f, 50.0f, 10.0f);
+const FVector location5 = FVector(110.0f, 40.0f, 20.0f);
+
+const uint16 id0 = 100u;
+const uint16 id1 = 101u;
+const uint16 id2 = 102u;
+const uint16 id3 = 103u;
+const uint16 id4 = 104u;
+
 struct CollectionOfArgusEntities
 {
-	const ArgusEntity entity1 = ArgusEntity::CreateEntity();
-	const ArgusEntity entity2 = ArgusEntity::CreateEntity();
-	const ArgusEntity entity3 = ArgusEntity::CreateEntity();
-	const ArgusEntity entity4 = ArgusEntity::CreateEntity();
-	const ArgusEntity entity0 = ArgusEntity::CreateEntity();
+	const ArgusEntity entity0 = ArgusEntity::CreateEntity(id0);
+	const ArgusEntity entity1 = ArgusEntity::CreateEntity(id1);
+	const ArgusEntity entity2 = ArgusEntity::CreateEntity(id2);
+	const ArgusEntity entity3 = ArgusEntity::CreateEntity(id3);
+	const ArgusEntity entity4 = ArgusEntity::CreateEntity(id4);
 };
 
 void PopulateKDTreeForTests(ArgusKDTree& tree, CollectionOfArgusEntities& entities, bool insertIntoTree)
 {
-	const FVector location0 = FVector(50.0f, 50.0f, 0.0f);
-	const FVector location1 = FVector(10.0f, 50.0f, 0.0f);
-	const FVector location2 = FVector(100.0f, 50.0f, 0.0f);
-	const FVector location3 = FVector(10.0f, 70.0f, 0.0f);
-	const FVector location4 = FVector(100.0f, 50.0f, 10.0f);
-
 	TransformComponent* transformComponent0 = entities.entity0.AddComponent<TransformComponent>();
 	TransformComponent* transformComponent1 = entities.entity1.AddComponent<TransformComponent>();
 	TransformComponent* transformComponent2 = entities.entity2.AddComponent<TransformComponent>();
@@ -143,6 +150,129 @@ bool ArgusUtilitiesArgusKDTreeRebuildKDTreeForAllArgusEntitiesTest::RunTest(cons
 		tree.DoesArgusEntityExistInKDTree(entities.entity2) && 
 		tree.DoesArgusEntityExistInKDTree(entities.entity3) && 
 		tree.DoesArgusEntityExistInKDTree(entities.entity4)
+	);
+#pragma endregion
+
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusKDTreeFindOtherArgusEntityIdClosestArgusEntityTest, "Argus.Utilities.ArgusKDTree.FindOtherArgusEntityIdClosestArgusEntityTest", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+bool ArgusUtilitiesArgusKDTreeFindOtherArgusEntityIdClosestArgusEntityTest::RunTest(const FString& Parameters)
+{
+	ArgusEntity::FlushAllEntities();
+	ArgusKDTree tree;
+	CollectionOfArgusEntities entities;
+	PopulateKDTreeForTests(tree, entities, true);
+
+	uint16 nearestEntityIdToCenter = tree.FindOtherArgusEntityIdClosestArgusEntity(entities.entity0);
+
+#pragma region Test that we can find the nearest entity to the center entity
+	TestEqual
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Creating a %s, creating some %s, then checking which %s is closest to center %s via %s"),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(ArgusKDTree),
+			ARGUS_NAMEOF(ArgusEntity),
+			ARGUS_NAMEOF(ArgusEntity),
+			ARGUS_NAMEOF(ArgusEntity),
+			ARGUS_NAMEOF(ArgusKDTree::FindOtherArgusEntityIdClosestArgusEntity)
+		),
+		nearestEntityIdToCenter,
+		id1
+	);
+#pragma endregion
+
+	uint16 nearestEntityIdToLeftCenter = tree.FindOtherArgusEntityIdClosestArgusEntity(entities.entity1);
+
+#pragma region Test that we can find the nearest entity to the center-left entity
+	TestEqual
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Creating a %s, creating some %s, then checking which %s is closest to center-left %s via %s"),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(ArgusKDTree),
+			ARGUS_NAMEOF(ArgusEntity),
+			ARGUS_NAMEOF(ArgusEntity),
+			ARGUS_NAMEOF(ArgusEntity),
+			ARGUS_NAMEOF(ArgusKDTree::FindOtherArgusEntityIdClosestArgusEntity)
+		),
+		nearestEntityIdToLeftCenter,
+		id3
+	);
+#pragma endregion
+
+	uint16 nearestEntityIdToRightCenter = tree.FindOtherArgusEntityIdClosestArgusEntity(entities.entity2);
+
+#pragma region Test that we can find the nearest entity to the center-right entity
+	TestEqual
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Creating a %s, creating some %s, then checking which %s is closest to center-right %s via %s"),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(ArgusKDTree),
+			ARGUS_NAMEOF(ArgusEntity),
+			ARGUS_NAMEOF(ArgusEntity),
+			ARGUS_NAMEOF(ArgusEntity),
+			ARGUS_NAMEOF(ArgusKDTree::FindOtherArgusEntityIdClosestArgusEntity)
+		),
+		nearestEntityIdToRightCenter,
+		id4
+	);
+#pragma endregion
+
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusKDTreeFindArgusEntityIdClosestToLocationTest, "Argus.Utilities.ArgusKDTree.FindArgusEntityIdClosestToLocationTest", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+bool ArgusUtilitiesArgusKDTreeFindArgusEntityIdClosestToLocationTest::RunTest(const FString& Parameters)
+{
+	ArgusEntity::FlushAllEntities();
+	ArgusKDTree tree;
+	CollectionOfArgusEntities entities;
+	PopulateKDTreeForTests(tree, entities, true);
+
+	uint16 nearestEntityIdToCenter = tree.FindArgusEntityIdClosestToLocation(location0);
+	;
+
+#pragma region Test that we can find the nearest entity to the center entity
+	TestEqual
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Creating a %s, creating some %s, then checking which %s is closest to center %s via %s"),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(ArgusKDTree),
+			ARGUS_NAMEOF(ArgusEntity),
+			ARGUS_NAMEOF(ArgusEntity),
+			ARGUS_NAMEOF(ArgusEntity),
+			ARGUS_NAMEOF(ArgusKDTree::FindArgusEntityIdClosestToLocation)
+		),
+		nearestEntityIdToCenter,
+		id0
+	);
+#pragma endregion
+
+	uint16 nearestEntityIdToZPoint = tree.FindArgusEntityIdClosestToLocation(location5);
+
+#pragma region Test that we can find the nearest entity to a non-entity z location
+	TestEqual
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Creating a %s, creating some %s, then checking which %s is closest to a z point %s via %s"),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(ArgusKDTree),
+			ARGUS_NAMEOF(ArgusEntity),
+			ARGUS_NAMEOF(ArgusEntity),
+			ARGUS_NAMEOF(ArgusEntity),
+			ARGUS_NAMEOF(ArgusKDTree::FindArgusEntityIdClosestToLocation)
+		),
+		nearestEntityIdToZPoint,
+		id4
 	);
 #pragma endregion
 
