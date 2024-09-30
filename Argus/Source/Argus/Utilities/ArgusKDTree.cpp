@@ -275,14 +275,19 @@ bool ArgusKDTree::DoesArgusEntityExistInKDTree(const ArgusEntity& entityToRepres
 	return SearchForEntityIdRecursive(m_rootNode, entityToRepresent.GetId());
 }
 
-uint16 ArgusKDTree::FindArgusEntityIdClosestToLocation(const FVector& location, uint16 entityIdToIgnore) const
+uint16 ArgusKDTree::FindArgusEntityIdClosestToLocation(const FVector& location) const
+{
+	return FindArgusEntityIdClosestToLocation(location, ArgusEntity::s_emptyEntity);
+}
+
+uint16 ArgusKDTree::FindArgusEntityIdClosestToLocation(const FVector& location, const ArgusEntity& entityToIgnore) const
 {
 	if (!m_rootNode)
 	{
 		return ArgusECSConstants::k_maxEntities;
 	}
 
-	const ArgusKDTreeNode* foundNode = FindArgusEntityIdClosestToLocationRecursive(m_rootNode, location, entityIdToIgnore, 0u);
+	const ArgusKDTreeNode* foundNode = FindArgusEntityIdClosestToLocationRecursive(m_rootNode, location, entityToIgnore.GetId(), 0u);
 
 	if (!foundNode)
 	{
@@ -300,5 +305,5 @@ uint16 ArgusKDTree::FindOtherArgusEntityIdClosestArgusEntity(const ArgusEntity& 
 		return ArgusECSConstants::k_maxEntities;
 	}
 
-	return FindArgusEntityIdClosestToLocation(transformComponent->m_transform.GetLocation(), entityToSearchAround.GetId());
+	return FindArgusEntityIdClosestToLocation(transformComponent->m_transform.GetLocation(), entityToSearchAround);
 }

@@ -2,6 +2,7 @@
 
 #include "TransformSystems.h"
 #include "ArgusEntity.h"
+#include "ArgusSystemsManager.h"
 #include "Math/UnrealMathUtility.h"
 
 bool TransformSystems::RunSystems(float deltaTime)
@@ -18,6 +19,7 @@ bool TransformSystems::RunSystems(float deltaTime)
 		}
 
 		TransformSystemsComponentArgs components;
+		components.m_entity = potentialEntity;
 		components.m_taskComponent = potentialEntity.GetComponent<TaskComponent>();
 		components.m_transformComponent = potentialEntity.GetComponent<TransformComponent>();
 		components.m_navigationComponent = potentialEntity.GetComponent<NavigationComponent>();
@@ -35,9 +37,9 @@ bool TransformSystems::RunSystems(float deltaTime)
 
 bool TransformSystems::TransformSystemsComponentArgs::AreComponentsValidCheck() const
 {
-	if (!m_taskComponent || !m_navigationComponent || !m_transformComponent || !m_targetingComponent)
+	if (!m_entity || !m_taskComponent || !m_navigationComponent || !m_transformComponent || !m_targetingComponent)
 	{
-		UE_LOG(ArgusECSLog, Error, TEXT("[%s] Transform Systems were run with invalid component arguments passed."), ARGUS_FUNCNAME);
+		UE_LOG(ArgusECSLog, Error, TEXT("[%s] Transform Systems were run with invalid entity or component arguments passed."), ARGUS_FUNCNAME);
 		return false;
 	}
 	return true;
@@ -57,6 +59,7 @@ bool TransformSystems::ProcessMovementTaskCommands(float deltaTime, const Transf
 		case ETask::MoveToLocation:
 		case ETask::MoveToEntity:
 			MoveAlongNavigationPath(deltaTime, components);
+			ProcessCollisions(deltaTime, components);
 			return true;
 		default:
 			return false;
@@ -166,5 +169,50 @@ void TransformSystems::OnCompleteNavigationPath(const TransformSystemsComponentA
 		components.m_navigationComponent->ResetPath();
 		components.m_targetingComponent->m_targetLocation = components.m_navigationComponent->m_queuedWaypoints.front();
 		components.m_navigationComponent->m_queuedWaypoints.pop();
+	}
+}
+
+void TransformSystems::ProcessCollisions(float deltaTime, const TransformSystemsComponentArgs& components)
+{
+	const ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusSystemsManager::s_singletonEntityId);
+	if (!singletonEntity)
+	{
+		return;
+	}
+
+	if (!components.AreComponentsValidCheck())
+	{
+		return;
+	}
+
+	const SpatialPartitioningComponent* const spatialPartitioningComponent = singletonEntity.GetComponent<SpatialPartitioningComponent>();
+	if (!spatialPartitioningComponent)
+	{
+		return;
+	}
+
+	const uint16 nearestOtherEntityId = spatialPartitioningComponent->m_argusKDTree.FindOtherArgusEntityIdClosestArgusEntity(components.m_entity);
+	if (nearestOtherEntityId == ArgusECSConstants::k_maxEntities)
+	{
+		return;
+	}
+
+	ArgusEntity nearestOtherEntity = ArgusEntity::RetrieveEntity(nearestOtherEntityId);
+	if (!nearestOtherEntity)
+	{
+		return;
+	}
+
+	const TransformComponent* const nearestOtherEntityTransformComponent = nearestOtherEntity.GetComponent<TransformComponent>();
+	if (!nearestOtherEntityTransformComponent)
+	{
+		return;
+	}
+
+	const float distanceSquared = FVector::DistSquared(nearestOtherEntityTransformComponent->m_transform.GetLocation(), components.m_transformComponent->m_transform.GetLocation());
+	if (distanceSquared < FMath::Square(ArgusECSConstants::k_defaultPathFindingAgentRadius))
+	{
+		// TODO JAMES: Actually do collision rerouting
+		return;
 	}
 }

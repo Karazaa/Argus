@@ -41,6 +41,7 @@ public:
 
 	bool DoesArgusEntityExistInKDTree(const ArgusEntity& entityToRepresent) const;
 
-	uint16 FindArgusEntityIdClosestToLocation(const FVector& location, uint16 entityIdToIgnore = ArgusECSConstants::k_maxEntities) const;
+	uint16 FindArgusEntityIdClosestToLocation(const FVector& location) const;
+	uint16 FindArgusEntityIdClosestToLocation(const FVector& location, const ArgusEntity& entityToIgnore) const;
 	uint16 FindOtherArgusEntityIdClosestArgusEntity(const ArgusEntity& entityToSearchAround) const;
 };

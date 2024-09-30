@@ -11,6 +11,7 @@ public:
 
 	struct TransformSystemsComponentArgs
 	{
+		ArgusEntity m_entity = ArgusEntity::s_emptyEntity;
 		TaskComponent* m_taskComponent = nullptr;
 		TransformComponent* m_transformComponent = nullptr;
 		NavigationComponent* m_navigationComponent = nullptr;
@@ -22,6 +23,7 @@ public:
 	static void MoveAlongNavigationPath(float deltaTime, const TransformSystemsComponentArgs& components);
 	static void FaceTowardsLocationXY(TransformComponent* transformComponent, FVector vectorFromTransformToTarget);
 	static void FindEntitiesWithinXYBounds(FVector2D minXY, FVector2D maxXY, TArray<ArgusEntity>& outEntitiesWithinBounds);
+	static void ProcessCollisions(float deltaTime, const TransformSystemsComponentArgs& components);
 
 private:
 	static void OnCompleteNavigationPath(const TransformSystemsComponentArgs& components);
