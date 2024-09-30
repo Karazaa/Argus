@@ -24,7 +24,6 @@ private:
 	ArgusKDTreeNode* m_rootNode = nullptr;
 
 	void ClearNodeRecursive(ArgusKDTreeNode* node);
-	void FlushAllNodes();
 	void InsertNodeIntoKDTreeRecursive(ArgusKDTreeNode* iterationNode, ArgusKDTreeNode* nodeToInsert, uint16 depth);
 
 	bool SearchForEntityIdRecursive(const ArgusKDTreeNode* node, uint16 entityId) const;
@@ -35,6 +34,7 @@ private:
 public:
 	~ArgusKDTree();
 
+	void FlushAllNodes();
 	void InsertArgusEntityIntoKDTree(const ArgusEntity& entityToRepresent);
 	void RebuildKDTreeForAllArgusEntities();
 

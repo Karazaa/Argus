@@ -44,18 +44,6 @@ void ArgusKDTree::ClearNodeRecursive(ArgusKDTreeNode* node)
 	}
 }
 
-void ArgusKDTree::FlushAllNodes()
-{
-	ARGUS_TRACE(ArgusKDTree::FlushAllNodes)
-
-	if (m_rootNode)
-	{
-		ClearNodeRecursive(m_rootNode);
-		delete(m_rootNode);
-		m_rootNode = nullptr;
-	}
-}
-
 void ArgusKDTree::InsertNodeIntoKDTreeRecursive(ArgusKDTreeNode* iterationNode, ArgusKDTreeNode* nodeToInsert, uint16 depth)
 {
 	if (!iterationNode || !nodeToInsert)
@@ -210,6 +198,18 @@ const ArgusKDTree::ArgusKDTreeNode* ArgusKDTree::ChooseNodeCloserToTarget(const 
 ArgusKDTree::~ArgusKDTree()
 {
 	FlushAllNodes();
+}
+
+void ArgusKDTree::FlushAllNodes()
+{
+	ARGUS_TRACE(ArgusKDTree::FlushAllNodes)
+
+		if (m_rootNode)
+		{
+			ClearNodeRecursive(m_rootNode);
+			delete(m_rootNode);
+			m_rootNode = nullptr;
+		}
 }
 
 void ArgusKDTree::InsertArgusEntityIntoKDTree(const ArgusEntity& entityToRepresent)
