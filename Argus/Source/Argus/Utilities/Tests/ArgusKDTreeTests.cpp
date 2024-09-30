@@ -236,7 +236,6 @@ bool ArgusUtilitiesArgusKDTreeFindArgusEntityIdClosestToLocationTest::RunTest(co
 	PopulateKDTreeForTests(tree, entities, true);
 
 	uint16 nearestEntityIdToCenter = tree.FindArgusEntityIdClosestToLocation(location0);
-	;
 
 #pragma region Test that we can find the nearest entity to the center entity
 	TestEqual
