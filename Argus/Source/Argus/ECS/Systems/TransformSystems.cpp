@@ -84,7 +84,7 @@ void TransformSystems::GetPathingLocationAtTimeOffset(float timeOffsetSeconds, c
 
 	FVector currentLocation = components.m_transformComponent->m_transform.GetLocation();
 
-	if (FMath::IsNearlyZero(timeOffsetSeconds))
+	if (timeOffsetSeconds == 0.0f)
 	{
 		outputLocation = currentLocation;
 		outputForwardVector = components.m_transformComponent->m_transform.GetRotation().GetForwardVector();
@@ -92,7 +92,7 @@ void TransformSystems::GetPathingLocationAtTimeOffset(float timeOffsetSeconds, c
 		return;
 	}
 
-	float translationMagnitude = components.m_navigationComponent->m_navigationSpeedUnitsPerSecond * timeOffsetSeconds;
+	float translationMagnitude = FMath::Abs(components.m_navigationComponent->m_navigationSpeedUnitsPerSecond * timeOffsetSeconds);
 	FVector positionDifferenceNormalized = FVector::ZeroVector;
 
 	if (timeOffsetSeconds > 0.0f)
@@ -129,7 +129,7 @@ void TransformSystems::GetPathingLocationAtTimeOffset(float timeOffsetSeconds, c
 		float positionDifferenceMagnitude = positionDifference.Length();
 		positionDifferenceNormalized = positionDifference.GetSafeNormal();
 
-		while (translationMagnitude >= positionDifferenceMagnitude)
+		while (translationMagnitude > positionDifferenceMagnitude)
 		{
 			if (pointIndex == 0u)
 			{
@@ -139,8 +139,9 @@ void TransformSystems::GetPathingLocationAtTimeOffset(float timeOffsetSeconds, c
 			}
 			pointIndex--;
 			translationMagnitude -= positionDifferenceMagnitude;
-			upcomingPoint = components.m_navigationComponent->m_navigationPoints[pointIndex - 1u];
-			currentLocation = components.m_navigationComponent->m_navigationPoints[pointIndex];
+
+			upcomingPoint = components.m_navigationComponent->m_navigationPoints[pointIndex];
+			currentLocation = components.m_navigationComponent->m_navigationPoints[pointIndex + 1];
 			positionDifference = upcomingPoint - currentLocation;
 			positionDifferenceMagnitude = positionDifference.Length();
 			positionDifferenceNormalized = positionDifference.GetSafeNormal();

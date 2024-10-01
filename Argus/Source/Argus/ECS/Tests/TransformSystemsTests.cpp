@@ -46,16 +46,16 @@ bool TransformSystemsGetPathingLocationAtTimeOffsetTest::RunTest(const FString& 
 	uint16 index = 0u;
 	TransformSystems::GetPathingLocationAtTimeOffset(1.0f, components, location, forwardVector, index);
 
-#pragma region Test navigation index one second in future
+#pragma region Test navigation index one second in the future
 	TestEqual
 	(
-		FString::Printf(TEXT("[%s] Test %s for one second in the future."), ARGUS_FUNCNAME, ARGUS_NAMEOF(components.m_navigationComponent->m_lastPointIndex)),
+		FString::Printf(TEXT("[%s] Test %s for one second in the future."), ARGUS_FUNCNAME, ARGUS_NAMEOF(index)),
 		index,
 		3u
 	);
 #pragma endregion
 
-#pragma region Test location one second in future
+#pragma region Test location one second in the future
 	TestEqual
 	(
 		FString::Printf(TEXT("[%s] Test that %s location is {%f, %f, %f} for one second in the future."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), oneSecondInFuture.X, oneSecondInFuture.Y, oneSecondInFuture.Z),
@@ -64,10 +64,155 @@ bool TransformSystemsGetPathingLocationAtTimeOffsetTest::RunTest(const FString& 
 	);
 #pragma endregion
 
-#pragma region Test rotation one second in future
+#pragma region Test rotation one second in the future
 	TestEqual
 	(
 		FString::Printf(TEXT("[%s] Test that %s forward vector is {%f, %f, %f} for one second in the future."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), expectedForward.X, expectedForward.Y, expectedForward.Z),
+		forwardVector,
+		expectedForward
+	);
+#pragma endregion
+
+	TransformSystems::GetPathingLocationAtTimeOffset(-1.0f, components, location, forwardVector, index);
+
+#pragma region Test navigation index one second in the past
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Test %s for one second in the past."), ARGUS_FUNCNAME, ARGUS_NAMEOF(index)),
+		index,
+		1u
+	);
+#pragma endregion
+
+#pragma region Test location one second in the past
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Test that %s location is {%f, %f, %f} for one second in the past."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), oneSecondInPast.X, oneSecondInPast.Y, oneSecondInPast.Z),
+		location,
+		oneSecondInPast
+	);
+#pragma endregion
+
+#pragma region Test rotation one second in the past
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Test that %s forward vector is {%f, %f, %f} for one second in the past."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), expectedForward.X, expectedForward.Y, expectedForward.Z),
+		forwardVector,
+		expectedForward
+	);
+#pragma endregion
+
+	TransformSystems::GetPathingLocationAtTimeOffset(2.0f, components, location, forwardVector, index);
+
+#pragma region Test navigation index two seconds in the future
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Test %s for two seconds in the future."), ARGUS_FUNCNAME, ARGUS_NAMEOF(index)),
+		index,
+		4u
+	);
+#pragma endregion
+
+#pragma region Test location two seconds in the future
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Test that %s location is {%f, %f, %f} for two seconds in the future."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), twoSecondsInFuture.X, twoSecondsInFuture.Y, twoSecondsInFuture.Z),
+		location,
+		twoSecondsInFuture
+	);
+#pragma endregion
+
+#pragma region Test rotation two seconds in the future
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Test that %s forward vector is {%f, %f, %f} for two seconds in the future."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), expectedForward.X, expectedForward.Y, expectedForward.Z),
+		forwardVector,
+		expectedForward
+	);
+#pragma endregion
+
+	TransformSystems::GetPathingLocationAtTimeOffset(-2.0f, components, location, forwardVector, index);
+
+#pragma region Test navigation index two seconds in the past
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Test %s for two seconds in the past."), ARGUS_FUNCNAME, ARGUS_NAMEOF(index)),
+		index,
+		0u
+	);
+#pragma endregion
+
+#pragma region Test location two seconds in the past
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Test that %s location is {%f, %f, %f} for two seconds in the past."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), twoSecondsInPast.X, twoSecondsInPast.Y, twoSecondsInPast.Z),
+		location,
+		twoSecondsInPast
+	);
+#pragma endregion
+
+#pragma region Test rotation two seconds in the past
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Test that %s forward vector is {%f, %f, %f} for two seconds in the past."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), expectedForward.X, expectedForward.Y, expectedForward.Z),
+		forwardVector,
+		expectedForward
+	);
+#pragma endregion
+
+	TransformSystems::GetPathingLocationAtTimeOffset(3.0f, components, location, forwardVector, index);
+
+#pragma region Test navigation index three seconds in the future
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Test %s for three seconds in the future."), ARGUS_FUNCNAME, ARGUS_NAMEOF(index)),
+		index,
+		4u
+	);
+#pragma endregion
+
+#pragma region Test location three seconds in the future
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Test that %s location is {%f, %f, %f} for three seconds in the future."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), twoSecondsInFuture.X, twoSecondsInFuture.Y, twoSecondsInFuture.Z),
+		location,
+		twoSecondsInFuture
+	);
+#pragma endregion
+
+#pragma region Test rotation three seconds in the future
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Test that %s forward vector is {%f, %f, %f} for three seconds in the future."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), expectedForward.X, expectedForward.Y, expectedForward.Z),
+		forwardVector,
+		expectedForward
+	);
+#pragma endregion
+
+	TransformSystems::GetPathingLocationAtTimeOffset(-3.0f, components, location, forwardVector, index);
+
+#pragma region Test navigation index three seconds in the past
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Test %s for three seconds in the past."), ARGUS_FUNCNAME, ARGUS_NAMEOF(index)),
+		index,
+		0u
+	);
+#pragma endregion
+
+#pragma region Test location three seconds in the past
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Test that %s location is {%f, %f, %f} for three seconds in the past."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), twoSecondsInPast.X, twoSecondsInPast.Y, twoSecondsInPast.Z),
+		location,
+		twoSecondsInPast
+	);
+#pragma endregion
+
+#pragma region Test rotation three seconds in the past
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Test that %s forward vector is {%f, %f, %f} for three seconds in the past."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), expectedForward.X, expectedForward.Y, expectedForward.Z),
 		forwardVector,
 		expectedForward
 	);
