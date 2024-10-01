@@ -66,35 +66,91 @@ bool TransformSystems::ProcessMovementTaskCommands(float deltaTime, const Transf
 	}
 }
 
-void TransformSystems::MoveAlongNavigationPath(float deltaTime, const TransformSystemsComponentArgs& components)
+void TransformSystems::GetPathingLocationAtTimeOffset(float timeOffsetSeconds, const TransformSystemsComponentArgs& components, FVector& outputLocation, FVector& outputForwardVector, uint16& indexOfOutputLocation)
 {
 	if (!components.AreComponentsValidCheck())
 	{
 		return;
 	}
 
-	const uint16 lastPointIndex = components.m_navigationComponent->m_lastPointIndex;
+	uint16 pointIndex = components.m_navigationComponent->m_lastPointIndex;
 	const uint16 numNavigationPoints = components.m_navigationComponent->m_navigationPoints.size();
 
-	if (lastPointIndex >= numNavigationPoints - 1)
+	if (pointIndex >= numNavigationPoints - 1u)
 	{
 		UE_LOG(ArgusECSLog, Error, TEXT("[%s] %s exceeded %s putting pathfinding in an invalid state."), ARGUS_FUNCNAME, ARGUS_NAMEOF(lastPointIndex), ARGUS_NAMEOF(numNavigationPoints));
 		return;
 	}
 
-	FVector newLocation = components.m_transformComponent->m_transform.GetLocation();
-	FVector newForwardVector = components.m_transformComponent->m_transform.GetRotation().GetForwardVector();
-	uint16 pointIndex = components.m_navigationComponent->m_lastPointIndex;
-	GetPathingLocationAtTimeOffset(deltaTime, components, newLocation, newForwardVector, pointIndex);
+	FVector currentLocation = components.m_transformComponent->m_transform.GetLocation();
 
-	FaceTowardsLocationXY(components.m_transformComponent, newForwardVector);
-
-	components.m_transformComponent->m_transform.SetLocation(newLocation);
-	components.m_navigationComponent->m_lastPointIndex = pointIndex;
-	if (components.m_navigationComponent->m_lastPointIndex == numNavigationPoints - 1)
+	if (FMath::IsNearlyZero(timeOffsetSeconds))
 	{
-		OnCompleteNavigationPath(components);
+		outputLocation = currentLocation;
+		outputForwardVector = components.m_transformComponent->m_transform.GetRotation().GetForwardVector();
+		indexOfOutputLocation = pointIndex;
+		return;
 	}
+
+	float translationMagnitude = components.m_navigationComponent->m_navigationSpeedUnitsPerSecond * timeOffsetSeconds;
+	FVector positionDifferenceNormalized = FVector::ZeroVector;
+
+	if (timeOffsetSeconds > 0.0f)
+	{
+		FVector upcomingPoint = components.m_navigationComponent->m_navigationPoints[pointIndex + 1u];
+		FVector positionDifference = upcomingPoint - currentLocation;
+		float positionDifferenceMagnitude = positionDifference.Length();
+		positionDifferenceNormalized = positionDifference.GetSafeNormal();
+
+		while (translationMagnitude >= positionDifferenceMagnitude)
+		{
+			pointIndex++;
+			if (pointIndex >= numNavigationPoints - 1u)
+			{
+				outputLocation = components.m_navigationComponent->m_navigationPoints[pointIndex];
+				indexOfOutputLocation = pointIndex;
+				return;
+			}
+
+			translationMagnitude -= positionDifferenceMagnitude;
+			upcomingPoint = components.m_navigationComponent->m_navigationPoints[pointIndex + 1u];
+			currentLocation = components.m_navigationComponent->m_navigationPoints[pointIndex];
+			positionDifference = upcomingPoint - currentLocation;
+			positionDifferenceMagnitude = positionDifference.Length();
+			positionDifferenceNormalized = positionDifference.GetSafeNormal();
+		}
+
+		outputForwardVector = positionDifferenceNormalized;
+	}
+	else
+	{
+		FVector upcomingPoint = components.m_navigationComponent->m_navigationPoints[pointIndex];
+		FVector positionDifference = upcomingPoint - currentLocation;
+		float positionDifferenceMagnitude = positionDifference.Length();
+		positionDifferenceNormalized = positionDifference.GetSafeNormal();
+
+		while (translationMagnitude >= positionDifferenceMagnitude)
+		{
+			if (pointIndex == 0u)
+			{
+				outputLocation = components.m_navigationComponent->m_navigationPoints[pointIndex];
+				indexOfOutputLocation = 0u;
+				return;
+			}
+			pointIndex--;
+			translationMagnitude -= positionDifferenceMagnitude;
+			upcomingPoint = components.m_navigationComponent->m_navigationPoints[pointIndex - 1u];
+			currentLocation = components.m_navigationComponent->m_navigationPoints[pointIndex];
+			positionDifference = upcomingPoint - currentLocation;
+			positionDifferenceMagnitude = positionDifference.Length();
+			positionDifferenceNormalized = positionDifference.GetSafeNormal();
+		}
+
+		outputForwardVector = -positionDifferenceNormalized;
+	}
+
+	outputLocation = currentLocation + (translationMagnitude * positionDifferenceNormalized);
+	indexOfOutputLocation = pointIndex;
 }
 
 void TransformSystems::FaceTowardsLocationXY(TransformComponent* transformComponent, FVector vectorFromTransformToTarget)
@@ -110,13 +166,44 @@ void TransformSystems::FaceTowardsLocationXY(TransformComponent* transformCompon
 		return;
 	}
 
-	vectorFromTransformToTarget.Z = 0;
+	vectorFromTransformToTarget.Z = 0.0f;
 	if (vectorFromTransformToTarget.GetSafeNormal().Equals(transformComponent->m_transform.GetRotation().GetForwardVector()))
 	{
 		return;
 	}
-	
+
 	transformComponent->m_transform.SetRotation(FRotationMatrix::MakeFromXZ(vectorFromTransformToTarget, FVector::UpVector).ToQuat());
+}
+
+void TransformSystems::MoveAlongNavigationPath(float deltaTime, const TransformSystemsComponentArgs& components)
+{
+	if (!components.AreComponentsValidCheck())
+	{
+		return;
+	}
+
+	const uint16 lastPointIndex = components.m_navigationComponent->m_lastPointIndex;
+	const uint16 numNavigationPoints = components.m_navigationComponent->m_navigationPoints.size();
+
+	if (lastPointIndex >= numNavigationPoints - 1u)
+	{
+		UE_LOG(ArgusECSLog, Error, TEXT("[%s] %s exceeded %s putting pathfinding in an invalid state."), ARGUS_FUNCNAME, ARGUS_NAMEOF(lastPointIndex), ARGUS_NAMEOF(numNavigationPoints));
+		return;
+	}
+
+	FVector newLocation = components.m_transformComponent->m_transform.GetLocation();
+	FVector newForwardVector = components.m_transformComponent->m_transform.GetRotation().GetForwardVector();
+	uint16 pointIndex = lastPointIndex;
+	GetPathingLocationAtTimeOffset(deltaTime, components, newLocation, newForwardVector, pointIndex);
+
+	FaceTowardsLocationXY(components.m_transformComponent, newForwardVector);
+
+	components.m_transformComponent->m_transform.SetLocation(newLocation);
+	components.m_navigationComponent->m_lastPointIndex = pointIndex;
+	if (components.m_navigationComponent->m_lastPointIndex == numNavigationPoints - 1u)
+	{
+		OnCompleteNavigationPath(components);
+	}
 }
 
 void TransformSystems::ProcessCollisions(float deltaTime, const TransformSystemsComponentArgs& components)
@@ -196,7 +283,7 @@ void TransformSystems::FindEntitiesWithinXYBounds(FVector2D minXY, FVector2D max
 
 void TransformSystems::OnCompleteNavigationPath(const TransformSystemsComponentArgs& components)
 {
-	if (components.m_navigationComponent->m_queuedWaypoints.size() == 0)
+	if (components.m_navigationComponent->m_queuedWaypoints.size() == 0u)
 	{
 		components.m_taskComponent->m_currentTask = ETask::None;
 		components.m_navigationComponent->ResetPath();
@@ -207,69 +294,5 @@ void TransformSystems::OnCompleteNavigationPath(const TransformSystemsComponentA
 		components.m_navigationComponent->ResetPath();
 		components.m_targetingComponent->m_targetLocation = components.m_navigationComponent->m_queuedWaypoints.front();
 		components.m_navigationComponent->m_queuedWaypoints.pop();
-	}
-}
-
-void TransformSystems::GetPathingLocationAtTimeOffset(float timeOffsetSeconds, const TransformSystemsComponentArgs& components, FVector& outputLocation, FVector& outputForwardVector, uint16& indexOfOutputLocation)
-{
-	if (!components.AreComponentsValidCheck())
-	{
-		return;
-	}
-
-	uint16 pointIndex = components.m_navigationComponent->m_lastPointIndex;
-	const uint16 numNavigationPoints = components.m_navigationComponent->m_navigationPoints.size();
-
-	if (pointIndex >= numNavigationPoints - 1)
-	{
-		UE_LOG(ArgusECSLog, Error, TEXT("[%s] %s exceeded %s putting pathfinding in an invalid state."), ARGUS_FUNCNAME, ARGUS_NAMEOF(lastPointIndex), ARGUS_NAMEOF(numNavigationPoints));
-		return;
-	}
-
-	FVector currentLocation = components.m_transformComponent->m_transform.GetLocation();
-
-	if (FMath::IsNearlyZero(timeOffsetSeconds))
-	{
-		outputLocation = currentLocation;
-		outputForwardVector = components.m_transformComponent->m_transform.GetRotation().GetForwardVector();
-		indexOfOutputLocation = pointIndex;
-		return;
-	}
-
-	float translationMagnitude = components.m_navigationComponent->m_navigationSpeedUnitsPerSecond * timeOffsetSeconds;
-
-	if (timeOffsetSeconds > 0.0f)
-	{
-		FVector upcomingPoint = components.m_navigationComponent->m_navigationPoints[pointIndex + 1];
-		FVector positionDifference = upcomingPoint - currentLocation;
-		float positionDifferenceMagnitude = positionDifference.Length();
-		FVector positionDifferenceNormalized = positionDifference.GetSafeNormal();
-
-		while (translationMagnitude >= positionDifferenceMagnitude)
-		{
-			pointIndex++;
-			if (pointIndex >= numNavigationPoints - 1)
-			{
-				outputLocation = components.m_navigationComponent->m_navigationPoints[pointIndex];
-				indexOfOutputLocation = pointIndex;
-				return;
-			}
-
-			translationMagnitude -= positionDifferenceMagnitude;
-			upcomingPoint = components.m_navigationComponent->m_navigationPoints[pointIndex + 1];
-			currentLocation = components.m_navigationComponent->m_navigationPoints[pointIndex];
-			positionDifference = upcomingPoint - currentLocation;
-			positionDifferenceMagnitude = positionDifference.Length();
-			positionDifferenceNormalized = positionDifference.GetSafeNormal();
-		}
-
-		outputLocation = currentLocation + (translationMagnitude * positionDifferenceNormalized);
-		outputForwardVector = positionDifferenceNormalized;
-		indexOfOutputLocation = pointIndex;
-		return;
-	}
-	else
-	{
-		// TODO JAMES: Plz figure out how to go back in time.
 	}
 }

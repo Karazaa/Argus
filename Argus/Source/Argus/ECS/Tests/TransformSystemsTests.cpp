@@ -6,6 +6,76 @@
 
 #if WITH_AUTOMATION_TESTS
 
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(TransformSystemsGetPathingLocationAtTimeOffsetTest, "Argus.ECS.Systems.TransformSystems.GetPathingLocationAtTimeOffset", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+bool TransformSystemsGetPathingLocationAtTimeOffsetTest::RunTest(const FString& Parameters)
+{
+	const FVector startLocation = FVector::ZeroVector;
+	const FVector oneSecondInPast = FVector(-1.0f, 0.0f, 0.0f);
+	const FVector twoSecondsInPast = FVector(-2.0f, 0.0f, 0.0f);
+	const FVector oneSecondInFuture = FVector(1.0f, 0.0f, 0.0f);
+	const FVector twoSecondsInFuture = FVector(2.0f, 0.0f, 0.0f);
+	const FVector expectedForward = FVector(1.0f, 0.0f, 0.0f);
+
+	ArgusEntity::FlushAllEntities();
+
+	ArgusEntity entity = ArgusEntity::CreateEntity();
+	TransformSystems::TransformSystemsComponentArgs components;
+
+	components.m_entity = entity;
+	components.m_taskComponent = entity.AddComponent<TaskComponent>();
+	components.m_transformComponent = entity.AddComponent<TransformComponent>();
+	components.m_navigationComponent = entity.AddComponent<NavigationComponent>();
+	components.m_targetingComponent = entity.AddComponent<TargetingComponent>();
+
+	if (!components.AreComponentsValidCheck())
+	{
+		return false;
+	}
+
+	components.m_navigationComponent->m_navigationSpeedUnitsPerSecond = 1.0f;
+	components.m_navigationComponent->m_navigationPoints.reserve(5);
+	components.m_navigationComponent->m_navigationPoints.push_back(twoSecondsInPast);
+	components.m_navigationComponent->m_navigationPoints.push_back(oneSecondInPast);
+	components.m_navigationComponent->m_navigationPoints.push_back(startLocation);
+	components.m_navigationComponent->m_navigationPoints.push_back(oneSecondInFuture);
+	components.m_navigationComponent->m_navigationPoints.push_back(twoSecondsInFuture);
+	components.m_navigationComponent->m_lastPointIndex = 2u;
+
+	FVector location = FVector::ZeroVector;
+	FVector forwardVector = FVector::ZeroVector;
+	uint16 index = 0u;
+	TransformSystems::GetPathingLocationAtTimeOffset(1.0f, components, location, forwardVector, index);
+
+#pragma region Test navigation index one second in future
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Test %s for one second in the future."), ARGUS_FUNCNAME, ARGUS_NAMEOF(components.m_navigationComponent->m_lastPointIndex)),
+		index,
+		3u
+	);
+#pragma endregion
+
+#pragma region Test location one second in future
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Test that %s location is {%f, %f, %f} for one second in the future."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), oneSecondInFuture.X, oneSecondInFuture.Y, oneSecondInFuture.Z),
+		location,
+		oneSecondInFuture
+	);
+#pragma endregion
+
+#pragma region Test rotation one second in future
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Test that %s forward vector is {%f, %f, %f} for one second in the future."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), expectedForward.X, expectedForward.Y, expectedForward.Z),
+		forwardVector,
+		expectedForward
+	);
+#pragma endregion
+
+	return true;
+}
+
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(TransformSystemsFaceTowardsLocationXYTest, "Argus.ECS.Systems.TransformSystems.FaceTowardsLocationXY", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool TransformSystemsFaceTowardsLocationXYTest::RunTest(const FString& Parameters)
 {

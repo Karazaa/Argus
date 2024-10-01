@@ -20,12 +20,12 @@ public:
 		bool AreComponentsValidCheck() const;
 	};
 	static bool ProcessMovementTaskCommands(float deltaTime, const TransformSystemsComponentArgs& components);
-	static void MoveAlongNavigationPath(float deltaTime, const TransformSystemsComponentArgs& components);
+	static void GetPathingLocationAtTimeOffset(float timeOffsetSeconds, const TransformSystemsComponentArgs& components, FVector& outputLocation, FVector& outputForwardVector, uint16& indexOfOutputLocation);
 	static void FaceTowardsLocationXY(TransformComponent* transformComponent, FVector vectorFromTransformToTarget);
+	static void MoveAlongNavigationPath(float deltaTime, const TransformSystemsComponentArgs& components);
 	static void FindEntitiesWithinXYBounds(FVector2D minXY, FVector2D maxXY, TArray<ArgusEntity>& outEntitiesWithinBounds);
 	static void ProcessCollisions(float deltaTime, const TransformSystemsComponentArgs& components);
 
 private:
 	static void OnCompleteNavigationPath(const TransformSystemsComponentArgs& components);
-	static void GetPathingLocationAtTimeOffset(float timeOffsetSeconds, const TransformSystemsComponentArgs& components, FVector& outputLocation, FVector& outputForwardVector, uint16& indexOfOutputLocation);
 };
