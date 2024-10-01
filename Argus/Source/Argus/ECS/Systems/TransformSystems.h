@@ -27,4 +27,5 @@ public:
 
 private:
 	static void OnCompleteNavigationPath(const TransformSystemsComponentArgs& components);
+	static void GetPathingLocationAtTimeOffset(float timeOffsetSeconds, const TransformSystemsComponentArgs& components, FVector& outputLocation, FVector& outputForwardVector, uint16& indexOfOutputLocation);
 };

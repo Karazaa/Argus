@@ -82,22 +82,15 @@ void TransformSystems::MoveAlongNavigationPath(float deltaTime, const TransformS
 		return;
 	}
 
-	const FVector currentLocation = components.m_transformComponent->m_transform.GetLocation();
-	const FVector upcomingPoint = components.m_navigationComponent->m_navigationPoints[lastPointIndex + 1];
-	const FVector positionDifference = upcomingPoint - currentLocation;
-	const FVector positionDifferenceNormalized = positionDifference.GetSafeNormal();
-	const FVector translationThisFrame = positionDifferenceNormalized * components.m_navigationComponent->m_navigationSpeedUnitsPerSecond * deltaTime;
+	FVector newLocation = components.m_transformComponent->m_transform.GetLocation();
+	FVector newForwardVector = components.m_transformComponent->m_transform.GetRotation().GetForwardVector();
+	uint16 pointIndex = components.m_navigationComponent->m_lastPointIndex;
+	GetPathingLocationAtTimeOffset(deltaTime, components, newLocation, newForwardVector, pointIndex);
 
-	FaceTowardsLocationXY(components.m_transformComponent, positionDifference);
+	FaceTowardsLocationXY(components.m_transformComponent, newForwardVector);
 
-	if (translationThisFrame.SquaredLength() < positionDifference.SquaredLength())
-	{
-		components.m_transformComponent->m_transform.SetLocation(currentLocation + translationThisFrame);
-		return;
-	}
-
-	components.m_transformComponent->m_transform.SetLocation(upcomingPoint);
-	components.m_navigationComponent->m_lastPointIndex++;
+	components.m_transformComponent->m_transform.SetLocation(newLocation);
+	components.m_navigationComponent->m_lastPointIndex = pointIndex;
 	if (components.m_navigationComponent->m_lastPointIndex == numNavigationPoints - 1)
 	{
 		OnCompleteNavigationPath(components);
@@ -124,6 +117,51 @@ void TransformSystems::FaceTowardsLocationXY(TransformComponent* transformCompon
 	}
 	
 	transformComponent->m_transform.SetRotation(FRotationMatrix::MakeFromXZ(vectorFromTransformToTarget, FVector::UpVector).ToQuat());
+}
+
+void TransformSystems::ProcessCollisions(float deltaTime, const TransformSystemsComponentArgs& components)
+{
+	const ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusSystemsManager::s_singletonEntityId);
+	if (!singletonEntity)
+	{
+		return;
+	}
+
+	if (!components.AreComponentsValidCheck())
+	{
+		return;
+	}
+
+	const SpatialPartitioningComponent* const spatialPartitioningComponent = singletonEntity.GetComponent<SpatialPartitioningComponent>();
+	if (!spatialPartitioningComponent)
+	{
+		return;
+	}
+
+	const uint16 nearestOtherEntityId = spatialPartitioningComponent->m_argusKDTree.FindOtherArgusEntityIdClosestArgusEntity(components.m_entity);
+	if (nearestOtherEntityId == ArgusECSConstants::k_maxEntities)
+	{
+		return;
+	}
+
+	ArgusEntity nearestOtherEntity = ArgusEntity::RetrieveEntity(nearestOtherEntityId);
+	if (!nearestOtherEntity)
+	{
+		return;
+	}
+
+	const TransformComponent* const nearestOtherEntityTransformComponent = nearestOtherEntity.GetComponent<TransformComponent>();
+	if (!nearestOtherEntityTransformComponent)
+	{
+		return;
+	}
+
+	const float distanceSquared = FVector::DistSquared(nearestOtherEntityTransformComponent->m_transform.GetLocation(), components.m_transformComponent->m_transform.GetLocation());
+	if (distanceSquared < FMath::Square(ArgusECSConstants::k_defaultPathFindingAgentRadius))
+	{
+		// TODO JAMES: Actually do collision rerouting
+		return;
+	}
 }
 
 void TransformSystems::FindEntitiesWithinXYBounds(FVector2D minXY, FVector2D maxXY, TArray<ArgusEntity>& outEntitiesWithinBounds)
@@ -172,47 +210,66 @@ void TransformSystems::OnCompleteNavigationPath(const TransformSystemsComponentA
 	}
 }
 
-void TransformSystems::ProcessCollisions(float deltaTime, const TransformSystemsComponentArgs& components)
+void TransformSystems::GetPathingLocationAtTimeOffset(float timeOffsetSeconds, const TransformSystemsComponentArgs& components, FVector& outputLocation, FVector& outputForwardVector, uint16& indexOfOutputLocation)
 {
-	const ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusSystemsManager::s_singletonEntityId);
-	if (!singletonEntity)
-	{
-		return;
-	}
-
 	if (!components.AreComponentsValidCheck())
 	{
 		return;
 	}
 
-	const SpatialPartitioningComponent* const spatialPartitioningComponent = singletonEntity.GetComponent<SpatialPartitioningComponent>();
-	if (!spatialPartitioningComponent)
+	uint16 pointIndex = components.m_navigationComponent->m_lastPointIndex;
+	const uint16 numNavigationPoints = components.m_navigationComponent->m_navigationPoints.size();
+
+	if (pointIndex >= numNavigationPoints - 1)
 	{
+		UE_LOG(ArgusECSLog, Error, TEXT("[%s] %s exceeded %s putting pathfinding in an invalid state."), ARGUS_FUNCNAME, ARGUS_NAMEOF(lastPointIndex), ARGUS_NAMEOF(numNavigationPoints));
 		return;
 	}
 
-	const uint16 nearestOtherEntityId = spatialPartitioningComponent->m_argusKDTree.FindOtherArgusEntityIdClosestArgusEntity(components.m_entity);
-	if (nearestOtherEntityId == ArgusECSConstants::k_maxEntities)
+	FVector currentLocation = components.m_transformComponent->m_transform.GetLocation();
+
+	if (FMath::IsNearlyZero(timeOffsetSeconds))
 	{
+		outputLocation = currentLocation;
+		outputForwardVector = components.m_transformComponent->m_transform.GetRotation().GetForwardVector();
+		indexOfOutputLocation = pointIndex;
 		return;
 	}
 
-	ArgusEntity nearestOtherEntity = ArgusEntity::RetrieveEntity(nearestOtherEntityId);
-	if (!nearestOtherEntity)
+	float translationMagnitude = components.m_navigationComponent->m_navigationSpeedUnitsPerSecond * timeOffsetSeconds;
+
+	if (timeOffsetSeconds > 0.0f)
 	{
+		FVector upcomingPoint = components.m_navigationComponent->m_navigationPoints[pointIndex + 1];
+		FVector positionDifference = upcomingPoint - currentLocation;
+		float positionDifferenceMagnitude = positionDifference.Length();
+		FVector positionDifferenceNormalized = positionDifference.GetSafeNormal();
+
+		while (translationMagnitude >= positionDifferenceMagnitude)
+		{
+			pointIndex++;
+			if (pointIndex >= numNavigationPoints - 1)
+			{
+				outputLocation = components.m_navigationComponent->m_navigationPoints[pointIndex];
+				indexOfOutputLocation = pointIndex;
+				return;
+			}
+
+			translationMagnitude -= positionDifferenceMagnitude;
+			upcomingPoint = components.m_navigationComponent->m_navigationPoints[pointIndex + 1];
+			currentLocation = components.m_navigationComponent->m_navigationPoints[pointIndex];
+			positionDifference = upcomingPoint - currentLocation;
+			positionDifferenceMagnitude = positionDifference.Length();
+			positionDifferenceNormalized = positionDifference.GetSafeNormal();
+		}
+
+		outputLocation = currentLocation + (translationMagnitude * positionDifferenceNormalized);
+		outputForwardVector = positionDifferenceNormalized;
+		indexOfOutputLocation = pointIndex;
 		return;
 	}
-
-	const TransformComponent* const nearestOtherEntityTransformComponent = nearestOtherEntity.GetComponent<TransformComponent>();
-	if (!nearestOtherEntityTransformComponent)
+	else
 	{
-		return;
-	}
-
-	const float distanceSquared = FVector::DistSquared(nearestOtherEntityTransformComponent->m_transform.GetLocation(), components.m_transformComponent->m_transform.GetLocation());
-	if (distanceSquared < FMath::Square(ArgusECSConstants::k_defaultPathFindingAgentRadius))
-	{
-		// TODO JAMES: Actually do collision rerouting
-		return;
+		// TODO JAMES: Plz figure out how to go back in time.
 	}
 }

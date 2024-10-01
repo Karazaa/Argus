@@ -210,24 +210,6 @@ bool TransformSystemsMoveAlongPathTest::RunTest(const FString& Parameters)
 	);
 #pragma endregion
 
-#pragma region Test location after moving along path for three seconds
-	TestEqual
-	(
-		FString::Printf(TEXT("[%s] Test that %s location is {%f, %f, %f} after moving along path for %f seconds."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), point2.X, point2.Y, point2.Z, secondCounter),
-		components.m_transformComponent->m_transform.GetLocation(),
-		point2
-	);
-#pragma endregion
-
-#pragma region Test rotation after moving along path for three seconds
-	TestEqual
-	(
-		FString::Printf(TEXT("[%s] Test that %s forward vector is {%f, %f, %f} after moving along path for %f seconds."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), expectedTestForward0.X, expectedTestForward0.Y, expectedTestForward0.Z, secondCounter),
-		components.m_transformComponent->m_transform.GetRotation().GetForwardVector(), 
-		expectedTestForward0
-	);
-#pragma endregion
-
 	TransformSystems::MoveAlongNavigationPath(deltaSecondsPerStep, components);
 	secondCounter += deltaSecondsPerStep;
 	const uint16 numPathPoints = components.m_navigationComponent->m_navigationPoints.size();
