@@ -226,7 +226,12 @@ void TransformSystems::ProcessCollisions(float deltaTime, const TransformSystems
 		return;
 	}
 
-	const uint16 nearestOtherEntityId = spatialPartitioningComponent->m_argusKDTree.FindOtherArgusEntityIdClosestArgusEntity(components.m_entity);
+	FVector predictedLocation = components.m_transformComponent->m_transform.GetLocation();
+	FVector newForwardVector = components.m_transformComponent->m_transform.GetRotation().GetForwardVector();
+	uint16 pointIndex = components.m_navigationComponent->m_lastPointIndex;
+	GetPathingLocationAtTimeOffset(ArgusECSConstants::k_defaultCollisionDetectionPredictionTime, components, predictedLocation, newForwardVector, pointIndex);
+
+	const uint16 nearestOtherEntityId = spatialPartitioningComponent->m_argusKDTree.FindArgusEntityIdClosestToLocation(predictedLocation, components.m_entity);
 	if (nearestOtherEntityId == ArgusECSConstants::k_maxEntities)
 	{
 		return;
@@ -247,7 +252,7 @@ void TransformSystems::ProcessCollisions(float deltaTime, const TransformSystems
 	const float distanceSquared = FVector::DistSquared(nearestOtherEntityTransformComponent->m_transform.GetLocation(), components.m_transformComponent->m_transform.GetLocation());
 	if (distanceSquared < FMath::Square(ArgusECSConstants::k_defaultPathFindingAgentRadius))
 	{
-		// TODO JAMES: Actually do collision rerouting
+		UE_LOG(ArgusECSLog, Display, TEXT("[%s] Transform Systems detected that %s %d will collide with %s %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), components.m_entity.GetId(), ARGUS_NAMEOF(ArgusEntity), nearestOtherEntityId);
 		return;
 	}
 }
