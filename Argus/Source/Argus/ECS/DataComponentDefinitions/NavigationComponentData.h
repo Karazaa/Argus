@@ -14,8 +14,6 @@ class ARGUS_API UNavigationComponentData : public UComponentData
 public:
 	std::vector<FVector> m_navigationPoints = std::vector<FVector>();
 	std::queue<FVector> m_queuedWaypoints = std::queue<FVector>();
-	UPROPERTY(EditAnywhere)
-	float m_navigationSpeedUnitsPerSecond = 100.0f;
 	uint16 m_lastPointIndex = 0u;
 
 	void InstantiateComponentForEntity(ArgusEntity& entity) const override;

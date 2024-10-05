@@ -13,6 +13,8 @@ class ARGUS_API UTransformComponentData : public UComponentData
 
 public:
 	FTransform m_transform = FTransform::Identity;
+	UPROPERTY(EditAnywhere)
+	float m_speedUnitsPerSecond = 100.0f;
 
 	void InstantiateComponentForEntity(ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;

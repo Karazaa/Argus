@@ -8,6 +8,7 @@ void UTransformComponentData::InstantiateComponentForEntity(ArgusEntity& entity)
 {
 	TransformComponent* TransformComponentRef = entity.AddComponent<TransformComponent>();
 	TransformComponentRef->m_transform = m_transform;
+	TransformComponentRef->m_speedUnitsPerSecond = m_speedUnitsPerSecond;
 }
 
 bool UTransformComponentData::MatchesType(UComponentData* other) const

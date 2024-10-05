@@ -92,7 +92,7 @@ void TransformSystems::GetPathingLocationAtTimeOffset(float timeOffsetSeconds, c
 		return;
 	}
 
-	float translationMagnitude = FMath::Abs(components.m_navigationComponent->m_navigationSpeedUnitsPerSecond * timeOffsetSeconds);
+	float translationMagnitude = FMath::Abs(components.m_transformComponent->m_speedUnitsPerSecond * timeOffsetSeconds);
 	FVector positionDifferenceNormalized = FVector::ZeroVector;
 
 	if (timeOffsetSeconds > 0.0f)
@@ -253,7 +253,27 @@ void TransformSystems::ProcessCollisions(float deltaTime, const TransformSystems
 	if (distanceSquared < FMath::Square(ArgusECSConstants::k_defaultPathFindingAgentRadius))
 	{
 		UE_LOG(ArgusECSLog, Display, TEXT("[%s] Transform Systems detected that %s %d will collide with %s %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), components.m_entity.GetId(), ARGUS_NAMEOF(ArgusEntity), nearestOtherEntityId);
-		return;
+		
+		TaskComponent* nearestOtherEntityTaskComponent = nearestOtherEntity.GetComponent<TaskComponent>();
+		NavigationComponent* nearestOtherEntityNavigationComponent = nearestOtherEntity.GetComponent<NavigationComponent>();
+		if (!nearestOtherEntityTaskComponent || !nearestOtherEntityNavigationComponent)
+		{
+			OnCompleteNavigationPath(components);
+			return;
+		}
+
+		if (nearestOtherEntityTaskComponent->IsExecutingMoveTask())
+		{
+			// TODO JAMES: Two movers colliding, gotta figure that out!
+			return;
+		}
+
+		nearestOtherEntityTaskComponent->m_currentTask = ETask::ProcessImminentCollisions;
+
+		PotentialCollision potentialCollision;
+		potentialCollision.m_entityID = components.m_entity.GetId();
+		potentialCollision.m_navigationPointIndex = pointIndex;
+		// TODO JAMES: Flesh out PotentialCollision hashing so it can be used in unordered set: nearestOtherEntityNavigationComponent->m_potentialCollisionOrigins.insert(potentialCollision);
 	}
 }
 
