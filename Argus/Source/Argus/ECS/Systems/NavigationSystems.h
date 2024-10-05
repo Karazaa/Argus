@@ -8,7 +8,7 @@
 class NavigationSystems
 {
 public:
-	static void RunSystems(TWeakObjectPtr<UWorld> worldPointer);
+	static void RunSystems(TWeakObjectPtr<UWorld>& worldPointer);
 
 	struct NavigationSystemsComponentArgs
 	{
@@ -19,11 +19,12 @@ public:
 
 		bool AreComponentsValidCheck() const;
 	};
-	static void ProcessNavigationTaskCommands(TWeakObjectPtr<UWorld> worldPointer, const NavigationSystemsComponentArgs& components);
-	static void RecalculateMoveToEntityPaths(TWeakObjectPtr<UWorld> worldPointer, const NavigationSystemsComponentArgs& components);
-	static void NavigateFromEntityToEntity(TWeakObjectPtr<UWorld> worldPointer, ArgusEntity targetEntity, const NavigationSystemsComponentArgs& components);
-	static void NavigateFromEntityToLocation(TWeakObjectPtr<UWorld> worldPointer, std::optional<FVector> targetLocation, const NavigationSystemsComponentArgs& components);
+	static void ProcessNavigationTaskCommands(TWeakObjectPtr<UWorld>& worldPointer, const NavigationSystemsComponentArgs& components);
+	static void ProcessPotentialCollisions(TWeakObjectPtr<UWorld>& worldPointer, const NavigationSystemsComponentArgs& components);
+	static void RecalculateMoveToEntityPaths(TWeakObjectPtr<UWorld>& worldPointer, const NavigationSystemsComponentArgs& components);
+	static void NavigateFromEntityToEntity(TWeakObjectPtr<UWorld>& worldPointer, ArgusEntity targetEntity, const NavigationSystemsComponentArgs& components);
+	static void NavigateFromEntityToLocation(TWeakObjectPtr<UWorld>& worldPointer, std::optional<FVector> targetLocation, const NavigationSystemsComponentArgs& components);
 
 private:
-	static bool IsWorldPointerValidCheck(TWeakObjectPtr<UWorld> worldPointer);
+	static bool IsWorldPointerValidCheck(TWeakObjectPtr<UWorld>& worldPointer);
 };

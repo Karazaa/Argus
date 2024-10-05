@@ -19,8 +19,15 @@ public:
 
 		bool AreComponentsValidCheck() const;
 	};
+	struct GetPathingLocationAtTimeOffsetResults
+	{
+		FVector m_outputPredictedLocation;
+		FVector m_outputPredictedForwardDirection;
+		uint16  m_navigationIndexOfPredictedLocation;
+	};
+
 	static bool ProcessMovementTaskCommands(float deltaTime, const TransformSystemsComponentArgs& components);
-	static void GetPathingLocationAtTimeOffset(float timeOffsetSeconds, const TransformSystemsComponentArgs& components, FVector& outputLocation, FVector& outputForwardVector, uint16& indexOfOutputLocation);
+	static void GetPathingLocationAtTimeOffset(float timeOffsetSeconds, const TransformSystemsComponentArgs& components, GetPathingLocationAtTimeOffsetResults& results);
 	static void FaceTowardsLocationXY(TransformComponent* transformComponent, FVector vectorFromTransformToTarget);
 	static void MoveAlongNavigationPath(float deltaTime, const TransformSystemsComponentArgs& components);
 	static void FindEntitiesWithinXYBounds(FVector2D minXY, FVector2D maxXY, TArray<ArgusEntity>& outEntitiesWithinBounds);
@@ -28,6 +35,6 @@ public:
 
 private:
 	static void OnCompleteNavigationPath(const TransformSystemsComponentArgs& components);
-	static void HandlePotentialCollisionWithMovableEntity(const FVector& movingEntityFutureLocation, const TransformSystemsComponentArgs& movingEntityComponents, const TransformSystemsComponentArgs& otherEntityComponents);
-	static void HandlePotentialCollisionWithStaticEntity(const FVector& movingEntityFutureLocation, const TransformSystemsComponentArgs& movingEntityComponents, const TransformComponent* otherEntityTransformComponent);
+	static void HandlePotentialCollisionWithMovableEntity(const GetPathingLocationAtTimeOffsetResults& movingEntityPredictedMovement, const TransformSystemsComponentArgs& components, const TransformSystemsComponentArgs& otherEntityComponents);
+	static void HandlePotentialCollisionWithStaticEntity(const GetPathingLocationAtTimeOffsetResults& movingEntityPredictedMovement, const TransformSystemsComponentArgs& components, const TransformComponent* otherEntityTransformComponent);
 };

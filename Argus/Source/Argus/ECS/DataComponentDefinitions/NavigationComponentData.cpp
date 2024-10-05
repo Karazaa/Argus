@@ -8,6 +8,7 @@ void UNavigationComponentData::InstantiateComponentForEntity(ArgusEntity& entity
 {
 	NavigationComponent* NavigationComponentRef = entity.AddComponent<NavigationComponent>();
 	NavigationComponentRef->m_navigationPoints = m_navigationPoints;
+	NavigationComponentRef->m_potentialCollisions = m_potentialCollisions;
 	NavigationComponentRef->m_queuedWaypoints = m_queuedWaypoints;
 	NavigationComponentRef->m_lastPointIndex = m_lastPointIndex;
 }

@@ -9,7 +9,7 @@
 
 static TAutoConsoleVariable<bool> CVarShowNavigationDebug(TEXT("Argus.Navigation.ShowNavigationDebug"), false, TEXT(""));
 
-void NavigationSystems::RunSystems(TWeakObjectPtr<UWorld> worldPointer)
+void NavigationSystems::RunSystems(TWeakObjectPtr<UWorld>& worldPointer)
 {
 	ARGUS_TRACE(NavigationSystems::RunSystems)
 
@@ -52,7 +52,7 @@ bool NavigationSystems::NavigationSystemsComponentArgs::AreComponentsValidCheck(
 	return true;
 }
 
-void NavigationSystems::ProcessNavigationTaskCommands(TWeakObjectPtr<UWorld> worldPointer, const NavigationSystemsComponentArgs& components)
+void NavigationSystems::ProcessNavigationTaskCommands(TWeakObjectPtr<UWorld>& worldPointer, const NavigationSystemsComponentArgs& components)
 {
 	ARGUS_TRACE(NavigationSystems::ProcessNavigationTaskCommands)
 
@@ -60,6 +60,8 @@ void NavigationSystems::ProcessNavigationTaskCommands(TWeakObjectPtr<UWorld> wor
 	{
 		return;
 	}
+
+	ProcessPotentialCollisions(worldPointer, components);
 
 	switch (components.m_taskComponent->m_currentTask)
 	{
@@ -78,7 +80,17 @@ void NavigationSystems::ProcessNavigationTaskCommands(TWeakObjectPtr<UWorld> wor
 	}
 }
 
-void NavigationSystems::RecalculateMoveToEntityPaths(TWeakObjectPtr<UWorld> worldPointer, const NavigationSystemsComponentArgs& components)
+void NavigationSystems::ProcessPotentialCollisions(TWeakObjectPtr<UWorld>& worldPointer, const NavigationSystemsComponentArgs& components)
+{
+	if (!IsWorldPointerValidCheck(worldPointer) || !components.AreComponentsValidCheck())
+	{
+		return;
+	}
+
+	components.m_navigationComponent->m_potentialCollisions.clear();
+}
+
+void NavigationSystems::RecalculateMoveToEntityPaths(TWeakObjectPtr<UWorld>& worldPointer, const NavigationSystemsComponentArgs& components)
 {
 	ARGUS_TRACE(NavigationSystems::RecalculateMoveToEntityPaths)
 
@@ -112,7 +124,7 @@ void NavigationSystems::RecalculateMoveToEntityPaths(TWeakObjectPtr<UWorld> worl
 	NavigateFromEntityToEntity(worldPointer, targetEntity, components);
 }
 
-void NavigationSystems::NavigateFromEntityToEntity(TWeakObjectPtr<UWorld> worldPointer, ArgusEntity targetEntity, const NavigationSystemsComponentArgs& components)
+void NavigationSystems::NavigateFromEntityToEntity(TWeakObjectPtr<UWorld>& worldPointer, ArgusEntity targetEntity, const NavigationSystemsComponentArgs& components)
 {
 	if (!IsWorldPointerValidCheck(worldPointer) || !components.AreComponentsValidCheck())
 	{
@@ -133,7 +145,7 @@ void NavigationSystems::NavigateFromEntityToEntity(TWeakObjectPtr<UWorld> worldP
 	NavigateFromEntityToLocation(worldPointer, targetEntityTransform->m_transform.GetLocation(), components);
 }
 
-void NavigationSystems::NavigateFromEntityToLocation(TWeakObjectPtr<UWorld> worldPointer, std::optional<FVector> targetLocation, const NavigationSystemsComponentArgs& components)
+void NavigationSystems::NavigateFromEntityToLocation(TWeakObjectPtr<UWorld>& worldPointer, std::optional<FVector> targetLocation, const NavigationSystemsComponentArgs& components)
 {
 	if (!IsWorldPointerValidCheck(worldPointer) || !components.AreComponentsValidCheck() || !targetLocation.has_value())
 	{
@@ -185,7 +197,7 @@ void NavigationSystems::NavigateFromEntityToLocation(TWeakObjectPtr<UWorld> worl
 	}
 }
 
-bool NavigationSystems::IsWorldPointerValidCheck(TWeakObjectPtr<UWorld> worldPointer)
+bool NavigationSystems::IsWorldPointerValidCheck(TWeakObjectPtr<UWorld>& worldPointer)
 {
 	if (!worldPointer.IsValid())
 	{

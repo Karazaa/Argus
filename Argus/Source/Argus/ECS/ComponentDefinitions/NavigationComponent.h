@@ -13,6 +13,9 @@ struct NavigationComponent
 	std::vector<FVector> m_navigationPoints = std::vector<FVector>();
 
 	ARGUS_IGNORE()
+	std::vector<PotentialCollision> m_potentialCollisions = std::vector<PotentialCollision>();
+
+	ARGUS_IGNORE()
 	std::queue<FVector> m_queuedWaypoints = std::queue<FVector>();
 
 	ARGUS_IGNORE()

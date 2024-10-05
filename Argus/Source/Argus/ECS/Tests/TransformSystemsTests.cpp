@@ -42,16 +42,17 @@ bool TransformSystemsGetPathingLocationAtTimeOffsetTest::RunTest(const FString& 
 	components.m_navigationComponent->m_navigationPoints.push_back(twoSecondsInFuture);
 	components.m_navigationComponent->m_lastPointIndex = 2u;
 
-	FVector location = FVector::ZeroVector;
-	FVector forwardVector = FVector::ZeroVector;
-	uint16 index = 0u;
-	TransformSystems::GetPathingLocationAtTimeOffset(1.0f, components, location, forwardVector, index);
+	TransformSystems::GetPathingLocationAtTimeOffsetResults results;
+	results.m_outputPredictedLocation = FVector::ZeroVector;
+	results.m_outputPredictedForwardDirection = FVector::ZeroVector;
+	results.m_navigationIndexOfPredictedLocation = 0u;
+	TransformSystems::GetPathingLocationAtTimeOffset(1.0f, components, results);
 
 #pragma region Test navigation index one second in the future
 	TestEqual
 	(
 		FString::Printf(TEXT("[%s] Test %s for one second in the future."), ARGUS_FUNCNAME, ARGUS_NAMEOF(index)),
-		index,
+		results.m_navigationIndexOfPredictedLocation,
 		3u
 	);
 #pragma endregion
@@ -60,7 +61,7 @@ bool TransformSystemsGetPathingLocationAtTimeOffsetTest::RunTest(const FString& 
 	TestEqual
 	(
 		FString::Printf(TEXT("[%s] Test that %s location is {%f, %f, %f} for one second in the future."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), oneSecondInFuture.X, oneSecondInFuture.Y, oneSecondInFuture.Z),
-		location,
+		results.m_outputPredictedLocation,
 		oneSecondInFuture
 	);
 #pragma endregion
@@ -69,18 +70,18 @@ bool TransformSystemsGetPathingLocationAtTimeOffsetTest::RunTest(const FString& 
 	TestEqual
 	(
 		FString::Printf(TEXT("[%s] Test that %s forward vector is {%f, %f, %f} for one second in the future."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), expectedForward.X, expectedForward.Y, expectedForward.Z),
-		forwardVector,
+		results.m_outputPredictedForwardDirection,
 		expectedForward
 	);
 #pragma endregion
 
-	TransformSystems::GetPathingLocationAtTimeOffset(-1.0f, components, location, forwardVector, index);
+	TransformSystems::GetPathingLocationAtTimeOffset(-1.0f, components, results);
 
 #pragma region Test navigation index one second in the past
 	TestEqual
 	(
 		FString::Printf(TEXT("[%s] Test %s for one second in the past."), ARGUS_FUNCNAME, ARGUS_NAMEOF(index)),
-		index,
+		results.m_navigationIndexOfPredictedLocation,
 		1u
 	);
 #pragma endregion
@@ -89,7 +90,7 @@ bool TransformSystemsGetPathingLocationAtTimeOffsetTest::RunTest(const FString& 
 	TestEqual
 	(
 		FString::Printf(TEXT("[%s] Test that %s location is {%f, %f, %f} for one second in the past."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), oneSecondInPast.X, oneSecondInPast.Y, oneSecondInPast.Z),
-		location,
+		results.m_outputPredictedLocation,
 		oneSecondInPast
 	);
 #pragma endregion
@@ -98,18 +99,18 @@ bool TransformSystemsGetPathingLocationAtTimeOffsetTest::RunTest(const FString& 
 	TestEqual
 	(
 		FString::Printf(TEXT("[%s] Test that %s forward vector is {%f, %f, %f} for one second in the past."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), expectedForward.X, expectedForward.Y, expectedForward.Z),
-		forwardVector,
+		results.m_outputPredictedForwardDirection,
 		expectedForward
 	);
 #pragma endregion
 
-	TransformSystems::GetPathingLocationAtTimeOffset(2.0f, components, location, forwardVector, index);
+	TransformSystems::GetPathingLocationAtTimeOffset(2.0f, components, results);
 
 #pragma region Test navigation index two seconds in the future
 	TestEqual
 	(
 		FString::Printf(TEXT("[%s] Test %s for two seconds in the future."), ARGUS_FUNCNAME, ARGUS_NAMEOF(index)),
-		index,
+		results.m_navigationIndexOfPredictedLocation,
 		4u
 	);
 #pragma endregion
@@ -118,7 +119,7 @@ bool TransformSystemsGetPathingLocationAtTimeOffsetTest::RunTest(const FString& 
 	TestEqual
 	(
 		FString::Printf(TEXT("[%s] Test that %s location is {%f, %f, %f} for two seconds in the future."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), twoSecondsInFuture.X, twoSecondsInFuture.Y, twoSecondsInFuture.Z),
-		location,
+		results.m_outputPredictedLocation,
 		twoSecondsInFuture
 	);
 #pragma endregion
@@ -127,18 +128,18 @@ bool TransformSystemsGetPathingLocationAtTimeOffsetTest::RunTest(const FString& 
 	TestEqual
 	(
 		FString::Printf(TEXT("[%s] Test that %s forward vector is {%f, %f, %f} for two seconds in the future."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), expectedForward.X, expectedForward.Y, expectedForward.Z),
-		forwardVector,
+		results.m_outputPredictedForwardDirection,
 		expectedForward
 	);
 #pragma endregion
 
-	TransformSystems::GetPathingLocationAtTimeOffset(-2.0f, components, location, forwardVector, index);
+	TransformSystems::GetPathingLocationAtTimeOffset(-2.0f, components, results);
 
 #pragma region Test navigation index two seconds in the past
 	TestEqual
 	(
 		FString::Printf(TEXT("[%s] Test %s for two seconds in the past."), ARGUS_FUNCNAME, ARGUS_NAMEOF(index)),
-		index,
+		results.m_navigationIndexOfPredictedLocation,
 		0u
 	);
 #pragma endregion
@@ -147,7 +148,7 @@ bool TransformSystemsGetPathingLocationAtTimeOffsetTest::RunTest(const FString& 
 	TestEqual
 	(
 		FString::Printf(TEXT("[%s] Test that %s location is {%f, %f, %f} for two seconds in the past."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), twoSecondsInPast.X, twoSecondsInPast.Y, twoSecondsInPast.Z),
-		location,
+		results.m_outputPredictedLocation,
 		twoSecondsInPast
 	);
 #pragma endregion
@@ -156,18 +157,18 @@ bool TransformSystemsGetPathingLocationAtTimeOffsetTest::RunTest(const FString& 
 	TestEqual
 	(
 		FString::Printf(TEXT("[%s] Test that %s forward vector is {%f, %f, %f} for two seconds in the past."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), expectedForward.X, expectedForward.Y, expectedForward.Z),
-		forwardVector,
+		results.m_outputPredictedForwardDirection,
 		expectedForward
 	);
 #pragma endregion
 
-	TransformSystems::GetPathingLocationAtTimeOffset(3.0f, components, location, forwardVector, index);
+	TransformSystems::GetPathingLocationAtTimeOffset(3.0f, components, results);
 
 #pragma region Test navigation index three seconds in the future
 	TestEqual
 	(
 		FString::Printf(TEXT("[%s] Test %s for three seconds in the future."), ARGUS_FUNCNAME, ARGUS_NAMEOF(index)),
-		index,
+		results.m_navigationIndexOfPredictedLocation,
 		4u
 	);
 #pragma endregion
@@ -176,7 +177,7 @@ bool TransformSystemsGetPathingLocationAtTimeOffsetTest::RunTest(const FString& 
 	TestEqual
 	(
 		FString::Printf(TEXT("[%s] Test that %s location is {%f, %f, %f} for three seconds in the future."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), twoSecondsInFuture.X, twoSecondsInFuture.Y, twoSecondsInFuture.Z),
-		location,
+		results.m_outputPredictedLocation,
 		twoSecondsInFuture
 	);
 #pragma endregion
@@ -185,18 +186,18 @@ bool TransformSystemsGetPathingLocationAtTimeOffsetTest::RunTest(const FString& 
 	TestEqual
 	(
 		FString::Printf(TEXT("[%s] Test that %s forward vector is {%f, %f, %f} for three seconds in the future."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), expectedForward.X, expectedForward.Y, expectedForward.Z),
-		forwardVector,
+		results.m_outputPredictedForwardDirection,
 		expectedForward
 	);
 #pragma endregion
 
-	TransformSystems::GetPathingLocationAtTimeOffset(-3.0f, components, location, forwardVector, index);
+	TransformSystems::GetPathingLocationAtTimeOffset(-3.0f, components, results);
 
 #pragma region Test navigation index three seconds in the past
 	TestEqual
 	(
 		FString::Printf(TEXT("[%s] Test %s for three seconds in the past."), ARGUS_FUNCNAME, ARGUS_NAMEOF(index)),
-		index,
+		results.m_navigationIndexOfPredictedLocation,
 		0u
 	);
 #pragma endregion
@@ -205,7 +206,7 @@ bool TransformSystemsGetPathingLocationAtTimeOffsetTest::RunTest(const FString& 
 	TestEqual
 	(
 		FString::Printf(TEXT("[%s] Test that %s location is {%f, %f, %f} for three seconds in the past."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), twoSecondsInPast.X, twoSecondsInPast.Y, twoSecondsInPast.Z),
-		location,
+		results.m_outputPredictedLocation,
 		twoSecondsInPast
 	);
 #pragma endregion
@@ -214,7 +215,7 @@ bool TransformSystemsGetPathingLocationAtTimeOffsetTest::RunTest(const FString& 
 	TestEqual
 	(
 		FString::Printf(TEXT("[%s] Test that %s forward vector is {%f, %f, %f} for three seconds in the past."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), expectedForward.X, expectedForward.Y, expectedForward.Z),
-		forwardVector,
+		results.m_outputPredictedForwardDirection,
 		expectedForward
 	);
 #pragma endregion

@@ -11,7 +11,6 @@ enum class ETask : uint8
 	None,
 	ProcessMoveToLocationCommand,
 	ProcessMoveToEntityCommand,
-	ProcessImminentCollisions,
 	MoveToLocation,
 	MoveToEntity,
 	FailedToFindPath,
