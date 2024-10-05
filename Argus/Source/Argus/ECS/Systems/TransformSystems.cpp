@@ -37,12 +37,7 @@ bool TransformSystems::RunSystems(float deltaTime)
 
 bool TransformSystems::TransformSystemsComponentArgs::AreComponentsValidCheck() const
 {
-	if (!m_entity || !m_taskComponent || !m_navigationComponent || !m_transformComponent || !m_targetingComponent)
-	{
-		UE_LOG(ArgusECSLog, Error, TEXT("[%s] Transform Systems were run with invalid entity or component arguments passed."), ARGUS_FUNCNAME);
-		return false;
-	}
-	return true;
+	return m_entity && m_taskComponent && m_navigationComponent && m_transformComponent && m_targetingComponent;
 }
 
 bool TransformSystems::ProcessMovementTaskCommands(float deltaTime, const TransformSystemsComponentArgs& components)
@@ -54,12 +49,16 @@ bool TransformSystems::ProcessMovementTaskCommands(float deltaTime, const Transf
 		return false;
 	}
 
+	if (components.m_taskComponent->IsExecutingMoveTask())
+	{
+		ProcessCollisions(deltaTime, components);
+	}
+
 	switch (components.m_taskComponent->m_currentTask)
 	{
 		case ETask::MoveToLocation:
 		case ETask::MoveToEntity:
 			MoveAlongNavigationPath(deltaTime, components);
-			ProcessCollisions(deltaTime, components);
 			return true;
 		default:
 			return false;
@@ -70,6 +69,13 @@ void TransformSystems::GetPathingLocationAtTimeOffset(float timeOffsetSeconds, c
 {
 	if (!components.AreComponentsValidCheck())
 	{
+		return;
+	}
+
+	if (!components.m_taskComponent->IsExecutingMoveTask())
+	{
+		outputLocation = components.m_transformComponent->m_transform.GetLocation();
+		outputForwardVector = components.m_transformComponent->m_transform.GetRotation().GetForwardVector();
 		return;
 	}
 
@@ -207,7 +213,7 @@ void TransformSystems::MoveAlongNavigationPath(float deltaTime, const TransformS
 	}
 }
 
-void TransformSystems::ProcessCollisions(float deltaTime, const TransformSystemsComponentArgs& components)
+void TransformSystems::ProcessCollisions(float deltaTime, const TransformSystemsComponentArgs& movingEntityComponents)
 {
 	const ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusSystemsManager::s_singletonEntityId);
 	if (!singletonEntity)
@@ -215,7 +221,7 @@ void TransformSystems::ProcessCollisions(float deltaTime, const TransformSystems
 		return;
 	}
 
-	if (!components.AreComponentsValidCheck())
+	if (!movingEntityComponents.AreComponentsValidCheck())
 	{
 		return;
 	}
@@ -226,12 +232,12 @@ void TransformSystems::ProcessCollisions(float deltaTime, const TransformSystems
 		return;
 	}
 
-	FVector predictedLocation = components.m_transformComponent->m_transform.GetLocation();
-	FVector newForwardVector = components.m_transformComponent->m_transform.GetRotation().GetForwardVector();
-	uint16 pointIndex = components.m_navigationComponent->m_lastPointIndex;
-	GetPathingLocationAtTimeOffset(ArgusECSConstants::k_defaultCollisionDetectionPredictionTime, components, predictedLocation, newForwardVector, pointIndex);
+	FVector predictedLocation = movingEntityComponents.m_transformComponent->m_transform.GetLocation();
+	FVector newForwardVector = movingEntityComponents.m_transformComponent->m_transform.GetRotation().GetForwardVector();
+	uint16 pointIndex = movingEntityComponents.m_navigationComponent->m_lastPointIndex;
+	GetPathingLocationAtTimeOffset(ArgusECSConstants::k_defaultCollisionDetectionPredictionTime, movingEntityComponents, predictedLocation, newForwardVector, pointIndex);
 
-	const uint16 nearestOtherEntityId = spatialPartitioningComponent->m_argusKDTree.FindArgusEntityIdClosestToLocation(predictedLocation, components.m_entity);
+	const uint16 nearestOtherEntityId = spatialPartitioningComponent->m_argusKDTree.FindArgusEntityIdClosestToLocation(predictedLocation, movingEntityComponents.m_entity);
 	if (nearestOtherEntityId == ArgusECSConstants::k_maxEntities)
 	{
 		return;
@@ -243,37 +249,26 @@ void TransformSystems::ProcessCollisions(float deltaTime, const TransformSystems
 		return;
 	}
 
-	const TransformComponent* const nearestOtherEntityTransformComponent = nearestOtherEntity.GetComponent<TransformComponent>();
+	TransformComponent* nearestOtherEntityTransformComponent = nearestOtherEntity.GetComponent<TransformComponent>();
 	if (!nearestOtherEntityTransformComponent)
 	{
 		return;
 	}
 
-	const float distanceSquared = FVector::DistSquared(nearestOtherEntityTransformComponent->m_transform.GetLocation(), components.m_transformComponent->m_transform.GetLocation());
-	if (distanceSquared < FMath::Square(ArgusECSConstants::k_defaultPathFindingAgentRadius))
+	TransformSystemsComponentArgs nearestOtherEntityComponents;
+	nearestOtherEntityComponents.m_entity = nearestOtherEntity;
+	nearestOtherEntityComponents.m_navigationComponent = nearestOtherEntity.GetComponent<NavigationComponent>();
+	nearestOtherEntityComponents.m_targetingComponent = nearestOtherEntity.GetComponent<TargetingComponent>();
+	nearestOtherEntityComponents.m_taskComponent = nearestOtherEntity.GetComponent<TaskComponent>();
+	nearestOtherEntityComponents.m_transformComponent = nearestOtherEntityTransformComponent;
+
+	if (nearestOtherEntityComponents.AreComponentsValidCheck())
 	{
-		UE_LOG(ArgusECSLog, Display, TEXT("[%s] Transform Systems detected that %s %d will collide with %s %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), components.m_entity.GetId(), ARGUS_NAMEOF(ArgusEntity), nearestOtherEntityId);
-		
-		TaskComponent* nearestOtherEntityTaskComponent = nearestOtherEntity.GetComponent<TaskComponent>();
-		NavigationComponent* nearestOtherEntityNavigationComponent = nearestOtherEntity.GetComponent<NavigationComponent>();
-		if (!nearestOtherEntityTaskComponent || !nearestOtherEntityNavigationComponent)
-		{
-			OnCompleteNavigationPath(components);
-			return;
-		}
-
-		if (nearestOtherEntityTaskComponent->IsExecutingMoveTask())
-		{
-			// TODO JAMES: Two movers colliding, gotta figure that out!
-			return;
-		}
-
-		nearestOtherEntityTaskComponent->m_currentTask = ETask::ProcessImminentCollisions;
-
-		PotentialCollision potentialCollision;
-		potentialCollision.m_entityID = components.m_entity.GetId();
-		potentialCollision.m_navigationPointIndex = pointIndex;
-		// TODO JAMES: Flesh out PotentialCollision hashing so it can be used in unordered set: nearestOtherEntityNavigationComponent->m_potentialCollisionOrigins.insert(potentialCollision);
+		HandlePotentialCollisionWithMovableEntity(predictedLocation, movingEntityComponents, nearestOtherEntityComponents);
+	}
+	else
+	{
+		HandlePotentialCollisionWithStaticEntity(predictedLocation, movingEntityComponents, nearestOtherEntityTransformComponent);
 	}
 }
 
@@ -320,5 +315,60 @@ void TransformSystems::OnCompleteNavigationPath(const TransformSystemsComponentA
 		components.m_navigationComponent->ResetPath();
 		components.m_targetingComponent->m_targetLocation = components.m_navigationComponent->m_queuedWaypoints.front();
 		components.m_navigationComponent->m_queuedWaypoints.pop();
+	}
+}
+
+void TransformSystems::HandlePotentialCollisionWithMovableEntity(const FVector& movingEntityFutureLocation, const TransformSystemsComponentArgs& movingEntityComponents, const TransformSystemsComponentArgs& otherEntityComponents)
+{
+	if (!movingEntityComponents.AreComponentsValidCheck() || !otherEntityComponents.AreComponentsValidCheck())
+	{
+		return;
+	}
+
+	FVector predictedLocation = otherEntityComponents.m_transformComponent->m_transform.GetLocation();
+	FVector newForwardVector = otherEntityComponents.m_transformComponent->m_transform.GetRotation().GetForwardVector();
+	uint16 pointIndex = otherEntityComponents.m_navigationComponent->m_lastPointIndex;
+	GetPathingLocationAtTimeOffset(ArgusECSConstants::k_defaultCollisionDetectionPredictionTime, otherEntityComponents, predictedLocation, newForwardVector, pointIndex);
+
+	const float distanceSquared = FVector::DistSquared(movingEntityFutureLocation, predictedLocation);
+	if (distanceSquared < FMath::Square(ArgusECSConstants::k_defaultPathFindingAgentRadius))
+	{
+		UE_LOG(ArgusECSLog, Display, TEXT("[%s] Transform Systems detected that %s %d will collide with %s %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), movingEntityComponents.m_entity.GetId(), ARGUS_NAMEOF(ArgusEntity), otherEntityComponents.m_entity.GetId());
+
+		if (otherEntityComponents.m_taskComponent->IsExecutingMoveTask())
+		{
+			// TODO JAMES: Two movers colliding, gotta figure that out!
+			return;
+		}
+
+		otherEntityComponents.m_taskComponent->m_currentTask = ETask::ProcessImminentCollisions;
+
+		PotentialCollision potentialCollision;
+		potentialCollision.m_entityID = otherEntityComponents.m_entity.GetId();
+		potentialCollision.m_navigationPointIndex = pointIndex;
+		// TODO JAMES: Flesh out PotentialCollision hashing so it can be used in unordered set: nearestOtherEntityNavigationComponent->m_potentialCollisionOrigins.insert(potentialCollision);
+	}
+}
+
+void TransformSystems::HandlePotentialCollisionWithStaticEntity(const FVector& movingEntityFutureLocation, const TransformSystemsComponentArgs& movingEntityComponents, const TransformComponent* otherEntityTransformComponent)
+{
+	if (!movingEntityComponents.AreComponentsValidCheck() || !movingEntityComponents.m_taskComponent->IsExecutingMoveTask() || !otherEntityTransformComponent)
+	{
+		return;
+	}
+
+	const uint16 numNavigationPoints = movingEntityComponents.m_navigationComponent->m_navigationPoints.size();
+	if (numNavigationPoints == 0u)
+	{
+		return;
+	}
+
+	const FVector endNavigationLocation = movingEntityComponents.m_navigationComponent->m_navigationPoints[numNavigationPoints - 1u];
+	const float currentDistanceSquared = FVector::DistSquared(movingEntityFutureLocation, otherEntityTransformComponent->m_transform.GetLocation());
+	const float goalDistanceSquared = FVector::DistSquared(endNavigationLocation, otherEntityTransformComponent->m_transform.GetLocation());
+	if (goalDistanceSquared < FMath::Square(ArgusECSConstants::k_defaultPathFindingAgentRadius) &&
+		currentDistanceSquared < FMath::Square(ArgusECSConstants::k_defaultPathFindingAgentRadius))
+	{
+		OnCompleteNavigationPath(movingEntityComponents);
 	}
 }

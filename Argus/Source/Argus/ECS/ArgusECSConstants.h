@@ -11,7 +11,7 @@ namespace ArgusECSConstants
 
 	static constexpr float k_defaultPathFindingAgentRadius = 100.0f;
 	static constexpr float k_defaultPathFindingAgentHeight = 100.0f;
-	static constexpr float k_defaultCollisionDetectionPredictionTime = 5.0f;
+	static constexpr float k_defaultCollisionDetectionPredictionTime = 1.0f;
 }
 
 // Unreal complains like a dumbass if UENUM is in a namespace. Big dumb.

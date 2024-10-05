@@ -32,6 +32,7 @@ bool TransformSystemsGetPathingLocationAtTimeOffsetTest::RunTest(const FString& 
 		return false;
 	}
 
+	components.m_taskComponent->m_currentTask = ETask::MoveToLocation;
 	components.m_transformComponent->m_speedUnitsPerSecond = 1.0f;
 	components.m_navigationComponent->m_navigationPoints.reserve(5);
 	components.m_navigationComponent->m_navigationPoints.push_back(twoSecondsInPast);

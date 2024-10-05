@@ -28,4 +28,6 @@ public:
 
 private:
 	static void OnCompleteNavigationPath(const TransformSystemsComponentArgs& components);
+	static void HandlePotentialCollisionWithMovableEntity(const FVector& movingEntityFutureLocation, const TransformSystemsComponentArgs& movingEntityComponents, const TransformSystemsComponentArgs& otherEntityComponents);
+	static void HandlePotentialCollisionWithStaticEntity(const FVector& movingEntityFutureLocation, const TransformSystemsComponentArgs& movingEntityComponents, const TransformComponent* otherEntityTransformComponent);
 };
