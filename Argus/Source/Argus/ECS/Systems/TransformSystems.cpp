@@ -365,12 +365,33 @@ void TransformSystems::HandlePotentialCollisionWithStaticEntity(const GetPathing
 	}
 
 	const FVector endNavigationLocation = components.m_navigationComponent->m_navigationPoints[numNavigationPoints - 1u];
-	const float currentDistanceSquared = FVector::DistSquared(movingEntityPredictedMovement.m_outputPredictedLocation, otherEntityTransformComponent->m_transform.GetLocation());
+	const FVector otherEntityLocation = otherEntityTransformComponent->m_transform.GetLocation();
+
+	const float currentDistanceSquared = FVector::DistSquared(movingEntityPredictedMovement.m_outputPredictedLocation, otherEntityLocation);
+	if (currentDistanceSquared > FMath::Square(ArgusECSConstants::k_defaultPathFindingAgentRadius))
+	{
+		return;
+	}
+
 	const float goalDistanceSquared = FVector::DistSquared(endNavigationLocation, otherEntityTransformComponent->m_transform.GetLocation());
-	if (goalDistanceSquared < FMath::Square(ArgusECSConstants::k_defaultPathFindingAgentRadius) &&
-		currentDistanceSquared < FMath::Square(ArgusECSConstants::k_defaultPathFindingAgentRadius))
+	if (goalDistanceSquared <= FMath::Square(ArgusECSConstants::k_defaultPathFindingAgentRadius))
 	{
 		UE_LOG(ArgusECSLog, Display, TEXT("[%s] Transform Systems detected that %s %d will collide with a static %s"), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), components.m_entity.GetId(), ARGUS_NAMEOF(ArgusEntity));
 		OnCompleteNavigationPath(components);
+		return;
 	}
+
+	const FVector navigationPointPriorToCollision = components.m_navigationComponent->m_navigationPoints[movingEntityPredictedMovement.m_navigationIndexOfPredictedLocation];
+	const FVector positionDeltaObstacle = otherEntityLocation - navigationPointPriorToCollision;
+	const FVector positionDeltaMoveDirection = movingEntityPredictedMovement.m_outputPredictedLocation - navigationPointPriorToCollision;
+
+	const float signAngle = FMath::Sign(positionDeltaMoveDirection.Cross(positionDeltaObstacle).Z);
+	const float lengthPositionDeltaObstacle = positionDeltaObstacle.Length();
+	const float angleToAvoidancePoint = FMath::Asin((ArgusECSConstants::k_defaultPathFindingAgentRadius + ArgusECSConstants::k_defaultPathFindingAgentAvoidanceCushion)  / lengthPositionDeltaObstacle);
+	const float lengthToAvoidancePoint = FMath::Max(FMath::Cos(angleToAvoidancePoint) * lengthPositionDeltaObstacle, ArgusECSConstants::k_defaultPathFindingAgentAvoidanceCushion);
+
+	const FVector positionDeltaAvoidancePoint = positionDeltaObstacle.RotateAngleAxisRad(angleToAvoidancePoint * -signAngle, FVector::UpVector).GetSafeNormal() * lengthToAvoidancePoint;
+	const FVector avoidancePointLocation = navigationPointPriorToCollision + positionDeltaAvoidancePoint;
+
+	components.m_navigationComponent->m_navigationPoints.insert(components.m_navigationComponent->m_navigationPoints.begin() + movingEntityPredictedMovement.m_navigationIndexOfPredictedLocation + 1u, avoidancePointLocation);
 }
