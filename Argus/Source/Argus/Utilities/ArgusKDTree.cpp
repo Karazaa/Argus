@@ -171,15 +171,7 @@ const ArgusKDTree::ArgusKDTreeNode* ArgusKDTree::FindArgusEntityIdClosestToLocat
 		{
 			const ArgusKDTreeNode* cachedPotentialNearestNeighbor = potentialNearestNeighbor;
 			potentialNearestNeighbor = FindArgusEntityIdClosestToLocationRecursive(secondBranch, targetLocation, entityIdToIgnore, depth + 1);
-
-			if (iterationNode->m_entityId == entityIdToIgnore)
-			{
-				potentialNearestNeighbor = ChooseNodeCloserToTarget(cachedPotentialNearestNeighbor, potentialNearestNeighbor, targetLocation, entityIdToIgnore);
-			}
-			else
-			{
-				potentialNearestNeighbor = ChooseNodeCloserToTarget(iterationNode, potentialNearestNeighbor, targetLocation, entityIdToIgnore);
-			}
+			potentialNearestNeighbor = ChooseNodeCloserToTarget(ChooseNodeCloserToTarget(cachedPotentialNearestNeighbor, potentialNearestNeighbor, targetLocation, entityIdToIgnore), potentialNearestNeighbor, targetLocation, entityIdToIgnore);
 		}
 	}
 	else
