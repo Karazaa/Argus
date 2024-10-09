@@ -13,7 +13,6 @@ class ARGUS_API UNavigationComponentData : public UComponentData
 
 public:
 	std::vector<FVector> m_navigationPoints = std::vector<FVector>();
-	std::vector<PotentialCollision> m_potentialCollisions = std::vector<PotentialCollision>();
 	std::queue<FVector> m_queuedWaypoints = std::queue<FVector>();
 	uint16 m_lastPointIndex = 0u;
 

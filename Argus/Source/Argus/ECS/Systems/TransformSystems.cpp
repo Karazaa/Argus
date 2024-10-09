@@ -24,9 +24,14 @@ bool TransformSystems::RunSystems(float deltaTime)
 		components.m_transformComponent = potentialEntity.GetComponent<TransformComponent>();
 		components.m_navigationComponent = potentialEntity.GetComponent<NavigationComponent>();
 		components.m_targetingComponent = potentialEntity.GetComponent<TargetingComponent>();
-		if (!components.m_taskComponent || !components.m_transformComponent || !components.m_navigationComponent || !components.m_targetingComponent)
+		if (!components.AreComponentsValidCheck())
 		{
 			continue;
+		}
+
+		if (components.m_taskComponent->IsExecutingMoveTask())
+		{
+			ProcessCollisions(deltaTime, components);
 		}
 
 		didMovementUpdateThisFrame |= ProcessMovementTaskCommands(deltaTime, components);
@@ -47,11 +52,6 @@ bool TransformSystems::ProcessMovementTaskCommands(float deltaTime, const Transf
 	if (!components.AreComponentsValidCheck())
 	{
 		return false;
-	}
-
-	if (components.m_taskComponent->IsExecutingMoveTask())
-	{
-		ProcessCollisions(deltaTime, components);
 	}
 
 	switch (components.m_taskComponent->m_currentTask)
@@ -344,10 +344,7 @@ void TransformSystems::HandlePotentialCollisionWithMovableEntity(const GetPathin
 			return;
 		}
 
-		PotentialCollision potentialCollision;
-		potentialCollision.m_entityID = components.m_entity.GetId();
-		potentialCollision.m_navigationPointIndex = movingEntityPredictedMovement.m_navigationIndexOfPredictedLocation;
-		otherEntityComponents.m_navigationComponent->m_potentialCollisions.push_back(potentialCollision);
+		// TODO JAMES: Mover colliding with a movable static entity, have to process avoidance from the perspective of the currently static entity.
 	}
 }
 

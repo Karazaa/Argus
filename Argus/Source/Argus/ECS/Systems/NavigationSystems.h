@@ -20,7 +20,6 @@ public:
 		bool AreComponentsValidCheck() const;
 	};
 	static void ProcessNavigationTaskCommands(TWeakObjectPtr<UWorld>& worldPointer, const NavigationSystemsComponentArgs& components);
-	static void ProcessPotentialCollisions(TWeakObjectPtr<UWorld>& worldPointer, const NavigationSystemsComponentArgs& components);
 	static void RecalculateMoveToEntityPaths(TWeakObjectPtr<UWorld>& worldPointer, const NavigationSystemsComponentArgs& components);
 	static void NavigateFromEntityToEntity(TWeakObjectPtr<UWorld>& worldPointer, ArgusEntity targetEntity, const NavigationSystemsComponentArgs& components);
 	static void NavigateFromEntityToLocation(TWeakObjectPtr<UWorld>& worldPointer, std::optional<FVector> targetLocation, const NavigationSystemsComponentArgs& components);

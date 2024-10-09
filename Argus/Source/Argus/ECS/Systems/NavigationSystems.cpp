@@ -61,8 +61,6 @@ void NavigationSystems::ProcessNavigationTaskCommands(TWeakObjectPtr<UWorld>& wo
 		return;
 	}
 
-	ProcessPotentialCollisions(worldPointer, components);
-
 	switch (components.m_taskComponent->m_currentTask)
 	{
 		case ETask::ProcessMoveToLocationCommand:
@@ -78,16 +76,6 @@ void NavigationSystems::ProcessNavigationTaskCommands(TWeakObjectPtr<UWorld>& wo
 		default:
 			break;
 	}
-}
-
-void NavigationSystems::ProcessPotentialCollisions(TWeakObjectPtr<UWorld>& worldPointer, const NavigationSystemsComponentArgs& components)
-{
-	if (!IsWorldPointerValidCheck(worldPointer) || !components.AreComponentsValidCheck())
-	{
-		return;
-	}
-
-	components.m_navigationComponent->m_potentialCollisions.clear();
 }
 
 void NavigationSystems::RecalculateMoveToEntityPaths(TWeakObjectPtr<UWorld>& worldPointer, const NavigationSystemsComponentArgs& components)
