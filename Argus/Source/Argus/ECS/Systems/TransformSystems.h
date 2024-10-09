@@ -37,4 +37,5 @@ private:
 	static void OnCompleteNavigationPath(const TransformSystemsComponentArgs& components);
 	static void HandlePotentialCollisionWithMovableEntity(const GetPathingLocationAtTimeOffsetResults& movingEntityPredictedMovement, const TransformSystemsComponentArgs& components, const TransformSystemsComponentArgs& otherEntityComponents);
 	static void HandlePotentialCollisionWithStaticEntity(const GetPathingLocationAtTimeOffsetResults& movingEntityPredictedMovement, const TransformSystemsComponentArgs& components, const TransformComponent* otherEntityTransformComponent);
+	static FVector GetAvoidancePointLocationForStaticCollision(const FVector& avoidingAgentLocation, const FVector& obstacleLocation, const FVector& predictedCollisionLocation);
 };
