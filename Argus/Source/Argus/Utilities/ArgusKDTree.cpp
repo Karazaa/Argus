@@ -126,10 +126,6 @@ const ArgusKDTree::ArgusKDTreeNode* ArgusKDTree::FindArgusEntityIdClosestToLocat
 	}
 
 	uint16 dimension = depth % 3u;
-
-	ArgusKDTreeNode* firstBranch = nullptr;
-	ArgusKDTreeNode* secondBranch = nullptr;
-
 	float iterationNodeValue = 0.0f;
 	float targetLocationValue = 0.0f;
 	switch (dimension)
@@ -148,6 +144,8 @@ const ArgusKDTree::ArgusKDTreeNode* ArgusKDTree::FindArgusEntityIdClosestToLocat
 			break;
 	}
 
+	ArgusKDTreeNode* firstBranch = nullptr;
+	ArgusKDTreeNode* secondBranch = nullptr;
 	if (targetLocationValue < iterationNodeValue)
 	{
 		firstBranch = iterationNode->m_leftChild;
@@ -201,6 +199,58 @@ const ArgusKDTree::ArgusKDTreeNode* ArgusKDTree::ChooseNodeCloserToTarget(const 
 	else
 	{
 		return node0;
+	}
+}
+
+void ArgusKDTree::FindArgusEntityIdsWithinRangeOfLocationRecursive(std::vector<uint16>& outNearbyArgusEntityIds, const ArgusKDTreeNode* iterationNode, const FVector& targetLocation, const float rangeSquared, uint16 entityIdToIgnore, uint16 depth) const
+{
+	if (!iterationNode)
+	{
+		return;
+	}
+
+	if (FVector::DistSquared(iterationNode->m_worldSpaceLocation, targetLocation) < rangeSquared)
+	{
+		if (iterationNode->m_entityId != entityIdToIgnore)
+		{
+			outNearbyArgusEntityIds.push_back(iterationNode->m_entityId);
+		}
+		
+		FindArgusEntityIdsWithinRangeOfLocationRecursive(outNearbyArgusEntityIds, iterationNode->m_rightChild, targetLocation, rangeSquared, entityIdToIgnore, depth + 1);
+		FindArgusEntityIdsWithinRangeOfLocationRecursive(outNearbyArgusEntityIds, iterationNode->m_leftChild, targetLocation, rangeSquared, entityIdToIgnore, depth + 1);
+		return;
+	}
+
+	uint16 dimension = depth % 3u;
+	float iterationNodeValue = 0.0f;
+	float targetLocationValue = 0.0f;
+	switch (dimension)
+	{
+		case 0:
+			iterationNodeValue = iterationNode->m_worldSpaceLocation.X;
+			targetLocationValue = targetLocation.X;
+			break;
+		case 1:
+			iterationNodeValue = iterationNode->m_worldSpaceLocation.Y;
+			targetLocationValue = targetLocation.Y;
+			break;
+		case 2:
+			iterationNodeValue = iterationNode->m_worldSpaceLocation.Z;
+			targetLocationValue = targetLocation.Z;
+			break;
+	}
+
+	const float differenceAlongDimension = targetLocationValue - iterationNodeValue;
+	if (FMath::Square(differenceAlongDimension) > rangeSquared)
+	{
+		if (differenceAlongDimension > 0.0f)
+		{
+			FindArgusEntityIdsWithinRangeOfLocationRecursive(outNearbyArgusEntityIds, iterationNode->m_rightChild, targetLocation, rangeSquared, entityIdToIgnore, depth + 1);
+		}
+		else
+		{
+			FindArgusEntityIdsWithinRangeOfLocationRecursive(outNearbyArgusEntityIds, iterationNode->m_leftChild, targetLocation, rangeSquared, entityIdToIgnore, depth + 1);
+		}
 	}
 }
 
@@ -298,4 +348,21 @@ uint16 ArgusKDTree::FindOtherArgusEntityIdClosestArgusEntity(const ArgusEntity& 
 	}
 
 	return FindArgusEntityIdClosestToLocation(transformComponent->m_transform.GetLocation(), entityToSearchAround);
+}
+
+bool ArgusKDTree::FindArgusEntityIdsWithinRangeOfLocation(std::vector<uint16>& outNearbyArgusEntityIds, const FVector& location, const float range) const
+{
+	return FindArgusEntityIdsWithinRangeOfLocation(outNearbyArgusEntityIds, location, range, ArgusEntity::s_emptyEntity);
+}
+
+bool ArgusKDTree::FindArgusEntityIdsWithinRangeOfLocation(std::vector<uint16>& outNearbyArgusEntityIds, const FVector& location, const float range, const ArgusEntity& entityToIgnore) const
+{
+	if (!m_rootNode || range <= 0.0f)
+	{
+		return false;
+	}
+
+	FindArgusEntityIdsWithinRangeOfLocationRecursive(outNearbyArgusEntityIds, m_rootNode, location, FMath::Square(range), entityToIgnore, 0u);
+
+	return outNearbyArgusEntityIds.size() > 0u;
 }

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "ArgusECSConstants.h"
+#include <vector>
 
 class ArgusEntity;
 
@@ -32,6 +33,8 @@ private:
 	const ArgusKDTreeNode* FindArgusEntityIdClosestToLocationRecursive(const ArgusKDTreeNode* iterationNode, const FVector& targetLocation, uint16 entityIdToIgnore, uint16 depth) const;
 	const ArgusKDTreeNode* ChooseNodeCloserToTarget(const ArgusKDTreeNode* node0, const ArgusKDTreeNode* node1, const FVector& targetLocation, uint16 entityIdToIgnore) const;
 
+	void FindArgusEntityIdsWithinRangeOfLocationRecursive(std::vector<uint16>& outNearbyArgusEntityIds, const ArgusKDTreeNode* iterationNode, const FVector& targetLocation, const float rangeSquared, uint16 entityIdToIgnore, uint16 depth) const;
+
 public:
 	~ArgusKDTree();
 
@@ -44,4 +47,7 @@ public:
 	uint16 FindArgusEntityIdClosestToLocation(const FVector& location) const;
 	uint16 FindArgusEntityIdClosestToLocation(const FVector& location, const ArgusEntity& entityToIgnore) const;
 	uint16 FindOtherArgusEntityIdClosestArgusEntity(const ArgusEntity& entityToSearchAround) const;
+
+	bool FindArgusEntityIdsWithinRangeOfLocation(std::vector<uint16>& outNearbyArgusEntityIds, const FVector& location, const float range) const;
+	bool FindArgusEntityIdsWithinRangeOfLocation(std::vector<uint16>& outNearbyArgusEntityIds, const FVector& location, const float range, const ArgusEntity& entityToIgnore) const;
 };
