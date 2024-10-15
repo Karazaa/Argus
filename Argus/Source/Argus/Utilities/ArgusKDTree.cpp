@@ -5,6 +5,10 @@
 #include "ArgusMacros.h"
 #include "ComponentDefinitions/TransformComponent.h"
 
+ArgusKDTree::ArgusKDTreeNode::ArgusKDTreeNode(const FVector& worldSpaceLocation) : m_worldSpaceLocation(worldSpaceLocation)
+{
+}
+
 ArgusKDTree::ArgusKDTreeNode::ArgusKDTreeNode(const ArgusEntity& entityToRepresent)
 {
 	if (!entityToRepresent)
@@ -22,23 +26,29 @@ ArgusKDTree::ArgusKDTreeNode::ArgusKDTreeNode(const ArgusEntity& entityToReprese
 	m_entityId = entityToRepresent.GetId();
 }
 
-void ArgusKDTree::ClearNodeRecursive(ArgusKDTreeNode* node)
+void ArgusKDTree::ClearNodeRecursive(ArgusKDTreeNode* node, FVector& currentAverageLocation, uint16& priorNodeCount)
 {
 	if (!node)
 	{
 		return;
 	}
 
+	if (node->m_entityId != ArgusECSConstants::k_maxEntities)
+	{
+		priorNodeCount++;
+		currentAverageLocation += node->m_worldSpaceLocation;
+	}
+
 	if (node->m_leftChild)
 	{
-		ClearNodeRecursive(node->m_leftChild);
+		ClearNodeRecursive(node->m_leftChild, currentAverageLocation, priorNodeCount);
 		delete(node->m_leftChild);
 		node->m_leftChild = nullptr;
 	}
 
 	if (node->m_rightChild)
 	{
-		ClearNodeRecursive(node->m_rightChild);
+		ClearNodeRecursive(node->m_rightChild, currentAverageLocation, priorNodeCount);
 		delete(node->m_rightChild);
 		node->m_rightChild = nullptr;
 	}
@@ -264,16 +274,21 @@ ArgusKDTree::~ArgusKDTree()
 	FlushAllNodes();
 }
 
-void ArgusKDTree::FlushAllNodes()
+FVector ArgusKDTree::FlushAllNodes()
 {
 	ARGUS_TRACE(ArgusKDTree::FlushAllNodes)
 
+	FVector sumLocation = FVector::ZeroVector;
+	uint16 numNodes = 0u;
+
 	if (m_rootNode)
 	{
-		ClearNodeRecursive(m_rootNode);
+		ClearNodeRecursive(m_rootNode, sumLocation, numNodes);
 		delete(m_rootNode);
 		m_rootNode = nullptr;
 	}
+
+	return  (sumLocation / static_cast<float>(numNodes));
 }
 
 void ArgusKDTree::InsertArgusEntityIntoKDTree(const ArgusEntity& entityToRepresent)
@@ -305,7 +320,9 @@ void ArgusKDTree::RebuildKDTreeForAllArgusEntities()
 {
 	ARGUS_TRACE(ArgusKDTree::RebuildKDTreeForAllArgusEntities)
 
-	FlushAllNodes();
+	const FVector averageLocation = FlushAllNodes();
+	m_rootNode = new ArgusKDTreeNode(averageLocation);
+
 	for (uint16 i = 0; i < ArgusECSConstants::k_maxEntities; ++i)
 	{
 		if (ArgusEntity retrievedEntity = ArgusEntity::RetrieveEntity(i))

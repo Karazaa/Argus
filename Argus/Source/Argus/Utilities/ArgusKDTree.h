@@ -14,16 +14,17 @@ private:
 	struct ArgusKDTreeNode
 	{
 		FVector		m_worldSpaceLocation = FVector::ZeroVector;
-		uint16		m_entityId = 0u;
+		uint16		m_entityId = ArgusECSConstants::k_maxEntities;
 		ArgusKDTreeNode* m_leftChild = nullptr;
 		ArgusKDTreeNode* m_rightChild = nullptr;
 
+		ArgusKDTreeNode(const FVector& worldSpaceLocation);
 		ArgusKDTreeNode(const ArgusEntity& entityToRepresent);
 	};
 
 	ArgusKDTreeNode* m_rootNode = nullptr;
 
-	void ClearNodeRecursive(ArgusKDTreeNode* node);
+	void ClearNodeRecursive(ArgusKDTreeNode* node, FVector& currentAverageLocation, uint16& priorNodeCount);
 	void InsertNodeIntoKDTreeRecursive(ArgusKDTreeNode* iterationNode, ArgusKDTreeNode* nodeToInsert, uint16 depth);
 
 	bool SearchForEntityIdRecursive(const ArgusKDTreeNode* node, uint16 entityId) const;
@@ -36,7 +37,7 @@ private:
 public:
 	~ArgusKDTree();
 
-	void FlushAllNodes();
+	FVector FlushAllNodes();
 	void InsertArgusEntityIntoKDTree(const ArgusEntity& entityToRepresent);
 	void RebuildKDTreeForAllArgusEntities();
 

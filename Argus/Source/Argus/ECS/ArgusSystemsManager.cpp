@@ -37,16 +37,18 @@ void ArgusSystemsManager::RunSystems(TWeakObjectPtr<UWorld> worldPointer, float 
 
 void ArgusSystemsManager::UpdateSingletonComponents(bool didMovementUpdateThisFrame)
 {
+	bool createdThisFrame = false;
 	if (!ArgusEntity::DoesEntityExist(s_singletonEntityId))
 	{
 		ArgusEntity::CreateEntity(s_singletonEntityId);
+		createdThisFrame = true;
 	}
 
 	ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(s_singletonEntityId);
 
 	if (SpatialPartitioningComponent* spatialPartitioningComponent = singletonEntity.GetOrAddComponent<SpatialPartitioningComponent>())
 	{
-		if (didMovementUpdateThisFrame)
+		if (didMovementUpdateThisFrame || createdThisFrame)
 		{
 			spatialPartitioningComponent->m_argusKDTree.RebuildKDTreeForAllArgusEntities();
 		}
