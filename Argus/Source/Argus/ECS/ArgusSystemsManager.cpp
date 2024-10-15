@@ -4,6 +4,7 @@
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
 #include "Engine/World.h"
+#include "Systems/AvoidanceSystems.h"
 #include "Systems/NavigationSystems.h"
 #include "Systems/TargetingSystems.h"
 #include "Systems/TransformSystems.h"
@@ -28,6 +29,7 @@ void ArgusSystemsManager::RunSystems(TWeakObjectPtr<UWorld> worldPointer, float 
 
 	NavigationSystems::RunSystems(worldPointer);
 	TargetingSystems::RunSystems(deltaTime);
+	AvoidanceSystems::RunSystems(deltaTime);
 	const bool didMovementUpdateThisFrame = TransformSystems::RunSystems(deltaTime);
 
 	UpdateSingletonComponents(didMovementUpdateThisFrame);
