@@ -21,8 +21,6 @@ private:
 		ArgusKDTreeNode(const ArgusEntity& entityToRepresent);
 	};
 
-
-
 	ArgusKDTreeNode* m_rootNode = nullptr;
 
 	void ClearNodeRecursive(ArgusKDTreeNode* node);

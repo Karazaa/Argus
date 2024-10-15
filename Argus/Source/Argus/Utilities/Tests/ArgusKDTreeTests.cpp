@@ -11,6 +11,8 @@ const FVector location2 = FVector(100.0f, 50.0f, 0.0f);
 const FVector location3 = FVector(10.0f, 70.0f, 0.0f);
 const FVector location4 = FVector(100.0f, 50.0f, 10.0f);
 const FVector location5 = FVector(110.0f, 40.0f, 20.0f);
+const FVector location6 = FVector(200.0f, 200.0f, 200.0f);
+const FVector location7 = FVector(15.0f, 60.0f, 0.0f);
 
 const uint16 id0 = 100u;
 const uint16 id1 = 101u;
@@ -272,6 +274,143 @@ bool ArgusUtilitiesArgusKDTreeFindArgusEntityIdClosestToLocationTest::RunTest(co
 		),
 		nearestEntityIdToZPoint,
 		id4
+	);
+#pragma endregion
+
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusKDTreeFindArgusEntityIdsWithinRangeOfLocationTest, "Argus.Utilities.ArgusKDTree.FindArgusEntityIdsWithinRangeOfLocationTest", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+bool ArgusUtilitiesArgusKDTreeFindArgusEntityIdsWithinRangeOfLocationTest::RunTest(const FString& Parameters)
+{
+	ArgusEntity::FlushAllEntities();
+	ArgusKDTree tree;
+	CollectionOfArgusEntities entities;
+	PopulateKDTreeForTests(tree, entities, true);
+
+	std::vector<uint16> argusEntityIds;
+	tree.FindArgusEntityIdsWithinRangeOfLocation(argusEntityIds, location6, 1.0f);
+
+#pragma region Test that we cannot find any entities within a small range of a far away location
+	TestEqual
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Creating a %s, creating some %s, then checking which %s are in range of a far away location via %s."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(ArgusKDTree),
+			ARGUS_NAMEOF(ArgusEntity),
+			ARGUS_NAMEOF(ArgusEntity),
+			ARGUS_NAMEOF(ArgusKDTree::FindArgusEntityIdsWithinRangeOfLocation)
+		),
+		argusEntityIds.size(),
+		0
+	);
+#pragma endregion
+
+	argusEntityIds.clear();
+	tree.FindArgusEntityIdsWithinRangeOfLocation(argusEntityIds, location0, 1.0f);
+
+#pragma region Test that we can find exactly one entity near the center
+	TestEqual
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Creating a %s, creating some %s, then checking that exactly one %s is in range of a central location via %s."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(ArgusKDTree),
+			ARGUS_NAMEOF(ArgusEntity),
+			ARGUS_NAMEOF(ArgusEntity),
+			ARGUS_NAMEOF(ArgusKDTree::FindArgusEntityIdsWithinRangeOfLocation)
+		),
+		argusEntityIds.size(),
+		1
+	);
+#pragma endregion
+
+	if (argusEntityIds.size() < 1)
+	{
+		return false;
+	}
+
+#pragma region Test the id of the one entity near the center
+	TestEqual
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Creating a %s, creating some %s, then checking that a specific %s is in range of a central location via %s."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(ArgusKDTree),
+			ARGUS_NAMEOF(ArgusEntity),
+			ARGUS_NAMEOF(ArgusEntity),
+			ARGUS_NAMEOF(ArgusKDTree::FindArgusEntityIdsWithinRangeOfLocation)
+		),
+		argusEntityIds[0],
+		id0
+	);
+#pragma endregion
+
+	argusEntityIds.clear();
+	tree.FindArgusEntityIdsWithinRangeOfLocation(argusEntityIds, location0, 200.0f);
+
+#pragma region Test that we can find all entities within a large range
+	TestEqual
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Creating a %s, creating some %s, then checking that all %s are within a large range of a central location via %s."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(ArgusKDTree),
+			ARGUS_NAMEOF(ArgusEntity),
+			ARGUS_NAMEOF(ArgusEntity),
+			ARGUS_NAMEOF(ArgusKDTree::FindArgusEntityIdsWithinRangeOfLocation)
+		),
+		argusEntityIds.size(),
+		5
+	);
+#pragma endregion
+
+	argusEntityIds.clear();
+	tree.FindArgusEntityIdsWithinRangeOfLocation(argusEntityIds, location7, 20.0f);
+
+#pragma region Test that we can find exactly two entities near a left point
+	TestEqual
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Creating a %s, creating some %s, then checking that exactly two %s are in range of a left location via %s."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(ArgusKDTree),
+			ARGUS_NAMEOF(ArgusEntity),
+			ARGUS_NAMEOF(ArgusEntity),
+			ARGUS_NAMEOF(ArgusKDTree::FindArgusEntityIdsWithinRangeOfLocation)
+		),
+		argusEntityIds.size(),
+		2
+	);
+#pragma endregion
+
+	if (argusEntityIds.size() < 2)
+	{
+		return false;
+	}
+
+	const bool entity1Present = argusEntityIds[0] == id1 || argusEntityIds[1] == id1;
+	const bool entity3Present = argusEntityIds[0] == id3 || argusEntityIds[1] == id3;
+
+#pragma region Test the ids of the entities near the left
+	TestTrue
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Creating a %s, creating some %s, then checking that specific %s are in range of a left location via %s."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(ArgusKDTree),
+			ARGUS_NAMEOF(ArgusEntity),
+			ARGUS_NAMEOF(ArgusEntity),
+			ARGUS_NAMEOF(ArgusKDTree::FindArgusEntityIdsWithinRangeOfLocation)
+		),
+		entity1Present && entity3Present
 	);
 #pragma endregion
 

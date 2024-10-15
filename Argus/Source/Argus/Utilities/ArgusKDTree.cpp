@@ -183,11 +183,11 @@ const ArgusKDTree::ArgusKDTreeNode* ArgusKDTree::FindArgusEntityIdClosestToLocat
 
 const ArgusKDTree::ArgusKDTreeNode* ArgusKDTree::ChooseNodeCloserToTarget(const ArgusKDTreeNode* node0, const ArgusKDTreeNode* node1, const FVector& targetLocation, uint16 entityIdToIgnore) const
 {
-	if (!node0 || node0->m_entityId == entityIdToIgnore)
+	if (!node0 || node0->m_entityId == entityIdToIgnore || node0->m_entityId == ArgusECSConstants::k_maxEntities)
 	{
 		return node1;
 	}
-	if (!node1 || node1->m_entityId == entityIdToIgnore)
+	if (!node1 || node1->m_entityId == entityIdToIgnore || node1->m_entityId == ArgusECSConstants::k_maxEntities)
 	{
 		return node0;
 	}
@@ -252,6 +252,11 @@ void ArgusKDTree::FindArgusEntityIdsWithinRangeOfLocationRecursive(std::vector<u
 			FindArgusEntityIdsWithinRangeOfLocationRecursive(outNearbyArgusEntityIds, iterationNode->m_leftChild, targetLocation, rangeSquared, entityIdToIgnore, depth + 1);
 		}
 	}
+	else
+	{
+		FindArgusEntityIdsWithinRangeOfLocationRecursive(outNearbyArgusEntityIds, iterationNode->m_rightChild, targetLocation, rangeSquared, entityIdToIgnore, depth + 1);
+		FindArgusEntityIdsWithinRangeOfLocationRecursive(outNearbyArgusEntityIds, iterationNode->m_leftChild, targetLocation, rangeSquared, entityIdToIgnore, depth + 1);
+	}
 }
 
 ArgusKDTree::~ArgusKDTree()
@@ -263,12 +268,12 @@ void ArgusKDTree::FlushAllNodes()
 {
 	ARGUS_TRACE(ArgusKDTree::FlushAllNodes)
 
-		if (m_rootNode)
-		{
-			ClearNodeRecursive(m_rootNode);
-			delete(m_rootNode);
-			m_rootNode = nullptr;
-		}
+	if (m_rootNode)
+	{
+		ClearNodeRecursive(m_rootNode);
+		delete(m_rootNode);
+		m_rootNode = nullptr;
+	}
 }
 
 void ArgusKDTree::InsertArgusEntityIntoKDTree(const ArgusEntity& entityToRepresent)
@@ -303,7 +308,10 @@ void ArgusKDTree::RebuildKDTreeForAllArgusEntities()
 	FlushAllNodes();
 	for (uint16 i = 0; i < ArgusECSConstants::k_maxEntities; ++i)
 	{
-		InsertArgusEntityIntoKDTree(ArgusEntity::RetrieveEntity(i));
+		if (ArgusEntity retrievedEntity = ArgusEntity::RetrieveEntity(i))
+		{
+			InsertArgusEntityIntoKDTree(retrievedEntity);
+		}
 	}
 }
 
