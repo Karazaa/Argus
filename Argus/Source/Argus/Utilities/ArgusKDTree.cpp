@@ -5,11 +5,12 @@
 #include "ArgusMacros.h"
 #include "ComponentDefinitions/TransformComponent.h"
 
-ArgusKDTree::ArgusKDTreeNode::ArgusKDTreeNode(const FVector& worldSpaceLocation) : m_worldSpaceLocation(worldSpaceLocation)
+void ArgusKDTree::ArgusKDTreeNode::Populate(const FVector& worldSpaceLocation)
 {
+	m_worldSpaceLocation = worldSpaceLocation;
 }
 
-ArgusKDTree::ArgusKDTreeNode::ArgusKDTreeNode(const ArgusEntity& entityToRepresent)
+void ArgusKDTree::ArgusKDTreeNode::Populate(const ArgusEntity& entityToRepresent)
 {
 	if (!entityToRepresent)
 	{
@@ -42,14 +43,14 @@ void ArgusKDTree::ClearNodeRecursive(ArgusKDTreeNode* node, FVector& currentAver
 	if (node->m_leftChild)
 	{
 		ClearNodeRecursive(node->m_leftChild, currentAverageLocation, priorNodeCount);
-		delete(node->m_leftChild);
+		m_nodePool.Release(node->m_leftChild);
 		node->m_leftChild = nullptr;
 	}
 
 	if (node->m_rightChild)
 	{
 		ClearNodeRecursive(node->m_rightChild, currentAverageLocation, priorNodeCount);
-		delete(node->m_rightChild);
+		m_nodePool.Release(node->m_rightChild);
 		node->m_rightChild = nullptr;
 	}
 }
@@ -272,6 +273,7 @@ void ArgusKDTree::FindArgusEntityIdsWithinRangeOfLocationRecursive(std::vector<u
 ArgusKDTree::~ArgusKDTree()
 {
 	FlushAllNodes();
+	m_nodePool.ClearPool();
 }
 
 FVector ArgusKDTree::FlushAllNodes()
@@ -284,7 +286,7 @@ FVector ArgusKDTree::FlushAllNodes()
 	if (m_rootNode)
 	{
 		ClearNodeRecursive(m_rootNode, sumLocation, numNodes);
-		delete(m_rootNode);
+		m_nodePool.Release(m_rootNode);
 		m_rootNode = nullptr;
 	}
 
@@ -306,7 +308,8 @@ void ArgusKDTree::InsertArgusEntityIntoKDTree(const ArgusEntity& entityToReprese
 		return;
 	}
 
-	ArgusKDTreeNode* nodeToInsert = new ArgusKDTreeNode(entityToRepresent);
+	ArgusKDTreeNode* nodeToInsert = m_nodePool.Take();;
+	nodeToInsert->Populate(entityToRepresent);
 	if (!m_rootNode)
 	{
 		m_rootNode = nodeToInsert;
@@ -321,7 +324,13 @@ void ArgusKDTree::RebuildKDTreeForAllArgusEntities()
 	ARGUS_TRACE(ArgusKDTree::RebuildKDTreeForAllArgusEntities)
 
 	const FVector averageLocation = FlushAllNodes();
-	m_rootNode = new ArgusKDTreeNode(averageLocation);
+
+	if (m_rootNode)
+	{
+		m_nodePool.Release(m_rootNode);
+	}
+	m_rootNode = m_nodePool.Take();
+	m_rootNode->Populate(averageLocation);
 
 	for (uint16 i = 0; i < ArgusECSConstants::k_maxEntities; ++i)
 	{
