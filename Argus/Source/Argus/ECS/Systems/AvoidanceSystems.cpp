@@ -33,6 +33,10 @@ void AvoidanceSystems::RunSystems(float deltaTime)
 	}
 }
 
+#pragma region RVO Avoidance
+#pragma endregion
+
+#pragma region Non-RVO avoidance
 void AvoidanceSystems::ProcessPotentialCollisions(float deltaTime, const TransformSystems::TransformSystemsComponentArgs& components)
 {
 	const ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusSystemsManager::s_singletonEntityId);
@@ -182,3 +186,4 @@ FVector AvoidanceSystems::GetAvoidancePointLocationForStaticCollision(const FVec
 	const FVector positionDeltaAvoidancePoint = positionDeltaObstacle.RotateAngleAxisRad(angleToAvoidancePoint * -signAngle, FVector::UpVector).GetSafeNormal() * lengthToAvoidancePoint;
 	return avoidingAgentLocation + positionDeltaAvoidancePoint;
 }
+#pragma endregion
