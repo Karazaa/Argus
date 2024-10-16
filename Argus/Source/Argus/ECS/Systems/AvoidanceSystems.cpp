@@ -5,7 +5,7 @@
 
 void AvoidanceSystems::RunSystems(float deltaTime)
 {
-	ARGUS_TRACE(TransformSystems::RunSystems)
+	ARGUS_TRACE(AvoidanceSystems::RunSystems)
 
 	for (uint16 i = 0; i < ArgusECSConstants::k_maxEntities; ++i)
 	{
