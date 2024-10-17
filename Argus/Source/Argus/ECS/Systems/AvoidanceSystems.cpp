@@ -28,24 +28,63 @@ void AvoidanceSystems::RunSystems(float deltaTime)
 
 		if (components.m_taskComponent->IsExecutingMoveTask())
 		{
+			ProcessRVOAvoidance(deltaTime, components);
 			ProcessPotentialCollisions(deltaTime, components);
 		}
 	}
 }
 
 #pragma region RVO Avoidance
-#pragma endregion
-
-#pragma region Non-RVO avoidance
-void AvoidanceSystems::ProcessPotentialCollisions(float deltaTime, const TransformSystems::TransformSystemsComponentArgs& components)
+void AvoidanceSystems::ProcessRVOAvoidance(float deltaTime, const TransformSystems::TransformSystemsComponentArgs& components)
 {
+	if (!components.AreComponentsValidCheck())
+	{
+		return;
+	}
+
 	const ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusSystemsManager::s_singletonEntityId);
 	if (!singletonEntity)
 	{
 		return;
 	}
 
+	const SpatialPartitioningComponent* const spatialPartitioningComponent = singletonEntity.GetComponent<SpatialPartitioningComponent>();
+	if (!spatialPartitioningComponent)
+	{
+		return;
+	}
+
+	components.m_transformComponent->m_avoidanceSpeedUnitsPerSecond = components.m_transformComponent->m_desiredSpeedUnitsPerSecond;
+
+	std::vector<uint16> foundEntityIds;
+	if (spatialPartitioningComponent->m_argusKDTree.FindOtherArgusEntityIdsWithinRangeOfArgusEntity(foundEntityIds, components.m_entity, ArgusECSConstants::k_defaultAvoidanceAgentRadius))
+	{
+		for (int i = 0; i < foundEntityIds.size(); ++i)
+		{
+			ArgusEntity foundEntity = ArgusEntity::RetrieveEntity(foundEntityIds[i]);
+			if (!foundEntity)
+			{
+				continue;
+			}
+				
+			// TODO JAMES: Do stuff.
+		}
+	}
+
+	// TODO James: Really need to flesh this out.
+}
+#pragma endregion
+
+#pragma region Non-RVO avoidance
+void AvoidanceSystems::ProcessPotentialCollisions(float deltaTime, const TransformSystems::TransformSystemsComponentArgs& components)
+{
 	if (!components.AreComponentsValidCheck())
+	{
+		return;
+	}
+
+	const ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusSystemsManager::s_singletonEntityId);
+	if (!singletonEntity)
 	{
 		return;
 	}

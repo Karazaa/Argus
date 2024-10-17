@@ -222,7 +222,7 @@ void ArgusKDTree::FindArgusEntityIdsWithinRangeOfLocationRecursive(std::vector<u
 
 	if (FVector::DistSquared(iterationNode->m_worldSpaceLocation, targetLocation) < rangeSquared)
 	{
-		if (iterationNode->m_entityId != entityIdToIgnore)
+		if (iterationNode->m_entityId != entityIdToIgnore && iterationNode->m_entityId != ArgusECSConstants::k_maxEntities)
 		{
 			outNearbyArgusEntityIds.push_back(iterationNode->m_entityId);
 		}
@@ -396,7 +396,18 @@ bool ArgusKDTree::FindArgusEntityIdsWithinRangeOfLocation(std::vector<uint16>& o
 		return false;
 	}
 
-	FindArgusEntityIdsWithinRangeOfLocationRecursive(outNearbyArgusEntityIds, m_rootNode, location, FMath::Square(range), entityToIgnore, 0u);
+	FindArgusEntityIdsWithinRangeOfLocationRecursive(outNearbyArgusEntityIds, m_rootNode, location, FMath::Square(range), entityToIgnore.GetId(), 0u);
 
 	return outNearbyArgusEntityIds.size() > 0u;
+}
+
+bool ArgusKDTree::FindOtherArgusEntityIdsWithinRangeOfArgusEntity(std::vector<uint16>& outNearbyArgusEntityIds, const ArgusEntity& entityToSearchAround, const float range) const
+{
+	const TransformComponent* transformComponent = entityToSearchAround.GetComponent<TransformComponent>();
+	if (!transformComponent)
+	{
+		return false;
+	}
+
+	return FindArgusEntityIdsWithinRangeOfLocation(outNearbyArgusEntityIds, transformComponent->m_transform.GetLocation(), range, entityToSearchAround);
 }

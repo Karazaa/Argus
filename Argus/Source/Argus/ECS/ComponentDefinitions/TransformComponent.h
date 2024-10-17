@@ -10,5 +10,7 @@ struct TransformComponent
 	ARGUS_IGNORE()
 	FTransform m_transform = FTransform::Identity;
 
-	float  m_speedUnitsPerSecond = 100.0f;
+	ARGUS_IGNORE()
+	float m_avoidanceSpeedUnitsPerSecond = 100.0f;
+	float m_desiredSpeedUnitsPerSecond = 100.0f;
 };

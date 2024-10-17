@@ -39,7 +39,7 @@ public:
 
 	bool FindArgusEntityIdsWithinRangeOfLocation(std::vector<uint16>& outNearbyArgusEntityIds, const FVector& location, const float range) const;
 	bool FindArgusEntityIdsWithinRangeOfLocation(std::vector<uint16>& outNearbyArgusEntityIds, const FVector& location, const float range, const ArgusEntity& entityToIgnore) const;
-
+	bool FindOtherArgusEntityIdsWithinRangeOfArgusEntity(std::vector<uint16>& outNearbyArgusEntityIds, const ArgusEntity& entityToSearchAround, const float range) const;
 
 private:
 	ArgusKDTreeNode* m_rootNode = nullptr;

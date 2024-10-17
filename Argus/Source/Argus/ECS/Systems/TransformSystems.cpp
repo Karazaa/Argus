@@ -93,7 +93,7 @@ void TransformSystems::GetPathingLocationAtTimeOffset(float timeOffsetSeconds, c
 		return;
 	}
 
-	float translationMagnitude = FMath::Abs(components.m_transformComponent->m_speedUnitsPerSecond * timeOffsetSeconds);
+	float translationMagnitude = FMath::Abs(components.m_transformComponent->m_avoidanceSpeedUnitsPerSecond * timeOffsetSeconds);
 	FVector positionDifferenceNormalized = FVector::ZeroVector;
 
 	if (timeOffsetSeconds > 0.0f)

@@ -13,6 +13,7 @@ public:
 private:
 
 #pragma region RVO avoidance
+	static void ProcessRVOAvoidance(float deltaTime, const TransformSystems::TransformSystemsComponentArgs& components);
 #pragma endregion
 
 #pragma region Non-RVO avoidance
