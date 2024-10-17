@@ -55,6 +55,8 @@ void AvoidanceSystems::ProcessRVOAvoidance(float deltaTime, const TransformSyste
 	}
 
 	components.m_transformComponent->m_avoidanceSpeedUnitsPerSecond = components.m_transformComponent->m_desiredSpeedUnitsPerSecond;
+	const FVector sourceEntityLocation = components.m_transformComponent->m_transform.GetLocation();
+	const FVector sourceEntityDirection = components.m_transformComponent->m_transform.GetRotation().GetForwardVector();
 
 	std::vector<uint16> foundEntityIds;
 	if (spatialPartitioningComponent->m_argusKDTree.FindOtherArgusEntityIdsWithinRangeOfArgusEntity(foundEntityIds, components.m_entity, ArgusECSConstants::k_defaultAvoidanceAgentRadius))
@@ -66,12 +68,40 @@ void AvoidanceSystems::ProcessRVOAvoidance(float deltaTime, const TransformSyste
 			{
 				continue;
 			}
-				
-			// TODO JAMES: Do stuff.
+
+			TransformComponent* foundTransformComponent = foundEntity.GetComponent<TransformComponent>();
+			if (!foundTransformComponent)
+			{
+				continue;
+			}
+
+			const FVector foundEntityLocation = foundTransformComponent->m_transform.GetLocation();
+			FVector foundEntityDirection = foundTransformComponent->m_transform.GetRotation().GetForwardVector();
+
+			TaskComponent* foundTaskComponent = foundEntity.GetComponent<TaskComponent>();
+			if (!foundTaskComponent || !foundTaskComponent->IsExecutingMoveTask())
+			{
+				foundEntityDirection = FVector::ZeroVector;
+			}
+
+			const FVector foundEntityLocationRelativeToSource = foundEntityLocation - sourceEntityLocation;
+			const FVector foundEntityDirectionRelativeToSource = foundEntityDirection - sourceEntityDirection;
+			const float relativeLocationDistanceSquared = foundEntityLocationRelativeToSource.SquaredLength();
+			const float combinedRadius = 2.0f * ArgusECSConstants::k_defaultAvoidanceAgentRadius;
+			const float combinedRadiusSquared = combinedRadius * combinedRadius;
+
+			if (relativeLocationDistanceSquared > combinedRadiusSquared)
+			{
+				// No collision yet.
+			}
+			else
+			{
+				// Collision occurred.
+			}
+			
+			// TODO JAMES: https://github.com/snape/RVO2/blob/af26bedf27a84ffffb59beea996ffe2531ddc789/src/Agent.cc#L541
 		}
 	}
-
-	// TODO James: Really need to flesh this out.
 }
 #pragma endregion
 
