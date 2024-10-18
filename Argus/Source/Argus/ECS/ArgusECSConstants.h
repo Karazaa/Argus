@@ -12,7 +12,7 @@ namespace ArgusECSConstants
 	static constexpr float k_defaultPathFindingAgentRadius = 100.0f;
 	static constexpr float k_defaultPathFindingAgentAvoidanceCushion = 25.0f;
 	static constexpr float k_defaultPathFindingAgentHeight = 100.0f;
-	static constexpr float k_defaultCollisionDetectionPredictionTime = 1.0f;
+	static constexpr float k_defaultCollisionDetectionPredictionTime = 2.0f;
 	static constexpr float k_defaultAvoidanceAgentRadius = 500.0f;
 }
 

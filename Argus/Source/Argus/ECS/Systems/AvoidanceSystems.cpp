@@ -54,9 +54,12 @@ void AvoidanceSystems::ProcessRVOAvoidance(float deltaTime, const TransformSyste
 		return;
 	}
 
+	// TODO James: Need to calculate avoidance speed at the end in the final version. This is just temp for now. Need to remove this line later.
 	components.m_transformComponent->m_avoidanceSpeedUnitsPerSecond = components.m_transformComponent->m_desiredSpeedUnitsPerSecond;
-	const FVector sourceEntityLocation = components.m_transformComponent->m_transform.GetLocation();
-	const FVector sourceEntityDirection = components.m_transformComponent->m_transform.GetRotation().GetForwardVector();
+
+	const FVector2D sourceEntityLocation = FVector2D(components.m_transformComponent->m_transform.GetLocation());
+	const FVector2D sourceEntityVelocity = FVector2D(components.m_transformComponent->m_transform.GetRotation().GetForwardVector()) * components.m_transformComponent->m_desiredSpeedUnitsPerSecond * ArgusECSConstants::k_defaultCollisionDetectionPredictionTime;
+	const float inversePredictionTime = 1.0F / ArgusECSConstants::k_defaultCollisionDetectionPredictionTime;
 
 	std::vector<uint16> foundEntityIds;
 	if (spatialPartitioningComponent->m_argusKDTree.FindOtherArgusEntityIdsWithinRangeOfArgusEntity(foundEntityIds, components.m_entity, ArgusECSConstants::k_defaultAvoidanceAgentRadius))
@@ -75,28 +78,41 @@ void AvoidanceSystems::ProcessRVOAvoidance(float deltaTime, const TransformSyste
 				continue;
 			}
 
-			const FVector foundEntityLocation = foundTransformComponent->m_transform.GetLocation();
-			FVector foundEntityDirection = foundTransformComponent->m_transform.GetRotation().GetForwardVector();
+			const FVector2D foundEntityLocation = FVector2D(foundTransformComponent->m_transform.GetLocation());
+			FVector2D foundEntityVelocity = FVector2D(foundTransformComponent->m_transform.GetRotation().GetForwardVector()) * foundTransformComponent->m_desiredSpeedUnitsPerSecond * ArgusECSConstants::k_defaultCollisionDetectionPredictionTime;
 
 			TaskComponent* foundTaskComponent = foundEntity.GetComponent<TaskComponent>();
 			if (!foundTaskComponent || !foundTaskComponent->IsExecutingMoveTask())
 			{
-				foundEntityDirection = FVector::ZeroVector;
+				foundEntityVelocity = FVector2D::ZeroVector;
 			}
 
-			const FVector foundEntityLocationRelativeToSource = foundEntityLocation - sourceEntityLocation;
-			const FVector foundEntityDirectionRelativeToSource = foundEntityDirection - sourceEntityDirection;
+			const FVector2D foundEntityLocationRelativeToSource = foundEntityLocation - sourceEntityLocation;
+			const FVector2D foundEntityVelocityRelativeToSource = foundEntityVelocity - sourceEntityVelocity;
 			const float relativeLocationDistanceSquared = foundEntityLocationRelativeToSource.SquaredLength();
 			const float combinedRadius = 2.0f * ArgusECSConstants::k_defaultAvoidanceAgentRadius;
 			const float combinedRadiusSquared = combinedRadius * combinedRadius;
 
+			FVector2D velocityToBoundaryOfVO = FVector2D::ZeroVector;
+			FVector2D orcaLineDirection = FVector2D::ZeroVector;
 			if (relativeLocationDistanceSquared > combinedRadiusSquared)
 			{
 				// No collision yet.
+				FVector2D cutoffCenterToRelativeVelocity = foundEntityVelocityRelativeToSource - (inversePredictionTime * foundEntityLocationRelativeToSource);
+
+				// TODO JAMES: Need more here.
 			}
 			else
 			{
 				// Collision occurred.
+				const float inverseDeltaTime = 1.0f / deltaTime;
+
+				const FVector2D cutoffCenterToRelativeVelocity = foundEntityVelocityRelativeToSource - (inverseDeltaTime * foundEntityLocationRelativeToSource);
+				const float lengthCutoffCenterToRelativeVelocity = cutoffCenterToRelativeVelocity.Length();
+				const FVector2D normalizedCutoffCenterToRelativeVelocity = cutoffCenterToRelativeVelocity / lengthCutoffCenterToRelativeVelocity;
+
+				orcaLineDirection = FVector2D(normalizedCutoffCenterToRelativeVelocity.Y, -normalizedCutoffCenterToRelativeVelocity.X);
+				velocityToBoundaryOfVO = ((combinedRadius * inverseDeltaTime) - lengthCutoffCenterToRelativeVelocity) * normalizedCutoffCenterToRelativeVelocity;
 			}
 			
 			// TODO JAMES: https://github.com/snape/RVO2/blob/af26bedf27a84ffffb59beea996ffe2531ddc789/src/Agent.cc#L541
