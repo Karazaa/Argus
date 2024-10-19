@@ -12,11 +12,27 @@ public:
 	
 private:
 
-#pragma region RVO avoidance
-	static void ProcessRVOAvoidance(float deltaTime, const TransformSystems::TransformSystemsComponentArgs& components);
+#pragma region Optimal Reciprocal Collision Avoidance
+	struct ORCALine
+	{
+		FVector2D m_direction = FVector2D::ZeroVector;
+		FVector2D m_point = FVector2D::ZeroVector;
+	};
+	struct FindORCALineParams
+	{
+		FVector2D m_sourceEntityLocation = FVector2D::ZeroVector;
+		FVector2D m_sourceEntityVelocity = FVector2D::ZeroVector;
+		FVector2D m_foundEntityLocation = FVector2D::ZeroVector;
+		FVector2D m_foundEntityVelocity = FVector2D::ZeroVector;
+		float m_deltaTime = 0.0f;
+		float m_inversePredictionTime = 0.0f;
+	};
+
+	static void ProcessORCAvoidance(float deltaTime, const TransformSystems::TransformSystemsComponentArgs& components);
+	static void FindORCALineAndVelocityToBoundaryPerEntity(const FindORCALineParams& findOrcaLineParams, FVector2D& velocityToBoundaryOfVO, ORCALine& orcaLine);
 #pragma endregion
 
-#pragma region Non-RVO avoidance
+#pragma region Non-ORC Avoidance
 	static void ProcessPotentialCollisions(float deltaTime, const TransformSystems::TransformSystemsComponentArgs& components);
 	static void HandlePotentialCollisionWithMovableEntity(const TransformSystems::GetPathingLocationAtTimeOffsetResults& movingEntityPredictedMovement, const TransformSystems::TransformSystemsComponentArgs& components, const TransformSystems::TransformSystemsComponentArgs& otherEntityComponents);
 	static void HandlePotentialCollisionWithStaticEntity(const TransformSystems::GetPathingLocationAtTimeOffsetResults& movingEntityPredictedMovement, const TransformSystems::TransformSystemsComponentArgs& components, const TransformComponent* otherEntityTransformComponent);
