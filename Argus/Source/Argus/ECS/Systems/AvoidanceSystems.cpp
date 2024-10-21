@@ -162,6 +162,11 @@ void AvoidanceSystems::FindORCALineAndVelocityToBoundaryPerEntity(const FindORCA
 	}
 }
 
+bool AvoidanceSystems::TwoDimensionalLinearProgram(const std::vector<ORCALine>& orcaLines, const float radius, const FVector2D& preferredVelocity, bool shouldOptimizeDirection, FVector2D& resultingVelocity)
+{
+	return false;
+}
+
 #pragma endregion
 
 #pragma region Non-RVO avoidance
