@@ -30,6 +30,7 @@ private:
 
 	static void ProcessORCAvoidance(float deltaTime, const TransformSystems::TransformSystemsComponentArgs& components);
 	static void FindORCALineAndVelocityToBoundaryPerEntity(const FindORCALineParams& findOrcaLineParams, FVector2D& velocityToBoundaryOfVO, ORCALine& orcaLine);
+	static bool OneDimensionalLinearProgram(const std::vector<ORCALine>& orcaLines, const int lineIndex, const float radius, const FVector2D& preferredVelocity, bool shouldOptimizeDirection, FVector2D& resultingVelocity);
 	static bool TwoDimensionalLinearProgram(const std::vector<ORCALine>& orcaLines, const float radius, const FVector2D& preferredVelocity, bool shouldOptimizeDirection, FVector2D& resultingVelocity);
 #pragma endregion
 

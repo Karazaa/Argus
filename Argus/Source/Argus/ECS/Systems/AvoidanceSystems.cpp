@@ -162,9 +162,100 @@ void AvoidanceSystems::FindORCALineAndVelocityToBoundaryPerEntity(const FindORCA
 	}
 }
 
+bool AvoidanceSystems::OneDimensionalLinearProgram(const std::vector<ORCALine>& orcaLines, const int lineIndex, const float radius, const FVector2D& preferredVelocity, bool shouldOptimizeDirection, FVector2D& resultingVelocity)
+{
+	const float dotProduct = orcaLines[lineIndex].m_point.Dot(orcaLines[lineIndex].m_direction);
+	const float discriminant = FMath::Square(dotProduct) + FMath::Square(radius) - orcaLines[lineIndex].m_point.SquaredLength();
+
+	if (discriminant < 0.0f)
+	{
+		false;
+	}
+
+	const float sqrtDiscriminant = FMath::Sqrt(discriminant);
+	float tLeft = -dotProduct - sqrtDiscriminant;
+	float tRight = -dotProduct + sqrtDiscriminant;
+
+	for (int i = 0; i < lineIndex; ++i)
+	{
+		const float denominator = ArgusMath::Determinant(orcaLines[lineIndex].m_direction, orcaLines[i].m_direction);
+		const float numerator = ArgusMath::Determinant(orcaLines[i].m_direction, orcaLines[lineIndex].m_point - orcaLines[i].m_point);
+
+		if (FMath::IsNearlyZero(denominator))
+		{
+			if (numerator < 0.0f)
+			{
+				return false;
+			}
+
+			continue;
+		}
+
+		const float t = numerator / denominator;
+
+		if (denominator >= 0.0f)
+		{
+			tRight = FMath::Min(tRight, t);
+		}
+		else
+		{
+			tLeft = FMath::Max(tLeft, t);
+		}
+
+		if (tLeft > tRight)
+		{
+			return false;
+		}
+	}
+
+	if (shouldOptimizeDirection)
+	{
+		if (preferredVelocity.Dot(orcaLines[lineIndex].m_direction) > 0.0f)
+		{
+
+		}
+		else
+		{
+
+		}
+	}
+	else
+	{
+
+	}
+
+	return true;
+}
+
 bool AvoidanceSystems::TwoDimensionalLinearProgram(const std::vector<ORCALine>& orcaLines, const float radius, const FVector2D& preferredVelocity, bool shouldOptimizeDirection, FVector2D& resultingVelocity)
 {
-	return false;
+	if (shouldOptimizeDirection)
+	{
+		resultingVelocity = preferredVelocity * radius;
+	}
+	else if (preferredVelocity.SquaredLength() > FMath::Square(radius))
+	{
+		resultingVelocity = preferredVelocity.GetSafeNormal() * radius;
+	}
+	else
+	{
+		resultingVelocity = preferredVelocity;
+	}
+
+	for (int i = 0; i < orcaLines.size(); ++i)
+	{
+		if (ArgusMath::Determinant(orcaLines[i].m_direction, orcaLines[i].m_point - resultingVelocity) > 0.0f)
+		{
+			const FVector2D cachedResultingVelocity = resultingVelocity;
+			if (!OneDimensionalLinearProgram(orcaLines, i, radius, preferredVelocity, shouldOptimizeDirection, resultingVelocity))
+			{
+				resultingVelocity = resultingVelocity;
+				return false;
+			}
+		}
+	}
+
+	return true;
 }
 
 #pragma endregion
