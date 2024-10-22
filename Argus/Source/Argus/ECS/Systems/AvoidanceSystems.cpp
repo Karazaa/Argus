@@ -59,7 +59,7 @@ void AvoidanceSystems::ProcessORCAvoidance(float deltaTime, const TransformSyste
 	}
 
 	const FVector2D sourceEntityLocation = FVector2D(components.m_transformComponent->m_transform.GetLocation());
-	const FVector2D sourceEntityVelocity = FVector2D(components.m_transformComponent->m_transform.GetRotation().GetForwardVector()) * components.m_transformComponent->m_desiredSpeedUnitsPerSecond * ArgusECSConstants::k_defaultCollisionDetectionPredictionTime;
+	const FVector2D sourceEntityVelocity = FVector2D(components.m_transformComponent->m_transform.GetRotation().GetForwardVector()) * components.m_transformComponent->m_desiredSpeedUnitsPerSecond;
 	const float inversePredictionTime = 1.0F / ArgusECSConstants::k_defaultCollisionDetectionPredictionTime;
 
 	std::vector<uint16> foundEntityIds;
@@ -104,6 +104,13 @@ void AvoidanceSystems::ProcessORCAvoidance(float deltaTime, const TransformSyste
 
 		orcaLine.m_point = sourceEntityVelocity + (velocityToBoundaryOfVO / 2.0f);
 		orcaLines.push_back(orcaLine);
+	}
+
+	int failureLine = -1;
+	FVector2D resultingVelocity = FVector2D::ZeroVector;
+	if (!TwoDimensionalLinearProgram(orcaLines, components.m_transformComponent->m_desiredSpeedUnitsPerSecond, sourceEntityVelocity, false, resultingVelocity, failureLine))
+	{
+		ThreeDimensionalLinearProgram(orcaLines, components.m_transformComponent->m_desiredSpeedUnitsPerSecond, failureLine, resultingVelocity);
 	}
 
 	// TODO JAMES: https://github.com/snape/RVO2/blob/af26bedf27a84ffffb59beea996ffe2531ddc789/src/Agent.cc#L541
@@ -162,7 +169,7 @@ void AvoidanceSystems::FindORCALineAndVelocityToBoundaryPerEntity(const FindORCA
 	}
 }
 
-bool AvoidanceSystems::OneDimensionalLinearProgram(const std::vector<ORCALine>& orcaLines, const int lineIndex, const float radius, const FVector2D& preferredVelocity, bool shouldOptimizeDirection, FVector2D& resultingVelocity)
+bool AvoidanceSystems::OneDimensionalLinearProgram(const std::vector<ORCALine>& orcaLines, const float radius, const FVector2D& preferredVelocity, bool shouldOptimizeDirection, const int lineIndex, FVector2D& resultingVelocity)
 {
 	const float dotProduct = orcaLines[lineIndex].m_point.Dot(orcaLines[lineIndex].m_direction);
 	const float discriminant = FMath::Square(dotProduct) + FMath::Square(radius) - orcaLines[lineIndex].m_point.SquaredLength();
@@ -212,22 +219,34 @@ bool AvoidanceSystems::OneDimensionalLinearProgram(const std::vector<ORCALine>& 
 	{
 		if (preferredVelocity.Dot(orcaLines[lineIndex].m_direction) > 0.0f)
 		{
-
+			resultingVelocity = orcaLines[lineIndex].m_point + (tRight * orcaLines[lineIndex].m_direction);
 		}
 		else
 		{
-
+			resultingVelocity = orcaLines[lineIndex].m_point + (tLeft * orcaLines[lineIndex].m_direction);
 		}
 	}
 	else
 	{
-
+		const float t = orcaLines[lineIndex].m_direction.Dot((preferredVelocity - orcaLines[lineIndex].m_point));
+		if (t < tLeft)
+		{
+			resultingVelocity = orcaLines[lineIndex].m_point + (tLeft * orcaLines[lineIndex].m_direction);
+		}
+		else if (t < tRight)
+		{
+			resultingVelocity = orcaLines[lineIndex].m_point + (tRight * orcaLines[lineIndex].m_direction);
+		}
+		else
+		{
+			resultingVelocity = orcaLines[lineIndex].m_point + (t * orcaLines[lineIndex].m_direction);
+		}
 	}
 
 	return true;
 }
 
-bool AvoidanceSystems::TwoDimensionalLinearProgram(const std::vector<ORCALine>& orcaLines, const float radius, const FVector2D& preferredVelocity, bool shouldOptimizeDirection, FVector2D& resultingVelocity)
+bool AvoidanceSystems::TwoDimensionalLinearProgram(const std::vector<ORCALine>& orcaLines, const float radius, const FVector2D& preferredVelocity, bool shouldOptimizeDirection, FVector2D& resultingVelocity, int& failureLine)
 {
 	if (shouldOptimizeDirection)
 	{
@@ -247,15 +266,30 @@ bool AvoidanceSystems::TwoDimensionalLinearProgram(const std::vector<ORCALine>& 
 		if (ArgusMath::Determinant(orcaLines[i].m_direction, orcaLines[i].m_point - resultingVelocity) > 0.0f)
 		{
 			const FVector2D cachedResultingVelocity = resultingVelocity;
-			if (!OneDimensionalLinearProgram(orcaLines, i, radius, preferredVelocity, shouldOptimizeDirection, resultingVelocity))
+			if (!OneDimensionalLinearProgram(orcaLines, radius, preferredVelocity, shouldOptimizeDirection, i, resultingVelocity))
 			{
 				resultingVelocity = resultingVelocity;
+				failureLine = i;
 				return false;
 			}
 		}
 	}
 
+	failureLine = -1;
 	return true;
+}
+
+void AvoidanceSystems::ThreeDimensionalLinearProgram(const std::vector<ORCALine>& orcaLines, const float radius, const int lineIndex, FVector2D& resultingVelocity)
+{
+	float distance = 0.0f;
+
+	for (int i = lineIndex; i < orcaLines.size(); ++i)
+	{
+		if (ArgusMath::Determinant(orcaLines[i].m_direction, (orcaLines[i].m_point - resultingVelocity)) > distance)
+		{
+
+		}
+	}
 }
 
 #pragma endregion
