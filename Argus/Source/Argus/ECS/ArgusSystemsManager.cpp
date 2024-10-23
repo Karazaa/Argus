@@ -29,7 +29,7 @@ void ArgusSystemsManager::RunSystems(TWeakObjectPtr<UWorld> worldPointer, float 
 
 	NavigationSystems::RunSystems(worldPointer);
 	TargetingSystems::RunSystems(deltaTime);
-	AvoidanceSystems::RunSystems(deltaTime);
+	AvoidanceSystems::RunSystems(worldPointer, deltaTime);
 	const bool didMovementUpdateThisFrame = TransformSystems::RunSystems(deltaTime);
 
 	UpdateSingletonComponents(didMovementUpdateThisFrame);

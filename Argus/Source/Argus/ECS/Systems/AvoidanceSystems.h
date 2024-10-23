@@ -8,7 +8,7 @@
 class AvoidanceSystems
 {
 public:
-	static void RunSystems(float deltaTime);
+	static void RunSystems(TWeakObjectPtr<UWorld>& worldPointer, float deltaTime);
 	
 private:
 
@@ -28,7 +28,7 @@ private:
 		float m_inversePredictionTime = 0.0f;
 	};
 
-	static void ProcessORCAvoidance(float deltaTime, const TransformSystems::TransformSystemsComponentArgs& components);
+	static void ProcessORCAvoidance(TWeakObjectPtr<UWorld>& worldPointer, float deltaTime, const TransformSystems::TransformSystemsComponentArgs& components);
 	static void FindORCALineAndVelocityToBoundaryPerEntity(const FindORCALineParams& findOrcaLineParams, FVector2D& velocityToBoundaryOfVO, ORCALine& orcaLine);
 	static bool OneDimensionalLinearProgram(const std::vector<ORCALine>& orcaLines, const float radius, const FVector2D& preferredVelocity, bool shouldOptimizeDirection, const int lineIndex, FVector2D& resultingVelocity);
 	static bool TwoDimensionalLinearProgram(const std::vector<ORCALine>& orcaLines, const float radius, const FVector2D& preferredVelocity, bool shouldOptimizeDirection, FVector2D& resultingVelocity, int& failureLine);

@@ -4,7 +4,9 @@
 #include "ArgusMath.h"
 #include "ArgusSystemsManager.h"
 
-void AvoidanceSystems::RunSystems(float deltaTime)
+static TAutoConsoleVariable<bool> CVarShowAvoidanceDebug(TEXT("Argus.Avoidance.ShowAvoidanceDebug"), false, TEXT(""));
+
+void AvoidanceSystems::RunSystems(TWeakObjectPtr<UWorld>& worldPointer, float deltaTime)
 {
 	ARGUS_TRACE(AvoidanceSystems::RunSystems)
 
@@ -32,14 +34,14 @@ void AvoidanceSystems::RunSystems(float deltaTime)
 			// TODO James: Need to calculate avoidance speed at the end in the final version. This is just temp for now. Need to remove this line later.
 			components.m_transformComponent->m_avoidanceSpeedUnitsPerSecond = components.m_transformComponent->m_desiredSpeedUnitsPerSecond;
 
-			ProcessORCAvoidance(deltaTime, components);
+			ProcessORCAvoidance(worldPointer, deltaTime, components);
 			ProcessPotentialCollisions(deltaTime, components);
 		}
 	}
 }
 
 #pragma region Optimal Reciprocal Collision Avoidance
-void AvoidanceSystems::ProcessORCAvoidance(float deltaTime, const TransformSystems::TransformSystemsComponentArgs& components)
+void AvoidanceSystems::ProcessORCAvoidance(TWeakObjectPtr<UWorld>& worldPointer, float deltaTime, const TransformSystems::TransformSystemsComponentArgs& components)
 {
 	if (!components.AreComponentsValidCheck())
 	{
@@ -113,6 +115,11 @@ void AvoidanceSystems::ProcessORCAvoidance(float deltaTime, const TransformSyste
 		ThreeDimensionalLinearProgram(orcaLines, components.m_transformComponent->m_desiredSpeedUnitsPerSecond, failureLine, resultingVelocity);
 	}
 
+	if (CVarShowAvoidanceDebug.GetValueOnGameThread())
+	{
+		FVector sourceEntityLocation3D = FVector(sourceEntityLocation, 5.0f);
+		DrawDebugLine(worldPointer.Get(), sourceEntityLocation3D, sourceEntityLocation3D + FVector(sourceEntityVelocity, 0.0f), FColor::Cyan, false, -1.0f, 0, 5.0f);
+	}
 	// TODO JAMES: https://github.com/snape/RVO2/blob/af26bedf27a84ffffb59beea996ffe2531ddc789/src/Agent.cc#L541
 }
 
