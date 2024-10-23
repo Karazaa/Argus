@@ -29,20 +29,23 @@ void AvoidanceSystems::RunSystems(TWeakObjectPtr<UWorld>& worldPointer, float de
 			continue;
 		}
 
-		if (components.m_taskComponent->IsExecutingMoveTask())
-		{
-			// TODO James: Need to calculate avoidance speed at the end in the final version. This is just temp for now. Need to remove this line later.
-			components.m_transformComponent->m_avoidanceSpeedUnitsPerSecond = components.m_transformComponent->m_desiredSpeedUnitsPerSecond;
+		// TODO James: Need to calculate avoidance speed at the end in the final version. This is just temp for now. Need to remove this line later.
+		components.m_transformComponent->m_avoidanceSpeedUnitsPerSecond = components.m_transformComponent->m_desiredSpeedUnitsPerSecond;
+		ProcessORCAvoidance(worldPointer, deltaTime, components);
 
-			ProcessORCAvoidance(worldPointer, deltaTime, components);
-			ProcessPotentialCollisions(deltaTime, components);
-		}
+		// TODO James: Consider deleting along with all non RVO avoidance once RVO implementation is ossified.
+		//if (components.m_taskComponent->IsExecutingMoveTask())
+		//{
+		//	ProcessPotentialCollisions(deltaTime, components);
+		//}
 	}
 }
 
 #pragma region Optimal Reciprocal Collision Avoidance
 void AvoidanceSystems::ProcessORCAvoidance(TWeakObjectPtr<UWorld>& worldPointer, float deltaTime, const TransformSystems::TransformSystemsComponentArgs& components)
 {
+	ARGUS_TRACE(AvoidanceSystems::ProcessORCAvoidance)
+
 	if (!components.AreComponentsValidCheck())
 	{
 		return;
@@ -61,7 +64,12 @@ void AvoidanceSystems::ProcessORCAvoidance(TWeakObjectPtr<UWorld>& worldPointer,
 	}
 
 	const FVector2D sourceEntityLocation = FVector2D(components.m_transformComponent->m_transform.GetLocation());
-	const FVector2D sourceEntityVelocity = FVector2D(components.m_transformComponent->m_transform.GetRotation().GetForwardVector()) * components.m_transformComponent->m_desiredSpeedUnitsPerSecond;
+	FVector2D sourceEntityVelocity = FVector2D::ZeroVector;
+	if (components.m_taskComponent->IsExecutingMoveTask())
+	{
+		sourceEntityVelocity = FVector2D(components.m_transformComponent->m_transform.GetRotation().GetForwardVector()) * components.m_transformComponent->m_desiredSpeedUnitsPerSecond;
+	}
+
 	const float inversePredictionTime = 1.0F / ArgusECSConstants::k_defaultCollisionDetectionPredictionTime;
 
 	std::vector<uint16> foundEntityIds;
@@ -97,12 +105,12 @@ void AvoidanceSystems::ProcessORCAvoidance(TWeakObjectPtr<UWorld>& worldPointer,
 		params.m_inversePredictionTime = inversePredictionTime;
 
 		params.m_foundEntityLocation = FVector2D(foundTransformComponent->m_transform.GetLocation());
-		params.m_foundEntityVelocity = FVector2D(foundTransformComponent->m_transform.GetRotation().GetForwardVector()) * foundTransformComponent->m_desiredSpeedUnitsPerSecond * ArgusECSConstants::k_defaultCollisionDetectionPredictionTime;
+		params.m_foundEntityVelocity = FVector2D::ZeroVector;
 
 		TaskComponent* foundTaskComponent = foundEntity.GetComponent<TaskComponent>();
-		if (!foundTaskComponent || !foundTaskComponent->IsExecutingMoveTask())
+		if (foundTaskComponent && foundTaskComponent->IsExecutingMoveTask())
 		{
-			params.m_foundEntityVelocity = FVector2D::ZeroVector;
+			params.m_foundEntityVelocity = FVector2D(foundTransformComponent->m_transform.GetRotation().GetForwardVector()) * foundTransformComponent->m_desiredSpeedUnitsPerSecond * ArgusECSConstants::k_defaultCollisionDetectionPredictionTime;
 		}
 
 		FVector2D velocityToBoundaryOfVO = FVector2D::ZeroVector;
@@ -126,11 +134,13 @@ void AvoidanceSystems::ProcessORCAvoidance(TWeakObjectPtr<UWorld>& worldPointer,
 		DrawDebugLine(worldPointer.Get(), sourceEntityLocation3D, sourceEntityLocation3D + FVector(resultingVelocity, 0.0f), FColor::Orange, false, -1.0f, 0, 5.0f);
 	}
 
-	// TODO JAMES: https://github.com/snape/RVO2/blob/af26bedf27a84ffffb59beea996ffe2531ddc789/src/Agent.cc#L541
+	// TODO JAMES: Take the resulting velocity and apply it somehow.
 }
 
 void AvoidanceSystems::FindORCALineAndVelocityToBoundaryPerEntity(const FindORCALineParams& params, FVector2D& velocityToBoundaryOfVO, ORCALine& orcaLine)
 {
+	ARGUS_TRACE(AvoidanceSystems::FindORCALineAndVelocityToBoundaryPerEntity)
+
 	const FVector2D relativeLocation = params.m_foundEntityLocation - params.m_sourceEntityLocation;
 	const FVector2D relativeVelocity = params.m_sourceEntityVelocity - params.m_foundEntityVelocity;
 	const float relativeLocationDistanceSquared = relativeLocation.SquaredLength();
@@ -184,6 +194,8 @@ void AvoidanceSystems::FindORCALineAndVelocityToBoundaryPerEntity(const FindORCA
 
 bool AvoidanceSystems::OneDimensionalLinearProgram(const std::vector<ORCALine>& orcaLines, const float radius, const FVector2D& preferredVelocity, bool shouldOptimizeDirection, const int lineIndex, FVector2D& resultingVelocity)
 {
+	ARGUS_TRACE(AvoidanceSystems::OneDimensionalLinearProgram)
+
 	const float dotProduct = orcaLines[lineIndex].m_point.Dot(orcaLines[lineIndex].m_direction);
 	const float discriminant = FMath::Square(dotProduct) + FMath::Square(radius) - orcaLines[lineIndex].m_point.SquaredLength();
 
@@ -261,6 +273,8 @@ bool AvoidanceSystems::OneDimensionalLinearProgram(const std::vector<ORCALine>& 
 
 bool AvoidanceSystems::TwoDimensionalLinearProgram(const std::vector<ORCALine>& orcaLines, const float radius, const FVector2D& preferredVelocity, bool shouldOptimizeDirection, FVector2D& resultingVelocity, int& failureLine)
 {
+	ARGUS_TRACE(AvoidanceSystems::TwoDimensionalLinearProgram)
+
 	if (shouldOptimizeDirection)
 	{
 		resultingVelocity = preferredVelocity * radius;
@@ -300,7 +314,7 @@ void AvoidanceSystems::ThreeDimensionalLinearProgram(const std::vector<ORCALine>
 	{
 		if (ArgusMath::Determinant(orcaLines[i].m_direction, (orcaLines[i].m_point - resultingVelocity)) > distance)
 		{
-
+			// TODO JAMES: https://github.com/snape/RVO2/blob/af26bedf27a84ffffb59beea996ffe2531ddc789/src/Agent.cc#L195
 		}
 	}
 }
