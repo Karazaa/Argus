@@ -65,8 +65,13 @@ void AvoidanceSystems::ProcessORCAvoidance(TWeakObjectPtr<UWorld>& worldPointer,
 	const float inversePredictionTime = 1.0F / ArgusECSConstants::k_defaultCollisionDetectionPredictionTime;
 
 	std::vector<uint16> foundEntityIds;
-	if (!spatialPartitioningComponent->m_argusKDTree.FindOtherArgusEntityIdsWithinRangeOfArgusEntity(foundEntityIds, components.m_entity, ArgusECSConstants::k_defaultAvoidanceAgentRadius))
+	if (!spatialPartitioningComponent->m_argusKDTree.FindOtherArgusEntityIdsWithinRangeOfArgusEntity(foundEntityIds, components.m_entity, ArgusECSConstants::k_defaultAvoidanceAgentSearchRadius))
 	{
+		if (CVarShowAvoidanceDebug.GetValueOnGameThread())
+		{
+			FVector sourceEntityLocation3D = FVector(sourceEntityLocation, 5.0f);
+			DrawDebugLine(worldPointer.Get(), sourceEntityLocation3D, sourceEntityLocation3D + FVector(sourceEntityVelocity, 0.0f), FColor::Orange, false, -1.0f, 0, 5.0f);
+		}
 		return;
 	}
 
@@ -118,8 +123,9 @@ void AvoidanceSystems::ProcessORCAvoidance(TWeakObjectPtr<UWorld>& worldPointer,
 	if (CVarShowAvoidanceDebug.GetValueOnGameThread())
 	{
 		FVector sourceEntityLocation3D = FVector(sourceEntityLocation, 5.0f);
-		DrawDebugLine(worldPointer.Get(), sourceEntityLocation3D, sourceEntityLocation3D + FVector(sourceEntityVelocity, 0.0f), FColor::Cyan, false, -1.0f, 0, 5.0f);
+		DrawDebugLine(worldPointer.Get(), sourceEntityLocation3D, sourceEntityLocation3D + FVector(resultingVelocity, 0.0f), FColor::Orange, false, -1.0f, 0, 5.0f);
 	}
+
 	// TODO JAMES: https://github.com/snape/RVO2/blob/af26bedf27a84ffffb59beea996ffe2531ddc789/src/Agent.cc#L541
 }
 
@@ -128,7 +134,7 @@ void AvoidanceSystems::FindORCALineAndVelocityToBoundaryPerEntity(const FindORCA
 	const FVector2D relativeLocation = params.m_foundEntityLocation - params.m_sourceEntityLocation;
 	const FVector2D relativeVelocity = params.m_sourceEntityVelocity - params.m_foundEntityVelocity;
 	const float relativeLocationDistanceSquared = relativeLocation.SquaredLength();
-	const float combinedRadius = 2.0f * ArgusECSConstants::k_defaultAvoidanceAgentRadius;
+	const float combinedRadius = 2.0f * ArgusECSConstants::k_defaultPathFindingAgentRadius;
 	const float combinedRadiusSquared = FMath::Square(combinedRadius);
 
 	if (relativeLocationDistanceSquared > combinedRadiusSquared)
