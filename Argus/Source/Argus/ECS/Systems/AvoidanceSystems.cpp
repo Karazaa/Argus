@@ -67,10 +67,22 @@ void AvoidanceSystems::ProcessORCAvoidance(TWeakObjectPtr<UWorld>& worldPointer,
 	FVector2D sourceEntityVelocity = FVector2D::ZeroVector;
 	if (components.m_taskComponent->IsExecutingMoveTask())
 	{
-		sourceEntityVelocity = FVector2D(components.m_transformComponent->m_transform.GetRotation().GetForwardVector()) * components.m_transformComponent->m_desiredSpeedUnitsPerSecond;
+		const uint16 futureIndex = components.m_navigationComponent->m_lastPointIndex + 1u;
+		FVector desiredDirection = FVector::ZeroVector;
+		if (futureIndex < components.m_navigationComponent->m_navigationPoints.size())
+		{
+			desiredDirection = (components.m_navigationComponent->m_navigationPoints[futureIndex] - components.m_transformComponent->m_transform.GetLocation()).GetSafeNormal();
+		}
+		else
+		{
+			UE_LOG(ArgusECSLog, Error, TEXT("[%s] Attempting to process ORCA, but the source %s's %s is in an invalid state."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(NavigationComponent));
+			desiredDirection = components.m_transformComponent->m_transform.GetRotation().GetForwardVector();
+		}
+
+		sourceEntityVelocity = FVector2D(desiredDirection) * components.m_transformComponent->m_desiredSpeedUnitsPerSecond;
 	}
 
-	const float inversePredictionTime = 1.0F / ArgusECSConstants::k_defaultCollisionDetectionPredictionTime;
+	const float inversePredictionTime = 1.0f / ArgusECSConstants::k_defaultCollisionDetectionPredictionTime;
 
 	std::vector<uint16> foundEntityIds;
 	if (!spatialPartitioningComponent->m_argusKDTree.FindOtherArgusEntityIdsWithinRangeOfArgusEntity(foundEntityIds, components.m_entity, ArgusECSConstants::k_defaultAvoidanceAgentSearchRadius))
@@ -125,7 +137,7 @@ void AvoidanceSystems::ProcessORCAvoidance(TWeakObjectPtr<UWorld>& worldPointer,
 	FVector2D resultingVelocity = FVector2D::ZeroVector;
 	if (!TwoDimensionalLinearProgram(orcaLines, components.m_transformComponent->m_desiredSpeedUnitsPerSecond, sourceEntityVelocity, false, resultingVelocity, failureLine))
 	{
-		ThreeDimensionalLinearProgram(orcaLines, components.m_transformComponent->m_desiredSpeedUnitsPerSecond, failureLine, resultingVelocity);
+		ThreeDimensionalLinearProgram(orcaLines, components.m_transformComponent->m_desiredSpeedUnitsPerSecond, failureLine, 0, resultingVelocity);
 	}
 
 	if (CVarShowAvoidanceDebug.GetValueOnGameThread())
@@ -306,16 +318,49 @@ bool AvoidanceSystems::TwoDimensionalLinearProgram(const std::vector<ORCALine>& 
 	return true;
 }
 
-void AvoidanceSystems::ThreeDimensionalLinearProgram(const std::vector<ORCALine>& orcaLines, const float radius, const int lineIndex, FVector2D& resultingVelocity)
+void AvoidanceSystems::ThreeDimensionalLinearProgram(const std::vector<ORCALine>& orcaLines, const float radius, const int lineIndex, const int numStaticObstacleORCALines, FVector2D& resultingVelocity)
 {
 	float distance = 0.0f;
 
 	for (int i = lineIndex; i < orcaLines.size(); ++i)
 	{
-		if (ArgusMath::Determinant(orcaLines[i].m_direction, (orcaLines[i].m_point - resultingVelocity)) > distance)
+		if (ArgusMath::Determinant(orcaLines[i].m_direction, (orcaLines[i].m_point - resultingVelocity)) <= distance)
 		{
-			// TODO JAMES: https://github.com/snape/RVO2/blob/af26bedf27a84ffffb59beea996ffe2531ddc789/src/Agent.cc#L195
+			continue;
 		}
+
+		std::vector<ORCALine> projectedLines(orcaLines.begin(), orcaLines.begin() + static_cast<std::ptrdiff_t>(numStaticObstacleORCALines));
+
+		for (int j = numStaticObstacleORCALines; j < i; ++j)
+		{
+			ORCALine orcaLine;
+			const float determinant = ArgusMath::Determinant(orcaLines[i].m_direction, orcaLines[j].m_direction);
+			if (FMath::IsNearlyZero(determinant))
+			{
+				if (orcaLines[j].m_direction.Dot(orcaLines[j].m_direction) > 0.0f)
+				{
+					continue;
+				}
+
+				orcaLine.m_point = 0.5f * (orcaLines[i].m_point + orcaLines[j].m_point);
+			}
+			else
+			{
+				orcaLine.m_point = orcaLines[i].m_point + ((ArgusMath::Determinant(orcaLines[j].m_direction, orcaLines[i].m_point - orcaLines[j].m_point) / determinant) * orcaLines[i].m_direction);
+			}
+
+			orcaLine.m_direction = (orcaLines[j].m_direction - orcaLines[i].m_direction).GetSafeNormal();
+			projectedLines.push_back(orcaLine);
+		}
+
+		const FVector2D cachedResultingVelocity = resultingVelocity;
+		int failureLine = -1;
+		if (!TwoDimensionalLinearProgram(projectedLines, radius, FVector2D(-orcaLines[i].m_direction.Y, orcaLines[i].m_direction.X), true, resultingVelocity, failureLine))
+		{
+			resultingVelocity = cachedResultingVelocity;
+		}
+
+		distance = ArgusMath::Determinant(orcaLines[i].m_direction, orcaLines[i].m_point - resultingVelocity);
 	}
 }
 
