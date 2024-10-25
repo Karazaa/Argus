@@ -93,7 +93,7 @@ void TransformSystems::GetPathingLocationAtTimeOffset(float timeOffsetSeconds, c
 		return;
 	}
 
-	float translationMagnitude = FMath::Abs(components.m_transformComponent->m_avoidanceSpeedUnitsPerSecond * timeOffsetSeconds);
+	float translationMagnitude = FMath::Abs(components.m_transformComponent->m_desiredSpeedUnitsPerSecond * timeOffsetSeconds);
 	FVector positionDifferenceNormalized = FVector::ZeroVector;
 
 	if (timeOffsetSeconds > 0.0f)
@@ -193,16 +193,18 @@ void TransformSystems::MoveAlongNavigationPath(float deltaTime, const TransformS
 		return;
 	}
 
-	GetPathingLocationAtTimeOffsetResults results;
-	results.m_outputPredictedLocation = components.m_transformComponent->m_transform.GetLocation();
-	results.m_outputPredictedForwardDirection = components.m_transformComponent->m_transform.GetRotation().GetForwardVector();
-	results.m_navigationIndexOfPredictedLocation = lastPointIndex;
-	GetPathingLocationAtTimeOffset(deltaTime, components, results);
+	FVector moverLocation = components.m_transformComponent->m_transform.GetLocation();
+	const FVector targetLocation = components.m_navigationComponent->m_navigationPoints[lastPointIndex + 1u];
+	moverLocation += components.m_transformComponent->m_avoidanceVelocity * deltaTime;
 
-	FaceTowardsLocationXY(components.m_transformComponent, results.m_outputPredictedForwardDirection);
+	if (FVector::DistSquared(moverLocation, targetLocation) < 5.0f)
+	{
+		components.m_navigationComponent->m_lastPointIndex++;
+	}
 
-	components.m_transformComponent->m_transform.SetLocation(results.m_outputPredictedLocation);
-	components.m_navigationComponent->m_lastPointIndex = results.m_navigationIndexOfPredictedLocation;
+	FaceTowardsLocationXY(components.m_transformComponent, components.m_transformComponent->m_avoidanceVelocity);
+
+	components.m_transformComponent->m_transform.SetLocation(moverLocation);
 	if (components.m_navigationComponent->m_lastPointIndex == numNavigationPoints - 1u)
 	{
 		OnCompleteNavigationPath(components);
@@ -245,6 +247,7 @@ void TransformSystems::OnCompleteNavigationPath(const TransformSystemsComponentA
 	{
 		components.m_taskComponent->m_currentTask = ETask::None;
 		components.m_navigationComponent->ResetPath();
+		components.m_transformComponent->m_avoidanceVelocity = FVector::ZeroVector;
 	}
 	else
 	{
