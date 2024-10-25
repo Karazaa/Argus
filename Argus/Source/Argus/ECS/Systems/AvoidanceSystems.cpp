@@ -65,6 +65,7 @@ void AvoidanceSystems::ProcessORCAvoidance(TWeakObjectPtr<UWorld>& worldPointer,
 
 	const FVector2D sourceEntityLocation = FVector2D(components.m_transformComponent->m_transform.GetLocation());
 	FVector2D sourceEntityVelocity = FVector2D::ZeroVector;
+	FVector2D desiredVelocity = FVector2D::ZeroVector;
 	if (components.m_taskComponent->IsExecutingMoveTask())
 	{
 		const uint16 futureIndex = components.m_navigationComponent->m_lastPointIndex + 1u;
@@ -146,7 +147,7 @@ void AvoidanceSystems::ProcessORCAvoidance(TWeakObjectPtr<UWorld>& worldPointer,
 		DrawDebugLine(worldPointer.Get(), sourceEntityLocation3D, sourceEntityLocation3D + FVector(resultingVelocity, 0.0f), FColor::Orange, false, -1.0f, 0, 5.0f);
 	}
 
-	// TODO JAMES: Take the resulting velocity and apply it somehow.
+	components.m_transformComponent->m_avoidanceVelocity = FVector(resultingVelocity, 0.0f);
 }
 
 void AvoidanceSystems::FindORCALineAndVelocityToBoundaryPerEntity(const FindORCALineParams& params, FVector2D& velocityToBoundaryOfVO, ORCALine& orcaLine)

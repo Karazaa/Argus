@@ -11,6 +11,9 @@ struct TransformComponent
 	FTransform m_transform = FTransform::Identity;
 
 	ARGUS_IGNORE()
+	FVector m_avoidanceVelocity = FVector::ZeroVector;
+
+	ARGUS_IGNORE()
 	float m_avoidanceSpeedUnitsPerSecond = 100.0f;
 	float m_desiredSpeedUnitsPerSecond = 100.0f;
 };
