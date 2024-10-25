@@ -64,7 +64,7 @@ void AvoidanceSystems::ProcessORCAvoidance(TWeakObjectPtr<UWorld>& worldPointer,
 	}
 
 	const FVector2D sourceEntityLocation = FVector2D(components.m_transformComponent->m_transform.GetLocation());
-	FVector2D sourceEntityVelocity = FVector2D::ZeroVector;
+	const FVector2D sourceEntityVelocity = FVector2D(components.m_transformComponent->m_avoidanceVelocity);
 	FVector2D desiredVelocity = FVector2D::ZeroVector;
 	if (components.m_taskComponent->IsExecutingMoveTask())
 	{
@@ -80,7 +80,7 @@ void AvoidanceSystems::ProcessORCAvoidance(TWeakObjectPtr<UWorld>& worldPointer,
 			desiredDirection = components.m_transformComponent->m_transform.GetRotation().GetForwardVector();
 		}
 
-		sourceEntityVelocity = FVector2D(desiredDirection) * components.m_transformComponent->m_desiredSpeedUnitsPerSecond;
+		desiredVelocity = FVector2D(desiredDirection) * components.m_transformComponent->m_desiredSpeedUnitsPerSecond;
 	}
 
 	const float inversePredictionTime = 1.0f / ArgusECSConstants::k_defaultCollisionDetectionPredictionTime;
@@ -88,6 +88,7 @@ void AvoidanceSystems::ProcessORCAvoidance(TWeakObjectPtr<UWorld>& worldPointer,
 	std::vector<uint16> foundEntityIds;
 	if (!spatialPartitioningComponent->m_argusKDTree.FindOtherArgusEntityIdsWithinRangeOfArgusEntity(foundEntityIds, components.m_entity, ArgusECSConstants::k_defaultAvoidanceAgentSearchRadius))
 	{
+		components.m_transformComponent->m_avoidanceVelocity = FVector(desiredVelocity, 0.0f);
 		if (CVarShowAvoidanceDebug.GetValueOnGameThread())
 		{
 			FVector sourceEntityLocation3D = FVector(sourceEntityLocation, 5.0f);
@@ -136,7 +137,7 @@ void AvoidanceSystems::ProcessORCAvoidance(TWeakObjectPtr<UWorld>& worldPointer,
 
 	int failureLine = -1;
 	FVector2D resultingVelocity = FVector2D::ZeroVector;
-	if (!TwoDimensionalLinearProgram(orcaLines, components.m_transformComponent->m_desiredSpeedUnitsPerSecond, sourceEntityVelocity, false, resultingVelocity, failureLine))
+	if (!TwoDimensionalLinearProgram(orcaLines, components.m_transformComponent->m_desiredSpeedUnitsPerSecond, desiredVelocity, false, resultingVelocity, failureLine))
 	{
 		ThreeDimensionalLinearProgram(orcaLines, components.m_transformComponent->m_desiredSpeedUnitsPerSecond, failureLine, 0, resultingVelocity);
 	}
