@@ -1,6 +1,8 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusEntity.h"
+#include "ArgusSystemsManager.h"
+#include "Systems/AvoidanceSystems.h"
 #include "Systems/TransformSystems.h"
 #include "Misc/AutomationTest.h"
 
@@ -33,6 +35,7 @@ bool TransformSystemsGetPathingLocationAtTimeOffsetTest::RunTest(const FString& 
 	}
 
 	components.m_taskComponent->m_currentTask = ETask::MoveToLocation;
+	components.m_transformComponent->m_desiredSpeedUnitsPerSecond = 1.0f;
 	components.m_transformComponent->m_avoidanceSpeedUnitsPerSecond = 1.0f;
 	components.m_navigationComponent->m_navigationPoints.reserve(5);
 	components.m_navigationComponent->m_navigationPoints.push_back(twoSecondsInPast);
@@ -314,6 +317,9 @@ bool TransformSystemsMoveAlongPathTest::RunTest(const FString& Parameters)
 
 	ArgusEntity::FlushAllEntities();
 
+	ArgusEntity singletonEntity = ArgusEntity::CreateEntity(ArgusSystemsManager::s_singletonEntityId);
+	singletonEntity.AddComponent<SpatialPartitioningComponent>();
+
 	ArgusEntity entity = ArgusEntity::CreateEntity();
 	TransformSystems::TransformSystemsComponentArgs components;
 
@@ -329,6 +335,7 @@ bool TransformSystemsMoveAlongPathTest::RunTest(const FString& Parameters)
 	}
 
 	components.m_taskComponent->m_currentTask = ETask::MoveToLocation;
+	components.m_transformComponent->m_desiredSpeedUnitsPerSecond = 1.0f;
 	components.m_transformComponent->m_avoidanceSpeedUnitsPerSecond = 1.0f;
 	components.m_navigationComponent->m_navigationPoints.reserve(4);
 	components.m_navigationComponent->m_navigationPoints.push_back(point0);
@@ -355,6 +362,8 @@ bool TransformSystemsMoveAlongPathTest::RunTest(const FString& Parameters)
 	);
 #pragma endregion
 
+	TWeakObjectPtr<UWorld> dummyWorldPointer;
+	AvoidanceSystems::ProcessORCAvoidance(dummyWorldPointer, deltaSecondsPerStep, components);
 	TransformSystems::MoveAlongNavigationPath(deltaSecondsPerStep, components);
 	secondCounter += deltaSecondsPerStep;
 
@@ -385,6 +394,7 @@ bool TransformSystemsMoveAlongPathTest::RunTest(const FString& Parameters)
 	);
 #pragma endregion
 
+	AvoidanceSystems::ProcessORCAvoidance(dummyWorldPointer, deltaSecondsPerStep, components);
 	TransformSystems::MoveAlongNavigationPath(deltaSecondsPerStep, components);
 	secondCounter += deltaSecondsPerStep;
 
@@ -415,6 +425,7 @@ bool TransformSystemsMoveAlongPathTest::RunTest(const FString& Parameters)
 	);
 #pragma endregion
 
+	AvoidanceSystems::ProcessORCAvoidance(dummyWorldPointer, deltaSecondsPerStep, components);
 	TransformSystems::MoveAlongNavigationPath(deltaSecondsPerStep, components);
 	secondCounter += deltaSecondsPerStep;
 
@@ -427,6 +438,7 @@ bool TransformSystemsMoveAlongPathTest::RunTest(const FString& Parameters)
 	);
 #pragma endregion
 
+	AvoidanceSystems::ProcessORCAvoidance(dummyWorldPointer, deltaSecondsPerStep, components);
 	TransformSystems::MoveAlongNavigationPath(deltaSecondsPerStep, components);
 	secondCounter += deltaSecondsPerStep;
 	const uint16 numPathPoints = components.m_navigationComponent->m_navigationPoints.size();

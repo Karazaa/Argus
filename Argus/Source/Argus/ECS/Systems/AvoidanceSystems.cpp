@@ -89,7 +89,7 @@ void AvoidanceSystems::ProcessORCAvoidance(TWeakObjectPtr<UWorld>& worldPointer,
 	if (!spatialPartitioningComponent->m_argusKDTree.FindOtherArgusEntityIdsWithinRangeOfArgusEntity(foundEntityIds, components.m_entity, ArgusECSConstants::k_defaultAvoidanceAgentSearchRadius))
 	{
 		components.m_transformComponent->m_avoidanceVelocity = FVector(desiredVelocity, 0.0f);
-		if (CVarShowAvoidanceDebug.GetValueOnGameThread())
+		if (CVarShowAvoidanceDebug.GetValueOnGameThread() && worldPointer.IsValid())
 		{
 			FVector sourceEntityLocation3D = FVector(sourceEntityLocation, 5.0f);
 			DrawDebugLine(worldPointer.Get(), sourceEntityLocation3D, sourceEntityLocation3D + FVector(sourceEntityVelocity, 0.0f), FColor::Orange, false, -1.0f, 0, 5.0f);
@@ -142,7 +142,7 @@ void AvoidanceSystems::ProcessORCAvoidance(TWeakObjectPtr<UWorld>& worldPointer,
 		ThreeDimensionalLinearProgram(orcaLines, components.m_transformComponent->m_desiredSpeedUnitsPerSecond, failureLine, 0, resultingVelocity);
 	}
 
-	if (CVarShowAvoidanceDebug.GetValueOnGameThread())
+	if (CVarShowAvoidanceDebug.GetValueOnGameThread() && worldPointer.IsValid())
 	{
 		FVector sourceEntityLocation3D = FVector(sourceEntityLocation, 5.0f);
 		DrawDebugLine(worldPointer.Get(), sourceEntityLocation3D, sourceEntityLocation3D + FVector(resultingVelocity, 0.0f), FColor::Orange, false, -1.0f, 0, 5.0f);
