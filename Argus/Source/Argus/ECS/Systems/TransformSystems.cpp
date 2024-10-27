@@ -195,11 +195,22 @@ void TransformSystems::MoveAlongNavigationPath(float deltaTime, const TransformS
 
 	FVector moverLocation = components.m_transformComponent->m_transform.GetLocation();
 	const FVector targetLocation = components.m_navigationComponent->m_navigationPoints[lastPointIndex + 1u];
-	moverLocation += components.m_transformComponent->m_avoidanceVelocity * deltaTime;
+	const FVector velocity = components.m_transformComponent->m_avoidanceVelocity * deltaTime;
+	const FVector2D moverLocation2D = FVector2D(moverLocation);
+	const FVector2D targetLocation2D = FVector2D(targetLocation);
+	const FVector2D velocity2D = FVector2D(velocity);
 
-	if (FVector::DistSquared(moverLocation, targetLocation) < 5.0f)
+	const float distanceToTarget = FVector2D::Distance(moverLocation2D, targetLocation2D);
+	const float distanceVelocityUpdateToTarget = FVector2D::Distance(moverLocation2D + velocity2D, targetLocation2D);
+	const float velocityLength = velocity2D.Length();
+	if (FMath::IsNearlyEqual(velocityLength, distanceToTarget + distanceVelocityUpdateToTarget))
 	{
 		components.m_navigationComponent->m_lastPointIndex++;
+		moverLocation = targetLocation;
+	}
+	else
+	{
+		moverLocation += velocity;
 	}
 
 	FaceTowardsLocationXY(components.m_transformComponent, components.m_transformComponent->m_avoidanceVelocity);
