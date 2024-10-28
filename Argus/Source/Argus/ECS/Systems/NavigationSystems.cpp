@@ -156,7 +156,7 @@ void NavigationSystems::NavigateFromEntityToLocation(TWeakObjectPtr<UWorld>& wor
 		components.m_transformComponent->m_transform.GetLocation(), 
 		targetLocation.value()
 	);
-	pathFindingQuery.SetNavAgentProperties(FNavAgentProperties(ArgusECSConstants::k_defaultPathFindingAgentRadius, ArgusECSConstants::k_defaultPathFindingAgentHeight));
+	pathFindingQuery.SetNavAgentProperties(FNavAgentProperties(ArgusECSConstants::k_pathFindingAgentRadius, ArgusECSConstants::k_pathFindingAgentHeight));
 	FPathFindingResult pathFindingResult = unrealNavigationSystem->FindPathSync(pathFindingQuery);
 
 	if (!pathFindingResult.IsSuccessful() || !pathFindingResult.Path)
