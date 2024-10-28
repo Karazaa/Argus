@@ -203,7 +203,7 @@ void TransformSystems::MoveAlongNavigationPath(float deltaTime, const TransformS
 	const float distanceToTarget = FVector2D::Distance(moverLocation2D, targetLocation2D);
 	const float distanceVelocityUpdateToTarget = FVector2D::Distance(moverLocation2D + velocity2D, targetLocation2D);
 	const float velocityLength = velocity2D.Length();
-	if (FMath::IsNearlyEqual(velocityLength, distanceToTarget + distanceVelocityUpdateToTarget))
+	if (FMath::IsNearlyEqual(velocityLength, distanceToTarget + distanceVelocityUpdateToTarget, ArgusECSConstants::k_moveAlongPathWaypointTolerance))
 	{
 		components.m_navigationComponent->m_lastPointIndex++;
 		moverLocation = targetLocation;
