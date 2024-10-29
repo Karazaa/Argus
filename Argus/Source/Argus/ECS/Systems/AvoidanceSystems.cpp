@@ -56,7 +56,7 @@ void AvoidanceSystems::ProcessORCAvoidance(TWeakObjectPtr<UWorld>& worldPointer,
 	}
 
 	const FVector2D sourceEntityLocation = FVector2D(components.m_transformComponent->m_transform.GetLocation());
-	const FVector2D sourceEntityVelocity = FVector2D(components.m_transformComponent->m_avoidanceVelocity);
+	const FVector2D sourceEntityVelocity = FVector2D(components.m_transformComponent->m_currentVelocity);
 	FVector2D desiredVelocity = FVector2D::ZeroVector;
 
 	// If we are moving, we need to get our desired velocity as the velocity that points towards the nearest pathing point at the desired speed.
@@ -82,11 +82,11 @@ void AvoidanceSystems::ProcessORCAvoidance(TWeakObjectPtr<UWorld>& worldPointer,
 	if (!spatialPartitioningComponent->m_argusKDTree.FindOtherArgusEntityIdsWithinRangeOfArgusEntity(foundEntityIds, components.m_entity, ArgusECSConstants::k_avoidanceAgentSearchRadius))
 	{
 		// If no entities nearby, then nothing can effect our navigation, so we should just early out at our desired speed. 
-		components.m_transformComponent->m_avoidanceVelocity = FVector(desiredVelocity, 0.0f);
+		components.m_transformComponent->m_proposedAvoidanceVelocity = FVector(desiredVelocity, 0.0f);
 		if (CVarShowAvoidanceDebug.GetValueOnGameThread() && worldPointer.IsValid())
 		{
 			FVector sourceEntityLocation3D = FVector(sourceEntityLocation, 5.0f);
-			DrawDebugLine(worldPointer.Get(), sourceEntityLocation3D, sourceEntityLocation3D + components.m_transformComponent->m_avoidanceVelocity, FColor::Orange, false, -1.0f, 0, 5.0f);
+			DrawDebugLine(worldPointer.Get(), sourceEntityLocation3D, sourceEntityLocation3D + components.m_transformComponent->m_proposedAvoidanceVelocity, FColor::Orange, false, -1.0f, 0, 5.0f);
 		}
 		return;
 	}
@@ -114,7 +114,7 @@ void AvoidanceSystems::ProcessORCAvoidance(TWeakObjectPtr<UWorld>& worldPointer,
 		params.m_deltaTime = deltaTime;
 		params.m_inversePredictionTime = inversePredictionTime;
 		params.m_foundEntityLocation = FVector2D(foundTransformComponent->m_transform.GetLocation());
-		params.m_foundEntityVelocity = FVector2D(foundTransformComponent->m_avoidanceVelocity);
+		params.m_foundEntityVelocity = FVector2D(foundTransformComponent->m_currentVelocity);
 
 		FVector2D velocityToBoundaryOfVO = FVector2D::ZeroVector;
 		ORCALine orcaLine;
@@ -138,7 +138,7 @@ void AvoidanceSystems::ProcessORCAvoidance(TWeakObjectPtr<UWorld>& worldPointer,
 		DrawDebugLine(worldPointer.Get(), sourceEntityLocation3D, sourceEntityLocation3D + FVector(desiredVelocity, 0.0f), FColor::Green, false, -1.0f, 0, 5.0f);
 	}
 
-	components.m_transformComponent->m_avoidanceVelocity = FVector(resultingVelocity, 0.0f);
+	components.m_transformComponent->m_proposedAvoidanceVelocity = FVector(resultingVelocity, 0.0f);
 }
 
 void AvoidanceSystems::FindORCALineAndVelocityToBoundaryPerEntity(const FindORCALineParams& params, FVector2D& velocityToBoundaryOfVO, ORCALine& orcaLine)
@@ -365,6 +365,23 @@ float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems
 
 	TaskComponent* foundEntityTaskComponent = foundEntity.GetComponent<TaskComponent>();
 	if (!foundEntityTaskComponent)
+	{
+		return 1.0f;
+	}
+
+	IdentityComponent* foundEntityIdentityComponent = foundEntity.GetComponent<IdentityComponent>();
+	if (!foundEntityIdentityComponent)
+	{
+		return 1.0f;
+	}
+
+	IdentityComponent* sourceEntityIdentityComponent = sourceEntityComponents.m_entity.GetComponent<IdentityComponent>();
+	if (!sourceEntityIdentityComponent)
+	{
+		return 1.0f;
+	}
+
+	if (sourceEntityIdentityComponent->IsInTeamMask(foundEntityIdentityComponent->m_enemies))
 	{
 		return 1.0f;
 	}

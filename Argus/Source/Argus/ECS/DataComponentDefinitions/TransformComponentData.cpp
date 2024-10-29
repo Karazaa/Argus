@@ -8,8 +8,8 @@ void UTransformComponentData::InstantiateComponentForEntity(ArgusEntity& entity)
 {
 	TransformComponent* TransformComponentRef = entity.AddComponent<TransformComponent>();
 	TransformComponentRef->m_transform = m_transform;
-	TransformComponentRef->m_avoidanceVelocity = m_avoidanceVelocity;
-	TransformComponentRef->m_avoidanceSpeedUnitsPerSecond = m_avoidanceSpeedUnitsPerSecond;
+	TransformComponentRef->m_currentVelocity = m_currentVelocity;
+	TransformComponentRef->m_proposedAvoidanceVelocity = m_proposedAvoidanceVelocity;
 	TransformComponentRef->m_desiredSpeedUnitsPerSecond = m_desiredSpeedUnitsPerSecond;
 }
 

@@ -55,6 +55,16 @@ bool TransformSystems::ProcessMovementTaskCommands(float deltaTime, const Transf
 		case ETask::MoveToEntity:
 			MoveAlongNavigationPath(deltaTime, components);
 			return true;
+		case ETask::None:
+			components.m_transformComponent->m_currentVelocity = components.m_transformComponent->m_proposedAvoidanceVelocity;
+			if (!components.m_transformComponent->m_currentVelocity.IsNearlyZero())
+			{
+				const FVector velocity = components.m_transformComponent->m_currentVelocity * deltaTime;
+				FaceTowardsLocationXY(components.m_transformComponent, components.m_transformComponent->m_currentVelocity);
+				components.m_transformComponent->m_transform.SetLocation(components.m_transformComponent->m_transform.GetLocation() + velocity);
+				return true;
+			}
+			return false;
 		default:
 			return false;
 	}
@@ -184,6 +194,7 @@ void TransformSystems::MoveAlongNavigationPath(float deltaTime, const TransformS
 		return;
 	}
 
+	components.m_transformComponent->m_currentVelocity = components.m_transformComponent->m_proposedAvoidanceVelocity;
 	const uint16 lastPointIndex = components.m_navigationComponent->m_lastPointIndex;
 	const uint16 numNavigationPoints = components.m_navigationComponent->m_navigationPoints.size();
 
@@ -195,7 +206,7 @@ void TransformSystems::MoveAlongNavigationPath(float deltaTime, const TransformS
 
 	FVector moverLocation = components.m_transformComponent->m_transform.GetLocation();
 	const FVector targetLocation = components.m_navigationComponent->m_navigationPoints[lastPointIndex + 1u];
-	const FVector velocity = components.m_transformComponent->m_avoidanceVelocity * deltaTime;
+	const FVector velocity = components.m_transformComponent->m_currentVelocity * deltaTime;
 	const FVector2D moverLocation2D = FVector2D(moverLocation);
 	const FVector2D targetLocation2D = FVector2D(targetLocation);
 	const FVector2D velocity2D = FVector2D(velocity);
@@ -213,7 +224,7 @@ void TransformSystems::MoveAlongNavigationPath(float deltaTime, const TransformS
 		moverLocation += velocity;
 	}
 
-	FaceTowardsLocationXY(components.m_transformComponent, components.m_transformComponent->m_avoidanceVelocity);
+	FaceTowardsLocationXY(components.m_transformComponent, components.m_transformComponent->m_currentVelocity);
 
 	components.m_transformComponent->m_transform.SetLocation(moverLocation);
 	if (components.m_navigationComponent->m_lastPointIndex == numNavigationPoints - 1u)
@@ -258,7 +269,7 @@ void TransformSystems::OnCompleteNavigationPath(const TransformSystemsComponentA
 	{
 		components.m_taskComponent->m_currentTask = ETask::None;
 		components.m_navigationComponent->ResetPath();
-		components.m_transformComponent->m_avoidanceVelocity = FVector::ZeroVector;
+		components.m_transformComponent->m_currentVelocity = FVector::ZeroVector;
 	}
 	else
 	{
