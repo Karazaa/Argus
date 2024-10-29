@@ -205,7 +205,7 @@ bool AvoidanceSystems::OneDimensionalLinearProgram(const std::vector<ORCALine>& 
 
 	if (discriminant < 0.0f)
 	{
-		false;
+		return false;
 	}
 
 	const float sqrtDiscriminant = FMath::Sqrt(discriminant);
@@ -217,7 +217,7 @@ bool AvoidanceSystems::OneDimensionalLinearProgram(const std::vector<ORCALine>& 
 		const float denominator = ArgusMath::Determinant(orcaLines[lineIndex].m_direction, orcaLines[i].m_direction);
 		const float numerator = ArgusMath::Determinant(orcaLines[i].m_direction, orcaLines[lineIndex].m_point - orcaLines[i].m_point);
 
-		if (FMath::IsNearlyZero(denominator))
+		if (FMath::IsNearlyZero(denominator, ArgusECSConstants::k_avoidanceEpsilonValue))
 		{
 			if (numerator < 0.0f)
 			{
@@ -327,7 +327,7 @@ void AvoidanceSystems::ThreeDimensionalLinearProgram(const std::vector<ORCALine>
 		{
 			ORCALine orcaLine;
 			const float determinant = ArgusMath::Determinant(orcaLines[i].m_direction, orcaLines[j].m_direction);
-			if (FMath::IsNearlyZero(determinant))
+			if (FMath::IsNearlyZero(determinant, ArgusECSConstants::k_avoidanceEpsilonValue))
 			{
 				if (orcaLines[j].m_direction.Dot(orcaLines[j].m_direction) > 0.0f)
 				{
