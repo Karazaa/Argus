@@ -120,7 +120,7 @@ void AvoidanceSystems::ProcessORCAvoidance(TWeakObjectPtr<UWorld>& worldPointer,
 		ORCALine orcaLine;
 		FindORCALineAndVelocityToBoundaryPerEntity(params, velocityToBoundaryOfVO, orcaLine);
 
-		orcaLine.m_point = sourceEntityVelocity + (velocityToBoundaryOfVO / 2.0f);
+		orcaLine.m_point = sourceEntityVelocity + (velocityToBoundaryOfVO * GetEffortCoefficientForEntityPair(components, foundEntity));
 		orcaLines.push_back(orcaLine);
 	}
 
@@ -356,4 +356,29 @@ void AvoidanceSystems::ThreeDimensionalLinearProgram(const std::vector<ORCALine>
 	}
 }
 
+float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems::TransformSystemsComponentArgs& sourceEntityComponents, const ArgusEntity& foundEntity)
+{
+	if (!sourceEntityComponents.AreComponentsValidCheck())
+	{
+		return 0.0f;
+	}
+
+	TaskComponent* foundEntityTaskComponent = foundEntity.GetComponent<TaskComponent>();
+	if (!foundEntityTaskComponent)
+	{
+		return 1.0f;
+	}
+
+	if (sourceEntityComponents.m_taskComponent->IsExecutingMoveTask() && !foundEntityTaskComponent->IsExecutingMoveTask())
+	{
+		return 0.0f;
+	}
+
+	if (!sourceEntityComponents.m_taskComponent->IsExecutingMoveTask() && foundEntityTaskComponent->IsExecutingMoveTask())
+	{
+		return 1.0f;
+	}
+
+	return 0.5f;
+}
 #pragma endregion
