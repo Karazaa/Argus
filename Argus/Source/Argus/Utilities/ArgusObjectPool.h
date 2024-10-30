@@ -19,6 +19,7 @@ public:
 	IObjectPoolable* Take();
 	void Release(IObjectPoolable* objectPointer);
 	void ClearPool();
+	std::size_t GetNumAvailableObjects();
 
 private:
 	std::queue<IObjectPoolable*> m_availableObjects;
@@ -29,17 +30,6 @@ template <class IObjectPoolable>
 ArgusObjectPool<IObjectPoolable>::~ArgusObjectPool()
 {
 	ClearPool();
-}
-
-template <class IObjectPoolable>
-void ArgusObjectPool<IObjectPoolable>::ClearPool()
-{
-	while (m_availableObjects.size() > 0)
-	{
-		IObjectPoolable* objectPointer = m_availableObjects.front();
-		m_availableObjects.pop();
-		delete objectPointer;
-	}
 }
 
 template <class IObjectPoolable>
@@ -65,4 +55,21 @@ void ArgusObjectPool<IObjectPoolable>::Release(IObjectPoolable* objectPointer)
 	}
 
 	m_availableObjects.push(objectPointer);
+}
+
+template <class IObjectPoolable>
+void ArgusObjectPool<IObjectPoolable>::ClearPool()
+{
+	while (m_availableObjects.size() > 0)
+	{
+		IObjectPoolable* objectPointer = m_availableObjects.front();
+		m_availableObjects.pop();
+		delete objectPointer;
+	}
+}
+
+template <class IObjectPoolable>
+std::size_t ArgusObjectPool<IObjectPoolable>::GetNumAvailableObjects()
+{
+	return m_availableObjects.size();
 }
