@@ -27,6 +27,14 @@ void ArgusKDTree::ArgusKDTreeNode::Populate(const ArgusEntity& entityToRepresent
 	m_entityId = entityToRepresent.GetId();
 }
 
+void ArgusKDTree::ArgusKDTreeNode::Reset()
+{
+	m_worldSpaceLocation = FVector::ZeroVector;
+	m_entityId = ArgusECSConstants::k_maxEntities;
+	m_leftChild = nullptr;
+	m_rightChild = nullptr;
+}
+
 void ArgusKDTree::ClearNodeRecursive(ArgusKDTreeNode* node, FVector& currentAverageLocation, uint16& priorNodeCount)
 {
 	if (!node)

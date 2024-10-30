@@ -126,9 +126,14 @@ void AvoidanceSystems::ProcessORCAvoidance(TWeakObjectPtr<UWorld>& worldPointer,
 
 	int failureLine = -1;
 	FVector2D resultingVelocity = FVector2D::ZeroVector;
-	if (!TwoDimensionalLinearProgram(orcaLines, components.m_transformComponent->m_desiredSpeedUnitsPerSecond, desiredVelocity, false, resultingVelocity, failureLine))
+	if (!TwoDimensionalLinearProgram(orcaLines, components.m_transformComponent->m_desiredSpeedUnitsPerSecond, desiredVelocity, true, resultingVelocity, failureLine))
 	{
 		ThreeDimensionalLinearProgram(orcaLines, components.m_transformComponent->m_desiredSpeedUnitsPerSecond, failureLine, 0, resultingVelocity);
+	}
+
+	if (resultingVelocity.SquaredLength() > FMath::Square(components.m_transformComponent->m_desiredSpeedUnitsPerSecond))
+	{
+		resultingVelocity = resultingVelocity.GetSafeNormal() * components.m_transformComponent->m_desiredSpeedUnitsPerSecond;
 	}
 
 	if (CVarShowAvoidanceDebug.GetValueOnGameThread() && worldPointer.IsValid())

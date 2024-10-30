@@ -4,53 +4,60 @@
 
 #include <queue>
 
-template <class T>
+class IObjectPoolable
+{
+	virtual void Reset() = 0;
+};
+
+// Type IObjectPoolable is an implicit constraint for using the ArgusObjectPool. Types you want to pool should inherit from IObjectPoolable 
+template <class IObjectPoolable>
 class ArgusObjectPool
 {
 public:
 	~ArgusObjectPool();
 
-	T* Take();
-	void Release(T* objectPointer);
+	IObjectPoolable* Take();
+	void Release(IObjectPoolable* objectPointer);
 	void ClearPool();
 
 private:
-	std::queue<T*> m_availableObjects;
+	std::queue<IObjectPoolable*> m_availableObjects;
 
 };
 
-template <class T>
-ArgusObjectPool<T>::~ArgusObjectPool()
+template <class IObjectPoolable>
+ArgusObjectPool<IObjectPoolable>::~ArgusObjectPool()
 {
 	ClearPool();
 }
 
-template <class T>
-void ArgusObjectPool<T>::ClearPool()
+template <class IObjectPoolable>
+void ArgusObjectPool<IObjectPoolable>::ClearPool()
 {
 	while (m_availableObjects.size() > 0)
 	{
-		T* objectPointer = m_availableObjects.front();
+		IObjectPoolable* objectPointer = m_availableObjects.front();
 		m_availableObjects.pop();
 		delete objectPointer;
 	}
 }
 
-template <class T>
-T* ArgusObjectPool<T>::Take()
+template <class IObjectPoolable>
+IObjectPoolable* ArgusObjectPool<IObjectPoolable>::Take()
 {
 	if (m_availableObjects.size() > 0)
 	{
-		T* objectPointer = m_availableObjects.front();
+		IObjectPoolable* objectPointer = m_availableObjects.front();
 		m_availableObjects.pop();
+		objectPointer->Reset();
 		return objectPointer;
 	}
 
-	return new T();
+	return new IObjectPoolable();
 }
 
-template <class T>
-void ArgusObjectPool<T>::Release(T* objectPointer)
+template <class IObjectPoolable>
+void ArgusObjectPool<IObjectPoolable>::Release(IObjectPoolable* objectPointer)
 {
 	if (!objectPointer)
 	{

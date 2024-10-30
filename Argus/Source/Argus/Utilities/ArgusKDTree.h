@@ -12,7 +12,7 @@ class ArgusEntity;
 class ArgusKDTree
 {
 private:
-	struct ArgusKDTreeNode
+	struct ArgusKDTreeNode : public IObjectPoolable
 	{
 		FVector		m_worldSpaceLocation = FVector::ZeroVector;
 		uint16		m_entityId = ArgusECSConstants::k_maxEntities;
@@ -22,6 +22,7 @@ private:
 		ArgusKDTreeNode() {};
 		void Populate(const FVector& worldSpaceLocation);
 		void Populate(const ArgusEntity& entityToRepresent);
+		virtual void Reset() override;
 	};
 
 public:
