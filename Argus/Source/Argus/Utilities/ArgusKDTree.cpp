@@ -52,14 +52,12 @@ void ArgusKDTree::ClearNodeRecursive(ArgusKDTreeNode* node, FVector& currentAver
 	{
 		ClearNodeRecursive(node->m_leftChild, currentAverageLocation, priorNodeCount);
 		m_nodePool.Release(node->m_leftChild);
-		node->m_leftChild = nullptr;
 	}
 
 	if (node->m_rightChild)
 	{
 		ClearNodeRecursive(node->m_rightChild, currentAverageLocation, priorNodeCount);
 		m_nodePool.Release(node->m_rightChild);
-		node->m_rightChild = nullptr;
 	}
 }
 
@@ -295,7 +293,6 @@ FVector ArgusKDTree::FlushAllNodes()
 	{
 		ClearNodeRecursive(m_rootNode, sumLocation, numNodes);
 		m_nodePool.Release(m_rootNode);
-		m_rootNode = nullptr;
 	}
 
 	return  (sumLocation / static_cast<float>(numNodes));

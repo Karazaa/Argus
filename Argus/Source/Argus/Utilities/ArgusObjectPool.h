@@ -17,7 +17,7 @@ public:
 	~ArgusObjectPool();
 
 	IObjectPoolable* Take();
-	void Release(IObjectPoolable* objectPointer);
+	void Release(IObjectPoolable*& objectPointer);
 	void ClearPool();
 	std::size_t GetNumAvailableObjects();
 
@@ -47,7 +47,7 @@ IObjectPoolable* ArgusObjectPool<IObjectPoolable>::Take()
 }
 
 template <class IObjectPoolable>
-void ArgusObjectPool<IObjectPoolable>::Release(IObjectPoolable* objectPointer)
+void ArgusObjectPool<IObjectPoolable>::Release(IObjectPoolable*& objectPointer)
 {
 	if (!objectPointer)
 	{
@@ -55,6 +55,7 @@ void ArgusObjectPool<IObjectPoolable>::Release(IObjectPoolable* objectPointer)
 	}
 
 	m_availableObjects.push(objectPointer);
+	objectPointer = nullptr;
 }
 
 template <class IObjectPoolable>
