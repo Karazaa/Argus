@@ -94,12 +94,14 @@ bool ArgusUtilitiesArgusKDTreeInsertEntitiesTest::RunTest(const FString& Paramet
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusKDTreeFlushAllNodesTest, "Argus.Utilities.ArgusKDTree.FlushAllNodesTest", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusUtilitiesArgusKDTreeFlushAllNodesTest::RunTest(const FString& Parameters)
 {
+	const FVector expectedAverageLocation = FVector(54.0f, 54.0f, 2.0f);
+
 	ArgusEntity::FlushAllEntities();
 	ArgusKDTree tree;
 	CollectionOfArgusEntities entities;
 	PopulateKDTreeForTests(tree, entities, true);
 
-	tree.FlushAllNodes();
+	FVector averageLocation = tree.FlushAllNodes();
 
 #pragma region Test that inserted entities are not present in the KD tree after being flushed.
 	TestFalse
@@ -118,6 +120,22 @@ bool ArgusUtilitiesArgusKDTreeFlushAllNodesTest::RunTest(const FString& Paramete
 		tree.DoesArgusEntityExistInKDTree(entities.entity2) || 
 		tree.DoesArgusEntityExistInKDTree(entities.entity3) || 
 		tree.DoesArgusEntityExistInKDTree(entities.entity4)
+	);
+#pragma endregion
+
+#pragma region Test that inserted entities are not present in the KD tree after being flushed.
+	TestEqual
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Creating a %s, inserting %s into it, then checking that the calculated average location is accurate after calling %s"),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(ArgusKDTree),
+			ARGUS_NAMEOF(ArgusEntity),
+			ARGUS_NAMEOF(ArgusKDTree::FlushAllNodes)
+		),
+		averageLocation,
+		expectedAverageLocation
 	);
 #pragma endregion
 

@@ -334,7 +334,7 @@ bool TransformSystemsMoveAlongPathTest::RunTest(const FString& Parameters)
 	}
 
 	components.m_taskComponent->m_currentTask = ETask::MoveToLocation;
-	components.m_transformComponent->m_desiredSpeedUnitsPerSecond = 1.0f;
+	components.m_transformComponent->m_desiredSpeedUnitsPerSecond = navigationSpeedUnitsPerSecond;
 	components.m_navigationComponent->m_navigationPoints.reserve(4);
 	components.m_navigationComponent->m_navigationPoints.push_back(point0);
 	components.m_navigationComponent->m_navigationPoints.push_back(point1);
