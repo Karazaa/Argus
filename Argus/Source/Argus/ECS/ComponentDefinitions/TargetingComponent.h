@@ -11,6 +11,8 @@ struct TargetingComponent
 	ARGUS_IGNORE()
 	TOptional<FVector> m_targetLocation = TOptional<FVector>();
 
+	float m_targetingRange = 400.0f;
+
 	ARGUS_IGNORE()
 	uint16 m_targetEntityId = ArgusECSConstants::k_maxEntities;
 

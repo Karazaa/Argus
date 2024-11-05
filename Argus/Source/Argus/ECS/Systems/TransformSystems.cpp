@@ -224,10 +224,22 @@ void TransformSystems::MoveAlongNavigationPath(float deltaTime, const TransformS
 		moverLocation += velocity;
 	}
 
-	FaceTowardsLocationXY(components.m_transformComponent, components.m_transformComponent->m_currentVelocity);
+	const bool isAtEndOfNavigationPath		=	components.m_navigationComponent->m_lastPointIndex == numNavigationPoints - 1u;
+	const bool isWithinRangeOfTargetEntity	=	components.m_navigationComponent->m_lastPointIndex == numNavigationPoints - 2u &&
+												components.m_taskComponent->m_currentTask == ETask::MoveToEntity &&
+												components.m_targetingComponent->m_targetingRange > distanceToTarget;
 
+	if (isWithinRangeOfTargetEntity && !isAtEndOfNavigationPath)
+	{
+		FaceTowardsLocationXY(components.m_transformComponent, components.m_navigationComponent->m_navigationPoints[components.m_navigationComponent->m_lastPointIndex + 1u] - moverLocation);
+	}
+	else
+	{
+		FaceTowardsLocationXY(components.m_transformComponent, components.m_transformComponent->m_currentVelocity);
+	}
 	components.m_transformComponent->m_transform.SetLocation(moverLocation);
-	if (components.m_navigationComponent->m_lastPointIndex == numNavigationPoints - 1u)
+	
+	if (isAtEndOfNavigationPath || isWithinRangeOfTargetEntity)
 	{
 		OnCompleteNavigationPath(components);
 	}

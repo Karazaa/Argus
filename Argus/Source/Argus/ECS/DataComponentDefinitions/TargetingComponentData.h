@@ -13,6 +13,8 @@ class ARGUS_API UTargetingComponentData : public UComponentData
 
 public:
 	TOptional<FVector> m_targetLocation = TOptional<FVector>();
+	UPROPERTY(EditAnywhere)
+	float m_targetingRange = 400.0f;
 	uint16 m_targetEntityId = ArgusECSConstants::k_maxEntities;
 
 	void InstantiateComponentForEntity(ArgusEntity& entity) const override;
