@@ -4,8 +4,9 @@
 #include "ArgusEntity.h"
 #include "ArgusSystemsManager.h"
 #include "Math/UnrealMathUtility.h"
+#include "NavigationSystem.h"
 
-bool TransformSystems::RunSystems(float deltaTime)
+bool TransformSystems::RunSystems(TWeakObjectPtr<UWorld>& worldPointer, float deltaTime)
 {
 	ARGUS_TRACE(TransformSystems::RunSystems)
 
@@ -29,7 +30,7 @@ bool TransformSystems::RunSystems(float deltaTime)
 			continue;
 		}
 
-		didMovementUpdateThisFrame |= ProcessMovementTaskCommands(deltaTime, components);
+		didMovementUpdateThisFrame |= ProcessMovementTaskCommands(worldPointer, deltaTime, components);
 	}
 
 	return didMovementUpdateThisFrame;
@@ -40,7 +41,7 @@ bool TransformSystems::TransformSystemsComponentArgs::AreComponentsValidCheck() 
 	return m_entity && m_taskComponent && m_navigationComponent && m_transformComponent && m_targetingComponent;
 }
 
-bool TransformSystems::ProcessMovementTaskCommands(float deltaTime, const TransformSystemsComponentArgs& components)
+bool TransformSystems::ProcessMovementTaskCommands(TWeakObjectPtr<UWorld>& worldPointer, float deltaTime, const TransformSystemsComponentArgs& components)
 {
 	ARGUS_TRACE(TransformSystems::ProcessMovementTaskCommands)
 
@@ -53,7 +54,7 @@ bool TransformSystems::ProcessMovementTaskCommands(float deltaTime, const Transf
 	{
 		case ETask::MoveToLocation:
 		case ETask::MoveToEntity:
-			MoveAlongNavigationPath(deltaTime, components);
+			MoveAlongNavigationPath(worldPointer, deltaTime, components);
 			return true;
 		case ETask::None:
 			components.m_transformComponent->m_currentVelocity = components.m_transformComponent->m_proposedAvoidanceVelocity;
@@ -187,8 +188,10 @@ void TransformSystems::FaceTowardsLocationXY(TransformComponent* transformCompon
 	transformComponent->m_transform.SetRotation(FRotationMatrix::MakeFromXZ(vectorFromTransformToTarget, FVector::UpVector).ToQuat());
 }
 
-void TransformSystems::MoveAlongNavigationPath(float deltaTime, const TransformSystemsComponentArgs& components)
+void TransformSystems::MoveAlongNavigationPath(TWeakObjectPtr<UWorld>& worldPointer, float deltaTime, const TransformSystemsComponentArgs& components)
 {
+	ARGUS_TRACE(TransformSystems::MoveAlongNavigationPath)
+
 	if (!components.AreComponentsValidCheck())
 	{
 		return;
@@ -237,6 +240,8 @@ void TransformSystems::MoveAlongNavigationPath(float deltaTime, const TransformS
 	{
 		FaceTowardsLocationXY(components.m_transformComponent, components.m_transformComponent->m_currentVelocity);
 	}
+
+	moverLocation = ProjectLocationOntoNavigationData(worldPointer, moverLocation);
 	components.m_transformComponent->m_transform.SetLocation(moverLocation);
 	
 	if (isAtEndOfNavigationPath || isWithinRangeOfTargetEntity)
@@ -289,5 +294,30 @@ void TransformSystems::OnCompleteNavigationPath(const TransformSystemsComponentA
 		components.m_navigationComponent->ResetPath();
 		components.m_targetingComponent->m_targetLocation = components.m_navigationComponent->m_queuedWaypoints.front();
 		components.m_navigationComponent->m_queuedWaypoints.pop();
+	}
+}
+
+FVector TransformSystems::ProjectLocationOntoNavigationData(TWeakObjectPtr<UWorld>& worldPointer, const FVector& location)
+{
+	if (!worldPointer.IsValid())
+	{
+		return location;
+	}
+
+	UNavigationSystemV1* unrealNavigationSystem = UNavigationSystemV1::GetCurrent(worldPointer.Get());
+	if (!unrealNavigationSystem)
+	{
+		return location;
+	}
+
+	FNavLocation projectedLocation;
+	const FVector agentExtents = FVector(ArgusECSConstants::k_pathFindingAgentRadius, ArgusECSConstants::k_pathFindingAgentRadius, ArgusECSConstants::k_pathFindingAgentHeight/2.0f);
+	if (unrealNavigationSystem->ProjectPointToNavigation(location, projectedLocation, agentExtents, unrealNavigationSystem->MainNavData))
+	{
+		return projectedLocation.Location;
+	}
+	else
+	{
+		return location;
 	}
 }

@@ -362,7 +362,7 @@ bool TransformSystemsMoveAlongPathTest::RunTest(const FString& Parameters)
 
 	TWeakObjectPtr<UWorld> dummyWorldPointer;
 	AvoidanceSystems::ProcessORCAvoidance(dummyWorldPointer, deltaSecondsPerStep, components);
-	TransformSystems::MoveAlongNavigationPath(deltaSecondsPerStep, components);
+	TransformSystems::MoveAlongNavigationPath(dummyWorldPointer, deltaSecondsPerStep, components);
 	secondCounter += deltaSecondsPerStep;
 
 #pragma region Test navigation index after moving along path for one second
@@ -393,7 +393,7 @@ bool TransformSystemsMoveAlongPathTest::RunTest(const FString& Parameters)
 #pragma endregion
 
 	AvoidanceSystems::ProcessORCAvoidance(dummyWorldPointer, deltaSecondsPerStep, components);
-	TransformSystems::MoveAlongNavigationPath(deltaSecondsPerStep, components);
+	TransformSystems::MoveAlongNavigationPath(dummyWorldPointer, deltaSecondsPerStep, components);
 	secondCounter += deltaSecondsPerStep;
 
 #pragma region Test navigation index after moving along path for two seconds
@@ -424,7 +424,7 @@ bool TransformSystemsMoveAlongPathTest::RunTest(const FString& Parameters)
 #pragma endregion
 
 	AvoidanceSystems::ProcessORCAvoidance(dummyWorldPointer, deltaSecondsPerStep, components);
-	TransformSystems::MoveAlongNavigationPath(deltaSecondsPerStep, components);
+	TransformSystems::MoveAlongNavigationPath(dummyWorldPointer, deltaSecondsPerStep, components);
 	secondCounter += deltaSecondsPerStep;
 
 #pragma region Test navigation index after moving along path for three seconds
@@ -437,7 +437,7 @@ bool TransformSystemsMoveAlongPathTest::RunTest(const FString& Parameters)
 #pragma endregion
 
 	AvoidanceSystems::ProcessORCAvoidance(dummyWorldPointer, deltaSecondsPerStep, components);
-	TransformSystems::MoveAlongNavigationPath(deltaSecondsPerStep, components);
+	TransformSystems::MoveAlongNavigationPath(dummyWorldPointer, deltaSecondsPerStep, components);
 	secondCounter += deltaSecondsPerStep;
 	const uint16 numPathPoints = components.m_navigationComponent->m_navigationPoints.size();
 

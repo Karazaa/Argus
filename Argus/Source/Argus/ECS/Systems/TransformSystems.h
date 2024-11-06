@@ -7,7 +7,7 @@
 class TransformSystems
 {
 public:
-	static bool RunSystems(float deltaTime);
+	static bool RunSystems(TWeakObjectPtr<UWorld>& worldPointer, float deltaTime);
 
 	struct TransformSystemsComponentArgs
 	{
@@ -26,10 +26,12 @@ public:
 		uint16  m_navigationIndexOfPredictedLocation;
 	};
 
-	static bool ProcessMovementTaskCommands(float deltaTime, const TransformSystemsComponentArgs& components);
+	static bool ProcessMovementTaskCommands(TWeakObjectPtr<UWorld>& worldPointer, float deltaTime, const TransformSystemsComponentArgs& components);
 	static void GetPathingLocationAtTimeOffset(float timeOffsetSeconds, const TransformSystemsComponentArgs& components, GetPathingLocationAtTimeOffsetResults& results);
 	static void FaceTowardsLocationXY(TransformComponent* transformComponent, FVector vectorFromTransformToTarget);
-	static void MoveAlongNavigationPath(float deltaTime, const TransformSystemsComponentArgs& components);
+	static void MoveAlongNavigationPath(TWeakObjectPtr<UWorld>& worldPointer, float deltaTime, const TransformSystemsComponentArgs& components);
 	static void FindEntitiesWithinXYBounds(FVector2D minXY, FVector2D maxXY, TArray<ArgusEntity>& outEntitiesWithinBounds);
 	static void OnCompleteNavigationPath(const TransformSystemsComponentArgs& components);
+
+	static FVector ProjectLocationOntoNavigationData(TWeakObjectPtr<UWorld>& worldPointer, const FVector& location);
 };
