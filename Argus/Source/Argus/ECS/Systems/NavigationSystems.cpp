@@ -164,9 +164,16 @@ void NavigationSystems::NavigateFromEntityToLocation(TWeakObjectPtr<UWorld>& wor
 		components.m_taskComponent->m_currentTask = ETask::FailedToFindPath;
 		return;
 	}
-
+	
 	TArray<FNavPathPoint>& pathPoints = pathFindingResult.Path->GetPathPoints();
 	const int numPathPoints = pathPoints.Num();
+
+	if (numPathPoints <= 1u)
+	{
+		components.m_taskComponent->m_currentTask = ETask::None;
+		return;
+	}
+
 	components.m_navigationComponent->m_navigationPoints.reserve(numPathPoints);
 	for (int i = 0; i < numPathPoints; ++i)
 	{
