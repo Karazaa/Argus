@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "ArgusMath.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "ArgusCameraActor.generated.h"
@@ -41,14 +42,14 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Panning")
 	float m_desiredVerticalVelocity = 500.0f;
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Panning")
-	float m_verticalAcceleration = 5.0f;
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Panning", Meta = (ClampMin = "1.0", ClampMax = "30.0"))
+	float m_verticalVelocitySmoothingDecayConstant = 5.0f;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Panning")
 	float m_desiredHorizontalVelocity = 500.0f;
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Panning")
-	float m_horizontalAcceleration = 5.0f;
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Panning", Meta = (ClampMin = "1.0", ClampMax = "30.0"))
+	float m_horizontalVelocitySmoothingDecayConstant = 5.0f;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Zoom")
 	float m_desiredZoomVelocity = 500.0f;
@@ -68,8 +69,10 @@ private:
 	void UpdateCameraPanning(const UpdateCameraPanningParameters& cameraParameters, const float deltaTime);
 	void UpdateCameraZoomInternal(const float deltaTime);
 
-	float m_currentVerticalVelocity = 0.0f;
-	float m_currentHorizontalVelocity = 0.0f;
+	ArgusMath::ExponentialDecaySmoother<float> m_currentVerticalVelocity;
+	ArgusMath::ExponentialDecaySmoother<float> m_currentHorizontalVelocity;
+	// TODO JAMES FVector Smoother for current location.
+
 	float m_zoomInputThisFrame = 0.0f;
 	FVector m_zoomTargetTranslation = FVector::ZeroVector;
 	FVector m_cameraPositionWithoutZoom = FVector::ZeroVector;

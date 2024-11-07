@@ -7,7 +7,9 @@
 #include "Engine/HitResult.h"
 #include "Engine/World.h"
 
-AArgusCameraActor::AArgusCameraActor()
+AArgusCameraActor::AArgusCameraActor() :	
+	m_currentVerticalVelocity(ArgusMath::ExponentialDecaySmoother<float>(0.0f, m_verticalVelocitySmoothingDecayConstant)),
+	m_currentHorizontalVelocity(ArgusMath::ExponentialDecaySmoother<float>(0.0f, m_horizontalVelocitySmoothingDecayConstant))
 {
 	PrimaryActorTick.bCanEverTick = true;
 	SetRootComponent(CreateDefaultSubobject<UCameraComponent>(FName("CameraComponent")));
@@ -16,8 +18,8 @@ AArgusCameraActor::AArgusCameraActor()
 void AArgusCameraActor::ForceSetCameraPositionWithoutZoom(const FVector& position)
 {
 	m_cameraPositionWithoutZoom = position;
-	m_currentVerticalVelocity = 0.0f;
-	m_currentHorizontalVelocity = 0.0f;
+	m_currentVerticalVelocity.Reset(0.0f);
+	m_currentHorizontalVelocity.Reset(0.0f);
 	SetActorLocation(position);
 }
 
@@ -68,8 +70,8 @@ void AArgusCameraActor::UpdateCameraPanning(const UpdateCameraPanningParameters&
 	{
 		desiredVerticalVelocity = -m_desiredVerticalVelocity;
 	}
-	m_currentVerticalVelocity = FMath::FInterpTo(m_currentVerticalVelocity, desiredVerticalVelocity, deltaTime, m_verticalAcceleration);
-	translation += m_moveUpDir * (m_currentVerticalVelocity * deltaTime);
+	m_currentVerticalVelocity.SmoothChase(desiredVerticalVelocity, deltaTime);
+	translation += m_moveUpDir * (m_currentVerticalVelocity.GetValue() * deltaTime);
 
 	// LEFT
 	if (cameraParameters.m_screenSpaceMousePosition->X < paddingAmountX)
@@ -81,8 +83,8 @@ void AArgusCameraActor::UpdateCameraPanning(const UpdateCameraPanningParameters&
 	{
 		desiredHorizontalVelocity = m_desiredHorizontalVelocity;
 	}
-	m_currentHorizontalVelocity = FMath::FInterpTo(m_currentHorizontalVelocity, desiredHorizontalVelocity, deltaTime, m_horizontalAcceleration);
-	translation += m_moveRightDir * (m_currentHorizontalVelocity * deltaTime);
+	m_currentHorizontalVelocity.SmoothChase(desiredHorizontalVelocity, deltaTime);
+	translation += m_moveRightDir * (m_currentHorizontalVelocity.GetValue() * deltaTime);
 
 	m_cameraPositionWithoutZoom += translation;
 }

@@ -67,14 +67,30 @@ bool ArgusUtilitiesArgusMathExponentialDecaySmootherFloatTest::RunTest(const FSt
 	const float value2 = 10.0f;
 	const float decayConstant = 10.0f;
 
-	ArgusMath::ExponentialDecaySmoother<float> testValue = ArgusMath::ExponentialDecaySmoother<float>(0.0f, decayConstant);
+	ArgusMath::ExponentialDecaySmoother<float> testValue;
 
-#pragma region Test that the ExponentialDecaySmoother has the correct initial value.
+#pragma region Test that the ExponentialDecaySmoother has the correct initial value after using default constructor.
 	TestEqual
 	(
 		FString::Printf
 		(
-			TEXT("[%s] Creating a %s, and testing that it has the correct initial value."),
+			TEXT("[%s] Creating a %s, and testing that it has the correct initial value after calling default constructor."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(ArgusMath::ExponentialDecaySmoother<float>)
+		),
+		testValue.GetValue(),
+		value0
+	);
+#pragma endregion
+
+	testValue = ArgusMath::ExponentialDecaySmoother<float>(0.0f, decayConstant);
+
+#pragma region Test that the ExponentialDecaySmoother has the correct initial value after using verbose constructor.
+	TestEqual
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Creating a %s, and testing that it has the correct initial value calling verbose constructor."),
 			ARGUS_FUNCNAME,
 			ARGUS_NAMEOF(ArgusMath::ExponentialDecaySmoother<float>)
 		),
@@ -181,14 +197,30 @@ bool ArgusUtilitiesArgusMathExponentialDecaySmootherFVectorTest::RunTest(const F
 	const FVector vector2 = FVector(-1000.0f, 1.0f, -500.0f);
 	const float decayConstant = 15.0f;
 
-	ArgusMath::ExponentialDecaySmoother<FVector> testValue = ArgusMath::ExponentialDecaySmoother<FVector>(vector0, decayConstant);
+	ArgusMath::ExponentialDecaySmoother<FVector> testValue;
 
-#pragma region Test that the ExponentialDecaySmoother has the correct initial value.
+#pragma region Test that the ExponentialDecaySmoother has the correct initial value after calling default constructor.
 	TestEqual
 	(
 		FString::Printf
 		(
-			TEXT("[%s] Creating a %s, and testing that it has the correct initial value."),
+			TEXT("[%s] Creating a %s, and testing that it has the correct initial value after calling default constructor."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(ArgusMath::ExponentialDecaySmoother<FVector>)
+		),
+		testValue.GetValue(),
+		vector0
+	);
+#pragma endregion
+
+	testValue = ArgusMath::ExponentialDecaySmoother<FVector>(vector0, decayConstant);
+
+#pragma region Test that the ExponentialDecaySmoother has the correct initial value after calling verbose constructor.
+	TestEqual
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Creating a %s, and testing that it has the correct initial value after calling verbose constructor."),
 			ARGUS_FUNCNAME,
 			ARGUS_NAMEOF(ArgusMath::ExponentialDecaySmoother<FVector>)
 		),

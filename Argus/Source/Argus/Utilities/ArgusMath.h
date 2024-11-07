@@ -6,11 +6,35 @@
 
 namespace ArgusMath
 {
+	template<typename T>
+	static T GetZero()
+	{
+		return T();
+	}
+
+	template<>
+	inline float GetZero<float>()
+	{
+		return 0.0f;
+	}
+
+	template<>
+	inline FVector GetZero<FVector>()
+	{
+		return FVector::ZeroVector;
+	}
+
 	template <typename T>
 	class ExponentialDecaySmoother
 	{
 	public:
-		ExponentialDecaySmoother(T initialValue, float decayConstant) : m_currentValue(initialValue) 
+		ExponentialDecaySmoother()
+		{
+			m_currentValue = GetZero<T>();
+			m_decayConstant = (k_maxDecayConstant - k_minDecayConstant) / 2.0f;
+		}
+
+		ExponentialDecaySmoother(T initialValue, float decayConstant) : m_currentValue(initialValue)
 		{
 			m_decayConstant = FMath::Clamp(decayConstant, k_minDecayConstant, k_maxDecayConstant);
 		}
@@ -40,7 +64,7 @@ namespace ArgusMath
 		static constexpr float k_maxDecayConstant = 30.0f;
 
 		T m_currentValue;
-		float m_decayConstant;
+		float m_decayConstant = k_minDecayConstant;
 	};
 
 	static float Determinant(const FVector2D& topRow, const FVector2D& bottomRow)
