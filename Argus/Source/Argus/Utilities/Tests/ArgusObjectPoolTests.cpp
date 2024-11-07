@@ -4,6 +4,8 @@
 #include "ArgusObjectPool.h"
 #include "Misc/AutomationTest.h"
 
+#if WITH_AUTOMATION_TESTS
+
 struct TestPoolable : public IObjectPoolable
 {
 	float m_dummyValue = 0.0f;
@@ -252,5 +254,4 @@ bool ArgusUtilitiesArgusObjectPoolClearPoolTest::RunTest(const FString& Paramete
 	return true;
 }
 
-#if WITH_AUTOMATION_TESTS
 #endif //WITH_AUTOMATION_TESTS
