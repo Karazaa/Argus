@@ -6,7 +6,7 @@ void TargetingSystems::RunSystems(float deltaTime)
 {
 	ARGUS_TRACE(TargetingSystems::RunSystems)
 
-	for (uint16 i = 0; i < ArgusECSConstants::k_maxEntities; ++i)
+	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{
 		ArgusEntity potentialEntity = ArgusEntity::RetrieveEntity(i);
 		if (!potentialEntity)

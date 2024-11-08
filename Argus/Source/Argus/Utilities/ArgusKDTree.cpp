@@ -337,7 +337,7 @@ void ArgusKDTree::RebuildKDTreeForAllArgusEntities()
 	m_rootNode = m_nodePool.Take();
 	m_rootNode->Populate(averageLocation);
 
-	for (uint16 i = 0; i < ArgusECSConstants::k_maxEntities; ++i)
+	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{
 		if (ArgusEntity retrievedEntity = ArgusEntity::RetrieveEntity(i))
 		{

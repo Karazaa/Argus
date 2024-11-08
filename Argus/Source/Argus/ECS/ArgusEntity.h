@@ -14,11 +14,15 @@ public:
 	static bool							DoesEntityExist(uint16 id);
 	static ArgusEntity					RetrieveEntity(uint16 id);
 	static void							FlushAllEntities();
+	static uint16						GetLowestTakenEntityId() { return s_lowestTakenEntityId; }
+	static uint16						GetHighestTakenEntityId() { return s_highestTakenEntityId; }
 
 	static const ArgusEntity			s_emptyEntity;
 
 private:
 	static std::bitset<ArgusECSConstants::k_maxEntities>	s_takenEntityIds;
+	static uint16 s_lowestTakenEntityId;
+	static uint16 s_highestTakenEntityId;
 
 	static uint16						GetLowestValidId(uint16 lowestId);
 	

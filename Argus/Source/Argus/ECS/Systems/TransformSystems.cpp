@@ -11,7 +11,7 @@ bool TransformSystems::RunSystems(TWeakObjectPtr<UWorld>& worldPointer, float de
 	ARGUS_TRACE(TransformSystems::RunSystems)
 
 	bool didMovementUpdateThisFrame = false;
-	for (uint16 i = 0; i < ArgusECSConstants::k_maxEntities; ++i)
+	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{
 		ArgusEntity potentialEntity = ArgusEntity::RetrieveEntity(i);
 		if (!potentialEntity)

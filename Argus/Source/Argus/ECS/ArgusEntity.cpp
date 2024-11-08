@@ -7,9 +7,36 @@
 const ArgusEntity ArgusEntity::s_emptyEntity = ArgusEntity();
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusEntity::s_takenEntityIds = std::bitset<ArgusECSConstants::k_maxEntities>();
 
+uint16 ArgusEntity::s_lowestTakenEntityId = ArgusECSConstants::k_maxEntities;
+uint16 ArgusEntity::s_highestTakenEntityId = 0u;
+
 ArgusEntity ArgusEntity::CreateEntity(uint16 lowestId)
 {
-	return ArgusEntity(GetLowestValidId(lowestId));
+	const uint16 id = GetLowestValidId(lowestId);
+
+	if (s_takenEntityIds[id])
+	{
+		UE_LOG(ArgusECSLog, Error, TEXT("[%s] Attempting to create an %s with an ID value of an already existing %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(ArgusEntity));
+		return s_emptyEntity;
+	}
+
+	if (id == ArgusECSConstants::k_maxEntities)
+	{
+		UE_LOG(ArgusECSLog, Error, TEXT("[%s] Attempting to create an %s with an invalid ID value."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity));
+		return s_emptyEntity;
+	}
+
+	s_takenEntityIds.set(id);
+	if (id < s_lowestTakenEntityId)
+	{
+		s_lowestTakenEntityId = id;
+	}
+	if (id > s_highestTakenEntityId)
+	{
+		s_highestTakenEntityId = id;
+	}
+
+	return ArgusEntity(id);
 }
 
 bool ArgusEntity::DoesEntityExist(uint16 id)
@@ -36,6 +63,8 @@ void ArgusEntity::FlushAllEntities()
 {
 	ArgusComponentRegistry::FlushAllComponents();
 	s_takenEntityIds.reset();
+	s_lowestTakenEntityId = ArgusECSConstants::k_maxEntities;
+	s_highestTakenEntityId = 0u;
 }
 
 uint16 ArgusEntity::GetLowestValidId(uint16 lowestId)
@@ -52,10 +81,10 @@ uint16 ArgusEntity::GetLowestValidId(uint16 lowestId)
 
 	if (s_takenEntityIds[lowestId])
 	{
-		UE_LOG(ArgusECSLog, Error, TEXT("[ECS] Exceeded the maximum number of allowed entities."));
+		UE_LOG(ArgusECSLog, Error, TEXT("[%s] Exceeded the maximum number of allowed %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity));
+		return ArgusECSConstants::k_maxEntities;
 	}
 
-	s_takenEntityIds.set(lowestId);
 	return lowestId;
 }
 

@@ -120,7 +120,7 @@ bool ArgusEntityCreateInvalidEntityTest::RunTest(const FString& Parameters)
 {
 	ArgusEntity::FlushAllEntities();
 
-	ArgusEntity entity = ArgusEntity::CreateEntity(ArgusECSConstants::k_maxEntities);
+	ArgusEntity entity = ArgusEntity::s_emptyEntity;
 
 #pragma region Test that the bool operator of an invalid ArgusEntity returns false
 	TestFalse
