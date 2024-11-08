@@ -357,7 +357,7 @@ bool ArgusEntityAddGetHealthComponentTest::RunTest(const FString& Parameters)
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityGetOrAddComponentTest, "Argus.ECS.Entity.GetOrAddComponentTest", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityGetOrAddComponentTest, "Argus.ECS.Entity.GetOrAddComponent", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusEntityGetOrAddComponentTest::RunTest(const FString& Parameters)
 {
 	ArgusEntity::FlushAllEntities();
@@ -376,12 +376,145 @@ bool ArgusEntityGetOrAddComponentTest::RunTest(const FString& Parameters)
 	healthComponent->m_health = 400u;
 	healthComponent = entity.GetOrAddComponent<HealthComponent>();
 
-#pragma region Test crreating an ArgusEntity. getting or adding a HealthComponent twice, and making sure the same component is returned
+#pragma region Test creating an ArgusEntity. getting or adding a HealthComponent twice, and making sure the same component is returned
 	TestEqual
 	(
 		FString::Printf(TEXT("[%s] Creating an %s, calling %s twice and making sure the same %s is returned."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(ArgusEntity::GetOrAddComponent), ARGUS_NAMEOF(HealthComponent)),
 		healthComponent->m_health, 
 		400u
+	);
+#pragma endregion
+
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityGetNextLowestUntakenIdTest, "Argus.ECS.Entity.GetNextLowestUntakenId", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+bool ArgusEntityGetNextLowestUntakenIdTest::RunTest(const FString& Parameters)
+{
+	const uint16 initialIdToQuery = 0u;
+
+	ArgusEntity::FlushAllEntities();
+
+	uint16 nextLowestId = ArgusEntity::GetNextLowestUntakenId(initialIdToQuery);
+
+#pragma region Test getting the next lowest ID when there are no entities
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Testing result of %s when there are no %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity::GetNextLowestUntakenId), ARGUS_NAMEOF(ArgusEntity)),
+		nextLowestId,
+		initialIdToQuery
+	);
+#pragma endregion
+
+	nextLowestId = ArgusEntity::GetNextLowestUntakenId(initialIdToQuery);
+
+#pragma region Test it again to validate that it does not change state.
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Testing result of %s when there are no %s a second time."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity::GetNextLowestUntakenId), ARGUS_NAMEOF(ArgusEntity)),
+		nextLowestId,
+		initialIdToQuery
+	);
+#pragma endregion
+
+	ArgusEntity::CreateEntity(initialIdToQuery);
+	nextLowestId = ArgusEntity::GetNextLowestUntakenId(initialIdToQuery);
+
+#pragma region Test getting next lowest untaken ID on a taken ID.
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Testing result of %s when there is a %s with the target ID."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity::GetNextLowestUntakenId), ARGUS_NAMEOF(ArgusEntity)),
+		nextLowestId,
+		initialIdToQuery + 1u
+	);
+#pragma endregion
+
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityGetTakenEntityIdRangeTest, "Argus.ECS.Entity.GetTakenEntityIdRange", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+bool ArgusEntityGetTakenEntityIdRangeTest::RunTest(const FString& Parameters)
+{
+	const uint16 entity0Id = 500u;
+	const uint16 entity1Id = 10u;
+
+	ArgusEntity::FlushAllEntities();
+
+#pragma region Test initial state of lowest entity ID
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Testing initial value of %s and making sure it equals %d."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity::GetLowestTakenEntityId), ArgusECSConstants::k_maxEntities),
+		ArgusEntity::GetLowestTakenEntityId(),
+		ArgusECSConstants::k_maxEntities
+	);
+#pragma endregion
+
+#pragma region Test initial state of highest entity ID
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Testing initial value of %s and making sure it equals %d."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity::GetHighestTakenEntityId), ArgusECSConstants::k_maxEntities),
+		ArgusEntity::GetHighestTakenEntityId(),
+		0u
+	);
+#pragma endregion
+
+	ArgusEntity::CreateEntity(entity0Id);
+
+#pragma region Test state of lowest entity ID after adding a single entity
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Testing value of %s after adding a single %s with ID %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity::GetLowestTakenEntityId), ARGUS_NAMEOF(ArgusEntity), entity0Id),
+		ArgusEntity::GetLowestTakenEntityId(),
+		entity0Id
+	);
+#pragma endregion
+
+#pragma region Test state of highest entity ID after adding a single entity
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Testing value of %s after adding a single %s with ID %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity::GetHighestTakenEntityId), ARGUS_NAMEOF(ArgusEntity), entity0Id),
+		ArgusEntity::GetHighestTakenEntityId(),
+		entity0Id
+	);
+#pragma endregion
+
+	ArgusEntity::CreateEntity(entity1Id);
+
+#pragma region Test state of lowest entity ID after adding a two entities
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Testing value of %s after adding two %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity::GetLowestTakenEntityId), ARGUS_NAMEOF(ArgusEntity)),
+		ArgusEntity::GetLowestTakenEntityId(),
+		entity1Id
+	);
+#pragma endregion
+
+#pragma region Test state of highest entity ID after adding a two entities
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Testing value of %s after adding two %s,"), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity::GetHighestTakenEntityId), ARGUS_NAMEOF(ArgusEntity)),
+		ArgusEntity::GetHighestTakenEntityId(),
+		entity0Id
+	);
+#pragma endregion
+
+	ArgusEntity::FlushAllEntities();
+
+#pragma region Test state of lowest entity ID after flushing all entities
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Testing value of %s and making sure it equals %d after calling %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity::GetLowestTakenEntityId), ArgusECSConstants::k_maxEntities, ARGUS_NAMEOF(ArgusEntity::FlushAllEntities)),
+		ArgusEntity::GetLowestTakenEntityId(),
+		ArgusECSConstants::k_maxEntities
+	);
+#pragma endregion
+
+#pragma region Test state of highest entity ID after flusing all entities
+	TestEqual
+	(
+		FString::Printf(TEXT("[%s] Testing value of %s and making sure it equals %d after calling %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity::GetHighestTakenEntityId), ArgusECSConstants::k_maxEntities, ARGUS_NAMEOF(ArgusEntity::FlushAllEntities)),
+		ArgusEntity::GetHighestTakenEntityId(),
+		0u
 	);
 #pragma endregion
 

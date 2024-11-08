@@ -10,12 +10,13 @@
 class ArgusEntity
 {
 public:
-	static ArgusEntity					CreateEntity(uint16 lowestId = 0u);
-	static bool							DoesEntityExist(uint16 id);
-	static ArgusEntity					RetrieveEntity(uint16 id);
-	static void							FlushAllEntities();
-	static uint16						GetLowestTakenEntityId() { return s_lowestTakenEntityId; }
-	static uint16						GetHighestTakenEntityId() { return s_highestTakenEntityId; }
+	static void				FlushAllEntities();
+	static bool				DoesEntityExist(uint16 id);
+	static ArgusEntity		CreateEntity(uint16 lowestId = 0u);
+	static ArgusEntity		RetrieveEntity(uint16 id);
+	static uint16			GetNextLowestUntakenId(uint16 lowestId);
+	static uint16			GetLowestTakenEntityId() { return s_lowestTakenEntityId; }
+	static uint16			GetHighestTakenEntityId() { return s_highestTakenEntityId; }
 
 	static const ArgusEntity			s_emptyEntity;
 
@@ -23,8 +24,6 @@ private:
 	static std::bitset<ArgusECSConstants::k_maxEntities>	s_takenEntityIds;
 	static uint16 s_lowestTakenEntityId;
 	static uint16 s_highestTakenEntityId;
-
-	static uint16						GetLowestValidId(uint16 lowestId);
 	
 public:
 	ArgusEntity(const ArgusEntity& other);

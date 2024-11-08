@@ -10,9 +10,27 @@ std::bitset<ArgusECSConstants::k_maxEntities> ArgusEntity::s_takenEntityIds = st
 uint16 ArgusEntity::s_lowestTakenEntityId = ArgusECSConstants::k_maxEntities;
 uint16 ArgusEntity::s_highestTakenEntityId = 0u;
 
+void ArgusEntity::FlushAllEntities()
+{
+	ArgusComponentRegistry::FlushAllComponents();
+	s_takenEntityIds.reset();
+	s_lowestTakenEntityId = ArgusECSConstants::k_maxEntities;
+	s_highestTakenEntityId = 0u;
+}
+
+bool ArgusEntity::DoesEntityExist(uint16 id)
+{
+	if (id >= ArgusECSConstants::k_maxEntities)
+	{
+		return false;
+	}
+
+	return s_takenEntityIds[id];
+}
+
 ArgusEntity ArgusEntity::CreateEntity(uint16 lowestId)
 {
-	const uint16 id = GetLowestValidId(lowestId);
+	const uint16 id = GetNextLowestUntakenId(lowestId);
 
 	if (s_takenEntityIds[id])
 	{
@@ -39,16 +57,6 @@ ArgusEntity ArgusEntity::CreateEntity(uint16 lowestId)
 	return ArgusEntity(id);
 }
 
-bool ArgusEntity::DoesEntityExist(uint16 id)
-{
-	if (id >= ArgusECSConstants::k_maxEntities)
-	{
-		return false;
-	}
-
-	return s_takenEntityIds[id];
-}
-
 ArgusEntity ArgusEntity::RetrieveEntity(uint16 id)
 {
 	if (id < ArgusECSConstants::k_maxEntities && s_takenEntityIds[id])
@@ -59,15 +67,7 @@ ArgusEntity ArgusEntity::RetrieveEntity(uint16 id)
 	return ArgusEntity::s_emptyEntity;
 }
 
-void ArgusEntity::FlushAllEntities()
-{
-	ArgusComponentRegistry::FlushAllComponents();
-	s_takenEntityIds.reset();
-	s_lowestTakenEntityId = ArgusECSConstants::k_maxEntities;
-	s_highestTakenEntityId = 0u;
-}
-
-uint16 ArgusEntity::GetLowestValidId(uint16 lowestId)
+uint16 ArgusEntity::GetNextLowestUntakenId(uint16 lowestId)
 {
 	if (lowestId >= ArgusECSConstants::k_maxEntities)
 	{
