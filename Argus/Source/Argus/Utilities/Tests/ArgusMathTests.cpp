@@ -186,6 +186,24 @@ bool ArgusUtilitiesArgusMathExponentialDecaySmootherFloatTest::RunTest(const FSt
 	);
 #pragma endregion
 
+	testValue.Reset(value2);
+	testValue.ResetZero();
+
+#pragma region Test that the ExponentialDecaySmoother has the correct value after calling ResetZero.
+	TestEqual
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Creating a %s, and testing that it has the correct value after calling %s."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(ArgusMath::ExponentialDecaySmoother<FVector>),
+			ARGUS_NAMEOF(testValue.ResetZero)
+		),
+		testValue.GetValue(),
+		value0
+	);
+#pragma endregion
+
 	return true;
 }
 
@@ -295,6 +313,24 @@ bool ArgusUtilitiesArgusMathExponentialDecaySmootherFVectorTest::RunTest(const F
 			ArgusMathTests::k_framerate
 		),
 		testValue.GetValue().Equals(vector0, ArgusMathTests::k_valueTolerance)
+	);
+#pragma endregion
+
+	testValue.Reset(vector2);
+	testValue.ResetZero();
+
+#pragma region Test that the ExponentialDecaySmoother has the correct value after calling ResetZero.
+	TestEqual
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Creating a %s, and testing that it has the correct value after calling %s."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(ArgusMath::ExponentialDecaySmoother<FVector>),
+			ARGUS_NAMEOF(testValue.ResetZero)
+		),
+		testValue.GetValue(),
+		vector0
 	);
 #pragma endregion
 

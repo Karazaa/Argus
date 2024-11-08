@@ -54,6 +54,11 @@ namespace ArgusMath
 			m_currentValue = initialValue;
 		}
 
+		void ResetZero()
+		{
+			m_currentValue = GetZero<T>();
+		}
+
 		void SmoothChase(const T& targetValue, float deltaTime)
 		{
 			m_currentValue = targetValue + ((m_currentValue - targetValue) * FMath::Exp(-m_decayConstant * deltaTime));

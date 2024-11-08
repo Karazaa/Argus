@@ -55,7 +55,7 @@ protected:
 	float m_desiredZoomVelocity = 500.0f;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Zoom")
-	float m_zoomAcceleration = 5.0f;
+	float m_zoomLocationSmoothingDecayConstant = 10.0f;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Zoom")
 	float m_minZoomDistanceToGround = 100.0f;
@@ -69,14 +69,13 @@ private:
 	void UpdateCameraPanning(const UpdateCameraPanningParameters& cameraParameters, const float deltaTime);
 	void UpdateCameraZoomInternal(const float deltaTime);
 
-	ArgusMath::ExponentialDecaySmoother<float> m_currentVerticalVelocity;
-	ArgusMath::ExponentialDecaySmoother<float> m_currentHorizontalVelocity;
-	// TODO JAMES FVector Smoother for current location.
+	ArgusMath::ExponentialDecaySmoother<float>		m_currentVerticalVelocity;
+	ArgusMath::ExponentialDecaySmoother<float>		m_currentHorizontalVelocity;
+	ArgusMath::ExponentialDecaySmoother<FVector>	m_currentLocation;
 
 	float m_zoomInputThisFrame = 0.0f;
 	FVector m_zoomTargetTranslation = FVector::ZeroVector;
 	FVector m_cameraPositionWithoutZoom = FVector::ZeroVector;
-
 
 	// TODO JAMES: Do these for real.
 	FVector m_moveUpDir		= FVector::ForwardVector;

@@ -9,7 +9,8 @@
 
 AArgusCameraActor::AArgusCameraActor() :	
 	m_currentVerticalVelocity(ArgusMath::ExponentialDecaySmoother<float>(0.0f, m_verticalVelocitySmoothingDecayConstant)),
-	m_currentHorizontalVelocity(ArgusMath::ExponentialDecaySmoother<float>(0.0f, m_horizontalVelocitySmoothingDecayConstant))
+	m_currentHorizontalVelocity(ArgusMath::ExponentialDecaySmoother<float>(0.0f, m_horizontalVelocitySmoothingDecayConstant)),
+	m_currentLocation(ArgusMath::ExponentialDecaySmoother<FVector>(FVector::ZeroVector, m_zoomLocationSmoothingDecayConstant))
 {
 	PrimaryActorTick.bCanEverTick = true;
 	SetRootComponent(CreateDefaultSubobject<UCameraComponent>(FName("CameraComponent")));
@@ -18,8 +19,9 @@ AArgusCameraActor::AArgusCameraActor() :
 void AArgusCameraActor::ForceSetCameraPositionWithoutZoom(const FVector& position)
 {
 	m_cameraPositionWithoutZoom = position;
-	m_currentVerticalVelocity.Reset(0.0f);
-	m_currentHorizontalVelocity.Reset(0.0f);
+	m_currentVerticalVelocity.ResetZero();
+	m_currentHorizontalVelocity.ResetZero();
+	m_currentLocation.Reset(position);
 	SetActorLocation(position);
 }
 
@@ -139,5 +141,6 @@ void AArgusCameraActor::UpdateCameraZoomInternal(const float deltaTime)
 		proposedPosition = m_cameraPositionWithoutZoom + m_zoomTargetTranslation;
 	}
 
-	SetActorLocation(FMath::VInterpTo(GetActorLocation(), proposedPosition, deltaTime, m_zoomAcceleration));
+	m_currentLocation.SmoothChase(proposedPosition, deltaTime);
+	SetActorLocation(m_currentLocation.GetValue());
 }
