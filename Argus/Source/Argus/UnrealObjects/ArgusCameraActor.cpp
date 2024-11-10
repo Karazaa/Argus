@@ -43,7 +43,7 @@ void AArgusCameraActor::UpdateCameraZoom(const float inputZoomValue)
 void AArgusCameraActor::BeginPlay()
 {
 	Super::BeginPlay();
-	m_cameraPositionWithoutZoom = GetActorLocation();
+	ForceSetCameraPositionWithoutZoom(GetActorLocation());
 }
 
 void AArgusCameraActor::UpdateCameraPanning(const UpdateCameraPanningParameters& cameraParameters, const float deltaTime)
