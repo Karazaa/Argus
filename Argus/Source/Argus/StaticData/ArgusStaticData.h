@@ -14,6 +14,32 @@ public:
 		return nullptr;
 	}
 
+#pragma region UArgusActorRecord
+	template<>
+	inline const UArgusActorRecord* GetRecord(uint32 id)
+	{
+		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
+
+		if (!staticDatabase)
+		{
+			return nullptr;
+		}
+
+		return staticDatabase->GetUArgusActorRecord(id);
+	}
+
+	static const uint32 GetIdFromRecordSoftPtr(const TSoftObjectPtr<UArgusActorRecord>& UArgusActorRecord)
+	{
+		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
+
+		if (!staticDatabase)
+		{
+			return 0u;
+		}
+
+		return staticDatabase->GetIdFromRecordSoftPtr(UArgusActorRecord);
+	}
+#pragma endregion
 #pragma region UFactionRecord
 	template<>
 	inline const UFactionRecord* GetRecord(uint32 id)

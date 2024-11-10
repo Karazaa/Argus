@@ -12,6 +12,7 @@
 #include "ComponentDefinitions\HealthComponent.h"
 #include "ComponentDefinitions\IdentityComponent.h"
 #include "ComponentDefinitions\NavigationComponent.h"
+#include "ComponentDefinitions\SpawningComponent.h"
 #include "ComponentDefinitions\TargetingComponent.h"
 #include "ComponentDefinitions\TaskComponent.h"
 #include "ComponentDefinitions\TransformComponent.h"
@@ -43,7 +44,7 @@ public:
 	static void FlushAllComponents();
 	static void AppendComponentDebugStrings(uint16 entityId, FString& debugStringToAppendTo);
 
-	static constexpr uint32 k_numComponentTypes = 7;
+	static constexpr uint32 k_numComponentTypes = 8;
 
 	// Begin component specific template specifiers.
 	
@@ -233,6 +234,69 @@ public:
 			s_NavigationComponents[entityId] = NavigationComponent();
 			s_isNavigationComponentActive.set(entityId);
 			return &s_NavigationComponents[entityId];
+		}
+	}
+#pragma endregion
+#pragma region SpawningComponent
+private:
+	static SpawningComponent s_SpawningComponents[ArgusECSConstants::k_maxEntities];
+	static std::bitset<ArgusECSConstants::k_maxEntities> s_isSpawningComponentActive;
+public:
+	template<>
+	inline SpawningComponent* GetComponent<SpawningComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			UE_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(SpawningComponent));
+			return nullptr;
+		}
+
+		if (!s_isSpawningComponentActive[entityId])
+		{
+			return nullptr;
+		}
+
+		return &s_SpawningComponents[entityId];
+	}
+
+	template<>
+	inline SpawningComponent* AddComponent<SpawningComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			UE_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(SpawningComponent));
+			return nullptr;
+		}
+
+		if (s_isSpawningComponentActive[entityId])
+		{
+			UE_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(SpawningComponent), entityId);
+			return &s_SpawningComponents[entityId];
+		}
+
+		s_SpawningComponents[entityId] = SpawningComponent();
+		s_isSpawningComponentActive.set(entityId);
+		return &s_SpawningComponents[entityId];
+	}
+
+	template<>
+	inline SpawningComponent* GetOrAddComponent<SpawningComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			UE_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(SpawningComponent));
+			return nullptr;
+		}
+
+		if (s_isSpawningComponentActive[entityId])
+		{
+			return &s_SpawningComponents[entityId];
+		}
+		else
+		{
+			s_SpawningComponents[entityId] = SpawningComponent();
+			s_isSpawningComponentActive.set(entityId);
+			return &s_SpawningComponents[entityId];
 		}
 	}
 #pragma endregion

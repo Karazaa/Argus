@@ -16,6 +16,10 @@ std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isIdenti
 NavigationComponent ArgusComponentRegistry::s_NavigationComponents[ArgusECSConstants::k_maxEntities];
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isNavigationComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
 #pragma endregion
+#pragma region SpawningComponent
+SpawningComponent ArgusComponentRegistry::s_SpawningComponents[ArgusECSConstants::k_maxEntities];
+std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isSpawningComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
+#pragma endregion
 #pragma region TargetingComponent
 TargetingComponent ArgusComponentRegistry::s_TargetingComponents[ArgusECSConstants::k_maxEntities];
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isTargetingComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
@@ -38,6 +42,7 @@ void ArgusComponentRegistry::FlushAllComponents()
 	s_isHealthComponentActive.reset();
 	s_isIdentityComponentActive.reset();
 	s_isNavigationComponentActive.reset();
+	s_isSpawningComponentActive.reset();
 	s_isTargetingComponentActive.reset();
 	s_isTaskComponentActive.reset();
 	s_isTransformComponentActive.reset();
@@ -48,6 +53,7 @@ void ArgusComponentRegistry::FlushAllComponents()
 		s_HealthComponents[i] = HealthComponent();
 		s_IdentityComponents[i] = IdentityComponent();
 		s_NavigationComponents[i] = NavigationComponent();
+		s_SpawningComponents[i] = SpawningComponent();
 		s_TargetingComponents[i] = TargetingComponent();
 		s_TaskComponents[i] = TaskComponent();
 		s_TransformComponents[i] = TransformComponent();
@@ -69,6 +75,10 @@ void ArgusComponentRegistry::AppendComponentDebugStrings(uint16 entityId, FStrin
 	if (const NavigationComponent* NavigationComponentPtr = GetComponent<NavigationComponent>(entityId))
 	{
 		NavigationComponentPtr->GetDebugString(debugStringToAppendTo);
+	}
+	if (const SpawningComponent* SpawningComponentPtr = GetComponent<SpawningComponent>(entityId))
+	{
+		SpawningComponentPtr->GetDebugString(debugStringToAppendTo);
 	}
 	if (const TargetingComponent* TargetingComponentPtr = GetComponent<TargetingComponent>(entityId))
 	{

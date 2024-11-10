@@ -3,6 +3,55 @@
 
 #include "ArgusStaticDatabase.h"
 
+#pragma region UArgusActorRecord
+const UArgusActorRecord* UArgusStaticDatabase::GetUArgusActorRecord(uint32 id)
+{
+	if (!m_UArgusActorRecordDatabasePersistent)
+	{
+		m_UArgusActorRecordDatabasePersistent = m_UArgusActorRecordDatabase.LoadSynchronous();
+		m_UArgusActorRecordDatabasePersistent->ResizePersistentObjectPointerArray();
+	}
+
+	if (!m_UArgusActorRecordDatabasePersistent)
+	{
+		UE_LOG
+		(
+			ArgusStaticDataLog, Error,
+			TEXT("[%s] Could not retrieve %s. %s might not be properly assigned."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(m_UArgusActorRecordDatabasePersistent),
+			ARGUS_NAMEOF(m_UArgusActorRecordDatabase)
+		);
+		return nullptr;
+	}
+
+	return m_UArgusActorRecordDatabasePersistent->GetRecord(id);
+}
+
+const uint32 UArgusStaticDatabase::GetIdFromRecordSoftPtr(const TSoftObjectPtr<UArgusActorRecord>& UArgusActorRecord)
+{
+	if (!m_UArgusActorRecordDatabasePersistent)
+	{
+		m_UArgusActorRecordDatabasePersistent = m_UArgusActorRecordDatabase.LoadSynchronous();
+		m_UArgusActorRecordDatabasePersistent->ResizePersistentObjectPointerArray();
+	}
+
+	if (!m_UArgusActorRecordDatabasePersistent)
+	{
+		UE_LOG
+		(
+			ArgusStaticDataLog, Error,
+			TEXT("[%s] Could not retrieve %s. %s might not be properly assigned."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(m_UArgusActorRecordDatabasePersistent),
+			ARGUS_NAMEOF(m_UArgusActorRecordDatabase)
+		);
+		return 0u;
+	}
+
+	return m_UArgusActorRecordDatabasePersistent->GetIdFromRecordSoftPtr(UArgusActorRecord);
+}
+#pragma endregion
 #pragma region UFactionRecord
 const UFactionRecord* UArgusStaticDatabase::GetUFactionRecord(uint32 id)
 {

@@ -28,6 +28,11 @@ bool ArgusComponentComponentSizeTest::RunTest(const FString& Parameters)
 	netSize += NavigationComponentSize;
 	UE_LOG(ArgusECSLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(NavigationComponent), NavigationComponentSize);
 #pragma endregion
+#pragma region SpawningComponent
+	const size_t SpawningComponentSize = sizeof(SpawningComponent);
+	netSize += SpawningComponentSize;
+	UE_LOG(ArgusECSLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(SpawningComponent), SpawningComponentSize);
+#pragma endregion
 #pragma region TargetingComponent
 	const size_t TargetingComponentSize = sizeof(TargetingComponent);
 	netSize += TargetingComponentSize;

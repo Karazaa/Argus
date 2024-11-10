@@ -5,6 +5,7 @@
 
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
+#include "RecordDatabases/ArgusActorRecordDatabase.h"
 #include "RecordDatabases/FactionRecordDatabase.h"
 #include "RecordDatabases/TeamColorRecordDatabase.h"
 #include "ArgusStaticDatabase.generated.h"
@@ -14,6 +15,17 @@ class UArgusStaticDatabase : public UDataAsset
 {
 	GENERATED_BODY()
 
+#pragma region UArgusActorRecord
+public:
+	const UArgusActorRecord* GetUArgusActorRecord(uint32 id);
+	const uint32 GetIdFromRecordSoftPtr(const TSoftObjectPtr<UArgusActorRecord>& UArgusActorRecord);
+
+protected:
+	UPROPERTY(EditAnywhere)
+	TSoftObjectPtr<UArgusActorRecordDatabase> m_UArgusActorRecordDatabase;
+	UPROPERTY(Transient)
+	TObjectPtr<UArgusActorRecordDatabase> m_UArgusActorRecordDatabasePersistent;
+#pragma endregion
 #pragma region UFactionRecord
 public:
 	const UFactionRecord* GetUFactionRecord(uint32 id);

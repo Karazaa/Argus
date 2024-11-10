@@ -4,7 +4,8 @@
 
 #include "ArgusMacros.h"
 #include "CoreMinimal.h"
-#include "RecordDefinitions/FactionRecord.h"
+
+class UFactionRecord;
 
 UENUM(meta = (Bitflags, UseEnumValuesAsMaskValuesInEditor = "true"))
 enum class ETeam : uint8
