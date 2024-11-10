@@ -30,4 +30,9 @@ struct NavigationComponent
 			m_queuedWaypoints.pop();
 		}
 	}
+
+	void GetDebugString(FString& debugStringToAppendTo) const
+	{
+		debugStringToAppendTo.Append(FString::Printf(TEXT("\n[%s]"), ARGUS_NAMEOF(NavigationComponent)));
+	}
 };

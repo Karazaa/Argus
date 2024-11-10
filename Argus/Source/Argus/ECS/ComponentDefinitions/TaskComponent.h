@@ -24,4 +24,9 @@ struct TaskComponent
 	{
 		return m_currentTask == ETask::MoveToLocation || m_currentTask == ETask::MoveToEntity;
 	}
+
+	void GetDebugString(FString& debugStringToAppendTo) const
+	{
+		debugStringToAppendTo.Append(FString::Printf(TEXT("\n[%s]"), ARGUS_NAMEOF(TaskComponent)));
+	}
 };

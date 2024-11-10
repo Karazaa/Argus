@@ -17,4 +17,9 @@ struct TransformComponent
 	FVector m_proposedAvoidanceVelocity = FVector::ZeroVector;
 
 	float m_desiredSpeedUnitsPerSecond = 100.0f;
+
+	void GetDebugString(FString& debugStringToAppendTo) const
+	{
+		debugStringToAppendTo.Append(FString::Printf(TEXT("\n[%s]"), ARGUS_NAMEOF(TransformComponent)));
+	}
 };

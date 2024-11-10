@@ -121,3 +121,10 @@ uint16 ArgusEntity::GetId() const
 {
 	return m_id;
 }
+
+const FString ArgusEntity::GetDebugString() const
+{
+	FString debugString = FString::Printf(TEXT("(%s: %d)"), ARGUS_NAMEOF(m_id), m_id);
+	ArgusComponentRegistry::AppendComponentDebugStrings(m_id, debugString);
+	return debugString;
+}

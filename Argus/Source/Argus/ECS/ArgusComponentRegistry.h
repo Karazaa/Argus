@@ -41,6 +41,7 @@ public:
 	}
 
 	static void FlushAllComponents();
+	static void AppendComponentDebugStrings(uint16 entityId, FString& debugStringToAppendTo);
 
 	static constexpr uint32 k_numComponentTypes = 7;
 

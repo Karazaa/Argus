@@ -54,4 +54,9 @@ struct IdentityComponent
 	{
 		return teamMask & ((uint8)m_team);
 	}
+
+	void GetDebugString(FString& debugStringToAppendTo) const
+	{
+		debugStringToAppendTo.Append(FString::Printf(TEXT("\n[%s]"), ARGUS_NAMEOF(IdentityComponent)));
+	}
 };

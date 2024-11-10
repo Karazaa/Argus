@@ -25,4 +25,9 @@ struct TargetingComponent
 	{
 		return m_targetEntityId < ArgusECSConstants::k_maxEntities;
 	}
+
+	void GetDebugString(FString& debugStringToAppendTo) const
+	{
+		debugStringToAppendTo.Append(FString::Printf(TEXT("\n[%s]"), ARGUS_NAMEOF(TargetingComponent)));
+	}
 };

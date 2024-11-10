@@ -55,3 +55,36 @@ void ArgusComponentRegistry::FlushAllComponents()
 
 	s_SpatialPartitioningComponents.clear();
 }
+
+void ArgusComponentRegistry::AppendComponentDebugStrings(uint16 entityId, FString& debugStringToAppendTo)
+{
+	if (const HealthComponent* healthComponent = GetComponent<HealthComponent>(entityId))
+	{
+		healthComponent->GetDebugString(debugStringToAppendTo);
+	}
+
+	if (const IdentityComponent* identityComponent = GetComponent<IdentityComponent>(entityId))
+	{
+		identityComponent->GetDebugString(debugStringToAppendTo);
+	}
+
+	if (const NavigationComponent* navigationComponent = GetComponent<NavigationComponent>(entityId))
+	{
+		navigationComponent->GetDebugString(debugStringToAppendTo);
+	}
+
+	if (const TargetingComponent* targetingComponent = GetComponent<TargetingComponent>(entityId))
+	{
+		targetingComponent->GetDebugString(debugStringToAppendTo);
+	}
+
+	if (const TaskComponent* taskComponent = GetComponent<TaskComponent>(entityId))
+	{
+		taskComponent->GetDebugString(debugStringToAppendTo);
+	}
+
+	if (const TransformComponent* transformComponent = GetComponent<TransformComponent>(entityId))
+	{
+		transformComponent->GetDebugString(debugStringToAppendTo);
+	}
+}

@@ -4,7 +4,10 @@
 #include "ArgusGameInstance.h"
 #include "ArgusGameModeBase.h"
 #include "ArgusStaticData.h"
+#include "DrawDebugHelpers.h"
 #include "Engine/World.h"
+
+static TAutoConsoleVariable<bool> CVarShowArgusEntityDebug(TEXT("Argus.ArgusEntity.ShowArgusEntityDebug"), false, TEXT(""));
 
 AArgusActor::AArgusActor()
 {
@@ -124,5 +127,10 @@ void AArgusActor::Tick(float deltaTime)
 	if (const TransformComponent* transformComponent = m_entity.GetComponent<TransformComponent>())
 	{
 		SetActorTransform(transformComponent->m_transform);
+
+		if (CVarShowArgusEntityDebug.GetValueOnGameThread())
+		{
+			DrawDebugString(GetWorld(), transformComponent->m_transform.GetLocation(), m_entity.GetDebugString(), nullptr, FColor::Yellow, 0.0f, true, 1.0f);
+		}
 	}
 }
