@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ArgusActorPool.h"
 #include "ArgusSystemsManager.h"
 #include "GameFramework/GameModeBase.h"
 #include "ComponentDefinitions/IdentityComponent.h"
@@ -28,5 +29,8 @@ protected:
 	virtual void Tick(float deltaTime) override;
 
 private:
+	void ManageActorStateForEntities();
+
 	ArgusSystemsManager m_argusSystemsManager = ArgusSystemsManager();
+	ArgusActorPool m_argusActorPool = ArgusActorPool();
 };

@@ -41,6 +41,38 @@ void AArgusGameModeBase::Tick(float deltaTime)
 
 	// Run all ECS systems.
 	m_argusSystemsManager.RunSystems(worldPointer, deltaTime);
+
+	// Take/Release ArgusActors based on ECS state.
+	ManageActorStateForEntities();
+}
+
+void AArgusGameModeBase::ManageActorStateForEntities()
+{
+	ARGUS_TRACE(AArgusGameModeBase::ManageActorStateForEntities)
+
+	for (int i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
+	{
+		ArgusEntity entity = ArgusEntity::RetrieveEntity(i);
+		if (!entity)
+		{
+			continue;
+		}
+
+		TaskComponent* taskComponent = entity.GetComponent<TaskComponent>();
+		if (!taskComponent)
+		{
+			continue;
+		}
+
+		if (taskComponent->m_currentTask == ETask::SpawnedWaitingForActorTake)
+		{
+			// TODO JAMES: Use pool to take actor and then set its entity
+		}
+		else if (taskComponent->m_currentTask == ETask::DestroyedWaitingForActorRelease)
+		{
+			// TODO JAMES: Release actor object back to the pool.
+		}
+	}
 }
 
 FColor AArgusGameModeBase::GetTeamColor(ETeam team)

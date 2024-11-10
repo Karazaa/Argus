@@ -14,6 +14,8 @@ enum class ETask : uint8
 	MoveToLocation,
 	MoveToEntity,
 	FailedToFindPath,
+	SpawnedWaitingForActorTake,
+	DestroyedWaitingForActorRelease
 };
 
 struct TaskComponent
@@ -47,6 +49,11 @@ struct TaskComponent
 				break;
 			case ETask::FailedToFindPath:
 				taskName = ARGUS_NAMEOF(ETask::FailedToFindPath);
+			case ETask::SpawnedWaitingForActorTake:
+				taskName = ARGUS_NAMEOF(ETask::SpawnedWaitingForActorTake);
+				break;
+			case ETask::DestroyedWaitingForActorRelease:
+				taskName = ARGUS_NAMEOF(ETask::DestroyedWaitingForActorRelease);
 				break;
 		}
 
