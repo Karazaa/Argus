@@ -22,35 +22,8 @@ ArgusEntity AArgusActor::GetEntity() const
 	return m_entity;
 }
 
-void AArgusActor::SetSelectionState(bool isSelected)
+void AArgusActor::SetEntity(const ArgusEntity& entity)
 {
-	if (isSelected == m_isSelected)
-	{
-		return;
-	}
-
-	m_isSelected = isSelected;
-
-	if (m_isSelected)
-	{
-		OnSelected();
-	}
-	else
-	{
-		OnDeselected();
-	}
-}
-
-void AArgusActor::BeginPlay()
-{
-	Super::BeginPlay();
-	
-	if (!m_entityTemplate)
-	{
-		return;
-	}
-
-	m_entity = m_entityTemplate->MakeEntity();
 	if (!m_entity)
 	{
 		return;
@@ -90,6 +63,61 @@ void AArgusActor::BeginPlay()
 	}
 
 	gameInstance->RegisterArgusEntityActor(this);
+}
+
+void AArgusActor::Reset()
+{
+	if (const UWorld* world = GetWorld())
+	{
+		if (UArgusGameInstance* gameInstance = world->GetGameInstance<UArgusGameInstance>())
+		{
+			if (m_entity)
+			{
+				gameInstance->DeregisterArgusEntityActor(this);
+			}
+		}
+	}
+
+	m_entityTemplate = nullptr;
+	m_isSelected = false;
+	m_entity = ArgusEntity::s_emptyEntity;
+}
+
+void AArgusActor::SetSelectionState(bool isSelected)
+{
+	if (isSelected == m_isSelected)
+	{
+		return;
+	}
+
+	m_isSelected = isSelected;
+
+	if (m_isSelected)
+	{
+		OnSelected();
+	}
+	else
+	{
+		OnDeselected();
+	}
+}
+
+void AArgusActor::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	if (!m_entityTemplate)
+	{
+		return;
+	}
+
+	m_entity = m_entityTemplate->MakeEntity();
+	if (!m_entity)
+	{
+		return;
+	}
+	
+	SetEntity(m_entity);
 }
 
 void AArgusActor::EndPlay(const EEndPlayReason::Type endPlayReason)
