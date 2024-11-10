@@ -11,6 +11,15 @@ struct HealthComponent
 
 	void GetDebugString(FString& debugStringToAppendTo) const
 	{
-		debugStringToAppendTo.Append(FString::Printf(TEXT("\n[%s]"), ARGUS_NAMEOF(HealthComponent)));
+		debugStringToAppendTo.Append
+		(
+			FString::Printf
+			(
+				TEXT("\n[%s] \n    (%s: %d)"), 
+				ARGUS_NAMEOF(HealthComponent), 
+				ARGUS_NAMEOF(m_health), 
+				m_health
+			)
+		);
 	}
 };

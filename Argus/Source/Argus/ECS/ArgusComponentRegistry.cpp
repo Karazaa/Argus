@@ -58,33 +58,32 @@ void ArgusComponentRegistry::FlushAllComponents()
 
 void ArgusComponentRegistry::AppendComponentDebugStrings(uint16 entityId, FString& debugStringToAppendTo)
 {
-	if (const HealthComponent* healthComponent = GetComponent<HealthComponent>(entityId))
+	if (const HealthComponent* HealthComponentPtr = GetComponent<HealthComponent>(entityId))
 	{
-		healthComponent->GetDebugString(debugStringToAppendTo);
+		HealthComponentPtr->GetDebugString(debugStringToAppendTo);
 	}
-
-	if (const IdentityComponent* identityComponent = GetComponent<IdentityComponent>(entityId))
+	if (const IdentityComponent* IdentityComponentPtr = GetComponent<IdentityComponent>(entityId))
 	{
-		identityComponent->GetDebugString(debugStringToAppendTo);
+		IdentityComponentPtr->GetDebugString(debugStringToAppendTo);
 	}
-
-	if (const NavigationComponent* navigationComponent = GetComponent<NavigationComponent>(entityId))
+	if (const NavigationComponent* NavigationComponentPtr = GetComponent<NavigationComponent>(entityId))
 	{
-		navigationComponent->GetDebugString(debugStringToAppendTo);
+		NavigationComponentPtr->GetDebugString(debugStringToAppendTo);
 	}
-
-	if (const TargetingComponent* targetingComponent = GetComponent<TargetingComponent>(entityId))
+	if (const TargetingComponent* TargetingComponentPtr = GetComponent<TargetingComponent>(entityId))
 	{
-		targetingComponent->GetDebugString(debugStringToAppendTo);
+		TargetingComponentPtr->GetDebugString(debugStringToAppendTo);
 	}
-
-	if (const TaskComponent* taskComponent = GetComponent<TaskComponent>(entityId))
+	if (const TaskComponent* TaskComponentPtr = GetComponent<TaskComponent>(entityId))
 	{
-		taskComponent->GetDebugString(debugStringToAppendTo);
+		TaskComponentPtr->GetDebugString(debugStringToAppendTo);
 	}
-
-	if (const TransformComponent* transformComponent = GetComponent<TransformComponent>(entityId))
+	if (const TransformComponent* TransformComponentPtr = GetComponent<TransformComponent>(entityId))
 	{
-		transformComponent->GetDebugString(debugStringToAppendTo);
+		TransformComponentPtr->GetDebugString(debugStringToAppendTo);
+	}
+	if (const SpatialPartitioningComponent* SpatialPartitioningComponentPtr = GetComponent<SpatialPartitioningComponent>(entityId))
+	{
+		SpatialPartitioningComponentPtr->GetDebugString(debugStringToAppendTo);
 	}
 }

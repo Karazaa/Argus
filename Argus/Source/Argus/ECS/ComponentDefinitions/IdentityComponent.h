@@ -16,7 +16,8 @@ enum class ETeam : uint8
 	TeamD = 1 << 3,
 	TeamE = 1 << 4,
 	TeamF = 1 << 5,
-	TeamG = 1 << 7
+	TeamG = 1 << 6,
+	TeamH = 1 << 7
 };
 ENUM_CLASS_FLAGS(ETeam);
 
@@ -57,6 +58,47 @@ struct IdentityComponent
 
 	void GetDebugString(FString& debugStringToAppendTo) const
 	{
-		debugStringToAppendTo.Append(FString::Printf(TEXT("\n[%s]"), ARGUS_NAMEOF(IdentityComponent)));
+		auto teamName = TEXT("");
+		switch (m_team)
+		{
+			case ETeam::None:
+				teamName = ARGUS_NAMEOF(ETeam::None);
+				break;
+			case ETeam::TeamA:
+				teamName = ARGUS_NAMEOF(ETeam::TeamA);
+				break;
+			case ETeam::TeamB:
+				teamName = ARGUS_NAMEOF(ETeam::TeamB);
+				break;
+			case ETeam::TeamC:
+				teamName = ARGUS_NAMEOF(ETeam::TeamC);
+				break;
+			case ETeam::TeamD:
+				teamName = ARGUS_NAMEOF(ETeam::TeamD);
+				break;
+			case ETeam::TeamE:
+				teamName = ARGUS_NAMEOF(ETeam::TeamE);
+				break;
+			case ETeam::TeamF:
+				teamName = ARGUS_NAMEOF(ETeam::TeamF);
+				break;
+			case ETeam::TeamG:
+				teamName = ARGUS_NAMEOF(ETeam::TeamG);
+				break;
+			case ETeam::TeamH:
+				teamName = ARGUS_NAMEOF(ETeam::TeamH);
+				break;
+		}
+
+		debugStringToAppendTo.Append
+		(
+			FString::Printf
+			(
+				TEXT("\n[%s] \n    (%s: %S)"), 
+				ARGUS_NAMEOF(IdentityComponent),
+				ARGUS_NAMEOF(teamName),
+				teamName
+			)
+		);
 	}
 };

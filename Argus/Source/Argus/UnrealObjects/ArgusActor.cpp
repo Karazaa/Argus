@@ -7,7 +7,8 @@
 #include "DrawDebugHelpers.h"
 #include "Engine/World.h"
 
-static TAutoConsoleVariable<bool> CVarShowArgusEntityDebug(TEXT("Argus.ArgusEntity.ShowArgusEntityDebug"), false, TEXT(""));
+static TAutoConsoleVariable<bool> CVarShowAllArgusEntitiesDebug(TEXT("Argus.ArgusEntity.ShowAllArgusEntitiesDebug"), false, TEXT(""));
+static TAutoConsoleVariable<bool> CVarShowSelectedArgusEntityDebug(TEXT("Argus.ArgusEntity.ShowSelectedArgusEntityDebug"), false, TEXT(""));
 
 AArgusActor::AArgusActor()
 {
@@ -128,9 +129,9 @@ void AArgusActor::Tick(float deltaTime)
 	{
 		SetActorTransform(transformComponent->m_transform);
 
-		if (CVarShowArgusEntityDebug.GetValueOnGameThread())
+		if (CVarShowAllArgusEntitiesDebug.GetValueOnGameThread() || (CVarShowSelectedArgusEntityDebug.GetValueOnGameThread() && m_isSelected))
 		{
-			DrawDebugString(GetWorld(), transformComponent->m_transform.GetLocation(), m_entity.GetDebugString(), nullptr, FColor::Yellow, 0.0f, true, 1.0f);
+			DrawDebugString(GetWorld(), transformComponent->m_transform.GetLocation(), m_entity.GetDebugString(), nullptr, FColor::Yellow, 0.0f, true, 0.75f);
 		}
 	}
 }

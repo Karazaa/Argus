@@ -24,6 +24,7 @@ private:
 	static const char* s_componentCppTemplateFlushFilename;
 	static const char* s_componentCppTemplateResetFilename;
 	static const char* s_dynamicAllocComponentCppTemplateResetFilename;
+	static const char* s_debugStringLinesTemplateFilename;
 	static const char* s_argusComponentSizeTestsTemplateFilename;
 	static const char* s_perComponentSizeTestsTemplateFilename;
 	static const char* s_argusComponentRegistryHeaderFilename;
@@ -42,6 +43,7 @@ private:
 		std::string componentCppTemplateFlushFilePath = "";
 		std::string componentCppTemplateResetFilePath = "";
 		std::string dynamicAllocComponentCppTemplateResetFilePath = "";
+		std::string debugStringLinesTemplateFilePath = "";
 		std::string argusComponentSizeTestsTemplateFilePath = "";
 		std::string perComponentSizeTestsTemplateFilePath = "";
 		std::vector<std::string> inComponentNames = std::vector<std::string>();

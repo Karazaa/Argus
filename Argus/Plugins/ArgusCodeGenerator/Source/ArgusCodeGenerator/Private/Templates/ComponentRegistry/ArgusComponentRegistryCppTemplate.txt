@@ -20,3 +20,8 @@ void ArgusComponentRegistry::FlushAllComponents()
 
 	&&&&&
 }
+
+void ArgusComponentRegistry::AppendComponentDebugStrings(uint16 entityId, FString& debugStringToAppendTo)
+{
+	%%%%%
+}

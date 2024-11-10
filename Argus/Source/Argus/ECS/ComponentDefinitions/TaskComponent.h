@@ -27,6 +27,38 @@ struct TaskComponent
 
 	void GetDebugString(FString& debugStringToAppendTo) const
 	{
-		debugStringToAppendTo.Append(FString::Printf(TEXT("\n[%s]"), ARGUS_NAMEOF(TaskComponent)));
+		auto taskName = TEXT("");
+		switch (m_currentTask)
+		{
+			case ETask::None:
+				taskName = ARGUS_NAMEOF(ETask::None);
+				break;
+			case ETask::ProcessMoveToLocationCommand:
+				taskName = ARGUS_NAMEOF(ETask::ProcessMoveToLocationCommand);
+				break;
+			case ETask::ProcessMoveToEntityCommand:
+				taskName = ARGUS_NAMEOF(ETask::ProcessMoveToEntityCommand);
+				break;
+			case ETask::MoveToLocation:
+				taskName = ARGUS_NAMEOF(ETask::MoveToLocation);
+				break;
+			case ETask::MoveToEntity:
+				taskName = ARGUS_NAMEOF(ETask::MoveToEntity);
+				break;
+			case ETask::FailedToFindPath:
+				taskName = ARGUS_NAMEOF(ETask::FailedToFindPath);
+				break;
+		}
+
+		debugStringToAppendTo.Append
+		(
+			FString::Printf
+			(
+				TEXT("\n[%s] \n    (%s: %s)"), 
+				ARGUS_NAMEOF(TaskComponent),
+				ARGUS_NAMEOF(m_currentTask),
+				taskName
+			)
+		);
 	}
 };

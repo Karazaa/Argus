@@ -20,6 +20,20 @@ struct TransformComponent
 
 	void GetDebugString(FString& debugStringToAppendTo) const
 	{
-		debugStringToAppendTo.Append(FString::Printf(TEXT("\n[%s]"), ARGUS_NAMEOF(TransformComponent)));
+		FVector location = m_transform.GetLocation();
+
+		debugStringToAppendTo.Append
+		(
+			FString::Printf
+			(
+				TEXT("\n[%s] \n    (Location: {%f, %f, %f}) \n    (%s: %f)"),
+				ARGUS_NAMEOF(TransformComponent),
+				location.X,
+				location.Y,
+				location.Z,
+				ARGUS_NAMEOF(m_desiredSpeedUnitsPerSecond),
+				m_desiredSpeedUnitsPerSecond
+			)
+		);
 	}
 };

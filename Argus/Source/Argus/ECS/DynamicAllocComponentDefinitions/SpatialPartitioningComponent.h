@@ -10,4 +10,9 @@ struct SpatialPartitioningComponent
 {
 	ARGUS_IGNORE()
 	ArgusKDTree m_argusKDTree;
+
+	void GetDebugString(FString& debugStringToAppendTo) const
+	{
+		debugStringToAppendTo.Append(FString::Printf(TEXT("\n[%s]"), ARGUS_NAMEOF(SpatialPartitioningComponent)));
+	}
 };

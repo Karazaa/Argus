@@ -33,6 +33,17 @@ struct NavigationComponent
 
 	void GetDebugString(FString& debugStringToAppendTo) const
 	{
-		debugStringToAppendTo.Append(FString::Printf(TEXT("\n[%s]"), ARGUS_NAMEOF(NavigationComponent)));
+		debugStringToAppendTo.Append
+		(
+			FString::Printf
+			(
+				TEXT("\n[%s] \n    (%s: %d) \n    (Num points: %d) \n    (Num queued waypoints: %d)"), 
+				ARGUS_NAMEOF(NavigationComponent),
+				ARGUS_NAMEOF(m_lastPointIndex),
+				m_lastPointIndex,
+				m_navigationPoints.size(),
+				m_queuedWaypoints.size()
+			)
+		);
 	}
 };

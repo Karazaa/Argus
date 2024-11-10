@@ -28,6 +28,15 @@ struct TargetingComponent
 
 	void GetDebugString(FString& debugStringToAppendTo) const
 	{
-		debugStringToAppendTo.Append(FString::Printf(TEXT("\n[%s]"), ARGUS_NAMEOF(TargetingComponent)));
+		debugStringToAppendTo.Append
+		(
+			FString::Printf
+			(
+				TEXT("\n[%s] \n    (%s: %f)"), 
+				ARGUS_NAMEOF(TargetingComponent),
+				ARGUS_NAMEOF(m_targetingRange),
+				m_targetingRange
+			)
+		);
 	}
 };
