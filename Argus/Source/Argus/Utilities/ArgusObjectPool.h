@@ -39,7 +39,6 @@ IObjectPoolable* ArgusObjectPool<IObjectPoolable>::Take()
 	{
 		IObjectPoolable* objectPointer = m_availableObjects.front();
 		m_availableObjects.pop();
-		objectPointer->Reset();
 		return objectPointer;
 	}
 
@@ -54,6 +53,7 @@ void ArgusObjectPool<IObjectPoolable>::Release(IObjectPoolable*& objectPointer)
 		return;
 	}
 
+	objectPointer->Reset();
 	m_availableObjects.push(objectPointer);
 	objectPointer = nullptr;
 }

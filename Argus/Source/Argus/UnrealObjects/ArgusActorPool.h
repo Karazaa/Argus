@@ -7,4 +7,13 @@
 
 class ArgusActorPool
 {
+public:
+	~ArgusActorPool();
+
+	AArgusActor* Take(TSoftClassPtr<AArgusActor>& classSoftPointer);
+	void Release(AArgusActor*& actorPointer);
+	void ClearPool();
+
+private:
+	TMap<UClass*, TArray<TObjectPtr<AArgusActor>>> m_availableObjects;
 };
