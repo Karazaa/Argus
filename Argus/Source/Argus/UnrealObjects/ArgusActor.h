@@ -16,10 +16,11 @@ class AArgusActor : public AActor
 	
 public:	
 	AArgusActor();
+
+	virtual void Reset();
+
 	ArgusEntity GetEntity() const;
 	void SetEntity(const ArgusEntity& entity);
-
-	void Reset();
 	void SetSelectionState(bool isSelected);
 
 protected:

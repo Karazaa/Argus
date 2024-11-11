@@ -1,13 +1,14 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusActorPool.h"
+#include "Engine/World.h"
 
 ArgusActorPool::~ArgusActorPool()
 {
 	ClearPool();
 }
 
-AArgusActor* ArgusActorPool::Take(TSoftClassPtr<AArgusActor>& classSoftPointer)
+AArgusActor* ArgusActorPool::Take(UWorld* worldPointer, const TSoftClassPtr<AArgusActor>& classSoftPointer)
 {
 	if (!classSoftPointer)
 	{
@@ -15,25 +16,44 @@ AArgusActor* ArgusActorPool::Take(TSoftClassPtr<AArgusActor>& classSoftPointer)
 	}
 
 	UClass* classPointer = classSoftPointer.LoadSynchronous();
-
-	if (!m_availableObjects.Contains(classPointer))
+	if (!classPointer)
 	{
-		// TODO JAMES: Instantiate a new object instance of classPointer and return a pointer to it.
 		return nullptr;
 	}
 
+	if (!m_availableObjects.Contains(classPointer) || m_availableObjects[classPointer].IsEmpty())
+	{
+		if (!worldPointer)
+		{
+			return nullptr;
+		}
+
+		return worldPointer->SpawnActor<AArgusActor>(classPointer);
+	}
+
+	m_numAvailableObjects--;
 	return m_availableObjects[classPointer].Pop();
 }
 
 void ArgusActorPool::Release(AArgusActor*& actorPointer)
 {
 	UClass* classPointer = actorPointer->GetClass();
+	if (!classPointer)
+	{
+		return;
+	}
 	
-
-
+	m_numAvailableObjects++;
+	actorPointer->Reset();
+	if (!m_availableObjects.Contains(classPointer))
+	{
+		m_availableObjects.Emplace(classPointer, TArray<TObjectPtr<AArgusActor>>());
+	}
+	m_availableObjects[classPointer].Add(actorPointer);	
+	actorPointer = nullptr;
 }
 
 void ArgusActorPool::ClearPool()
 {
-
+	m_availableObjects.Empty();
 }

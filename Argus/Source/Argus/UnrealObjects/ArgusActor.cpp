@@ -17,6 +17,24 @@ AArgusActor::AArgusActor()
 	SetRootComponent(CreateDefaultSubobject<USceneComponent>(FName("RootSceneComponent")));
 }
 
+void AArgusActor::Reset()
+{
+	if (const UWorld* world = GetWorld())
+	{
+		if (UArgusGameInstance* gameInstance = world->GetGameInstance<UArgusGameInstance>())
+		{
+			if (m_entity)
+			{
+				gameInstance->DeregisterArgusEntityActor(this);
+			}
+		}
+	}
+
+	m_entityTemplate = nullptr;
+	m_isSelected = false;
+	m_entity = ArgusEntity::s_emptyEntity;
+}
+
 ArgusEntity AArgusActor::GetEntity() const
 {
 	return m_entity;
@@ -63,24 +81,6 @@ void AArgusActor::SetEntity(const ArgusEntity& entity)
 	}
 
 	gameInstance->RegisterArgusEntityActor(this);
-}
-
-void AArgusActor::Reset()
-{
-	if (const UWorld* world = GetWorld())
-	{
-		if (UArgusGameInstance* gameInstance = world->GetGameInstance<UArgusGameInstance>())
-		{
-			if (m_entity)
-			{
-				gameInstance->DeregisterArgusEntityActor(this);
-			}
-		}
-	}
-
-	m_entityTemplate = nullptr;
-	m_isSelected = false;
-	m_entity = ArgusEntity::s_emptyEntity;
 }
 
 void AArgusActor::SetSelectionState(bool isSelected)
