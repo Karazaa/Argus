@@ -14,6 +14,7 @@ public:
 
 	AArgusActor* Take(UWorld* worldPointer, const TSoftClassPtr<AArgusActor>& classSoftPointer);
 	void Release(AArgusActor*& actorPointer);
+	void Release(TObjectPtr<AArgusActor>& actorPointer);
 	void ClearPool();
 	uint32 GetNumAvailableObjects() const { return m_numAvailableObjects; }
 

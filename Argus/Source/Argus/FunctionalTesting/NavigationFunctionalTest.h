@@ -13,7 +13,7 @@ class ARGUS_API ANavigationFunctionalTest : public AArgusFunctionalTest
 
 private:
 	static constexpr const char* k_testName = "Argus.FunctionalTest.Navigation";
-	static constexpr uint8       k_totalNumSteps = 3;
+	static constexpr uint8       k_totalNumSteps = 3u;
 
 public:
 	ANavigationFunctionalTest(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
@@ -40,6 +40,7 @@ private:
 	void StartNavigationToLocationTestStep();
 	void StartNavigationToEntityTestStep();
 	void StartNavigationThroughWaypointsTestStep();
+
 	bool DidNavigationToLocationTestStepSucceed();
 	bool DidNavigationToEntityTestStepSucceed();
 	bool DidNavigationThroughWaypointsTestStepSucceed();

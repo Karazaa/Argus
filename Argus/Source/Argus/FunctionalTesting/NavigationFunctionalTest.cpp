@@ -103,11 +103,11 @@ bool ANavigationFunctionalTest::DidCurrentTestStepSucceed()
 {
 	switch (m_testStepIndex)
 	{
-		case 0:
+		case 0u:
 			return DidNavigationToLocationTestStepSucceed();
-		case 1:
+		case 1u:
 			return DidNavigationToEntityTestStepSucceed();
-		case 2:
+		case 2u:
 			return DidNavigationThroughWaypointsTestStepSucceed();
 		default:
 			break;
@@ -119,13 +119,13 @@ void ANavigationFunctionalTest::StartNextTestStep()
 {
 	switch (m_testStepIndex)
 	{
-		case 0:
+		case 0u:
 			StartNavigationToLocationTestStep();
 			break;
-		case 1:
+		case 1u:
 			StartNavigationToEntityTestStep();
 			break;
-		case 2:
+		case 2u:
 			StartNavigationThroughWaypointsTestStep();
 			break;
 		default:

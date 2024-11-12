@@ -15,7 +15,7 @@ class ARGUS_API ARetrieveArgusActorFromEntityFunctionalTest : public AArgusFunct
 
 private:
 	static constexpr const char* k_testName = "Argus.FunctionalTest.RetrieveArgusActorFromEntity";
-	static constexpr uint8       k_totalNumSteps = 2;
+	static constexpr uint8       k_totalNumSteps = 2u;
 
 public:
 	ARetrieveArgusActorFromEntityFunctionalTest(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
@@ -31,6 +31,7 @@ protected:
 private:
 	void StartRetrieveArgusActorFromEntityTestStep();
 	void StartRemoveArgusActorFromEntityMapTestStep();
+
 	bool DidRetrieveArgusActorFromEntityTestStepSucceed();
 	bool DidRemoveArgusActorFromEntityMapTestStepSucceed();
 

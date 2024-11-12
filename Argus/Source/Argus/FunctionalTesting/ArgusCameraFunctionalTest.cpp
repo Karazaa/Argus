@@ -49,22 +49,22 @@ void AArgusCameraFunctionalTest::StartNextTestStep()
 
 	switch (m_testStepIndex)
 	{
-		case 0:
+		case 0u:
 			StartPanLeftTestStep();
 			break;
-		case 1:
+		case 1u:
 			StartPanRightTestStep();
 			break;
-		case 2:
+		case 2u:
 			StartPanUpTestStep();
 			break;
-		case 3:
+		case 3u:
 			StartPanDownTestStep();
 			break;
-		case 4:
+		case 4u:
 			StartZoomInTestStep();
 			break;
-		case 5:
+		case 5u:
 			StartZoomOutTestStep();
 			break;
 		default:
@@ -83,17 +83,17 @@ bool AArgusCameraFunctionalTest::DidCurrentTestStepSucceed()
 
 	switch (m_testStepIndex)
 	{
-		case 0:
+		case 0u:
 			return DidPanLeftTestStepSucceed(locationDifference);
-		case 1:
+		case 1u:
 			return DidPanRightTestStepSucceed(locationDifference);
-		case 2:
+		case 2u:
 			return DidPanUpTestStepSucceed(locationDifference);
-		case 3:
+		case 3u:
 			return DidPanDownTestStepSucceed(locationDifference);
-		case 4:
+		case 4u:
 			return DidZoomInTestStepSucceed();
-		case 5:
+		case 5u:
 			return DidZoomOutTestStepSucceed();
 		default:
 			break;

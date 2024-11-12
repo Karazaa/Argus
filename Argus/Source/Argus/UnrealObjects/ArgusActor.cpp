@@ -33,6 +33,7 @@ void AArgusActor::Reset()
 	m_entityTemplate = nullptr;
 	m_isSelected = false;
 	m_entity = ArgusEntity::s_emptyEntity;
+	SetHidden(true);
 }
 
 ArgusEntity AArgusActor::GetEntity() const
@@ -42,20 +43,33 @@ ArgusEntity AArgusActor::GetEntity() const
 
 void AArgusActor::SetEntity(const ArgusEntity& entity)
 {
-	if (!m_entity)
-	{
-		return;
-	}
-
-	if (TransformComponent* transformComponent = m_entity.GetComponent<TransformComponent>())
-	{
-		transformComponent->m_transform = GetActorTransform();
-	}
-
 	const UWorld* world = GetWorld();
 	if (!world)
 	{
 		return;
+	}
+
+	UArgusGameInstance* gameInstance = world->GetGameInstance<UArgusGameInstance>();
+	if (!gameInstance)
+	{
+		return;
+	}
+
+	if (!entity)
+	{
+		if (m_entity)
+		{
+			gameInstance->DeregisterArgusEntityActor(this);
+		}
+		m_entity = entity;
+		return;
+	}
+	m_entity = entity;
+	gameInstance->RegisterArgusEntityActor(this);
+
+	if (TransformComponent* transformComponent = m_entity.GetComponent<TransformComponent>())
+	{
+		transformComponent->m_transform = GetActorTransform();
 	}
 
 	AArgusGameModeBase* gameMode = Cast<AArgusGameModeBase>(world->GetAuthGameMode());
@@ -73,14 +87,6 @@ void AArgusActor::SetEntity(const ArgusEntity& entity)
 
 		OnPopulateTeam(gameMode->GetTeamColor(identityComponent->m_team));
 	}
-
-	UArgusGameInstance* gameInstance = world->GetGameInstance<UArgusGameInstance>();
-	if (!gameInstance)
-	{
-		return;
-	}
-
-	gameInstance->RegisterArgusEntityActor(this);
 }
 
 void AArgusActor::SetSelectionState(bool isSelected)

@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "ArgusActor.h"
+#include "ArgusActorPool.h"
 #include "ArgusFunctionalTest.h"
 #include "ArgusActorPoolFunctionalTest.generated.h"
 
@@ -13,7 +13,7 @@ class ARGUS_API AArgusActorPoolFunctionalTest : public AArgusFunctionalTest
 
 private:
 	static constexpr const char* k_testName = "Argus.FunctionalTest.ArgusActorPool";
-	static constexpr uint8       k_totalNumSteps = 1;
+	static constexpr uint8       k_totalNumSteps = 8u;
 
 public:
 	AArgusActorPoolFunctionalTest(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
@@ -38,6 +38,24 @@ protected:
 
 private:
 	void StartInstantiateActorTestStep();
+	void StartReleaseActorTestStep();
+	void StartInstantiateSecondActorTestStep();
+	void StartReleaseSecondActorTestStep();
+	void StartTakeInstantiatedActorTestStep();
+	void StartMakeEntityForActorTestStep();
+	void StartTakeSecondInstantiatedActorTestStep();
+	void StartMakeEntityForSecondActorTestStep();
 
 	bool DidInstantiateActorTestStepSucceed();
+	bool DidReleaseActorTestStepSucceed();
+	bool DidInstantiateSecondActorTestStepSucceed();
+	bool DidReleaseSecondActorTestStepSucceed();
+	bool DidTakeInstantiatedActorTestStepSucceed();
+	bool DidMakeEntityForActorTestStepSucceed();
+	bool DidTakeSecondInstantiatedActorTestStepSucceed();
+	bool DidMakeEntityForSecondActorTestStepSucceed();
+
+	ArgusActorPool m_argusActorPool;
+	TObjectPtr<AArgusActor> m_actor0 = nullptr;
+	TObjectPtr<AArgusActor> m_actor1 = nullptr;
 };

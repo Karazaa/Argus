@@ -32,7 +32,14 @@ AArgusActor* ArgusActorPool::Take(UWorld* worldPointer, const TSoftClassPtr<AArg
 	}
 
 	m_numAvailableObjects--;
-	return m_availableObjects[classPointer].Pop();
+	AArgusActor* cachedActor = m_availableObjects[classPointer].Pop();
+	if (!cachedActor)
+	{
+		return nullptr;
+	}
+
+	cachedActor->SetHidden(false);
+	return cachedActor;
 }
 
 void ArgusActorPool::Release(AArgusActor*& actorPointer)
@@ -50,6 +57,23 @@ void ArgusActorPool::Release(AArgusActor*& actorPointer)
 		m_availableObjects.Emplace(classPointer, TArray<TObjectPtr<AArgusActor>>());
 	}
 	m_availableObjects[classPointer].Add(actorPointer);	
+	actorPointer = nullptr;
+}
+
+void ArgusActorPool::Release(TObjectPtr<AArgusActor>& actorPointer)
+{
+	if (!actorPointer)
+	{
+		return;
+	}
+
+	AArgusActor* rawActorPointer = actorPointer.Get();
+	if (!rawActorPointer)
+	{
+		return;
+	}
+
+	Release(rawActorPointer);
 	actorPointer = nullptr;
 }
 

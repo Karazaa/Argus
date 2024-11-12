@@ -16,10 +16,10 @@ void ARetrieveArgusActorFromEntityFunctionalTest::StartNextTestStep()
 {
 	switch (m_testStepIndex)
 	{
-		case 0:
+		case 0u:
 			StartRetrieveArgusActorFromEntityTestStep();
 			break;
-		case 1:
+		case 1u:
 			StartRemoveArgusActorFromEntityMapTestStep();
 			break;
 		default:
@@ -31,9 +31,9 @@ bool ARetrieveArgusActorFromEntityFunctionalTest::DidCurrentTestStepSucceed()
 {
 	switch (m_testStepIndex)
 	{
-		case 0:
+		case 0u:
 			return DidRetrieveArgusActorFromEntityTestStepSucceed();
-		case 1:
+		case 1u:
 			return DidRemoveArgusActorFromEntityMapTestStepSucceed();
 		default:
 			break;

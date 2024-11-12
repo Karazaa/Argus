@@ -30,7 +30,7 @@ void AStaticDataFunctionalTest::StartNextTestStep()
 {
 	switch (m_testStepIndex)
 	{
-		case 0:
+		case 0u:
 			StartFactionTestStep();
 			break;
 		default:
@@ -42,7 +42,7 @@ bool AStaticDataFunctionalTest::DidCurrentTestStepSucceed()
 {
 	switch (m_testStepIndex)
 	{
-		case 0:
+		case 0u:
 			return DidFactionTestStepSucceed();
 		default:
 			break;

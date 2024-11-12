@@ -13,7 +13,7 @@ class ARGUS_API AStaticDataFunctionalTest : public AArgusFunctionalTest
 
 private:
 	static constexpr const char* k_testName = "Argus.FunctionalTest.StaticData";
-	static constexpr uint8       k_totalNumSteps = 1;
+	static constexpr uint8       k_totalNumSteps = 1u;
 
 public:
 	AStaticDataFunctionalTest(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
