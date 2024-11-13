@@ -150,7 +150,7 @@ void ANavigationFunctionalTest::StartNavigationToLocationTestStep()
 	if (taskComponent && targetingComponent)
 	{
 		targetingComponent->m_targetLocation = m_goalLocationActor->GetActorLocation();
-		taskComponent->m_currentTask = ETask::ProcessMoveToLocationCommand;
+		taskComponent->m_movementState = EMovementState::ProcessMoveToLocationCommand;
 	}
 	else
 	{
@@ -184,9 +184,9 @@ void ANavigationFunctionalTest::StartNavigationToEntityTestStep()
 	if (taskComponent && targetingComponent && goalTaskComponent && goalTargetingComponent)
 	{
 		goalTargetingComponent->m_targetLocation = m_goalLocationActor->GetActorLocation();
-		goalTaskComponent->m_currentTask = ETask::ProcessMoveToLocationCommand;
+		goalTaskComponent->m_movementState = EMovementState::ProcessMoveToLocationCommand;
 		targetingComponent->m_targetEntityId = goalEntity.GetId();
-		taskComponent->m_currentTask = ETask::ProcessMoveToEntityCommand;
+		taskComponent->m_movementState = EMovementState::ProcessMoveToEntityCommand;
 	}
 	else
 	{
@@ -231,7 +231,7 @@ void ANavigationFunctionalTest::StartNavigationThroughWaypointsTestStep()
 		targetingComponent->m_targetLocation = m_waypoint0;
 		navigationComponent->m_queuedWaypoints.push(m_waypoint1);
 		navigationComponent->m_queuedWaypoints.push(m_waypoint2);
-		taskComponent->m_currentTask = ETask::ProcessMoveToLocationCommand;
+		taskComponent->m_movementState = EMovementState::ProcessMoveToLocationCommand;
 	}
 	else
 	{

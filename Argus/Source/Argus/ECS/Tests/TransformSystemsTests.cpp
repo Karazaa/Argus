@@ -34,7 +34,7 @@ bool TransformSystemsGetPathingLocationAtTimeOffsetTest::RunTest(const FString& 
 		return false;
 	}
 
-	components.m_taskComponent->m_currentTask = ETask::MoveToLocation;
+	components.m_taskComponent->m_movementState = EMovementState::MoveToLocation;
 	components.m_transformComponent->m_desiredSpeedUnitsPerSecond = 1.0f;
 	components.m_navigationComponent->m_navigationPoints.reserve(5);
 	components.m_navigationComponent->m_navigationPoints.push_back(twoSecondsInPast);
@@ -333,7 +333,7 @@ bool TransformSystemsMoveAlongPathTest::RunTest(const FString& Parameters)
 		return false;
 	}
 
-	components.m_taskComponent->m_currentTask = ETask::MoveToLocation;
+	components.m_taskComponent->m_movementState = EMovementState::MoveToLocation;
 	components.m_transformComponent->m_desiredSpeedUnitsPerSecond = navigationSpeedUnitsPerSecond;
 	components.m_navigationComponent->m_navigationPoints.reserve(4);
 	components.m_navigationComponent->m_navigationPoints.push_back(point0);
@@ -463,8 +463,8 @@ bool TransformSystemsMoveAlongPathTest::RunTest(const FString& Parameters)
 	TestEqual
 	(
 		FString::Printf(TEXT("[%s] Test that %s current task is %s after moving along path for %f seconds."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TaskComponent), ARGUS_NAMEOF(ETask::None), secondCounter),
-		components.m_taskComponent->m_currentTask, 
-		ETask::None
+		components.m_taskComponent->m_movementState, 
+		EMovementState::None
 	);
 #pragma endregion
 

@@ -64,11 +64,11 @@ void AArgusGameModeBase::ManageActorStateForEntities()
 			continue;
 		}
 
-		if (taskComponent->m_currentTask == ETask::SpawnedWaitingForActorTake)
+		if (taskComponent->m_baseState == EBaseState::SpawnedWaitingForActorTake)
 		{
 			// TODO JAMES: Use pool to take actor and then set its entity
 		}
-		else if (taskComponent->m_currentTask == ETask::DestroyedWaitingForActorRelease)
+		else if (taskComponent->m_baseState == EBaseState::DestroyedWaitingForActorRelease)
 		{
 			// TODO JAMES: Release actor object back to the pool.
 		}

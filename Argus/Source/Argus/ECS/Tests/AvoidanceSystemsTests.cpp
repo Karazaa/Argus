@@ -89,7 +89,7 @@ bool AvoidanceSystemsProcessORCAvoidanceTest::RunTest(const FString& Parameters)
 
 	components.m_navigationComponent->m_navigationPoints.push_back(components.m_transformComponent->m_transform.GetLocation());
 	components.m_navigationComponent->m_navigationPoints.push_back(targetLocation);
-	components.m_taskComponent->m_currentTask = ETask::MoveToLocation;
+	components.m_taskComponent->m_movementState = EMovementState::MoveToLocation;
 	components.m_transformComponent->m_currentVelocity = velocity;
 
 	spatialPartitioningComponent->m_argusKDTree.RebuildKDTreeForAllArgusEntities();
@@ -194,7 +194,7 @@ bool AvoidanceSystemsProcessORCAvoidanceTest::RunTest(const FString& Parameters)
 
 	secondComponents.m_navigationComponent->m_navigationPoints.push_back(secondComponents.m_transformComponent->m_transform.GetLocation());
 	secondComponents.m_navigationComponent->m_navigationPoints.push_back(secondTargetLocation);
-	secondComponents.m_taskComponent->m_currentTask = ETask::MoveToLocation;
+	secondComponents.m_taskComponent->m_movementState = EMovementState::MoveToLocation;
 	secondComponents.m_transformComponent->m_currentVelocity = secondVelocity;
 	secondComponents.m_transformComponent->m_desiredSpeedUnitsPerSecond = desiredSpeed;
 

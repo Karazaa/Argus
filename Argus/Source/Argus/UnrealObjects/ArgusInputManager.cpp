@@ -337,14 +337,14 @@ void UArgusInputManager::ProcessMoveToInputEvent()
 		);
 	}
 
-	ETask inputTask = ETask::ProcessMoveToLocationCommand;
+	EMovementState inputMovementState = EMovementState::ProcessMoveToLocationCommand;
 	ArgusEntity targetEntity = ArgusEntity::s_emptyEntity;
 	if (AArgusActor* argusActor = Cast<AArgusActor>(hitResult.GetActor()))
 	{
 		targetEntity = argusActor->GetEntity();
 		if (targetEntity && targetEntity.GetComponent<TransformComponent>())
 		{
-			inputTask = ETask::ProcessMoveToEntityCommand;
+			inputMovementState = EMovementState::ProcessMoveToEntityCommand;
 		}
 	}
 
@@ -355,11 +355,11 @@ void UArgusInputManager::ProcessMoveToInputEvent()
 			continue;
 		}
 
-		ProcessMoveToInputEventPerSelectedActor(selectedActor.Get(), inputTask, targetEntity, targetLocation);
+		ProcessMoveToInputEventPerSelectedActor(selectedActor.Get(), inputMovementState, targetEntity, targetLocation);
 	}
 }
 
-void UArgusInputManager::ProcessMoveToInputEventPerSelectedActor(AArgusActor* argusActor, ETask inputTask, ArgusEntity targetEntity, FVector targetLocation)
+void UArgusInputManager::ProcessMoveToInputEventPerSelectedActor(AArgusActor* argusActor, EMovementState inputMovementState, ArgusEntity targetEntity, FVector targetLocation)
 {
 	if (!argusActor)
 	{
@@ -382,22 +382,22 @@ void UArgusInputManager::ProcessMoveToInputEventPerSelectedActor(AArgusActor* ar
 	}
 
 	navigationComponent->ResetQueuedWaypoints();
-	if (inputTask == ETask::ProcessMoveToEntityCommand)
+	if (inputMovementState == EMovementState::ProcessMoveToEntityCommand)
 	{
 		if (targetEntity == selectedEntity)
 		{
-			taskComponent->m_currentTask = ETask::None;
+			taskComponent->m_movementState = EMovementState::None;
 		}
 		else
 		{
-			taskComponent->m_currentTask = inputTask;
+			taskComponent->m_movementState = inputMovementState;
 			targetingComponent->m_targetEntityId = targetEntity.GetId();
 			targetingComponent->m_targetLocation.Reset();
 		}
 	}
-	else if (inputTask == ETask::ProcessMoveToLocationCommand)
+	else if (inputMovementState == EMovementState::ProcessMoveToLocationCommand)
 	{
-		taskComponent->m_currentTask = inputTask;
+		taskComponent->m_movementState = inputMovementState;
 		targetingComponent->m_targetEntityId = ArgusEntity::s_emptyEntity.GetId();
 		targetingComponent->m_targetLocation = targetLocation;
 	}
@@ -462,20 +462,20 @@ void UArgusInputManager::ProcessSetWaypointInputEventPerSelectedActor(AArgusActo
 		return;
 	}
 
-	switch (taskComponent->m_currentTask)
+	switch (taskComponent->m_movementState)
 	{
-		case ETask::None:
-		case ETask::FailedToFindPath:
-		case ETask::ProcessMoveToEntityCommand:
-		case ETask::MoveToEntity:
-			taskComponent->m_currentTask = ETask::ProcessMoveToLocationCommand;
+		case EMovementState::None:
+		case EMovementState::FailedToFindPath:
+		case EMovementState::ProcessMoveToEntityCommand:
+		case EMovementState::MoveToEntity:
+			taskComponent->m_movementState = EMovementState::ProcessMoveToLocationCommand;
 			targetingComponent->m_targetEntityId = ArgusEntity::s_emptyEntity.GetId();
 			targetingComponent->m_targetLocation = targetLocation;
 			navigationComponent->ResetQueuedWaypoints();
 			break;
-		case ETask::ProcessMoveToLocationCommand:
-		case ETask::MoveToLocation:
-			taskComponent->m_currentTask = ETask::ProcessMoveToLocationCommand;
+		case EMovementState::ProcessMoveToLocationCommand:
+		case EMovementState::MoveToLocation:
+			taskComponent->m_movementState = EMovementState::ProcessMoveToLocationCommand;
 			navigationComponent->m_queuedWaypoints.push(targetLocation);
 			break;
 		default:

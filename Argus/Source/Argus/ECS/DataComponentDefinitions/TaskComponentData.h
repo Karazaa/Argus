@@ -12,8 +12,10 @@ class ARGUS_API UTaskComponentData : public UComponentData
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere)
-	ETask m_currentTask = ETask::None;
+	EBaseState m_baseState = EBaseState::None;
+	EMovementState m_movementState = EMovementState::None;
+	ESpawningState m_spawningState = ESpawningState::None;
+	EAttackingState m_attackingState = EAttackingState::None;
 
 	void InstantiateComponentForEntity(ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;

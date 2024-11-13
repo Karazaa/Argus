@@ -61,15 +61,15 @@ void NavigationSystems::ProcessNavigationTaskCommands(TWeakObjectPtr<UWorld>& wo
 		return;
 	}
 
-	switch (components.m_taskComponent->m_currentTask)
+	switch (components.m_taskComponent->m_movementState)
 	{
-		case ETask::ProcessMoveToLocationCommand:
-			components.m_taskComponent->m_currentTask = ETask::MoveToLocation;
+		case EMovementState::ProcessMoveToLocationCommand:
+			components.m_taskComponent->m_movementState = EMovementState::MoveToLocation;
 			NavigateFromEntityToLocation(worldPointer, components.m_targetingComponent->m_targetLocation.GetValue(), components);
 			break;
 
-		case ETask::ProcessMoveToEntityCommand:
-			components.m_taskComponent->m_currentTask = ETask::MoveToEntity;
+		case EMovementState::ProcessMoveToEntityCommand:
+			components.m_taskComponent->m_movementState = EMovementState::MoveToEntity;
 			NavigateFromEntityToEntity(worldPointer, ArgusEntity::RetrieveEntity(components.m_targetingComponent->m_targetEntityId), components);
 			break;
 
@@ -87,7 +87,7 @@ void NavigationSystems::RecalculateMoveToEntityPaths(TWeakObjectPtr<UWorld>& wor
 		return;
 	}
 
-	if (components.m_taskComponent->m_currentTask != ETask::MoveToEntity)
+	if (components.m_taskComponent->m_movementState != EMovementState::MoveToEntity)
 	{
 		return;
 	}
@@ -161,7 +161,7 @@ void NavigationSystems::NavigateFromEntityToLocation(TWeakObjectPtr<UWorld>& wor
 
 	if (!pathFindingResult.IsSuccessful() || !pathFindingResult.Path)
 	{
-		components.m_taskComponent->m_currentTask = ETask::FailedToFindPath;
+		components.m_taskComponent->m_movementState = EMovementState::FailedToFindPath;
 		return;
 	}
 	
@@ -170,7 +170,7 @@ void NavigationSystems::NavigateFromEntityToLocation(TWeakObjectPtr<UWorld>& wor
 
 	if (numPathPoints <= 1u)
 	{
-		components.m_taskComponent->m_currentTask = ETask::None;
+		components.m_taskComponent->m_movementState = EMovementState::None;
 		return;
 	}
 
