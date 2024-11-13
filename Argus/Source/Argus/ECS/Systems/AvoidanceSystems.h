@@ -27,6 +27,7 @@ private:
 		FVector2D m_foundEntityVelocity = FVector2D::ZeroVector;
 		float m_deltaTime = 0.0f;
 		float m_inversePredictionTime = 0.0f;
+		float m_entityRadius = 45.0f;
 	};
 
 	static void FindORCALineAndVelocityToBoundaryPerEntity(const FindORCALineParams& findOrcaLineParams, FVector2D& velocityToBoundaryOfVO, ORCALine& orcaLine);

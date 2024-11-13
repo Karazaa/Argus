@@ -115,6 +115,7 @@ void AvoidanceSystems::ProcessORCAvoidance(TWeakObjectPtr<UWorld>& worldPointer,
 		params.m_inversePredictionTime = inversePredictionTime;
 		params.m_foundEntityLocation = FVector2D(foundTransformComponent->m_transform.GetLocation());
 		params.m_foundEntityVelocity = FVector2D(foundTransformComponent->m_currentVelocity);
+		params.m_entityRadius = components.m_transformComponent->m_radius;
 
 		FVector2D velocityToBoundaryOfVO = FVector2D::ZeroVector;
 		ORCALine orcaLine;
@@ -153,7 +154,7 @@ void AvoidanceSystems::FindORCALineAndVelocityToBoundaryPerEntity(const FindORCA
 	const FVector2D relativeLocation = params.m_foundEntityLocation - params.m_sourceEntityLocation;
 	const FVector2D relativeVelocity = params.m_sourceEntityVelocity - params.m_foundEntityVelocity;
 	const float relativeLocationDistanceSquared = relativeLocation.SquaredLength();
-	const float combinedRadius = 2.0f * ArgusECSConstants::k_pathFindingAgentRadius;
+	const float combinedRadius = 2.0f * params.m_entityRadius;
 	const float combinedRadiusSquared = FMath::Square(combinedRadius);
 
 	if (relativeLocationDistanceSquared > combinedRadiusSquared)

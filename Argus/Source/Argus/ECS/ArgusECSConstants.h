@@ -9,8 +9,6 @@ namespace ArgusECSConstants
 {
 	static constexpr uint16	k_maxEntities = 15000u;
 
-	static constexpr float k_pathFindingAgentRadius = 45.0f;
-	static constexpr float k_pathFindingAgentHeight = 100.0f;
 	static constexpr float k_avoidanceCollisionDetectionPredictionTime = 1.0f;
 	static constexpr float k_avoidanceAgentSearchRadius = 200.0f;
 	static constexpr float k_avoidanceEpsilonValue = 0.00001f;

@@ -241,7 +241,7 @@ void TransformSystems::MoveAlongNavigationPath(TWeakObjectPtr<UWorld>& worldPoin
 		FaceTowardsLocationXY(components.m_transformComponent, components.m_transformComponent->m_currentVelocity);
 	}
 
-	moverLocation = ProjectLocationOntoNavigationData(worldPointer, moverLocation);
+	moverLocation = ProjectLocationOntoNavigationData(worldPointer, components.m_transformComponent, moverLocation);
 	components.m_transformComponent->m_transform.SetLocation(moverLocation);
 	
 	if (isAtEndOfNavigationPath || isWithinRangeOfTargetEntity)
@@ -297,9 +297,9 @@ void TransformSystems::OnCompleteNavigationPath(const TransformSystemsComponentA
 	}
 }
 
-FVector TransformSystems::ProjectLocationOntoNavigationData(TWeakObjectPtr<UWorld>& worldPointer, const FVector& location)
+FVector TransformSystems::ProjectLocationOntoNavigationData(TWeakObjectPtr<UWorld>& worldPointer, TransformComponent* transformComponent, const FVector& location)
 {
-	if (!worldPointer.IsValid())
+	if (!worldPointer.IsValid() || !transformComponent)
 	{
 		return location;
 	}
@@ -311,7 +311,7 @@ FVector TransformSystems::ProjectLocationOntoNavigationData(TWeakObjectPtr<UWorl
 	}
 
 	FNavLocation projectedLocation;
-	const FVector agentExtents = FVector(ArgusECSConstants::k_pathFindingAgentRadius, ArgusECSConstants::k_pathFindingAgentRadius, ArgusECSConstants::k_pathFindingAgentHeight/2.0f);
+	const FVector agentExtents = FVector(transformComponent->m_radius, transformComponent->m_radius, transformComponent->m_height /2.0f);
 	if (unrealNavigationSystem->ProjectPointToNavigation(location, projectedLocation, agentExtents, unrealNavigationSystem->MainNavData))
 	{
 		return projectedLocation.Location;

@@ -17,6 +17,8 @@ struct TransformComponent
 	FVector m_proposedAvoidanceVelocity = FVector::ZeroVector;
 
 	float m_desiredSpeedUnitsPerSecond = 100.0f;
+	float m_radius = 45.0f;
+	float m_height = 100.0f;
 
 	void GetDebugString(FString& debugStringToAppendTo) const
 	{

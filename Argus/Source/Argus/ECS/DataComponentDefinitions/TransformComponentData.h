@@ -17,6 +17,10 @@ public:
 	FVector m_proposedAvoidanceVelocity = FVector::ZeroVector;
 	UPROPERTY(EditAnywhere)
 	float m_desiredSpeedUnitsPerSecond = 100.0f;
+	UPROPERTY(EditAnywhere)
+	float m_radius = 45.0f;
+	UPROPERTY(EditAnywhere)
+	float m_height = 100.0f;
 
 	void InstantiateComponentForEntity(ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;

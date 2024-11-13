@@ -11,6 +11,8 @@ void UTransformComponentData::InstantiateComponentForEntity(ArgusEntity& entity)
 	TransformComponentRef->m_currentVelocity = m_currentVelocity;
 	TransformComponentRef->m_proposedAvoidanceVelocity = m_proposedAvoidanceVelocity;
 	TransformComponentRef->m_desiredSpeedUnitsPerSecond = m_desiredSpeedUnitsPerSecond;
+	TransformComponentRef->m_radius = m_radius;
+	TransformComponentRef->m_height = m_height;
 }
 
 bool UTransformComponentData::MatchesType(UComponentData* other) const
