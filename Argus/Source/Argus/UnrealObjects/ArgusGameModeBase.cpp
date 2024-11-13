@@ -4,6 +4,7 @@
 #include "ArgusEntity.h"
 #include "ArgusGameStateBase.h"
 #include "ArgusPlayerController.h"
+#include "ArgusStaticData.h"
 #include "EngineUtils.h"
 
 AArgusGameModeBase::AArgusGameModeBase()
@@ -50,7 +51,7 @@ void AArgusGameModeBase::ManageActorStateForEntities()
 {
 	ARGUS_TRACE(AArgusGameModeBase::ManageActorStateForEntities)
 
-	for (int i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
+	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{
 		ArgusEntity entity = ArgusEntity::RetrieveEntity(i);
 		if (!entity)
@@ -66,13 +67,35 @@ void AArgusGameModeBase::ManageActorStateForEntities()
 
 		if (taskComponent->m_baseState == EBaseState::SpawnedWaitingForActorTake)
 		{
-			// TODO JAMES: Use pool to take actor and then set its entity
+			SpawnActorFromEntity(entity, taskComponent);
 		}
 		else if (taskComponent->m_baseState == EBaseState::DestroyedWaitingForActorRelease)
 		{
 			// TODO JAMES: Release actor object back to the pool.
 		}
 	}
+}
+
+void AArgusGameModeBase::SpawnActorFromEntity(ArgusEntity entity, TaskComponent* taskComponent)
+{
+	if (!entity || !taskComponent)
+	{
+		return;
+	}
+
+	const UArgusActorRecord* actorRecord = ArgusStaticData::GetRecord<UArgusActorRecord>(taskComponent->m_spawnedFromArgusActorRecordId);
+	if (!actorRecord)
+	{
+		return;
+	}
+
+	AArgusActor* spawnedActor = m_argusActorPool.Take(GetWorld(), actorRecord->m_argusActorClass);
+	if (!spawnedActor)
+	{
+		return;
+	}
+
+	spawnedActor->SetEntity(entity);
 }
 
 FColor AArgusGameModeBase::GetTeamColor(ETeam team)

@@ -41,36 +41,6 @@ bool TransformSystems::TransformSystemsComponentArgs::AreComponentsValidCheck() 
 	return m_entity && m_taskComponent && m_navigationComponent && m_transformComponent && m_targetingComponent;
 }
 
-bool TransformSystems::ProcessMovementTaskCommands(TWeakObjectPtr<UWorld>& worldPointer, float deltaTime, const TransformSystemsComponentArgs& components)
-{
-	ARGUS_TRACE(TransformSystems::ProcessMovementTaskCommands)
-
-	if (!components.AreComponentsValidCheck())
-	{
-		return false;
-	}
-
-	switch (components.m_taskComponent->m_movementState)
-	{
-		case EMovementState::MoveToLocation:
-		case EMovementState::MoveToEntity:
-			MoveAlongNavigationPath(worldPointer, deltaTime, components);
-			return true;
-		case EMovementState::None:
-			components.m_transformComponent->m_currentVelocity = components.m_transformComponent->m_proposedAvoidanceVelocity;
-			if (!components.m_transformComponent->m_currentVelocity.IsNearlyZero())
-			{
-				const FVector velocity = components.m_transformComponent->m_currentVelocity * deltaTime;
-				FaceTowardsLocationXY(components.m_transformComponent, components.m_transformComponent->m_currentVelocity);
-				components.m_transformComponent->m_transform.SetLocation(components.m_transformComponent->m_transform.GetLocation() + velocity);
-				return true;
-			}
-			return false;
-		default:
-			return false;
-	}
-}
-
 void TransformSystems::GetPathingLocationAtTimeOffset(float timeOffsetSeconds, const TransformSystemsComponentArgs& components, GetPathingLocationAtTimeOffsetResults& results)
 {
 	if (!components.AreComponentsValidCheck())
@@ -277,6 +247,36 @@ void TransformSystems::FindEntitiesWithinXYBounds(FVector2D minXY, FVector2D max
 		{
 			outEntitiesWithinBounds.Emplace(potentialEntity);
 		}
+	}
+}
+
+bool TransformSystems::ProcessMovementTaskCommands(TWeakObjectPtr<UWorld>& worldPointer, float deltaTime, const TransformSystemsComponentArgs& components)
+{
+	ARGUS_TRACE(TransformSystems::ProcessMovementTaskCommands)
+
+	if (!components.AreComponentsValidCheck())
+	{
+		return false;
+	}
+
+	switch (components.m_taskComponent->m_movementState)
+	{
+		case EMovementState::MoveToLocation:
+		case EMovementState::MoveToEntity:
+			MoveAlongNavigationPath(worldPointer, deltaTime, components);
+			return true;
+		case EMovementState::None:
+			components.m_transformComponent->m_currentVelocity = components.m_transformComponent->m_proposedAvoidanceVelocity;
+			if (!components.m_transformComponent->m_currentVelocity.IsNearlyZero())
+			{
+				const FVector velocity = components.m_transformComponent->m_currentVelocity * deltaTime;
+				FaceTowardsLocationXY(components.m_transformComponent, components.m_transformComponent->m_currentVelocity);
+				components.m_transformComponent->m_transform.SetLocation(components.m_transformComponent->m_transform.GetLocation() + velocity);
+				return true;
+			}
+			return false;
+		default:
+			return false;
 	}
 }
 

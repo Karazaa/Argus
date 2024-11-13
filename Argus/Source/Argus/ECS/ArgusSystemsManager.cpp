@@ -6,6 +6,7 @@
 #include "Engine/World.h"
 #include "Systems/AvoidanceSystems.h"
 #include "Systems/NavigationSystems.h"
+#include "Systems/SpawningSystems.h"
 #include "Systems/TargetingSystems.h"
 #include "Systems/TransformSystems.h"
 
@@ -27,6 +28,7 @@ void ArgusSystemsManager::RunSystems(TWeakObjectPtr<UWorld> worldPointer, float 
 		return;
 	}
 
+	SpawningSystems::RunSystems(deltaTime);
 	NavigationSystems::RunSystems(worldPointer);
 	TargetingSystems::RunSystems(deltaTime);
 	AvoidanceSystems::RunSystems(worldPointer, deltaTime);

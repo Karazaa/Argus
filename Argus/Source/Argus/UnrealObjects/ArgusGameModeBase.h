@@ -30,6 +30,7 @@ protected:
 
 private:
 	void ManageActorStateForEntities();
+	void SpawnActorFromEntity(ArgusEntity entity, TaskComponent* taskComponent);
 
 	ArgusSystemsManager m_argusSystemsManager = ArgusSystemsManager();
 	ArgusActorPool m_argusActorPool = ArgusActorPool();

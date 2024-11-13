@@ -16,6 +16,7 @@ public:
 	EMovementState m_movementState = EMovementState::None;
 	ESpawningState m_spawningState = ESpawningState::None;
 	EAttackingState m_attackingState = EAttackingState::None;
+	uint32 m_spawnedFromArgusActorRecordId = MAX_uint32;
 
 	void InstantiateComponentForEntity(ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;

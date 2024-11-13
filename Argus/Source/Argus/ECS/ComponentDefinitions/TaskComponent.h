@@ -49,6 +49,8 @@ struct TaskComponent
 	ESpawningState m_spawningState = ESpawningState::None;
 	ARGUS_IGNORE()
 	EAttackingState m_attackingState = EAttackingState::None;
+	ARGUS_IGNORE()
+	uint32 m_spawnedFromArgusActorRecordId = MAX_uint32;
 
 	bool IsExecutingMoveTask() const
 	{
