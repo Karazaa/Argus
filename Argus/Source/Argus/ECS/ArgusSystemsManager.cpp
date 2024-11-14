@@ -12,7 +12,7 @@
 
 const uint16 ArgusSystemsManager::s_singletonEntityId = ArgusECSConstants::k_maxEntities - 1u;
 
-void ArgusSystemsManager::RunSystems(TWeakObjectPtr<UWorld> worldPointer, float deltaTime)
+void ArgusSystemsManager::RunSystems(TWeakObjectPtr<UWorld>& worldPointer, float deltaTime)
 {
 	ARGUS_TRACE(ArgusSystemsManager::RunSystems)
 

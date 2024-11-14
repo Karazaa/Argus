@@ -10,6 +10,6 @@ class ArgusSystemsManager
 {
 public:
 	static const uint16 s_singletonEntityId;
-	static void RunSystems(TWeakObjectPtr<UWorld> worldPointer, float deltaTime);
+	static void RunSystems(TWeakObjectPtr<UWorld>& worldPointer, float deltaTime);
 	static void UpdateSingletonComponents(bool didMovementUpdateThisFrame);
 };

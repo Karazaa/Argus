@@ -22,6 +22,8 @@ public:
 	AArgusGameModeBase();
 	virtual void StartPlay() override;
 
+	static void SpawnActorFromEntity(TWeakObjectPtr<UWorld>& worldPointer, ArgusActorPool& argusActorPool, ArgusEntity spawnedEntity);
+
 protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	TMap<ETeam, TObjectPtr<UTeamColorRecord>> m_teamColorMap;
@@ -30,7 +32,6 @@ protected:
 
 private:
 	void ManageActorStateForEntities();
-	void SpawnActorFromEntity(ArgusEntity entity, TaskComponent* taskComponent);
 
 	ArgusSystemsManager m_argusSystemsManager = ArgusSystemsManager();
 	ArgusActorPool m_argusActorPool = ArgusActorPool();
