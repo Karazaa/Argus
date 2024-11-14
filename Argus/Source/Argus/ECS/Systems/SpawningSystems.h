@@ -18,7 +18,7 @@ public:
 		bool AreComponentsValidCheck() const;
 	};
 
-	static void SpawnEntity(const SpawningSystemsComponentArgs& components);
+	static void SpawnEntity(TaskComponent* spawningTaskComponent, const UArgusActorRecord* argusActorRecord);
 
 private:
 	static void ProcessSpawningTaskCommands(float deltaTime, const SpawningSystemsComponentArgs& components);

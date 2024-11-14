@@ -34,17 +34,11 @@ bool SpawningSystems::SpawningSystemsComponentArgs::AreComponentsValidCheck() co
 	return m_entity && m_taskComponent && m_spawningComponent;
 }
 
-void SpawningSystems::SpawnEntity(const SpawningSystemsComponentArgs& components)
+void SpawningSystems::SpawnEntity(TaskComponent* spawningTaskComponent, const UArgusActorRecord* argusActorRecord)
 {
 	ARGUS_TRACE(SpawningSystems::SpawnEntity)
 
-	if (!components.AreComponentsValidCheck())
-	{
-		return;
-	}
-
-	const UArgusActorRecord* argusActorRecord = ArgusStaticData::GetRecord<UArgusActorRecord>(components.m_spawningComponent->m_argusActorRecordId);
-	if (!argusActorRecord || !argusActorRecord->m_entityTemplateOverride)
+	if (!spawningTaskComponent || spawningTaskComponent->m_spawningState != ESpawningState::ProcessSpawnEntityCommand || !argusActorRecord || !argusActorRecord->m_entityTemplateOverride)
 	{
 		return;
 	}
@@ -57,9 +51,9 @@ void SpawningSystems::SpawnEntity(const SpawningSystemsComponentArgs& components
 	}
 
 	spawnedEntityTaskComponent->m_baseState = EBaseState::SpawnedWaitingForActorTake;
-	spawnedEntityTaskComponent->m_spawnedFromArgusActorRecordId = components.m_spawningComponent->m_argusActorRecordId;
+	spawnedEntityTaskComponent->m_spawnedFromArgusActorRecordId = argusActorRecord->m_id;
 
-	components.m_taskComponent->m_spawningState = ESpawningState::None;
+	spawningTaskComponent->m_spawningState = ESpawningState::None;
 }
 
 void SpawningSystems::ProcessSpawningTaskCommands(float deltaTime, const SpawningSystemsComponentArgs& components)
@@ -76,7 +70,7 @@ void SpawningSystems::ProcessSpawningTaskCommands(float deltaTime, const Spawnin
 		case ESpawningState::None:
 			break;
 		case ESpawningState::ProcessSpawnEntityCommand:
-			SpawnEntity(components);
+			SpawnEntity(components.m_taskComponent, ArgusStaticData::GetRecord<UArgusActorRecord>(components.m_spawningComponent->m_argusActorRecordId));
 			break;
 		default:
 			break;
