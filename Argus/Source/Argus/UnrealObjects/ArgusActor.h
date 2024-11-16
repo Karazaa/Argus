@@ -22,6 +22,8 @@ public:
 	ArgusEntity GetEntity() const;
 	void SetEntity(const ArgusEntity& entity);
 	void SetSelectionState(bool isSelected);
+	void Show();
+	void Hide();
 
 protected:
 	UFUNCTION(BlueprintImplementableEvent)

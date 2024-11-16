@@ -48,11 +48,6 @@ bool AArgusFunctionalTest::DidArgusFunctionalTestSucceed()
 {
 	if (DidCurrentTestStepSucceed())
 	{
-		if (m_testStepIndex >= GetTotalNumTestSteps() - 1)
-		{
-			return true;
-		}
-
 		if (m_secondsBetweenSteps > 0.0f && !m_delayBetweenStepsTimer.IsSet())
 		{
 			m_delayBetweenStepsTimer = m_secondsBetweenSteps;
@@ -63,6 +58,11 @@ bool AArgusFunctionalTest::DidArgusFunctionalTestSucceed()
 		{
 			m_delayBetweenStepsTimer = m_delayBetweenStepsTimer.GetValue() - m_currentDeltaSeconds;
 			return false;
+		}
+
+		if (m_testStepIndex >= GetTotalNumTestSteps() - 1)
+		{
+			return true;
 		}
 
 		m_testStepIndex++;

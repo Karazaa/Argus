@@ -38,7 +38,7 @@ AArgusActor* ArgusActorPool::Take(UWorld* worldPointer, const TSoftClassPtr<AArg
 		return nullptr;
 	}
 
-	cachedActor->SetHidden(false);
+	cachedActor->Show();
 	return cachedActor;
 }
 

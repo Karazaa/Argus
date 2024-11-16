@@ -33,7 +33,8 @@ void AArgusActor::Reset()
 	m_entityTemplate = nullptr;
 	m_isSelected = false;
 	m_entity = ArgusEntity::s_emptyEntity;
-	SetHidden(true);
+
+	Hide();
 }
 
 ArgusEntity AArgusActor::GetEntity() const
@@ -106,6 +107,16 @@ void AArgusActor::SetSelectionState(bool isSelected)
 	{
 		OnDeselected();
 	}
+}
+
+void AArgusActor::Show()
+{
+	RootComponent->SetVisibility(true, true);
+}
+
+void AArgusActor::Hide()
+{
+	RootComponent->SetVisibility(false, true);
 }
 
 void AArgusActor::BeginPlay()

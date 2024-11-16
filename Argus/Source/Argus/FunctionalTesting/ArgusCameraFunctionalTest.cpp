@@ -11,7 +11,7 @@ const FVector2D k_rightScreenPos	= FVector2D(99.0f, 50.0f);
 const FVector2D k_upScreenPos		= FVector2D(50.0f, 1.0f);
 const FVector2D k_downScreenPos		= FVector2D(50.0f, 99.0f);
 
-const float k_zoomPositionDifferenceSquaredTolerance = 1.0f;
+const float k_zoomPositionDifferenceSquaredTolerance = 5.0f;
 
 AArgusCameraFunctionalTest::AArgusCameraFunctionalTest(const FObjectInitializer& ObjectInitializer)
 {

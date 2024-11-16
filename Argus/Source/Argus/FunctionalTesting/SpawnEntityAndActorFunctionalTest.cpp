@@ -128,7 +128,20 @@ void ASpawnEntityAndActorFunctionalTest::StartSpawnArgusActorTestStep()
 void ASpawnEntityAndActorFunctionalTest::StartDespawnArgusActorTestStep()
 {
 	StartStep(TEXT("Despawn Argus Actor."));
-	m_secondsBetweenSteps = m_cachedSecondsBetweenSteps;
+
+	ArgusEntity spawnedEntity = ArgusEntity::RetrieveEntity(m_expectedSpawnedEntityId);
+	if (!spawnedEntity)
+	{
+		return;
+	}
+
+	TaskComponent* taskComponent = spawnedEntity.GetComponent<TaskComponent>();
+	if (!taskComponent)
+	{
+		return;
+	}
+
+	taskComponent->m_baseState = EBaseState::DestroyedWaitingForActorRelease;
 }
 
 
@@ -172,5 +185,23 @@ bool ASpawnEntityAndActorFunctionalTest::DidSpawnArgusActorTestStep()
 
 bool ASpawnEntityAndActorFunctionalTest::DidDespawnArgusActorTestStep()
 {	
+	const UWorld* worldPointer = GetWorld();
+	if (!worldPointer)
+	{
+		return false;
+	}
+
+	const UArgusGameInstance* gameInstance = worldPointer->GetGameInstance<UArgusGameInstance>();
+	if (!gameInstance)
+	{
+		return false;
+	}
+
+	const AArgusActor* argusActor = gameInstance->GetArgusActorFromArgusEntity(ArgusEntity::RetrieveEntity(m_expectedSpawnedEntityId));
+	if (argusActor)
+	{
+		return false;
+	}
+
 	return true;
 }
