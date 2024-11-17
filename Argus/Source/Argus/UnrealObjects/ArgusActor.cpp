@@ -119,6 +119,11 @@ void AArgusActor::Hide()
 	RootComponent->SetVisibility(false, true);
 }
 
+bool AArgusActor::IsVisible() const
+{
+	return RootComponent->IsVisible();
+}
+
 void AArgusActor::BeginPlay()
 {
 	Super::BeginPlay();

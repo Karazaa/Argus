@@ -36,6 +36,36 @@ std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isTransf
 std::unordered_map<uint16, SpatialPartitioningComponent> ArgusComponentRegistry::s_SpatialPartitioningComponents;
 #pragma endregion
 
+void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
+{
+	if (entityId >= ArgusECSConstants::k_maxEntities)
+	{
+		UE_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d."), ARGUS_FUNCNAME, entityId);
+		return;
+	}
+
+	s_isHealthComponentActive.set(entityId, false);
+	s_isIdentityComponentActive.set(entityId, false);
+	s_isNavigationComponentActive.set(entityId, false);
+	s_isSpawningComponentActive.set(entityId, false);
+	s_isTargetingComponentActive.set(entityId, false);
+	s_isTaskComponentActive.set(entityId, false);
+	s_isTransformComponentActive.set(entityId, false);
+
+	s_HealthComponents[entityId] = HealthComponent();
+	s_IdentityComponents[entityId] = IdentityComponent();
+	s_NavigationComponents[entityId] = NavigationComponent();
+	s_SpawningComponents[entityId] = SpawningComponent();
+	s_TargetingComponents[entityId] = TargetingComponent();
+	s_TaskComponents[entityId] = TaskComponent();
+	s_TransformComponents[entityId] = TransformComponent();
+
+	if (s_SpatialPartitioningComponents.contains(entityId))
+	{
+		s_SpatialPartitioningComponents.erase(entityId);
+	}
+}
+
 void ArgusComponentRegistry::FlushAllComponents()
 {
 	// Begin flush active component bitsets
@@ -48,7 +78,7 @@ void ArgusComponentRegistry::FlushAllComponents()
 	s_isTransformComponentActive.reset();
 
 	// Begin flush component values
-	for (int i = 0; i < ArgusECSConstants::k_maxEntities; ++i)
+	for (uint16 i = 0u; i < ArgusECSConstants::k_maxEntities; ++i)
 	{
 		s_HealthComponents[i] = HealthComponent();
 		s_IdentityComponents[i] = IdentityComponent();

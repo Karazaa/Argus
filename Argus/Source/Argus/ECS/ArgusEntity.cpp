@@ -57,6 +57,59 @@ ArgusEntity ArgusEntity::CreateEntity(uint16 lowestId)
 	return ArgusEntity(id);
 }
 
+void ArgusEntity::DestroyEntity(ArgusEntity& entityToDestroy)
+{
+	if (!entityToDestroy)
+	{
+		return;
+	}
+
+	uint16 entityToDestoryId = entityToDestroy.GetId();
+	s_takenEntityIds.set(entityToDestoryId, false);
+	ArgusComponentRegistry::RemoveComponentsForEntity(entityToDestoryId);
+	
+	if (entityToDestoryId == s_lowestTakenEntityId)
+	{
+		uint16 newLowestTakenId = ArgusECSConstants::k_maxEntities;
+		for (uint16 i = s_lowestTakenEntityId + 1u; i <= s_highestTakenEntityId; ++i)
+		{
+			if (s_takenEntityIds[entityToDestoryId])
+			{
+				newLowestTakenId = i;
+				break;
+			}
+		}
+
+		s_lowestTakenEntityId = newLowestTakenId;
+	}
+
+	if (entityToDestoryId == s_highestTakenEntityId)
+	{
+		uint16 newHighestTakenId = 0u;
+		for (uint16 i = s_highestTakenEntityId - 1u; i >= s_lowestTakenEntityId; --i)
+		{
+			if (s_takenEntityIds[entityToDestoryId])
+			{
+				newHighestTakenId = i;
+				break;
+			}
+		}
+
+		s_highestTakenEntityId = newHighestTakenId;
+	}
+
+	entityToDestroy = s_emptyEntity;
+}
+
+void ArgusEntity::DestroyEntity(uint16 entityIdToDestroy)
+{
+	ArgusEntity entityToDestroy = RetrieveEntity(entityIdToDestroy);
+	if (entityToDestroy)
+	{
+		DestroyEntity(entityToDestroy);
+	}
+}
+
 ArgusEntity ArgusEntity::RetrieveEntity(uint16 id)
 {
 	if (id < ArgusECSConstants::k_maxEntities && s_takenEntityIds[id])

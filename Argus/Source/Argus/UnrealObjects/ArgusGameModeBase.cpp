@@ -135,7 +135,7 @@ void AArgusGameModeBase::DespawnActorForEntity(ArgusEntity spawnedEntity)
 	}
 	taskComponent->m_baseState = EBaseState::None;
 
-	// TODO JAMES: We need a way of destroying entities lmao
+	ArgusEntity::DestroyEntity(spawnedEntity);
 }
 
 FColor AArgusGameModeBase::GetTeamColor(ETeam team)

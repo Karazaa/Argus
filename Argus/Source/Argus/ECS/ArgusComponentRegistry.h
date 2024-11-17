@@ -41,6 +41,7 @@ public:
 		return nullptr;
 	}
 
+	static void RemoveComponentsForEntity(uint16 entityId);
 	static void FlushAllComponents();
 	static void AppendComponentDebugStrings(uint16 entityId, FString& debugStringToAppendTo);
 

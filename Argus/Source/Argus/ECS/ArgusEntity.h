@@ -13,6 +13,8 @@ public:
 	static void				FlushAllEntities();
 	static bool				DoesEntityExist(uint16 id);
 	static ArgusEntity		CreateEntity(uint16 lowestId = 0u);
+	static void				DestroyEntity(ArgusEntity& entityToDestroy);
+	static void				DestroyEntity(uint16 entityIdToDestroy);
 	static ArgusEntity		RetrieveEntity(uint16 id);
 	static uint16			GetNextLowestUntakenId(uint16 lowestId);
 	static uint16			GetLowestTakenEntityId() { return s_lowestTakenEntityId; }

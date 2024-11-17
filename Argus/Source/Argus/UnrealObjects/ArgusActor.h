@@ -24,6 +24,7 @@ public:
 	void SetSelectionState(bool isSelected);
 	void Show();
 	void Hide();
+	bool IsVisible() const;
 
 protected:
 	UFUNCTION(BlueprintImplementableEvent)

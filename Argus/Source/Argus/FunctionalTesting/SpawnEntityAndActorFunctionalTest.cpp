@@ -1,8 +1,10 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "SpawnEntityAndActorFunctionalTest.h"
+#include "ArgusActor.h"
 #include "ArgusEntityTemplate.h"
 #include "ArgusStaticData.h"
+#include "EngineUtils.h"
 
 ASpawnEntityAndActorFunctionalTest::ASpawnEntityAndActorFunctionalTest(const FObjectInitializer& ObjectInitializer)
 {
@@ -184,23 +186,24 @@ bool ASpawnEntityAndActorFunctionalTest::DidSpawnArgusActorTestStep()
 }
 
 bool ASpawnEntityAndActorFunctionalTest::DidDespawnArgusActorTestStep()
-{	
+{
+	if (ArgusEntity::DoesEntityExist(m_expectedSpawnedEntityId))
+	{
+		return false;
+	}
+
 	const UWorld* worldPointer = GetWorld();
 	if (!worldPointer)
 	{
 		return false;
 	}
 
-	const UArgusGameInstance* gameInstance = worldPointer->GetGameInstance<UArgusGameInstance>();
-	if (!gameInstance)
+	for (const AArgusActor* foundArgusActor : TActorRange<AArgusActor>(worldPointer))
 	{
-		return false;
-	}
-
-	const AArgusActor* argusActor = gameInstance->GetArgusActorFromArgusEntity(ArgusEntity::RetrieveEntity(m_expectedSpawnedEntityId));
-	if (argusActor)
-	{
-		return false;
+		if (foundArgusActor && foundArgusActor->IsVisible())
+		{
+			return false;
+		}
 	}
 
 	return true;
