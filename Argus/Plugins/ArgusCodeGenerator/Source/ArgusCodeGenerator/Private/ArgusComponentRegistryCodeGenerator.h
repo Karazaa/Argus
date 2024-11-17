@@ -21,6 +21,9 @@ private:
 	static const char* s_dynamicAllocComponentHeaderTemplateFilename;
 	static const char* s_componentCppTemplateDefinitionsFilename;
 	static const char* s_dynamicAllocComponentCppTemplateDefinitionsFilename;
+	static const char* s_removeComponentCppTemplateBitsetFilename;
+	static const char* s_removeComponentCppTemplateValuesFilename;
+	static const char* s_removeComponentCppTemplateDynamicAllocFilename;
 	static const char* s_componentCppTemplateFlushFilename;
 	static const char* s_componentCppTemplateResetFilename;
 	static const char* s_dynamicAllocComponentCppTemplateResetFilename;
@@ -40,6 +43,9 @@ private:
 		std::string argusComponentRegistryCppTemplateFilePath = "";
 		std::string componentCppTemplateDefinitionsFilePath = "";
 		std::string dynamicAllocComponentCppTemplateDefinitionsFilePath = "";
+		std::string removeComponentCppTemplateBitsetFilePath = "";
+		std::string removeComponentCppTemplateValuesFilePath = "";
+		std::string removeComponentCppTemplateDynamicAllocFilePath = "";
 		std::string componentCppTemplateFlushFilePath = "";
 		std::string componentCppTemplateResetFilePath = "";
 		std::string dynamicAllocComponentCppTemplateResetFilePath = "";

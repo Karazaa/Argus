@@ -44,6 +44,7 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 		return;
 	}
 
+	// Begin set bitset bits to false
 	s_isHealthComponentActive.set(entityId, false);
 	s_isIdentityComponentActive.set(entityId, false);
 	s_isNavigationComponentActive.set(entityId, false);
@@ -52,6 +53,7 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 	s_isTaskComponentActive.set(entityId, false);
 	s_isTransformComponentActive.set(entityId, false);
 
+	// Begin set component values
 	s_HealthComponents[entityId] = HealthComponent();
 	s_IdentityComponents[entityId] = IdentityComponent();
 	s_NavigationComponents[entityId] = NavigationComponent();
@@ -60,6 +62,7 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 	s_TaskComponents[entityId] = TaskComponent();
 	s_TransformComponents[entityId] = TransformComponent();
 
+	// Begin remove dynamically allocated components
 	if (s_SpatialPartitioningComponents.contains(entityId))
 	{
 		s_SpatialPartitioningComponents.erase(entityId);
@@ -89,6 +92,7 @@ void ArgusComponentRegistry::FlushAllComponents()
 		s_TransformComponents[i] = TransformComponent();
 	}
 
+	// Begin flush dynamically allocated components
 	s_SpatialPartitioningComponents.clear();
 }
 

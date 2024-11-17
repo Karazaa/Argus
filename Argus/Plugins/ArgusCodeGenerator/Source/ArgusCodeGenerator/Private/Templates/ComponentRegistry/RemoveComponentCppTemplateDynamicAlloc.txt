@@ -1,0 +1,4 @@
+	if (s_#####s.contains(entityId))
+	{
+		s_#####s.erase(entityId);
+	}

@@ -15,6 +15,9 @@ const char* ArgusComponentRegistryCodeGenerator::s_componentHeaderTemplateFilena
 const char* ArgusComponentRegistryCodeGenerator::s_dynamicAllocComponentHeaderTemplateFilename = "DynamicAllocComponentHeaderTemplate.txt";
 const char* ArgusComponentRegistryCodeGenerator::s_componentCppTemplateDefinitionsFilename = "ComponentCppTemplateDefinitions.txt";
 const char* ArgusComponentRegistryCodeGenerator::s_dynamicAllocComponentCppTemplateDefinitionsFilename = "DynamicAllocComponentCppTemplateDefinitions.txt";
+const char* ArgusComponentRegistryCodeGenerator::s_removeComponentCppTemplateBitsetFilename = "RemoveComponentCppTemplateBitset.txt";
+const char* ArgusComponentRegistryCodeGenerator::s_removeComponentCppTemplateValuesFilename = "RemoveComponentCppTemplateValues.txt";
+const char* ArgusComponentRegistryCodeGenerator::s_removeComponentCppTemplateDynamicAllocFilename = "RemoveComponentCppTemplateDynamicAlloc.txt";
 const char* ArgusComponentRegistryCodeGenerator::s_componentCppTemplateFlushFilename = "ComponentCppTemplateFlush.txt";
 const char* ArgusComponentRegistryCodeGenerator::s_componentCppTemplateResetFilename = "ComponentCppTemplateReset.txt";
 const char* ArgusComponentRegistryCodeGenerator::s_dynamicAllocComponentCppTemplateResetFilename = "DynamicAllocComponentCppTemplateReset.txt";
@@ -47,6 +50,9 @@ void ArgusComponentRegistryCodeGenerator::GenerateComponentRegistryCode(const Ar
 	params.dynamicAllocComponentHeaderTemplateFilePath = std::string(cStrTemplateDirectory).append(s_dynamicAllocComponentHeaderTemplateFilename);
 	params.componentCppTemplateDefinitionsFilePath = std::string(cStrTemplateDirectory).append(s_componentCppTemplateDefinitionsFilename);
 	params.dynamicAllocComponentCppTemplateDefinitionsFilePath = std::string(cStrTemplateDirectory).append(s_dynamicAllocComponentCppTemplateDefinitionsFilename);
+	params.removeComponentCppTemplateBitsetFilePath = std::string(cStrTemplateDirectory).append(s_removeComponentCppTemplateBitsetFilename);
+	params.removeComponentCppTemplateValuesFilePath = std::string(cStrTemplateDirectory).append(s_removeComponentCppTemplateValuesFilename);
+	params.removeComponentCppTemplateDynamicAllocFilePath = std::string(cStrTemplateDirectory).append(s_removeComponentCppTemplateDynamicAllocFilename);
 	params.componentCppTemplateResetFilePath = std::string(cStrTemplateDirectory).append(s_componentCppTemplateResetFilename);
 	params.componentCppTemplateFlushFilePath = std::string(cStrTemplateDirectory).append(s_componentCppTemplateFlushFilename);
 	params.dynamicAllocComponentCppTemplateResetFilePath = std::string(cStrTemplateDirectory).append(s_dynamicAllocComponentCppTemplateResetFilename);
@@ -164,6 +170,18 @@ bool ArgusComponentRegistryCodeGenerator::ParseComponentRegistryCppTemplateWithR
 	std::vector<std::string> parsedDynamicAllocDefinitionLines = std::vector<std::string>();
 	didSucceed &= ArgusCodeGeneratorUtil::ParseComponentSpecificTemplate(params.dynamicAllocComponentCppTemplateDefinitionsFilePath, params.inDynamicAllocComponentNames, parsedDynamicAllocDefinitionLines);
 
+	// Parse dynamic alloc definitions template into one section
+	std::vector<std::string> parsedRemoveComponentBitset = std::vector<std::string>();
+	didSucceed &= ArgusCodeGeneratorUtil::ParseComponentSpecificTemplate(params.removeComponentCppTemplateBitsetFilePath, params.inComponentNames, parsedRemoveComponentBitset);
+
+	// Parse dynamic alloc definitions template into one section
+	std::vector<std::string> parsedRemoveComponentValues = std::vector<std::string>();
+	didSucceed &= ArgusCodeGeneratorUtil::ParseComponentSpecificTemplate(params.removeComponentCppTemplateValuesFilePath, params.inComponentNames, parsedRemoveComponentValues);
+
+	// Parse dynamic alloc definitions template into one section
+	std::vector<std::string> parsedRemoveComponentDynamicAlloc = std::vector<std::string>();
+	didSucceed &= ArgusCodeGeneratorUtil::ParseComponentSpecificTemplate(params.removeComponentCppTemplateDynamicAllocFilePath, params.inDynamicAllocComponentNames, parsedRemoveComponentDynamicAlloc);
+
 	// Parse reset template into one section
 	std::vector<std::string> parsedResetLines = std::vector<std::string>();
 	didSucceed &= ArgusCodeGeneratorUtil::ParseComponentSpecificTemplate(params.componentCppTemplateResetFilePath, params.inComponentNames, parsedResetLines);
@@ -204,6 +222,27 @@ bool ArgusComponentRegistryCodeGenerator::ParseComponentRegistryCppTemplateWithR
 		else if (cppLineText.find("^^^^^") != std::string::npos)
 		{
 			for (std::string parsedLine : parsedDynamicAllocDefinitionLines)
+			{
+				outFileContents.push_back(parsedLine);
+			}
+		}
+		else if (cppLineText.find("*****") != std::string::npos)
+		{
+			for (std::string parsedLine : parsedRemoveComponentBitset)
+			{
+				outFileContents.push_back(parsedLine);
+			}
+		}
+		else if (cppLineText.find("~~~~~") != std::string::npos)
+		{
+			for (std::string parsedLine : parsedRemoveComponentValues)
+			{
+				outFileContents.push_back(parsedLine);
+			}
+		}
+		else if (cppLineText.find("?????") != std::string::npos)
+		{
+			for (std::string parsedLine : parsedRemoveComponentDynamicAlloc)
 			{
 				outFileContents.push_back(parsedLine);
 			}

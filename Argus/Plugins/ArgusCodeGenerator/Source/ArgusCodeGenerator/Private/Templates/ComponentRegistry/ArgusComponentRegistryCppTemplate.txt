@@ -7,17 +7,36 @@
 @@@@@
 ^^^^^
 
+void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
+{
+	if (entityId >= ArgusECSConstants::k_maxEntities)
+	{
+		UE_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d."), ARGUS_FUNCNAME, entityId);
+		return;
+	}
+
+	// Begin set bitset bits to false
+	*****
+
+	// Begin set component values
+	~~~~~
+
+	// Begin remove dynamically allocated components
+	?????
+}
+
 void ArgusComponentRegistry::FlushAllComponents()
 {
 	// Begin flush active component bitsets
 	#####
 
 	// Begin flush component values
-	for (int i = 0; i < ArgusECSConstants::k_maxEntities; ++i)
+	for (uint16 i = 0u; i < ArgusECSConstants::k_maxEntities; ++i)
 	{
 		$$$$$
 	}
 
+	// Begin flush dynamically allocated components
 	&&&&&
 }
 
