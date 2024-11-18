@@ -9,7 +9,6 @@
 ASpawnEntityAndActorFunctionalTest::ASpawnEntityAndActorFunctionalTest(const FObjectInitializer& ObjectInitializer)
 {
 	TestLabel = k_testName;
-	m_cachedSecondsBetweenSteps = m_secondsBetweenSteps;
 }
 
 bool ASpawnEntityAndActorFunctionalTest::DidArgusFunctionalTestFail()
@@ -124,12 +123,13 @@ void ASpawnEntityAndActorFunctionalTest::StartSpawnArgusEntityTestStep()
 void ASpawnEntityAndActorFunctionalTest::StartSpawnArgusActorTestStep()
 {
 	StartStep(TEXT("Spawn Argus Actor."));
-	m_secondsBetweenSteps = m_secondsToWaitAfterSpawningActor;
+	SetMinimumSecondsPerTestStep(m_secondsToWaitAfterSpawningActor);
 }
 
 void ASpawnEntityAndActorFunctionalTest::StartDespawnArgusActorTestStep()
 {
 	StartStep(TEXT("Despawn Argus Actor."));
+	SetMinimumSecondsPerTestStep(m_secondsToWaitAfterSpawningActor);
 
 	ArgusEntity spawnedEntity = ArgusEntity::RetrieveEntity(m_expectedSpawnedEntityId);
 	if (!spawnedEntity)

@@ -45,6 +45,4 @@ private:
 	TObjectPtr<UArgusActorRecord> m_loadedArgusActorRecord = nullptr;
 	ArgusEntity m_spawnerEntity = ArgusEntity::s_emptyEntity;
 	uint16 m_expectedSpawnedEntityId = ArgusECSConstants::k_maxEntities;
-
-	float m_cachedSecondsBetweenSteps = 0.0f;
 };

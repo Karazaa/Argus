@@ -48,9 +48,9 @@ bool AArgusFunctionalTest::DidArgusFunctionalTestSucceed()
 {
 	if (DidCurrentTestStepSucceed())
 	{
-		if (m_secondsBetweenSteps > 0.0f && !m_delayBetweenStepsTimer.IsSet())
+		if (m_minimumSecondsForCurrentTestStep > 0.0f && !m_delayBetweenStepsTimer.IsSet())
 		{
-			m_delayBetweenStepsTimer = m_secondsBetweenSteps;
+			m_delayBetweenStepsTimer = m_minimumSecondsForCurrentTestStep;
 			return false;
 		}
 
@@ -65,10 +65,7 @@ bool AArgusFunctionalTest::DidArgusFunctionalTestSucceed()
 			return true;
 		}
 
-		m_testStepIndex++;
-		FinishStep();
-		m_delayBetweenStepsTimer.Reset();
-		StartNextTestStep();
+		FinishTestStep();
 	}
 
 	return false;
@@ -100,4 +97,18 @@ void AArgusFunctionalTest::ExitArgusFunctionalTest()
 	{
 		playerController->ConsoleCommand("quit");
 	}
+}
+
+void AArgusFunctionalTest::SetMinimumSecondsPerTestStep(float secondsPerTestStep)
+{
+	m_minimumSecondsForCurrentTestStep = secondsPerTestStep;
+}
+
+void AArgusFunctionalTest::FinishTestStep()
+{
+	m_minimumSecondsForCurrentTestStep = m_defaultMinimumSecondsPerTestStep;
+	m_testStepIndex++;
+	FinishStep();
+	m_delayBetweenStepsTimer.Reset();
+	StartNextTestStep();
 }

@@ -13,15 +13,9 @@ class ARGUS_API AArgusFunctionalTest : public AFunctionalTest
 public:
 	AArgusFunctionalTest(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
-	UPROPERTY(EditAnywhere)
-	float m_secondsBetweenSteps = 0.0f;
-
 protected:
-	FString m_testSucceededMessage = FString();
-	FString m_testFailedMessage = FString();
-	uint8 m_testStepIndex = 0;
-	float m_currentDeltaSeconds = 0.1f;
-	TOptional<float> m_delayBetweenStepsTimer;
+	UPROPERTY(EditAnywhere)
+	float m_defaultMinimumSecondsPerTestStep = 0.0f;
 
 	virtual bool IsReady_Implementation()	override	{ return true; }
 	virtual void BeginPlay()				override;
@@ -38,4 +32,17 @@ protected:
 	virtual void ConcludeSuccessfulArgusFunctionalTest();
 	virtual void ConcludeFailedArgusFunctionalTest();
 	virtual void ExitArgusFunctionalTest();
+
+	void SetMinimumSecondsPerTestStep(float secondsPerTestStep);
+
+	FString m_testSucceededMessage = FString();
+	FString m_testFailedMessage = FString();
+	uint8 m_testStepIndex = 0;
+	float m_currentDeltaSeconds = 0.1f;
+	TOptional<float> m_delayBetweenStepsTimer;
+
+private:
+	void FinishTestStep();
+
+	float m_minimumSecondsForCurrentTestStep = 0.0f;
 };
