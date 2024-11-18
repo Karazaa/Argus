@@ -14,6 +14,9 @@ AArgusCameraActor::AArgusCameraActor() :
 {
 	PrimaryActorTick.bCanEverTick = true;
 	SetRootComponent(CreateDefaultSubobject<UCameraComponent>(FName("CameraComponent")));
+
+	m_zoomRange = TRange<float>(m_minZoomDistanceToGround, m_maxZoomDistanceToGround);
+	m_zeroToOne = TRange<float>(0.0f, 1.0f);
 }
 
 void AArgusCameraActor::ForceSetCameraPositionWithoutZoom(const FVector& position)
@@ -61,16 +64,18 @@ void AArgusCameraActor::UpdateCameraPanning(const UpdateCameraPanningParameters&
 	float desiredHorizontalVelocity = 0.0f;
 
 	FVector translation = FVector::ZeroVector;
+	const float scaledDesiredVerticalVelocity = FMath::Lerp(m_minimumDesiredVerticalVelocity, m_maximumDesiredVerticalVelocity, m_zoomLevelInterpolant);
+	const float scaledDesiredHorizontalVelocity = FMath::Lerp(m_minimumDesiredHorizontalVelocity, m_maximumDesiredHorizontalVelocity, m_zoomLevelInterpolant);
 
 	// UP
 	if (cameraParameters.m_screenSpaceMousePosition->Y < paddingAmountY)
 	{
-		desiredVerticalVelocity = m_desiredVerticalVelocity;
+		desiredVerticalVelocity = scaledDesiredVerticalVelocity;
 	}
 	// DOWN
 	else if (cameraParameters.m_screenSpaceMousePosition->Y > (cameraParameters.m_screenSpaceXYBounds->Y - paddingAmountY))
 	{
-		desiredVerticalVelocity = -m_desiredVerticalVelocity;
+		desiredVerticalVelocity = -scaledDesiredVerticalVelocity;
 	}
 	m_currentVerticalVelocity.SmoothChase(desiredVerticalVelocity, deltaTime);
 	translation += m_moveUpDir * (m_currentVerticalVelocity.GetValue() * deltaTime);
@@ -78,12 +83,12 @@ void AArgusCameraActor::UpdateCameraPanning(const UpdateCameraPanningParameters&
 	// LEFT
 	if (cameraParameters.m_screenSpaceMousePosition->X < paddingAmountX)
 	{
-		desiredHorizontalVelocity = -m_desiredHorizontalVelocity;
+		desiredHorizontalVelocity = -scaledDesiredHorizontalVelocity;
 	}
 	// RIGHT
 	else if (cameraParameters.m_screenSpaceMousePosition->X > (cameraParameters.m_screenSpaceXYBounds->X - paddingAmountX))
 	{
-		desiredHorizontalVelocity = m_desiredHorizontalVelocity;
+		desiredHorizontalVelocity = scaledDesiredHorizontalVelocity;
 	}
 	m_currentHorizontalVelocity.SmoothChase(desiredHorizontalVelocity, deltaTime);
 	translation += m_moveRightDir * (m_currentHorizontalVelocity.GetValue() * deltaTime);
@@ -114,6 +119,8 @@ void AArgusCameraActor::UpdateCameraZoomInternal(const float deltaTime)
 	if (world->LineTraceSingleByChannel(hitResult, proposedPosition, traceEndpoint, ECC_WorldStatic))
 	{
 		const float distanceUpdateThisFrame = -m_zoomInputThisFrame * m_desiredZoomVelocity;
+
+		m_zoomLevelInterpolant = FMath::GetMappedRangeValueClamped(m_zoomRange, m_zeroToOne, hitResult.Distance);
 
 		// Camera is too close to terrain
 		if ((distanceUpdateThisFrame + hitResult.Distance) < m_minZoomDistanceToGround)

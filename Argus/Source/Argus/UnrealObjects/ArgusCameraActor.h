@@ -40,13 +40,19 @@ protected:
 	float m_horizontalScreenMovePaddingProportion = 0.2f;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Panning")
-	float m_desiredVerticalVelocity = 500.0f;
+	float m_minimumDesiredVerticalVelocity = 300.0f;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Panning")
+	float m_maximumDesiredVerticalVelocity = 600.0f;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Panning", Meta = (ClampMin = "1.0", ClampMax = "30.0"))
 	float m_verticalVelocitySmoothingDecayConstant = 5.0f;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Panning")
-	float m_desiredHorizontalVelocity = 500.0f;
+	float m_minimumDesiredHorizontalVelocity = 300.0f;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Panning")
+	float m_maximumDesiredHorizontalVelocity = 600.0f;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Panning", Meta = (ClampMin = "1.0", ClampMax = "30.0"))
 	float m_horizontalVelocitySmoothingDecayConstant = 5.0f;
@@ -74,6 +80,10 @@ private:
 	ArgusMath::ExponentialDecaySmoother<FVector>	m_currentLocation;
 
 	float m_zoomInputThisFrame = 0.0f;
+	float m_zoomLevelInterpolant = 0.5f;
+	TRange<float> m_zoomRange;
+	TRange<float> m_zeroToOne;
+
 	FVector m_zoomTargetTranslation = FVector::ZeroVector;
 	FVector m_cameraPositionWithoutZoom = FVector::ZeroVector;
 
