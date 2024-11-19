@@ -31,7 +31,7 @@ bool TargetingSystems::TargetingSystemsComponentArgs::AreComponentsValidCheck() 
 {
 	if (!m_targetingComponent || !m_transformComponent)
 	{
-		UE_LOG(ArgusECSLog, Error, TEXT("[%s] Targeting Systems were run with invalid component arguments passed."), ARGUS_FUNCNAME);
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Targeting Systems were run with invalid component arguments passed."), ARGUS_FUNCNAME);
 		return false;
 	}
 

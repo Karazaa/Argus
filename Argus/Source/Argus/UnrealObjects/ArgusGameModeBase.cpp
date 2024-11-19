@@ -12,7 +12,7 @@ AArgusGameModeBase::AArgusGameModeBase()
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
 
-	UE_LOG(ArgusUnrealObjectsLog, Display, TEXT("[%s] Constructing Argus game mode base."), ARGUS_FUNCNAME);
+	ARGUS_LOG(ArgusUnrealObjectsLog, Display, TEXT("[%s] Constructing Argus game mode base."), ARGUS_FUNCNAME);
 	GameStateClass = AArgusGameStateBase::StaticClass();
 }
 
@@ -20,7 +20,7 @@ void AArgusGameModeBase::StartPlay()
 {
 	ArgusEntity::FlushAllEntities();
 	Super::StartPlay();
-	UE_LOG(ArgusUnrealObjectsLog, Display, TEXT("[%s] Argus game mode base starting play."), ARGUS_FUNCNAME);
+	ARGUS_LOG(ArgusUnrealObjectsLog, Display, TEXT("[%s] Argus game mode base starting play."), ARGUS_FUNCNAME);
 }
 
 void AArgusGameModeBase::Tick(float deltaTime)
@@ -142,7 +142,7 @@ FColor AArgusGameModeBase::GetTeamColor(ETeam team)
 {
 	if (!m_teamColorMap.Contains(team))
 	{
-		UE_LOG
+		ARGUS_LOG
 		(
 			ArgusUnrealObjectsLog, 
 			Error, 
@@ -157,7 +157,7 @@ FColor AArgusGameModeBase::GetTeamColor(ETeam team)
 	TObjectPtr<UTeamColorRecord>* pointerToTeamColorRecordObjectPointer = &m_teamColorMap[team];
 	if (!(*pointerToTeamColorRecordObjectPointer))
 	{
-		UE_LOG
+		ARGUS_LOG
 		(
 			ArgusUnrealObjectsLog, 
 			Error, 

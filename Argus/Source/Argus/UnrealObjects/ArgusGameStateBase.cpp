@@ -7,5 +7,5 @@
 void AArgusGameStateBase::HandleBeginPlay()
 {
 	Super::HandleBeginPlay();
-	UE_LOG(ArgusUnrealObjectsLog, Display, TEXT("Argus game state base handling BeginPlay."));
+	ARGUS_LOG(ArgusUnrealObjectsLog, Display, TEXT("Argus game state base handling BeginPlay."));
 }

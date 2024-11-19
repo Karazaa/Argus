@@ -16,42 +16,42 @@ bool ArgusComponentComponentSizeTest::RunTest(const FString& Parameters)
 #pragma region HealthComponent
 	const size_t HealthComponentSize = sizeof(HealthComponent);
 	netSize += HealthComponentSize;
-	UE_LOG(ArgusECSLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(HealthComponent), HealthComponentSize);
+	ARGUS_LOG(ArgusTestingLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(HealthComponent), HealthComponentSize);
 #pragma endregion
 #pragma region IdentityComponent
 	const size_t IdentityComponentSize = sizeof(IdentityComponent);
 	netSize += IdentityComponentSize;
-	UE_LOG(ArgusECSLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(IdentityComponent), IdentityComponentSize);
+	ARGUS_LOG(ArgusTestingLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(IdentityComponent), IdentityComponentSize);
 #pragma endregion
 #pragma region NavigationComponent
 	const size_t NavigationComponentSize = sizeof(NavigationComponent);
 	netSize += NavigationComponentSize;
-	UE_LOG(ArgusECSLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(NavigationComponent), NavigationComponentSize);
+	ARGUS_LOG(ArgusTestingLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(NavigationComponent), NavigationComponentSize);
 #pragma endregion
 #pragma region SpawningComponent
 	const size_t SpawningComponentSize = sizeof(SpawningComponent);
 	netSize += SpawningComponentSize;
-	UE_LOG(ArgusECSLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(SpawningComponent), SpawningComponentSize);
+	ARGUS_LOG(ArgusTestingLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(SpawningComponent), SpawningComponentSize);
 #pragma endregion
 #pragma region TargetingComponent
 	const size_t TargetingComponentSize = sizeof(TargetingComponent);
 	netSize += TargetingComponentSize;
-	UE_LOG(ArgusECSLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(TargetingComponent), TargetingComponentSize);
+	ARGUS_LOG(ArgusTestingLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(TargetingComponent), TargetingComponentSize);
 #pragma endregion
 #pragma region TaskComponent
 	const size_t TaskComponentSize = sizeof(TaskComponent);
 	netSize += TaskComponentSize;
-	UE_LOG(ArgusECSLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(TaskComponent), TaskComponentSize);
+	ARGUS_LOG(ArgusTestingLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(TaskComponent), TaskComponentSize);
 #pragma endregion
 #pragma region TransformComponent
 	const size_t TransformComponentSize = sizeof(TransformComponent);
 	netSize += TransformComponentSize;
-	UE_LOG(ArgusECSLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), TransformComponentSize);
+	ARGUS_LOG(ArgusTestingLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), TransformComponentSize);
 #pragma endregion
 
 	netSize *= ArgusECSConstants::k_maxEntities;
 	netSize /= 1024;
-	UE_LOG(ArgusECSLog, Display, TEXT("[%s] Net size of all component arrays = %d kb"), ARGUS_FUNCNAME, netSize);
+	ARGUS_LOG(ArgusTestingLog, Display, TEXT("[%s] Net size of all component arrays = %d kb"), ARGUS_FUNCNAME, netSize);
 
 	TestTrue(TEXT("Printing out component sizes"), true);
 	return true;

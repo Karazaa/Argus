@@ -13,7 +13,7 @@ const UArgusActorRecord* UArgusActorRecordDatabase::GetRecord(uint32 id)
 		
 		if (static_cast<uint32>(m_UArgusActorRecordsPersistent.Num()) <= id)
 		{
-			UE_LOG
+			ARGUS_LOG
 			(
 				ArgusStaticDataLog, Error,
 				TEXT("[%s] Could not find %s %d in %s."),

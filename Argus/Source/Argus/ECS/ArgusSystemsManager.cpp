@@ -18,7 +18,7 @@ void ArgusSystemsManager::RunSystems(TWeakObjectPtr<UWorld>& worldPointer, float
 
 	if (!worldPointer.IsValid())
 	{
-		UE_LOG
+		ARGUS_LOG
 		(
 			ArgusECSLog, Error, TEXT("[%s] was invoked with an invalid %s, %s."),
 			ARGUS_FUNCNAME, 

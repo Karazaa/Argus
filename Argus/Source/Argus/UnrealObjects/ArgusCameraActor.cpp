@@ -102,7 +102,7 @@ void AArgusCameraActor::UpdateCameraZoomInternal(const float deltaTime)
 	UWorld* world = GetWorld();
 	if (!world)
 	{
-		UE_LOG(ArgusUnrealObjectsLog, Error, TEXT("[%s] Failed to get %s reference."), ARGUS_FUNCNAME, ARGUS_NAMEOF(UWorld));
+		ARGUS_LOG(ArgusUnrealObjectsLog, Error, TEXT("[%s] Failed to get %s reference."), ARGUS_FUNCNAME, ARGUS_NAMEOF(UWorld));
 		return;
 	}
 

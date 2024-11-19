@@ -40,7 +40,7 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 {
 	if (entityId >= ArgusECSConstants::k_maxEntities)
 	{
-		UE_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d."), ARGUS_FUNCNAME, entityId);
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d."), ARGUS_FUNCNAME, entityId);
 		return;
 	}
 

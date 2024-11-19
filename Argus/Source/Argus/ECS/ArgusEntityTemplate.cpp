@@ -51,7 +51,7 @@ void UArgusEntityTemplate::PostEditChangeProperty(FPropertyChangedEvent& propert
 
 			if (modifiedComponent->MatchesType(m_componentData[i].LoadSynchronous()))
 			{
-				UE_LOG(ArgusECSLog, Error, TEXT("[%s] Found duplicate component type when assigning to an ArgusEntityTemplate. An ArgusEntity can only have one instance of a component type."), ARGUS_FUNCNAME);
+				ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Found duplicate component type when assigning to an ArgusEntityTemplate. An ArgusEntity can only have one instance of a component type."), ARGUS_FUNCNAME);
 				m_componentData[arrayIndex] = nullptr;
 				return;
 			}

@@ -63,7 +63,7 @@ bool AArgusPlayerController::GetMouseProjectionLocation(FHitResult& outHitResult
 	UWorld* world = GetWorld();
 	if (!world)
 	{
-		UE_LOG(ArgusUnrealObjectsLog, Error, TEXT("[%s] Failed to get %s reference."), ARGUS_FUNCNAME, ARGUS_NAMEOF(UWorld));
+		ARGUS_LOG(ArgusUnrealObjectsLog, Error, TEXT("[%s] Failed to get %s reference."), ARGUS_FUNCNAME, ARGUS_NAMEOF(UWorld));
 		return false;
 	}
 
@@ -115,21 +115,21 @@ bool AArgusPlayerController::IsArgusActorOnPlayerTeam(const AArgusActor* const a
 {
 	if (!actor)
 	{
-		UE_LOG(ArgusUnrealObjectsLog, Error, TEXT("[%s] Passed %s is null."), ARGUS_FUNCNAME, ARGUS_NAMEOF(AArgusActor*));
+		ARGUS_LOG(ArgusUnrealObjectsLog, Error, TEXT("[%s] Passed %s is null."), ARGUS_FUNCNAME, ARGUS_NAMEOF(AArgusActor*));
 		return false;
 	}
 
 	ArgusEntity entity = actor->GetEntity();
 	if (!entity)
 	{
-		UE_LOG(ArgusUnrealObjectsLog, Error, TEXT("[%s] Could not retrieve %s from %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(AArgusActor*));
+		ARGUS_LOG(ArgusUnrealObjectsLog, Error, TEXT("[%s] Could not retrieve %s from %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(AArgusActor*));
 		return false;
 	}
 
 	const IdentityComponent* identityComponent = entity.GetComponent<IdentityComponent>();
 	if (!identityComponent)
 	{
-		UE_LOG(ArgusUnrealObjectsLog, Error, TEXT("[%s] Could not retrieve %s from %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(IdentityComponent), ARGUS_NAMEOF(ArgusEntity));
+		ARGUS_LOG(ArgusUnrealObjectsLog, Error, TEXT("[%s] Could not retrieve %s from %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(IdentityComponent), ARGUS_NAMEOF(ArgusEntity));
 		return false;
 	}
 
@@ -141,7 +141,7 @@ void AArgusPlayerController::BeginPlay()
 	m_argusCameraActor = Cast<AArgusCameraActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AArgusCameraActor::StaticClass()));
 	if (!m_argusCameraActor)
 	{
-		UE_LOG(ArgusUnrealObjectsLog, Error, TEXT("[%s] Failed to get %s reference."), ARGUS_FUNCNAME, ARGUS_NAMEOF(AArgusCameraActor));
+		ARGUS_LOG(ArgusUnrealObjectsLog, Error, TEXT("[%s] Failed to get %s reference."), ARGUS_FUNCNAME, ARGUS_NAMEOF(AArgusCameraActor));
 		return;
 	}
 
@@ -157,7 +157,7 @@ void AArgusPlayerController::SetupInputComponent()
 		m_argusInputManager = NewObject<UArgusInputManager>();
 		if (!m_argusInputManager)
 		{
-			UE_LOG(ArgusUnrealObjectsLog, Error, TEXT("[%s] Failed to initialize %s when setting up input."), ARGUS_FUNCNAME, ARGUS_NAMEOF(m_argusInputManager));
+			ARGUS_LOG(ArgusUnrealObjectsLog, Error, TEXT("[%s] Failed to initialize %s when setting up input."), ARGUS_FUNCNAME, ARGUS_NAMEOF(m_argusInputManager));
 			return;
 		}
 		m_argusInputManager->AddToRoot();

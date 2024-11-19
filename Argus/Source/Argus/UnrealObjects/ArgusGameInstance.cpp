@@ -11,7 +11,7 @@ UArgusStaticDatabase* UArgusGameInstance::GetStaticDatabase()
 {
 	if (!s_staticDatabaseLoadedReference)
 	{
-		UE_LOG
+		ARGUS_LOG
 		(
 			ArgusStaticDataLog, Error, 
 			TEXT("[%s] No %s has been assigned to yet! Accessing database berfore %s has been called."),

@@ -34,13 +34,13 @@ ArgusEntity ArgusEntity::CreateEntity(uint16 lowestId)
 
 	if (s_takenEntityIds[id])
 	{
-		UE_LOG(ArgusECSLog, Error, TEXT("[%s] Attempting to create an %s with an ID value of an already existing %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(ArgusEntity));
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Attempting to create an %s with an ID value of an already existing %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(ArgusEntity));
 		return s_emptyEntity;
 	}
 
 	if (id == ArgusECSConstants::k_maxEntities)
 	{
-		UE_LOG(ArgusECSLog, Error, TEXT("[%s] Attempting to create an %s with an invalid ID value."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity));
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Attempting to create an %s with an invalid ID value."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity));
 		return s_emptyEntity;
 	}
 
@@ -134,7 +134,7 @@ uint16 ArgusEntity::GetNextLowestUntakenId(uint16 lowestId)
 
 	if (s_takenEntityIds[lowestId])
 	{
-		UE_LOG(ArgusECSLog, Error, TEXT("[%s] Exceeded the maximum number of allowed %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity));
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Exceeded the maximum number of allowed %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity));
 		return ArgusECSConstants::k_maxEntities;
 	}
 

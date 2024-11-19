@@ -14,7 +14,7 @@ const UArgusActorRecord* UArgusStaticDatabase::GetUArgusActorRecord(uint32 id)
 
 	if (!m_UArgusActorRecordDatabasePersistent)
 	{
-		UE_LOG
+		ARGUS_LOG
 		(
 			ArgusStaticDataLog, Error,
 			TEXT("[%s] Could not retrieve %s. %s might not be properly assigned."),
@@ -38,7 +38,7 @@ const uint32 UArgusStaticDatabase::GetIdFromRecordSoftPtr(const TSoftObjectPtr<U
 
 	if (!m_UArgusActorRecordDatabasePersistent)
 	{
-		UE_LOG
+		ARGUS_LOG
 		(
 			ArgusStaticDataLog, Error,
 			TEXT("[%s] Could not retrieve %s. %s might not be properly assigned."),
@@ -63,7 +63,7 @@ const UFactionRecord* UArgusStaticDatabase::GetUFactionRecord(uint32 id)
 
 	if (!m_UFactionRecordDatabasePersistent)
 	{
-		UE_LOG
+		ARGUS_LOG
 		(
 			ArgusStaticDataLog, Error,
 			TEXT("[%s] Could not retrieve %s. %s might not be properly assigned."),
@@ -87,7 +87,7 @@ const uint32 UArgusStaticDatabase::GetIdFromRecordSoftPtr(const TSoftObjectPtr<U
 
 	if (!m_UFactionRecordDatabasePersistent)
 	{
-		UE_LOG
+		ARGUS_LOG
 		(
 			ArgusStaticDataLog, Error,
 			TEXT("[%s] Could not retrieve %s. %s might not be properly assigned."),
@@ -112,7 +112,7 @@ const UTeamColorRecord* UArgusStaticDatabase::GetUTeamColorRecord(uint32 id)
 
 	if (!m_UTeamColorRecordDatabasePersistent)
 	{
-		UE_LOG
+		ARGUS_LOG
 		(
 			ArgusStaticDataLog, Error,
 			TEXT("[%s] Could not retrieve %s. %s might not be properly assigned."),
@@ -136,7 +136,7 @@ const uint32 UArgusStaticDatabase::GetIdFromRecordSoftPtr(const TSoftObjectPtr<U
 
 	if (!m_UTeamColorRecordDatabasePersistent)
 	{
-		UE_LOG
+		ARGUS_LOG
 		(
 			ArgusStaticDataLog, Error,
 			TEXT("[%s] Could not retrieve %s. %s might not be properly assigned."),

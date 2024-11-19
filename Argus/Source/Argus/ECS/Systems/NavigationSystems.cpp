@@ -45,7 +45,7 @@ bool NavigationSystems::NavigationSystemsComponentArgs::AreComponentsValidCheck(
 {
 	if (!m_taskComponent || !m_navigationComponent || !m_targetingComponent || !m_transformComponent)
 	{
-		UE_LOG(ArgusECSLog, Error, TEXT("[%s] Navigation Systems were run with invalid component arguments passed."), ARGUS_FUNCNAME);
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Navigation Systems were run with invalid component arguments passed."), ARGUS_FUNCNAME);
 		return false;
 	}
 
@@ -145,7 +145,7 @@ void NavigationSystems::NavigateFromEntityToLocation(TWeakObjectPtr<UWorld>& wor
 	UNavigationSystemV1* unrealNavigationSystem = UNavigationSystemV1::GetCurrent(worldPointer.Get());
 	if (!unrealNavigationSystem)
 	{
-		UE_LOG(ArgusECSLog, Error, TEXT("[%s] Could not obtain a valid reference to %s"), ARGUS_FUNCNAME, ARGUS_NAMEOF(UNavigationSystemV1));
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Could not obtain a valid reference to %s"), ARGUS_FUNCNAME, ARGUS_NAMEOF(UNavigationSystemV1));
 		return;
 	}
 
@@ -196,7 +196,7 @@ bool NavigationSystems::IsWorldPointerValidCheck(TWeakObjectPtr<UWorld>& worldPo
 {
 	if (!worldPointer.IsValid())
 	{
-		UE_LOG
+		ARGUS_LOG
 		(
 			ArgusECSLog, Error, TEXT("[%s] was invoked with an invalid %s, %s."),
 			ARGUS_FUNCNAME,

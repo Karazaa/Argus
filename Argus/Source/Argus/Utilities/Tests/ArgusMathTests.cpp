@@ -19,14 +19,14 @@ void ChaseValue(ArgusMath::ExponentialDecaySmoother<float>& smoother, float from
 {
 	if (CVarEnableVerboseTestLogging.GetValueOnAnyThread())
 	{
-		UE_LOG(ArgusTestingLog, Display, TEXT("Smoothing from %f to %f"), from, to);
+		ARGUS_LOG(ArgusTestingLog, Display, TEXT("Smoothing from %f to %f"), from, to);
 	}
 	for (int i = 0; i < ArgusMathTests::k_sampleSize; ++i)
 	{
 		smoother.SmoothChase(to, ArgusMathTests::k_deltaTime);
 		if (CVarEnableVerboseTestLogging.GetValueOnAnyThread())
 		{
-			UE_LOG(ArgusTestingLog, Display, TEXT("%s value: %f"), ARGUS_NAMEOF(ExponentialDecaySmoother<float>), smoother.GetValue());
+			ARGUS_LOG(ArgusTestingLog, Display, TEXT("%s value: %f"), ARGUS_NAMEOF(ExponentialDecaySmoother<float>), smoother.GetValue());
 		}
 	}
 }
@@ -35,7 +35,7 @@ void ChaseValue(ArgusMath::ExponentialDecaySmoother<FVector>& smoother, const FV
 {
 	if (CVarEnableVerboseTestLogging.GetValueOnAnyThread())
 	{
-		UE_LOG
+		ARGUS_LOG
 		(
 			ArgusTestingLog, Display, TEXT("Smoothing from {%f, %f, %f} to {%f, %f, %f}."),
 			from.X, from.Y, from.Z,
@@ -48,7 +48,7 @@ void ChaseValue(ArgusMath::ExponentialDecaySmoother<FVector>& smoother, const FV
 		const FVector value = smoother.GetValue();
 		if (CVarEnableVerboseTestLogging.GetValueOnAnyThread())
 		{
-			UE_LOG
+			ARGUS_LOG
 			(
 				ArgusTestingLog,
 				Display,

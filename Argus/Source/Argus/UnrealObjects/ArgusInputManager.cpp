@@ -15,7 +15,7 @@ void UArgusInputManager::SetupInputComponent(TWeakObjectPtr<AArgusPlayerControll
 {
 	if (!owningPlayerController.IsValid())
 	{
-		UE_LOG
+		ARGUS_LOG
 		(
 			ArgusInputLog, Error, TEXT("[%s] %s is setting up an InputComponent without a valid owning %s"),
 			ARGUS_FUNCNAME, 
@@ -28,7 +28,7 @@ void UArgusInputManager::SetupInputComponent(TWeakObjectPtr<AArgusPlayerControll
 
 	if (!m_owningPlayerController->InputComponent)
 	{
-		UE_LOG
+		ARGUS_LOG
 		(
 			ArgusInputLog, Error, TEXT("[%s] Null input component, %s, assigned to %s."),
 			ARGUS_FUNCNAME, 
@@ -92,7 +92,7 @@ void UArgusInputManager::ProcessPlayerInput(TObjectPtr<AArgusCameraActor>& argus
 
 	if (!argusCamera)
 	{
-		UE_LOG
+		ARGUS_LOG
 		(
 			ArgusInputLog, Error, TEXT("[%s] Did not recieve valid reference to %s. Unable to call %s as a result."),
 			ARGUS_FUNCNAME,
@@ -109,7 +109,7 @@ void UArgusInputManager::BindActions(TSoftObjectPtr<UArgusInputActionSet>& argus
 {
 	if (!enhancedInputComponent.IsValid())
 	{
-		UE_LOG
+		ARGUS_LOG
 		(
 			ArgusInputLog, Error, TEXT("[%s] Failed to cast input component, %s, to a %s."),
 			ARGUS_FUNCNAME,
@@ -122,7 +122,7 @@ void UArgusInputManager::BindActions(TSoftObjectPtr<UArgusInputActionSet>& argus
 	const UArgusInputActionSet* actionSet = argusInputActionSet.LoadSynchronous();
 	if (!actionSet)
 	{
-		UE_LOG(ArgusInputLog, Error, TEXT("[%s] Failed to retrieve input action set, %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(argusInputActionSet));
+		ARGUS_LOG(ArgusInputLog, Error, TEXT("[%s] Failed to retrieve input action set, %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(argusInputActionSet));
 		return;
 	}
 
@@ -166,7 +166,7 @@ bool UArgusInputManager::ValidateOwningPlayerController()
 {
 	if (!m_owningPlayerController.IsValid())
 	{
-		UE_LOG(ArgusInputLog, Error, TEXT("[%s] Null %s, assigned in %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(m_owningPlayerController), ARGUS_NAMEOF(UArgusInputManager));
+		ARGUS_LOG(ArgusInputLog, Error, TEXT("[%s] Null %s, assigned in %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(m_owningPlayerController), ARGUS_NAMEOF(UArgusInputManager));
 		return false;
 	}
 
@@ -242,7 +242,7 @@ void UArgusInputManager::ProcessSelectInputEvent(bool isAdditive)
 
 	if (CVarEnableVerboseArgusInputLogging.GetValueOnGameThread())
 	{
-		UE_LOG
+		ARGUS_LOG
 		(
 			ArgusInputLog, Display, TEXT("[%s] selected an %s with ID %d. Is additive? %s"),
 			ARGUS_FUNCNAME,
@@ -290,7 +290,7 @@ void UArgusInputManager::ProcessMarqueeSelectInputEvent(bool isAdditive)
 	const int numFoundEntities = actorsWithinBounds.Num();
 	if (CVarEnableVerboseArgusInputLogging.GetValueOnGameThread())
 	{
-		UE_LOG
+		ARGUS_LOG
 		(
 			ArgusInputLog, Display, TEXT("[%s] Did a Marquee Select from {%f, %f} to {%f, %f}. Found %d entities. Is additive? %s"),
 			ARGUS_FUNCNAME,
@@ -327,7 +327,7 @@ void UArgusInputManager::ProcessMoveToInputEvent()
 	FVector targetLocation = hitResult.Location;
 	if (CVarEnableVerboseArgusInputLogging.GetValueOnGameThread())
 	{
-		UE_LOG
+		ARGUS_LOG
 		(
 			ArgusInputLog, Display, TEXT("[%s] Move To input occurred. Mouse projection worldspace location is (%f, %f, %f)"),
 			ARGUS_FUNCNAME,
@@ -419,7 +419,7 @@ void UArgusInputManager::ProcessSetWaypointInputEvent()
 	FVector targetLocation = hitResult.Location;
 	if (CVarEnableVerboseArgusInputLogging.GetValueOnGameThread())
 	{
-		UE_LOG
+		ARGUS_LOG
 		(
 			ArgusInputLog, Display, TEXT("[%s] Set Waypoint input occurred. Mouse projection worldspace location is (%f, %f, %f)"),
 			ARGUS_FUNCNAME,
@@ -488,7 +488,7 @@ void UArgusInputManager::ProcessZoomInpuEvent(TObjectPtr<AArgusCameraActor>& arg
 	const float zoomValue = value.Get<float>();
 	if (CVarEnableVerboseArgusInputLogging.GetValueOnGameThread())
 	{
-		UE_LOG
+		ARGUS_LOG
 		(
 			ArgusInputLog, Display, TEXT("[%s] Zoom with a value of %f occurred."),
 			ARGUS_FUNCNAME,
@@ -498,7 +498,7 @@ void UArgusInputManager::ProcessZoomInpuEvent(TObjectPtr<AArgusCameraActor>& arg
 
 	if (!argusCamera)
 	{
-		UE_LOG
+		ARGUS_LOG
 		(
 			ArgusInputLog, Error, TEXT("[%s] Did not recieve a valid reference to %s. Cannot call %s."), 
 			ARGUS_FUNCNAME, 

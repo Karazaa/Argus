@@ -9,7 +9,7 @@ const #####* UArgusStaticDatabase::Get#####(uint32 id)
 
 	if (!m_#####DatabasePersistent)
 	{
-		UE_LOG
+		ARGUS_LOG
 		(
 			ArgusStaticDataLog, Error,
 			TEXT("[%s] Could not retrieve %s. %s might not be properly assigned."),
@@ -33,7 +33,7 @@ const uint32 UArgusStaticDatabase::GetIdFromRecordSoftPtr(const TSoftObjectPtr<#
 
 	if (!m_#####DatabasePersistent)
 	{
-		UE_LOG
+		ARGUS_LOG
 		(
 			ArgusStaticDataLog, Error,
 			TEXT("[%s] Could not retrieve %s. %s might not be properly assigned."),
