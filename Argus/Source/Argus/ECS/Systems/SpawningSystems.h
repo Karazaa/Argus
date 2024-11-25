@@ -11,7 +11,7 @@ public:
 
 	struct SpawningSystemsComponentArgs
 	{
-		ArgusEntity m_entity = ArgusEntity::s_emptyEntity;
+		ArgusEntity m_entity = ArgusEntity::k_emptyEntity;
 		TaskComponent* m_taskComponent = nullptr;
 		SpawningComponent* m_spawningComponent = nullptr;
 

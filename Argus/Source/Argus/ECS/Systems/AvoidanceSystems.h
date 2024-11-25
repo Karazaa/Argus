@@ -8,8 +8,8 @@
 class AvoidanceSystems
 {
 public:
-	static void RunSystems(TWeakObjectPtr<UWorld>& worldPointer, float deltaTime);
-	static void ProcessORCAvoidance(TWeakObjectPtr<UWorld>& worldPointer, float deltaTime, const TransformSystems::TransformSystemsComponentArgs& components);
+	static void RunSystems(UWorld* worldPointer, float deltaTime);
+	static void ProcessORCAvoidance(UWorld* worldPointer, float deltaTime, const TransformSystems::TransformSystemsComponentArgs& components);
 	
 private:
 

@@ -363,7 +363,20 @@ bool TransformSystemsMoveAlongPathTest::RunTest(const FString& Parameters)
 	);
 #pragma endregion
 
-	TWeakObjectPtr<UWorld> dummyWorldPointer;
+	UWorld* dummyWorldPointer = nullptr;
+#pragma region Test moving along path with an invalid world pointer.
+	AddExpectedErrorPlain
+	(
+		FString::Printf
+		(
+			TEXT("Passed in %s was invalid."),
+			ARGUS_NAMEOF(UWorld*)
+		),
+		EAutomationExpectedMessageFlags::Contains,
+		4
+	);
+#pragma endregion
+
 	AvoidanceSystems::ProcessORCAvoidance(dummyWorldPointer, deltaSecondsPerStep, components);
 	TransformSystems::MoveAlongNavigationPath(dummyWorldPointer, deltaSecondsPerStep, components);
 	secondCounter += deltaSecondsPerStep;

@@ -20,7 +20,7 @@ public:
 	static uint16			GetLowestTakenEntityId() { return s_lowestTakenEntityId; }
 	static uint16			GetHighestTakenEntityId() { return s_highestTakenEntityId; }
 
-	static const ArgusEntity			s_emptyEntity;
+	static const ArgusEntity k_emptyEntity;
 
 private:
 	static std::bitset<ArgusECSConstants::k_maxEntities>	s_takenEntityIds;

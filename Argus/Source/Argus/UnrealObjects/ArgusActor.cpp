@@ -32,7 +32,7 @@ void AArgusActor::Reset()
 
 	m_entityTemplate = nullptr;
 	m_isSelected = false;
-	m_entity = ArgusEntity::s_emptyEntity;
+	m_entity = ArgusEntity::k_emptyEntity;
 
 	Hide();
 }

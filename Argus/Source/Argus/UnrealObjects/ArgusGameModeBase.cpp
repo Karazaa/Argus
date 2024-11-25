@@ -29,10 +29,15 @@ void AArgusGameModeBase::Tick(float deltaTime)
 
 	Super::Tick(deltaTime);
 
-	TWeakObjectPtr<UWorld> worldPointer = GetWorld();
+	UWorld* worldPointer = GetWorld();
+	if (!worldPointer)
+	{
+		ARGUS_LOG(ArgusUnrealObjectsLog, Error, TEXT("[%s] Could not retrieve a valid %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(UWorld*));
+		return;
+	}
 
 	// Update camera and process player input
-	for (AArgusPlayerController* argusPlayerController : TActorRange<AArgusPlayerController>(worldPointer.Get()))
+	for (AArgusPlayerController* argusPlayerController : TActorRange<AArgusPlayerController>(worldPointer))
 	{
 		if (argusPlayerController)
 		{

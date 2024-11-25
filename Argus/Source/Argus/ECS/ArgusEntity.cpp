@@ -4,7 +4,7 @@
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
 
-const ArgusEntity ArgusEntity::s_emptyEntity = ArgusEntity();
+const ArgusEntity ArgusEntity::k_emptyEntity = ArgusEntity();
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusEntity::s_takenEntityIds = std::bitset<ArgusECSConstants::k_maxEntities>();
 
 uint16 ArgusEntity::s_lowestTakenEntityId = ArgusECSConstants::k_maxEntities;
@@ -35,13 +35,13 @@ ArgusEntity ArgusEntity::CreateEntity(uint16 lowestId)
 	if (id == ArgusECSConstants::k_maxEntities)
 	{
 		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Attempting to create an %s with an invalid ID value."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity));
-		return s_emptyEntity;
+		return k_emptyEntity;
 	}
 
 	if (s_takenEntityIds[id])
 	{
 		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Attempting to create an %s with an ID value of an already existing %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(ArgusEntity));
-		return s_emptyEntity;
+		return k_emptyEntity;
 	}
 
 	s_takenEntityIds.set(id);
@@ -61,6 +61,7 @@ void ArgusEntity::DestroyEntity(ArgusEntity& entityToDestroy)
 {
 	if (!entityToDestroy)
 	{
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Attempting to destroy an %s that doesn't exist."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity));
 		return;
 	}
 
@@ -98,16 +99,13 @@ void ArgusEntity::DestroyEntity(ArgusEntity& entityToDestroy)
 		s_highestTakenEntityId = newHighestTakenId;
 	}
 
-	entityToDestroy = s_emptyEntity;
+	entityToDestroy = k_emptyEntity;
 }
 
 void ArgusEntity::DestroyEntity(uint16 entityIdToDestroy)
 {
-	ArgusEntity entityToDestroy = RetrieveEntity(entityIdToDestroy);
-	if (entityToDestroy)
-	{
-		DestroyEntity(entityToDestroy);
-	}
+	ArgusEntity retrievedEntity = RetrieveEntity(entityIdToDestroy);
+	DestroyEntity(retrievedEntity);
 }
 
 ArgusEntity ArgusEntity::RetrieveEntity(uint16 id)
@@ -117,7 +115,7 @@ ArgusEntity ArgusEntity::RetrieveEntity(uint16 id)
 		return ArgusEntity(id);
 	}
 
-	return ArgusEntity::s_emptyEntity;
+	return ArgusEntity::k_emptyEntity;
 }
 
 uint16 ArgusEntity::GetNextLowestUntakenId(uint16 lowestId)

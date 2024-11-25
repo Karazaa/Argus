@@ -43,6 +43,6 @@ private:
 	bool DidDespawnArgusActorTestStep();
 
 	TObjectPtr<UArgusActorRecord> m_loadedArgusActorRecord = nullptr;
-	ArgusEntity m_spawnerEntity = ArgusEntity::s_emptyEntity;
+	ArgusEntity m_spawnerEntity = ArgusEntity::k_emptyEntity;
 	uint16 m_expectedSpawnedEntityId = ArgusECSConstants::k_maxEntities;
 };

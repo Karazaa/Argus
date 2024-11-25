@@ -6,7 +6,7 @@
 #include "Math/UnrealMathUtility.h"
 #include "NavigationSystem.h"
 
-bool TransformSystems::RunSystems(TWeakObjectPtr<UWorld>& worldPointer, float deltaTime)
+bool TransformSystems::RunSystems(UWorld* worldPointer, float deltaTime)
 {
 	ARGUS_TRACE(TransformSystems::RunSystems)
 
@@ -45,6 +45,7 @@ void TransformSystems::GetPathingLocationAtTimeOffset(float timeOffsetSeconds, c
 {
 	if (!components.AreComponentsValidCheck())
 	{
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Passed in %s object has invalid component references."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformSystemsComponentArgs));
 		return;
 	}
 
@@ -158,12 +159,13 @@ void TransformSystems::FaceTowardsLocationXY(TransformComponent* transformCompon
 	transformComponent->m_transform.SetRotation(FRotationMatrix::MakeFromXZ(vectorFromTransformToTarget, FVector::UpVector).ToQuat());
 }
 
-void TransformSystems::MoveAlongNavigationPath(TWeakObjectPtr<UWorld>& worldPointer, float deltaTime, const TransformSystemsComponentArgs& components)
+void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float deltaTime, const TransformSystemsComponentArgs& components)
 {
 	ARGUS_TRACE(TransformSystems::MoveAlongNavigationPath)
 
 	if (!components.AreComponentsValidCheck())
 	{
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Passed in %s object has invalid component references."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformSystemsComponentArgs));
 		return;
 	}
 
@@ -250,12 +252,13 @@ void TransformSystems::FindEntitiesWithinXYBounds(FVector2D minXY, FVector2D max
 	}
 }
 
-bool TransformSystems::ProcessMovementTaskCommands(TWeakObjectPtr<UWorld>& worldPointer, float deltaTime, const TransformSystemsComponentArgs& components)
+bool TransformSystems::ProcessMovementTaskCommands(UWorld* worldPointer, float deltaTime, const TransformSystemsComponentArgs& components)
 {
 	ARGUS_TRACE(TransformSystems::ProcessMovementTaskCommands)
 
 	if (!components.AreComponentsValidCheck())
 	{
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Passed in %s object has invalid component references."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformSystemsComponentArgs));
 		return false;
 	}
 
@@ -282,6 +285,12 @@ bool TransformSystems::ProcessMovementTaskCommands(TWeakObjectPtr<UWorld>& world
 
 void TransformSystems::OnCompleteNavigationPath(const TransformSystemsComponentArgs& components)
 {
+	if (!components.AreComponentsValidCheck())
+	{
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Passed in %s object has invalid component references."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformSystemsComponentArgs));
+		return;
+	}
+
 	if (components.m_navigationComponent->m_queuedWaypoints.size() == 0u)
 	{
 		components.m_taskComponent->m_movementState = EMovementState::None;
@@ -297,21 +306,27 @@ void TransformSystems::OnCompleteNavigationPath(const TransformSystemsComponentA
 	}
 }
 
-FVector TransformSystems::ProjectLocationOntoNavigationData(TWeakObjectPtr<UWorld>& worldPointer, TransformComponent* transformComponent, const FVector& location)
+FVector TransformSystems::ProjectLocationOntoNavigationData(UWorld* worldPointer, TransformComponent* transformComponent, const FVector& location)
 {
-	if (!worldPointer.IsValid() || !transformComponent)
+	if (!worldPointer)
+	{
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Passed in %s was invalid."), ARGUS_FUNCNAME, ARGUS_NAMEOF(UWorld*))
+		return location;
+	}
+
+	if (!transformComponent)
 	{
 		return location;
 	}
 
-	UNavigationSystemV1* unrealNavigationSystem = UNavigationSystemV1::GetCurrent(worldPointer.Get());
+	UNavigationSystemV1* unrealNavigationSystem = UNavigationSystemV1::GetCurrent(worldPointer);
 	if (!unrealNavigationSystem)
 	{
 		return location;
 	}
 
 	FNavLocation projectedLocation;
-	const FVector agentExtents = FVector(transformComponent->m_radius, transformComponent->m_radius, transformComponent->m_height /2.0f);
+	const FVector agentExtents = FVector(transformComponent->m_radius, transformComponent->m_radius, transformComponent->m_height / 2.0f);
 	if (unrealNavigationSystem->ProjectPointToNavigation(location, projectedLocation, agentExtents, unrealNavigationSystem->MainNavData))
 	{
 		return projectedLocation.Location;

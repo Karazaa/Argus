@@ -9,7 +9,7 @@
 
 static TAutoConsoleVariable<bool> CVarShowNavigationDebug(TEXT("Argus.Navigation.ShowNavigationDebug"), false, TEXT(""));
 
-void NavigationSystems::RunSystems(TWeakObjectPtr<UWorld>& worldPointer)
+void NavigationSystems::RunSystems(UWorld* worldPointer)
 {
 	ARGUS_TRACE(NavigationSystems::RunSystems)
 
@@ -52,7 +52,7 @@ bool NavigationSystems::NavigationSystemsComponentArgs::AreComponentsValidCheck(
 	return true;
 }
 
-void NavigationSystems::ProcessNavigationTaskCommands(TWeakObjectPtr<UWorld>& worldPointer, const NavigationSystemsComponentArgs& components)
+void NavigationSystems::ProcessNavigationTaskCommands(UWorld* worldPointer, const NavigationSystemsComponentArgs& components)
 {
 	ARGUS_TRACE(NavigationSystems::ProcessNavigationTaskCommands)
 
@@ -78,7 +78,7 @@ void NavigationSystems::ProcessNavigationTaskCommands(TWeakObjectPtr<UWorld>& wo
 	}
 }
 
-void NavigationSystems::RecalculateMoveToEntityPaths(TWeakObjectPtr<UWorld>& worldPointer, const NavigationSystemsComponentArgs& components)
+void NavigationSystems::RecalculateMoveToEntityPaths(UWorld* worldPointer, const NavigationSystemsComponentArgs& components)
 {
 	ARGUS_TRACE(NavigationSystems::RecalculateMoveToEntityPaths)
 
@@ -112,7 +112,7 @@ void NavigationSystems::RecalculateMoveToEntityPaths(TWeakObjectPtr<UWorld>& wor
 	NavigateFromEntityToEntity(worldPointer, targetEntity, components);
 }
 
-void NavigationSystems::NavigateFromEntityToEntity(TWeakObjectPtr<UWorld>& worldPointer, ArgusEntity targetEntity, const NavigationSystemsComponentArgs& components)
+void NavigationSystems::NavigateFromEntityToEntity(UWorld* worldPointer, ArgusEntity targetEntity, const NavigationSystemsComponentArgs& components)
 {
 	if (!IsWorldPointerValidCheck(worldPointer) || !components.AreComponentsValidCheck())
 	{
@@ -133,7 +133,7 @@ void NavigationSystems::NavigateFromEntityToEntity(TWeakObjectPtr<UWorld>& world
 	NavigateFromEntityToLocation(worldPointer, targetEntityTransform->m_transform.GetLocation(), components);
 }
 
-void NavigationSystems::NavigateFromEntityToLocation(TWeakObjectPtr<UWorld>& worldPointer, std::optional<FVector> targetLocation, const NavigationSystemsComponentArgs& components)
+void NavigationSystems::NavigateFromEntityToLocation(UWorld* worldPointer, std::optional<FVector> targetLocation, const NavigationSystemsComponentArgs& components)
 {
 	if (!IsWorldPointerValidCheck(worldPointer) || !components.AreComponentsValidCheck() || !targetLocation.has_value())
 	{
@@ -142,7 +142,7 @@ void NavigationSystems::NavigateFromEntityToLocation(TWeakObjectPtr<UWorld>& wor
 
 	components.m_navigationComponent->ResetPath();
 
-	UNavigationSystemV1* unrealNavigationSystem = UNavigationSystemV1::GetCurrent(worldPointer.Get());
+	UNavigationSystemV1* unrealNavigationSystem = UNavigationSystemV1::GetCurrent(worldPointer);
 	if (!unrealNavigationSystem)
 	{
 		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Could not obtain a valid reference to %s"), ARGUS_FUNCNAME, ARGUS_NAMEOF(UNavigationSystemV1));
@@ -184,23 +184,23 @@ void NavigationSystems::NavigateFromEntityToLocation(TWeakObjectPtr<UWorld>& wor
 			continue;
 		}
 
-		DrawDebugSphere(worldPointer.Get(), components.m_navigationComponent->m_navigationPoints[i], 20.0f, 20, FColor::Magenta, false, 3.0f, 0, 5.0f);
+		DrawDebugSphere(worldPointer, components.m_navigationComponent->m_navigationPoints[i], 20.0f, 20, FColor::Magenta, false, 3.0f, 0, 5.0f);
 		if ((i + 1) < numPathPoints)
 		{
-			DrawDebugLine(worldPointer.Get(), components.m_navigationComponent->m_navigationPoints[i], pathPoints[i + 1].Location, FColor::Magenta, false, 3.0f, 0, 5.0f);
+			DrawDebugLine(worldPointer, components.m_navigationComponent->m_navigationPoints[i], pathPoints[i + 1].Location, FColor::Magenta, false, 3.0f, 0, 5.0f);
 		}
 	}
 }
 
-bool NavigationSystems::IsWorldPointerValidCheck(TWeakObjectPtr<UWorld>& worldPointer)
+bool NavigationSystems::IsWorldPointerValidCheck(UWorld* worldPointer)
 {
-	if (!worldPointer.IsValid())
+	if (!worldPointer)
 	{
 		ARGUS_LOG
 		(
 			ArgusECSLog, Error, TEXT("[%s] was invoked with an invalid %s, %s."),
 			ARGUS_FUNCNAME,
-			ARGUS_NAMEOF(TWeakObjectPtr<UWorld>),
+			ARGUS_NAMEOF(UWorld*),
 			ARGUS_NAMEOF(worldPointer)
 		);
 		return false;

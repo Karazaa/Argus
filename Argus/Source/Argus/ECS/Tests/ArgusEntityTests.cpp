@@ -169,7 +169,7 @@ bool ArgusEntityBoolOperatorTest::RunTest(const FString& Parameters)
 			ARGUS_FUNCNAME, 
 			ARGUS_NAMEOF(ArgusEntity)
 		),
-		ArgusEntity::s_emptyEntity
+		ArgusEntity::k_emptyEntity
 	);
 #pragma endregion
 
@@ -196,7 +196,7 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityCreateInvalidEntityTest, "Argus.ECS.
 bool ArgusEntityCreateInvalidEntityTest::RunTest(const FString& Parameters)
 {
 	ArgusTesting::StartArgusTest();
-	ArgusEntity entity = ArgusEntity::s_emptyEntity;
+	ArgusEntity entity = ArgusEntity::k_emptyEntity;
 
 #pragma region Test that the bool operator of an invalid ArgusEntity returns false
 	TestFalse
@@ -955,6 +955,24 @@ bool ArgusEntityDestroyEntityTest::RunTest(const FString& Parameters)
 		ArgusEntity::DoesEntityExist(entity0Id)
 	);
 #pragma endregion
+
+	entity = ArgusEntity::k_emptyEntity;
+
+#pragma region Test attempting to destroy an invalid ArgusEntity.
+	AddExpectedErrorPlain
+	(
+		FString::Printf
+		(
+			TEXT("Attempting to destroy an %s that doesn't exist."),
+			ARGUS_NAMEOF(ArgusEntity)
+		),
+		EAutomationExpectedMessageFlags::Contains,
+		2
+	);
+#pragma endregion
+
+	ArgusEntity::DestroyEntity(entity);
+	ArgusEntity::DestroyEntity(ArgusECSConstants::k_maxEntities);
 
 	ArgusTesting::EndArgusTest();
 	return true;

@@ -44,6 +44,6 @@ protected:
 	virtual void Tick(float deltaTime) override;
 
 private:
-	ArgusEntity m_entity = ArgusEntity::s_emptyEntity;
+	ArgusEntity m_entity = ArgusEntity::k_emptyEntity;
 	bool m_isSelected = false;
 };

@@ -12,19 +12,13 @@
 
 const uint16 ArgusSystemsManager::s_singletonEntityId = ArgusECSConstants::k_maxEntities - 1u;
 
-void ArgusSystemsManager::RunSystems(TWeakObjectPtr<UWorld>& worldPointer, float deltaTime)
+void ArgusSystemsManager::RunSystems(UWorld* worldPointer, float deltaTime)
 {
 	ARGUS_TRACE(ArgusSystemsManager::RunSystems)
 
-	if (!worldPointer.IsValid())
+	if (!worldPointer)
 	{
-		ARGUS_LOG
-		(
-			ArgusECSLog, Error, TEXT("[%s] was invoked with an invalid %s, %s."),
-			ARGUS_FUNCNAME, 
-			ARGUS_NAMEOF(TWeakObjectPtr<UWorld>), 
-			ARGUS_NAMEOF(worldPointer)
-		);
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] was invoked with an invalid %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(UWorld*));
 		return;
 	}
 

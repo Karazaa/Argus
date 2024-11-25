@@ -358,7 +358,7 @@ bool ArgusKDTree::DoesArgusEntityExistInKDTree(const ArgusEntity& entityToRepres
 
 uint16 ArgusKDTree::FindArgusEntityIdClosestToLocation(const FVector& location) const
 {
-	return FindArgusEntityIdClosestToLocation(location, ArgusEntity::s_emptyEntity);
+	return FindArgusEntityIdClosestToLocation(location, ArgusEntity::k_emptyEntity);
 }
 
 uint16 ArgusKDTree::FindArgusEntityIdClosestToLocation(const FVector& location, const ArgusEntity& entityToIgnore) const
@@ -391,7 +391,7 @@ uint16 ArgusKDTree::FindOtherArgusEntityIdClosestArgusEntity(const ArgusEntity& 
 
 bool ArgusKDTree::FindArgusEntityIdsWithinRangeOfLocation(std::vector<uint16>& outNearbyArgusEntityIds, const FVector& location, const float range) const
 {
-	return FindArgusEntityIdsWithinRangeOfLocation(outNearbyArgusEntityIds, location, range, ArgusEntity::s_emptyEntity);
+	return FindArgusEntityIdsWithinRangeOfLocation(outNearbyArgusEntityIds, location, range, ArgusEntity::k_emptyEntity);
 }
 
 bool ArgusKDTree::FindArgusEntityIdsWithinRangeOfLocation(std::vector<uint16>& outNearbyArgusEntityIds, const FVector& location, const float range, const ArgusEntity& entityToIgnore) const

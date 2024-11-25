@@ -6,7 +6,7 @@
 
 static TAutoConsoleVariable<bool> CVarShowAvoidanceDebug(TEXT("Argus.Avoidance.ShowAvoidanceDebug"), false, TEXT(""));
 
-void AvoidanceSystems::RunSystems(TWeakObjectPtr<UWorld>& worldPointer, float deltaTime)
+void AvoidanceSystems::RunSystems(UWorld* worldPointer, float deltaTime)
 {
 	ARGUS_TRACE(AvoidanceSystems::RunSystems)
 
@@ -34,7 +34,7 @@ void AvoidanceSystems::RunSystems(TWeakObjectPtr<UWorld>& worldPointer, float de
 }
 
 #pragma region Optimal Reciprocal Collision Avoidance
-void AvoidanceSystems::ProcessORCAvoidance(TWeakObjectPtr<UWorld>& worldPointer, float deltaTime, const TransformSystems::TransformSystemsComponentArgs& components)
+void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime, const TransformSystems::TransformSystemsComponentArgs& components)
 {
 	ARGUS_TRACE(AvoidanceSystems::ProcessORCAvoidance)
 
@@ -83,10 +83,10 @@ void AvoidanceSystems::ProcessORCAvoidance(TWeakObjectPtr<UWorld>& worldPointer,
 	{
 		// If no entities nearby, then nothing can effect our navigation, so we should just early out at our desired speed. 
 		components.m_transformComponent->m_proposedAvoidanceVelocity = FVector(desiredVelocity, 0.0f);
-		if (CVarShowAvoidanceDebug.GetValueOnGameThread() && worldPointer.IsValid())
+		if (CVarShowAvoidanceDebug.GetValueOnGameThread() && worldPointer)
 		{
 			FVector sourceEntityLocation3D = FVector(sourceEntityLocation, 5.0f);
-			DrawDebugLine(worldPointer.Get(), sourceEntityLocation3D, sourceEntityLocation3D + components.m_transformComponent->m_proposedAvoidanceVelocity, FColor::Orange, false, -1.0f, 0, 5.0f);
+			DrawDebugLine(worldPointer, sourceEntityLocation3D, sourceEntityLocation3D + components.m_transformComponent->m_proposedAvoidanceVelocity, FColor::Orange, false, -1.0f, 0, 5.0f);
 		}
 		return;
 	}
@@ -137,11 +137,11 @@ void AvoidanceSystems::ProcessORCAvoidance(TWeakObjectPtr<UWorld>& worldPointer,
 		resultingVelocity = resultingVelocity.GetSafeNormal() * components.m_transformComponent->m_desiredSpeedUnitsPerSecond;
 	}
 
-	if (CVarShowAvoidanceDebug.GetValueOnGameThread() && worldPointer.IsValid())
+	if (CVarShowAvoidanceDebug.GetValueOnGameThread() && worldPointer)
 	{
 		const FVector sourceEntityLocation3D = FVector(sourceEntityLocation, 5.0f);
-		DrawDebugLine(worldPointer.Get(), sourceEntityLocation3D, sourceEntityLocation3D + FVector(resultingVelocity, 0.0f), FColor::Orange, false, -1.0f, 0, 5.0f);
-		DrawDebugLine(worldPointer.Get(), sourceEntityLocation3D, sourceEntityLocation3D + FVector(desiredVelocity, 0.0f), FColor::Green, false, -1.0f, 0, 5.0f);
+		DrawDebugLine(worldPointer, sourceEntityLocation3D, sourceEntityLocation3D + FVector(resultingVelocity, 0.0f), FColor::Orange, false, -1.0f, 0, 5.0f);
+		DrawDebugLine(worldPointer, sourceEntityLocation3D, sourceEntityLocation3D + FVector(desiredVelocity, 0.0f), FColor::Green, false, -1.0f, 0, 5.0f);
 	}
 
 	components.m_transformComponent->m_proposedAvoidanceVelocity = FVector(resultingVelocity, 0.0f);

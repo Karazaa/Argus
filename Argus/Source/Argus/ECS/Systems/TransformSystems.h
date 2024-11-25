@@ -7,11 +7,11 @@
 class TransformSystems
 {
 public:
-	static bool RunSystems(TWeakObjectPtr<UWorld>& worldPointer, float deltaTime);
+	static bool RunSystems(UWorld* worldPointer, float deltaTime);
 
 	struct TransformSystemsComponentArgs
 	{
-		ArgusEntity m_entity = ArgusEntity::s_emptyEntity;
+		ArgusEntity m_entity = ArgusEntity::k_emptyEntity;
 		TaskComponent* m_taskComponent = nullptr;
 		TransformComponent* m_transformComponent = nullptr;
 		NavigationComponent* m_navigationComponent = nullptr;
@@ -28,11 +28,11 @@ public:
 
 	static void GetPathingLocationAtTimeOffset(float timeOffsetSeconds, const TransformSystemsComponentArgs& components, GetPathingLocationAtTimeOffsetResults& results);
 	static void FaceTowardsLocationXY(TransformComponent* transformComponent, FVector vectorFromTransformToTarget);
-	static void MoveAlongNavigationPath(TWeakObjectPtr<UWorld>& worldPointer, float deltaTime, const TransformSystemsComponentArgs& components);
+	static void MoveAlongNavigationPath(UWorld* worldPointer, float deltaTime, const TransformSystemsComponentArgs& components);
 	static void FindEntitiesWithinXYBounds(FVector2D minXY, FVector2D maxXY, TArray<ArgusEntity>& outEntitiesWithinBounds);
 
 private:
-	static bool ProcessMovementTaskCommands(TWeakObjectPtr<UWorld>& worldPointer, float deltaTime, const TransformSystemsComponentArgs& components);
+	static bool ProcessMovementTaskCommands(UWorld* worldPointer, float deltaTime, const TransformSystemsComponentArgs& components);
 	static void OnCompleteNavigationPath(const TransformSystemsComponentArgs& components);
-	static FVector ProjectLocationOntoNavigationData(TWeakObjectPtr<UWorld>& worldPointer, TransformComponent* transformComponent, const FVector& location);
+	static FVector ProjectLocationOntoNavigationData(UWorld* worldPointer, TransformComponent* transformComponent, const FVector& location);
 };

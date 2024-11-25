@@ -35,5 +35,5 @@ private:
 	bool DidRetrieveArgusActorFromEntityTestStepSucceed();
 	bool DidRemoveArgusActorFromEntityMapTestStepSucceed();
 
-	ArgusEntity m_cachedArgusEntity = ArgusEntity::s_emptyEntity;
+	ArgusEntity m_cachedArgusEntity = ArgusEntity::k_emptyEntity;
 };

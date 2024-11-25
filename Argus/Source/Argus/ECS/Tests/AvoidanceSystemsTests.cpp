@@ -23,7 +23,7 @@ bool AvoidanceSystemsProcessORCAvoidanceTest::RunTest(const FString& Parameters)
 	ArgusTesting::StartArgusTest();
 	ArgusEntity entity = ArgusEntity::CreateEntity();
 	TransformSystems::TransformSystemsComponentArgs components;
-	TWeakObjectPtr<UWorld> dummyPointer = nullptr;
+	UWorld* dummyPointer = nullptr;
 
 	components.m_entity = entity;
 	components.m_taskComponent = entity.AddComponent<TaskComponent>();
