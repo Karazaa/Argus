@@ -1,6 +1,7 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusEntity.h"
+#include "ArgusTesting.h"
 #include "Misc/AutomationTest.h"
 
 #if WITH_AUTOMATION_TESTS
@@ -63,7 +64,7 @@ void PopulateKDTreeForTests(ArgusKDTree& tree, CollectionOfArgusEntities& entiti
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusKDTreeInsertEntitiesTest, "Argus.Utilities.ArgusKDTree.InsertEntitiesTest", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusUtilitiesArgusKDTreeInsertEntitiesTest::RunTest(const FString& Parameters)
 {
-	ArgusEntity::FlushAllEntities();
+	ArgusTesting::StartArgusTest();
 	ArgusKDTree tree;
 	CollectionOfArgusEntities entities;
 	PopulateKDTreeForTests(tree, entities, true);
@@ -88,6 +89,7 @@ bool ArgusUtilitiesArgusKDTreeInsertEntitiesTest::RunTest(const FString& Paramet
 	);
 #pragma endregion
 
+	ArgusTesting::EndArgusTest();
 	return true;
 }
 
@@ -96,7 +98,7 @@ bool ArgusUtilitiesArgusKDTreeFlushAllNodesTest::RunTest(const FString& Paramete
 {
 	const FVector expectedAverageLocation = FVector(54.0f, 54.0f, 2.0f);
 
-	ArgusEntity::FlushAllEntities();
+	ArgusTesting::StartArgusTest();
 	ArgusKDTree tree;
 	CollectionOfArgusEntities entities;
 	PopulateKDTreeForTests(tree, entities, true);
@@ -139,13 +141,14 @@ bool ArgusUtilitiesArgusKDTreeFlushAllNodesTest::RunTest(const FString& Paramete
 	);
 #pragma endregion
 
+	ArgusTesting::EndArgusTest();
 	return true;
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusKDTreeRebuildKDTreeForAllArgusEntitiesTest, "Argus.Utilities.ArgusKDTree.RebuildKDTreeForAllArgusEntitiesTest", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusUtilitiesArgusKDTreeRebuildKDTreeForAllArgusEntitiesTest::RunTest(const FString& Parameters)
 {
-	ArgusEntity::FlushAllEntities();
+	ArgusTesting::StartArgusTest();
 	ArgusKDTree tree;
 	CollectionOfArgusEntities entities;
 	PopulateKDTreeForTests(tree, entities, false);
@@ -173,13 +176,14 @@ bool ArgusUtilitiesArgusKDTreeRebuildKDTreeForAllArgusEntitiesTest::RunTest(cons
 	);
 #pragma endregion
 
+	ArgusTesting::EndArgusTest();
 	return true;
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusKDTreeFindOtherArgusEntityIdClosestArgusEntityTest, "Argus.Utilities.ArgusKDTree.FindOtherArgusEntityIdClosestArgusEntityTest", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusUtilitiesArgusKDTreeFindOtherArgusEntityIdClosestArgusEntityTest::RunTest(const FString& Parameters)
 {
-	ArgusEntity::FlushAllEntities();
+	ArgusTesting::StartArgusTest();
 	ArgusKDTree tree;
 	CollectionOfArgusEntities entities;
 	PopulateKDTreeForTests(tree, entities, true);
@@ -244,13 +248,14 @@ bool ArgusUtilitiesArgusKDTreeFindOtherArgusEntityIdClosestArgusEntityTest::RunT
 	);
 #pragma endregion
 
+	ArgusTesting::EndArgusTest();
 	return true;
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusKDTreeFindArgusEntityIdClosestToLocationTest, "Argus.Utilities.ArgusKDTree.FindArgusEntityIdClosestToLocationTest", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusUtilitiesArgusKDTreeFindArgusEntityIdClosestToLocationTest::RunTest(const FString& Parameters)
 {
-	ArgusEntity::FlushAllEntities();
+	ArgusTesting::StartArgusTest();
 	ArgusKDTree tree;
 	CollectionOfArgusEntities entities;
 	PopulateKDTreeForTests(tree, entities, true);
@@ -295,13 +300,14 @@ bool ArgusUtilitiesArgusKDTreeFindArgusEntityIdClosestToLocationTest::RunTest(co
 	);
 #pragma endregion
 
+	ArgusTesting::EndArgusTest();
 	return true;
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusKDTreeFindArgusEntityIdsWithinRangeOfLocationTest, "Argus.Utilities.ArgusKDTree.FindArgusEntityIdsWithinRangeOfLocationTest", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusUtilitiesArgusKDTreeFindArgusEntityIdsWithinRangeOfLocationTest::RunTest(const FString& Parameters)
 {
-	ArgusEntity::FlushAllEntities();
+	ArgusTesting::StartArgusTest();
 	ArgusKDTree tree;
 	CollectionOfArgusEntities entities;
 	PopulateKDTreeForTests(tree, entities, true);
@@ -348,6 +354,7 @@ bool ArgusUtilitiesArgusKDTreeFindArgusEntityIdsWithinRangeOfLocationTest::RunTe
 
 	if (argusEntityIds.size() < 1)
 	{
+		ArgusTesting::EndArgusTest();
 		return false;
 	}
 
@@ -410,6 +417,7 @@ bool ArgusUtilitiesArgusKDTreeFindArgusEntityIdsWithinRangeOfLocationTest::RunTe
 
 	if (argusEntityIds.size() < 2)
 	{
+		ArgusTesting::EndArgusTest();
 		return false;
 	}
 
@@ -432,6 +440,7 @@ bool ArgusUtilitiesArgusKDTreeFindArgusEntityIdsWithinRangeOfLocationTest::RunTe
 	);
 #pragma endregion
 
+	ArgusTesting::EndArgusTest();
 	return true;
 }
 

@@ -2,6 +2,7 @@
 
 #include "ArgusMacros.h"
 #include "ArgusObjectPool.h"
+#include "ArgusTesting.h"
 #include "Misc/AutomationTest.h"
 
 #if WITH_AUTOMATION_TESTS
@@ -19,6 +20,7 @@ struct TestPoolable : public IObjectPoolable
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusObjectPoolTakeTest, "Argus.Utilities.ArgusObjectPool.TakeTest", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusUtilitiesArgusObjectPoolTakeTest::RunTest(const FString& Parameters)
 {
+	ArgusTesting::StartArgusTest();
 	ArgusObjectPool<TestPoolable> objectPool;
 	int numAvailableObjects = objectPool.GetNumAvailableObjects();
 
@@ -70,12 +72,14 @@ bool ArgusUtilitiesArgusObjectPoolTakeTest::RunTest(const FString& Parameters)
 
 	delete testPoolable;
 
+	ArgusTesting::EndArgusTest();
 	return true;
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusObjectPoolReleaseTest, "Argus.Utilities.ArgusObjectPool.ReleaseTest", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusUtilitiesArgusObjectPoolReleaseTest::RunTest(const FString& Parameters)
 {
+	ArgusTesting::StartArgusTest();
 	ArgusObjectPool<TestPoolable> objectPool;
 
 	TestPoolable* testPoolable = nullptr;
@@ -189,12 +193,14 @@ bool ArgusUtilitiesArgusObjectPoolReleaseTest::RunTest(const FString& Parameters
 
 	delete testPoolable;
 
+	ArgusTesting::EndArgusTest();
 	return true;
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusObjectPoolClearPoolTest, "Argus.Utilities.ArgusObjectPool.ClearPool", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusUtilitiesArgusObjectPoolClearPoolTest::RunTest(const FString& Parameters)
 {
+	ArgusTesting::StartArgusTest();
 	ArgusObjectPool<TestPoolable> objectPool;
 	constexpr int numObjectToTest = 100;
 
@@ -251,6 +257,7 @@ bool ArgusUtilitiesArgusObjectPoolClearPoolTest::RunTest(const FString& Paramete
 	);
 #pragma endregion
 
+	ArgusTesting::EndArgusTest();
 	return true;
 }
 

@@ -1,6 +1,7 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusEntity.h"
+#include "ArgusTesting.h"
 #include "Misc/AutomationTest.h"
 
 #if WITH_AUTOMATION_TESTS
@@ -11,13 +12,13 @@ bool ArgusComponentHealthComponentPersistenceTest::RunTest(const FString& Parame
 	const uint32 expectedSetHealthValue = 500u;
 	const uint32 expectedPostResetHealthValue = 1000u;
 
-	ArgusEntity::FlushAllEntities();
-
+	ArgusTesting::StartArgusTest();
 	ArgusEntity entity = ArgusEntity::CreateEntity();
 	HealthComponent* healthComponent = entity.AddComponent<HealthComponent>();
 
 	if (!healthComponent)
 	{
+		ArgusTesting::EndArgusTest();
 		return false;
 	}
 
@@ -44,20 +45,21 @@ bool ArgusComponentHealthComponentPersistenceTest::RunTest(const FString& Parame
 	);
 #pragma endregion
 
+	ArgusTesting::EndArgusTest();
 	return true;
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentSpatialPartitioningComponentPersistenceTest, "Argus.ECS.Component.SpatialPartitioningComponent.Persistence", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusComponentSpatialPartitioningComponentPersistenceTest::RunTest(const FString& Parameters)
 {
-	ArgusEntity::FlushAllEntities();
-
+	ArgusTesting::StartArgusTest();
 	ArgusEntity entity = ArgusEntity::CreateEntity();
 	SpatialPartitioningComponent* spatialPartitioningComponent = entity.AddComponent<SpatialPartitioningComponent>();
 	entity.AddComponent<TransformComponent>();
 
 	if (!spatialPartitioningComponent)
 	{
+		ArgusTesting::EndArgusTest();
 		return false;
 	}
 
@@ -82,20 +84,21 @@ bool ArgusComponentSpatialPartitioningComponentPersistenceTest::RunTest(const FS
 	);
 #pragma endregion
 
+	ArgusTesting::EndArgusTest();
 	return true;
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentTargetingComponentHasEntityTargetTest, "Argus.ECS.Component.TargetingComponent.HasEntityTarget", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusComponentTargetingComponentHasEntityTargetTest::RunTest(const FString& Parameters)
 {
-	ArgusEntity::FlushAllEntities();
-
+	ArgusTesting::StartArgusTest();
 	ArgusEntity entity1 = ArgusEntity::CreateEntity();
 	ArgusEntity entity2 = ArgusEntity::CreateEntity();
 	TargetingComponent* targetingComponent = entity1.AddComponent<TargetingComponent>();
 
 	if (!targetingComponent)
 	{
+		ArgusTesting::EndArgusTest();
 		return false;
 	}
 
@@ -126,14 +129,14 @@ bool ArgusComponentTargetingComponentHasEntityTargetTest::RunTest(const FString&
 	);
 #pragma endregion
 
+	ArgusTesting::EndArgusTest();
 	return true;
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentTargetingComponentHasLocationTargetTest, "Argus.ECS.Component.TargetingComponent.HasLocationTarget", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusComponentTargetingComponentHasLocationTargetTest::RunTest(const FString& Parameters)
 {
-	ArgusEntity::FlushAllEntities();
-
+	ArgusTesting::StartArgusTest();
 	ArgusEntity entity = ArgusEntity::CreateEntity();
 	TargetingComponent* targetingComponent = entity.AddComponent<TargetingComponent>();
 	const FVector targetLocation = FVector(10.0f, 10.0f, 10.0f);
@@ -165,19 +168,20 @@ bool ArgusComponentTargetingComponentHasLocationTargetTest::RunTest(const FStrin
 	);
 #pragma endregion
 
+	ArgusTesting::EndArgusTest();
 	return true;
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentIdentityComponentIsInTeamMaskTest, "Argus.ECS.Component.IdentityComponent.IsInTeamMask", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusComponentIdentityComponentIsInTeamMaskTest::RunTest(const FString& Parameters)
 {
-	ArgusEntity::FlushAllEntities();
-
+	ArgusTesting::StartArgusTest();
 	ArgusEntity entity1 = ArgusEntity::CreateEntity();
 	IdentityComponent* identityComponent = entity1.AddComponent<IdentityComponent>();
 
 	if (!identityComponent)
 	{
+		ArgusTesting::EndArgusTest();
 		return false;
 	}
 
@@ -202,14 +206,14 @@ bool ArgusComponentIdentityComponentIsInTeamMaskTest::RunTest(const FString& Par
 	);
 #pragma endregion
 
+	ArgusTesting::EndArgusTest();
 	return true;
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentIdentityComponentAddAllyTeamTest, "Argus.ECS.Component.IdentityComponent.AddAllyTeam", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusComponentIdentityComponentAddAllyTeamTest::RunTest(const FString& Parameters)
 {
-	ArgusEntity::FlushAllEntities();
-
+	ArgusTesting::StartArgusTest();
 	ArgusEntity entity1 = ArgusEntity::CreateEntity();
 	ArgusEntity entity2 = ArgusEntity::CreateEntity();
 	IdentityComponent* identityComponent1 = entity1.AddComponent<IdentityComponent>();
@@ -217,6 +221,7 @@ bool ArgusComponentIdentityComponentAddAllyTeamTest::RunTest(const FString& Para
 
 	if (!identityComponent1 || !identityComponent2)
 	{
+		ArgusTesting::EndArgusTest();
 		return false;
 	}
 
@@ -252,14 +257,14 @@ bool ArgusComponentIdentityComponentAddAllyTeamTest::RunTest(const FString& Para
 	);
 #pragma endregion
 
+	ArgusTesting::EndArgusTest();
 	return true;
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentIdentityComponentAddEnemyTeamTest, "Argus.ECS.Component.IdentityComponent.AddEnemyTeam", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusComponentIdentityComponentAddEnemyTeamTest::RunTest(const FString& Parameters)
 {
-	ArgusEntity::FlushAllEntities();
-
+	ArgusTesting::StartArgusTest();
 	ArgusEntity entity1 = ArgusEntity::CreateEntity();
 	ArgusEntity entity2 = ArgusEntity::CreateEntity();
 	IdentityComponent* identityComponent1 = entity1.AddComponent<IdentityComponent>();
@@ -267,6 +272,7 @@ bool ArgusComponentIdentityComponentAddEnemyTeamTest::RunTest(const FString& Par
 
 	if (!identityComponent1 || !identityComponent2)
 	{
+		ArgusTesting::EndArgusTest();
 		return false;
 	}
 
@@ -312,19 +318,20 @@ bool ArgusComponentIdentityComponentAddEnemyTeamTest::RunTest(const FString& Par
 	);
 #pragma endregion
 
+	ArgusTesting::EndArgusTest();
 	return true;
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentTaskComponentIsExecutingMoveTaskTest, "Argus.ECS.Component.TaskComponent.IsExecutingMoveTask", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusComponentTaskComponentIsExecutingMoveTaskTest::RunTest(const FString& Parameters)
 {
-	ArgusEntity::FlushAllEntities();
-
+	ArgusTesting::StartArgusTest();
 	ArgusEntity entity = ArgusEntity::CreateEntity();
 	TaskComponent* taskComponent = entity.AddComponent<TaskComponent>();
 
 	if (!taskComponent)
 	{
+		ArgusTesting::EndArgusTest();
 		return false;
 	}
 
@@ -386,6 +393,7 @@ bool ArgusComponentTaskComponentIsExecutingMoveTaskTest::RunTest(const FString& 
 	);
 #pragma endregion
 
+	ArgusTesting::StartArgusTest();
 	return true;
 }
 
@@ -398,13 +406,13 @@ bool ArgusComponentNavigationComponentResetPathTest::RunTest(const FString& Para
 	const int32		numPoints			= 3;
 	const int32		indexThroughPath	= 1;
 
-	ArgusEntity::FlushAllEntities();
-
+	ArgusTesting::StartArgusTest();
 	ArgusEntity entity = ArgusEntity::CreateEntity();
 	NavigationComponent* navigationComponent = entity.AddComponent<NavigationComponent>();
 
 	if (!navigationComponent)
 	{
+		ArgusTesting::EndArgusTest();
 		return false;
 	}
 
@@ -479,6 +487,7 @@ bool ArgusComponentNavigationComponentResetPathTest::RunTest(const FString& Para
 	);
 #pragma endregion
 
+	ArgusTesting::EndArgusTest();
 	return true;
 }
 
@@ -490,13 +499,13 @@ bool ArgusComponentNavigationComponentResetQueuedWaypointsTest::RunTest(const FS
 	const FVector	point2		= FVector(2.0f, 3.0f, 4.0f);
 	const int32		numPoints	= 3;
 
-	ArgusEntity::FlushAllEntities();
-
+	ArgusTesting::StartArgusTest();
 	ArgusEntity entity = ArgusEntity::CreateEntity();
 	NavigationComponent* navigationComponent = entity.AddComponent<NavigationComponent>();
 
 	if (!navigationComponent)
 	{
+		ArgusTesting::EndArgusTest();
 		return false;
 	}
 
@@ -542,6 +551,7 @@ bool ArgusComponentNavigationComponentResetQueuedWaypointsTest::RunTest(const FS
 	);
 #pragma endregion
 
+	ArgusTesting::EndArgusTest();
 	return true;
 }
 #endif //WITH_AUTOMATION_TESTS

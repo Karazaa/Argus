@@ -1,6 +1,7 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusLogging.h"
+#include "ArgusTesting.h"
 #include "Framework/Notifications/NotificationManager.h"
 #include "Styling/AppStyle.h"
 #include "Widgets/Notifications/SNotificationList.h"
@@ -13,6 +14,13 @@ DEFINE_LOG_CATEGORY(ArgusTestingLog);
 
 void ArgusLogging::ShowEditorNotification(const FString& text, const FString& subText, ELogVerbosity::Type logVerbosity, float durationSeconds)
 {
+#if WITH_AUTOMATION_TESTS
+	if (ArgusTesting::IsInTestingContext())
+	{
+		return;
+	}
+#endif //WITH_AUTOMATION_TESTS
+
 #if WITH_EDITOR
 	if (GIsEditor)
 	{

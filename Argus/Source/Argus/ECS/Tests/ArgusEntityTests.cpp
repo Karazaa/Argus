@@ -1,18 +1,42 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusEntity.h"
+#include "ArgusTesting.h"
 #include "Misc/AutomationTest.h"
 
 #if WITH_AUTOMATION_TESTS
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityGetIdTest, "Argus.ECS.Entity.GetId", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
-bool ArgusEntityGetIdTest::RunTest(const FString& Parameters)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityCreateEntityTest, "Argus.ECS.Entity.CreateEntity", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+bool ArgusEntityCreateEntityTest::RunTest(const FString& Parameters)
 {
-	const uint32 expectedEntityId = 20u;
+	const uint32 expectedEntityId = ArgusECSConstants::k_maxEntities - 1u;
 
-	ArgusEntity::FlushAllEntities();
+	ArgusTesting::StartArgusTest();
 
-	ArgusEntity entity = ArgusEntity::CreateEntity(expectedEntityId);
+#pragma region Test attempting to create an ArgusEntity with an invalid ID
+	AddExpectedErrorPlain
+	(
+		FString::Printf
+		(
+			TEXT("Attempting to retrieve an ID that is beyond %s."),
+			ARGUS_NAMEOF(ArgusECSConstants::k_maxEntities)
+		)
+	);
+	AddExpectedErrorPlain
+	(
+		FString::Printf
+		(
+			TEXT("Attempting to create an %s with an invalid ID value."),
+			ARGUS_NAMEOF(ArgusEntity)
+		),
+		EAutomationExpectedErrorFlags::Contains,
+		2
+	);
+#pragma endregion
+
+	ArgusEntity entity = ArgusEntity::CreateEntity(ArgusECSConstants::k_maxEntities);
+
+	entity = ArgusEntity::CreateEntity(expectedEntityId);
 
 #pragma region Test creating an entity with a specific ID
 	TestEqual
@@ -30,6 +54,20 @@ bool ArgusEntityGetIdTest::RunTest(const FString& Parameters)
 	);
 #pragma endregion
 
+#pragma region Test creating an ArgusEntity with an already selected value just under maximum.
+	AddExpectedErrorPlain
+	(
+		FString::Printf
+		(
+			TEXT("Exceeded the maximum number of allowed %s."),
+			ARGUS_NAMEOF(ArgusEntity)
+		)
+	);
+#pragma endregion
+
+	entity = ArgusEntity::CreateEntity(expectedEntityId);
+
+	ArgusTesting::EndArgusTest();
 	return true;
 }
 
@@ -39,7 +77,7 @@ bool ArgusEntityAssignmentOperatorTest::RunTest(const FString& Parameters)
 	const uint32 initialEntityId = 20u;
 	const uint32 assignedEntityId = 30u;
 
-	ArgusEntity::FlushAllEntities();
+	ArgusTesting::StartArgusTest();
 
 	ArgusEntity entity0 = ArgusEntity::CreateEntity(initialEntityId);
 	ArgusEntity entity1 = ArgusEntity::CreateEntity(assignedEntityId);
@@ -74,14 +112,14 @@ bool ArgusEntityAssignmentOperatorTest::RunTest(const FString& Parameters)
 	);
 #pragma endregion
 
+	ArgusTesting::EndArgusTest();
 	return true;
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityEqualsOperatorTest, "Argus.ECS.Entity.EqualsOperator", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusEntityEqualsOperatorTest::RunTest(const FString& Parameters)
 {
-	ArgusEntity::FlushAllEntities();
-
+	ArgusTesting::StartArgusTest();
 	ArgusEntity entity0 = ArgusEntity::CreateEntity();
 	ArgusEntity entity1 = ArgusEntity::CreateEntity();
 
@@ -113,13 +151,14 @@ bool ArgusEntityEqualsOperatorTest::RunTest(const FString& Parameters)
 	);
 #pragma endregion
 
+	ArgusTesting::EndArgusTest();
 	return true;
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityBoolOperatorTest, "Argus.ECS.Entity.BoolOperator", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusEntityBoolOperatorTest::RunTest(const FString& Parameters)
 {
-	ArgusEntity::FlushAllEntities();
+	ArgusTesting::StartArgusTest();
 
 #pragma region Test that the bool operator of an empty ArgusEntity returns false
 	TestFalse
@@ -149,14 +188,14 @@ bool ArgusEntityBoolOperatorTest::RunTest(const FString& Parameters)
 	);
 #pragma endregion
 
+	ArgusTesting::EndArgusTest();
 	return true;
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityCreateInvalidEntityTest, "Argus.ECS.Entity.CreateInvalidEntity", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusEntityCreateInvalidEntityTest::RunTest(const FString& Parameters)
 {
-	ArgusEntity::FlushAllEntities();
-
+	ArgusTesting::StartArgusTest();
 	ArgusEntity entity = ArgusEntity::s_emptyEntity;
 
 #pragma region Test that the bool operator of an invalid ArgusEntity returns false
@@ -173,14 +212,14 @@ bool ArgusEntityCreateInvalidEntityTest::RunTest(const FString& Parameters)
 	);
 #pragma endregion
 
+	ArgusTesting::EndArgusTest();
 	return true;
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityFlushAllEntitiesTest, "Argus.ECS.Entity.FlushAllEntities", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusEntityFlushAllEntitiesTest::RunTest(const FString& Parameters)
 {
-	ArgusEntity::FlushAllEntities();
-
+	ArgusTesting::StartArgusTest();
 	ArgusEntity entity = ArgusEntity::CreateEntity();
 
 #pragma region Test that the bool operator of an ArgusEntity is true after creation
@@ -212,14 +251,14 @@ bool ArgusEntityFlushAllEntitiesTest::RunTest(const FString& Parameters)
 	);
 #pragma endregion
 
+	ArgusTesting::EndArgusTest();
 	return true;
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityCopyConstructorTest, "Argus.ECS.Entity.CopyConstructor", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusEntityCopyConstructorTest::RunTest(const FString& Parameters)
 {
-	ArgusEntity::FlushAllEntities();
-
+	ArgusTesting::StartArgusTest();
 	ArgusEntity entity0 = ArgusEntity::CreateEntity();
 	ArgusEntity entity1 = ArgusEntity(entity0);
 
@@ -237,14 +276,14 @@ bool ArgusEntityCopyConstructorTest::RunTest(const FString& Parameters)
 	);
 #pragma endregion
 
+	ArgusTesting::EndArgusTest();
 	return true;
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityAutoIncrementIdTest, "Argus.ECS.Entity.AutoIncrementId", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusEntityAutoIncrementIdTest::RunTest(const FString& Parameters)
 {
-	ArgusEntity::FlushAllEntities();
-
+	ArgusTesting::StartArgusTest();
 	ArgusEntity entity0 = ArgusEntity::CreateEntity();
 	ArgusEntity entity1 = ArgusEntity::CreateEntity();
 
@@ -276,6 +315,7 @@ bool ArgusEntityAutoIncrementIdTest::RunTest(const FString& Parameters)
 	);
 #pragma endregion
 
+	ArgusTesting::EndArgusTest();
 	return true;
 }
 
@@ -284,8 +324,7 @@ bool ArgusEntityCopyEntityTest::RunTest(const FString& Parameters)
 {
 	const uint32 expectedId = 20u;
 
-	ArgusEntity::FlushAllEntities();
-
+	ArgusTesting::StartArgusTest();
 	ArgusEntity entity0 = ArgusEntity::CreateEntity(expectedId);
 	ArgusEntity entity1 = entity0;
 	ArgusEntity entity2 = ArgusEntity(entity0);
@@ -320,6 +359,7 @@ bool ArgusEntityCopyEntityTest::RunTest(const FString& Parameters)
 	);
 #pragma endregion
 
+	ArgusTesting::EndArgusTest();
 	return true;
 }
 
@@ -329,8 +369,7 @@ bool ArgusEntityDoesEntityExistTest::RunTest(const FString& Parameters)
 	const uint32 expectedId = 20u;
 	const uint32 fakeId = 30u;
 
-	ArgusEntity::FlushAllEntities();
-
+	ArgusTesting::StartArgusTest();
 	ArgusEntity entity0 = ArgusEntity::CreateEntity(expectedId);
 
 #pragma region Test that an ArgusEntity exists after being created
@@ -373,6 +412,7 @@ bool ArgusEntityDoesEntityExistTest::RunTest(const FString& Parameters)
 	);
 #pragma endregion
 
+	ArgusTesting::EndArgusTest();
 	return true;
 }
 
@@ -382,8 +422,7 @@ bool ArgusEntityRetrieveEntityTest::RunTest(const FString& Parameters)
 	const uint32 expectedId = 20u;
 	const uint32 fakeId = 30u;
 
-	ArgusEntity::FlushAllEntities();
-
+	ArgusTesting::StartArgusTest();
 	ArgusEntity::CreateEntity(expectedId);
 	ArgusEntity existingEntity = ArgusEntity::RetrieveEntity(expectedId);
 	ArgusEntity fakeEntity = ArgusEntity::RetrieveEntity(fakeId);
@@ -446,14 +485,14 @@ bool ArgusEntityRetrieveEntityTest::RunTest(const FString& Parameters)
 	);
 #pragma endregion
 
+	ArgusTesting::EndArgusTest();
 	return true;
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityAddGetHealthComponentTest, "Argus.ECS.Entity.AddGetHealthComponent", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusEntityAddGetHealthComponentTest::RunTest(const FString& Parameters)
 {
-	ArgusEntity::FlushAllEntities();
-
+	ArgusTesting::StartArgusTest();
 	ArgusEntity entity = ArgusEntity::CreateEntity();
 	HealthComponent* healthComponent = entity.GetComponent<HealthComponent>();
 
@@ -487,14 +526,14 @@ bool ArgusEntityAddGetHealthComponentTest::RunTest(const FString& Parameters)
 	);
 #pragma endregion
 
+	ArgusTesting::EndArgusTest();
 	return true;
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityGetOrAddComponentTest, "Argus.ECS.Entity.GetOrAddComponent", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusEntityGetOrAddComponentTest::RunTest(const FString& Parameters)
 {
-	ArgusEntity::FlushAllEntities();
-
+	ArgusTesting::StartArgusTest();
 	ArgusEntity entity = ArgusEntity::CreateEntity();
 	HealthComponent* healthComponent = entity.GetOrAddComponent<HealthComponent>();
 
@@ -532,6 +571,7 @@ bool ArgusEntityGetOrAddComponentTest::RunTest(const FString& Parameters)
 	);
 #pragma endregion
 
+	ArgusTesting::EndArgusTest();
 	return true;
 }
 
@@ -540,8 +580,7 @@ bool ArgusEntityGetNextLowestUntakenIdTest::RunTest(const FString& Parameters)
 {
 	const uint16 initialIdToQuery = 0u;
 
-	ArgusEntity::FlushAllEntities();
-
+	ArgusTesting::StartArgusTest();
 	uint16 nextLowestId = ArgusEntity::GetNextLowestUntakenId(initialIdToQuery);
 
 #pragma region Test getting the next lowest ID when there are no entities
@@ -594,6 +633,7 @@ bool ArgusEntityGetNextLowestUntakenIdTest::RunTest(const FString& Parameters)
 	);
 #pragma endregion
 
+	ArgusTesting::EndArgusTest();
 	return true;
 }
 
@@ -603,7 +643,7 @@ bool ArgusEntityGetTakenEntityIdRangeTest::RunTest(const FString& Parameters)
 	const uint16 entity0Id = 500u;
 	const uint16 entity1Id = 10u;
 
-	ArgusEntity::FlushAllEntities();
+	ArgusTesting::StartArgusTest();
 
 #pragma region Test initial state of lowest entity ID
 	TestEqual
@@ -735,6 +775,7 @@ bool ArgusEntityGetTakenEntityIdRangeTest::RunTest(const FString& Parameters)
 	);
 #pragma endregion
 
+	ArgusTesting::EndArgusTest();
 	return true;
 }
 
@@ -745,8 +786,7 @@ bool ArgusEntityDestroyEntityTest::RunTest(const FString& Parameters)
 	const uint16 expectedHighestTakenIdAfterDestroy = 0u;
 	const uint16 entity0Id = 500u;
 
-	ArgusEntity::FlushAllEntities();
-
+	ArgusTesting::StartArgusTest();
 	ArgusEntity entity = ArgusEntity::CreateEntity(entity0Id);
 
 #pragma region Test the creation of a single entity
@@ -796,12 +836,14 @@ bool ArgusEntityDestroyEntityTest::RunTest(const FString& Parameters)
 
 	if (!entity)
 	{
+		ArgusTesting::EndArgusTest();
 		return false;
 	}
 
 	TaskComponent* taskComponent = entity.AddComponent<TaskComponent>();
 	if (!taskComponent)
 	{
+		ArgusTesting::EndArgusTest();
 		return false;
 	}
 	taskComponent->m_attackingState = EAttackingState::Attacking;
@@ -914,6 +956,7 @@ bool ArgusEntityDestroyEntityTest::RunTest(const FString& Parameters)
 	);
 #pragma endregion
 
+	ArgusTesting::EndArgusTest();
 	return true;
 }
 

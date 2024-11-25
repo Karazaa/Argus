@@ -3,6 +3,7 @@
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
 #include "ArgusMath.h"
+#include "ArgusTesting.h"
 #include "Misc/AutomationTest.h"
 
 #if WITH_AUTOMATION_TESTS
@@ -67,6 +68,7 @@ bool ArgusUtilitiesArgusMathExponentialDecaySmootherFloatTest::RunTest(const FSt
 	const float value2 = 10.0f;
 	const float decayConstant = 10.0f;
 
+	ArgusTesting::StartArgusTest();
 	ArgusMath::ExponentialDecaySmoother<float> testValue;
 
 #pragma region Test that the ExponentialDecaySmoother has the correct initial value after using default constructor.
@@ -204,6 +206,7 @@ bool ArgusUtilitiesArgusMathExponentialDecaySmootherFloatTest::RunTest(const FSt
 	);
 #pragma endregion
 
+	ArgusTesting::EndArgusTest();
 	return true;
 }
 
@@ -215,6 +218,7 @@ bool ArgusUtilitiesArgusMathExponentialDecaySmootherFVectorTest::RunTest(const F
 	const FVector vector2 = FVector(-1000.0f, 1.0f, -500.0f);
 	const float decayConstant = 15.0f;
 
+	ArgusTesting::StartArgusTest();
 	ArgusMath::ExponentialDecaySmoother<FVector> testValue;
 
 #pragma region Test that the ExponentialDecaySmoother has the correct initial value after calling default constructor.
@@ -334,6 +338,7 @@ bool ArgusUtilitiesArgusMathExponentialDecaySmootherFVectorTest::RunTest(const F
 	);
 #pragma endregion
 
+	ArgusTesting::EndArgusTest();
 	return true;
 }
 

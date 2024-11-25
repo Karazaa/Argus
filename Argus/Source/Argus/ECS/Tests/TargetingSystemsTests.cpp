@@ -1,6 +1,7 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusEntity.h"
+#include "ArgusTesting.h"
 #include "Systems/TargetingSystems.h"
 #include "Misc/AutomationTest.h"
 
@@ -9,8 +10,7 @@
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(TargetingSystemsTargetNearestEntityMatchingTeamMaskTest, "Argus.ECS.Systems.TargetingSystems.TargetNearestEntityMatchingTeamMask", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool TargetingSystemsTargetNearestEntityMatchingTeamMaskTest::RunTest(const FString& Parameters)
 {
-	ArgusEntity::FlushAllEntities();
-
+	ArgusTesting::StartArgusTest();
 	const ArgusEntity sourceEntity = ArgusEntity::CreateEntity();
 	const ArgusEntity closeEntity = ArgusEntity::CreateEntity();
 	const ArgusEntity fartherEntity = ArgusEntity::CreateEntity();
@@ -25,6 +25,7 @@ bool TargetingSystemsTargetNearestEntityMatchingTeamMaskTest::RunTest(const FStr
 	if (!sourceTransformComponent || !closeTransformComponent || !fartherTransformComponent || 
 		!sourceIdentityComponent || !closeIdentityComponent || !fartherIdentityComponent || !sourceTargetingComponent)
 	{
+		ArgusTesting::EndArgusTest();
 		return false;
 	}
 
@@ -142,6 +143,7 @@ bool TargetingSystemsTargetNearestEntityMatchingTeamMaskTest::RunTest(const FStr
 	);
 #pragma endregion
 
+	ArgusTesting::EndArgusTest();
 	return true;
 }
 

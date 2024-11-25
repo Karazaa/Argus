@@ -32,15 +32,15 @@ ArgusEntity ArgusEntity::CreateEntity(uint16 lowestId)
 {
 	const uint16 id = GetNextLowestUntakenId(lowestId);
 
-	if (s_takenEntityIds[id])
-	{
-		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Attempting to create an %s with an ID value of an already existing %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(ArgusEntity));
-		return s_emptyEntity;
-	}
-
 	if (id == ArgusECSConstants::k_maxEntities)
 	{
 		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Attempting to create an %s with an invalid ID value."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity));
+		return s_emptyEntity;
+	}
+
+	if (s_takenEntityIds[id])
+	{
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Attempting to create an %s with an ID value of an already existing %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(ArgusEntity));
 		return s_emptyEntity;
 	}
 
@@ -124,6 +124,7 @@ uint16 ArgusEntity::GetNextLowestUntakenId(uint16 lowestId)
 {
 	if (lowestId >= ArgusECSConstants::k_maxEntities)
 	{
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Attempting to retrieve an ID that is beyond %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusECSConstants::k_maxEntities));
 		return ArgusECSConstants::k_maxEntities;
 	}
 

@@ -1,6 +1,7 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusEntityTemplate.h"
+#include "ArgusTesting.h"
 #include "DataComponentDefinitions/HealthComponentData.h"
 #include "Misc/AutomationTest.h"
 
@@ -10,10 +11,9 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityTemplateInstantiateEntityTest, "Argu
 bool ArgusEntityTemplateInstantiateEntityTest::RunTest(const FString& Parameters)
 {
 	const uint32 expectedHealthValue = 5000u;
-
-	ArgusEntity::FlushAllEntities();
-
 	const uint16 targetId = static_cast<uint16>(UEntityPriority::MediumPriority);
+
+	ArgusTesting::StartArgusTest();
 
 #pragma region Test that there is not an entity of a specific entityID
 	TestFalse
@@ -51,6 +51,7 @@ bool ArgusEntityTemplateInstantiateEntityTest::RunTest(const FString& Parameters
 	);
 #pragma endregion
 
+	ArgusTesting::EndArgusTest();
 	return true;
 }
 

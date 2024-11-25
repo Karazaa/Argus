@@ -2,6 +2,7 @@
 
 #include "ArgusEntity.h"
 #include "ArgusSystemsManager.h"
+#include "ArgusTesting.h"
 #include "Systems/AvoidanceSystems.h"
 #include "Systems/TransformSystems.h"
 #include "Misc/AutomationTest.h"
@@ -18,8 +19,7 @@ bool TransformSystemsGetPathingLocationAtTimeOffsetTest::RunTest(const FString& 
 	const FVector twoSecondsInFuture = FVector(2.0f, 0.0f, 0.0f);
 	const FVector expectedForward = FVector(1.0f, 0.0f, 0.0f);
 
-	ArgusEntity::FlushAllEntities();
-
+	ArgusTesting::StartArgusTest();
 	ArgusEntity entity = ArgusEntity::CreateEntity();
 	TransformSystems::TransformSystemsComponentArgs components;
 
@@ -31,6 +31,7 @@ bool TransformSystemsGetPathingLocationAtTimeOffsetTest::RunTest(const FString& 
 
 	if (!components.AreComponentsValidCheck())
 	{
+		ArgusTesting::EndArgusTest();
 		return false;
 	}
 
@@ -222,6 +223,7 @@ bool TransformSystemsGetPathingLocationAtTimeOffsetTest::RunTest(const FString& 
 	);
 #pragma endregion
 
+	ArgusTesting::EndArgusTest();
 	return true;
 }
 
@@ -234,13 +236,13 @@ bool TransformSystemsFaceTowardsLocationXYTest::RunTest(const FString& Parameter
 	const FVector expectedForward = FVector(-1.0f, 0.0f, 0.0f);
 	const FVector secondExpectedForward = FVector(1.0f, 0.0f, 0.0f);
 
-	ArgusEntity::FlushAllEntities();
-
+	ArgusTesting::StartArgusTest();
 	ArgusEntity entity = ArgusEntity::CreateEntity();
 	TransformComponent* transformComponent = entity.AddComponent<TransformComponent>();
 
 	if (!transformComponent)
 	{
+		ArgusTesting::EndArgusTest();
 		return false;
 	}
 
@@ -297,6 +299,7 @@ bool TransformSystemsFaceTowardsLocationXYTest::RunTest(const FString& Parameter
 	);
 #pragma endregion
 
+	ArgusTesting::EndArgusTest();
 	return true;
 }
 
@@ -314,8 +317,7 @@ bool TransformSystemsMoveAlongPathTest::RunTest(const FString& Parameters)
 	const float deltaSecondsPerStep = 1.0f;
 	const uint32 numExpectedPathPointsAtConclusion = 0u;
 
-	ArgusEntity::FlushAllEntities();
-
+	ArgusTesting::StartArgusTest();
 	ArgusEntity singletonEntity = ArgusEntity::CreateEntity(ArgusSystemsManager::s_singletonEntityId);
 	singletonEntity.AddComponent<SpatialPartitioningComponent>();
 
@@ -330,6 +332,7 @@ bool TransformSystemsMoveAlongPathTest::RunTest(const FString& Parameters)
 
 	if (!components.AreComponentsValidCheck())
 	{
+		ArgusTesting::EndArgusTest();
 		return false;
 	}
 
@@ -486,6 +489,7 @@ bool TransformSystemsMoveAlongPathTest::RunTest(const FString& Parameters)
 	);
 #pragma endregion
 
+	ArgusTesting::EndArgusTest();
 	return true;
 }
 
@@ -503,8 +507,8 @@ bool TransformSystemsFindEntitiesWithinXYBoundsTest::RunTest(const FString& Para
 	const uint32	totalNumEntities			= 4u;
 	const uint32	initialNumExpectedEntities	= 0u;
 	const uint32	expectedNumHitEntities		= 3u;
-	ArgusEntity::FlushAllEntities();
-
+	
+	ArgusTesting::StartArgusTest();
 	ArgusEntity entity0 = ArgusEntity::CreateEntity();
 	ArgusEntity entity1 = ArgusEntity::CreateEntity();
 	ArgusEntity entity2 = ArgusEntity::CreateEntity();
@@ -614,6 +618,7 @@ bool TransformSystemsFindEntitiesWithinXYBoundsTest::RunTest(const FString& Para
 	);
 #pragma endregion
 
+	ArgusTesting::EndArgusTest();
 	return true;
 }
 

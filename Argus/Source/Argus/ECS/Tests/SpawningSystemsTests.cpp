@@ -2,6 +2,7 @@
 
 #include "ArgusEntityTemplate.h"
 #include "ArgusMacros.h"
+#include "ArgusTesting.h"
 #include "DataComponentDefinitions/TransformComponentData.h"
 #include "Misc/AutomationTest.h"
 #include "RecordDefinitions/ArgusActorRecord.h"
@@ -18,13 +19,13 @@ bool SpawningSystemsSpawnEntityTest::RunTest(const FString& Parameters)
 	const uint32			dummyRecordID = 1234u;
 	const UEntityPriority	dummyEntityPriority = UEntityPriority::HighPriority;
 
-	ArgusEntity::FlushAllEntities();
-
+	ArgusTesting::StartArgusTest();
 	UTransformComponentData* transformComponentData = NewObject<UTransformComponentData>();
 	UArgusEntityTemplate* entityTemplate = NewObject<UArgusEntityTemplate>();
 	UArgusActorRecord* argusActorRecord = NewObject<UArgusActorRecord>();
 	if (!transformComponentData || !entityTemplate || !argusActorRecord)
 	{
+		ArgusTesting::EndArgusTest();
 		return false;
 	}
 
@@ -42,6 +43,7 @@ bool SpawningSystemsSpawnEntityTest::RunTest(const FString& Parameters)
 	TaskComponent* spawningTaskComponent = spawningEntity.AddComponent<TaskComponent>();
 	if (!spawningTaskComponent)
 	{
+		ArgusTesting::EndArgusTest();
 		return false;
 	}
 	spawningTaskComponent->m_spawningState = ESpawningState::ProcessSpawnEntityCommand;
@@ -211,6 +213,7 @@ bool SpawningSystemsSpawnEntityTest::RunTest(const FString& Parameters)
 	);
 #pragma endregion
 
+	ArgusTesting::EndArgusTest();
 	return true;
 }
 
