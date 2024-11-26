@@ -59,7 +59,7 @@ void TransformSystems::GetPathingLocationAtTimeOffset(float timeOffsetSeconds, c
 	uint16 pointIndex = components.m_navigationComponent->m_lastPointIndex;
 	const uint16 numNavigationPoints = components.m_navigationComponent->m_navigationPoints.size();
 
-	if (pointIndex >= numNavigationPoints - 1u)
+	if (numNavigationPoints == 0u || pointIndex >= numNavigationPoints - 1u)
 	{
 		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] %s exceeded %s putting pathfinding in an invalid state."), ARGUS_FUNCNAME, ARGUS_NAMEOF(lastPointIndex), ARGUS_NAMEOF(numNavigationPoints));
 		return;
@@ -146,7 +146,7 @@ void TransformSystems::FaceTowardsLocationXY(TransformComponent* transformCompon
 
 	if (!transformComponent)
 	{
-		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Transform Systems were run with invalid component arguments passed."), ARGUS_FUNCNAME);
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Passed in an invalid %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent*));
 		return;
 	}
 
@@ -173,7 +173,7 @@ void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float delta
 	const uint16 lastPointIndex = components.m_navigationComponent->m_lastPointIndex;
 	const uint16 numNavigationPoints = components.m_navigationComponent->m_navigationPoints.size();
 
-	if (lastPointIndex >= numNavigationPoints - 1u)
+	if (numNavigationPoints == 0u || lastPointIndex >= numNavigationPoints - 1u)
 	{
 		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] %s exceeded %s putting pathfinding in an invalid state."), ARGUS_FUNCNAME, ARGUS_NAMEOF(lastPointIndex), ARGUS_NAMEOF(numNavigationPoints));
 		return;
