@@ -40,18 +40,21 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 
 	if (!components.AreComponentsValidCheck())
 	{
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Passed in %s object is invalid."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformSystemsComponentArgs))
 		return;
 	}
 
 	const ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusSystemsManager::s_singletonEntityId);
 	if (!singletonEntity)
 	{
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Could not retrieve singleton %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity))
 		return;
 	}
 
 	const SpatialPartitioningComponent* const spatialPartitioningComponent = singletonEntity.GetComponent<SpatialPartitioningComponent>();
 	if (!spatialPartitioningComponent)
 	{
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Could not retrieve %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(SpatialPartitioningComponent*))
 		return;
 	}
 
@@ -63,8 +66,9 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 	if (components.m_taskComponent->IsExecutingMoveTask())
 	{
 		const uint16 futureIndex = components.m_navigationComponent->m_lastPointIndex + 1u;
+		const uint16 numNavigationPoints = components.m_navigationComponent->m_navigationPoints.size();
 		FVector desiredDirection = FVector::ZeroVector;
-		if (futureIndex < components.m_navigationComponent->m_navigationPoints.size())
+		if (numNavigationPoints != 0u && futureIndex < numNavigationPoints)
 		{
 			desiredDirection = (components.m_navigationComponent->m_navigationPoints[futureIndex] - components.m_transformComponent->m_transform.GetLocation());
 		}

@@ -22,6 +22,8 @@ void ArgusSystemsManager::RunSystems(UWorld* worldPointer, float deltaTime)
 		return;
 	}
 
+	PopulateSingletonComponents();
+
 	SpawningSystems::RunSystems(deltaTime);
 	NavigationSystems::RunSystems(worldPointer);
 	TargetingSystems::RunSystems(deltaTime);
@@ -31,22 +33,44 @@ void ArgusSystemsManager::RunSystems(UWorld* worldPointer, float deltaTime)
 	UpdateSingletonComponents(didMovementUpdateThisFrame);
 }
 
-void ArgusSystemsManager::UpdateSingletonComponents(bool didMovementUpdateThisFrame)
+void ArgusSystemsManager::PopulateSingletonComponents()
 {
-	bool createdThisFrame = false;
-	if (!ArgusEntity::DoesEntityExist(s_singletonEntityId))
+	if (ArgusEntity::DoesEntityExist(s_singletonEntityId))
 	{
-		ArgusEntity::CreateEntity(s_singletonEntityId);
-		createdThisFrame = true;
+		return;
 	}
 
-	ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(s_singletonEntityId);
-
-	if (SpatialPartitioningComponent* spatialPartitioningComponent = singletonEntity.GetOrAddComponent<SpatialPartitioningComponent>())
+	ArgusEntity singletonEntity = ArgusEntity::CreateEntity(s_singletonEntityId);
+	if (!singletonEntity)
 	{
-		if (didMovementUpdateThisFrame || createdThisFrame)
-		{
-			spatialPartitioningComponent->m_argusKDTree.RebuildKDTreeForAllArgusEntities();
-		}
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] There is no singleton %s when it should have already been made."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity));
+		return;
+	}
+
+	if (SpatialPartitioningComponent* spatialPartitioningComponent = singletonEntity.AddComponent<SpatialPartitioningComponent>())
+	{
+		spatialPartitioningComponent->m_argusKDTree.RebuildKDTreeForAllArgusEntities();
+	}
+}
+
+void ArgusSystemsManager::UpdateSingletonComponents(bool didMovementUpdateThisFrame)
+{
+	ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(s_singletonEntityId);
+	if (!singletonEntity)
+	{
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] There is no singleton %s when it should have already been made."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity));
+		return;
+	}
+
+	SpatialPartitioningComponent* spatialPartitioningComponent = singletonEntity.GetComponent<SpatialPartitioningComponent>();
+	if (!spatialPartitioningComponent)
+	{
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] There is not %s when it should have already been made."), ARGUS_FUNCNAME, ARGUS_NAMEOF(SpatialPartitioningComponent));
+		return;
+	}
+
+	if (didMovementUpdateThisFrame)
+	{
+		spatialPartitioningComponent->m_argusKDTree.RebuildKDTreeForAllArgusEntities();
 	}
 }

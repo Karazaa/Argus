@@ -11,5 +11,8 @@ class ArgusSystemsManager
 public:
 	static const uint16 s_singletonEntityId;
 	static void RunSystems(UWorld* worldPointer, float deltaTime);
+
+private:
+	static void PopulateSingletonComponents();
 	static void UpdateSingletonComponents(bool didMovementUpdateThisFrame);
 };

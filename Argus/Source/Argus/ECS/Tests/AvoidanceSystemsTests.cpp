@@ -25,6 +25,19 @@ bool AvoidanceSystemsProcessORCAvoidanceTest::RunTest(const FString& Parameters)
 	TransformSystems::TransformSystemsComponentArgs components;
 	UWorld* dummyPointer = nullptr;
 
+#pragma region Test that invalid components report the proper error.
+	AddExpectedErrorPlain
+	(
+		FString::Printf
+		(
+			TEXT("Passed in %s object is invalid."),
+			ARGUS_NAMEOF(TransformSystemsComponentArgs)
+		)
+	);
+#pragma endregion
+
+	AvoidanceSystems::ProcessORCAvoidance(dummyPointer, deltaTime, components);
+
 	components.m_entity = entity;
 	components.m_taskComponent = entity.AddComponent<TaskComponent>();
 	components.m_transformComponent = entity.AddComponent<TransformComponent>();
@@ -32,7 +45,34 @@ bool AvoidanceSystemsProcessORCAvoidanceTest::RunTest(const FString& Parameters)
 	components.m_targetingComponent = entity.AddComponent<TargetingComponent>();
 	IdentityComponent* identityComponent = entity.AddComponent<IdentityComponent>();
 
+#pragma region Test that an error is reported if there is no singleton entity.
+	AddExpectedErrorPlain
+	(
+		FString::Printf
+		(
+			TEXT("Could not retrieve singleton %s."),
+			ARGUS_NAMEOF(ArgusEntity)
+		)
+	);
+#pragma endregion
+
+	AvoidanceSystems::ProcessORCAvoidance(dummyPointer, deltaTime, components);
+
 	ArgusEntity singletonEntity = ArgusEntity::CreateEntity(ArgusSystemsManager::s_singletonEntityId);
+
+#pragma region Test that an error is reported if there is no SpatialPartitioningComponent on the singleton entity.
+	AddExpectedErrorPlain
+	(
+		FString::Printf
+		(
+			TEXT("Could not retrieve %s."),
+			ARGUS_NAMEOF(SpatialPartitioningComponent*)
+		)
+	);
+#pragma endregion
+
+	AvoidanceSystems::ProcessORCAvoidance(dummyPointer, deltaTime, components);
+
 	SpatialPartitioningComponent* spatialPartitioningComponent = singletonEntity.AddComponent<SpatialPartitioningComponent>();
 
 	if (!components.AreComponentsValidCheck() || !spatialPartitioningComponent || !identityComponent)
@@ -89,14 +129,28 @@ bool AvoidanceSystemsProcessORCAvoidanceTest::RunTest(const FString& Parameters)
 	}
 	secondComponents.m_transformComponent->m_transform.SetLocation(secondEntityLocation);
 
+	components.m_taskComponent->m_movementState = EMovementState::MoveToLocation;
+
+#pragma region Test that an error is reported if the navigation component is malformed.
+	AddExpectedErrorPlain
+	(
+		FString::Printf
+		(
+			TEXT("Attempting to process ORCA, but the source %s's %s is in an invalid state."),
+			ARGUS_NAMEOF(ArgusEntity),
+			ARGUS_NAMEOF(NavigationComponent)
+		)
+	);
+#pragma endregion
+
+	AvoidanceSystems::ProcessORCAvoidance(dummyPointer, deltaTime, components);
+
 	components.m_navigationComponent->m_navigationPoints.push_back(components.m_transformComponent->m_transform.GetLocation());
 	components.m_navigationComponent->m_navigationPoints.push_back(targetLocation);
-	components.m_taskComponent->m_movementState = EMovementState::MoveToLocation;
 	components.m_transformComponent->m_currentVelocity = velocity;
 
 	spatialPartitioningComponent->m_argusKDTree.RebuildKDTreeForAllArgusEntities();
 	AvoidanceSystems::ProcessORCAvoidance(dummyPointer, deltaTime, components);
-	AvoidanceSystems::ProcessORCAvoidance(dummyPointer, deltaTime, secondComponents);
 
 #pragma region Test that a moving entity would not maintain its velocity when about to collide with a static entity.
 	TestNotEqual
