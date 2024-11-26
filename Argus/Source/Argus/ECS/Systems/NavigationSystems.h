@@ -17,7 +17,7 @@ public:
 		TargetingComponent* m_targetingComponent = nullptr;
 		const TransformComponent* m_transformComponent = nullptr;
 
-		bool AreComponentsValidCheck() const;
+		bool AreComponentsValidCheck(const WIDECHAR* functionName) const;
 	};
 	static void ProcessNavigationTaskCommands(UWorld* worldPointer, const NavigationSystemsComponentArgs& components);
 	static void RecalculateMoveToEntityPaths(UWorld* worldPointer, const NavigationSystemsComponentArgs& components);
@@ -25,5 +25,5 @@ public:
 	static void NavigateFromEntityToLocation(UWorld* worldPointer, std::optional<FVector> targetLocation, const NavigationSystemsComponentArgs& components);
 
 private:
-	static bool IsWorldPointerValidCheck(UWorld* worldPointer);
+	static bool IsWorldPointerValidCheck(UWorld* worldPointer, const WIDECHAR* functionName);
 };

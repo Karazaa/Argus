@@ -13,7 +13,7 @@ void NavigationSystems::RunSystems(UWorld* worldPointer)
 {
 	ARGUS_TRACE(NavigationSystems::RunSystems)
 
-	if (!IsWorldPointerValidCheck(worldPointer))
+	if (!IsWorldPointerValidCheck(worldPointer, ARGUS_FUNCNAME))
 	{
 		return;
 	}
@@ -41,11 +41,11 @@ void NavigationSystems::RunSystems(UWorld* worldPointer)
 	}
 }
 
-bool NavigationSystems::NavigationSystemsComponentArgs::AreComponentsValidCheck() const
+bool NavigationSystems::NavigationSystemsComponentArgs::AreComponentsValidCheck(const WIDECHAR* functionName) const
 {
 	if (!m_taskComponent || !m_navigationComponent || !m_targetingComponent || !m_transformComponent)
 	{
-		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Navigation Systems were run with invalid component arguments passed."), ARGUS_FUNCNAME);
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Navigation Systems were run with invalid component arguments passed."), functionName);
 		return false;
 	}
 
@@ -56,7 +56,7 @@ void NavigationSystems::ProcessNavigationTaskCommands(UWorld* worldPointer, cons
 {
 	ARGUS_TRACE(NavigationSystems::ProcessNavigationTaskCommands)
 
-	if (!IsWorldPointerValidCheck(worldPointer) || !components.AreComponentsValidCheck())
+	if (!IsWorldPointerValidCheck(worldPointer, ARGUS_FUNCNAME) || !components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return;
 	}
@@ -82,7 +82,7 @@ void NavigationSystems::RecalculateMoveToEntityPaths(UWorld* worldPointer, const
 {
 	ARGUS_TRACE(NavigationSystems::RecalculateMoveToEntityPaths)
 
-	if (!IsWorldPointerValidCheck(worldPointer) || !components.AreComponentsValidCheck())
+	if (!IsWorldPointerValidCheck(worldPointer, ARGUS_FUNCNAME) || !components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return;
 	}
@@ -114,7 +114,7 @@ void NavigationSystems::RecalculateMoveToEntityPaths(UWorld* worldPointer, const
 
 void NavigationSystems::NavigateFromEntityToEntity(UWorld* worldPointer, ArgusEntity targetEntity, const NavigationSystemsComponentArgs& components)
 {
-	if (!IsWorldPointerValidCheck(worldPointer) || !components.AreComponentsValidCheck())
+	if (!IsWorldPointerValidCheck(worldPointer, ARGUS_FUNCNAME) || !components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return;
 	}
@@ -135,7 +135,7 @@ void NavigationSystems::NavigateFromEntityToEntity(UWorld* worldPointer, ArgusEn
 
 void NavigationSystems::NavigateFromEntityToLocation(UWorld* worldPointer, std::optional<FVector> targetLocation, const NavigationSystemsComponentArgs& components)
 {
-	if (!IsWorldPointerValidCheck(worldPointer) || !components.AreComponentsValidCheck() || !targetLocation.has_value())
+	if (!IsWorldPointerValidCheck(worldPointer, ARGUS_FUNCNAME) || !components.AreComponentsValidCheck(ARGUS_FUNCNAME) || !targetLocation.has_value())
 	{
 		return;
 	}
@@ -192,14 +192,14 @@ void NavigationSystems::NavigateFromEntityToLocation(UWorld* worldPointer, std::
 	}
 }
 
-bool NavigationSystems::IsWorldPointerValidCheck(UWorld* worldPointer)
+bool NavigationSystems::IsWorldPointerValidCheck(UWorld* worldPointer, const WIDECHAR* functionName)
 {
 	if (!worldPointer)
 	{
 		ARGUS_LOG
 		(
 			ArgusECSLog, Error, TEXT("[%s] was invoked with an invalid %s, %s."),
-			ARGUS_FUNCNAME,
+			functionName,
 			ARGUS_NAMEOF(UWorld*),
 			ARGUS_NAMEOF(worldPointer)
 		);
