@@ -30,7 +30,7 @@ bool AvoidanceSystemsProcessORCAvoidanceTest::RunTest(const FString& Parameters)
 	(
 		FString::Printf
 		(
-			TEXT("Passed in %s object is invalid."),
+			TEXT("Passed in %s object has invalid component references."),
 			ARGUS_NAMEOF(TransformSystemsComponentArgs)
 		)
 	);
@@ -75,7 +75,7 @@ bool AvoidanceSystemsProcessORCAvoidanceTest::RunTest(const FString& Parameters)
 
 	SpatialPartitioningComponent* spatialPartitioningComponent = singletonEntity.AddComponent<SpatialPartitioningComponent>();
 
-	if (!components.AreComponentsValidCheck() || !spatialPartitioningComponent || !identityComponent)
+	if (!components.AreComponentsValidCheck(true, ARGUS_FUNCNAME) || !spatialPartitioningComponent || !identityComponent)
 	{
 		ArgusTesting::EndArgusTest();
 		return false;
@@ -206,7 +206,7 @@ bool AvoidanceSystemsProcessORCAvoidanceTest::RunTest(const FString& Parameters)
 	secondComponents.m_targetingComponent = secondEntity.AddComponent<TargetingComponent>();
 	IdentityComponent* secondIdentityComponent = secondEntity.AddComponent<IdentityComponent>();
 
-	if (!secondComponents.AreComponentsValidCheck() || !secondIdentityComponent)
+	if (!secondComponents.AreComponentsValidCheck(true, ARGUS_FUNCNAME) || !secondIdentityComponent)
 	{
 		ArgusTesting::EndArgusTest();
 		return false;

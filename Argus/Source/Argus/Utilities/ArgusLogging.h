@@ -26,4 +26,5 @@ static TAutoConsoleVariable<bool> CVarEnableVerboseTestLogging(TEXT("Argus.Input
 namespace ArgusLogging
 {
 	void ShowEditorNotification(const FString& text, const FString& subText = FString{}, ELogVerbosity::Type logVerbosity = ELogVerbosity::Error, float durationSeconds = 5.0f);
+	void LogInvalidComponentReferences(const WIDECHAR* functionName, const WIDECHAR* objectName);
 }

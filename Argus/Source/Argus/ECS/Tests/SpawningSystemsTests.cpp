@@ -39,14 +39,29 @@ bool SpawningSystemsSpawnEntityTest::RunTest(const FString& Parameters)
 	argusActorRecord->m_id = dummyRecordID;
 	argusActorRecord->m_entityTemplateOverride = entityTemplate;
 
-	ArgusEntity spawningEntity = ArgusEntity::CreateEntity();
-	TaskComponent* spawningTaskComponent = spawningEntity.AddComponent<TaskComponent>();
-	if (!spawningTaskComponent)
+	SpawningSystems::SpawningSystemsComponentArgs components;
+
+#pragma region Test that invalid components report the proper error.
+	AddExpectedErrorPlain
+	(
+		FString::Printf
+		(
+			TEXT("Passed in %s object has invalid component references."),
+			ARGUS_NAMEOF(SpawningSystemsComponentArgs)
+		)
+	);
+#pragma endregion
+	SpawningSystems::SpawnEntity(components, argusActorRecord);
+
+	components.m_entity = ArgusEntity::CreateEntity();
+	components.m_taskComponent = components.m_entity.AddComponent<TaskComponent>();
+	components.m_spawningComponent = components.m_entity.AddComponent<SpawningComponent>();
+	if (!components.AreComponentsValidCheck(true, ARGUS_FUNCNAME))
 	{
 		ArgusTesting::EndArgusTest();
 		return false;
 	}
-	spawningTaskComponent->m_spawningState = ESpawningState::ProcessSpawnEntityCommand;
+	components.m_taskComponent->m_spawningState = ESpawningState::ProcessSpawnEntityCommand;
 
 #pragma region Test that the to-be-spawned entity does not yet exist.
 	TestFalse
@@ -61,7 +76,7 @@ bool SpawningSystemsSpawnEntityTest::RunTest(const FString& Parameters)
 	);
 #pragma endregion
 
-	SpawningSystems::SpawnEntity(spawningTaskComponent, argusActorRecord);
+	SpawningSystems::SpawnEntity(components, argusActorRecord);
 
 #pragma region Test that the to-be-spawned entity exists after spawning.
 	TestTrue
@@ -208,7 +223,7 @@ bool SpawningSystemsSpawnEntityTest::RunTest(const FString& Parameters)
 			ARGUS_NAMEOF(m_spawningState),
 			ARGUS_NAMEOF(SpawningSystems::SpawnEntity)
 		),
-		spawningTaskComponent->m_spawningState,
+		components.m_taskComponent->m_spawningState,
 		ESpawningState::None
 	);
 #pragma endregion

@@ -25,7 +25,7 @@ bool TransformSystems::RunSystems(UWorld* worldPointer, float deltaTime)
 		components.m_transformComponent = potentialEntity.GetComponent<TransformComponent>();
 		components.m_navigationComponent = potentialEntity.GetComponent<NavigationComponent>();
 		components.m_targetingComponent = potentialEntity.GetComponent<TargetingComponent>();
-		if (!components.AreComponentsValidCheck())
+		if (!components.AreComponentsValidCheck(false))
 		{
 			continue;
 		}
@@ -36,16 +36,25 @@ bool TransformSystems::RunSystems(UWorld* worldPointer, float deltaTime)
 	return didMovementUpdateThisFrame;
 }
 
-bool TransformSystems::TransformSystemsComponentArgs::AreComponentsValidCheck() const
+bool TransformSystems::TransformSystemsComponentArgs::AreComponentsValidCheck(bool errorIfInvalid, const WIDECHAR* functionName) const
 {
-	return m_entity && m_taskComponent && m_navigationComponent && m_transformComponent && m_targetingComponent;
+	if (m_entity && m_taskComponent && m_navigationComponent && m_transformComponent && m_targetingComponent)
+	{
+		return true;
+	}
+
+	if (errorIfInvalid && functionName)
+	{
+		ArgusLogging::LogInvalidComponentReferences(functionName, ARGUS_NAMEOF(TransformSystemsComponentArgs));
+	}
+
+	return false;
 }
 
 void TransformSystems::GetPathingLocationAtTimeOffset(float timeOffsetSeconds, const TransformSystemsComponentArgs& components, GetPathingLocationAtTimeOffsetResults& results)
 {
-	if (!components.AreComponentsValidCheck())
+	if (!components.AreComponentsValidCheck(true, ARGUS_FUNCNAME))
 	{
-		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Passed in %s object has invalid component references."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformSystemsComponentArgs));
 		return;
 	}
 
@@ -163,9 +172,8 @@ void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float delta
 {
 	ARGUS_TRACE(TransformSystems::MoveAlongNavigationPath)
 
-	if (!components.AreComponentsValidCheck())
+	if (!components.AreComponentsValidCheck(true, ARGUS_FUNCNAME))
 	{
-		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Passed in %s object has invalid component references."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformSystemsComponentArgs));
 		return;
 	}
 
@@ -256,9 +264,8 @@ bool TransformSystems::ProcessMovementTaskCommands(UWorld* worldPointer, float d
 {
 	ARGUS_TRACE(TransformSystems::ProcessMovementTaskCommands)
 
-	if (!components.AreComponentsValidCheck())
+	if (!components.AreComponentsValidCheck(true, ARGUS_FUNCNAME))
 	{
-		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Passed in %s object has invalid component references."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformSystemsComponentArgs));
 		return false;
 	}
 
@@ -285,9 +292,8 @@ bool TransformSystems::ProcessMovementTaskCommands(UWorld* worldPointer, float d
 
 void TransformSystems::OnCompleteNavigationPath(const TransformSystemsComponentArgs& components)
 {
-	if (!components.AreComponentsValidCheck())
+	if (!components.AreComponentsValidCheck(true, ARGUS_FUNCNAME))
 	{
-		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Passed in %s object has invalid component references."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformSystemsComponentArgs));
 		return;
 	}
 

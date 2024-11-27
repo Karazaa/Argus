@@ -15,10 +15,10 @@ public:
 		TaskComponent* m_taskComponent = nullptr;
 		SpawningComponent* m_spawningComponent = nullptr;
 
-		bool AreComponentsValidCheck() const;
+		bool AreComponentsValidCheck(bool shouldErrorIfInvalid, const WIDECHAR* functionName = nullptr) const;
 	};
 
-	static void SpawnEntity(TaskComponent* spawningTaskComponent, const UArgusActorRecord* argusActorRecord);
+	static void SpawnEntity(const SpawningSystemsComponentArgs& components, const UArgusActorRecord* argusActorRecord);
 
 private:
 	static void ProcessSpawningTaskCommands(float deltaTime, const SpawningSystemsComponentArgs& components);

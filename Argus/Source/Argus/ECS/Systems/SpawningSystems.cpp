@@ -1,6 +1,8 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "SpawningSystems.h"
+#include "ArgusLogging.h"
+#include "ArgusMacros.h"
 #include "ArgusStaticData.h"
 
 void SpawningSystems::RunSystems(float deltaTime)
@@ -20,7 +22,7 @@ void SpawningSystems::RunSystems(float deltaTime)
 		components.m_taskComponent = components.m_entity.GetComponent<TaskComponent>();
 		components.m_spawningComponent = components.m_entity.GetComponent<SpawningComponent>();
 
-		if (!components.AreComponentsValidCheck())
+		if (!components.AreComponentsValidCheck(false))
 		{
 			continue;
 		}
@@ -29,16 +31,31 @@ void SpawningSystems::RunSystems(float deltaTime)
 	}
 }
 
-bool SpawningSystems::SpawningSystemsComponentArgs::AreComponentsValidCheck() const
+bool SpawningSystems::SpawningSystemsComponentArgs::AreComponentsValidCheck(bool shouldErrorIfInvalid, const WIDECHAR* functionName) const
 {
-	return m_entity && m_taskComponent && m_spawningComponent;
+	if (m_entity && m_taskComponent && m_spawningComponent)
+	{
+		return true;
+	}
+
+	if (shouldErrorIfInvalid && functionName)
+	{
+		ArgusLogging::LogInvalidComponentReferences(functionName, ARGUS_NAMEOF(SpawningSystemsComponentArgs));
+	}
+
+	return false;
 }
 
-void SpawningSystems::SpawnEntity(TaskComponent* spawningTaskComponent, const UArgusActorRecord* argusActorRecord)
+void SpawningSystems::SpawnEntity(const SpawningSystemsComponentArgs& components, const UArgusActorRecord* argusActorRecord)
 {
 	ARGUS_TRACE(SpawningSystems::SpawnEntity)
 
-	if (!spawningTaskComponent || spawningTaskComponent->m_spawningState != ESpawningState::ProcessSpawnEntityCommand || !argusActorRecord || !argusActorRecord->m_entityTemplateOverride)
+	if (!components.AreComponentsValidCheck(true, ARGUS_FUNCNAME))
+	{
+		return;
+	}
+
+	if (components.m_taskComponent->m_spawningState != ESpawningState::ProcessSpawnEntityCommand || !argusActorRecord || !argusActorRecord->m_entityTemplateOverride)
 	{
 		return;
 	}
@@ -53,14 +70,14 @@ void SpawningSystems::SpawnEntity(TaskComponent* spawningTaskComponent, const UA
 	spawnedEntityTaskComponent->m_baseState = EBaseState::SpawnedWaitingForActorTake;
 	spawnedEntityTaskComponent->m_spawnedFromArgusActorRecordId = argusActorRecord->m_id;
 
-	spawningTaskComponent->m_spawningState = ESpawningState::None;
+	components.m_taskComponent->m_spawningState = ESpawningState::None;
 }
 
 void SpawningSystems::ProcessSpawningTaskCommands(float deltaTime, const SpawningSystemsComponentArgs& components)
 {
 	ARGUS_TRACE(SpawningSystems::ProcessSpawningTaskCommands)
 
-	if (!components.AreComponentsValidCheck())
+	if (!components.AreComponentsValidCheck(true, ARGUS_FUNCNAME))
 	{
 		return;
 	}
@@ -70,7 +87,7 @@ void SpawningSystems::ProcessSpawningTaskCommands(float deltaTime, const Spawnin
 		case ESpawningState::None:
 			break;
 		case ESpawningState::ProcessSpawnEntityCommand:
-			SpawnEntity(components.m_taskComponent, ArgusStaticData::GetRecord<UArgusActorRecord>(components.m_spawningComponent->m_argusActorRecordId));
+			SpawnEntity(components, ArgusStaticData::GetRecord<UArgusActorRecord>(components.m_spawningComponent->m_argusActorRecordId));
 			break;
 		default:
 			break;

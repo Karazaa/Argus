@@ -55,3 +55,8 @@ void ArgusLogging::ShowEditorNotification(const FString& text, const FString& su
 	}
 #endif // WITH_EDITOR
 }
+
+void ArgusLogging::LogInvalidComponentReferences(const WIDECHAR* functionName, const WIDECHAR* objectName)
+{
+	ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Passed in %s object has invalid component references."), functionName, objectName);
+}

@@ -17,7 +17,7 @@ public:
 		NavigationComponent* m_navigationComponent = nullptr;
 		TargetingComponent* m_targetingComponent = nullptr;
 
-		bool AreComponentsValidCheck() const;
+		bool AreComponentsValidCheck(bool shouldErrorIfInvalid, const WIDECHAR* functionName = nullptr) const;
 	};
 	struct GetPathingLocationAtTimeOffsetResults
 	{
