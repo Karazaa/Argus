@@ -42,9 +42,10 @@ public:
 	bool FindArgusEntityIdsWithinRangeOfLocation(std::vector<uint16>& outNearbyArgusEntityIds, const FVector& location, const float range, const ArgusEntity& entityToIgnore) const;
 	bool FindOtherArgusEntityIdsWithinRangeOfArgusEntity(std::vector<uint16>& outNearbyArgusEntityIds, const ArgusEntity& entityToSearchAround, const float range) const;
 
+
 private:
-	ArgusKDTreeNode* m_rootNode = nullptr;
-	ArgusObjectPool<ArgusKDTreeNode> m_nodePool;
+	static void ErrorOnInvalidArgusEntity(const WIDECHAR* functionName);
+	static void ErrorOnInvalidTransformComponent(const WIDECHAR* functionName);
 
 	void ClearNodeRecursive(ArgusKDTreeNode* node, FVector& currentAverageLocation, uint16& priorNodeCount);
 	void InsertNodeIntoKDTreeRecursive(ArgusKDTreeNode* iterationNode, ArgusKDTreeNode* nodeToInsert, uint16 depth);
@@ -55,4 +56,7 @@ private:
 	const ArgusKDTreeNode* ChooseNodeCloserToTarget(const ArgusKDTreeNode* node0, const ArgusKDTreeNode* node1, const FVector& targetLocation, uint16 entityIdToIgnore) const;
 
 	void FindArgusEntityIdsWithinRangeOfLocationRecursive(std::vector<uint16>& outNearbyArgusEntityIds, const ArgusKDTreeNode* iterationNode, const FVector& targetLocation, const float rangeSquared, uint16 entityIdToIgnore, uint16 depth) const;
+	
+	ArgusKDTreeNode* m_rootNode = nullptr;
+	ArgusObjectPool<ArgusKDTreeNode> m_nodePool;
 };

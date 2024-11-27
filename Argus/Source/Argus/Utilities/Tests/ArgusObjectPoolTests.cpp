@@ -82,6 +82,16 @@ bool ArgusUtilitiesArgusObjectPoolReleaseTest::RunTest(const FString& Parameters
 	ArgusTesting::StartArgusTest();
 	ArgusObjectPool<TestPoolable> objectPool;
 
+#pragma region Test that releasing a nullpointer reports the proper error.
+	AddExpectedErrorPlain
+	(
+		FString::Printf
+		(
+			TEXT("Attempting to release a nullptr.")
+		)
+	);
+#pragma endregion
+
 	TestPoolable* testPoolable = nullptr;
 	objectPool.Release(testPoolable);
 	int numAvailableObjects = objectPool.GetNumAvailableObjects();

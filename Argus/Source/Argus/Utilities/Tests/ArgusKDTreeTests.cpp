@@ -89,6 +89,42 @@ bool ArgusUtilitiesArgusKDTreeInsertEntitiesTest::RunTest(const FString& Paramet
 	);
 #pragma endregion
 
+	ArgusEntity entity5 = ArgusEntity::k_emptyEntity;
+
+#pragma region Test that an invalid ArgusEntity reports the proper error.
+	AddExpectedErrorPlain
+	(
+		FString::Printf
+		(
+			TEXT("Passed in %s is invalid. It cannot be added to or retrieved from %s."),
+			ARGUS_NAMEOF(ArgusEntity),
+			ARGUS_NAMEOF(ArgusKDTree)
+		),
+		EAutomationExpectedErrorFlags::Contains,
+		2
+	);
+#pragma endregion
+
+	tree.DoesArgusEntityExistInKDTree(entity5);
+	tree.InsertArgusEntityIntoKDTree(entity5);
+	entity5 = ArgusEntity::CreateEntity(105u);
+	TransformComponent* entity5TransformComponent = nullptr;
+
+#pragma region Test that an invalid TransformComponent reports the proper error.
+	AddExpectedErrorPlain
+	(
+		FString::Printf
+		(
+			TEXT("Retrieved %s is invalid. Its owning %s cannot be added to or retrieved from %s."),
+			ARGUS_NAMEOF(TransformComponent),
+			ARGUS_NAMEOF(ArgusEntity),
+			ARGUS_NAMEOF(ArgusKDTree)
+		)
+	);
+#pragma endregion
+
+	tree.InsertArgusEntityIntoKDTree(entity5);
+
 	ArgusTesting::EndArgusTest();
 	return true;
 }
@@ -247,6 +283,39 @@ bool ArgusUtilitiesArgusKDTreeFindOtherArgusEntityIdClosestArgusEntityTest::RunT
 		id4
 	);
 #pragma endregion
+
+	ArgusEntity errorEntity = ArgusEntity::k_emptyEntity;
+
+#pragma region Test that an invalid ArgusEntity reports the proper error.
+	AddExpectedErrorPlain
+	(
+		FString::Printf
+		(
+			TEXT("Passed in %s is invalid. It cannot be added to or retrieved from %s."),
+			ARGUS_NAMEOF(ArgusEntity),
+			ARGUS_NAMEOF(ArgusKDTree)
+		)
+	);
+#pragma endregion
+
+	tree.FindOtherArgusEntityIdClosestArgusEntity(errorEntity);
+	errorEntity = ArgusEntity::CreateEntity(105u);
+	TransformComponent* errorEntityTransformComponent = nullptr;
+
+#pragma region Test that an TransformComponent reports the proper error.
+	AddExpectedErrorPlain
+	(
+		FString::Printf
+		(
+			TEXT("Retrieved %s is invalid. Its owning %s cannot be added to or retrieved from %s."),
+			ARGUS_NAMEOF(TransformComponent),
+			ARGUS_NAMEOF(ArgusEntity),
+			ARGUS_NAMEOF(ArgusKDTree)
+		)
+	);
+#pragma endregion
+
+	tree.FindOtherArgusEntityIdClosestArgusEntity(errorEntity);
 
 	ArgusTesting::EndArgusTest();
 	return true;

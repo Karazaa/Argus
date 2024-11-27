@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "ArgusLogging.h"
+#include "ArgusMacros.h"
 #include <queue>
 
 class IObjectPoolable
@@ -50,6 +52,7 @@ void ArgusObjectPool<IObjectPoolable>::Release(IObjectPoolable*& objectPointer)
 {
 	if (!objectPointer)
 	{
+		ARGUS_LOG(ArgusUtilitiesLog, Error, TEXT("[%s] Attempting to release a nullptr."), ARGUS_FUNCNAME);
 		return;
 	}
 

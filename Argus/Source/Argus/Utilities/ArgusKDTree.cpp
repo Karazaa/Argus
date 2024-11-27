@@ -2,6 +2,7 @@
 
 #include "ArgusKDTree.h"
 #include "ArgusEntity.h"
+#include "ArgusLogging.h"
 #include "ArgusMacros.h"
 #include "ComponentDefinitions/TransformComponent.h"
 
@@ -14,12 +15,14 @@ void ArgusKDTree::ArgusKDTreeNode::Populate(const ArgusEntity& entityToRepresent
 {
 	if (!entityToRepresent)
 	{
+		ErrorOnInvalidArgusEntity(ARGUS_FUNCNAME);
 		return;
 	}
 
 	const TransformComponent* transformComponent = entityToRepresent.GetComponent<TransformComponent>();
 	if (!transformComponent)
 	{
+		ErrorOnInvalidTransformComponent(ARGUS_FUNCNAME);
 		return;
 	}
 
@@ -33,6 +36,211 @@ void ArgusKDTree::ArgusKDTreeNode::Reset()
 	m_entityId = ArgusECSConstants::k_maxEntities;
 	m_leftChild = nullptr;
 	m_rightChild = nullptr;
+}
+
+ArgusKDTree::~ArgusKDTree()
+{
+	FlushAllNodes();
+	m_nodePool.ClearPool();
+}
+
+FVector ArgusKDTree::FlushAllNodes()
+{
+	ARGUS_TRACE(ArgusKDTree::FlushAllNodes)
+
+	FVector sumLocation = FVector::ZeroVector;
+	uint16 numNodes = 0u;
+
+	if (m_rootNode)
+	{
+		ClearNodeRecursive(m_rootNode, sumLocation, numNodes);
+		m_nodePool.Release(m_rootNode);
+	}
+
+	return  (sumLocation / static_cast<float>(numNodes));
+}
+
+void ArgusKDTree::InsertArgusEntityIntoKDTree(const ArgusEntity& entityToRepresent)
+{
+	ARGUS_TRACE(ArgusKDTree::InsertArgusEntityIntoKDTree)
+
+	if (!entityToRepresent)
+	{
+		ErrorOnInvalidArgusEntity(ARGUS_FUNCNAME);
+		return;
+	}
+
+	const TransformComponent* transformComponent = entityToRepresent.GetComponent<TransformComponent>();
+	if (!transformComponent)
+	{
+		ErrorOnInvalidTransformComponent(ARGUS_FUNCNAME);
+		return;
+	}
+
+	ArgusKDTreeNode* nodeToInsert = m_nodePool.Take();;
+	nodeToInsert->Populate(entityToRepresent);
+	if (!m_rootNode)
+	{
+		m_rootNode = nodeToInsert;
+		return;
+	}
+
+	InsertNodeIntoKDTreeRecursive(m_rootNode, nodeToInsert, 0u);
+}
+
+void ArgusKDTree::RebuildKDTreeForAllArgusEntities()
+{
+	ARGUS_TRACE(ArgusKDTree::RebuildKDTreeForAllArgusEntities)
+
+	const FVector averageLocation = FlushAllNodes();
+
+	if (m_rootNode)
+	{
+		m_nodePool.Release(m_rootNode);
+	}
+	m_rootNode = m_nodePool.Take();
+	m_rootNode->Populate(averageLocation);
+
+	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
+	{
+		ArgusEntity retrievedEntity = ArgusEntity::RetrieveEntity(i);
+		if (!retrievedEntity)
+		{
+			continue;
+		}
+
+		const TransformComponent* transformComponent = retrievedEntity.GetComponent<TransformComponent>();
+		if (!transformComponent)
+		{
+			continue;
+		}
+
+		InsertArgusEntityIntoKDTree(retrievedEntity);
+	}
+}
+
+bool ArgusKDTree::DoesArgusEntityExistInKDTree(const ArgusEntity& entityToRepresent) const
+{
+	if (!entityToRepresent)
+	{
+		ErrorOnInvalidArgusEntity(ARGUS_FUNCNAME);
+		return false;
+	}
+
+	if (!m_rootNode)
+	{
+		return false;
+	}
+
+	return SearchForEntityIdRecursive(m_rootNode, entityToRepresent.GetId());
+}
+
+uint16 ArgusKDTree::FindArgusEntityIdClosestToLocation(const FVector& location) const
+{
+	return FindArgusEntityIdClosestToLocation(location, ArgusEntity::k_emptyEntity);
+}
+
+uint16 ArgusKDTree::FindArgusEntityIdClosestToLocation(const FVector& location, const ArgusEntity& entityToIgnore) const
+{
+	if (!m_rootNode)
+	{
+		return ArgusECSConstants::k_maxEntities;
+	}
+
+	const ArgusKDTreeNode* foundNode = FindArgusEntityIdClosestToLocationRecursive(m_rootNode, location, entityToIgnore.GetId(), 0u);
+
+	if (!foundNode)
+	{
+		return ArgusECSConstants::k_maxEntities;
+	}
+
+	return foundNode->m_entityId;
+}
+
+uint16 ArgusKDTree::FindOtherArgusEntityIdClosestArgusEntity(const ArgusEntity& entityToSearchAround) const
+{
+	if (!entityToSearchAround)
+	{
+		ErrorOnInvalidArgusEntity(ARGUS_FUNCNAME);
+		return ArgusECSConstants::k_maxEntities;
+	}
+
+	const TransformComponent* transformComponent = entityToSearchAround.GetComponent<TransformComponent>();
+	if (!transformComponent)
+	{
+		ErrorOnInvalidTransformComponent(ARGUS_FUNCNAME);
+		return ArgusECSConstants::k_maxEntities;
+	}
+
+	return FindArgusEntityIdClosestToLocation(transformComponent->m_transform.GetLocation(), entityToSearchAround);
+}
+
+bool ArgusKDTree::FindArgusEntityIdsWithinRangeOfLocation(std::vector<uint16>& outNearbyArgusEntityIds, const FVector& location, const float range) const
+{
+	return FindArgusEntityIdsWithinRangeOfLocation(outNearbyArgusEntityIds, location, range, ArgusEntity::k_emptyEntity);
+}
+
+bool ArgusKDTree::FindArgusEntityIdsWithinRangeOfLocation(std::vector<uint16>& outNearbyArgusEntityIds, const FVector& location, const float range, const ArgusEntity& entityToIgnore) const
+{
+	if (!m_rootNode)
+	{
+		return false;
+	}
+
+	if (range <= 0.0f)
+	{
+		ARGUS_LOG(ArgusUtilitiesLog, Error, TEXT("[%s] Searching range is less than or equal to 0."), ARGUS_FUNCNAME);
+		return false;
+	}
+
+	FindArgusEntityIdsWithinRangeOfLocationRecursive(outNearbyArgusEntityIds, m_rootNode, location, FMath::Square(range), entityToIgnore.GetId(), 0u);
+
+	return outNearbyArgusEntityIds.size() > 0u;
+}
+
+bool ArgusKDTree::FindOtherArgusEntityIdsWithinRangeOfArgusEntity(std::vector<uint16>& outNearbyArgusEntityIds, const ArgusEntity& entityToSearchAround, const float range) const
+{
+	if (!entityToSearchAround)
+	{
+		ErrorOnInvalidArgusEntity(ARGUS_FUNCNAME);
+		return false;
+	}
+
+	const TransformComponent* transformComponent = entityToSearchAround.GetComponent<TransformComponent>();
+	if (!transformComponent)
+	{
+		ErrorOnInvalidTransformComponent(ARGUS_FUNCNAME);
+		return false;
+	}
+
+	return FindArgusEntityIdsWithinRangeOfLocation(outNearbyArgusEntityIds, transformComponent->m_transform.GetLocation(), range, entityToSearchAround);
+}
+
+void ArgusKDTree::ErrorOnInvalidArgusEntity(const WIDECHAR* functionName)
+{
+	ARGUS_LOG
+	(
+		ArgusUtilitiesLog,
+		Error,
+		TEXT("[%s] Passed in %s is invalid. It cannot be added to or retrieved from %s."),
+		functionName,
+		ARGUS_NAMEOF(ArgusEntity),
+		ARGUS_NAMEOF(ArgusKDTree)
+	);
+}
+
+void ArgusKDTree::ErrorOnInvalidTransformComponent(const WIDECHAR* functionName)
+{
+	ARGUS_LOG
+	(
+		ArgusUtilitiesLog,
+		Error,
+		TEXT("[%s] Retrieved %s is invalid. Its owning %s cannot be added to or retrieved from %s."),
+		functionName,
+		ARGUS_NAMEOF(TransformComponent),
+		ARGUS_NAMEOF(ArgusEntity),
+		ARGUS_NAMEOF(ArgusKDTree)
+	);
 }
 
 void ArgusKDTree::ClearNodeRecursive(ArgusKDTreeNode* node, FVector& currentAverageLocation, uint16& priorNodeCount)
@@ -74,18 +282,18 @@ void ArgusKDTree::InsertNodeIntoKDTreeRecursive(ArgusKDTreeNode* iterationNode, 
 	float noteToInsertValue = 0.0f;
 	switch (dimension)
 	{
-		case 0:
-			iterationNodeValue = iterationNode->m_worldSpaceLocation.X;
-			noteToInsertValue = nodeToInsert->m_worldSpaceLocation.X;
-			break;
-		case 1:
-			iterationNodeValue = iterationNode->m_worldSpaceLocation.Y;
-			noteToInsertValue = nodeToInsert->m_worldSpaceLocation.Y;
-			break;
-		case 2:
-			iterationNodeValue = iterationNode->m_worldSpaceLocation.Z;
-			noteToInsertValue = nodeToInsert->m_worldSpaceLocation.Z;
-			break;
+	case 0:
+		iterationNodeValue = iterationNode->m_worldSpaceLocation.X;
+		noteToInsertValue = nodeToInsert->m_worldSpaceLocation.X;
+		break;
+	case 1:
+		iterationNodeValue = iterationNode->m_worldSpaceLocation.Y;
+		noteToInsertValue = nodeToInsert->m_worldSpaceLocation.Y;
+		break;
+	case 2:
+		iterationNodeValue = iterationNode->m_worldSpaceLocation.Z;
+		noteToInsertValue = nodeToInsert->m_worldSpaceLocation.Z;
+		break;
 	}
 
 	if (noteToInsertValue < iterationNodeValue)
@@ -147,18 +355,18 @@ const ArgusKDTree::ArgusKDTreeNode* ArgusKDTree::FindArgusEntityIdClosestToLocat
 	float targetLocationValue = 0.0f;
 	switch (dimension)
 	{
-		case 0:
-			iterationNodeValue = iterationNode->m_worldSpaceLocation.X;
-			targetLocationValue = targetLocation.X;
-			break;
-		case 1:
-			iterationNodeValue = iterationNode->m_worldSpaceLocation.Y;
-			targetLocationValue = targetLocation.Y;
-			break;
-		case 2:
-			iterationNodeValue = iterationNode->m_worldSpaceLocation.Z;
-			targetLocationValue = targetLocation.Z;
-			break;
+	case 0:
+		iterationNodeValue = iterationNode->m_worldSpaceLocation.X;
+		targetLocationValue = targetLocation.X;
+		break;
+	case 1:
+		iterationNodeValue = iterationNode->m_worldSpaceLocation.Y;
+		targetLocationValue = targetLocation.Y;
+		break;
+	case 2:
+		iterationNodeValue = iterationNode->m_worldSpaceLocation.Z;
+		targetLocationValue = targetLocation.Z;
+		break;
 	}
 
 	ArgusKDTreeNode* firstBranch = nullptr;
@@ -232,7 +440,7 @@ void ArgusKDTree::FindArgusEntityIdsWithinRangeOfLocationRecursive(std::vector<u
 		{
 			outNearbyArgusEntityIds.push_back(iterationNode->m_entityId);
 		}
-		
+
 		FindArgusEntityIdsWithinRangeOfLocationRecursive(outNearbyArgusEntityIds, iterationNode->m_rightChild, targetLocation, rangeSquared, entityIdToIgnore, depth + 1);
 		FindArgusEntityIdsWithinRangeOfLocationRecursive(outNearbyArgusEntityIds, iterationNode->m_leftChild, targetLocation, rangeSquared, entityIdToIgnore, depth + 1);
 		return;
@@ -243,18 +451,18 @@ void ArgusKDTree::FindArgusEntityIdsWithinRangeOfLocationRecursive(std::vector<u
 	float targetLocationValue = 0.0f;
 	switch (dimension)
 	{
-		case 0:
-			iterationNodeValue = iterationNode->m_worldSpaceLocation.X;
-			targetLocationValue = targetLocation.X;
-			break;
-		case 1:
-			iterationNodeValue = iterationNode->m_worldSpaceLocation.Y;
-			targetLocationValue = targetLocation.Y;
-			break;
-		case 2:
-			iterationNodeValue = iterationNode->m_worldSpaceLocation.Z;
-			targetLocationValue = targetLocation.Z;
-			break;
+	case 0:
+		iterationNodeValue = iterationNode->m_worldSpaceLocation.X;
+		targetLocationValue = targetLocation.X;
+		break;
+	case 1:
+		iterationNodeValue = iterationNode->m_worldSpaceLocation.Y;
+		targetLocationValue = targetLocation.Y;
+		break;
+	case 2:
+		iterationNodeValue = iterationNode->m_worldSpaceLocation.Z;
+		targetLocationValue = targetLocation.Z;
+		break;
 	}
 
 	const float differenceAlongDimension = targetLocationValue - iterationNodeValue;
@@ -274,145 +482,4 @@ void ArgusKDTree::FindArgusEntityIdsWithinRangeOfLocationRecursive(std::vector<u
 		FindArgusEntityIdsWithinRangeOfLocationRecursive(outNearbyArgusEntityIds, iterationNode->m_rightChild, targetLocation, rangeSquared, entityIdToIgnore, depth + 1);
 		FindArgusEntityIdsWithinRangeOfLocationRecursive(outNearbyArgusEntityIds, iterationNode->m_leftChild, targetLocation, rangeSquared, entityIdToIgnore, depth + 1);
 	}
-}
-
-ArgusKDTree::~ArgusKDTree()
-{
-	FlushAllNodes();
-	m_nodePool.ClearPool();
-}
-
-FVector ArgusKDTree::FlushAllNodes()
-{
-	ARGUS_TRACE(ArgusKDTree::FlushAllNodes)
-
-	FVector sumLocation = FVector::ZeroVector;
-	uint16 numNodes = 0u;
-
-	if (m_rootNode)
-	{
-		ClearNodeRecursive(m_rootNode, sumLocation, numNodes);
-		m_nodePool.Release(m_rootNode);
-	}
-
-	return  (sumLocation / static_cast<float>(numNodes));
-}
-
-void ArgusKDTree::InsertArgusEntityIntoKDTree(const ArgusEntity& entityToRepresent)
-{
-	ARGUS_TRACE(ArgusKDTree::InsertArgusEntityIntoKDTree)
-
-	if (!entityToRepresent)
-	{
-		return;
-	}
-
-	const TransformComponent* transformComponent = entityToRepresent.GetComponent<TransformComponent>();
-	if (!transformComponent)
-	{
-		return;
-	}
-
-	ArgusKDTreeNode* nodeToInsert = m_nodePool.Take();;
-	nodeToInsert->Populate(entityToRepresent);
-	if (!m_rootNode)
-	{
-		m_rootNode = nodeToInsert;
-		return;
-	}
-
-	InsertNodeIntoKDTreeRecursive(m_rootNode, nodeToInsert, 0u);
-}
-
-void ArgusKDTree::RebuildKDTreeForAllArgusEntities()
-{
-	ARGUS_TRACE(ArgusKDTree::RebuildKDTreeForAllArgusEntities)
-
-	const FVector averageLocation = FlushAllNodes();
-
-	if (m_rootNode)
-	{
-		m_nodePool.Release(m_rootNode);
-	}
-	m_rootNode = m_nodePool.Take();
-	m_rootNode->Populate(averageLocation);
-
-	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
-	{
-		if (ArgusEntity retrievedEntity = ArgusEntity::RetrieveEntity(i))
-		{
-			InsertArgusEntityIntoKDTree(retrievedEntity);
-		}
-	}
-}
-
-bool ArgusKDTree::DoesArgusEntityExistInKDTree(const ArgusEntity& entityToRepresent) const
-{
-	if (!entityToRepresent || !m_rootNode)
-	{
-		return false;
-	}
-
-	return SearchForEntityIdRecursive(m_rootNode, entityToRepresent.GetId());
-}
-
-uint16 ArgusKDTree::FindArgusEntityIdClosestToLocation(const FVector& location) const
-{
-	return FindArgusEntityIdClosestToLocation(location, ArgusEntity::k_emptyEntity);
-}
-
-uint16 ArgusKDTree::FindArgusEntityIdClosestToLocation(const FVector& location, const ArgusEntity& entityToIgnore) const
-{
-	if (!m_rootNode)
-	{
-		return ArgusECSConstants::k_maxEntities;
-	}
-
-	const ArgusKDTreeNode* foundNode = FindArgusEntityIdClosestToLocationRecursive(m_rootNode, location, entityToIgnore.GetId(), 0u);
-
-	if (!foundNode)
-	{
-		return ArgusECSConstants::k_maxEntities;
-	}
-
-	return foundNode->m_entityId;
-}
-
-uint16 ArgusKDTree::FindOtherArgusEntityIdClosestArgusEntity(const ArgusEntity& entityToSearchAround) const
-{
-	const TransformComponent* transformComponent = entityToSearchAround.GetComponent<TransformComponent>();
-	if (!transformComponent)
-	{
-		return ArgusECSConstants::k_maxEntities;
-	}
-
-	return FindArgusEntityIdClosestToLocation(transformComponent->m_transform.GetLocation(), entityToSearchAround);
-}
-
-bool ArgusKDTree::FindArgusEntityIdsWithinRangeOfLocation(std::vector<uint16>& outNearbyArgusEntityIds, const FVector& location, const float range) const
-{
-	return FindArgusEntityIdsWithinRangeOfLocation(outNearbyArgusEntityIds, location, range, ArgusEntity::k_emptyEntity);
-}
-
-bool ArgusKDTree::FindArgusEntityIdsWithinRangeOfLocation(std::vector<uint16>& outNearbyArgusEntityIds, const FVector& location, const float range, const ArgusEntity& entityToIgnore) const
-{
-	if (!m_rootNode || range <= 0.0f)
-	{
-		return false;
-	}
-
-	FindArgusEntityIdsWithinRangeOfLocationRecursive(outNearbyArgusEntityIds, m_rootNode, location, FMath::Square(range), entityToIgnore.GetId(), 0u);
-
-	return outNearbyArgusEntityIds.size() > 0u;
-}
-
-bool ArgusKDTree::FindOtherArgusEntityIdsWithinRangeOfArgusEntity(std::vector<uint16>& outNearbyArgusEntityIds, const ArgusEntity& entityToSearchAround, const float range) const
-{
-	const TransformComponent* transformComponent = entityToSearchAround.GetComponent<TransformComponent>();
-	if (!transformComponent)
-	{
-		return false;
-	}
-
-	return FindArgusEntityIdsWithinRangeOfLocation(outNearbyArgusEntityIds, transformComponent->m_transform.GetLocation(), range, entityToSearchAround);
 }
