@@ -12,5 +12,6 @@ class UArgusStaticRecord : public UDataAsset
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(VisibleAnywhere)
 	uint32 m_id;
 };

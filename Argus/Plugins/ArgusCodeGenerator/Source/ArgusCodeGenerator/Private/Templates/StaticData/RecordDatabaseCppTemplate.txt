@@ -5,6 +5,10 @@ $$$$$
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
 
+#if WITH_EDITOR
+#include "Subsystems/EditorAssetSubsystem.h"
+#endif
+
 const #####* #####Database::GetRecord(uint32 id)
 {
 	if (static_cast<uint32>(m_#####sPersistent.Num()) <= id)
@@ -62,3 +66,43 @@ void #####Database::ResizePersistentObjectPointerArray()
 {
 	m_#####sPersistent.SetNumZeroed(m_#####s.Num());
 }
+
+#if WITH_EDITOR
+void #####Database::PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent)
+{
+	if (propertyChangedEvent.ChangeType != EPropertyChangeType::ValueSet)
+	{
+		return;
+	}
+
+	const FString propertyName = propertyChangedEvent.GetPropertyName().ToString();
+	const FString recordPropertyName = ARGUS_NAMEOF(m_#####s);
+	if (!propertyName.Equals(recordPropertyName))
+	{
+		return;
+	}
+
+	const int32 arrayIndex = propertyChangedEvent.GetArrayIndex(propertyName);
+	#####* modified##### = m_#####s[arrayIndex].LoadSynchronous();
+	if (!modified#####)
+	{
+		return;
+	}
+
+	modified#####->m_id = arrayIndex;
+
+	if (!GEditor)
+	{
+		return;
+	}
+
+	UEditorAssetSubsystem* editorAssetSubsystem = GEditor->GetEditorSubsystem<UEditorAssetSubsystem>();
+	if (!editorAssetSubsystem)
+	{
+		return;
+	}
+
+	editorAssetSubsystem->SaveLoadedAsset(modified#####, false);
+	editorAssetSubsystem->SaveLoadedAsset(this, false);
+}
+#endif //WITH_EDITOR

@@ -22,4 +22,9 @@ protected:
 
 	UPROPERTY(Transient)
 	TArray<TObjectPtr<UTeamColorRecord>> m_UTeamColorRecordsPersistent;
+
+public:
+#if WITH_EDITOR
+	virtual void PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent) override;
+#endif
 };
