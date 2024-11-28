@@ -11,16 +11,4 @@
 
 		return staticDatabase->Get#####(id);
 	}
-
-	static const uint32 GetIdFromRecordSoftPtr(const TSoftObjectPtr<#####>& #####)
-	{
-		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
-
-		if (!staticDatabase)
-		{
-			return 0u;
-		}
-
-		return staticDatabase->GetIdFromRecordSoftPtr(#####);
-	}
 #pragma endregion

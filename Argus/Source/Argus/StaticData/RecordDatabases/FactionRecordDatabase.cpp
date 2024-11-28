@@ -49,19 +49,6 @@ const UFactionRecord* UFactionRecordDatabase::GetRecord(uint32 id)
 	return m_UFactionRecordsPersistent[id];
 }
 
-const uint32 UFactionRecordDatabase::GetIdFromRecordSoftPtr(const TSoftObjectPtr<UFactionRecord>& UFactionRecord) const
-{
-	for (int i = 0; i < m_UFactionRecords.Num(); ++i)
-	{
-		if (m_UFactionRecords[i] == UFactionRecord)
-		{
-			return i;
-		}
-	}
-
-	return 0u;
-}
-
 void UFactionRecordDatabase::ResizePersistentObjectPointerArray()
 {
 	m_UFactionRecordsPersistent.SetNumZeroed(m_UFactionRecords.Num());

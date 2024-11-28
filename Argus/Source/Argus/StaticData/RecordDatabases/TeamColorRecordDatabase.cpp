@@ -49,19 +49,6 @@ const UTeamColorRecord* UTeamColorRecordDatabase::GetRecord(uint32 id)
 	return m_UTeamColorRecordsPersistent[id];
 }
 
-const uint32 UTeamColorRecordDatabase::GetIdFromRecordSoftPtr(const TSoftObjectPtr<UTeamColorRecord>& UTeamColorRecord) const
-{
-	for (int i = 0; i < m_UTeamColorRecords.Num(); ++i)
-	{
-		if (m_UTeamColorRecords[i] == UTeamColorRecord)
-		{
-			return i;
-		}
-	}
-
-	return 0u;
-}
-
 void UTeamColorRecordDatabase::ResizePersistentObjectPointerArray()
 {
 	m_UTeamColorRecordsPersistent.SetNumZeroed(m_UTeamColorRecords.Num());

@@ -13,7 +13,6 @@ class UArgusActorRecordDatabase : public UDataAsset
 
 public:
 	const UArgusActorRecord* GetRecord(uint32 id);
-	const uint32 GetIdFromRecordSoftPtr(const TSoftObjectPtr<UArgusActorRecord>& UArgusActorRecord) const;
 	void ResizePersistentObjectPointerArray();
 
 protected:

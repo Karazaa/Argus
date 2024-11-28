@@ -7,7 +7,7 @@
 void USpawningComponentData::InstantiateComponentForEntity(ArgusEntity& entity) const
 {
 	SpawningComponent* SpawningComponentRef = entity.AddComponent<SpawningComponent>();
-	SpawningComponentRef->m_argusActorRecordId = ArgusStaticData::GetIdFromRecordSoftPtr(m_argusActorRecordId);
+	SpawningComponentRef->m_argusActorRecordId = m_argusActorRecordId.LoadSynchronous()->m_id;
 }
 
 bool USpawningComponentData::MatchesType(UComponentData* other) const

@@ -13,7 +13,6 @@ class UTeamColorRecordDatabase : public UDataAsset
 
 public:
 	const UTeamColorRecord* GetRecord(uint32 id);
-	const uint32 GetIdFromRecordSoftPtr(const TSoftObjectPtr<UTeamColorRecord>& UTeamColorRecord) const;
 	void ResizePersistentObjectPointerArray();
 
 protected:

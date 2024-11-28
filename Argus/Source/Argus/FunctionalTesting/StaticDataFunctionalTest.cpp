@@ -63,8 +63,12 @@ bool AStaticDataFunctionalTest::DidFactionTestStepSucceed()
 	}
 
 	const UFactionRecord* expectedFactionRecord = m_factionRecord.LoadSynchronous();
-	const uint32 expectedFactionId = ArgusStaticData::GetIdFromRecordSoftPtr(m_factionRecord);
+	if (!expectedFactionRecord)
+	{
+		return false;
+	}
 
+	const uint32 expectedFactionId = expectedFactionRecord->m_id;
 	const UFactionRecord* retrievedFactionRecord = ArgusStaticData::GetRecord<UFactionRecord>(expectedFactionId);
 	if (!retrievedFactionRecord)
 	{

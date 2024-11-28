@@ -27,18 +27,6 @@ public:
 
 		return staticDatabase->GetUArgusActorRecord(id);
 	}
-
-	static const uint32 GetIdFromRecordSoftPtr(const TSoftObjectPtr<UArgusActorRecord>& UArgusActorRecord)
-	{
-		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
-
-		if (!staticDatabase)
-		{
-			return 0u;
-		}
-
-		return staticDatabase->GetIdFromRecordSoftPtr(UArgusActorRecord);
-	}
 #pragma endregion
 #pragma region UFactionRecord
 	template<>
@@ -53,18 +41,6 @@ public:
 
 		return staticDatabase->GetUFactionRecord(id);
 	}
-
-	static const uint32 GetIdFromRecordSoftPtr(const TSoftObjectPtr<UFactionRecord>& UFactionRecord)
-	{
-		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
-
-		if (!staticDatabase)
-		{
-			return 0u;
-		}
-
-		return staticDatabase->GetIdFromRecordSoftPtr(UFactionRecord);
-	}
 #pragma endregion
 #pragma region UTeamColorRecord
 	template<>
@@ -78,18 +54,6 @@ public:
 		}
 
 		return staticDatabase->GetUTeamColorRecord(id);
-	}
-
-	static const uint32 GetIdFromRecordSoftPtr(const TSoftObjectPtr<UTeamColorRecord>& UTeamColorRecord)
-	{
-		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
-
-		if (!staticDatabase)
-		{
-			return 0u;
-		}
-
-		return staticDatabase->GetIdFromRecordSoftPtr(UTeamColorRecord);
 	}
 #pragma endregion
 };

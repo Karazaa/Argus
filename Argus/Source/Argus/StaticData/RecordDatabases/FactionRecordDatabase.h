@@ -13,7 +13,6 @@ class UFactionRecordDatabase : public UDataAsset
 
 public:
 	const UFactionRecord* GetRecord(uint32 id);
-	const uint32 GetIdFromRecordSoftPtr(const TSoftObjectPtr<UFactionRecord>& UFactionRecord) const;
 	void ResizePersistentObjectPointerArray();
 
 protected:

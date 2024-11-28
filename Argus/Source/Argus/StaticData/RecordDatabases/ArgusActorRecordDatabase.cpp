@@ -49,19 +49,6 @@ const UArgusActorRecord* UArgusActorRecordDatabase::GetRecord(uint32 id)
 	return m_UArgusActorRecordsPersistent[id];
 }
 
-const uint32 UArgusActorRecordDatabase::GetIdFromRecordSoftPtr(const TSoftObjectPtr<UArgusActorRecord>& UArgusActorRecord) const
-{
-	for (int i = 0; i < m_UArgusActorRecords.Num(); ++i)
-	{
-		if (m_UArgusActorRecords[i] == UArgusActorRecord)
-		{
-			return i;
-		}
-	}
-
-	return 0u;
-}
-
 void UArgusActorRecordDatabase::ResizePersistentObjectPointerArray()
 {
 	m_UArgusActorRecordsPersistent.SetNumZeroed(m_UArgusActorRecords.Num());

@@ -49,19 +49,6 @@ const #####* #####Database::GetRecord(uint32 id)
 	return m_#####sPersistent[id];
 }
 
-const uint32 #####Database::GetIdFromRecordSoftPtr(const TSoftObjectPtr<#####>& #####) const
-{
-	for (int i = 0; i < m_#####s.Num(); ++i)
-	{
-		if (m_#####s[i] == #####)
-		{
-			return i;
-		}
-	}
-
-	return 0u;
-}
-
 void #####Database::ResizePersistentObjectPointerArray()
 {
 	m_#####sPersistent.SetNumZeroed(m_#####s.Num());

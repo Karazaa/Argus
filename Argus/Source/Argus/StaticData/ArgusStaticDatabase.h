@@ -18,7 +18,6 @@ class UArgusStaticDatabase : public UDataAsset
 #pragma region UArgusActorRecord
 public:
 	const UArgusActorRecord* GetUArgusActorRecord(uint32 id);
-	const uint32 GetIdFromRecordSoftPtr(const TSoftObjectPtr<UArgusActorRecord>& UArgusActorRecord);
 
 protected:
 	UPROPERTY(EditAnywhere)
@@ -29,7 +28,6 @@ protected:
 #pragma region UFactionRecord
 public:
 	const UFactionRecord* GetUFactionRecord(uint32 id);
-	const uint32 GetIdFromRecordSoftPtr(const TSoftObjectPtr<UFactionRecord>& UFactionRecord);
 
 protected:
 	UPROPERTY(EditAnywhere)
@@ -40,7 +38,6 @@ protected:
 #pragma region UTeamColorRecord
 public:
 	const UTeamColorRecord* GetUTeamColorRecord(uint32 id);
-	const uint32 GetIdFromRecordSoftPtr(const TSoftObjectPtr<UTeamColorRecord>& UTeamColorRecord);
 
 protected:
 	UPROPERTY(EditAnywhere)

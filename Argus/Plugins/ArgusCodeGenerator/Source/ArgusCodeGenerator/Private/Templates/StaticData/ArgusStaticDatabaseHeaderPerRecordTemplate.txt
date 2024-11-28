@@ -1,7 +1,6 @@
 #pragma region #####
 public:
 	const #####* Get#####(uint32 id);
-	const uint32 GetIdFromRecordSoftPtr(const TSoftObjectPtr<#####>& #####);
 
 protected:
 	UPROPERTY(EditAnywhere)

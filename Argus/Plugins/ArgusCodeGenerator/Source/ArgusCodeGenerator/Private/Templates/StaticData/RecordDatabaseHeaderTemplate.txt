@@ -13,7 +13,6 @@ class #####Database : public UDataAsset
 
 public:
 	const #####* GetRecord(uint32 id);
-	const uint32 GetIdFromRecordSoftPtr(const TSoftObjectPtr<#####>& #####) const;
 	void ResizePersistentObjectPointerArray();
 
 protected:

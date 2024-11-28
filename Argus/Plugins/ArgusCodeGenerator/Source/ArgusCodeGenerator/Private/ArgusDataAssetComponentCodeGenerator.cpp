@@ -199,7 +199,7 @@ bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetCppFileTemplateWithRepl
 					const size_t propertyStaticDataDelimiterIndex = parsedComponentData.m_componentVariableData[i][j].m_propertyMacro.find(ArgusCodeGeneratorUtil::s_propertyStaticDataDelimiter);
 					if (propertyStaticDataDelimiterIndex != std::string::npos)
 					{
-						std::string staticDataStatement = std::regex_replace("ArgusStaticData::GetIdFromRecordSoftPtr(XXXXX)", std::regex("XXXXX"), parsedComponentData.m_componentVariableData[i][j].m_varName);
+						std::string staticDataStatement = std::regex_replace("XXXXX.LoadSynchronous()->m_id", std::regex("XXXXX"), parsedComponentData.m_componentVariableData[i][j].m_varName);
 						variableAssignment.append(staticDataStatement);
 					}
 					else
