@@ -275,6 +275,7 @@ bool TransformSystems::ProcessMovementTaskCommands(UWorld* worldPointer, float d
 		case EMovementState::MoveToEntity:
 			MoveAlongNavigationPath(worldPointer, deltaTime, components);
 			return true;
+
 		case EMovementState::None:
 			components.m_transformComponent->m_currentVelocity = components.m_transformComponent->m_proposedAvoidanceVelocity;
 			if (!components.m_transformComponent->m_currentVelocity.IsNearlyZero())
@@ -285,6 +286,7 @@ bool TransformSystems::ProcessMovementTaskCommands(UWorld* worldPointer, float d
 				return true;
 			}
 			return false;
+
 		default:
 			return false;
 	}

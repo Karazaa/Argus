@@ -10,7 +10,7 @@ void UTaskComponentData::InstantiateComponentForEntity(ArgusEntity& entity) cons
 	TaskComponentRef->m_baseState = m_baseState;
 	TaskComponentRef->m_movementState = m_movementState;
 	TaskComponentRef->m_spawningState = m_spawningState;
-	TaskComponentRef->m_attackingState = m_attackingState;
+	TaskComponentRef->m_abilityState = m_abilityState;
 	TaskComponentRef->m_spawnedFromArgusActorRecordId = m_spawnedFromArgusActorRecordId;
 }
 

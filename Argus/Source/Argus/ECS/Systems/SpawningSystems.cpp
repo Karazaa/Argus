@@ -84,11 +84,10 @@ void SpawningSystems::ProcessSpawningTaskCommands(float deltaTime, const Spawnin
 
 	switch (components.m_taskComponent->m_spawningState)
 	{
-		case ESpawningState::None:
-			break;
 		case ESpawningState::ProcessSpawnEntityCommand:
 			SpawnEntity(components, ArgusStaticData::GetRecord<UArgusActorRecord>(components.m_spawningComponent->m_argusActorRecordId));
 			break;
+
 		default:
 			break;
 	}

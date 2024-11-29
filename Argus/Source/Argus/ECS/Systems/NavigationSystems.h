@@ -19,11 +19,12 @@ public:
 
 		bool AreComponentsValidCheck(const WIDECHAR* functionName) const;
 	};
-	static void ProcessNavigationTaskCommands(UWorld* worldPointer, const NavigationSystemsComponentArgs& components);
-	static void RecalculateMoveToEntityPaths(UWorld* worldPointer, const NavigationSystemsComponentArgs& components);
+	
 	static void NavigateFromEntityToEntity(UWorld* worldPointer, ArgusEntity targetEntity, const NavigationSystemsComponentArgs& components);
 	static void NavigateFromEntityToLocation(UWorld* worldPointer, std::optional<FVector> targetLocation, const NavigationSystemsComponentArgs& components);
 
 private:
+	static void ProcessNavigationTaskCommands(UWorld* worldPointer, const NavigationSystemsComponentArgs& components);
+	static void RecalculateMoveToEntityPaths(UWorld* worldPointer, const NavigationSystemsComponentArgs& components);
 	static bool IsWorldPointerValidCheck(UWorld* worldPointer, const WIDECHAR* functionName);
 };

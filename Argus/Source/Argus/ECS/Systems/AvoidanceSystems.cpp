@@ -36,7 +36,7 @@ void AvoidanceSystems::RunSystems(UWorld* worldPointer, float deltaTime)
 #pragma region Optimal Reciprocal Collision Avoidance
 void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime, const TransformSystems::TransformSystemsComponentArgs& components)
 {
-	ARGUS_TRACE(AvoidanceSystems::ProcessORCAvoidance)
+	ARGUS_TRACE(AvoidanceSystems::ProcessORCAvoidance);
 
 	if (!components.AreComponentsValidCheck(true, ARGUS_FUNCNAME))
 	{

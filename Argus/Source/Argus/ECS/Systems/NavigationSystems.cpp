@@ -52,66 +52,6 @@ bool NavigationSystems::NavigationSystemsComponentArgs::AreComponentsValidCheck(
 	return true;
 }
 
-void NavigationSystems::ProcessNavigationTaskCommands(UWorld* worldPointer, const NavigationSystemsComponentArgs& components)
-{
-	ARGUS_TRACE(NavigationSystems::ProcessNavigationTaskCommands)
-
-	if (!IsWorldPointerValidCheck(worldPointer, ARGUS_FUNCNAME) || !components.AreComponentsValidCheck(ARGUS_FUNCNAME))
-	{
-		return;
-	}
-
-	switch (components.m_taskComponent->m_movementState)
-	{
-		case EMovementState::ProcessMoveToLocationCommand:
-			components.m_taskComponent->m_movementState = EMovementState::MoveToLocation;
-			NavigateFromEntityToLocation(worldPointer, components.m_targetingComponent->m_targetLocation.GetValue(), components);
-			break;
-
-		case EMovementState::ProcessMoveToEntityCommand:
-			components.m_taskComponent->m_movementState = EMovementState::MoveToEntity;
-			NavigateFromEntityToEntity(worldPointer, ArgusEntity::RetrieveEntity(components.m_targetingComponent->m_targetEntityId), components);
-			break;
-
-		default:
-			break;
-	}
-}
-
-void NavigationSystems::RecalculateMoveToEntityPaths(UWorld* worldPointer, const NavigationSystemsComponentArgs& components)
-{
-	ARGUS_TRACE(NavigationSystems::RecalculateMoveToEntityPaths)
-
-	if (!IsWorldPointerValidCheck(worldPointer, ARGUS_FUNCNAME) || !components.AreComponentsValidCheck(ARGUS_FUNCNAME))
-	{
-		return;
-	}
-
-	if (components.m_taskComponent->m_movementState != EMovementState::MoveToEntity)
-	{
-		return;
-	}
-
-	ArgusEntity targetEntity = ArgusEntity::RetrieveEntity(components.m_targetingComponent->m_targetEntityId);
-	if (!targetEntity)
-	{
-		return;
-	}
-
-	TaskComponent* targetEntityTaskComponent = targetEntity.GetComponent<TaskComponent>();
-	if (!targetEntityTaskComponent)
-	{
-		return;
-	}
-
-	if (!targetEntityTaskComponent->IsExecutingMoveTask())
-	{
-		return;
-	}
-
-	NavigateFromEntityToEntity(worldPointer, targetEntity, components);
-}
-
 void NavigationSystems::NavigateFromEntityToEntity(UWorld* worldPointer, ArgusEntity targetEntity, const NavigationSystemsComponentArgs& components)
 {
 	if (!IsWorldPointerValidCheck(worldPointer, ARGUS_FUNCNAME) || !components.AreComponentsValidCheck(ARGUS_FUNCNAME))
@@ -190,6 +130,66 @@ void NavigationSystems::NavigateFromEntityToLocation(UWorld* worldPointer, std::
 			DrawDebugLine(worldPointer, components.m_navigationComponent->m_navigationPoints[i], pathPoints[i + 1].Location, FColor::Magenta, false, 3.0f, 0, 5.0f);
 		}
 	}
+}
+
+void NavigationSystems::ProcessNavigationTaskCommands(UWorld* worldPointer, const NavigationSystemsComponentArgs& components)
+{
+	ARGUS_TRACE(NavigationSystems::ProcessNavigationTaskCommands)
+
+		if (!IsWorldPointerValidCheck(worldPointer, ARGUS_FUNCNAME) || !components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+		{
+			return;
+		}
+
+	switch (components.m_taskComponent->m_movementState)
+	{
+		case EMovementState::ProcessMoveToLocationCommand:
+			components.m_taskComponent->m_movementState = EMovementState::MoveToLocation;
+			NavigateFromEntityToLocation(worldPointer, components.m_targetingComponent->m_targetLocation.GetValue(), components);
+			break;
+
+		case EMovementState::ProcessMoveToEntityCommand:
+			components.m_taskComponent->m_movementState = EMovementState::MoveToEntity;
+			NavigateFromEntityToEntity(worldPointer, ArgusEntity::RetrieveEntity(components.m_targetingComponent->m_targetEntityId), components);
+			break;
+
+		default:
+			break;
+	}
+}
+
+void NavigationSystems::RecalculateMoveToEntityPaths(UWorld* worldPointer, const NavigationSystemsComponentArgs& components)
+{
+	ARGUS_TRACE(NavigationSystems::RecalculateMoveToEntityPaths)
+
+		if (!IsWorldPointerValidCheck(worldPointer, ARGUS_FUNCNAME) || !components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+		{
+			return;
+		}
+
+	if (components.m_taskComponent->m_movementState != EMovementState::MoveToEntity)
+	{
+		return;
+	}
+
+	ArgusEntity targetEntity = ArgusEntity::RetrieveEntity(components.m_targetingComponent->m_targetEntityId);
+	if (!targetEntity)
+	{
+		return;
+	}
+
+	TaskComponent* targetEntityTaskComponent = targetEntity.GetComponent<TaskComponent>();
+	if (!targetEntityTaskComponent)
+	{
+		return;
+	}
+
+	if (!targetEntityTaskComponent->IsExecutingMoveTask())
+	{
+		return;
+	}
+
+	NavigateFromEntityToEntity(worldPointer, targetEntity, components);
 }
 
 bool NavigationSystems::IsWorldPointerValidCheck(UWorld* worldPointer, const WIDECHAR* functionName)

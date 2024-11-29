@@ -28,14 +28,17 @@ UENUM()
 enum class ESpawningState : uint8
 {
 	None,
-	ProcessSpawnEntityCommand,
+	ProcessSpawnEntityCommand
 };
 
 UENUM()
-enum class EAttackingState : uint8
+enum class EAbilityState : uint8
 {
 	None,
-	Attacking,
+	ProcessCastAbility0Command,
+	ProcessCastAbility1Command,
+	ProcessCastAbility2Command,
+	ProcessCastAbility3Command
 };
 
 
@@ -48,7 +51,7 @@ struct TaskComponent
 	ARGUS_IGNORE()
 	ESpawningState m_spawningState = ESpawningState::None;
 	ARGUS_IGNORE()
-	EAttackingState m_attackingState = EAttackingState::None;
+	EAbilityState m_abilityState = EAbilityState::None;
 	ARGUS_IGNORE()
 	uint32 m_spawnedFromArgusActorRecordId = MAX_uint32;
 
@@ -113,14 +116,23 @@ struct TaskComponent
 				break;
 		}
 
-		auto attackingStateName = TEXT("");
-		switch (m_attackingState)
+		auto abilityStateName = TEXT("");
+		switch (m_abilityState)
 		{
-			case EAttackingState::None:
-				attackingStateName = ARGUS_NAMEOF(EAttackingState::None);
+			case EAbilityState::None:
+				abilityStateName = ARGUS_NAMEOF(EAbilityState::None);
 				break;
-			case EAttackingState::Attacking:
-				attackingStateName = ARGUS_NAMEOF(EAttackingState::Attacking);
+			case EAbilityState::ProcessCastAbility0Command:
+				abilityStateName = ARGUS_NAMEOF(EAbilityState::ProcessCastAbility0Command);
+				break;
+			case EAbilityState::ProcessCastAbility1Command:
+				abilityStateName = ARGUS_NAMEOF(EAbilityState::ProcessCastAbility0Command);
+				break;
+			case EAbilityState::ProcessCastAbility2Command:
+				abilityStateName = ARGUS_NAMEOF(EAbilityState::ProcessCastAbility0Command);
+				break;
+			case EAbilityState::ProcessCastAbility3Command:
+				abilityStateName = ARGUS_NAMEOF(EAbilityState::ProcessCastAbility0Command);
 				break;
 			default:
 				break;
@@ -138,8 +150,8 @@ struct TaskComponent
 				movementStateName,
 				ARGUS_NAMEOF(m_spawningState),
 				spawningStateName,
-				ARGUS_NAMEOF(m_attackingState),
-				attackingStateName
+				ARGUS_NAMEOF(m_abilityState),
+				abilityStateName
 			)
 		);
 	}
