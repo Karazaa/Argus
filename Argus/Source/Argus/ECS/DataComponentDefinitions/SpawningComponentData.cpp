@@ -7,7 +7,7 @@
 void USpawningComponentData::InstantiateComponentForEntity(ArgusEntity& entity) const
 {
 	SpawningComponent* SpawningComponentRef = entity.AddComponent<SpawningComponent>();
-	SpawningComponentRef->m_argusActorRecordId = m_argusActorRecordId.LoadSynchronous()->m_id;
+	SpawningComponentRef->m_argusActorRecordId = m_argusActorRecordId.LoadSynchronous() ? m_argusActorRecordId.LoadSynchronous()->m_id : 0u;
 }
 
 bool USpawningComponentData::MatchesType(UComponentData* other) const

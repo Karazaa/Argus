@@ -7,7 +7,7 @@
 void UIdentityComponentData::InstantiateComponentForEntity(ArgusEntity& entity) const
 {
 	IdentityComponent* IdentityComponentRef = entity.AddComponent<IdentityComponent>();
-	IdentityComponentRef->m_factionId = m_factionId.LoadSynchronous()->m_id;
+	IdentityComponentRef->m_factionId = m_factionId.LoadSynchronous() ? m_factionId.LoadSynchronous()->m_id : 0u;
 	IdentityComponentRef->m_team = m_team;
 	IdentityComponentRef->m_allies = m_allies;
 	IdentityComponentRef->m_enemies = m_enemies;

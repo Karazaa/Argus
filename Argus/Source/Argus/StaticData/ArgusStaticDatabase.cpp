@@ -9,6 +9,12 @@ const UAbilityRecord* UArgusStaticDatabase::GetUAbilityRecord(uint32 id)
 	if (!m_UAbilityRecordDatabasePersistent)
 	{
 		m_UAbilityRecordDatabasePersistent = m_UAbilityRecordDatabase.LoadSynchronous();
+		if (!m_UAbilityRecordDatabasePersistent)
+		{
+			ARGUS_LOG(ArgusStaticDataLog, Error, TEXT("[%s] Could not find %s reference. Need to set reference in %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(m_UAbilityRecordDatabase), ARGUS_NAMEOF(UArgusStaticDatabase));
+			return nullptr;
+		}
+
 		m_UAbilityRecordDatabasePersistent->ResizePersistentObjectPointerArray();
 	}
 
@@ -34,6 +40,12 @@ const UArgusActorRecord* UArgusStaticDatabase::GetUArgusActorRecord(uint32 id)
 	if (!m_UArgusActorRecordDatabasePersistent)
 	{
 		m_UArgusActorRecordDatabasePersistent = m_UArgusActorRecordDatabase.LoadSynchronous();
+		if (!m_UArgusActorRecordDatabasePersistent)
+		{
+			ARGUS_LOG(ArgusStaticDataLog, Error, TEXT("[%s] Could not find %s reference. Need to set reference in %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(m_UArgusActorRecordDatabase), ARGUS_NAMEOF(UArgusStaticDatabase));
+			return nullptr;
+		}
+
 		m_UArgusActorRecordDatabasePersistent->ResizePersistentObjectPointerArray();
 	}
 
@@ -59,6 +71,12 @@ const UFactionRecord* UArgusStaticDatabase::GetUFactionRecord(uint32 id)
 	if (!m_UFactionRecordDatabasePersistent)
 	{
 		m_UFactionRecordDatabasePersistent = m_UFactionRecordDatabase.LoadSynchronous();
+		if (!m_UFactionRecordDatabasePersistent)
+		{
+			ARGUS_LOG(ArgusStaticDataLog, Error, TEXT("[%s] Could not find %s reference. Need to set reference in %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(m_UFactionRecordDatabase), ARGUS_NAMEOF(UArgusStaticDatabase));
+			return nullptr;
+		}
+
 		m_UFactionRecordDatabasePersistent->ResizePersistentObjectPointerArray();
 	}
 
@@ -84,6 +102,12 @@ const UTeamColorRecord* UArgusStaticDatabase::GetUTeamColorRecord(uint32 id)
 	if (!m_UTeamColorRecordDatabasePersistent)
 	{
 		m_UTeamColorRecordDatabasePersistent = m_UTeamColorRecordDatabase.LoadSynchronous();
+		if (!m_UTeamColorRecordDatabasePersistent)
+		{
+			ARGUS_LOG(ArgusStaticDataLog, Error, TEXT("[%s] Could not find %s reference. Need to set reference in %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(m_UTeamColorRecordDatabase), ARGUS_NAMEOF(UArgusStaticDatabase));
+			return nullptr;
+		}
+
 		m_UTeamColorRecordDatabasePersistent->ResizePersistentObjectPointerArray();
 	}
 
