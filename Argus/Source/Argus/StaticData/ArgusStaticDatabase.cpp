@@ -3,6 +3,31 @@
 
 #include "ArgusStaticDatabase.h"
 
+#pragma region UAbilityRecord
+const UAbilityRecord* UArgusStaticDatabase::GetUAbilityRecord(uint32 id)
+{
+	if (!m_UAbilityRecordDatabasePersistent)
+	{
+		m_UAbilityRecordDatabasePersistent = m_UAbilityRecordDatabase.LoadSynchronous();
+		m_UAbilityRecordDatabasePersistent->ResizePersistentObjectPointerArray();
+	}
+
+	if (!m_UAbilityRecordDatabasePersistent)
+	{
+		ARGUS_LOG
+		(
+			ArgusStaticDataLog, Error,
+			TEXT("[%s] Could not retrieve %s. %s might not be properly assigned."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(m_UAbilityRecordDatabasePersistent),
+			ARGUS_NAMEOF(m_UAbilityRecordDatabase)
+		);
+		return nullptr;
+	}
+
+	return m_UAbilityRecordDatabasePersistent->GetRecord(id);
+}
+#pragma endregion
 #pragma region UArgusActorRecord
 const UArgusActorRecord* UArgusStaticDatabase::GetUArgusActorRecord(uint32 id)
 {

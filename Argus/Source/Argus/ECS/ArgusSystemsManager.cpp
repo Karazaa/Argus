@@ -24,9 +24,9 @@ void ArgusSystemsManager::RunSystems(UWorld* worldPointer, float deltaTime)
 
 	PopulateSingletonComponents();
 
-	SpawningSystems::RunSystems(deltaTime);
 	NavigationSystems::RunSystems(worldPointer);
 	TargetingSystems::RunSystems(deltaTime);
+	SpawningSystems::RunSystems(deltaTime);
 	AvoidanceSystems::RunSystems(worldPointer, deltaTime);
 	const bool didMovementUpdateThisFrame = TransformSystems::RunSystems(worldPointer, deltaTime);
 

@@ -14,6 +14,20 @@ public:
 		return nullptr;
 	}
 
+#pragma region UAbilityRecord
+	template<>
+	inline const UAbilityRecord* GetRecord(uint32 id)
+	{
+		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
+
+		if (!staticDatabase)
+		{
+			return nullptr;
+		}
+
+		return staticDatabase->GetUAbilityRecord(id);
+	}
+#pragma endregion
 #pragma region UArgusActorRecord
 	template<>
 	inline const UArgusActorRecord* GetRecord(uint32 id)
