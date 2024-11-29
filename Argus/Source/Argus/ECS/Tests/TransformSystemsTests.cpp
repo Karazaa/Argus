@@ -436,7 +436,7 @@ bool TransformSystemsMoveAlongPathTest::RunTest(const FString& Parameters)
 	const uint32 numExpectedPathPointsAtConclusion = 0u;
 
 	ArgusTesting::StartArgusTest();
-	ArgusEntity singletonEntity = ArgusEntity::CreateEntity(ArgusSystemsManager::s_singletonEntityId);
+	ArgusEntity singletonEntity = ArgusEntity::CreateEntity(ArgusSystemsManager::k_singletonEntityId);
 	singletonEntity.AddComponent<SpatialPartitioningComponent>();
 
 	ArgusEntity entity = ArgusEntity::CreateEntity();

@@ -58,7 +58,7 @@ bool AvoidanceSystemsProcessORCAvoidanceTest::RunTest(const FString& Parameters)
 
 	AvoidanceSystems::ProcessORCAvoidance(dummyPointer, deltaTime, components);
 
-	ArgusEntity singletonEntity = ArgusEntity::CreateEntity(ArgusSystemsManager::s_singletonEntityId);
+	ArgusEntity singletonEntity = ArgusEntity::CreateEntity(ArgusSystemsManager::k_singletonEntityId);
 
 #pragma region Test that an error is reported if there is no SpatialPartitioningComponent on the singleton entity.
 	AddExpectedErrorPlain

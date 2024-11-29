@@ -43,7 +43,7 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 		return;
 	}
 
-	const ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusSystemsManager::s_singletonEntityId);
+	const ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusSystemsManager::k_singletonEntityId);
 	if (!singletonEntity)
 	{
 		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Could not retrieve singleton %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity))

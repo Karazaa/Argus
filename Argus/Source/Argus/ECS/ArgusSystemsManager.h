@@ -9,7 +9,7 @@ class UWorld;
 class ArgusSystemsManager
 {
 public:
-	static const uint16 s_singletonEntityId;
+	static const uint16 k_singletonEntityId;
 	static void RunSystems(UWorld* worldPointer, float deltaTime);
 
 private:
