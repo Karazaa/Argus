@@ -77,6 +77,26 @@ void UArgusInputManager::OnZoom(const FInputActionValue& value)
 {
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::Zoom, value));
 }
+
+void UArgusInputManager::OnAbility0(const FInputActionValue& value)
+{
+	m_inputEventsThisFrame.Emplace(InputCache(InputType::Ability0, value));
+}
+
+void UArgusInputManager::OnAbility1(const FInputActionValue& value)
+{
+	m_inputEventsThisFrame.Emplace(InputCache(InputType::Ability1, value));
+}
+
+void UArgusInputManager::OnAbility2(const FInputActionValue& value)
+{
+	m_inputEventsThisFrame.Emplace(InputCache(InputType::Ability2, value));
+}
+
+void UArgusInputManager::OnAbility3(const FInputActionValue& value)
+{
+	m_inputEventsThisFrame.Emplace(InputCache(InputType::Ability3, value));
+}
 #pragma endregion
 
 void UArgusInputManager::ProcessPlayerInput(TObjectPtr<AArgusCameraActor>& argusCamera, const AArgusCameraActor::UpdateCameraPanningParameters& updateCameraParameters, float deltaTime)
@@ -160,6 +180,26 @@ void UArgusInputManager::BindActions(TSoftObjectPtr<UArgusInputActionSet>& argus
 	{
 		enhancedInputComponent->BindAction(zoomAction, ETriggerEvent::Triggered, this, &UArgusInputManager::OnZoom);
 	}
+
+	if (const UInputAction* ability0Action = actionSet->m_ability0Action.LoadSynchronous())
+	{
+		enhancedInputComponent->BindAction(ability0Action, ETriggerEvent::Triggered, this, &UArgusInputManager::OnAbility0);
+	}
+
+	if (const UInputAction* ability1Action = actionSet->m_ability1Action.LoadSynchronous())
+	{
+		enhancedInputComponent->BindAction(ability1Action, ETriggerEvent::Triggered, this, &UArgusInputManager::OnAbility1);
+	}
+
+	if (const UInputAction* ability2Action = actionSet->m_ability2Action.LoadSynchronous())
+	{
+		enhancedInputComponent->BindAction(ability2Action, ETriggerEvent::Triggered, this, &UArgusInputManager::OnAbility2);
+	}
+
+	if (const UInputAction* ability3Action = actionSet->m_ability3Action.LoadSynchronous())
+	{
+		enhancedInputComponent->BindAction(ability3Action, ETriggerEvent::Triggered, this, &UArgusInputManager::OnAbility3);
+	}
 }
 
 bool UArgusInputManager::ValidateOwningPlayerController()
@@ -198,7 +238,19 @@ void UArgusInputManager::ProcessInputEvent(TObjectPtr<AArgusCameraActor>& argusC
 			ProcessSetWaypointInputEvent();
 			break;
 		case InputType::Zoom:
-			ProcessZoomInpuEvent(argusCamera, inputType.m_value);
+			ProcessZoomInputEvent(argusCamera, inputType.m_value);
+			break;
+		case InputType::Ability0:
+			ProcessAbilityInputEvent(0u);
+			break;
+		case InputType::Ability1:
+			ProcessAbilityInputEvent(1u);
+			break;
+		case InputType::Ability2:
+			ProcessAbilityInputEvent(2u);
+			break;
+		case InputType::Ability3:
+			ProcessAbilityInputEvent(3u);
 			break;
 		default:
 			break;
@@ -483,7 +535,7 @@ void UArgusInputManager::ProcessSetWaypointInputEventPerSelectedActor(AArgusActo
 	}
 }
 
-void UArgusInputManager::ProcessZoomInpuEvent(TObjectPtr<AArgusCameraActor>& argusCamera, const FInputActionValue& value)
+void UArgusInputManager::ProcessZoomInputEvent(TObjectPtr<AArgusCameraActor>& argusCamera, const FInputActionValue& value)
 {
 	const float zoomValue = value.Get<float>();
 	if (CVarEnableVerboseArgusInputLogging.GetValueOnGameThread())
@@ -509,6 +561,67 @@ void UArgusInputManager::ProcessZoomInpuEvent(TObjectPtr<AArgusCameraActor>& arg
 	}
 
 	argusCamera->UpdateCameraZoom(zoomValue);
+}
+
+void UArgusInputManager::ProcessAbilityInputEvent(uint8 abilityIndex)
+{
+	if (CVarEnableVerboseArgusInputLogging.GetValueOnGameThread())
+	{
+		ARGUS_LOG
+		(
+			ArgusInputLog, Display, TEXT("[%s] Pressed Ability %d."),
+			ARGUS_FUNCNAME,
+			abilityIndex
+		);
+	}
+
+	for (TWeakObjectPtr<AArgusActor>& selectedActor : m_selectedArgusActors)
+	{
+		if (!selectedActor.IsValid())
+		{
+			continue;
+		}
+
+		ProcessAbilityInputEventPerSelectedActor(selectedActor.Get(), abilityIndex);
+	}
+}
+
+void UArgusInputManager::ProcessAbilityInputEventPerSelectedActor(AArgusActor* argusActor, uint8 abilityIndex)
+{
+	if (!argusActor)
+	{
+		return;
+	}
+
+	ArgusEntity entity = argusActor->GetEntity();
+	if (!entity)
+	{
+		return;
+	}
+
+	TaskComponent* taskComponent = entity.GetComponent<TaskComponent>();
+	if (!taskComponent)
+	{
+		return;
+	}
+
+	switch (abilityIndex)
+	{
+		case 0u:
+			taskComponent->m_abilityState = EAbilityState::ProcessCastAbility0Command;
+			break;
+		case 1u:
+			taskComponent->m_abilityState = EAbilityState::ProcessCastAbility1Command;
+			break;
+		case 2u:
+			taskComponent->m_abilityState = EAbilityState::ProcessCastAbility2Command;
+			break;
+		case 3u:
+			taskComponent->m_abilityState = EAbilityState::ProcessCastAbility3Command;
+			break;
+		default:
+			break;
+	}
 }
 #pragma endregion
 

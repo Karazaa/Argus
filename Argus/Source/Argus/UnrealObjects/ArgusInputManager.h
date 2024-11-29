@@ -27,6 +27,10 @@ public:
 	void OnMoveTo(const FInputActionValue& value);
 	void OnSetWaypoint(const FInputActionValue& value);
 	void OnZoom(const FInputActionValue& value);
+	void OnAbility0(const FInputActionValue& value);
+	void OnAbility1(const FInputActionValue& value);
+	void OnAbility2(const FInputActionValue& value);
+	void OnAbility3(const FInputActionValue& value);
 
 
 	void ProcessPlayerInput(TObjectPtr<AArgusCameraActor>& argusCamera, const AArgusCameraActor::UpdateCameraPanningParameters& updateCameraPanningParameters, float deltaTime);
@@ -41,7 +45,11 @@ private:
 		MarqueeSelectAdditive,
 		MoveTo,
 		SetWaypoint,
-		Zoom
+		Zoom,
+		Ability0,
+		Ability1,
+		Ability2,
+		Ability3
 	};
 
 	struct InputCache
@@ -66,7 +74,9 @@ private:
 	void ProcessMoveToInputEventPerSelectedActor(AArgusActor* argusActor, EMovementState inputMovementState, ArgusEntity targetEntity, FVector targetLocation);
 	void ProcessSetWaypointInputEvent();
 	void ProcessSetWaypointInputEventPerSelectedActor(AArgusActor* argusActor, FVector targetLocation);
-	void ProcessZoomInpuEvent(TObjectPtr<AArgusCameraActor>& argusCamera, const FInputActionValue& value);
+	void ProcessZoomInputEvent(TObjectPtr<AArgusCameraActor>& argusCamera, const FInputActionValue& value);
+	void ProcessAbilityInputEvent(uint8 abilityIndex);
+	void ProcessAbilityInputEventPerSelectedActor(AArgusActor* argusActor, uint8 abilityIndex);
 
 	void AddSelectedActorExclusive(AArgusActor* argusActor);
 	void AddSelectedActorAdditive(AArgusActor* argusActor);
