@@ -16,6 +16,7 @@
 #include "ComponentDefinitions\SpawningComponent.h"
 #include "ComponentDefinitions\TargetingComponent.h"
 #include "ComponentDefinitions\TaskComponent.h"
+#include "ComponentDefinitions\TimerComponent.h"
 #include "ComponentDefinitions\TransformComponent.h"
 
 // Begin dynamically allocated component specific includes.
@@ -46,7 +47,7 @@ public:
 	static void FlushAllComponents();
 	static void AppendComponentDebugStrings(uint16 entityId, FString& debugStringToAppendTo);
 
-	static constexpr uint32 k_numComponentTypes = 9;
+	static constexpr uint32 k_numComponentTypes = 10;
 
 	// Begin component specific template specifiers.
 	
@@ -488,6 +489,69 @@ public:
 			s_TaskComponents[entityId] = TaskComponent();
 			s_isTaskComponentActive.set(entityId);
 			return &s_TaskComponents[entityId];
+		}
+	}
+#pragma endregion
+#pragma region TimerComponent
+private:
+	static TimerComponent s_TimerComponents[ArgusECSConstants::k_maxEntities];
+	static std::bitset<ArgusECSConstants::k_maxEntities> s_isTimerComponentActive;
+public:
+	template<>
+	inline TimerComponent* GetComponent<TimerComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(TimerComponent));
+			return nullptr;
+		}
+
+		if (!s_isTimerComponentActive[entityId])
+		{
+			return nullptr;
+		}
+
+		return &s_TimerComponents[entityId];
+	}
+
+	template<>
+	inline TimerComponent* AddComponent<TimerComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(TimerComponent));
+			return nullptr;
+		}
+
+		if (s_isTimerComponentActive[entityId])
+		{
+			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TimerComponent), entityId);
+			return &s_TimerComponents[entityId];
+		}
+
+		s_TimerComponents[entityId] = TimerComponent();
+		s_isTimerComponentActive.set(entityId);
+		return &s_TimerComponents[entityId];
+	}
+
+	template<>
+	inline TimerComponent* GetOrAddComponent<TimerComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(TimerComponent));
+			return nullptr;
+		}
+
+		if (s_isTimerComponentActive[entityId])
+		{
+			return &s_TimerComponents[entityId];
+		}
+		else
+		{
+			s_TimerComponents[entityId] = TimerComponent();
+			s_isTimerComponentActive.set(entityId);
+			return &s_TimerComponents[entityId];
 		}
 	}
 #pragma endregion

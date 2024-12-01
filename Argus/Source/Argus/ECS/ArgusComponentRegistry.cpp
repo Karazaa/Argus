@@ -32,6 +32,10 @@ std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isTarget
 TaskComponent ArgusComponentRegistry::s_TaskComponents[ArgusECSConstants::k_maxEntities];
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isTaskComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
 #pragma endregion
+#pragma region TimerComponent
+TimerComponent ArgusComponentRegistry::s_TimerComponents[ArgusECSConstants::k_maxEntities];
+std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isTimerComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
+#pragma endregion
 #pragma region TransformComponent
 TransformComponent ArgusComponentRegistry::s_TransformComponents[ArgusECSConstants::k_maxEntities];
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isTransformComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
@@ -56,6 +60,7 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 	s_isSpawningComponentActive.set(entityId, false);
 	s_isTargetingComponentActive.set(entityId, false);
 	s_isTaskComponentActive.set(entityId, false);
+	s_isTimerComponentActive.set(entityId, false);
 	s_isTransformComponentActive.set(entityId, false);
 
 	// Begin set component values
@@ -66,6 +71,7 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 	s_SpawningComponents[entityId] = SpawningComponent();
 	s_TargetingComponents[entityId] = TargetingComponent();
 	s_TaskComponents[entityId] = TaskComponent();
+	s_TimerComponents[entityId] = TimerComponent();
 	s_TransformComponents[entityId] = TransformComponent();
 
 	// Begin remove dynamically allocated components
@@ -85,6 +91,7 @@ void ArgusComponentRegistry::FlushAllComponents()
 	s_isSpawningComponentActive.reset();
 	s_isTargetingComponentActive.reset();
 	s_isTaskComponentActive.reset();
+	s_isTimerComponentActive.reset();
 	s_isTransformComponentActive.reset();
 
 	// Begin flush component values
@@ -97,6 +104,7 @@ void ArgusComponentRegistry::FlushAllComponents()
 		s_SpawningComponents[i] = SpawningComponent();
 		s_TargetingComponents[i] = TargetingComponent();
 		s_TaskComponents[i] = TaskComponent();
+		s_TimerComponents[i] = TimerComponent();
 		s_TransformComponents[i] = TransformComponent();
 	}
 
@@ -133,6 +141,10 @@ void ArgusComponentRegistry::AppendComponentDebugStrings(uint16 entityId, FStrin
 	if (const TaskComponent* TaskComponentPtr = GetComponent<TaskComponent>(entityId))
 	{
 		TaskComponentPtr->GetDebugString(debugStringToAppendTo);
+	}
+	if (const TimerComponent* TimerComponentPtr = GetComponent<TimerComponent>(entityId))
+	{
+		TimerComponentPtr->GetDebugString(debugStringToAppendTo);
 	}
 	if (const TransformComponent* TransformComponentPtr = GetComponent<TransformComponent>(entityId))
 	{

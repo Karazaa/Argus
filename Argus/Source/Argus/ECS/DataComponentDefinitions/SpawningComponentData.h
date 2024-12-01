@@ -14,6 +14,8 @@ class ARGUS_API USpawningComponentData : public UComponentData
 public:
 	UPROPERTY(EditAnywhere)
 	TSoftObjectPtr<UArgusActorRecord> m_argusActorRecordId;
+	UPROPERTY(EditAnywhere)
+	float m_spawningRadius = 100.0f;
 
 	void InstantiateComponentForEntity(ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;

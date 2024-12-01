@@ -49,6 +49,11 @@ bool ArgusComponentComponentSizeTest::RunTest(const FString& Parameters)
 	netSize += TaskComponentSize;
 	ARGUS_LOG(ArgusTestingLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(TaskComponent), TaskComponentSize);
 #pragma endregion
+#pragma region TimerComponent
+	const size_t TimerComponentSize = sizeof(TimerComponent);
+	netSize += TimerComponentSize;
+	ARGUS_LOG(ArgusTestingLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(TimerComponent), TimerComponentSize);
+#pragma endregion
 #pragma region TransformComponent
 	const size_t TransformComponentSize = sizeof(TransformComponent);
 	netSize += TransformComponentSize;
