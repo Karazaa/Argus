@@ -25,7 +25,8 @@ bool TransformSystems::RunSystems(UWorld* worldPointer, float deltaTime)
 		components.m_transformComponent = potentialEntity.GetComponent<TransformComponent>();
 		components.m_navigationComponent = potentialEntity.GetComponent<NavigationComponent>();
 		components.m_targetingComponent = potentialEntity.GetComponent<TargetingComponent>();
-		if (!components.AreComponentsValidCheck(false))
+		if (!components.m_entity || !components.m_taskComponent || !components.m_transformComponent || 
+			!components.m_navigationComponent || !components.m_targetingComponent)
 		{
 			continue;
 		}
@@ -36,24 +37,21 @@ bool TransformSystems::RunSystems(UWorld* worldPointer, float deltaTime)
 	return didMovementUpdateThisFrame;
 }
 
-bool TransformSystems::TransformSystemsComponentArgs::AreComponentsValidCheck(bool errorIfInvalid, const WIDECHAR* functionName) const
+bool TransformSystems::TransformSystemsComponentArgs::AreComponentsValidCheck(const WIDECHAR* functionName) const
 {
 	if (m_entity && m_taskComponent && m_navigationComponent && m_transformComponent && m_targetingComponent)
 	{
 		return true;
 	}
 
-	if (errorIfInvalid && functionName)
-	{
-		ArgusLogging::LogInvalidComponentReferences(functionName, ARGUS_NAMEOF(TransformSystemsComponentArgs));
-	}
+	ArgusLogging::LogInvalidComponentReferences(functionName, ARGUS_NAMEOF(TransformSystemsComponentArgs));
 
 	return false;
 }
 
 void TransformSystems::GetPathingLocationAtTimeOffset(float timeOffsetSeconds, const TransformSystemsComponentArgs& components, GetPathingLocationAtTimeOffsetResults& results)
 {
-	if (!components.AreComponentsValidCheck(true, ARGUS_FUNCNAME))
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return;
 	}
@@ -172,7 +170,7 @@ void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float delta
 {
 	ARGUS_TRACE(TransformSystems::MoveAlongNavigationPath)
 
-	if (!components.AreComponentsValidCheck(true, ARGUS_FUNCNAME))
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return;
 	}
@@ -264,7 +262,7 @@ bool TransformSystems::ProcessMovementTaskCommands(UWorld* worldPointer, float d
 {
 	ARGUS_TRACE(TransformSystems::ProcessMovementTaskCommands)
 
-	if (!components.AreComponentsValidCheck(true, ARGUS_FUNCNAME))
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return false;
 	}
@@ -294,7 +292,7 @@ bool TransformSystems::ProcessMovementTaskCommands(UWorld* worldPointer, float d
 
 void TransformSystems::OnCompleteNavigationPath(const TransformSystemsComponentArgs& components)
 {
-	if (!components.AreComponentsValidCheck(true, ARGUS_FUNCNAME))
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return;
 	}

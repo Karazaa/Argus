@@ -43,7 +43,7 @@ bool TransformSystemsGetPathingLocationAtTimeOffsetTest::RunTest(const FString& 
 	components.m_navigationComponent = entity.AddComponent<NavigationComponent>();
 	components.m_targetingComponent = entity.AddComponent<TargetingComponent>();
 
-	if (!components.AreComponentsValidCheck(true, ARGUS_FUNCNAME))
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		ArgusTesting::EndArgusTest();
 		return false;
@@ -462,7 +462,7 @@ bool TransformSystemsMoveAlongPathTest::RunTest(const FString& Parameters)
 	components.m_navigationComponent = entity.AddComponent<NavigationComponent>();
 	components.m_targetingComponent = entity.AddComponent<TargetingComponent>();
 
-	if (!components.AreComponentsValidCheck(true, ARGUS_FUNCNAME))
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		ArgusTesting::EndArgusTest();
 		return false;

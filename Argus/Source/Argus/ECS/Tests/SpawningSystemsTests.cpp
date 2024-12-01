@@ -54,9 +54,11 @@ bool SpawningSystemsSpawnEntityTest::RunTest(const FString& Parameters)
 	SpawningSystems::SpawnEntity(components, argusActorRecord);
 
 	components.m_entity = ArgusEntity::CreateEntity();
-	components.m_taskComponent = components.m_entity.AddComponent<TaskComponent>();
 	components.m_spawningComponent = components.m_entity.AddComponent<SpawningComponent>();
-	if (!components.AreComponentsValidCheck(true, ARGUS_FUNCNAME))
+	components.m_targetingComponent = components.m_entity.AddComponent<TargetingComponent>();
+	components.m_taskComponent = components.m_entity.AddComponent<TaskComponent>();
+	components.m_transformComponent = components.m_entity.AddComponent<TransformComponent>();
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		ArgusTesting::EndArgusTest();
 		return false;

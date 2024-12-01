@@ -70,7 +70,14 @@ void AArgusActor::SetEntity(const ArgusEntity& entity)
 
 	if (TransformComponent* transformComponent = m_entity.GetComponent<TransformComponent>())
 	{
-		transformComponent->m_transform = GetActorTransform();
+		if (m_shouldActorSpawnLocationSetEntityLocation)
+		{
+			transformComponent->m_transform = GetActorTransform();
+		}
+		else
+		{
+			SetActorTransform(transformComponent->m_transform);
+		}
 	}
 
 	AArgusGameModeBase* gameMode = Cast<AArgusGameModeBase>(world->GetAuthGameMode());

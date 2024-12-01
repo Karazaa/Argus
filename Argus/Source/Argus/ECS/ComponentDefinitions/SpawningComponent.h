@@ -12,6 +12,8 @@ struct SpawningComponent
 	ARGUS_STATIC_DATA(UArgusActorRecord)
 	uint32 m_argusActorRecordId = 0u;
 
+	float m_spawningRadius = 100.0f;
+
 	void GetDebugString(FString& debugStringToAppendTo) const
 	{
 		debugStringToAppendTo.Append

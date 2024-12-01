@@ -24,7 +24,8 @@ void AvoidanceSystems::RunSystems(UWorld* worldPointer, float deltaTime)
 		components.m_transformComponent = potentialEntity.GetComponent<TransformComponent>();
 		components.m_navigationComponent = potentialEntity.GetComponent<NavigationComponent>();
 		components.m_targetingComponent = potentialEntity.GetComponent<TargetingComponent>();
-		if (!components.AreComponentsValidCheck(false))
+		if (!components.m_entity || !components.m_taskComponent || !components.m_transformComponent ||
+			!components.m_navigationComponent || !components.m_targetingComponent)
 		{
 			continue;
 		}
@@ -38,7 +39,7 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 {
 	ARGUS_TRACE(AvoidanceSystems::ProcessORCAvoidance);
 
-	if (!components.AreComponentsValidCheck(true, ARGUS_FUNCNAME))
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return;
 	}
@@ -367,7 +368,8 @@ void AvoidanceSystems::ThreeDimensionalLinearProgram(const std::vector<ORCALine>
 
 float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems::TransformSystemsComponentArgs& sourceEntityComponents, const ArgusEntity& foundEntity)
 {
-	if (!sourceEntityComponents.AreComponentsValidCheck(false))
+	if (!sourceEntityComponents.m_entity || !sourceEntityComponents.m_taskComponent || !sourceEntityComponents.m_transformComponent ||
+		!sourceEntityComponents.m_navigationComponent || !sourceEntityComponents.m_targetingComponent)
 	{
 		return 0.0f;
 	}

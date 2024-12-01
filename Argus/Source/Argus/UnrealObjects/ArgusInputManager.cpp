@@ -428,12 +428,16 @@ void UArgusInputManager::ProcessMoveToInputEventPerSelectedActor(AArgusActor* ar
 	TargetingComponent* targetingComponent = selectedEntity.GetComponent<TargetingComponent>();
 	NavigationComponent* navigationComponent = selectedEntity.GetComponent<NavigationComponent>();
 
-	if (!taskComponent || !targetingComponent || !navigationComponent)
+	if (!taskComponent || !targetingComponent)
 	{
 		return;
 	}
 
-	navigationComponent->ResetQueuedWaypoints();
+	if (navigationComponent)
+	{
+		navigationComponent->ResetQueuedWaypoints();
+	}
+	
 	if (inputMovementState == EMovementState::ProcessMoveToEntityCommand)
 	{
 		if (targetEntity == selectedEntity)
@@ -442,14 +446,22 @@ void UArgusInputManager::ProcessMoveToInputEventPerSelectedActor(AArgusActor* ar
 		}
 		else
 		{
-			taskComponent->m_movementState = inputMovementState;
+			if (navigationComponent)
+			{
+				taskComponent->m_movementState = inputMovementState;
+			}
+			
 			targetingComponent->m_targetEntityId = targetEntity.GetId();
 			targetingComponent->m_targetLocation.Reset();
 		}
 	}
 	else if (inputMovementState == EMovementState::ProcessMoveToLocationCommand)
 	{
-		taskComponent->m_movementState = inputMovementState;
+		if (navigationComponent)
+		{
+			taskComponent->m_movementState = inputMovementState;
+		}
+		
 		targetingComponent->m_targetEntityId = ArgusEntity::k_emptyEntity.GetId();
 		targetingComponent->m_targetLocation = targetLocation;
 	}

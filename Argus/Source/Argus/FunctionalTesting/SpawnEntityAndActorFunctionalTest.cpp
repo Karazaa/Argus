@@ -98,8 +98,20 @@ void ASpawnEntityAndActorFunctionalTest::StartSpawnArgusEntityTestStep()
 		return;
 	}
 
+	TargetingComponent* spawnerTargetingComponent = m_spawnerEntity.AddComponent<TargetingComponent>();
+	if (!spawnerTargetingComponent)
+	{
+		return;
+	}
+
 	TaskComponent* spawnerTaskComponent = m_spawnerEntity.AddComponent<TaskComponent>();
 	if (!spawnerTaskComponent)
+	{
+		return;
+	}
+
+	TransformComponent* spawnerTransformComponent = m_spawnerEntity.AddComponent<TransformComponent>();
+	if (!spawnerTransformComponent)
 	{
 		return;
 	}

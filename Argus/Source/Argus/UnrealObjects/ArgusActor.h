@@ -38,6 +38,8 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	TObjectPtr<UArgusEntityTemplate> m_entityTemplate = nullptr;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	bool m_shouldActorSpawnLocationSetEntityLocation = false;
 
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type endPlayReason) override;
