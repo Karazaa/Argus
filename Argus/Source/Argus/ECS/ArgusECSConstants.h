@@ -8,6 +8,7 @@
 namespace ArgusECSConstants
 {
 	static constexpr uint16	k_maxEntities = 15000u;
+	static constexpr uint16	k_singletonEntityId = k_maxEntities - 1u;
 
 	static constexpr float k_avoidanceCollisionDetectionPredictionTime = 1.0f;
 	static constexpr float k_avoidanceAgentSearchRadius = 200.0f;

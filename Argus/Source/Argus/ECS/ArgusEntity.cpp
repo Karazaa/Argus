@@ -45,13 +45,17 @@ ArgusEntity ArgusEntity::CreateEntity(uint16 lowestId)
 	}
 
 	s_takenEntityIds.set(id);
-	if (id < s_lowestTakenEntityId)
+
+	if (id != ArgusECSConstants::k_singletonEntityId)
 	{
-		s_lowestTakenEntityId = id;
-	}
-	if (id > s_highestTakenEntityId)
-	{
-		s_highestTakenEntityId = id;
+		if (id < s_lowestTakenEntityId)
+		{
+			s_lowestTakenEntityId = id;
+		}
+		if (id > s_highestTakenEntityId)
+		{
+			s_highestTakenEntityId = id;
+		}
 	}
 
 	return ArgusEntity(id);
@@ -68,13 +72,20 @@ void ArgusEntity::DestroyEntity(ArgusEntity& entityToDestroy)
 	uint16 entityToDestoryId = entityToDestroy.GetId();
 	s_takenEntityIds.set(entityToDestoryId, false);
 	ArgusComponentRegistry::RemoveComponentsForEntity(entityToDestoryId);
+
+	entityToDestroy = k_emptyEntity;
 	
+	if (entityToDestoryId == ArgusECSConstants::k_singletonEntityId)
+	{
+		return;
+	}
+
 	if (entityToDestoryId == s_lowestTakenEntityId)
 	{
 		uint16 newLowestTakenId = ArgusECSConstants::k_maxEntities;
 		for (uint16 i = s_lowestTakenEntityId + 1u; i <= s_highestTakenEntityId; ++i)
 		{
-			if (s_takenEntityIds[entityToDestoryId])
+			if (s_takenEntityIds[i])
 			{
 				newLowestTakenId = i;
 				break;
@@ -89,7 +100,7 @@ void ArgusEntity::DestroyEntity(ArgusEntity& entityToDestroy)
 		uint16 newHighestTakenId = 0u;
 		for (uint16 i = s_highestTakenEntityId - 1u; i >= s_lowestTakenEntityId; --i)
 		{
-			if (s_takenEntityIds[entityToDestoryId])
+			if (s_takenEntityIds[i])
 			{
 				newHighestTakenId = i;
 				break;
@@ -98,8 +109,6 @@ void ArgusEntity::DestroyEntity(ArgusEntity& entityToDestroy)
 
 		s_highestTakenEntityId = newHighestTakenId;
 	}
-
-	entityToDestroy = k_emptyEntity;
 }
 
 void ArgusEntity::DestroyEntity(uint16 entityIdToDestroy)

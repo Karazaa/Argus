@@ -11,8 +11,6 @@
 #include "Systems/TargetingSystems.h"
 #include "Systems/TransformSystems.h"
 
-const uint16 ArgusSystemsManager::k_singletonEntityId = ArgusECSConstants::k_maxEntities - 1u;
-
 void ArgusSystemsManager::RunSystems(UWorld* worldPointer, float deltaTime)
 {
 	ARGUS_TRACE(ArgusSystemsManager::RunSystems)
@@ -37,12 +35,12 @@ void ArgusSystemsManager::RunSystems(UWorld* worldPointer, float deltaTime)
 
 void ArgusSystemsManager::PopulateSingletonComponents()
 {
-	if (ArgusEntity::DoesEntityExist(k_singletonEntityId))
+	if (ArgusEntity::DoesEntityExist(ArgusECSConstants::k_singletonEntityId))
 	{
 		return;
 	}
 
-	ArgusEntity singletonEntity = ArgusEntity::CreateEntity(k_singletonEntityId);
+	ArgusEntity singletonEntity = ArgusEntity::CreateEntity(ArgusECSConstants::k_singletonEntityId);
 	if (!singletonEntity)
 	{
 		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] There is no singleton %s when it should have already been made."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity));
@@ -57,7 +55,7 @@ void ArgusSystemsManager::PopulateSingletonComponents()
 
 void ArgusSystemsManager::UpdateSingletonComponents(bool didMovementUpdateThisFrame)
 {
-	ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(k_singletonEntityId);
+	ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId);
 	if (!singletonEntity)
 	{
 		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] There is no singleton %s when it should have already been made."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity));

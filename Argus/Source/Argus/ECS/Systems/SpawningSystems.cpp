@@ -154,6 +154,6 @@ void SpawningSystems::GetSpawnLocationAndNavigationState(const SpawningSystemsCo
 
 	FVector spawnForward = targetTransformComponent->m_transform.GetLocation() - spawnerLocation;
 	spawnForward.Normalize();
-	outSpawnLocation = spawnerLocation + (spawnForward * components.m_transformComponent->m_radius);
+	outSpawnLocation = spawnerLocation + (spawnForward * components.m_spawningComponent->m_spawningRadius);
 	outMovementState = EMovementState::ProcessMoveToEntityCommand;
 }

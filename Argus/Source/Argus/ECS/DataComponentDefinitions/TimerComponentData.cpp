@@ -7,7 +7,7 @@
 void UTimerComponentData::InstantiateComponentForEntity(ArgusEntity& entity) const
 {
 	TimerComponent* TimerComponentRef = entity.AddComponent<TimerComponent>();
-	TimerComponentRef->m_timer = m_timer;
+	TimerComponentRef->m_timers = m_timers;
 }
 
 bool UTimerComponentData::MatchesType(UComponentData* other) const

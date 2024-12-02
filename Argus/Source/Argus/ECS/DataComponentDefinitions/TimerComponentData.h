@@ -12,7 +12,7 @@ class ARGUS_API UTimerComponentData : public UComponentData
 	GENERATED_BODY()
 
 public:
-	Timer m_timer;
+	std::vector<Timer> m_timers = std::vector<Timer>();
 
 	void InstantiateComponentForEntity(ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;

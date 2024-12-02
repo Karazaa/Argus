@@ -5,11 +5,12 @@
 #include "ArgusMacros.h"
 #include "CoreMinimal.h"
 #include "ComponentDependencies/Timer.h"
+#include <vector>
 
 struct TimerComponent
 {
 	ARGUS_IGNORE()
-	Timer m_timer;
+	std::vector<Timer> m_timers = std::vector<Timer>();
 
 	void GetDebugString(FString& debugStringToAppendTo) const
 	{
