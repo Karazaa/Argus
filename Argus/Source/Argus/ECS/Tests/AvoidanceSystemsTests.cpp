@@ -129,7 +129,7 @@ bool AvoidanceSystemsProcessORCAvoidanceTest::RunTest(const FString& Parameters)
 	}
 	secondComponents.m_transformComponent->m_transform.SetLocation(secondEntityLocation);
 
-	components.m_taskComponent->m_movementState = EMovementState::MoveToLocation;
+	components.m_taskComponent->m_movementState = MovementState::MoveToLocation;
 
 #pragma region Test that an error is reported if the navigation component is malformed.
 	AddExpectedErrorPlain
@@ -251,7 +251,7 @@ bool AvoidanceSystemsProcessORCAvoidanceTest::RunTest(const FString& Parameters)
 
 	secondComponents.m_navigationComponent->m_navigationPoints.push_back(secondComponents.m_transformComponent->m_transform.GetLocation());
 	secondComponents.m_navigationComponent->m_navigationPoints.push_back(secondTargetLocation);
-	secondComponents.m_taskComponent->m_movementState = EMovementState::MoveToLocation;
+	secondComponents.m_taskComponent->m_movementState = MovementState::MoveToLocation;
 	secondComponents.m_transformComponent->m_currentVelocity = secondVelocity;
 	secondComponents.m_transformComponent->m_desiredSpeedUnitsPerSecond = desiredSpeed;
 

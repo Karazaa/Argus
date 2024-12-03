@@ -207,7 +207,7 @@ void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float delta
 
 	const bool isAtEndOfNavigationPath		=	components.m_navigationComponent->m_lastPointIndex == numNavigationPoints - 1u;
 	const bool isWithinRangeOfTargetEntity	=	components.m_navigationComponent->m_lastPointIndex == numNavigationPoints - 2u &&
-												components.m_taskComponent->m_movementState == EMovementState::MoveToEntity &&
+												components.m_taskComponent->m_movementState == MovementState::MoveToEntity &&
 												components.m_targetingComponent->m_targetingRange > distanceToTarget;
 
 	if (isWithinRangeOfTargetEntity && !isAtEndOfNavigationPath)
@@ -269,12 +269,12 @@ bool TransformSystems::ProcessMovementTaskCommands(UWorld* worldPointer, float d
 
 	switch (components.m_taskComponent->m_movementState)
 	{
-		case EMovementState::MoveToLocation:
-		case EMovementState::MoveToEntity:
+		case MovementState::MoveToLocation:
+		case MovementState::MoveToEntity:
 			MoveAlongNavigationPath(worldPointer, deltaTime, components);
 			return true;
 
-		case EMovementState::None:
+		case MovementState::None:
 			components.m_transformComponent->m_currentVelocity = components.m_transformComponent->m_proposedAvoidanceVelocity;
 			if (!components.m_transformComponent->m_currentVelocity.IsNearlyZero())
 			{
@@ -299,13 +299,13 @@ void TransformSystems::OnCompleteNavigationPath(const TransformSystemsComponentA
 
 	if (components.m_navigationComponent->m_queuedWaypoints.size() == 0u)
 	{
-		components.m_taskComponent->m_movementState = EMovementState::None;
+		components.m_taskComponent->m_movementState = MovementState::None;
 		components.m_navigationComponent->ResetPath();
 		components.m_transformComponent->m_currentVelocity = FVector::ZeroVector;
 	}
 	else
 	{
-		components.m_taskComponent->m_movementState = EMovementState::ProcessMoveToLocationCommand;
+		components.m_taskComponent->m_movementState = MovementState::ProcessMoveToLocationCommand;
 		components.m_navigationComponent->ResetPath();
 		components.m_targetingComponent->m_targetLocation = components.m_navigationComponent->m_queuedWaypoints.front();
 		components.m_navigationComponent->m_queuedWaypoints.pop();

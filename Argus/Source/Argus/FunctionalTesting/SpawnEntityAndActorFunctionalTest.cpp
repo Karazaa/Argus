@@ -132,7 +132,7 @@ void ASpawnEntityAndActorFunctionalTest::StartSpawnArgusEntityTestStep()
 	{
 		spawnerSpawningComponent->m_argusActorRecordId = loadedRecord->m_id;
 	}
-	spawnerTaskComponent->m_spawningState = ESpawningState::ProcessSpawnEntityCommand;
+	spawnerTaskComponent->m_spawningState = SpawningState::ProcessSpawnEntityCommand;
 }
 
 void ASpawnEntityAndActorFunctionalTest::StartSpawnArgusActorTestStep()
@@ -158,7 +158,7 @@ void ASpawnEntityAndActorFunctionalTest::StartDespawnArgusActorTestStep()
 		return;
 	}
 
-	taskComponent->m_baseState = EBaseState::DestroyedWaitingForActorRelease;
+	taskComponent->m_baseState = BaseState::DestroyedWaitingForActorRelease;
 }
 
 

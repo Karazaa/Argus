@@ -49,7 +49,7 @@ bool TransformSystemsGetPathingLocationAtTimeOffsetTest::RunTest(const FString& 
 		return false;
 	}
 
-	components.m_taskComponent->m_movementState = EMovementState::None;
+	components.m_taskComponent->m_movementState = MovementState::None;
 	const FVector defaultLocation = components.m_transformComponent->m_transform.GetLocation();
 	const FVector defaultForwardVector = components.m_transformComponent->m_transform.GetRotation().GetForwardVector();
 
@@ -73,7 +73,7 @@ bool TransformSystemsGetPathingLocationAtTimeOffsetTest::RunTest(const FString& 
 	);
 #pragma endregion
 
-	components.m_taskComponent->m_movementState = EMovementState::MoveToLocation;
+	components.m_taskComponent->m_movementState = MovementState::MoveToLocation;
 	components.m_navigationComponent->m_lastPointIndex = 2u;
 
 #pragma region Test having an invalid navigation point index fires the proper error.
@@ -468,7 +468,7 @@ bool TransformSystemsMoveAlongPathTest::RunTest(const FString& Parameters)
 		return false;
 	}
 
-	components.m_taskComponent->m_movementState = EMovementState::MoveToLocation;
+	components.m_taskComponent->m_movementState = MovementState::MoveToLocation;
 	components.m_transformComponent->m_desiredSpeedUnitsPerSecond = navigationSpeedUnitsPerSecond;
 
 #pragma region Test having an invalid navigation point index fires the proper error.
@@ -624,7 +624,7 @@ bool TransformSystemsMoveAlongPathTest::RunTest(const FString& Parameters)
 	(
 		FString::Printf(TEXT("[%s] Test that %s current task is %s after moving along path for %f seconds."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TaskComponent), ARGUS_NAMEOF(ETask::None), secondCounter),
 		components.m_taskComponent->m_movementState, 
-		EMovementState::None
+		MovementState::None
 	);
 #pragma endregion
 

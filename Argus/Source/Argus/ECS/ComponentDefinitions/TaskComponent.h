@@ -5,16 +5,14 @@
 #include "ArgusMacros.h"
 #include "CoreMinimal.h"
 
-UENUM()
-enum class EBaseState : uint8
+enum class BaseState : uint8
 {
 	None,
 	SpawnedWaitingForActorTake,
 	DestroyedWaitingForActorRelease
 };
 
-UENUM()
-enum class EMovementState : uint8
+enum class MovementState : uint8
 {
 	None,
 	ProcessMoveToLocationCommand,
@@ -24,15 +22,13 @@ enum class EMovementState : uint8
 	FailedToFindPath
 };
 
-UENUM()
-enum class ESpawningState : uint8
+enum class SpawningState : uint8
 {
 	None,
 	ProcessSpawnEntityCommand
 };
 
-UENUM()
-enum class EAbilityState : uint8
+enum class AbilityState : uint8
 {
 	None,
 	ProcessCastAbility0Command,
@@ -41,23 +37,22 @@ enum class EAbilityState : uint8
 	ProcessCastAbility3Command
 };
 
-
 struct TaskComponent
 {
 	ARGUS_IGNORE()
-	EBaseState m_baseState = EBaseState::None;
+	BaseState m_baseState = BaseState::None;
 	ARGUS_IGNORE()
-	EMovementState m_movementState = EMovementState::None;
+	MovementState m_movementState = MovementState::None;
 	ARGUS_IGNORE()
-	ESpawningState m_spawningState = ESpawningState::None;
+	SpawningState m_spawningState = SpawningState::None;
 	ARGUS_IGNORE()
-	EAbilityState m_abilityState = EAbilityState::None;
+	AbilityState m_abilityState = AbilityState::None;
 	ARGUS_IGNORE()
 	uint32 m_spawnedFromArgusActorRecordId = MAX_uint32;
 
 	bool IsExecutingMoveTask() const
 	{
-		return m_movementState == EMovementState::MoveToLocation || m_movementState == EMovementState::MoveToEntity;
+		return m_movementState == MovementState::MoveToLocation || m_movementState == MovementState::MoveToEntity;
 	}
 
 	void GetDebugString(FString& debugStringToAppendTo) const
@@ -65,14 +60,14 @@ struct TaskComponent
 		auto baseStateName = TEXT("");
 		switch (m_baseState)
 		{
-			case EBaseState::None:
-				baseStateName = ARGUS_NAMEOF(EBaseState::None);
+			case BaseState::None:
+				baseStateName = ARGUS_NAMEOF(BaseState::None);
 				break;
-			case EBaseState::SpawnedWaitingForActorTake:
-				baseStateName = ARGUS_NAMEOF(EBaseState::SpawnedWaitingForActorTake);
+			case BaseState::SpawnedWaitingForActorTake:
+				baseStateName = ARGUS_NAMEOF(BaseState::SpawnedWaitingForActorTake);
 				break;
-			case EBaseState::DestroyedWaitingForActorRelease:
-				baseStateName = ARGUS_NAMEOF(EBaseState::DestroyedWaitingForActorRelease);
+			case BaseState::DestroyedWaitingForActorRelease:
+				baseStateName = ARGUS_NAMEOF(BaseState::DestroyedWaitingForActorRelease);
 				break;
 			default:
 				break;
@@ -81,23 +76,23 @@ struct TaskComponent
 		auto movementStateName = TEXT("");
 		switch (m_movementState)
 		{
-			case EMovementState::None:
-				movementStateName = ARGUS_NAMEOF(EBaseState::None);
+			case MovementState::None:
+				movementStateName = ARGUS_NAMEOF(BaseState::None);
 				break;
-			case EMovementState::ProcessMoveToLocationCommand:
-				movementStateName = ARGUS_NAMEOF(EMovementState::ProcessMoveToLocationCommand);
+			case MovementState::ProcessMoveToLocationCommand:
+				movementStateName = ARGUS_NAMEOF(MovementState::ProcessMoveToLocationCommand);
 				break;
-			case EMovementState::ProcessMoveToEntityCommand:
-				movementStateName = ARGUS_NAMEOF(EMovementState::ProcessMoveToEntityCommand);
+			case MovementState::ProcessMoveToEntityCommand:
+				movementStateName = ARGUS_NAMEOF(MovementState::ProcessMoveToEntityCommand);
 				break;
-			case EMovementState::MoveToLocation:
-				movementStateName = ARGUS_NAMEOF(EMovementState::ProcessMoveToLocationCommand);
+			case MovementState::MoveToLocation:
+				movementStateName = ARGUS_NAMEOF(MovementState::ProcessMoveToLocationCommand);
 				break;
-			case EMovementState::MoveToEntity:
-				movementStateName = ARGUS_NAMEOF(EMovementState::ProcessMoveToEntityCommand);
+			case MovementState::MoveToEntity:
+				movementStateName = ARGUS_NAMEOF(MovementState::ProcessMoveToEntityCommand);
 				break;
-			case EMovementState::FailedToFindPath:
-				movementStateName = ARGUS_NAMEOF(EMovementState::FailedToFindPath);
+			case MovementState::FailedToFindPath:
+				movementStateName = ARGUS_NAMEOF(MovementState::FailedToFindPath);
 				break;
 			default:
 				break;
@@ -106,11 +101,11 @@ struct TaskComponent
 		auto spawningStateName = TEXT("");
 		switch (m_spawningState)
 		{
-			case ESpawningState::None:
-				spawningStateName = ARGUS_NAMEOF(ESpawningState::None);
+			case SpawningState::None:
+				spawningStateName = ARGUS_NAMEOF(SpawningState::None);
 				break;
-			case ESpawningState::ProcessSpawnEntityCommand:
-				spawningStateName = ARGUS_NAMEOF(ESpawningState::ProcessSpawnEntityCommand);
+			case SpawningState::ProcessSpawnEntityCommand:
+				spawningStateName = ARGUS_NAMEOF(SpawningState::ProcessSpawnEntityCommand);
 				break;
 			default:
 				break;
@@ -119,20 +114,20 @@ struct TaskComponent
 		auto abilityStateName = TEXT("");
 		switch (m_abilityState)
 		{
-			case EAbilityState::None:
-				abilityStateName = ARGUS_NAMEOF(EAbilityState::None);
+			case AbilityState::None:
+				abilityStateName = ARGUS_NAMEOF(AbilityState::None);
 				break;
-			case EAbilityState::ProcessCastAbility0Command:
-				abilityStateName = ARGUS_NAMEOF(EAbilityState::ProcessCastAbility0Command);
+			case AbilityState::ProcessCastAbility0Command:
+				abilityStateName = ARGUS_NAMEOF(AbilityState::ProcessCastAbility0Command);
 				break;
-			case EAbilityState::ProcessCastAbility1Command:
-				abilityStateName = ARGUS_NAMEOF(EAbilityState::ProcessCastAbility0Command);
+			case AbilityState::ProcessCastAbility1Command:
+				abilityStateName = ARGUS_NAMEOF(AbilityState::ProcessCastAbility0Command);
 				break;
-			case EAbilityState::ProcessCastAbility2Command:
-				abilityStateName = ARGUS_NAMEOF(EAbilityState::ProcessCastAbility0Command);
+			case AbilityState::ProcessCastAbility2Command:
+				abilityStateName = ARGUS_NAMEOF(AbilityState::ProcessCastAbility0Command);
 				break;
-			case EAbilityState::ProcessCastAbility3Command:
-				abilityStateName = ARGUS_NAMEOF(EAbilityState::ProcessCastAbility0Command);
+			case AbilityState::ProcessCastAbility3Command:
+				abilityStateName = ARGUS_NAMEOF(AbilityState::ProcessCastAbility0Command);
 				break;
 			default:
 				break;

@@ -77,7 +77,7 @@ void AbilitySystems::CastAbility(uint32 abilityRecordId, const AbilitySystemsCom
 			break;
 	}
 
-	components.m_taskComponent->m_abilityState = EAbilityState::None;
+	components.m_taskComponent->m_abilityState = AbilityState::None;
 }
 
 void AbilitySystems::ProcessAbilityTaskCommands(const AbilitySystemsComponentArgs& components)
@@ -89,19 +89,19 @@ void AbilitySystems::ProcessAbilityTaskCommands(const AbilitySystemsComponentArg
 
 	switch (components.m_taskComponent->m_abilityState)
 	{
-		case EAbilityState::ProcessCastAbility0Command:
+		case AbilityState::ProcessCastAbility0Command:
 			CastAbility(components.m_abilityComponent->m_ability0Id, components);
 			break;
 
-		case EAbilityState::ProcessCastAbility1Command:
+		case AbilityState::ProcessCastAbility1Command:
 			CastAbility(components.m_abilityComponent->m_ability1Id, components);
 			break;
 
-		case EAbilityState::ProcessCastAbility2Command:
+		case AbilityState::ProcessCastAbility2Command:
 			CastAbility(components.m_abilityComponent->m_ability2Id, components);
 			break;
 
-		case EAbilityState::ProcessCastAbility3Command:
+		case AbilityState::ProcessCastAbility3Command:
 			CastAbility(components.m_abilityComponent->m_ability3Id, components);
 			break;
 
@@ -140,7 +140,7 @@ void AbilitySystems::CastSpawnAbility(const UAbilityRecord* abilityRecord, const
 	}
 
 	spawningComponent->m_argusActorRecordId = argusActorRecord->m_id;
-	components.m_taskComponent->m_spawningState = ESpawningState::ProcessSpawnEntityCommand;
+	components.m_taskComponent->m_spawningState = SpawningState::ProcessSpawnEntityCommand;
 }
 
 void AbilitySystems::CastHealAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsComponentArgs& components)

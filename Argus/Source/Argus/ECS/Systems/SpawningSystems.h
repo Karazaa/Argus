@@ -24,5 +24,5 @@ public:
 
 private:
 	static void ProcessSpawningTaskCommands(float deltaTime, const SpawningSystemsComponentArgs& components);
-	static void GetSpawnLocationAndNavigationState(const SpawningSystemsComponentArgs& components, FVector& outSpawnLocation, EMovementState& outMovementState);
+	static void GetSpawnLocationAndNavigationState(const SpawningSystemsComponentArgs& components, FVector& outSpawnLocation, MovementState& outMovementState);
 };

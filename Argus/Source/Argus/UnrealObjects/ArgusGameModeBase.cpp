@@ -70,11 +70,11 @@ void AArgusGameModeBase::ManageActorStateForEntities()
 			continue;
 		}
 
-		if (taskComponent->m_baseState == EBaseState::SpawnedWaitingForActorTake)
+		if (taskComponent->m_baseState == BaseState::SpawnedWaitingForActorTake)
 		{
 			SpawnActorForEntity(entity);
 		}
-		else if (taskComponent->m_baseState == EBaseState::DestroyedWaitingForActorRelease)
+		else if (taskComponent->m_baseState == BaseState::DestroyedWaitingForActorRelease)
 		{
 			DespawnActorForEntity(entity);
 		}
@@ -108,7 +108,7 @@ void AArgusGameModeBase::SpawnActorForEntity(ArgusEntity spawnedEntity)
 	}
 
 	spawnedActor->SetEntity(spawnedEntity);
-	taskComponent->m_baseState = EBaseState::None;
+	taskComponent->m_baseState = BaseState::None;
 }
 
 void AArgusGameModeBase::DespawnActorForEntity(ArgusEntity spawnedEntity)
@@ -138,7 +138,7 @@ void AArgusGameModeBase::DespawnActorForEntity(ArgusEntity spawnedEntity)
 	{
 		return;
 	}
-	taskComponent->m_baseState = EBaseState::None;
+	taskComponent->m_baseState = BaseState::None;
 
 	ArgusEntity::DestroyEntity(spawnedEntity);
 }

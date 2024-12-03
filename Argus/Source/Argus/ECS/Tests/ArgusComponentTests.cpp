@@ -343,7 +343,7 @@ bool ArgusComponentTaskComponentIsExecutingMoveTaskTest::RunTest(const FString& 
 	);
 #pragma endregion
 
-	taskComponent->m_movementState = EMovementState::ProcessMoveToLocationCommand;
+	taskComponent->m_movementState = MovementState::ProcessMoveToLocationCommand;
 
 #pragma region Test that ProcessMoveToLocationCommand is not considered a move task.
 	TestFalse
@@ -353,7 +353,7 @@ bool ArgusComponentTaskComponentIsExecutingMoveTaskTest::RunTest(const FString& 
 	);
 #pragma endregion
 
-	taskComponent->m_movementState = EMovementState::ProcessMoveToEntityCommand;
+	taskComponent->m_movementState = MovementState::ProcessMoveToEntityCommand;
 
 #pragma region Test that ProcessMoveToEntityCommand is not considered a move task.
 	TestFalse
@@ -363,7 +363,7 @@ bool ArgusComponentTaskComponentIsExecutingMoveTaskTest::RunTest(const FString& 
 	);
 #pragma endregion
 
-	taskComponent->m_movementState = EMovementState::FailedToFindPath;
+	taskComponent->m_movementState = MovementState::FailedToFindPath;
 
 #pragma region Test that FailedToFindPath is not considered a move task.
 	TestFalse
@@ -373,7 +373,7 @@ bool ArgusComponentTaskComponentIsExecutingMoveTaskTest::RunTest(const FString& 
 	);
 #pragma endregion
 
-	taskComponent->m_movementState = EMovementState::MoveToLocation;
+	taskComponent->m_movementState = MovementState::MoveToLocation;
 
 #pragma region Test that MoveToLocation is considered a move task.
 	TestTrue
@@ -383,7 +383,7 @@ bool ArgusComponentTaskComponentIsExecutingMoveTaskTest::RunTest(const FString& 
 	);
 #pragma endregion
 
-	taskComponent->m_movementState = EMovementState::MoveToEntity;
+	taskComponent->m_movementState = MovementState::MoveToEntity;
 
 #pragma region Test that MoveToEntity is considered a move task.
 	TestTrue
