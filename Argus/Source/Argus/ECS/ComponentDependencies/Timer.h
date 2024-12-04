@@ -23,18 +23,18 @@ struct Timer
 class TimerHandle
 {
 public:
-	void StartTimer(ArgusEntity& entityWithTimer, float seconds);
-	void FinishTimerHandling(ArgusEntity& entityWithTimer);
-	void CancelTimer(ArgusEntity& entityWithTimer);
+	void StartTimer(const ArgusEntity& entityWithTimer, float seconds);
+	void FinishTimerHandling(const ArgusEntity& entityWithTimer);
+	void CancelTimer(const ArgusEntity& entityWithTimer);
 	void ResetTimerIndex() { m_timerIndex = UINT8_MAX; }
 
-	bool IsTimerComplete(ArgusEntity& entityWithTimer) const;
+	bool IsTimerComplete(const ArgusEntity& entityWithTimer) const;
 
 	uint8 GetTimerIndex() const { return m_timerIndex; }
 
 private:
-	TimerComponent* GetTimerComponentForEntity(ArgusEntity& entityWithTimer, const WIDECHAR* functionName) const;
-	Timer* GetTimerForEntity(ArgusEntity& entityWithTimer, const WIDECHAR* functionName) const;
+	TimerComponent* GetTimerComponentForEntity(const ArgusEntity& entityWithTimer, const WIDECHAR* functionName) const;
+	Timer* GetTimerForEntity(const ArgusEntity& entityWithTimer, const WIDECHAR* functionName) const;
 
 	uint8 m_timerIndex = UINT8_MAX;
 };

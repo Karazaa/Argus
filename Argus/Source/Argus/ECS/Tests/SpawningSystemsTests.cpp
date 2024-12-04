@@ -63,7 +63,7 @@ bool SpawningSystemsSpawnEntityTest::RunTest(const FString& Parameters)
 		ArgusTesting::EndArgusTest();
 		return false;
 	}
-	components.m_taskComponent->m_spawningState = SpawningState::ProcessSpawnEntityCommand;
+	components.m_taskComponent->m_spawningState = SpawningState::SpawningEntity;
 
 #pragma region Test that the to-be-spawned entity does not yet exist.
 	TestFalse

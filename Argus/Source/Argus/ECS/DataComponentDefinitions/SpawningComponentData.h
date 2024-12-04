@@ -16,6 +16,7 @@ public:
 	TSoftObjectPtr<UArgusActorRecord> m_argusActorRecordId;
 	UPROPERTY(EditAnywhere)
 	float m_spawningRadius = 100.0f;
+	TimerHandle m_spawnTimerHandle;
 
 	void InstantiateComponentForEntity(ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;

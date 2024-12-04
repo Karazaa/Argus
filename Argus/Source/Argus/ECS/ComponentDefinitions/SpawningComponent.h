@@ -3,6 +3,7 @@
 #pragma once
 
 #include "ArgusMacros.h"
+#include "ComponentDependencies/Timer.h"
 #include "CoreMinimal.h"
 
 class UArgusActorRecord;
@@ -13,6 +14,9 @@ struct SpawningComponent
 	uint32 m_argusActorRecordId = 0u;
 
 	float m_spawningRadius = 100.0f;
+
+	ARGUS_IGNORE()
+	TimerHandle m_spawnTimerHandle;
 
 	void GetDebugString(FString& debugStringToAppendTo) const
 	{

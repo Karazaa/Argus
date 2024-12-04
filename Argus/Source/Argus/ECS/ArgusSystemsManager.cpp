@@ -9,6 +9,7 @@
 #include "Systems/NavigationSystems.h"
 #include "Systems/SpawningSystems.h"
 #include "Systems/TargetingSystems.h"
+#include "Systems/TimerSystems.h"
 #include "Systems/TransformSystems.h"
 
 void ArgusSystemsManager::RunSystems(UWorld* worldPointer, float deltaTime)
@@ -23,6 +24,7 @@ void ArgusSystemsManager::RunSystems(UWorld* worldPointer, float deltaTime)
 
 	PopulateSingletonComponents();
 
+	TimerSystems::RunSystems(deltaTime);
 	NavigationSystems::RunSystems(worldPointer);
 	TargetingSystems::RunSystems(deltaTime);
 	AbilitySystems::RunSystems(deltaTime);

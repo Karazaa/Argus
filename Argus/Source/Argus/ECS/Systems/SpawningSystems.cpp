@@ -55,7 +55,7 @@ void SpawningSystems::SpawnEntity(const SpawningSystemsComponentArgs& components
 		return;
 	}
 
-	if (components.m_taskComponent->m_spawningState != SpawningState::ProcessSpawnEntityCommand || !argusActorRecord || !argusActorRecord->m_entityTemplateOverride)
+	if (components.m_taskComponent->m_spawningState != SpawningState::SpawningEntity || !argusActorRecord || !argusActorRecord->m_entityTemplateOverride)
 	{
 		return;
 	}
@@ -106,7 +106,16 @@ void SpawningSystems::ProcessSpawningTaskCommands(float deltaTime, const Spawnin
 
 	switch (components.m_taskComponent->m_spawningState)
 	{
-		case SpawningState::ProcessSpawnEntityCommand:
+		case SpawningState::WaitingToSpawnEntity:
+			if (components.m_spawningComponent->m_spawnTimerHandle.IsTimerComplete(components.m_entity))
+			{
+				components.m_spawningComponent->m_spawnTimerHandle.FinishTimerHandling(components.m_entity);
+				components.m_taskComponent->m_spawningState = SpawningState::SpawningEntity;
+				SpawnEntity(components, ArgusStaticData::GetRecord<UArgusActorRecord>(components.m_spawningComponent->m_argusActorRecordId));
+			}
+			break;
+
+		case SpawningState::SpawningEntity:
 			SpawnEntity(components, ArgusStaticData::GetRecord<UArgusActorRecord>(components.m_spawningComponent->m_argusActorRecordId));
 			break;
 

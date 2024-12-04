@@ -17,4 +17,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (EditCondition = "m_abilityType == EAbilityTypes::Spawn", EditConditionHides))
 	TSoftObjectPtr<UArgusActorRecord> m_argusActorRecordToSpawn;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (EditCondition = "m_abilityType == EAbilityTypes::Spawn", EditConditionHides))
+	float m_timeToSpawnSeconds = 0.0f;
 };

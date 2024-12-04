@@ -132,7 +132,7 @@ void ASpawnEntityAndActorFunctionalTest::StartSpawnArgusEntityTestStep()
 	{
 		spawnerSpawningComponent->m_argusActorRecordId = loadedRecord->m_id;
 	}
-	spawnerTaskComponent->m_spawningState = SpawningState::ProcessSpawnEntityCommand;
+	spawnerTaskComponent->m_spawningState = SpawningState::SpawningEntity;
 }
 
 void ASpawnEntityAndActorFunctionalTest::StartSpawnArgusActorTestStep()

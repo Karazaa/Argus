@@ -25,7 +25,8 @@ enum class MovementState : uint8
 enum class SpawningState : uint8
 {
 	None,
-	ProcessSpawnEntityCommand
+	WaitingToSpawnEntity,
+	SpawningEntity
 };
 
 enum class AbilityState : uint8
@@ -104,8 +105,11 @@ struct TaskComponent
 			case SpawningState::None:
 				spawningStateName = ARGUS_NAMEOF(SpawningState::None);
 				break;
-			case SpawningState::ProcessSpawnEntityCommand:
-				spawningStateName = ARGUS_NAMEOF(SpawningState::ProcessSpawnEntityCommand);
+			case SpawningState::WaitingToSpawnEntity:
+				spawningStateName = ARGUS_NAMEOF(SpawningState::WaitingToSpawnEntity);
+				break;
+			case SpawningState::SpawningEntity:
+				spawningStateName = ARGUS_NAMEOF(SpawningState::SpawningEntity);
 				break;
 			default:
 				break;

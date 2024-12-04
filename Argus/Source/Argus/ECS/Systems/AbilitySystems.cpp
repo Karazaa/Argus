@@ -140,7 +140,15 @@ void AbilitySystems::CastSpawnAbility(const UAbilityRecord* abilityRecord, const
 	}
 
 	spawningComponent->m_argusActorRecordId = argusActorRecord->m_id;
-	components.m_taskComponent->m_spawningState = SpawningState::ProcessSpawnEntityCommand;
+	if (abilityRecord->m_timeToSpawnSeconds > 0.0f)
+	{
+		spawningComponent->m_spawnTimerHandle.StartTimer(components.m_entity, abilityRecord->m_timeToSpawnSeconds);
+		components.m_taskComponent->m_spawningState = SpawningState::WaitingToSpawnEntity;
+	}
+	else
+	{
+		components.m_taskComponent->m_spawningState = SpawningState::SpawningEntity;
+	}
 }
 
 void AbilitySystems::CastHealAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsComponentArgs& components)

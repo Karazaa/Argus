@@ -12,8 +12,6 @@ public:
 	static void ProcessORCAvoidance(UWorld* worldPointer, float deltaTime, const TransformSystems::TransformSystemsComponentArgs& components);
 	
 private:
-
-#pragma region Optimal Reciprocal Collision Avoidance
 	struct ORCALine
 	{
 		FVector2D m_direction = FVector2D::ZeroVector;
@@ -36,6 +34,4 @@ private:
 	static void ThreeDimensionalLinearProgram(const std::vector<ORCALine>& orcaLines, const float radius, const int lineIndex, const int numStaticObstacleORCALines, FVector2D& resultingVelocity);
 	
 	static float GetEffortCoefficientForEntityPair(const TransformSystems::TransformSystemsComponentArgs& sourceEntityComponents, const ArgusEntity& foundEntity);
-#pragma endregion
-
 };
