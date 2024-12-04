@@ -44,6 +44,26 @@ struct TimerComponent
 
 	void GetDebugString(FString& debugStringToAppendTo) const
 	{
-		// TODO JAME: Something here pls.
+		debugStringToAppendTo.Append
+		(
+			FString::Printf
+			(
+				TEXT("\n[%s]"),
+				ARGUS_NAMEOF(TimerComponent)
+			)
+		);
+
+		for (size_t i = 0; i < m_timers.size(); ++i)
+		{
+			debugStringToAppendTo.Append
+			(
+				FString::Printf
+				(
+					TEXT("\n    (%d: %f)"),
+					i,
+					m_timers[i].m_timeRemainingSeconds
+				)
+			);
+		}
 	}
 };

@@ -24,10 +24,12 @@ struct SpawningComponent
 		(
 			FString::Printf
 			(
-				TEXT("\n[%s]\n    (%s: %d)"),
+				TEXT("\n[%s]\n    (%s: %d)\n    (%s: %f)"),
 				ARGUS_NAMEOF(SpawningComponent),
 				ARGUS_NAMEOF(m_argusActorRecordId),
-				m_argusActorRecordId
+				m_argusActorRecordId,
+				ARGUS_NAMEOF(m_spawningRadius),
+				m_spawningRadius
 			)
 		);
 	}
