@@ -3,6 +3,7 @@
 #include "AvoidanceSystems.h"
 #include "ArgusMath.h"
 #include "ArgusSystemsManager.h"
+#include "DrawDebugHelpers.h"
 
 static TAutoConsoleVariable<bool> CVarShowAvoidanceDebug(TEXT("Argus.Avoidance.ShowAvoidanceDebug"), false, TEXT(""));
 

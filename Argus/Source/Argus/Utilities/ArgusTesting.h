@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Misc/AutomationTest.h"
 
 #if WITH_AUTOMATION_TESTS
 
