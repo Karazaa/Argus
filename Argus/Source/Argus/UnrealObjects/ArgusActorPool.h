@@ -5,6 +5,8 @@
 #include "ArgusActor.h"
 #include "CoreMinimal.h"
 
+LLM_DECLARE_TAG(ArgusActorPool);
+
 class UWorld;
 
 class ArgusActorPool

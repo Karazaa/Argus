@@ -6,6 +6,8 @@
 #include "ArgusMacros.h"
 #include "ComponentDefinitions/TransformComponent.h"
 
+LLM_DEFINE_TAG(ArgusKDTree);
+
 void ArgusKDTree::ArgusKDTreeNode::Populate(const FVector& worldSpaceLocation)
 {
 	m_worldSpaceLocation = worldSpaceLocation;
@@ -40,13 +42,15 @@ void ArgusKDTree::ArgusKDTreeNode::Reset()
 
 ArgusKDTree::~ArgusKDTree()
 {
+	LLM_SCOPE_BYTAG(ArgusKDTree);
 	FlushAllNodes();
 	m_nodePool.ClearPool();
 }
 
 FVector ArgusKDTree::FlushAllNodes()
 {
-	ARGUS_TRACE(ArgusKDTree::FlushAllNodes)
+	LLM_SCOPE_BYTAG(ArgusKDTree);
+	ARGUS_TRACE(ArgusKDTree::FlushAllNodes);
 
 	FVector sumLocation = FVector::ZeroVector;
 	uint16 numNodes = 0u;
@@ -62,7 +66,8 @@ FVector ArgusKDTree::FlushAllNodes()
 
 void ArgusKDTree::InsertArgusEntityIntoKDTree(const ArgusEntity& entityToRepresent)
 {
-	ARGUS_TRACE(ArgusKDTree::InsertArgusEntityIntoKDTree)
+	LLM_SCOPE_BYTAG(ArgusKDTree);
+	ARGUS_TRACE(ArgusKDTree::InsertArgusEntityIntoKDTree);
 
 	if (!entityToRepresent)
 	{
@@ -90,7 +95,8 @@ void ArgusKDTree::InsertArgusEntityIntoKDTree(const ArgusEntity& entityToReprese
 
 void ArgusKDTree::RebuildKDTreeForAllArgusEntities()
 {
-	ARGUS_TRACE(ArgusKDTree::RebuildKDTreeForAllArgusEntities)
+	LLM_SCOPE_BYTAG(ArgusKDTree);
+	ARGUS_TRACE(ArgusKDTree::RebuildKDTreeForAllArgusEntities);
 
 	const FVector averageLocation = FlushAllNodes();
 
@@ -282,18 +288,18 @@ void ArgusKDTree::InsertNodeIntoKDTreeRecursive(ArgusKDTreeNode* iterationNode, 
 	float noteToInsertValue = 0.0f;
 	switch (dimension)
 	{
-	case 0:
-		iterationNodeValue = iterationNode->m_worldSpaceLocation.X;
-		noteToInsertValue = nodeToInsert->m_worldSpaceLocation.X;
-		break;
-	case 1:
-		iterationNodeValue = iterationNode->m_worldSpaceLocation.Y;
-		noteToInsertValue = nodeToInsert->m_worldSpaceLocation.Y;
-		break;
-	case 2:
-		iterationNodeValue = iterationNode->m_worldSpaceLocation.Z;
-		noteToInsertValue = nodeToInsert->m_worldSpaceLocation.Z;
-		break;
+		case 0:
+			iterationNodeValue = iterationNode->m_worldSpaceLocation.X;
+			noteToInsertValue = nodeToInsert->m_worldSpaceLocation.X;
+			break;
+		case 1:
+			iterationNodeValue = iterationNode->m_worldSpaceLocation.Y;
+			noteToInsertValue = nodeToInsert->m_worldSpaceLocation.Y;
+			break;
+		case 2:
+			iterationNodeValue = iterationNode->m_worldSpaceLocation.Z;
+			noteToInsertValue = nodeToInsert->m_worldSpaceLocation.Z;
+			break;
 	}
 
 	if (noteToInsertValue < iterationNodeValue)
@@ -355,18 +361,18 @@ const ArgusKDTree::ArgusKDTreeNode* ArgusKDTree::FindArgusEntityIdClosestToLocat
 	float targetLocationValue = 0.0f;
 	switch (dimension)
 	{
-	case 0:
-		iterationNodeValue = iterationNode->m_worldSpaceLocation.X;
-		targetLocationValue = targetLocation.X;
-		break;
-	case 1:
-		iterationNodeValue = iterationNode->m_worldSpaceLocation.Y;
-		targetLocationValue = targetLocation.Y;
-		break;
-	case 2:
-		iterationNodeValue = iterationNode->m_worldSpaceLocation.Z;
-		targetLocationValue = targetLocation.Z;
-		break;
+		case 0:
+			iterationNodeValue = iterationNode->m_worldSpaceLocation.X;
+			targetLocationValue = targetLocation.X;
+			break;
+		case 1:
+			iterationNodeValue = iterationNode->m_worldSpaceLocation.Y;
+			targetLocationValue = targetLocation.Y;
+			break;
+		case 2:
+			iterationNodeValue = iterationNode->m_worldSpaceLocation.Z;
+			targetLocationValue = targetLocation.Z;
+			break;
 	}
 
 	ArgusKDTreeNode* firstBranch = nullptr;
@@ -451,18 +457,18 @@ void ArgusKDTree::FindArgusEntityIdsWithinRangeOfLocationRecursive(std::vector<u
 	float targetLocationValue = 0.0f;
 	switch (dimension)
 	{
-	case 0:
-		iterationNodeValue = iterationNode->m_worldSpaceLocation.X;
-		targetLocationValue = targetLocation.X;
-		break;
-	case 1:
-		iterationNodeValue = iterationNode->m_worldSpaceLocation.Y;
-		targetLocationValue = targetLocation.Y;
-		break;
-	case 2:
-		iterationNodeValue = iterationNode->m_worldSpaceLocation.Z;
-		targetLocationValue = targetLocation.Z;
-		break;
+		case 0:
+			iterationNodeValue = iterationNode->m_worldSpaceLocation.X;
+			targetLocationValue = targetLocation.X;
+			break;
+		case 1:
+			iterationNodeValue = iterationNode->m_worldSpaceLocation.Y;
+			targetLocationValue = targetLocation.Y;
+			break;
+		case 2:
+			iterationNodeValue = iterationNode->m_worldSpaceLocation.Z;
+			targetLocationValue = targetLocation.Z;
+			break;
 	}
 
 	const float differenceAlongDimension = targetLocationValue - iterationNodeValue;

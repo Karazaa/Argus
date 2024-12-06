@@ -3,6 +3,8 @@
 #include "ArgusActorPool.h"
 #include "Engine/World.h"
 
+LLM_DEFINE_TAG(ArgusActorPool);
+
 ArgusActorPool::~ArgusActorPool()
 {
 	ClearPool();
@@ -10,6 +12,8 @@ ArgusActorPool::~ArgusActorPool()
 
 AArgusActor* ArgusActorPool::Take(UWorld* worldPointer, const TSoftClassPtr<AArgusActor>& classSoftPointer)
 {
+	LLM_SCOPE_BYTAG(ArgusActorPool);
+
 	if (!classSoftPointer)
 	{
 		return nullptr;
@@ -44,6 +48,8 @@ AArgusActor* ArgusActorPool::Take(UWorld* worldPointer, const TSoftClassPtr<AArg
 
 void ArgusActorPool::Release(AArgusActor*& actorPointer)
 {
+	LLM_SCOPE_BYTAG(ArgusActorPool);
+
 	UClass* classPointer = actorPointer->GetClass();
 	if (!classPointer)
 	{
@@ -79,5 +85,6 @@ void ArgusActorPool::Release(TObjectPtr<AArgusActor>& actorPointer)
 
 void ArgusActorPool::ClearPool()
 {
+	LLM_SCOPE_BYTAG(ArgusActorPool);
 	m_availableObjects.Empty();
 }

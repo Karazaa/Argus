@@ -7,11 +7,13 @@
 #include "NavigationSystem.h"
 #include "NavigationSystemTypes.h"
 
+LLM_DEFINE_TAG(ArgusNavigationSystems);
+
 static TAutoConsoleVariable<bool> CVarShowNavigationDebug(TEXT("Argus.Navigation.ShowNavigationDebug"), false, TEXT(""));
 
 void NavigationSystems::RunSystems(UWorld* worldPointer)
 {
-	ARGUS_TRACE(NavigationSystems::RunSystems)
+	ARGUS_TRACE(NavigationSystems::RunSystems);
 
 	if (!IsWorldPointerValidCheck(worldPointer, ARGUS_FUNCNAME))
 	{
@@ -75,6 +77,8 @@ void NavigationSystems::NavigateFromEntityToEntity(UWorld* worldPointer, ArgusEn
 
 void NavigationSystems::NavigateFromEntityToLocation(UWorld* worldPointer, std::optional<FVector> targetLocation, const NavigationSystemsComponentArgs& components)
 {
+	LLM_SCOPE_BYTAG(ArgusNavigationSystems);
+
 	if (!IsWorldPointerValidCheck(worldPointer, ARGUS_FUNCNAME) || !components.AreComponentsValidCheck(ARGUS_FUNCNAME) || !targetLocation.has_value())
 	{
 		return;
@@ -134,12 +138,12 @@ void NavigationSystems::NavigateFromEntityToLocation(UWorld* worldPointer, std::
 
 void NavigationSystems::ProcessNavigationTaskCommands(UWorld* worldPointer, const NavigationSystemsComponentArgs& components)
 {
-	ARGUS_TRACE(NavigationSystems::ProcessNavigationTaskCommands)
+	ARGUS_TRACE(NavigationSystems::ProcessNavigationTaskCommands);
 
-		if (!IsWorldPointerValidCheck(worldPointer, ARGUS_FUNCNAME) || !components.AreComponentsValidCheck(ARGUS_FUNCNAME))
-		{
-			return;
-		}
+	if (!IsWorldPointerValidCheck(worldPointer, ARGUS_FUNCNAME) || !components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
 
 	switch (components.m_taskComponent->m_movementState)
 	{
@@ -160,12 +164,12 @@ void NavigationSystems::ProcessNavigationTaskCommands(UWorld* worldPointer, cons
 
 void NavigationSystems::RecalculateMoveToEntityPaths(UWorld* worldPointer, const NavigationSystemsComponentArgs& components)
 {
-	ARGUS_TRACE(NavigationSystems::RecalculateMoveToEntityPaths)
+	ARGUS_TRACE(NavigationSystems::RecalculateMoveToEntityPaths);
 
-		if (!IsWorldPointerValidCheck(worldPointer, ARGUS_FUNCNAME) || !components.AreComponentsValidCheck(ARGUS_FUNCNAME))
-		{
-			return;
-		}
+	if (!IsWorldPointerValidCheck(worldPointer, ARGUS_FUNCNAME) || !components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
 
 	if (components.m_taskComponent->m_movementState != MovementState::MoveToEntity)
 	{
