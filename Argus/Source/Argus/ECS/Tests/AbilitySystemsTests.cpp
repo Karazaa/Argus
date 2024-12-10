@@ -61,6 +61,7 @@ bool AbilitySystemsCastSpawnAbilityTest::RunTest(const FString& Parameters)
 	UAbilityRecord* abilityRecord = NewObject<UAbilityRecord>();
 	if (!abilityRecord)
 	{
+		ArgusTesting::EndArgusTest();
 		return false;
 	}
 	abilityRecord->m_abilityType = EAbilityTypes::Spawn;
@@ -86,6 +87,7 @@ bool AbilitySystemsCastSpawnAbilityTest::RunTest(const FString& Parameters)
 	UArgusActorRecord* argusActorRecord = NewObject<UArgusActorRecord>();
 	if (!argusActorRecord)
 	{
+		ArgusTesting::EndArgusTest();
 		return false;
 	}
 	argusActorRecord->m_id = argusActorRecordId;

@@ -32,6 +32,7 @@ bool TimerSystemsAdvanceTimersTest::RunTest(const FString& Parameters)
 	TimerComponent* timerComponent = timerEntity.AddComponent<TimerComponent>();
 	if (!timerComponent)
 	{
+		ArgusTesting::EndArgusTest();
 		return false;
 	}
 

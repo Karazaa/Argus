@@ -48,6 +48,7 @@ bool TimerHandleStartTimerTest::RunTest(const FString& Parameters)
 	TimerComponent* timerComponent = timerEntity.AddComponent<TimerComponent>();
 	if (!timerComponent)
 	{
+		ArgusTesting::EndArgusTest();
 		return false;
 	}
 
@@ -130,6 +131,7 @@ bool TimerHandleFinishTimerTest::RunTest(const FString& Parameters)
 	TimerComponent* timerComponent = timerEntity.AddComponent<TimerComponent>();
 	if (!timerComponent)
 	{
+		ArgusTesting::EndArgusTest();
 		return false;
 	}
 
@@ -198,6 +200,7 @@ bool TimerHandleCancelTimerTest::RunTest(const FString& Parameters)
 	TimerComponent* timerComponent = timerEntity.AddComponent<TimerComponent>();
 	if (!timerComponent)
 	{
+		ArgusTesting::EndArgusTest();
 		return false;
 	}
 
@@ -255,6 +258,7 @@ bool TimerHandleGetTimerIndexTest::RunTest(const FString& Parameters)
 	TimerComponent* timerComponent = timerEntity.AddComponent<TimerComponent>();
 	if (!timerComponent)
 	{
+		ArgusTesting::EndArgusTest();
 		return false;
 	}
 
@@ -321,6 +325,7 @@ bool TimerHandleIsTimerCompleteTest::RunTest(const FString& Parameters)
 	TimerComponent* timerComponent = timerEntity.AddComponent<TimerComponent>();
 	if (!timerComponent)
 	{
+		ArgusTesting::EndArgusTest();
 		return false;
 	}
 

@@ -502,7 +502,6 @@ bool ArgusComponentNavigationComponentResetQueuedWaypointsTest::RunTest(const FS
 	ArgusTesting::StartArgusTest();
 	ArgusEntity entity = ArgusEntity::CreateEntity();
 	NavigationComponent* navigationComponent = entity.AddComponent<NavigationComponent>();
-
 	if (!navigationComponent)
 	{
 		ArgusTesting::EndArgusTest();
@@ -554,4 +553,69 @@ bool ArgusComponentNavigationComponentResetQueuedWaypointsTest::RunTest(const FS
 	ArgusTesting::EndArgusTest();
 	return true;
 }
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentTimerComponentGetTimerFromHandleTest, "Argus.ECS.Component.TimerComponent.GetTimerFromHandle", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+bool ArgusComponentTimerComponentGetTimerFromHandleTest::RunTest(const FString& Parameters)
+{
+	const float expectedTimerDurationSeconds = 10.0f;
+	ArgusTesting::StartArgusTest();
+	ArgusEntity entity = ArgusEntity::CreateEntity();
+	TimerComponent* timerComponent = entity.AddComponent<TimerComponent>();
+	if (!timerComponent)
+	{
+		ArgusTesting::EndArgusTest();
+		return false;
+	}
+
+#pragma region Test that passing in an invalid TimerHandle* errors
+	AddExpectedErrorPlain
+	(
+		FString::Printf
+		(
+			TEXT("Passed in %s was null."),
+			ARGUS_NAMEOF(TimerHandle*)
+		)
+	);
+#pragma endregion
+
+	timerComponent->GetTimerFromHandle(nullptr);
+
+	TimerHandle handle;
+	Timer* timer = timerComponent->GetTimerFromHandle(&handle);
+
+#pragma region Test that retrieving a timer from an unassigned timerhandle is null
+	TestNull
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Checking that calling %s on an unassigned %s returns nullptr."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(TimerComponent::GetTimerFromHandle),
+			ARGUS_NAMEOF(TimerHandle)
+		),
+		timer
+	);
+#pragma endregion
+
+	handle.StartTimer(entity, expectedTimerDurationSeconds);
+	timer = timerComponent->GetTimerFromHandle(&handle);
+
+#pragma region Test that retrieving a timer from an assigned timerhandle is not null
+	TestNotNull
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Checking that calling %s on an assigned %s does not return nullptr."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(TimerComponent::GetTimerFromHandle),
+			ARGUS_NAMEOF(TimerHandle)
+		),
+		timer
+	);
+#pragma endregion
+
+	ArgusTesting::EndArgusTest();
+	return true;
+}
+
 #endif //WITH_AUTOMATION_TESTS
