@@ -26,7 +26,6 @@ public:
 	void StartTimer(const ArgusEntity& entityWithTimer, float seconds);
 	void FinishTimerHandling(const ArgusEntity& entityWithTimer);
 	void CancelTimer(const ArgusEntity& entityWithTimer);
-	void ResetTimerIndex() { m_timerIndex = UINT8_MAX; }
 
 	bool IsTimerComplete(const ArgusEntity& entityWithTimer) const;
 

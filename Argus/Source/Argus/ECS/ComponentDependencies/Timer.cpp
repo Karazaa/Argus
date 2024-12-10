@@ -8,6 +8,19 @@
 
 void TimerHandle::StartTimer(const ArgusEntity& entityWithTimer, float seconds)
 {
+	if (m_timerIndex != UINT8_MAX)
+	{
+		ARGUS_LOG
+		(
+			ArgusECSLog,
+			Error,
+			TEXT("[%s] Attempting to start a timer on a %s that is already assigned."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(TimerHandle)
+		);
+		return;
+	}
+
 	TimerComponent* timerComponent = GetTimerComponentForEntity(entityWithTimer, ARGUS_FUNCNAME);
 	if (!timerComponent)
 	{
@@ -65,6 +78,11 @@ void TimerHandle::CancelTimer(const ArgusEntity& entityWithTimer)
 
 bool TimerHandle::IsTimerComplete(const ArgusEntity& entityWithTimer) const
 {
+	if (m_timerIndex == UINT8_MAX)
+	{
+		return false;
+	}
+
 	Timer* timer = GetTimerForEntity(entityWithTimer, ARGUS_FUNCNAME);
 	if (!timer)
 	{
