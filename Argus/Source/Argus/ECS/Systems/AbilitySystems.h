@@ -20,7 +20,7 @@ public:
 		bool AreComponentsValidCheck(const WIDECHAR* functionName) const;
 	};
 
-	static void CastAbility(uint32 abilityRecordId, const AbilitySystemsComponentArgs& components);
+	static void CastAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsComponentArgs& components);
 
 private:
 	static void ProcessAbilityTaskCommands(const AbilitySystemsComponentArgs& components);

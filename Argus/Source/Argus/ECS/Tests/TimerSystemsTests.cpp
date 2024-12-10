@@ -15,7 +15,7 @@ bool TimerSystemsAdvanceTimersTest::RunTest(const FString& Parameters)
 	const float timer1expectedDuration = 2.0f;
 	ArgusTesting::StartArgusTest();
 
-#pragma region Test passing that passing in an invalid TimerComponent errors
+#pragma region Test that passing in an invalid TimerComponent errors
 	AddExpectedErrorPlain
 	(
 		FString::Printf

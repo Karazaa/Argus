@@ -43,19 +43,13 @@ bool AbilitySystems::AbilitySystemsComponentArgs::AreComponentsValidCheck(const 
 	return false;
 }
 
-void AbilitySystems::CastAbility(uint32 abilityRecordId, const AbilitySystemsComponentArgs& components)
+void AbilitySystems::CastAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsComponentArgs& components)
 {
-	if (abilityRecordId == 0u)
-	{
-		return;
-	}
-
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return;
 	}
 
-	const UAbilityRecord* abilityRecord = ArgusStaticData::GetRecord<UAbilityRecord>(abilityRecordId);
 	if (!abilityRecord)
 	{
 		LogAbilityRecordError(ARGUS_FUNCNAME);
@@ -90,19 +84,19 @@ void AbilitySystems::ProcessAbilityTaskCommands(const AbilitySystemsComponentArg
 	switch (components.m_taskComponent->m_abilityState)
 	{
 		case AbilityState::ProcessCastAbility0Command:
-			CastAbility(components.m_abilityComponent->m_ability0Id, components);
+			CastAbility(ArgusStaticData::GetRecord<UAbilityRecord>(components.m_abilityComponent->m_ability0Id), components);
 			break;
 
 		case AbilityState::ProcessCastAbility1Command:
-			CastAbility(components.m_abilityComponent->m_ability1Id, components);
+			CastAbility(ArgusStaticData::GetRecord<UAbilityRecord>(components.m_abilityComponent->m_ability1Id), components);
 			break;
 
 		case AbilityState::ProcessCastAbility2Command:
-			CastAbility(components.m_abilityComponent->m_ability2Id, components);
+			CastAbility(ArgusStaticData::GetRecord<UAbilityRecord>(components.m_abilityComponent->m_ability2Id), components);
 			break;
 
 		case AbilityState::ProcessCastAbility3Command:
-			CastAbility(components.m_abilityComponent->m_ability3Id, components);
+			CastAbility(ArgusStaticData::GetRecord<UAbilityRecord>(components.m_abilityComponent->m_ability3Id), components);
 			break;
 
 		default:
@@ -112,21 +106,21 @@ void AbilitySystems::ProcessAbilityTaskCommands(const AbilitySystemsComponentArg
 
 void AbilitySystems::CastSpawnAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsComponentArgs& components)
 {
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+
 	if (!abilityRecord)
 	{
 		LogAbilityRecordError(ARGUS_FUNCNAME);
 		return;
 	}
 
-	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
-	{
-		return;
-	}
-
 	SpawningComponent* spawningComponent = components.m_entity.GetComponent<SpawningComponent>();
 	if (!spawningComponent)
 	{
-		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Attempting to cast a spawn ability without having a %s."), ARGUS_NAMEOF(SpawningComponent));
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Attempting to cast a spawn ability without having a %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(SpawningComponent));
 		return;
 	}
 
@@ -135,7 +129,7 @@ void AbilitySystems::CastSpawnAbility(const UAbilityRecord* abilityRecord, const
 	UArgusActorRecord* argusActorRecord = abilityRecord->m_argusActorRecordToSpawn.LoadSynchronous();
 	if (!argusActorRecord)
 	{
-		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Could not retrieve %s from %s."), ARGUS_NAMEOF(UArgusActorRecord*), ARGUS_NAMEOF(UAbilityRecord*));
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Could not retrieve %s from %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(UArgusActorRecord*), ARGUS_NAMEOF(UAbilityRecord*));
 		return;
 	}
 
