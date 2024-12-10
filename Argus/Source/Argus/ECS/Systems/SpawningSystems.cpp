@@ -7,7 +7,7 @@
 
 void SpawningSystems::RunSystems(float deltaTime)
 {
-	ARGUS_TRACE(SpawningSystems::RunSystems)
+	ARGUS_TRACE(SpawningSystems::RunSystems);
 
 	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{
@@ -48,7 +48,7 @@ bool SpawningSystems::SpawningSystemsComponentArgs::AreComponentsValidCheck(cons
 
 void SpawningSystems::SpawnEntity(const SpawningSystemsComponentArgs& components, const UArgusActorRecord* argusActorRecord)
 {
-	ARGUS_TRACE(SpawningSystems::SpawnEntity)
+	ARGUS_TRACE(SpawningSystems::SpawnEntity);
 
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
@@ -97,7 +97,7 @@ void SpawningSystems::SpawnEntity(const SpawningSystemsComponentArgs& components
 
 void SpawningSystems::ProcessSpawningTaskCommands(float deltaTime, const SpawningSystemsComponentArgs& components)
 {
-	ARGUS_TRACE(SpawningSystems::ProcessSpawningTaskCommands)
+	ARGUS_TRACE(SpawningSystems::ProcessSpawningTaskCommands);
 
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{

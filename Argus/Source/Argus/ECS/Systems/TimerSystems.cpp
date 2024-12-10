@@ -7,7 +7,7 @@
 
 void TimerSystems::RunSystems(float deltaTime)
 {
-	ARGUS_TRACE(TimerSystems::RunSystems)
+	ARGUS_TRACE(TimerSystems::RunSystems);
 
 	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{
@@ -29,7 +29,7 @@ void TimerSystems::RunSystems(float deltaTime)
 
 void TimerSystems::AdvaceTimers(TimerComponent* timerComponent, float deltaTime)
 {
-	ARGUS_TRACE(TimerSystems::AdvaceTimers)
+	ARGUS_TRACE(TimerSystems::AdvaceTimers);
 
 	if (!timerComponent)
 	{

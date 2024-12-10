@@ -12,6 +12,8 @@ $$$$$
 
 const #####* #####Database::GetRecord(uint32 id)
 {
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
 	if (static_cast<uint32>(m_#####sPersistent.Num()) <= id)
 	{
 		ResizePersistentObjectPointerArray();
@@ -52,6 +54,8 @@ const #####* #####Database::GetRecord(uint32 id)
 
 void #####Database::ResizePersistentObjectPointerArray()
 {
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
 	m_#####sPersistent.SetNumZeroed(m_#####s.Num());
 }
 

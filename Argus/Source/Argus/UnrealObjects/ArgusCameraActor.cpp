@@ -30,7 +30,7 @@ void AArgusCameraActor::ForceSetCameraPositionWithoutZoom(const FVector& positio
 
 void AArgusCameraActor::UpdateCamera(const UpdateCameraPanningParameters& cameraParameters, const float deltaTime)
 {
-	ARGUS_TRACE(AArgusCameraActor::UpdateCamera)
+	ARGUS_TRACE(AArgusCameraActor::UpdateCamera);
 
 	UpdateCameraPanning(cameraParameters, deltaTime);
 	UpdateCameraZoomInternal(deltaTime);
@@ -51,7 +51,7 @@ void AArgusCameraActor::BeginPlay()
 
 void AArgusCameraActor::UpdateCameraPanning(const UpdateCameraPanningParameters& cameraParameters, const float deltaTime)
 {
-	ARGUS_TRACE(AArgusCameraActor::UpdateCameraPanning)
+	ARGUS_TRACE(AArgusCameraActor::UpdateCameraPanning);
 
 	if (!cameraParameters.m_screenSpaceMousePosition || !cameraParameters.m_screenSpaceXYBounds)
 	{
@@ -98,7 +98,7 @@ void AArgusCameraActor::UpdateCameraPanning(const UpdateCameraPanningParameters&
 
 void AArgusCameraActor::UpdateCameraZoomInternal(const float deltaTime)
 {
-	ARGUS_TRACE(AArgusCameraActor::UpdateCameraZoom)
+	ARGUS_TRACE(AArgusCameraActor::UpdateCameraZoom);
 	UWorld* world = GetWorld();
 	if (!world)
 	{

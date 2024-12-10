@@ -25,7 +25,7 @@ void AArgusGameModeBase::StartPlay()
 
 void AArgusGameModeBase::Tick(float deltaTime)
 {
-	ARGUS_TRACE(AArgusGameModeBase::Tick)
+	ARGUS_TRACE(AArgusGameModeBase::Tick);
 
 	Super::Tick(deltaTime);
 
@@ -54,7 +54,7 @@ void AArgusGameModeBase::Tick(float deltaTime)
 
 void AArgusGameModeBase::ManageActorStateForEntities()
 {
-	ARGUS_TRACE(AArgusGameModeBase::ManageActorStateForEntities)
+	ARGUS_TRACE(AArgusGameModeBase::ManageActorStateForEntities);
 
 	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{

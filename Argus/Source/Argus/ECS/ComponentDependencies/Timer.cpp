@@ -8,6 +8,8 @@
 
 void TimerHandle::StartTimer(const ArgusEntity& entityWithTimer, float seconds)
 {
+	ARGUS_MEMORY_TRACE(ArgusTimerSystems);
+
 	if (m_timerIndex != UINT8_MAX)
 	{
 		ARGUS_LOG

@@ -1,6 +1,8 @@
 #pragma region #####
 const #####* UArgusStaticDatabase::Get#####(uint32 id)
 {
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
 	if (!m_#####DatabasePersistent)
 	{
 		m_#####DatabasePersistent = m_#####Database.LoadSynchronous();

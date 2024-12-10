@@ -1,9 +1,8 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusActorPool.h"
+#include "ArgusMacros.h"
 #include "Engine/World.h"
-
-LLM_DEFINE_TAG(ArgusActorPool);
 
 ArgusActorPool::~ArgusActorPool()
 {
@@ -12,7 +11,7 @@ ArgusActorPool::~ArgusActorPool()
 
 AArgusActor* ArgusActorPool::Take(UWorld* worldPointer, const TSoftClassPtr<AArgusActor>& classSoftPointer)
 {
-	LLM_SCOPE_BYTAG(ArgusActorPool);
+	ARGUS_MEMORY_TRACE(ArgusActorPool);
 
 	if (!classSoftPointer)
 	{
@@ -48,7 +47,7 @@ AArgusActor* ArgusActorPool::Take(UWorld* worldPointer, const TSoftClassPtr<AArg
 
 void ArgusActorPool::Release(AArgusActor*& actorPointer)
 {
-	LLM_SCOPE_BYTAG(ArgusActorPool);
+	ARGUS_MEMORY_TRACE(ArgusActorPool);
 
 	UClass* classPointer = actorPointer->GetClass();
 	if (!classPointer)
@@ -85,6 +84,6 @@ void ArgusActorPool::Release(TObjectPtr<AArgusActor>& actorPointer)
 
 void ArgusActorPool::ClearPool()
 {
-	LLM_SCOPE_BYTAG(ArgusActorPool);
+	ARGUS_MEMORY_TRACE(ArgusActorPool);
 	m_availableObjects.Empty();
 }

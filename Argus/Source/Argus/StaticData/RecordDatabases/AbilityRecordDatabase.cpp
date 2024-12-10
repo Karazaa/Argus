@@ -12,6 +12,8 @@
 
 const UAbilityRecord* UAbilityRecordDatabase::GetRecord(uint32 id)
 {
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
 	if (static_cast<uint32>(m_UAbilityRecordsPersistent.Num()) <= id)
 	{
 		ResizePersistentObjectPointerArray();
@@ -52,6 +54,8 @@ const UAbilityRecord* UAbilityRecordDatabase::GetRecord(uint32 id)
 
 void UAbilityRecordDatabase::ResizePersistentObjectPointerArray()
 {
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
 	m_UAbilityRecordsPersistent.SetNumZeroed(m_UAbilityRecords.Num());
 }
 

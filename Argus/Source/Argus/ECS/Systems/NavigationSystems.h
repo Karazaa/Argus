@@ -5,8 +5,6 @@
 #include "ArgusEntity.h"
 #include <optional>
 
-LLM_DECLARE_TAG(ArgusNavigationSystems);
-
 class NavigationSystems
 {
 public:

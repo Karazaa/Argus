@@ -7,8 +7,6 @@
 #include "NavigationSystem.h"
 #include "NavigationSystemTypes.h"
 
-LLM_DEFINE_TAG(ArgusNavigationSystems);
-
 static TAutoConsoleVariable<bool> CVarShowNavigationDebug(TEXT("Argus.Navigation.ShowNavigationDebug"), false, TEXT(""));
 
 void NavigationSystems::RunSystems(UWorld* worldPointer)
@@ -77,7 +75,7 @@ void NavigationSystems::NavigateFromEntityToEntity(UWorld* worldPointer, ArgusEn
 
 void NavigationSystems::NavigateFromEntityToLocation(UWorld* worldPointer, std::optional<FVector> targetLocation, const NavigationSystemsComponentArgs& components)
 {
-	LLM_SCOPE_BYTAG(ArgusNavigationSystems);
+	ARGUS_MEMORY_TRACE(ArgusNavigationSystems);
 
 	if (!IsWorldPointerValidCheck(worldPointer, ARGUS_FUNCNAME) || !components.AreComponentsValidCheck(ARGUS_FUNCNAME) || !targetLocation.has_value())
 	{

@@ -12,6 +12,8 @@
 
 const UArgusActorRecord* UArgusActorRecordDatabase::GetRecord(uint32 id)
 {
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
 	if (static_cast<uint32>(m_UArgusActorRecordsPersistent.Num()) <= id)
 	{
 		ResizePersistentObjectPointerArray();
@@ -52,6 +54,8 @@ const UArgusActorRecord* UArgusActorRecordDatabase::GetRecord(uint32 id)
 
 void UArgusActorRecordDatabase::ResizePersistentObjectPointerArray()
 {
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
 	m_UArgusActorRecordsPersistent.SetNumZeroed(m_UArgusActorRecords.Num());
 }
 

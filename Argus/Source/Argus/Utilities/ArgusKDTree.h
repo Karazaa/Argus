@@ -7,8 +7,6 @@
 #include "CoreMinimal.h"
 #include <vector>
 
-LLM_DECLARE_TAG(ArgusKDTree);
-
 class ArgusEntity;
 
 class ArgusKDTree

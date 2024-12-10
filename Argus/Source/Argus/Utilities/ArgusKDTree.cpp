@@ -6,8 +6,6 @@
 #include "ArgusMacros.h"
 #include "ComponentDefinitions/TransformComponent.h"
 
-LLM_DEFINE_TAG(ArgusKDTree);
-
 void ArgusKDTree::ArgusKDTreeNode::Populate(const FVector& worldSpaceLocation)
 {
 	m_worldSpaceLocation = worldSpaceLocation;
@@ -42,14 +40,14 @@ void ArgusKDTree::ArgusKDTreeNode::Reset()
 
 ArgusKDTree::~ArgusKDTree()
 {
-	LLM_SCOPE_BYTAG(ArgusKDTree);
+	ARGUS_MEMORY_TRACE(ArgusKDTree);
 	FlushAllNodes();
 	m_nodePool.ClearPool();
 }
 
 FVector ArgusKDTree::FlushAllNodes()
 {
-	LLM_SCOPE_BYTAG(ArgusKDTree);
+	ARGUS_MEMORY_TRACE(ArgusKDTree);
 	ARGUS_TRACE(ArgusKDTree::FlushAllNodes);
 
 	FVector sumLocation = FVector::ZeroVector;
@@ -66,7 +64,7 @@ FVector ArgusKDTree::FlushAllNodes()
 
 void ArgusKDTree::InsertArgusEntityIntoKDTree(const ArgusEntity& entityToRepresent)
 {
-	LLM_SCOPE_BYTAG(ArgusKDTree);
+	ARGUS_MEMORY_TRACE(ArgusKDTree);
 	ARGUS_TRACE(ArgusKDTree::InsertArgusEntityIntoKDTree);
 
 	if (!entityToRepresent)
@@ -95,7 +93,7 @@ void ArgusKDTree::InsertArgusEntityIntoKDTree(const ArgusEntity& entityToReprese
 
 void ArgusKDTree::RebuildKDTreeForAllArgusEntities()
 {
-	LLM_SCOPE_BYTAG(ArgusKDTree);
+	ARGUS_MEMORY_TRACE(ArgusKDTree);
 	ARGUS_TRACE(ArgusKDTree::RebuildKDTreeForAllArgusEntities);
 
 	const FVector averageLocation = FlushAllNodes();

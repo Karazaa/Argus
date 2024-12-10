@@ -7,6 +7,8 @@
 
 ArgusEntity UArgusEntityTemplate::MakeEntity()
 {
+	ARGUS_MEMORY_TRACE(ArgusComponentData);
+
 	ArgusEntity entity = ArgusEntity::CreateEntity(static_cast<uint16>(m_entityPriority));
 
 	for (TSoftObjectPtr<UComponentData> componentDataSoftObjectPtr : m_componentData)

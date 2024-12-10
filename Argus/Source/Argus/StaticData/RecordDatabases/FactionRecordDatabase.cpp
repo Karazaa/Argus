@@ -12,6 +12,8 @@
 
 const UFactionRecord* UFactionRecordDatabase::GetRecord(uint32 id)
 {
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
 	if (static_cast<uint32>(m_UFactionRecordsPersistent.Num()) <= id)
 	{
 		ResizePersistentObjectPointerArray();
@@ -52,6 +54,8 @@ const UFactionRecord* UFactionRecordDatabase::GetRecord(uint32 id)
 
 void UFactionRecordDatabase::ResizePersistentObjectPointerArray()
 {
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
 	m_UFactionRecordsPersistent.SetNumZeroed(m_UFactionRecords.Num());
 }
 

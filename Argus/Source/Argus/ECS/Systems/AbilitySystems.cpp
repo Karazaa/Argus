@@ -7,7 +7,7 @@
 
 void AbilitySystems::RunSystems(float deltaTime)
 {
-	ARGUS_TRACE(AbilitySystems::RunSystems)
+	ARGUS_TRACE(AbilitySystems::RunSystems);
 
 	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{

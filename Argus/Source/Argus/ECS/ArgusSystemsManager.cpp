@@ -14,7 +14,8 @@
 
 void ArgusSystemsManager::RunSystems(UWorld* worldPointer, float deltaTime)
 {
-	ARGUS_TRACE(ArgusSystemsManager::RunSystems)
+
+	ARGUS_TRACE(ArgusSystemsManager::RunSystems);
 
 	if (!worldPointer)
 	{

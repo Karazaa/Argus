@@ -12,6 +12,8 @@
 
 const UTeamColorRecord* UTeamColorRecordDatabase::GetRecord(uint32 id)
 {
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
 	if (static_cast<uint32>(m_UTeamColorRecordsPersistent.Num()) <= id)
 	{
 		ResizePersistentObjectPointerArray();
@@ -52,6 +54,8 @@ const UTeamColorRecord* UTeamColorRecordDatabase::GetRecord(uint32 id)
 
 void UTeamColorRecordDatabase::ResizePersistentObjectPointerArray()
 {
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
 	m_UTeamColorRecordsPersistent.SetNumZeroed(m_UTeamColorRecords.Num());
 }
 

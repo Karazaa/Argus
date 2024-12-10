@@ -45,63 +45,86 @@ void UArgusInputManager::SetupInputComponent(TWeakObjectPtr<AArgusPlayerControll
 #pragma region Input Action Delegates
 void UArgusInputManager::OnSelect(const FInputActionValue& value)
 {
+	ARGUS_MEMORY_TRACE(ArgusInputManager);
+
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::Select, value));
 }
 
 void UArgusInputManager::OnSelectAdditive(const FInputActionValue& value)
 {
+	ARGUS_MEMORY_TRACE(ArgusInputManager);
+
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::SelectAdditive, value));
 }
 
 void UArgusInputManager::OnMarqueeSelect(const FInputActionValue& value)
 {
+	ARGUS_MEMORY_TRACE(ArgusInputManager);
+
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::MarqueeSelect, value));
 }
 
 void UArgusInputManager::OnMarqueeSelectAdditive(const FInputActionValue& value)
 {
+	ARGUS_MEMORY_TRACE(ArgusInputManager);
+
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::MarqueeSelectAdditive, value));
 }
 
 void UArgusInputManager::OnMoveTo(const FInputActionValue& value)
 {
+	ARGUS_MEMORY_TRACE(ArgusInputManager);
+
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::MoveTo, value));
 }
 
 void UArgusInputManager::OnSetWaypoint(const FInputActionValue& value)
 {
+	ARGUS_MEMORY_TRACE(ArgusInputManager);
+
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::SetWaypoint, value));
 }
 
 void UArgusInputManager::OnZoom(const FInputActionValue& value)
 {
+	ARGUS_MEMORY_TRACE(ArgusInputManager);
+
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::Zoom, value));
 }
 
 void UArgusInputManager::OnAbility0(const FInputActionValue& value)
 {
+	ARGUS_MEMORY_TRACE(ArgusInputManager);
+
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::Ability0, value));
 }
 
 void UArgusInputManager::OnAbility1(const FInputActionValue& value)
 {
+	ARGUS_MEMORY_TRACE(ArgusInputManager);
+
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::Ability1, value));
 }
 
 void UArgusInputManager::OnAbility2(const FInputActionValue& value)
 {
+	ARGUS_MEMORY_TRACE(ArgusInputManager);
+
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::Ability2, value));
 }
 
 void UArgusInputManager::OnAbility3(const FInputActionValue& value)
 {
+	ARGUS_MEMORY_TRACE(ArgusInputManager);
+
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::Ability3, value));
 }
 #pragma endregion
 
 void UArgusInputManager::ProcessPlayerInput(TObjectPtr<AArgusCameraActor>& argusCamera, const AArgusCameraActor::UpdateCameraPanningParameters& updateCameraParameters, float deltaTime)
 {
-	ARGUS_TRACE(UArgusInputManager::ProcessPlayerInput)
+	ARGUS_MEMORY_TRACE(ArgusInputManager);
+	ARGUS_TRACE(UArgusInputManager::ProcessPlayerInput);
 
 	const int inputsEventsThisFrameCount = m_inputEventsThisFrame.Num();
 	for (int i = 0; i < inputsEventsThisFrameCount; ++i)
@@ -215,7 +238,7 @@ bool UArgusInputManager::ValidateOwningPlayerController()
 
 void UArgusInputManager::ProcessInputEvent(TObjectPtr<AArgusCameraActor>& argusCamera, const InputCache& inputType)
 {
-	ARGUS_TRACE(UArgusInputManager::ProcessInputEvent)
+	ARGUS_TRACE(UArgusInputManager::ProcessInputEvent);
 
 	switch (inputType.m_type)
 	{
@@ -506,6 +529,8 @@ void UArgusInputManager::ProcessSetWaypointInputEvent()
 
 void UArgusInputManager::ProcessSetWaypointInputEventPerSelectedActor(AArgusActor* argusActor, FVector targetLocation)
 {
+	ARGUS_MEMORY_TRACE(ArgusNavigationSystems);
+
 	if (!argusActor)
 	{
 		return;
@@ -639,6 +664,8 @@ void UArgusInputManager::ProcessAbilityInputEventPerSelectedActor(AArgusActor* a
 
 void UArgusInputManager::AddSelectedActorExclusive(AArgusActor* argusActor)
 {
+	ARGUS_MEMORY_TRACE(ArgusInputManager);
+
 	if (!argusActor)
 	{
 		return;
@@ -667,6 +694,8 @@ void UArgusInputManager::AddSelectedActorExclusive(AArgusActor* argusActor)
 
 void UArgusInputManager::AddSelectedActorAdditive(AArgusActor* argusActor)
 {
+	ARGUS_MEMORY_TRACE(ArgusInputManager);
+
 	if (!argusActor)
 	{
 		return;
@@ -686,6 +715,8 @@ void UArgusInputManager::AddSelectedActorAdditive(AArgusActor* argusActor)
 
 void UArgusInputManager::AddMarqueeSelectedActorsExclusive(const TArray<AArgusActor*>& marqueeSelectedActors)
 {
+	ARGUS_MEMORY_TRACE(ArgusInputManager);
+
 	for (TWeakObjectPtr<AArgusActor>& selectedActor : m_selectedArgusActors)
 	{
 		if (selectedActor.IsValid())
@@ -700,6 +731,8 @@ void UArgusInputManager::AddMarqueeSelectedActorsExclusive(const TArray<AArgusAc
 
 void UArgusInputManager::AddMarqueeSelectedActorsAdditive(const TArray<AArgusActor*>& marqueeSelectedActors)
 {
+	ARGUS_MEMORY_TRACE(ArgusInputManager);
+
 	const uint32 selectedActorsNum = marqueeSelectedActors.Num();
 	const uint32 existingSelectedActorNum = m_selectedArgusActors.Num();
 	m_selectedArgusActors.Reserve(selectedActorsNum + existingSelectedActorNum);

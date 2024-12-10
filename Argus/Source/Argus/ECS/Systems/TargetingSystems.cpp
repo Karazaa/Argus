@@ -4,7 +4,7 @@
 
 void TargetingSystems::RunSystems(float deltaTime)
 {
-	ARGUS_TRACE(TargetingSystems::RunSystems)
+	ARGUS_TRACE(TargetingSystems::RunSystems);
 
 	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{

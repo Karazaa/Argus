@@ -8,7 +8,7 @@
 
 bool TransformSystems::RunSystems(UWorld* worldPointer, float deltaTime)
 {
-	ARGUS_TRACE(TransformSystems::RunSystems)
+	ARGUS_TRACE(TransformSystems::RunSystems);
 
 	bool didMovementUpdateThisFrame = false;
 	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
@@ -168,7 +168,7 @@ void TransformSystems::FaceTowardsLocationXY(TransformComponent* transformCompon
 
 void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float deltaTime, const TransformSystemsComponentArgs& components)
 {
-	ARGUS_TRACE(TransformSystems::MoveAlongNavigationPath)
+	ARGUS_TRACE(TransformSystems::MoveAlongNavigationPath);
 
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
@@ -230,7 +230,7 @@ void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float delta
 
 void TransformSystems::FindEntitiesWithinXYBounds(FVector2D minXY, FVector2D maxXY, TArray<ArgusEntity>& outEntitiesWithinBounds)
 {
-	ARGUS_TRACE(TransformSystems::FindEntitiesWithinXYBounds)
+	ARGUS_TRACE(TransformSystems::FindEntitiesWithinXYBounds);
 
 	for (uint16 i = 0; i < ArgusECSConstants::k_maxEntities; ++i)
 	{
@@ -260,7 +260,7 @@ void TransformSystems::FindEntitiesWithinXYBounds(FVector2D minXY, FVector2D max
 
 bool TransformSystems::ProcessMovementTaskCommands(UWorld* worldPointer, float deltaTime, const TransformSystemsComponentArgs& components)
 {
-	ARGUS_TRACE(TransformSystems::ProcessMovementTaskCommands)
+	ARGUS_TRACE(TransformSystems::ProcessMovementTaskCommands);
 
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{

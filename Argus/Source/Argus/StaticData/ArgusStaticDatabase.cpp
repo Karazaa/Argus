@@ -6,6 +6,8 @@
 #pragma region UAbilityRecord
 const UAbilityRecord* UArgusStaticDatabase::GetUAbilityRecord(uint32 id)
 {
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
 	if (!m_UAbilityRecordDatabasePersistent)
 	{
 		m_UAbilityRecordDatabasePersistent = m_UAbilityRecordDatabase.LoadSynchronous();
@@ -37,6 +39,8 @@ const UAbilityRecord* UArgusStaticDatabase::GetUAbilityRecord(uint32 id)
 #pragma region UArgusActorRecord
 const UArgusActorRecord* UArgusStaticDatabase::GetUArgusActorRecord(uint32 id)
 {
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
 	if (!m_UArgusActorRecordDatabasePersistent)
 	{
 		m_UArgusActorRecordDatabasePersistent = m_UArgusActorRecordDatabase.LoadSynchronous();
@@ -68,6 +72,8 @@ const UArgusActorRecord* UArgusStaticDatabase::GetUArgusActorRecord(uint32 id)
 #pragma region UFactionRecord
 const UFactionRecord* UArgusStaticDatabase::GetUFactionRecord(uint32 id)
 {
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
 	if (!m_UFactionRecordDatabasePersistent)
 	{
 		m_UFactionRecordDatabasePersistent = m_UFactionRecordDatabase.LoadSynchronous();
@@ -99,6 +105,8 @@ const UFactionRecord* UArgusStaticDatabase::GetUFactionRecord(uint32 id)
 #pragma region UTeamColorRecord
 const UTeamColorRecord* UArgusStaticDatabase::GetUTeamColorRecord(uint32 id)
 {
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
 	if (!m_UTeamColorRecordDatabasePersistent)
 	{
 		m_UTeamColorRecordDatabasePersistent = m_UTeamColorRecordDatabase.LoadSynchronous();

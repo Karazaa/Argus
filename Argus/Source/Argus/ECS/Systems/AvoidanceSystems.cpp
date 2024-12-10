@@ -9,7 +9,7 @@ static TAutoConsoleVariable<bool> CVarShowAvoidanceDebug(TEXT("Argus.Avoidance.S
 
 void AvoidanceSystems::RunSystems(UWorld* worldPointer, float deltaTime)
 {
-	ARGUS_TRACE(AvoidanceSystems::RunSystems)
+	ARGUS_TRACE(AvoidanceSystems::RunSystems);
 
 	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{
@@ -38,6 +38,7 @@ void AvoidanceSystems::RunSystems(UWorld* worldPointer, float deltaTime)
 #pragma region Optimal Reciprocal Collision Avoidance
 void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime, const TransformSystems::TransformSystemsComponentArgs& components)
 {
+	ARGUS_MEMORY_TRACE(ArgusAvoidanceSystems);
 	ARGUS_TRACE(AvoidanceSystems::ProcessORCAvoidance);
 
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
@@ -154,7 +155,7 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 
 void AvoidanceSystems::FindORCALineAndVelocityToBoundaryPerEntity(const FindORCALineParams& params, FVector2D& velocityToBoundaryOfVO, ORCALine& orcaLine)
 {
-	ARGUS_TRACE(AvoidanceSystems::FindORCALineAndVelocityToBoundaryPerEntity)
+	ARGUS_TRACE(AvoidanceSystems::FindORCALineAndVelocityToBoundaryPerEntity);
 
 	const FVector2D relativeLocation = params.m_foundEntityLocation - params.m_sourceEntityLocation;
 	const FVector2D relativeVelocity = params.m_sourceEntityVelocity - params.m_foundEntityVelocity;
@@ -209,7 +210,7 @@ void AvoidanceSystems::FindORCALineAndVelocityToBoundaryPerEntity(const FindORCA
 
 bool AvoidanceSystems::OneDimensionalLinearProgram(const std::vector<ORCALine>& orcaLines, const float radius, const FVector2D& preferredVelocity, bool shouldOptimizeDirection, const int lineIndex, FVector2D& resultingVelocity)
 {
-	ARGUS_TRACE(AvoidanceSystems::OneDimensionalLinearProgram)
+	ARGUS_TRACE(AvoidanceSystems::OneDimensionalLinearProgram);
 
 	const float dotProduct = orcaLines[lineIndex].m_point.Dot(orcaLines[lineIndex].m_direction);
 	const float discriminant = FMath::Square(dotProduct) + FMath::Square(radius) - orcaLines[lineIndex].m_point.SquaredLength();
@@ -288,7 +289,7 @@ bool AvoidanceSystems::OneDimensionalLinearProgram(const std::vector<ORCALine>& 
 
 bool AvoidanceSystems::TwoDimensionalLinearProgram(const std::vector<ORCALine>& orcaLines, const float radius, const FVector2D& preferredVelocity, bool shouldOptimizeDirection, FVector2D& resultingVelocity, int& failureLine)
 {
-	ARGUS_TRACE(AvoidanceSystems::TwoDimensionalLinearProgram)
+	ARGUS_TRACE(AvoidanceSystems::TwoDimensionalLinearProgram);
 
 	if (shouldOptimizeDirection)
 	{
@@ -323,6 +324,8 @@ bool AvoidanceSystems::TwoDimensionalLinearProgram(const std::vector<ORCALine>& 
 
 void AvoidanceSystems::ThreeDimensionalLinearProgram(const std::vector<ORCALine>& orcaLines, const float radius, const int lineIndex, const int numStaticObstacleORCALines, FVector2D& resultingVelocity)
 {
+	ARGUS_MEMORY_TRACE(ArgusAvoidanceSystems);
+
 	float distance = 0.0f;
 
 	for (int i = lineIndex; i < orcaLines.size(); ++i)
