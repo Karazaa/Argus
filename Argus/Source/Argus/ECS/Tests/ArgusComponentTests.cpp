@@ -6,7 +6,7 @@
 
 #if WITH_AUTOMATION_TESTS
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentHealthComponentPersistenceTest, "Argus.ECS.Component.HealthComponent.Persistence", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentHealthComponentPersistenceTest, "Argus.ECS.Component.HealthComponent.Persistence", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusComponentHealthComponentPersistenceTest::RunTest(const FString& Parameters)
 {
 	const uint32 expectedSetHealthValue = 500u;
@@ -49,7 +49,7 @@ bool ArgusComponentHealthComponentPersistenceTest::RunTest(const FString& Parame
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentSpatialPartitioningComponentPersistenceTest, "Argus.ECS.Component.SpatialPartitioningComponent.Persistence", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentSpatialPartitioningComponentPersistenceTest, "Argus.ECS.Component.SpatialPartitioningComponent.Persistence", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusComponentSpatialPartitioningComponentPersistenceTest::RunTest(const FString& Parameters)
 {
 	ArgusTesting::StartArgusTest();
@@ -88,7 +88,7 @@ bool ArgusComponentSpatialPartitioningComponentPersistenceTest::RunTest(const FS
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentTargetingComponentHasEntityTargetTest, "Argus.ECS.Component.TargetingComponent.HasEntityTarget", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentTargetingComponentHasEntityTargetTest, "Argus.ECS.Component.TargetingComponent.HasEntityTarget", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusComponentTargetingComponentHasEntityTargetTest::RunTest(const FString& Parameters)
 {
 	ArgusTesting::StartArgusTest();
@@ -133,7 +133,7 @@ bool ArgusComponentTargetingComponentHasEntityTargetTest::RunTest(const FString&
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentTargetingComponentHasLocationTargetTest, "Argus.ECS.Component.TargetingComponent.HasLocationTarget", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentTargetingComponentHasLocationTargetTest, "Argus.ECS.Component.TargetingComponent.HasLocationTarget", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusComponentTargetingComponentHasLocationTargetTest::RunTest(const FString& Parameters)
 {
 	ArgusTesting::StartArgusTest();
@@ -172,7 +172,7 @@ bool ArgusComponentTargetingComponentHasLocationTargetTest::RunTest(const FStrin
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentIdentityComponentIsInTeamMaskTest, "Argus.ECS.Component.IdentityComponent.IsInTeamMask", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentIdentityComponentIsInTeamMaskTest, "Argus.ECS.Component.IdentityComponent.IsInTeamMask", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusComponentIdentityComponentIsInTeamMaskTest::RunTest(const FString& Parameters)
 {
 	ArgusTesting::StartArgusTest();
@@ -210,7 +210,7 @@ bool ArgusComponentIdentityComponentIsInTeamMaskTest::RunTest(const FString& Par
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentIdentityComponentAddAllyTeamTest, "Argus.ECS.Component.IdentityComponent.AddAllyTeam", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentIdentityComponentAddAllyTeamTest, "Argus.ECS.Component.IdentityComponent.AddAllyTeam", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusComponentIdentityComponentAddAllyTeamTest::RunTest(const FString& Parameters)
 {
 	ArgusTesting::StartArgusTest();
@@ -261,7 +261,7 @@ bool ArgusComponentIdentityComponentAddAllyTeamTest::RunTest(const FString& Para
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentIdentityComponentAddEnemyTeamTest, "Argus.ECS.Component.IdentityComponent.AddEnemyTeam", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentIdentityComponentAddEnemyTeamTest, "Argus.ECS.Component.IdentityComponent.AddEnemyTeam", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusComponentIdentityComponentAddEnemyTeamTest::RunTest(const FString& Parameters)
 {
 	ArgusTesting::StartArgusTest();
@@ -322,7 +322,7 @@ bool ArgusComponentIdentityComponentAddEnemyTeamTest::RunTest(const FString& Par
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentTaskComponentIsExecutingMoveTaskTest, "Argus.ECS.Component.TaskComponent.IsExecutingMoveTask", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentTaskComponentIsExecutingMoveTaskTest, "Argus.ECS.Component.TaskComponent.IsExecutingMoveTask", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusComponentTaskComponentIsExecutingMoveTaskTest::RunTest(const FString& Parameters)
 {
 	ArgusTesting::StartArgusTest();
@@ -397,7 +397,7 @@ bool ArgusComponentTaskComponentIsExecutingMoveTaskTest::RunTest(const FString& 
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentNavigationComponentResetPathTest, "Argus.ECS.Component.NavigationComponent.ResetPath", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentNavigationComponentResetPathTest, "Argus.ECS.Component.NavigationComponent.ResetPath", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusComponentNavigationComponentResetPathTest::RunTest(const FString& Parameters)
 {
 	const FVector	point0				= FVector(0.0f, 1.0f, 2.0f);
@@ -491,7 +491,7 @@ bool ArgusComponentNavigationComponentResetPathTest::RunTest(const FString& Para
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentNavigationComponentResetQueuedWaypointsTest, "Argus.ECS.Component.NavigationComponent.ResetQueuedWaypoints", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentNavigationComponentResetQueuedWaypointsTest, "Argus.ECS.Component.NavigationComponent.ResetQueuedWaypoints", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusComponentNavigationComponentResetQueuedWaypointsTest::RunTest(const FString& Parameters)
 {
 	const FVector	point0		= FVector(0.0f, 1.0f, 2.0f);
@@ -554,7 +554,7 @@ bool ArgusComponentNavigationComponentResetQueuedWaypointsTest::RunTest(const FS
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentTimerComponentGetTimerFromHandleTest, "Argus.ECS.Component.TimerComponent.GetTimerFromHandle", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentTimerComponentGetTimerFromHandleTest, "Argus.ECS.Component.TimerComponent.GetTimerFromHandle", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusComponentTimerComponentGetTimerFromHandleTest::RunTest(const FString& Parameters)
 {
 	const float expectedTimerDurationSeconds = 10.0f;

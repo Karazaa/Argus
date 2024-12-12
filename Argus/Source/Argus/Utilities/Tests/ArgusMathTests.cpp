@@ -60,7 +60,7 @@ void ChaseValue(ArgusMath::ExponentialDecaySmoother<FVector>& smoother, const FV
 	}
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusMathExponentialDecaySmootherFloatTest, "Argus.Utilities.ArgusMath.ExponentialDecaySmoother.FloatTest", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusMathExponentialDecaySmootherFloatTest, "Argus.Utilities.ArgusMath.ExponentialDecaySmoother.FloatTest", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusUtilitiesArgusMathExponentialDecaySmootherFloatTest::RunTest(const FString& Parameters)
 {
 	const float value0 = 0.0f;
@@ -210,7 +210,7 @@ bool ArgusUtilitiesArgusMathExponentialDecaySmootherFloatTest::RunTest(const FSt
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusMathExponentialDecaySmootherFVectorTest, "Argus.Utilities.ArgusMath.ExponentialDecaySmoother.FVectorTest", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusMathExponentialDecaySmootherFVectorTest, "Argus.Utilities.ArgusMath.ExponentialDecaySmoother.FVectorTest", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusUtilitiesArgusMathExponentialDecaySmootherFVectorTest::RunTest(const FString& Parameters)
 {
 	const FVector vector0 = FVector::ZeroVector;

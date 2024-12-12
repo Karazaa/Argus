@@ -6,7 +6,7 @@
 
 #if WITH_AUTOMATION_TESTS
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityCreateEntityTest, "Argus.ECS.Entity.CreateEntity", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityCreateEntityTest, "Argus.ECS.Entity.CreateEntity", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusEntityCreateEntityTest::RunTest(const FString& Parameters)
 {
 	const uint32 expectedEntityId = ArgusECSConstants::k_maxEntities - 1u;
@@ -71,7 +71,7 @@ bool ArgusEntityCreateEntityTest::RunTest(const FString& Parameters)
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityAssignmentOperatorTest, "Argus.ECS.Entity.AssignmentOperator", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityAssignmentOperatorTest, "Argus.ECS.Entity.AssignmentOperator", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusEntityAssignmentOperatorTest::RunTest(const FString& Parameters)
 {
 	const uint32 initialEntityId = 20u;
@@ -116,7 +116,7 @@ bool ArgusEntityAssignmentOperatorTest::RunTest(const FString& Parameters)
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityEqualsOperatorTest, "Argus.ECS.Entity.EqualsOperator", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityEqualsOperatorTest, "Argus.ECS.Entity.EqualsOperator", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusEntityEqualsOperatorTest::RunTest(const FString& Parameters)
 {
 	ArgusTesting::StartArgusTest();
@@ -155,7 +155,7 @@ bool ArgusEntityEqualsOperatorTest::RunTest(const FString& Parameters)
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityBoolOperatorTest, "Argus.ECS.Entity.BoolOperator", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityBoolOperatorTest, "Argus.ECS.Entity.BoolOperator", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusEntityBoolOperatorTest::RunTest(const FString& Parameters)
 {
 	ArgusTesting::StartArgusTest();
@@ -192,7 +192,7 @@ bool ArgusEntityBoolOperatorTest::RunTest(const FString& Parameters)
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityCreateInvalidEntityTest, "Argus.ECS.Entity.CreateInvalidEntity", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityCreateInvalidEntityTest, "Argus.ECS.Entity.CreateInvalidEntity", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusEntityCreateInvalidEntityTest::RunTest(const FString& Parameters)
 {
 	ArgusTesting::StartArgusTest();
@@ -216,7 +216,7 @@ bool ArgusEntityCreateInvalidEntityTest::RunTest(const FString& Parameters)
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityFlushAllEntitiesTest, "Argus.ECS.Entity.FlushAllEntities", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityFlushAllEntitiesTest, "Argus.ECS.Entity.FlushAllEntities", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusEntityFlushAllEntitiesTest::RunTest(const FString& Parameters)
 {
 	ArgusTesting::StartArgusTest();
@@ -255,7 +255,7 @@ bool ArgusEntityFlushAllEntitiesTest::RunTest(const FString& Parameters)
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityCopyConstructorTest, "Argus.ECS.Entity.CopyConstructor", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityCopyConstructorTest, "Argus.ECS.Entity.CopyConstructor", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusEntityCopyConstructorTest::RunTest(const FString& Parameters)
 {
 	ArgusTesting::StartArgusTest();
@@ -280,7 +280,7 @@ bool ArgusEntityCopyConstructorTest::RunTest(const FString& Parameters)
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityAutoIncrementIdTest, "Argus.ECS.Entity.AutoIncrementId", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityAutoIncrementIdTest, "Argus.ECS.Entity.AutoIncrementId", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusEntityAutoIncrementIdTest::RunTest(const FString& Parameters)
 {
 	ArgusTesting::StartArgusTest();
@@ -319,7 +319,7 @@ bool ArgusEntityAutoIncrementIdTest::RunTest(const FString& Parameters)
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityCopyEntityTest, "Argus.ECS.Entity.CopyEntity", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityCopyEntityTest, "Argus.ECS.Entity.CopyEntity", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusEntityCopyEntityTest::RunTest(const FString& Parameters)
 {
 	const uint32 expectedId = 20u;
@@ -363,7 +363,7 @@ bool ArgusEntityCopyEntityTest::RunTest(const FString& Parameters)
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityDoesEntityExistTest, "Argus.ECS.Entity.DoesEntityExist", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityDoesEntityExistTest, "Argus.ECS.Entity.DoesEntityExist", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusEntityDoesEntityExistTest::RunTest(const FString& Parameters)
 {
 	const uint32 expectedId = 20u;
@@ -416,7 +416,7 @@ bool ArgusEntityDoesEntityExistTest::RunTest(const FString& Parameters)
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityRetrieveEntityTest, "Argus.ECS.Entity.RetrieveEntity", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityRetrieveEntityTest, "Argus.ECS.Entity.RetrieveEntity", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusEntityRetrieveEntityTest::RunTest(const FString& Parameters)
 {
 	const uint32 expectedId = 20u;
@@ -489,7 +489,7 @@ bool ArgusEntityRetrieveEntityTest::RunTest(const FString& Parameters)
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityAddGetHealthComponentTest, "Argus.ECS.Entity.AddGetHealthComponent", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityAddGetHealthComponentTest, "Argus.ECS.Entity.AddGetHealthComponent", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusEntityAddGetHealthComponentTest::RunTest(const FString& Parameters)
 {
 	ArgusTesting::StartArgusTest();
@@ -530,7 +530,7 @@ bool ArgusEntityAddGetHealthComponentTest::RunTest(const FString& Parameters)
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityGetOrAddComponentTest, "Argus.ECS.Entity.GetOrAddComponent", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityGetOrAddComponentTest, "Argus.ECS.Entity.GetOrAddComponent", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusEntityGetOrAddComponentTest::RunTest(const FString& Parameters)
 {
 	ArgusTesting::StartArgusTest();
@@ -575,7 +575,7 @@ bool ArgusEntityGetOrAddComponentTest::RunTest(const FString& Parameters)
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityGetNextLowestUntakenIdTest, "Argus.ECS.Entity.GetNextLowestUntakenId", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityGetNextLowestUntakenIdTest, "Argus.ECS.Entity.GetNextLowestUntakenId", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusEntityGetNextLowestUntakenIdTest::RunTest(const FString& Parameters)
 {
 	const uint16 initialIdToQuery = 0u;
@@ -637,7 +637,7 @@ bool ArgusEntityGetNextLowestUntakenIdTest::RunTest(const FString& Parameters)
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityGetTakenEntityIdRangeTest, "Argus.ECS.Entity.GetTakenEntityIdRange", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityGetTakenEntityIdRangeTest, "Argus.ECS.Entity.GetTakenEntityIdRange", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusEntityGetTakenEntityIdRangeTest::RunTest(const FString& Parameters)
 {
 	const uint16 entity0Id = 500u;
@@ -779,7 +779,7 @@ bool ArgusEntityGetTakenEntityIdRangeTest::RunTest(const FString& Parameters)
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityDestroyEntityTest, "Argus.ECS.Entity.DestroyEntity", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusEntityDestroyEntityTest, "Argus.ECS.Entity.DestroyEntity", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusEntityDestroyEntityTest::RunTest(const FString& Parameters)
 {
 	const uint16 expectedLowestTakenIdAfterDestroy = ArgusECSConstants::k_maxEntities;

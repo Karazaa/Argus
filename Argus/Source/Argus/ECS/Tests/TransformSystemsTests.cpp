@@ -9,7 +9,7 @@
 
 #if WITH_AUTOMATION_TESTS
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(TransformSystemsGetPathingLocationAtTimeOffsetTest, "Argus.ECS.Systems.TransformSystems.GetPathingLocationAtTimeOffset", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(TransformSystemsGetPathingLocationAtTimeOffsetTest, "Argus.ECS.Systems.TransformSystems.GetPathingLocationAtTimeOffset", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool TransformSystemsGetPathingLocationAtTimeOffsetTest::RunTest(const FString& Parameters)
 {
 	const FVector startLocation = FVector::ZeroVector;
@@ -278,7 +278,7 @@ bool TransformSystemsGetPathingLocationAtTimeOffsetTest::RunTest(const FString& 
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(TransformSystemsFaceTowardsLocationXYTest, "Argus.ECS.Systems.TransformSystems.FaceTowardsLocationXY", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(TransformSystemsFaceTowardsLocationXYTest, "Argus.ECS.Systems.TransformSystems.FaceTowardsLocationXY", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool TransformSystemsFaceTowardsLocationXYTest::RunTest(const FString& Parameters)
 {
 	const FVector expectedFirstTargetLocation = FVector(-1.0f, 0.0f, 10.0f);
@@ -421,7 +421,7 @@ bool TransformSystemsFaceTowardsLocationXYTest::RunTest(const FString& Parameter
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(TransformSystemsMoveAlongPathTest, "Argus.ECS.Systems.TransformSystems.MoveAlongPath", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(TransformSystemsMoveAlongPathTest, "Argus.ECS.Systems.TransformSystems.MoveAlongPath", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool TransformSystemsMoveAlongPathTest::RunTest(const FString& Parameters)
 {
 	const FVector point0				= FVector(0.0f, 0.0f, 0.0f);
@@ -650,7 +650,7 @@ bool TransformSystemsMoveAlongPathTest::RunTest(const FString& Parameters)
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(TransformSystemsFindEntitiesWithinXYBoundsTest, "Argus.ECS.Systems.TransformSystems.FindEntitiesWithinXYBounds", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(TransformSystemsFindEntitiesWithinXYBoundsTest, "Argus.ECS.Systems.TransformSystems.FindEntitiesWithinXYBounds", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool TransformSystemsFindEntitiesWithinXYBoundsTest::RunTest(const FString& Parameters)
 {
 	const FVector	location0					= FVector	(0.0f, 0.0f, 0.0f);

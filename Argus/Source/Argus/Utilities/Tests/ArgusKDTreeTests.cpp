@@ -61,7 +61,7 @@ void PopulateKDTreeForTests(ArgusKDTree& tree, CollectionOfArgusEntities& entiti
 	}
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusKDTreeInsertEntitiesTest, "Argus.Utilities.ArgusKDTree.InsertEntitiesTest", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusKDTreeInsertEntitiesTest, "Argus.Utilities.ArgusKDTree.InsertEntitiesTest", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusUtilitiesArgusKDTreeInsertEntitiesTest::RunTest(const FString& Parameters)
 {
 	ArgusTesting::StartArgusTest();
@@ -129,7 +129,7 @@ bool ArgusUtilitiesArgusKDTreeInsertEntitiesTest::RunTest(const FString& Paramet
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusKDTreeFlushAllNodesTest, "Argus.Utilities.ArgusKDTree.FlushAllNodesTest", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusKDTreeFlushAllNodesTest, "Argus.Utilities.ArgusKDTree.FlushAllNodesTest", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusUtilitiesArgusKDTreeFlushAllNodesTest::RunTest(const FString& Parameters)
 {
 	const FVector expectedAverageLocation = FVector(54.0f, 54.0f, 2.0f);
@@ -181,7 +181,7 @@ bool ArgusUtilitiesArgusKDTreeFlushAllNodesTest::RunTest(const FString& Paramete
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusKDTreeRebuildKDTreeForAllArgusEntitiesTest, "Argus.Utilities.ArgusKDTree.RebuildKDTreeForAllArgusEntitiesTest", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusKDTreeRebuildKDTreeForAllArgusEntitiesTest, "Argus.Utilities.ArgusKDTree.RebuildKDTreeForAllArgusEntitiesTest", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusUtilitiesArgusKDTreeRebuildKDTreeForAllArgusEntitiesTest::RunTest(const FString& Parameters)
 {
 	ArgusTesting::StartArgusTest();
@@ -216,7 +216,7 @@ bool ArgusUtilitiesArgusKDTreeRebuildKDTreeForAllArgusEntitiesTest::RunTest(cons
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusKDTreeFindOtherArgusEntityIdClosestArgusEntityTest, "Argus.Utilities.ArgusKDTree.FindOtherArgusEntityIdClosestArgusEntityTest", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusKDTreeFindOtherArgusEntityIdClosestArgusEntityTest, "Argus.Utilities.ArgusKDTree.FindOtherArgusEntityIdClosestArgusEntityTest", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusUtilitiesArgusKDTreeFindOtherArgusEntityIdClosestArgusEntityTest::RunTest(const FString& Parameters)
 {
 	ArgusTesting::StartArgusTest();
@@ -321,7 +321,7 @@ bool ArgusUtilitiesArgusKDTreeFindOtherArgusEntityIdClosestArgusEntityTest::RunT
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusKDTreeFindArgusEntityIdClosestToLocationTest, "Argus.Utilities.ArgusKDTree.FindArgusEntityIdClosestToLocationTest", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusKDTreeFindArgusEntityIdClosestToLocationTest, "Argus.Utilities.ArgusKDTree.FindArgusEntityIdClosestToLocationTest", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusUtilitiesArgusKDTreeFindArgusEntityIdClosestToLocationTest::RunTest(const FString& Parameters)
 {
 	ArgusTesting::StartArgusTest();
@@ -373,7 +373,7 @@ bool ArgusUtilitiesArgusKDTreeFindArgusEntityIdClosestToLocationTest::RunTest(co
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusKDTreeFindArgusEntityIdsWithinRangeOfLocationTest, "Argus.Utilities.ArgusKDTree.FindArgusEntityIdsWithinRangeOfLocationTest", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusKDTreeFindArgusEntityIdsWithinRangeOfLocationTest, "Argus.Utilities.ArgusKDTree.FindArgusEntityIdsWithinRangeOfLocationTest", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusUtilitiesArgusKDTreeFindArgusEntityIdsWithinRangeOfLocationTest::RunTest(const FString& Parameters)
 {
 	ArgusTesting::StartArgusTest();

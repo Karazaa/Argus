@@ -7,7 +7,7 @@
 
 #if WITH_AUTOMATION_TESTS
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(TargetingSystemsTargetNearestEntityMatchingTeamMaskTest, "Argus.ECS.Systems.TargetingSystems.TargetNearestEntityMatchingTeamMask", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(TargetingSystemsTargetNearestEntityMatchingTeamMaskTest, "Argus.ECS.Systems.TargetingSystems.TargetNearestEntityMatchingTeamMask", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool TargetingSystemsTargetNearestEntityMatchingTeamMaskTest::RunTest(const FString& Parameters)
 {
 	ArgusTesting::StartArgusTest();

@@ -7,7 +7,7 @@
 
 #if WITH_AUTOMATION_TESTS
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(TimerHandleStartTimerTest, "Argus.ECS.TimerHandle.StartTimer", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(TimerHandleStartTimerTest, "Argus.ECS.TimerHandle.StartTimer", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool TimerHandleStartTimerTest::RunTest(const FString& Parameters)
 {
 	const float expectedTimerDurationSeconds = 10.0f;
@@ -120,7 +120,7 @@ bool TimerHandleStartTimerTest::RunTest(const FString& Parameters)
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(TimerHandleFinishTimerTest, "Argus.ECS.TimerHandle.FinishTimer", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(TimerHandleFinishTimerTest, "Argus.ECS.TimerHandle.FinishTimer", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool TimerHandleFinishTimerTest::RunTest(const FString& Parameters)
 {
 	const float expectedTimerDurationSeconds = 10.0f;
@@ -190,7 +190,7 @@ bool TimerHandleFinishTimerTest::RunTest(const FString& Parameters)
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(TimerHandleCancelTimerTest, "Argus.ECS.TimerHandle.CancelTimer", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(TimerHandleCancelTimerTest, "Argus.ECS.TimerHandle.CancelTimer", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool TimerHandleCancelTimerTest::RunTest(const FString& Parameters)
 {
 	const float expectedTimerDurationSeconds = 10.0f;
@@ -242,7 +242,7 @@ bool TimerHandleCancelTimerTest::RunTest(const FString& Parameters)
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(TimerHandleGetTimerIndexTest, "Argus.ECS.TimerHandle.GetTimerIndex", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(TimerHandleGetTimerIndexTest, "Argus.ECS.TimerHandle.GetTimerIndex", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool TimerHandleGetTimerIndexTest::RunTest(const FString& Parameters)
 {
 	const float expectedTimerDurationSeconds = 10.0f;
@@ -314,7 +314,7 @@ bool TimerHandleGetTimerIndexTest::RunTest(const FString& Parameters)
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(TimerHandleIsTimerCompleteTest, "Argus.ECS.TimerHandle.IsTimerComplete", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(TimerHandleIsTimerCompleteTest, "Argus.ECS.TimerHandle.IsTimerComplete", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool TimerHandleIsTimerCompleteTest::RunTest(const FString& Parameters)
 {
 	const float expectedTimerDurationSeconds = 10.0f;

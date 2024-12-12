@@ -7,7 +7,7 @@
 
 #if WITH_AUTOMATION_TESTS
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(TimerSystemsAdvanceTimersTest, "Argus.ECS.Systems.TimerSystems.AdvanceTimers", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(TimerSystemsAdvanceTimersTest, "Argus.ECS.Systems.TimerSystems.AdvanceTimers", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool TimerSystemsAdvanceTimersTest::RunTest(const FString& Parameters)
 {
 	const float deltaTime = 1.0f;

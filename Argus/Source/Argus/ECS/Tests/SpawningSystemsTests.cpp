@@ -10,7 +10,7 @@
 
 #if WITH_AUTOMATION_TESTS
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(SpawningSystemsSpawnEntityTest, "Argus.ECS.Systems.SpawningSystems.SpawnEntity", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(SpawningSystemsSpawnEntityTest, "Argus.ECS.Systems.SpawningSystems.SpawnEntity", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool SpawningSystemsSpawnEntityTest::RunTest(const FString& Parameters)
 {
 	const float				dummyHeight = 500.0f;

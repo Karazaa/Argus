@@ -9,7 +9,7 @@
 
 #if WITH_AUTOMATION_TESTS
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(AbilitySystemsCastSpawnAbilityTest, "Argus.ECS.Systems.AbilitySystems.CastSpawnAbility", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(AbilitySystemsCastSpawnAbilityTest, "Argus.ECS.Systems.AbilitySystems.CastSpawnAbility", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool AbilitySystemsCastSpawnAbilityTest::RunTest(const FString& Parameters)
 {
 	const uint32 argusActorRecordId = 5u;

@@ -17,7 +17,7 @@ struct TestPoolable : public IObjectPoolable
 	}
 };
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusObjectPoolTakeTest, "Argus.Utilities.ArgusObjectPool.TakeTest", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusObjectPoolTakeTest, "Argus.Utilities.ArgusObjectPool.TakeTest", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusUtilitiesArgusObjectPoolTakeTest::RunTest(const FString& Parameters)
 {
 	ArgusTesting::StartArgusTest();
@@ -76,7 +76,7 @@ bool ArgusUtilitiesArgusObjectPoolTakeTest::RunTest(const FString& Parameters)
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusObjectPoolReleaseTest, "Argus.Utilities.ArgusObjectPool.ReleaseTest", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusObjectPoolReleaseTest, "Argus.Utilities.ArgusObjectPool.ReleaseTest", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusUtilitiesArgusObjectPoolReleaseTest::RunTest(const FString& Parameters)
 {
 	ArgusTesting::StartArgusTest();
@@ -207,7 +207,7 @@ bool ArgusUtilitiesArgusObjectPoolReleaseTest::RunTest(const FString& Parameters
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusObjectPoolClearPoolTest, "Argus.Utilities.ArgusObjectPool.ClearPool", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusObjectPoolClearPoolTest, "Argus.Utilities.ArgusObjectPool.ClearPool", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusUtilitiesArgusObjectPoolClearPoolTest::RunTest(const FString& Parameters)
 {
 	ArgusTesting::StartArgusTest();
