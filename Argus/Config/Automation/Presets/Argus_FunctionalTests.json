@@ -1,0 +1,12 @@
+{
+	"id": "Argus_FunctionalTests",
+	"name": "Argus_FunctionalTests",
+	"enabledTests": [
+		"Project.Functional Tests.FunctionalTesting.FTEST_ArgusActorPool.Argus.FunctionalTest.ArgusActorPool",
+		"Project.Functional Tests.FunctionalTesting.FTEST_ArgusCamera.Argus.FunctionalTests.ArgusCamera",
+		"Project.Functional Tests.FunctionalTesting.FTEST_Navigation.Argus.FunctionalTests.Navigation",
+		"Project.Functional Tests.FunctionalTesting.FTEST_RetrieveArgusActorFromEntity.Argus.FunctionalTests.RetrieveArgusActorFromEntity",
+		"Project.Functional Tests.FunctionalTesting.FTEST_SpawnEntityAndActor.Argus.FunctionalTests.SpawnEntityAndActor",
+		"Project.Functional Tests.FunctionalTesting.FTEST_StaticData.Argus.FunctionalTests.StaticData"
+	]
+}

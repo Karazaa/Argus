@@ -401,14 +401,14 @@ float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems
 		return 1.0f;
 	}
 
-	if (sourceEntityComponents.m_taskComponent->IsExecutingMoveTask() && !foundEntityTaskComponent->IsExecutingMoveTask())
+	if (sourceEntityComponents.m_taskComponent->IsExecutingMoveTask() && (!foundEntityTaskComponent->IsExecutingMoveTask()))
 	{
-		return 0.0f;
+		return foundEntity.IsMoveable() ? 0.0f : 1.0f;
 	}
 
 	if (!sourceEntityComponents.m_taskComponent->IsExecutingMoveTask() && foundEntityTaskComponent->IsExecutingMoveTask())
 	{
-		return 1.0f;
+		return sourceEntityComponents.m_entity.IsMoveable() ? 1.0f : 0.0f;
 	}
 
 	return 0.5f;

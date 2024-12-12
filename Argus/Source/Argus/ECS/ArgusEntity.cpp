@@ -189,3 +189,13 @@ const FString ArgusEntity::GetDebugString() const
 	ArgusComponentRegistry::AppendComponentDebugStrings(m_id, debugString);
 	return debugString;
 }
+
+bool ArgusEntity::IsMoveable() const
+{
+	const bool isValidEntity = DoesEntityExist(m_id);
+	const bool hasNavigationComponent = GetComponent<NavigationComponent>() != nullptr;
+	const bool hasTransformComponent = GetComponent<TransformComponent>() != nullptr;
+	const bool hasTargetingComponent = GetComponent<TargetingComponent>() != nullptr;
+
+	return isValidEntity && hasNavigationComponent && hasTransformComponent && hasTargetingComponent;
+}

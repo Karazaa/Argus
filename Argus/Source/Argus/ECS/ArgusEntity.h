@@ -33,8 +33,9 @@ public:
 	bool operator==(const ArgusEntity& other) const;
 	operator bool() const;
 
-	uint16		   GetId() const;
-	const FString  GetDebugString() const;
+	uint16			GetId() const;
+	const FString	GetDebugString() const;
+	bool			IsMoveable() const;
 
 	template<class ArgusComponent>
 	ArgusComponent* GetComponent() const
