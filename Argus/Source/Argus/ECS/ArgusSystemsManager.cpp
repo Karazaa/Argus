@@ -7,6 +7,7 @@
 #include "Systems/AbilitySystems.h"
 #include "Systems/AvoidanceSystems.h"
 #include "Systems/NavigationSystems.h"
+#include "Systems/SpatialPartitioningSystems.h"
 #include "Systems/SpawningSystems.h"
 #include "Systems/TargetingSystems.h"
 #include "Systems/TimerSystems.h"
@@ -14,7 +15,6 @@
 
 void ArgusSystemsManager::RunSystems(UWorld* worldPointer, float deltaTime)
 {
-
 	ARGUS_TRACE(ArgusSystemsManager::RunSystems);
 
 	if (!worldPointer)
@@ -74,6 +74,6 @@ void ArgusSystemsManager::UpdateSingletonComponents(bool didMovementUpdateThisFr
 
 	if (didMovementUpdateThisFrame)
 	{
-		spatialPartitioningComponent->m_argusKDTree.RebuildKDTreeForAllArgusEntities();
+		SpatialPartitioningSystems::RunSystems(singletonEntity);
 	}
 }

@@ -30,6 +30,8 @@ public:
 
 	FVector FlushAllNodes();
 	void InsertArgusEntityIntoKDTree(const ArgusEntity& entityToRepresent);
+
+	void ResetKDTreeWithAverageLocation();
 	void RebuildKDTreeForAllArgusEntities();
 
 	bool DoesArgusEntityExistInKDTree(const ArgusEntity& entityToRepresent) const;

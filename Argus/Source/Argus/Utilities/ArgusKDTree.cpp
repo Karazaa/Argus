@@ -91,7 +91,7 @@ void ArgusKDTree::InsertArgusEntityIntoKDTree(const ArgusEntity& entityToReprese
 	InsertNodeIntoKDTreeRecursive(m_rootNode, nodeToInsert, 0u);
 }
 
-void ArgusKDTree::RebuildKDTreeForAllArgusEntities()
+void ArgusKDTree::ResetKDTreeWithAverageLocation()
 {
 	ARGUS_MEMORY_TRACE(ArgusKDTree);
 	ARGUS_TRACE(ArgusKDTree::RebuildKDTreeForAllArgusEntities);
@@ -104,6 +104,14 @@ void ArgusKDTree::RebuildKDTreeForAllArgusEntities()
 	}
 	m_rootNode = m_nodePool.Take();
 	m_rootNode->Populate(averageLocation);
+}
+
+void ArgusKDTree::RebuildKDTreeForAllArgusEntities()
+{
+	ARGUS_MEMORY_TRACE(ArgusKDTree);
+	ARGUS_TRACE(ArgusKDTree::RebuildKDTreeForAllArgusEntities);
+
+	ResetKDTreeWithAverageLocation();
 
 	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{
