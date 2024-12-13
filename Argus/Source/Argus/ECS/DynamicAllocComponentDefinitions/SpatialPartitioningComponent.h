@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "ArgusKDTree.h"
 #include "ArgusMacros.h"
+#include "ComponentDependencies/ArgusKDTree.h"
 #include "CoreMinimal.h"
 
 struct SpatialPartitioningComponent
