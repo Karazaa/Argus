@@ -6,28 +6,31 @@
 
 #if WITH_AUTOMATION_TESTS
 
-const FVector location0 = FVector(50.0f, 50.0f, 0.0f);
-const FVector location1 = FVector(10.0f, 50.0f, 0.0f);
-const FVector location2 = FVector(100.0f, 50.0f, 0.0f);
-const FVector location3 = FVector(10.0f, 70.0f, 0.0f);
-const FVector location4 = FVector(100.0f, 50.0f, 10.0f);
-const FVector location5 = FVector(110.0f, 40.0f, 20.0f);
-const FVector location6 = FVector(200.0f, 200.0f, 200.0f);
-const FVector location7 = FVector(15.0f, 60.0f, 0.0f);
+namespace ArgusKDTreeTestConstants
+{
+	const FVector location0 = FVector(50.0f, 50.0f, 0.0f);
+	const FVector location1 = FVector(10.0f, 50.0f, 0.0f);
+	const FVector location2 = FVector(100.0f, 50.0f, 0.0f);
+	const FVector location3 = FVector(10.0f, 70.0f, 0.0f);
+	const FVector location4 = FVector(100.0f, 50.0f, 10.0f);
+	const FVector location5 = FVector(110.0f, 40.0f, 20.0f);
+	const FVector location6 = FVector(200.0f, 200.0f, 200.0f);
+	const FVector location7 = FVector(15.0f, 60.0f, 0.0f);
 
-const uint16 id0 = 100u;
-const uint16 id1 = 101u;
-const uint16 id2 = 102u;
-const uint16 id3 = 103u;
-const uint16 id4 = 104u;
+	const uint16 id0 = 100u;
+	const uint16 id1 = 101u;
+	const uint16 id2 = 102u;
+	const uint16 id3 = 103u;
+	const uint16 id4 = 104u;
+}
 
 struct CollectionOfArgusEntities
 {
-	const ArgusEntity entity0 = ArgusEntity::CreateEntity(id0);
-	const ArgusEntity entity1 = ArgusEntity::CreateEntity(id1);
-	const ArgusEntity entity2 = ArgusEntity::CreateEntity(id2);
-	const ArgusEntity entity3 = ArgusEntity::CreateEntity(id3);
-	const ArgusEntity entity4 = ArgusEntity::CreateEntity(id4);
+	const ArgusEntity entity0 = ArgusEntity::CreateEntity(ArgusKDTreeTestConstants::id0);
+	const ArgusEntity entity1 = ArgusEntity::CreateEntity(ArgusKDTreeTestConstants::id1);
+	const ArgusEntity entity2 = ArgusEntity::CreateEntity(ArgusKDTreeTestConstants::id2);
+	const ArgusEntity entity3 = ArgusEntity::CreateEntity(ArgusKDTreeTestConstants::id3);
+	const ArgusEntity entity4 = ArgusEntity::CreateEntity(ArgusKDTreeTestConstants::id4);
 };
 
 void PopulateKDTreeForTests(ArgusKDTree& tree, CollectionOfArgusEntities& entities, bool insertIntoTree)
@@ -44,11 +47,11 @@ void PopulateKDTreeForTests(ArgusKDTree& tree, CollectionOfArgusEntities& entiti
 		transformComponent3 &&
 		transformComponent4)
 	{
-		transformComponent0->m_transform.SetLocation(location0);
-		transformComponent1->m_transform.SetLocation(location1);
-		transformComponent2->m_transform.SetLocation(location2);
-		transformComponent3->m_transform.SetLocation(location3);
-		transformComponent4->m_transform.SetLocation(location4);
+		transformComponent0->m_transform.SetLocation(ArgusKDTreeTestConstants::location0);
+		transformComponent1->m_transform.SetLocation(ArgusKDTreeTestConstants::location1);
+		transformComponent2->m_transform.SetLocation(ArgusKDTreeTestConstants::location2);
+		transformComponent3->m_transform.SetLocation(ArgusKDTreeTestConstants::location3);
+		transformComponent4->m_transform.SetLocation(ArgusKDTreeTestConstants::location4);
 	}
 
 	if (insertIntoTree)
@@ -240,7 +243,7 @@ bool ArgusUtilitiesArgusKDTreeFindOtherArgusEntityIdClosestArgusEntityTest::RunT
 			ARGUS_NAMEOF(ArgusKDTree::FindOtherArgusEntityIdClosestArgusEntity)
 		),
 		nearestEntityIdToCenter,
-		id1
+		ArgusKDTreeTestConstants::id1
 	);
 #pragma endregion
 
@@ -260,7 +263,7 @@ bool ArgusUtilitiesArgusKDTreeFindOtherArgusEntityIdClosestArgusEntityTest::RunT
 			ARGUS_NAMEOF(ArgusKDTree::FindOtherArgusEntityIdClosestArgusEntity)
 		),
 		nearestEntityIdToLeftCenter,
-		id3
+		ArgusKDTreeTestConstants::id3
 	);
 #pragma endregion
 
@@ -280,7 +283,7 @@ bool ArgusUtilitiesArgusKDTreeFindOtherArgusEntityIdClosestArgusEntityTest::RunT
 			ARGUS_NAMEOF(ArgusKDTree::FindOtherArgusEntityIdClosestArgusEntity)
 		),
 		nearestEntityIdToRightCenter,
-		id4
+		ArgusKDTreeTestConstants::id4
 	);
 #pragma endregion
 
@@ -329,7 +332,7 @@ bool ArgusUtilitiesArgusKDTreeFindArgusEntityIdClosestToLocationTest::RunTest(co
 	CollectionOfArgusEntities entities;
 	PopulateKDTreeForTests(tree, entities, true);
 
-	uint16 nearestEntityIdToCenter = tree.FindArgusEntityIdClosestToLocation(location0);
+	uint16 nearestEntityIdToCenter = tree.FindArgusEntityIdClosestToLocation(ArgusKDTreeTestConstants::location0);
 
 #pragma region Test that we can find the nearest entity to the center entity
 	TestEqual
@@ -345,11 +348,11 @@ bool ArgusUtilitiesArgusKDTreeFindArgusEntityIdClosestToLocationTest::RunTest(co
 			ARGUS_NAMEOF(ArgusKDTree::FindArgusEntityIdClosestToLocation)
 		),
 		nearestEntityIdToCenter,
-		id0
+		ArgusKDTreeTestConstants::id0
 	);
 #pragma endregion
 
-	uint16 nearestEntityIdToZPoint = tree.FindArgusEntityIdClosestToLocation(location5);
+	uint16 nearestEntityIdToZPoint = tree.FindArgusEntityIdClosestToLocation(ArgusKDTreeTestConstants::location5);
 
 #pragma region Test that we can find the nearest entity to a non-entity z location
 	TestEqual
@@ -365,7 +368,7 @@ bool ArgusUtilitiesArgusKDTreeFindArgusEntityIdClosestToLocationTest::RunTest(co
 			ARGUS_NAMEOF(ArgusKDTree::FindArgusEntityIdClosestToLocation)
 		),
 		nearestEntityIdToZPoint,
-		id4
+		ArgusKDTreeTestConstants::id4
 	);
 #pragma endregion
 
@@ -382,7 +385,7 @@ bool ArgusUtilitiesArgusKDTreeFindArgusEntityIdsWithinRangeOfLocationTest::RunTe
 	PopulateKDTreeForTests(tree, entities, true);
 
 	std::vector<uint16> argusEntityIds;
-	tree.FindArgusEntityIdsWithinRangeOfLocation(argusEntityIds, location6, 1.0f);
+	tree.FindArgusEntityIdsWithinRangeOfLocation(argusEntityIds, ArgusKDTreeTestConstants::location6, 1.0f);
 
 #pragma region Test that we cannot find any entities within a small range of a far away location
 	TestEqual
@@ -402,7 +405,7 @@ bool ArgusUtilitiesArgusKDTreeFindArgusEntityIdsWithinRangeOfLocationTest::RunTe
 #pragma endregion
 
 	argusEntityIds.clear();
-	tree.FindArgusEntityIdsWithinRangeOfLocation(argusEntityIds, location0, 1.0f);
+	tree.FindArgusEntityIdsWithinRangeOfLocation(argusEntityIds, ArgusKDTreeTestConstants::location0, 1.0f);
 
 #pragma region Test that we can find exactly one entity near the center
 	TestEqual
@@ -440,12 +443,12 @@ bool ArgusUtilitiesArgusKDTreeFindArgusEntityIdsWithinRangeOfLocationTest::RunTe
 			ARGUS_NAMEOF(ArgusKDTree::FindArgusEntityIdsWithinRangeOfLocation)
 		),
 		argusEntityIds[0],
-		id0
+		ArgusKDTreeTestConstants::id0
 	);
 #pragma endregion
 
 	argusEntityIds.clear();
-	tree.FindArgusEntityIdsWithinRangeOfLocation(argusEntityIds, location0, 200.0f);
+	tree.FindArgusEntityIdsWithinRangeOfLocation(argusEntityIds, ArgusKDTreeTestConstants::location0, 200.0f);
 
 #pragma region Test that we can find all entities within a large range
 	TestEqual
@@ -465,7 +468,7 @@ bool ArgusUtilitiesArgusKDTreeFindArgusEntityIdsWithinRangeOfLocationTest::RunTe
 #pragma endregion
 
 	argusEntityIds.clear();
-	tree.FindArgusEntityIdsWithinRangeOfLocation(argusEntityIds, location7, 20.0f);
+	tree.FindArgusEntityIdsWithinRangeOfLocation(argusEntityIds, ArgusKDTreeTestConstants::location7, 20.0f);
 
 #pragma region Test that we can find exactly two entities near a left point
 	TestEqual
@@ -490,8 +493,8 @@ bool ArgusUtilitiesArgusKDTreeFindArgusEntityIdsWithinRangeOfLocationTest::RunTe
 		return false;
 	}
 
-	const bool entity1Present = argusEntityIds[0] == id1 || argusEntityIds[1] == id1;
-	const bool entity3Present = argusEntityIds[0] == id3 || argusEntityIds[1] == id3;
+	const bool entity1Present = argusEntityIds[0] == ArgusKDTreeTestConstants::id1 || argusEntityIds[1] == ArgusKDTreeTestConstants::id1;
+	const bool entity3Present = argusEntityIds[0] == ArgusKDTreeTestConstants::id3 || argusEntityIds[1] == ArgusKDTreeTestConstants::id3;
 
 #pragma region Test the ids of the entities near the left
 	TestTrue
