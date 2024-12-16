@@ -4,10 +4,12 @@
 
 #include "ArgusEntity.h"
 
+class UWorld;
+
 class SpatialPartitioningSystems
 {
 public:
-	static void RunSystems(const ArgusEntity& spatialPartitioningEntity);
+	static void RunSystems(UWorld* worldPointer, const ArgusEntity& spatialPartitioningEntity);
 
 	struct SpatialPartitioningSystemsComponentArgs
 	{
@@ -19,5 +21,5 @@ public:
 	};
 
 private:
-	static void PopulateRelevantNavEdges(const SpatialPartitioningSystemsComponentArgs& components);
+	static void PopulateRelevantNavEdges(UWorld* worldPointer, const SpatialPartitioningSystemsComponentArgs& components);
 };
