@@ -4,6 +4,8 @@
 #include "ArgusMath.h"
 #include "ArgusSystemsManager.h"
 #include "DrawDebugHelpers.h"
+#include "NavigationData.h"
+#include "NavigationSystem.h"
 
 static TAutoConsoleVariable<bool> CVarShowAvoidanceDebug(TEXT("Argus.Avoidance.ShowAvoidanceDebug"), false, TEXT(""));
 
@@ -44,6 +46,12 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return;
+	}
+
+	TArray<FVector> relevantNavEdges;
+	if (worldPointer)
+	{
+		RetrieveRelevantNavEdges(worldPointer, components, relevantNavEdges);
 	}
 
 	const ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId);
@@ -368,6 +376,62 @@ void AvoidanceSystems::ThreeDimensionalLinearProgram(const std::vector<ORCALine>
 
 		distance = ArgusMath::Determinant(orcaLines[i].m_direction, orcaLines[i].m_point - resultingVelocity);
 	}
+}
+
+void AvoidanceSystems::RetrieveRelevantNavEdges(UWorld* worldPointer, const TransformSystems::TransformSystemsComponentArgs& components, TArray<FVector>& outNavEdges)
+{
+	ARGUS_MEMORY_TRACE(ArgusAvoidanceSystems);
+	ARGUS_TRACE(AvoidanceSystems::RetrieveRelevantNavEdges);
+
+	if (!worldPointer)
+	{
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Passed in %s is nullptr."), ARGUS_FUNCNAME, ARGUS_NAMEOF(UWorld*));
+		return;
+	}
+
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+
+	UNavigationSystemV1* unrealNavigationSystem = UNavigationSystemV1::GetCurrent(worldPointer);
+	if (!unrealNavigationSystem)
+	{
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Could not retrieve a valid %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(UNavigationSystemV1*));
+		return;
+	}
+
+	ANavigationData* navData = unrealNavigationSystem->MainNavData;
+	if (!unrealNavigationSystem)
+	{
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Could not retrieve a valid %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ANavigationData*));
+		return;
+	}
+
+	FVector entityLocation = components.m_transformComponent->m_transform.GetLocation();
+	FNavLocation originLocation;
+	if (!unrealNavigationSystem->ProjectPointToNavigation(entityLocation, originLocation))
+	{
+		return;
+	}
+
+	TArray<FVector> queryShapePoints;
+	queryShapePoints.SetNumZeroed(4);
+	queryShapePoints[0] = entityLocation;
+	queryShapePoints[1] = entityLocation;
+	queryShapePoints[2] = entityLocation;
+	queryShapePoints[3] = entityLocation;
+
+	queryShapePoints[0].X -= ArgusECSConstants::k_avoidanceAgentSearchRadius;
+	queryShapePoints[1].X += ArgusECSConstants::k_avoidanceAgentSearchRadius;
+	queryShapePoints[2].X += ArgusECSConstants::k_avoidanceAgentSearchRadius;
+	queryShapePoints[3].X -= ArgusECSConstants::k_avoidanceAgentSearchRadius;
+	queryShapePoints[0].Y += ArgusECSConstants::k_avoidanceAgentSearchRadius;
+	queryShapePoints[1].Y += ArgusECSConstants::k_avoidanceAgentSearchRadius;
+	queryShapePoints[2].Y -= ArgusECSConstants::k_avoidanceAgentSearchRadius;
+	queryShapePoints[3].Y -= ArgusECSConstants::k_avoidanceAgentSearchRadius;
+
+	navData->FindOverlappingEdges(originLocation, TConstArrayView<FVector>(queryShapePoints), outNavEdges);
 }
 
 float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems::TransformSystemsComponentArgs& sourceEntityComponents, const ArgusEntity& foundEntity)

@@ -33,7 +33,7 @@ void ArgusSystemsManager::RunSystems(UWorld* worldPointer, float deltaTime)
 	AvoidanceSystems::RunSystems(worldPointer, deltaTime);
 	const bool didMovementUpdateThisFrame = TransformSystems::RunSystems(worldPointer, deltaTime);
 
-	UpdateSingletonComponents(worldPointer, didMovementUpdateThisFrame);
+	UpdateSingletonComponents(didMovementUpdateThisFrame);
 }
 
 void ArgusSystemsManager::PopulateSingletonComponents()
@@ -56,7 +56,7 @@ void ArgusSystemsManager::PopulateSingletonComponents()
 	}
 }
 
-void ArgusSystemsManager::UpdateSingletonComponents(UWorld* worldPointer, bool didMovementUpdateThisFrame)
+void ArgusSystemsManager::UpdateSingletonComponents(bool didMovementUpdateThisFrame)
 {
 	ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId);
 	if (!singletonEntity)
@@ -74,6 +74,6 @@ void ArgusSystemsManager::UpdateSingletonComponents(UWorld* worldPointer, bool d
 
 	if (didMovementUpdateThisFrame)
 	{
-		SpatialPartitioningSystems::RunSystems(worldPointer, singletonEntity);
+		SpatialPartitioningSystems::RunSystems(singletonEntity);
 	}
 }

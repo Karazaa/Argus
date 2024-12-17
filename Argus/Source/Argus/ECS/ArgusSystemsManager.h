@@ -13,5 +13,5 @@ public:
 
 private:
 	static void PopulateSingletonComponents();
-	static void UpdateSingletonComponents(UWorld* worldPointer, bool didMovementUpdateThisFrame);
+	static void UpdateSingletonComponents(bool didMovementUpdateThisFrame);
 };

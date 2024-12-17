@@ -9,7 +9,7 @@ class UWorld;
 class SpatialPartitioningSystems
 {
 public:
-	static void RunSystems(UWorld* worldPointer, const ArgusEntity& spatialPartitioningEntity);
+	static void RunSystems(const ArgusEntity& spatialPartitioningEntity);
 
 	struct SpatialPartitioningSystemsComponentArgs
 	{
@@ -19,7 +19,4 @@ public:
 
 		bool AreComponentsValidCheck(const WIDECHAR* functionName) const;
 	};
-
-private:
-	static void PopulateRelevantNavEdges(UWorld* worldPointer, const SpatialPartitioningSystemsComponentArgs& components);
 };
