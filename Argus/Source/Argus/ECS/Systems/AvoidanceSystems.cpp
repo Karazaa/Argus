@@ -48,12 +48,6 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 		return;
 	}
 
-	TArray<FVector> relevantNavEdges;
-	if (worldPointer)
-	{
-		RetrieveRelevantNavEdges(worldPointer, components, relevantNavEdges);
-	}
-
 	const ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId);
 	if (!singletonEntity)
 	{
@@ -68,8 +62,11 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 		return;
 	}
 
-	const FVector2D sourceEntityLocation = FVector2D(components.m_transformComponent->m_transform.GetLocation());
-	const FVector2D sourceEntityVelocity = FVector2D(components.m_transformComponent->m_currentVelocity);
+	CreateEntityORCALinesParams params;
+	params.m_sourceEntityLocation = FVector2D(components.m_transformComponent->m_transform.GetLocation());
+	params.m_sourceEntityVelocity = FVector2D(components.m_transformComponent->m_currentVelocity);
+	params.m_deltaTime = deltaTime;
+	params.m_inversePredictionTime = 1.0f / ArgusECSConstants::k_avoidanceCollisionDetectionPredictionTime;
 	FVector2D desiredVelocity = FVector2D::ZeroVector;
 
 	// If we are moving, we need to get our desired velocity as the velocity that points towards the nearest pathing point at the desired speed.
@@ -99,15 +96,52 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 		components.m_transformComponent->m_proposedAvoidanceVelocity = FVector(desiredVelocity, 0.0f);
 		if (CVarShowAvoidanceDebug.GetValueOnGameThread() && worldPointer)
 		{
-			FVector sourceEntityLocation3D = FVector(sourceEntityLocation, 5.0f);
+			FVector sourceEntityLocation3D = FVector(params.m_sourceEntityLocation, 5.0f);
 			DrawDebugLine(worldPointer, sourceEntityLocation3D, sourceEntityLocation3D + components.m_transformComponent->m_proposedAvoidanceVelocity, FColor::Orange, false, -1.0f, 0, 5.0f);
 		}
 		return;
 	}
 
 	// Iterate over the found entities and generate ORCA lines based on their current states.
-	const float inversePredictionTime = 1.0f / ArgusECSConstants::k_avoidanceCollisionDetectionPredictionTime;
-	std::vector<ORCALine> orcaLines;
+	std::vector<ORCALine> calculatedORCALines;
+	CreateObstacleORCALines(worldPointer, components, calculatedORCALines);
+	CreateEntityORCALines(params, components, foundEntityIds, calculatedORCALines);
+
+	int failureLine = -1;
+	FVector2D resultingVelocity = FVector2D::ZeroVector;
+	if (!TwoDimensionalLinearProgram(calculatedORCALines, components.m_transformComponent->m_desiredSpeedUnitsPerSecond, desiredVelocity, true, resultingVelocity, failureLine))
+	{
+		ThreeDimensionalLinearProgram(calculatedORCALines, components.m_transformComponent->m_desiredSpeedUnitsPerSecond, failureLine, 0, resultingVelocity);
+	}
+
+	if (resultingVelocity.SquaredLength() > FMath::Square(components.m_transformComponent->m_desiredSpeedUnitsPerSecond))
+	{
+		resultingVelocity = resultingVelocity.GetSafeNormal() * components.m_transformComponent->m_desiredSpeedUnitsPerSecond;
+	}
+
+	if (CVarShowAvoidanceDebug.GetValueOnGameThread() && worldPointer)
+	{
+		const FVector sourceEntityLocation3D = FVector(params.m_sourceEntityLocation, 5.0f);
+		DrawDebugLine(worldPointer, sourceEntityLocation3D, sourceEntityLocation3D + FVector(resultingVelocity, 0.0f), FColor::Orange, false, -1.0f, 0, 5.0f);
+		DrawDebugLine(worldPointer, sourceEntityLocation3D, sourceEntityLocation3D + FVector(desiredVelocity, 0.0f), FColor::Green, false, -1.0f, 0, 5.0f);
+	}
+
+	components.m_transformComponent->m_proposedAvoidanceVelocity = FVector(resultingVelocity, 0.0f);
+}
+
+void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const TransformSystems::TransformSystemsComponentArgs& components, std::vector<ORCALine>& outORCALines)
+{
+	if (!worldPointer)
+	{
+		return;
+	}
+
+	TArray<FVector> foundNavEdges;
+	RetrieveRelevantNavEdges(worldPointer, components, foundNavEdges);
+}
+
+void AvoidanceSystems::CreateEntityORCALines(const CreateEntityORCALinesParams& params, const TransformSystems::TransformSystemsComponentArgs& components, std::vector<uint16>& foundEntityIds, std::vector<ORCALine>& outORCALines)
+{
 	for (int i = 0; i < foundEntityIds.size(); ++i)
 	{
 		ArgusEntity foundEntity = ArgusEntity::RetrieveEntity(foundEntityIds[i]);
@@ -122,53 +156,28 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 			continue;
 		}
 
-		FindORCALineParams params;
-		params.m_sourceEntityLocation = sourceEntityLocation;
-		params.m_sourceEntityVelocity = sourceEntityVelocity;
-		params.m_deltaTime = deltaTime;
-		params.m_inversePredictionTime = inversePredictionTime;
-		params.m_foundEntityLocation = FVector2D(foundTransformComponent->m_transform.GetLocation());
-		params.m_foundEntityVelocity = FVector2D(foundTransformComponent->m_currentVelocity);
-		params.m_entityRadius = components.m_transformComponent->m_radius;
+		CreateEntityORCALinesParamsPerEntity perEntityParams;
+		perEntityParams.m_foundEntityLocation = FVector2D(foundTransformComponent->m_transform.GetLocation());
+		perEntityParams.m_foundEntityVelocity = FVector2D(foundTransformComponent->m_currentVelocity);
+		perEntityParams.m_entityRadius = components.m_transformComponent->m_radius;
 
 		FVector2D velocityToBoundaryOfVO = FVector2D::ZeroVector;
-		ORCALine orcaLine;
-		FindORCALineAndVelocityToBoundaryPerEntity(params, velocityToBoundaryOfVO, orcaLine);
+		ORCALine calculatedORCALine;
+		FindORCALineAndVelocityToBoundaryPerEntity(params, perEntityParams, velocityToBoundaryOfVO, calculatedORCALine);
 
-		orcaLine.m_point = sourceEntityVelocity + (velocityToBoundaryOfVO * GetEffortCoefficientForEntityPair(components, foundEntity));
-		orcaLines.push_back(orcaLine);
+		calculatedORCALine.m_point = params.m_sourceEntityVelocity + (velocityToBoundaryOfVO * GetEffortCoefficientForEntityPair(components, foundEntity));
+		outORCALines.push_back(calculatedORCALine);
 	}
-
-	int failureLine = -1;
-	FVector2D resultingVelocity = FVector2D::ZeroVector;
-	if (!TwoDimensionalLinearProgram(orcaLines, components.m_transformComponent->m_desiredSpeedUnitsPerSecond, desiredVelocity, true, resultingVelocity, failureLine))
-	{
-		ThreeDimensionalLinearProgram(orcaLines, components.m_transformComponent->m_desiredSpeedUnitsPerSecond, failureLine, 0, resultingVelocity);
-	}
-
-	if (resultingVelocity.SquaredLength() > FMath::Square(components.m_transformComponent->m_desiredSpeedUnitsPerSecond))
-	{
-		resultingVelocity = resultingVelocity.GetSafeNormal() * components.m_transformComponent->m_desiredSpeedUnitsPerSecond;
-	}
-
-	if (CVarShowAvoidanceDebug.GetValueOnGameThread() && worldPointer)
-	{
-		const FVector sourceEntityLocation3D = FVector(sourceEntityLocation, 5.0f);
-		DrawDebugLine(worldPointer, sourceEntityLocation3D, sourceEntityLocation3D + FVector(resultingVelocity, 0.0f), FColor::Orange, false, -1.0f, 0, 5.0f);
-		DrawDebugLine(worldPointer, sourceEntityLocation3D, sourceEntityLocation3D + FVector(desiredVelocity, 0.0f), FColor::Green, false, -1.0f, 0, 5.0f);
-	}
-
-	components.m_transformComponent->m_proposedAvoidanceVelocity = FVector(resultingVelocity, 0.0f);
 }
 
-void AvoidanceSystems::FindORCALineAndVelocityToBoundaryPerEntity(const FindORCALineParams& params, FVector2D& velocityToBoundaryOfVO, ORCALine& orcaLine)
+void AvoidanceSystems::FindORCALineAndVelocityToBoundaryPerEntity(const CreateEntityORCALinesParams& params, const CreateEntityORCALinesParamsPerEntity& perEntityParams, FVector2D& velocityToBoundaryOfVO, ORCALine& orcaLine)
 {
 	ARGUS_TRACE(AvoidanceSystems::FindORCALineAndVelocityToBoundaryPerEntity);
 
-	const FVector2D relativeLocation = params.m_foundEntityLocation - params.m_sourceEntityLocation;
-	const FVector2D relativeVelocity = params.m_sourceEntityVelocity - params.m_foundEntityVelocity;
+	const FVector2D relativeLocation = perEntityParams.m_foundEntityLocation - params.m_sourceEntityLocation;
+	const FVector2D relativeVelocity = params.m_sourceEntityVelocity - perEntityParams.m_foundEntityVelocity;
 	const float relativeLocationDistanceSquared = relativeLocation.SquaredLength();
-	const float combinedRadius = 2.0f * params.m_entityRadius;
+	const float combinedRadius = 2.0f * perEntityParams.m_entityRadius;
 	const float combinedRadiusSquared = FMath::Square(combinedRadius);
 
 	if (relativeLocationDistanceSquared > combinedRadiusSquared)
