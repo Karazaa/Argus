@@ -63,9 +63,9 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 	}
 
 	CreateEntityORCALinesParams params;
-	FVector sourceEntityLocation3D = components.m_transformComponent->m_transform.GetLocation();
-	sourceEntityLocation3D.Z += k_debugVectorHeightAdjust;
-	params.m_sourceEntityLocation = FVector2D(sourceEntityLocation3D);
+	params.m_sourceEntityLocation3D = components.m_transformComponent->m_transform.GetLocation();
+	params.m_sourceEntityLocation3D.Z += k_debugVectorHeightAdjust;
+	params.m_sourceEntityLocation = FVector2D(params.m_sourceEntityLocation3D);
 	params.m_sourceEntityVelocity = FVector2D(components.m_transformComponent->m_currentVelocity);
 	params.m_deltaTime = deltaTime;
 	params.m_inversePredictionTime = 1.0f / ArgusECSConstants::k_avoidanceCollisionDetectionPredictionTime;
@@ -98,7 +98,7 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 		components.m_transformComponent->m_proposedAvoidanceVelocity = FVector(desiredVelocity, 0.0f);
 		if (CVarShowAvoidanceDebug.GetValueOnGameThread() && worldPointer)
 		{
-			DrawDebugLine(worldPointer, sourceEntityLocation3D, sourceEntityLocation3D + components.m_transformComponent->m_proposedAvoidanceVelocity, FColor::Orange, false, -1.0f, 0, k_debugVectorWidth);
+			DrawDebugLine(worldPointer, params.m_sourceEntityLocation3D, params.m_sourceEntityLocation3D + components.m_transformComponent->m_proposedAvoidanceVelocity, FColor::Orange, false, -1.0f, 0, k_debugVectorWidth);
 		}
 		return;
 	}
@@ -123,8 +123,9 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 
 	if (CVarShowAvoidanceDebug.GetValueOnGameThread() && worldPointer)
 	{
-		DrawDebugLine(worldPointer, sourceEntityLocation3D, sourceEntityLocation3D + FVector(resultingVelocity, 0.0f), FColor::Orange, false, -1.0f, 0, k_debugVectorWidth);
-		DrawDebugLine(worldPointer, sourceEntityLocation3D, sourceEntityLocation3D + FVector(desiredVelocity, 0.0f), FColor::Green, false, -1.0f, 0, k_debugVectorWidth);
+		DrawORCADebugLines(worldPointer, params, calculatedORCALines);
+		DrawDebugLine(worldPointer, params.m_sourceEntityLocation3D, params.m_sourceEntityLocation3D + FVector(resultingVelocity, 0.0f), FColor::Orange, false, -1.0f, 0, k_debugVectorWidth);
+		DrawDebugLine(worldPointer, params.m_sourceEntityLocation3D, params.m_sourceEntityLocation3D + FVector(desiredVelocity, 0.0f), FColor::Green, false, -1.0f, 0, k_debugVectorWidth);
 	}
 
 	components.m_transformComponent->m_proposedAvoidanceVelocity = FVector(resultingVelocity, 0.0f);
@@ -145,7 +146,7 @@ void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const Creat
 		FVector zAdjust = FVector(0.0f, 0.0f, 10.0f);
 		for (int i = 0; i < foundNavEdges.Num(); i += 2)
 		{
-			DrawDebugLine(worldPointer, foundNavEdges[i] + zAdjust, foundNavEdges[i + 1] + zAdjust, FColor::Blue, false, -1.0f, 0u, k_debugVectorWidth);
+			DrawDebugLine(worldPointer, foundNavEdges[i] + zAdjust, foundNavEdges[i + 1] + zAdjust, FColor::Black, false, -1.0f, 0u, k_debugVectorWidth);
 		}
 	}
 
@@ -531,4 +532,30 @@ float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems
 
 	return 0.5f;
 }
+
+void AvoidanceSystems::DrawORCADebugLines(UWorld* worldPointer, const CreateEntityORCALinesParams& params, const std::vector<ORCALine>& orcaLines)
+{
+	if (!CVarShowAvoidanceDebug.GetValueOnGameThread() || !worldPointer)
+	{
+		return;
+	}
+
+	const FVector sourceEntityLocation3D = FVector(params.m_sourceEntityLocation, 0.0f);
+	const FVector sourceEntityVelocity3D = FVector(params.m_sourceEntityVelocity, 0.0f);
+	const FVector relativeVelocityBasisTranslation = FVector(params.m_sourceEntityLocation, 0.0f) + sourceEntityVelocity3D;
+	const FQuat relativeVelocityBasisRotation = FRotationMatrix::MakeFromXZ(sourceEntityVelocity3D, FVector::UpVector).ToQuat();
+	const FTransform basisTransform = FTransform(relativeVelocityBasisRotation, relativeVelocityBasisTranslation);
+
+	for (int i = 0; i < orcaLines.size(); ++i)
+	{
+		const FVector worldspacePoint = basisTransform.TransformPosition(FVector(orcaLines[i].m_point, 0.0f));
+		const FVector worldspaceDirection = basisTransform.TransformVector(FVector(orcaLines[i].m_direction, 0.0f));
+		const FVector worldspaceOrthogonalDirectionScaled = worldspaceDirection.Cross(FVector::UpVector) * 1000.0f;
+
+		DrawDebugSphere(worldPointer, worldspacePoint, 10.0f, 10u, FColor::Cyan, false, -1.0f, 0u, k_debugVectorWidth);
+		DrawDebugLine(worldPointer, worldspacePoint, worldspacePoint + (worldspaceDirection * 100.0f), FColor::Cyan, false, -1.0f, 0u, k_debugVectorWidth);
+		DrawDebugLine(worldPointer, worldspacePoint - worldspaceOrthogonalDirectionScaled, worldspacePoint + worldspaceOrthogonalDirectionScaled, FColor::Cyan, false, -1.0f, 0u, k_debugVectorWidth);
+	}
+}
+
 #pragma endregion

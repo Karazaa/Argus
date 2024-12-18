@@ -19,6 +19,7 @@ private:
 	};
 	struct CreateEntityORCALinesParams
 	{
+		FVector m_sourceEntityLocation3D = FVector::ZeroVector;
 		FVector2D m_sourceEntityLocation = FVector2D::ZeroVector;
 		FVector2D m_sourceEntityVelocity = FVector2D::ZeroVector;
 		float m_deltaTime = 0.0f;
@@ -41,6 +42,8 @@ private:
 	static void RetrieveRelevantNavEdges(UWorld* worldPointer, const TransformSystems::TransformSystemsComponentArgs& components, TArray<FVector>& outNavEdges);
 	static float GetEffortCoefficientForEntityPair(const TransformSystems::TransformSystemsComponentArgs& sourceEntityComponents, const ArgusEntity& foundEntity);
 	
+	static void DrawORCADebugLines(UWorld* worldPointer, const CreateEntityORCALinesParams& params, const std::vector<ORCALine>& orcaLines);
+
 	static constexpr float k_debugVectorWidth = 3.0f;
 	static constexpr float k_debugVectorHeightAdjust = 5.0f;
 };
