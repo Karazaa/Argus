@@ -63,7 +63,9 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 	}
 
 	CreateEntityORCALinesParams params;
-	params.m_sourceEntityLocation = FVector2D(components.m_transformComponent->m_transform.GetLocation());
+	FVector sourceEntityLocation3D = components.m_transformComponent->m_transform.GetLocation();
+	sourceEntityLocation3D.Z += k_debugVectorHeightAdjust;
+	params.m_sourceEntityLocation = FVector2D(sourceEntityLocation3D);
 	params.m_sourceEntityVelocity = FVector2D(components.m_transformComponent->m_currentVelocity);
 	params.m_deltaTime = deltaTime;
 	params.m_inversePredictionTime = 1.0f / ArgusECSConstants::k_avoidanceCollisionDetectionPredictionTime;
@@ -96,22 +98,22 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 		components.m_transformComponent->m_proposedAvoidanceVelocity = FVector(desiredVelocity, 0.0f);
 		if (CVarShowAvoidanceDebug.GetValueOnGameThread() && worldPointer)
 		{
-			FVector sourceEntityLocation3D = FVector(params.m_sourceEntityLocation, 5.0f);
-			DrawDebugLine(worldPointer, sourceEntityLocation3D, sourceEntityLocation3D + components.m_transformComponent->m_proposedAvoidanceVelocity, FColor::Orange, false, -1.0f, 0, 5.0f);
+			DrawDebugLine(worldPointer, sourceEntityLocation3D, sourceEntityLocation3D + components.m_transformComponent->m_proposedAvoidanceVelocity, FColor::Orange, false, -1.0f, 0, k_debugVectorWidth);
 		}
 		return;
 	}
 
 	// Iterate over the found entities and generate ORCA lines based on their current states.
 	std::vector<ORCALine> calculatedORCALines;
-	CreateObstacleORCALines(worldPointer, components, calculatedORCALines);
+	CreateObstacleORCALines(worldPointer, params, components, calculatedORCALines);
+	const int numStaticObstacles = calculatedORCALines.size();
 	CreateEntityORCALines(params, components, foundEntityIds, calculatedORCALines);
 
 	int failureLine = -1;
 	FVector2D resultingVelocity = FVector2D::ZeroVector;
 	if (!TwoDimensionalLinearProgram(calculatedORCALines, components.m_transformComponent->m_desiredSpeedUnitsPerSecond, desiredVelocity, true, resultingVelocity, failureLine))
 	{
-		ThreeDimensionalLinearProgram(calculatedORCALines, components.m_transformComponent->m_desiredSpeedUnitsPerSecond, failureLine, 0, resultingVelocity);
+		ThreeDimensionalLinearProgram(calculatedORCALines, components.m_transformComponent->m_desiredSpeedUnitsPerSecond, failureLine, numStaticObstacles, resultingVelocity);
 	}
 
 	if (resultingVelocity.SquaredLength() > FMath::Square(components.m_transformComponent->m_desiredSpeedUnitsPerSecond))
@@ -121,15 +123,14 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 
 	if (CVarShowAvoidanceDebug.GetValueOnGameThread() && worldPointer)
 	{
-		const FVector sourceEntityLocation3D = FVector(params.m_sourceEntityLocation, 5.0f);
-		DrawDebugLine(worldPointer, sourceEntityLocation3D, sourceEntityLocation3D + FVector(resultingVelocity, 0.0f), FColor::Orange, false, -1.0f, 0, 5.0f);
-		DrawDebugLine(worldPointer, sourceEntityLocation3D, sourceEntityLocation3D + FVector(desiredVelocity, 0.0f), FColor::Green, false, -1.0f, 0, 5.0f);
+		DrawDebugLine(worldPointer, sourceEntityLocation3D, sourceEntityLocation3D + FVector(resultingVelocity, 0.0f), FColor::Orange, false, -1.0f, 0, k_debugVectorWidth);
+		DrawDebugLine(worldPointer, sourceEntityLocation3D, sourceEntityLocation3D + FVector(desiredVelocity, 0.0f), FColor::Green, false, -1.0f, 0, k_debugVectorWidth);
 	}
 
 	components.m_transformComponent->m_proposedAvoidanceVelocity = FVector(resultingVelocity, 0.0f);
 }
 
-void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const TransformSystems::TransformSystemsComponentArgs& components, std::vector<ORCALine>& outORCALines)
+void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const CreateEntityORCALinesParams& params, const TransformSystems::TransformSystemsComponentArgs& components, std::vector<ORCALine>& outORCALines)
 {
 	if (!worldPointer)
 	{
@@ -138,6 +139,30 @@ void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const Trans
 
 	TArray<FVector> foundNavEdges;
 	RetrieveRelevantNavEdges(worldPointer, components, foundNavEdges);
+
+	if (CVarShowAvoidanceDebug.GetValueOnGameThread())
+	{
+		FVector zAdjust = FVector(0.0f, 0.0f, 10.0f);
+		for (int i = 0; i < foundNavEdges.Num(); i += 2)
+		{
+			DrawDebugLine(worldPointer, foundNavEdges[i] + zAdjust, foundNavEdges[i + 1] + zAdjust, FColor::Blue, false, -1.0f, 0u, k_debugVectorWidth);
+		}
+	}
+
+	for (int i = 0; i < foundNavEdges.Num(); i += 2)
+	{
+		ORCALine calculatedORCALine;
+		calculatedORCALine.m_point = FVector2D(foundNavEdges[0]);
+
+		FVector2D relativeLocation = params.m_sourceEntityLocation - calculatedORCALine.m_point;
+		FVector2D lineSegment = FVector2D(foundNavEdges[1] - foundNavEdges[0]);
+
+		FVector2D potentialDirection0 = FVector2D(lineSegment.Y, -lineSegment.X);
+		FVector2D potentialDirection1 = FVector2D(-lineSegment.Y, lineSegment.X);
+
+		calculatedORCALine.m_direction = relativeLocation.Dot(potentialDirection0) ? potentialDirection0 : potentialDirection1;
+		// outORCALines.push_back(calculatedORCALine);
+	}
 }
 
 void AvoidanceSystems::CreateEntityORCALines(const CreateEntityORCALinesParams& params, const TransformSystems::TransformSystemsComponentArgs& components, std::vector<uint16>& foundEntityIds, std::vector<ORCALine>& outORCALines)
@@ -170,7 +195,7 @@ void AvoidanceSystems::CreateEntityORCALines(const CreateEntityORCALinesParams& 
 	}
 }
 
-void AvoidanceSystems::FindORCALineAndVelocityToBoundaryPerEntity(const CreateEntityORCALinesParams& params, const CreateEntityORCALinesParamsPerEntity& perEntityParams, FVector2D& velocityToBoundaryOfVO, ORCALine& orcaLine)
+void AvoidanceSystems::FindORCALineAndVelocityToBoundaryPerEntity(const CreateEntityORCALinesParams& params, const CreateEntityORCALinesParamsPerEntity& perEntityParams, FVector2D& velocityToBoundaryOfVO, ORCALine& calculatedORCALine)
 {
 	ARGUS_TRACE(AvoidanceSystems::FindORCALineAndVelocityToBoundaryPerEntity);
 
@@ -191,7 +216,7 @@ void AvoidanceSystems::FindORCALineAndVelocityToBoundaryPerEntity(const CreateEn
 		{
 			const float cutoffCenterToRelativeVelocityLength = FMath::Sqrt(cutoffCenterToRelativeVelocityLengthSqared);
 			const FVector2D unitCutoffCenterToRelativeVelocity = cutoffCenterToRelativeVelocity / cutoffCenterToRelativeVelocityLength;
-			orcaLine.m_direction = FVector2D(unitCutoffCenterToRelativeVelocity.Y, -unitCutoffCenterToRelativeVelocity.X);
+			calculatedORCALine.m_direction = FVector2D(unitCutoffCenterToRelativeVelocity.Y, -unitCutoffCenterToRelativeVelocity.X);
 			velocityToBoundaryOfVO = ((combinedRadius * params.m_inversePredictionTime) - cutoffCenterToRelativeVelocityLength) * unitCutoffCenterToRelativeVelocity;
 		}
 		else
@@ -199,16 +224,16 @@ void AvoidanceSystems::FindORCALineAndVelocityToBoundaryPerEntity(const CreateEn
 			const float leg = FMath::Sqrt(relativeLocationDistanceSquared - combinedRadiusSquared);
 			if (ArgusMath::Determinant(relativeLocation, cutoffCenterToRelativeVelocity) > 0.0f)
 			{
-				orcaLine.m_direction = FVector2D((relativeLocation.X * leg) - (relativeLocation.Y * combinedRadius),
+				calculatedORCALine.m_direction = FVector2D((relativeLocation.X * leg) - (relativeLocation.Y * combinedRadius),
 					(relativeLocation.X * combinedRadius) + (relativeLocation.Y * leg));
 			}
 			else
 			{
-				orcaLine.m_direction = -FVector2D((relativeLocation.X * leg) + (relativeLocation.Y * combinedRadius),
+				calculatedORCALine.m_direction = -FVector2D((relativeLocation.X * leg) + (relativeLocation.Y * combinedRadius),
 					(-relativeLocation.X * combinedRadius) + (relativeLocation.Y * leg));
 			}
-			orcaLine.m_direction /= relativeLocationDistanceSquared;
-			velocityToBoundaryOfVO = (relativeVelocity.Dot(orcaLine.m_direction) * orcaLine.m_direction) - relativeVelocity;
+			calculatedORCALine.m_direction /= relativeLocationDistanceSquared;
+			velocityToBoundaryOfVO = (relativeVelocity.Dot(calculatedORCALine.m_direction) * calculatedORCALine.m_direction) - relativeVelocity;
 		}
 	}
 	else
@@ -220,7 +245,7 @@ void AvoidanceSystems::FindORCALineAndVelocityToBoundaryPerEntity(const CreateEn
 		const float lengthCutoffCenterToRelativeVelocity = cutoffCenterToRelativeVelocity.Length();
 		const FVector2D normalizedCutoffCenterToRelativeVelocity = cutoffCenterToRelativeVelocity / lengthCutoffCenterToRelativeVelocity;
 
-		orcaLine.m_direction = FVector2D(normalizedCutoffCenterToRelativeVelocity.Y, -normalizedCutoffCenterToRelativeVelocity.X);
+		calculatedORCALine.m_direction = FVector2D(normalizedCutoffCenterToRelativeVelocity.Y, -normalizedCutoffCenterToRelativeVelocity.X);
 		velocityToBoundaryOfVO = ((combinedRadius * inverseDeltaTime) - lengthCutoffCenterToRelativeVelocity) * normalizedCutoffCenterToRelativeVelocity;
 	}
 }

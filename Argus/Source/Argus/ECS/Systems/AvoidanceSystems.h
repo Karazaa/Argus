@@ -31,7 +31,7 @@ private:
 		float m_entityRadius = 45.0f;
 	};
 
-	static void CreateObstacleORCALines(UWorld* worldPointer, const TransformSystems::TransformSystemsComponentArgs& components, std::vector<ORCALine>& outORCALines);
+	static void CreateObstacleORCALines(UWorld* worldPointer, const CreateEntityORCALinesParams& params, const TransformSystems::TransformSystemsComponentArgs& components, std::vector<ORCALine>& outORCALines);
 	static void CreateEntityORCALines(const CreateEntityORCALinesParams& params, const TransformSystems::TransformSystemsComponentArgs& components, std::vector<uint16>& foundEntityIds, std::vector<ORCALine>& outORCALines);
 	static void FindORCALineAndVelocityToBoundaryPerEntity(const CreateEntityORCALinesParams& params, const CreateEntityORCALinesParamsPerEntity& perEntityParams, FVector2D& velocityToBoundaryOfVO, ORCALine& orcaLine);
 	static bool OneDimensionalLinearProgram(const std::vector<ORCALine>& orcaLines, const float radius, const FVector2D& preferredVelocity, bool shouldOptimizeDirection, const int lineIndex, FVector2D& resultingVelocity);
@@ -40,4 +40,7 @@ private:
 	
 	static void RetrieveRelevantNavEdges(UWorld* worldPointer, const TransformSystems::TransformSystemsComponentArgs& components, TArray<FVector>& outNavEdges);
 	static float GetEffortCoefficientForEntityPair(const TransformSystems::TransformSystemsComponentArgs& sourceEntityComponents, const ArgusEntity& foundEntity);
+	
+	static constexpr float k_debugVectorWidth = 3.0f;
+	static constexpr float k_debugVectorHeightAdjust = 5.0f;
 };
