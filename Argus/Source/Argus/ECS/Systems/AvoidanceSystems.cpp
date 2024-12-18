@@ -111,7 +111,7 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 
 	int failureLine = -1;
 	FVector2D resultingVelocity = FVector2D::ZeroVector;
-	if (!TwoDimensionalLinearProgram(calculatedORCALines, components.m_transformComponent->m_desiredSpeedUnitsPerSecond, desiredVelocity, true, resultingVelocity, failureLine))
+	if (!TwoDimensionalLinearProgram(calculatedORCALines, components.m_transformComponent->m_desiredSpeedUnitsPerSecond, desiredVelocity, false, resultingVelocity, failureLine))
 	{
 		ThreeDimensionalLinearProgram(calculatedORCALines, components.m_transformComponent->m_desiredSpeedUnitsPerSecond, failureLine, numStaticObstacles, resultingVelocity);
 	}
@@ -181,6 +181,12 @@ void AvoidanceSystems::CreateEntityORCALines(const CreateEntityORCALinesParams& 
 			continue;
 		}
 
+		const float effortCoefficient = GetEffortCoefficientForEntityPair(components, foundEntity);
+		if (effortCoefficient == 0.0f)
+		{
+			continue;
+		}
+
 		CreateEntityORCALinesParamsPerEntity perEntityParams;
 		perEntityParams.m_foundEntityLocation = FVector2D(foundTransformComponent->m_transform.GetLocation());
 		perEntityParams.m_foundEntityVelocity = FVector2D(foundTransformComponent->m_currentVelocity);
@@ -190,7 +196,7 @@ void AvoidanceSystems::CreateEntityORCALines(const CreateEntityORCALinesParams& 
 		ORCALine calculatedORCALine;
 		FindORCALineAndVelocityToBoundaryPerEntity(params, perEntityParams, velocityToBoundaryOfVO, calculatedORCALine);
 
-		calculatedORCALine.m_point = params.m_sourceEntityVelocity + (velocityToBoundaryOfVO * GetEffortCoefficientForEntityPair(components, foundEntity));
+		calculatedORCALine.m_point = params.m_sourceEntityVelocity + (velocityToBoundaryOfVO * effortCoefficient);
 		outORCALines.push_back(calculatedORCALine);
 	}
 }
@@ -501,12 +507,26 @@ float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems
 
 	if (sourceEntityComponents.m_taskComponent->IsExecutingMoveTask() && (!foundEntityTaskComponent->IsExecutingMoveTask()))
 	{
-		return foundEntity.IsMoveable() ? 0.0f : 1.0f;
+		if (foundEntity.IsMoveable())
+		{
+			return 0.0f;
+		}
+		else
+		{
+			return 1.0f;
+		}
 	}
 
 	if (!sourceEntityComponents.m_taskComponent->IsExecutingMoveTask() && foundEntityTaskComponent->IsExecutingMoveTask())
 	{
-		return sourceEntityComponents.m_entity.IsMoveable() ? 1.0f : 0.0f;
+		if (sourceEntityComponents.m_entity.IsMoveable())
+		{
+			return 1.0f;
+		}
+		else
+		{
+			return 0.0f;
+		}
 	}
 
 	return 0.5f;
