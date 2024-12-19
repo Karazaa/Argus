@@ -111,7 +111,7 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 
 	int failureLine = -1;
 	FVector2D resultingVelocity = FVector2D::ZeroVector;
-	if (!TwoDimensionalLinearProgram(calculatedORCALines, components.m_transformComponent->m_desiredSpeedUnitsPerSecond, desiredVelocity, false, resultingVelocity, failureLine))
+	if (!TwoDimensionalLinearProgram(calculatedORCALines, components.m_transformComponent->m_desiredSpeedUnitsPerSecond, desiredVelocity, true, resultingVelocity, failureLine))
 	{
 		ThreeDimensionalLinearProgram(calculatedORCALines, components.m_transformComponent->m_desiredSpeedUnitsPerSecond, failureLine, numStaticObstacles, resultingVelocity);
 	}
@@ -480,13 +480,32 @@ void AvoidanceSystems::RetrieveRelevantNavEdges(UWorld* worldPointer, const Tran
 
 	if (CVarShowAvoidanceDebug.GetValueOnGameThread())
 	{
+		const FVector zAdjust = FVector(0.0f, 0.0f, k_debugVectorHeightAdjust);
+		DrawDebugCircle(worldPointer, entityLocation + zAdjust, ArgusECSConstants::k_avoidanceAgentSearchRadius, 20, FColor::Yellow, false, -1.0f, 0, k_debugVectorWidth, FVector::RightVector, FVector::ForwardVector, false);
 		for (int32 i = 0; i < 4; ++i)
 		{
-			DrawDebugLine(worldPointer, queryShapePoints[i], queryShapePoints[(i + 1) % 4], FColor::Yellow, false, -1.0f, k_debugVectorWidth);
+			DrawDebugLine(worldPointer, queryShapePoints[i] + zAdjust, queryShapePoints[(i + 1) % 4] + zAdjust, FColor::Yellow, false, -1.0f, k_debugVectorWidth);
 		}
 	}
 
-	navData->FindOverlappingEdges(originLocation, TConstArrayView<FVector>(queryShapePoints), outNavEdges);
+	TArray<FVector> unfilteredNavEdges;
+	navData->FindOverlappingEdges(originLocation, TConstArrayView<FVector>(queryShapePoints), unfilteredNavEdges);
+
+	int32 numNavEdges = unfilteredNavEdges.Num();
+	outNavEdges.Reserve(numNavEdges);
+	for (int32 i = 0; i < numNavEdges; i += 2)
+	{
+		const float searchRadiusSquared = FMath::Square(ArgusECSConstants::k_avoidanceAgentSearchRadius);
+		const bool isFirstOutOfRange = (unfilteredNavEdges[i] - entityLocation).SquaredLength() > searchRadiusSquared;
+		const bool isSecondOutOfRange = (unfilteredNavEdges[i + 1] - entityLocation).SquaredLength() > searchRadiusSquared;
+		if (isFirstOutOfRange && isSecondOutOfRange)
+		{
+			continue;
+		}
+
+		outNavEdges.Add(unfilteredNavEdges[i]);
+		outNavEdges.Add(unfilteredNavEdges[i + 1]);
+	}
 }
 
 float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems::TransformSystemsComponentArgs& sourceEntityComponents, const ArgusEntity& foundEntity)
@@ -591,9 +610,8 @@ void AvoidanceSystems::DrawORCADebugLines(UWorld* worldPointer, const CreateEnti
 	}
 
 	const FVector sourceEntityLocation3D = FVector(params.m_sourceEntityLocation, 0.0f);
-	const FVector sourceEntityVelocity3D = FVector(params.m_sourceEntityVelocity, 0.0f);
-	const FVector relativeVelocityBasisTranslation = FVector(params.m_sourceEntityLocation, 0.0f) + sourceEntityVelocity3D;
-	const FQuat relativeVelocityBasisRotation = FRotationMatrix::MakeFromXZ(sourceEntityVelocity3D, FVector::UpVector).ToQuat();
+	const FVector relativeVelocityBasisTranslation = FVector(params.m_sourceEntityLocation, 0.0f);
+	const FQuat relativeVelocityBasisRotation = FRotationMatrix::MakeFromXZ(FVector::ForwardVector, FVector::UpVector).ToQuat();
 	const FTransform basisTransform = FTransform(relativeVelocityBasisRotation, relativeVelocityBasisTranslation);
 
 	for (int i = 0; i < orcaLines.size(); ++i)

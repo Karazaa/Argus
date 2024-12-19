@@ -19,6 +19,7 @@ private:
 	};
 	struct CreateEntityORCALinesParams
 	{
+		FTransform m_basisTransform = FTransform::Identity;
 		FVector m_sourceEntityLocation3D = FVector::ZeroVector;
 		FVector2D m_sourceEntityLocation = FVector2D::ZeroVector;
 		FVector2D m_sourceEntityVelocity = FVector2D::ZeroVector;
