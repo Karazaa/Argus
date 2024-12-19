@@ -139,31 +139,37 @@ void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const Creat
 	}
 
 	TArray<FVector> foundNavEdges;
+	TArray<ObstacleCorner> obstacleCorners;
 	RetrieveRelevantNavEdges(worldPointer, components, foundNavEdges);
+	CalculateObstacleCorners(params.m_sourceEntityLocation3D, foundNavEdges, obstacleCorners);
 
 	if (CVarShowAvoidanceDebug.GetValueOnGameThread())
 	{
-		FVector zAdjust = FVector(0.0f, 0.0f, 10.0f);
-		for (int i = 0; i < foundNavEdges.Num(); i += 2)
+		FVector zAdjust = FVector(0.0f, 0.0f, k_debugVectorHeightAdjust);
+		for (int32 i = 0; i < obstacleCorners.Num(); ++i)
+		{
+			DrawDebugSphere(worldPointer, foundNavEdges[obstacleCorners[i].locationIndex] + zAdjust, 10.0f, 10, FColor::Black, false, -1.0f, 0u, k_debugVectorWidth);
+		}
+		for (int32 i = 0; i < foundNavEdges.Num(); i += 2)
 		{
 			DrawDebugLine(worldPointer, foundNavEdges[i] + zAdjust, foundNavEdges[i + 1] + zAdjust, FColor::Black, false, -1.0f, 0u, k_debugVectorWidth);
 		}
 	}
 
-	for (int i = 0; i < foundNavEdges.Num(); i += 2)
-	{
-		ORCALine calculatedORCALine;
-		calculatedORCALine.m_point = FVector2D(foundNavEdges[0]);
+	//for (int i = 0; i < foundNavEdges.Num(); i += 2)
+	//{
+	//	ORCALine calculatedORCALine;
+	//	calculatedORCALine.m_point = FVector2D(foundNavEdges[0]);
 
-		FVector2D relativeLocation = params.m_sourceEntityLocation - calculatedORCALine.m_point;
-		FVector2D lineSegment = FVector2D(foundNavEdges[1] - foundNavEdges[0]);
+	//	FVector2D relativeLocation = params.m_sourceEntityLocation - calculatedORCALine.m_point;
+	//	FVector2D lineSegment = FVector2D(foundNavEdges[1] - foundNavEdges[0]);
 
-		FVector2D potentialDirection0 = FVector2D(lineSegment.Y, -lineSegment.X);
-		FVector2D potentialDirection1 = FVector2D(-lineSegment.Y, lineSegment.X);
+	//	FVector2D potentialDirection0 = FVector2D(lineSegment.Y, -lineSegment.X);
+	//	FVector2D potentialDirection1 = FVector2D(-lineSegment.Y, lineSegment.X);
 
-		calculatedORCALine.m_direction = relativeLocation.Dot(potentialDirection0) ? potentialDirection0 : potentialDirection1;
-		// outORCALines.push_back(calculatedORCALine);
-	}
+	//	calculatedORCALine.m_direction = relativeLocation.Dot(potentialDirection0) ? potentialDirection0 : potentialDirection1;
+	//	// outORCALines.push_back(calculatedORCALine);
+	//}
 }
 
 void AvoidanceSystems::CreateEntityORCALines(const CreateEntityORCALinesParams& params, const TransformSystems::TransformSystemsComponentArgs& components, std::vector<uint16>& foundEntityIds, std::vector<ORCALine>& outORCALines)
@@ -472,6 +478,14 @@ void AvoidanceSystems::RetrieveRelevantNavEdges(UWorld* worldPointer, const Tran
 	queryShapePoints[2].Y -= ArgusECSConstants::k_avoidanceAgentSearchRadius;
 	queryShapePoints[3].Y -= ArgusECSConstants::k_avoidanceAgentSearchRadius;
 
+	if (CVarShowAvoidanceDebug.GetValueOnGameThread())
+	{
+		for (int32 i = 0; i < 4; ++i)
+		{
+			DrawDebugLine(worldPointer, queryShapePoints[i], queryShapePoints[(i + 1) % 4], FColor::Yellow, false, -1.0f, k_debugVectorWidth);
+		}
+	}
+
 	navData->FindOverlappingEdges(originLocation, TConstArrayView<FVector>(queryShapePoints), outNavEdges);
 }
 
@@ -531,6 +545,42 @@ float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems
 	}
 
 	return 0.5f;
+}
+
+void AvoidanceSystems::CalculateObstacleCorners(const FVector& sourceEntityLocation, const TArray<FVector>& navEdges, TArray<ObstacleCorner>& outObstacleCorners)
+{
+	int32 numEdges = navEdges.Num();
+	if ((numEdges % 2) != 0)
+	{
+		// TODO JAMES: Error, something terrible has happened.
+		return;
+	}
+
+	outObstacleCorners.Reserve(numEdges / 2);
+	for (int32 i = 0; i < numEdges - 1; ++i)
+	{
+		for (int32 j = i + 1; j < numEdges; ++j)
+		{
+			if (navEdges[i] != navEdges[j])
+			{
+				continue;
+			}
+
+			ObstacleCorner corner;
+			corner.lineSegmentPointIndex0 = i - (i % 2);
+			corner.lineSegmentPointIndex1 = j - (j % 2);
+			corner.locationIndex = i;
+
+			const FVector toEntity = sourceEntityLocation - navEdges[i];
+			const FVector toEndSegment0 = navEdges[i + (corner.lineSegmentPointIndex0 == i ? 1 : -1)] - navEdges[i];
+			const FVector toEndSegment1 = navEdges[j + (corner.lineSegmentPointIndex1 == j ? 1 : -1)] - navEdges[j];
+
+			corner.lineSegment0DotProduct = toEntity.Dot(toEndSegment0);
+			corner.lineSegment1DotProduct = toEntity.Dot(toEndSegment1);
+
+			outObstacleCorners.Add(corner);
+		}
+	}
 }
 
 void AvoidanceSystems::DrawORCADebugLines(UWorld* worldPointer, const CreateEntityORCALinesParams& params, const std::vector<ORCALine>& orcaLines)
