@@ -139,9 +139,9 @@ void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const Creat
 	}
 
 	TArray<FVector> foundNavEdges;
-	TArray<TArray<Obstacle>> obstacles;
+	TArray<TArray<ObstaclePoint>> obstacles;
 	RetrieveRelevantNavEdges(worldPointer, components, foundNavEdges);
-	CalculateObstacles(params.m_sourceEntityLocation3D, foundNavEdges, obstacles);
+	CalculateObstacles(params.m_sourceEntityLocation, foundNavEdges, obstacles);
 
 	for (int32 i = 0; i < foundNavEdges.Num(); i += 2)
 	{
@@ -547,7 +547,7 @@ float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems
 	return 0.5f;
 }
 
-void AvoidanceSystems::CalculateObstacles(const FVector& sourceEntityLocation, const TArray<FVector>& navEdges, TArray<TArray<Obstacle>>& outObstacles)
+void AvoidanceSystems::CalculateObstacles(const FVector2D& sourceEntityLocation, const TArray<FVector>& navEdges, TArray<TArray<ObstaclePoint>>& outObstacles)
 {
 	const int32 numNavEdges = navEdges.Num();
 	if ((numNavEdges % 2) != 0 || numNavEdges == 0)
@@ -573,7 +573,7 @@ void AvoidanceSystems::CalculateObstacles(const FVector& sourceEntityLocation, c
 			const FVector2D endOfChainLocation = outObstacles[j][numObstaclesInChain - 1].m_point;
 			if (startOfChainLocation == edgeVertex0)
 			{
-				Obstacle vertex1Obstacle;
+				ObstaclePoint vertex1Obstacle;
 				vertex1Obstacle.m_point = edgeVertex1;
 				outObstacles[j].Insert(vertex1Obstacle, 0);
 				handledEdge = true;
@@ -581,7 +581,7 @@ void AvoidanceSystems::CalculateObstacles(const FVector& sourceEntityLocation, c
 			}
 			if (startOfChainLocation == edgeVertex1)
 			{
-				Obstacle vertex0Obstacle;
+				ObstaclePoint vertex0Obstacle;
 				vertex0Obstacle.m_point = edgeVertex0;
 				outObstacles[j].Insert(vertex0Obstacle, 0);
 				handledEdge = true;
@@ -589,7 +589,7 @@ void AvoidanceSystems::CalculateObstacles(const FVector& sourceEntityLocation, c
 			}
 			if (endOfChainLocation == edgeVertex0)
 			{
-				Obstacle vertex1Obstacle;
+				ObstaclePoint vertex1Obstacle;
 				vertex1Obstacle.m_point = edgeVertex1;
 				outObstacles[j].Add(vertex1Obstacle);
 				handledEdge = true;
@@ -597,7 +597,7 @@ void AvoidanceSystems::CalculateObstacles(const FVector& sourceEntityLocation, c
 			}
 			if (endOfChainLocation == edgeVertex1)
 			{
-				Obstacle vertex0Obstacle;
+				ObstaclePoint vertex0Obstacle;
 				vertex0Obstacle.m_point = edgeVertex0;
 				outObstacles[j].Add(vertex0Obstacle);
 				handledEdge = true;
@@ -610,10 +610,69 @@ void AvoidanceSystems::CalculateObstacles(const FVector& sourceEntityLocation, c
 			continue;
 		}
 		
-		Obstacle vertex0Obstacle, vertex1Obstacle;
+		ObstaclePoint vertex0Obstacle, vertex1Obstacle;
 		vertex0Obstacle.m_point = edgeVertex0;
 		vertex1Obstacle.m_point = edgeVertex1;
-		outObstacles.Add(TArray<Obstacle>({ vertex0Obstacle, vertex1Obstacle }));
+		outObstacles.Add(TArray<ObstaclePoint>({ vertex0Obstacle, vertex1Obstacle }));
+	}
+
+	for (int32 i = 0; i < outObstacles.Num(); ++i)
+	{
+		CalculateDirectionAndConvexForObstacles(sourceEntityLocation, outObstacles[i]);
+	}
+}
+
+void AvoidanceSystems::CalculateDirectionAndConvexForObstacles(const FVector2D& sourceEntityLocation, TArray<ObstaclePoint>& outObstacle)
+{
+	const int32 numObstaclePoints = outObstacle.Num();
+	float smallestDistanceSquared = FVector2D::DistSquared(sourceEntityLocation, outObstacle[0].m_point);
+	int32 nearestVertex = 0;
+	for (int32 i = 1; i < numObstaclePoints; ++i)
+	{
+		float squaredDistanceToCheck = FVector2D::DistSquared(sourceEntityLocation, outObstacle[i].m_point);
+		if (squaredDistanceToCheck < smallestDistanceSquared)
+		{
+			smallestDistanceSquared = squaredDistanceToCheck;
+			nearestVertex = i;
+		}
+	}
+
+	const FVector2D potentialDirectionForward = nearestVertex == (numObstaclePoints - 1) ? 
+											outObstacle[nearestVertex].m_point - outObstacle[nearestVertex - 1].m_point : 
+											outObstacle[nearestVertex + 1].m_point - outObstacle[nearestVertex].m_point;
+	const bool isBackwards = ArgusMath::IsLeftOf(outObstacle[nearestVertex].m_point, outObstacle[nearestVertex].m_point + potentialDirectionForward, sourceEntityLocation);
+
+	for (int32 i = 0; i < numObstaclePoints; ++i)
+	{
+		if (isBackwards)
+		{
+			outObstacle[i].m_direction = i == 0 ? 
+				outObstacle[i].m_point - outObstacle[i + 1].m_point :
+				outObstacle[i - 1].m_point - outObstacle[i].m_point;
+		}
+		else
+		{
+			outObstacle[i].m_direction = i == (numObstaclePoints - 1) ?
+				outObstacle[i].m_point - outObstacle[i - 1].m_point :
+				outObstacle[i + 1].m_point - outObstacle[i].m_point;
+		}
+		outObstacle[i].m_direction.Normalize();
+
+		if (i == 0 || i == (numObstaclePoints - 1))
+		{
+			outObstacle[i].m_isConvex = true;
+		}
+		else
+		{
+			if (isBackwards)
+			{
+				outObstacle[i].m_isConvex = ArgusMath::IsLeftOf(outObstacle[i + 1].m_point, outObstacle[i].m_point, outObstacle[i - 1].m_point);
+			}
+			else
+			{
+				outObstacle[i].m_isConvex = ArgusMath::IsLeftOf(outObstacle[i - 1].m_point, outObstacle[i].m_point, outObstacle[i + 1].m_point);
+			}
+		}
 	}
 }
 

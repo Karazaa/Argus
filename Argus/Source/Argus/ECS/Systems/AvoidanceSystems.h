@@ -32,7 +32,7 @@ private:
 		FVector2D m_foundEntityVelocity = FVector2D::ZeroVector;
 		float m_entityRadius = 45.0f;
 	};
-	struct Obstacle
+	struct ObstaclePoint
 	{
 		FVector2D m_point = FVector2D::ZeroVector;
 		FVector2D m_direction = FVector2D::ZeroVector;
@@ -49,7 +49,8 @@ private:
 	static void			RetrieveRelevantNavEdges(UWorld* worldPointer, const TransformSystems::TransformSystemsComponentArgs& components, TArray<FVector>& outNavEdges);
 	static float		GetEffortCoefficientForEntityPair(const TransformSystems::TransformSystemsComponentArgs& sourceEntityComponents, const ArgusEntity& foundEntity);
 	
-	static void			CalculateObstacles(const FVector& sourceEntityLocation, const TArray<FVector>& navEdges, TArray<TArray<Obstacle>>& outObstacles);
+	static void			CalculateObstacles(const FVector2D& sourceEntityLocation, const TArray<FVector>& navEdges, TArray<TArray<ObstaclePoint>>& outObstacles);
+	static void			CalculateDirectionAndConvexForObstacles(const FVector2D& sourceEntityLocation, TArray<ObstaclePoint>& outObstacle);
 	static ORCALine		CreateORCALineForNavEdge(const CreateEntityORCALinesParams& params, const TArray<FVector>& navEdges, int32 index);
 	static void			DrawORCADebugLines(UWorld* worldPointer, const CreateEntityORCALinesParams& params, const std::vector<ORCALine>& orcaLines);
 

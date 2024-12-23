@@ -76,4 +76,9 @@ namespace ArgusMath
 	{
 		return (topRow.X * bottomRow.Y) - (topRow.Y * bottomRow.X);
 	}
+
+	static bool IsLeftOf(const FVector2D& lineSegmentPoint0, const FVector2D& lineSegmentPoint1, const FVector2D& evaluationPoint)
+	{
+		return Determinant(lineSegmentPoint0 - evaluationPoint, lineSegmentPoint1 - lineSegmentPoint0) > 0.0f;
+	}
 }
