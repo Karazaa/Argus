@@ -140,36 +140,49 @@ void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const Creat
 
 	TArray<FVector> foundNavEdges;
 	TArray<ObstacleCorner> obstacleCorners;
+	TArray<bool> processedEdges;
 	RetrieveRelevantNavEdges(worldPointer, components, foundNavEdges);
 	CalculateObstacleCorners(params.m_sourceEntityLocation3D, foundNavEdges, obstacleCorners);
+	processedEdges.SetNumZeroed(foundNavEdges.Num());
 
-	if (CVarShowAvoidanceDebug.GetValueOnGameThread())
+	const bool drawDebugInfo = CVarShowAvoidanceDebug.GetValueOnGameThread();
+	for (int32 i = 0; i < obstacleCorners.Num(); ++i)
 	{
-		FVector zAdjust = FVector(0.0f, 0.0f, k_debugVectorHeightAdjust);
-		for (int32 i = 0; i < obstacleCorners.Num(); ++i)
+		if (drawDebugInfo)
 		{
-			DrawDebugSphere(worldPointer, foundNavEdges[obstacleCorners[i].locationIndex] + zAdjust, 10.0f, 10, FColor::Black, false, -1.0f, 0u, k_debugVectorWidth);
+			FVector zAdjust = FVector(0.0f, 0.0f, k_debugVectorHeightAdjust);
+			DrawDebugSphere(worldPointer, foundNavEdges[obstacleCorners[i].m_locationIndex] + zAdjust, 10.0f, 10, FColor::Black, false, -1.0f, 0u, k_debugVectorWidth);
 		}
-		for (int32 i = 0; i < foundNavEdges.Num(); i += 2)
+
+		if (obstacleCorners[i].m_lineSegment0DotProduct > 0.0f)
 		{
-			DrawDebugLine(worldPointer, foundNavEdges[i] + zAdjust, foundNavEdges[i + 1] + zAdjust, FColor::Black, false, -1.0f, 0u, k_debugVectorWidth);
+			// outORCALines.push_back(CreateORCALineForNavEdge(params, foundNavEdges, obstacleCorners[i].m_lineSegmentPointIndex0));
 		}
+
+		if (obstacleCorners[i].m_lineSegment1DotProduct > 0.0f)
+		{
+			// outORCALines.push_back(CreateORCALineForNavEdge(params, foundNavEdges, obstacleCorners[i].m_lineSegmentPointIndex1));
+		}
+
+		processedEdges[obstacleCorners[i].m_lineSegmentPointIndex0] = true;
+		processedEdges[obstacleCorners[i].m_lineSegmentPointIndex1] = true;
 	}
 
-	//for (int i = 0; i < foundNavEdges.Num(); i += 2)
-	//{
-	//	ORCALine calculatedORCALine;
-	//	calculatedORCALine.m_point = FVector2D(foundNavEdges[0]);
+	for (int32 i = 0; i < foundNavEdges.Num(); i += 2)
+	{
+		if (drawDebugInfo)
+		{
+			FVector zAdjust = FVector(0.0f, 0.0f, k_debugVectorHeightAdjust);
+			DrawDebugLine(worldPointer, foundNavEdges[i] + zAdjust, foundNavEdges[i + 1] + zAdjust, FColor::Black, false, -1.0f, 0u, k_debugVectorWidth);
+		}
 
-	//	FVector2D relativeLocation = params.m_sourceEntityLocation - calculatedORCALine.m_point;
-	//	FVector2D lineSegment = FVector2D(foundNavEdges[1] - foundNavEdges[0]);
+		if (processedEdges[i])
+		{
+			continue;
+		}
 
-	//	FVector2D potentialDirection0 = FVector2D(lineSegment.Y, -lineSegment.X);
-	//	FVector2D potentialDirection1 = FVector2D(-lineSegment.Y, lineSegment.X);
-
-	//	calculatedORCALine.m_direction = relativeLocation.Dot(potentialDirection0) ? potentialDirection0 : potentialDirection1;
-	//	// outORCALines.push_back(calculatedORCALine);
-	//}
+		// outORCALines.push_back(CreateORCALineForNavEdge(params, foundNavEdges, i));
+	}
 }
 
 void AvoidanceSystems::CreateEntityORCALines(const CreateEntityORCALinesParams& params, const TransformSystems::TransformSystemsComponentArgs& components, std::vector<uint16>& foundEntityIds, std::vector<ORCALine>& outORCALines)
@@ -586,20 +599,34 @@ void AvoidanceSystems::CalculateObstacleCorners(const FVector& sourceEntityLocat
 			}
 
 			ObstacleCorner corner;
-			corner.lineSegmentPointIndex0 = i - (i % 2);
-			corner.lineSegmentPointIndex1 = j - (j % 2);
-			corner.locationIndex = i;
+			corner.m_lineSegmentPointIndex0 = i - (i % 2);
+			corner.m_lineSegmentPointIndex1 = j - (j % 2);
+			corner.m_locationIndex = i;
 
 			const FVector toEntity = sourceEntityLocation - navEdges[i];
-			const FVector toEndSegment0 = navEdges[i + (corner.lineSegmentPointIndex0 == i ? 1 : -1)] - navEdges[i];
-			const FVector toEndSegment1 = navEdges[j + (corner.lineSegmentPointIndex1 == j ? 1 : -1)] - navEdges[j];
+			const FVector toEndSegment0 = navEdges[corner.m_lineSegmentPointIndex0 + 1] - navEdges[corner.m_lineSegmentPointIndex0];
+			const FVector toEndSegment1 = navEdges[corner.m_lineSegmentPointIndex1 + 1] - navEdges[corner.m_lineSegmentPointIndex1];
 
-			corner.lineSegment0DotProduct = toEntity.Dot(toEndSegment0);
-			corner.lineSegment1DotProduct = toEntity.Dot(toEndSegment1);
+			corner.m_lineSegment0DotProduct = toEntity.Dot(toEndSegment0);
+			corner.m_lineSegment1DotProduct = toEntity.Dot(toEndSegment1);
 
 			outObstacleCorners.Add(corner);
 		}
 	}
+}
+
+AvoidanceSystems::ORCALine AvoidanceSystems::CreateORCALineForNavEdge(const CreateEntityORCALinesParams& params, const TArray<FVector>& navEdges, int32 index)
+{
+	ORCALine outputLine;
+
+	outputLine.m_point = FVector2D(navEdges[index]) - params.m_sourceEntityLocation;
+	const FVector2D lineSegment = FVector2D(navEdges[index + 1] - navEdges[index]);
+	const FVector2D potentialDirection0 = FVector2D(lineSegment.Y, -lineSegment.X);
+	const FVector2D potentialDirection1 = FVector2D(-lineSegment.Y, lineSegment.X);
+
+	outputLine.m_direction = (outputLine.m_point.Dot(potentialDirection0) ? potentialDirection1 : potentialDirection0).GetSafeNormal();
+
+	return outputLine;
 }
 
 void AvoidanceSystems::DrawORCADebugLines(UWorld* worldPointer, const CreateEntityORCALinesParams& params, const std::vector<ORCALine>& orcaLines)
