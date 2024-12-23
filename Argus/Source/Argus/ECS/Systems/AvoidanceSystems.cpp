@@ -139,49 +139,17 @@ void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const Creat
 	}
 
 	TArray<FVector> foundNavEdges;
-	TArray<ObstacleCorner> obstacleCorners;
-	TArray<bool> processedEdges;
+	TArray<TArray<Obstacle>> obstacles;
 	RetrieveRelevantNavEdges(worldPointer, components, foundNavEdges);
-	CalculateObstacleCorners(params.m_sourceEntityLocation3D, foundNavEdges, obstacleCorners);
-	processedEdges.SetNumZeroed(foundNavEdges.Num());
-
-	const bool drawDebugInfo = CVarShowAvoidanceDebug.GetValueOnGameThread();
-	for (int32 i = 0; i < obstacleCorners.Num(); ++i)
-	{
-		if (drawDebugInfo)
-		{
-			FVector zAdjust = FVector(0.0f, 0.0f, k_debugVectorHeightAdjust);
-			DrawDebugSphere(worldPointer, foundNavEdges[obstacleCorners[i].m_locationIndex] + zAdjust, 10.0f, 10, FColor::Black, false, -1.0f, 0u, k_debugVectorWidth);
-		}
-
-		if (obstacleCorners[i].m_lineSegment0DotProduct > 0.0f)
-		{
-			// outORCALines.push_back(CreateORCALineForNavEdge(params, foundNavEdges, obstacleCorners[i].m_lineSegmentPointIndex0));
-		}
-
-		if (obstacleCorners[i].m_lineSegment1DotProduct > 0.0f)
-		{
-			// outORCALines.push_back(CreateORCALineForNavEdge(params, foundNavEdges, obstacleCorners[i].m_lineSegmentPointIndex1));
-		}
-
-		processedEdges[obstacleCorners[i].m_lineSegmentPointIndex0] = true;
-		processedEdges[obstacleCorners[i].m_lineSegmentPointIndex1] = true;
-	}
+	CalculateObstacles(params.m_sourceEntityLocation3D, foundNavEdges, obstacles);
 
 	for (int32 i = 0; i < foundNavEdges.Num(); i += 2)
 	{
-		if (drawDebugInfo)
+		if (CVarShowAvoidanceDebug.GetValueOnGameThread())
 		{
 			FVector zAdjust = FVector(0.0f, 0.0f, k_debugVectorHeightAdjust);
 			DrawDebugLine(worldPointer, foundNavEdges[i] + zAdjust, foundNavEdges[i + 1] + zAdjust, FColor::Black, false, -1.0f, 0u, k_debugVectorWidth);
 		}
-
-		if (processedEdges[i])
-		{
-			continue;
-		}
-
-		// outORCALines.push_back(CreateORCALineForNavEdge(params, foundNavEdges, i));
 	}
 }
 
@@ -579,39 +547,73 @@ float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems
 	return 0.5f;
 }
 
-void AvoidanceSystems::CalculateObstacleCorners(const FVector& sourceEntityLocation, const TArray<FVector>& navEdges, TArray<ObstacleCorner>& outObstacleCorners)
+void AvoidanceSystems::CalculateObstacles(const FVector& sourceEntityLocation, const TArray<FVector>& navEdges, TArray<TArray<Obstacle>>& outObstacles)
 {
-	int32 numEdges = navEdges.Num();
-	if ((numEdges % 2) != 0)
+	const int32 numNavEdges = navEdges.Num();
+	if ((numNavEdges % 2) != 0 || numNavEdges == 0)
 	{
-		// TODO JAMES: Error, something terrible has happened.
 		return;
 	}
 
-	outObstacleCorners.Reserve(numEdges / 2);
-	for (int32 i = 0; i < numEdges - 1; ++i)
+	for (int32 i = 0; i < numNavEdges; i += 2)
 	{
-		for (int32 j = i + 1; j < numEdges; ++j)
+		const FVector2D edgeVertex0 = FVector2D(navEdges[i]);
+		const FVector2D edgeVertex1 = FVector2D(navEdges[i + 1]);
+
+		bool handledEdge = false;
+		for (int32 j = 0; j < outObstacles.Num(); ++j)
 		{
-			if (navEdges[i] != navEdges[j])
+			const int32 numObstaclesInChain = outObstacles[j].Num();
+			if (numObstaclesInChain == 0)
 			{
 				continue;
 			}
 
-			ObstacleCorner corner;
-			corner.m_lineSegmentPointIndex0 = i - (i % 2);
-			corner.m_lineSegmentPointIndex1 = j - (j % 2);
-			corner.m_locationIndex = i;
-
-			const FVector toEntity = sourceEntityLocation - navEdges[i];
-			const FVector toEndSegment0 = navEdges[corner.m_lineSegmentPointIndex0 + 1] - navEdges[corner.m_lineSegmentPointIndex0];
-			const FVector toEndSegment1 = navEdges[corner.m_lineSegmentPointIndex1 + 1] - navEdges[corner.m_lineSegmentPointIndex1];
-
-			corner.m_lineSegment0DotProduct = toEntity.Dot(toEndSegment0);
-			corner.m_lineSegment1DotProduct = toEntity.Dot(toEndSegment1);
-
-			outObstacleCorners.Add(corner);
+			const FVector2D startOfChainLocation = outObstacles[j][0].m_point;
+			const FVector2D endOfChainLocation = outObstacles[j][numObstaclesInChain - 1].m_point;
+			if (startOfChainLocation == edgeVertex0)
+			{
+				Obstacle vertex1Obstacle;
+				vertex1Obstacle.m_point = edgeVertex1;
+				outObstacles[j].Insert(vertex1Obstacle, 0);
+				handledEdge = true;
+				break;
+			}
+			if (startOfChainLocation == edgeVertex1)
+			{
+				Obstacle vertex0Obstacle;
+				vertex0Obstacle.m_point = edgeVertex0;
+				outObstacles[j].Insert(vertex0Obstacle, 0);
+				handledEdge = true;
+				break;
+			}
+			if (endOfChainLocation == edgeVertex0)
+			{
+				Obstacle vertex1Obstacle;
+				vertex1Obstacle.m_point = edgeVertex1;
+				outObstacles[j].Add(vertex1Obstacle);
+				handledEdge = true;
+				break;
+			}
+			if (endOfChainLocation == edgeVertex1)
+			{
+				Obstacle vertex0Obstacle;
+				vertex0Obstacle.m_point = edgeVertex0;
+				outObstacles[j].Add(vertex0Obstacle);
+				handledEdge = true;
+				break;
+			}
 		}
+
+		if (handledEdge)
+		{
+			continue;
+		}
+		
+		Obstacle vertex0Obstacle, vertex1Obstacle;
+		vertex0Obstacle.m_point = edgeVertex0;
+		vertex1Obstacle.m_point = edgeVertex1;
+		outObstacles.Add(TArray<Obstacle>({ vertex0Obstacle, vertex1Obstacle }));
 	}
 }
 
