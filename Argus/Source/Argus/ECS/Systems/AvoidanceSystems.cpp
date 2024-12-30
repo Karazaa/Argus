@@ -148,7 +148,8 @@ void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const Creat
 	{
 		for (int32 j = 0; j < (obstacles[i].Num() - 1); ++j)
 		{
-			CalculateORCALineForObstacleSegment(params, obstacles[i][j], obstacles[i][j + 1], outORCALines);
+			const FVector2D previousObstaclePointDir = j == 0 ? obstacles[i][0].m_direction : obstacles[i][j - 1].m_direction;
+			CalculateORCALineForObstacleSegment(params, obstacles[i][j], obstacles[i][j + 1], previousObstaclePointDir, outORCALines);
 		}
 	}
 
@@ -684,7 +685,7 @@ void AvoidanceSystems::CalculateDirectionAndConvexForObstacles(const FVector2D& 
 	}
 }
 
-void AvoidanceSystems::CalculateORCALineForObstacleSegment(const CreateEntityORCALinesParams& params, const ObstaclePoint& obstaclePoint0, const ObstaclePoint& obstaclePoint1, std::vector<ORCALine>& outORCALines)
+void AvoidanceSystems::CalculateORCALineForObstacleSegment(const CreateEntityORCALinesParams& params, ObstaclePoint obstaclePoint0, ObstaclePoint obstaclePoint1, const FVector2D& previousObstaclePointDir, std::vector<ORCALine>& outORCALines)
 {
 	const FVector2D relativeLocation0 = obstaclePoint0.m_point - params.m_sourceEntityLocation;
 	const FVector2D relativeLocation1 = obstaclePoint1.m_point - params.m_sourceEntityLocation;
@@ -720,7 +721,7 @@ void AvoidanceSystems::CalculateORCALineForObstacleSegment(const CreateEntityORC
 		{
 			line.m_point = FVector2D::ZeroVector;
 			line.m_direction = FVector2D((-relativeLocation0).Y, relativeLocation0.X).GetSafeNormal();
-			//outORCALines.push_back(line);
+			outORCALines.push_back(line);
 			return;
 		}
 	}
@@ -732,7 +733,7 @@ void AvoidanceSystems::CalculateORCALineForObstacleSegment(const CreateEntityORC
 		{
 			line.m_point = FVector2D::ZeroVector;
 			line.m_direction = FVector2D((-relativeLocation1).Y, relativeLocation1.X).GetSafeNormal();
-			//outORCALines.push_back(line);
+			outORCALines.push_back(line);
 			return;
 		}
 	}
@@ -742,12 +743,98 @@ void AvoidanceSystems::CalculateORCALineForObstacleSegment(const CreateEntityORC
 	{
 		line.m_point = FVector2D::ZeroVector;
 		line.m_direction = -obstaclePoint0.m_direction;
-		//outORCALines.push_back(line);
+		outORCALines.push_back(line);
 		return;
 	}
 
-	// No Collision
-	// TODO JAMES: Finish. Currently at line 352 https://github.com/snape/RVO2/blob/main/src/Agent.cc
+	// No collision. Compute legs. When obliquely viewed, both legs can come
+	// from a single vertex. Legs extend cut-off line when nonconvex vertex.
+	FVector2D leftLegDirection;
+	FVector2D rightLegDirection;
+
+	if (sValue < 0.0f && squaredDistanceLine <= radiusSquared)
+	{
+		if (!obstaclePoint0.m_isConvex)
+		{
+			return;
+		}
+
+		obstaclePoint1 = obstaclePoint0;
+
+		const float leg0 = FMath::Sqrt(squaredDistance0 - radiusSquared);
+		leftLegDirection = FVector2D
+		(
+			(relativeLocation0.X * leg0) - (relativeLocation0.Y * params.m_entityRadius),
+			(relativeLocation0.X * params.m_entityRadius) + (relativeLocation0.Y * leg0)
+		) / squaredDistance0;
+		rightLegDirection = FVector2D
+		(
+			(relativeLocation0.X * leg0) + (relativeLocation0.Y * params.m_entityRadius),
+			(-relativeLocation0.X * params.m_entityRadius) + (relativeLocation0.Y * leg0)
+		) / squaredDistance0;
+	}
+	else if (sValue > 1.0f && squaredDistanceLine <= radiusSquared)
+	{
+		if (!obstaclePoint1.m_isConvex)
+		{
+			return;
+		}
+
+		obstaclePoint0 = obstaclePoint1;
+
+		const float leg1 = FMath::Sqrt(squaredDistance1 - radiusSquared);
+		leftLegDirection = FVector2D
+		(
+			(relativeLocation1.X * leg1) - (relativeLocation1.Y * params.m_entityRadius),
+			(relativeLocation1.X * params.m_entityRadius) + (relativeLocation1.Y * leg1)
+		) / squaredDistance1;
+		rightLegDirection = FVector2D
+		(
+			(relativeLocation1.X * leg1) + (relativeLocation1.Y * params.m_entityRadius),
+			(-relativeLocation1.X * params.m_entityRadius) + (relativeLocation1.Y * leg1)
+		) / squaredDistance1;
+	}
+	else
+	{
+		if (obstaclePoint0.m_isConvex)
+		{
+			const float leg0 = FMath::Sqrt(squaredDistance0 - radiusSquared);
+			leftLegDirection = FVector2D
+			(
+				(relativeLocation0.X * leg0) - (relativeLocation0.Y * params.m_entityRadius),
+				(relativeLocation0.X * params.m_entityRadius) + (relativeLocation0.Y * leg0)
+			) / squaredDistance0;
+		}
+		else
+		{
+			// Left vertex non-convex; left leg extends cut-off line.
+			leftLegDirection = -obstaclePoint0.m_direction;
+		}
+
+		if (obstaclePoint1.m_isConvex)
+		{
+			const float leg1 = FMath::Sqrt(squaredDistance1 - radiusSquared);
+			rightLegDirection = FVector2D
+			(
+				(relativeLocation1.X * leg1) + (relativeLocation1.Y * params.m_entityRadius),
+				(-relativeLocation1.X * params.m_entityRadius) + (relativeLocation1.Y * leg1)
+			) / squaredDistance1;
+		}
+		else
+		{
+			// Right vertex non-convex; right leg extends cut-off line.
+			rightLegDirection = obstaclePoint0.m_direction;
+		}
+	}
+
+	bool isLeftLegForeign = false;
+	bool isRightLegForeign = false;
+
+	if (obstaclePoint0.m_isConvex && ArgusMath::Determinant(leftLegDirection, -previousObstaclePointDir) <= 0.0f)
+	{
+		leftLegDirection = -previousObstaclePointDir;
+		isLeftLegForeign = true;
+	}
 }
 
 void AvoidanceSystems::DrawORCADebugLines(UWorld* worldPointer, const CreateEntityORCALinesParams& params, const std::vector<ORCALine>& orcaLines)

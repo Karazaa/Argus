@@ -52,7 +52,7 @@ private:
 	
 	static void			CalculateObstacles(const FVector2D& sourceEntityLocation, const TArray<FVector>& navEdges, TArray<TArray<ObstaclePoint>>& outObstacles);
 	static void			CalculateDirectionAndConvexForObstacles(const FVector2D& sourceEntityLocation, TArray<ObstaclePoint>& outObstacle);
-	static void			CalculateORCALineForObstacleSegment(const CreateEntityORCALinesParams& params, const ObstaclePoint& obstaclePoint0, const ObstaclePoint& obstaclePoint1, std::vector<ORCALine>& outORCALines);
+	static void			CalculateORCALineForObstacleSegment(const CreateEntityORCALinesParams& params, ObstaclePoint obstaclePoint0, ObstaclePoint obstaclePoint1, const FVector2D& previousObstaclePointDir, std::vector<ORCALine>& outORCALines);
 	static void			DrawORCADebugLines(UWorld* worldPointer, const CreateEntityORCALinesParams& params, const std::vector<ORCALine>& orcaLines);
 
 	static constexpr float k_debugVectorWidth = 3.0f;
