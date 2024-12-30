@@ -25,6 +25,7 @@ private:
 		FVector2D m_sourceEntityVelocity = FVector2D::ZeroVector;
 		float m_deltaTime = 0.0f;
 		float m_inversePredictionTime = 0.0f;
+		float m_entityRadius = 45.0f;
 	};
 	struct CreateEntityORCALinesParamsPerEntity
 	{
@@ -51,7 +52,7 @@ private:
 	
 	static void			CalculateObstacles(const FVector2D& sourceEntityLocation, const TArray<FVector>& navEdges, TArray<TArray<ObstaclePoint>>& outObstacles);
 	static void			CalculateDirectionAndConvexForObstacles(const FVector2D& sourceEntityLocation, TArray<ObstaclePoint>& outObstacle);
-	static ORCALine		CreateORCALineForNavEdge(const CreateEntityORCALinesParams& params, const TArray<FVector>& navEdges, int32 index);
+	static void			CalculateORCALineForObstacleSegment(const CreateEntityORCALinesParams& params, const ObstaclePoint& obstaclePoint0, const ObstaclePoint& obstaclePoint1, std::vector<ORCALine>& outORCALines);
 	static void			DrawORCADebugLines(UWorld* worldPointer, const CreateEntityORCALinesParams& params, const std::vector<ORCALine>& orcaLines);
 
 	static constexpr float k_debugVectorWidth = 3.0f;
