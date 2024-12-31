@@ -6,6 +6,7 @@
 #include "DrawDebugHelpers.h"
 #include "NavigationData.h"
 #include "NavigationSystem.h"
+#include <limits>
 
 static TAutoConsoleVariable<bool> CVarShowAvoidanceDebug(TEXT("Argus.Avoidance.ShowAvoidanceDebug"), false, TEXT(""));
 
@@ -832,9 +833,89 @@ void AvoidanceSystems::CalculateORCALineForObstacleSegment(const CreateEntityORC
 
 	if (obstaclePoint0.m_isConvex && ArgusMath::Determinant(leftLegDirection, -previousObstaclePointDir) <= 0.0f)
 	{
+		// Left leg points into obstacle
 		leftLegDirection = -previousObstaclePointDir;
 		isLeftLegForeign = true;
 	}
+
+	if (obstaclePoint1.m_isConvex && ArgusMath::Determinant(rightLegDirection, obstaclePoint1.m_direction) <= 0.0f)
+	{
+		// Right leg points into obstacle
+		rightLegDirection = obstaclePoint1.m_direction;
+		isRightLegForeign = true;
+	}
+
+	// Compute cutoff centers
+	const FVector2D leftCutoff = params.m_inversePredictionTime * relativeLocation0;
+	const FVector2D rightCutoff = params.m_inversePredictionTime * relativeLocation1;
+	const FVector2D cutoffVector = rightCutoff - leftCutoff;
+
+	// Project current velocity onto velocity obstacle
+	
+	// Check if current velocity is projected on cutoff circles
+	const bool areObstaclesEqual = obstaclePoint0.m_point == obstaclePoint1.m_point;
+	const float tValue = areObstaclesEqual ? 0.5f : (params.m_sourceEntityVelocity - leftCutoff).Dot(cutoffVector) / cutoffVector.SquaredLength();
+	const float tLeft = (params.m_sourceEntityVelocity - leftCutoff).Dot(leftLegDirection);
+	const float tRight = (params.m_sourceEntityVelocity - rightCutoff).Dot(rightLegDirection);
+
+	if ((tValue < 0.0f && tLeft < 0.0f) || (areObstaclesEqual && tLeft < 0.0f && tRight < 0.0f))
+	{
+		// Project onto left cutoff circle
+		const FVector2D unitW = (params.m_sourceEntityVelocity - leftCutoff).GetSafeNormal();
+		line.m_direction = FVector2D(unitW.Y, -unitW.X);
+		line.m_point = leftCutoff + (params.m_entityRadius * params.m_inversePredictionTime * unitW);
+		outORCALines.push_back(line);
+		return;
+	}
+
+	if (tValue > 1.0f && tRight < 0.0f)
+	{
+		// Project onto right cutoff circle
+		const FVector2D unitW = (params.m_sourceEntityVelocity - rightCutoff).GetSafeNormal();
+		line.m_direction = FVector2D(unitW.Y, -unitW.X);
+		line.m_point = rightCutoff + (params.m_entityRadius * params.m_inversePredictionTime * unitW);
+		outORCALines.push_back(line);
+		return;
+	}
+
+	// Project on left leg, right leg, or cut - off line, whichever is closest to velocity
+	const float squaredDistanceCutoff = (tValue < 0.0f || tValue > 1.0f || areObstaclesEqual) ? 
+		std::numeric_limits<float>::infinity() : (params.m_sourceEntityVelocity - (leftCutoff + tValue * cutoffVector)).SquaredLength();
+	const float squaredDistanceLeft = tLeft < 0.0f ?
+		std::numeric_limits<float>::infinity() : (params.m_sourceEntityVelocity - (leftCutoff + tLeft * leftLegDirection)).SquaredLength();
+	const float squaredDistanceRight= tRight < 0.0f ?
+		std::numeric_limits<float>::infinity() : (params.m_sourceEntityVelocity - (rightCutoff + tRight * rightLegDirection)).SquaredLength();
+
+	if (squaredDistanceCutoff <= squaredDistanceLeft && squaredDistanceCutoff <= squaredDistanceRight)
+	{
+		// Project on cutoff line
+		line.m_direction = -obstaclePoint0.m_direction;
+		line.m_point = leftCutoff + (params.m_entityRadius * params.m_inversePredictionTime * FVector2D(-line.m_direction.Y, line.m_direction.X));
+		outORCALines.push_back(line);
+		return;
+	}
+
+	if (squaredDistanceLeft <= squaredDistanceRight)
+	{
+		if (isLeftLegForeign)
+		{
+			return;
+		}
+
+		line.m_direction = leftLegDirection;
+		line.m_point = leftCutoff + (params.m_entityRadius * params.m_inversePredictionTime * FVector2D(-line.m_direction.Y, line.m_direction.X));
+		outORCALines.push_back(line);
+		return;
+	}
+
+	if (isRightLegForeign)
+	{
+		return;
+	}
+
+	line.m_direction = -rightLegDirection;
+	line.m_point = rightCutoff + (params.m_entityRadius * params.m_inversePredictionTime * FVector2D(-line.m_direction.Y, line.m_direction.X));
+	outORCALines.push_back(line);
 }
 
 void AvoidanceSystems::DrawORCADebugLines(UWorld* worldPointer, const CreateEntityORCALinesParams& params, const std::vector<ORCALine>& orcaLines)
