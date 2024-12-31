@@ -81,4 +81,19 @@ namespace ArgusMath
 	{
 		return Determinant(lineSegmentPoint0 - evaluationPoint, lineSegmentPoint1 - lineSegmentPoint0) > 0.0f;
 	}
+
+	// Unreal being left handed hurts my soul. Defining two functions here simply for code readability. 
+	static FVector2D ToCartesianVector2(const FVector2D& vectorToConvert)
+	{
+		FVector2D output = vectorToConvert;
+		output.Y *= -1.0f;
+		return output;
+	}
+
+	static FVector2D ToUnrealVector2(const FVector2D& vectorToConvert)
+	{
+		FVector2D output = vectorToConvert;
+		output.Y *= -1.0f;
+		return output;
+	}
 }
