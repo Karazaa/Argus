@@ -108,6 +108,10 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 	// Iterate over the found entities and generate ORCA lines based on their current states.
 	std::vector<ORCALine> calculatedORCALines;
 	CreateObstacleORCALines(worldPointer, params, components, calculatedORCALines);
+	if (CVarShowAvoidanceDebug.GetValueOnGameThread() && worldPointer)
+	{
+		DrawORCADebugLines(worldPointer, params, calculatedORCALines, true, 0);
+	}
 	const int numStaticObstacles = calculatedORCALines.size();
 	CreateEntityORCALines(params, components, foundEntityIds, calculatedORCALines);
 
@@ -125,7 +129,7 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 
 	if (CVarShowAvoidanceDebug.GetValueOnGameThread() && worldPointer)
 	{
-		DrawORCADebugLines(worldPointer, params, calculatedORCALines);
+		DrawORCADebugLines(worldPointer, params, calculatedORCALines, false, numStaticObstacles);
 		DrawDebugLine(worldPointer, params.m_sourceEntityLocation3D, params.m_sourceEntityLocation3D + FVector(resultingVelocity, 0.0f), FColor::Orange, false, -1.0f, 0, k_debugVectorWidth);
 		DrawDebugLine(worldPointer, params.m_sourceEntityLocation3D, params.m_sourceEntityLocation3D + FVector(desiredVelocity, 0.0f), FColor::Green, false, -1.0f, 0, k_debugVectorWidth);
 	}
@@ -918,7 +922,7 @@ void AvoidanceSystems::CalculateORCALineForObstacleSegment(const CreateEntityORC
 	outORCALines.push_back(line);
 }
 
-void AvoidanceSystems::DrawORCADebugLines(UWorld* worldPointer, const CreateEntityORCALinesParams& params, const std::vector<ORCALine>& orcaLines)
+void AvoidanceSystems::DrawORCADebugLines(UWorld* worldPointer, const CreateEntityORCALinesParams& params, const std::vector<ORCALine>& orcaLines, bool areObstacleLines, int startingLine)
 {
 	if (!CVarShowAvoidanceDebug.GetValueOnGameThread() || !worldPointer)
 	{
@@ -930,15 +934,17 @@ void AvoidanceSystems::DrawORCADebugLines(UWorld* worldPointer, const CreateEnti
 	const FQuat relativeVelocityBasisRotation = FRotationMatrix::MakeFromXZ(FVector::ForwardVector, FVector::UpVector).ToQuat();
 	const FTransform basisTransform = FTransform(relativeVelocityBasisRotation, relativeVelocityBasisTranslation);
 
-	for (int i = 0; i < orcaLines.size(); ++i)
+	FColor debugColor = areObstacleLines ? FColor::Purple : FColor::Cyan;
+
+	for (int i = startingLine; i < orcaLines.size(); ++i)
 	{
 		const FVector worldspacePoint = basisTransform.TransformPosition(FVector(orcaLines[i].m_point, 0.0f));
 		const FVector worldspaceDirection = basisTransform.TransformVector(FVector(orcaLines[i].m_direction, 0.0f));
 		const FVector worldspaceOrthogonalDirectionScaled = worldspaceDirection.Cross(FVector::UpVector) * 1000.0f;
 
-		DrawDebugSphere(worldPointer, worldspacePoint, 10.0f, 10u, FColor::Cyan, false, -1.0f, 0u, k_debugVectorWidth);
-		DrawDebugLine(worldPointer, worldspacePoint, worldspacePoint + (worldspaceDirection * 100.0f), FColor::Cyan, false, -1.0f, 0u, k_debugVectorWidth);
-		DrawDebugLine(worldPointer, worldspacePoint - worldspaceOrthogonalDirectionScaled, worldspacePoint + worldspaceOrthogonalDirectionScaled, FColor::Cyan, false, -1.0f, 0u, k_debugVectorWidth);
+		DrawDebugSphere(worldPointer, worldspacePoint, 10.0f, 10u, debugColor, false, -1.0f, 0u, k_debugVectorWidth);
+		DrawDebugLine(worldPointer, worldspacePoint, worldspacePoint + (worldspaceDirection * 100.0f), debugColor, false, -1.0f, 0u, k_debugVectorWidth);
+		DrawDebugLine(worldPointer, worldspacePoint - worldspaceOrthogonalDirectionScaled, worldspacePoint + worldspaceOrthogonalDirectionScaled, debugColor, false, -1.0f, 0u, k_debugVectorWidth);
 	}
 }
 
