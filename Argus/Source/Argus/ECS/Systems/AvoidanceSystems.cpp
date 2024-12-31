@@ -653,7 +653,7 @@ void AvoidanceSystems::CalculateDirectionAndConvexForObstacles(const FVector2D& 
 											outObstacle[nearestVertex + 1].m_point - outObstacle[nearestVertex].m_point;
 
 	// Reverse the obstacle if it is ordered backwards relative to the entity we are calculating.
-	if (ArgusMath::IsLeftOf(outObstacle[nearestVertex].m_point, outObstacle[nearestVertex].m_point + potentialDirectionForward, sourceEntityLocation))
+	if (!ArgusMath::IsLeftOf(outObstacle[nearestVertex].m_point, outObstacle[nearestVertex].m_point + potentialDirectionForward, sourceEntityLocation))
 	{
 		const int32 halfObstaclePoints = numObstaclePoints / 2;
 		for (int32 i = 0; i <= halfObstaclePoints; ++i)
