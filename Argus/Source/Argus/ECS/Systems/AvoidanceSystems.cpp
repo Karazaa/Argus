@@ -151,8 +151,33 @@ void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const Creat
 
 	for (int32 i = 0; i < obstacles.Num(); ++i)
 	{
-		for (int32 j = 0; j < (obstacles[i].Num() - 1); ++j)
+		for (int32 j = 0; j < obstacles[i].Num(); ++j)
 		{
+			if (CVarShowAvoidanceDebug.GetValueOnGameThread())
+			{
+				DrawDebugString
+				(
+					worldPointer, 
+					FVector(ArgusMath::ToUnrealVector2(obstacles[i][j].m_point), 0.0f), 
+					FString::Printf
+					(
+						TEXT("%d\nIsConvex: %d"),
+						j,
+						obstacles[i][j].m_isConvex
+					),
+					nullptr,
+					FColor::Purple,
+					0.1f,
+					true,
+					0.75f
+				);
+			}
+
+			if (j == obstacles[i].Num() - 1)
+			{
+				break;
+			}
+
 			const FVector2D previousObstaclePointDir = j == 0 ? obstacles[i][0].m_direction : obstacles[i][j - 1].m_direction;
 			CalculateORCALineForObstacleSegment(params, obstacles[i][j], obstacles[i][j + 1], previousObstaclePointDir, outORCALines);
 		}
