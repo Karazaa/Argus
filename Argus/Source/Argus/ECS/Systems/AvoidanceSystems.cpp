@@ -66,8 +66,8 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 	CreateEntityORCALinesParams params;
 	params.m_sourceEntityLocation3D = components.m_transformComponent->m_transform.GetLocation();
 	params.m_sourceEntityLocation3D.Z += k_debugVectorHeightAdjust;
-	params.m_sourceEntityLocation = FVector2D(params.m_sourceEntityLocation3D);
-	params.m_sourceEntityVelocity = FVector2D(components.m_transformComponent->m_currentVelocity);
+	params.m_sourceEntityLocation = ArgusMath::ToCartesianVector2(FVector2D(params.m_sourceEntityLocation3D));
+	params.m_sourceEntityVelocity = ArgusMath::ToCartesianVector2(FVector2D(components.m_transformComponent->m_currentVelocity));
 	params.m_deltaTime = deltaTime;
 	params.m_entityRadius = components.m_transformComponent->m_radius;
 	params.m_inversePredictionTime = 1.0f / ArgusECSConstants::k_avoidanceCollisionDetectionPredictionTime;
@@ -89,7 +89,7 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 			desiredDirection = components.m_transformComponent->m_transform.GetRotation().GetForwardVector();
 		}
 
-		desiredVelocity = FVector2D(desiredDirection).GetSafeNormal() * components.m_transformComponent->m_desiredSpeedUnitsPerSecond;
+		desiredVelocity = ArgusMath::ToCartesianVector2(FVector2D(desiredDirection).GetSafeNormal() * components.m_transformComponent->m_desiredSpeedUnitsPerSecond);
 	}
 
 	// Search for nearby entities within a specific range.
@@ -97,7 +97,7 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 	if (!spatialPartitioningComponent->m_argusKDTree.FindOtherArgusEntityIdsWithinRangeOfArgusEntity(foundEntityIds, components.m_entity, ArgusECSConstants::k_avoidanceAgentSearchRadius))
 	{
 		// If no entities nearby, then nothing can effect our navigation, so we should just early out at our desired speed. 
-		components.m_transformComponent->m_proposedAvoidanceVelocity = FVector(desiredVelocity, 0.0f);
+		components.m_transformComponent->m_proposedAvoidanceVelocity = FVector(ArgusMath::ToUnrealVector2(desiredVelocity), 0.0f);
 		if (CVarShowAvoidanceDebug.GetValueOnGameThread() && worldPointer)
 		{
 			DrawDebugLine(worldPointer, params.m_sourceEntityLocation3D, params.m_sourceEntityLocation3D + components.m_transformComponent->m_proposedAvoidanceVelocity, FColor::Orange, false, -1.0f, 0, k_debugVectorWidth);
@@ -130,11 +130,11 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 	if (CVarShowAvoidanceDebug.GetValueOnGameThread() && worldPointer)
 	{
 		DrawORCADebugLines(worldPointer, params, calculatedORCALines, false, numStaticObstacles);
-		DrawDebugLine(worldPointer, params.m_sourceEntityLocation3D, params.m_sourceEntityLocation3D + FVector(resultingVelocity, 0.0f), FColor::Orange, false, -1.0f, 0, k_debugVectorWidth);
-		DrawDebugLine(worldPointer, params.m_sourceEntityLocation3D, params.m_sourceEntityLocation3D + FVector(desiredVelocity, 0.0f), FColor::Green, false, -1.0f, 0, k_debugVectorWidth);
+		DrawDebugLine(worldPointer, params.m_sourceEntityLocation3D, params.m_sourceEntityLocation3D + FVector(ArgusMath::ToUnrealVector2(resultingVelocity), 0.0f), FColor::Orange, false, -1.0f, 0, k_debugVectorWidth);
+		DrawDebugLine(worldPointer, params.m_sourceEntityLocation3D, params.m_sourceEntityLocation3D + FVector(ArgusMath::ToUnrealVector2(desiredVelocity), 0.0f), FColor::Green, false, -1.0f, 0, k_debugVectorWidth);
 	}
 
-	components.m_transformComponent->m_proposedAvoidanceVelocity = FVector(resultingVelocity, 0.0f);
+	components.m_transformComponent->m_proposedAvoidanceVelocity = FVector(ArgusMath::ToUnrealVector2(resultingVelocity), 0.0f);
 }
 
 void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const CreateEntityORCALinesParams& params, const TransformSystems::TransformSystemsComponentArgs& components, std::vector<ORCALine>& outORCALines)
@@ -191,8 +191,8 @@ void AvoidanceSystems::CreateEntityORCALines(const CreateEntityORCALinesParams& 
 		}
 
 		CreateEntityORCALinesParamsPerEntity perEntityParams;
-		perEntityParams.m_foundEntityLocation = FVector2D(foundTransformComponent->m_transform.GetLocation());
-		perEntityParams.m_foundEntityVelocity = FVector2D(foundTransformComponent->m_currentVelocity);
+		perEntityParams.m_foundEntityLocation = ArgusMath::ToCartesianVector2(FVector2D(foundTransformComponent->m_transform.GetLocation()));
+		perEntityParams.m_foundEntityVelocity = ArgusMath::ToCartesianVector2(FVector2D(foundTransformComponent->m_currentVelocity));
 		perEntityParams.m_entityRadius = components.m_transformComponent->m_radius;
 
 		FVector2D velocityToBoundaryOfVO = FVector2D::ZeroVector;
@@ -929,8 +929,7 @@ void AvoidanceSystems::DrawORCADebugLines(UWorld* worldPointer, const CreateEnti
 		return;
 	}
 
-	const FVector sourceEntityLocation3D = FVector(params.m_sourceEntityLocation, 0.0f);
-	const FVector relativeVelocityBasisTranslation = FVector(params.m_sourceEntityLocation, 0.0f);
+	const FVector relativeVelocityBasisTranslation = FVector(ArgusMath::ToUnrealVector2(params.m_sourceEntityLocation), 0.0f);
 	const FQuat relativeVelocityBasisRotation = FRotationMatrix::MakeFromXZ(FVector::ForwardVector, FVector::UpVector).ToQuat();
 	const FTransform basisTransform = FTransform(relativeVelocityBasisRotation, relativeVelocityBasisTranslation);
 
@@ -938,8 +937,8 @@ void AvoidanceSystems::DrawORCADebugLines(UWorld* worldPointer, const CreateEnti
 
 	for (int i = startingLine; i < orcaLines.size(); ++i)
 	{
-		const FVector worldspacePoint = basisTransform.TransformPosition(FVector(orcaLines[i].m_point, 0.0f));
-		const FVector worldspaceDirection = basisTransform.TransformVector(FVector(orcaLines[i].m_direction, 0.0f));
+		const FVector worldspacePoint = basisTransform.TransformPosition(FVector(ArgusMath::ToUnrealVector2(orcaLines[i].m_point), 0.0f));
+		const FVector worldspaceDirection = basisTransform.TransformVector(FVector(ArgusMath::ToUnrealVector2(orcaLines[i].m_direction), 0.0f));
 		const FVector worldspaceOrthogonalDirectionScaled = worldspaceDirection.Cross(FVector::UpVector) * 1000.0f;
 
 		DrawDebugSphere(worldPointer, worldspacePoint, 10.0f, 10u, debugColor, false, -1.0f, 0u, k_debugVectorWidth);
