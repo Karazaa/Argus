@@ -158,9 +158,9 @@ void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const Creat
 		}
 	}
 
-	for (int32 i = 0; i < foundNavEdges.Num(); i += 2)
+	if (CVarShowAvoidanceDebug.GetValueOnGameThread())
 	{
-		if (CVarShowAvoidanceDebug.GetValueOnGameThread())
+		for (int32 i = 0; i < foundNavEdges.Num(); i += 2)
 		{
 			FVector zAdjust = FVector(0.0f, 0.0f, k_debugVectorHeightAdjust);
 			DrawDebugLine(worldPointer, foundNavEdges[i] + zAdjust, foundNavEdges[i + 1] + zAdjust, FColor::Black, false, -1.0f, 0u, k_debugVectorWidth);
@@ -572,8 +572,8 @@ void AvoidanceSystems::CalculateObstacles(const FVector2D& sourceEntityLocation,
 
 	for (int32 i = 0; i < numNavEdges; i += 2)
 	{
-		const FVector2D edgeVertex0 = FVector2D(navEdges[i]);
-		const FVector2D edgeVertex1 = FVector2D(navEdges[i + 1]);
+		const FVector2D edgeVertex0 = ArgusMath::ToCartesianVector2(FVector2D(navEdges[i]));
+		const FVector2D edgeVertex1 = ArgusMath::ToCartesianVector2(FVector2D(navEdges[i + 1]));
 
 		bool handledEdge = false;
 		for (int32 j = 0; j < outObstacles.Num(); ++j)
@@ -657,7 +657,7 @@ void AvoidanceSystems::CalculateDirectionAndConvexForObstacles(const FVector2D& 
 											outObstacle[nearestVertex + 1].m_point - outObstacle[nearestVertex].m_point;
 
 	// Reverse the obstacle if it is ordered backwards relative to the entity we are calculating.
-	if (!ArgusMath::IsLeftOf(outObstacle[nearestVertex].m_point, outObstacle[nearestVertex].m_point + potentialDirectionForward, sourceEntityLocation))
+	if (ArgusMath::IsLeftOf(outObstacle[nearestVertex].m_point, outObstacle[nearestVertex].m_point + potentialDirectionForward, sourceEntityLocation))
 	{
 		const int32 halfObstaclePoints = numObstaclePoints / 2;
 		for (int32 i = 0; i <= halfObstaclePoints; ++i)
