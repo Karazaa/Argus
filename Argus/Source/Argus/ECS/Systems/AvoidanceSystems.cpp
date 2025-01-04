@@ -710,7 +710,7 @@ void AvoidanceSystems::CalculateDirectionAndConvexForObstacles(const FVector2D& 
 
 		if (i == 0 || i == (numObstaclePoints - 1))
 		{
-			outObstacle[i].m_isConvex = true;
+			outObstacle[i].m_isConvex = false;
 		}
 		else
 		{
