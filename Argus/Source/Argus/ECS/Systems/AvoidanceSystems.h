@@ -24,7 +24,8 @@ private:
 		FVector2D m_sourceEntityLocation = FVector2D::ZeroVector;
 		FVector2D m_sourceEntityVelocity = FVector2D::ZeroVector;
 		float m_deltaTime = 0.0f;
-		float m_inversePredictionTime = 0.0f;
+		float m_inverseEntityPredictionTime = 0.0f;
+		float m_inverseObstaclePredictionTime = 0.0f;
 		float m_entityRadius = 45.0f;
 	};
 	struct CreateEntityORCALinesParamsPerEntity

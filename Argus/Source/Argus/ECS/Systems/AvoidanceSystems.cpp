@@ -70,7 +70,8 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 	params.m_sourceEntityVelocity = ArgusMath::ToCartesianVector2(FVector2D(components.m_transformComponent->m_currentVelocity));
 	params.m_deltaTime = deltaTime;
 	params.m_entityRadius = components.m_transformComponent->m_radius;
-	params.m_inversePredictionTime = 1.0f / ArgusECSConstants::k_avoidanceCollisionDetectionPredictionTime;
+	params.m_inverseEntityPredictionTime = 1.0f / ArgusECSConstants::k_avoidanceEntityDetectionPredictionTime;
+	params.m_inverseObstaclePredictionTime = 1.0f / ArgusECSConstants::k_avoidanceObstacleDetectionPredictionTime;
 	FVector2D desiredVelocity = FVector2D::ZeroVector;
 
 	// If we are moving, we need to get our desired velocity as the velocity that points towards the nearest pathing point at the desired speed.
@@ -242,7 +243,7 @@ void AvoidanceSystems::FindORCALineAndVelocityToBoundaryPerEntity(const CreateEn
 	if (relativeLocationDistanceSquared > combinedRadiusSquared)
 	{
 		// No collision yet.
-		const FVector2D cutoffCenterToRelativeVelocity = relativeVelocity - (params.m_inversePredictionTime * relativeLocation);
+		const FVector2D cutoffCenterToRelativeVelocity = relativeVelocity - (params.m_inverseEntityPredictionTime * relativeLocation);
 		const float cutoffCenterToRelativeVelocityLengthSqared = cutoffCenterToRelativeVelocity.SquaredLength();
 		const float dotProduct = cutoffCenterToRelativeVelocity.Dot(relativeLocation);
 
@@ -251,7 +252,7 @@ void AvoidanceSystems::FindORCALineAndVelocityToBoundaryPerEntity(const CreateEn
 			const float cutoffCenterToRelativeVelocityLength = FMath::Sqrt(cutoffCenterToRelativeVelocityLengthSqared);
 			const FVector2D unitCutoffCenterToRelativeVelocity = cutoffCenterToRelativeVelocity / cutoffCenterToRelativeVelocityLength;
 			calculatedORCALine.m_direction = FVector2D(unitCutoffCenterToRelativeVelocity.Y, -unitCutoffCenterToRelativeVelocity.X);
-			velocityToBoundaryOfVO = ((combinedRadius * params.m_inversePredictionTime) - cutoffCenterToRelativeVelocityLength) * unitCutoffCenterToRelativeVelocity;
+			velocityToBoundaryOfVO = ((combinedRadius * params.m_inverseEntityPredictionTime) - cutoffCenterToRelativeVelocityLength) * unitCutoffCenterToRelativeVelocity;
 		}
 		else
 		{
@@ -683,27 +684,12 @@ void AvoidanceSystems::CalculateObstacles(const FVector2D& sourceEntityLocation,
 void AvoidanceSystems::CalculateDirectionAndConvexForObstacles(const FVector2D& sourceEntityLocation, TArray<ObstaclePoint>& outObstacle)
 {
 	const int32 numObstaclePoints = outObstacle.Num();
-	float smallestDistanceSquared = FVector2D::DistSquared(sourceEntityLocation, outObstacle[0].m_point);
-	int32 nearestVertex = 0;
-	for (int32 i = 1; i < numObstaclePoints; ++i)
-	{
-		float squaredDistanceToCheck = FVector2D::DistSquared(sourceEntityLocation, outObstacle[i].m_point);
-		if (squaredDistanceToCheck < smallestDistanceSquared)
-		{
-			smallestDistanceSquared = squaredDistanceToCheck;
-			nearestVertex = i;
-		}
-	}
-
-	const FVector2D potentialDirectionForward = nearestVertex == (numObstaclePoints - 1) ? 
-											outObstacle[nearestVertex].m_point - outObstacle[nearestVertex - 1].m_point : 
-											outObstacle[nearestVertex + 1].m_point - outObstacle[nearestVertex].m_point;
 
 	// Reverse the obstacle if it is ordered backwards relative to the entity we are calculating.
-	if (ArgusMath::IsLeftOfCartesian(outObstacle[nearestVertex].m_point, outObstacle[nearestVertex].m_point + potentialDirectionForward, sourceEntityLocation))
+	if (FindAreaOfObstacleCartesian(outObstacle) > 0.0f)
 	{
 		const int32 halfObstaclePoints = numObstaclePoints / 2;
-		for (int32 i = 0; i <= halfObstaclePoints; ++i)
+		for (int32 i = 0; i < halfObstaclePoints; ++i)
 		{
 			outObstacle.Swap(i, numObstaclePoints - (i + 1));
 		}
@@ -741,9 +727,9 @@ void AvoidanceSystems::CalculateORCALineForObstacleSegment(const CreateEntityORC
 
 	for (int i = 0; i < outORCALines.size(); ++i)
 	{
-		const float determinant0 = ArgusMath::Determinant(params.m_inversePredictionTime * (relativeLocation0 - outORCALines[i].m_point), outORCALines[i].m_direction);
-		const float determinant1 = ArgusMath::Determinant(params.m_inversePredictionTime * (relativeLocation1 - outORCALines[i].m_point), outORCALines[i].m_direction);
-		const float scaledRadius = params.m_inversePredictionTime * params.m_entityRadius;
+		const float determinant0 = ArgusMath::Determinant(params.m_inverseObstaclePredictionTime * (relativeLocation0 - outORCALines[i].m_point), outORCALines[i].m_direction);
+		const float determinant1 = ArgusMath::Determinant(params.m_inverseObstaclePredictionTime * (relativeLocation1 - outORCALines[i].m_point), outORCALines[i].m_direction);
+		const float scaledRadius = params.m_inverseObstaclePredictionTime * params.m_entityRadius;
 		const bool point0Check = (determinant0 - scaledRadius) >= -ArgusECSConstants::k_avoidanceEpsilonValue;
 		const bool point1Check = (determinant1 - scaledRadius) >= -ArgusECSConstants::k_avoidanceEpsilonValue;
 
@@ -893,8 +879,8 @@ void AvoidanceSystems::CalculateORCALineForObstacleSegment(const CreateEntityORC
 	}
 
 	// Compute cutoff centers
-	const FVector2D leftCutoff = params.m_inversePredictionTime * relativeLocation0;
-	const FVector2D rightCutoff = params.m_inversePredictionTime * relativeLocation1;
+	const FVector2D leftCutoff = params.m_inverseObstaclePredictionTime * relativeLocation0;
+	const FVector2D rightCutoff = params.m_inverseObstaclePredictionTime * relativeLocation1;
 	const FVector2D cutoffVector = rightCutoff - leftCutoff;
 
 	// Project current velocity onto velocity obstacle
@@ -910,7 +896,7 @@ void AvoidanceSystems::CalculateORCALineForObstacleSegment(const CreateEntityORC
 		// Project onto left cutoff circle
 		const FVector2D unitW = (params.m_sourceEntityVelocity - leftCutoff).GetSafeNormal();
 		line.m_direction = FVector2D(unitW.Y, -unitW.X);
-		line.m_point = leftCutoff + (params.m_entityRadius * params.m_inversePredictionTime * unitW);
+		line.m_point = leftCutoff + (params.m_entityRadius * params.m_inverseObstaclePredictionTime * unitW);
 		outORCALines.push_back(line);
 		return;
 	}
@@ -920,7 +906,7 @@ void AvoidanceSystems::CalculateORCALineForObstacleSegment(const CreateEntityORC
 		// Project onto right cutoff circle
 		const FVector2D unitW = (params.m_sourceEntityVelocity - rightCutoff).GetSafeNormal();
 		line.m_direction = FVector2D(unitW.Y, -unitW.X);
-		line.m_point = rightCutoff + (params.m_entityRadius * params.m_inversePredictionTime * unitW);
+		line.m_point = rightCutoff + (params.m_entityRadius * params.m_inverseObstaclePredictionTime * unitW);
 		outORCALines.push_back(line);
 		return;
 	}
@@ -937,7 +923,7 @@ void AvoidanceSystems::CalculateORCALineForObstacleSegment(const CreateEntityORC
 	{
 		// Project on cutoff line
 		line.m_direction = -obstaclePoint0.m_direction;
-		line.m_point = leftCutoff + (params.m_entityRadius * params.m_inversePredictionTime * FVector2D(-line.m_direction.Y, line.m_direction.X));
+		line.m_point = leftCutoff + (params.m_entityRadius * params.m_inverseObstaclePredictionTime * FVector2D(-line.m_direction.Y, line.m_direction.X));
 		outORCALines.push_back(line);
 		return;
 	}
@@ -950,7 +936,7 @@ void AvoidanceSystems::CalculateORCALineForObstacleSegment(const CreateEntityORC
 		}
 
 		line.m_direction = leftLegDirection;
-		line.m_point = leftCutoff + (params.m_entityRadius * params.m_inversePredictionTime * FVector2D(-line.m_direction.Y, line.m_direction.X));
+		line.m_point = leftCutoff + (params.m_entityRadius * params.m_inverseObstaclePredictionTime * FVector2D(-line.m_direction.Y, line.m_direction.X));
 		outORCALines.push_back(line);
 		return;
 	}
@@ -961,7 +947,7 @@ void AvoidanceSystems::CalculateORCALineForObstacleSegment(const CreateEntityORC
 	}
 
 	line.m_direction = -rightLegDirection;
-	line.m_point = rightCutoff + (params.m_entityRadius * params.m_inversePredictionTime * FVector2D(-line.m_direction.Y, line.m_direction.X));
+	line.m_point = rightCutoff + (params.m_entityRadius * params.m_inverseObstaclePredictionTime * FVector2D(-line.m_direction.Y, line.m_direction.X));
 	outORCALines.push_back(line);
 }
 
