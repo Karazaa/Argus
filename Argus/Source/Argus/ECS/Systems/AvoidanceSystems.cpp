@@ -587,6 +587,24 @@ float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems
 	return 0.5f;
 }
 
+float AvoidanceSystems::FindAreaOfObstacleCartesian(const TArray<ObstaclePoint>& obstaclePoints)
+{
+	float area = 0.0f;
+
+	for (int32 i = 0; i < obstaclePoints.Num(); ++i)
+	{
+		FVector2D point0 = obstaclePoints[i].m_point;
+		FVector2D point1 = obstaclePoints[(i + 1) % obstaclePoints.Num()].m_point;
+
+		float width = point1.X - point0.X;
+		float height = (point1.Y + point0.Y) / 2.0f;
+
+		area += width * height;
+	}
+
+	return area;
+}
+
 void AvoidanceSystems::CalculateObstacles(const FVector2D& sourceEntityLocation, const TArray<FVector>& navEdges, TArray<TArray<ObstaclePoint>>& outObstacles)
 {
 	const int32 numNavEdges = navEdges.Num();
@@ -682,7 +700,7 @@ void AvoidanceSystems::CalculateDirectionAndConvexForObstacles(const FVector2D& 
 											outObstacle[nearestVertex + 1].m_point - outObstacle[nearestVertex].m_point;
 
 	// Reverse the obstacle if it is ordered backwards relative to the entity we are calculating.
-	if (ArgusMath::IsLeftOf(outObstacle[nearestVertex].m_point, outObstacle[nearestVertex].m_point + potentialDirectionForward, sourceEntityLocation))
+	if (ArgusMath::IsLeftOfCartesian(outObstacle[nearestVertex].m_point, outObstacle[nearestVertex].m_point + potentialDirectionForward, sourceEntityLocation))
 	{
 		const int32 halfObstaclePoints = numObstaclePoints / 2;
 		for (int32 i = 0; i <= halfObstaclePoints; ++i)
@@ -710,7 +728,7 @@ void AvoidanceSystems::CalculateDirectionAndConvexForObstacles(const FVector2D& 
 		}
 		else
 		{
-			outObstacle[i].m_isConvex = ArgusMath::IsLeftOf(outObstacle[i - 1].m_point, outObstacle[i].m_point, outObstacle[i + 1].m_point);
+			outObstacle[i].m_isConvex = ArgusMath::IsLeftOfCartesian(outObstacle[i - 1].m_point, outObstacle[i].m_point, outObstacle[i + 1].m_point);
 		}
 	}
 }
