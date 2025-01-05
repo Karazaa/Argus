@@ -711,25 +711,12 @@ void AvoidanceSystems::CalculateDirectionAndConvexForObstacles(const FVector2D& 
 
 	for (int32 i = 0; i < numObstaclePoints; ++i)
 	{
-		if (i == (numObstaclePoints - 1))
-		{
-			outObstacle[i].m_direction = outObstacle[i].m_point - outObstacle[i - 1].m_point;
-		}
-		else
-		{
-			outObstacle[i].m_direction = outObstacle[i + 1].m_point - outObstacle[i].m_point;
-		}
-
+		const int32 nextIndex = (i + 1) % numObstaclePoints;
+		outObstacle[i].m_direction = outObstacle[nextIndex].m_point - outObstacle[i].m_point;
 		outObstacle[i].m_direction.Normalize();
 
-		if (i == 0 || i == (numObstaclePoints - 1))
-		{
-			outObstacle[i].m_isConvex = false;
-		}
-		else
-		{
-			outObstacle[i].m_isConvex = ArgusMath::IsLeftOfCartesian(outObstacle[i - 1].m_point, outObstacle[i].m_point, outObstacle[i + 1].m_point);
-		}
+		const int32 lastIndex = (i - 1) >= 0 ? (i - 1) : numObstaclePoints - 1;
+		outObstacle[i].m_isConvex = ArgusMath::IsLeftOfCartesian(outObstacle[lastIndex].m_point, outObstacle[i].m_point, outObstacle[nextIndex].m_point);
 	}
 }
 
