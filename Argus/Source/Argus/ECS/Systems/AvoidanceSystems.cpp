@@ -159,7 +159,7 @@ void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const Creat
 				DrawDebugString
 				(
 					worldPointer, 
-					FVector(ArgusMath::ToUnrealVector2(obstacles[i][j].m_point), 0.0f), 
+					FVector(ArgusMath::ToUnrealVector2(obstacles[i][j].m_point), k_debugVectorHeightAdjust),
 					FString::Printf
 					(
 						TEXT("%d\nIsConvex: %d"),
@@ -172,6 +172,29 @@ void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const Creat
 					true,
 					0.75f
 				);
+				DrawDebugLine
+				(
+					worldPointer,
+					FVector(ArgusMath::ToUnrealVector2(obstacles[i][j].m_point), k_debugVectorHeightAdjust),
+					FVector(ArgusMath::ToUnrealVector2(obstacles[i][j].m_point + (obstacles[i][j].m_direction * 100.0f)), k_debugVectorHeightAdjust),
+					FColor::Purple,
+					false,
+					0.1f,
+					0u,
+					k_debugVectorWidth
+				);
+				DrawDebugSphere
+				(
+					worldPointer,
+					FVector(ArgusMath::ToUnrealVector2(obstacles[i][j].m_point), k_debugVectorHeightAdjust),
+					10.0f,
+					4u,
+					FColor::Purple,
+					false,
+					0.1f,
+					0u,
+					k_debugVectorWidth
+				);
 			}
 
 			if (j == obstacles[i].Num() - 1)
@@ -181,15 +204,6 @@ void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const Creat
 
 			const FVector2D previousObstaclePointDir = j == 0 ? obstacles[i][0].m_direction : obstacles[i][j - 1].m_direction;
 			CalculateORCALineForObstacleSegment(params, obstacles[i][j], obstacles[i][j + 1], previousObstaclePointDir, outORCALines);
-		}
-	}
-
-	if (CVarShowAvoidanceDebug.GetValueOnGameThread())
-	{
-		for (int32 i = 0; i < foundNavEdges.Num(); i += 2)
-		{
-			FVector zAdjust = FVector(0.0f, 0.0f, k_debugVectorHeightAdjust);
-			DrawDebugLine(worldPointer, foundNavEdges[i] + zAdjust, foundNavEdges[i + 1] + zAdjust, FColor::Black, false, -1.0f, 0u, k_debugVectorWidth);
 		}
 	}
 }
@@ -723,8 +737,8 @@ void AvoidanceSystems::CalculateORCALineForObstacleSegment(const CreateEntityORC
 {
 	const FVector2D relativeLocation0 = obstaclePoint0.m_point - params.m_sourceEntityLocation;
 	const FVector2D relativeLocation1 = obstaclePoint1.m_point - params.m_sourceEntityLocation;
-	bool isAlreadyCovered = false;
 
+	// Check if the velocity obstacle of the obstacle is already covered by existing ORCA lines.
 	for (int i = 0; i < outORCALines.size(); ++i)
 	{
 		const float determinant0 = ArgusMath::Determinant(params.m_inverseObstaclePredictionTime * (relativeLocation0 - outORCALines[i].m_point), outORCALines[i].m_direction);
@@ -864,7 +878,7 @@ void AvoidanceSystems::CalculateORCALineForObstacleSegment(const CreateEntityORC
 	bool isLeftLegForeign = false;
 	bool isRightLegForeign = false;
 
-	if (obstaclePoint0.m_isConvex && ArgusMath::Determinant(leftLegDirection, -previousObstaclePointDir) <= 0.0f)
+	if (obstaclePoint0.m_isConvex && ArgusMath::Determinant(leftLegDirection, -previousObstaclePointDir) >= 0.0f)
 	{
 		// Left leg points into obstacle
 		leftLegDirection = -previousObstaclePointDir;
@@ -879,14 +893,16 @@ void AvoidanceSystems::CalculateORCALineForObstacleSegment(const CreateEntityORC
 	}
 
 	// Compute cutoff centers
-	const FVector2D leftCutoff = params.m_inverseObstaclePredictionTime * relativeLocation0;
-	const FVector2D rightCutoff = params.m_inverseObstaclePredictionTime * relativeLocation1;
+	const FVector2D leftCutoff = params.m_inverseObstaclePredictionTime * (obstaclePoint0.m_point - params.m_sourceEntityLocation);
+	const FVector2D rightCutoff = params.m_inverseObstaclePredictionTime * (obstaclePoint1.m_point - params.m_sourceEntityLocation);
 	const FVector2D cutoffVector = rightCutoff - leftCutoff;
 
 	// Project current velocity onto velocity obstacle
 	
 	// Check if current velocity is projected on cutoff circles
-	const bool areObstaclesEqual = obstaclePoint0.m_point == obstaclePoint1.m_point;
+	const bool areObstaclesEqual =	obstaclePoint0.m_point == obstaclePoint1.m_point && 
+									obstaclePoint0.m_direction == obstaclePoint1.m_direction && 
+									obstaclePoint0.m_isConvex == obstaclePoint1.m_isConvex;
 	const float tValue = areObstaclesEqual ? 0.5f : (params.m_sourceEntityVelocity - leftCutoff).Dot(cutoffVector) / cutoffVector.SquaredLength();
 	const float tLeft = (params.m_sourceEntityVelocity - leftCutoff).Dot(leftLegDirection);
 	const float tRight = (params.m_sourceEntityVelocity - rightCutoff).Dot(rightLegDirection);
@@ -913,11 +929,11 @@ void AvoidanceSystems::CalculateORCALineForObstacleSegment(const CreateEntityORC
 
 	// Project on left leg, right leg, or cut - off line, whichever is closest to velocity
 	const float squaredDistanceCutoff = (tValue < 0.0f || tValue > 1.0f || areObstaclesEqual) ? 
-		std::numeric_limits<float>::infinity() : (params.m_sourceEntityVelocity - (leftCutoff + tValue * cutoffVector)).SquaredLength();
+		std::numeric_limits<float>::infinity() : (params.m_sourceEntityVelocity - (leftCutoff + (tValue * cutoffVector))).SquaredLength();
 	const float squaredDistanceLeft = tLeft < 0.0f ?
-		std::numeric_limits<float>::infinity() : (params.m_sourceEntityVelocity - (leftCutoff + tLeft * leftLegDirection)).SquaredLength();
+		std::numeric_limits<float>::infinity() : (params.m_sourceEntityVelocity - (leftCutoff + (tLeft * leftLegDirection))).SquaredLength();
 	const float squaredDistanceRight= tRight < 0.0f ?
-		std::numeric_limits<float>::infinity() : (params.m_sourceEntityVelocity - (rightCutoff + tRight * rightLegDirection)).SquaredLength();
+		std::numeric_limits<float>::infinity() : (params.m_sourceEntityVelocity - (rightCutoff + (tRight * rightLegDirection))).SquaredLength();
 
 	if (squaredDistanceCutoff <= squaredDistanceLeft && squaredDistanceCutoff <= squaredDistanceRight)
 	{
