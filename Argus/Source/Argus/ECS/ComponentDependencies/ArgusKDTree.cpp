@@ -6,23 +6,23 @@
 #include "ArgusMacros.h"
 #include "ComponentDefinitions/TransformComponent.h"
 
-void ArgusKDTree::ArgusKDTreeNode::Populate(const FVector& worldSpaceLocation)
+void ArgusKDTreeNode::Populate(const FVector& worldSpaceLocation)
 {
 	m_worldSpaceLocation = worldSpaceLocation;
 }
 
-void ArgusKDTree::ArgusKDTreeNode::Populate(const ArgusEntity& entityToRepresent)
+void ArgusKDTreeNode::Populate(const ArgusEntity& entityToRepresent)
 {
 	if (!entityToRepresent)
 	{
-		ErrorOnInvalidArgusEntity(ARGUS_FUNCNAME);
+		ArgusKDTree::ErrorOnInvalidArgusEntity(ARGUS_FUNCNAME);
 		return;
 	}
 
 	const TransformComponent* transformComponent = entityToRepresent.GetComponent<TransformComponent>();
 	if (!transformComponent)
 	{
-		ErrorOnInvalidTransformComponent(ARGUS_FUNCNAME);
+		ArgusKDTree::ErrorOnInvalidTransformComponent(ARGUS_FUNCNAME);
 		return;
 	}
 
@@ -30,7 +30,7 @@ void ArgusKDTree::ArgusKDTreeNode::Populate(const ArgusEntity& entityToRepresent
 	m_entityId = entityToRepresent.GetId();
 }
 
-void ArgusKDTree::ArgusKDTreeNode::Reset()
+void ArgusKDTreeNode::Reset()
 {
 	m_worldSpaceLocation = FVector::ZeroVector;
 	m_entityId = ArgusECSConstants::k_maxEntities;
@@ -237,7 +237,7 @@ void ArgusKDTree::ErrorOnInvalidArgusEntity(const WIDECHAR* functionName)
 		TEXT("[%s] Passed in %s is invalid. It cannot be added to or retrieved from %s."),
 		functionName,
 		ARGUS_NAMEOF(ArgusEntity),
-		ARGUS_NAMEOF(ArgusKDTree)
+		ARGUS_NAMEOF(ArgusEntityKDTree)
 	);
 }
 
@@ -251,7 +251,7 @@ void ArgusKDTree::ErrorOnInvalidTransformComponent(const WIDECHAR* functionName)
 		functionName,
 		ARGUS_NAMEOF(TransformComponent),
 		ARGUS_NAMEOF(ArgusEntity),
-		ARGUS_NAMEOF(ArgusKDTree)
+		ARGUS_NAMEOF(ArgusEntityKDTree)
 	);
 }
 
@@ -355,7 +355,7 @@ bool ArgusKDTree::SearchForEntityIdRecursive(const ArgusKDTreeNode* node, uint16
 	return false;
 }
 
-const ArgusKDTree::ArgusKDTreeNode* ArgusKDTree::FindArgusEntityIdClosestToLocationRecursive(const ArgusKDTreeNode* iterationNode, const FVector& targetLocation, uint16 entityIdToIgnore, uint16 depth) const
+const ArgusKDTreeNode* ArgusKDTree::FindArgusEntityIdClosestToLocationRecursive(const ArgusKDTreeNode* iterationNode, const FVector& targetLocation, uint16 entityIdToIgnore, uint16 depth) const
 {
 	if (!iterationNode)
 	{
@@ -418,7 +418,7 @@ const ArgusKDTree::ArgusKDTreeNode* ArgusKDTree::FindArgusEntityIdClosestToLocat
 	return potentialNearestNeighbor;
 }
 
-const ArgusKDTree::ArgusKDTreeNode* ArgusKDTree::ChooseNodeCloserToTarget(const ArgusKDTreeNode* node0, const ArgusKDTreeNode* node1, const FVector& targetLocation, uint16 entityIdToIgnore) const
+const ArgusKDTreeNode* ArgusKDTree::ChooseNodeCloserToTarget(const ArgusKDTreeNode* node0, const ArgusKDTreeNode* node1, const FVector& targetLocation, uint16 entityIdToIgnore) const
 {
 	if (!node0 || node0->m_entityId == entityIdToIgnore || node0->m_entityId == ArgusECSConstants::k_maxEntities)
 	{
