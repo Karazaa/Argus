@@ -2,6 +2,7 @@
 
 #include "ArgusEntity.h"
 #include "ArgusTesting.h"
+#include "ComponentDependencies/ArgusEntityKDTree.h"
 #include "Misc/AutomationTest.h"
 
 #if WITH_AUTOMATION_TESTS
@@ -33,7 +34,7 @@ struct CollectionOfArgusEntities
 	const ArgusEntity entity4 = ArgusEntity::CreateEntity(ArgusKDTreeTestConstants::id4);
 };
 
-void PopulateKDTreeForTests(ArgusKDTree& tree, CollectionOfArgusEntities& entities, bool insertIntoTree)
+void PopulateKDTreeForTests(ArgusEntityKDTree& tree, CollectionOfArgusEntities& entities, bool insertIntoTree)
 {
 	TransformComponent* transformComponent0 = entities.entity0.AddComponent<TransformComponent>();
 	TransformComponent* transformComponent1 = entities.entity1.AddComponent<TransformComponent>();
@@ -68,7 +69,7 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusKDTreeInsertEntitiesTest, "A
 bool ArgusUtilitiesArgusKDTreeInsertEntitiesTest::RunTest(const FString& Parameters)
 {
 	ArgusTesting::StartArgusTest();
-	ArgusKDTree tree;
+	ArgusEntityKDTree tree;
 	CollectionOfArgusEntities entities;
 	PopulateKDTreeForTests(tree, entities, true);
 
@@ -79,10 +80,10 @@ bool ArgusUtilitiesArgusKDTreeInsertEntitiesTest::RunTest(const FString& Paramet
 		(
 			TEXT("[%s] Creating a %s, inserting %s into it, then checking that all of the inserted %s are present via %s"), 
 			ARGUS_FUNCNAME, 
-			ARGUS_NAMEOF(ArgusKDTree), 
+			ARGUS_NAMEOF(ArgusEntityKDTree),
 			ARGUS_NAMEOF(ArgusEntity), 
 			ARGUS_NAMEOF(ArgusEntity), 
-			ARGUS_NAMEOF(ArgusKDTree::DoesArgusEntityExistInKDTree)
+			ARGUS_NAMEOF(ArgusEntityKDTree::DoesArgusEntityExistInKDTree)
 		),
 		tree.DoesArgusEntityExistInKDTree(entities.entity0) && 
 		tree.DoesArgusEntityExistInKDTree(entities.entity1) && 
@@ -101,7 +102,7 @@ bool ArgusUtilitiesArgusKDTreeInsertEntitiesTest::RunTest(const FString& Paramet
 		(
 			TEXT("Passed in %s is invalid. It cannot be added to or retrieved from %s."),
 			ARGUS_NAMEOF(ArgusEntity),
-			ARGUS_NAMEOF(ArgusKDTree)
+			ARGUS_NAMEOF(ArgusEntityKDTree)
 		),
 		EAutomationExpectedErrorFlags::Contains,
 		2
@@ -121,7 +122,7 @@ bool ArgusUtilitiesArgusKDTreeInsertEntitiesTest::RunTest(const FString& Paramet
 			TEXT("Retrieved %s is invalid. Its owning %s cannot be added to or retrieved from %s."),
 			ARGUS_NAMEOF(TransformComponent),
 			ARGUS_NAMEOF(ArgusEntity),
-			ARGUS_NAMEOF(ArgusKDTree)
+			ARGUS_NAMEOF(ArgusEntityKDTree)
 		)
 	);
 #pragma endregion
@@ -138,7 +139,7 @@ bool ArgusUtilitiesArgusKDTreeFlushAllNodesTest::RunTest(const FString& Paramete
 	const FVector expectedAverageLocation = FVector(54.0f, 54.0f, 2.0f);
 
 	ArgusTesting::StartArgusTest();
-	ArgusKDTree tree;
+	ArgusEntityKDTree tree;
 	CollectionOfArgusEntities entities;
 	PopulateKDTreeForTests(tree, entities, true);
 
@@ -151,10 +152,10 @@ bool ArgusUtilitiesArgusKDTreeFlushAllNodesTest::RunTest(const FString& Paramete
 		(
 			TEXT("[%s] Creating a %s, inserting %s into it, then checking that none of the inserted %s are present after calling %s"), 
 			ARGUS_FUNCNAME, 
-			ARGUS_NAMEOF(ArgusKDTree), 
+			ARGUS_NAMEOF(ArgusEntityKDTree),
 			ARGUS_NAMEOF(ArgusEntity), 
 			ARGUS_NAMEOF(ArgusEntity), 
-			ARGUS_NAMEOF(ArgusKDTree::FlushAllNodes)
+			ARGUS_NAMEOF(ArgusEntityKDTree::FlushAllNodes)
 		),
 		tree.DoesArgusEntityExistInKDTree(entities.entity0) || 
 		tree.DoesArgusEntityExistInKDTree(entities.entity1) || 
@@ -171,9 +172,9 @@ bool ArgusUtilitiesArgusKDTreeFlushAllNodesTest::RunTest(const FString& Paramete
 		(
 			TEXT("[%s] Creating a %s, inserting %s into it, then checking that the calculated average location is accurate after calling %s"),
 			ARGUS_FUNCNAME,
-			ARGUS_NAMEOF(ArgusKDTree),
+			ARGUS_NAMEOF(ArgusEntityKDTree),
 			ARGUS_NAMEOF(ArgusEntity),
-			ARGUS_NAMEOF(ArgusKDTree::FlushAllNodes)
+			ARGUS_NAMEOF(ArgusEntityKDTree::FlushAllNodes)
 		),
 		averageLocation,
 		expectedAverageLocation
@@ -188,7 +189,7 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusKDTreeRebuildKDTreeForAllArg
 bool ArgusUtilitiesArgusKDTreeRebuildKDTreeForAllArgusEntitiesTest::RunTest(const FString& Parameters)
 {
 	ArgusTesting::StartArgusTest();
-	ArgusKDTree tree;
+	ArgusEntityKDTree tree;
 	CollectionOfArgusEntities entities;
 	PopulateKDTreeForTests(tree, entities, false);
 
@@ -201,11 +202,11 @@ bool ArgusUtilitiesArgusKDTreeRebuildKDTreeForAllArgusEntitiesTest::RunTest(cons
 		(
 			TEXT("[%s] Creating a %s, creating some %s, then calling %s and checking that all of the inserted %s are present in the %s"), 
 			ARGUS_FUNCNAME, 
-			ARGUS_NAMEOF(ArgusKDTree), 
+			ARGUS_NAMEOF(ArgusEntityKDTree),
 			ARGUS_NAMEOF(ArgusEntity), 
-			ARGUS_NAMEOF(ArgusKDTree::RebuildKDTreeForAllArgusEntities), 
+			ARGUS_NAMEOF(ArgusEntityKDTree::RebuildKDTreeForAllArgusEntities),
 			ARGUS_NAMEOF(ArgusEntity), 
-			ARGUS_NAMEOF(ArgusKDTree)
+			ARGUS_NAMEOF(ArgusEntityKDTree)
 		),
 		tree.DoesArgusEntityExistInKDTree(entities.entity0) && 
 		tree.DoesArgusEntityExistInKDTree(entities.entity1) && 
@@ -223,7 +224,7 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusKDTreeFindOtherArgusEntityId
 bool ArgusUtilitiesArgusKDTreeFindOtherArgusEntityIdClosestArgusEntityTest::RunTest(const FString& Parameters)
 {
 	ArgusTesting::StartArgusTest();
-	ArgusKDTree tree;
+	ArgusEntityKDTree tree;
 	CollectionOfArgusEntities entities;
 	PopulateKDTreeForTests(tree, entities, true);
 
@@ -236,11 +237,11 @@ bool ArgusUtilitiesArgusKDTreeFindOtherArgusEntityIdClosestArgusEntityTest::RunT
 		(
 			TEXT("[%s] Creating a %s, creating some %s, then checking which %s is closest to center %s via %s"),
 			ARGUS_FUNCNAME,
-			ARGUS_NAMEOF(ArgusKDTree),
+			ARGUS_NAMEOF(ArgusEntityKDTree),
 			ARGUS_NAMEOF(ArgusEntity),
 			ARGUS_NAMEOF(ArgusEntity),
 			ARGUS_NAMEOF(ArgusEntity),
-			ARGUS_NAMEOF(ArgusKDTree::FindOtherArgusEntityIdClosestArgusEntity)
+			ARGUS_NAMEOF(ArgusEntityKDTree::FindOtherArgusEntityIdClosestArgusEntity)
 		),
 		nearestEntityIdToCenter,
 		ArgusKDTreeTestConstants::id1
@@ -256,11 +257,11 @@ bool ArgusUtilitiesArgusKDTreeFindOtherArgusEntityIdClosestArgusEntityTest::RunT
 		(
 			TEXT("[%s] Creating a %s, creating some %s, then checking which %s is closest to center-left %s via %s"),
 			ARGUS_FUNCNAME,
-			ARGUS_NAMEOF(ArgusKDTree),
+			ARGUS_NAMEOF(ArgusEntityKDTree),
 			ARGUS_NAMEOF(ArgusEntity),
 			ARGUS_NAMEOF(ArgusEntity),
 			ARGUS_NAMEOF(ArgusEntity),
-			ARGUS_NAMEOF(ArgusKDTree::FindOtherArgusEntityIdClosestArgusEntity)
+			ARGUS_NAMEOF(ArgusEntityKDTree::FindOtherArgusEntityIdClosestArgusEntity)
 		),
 		nearestEntityIdToLeftCenter,
 		ArgusKDTreeTestConstants::id3
@@ -276,11 +277,11 @@ bool ArgusUtilitiesArgusKDTreeFindOtherArgusEntityIdClosestArgusEntityTest::RunT
 		(
 			TEXT("[%s] Creating a %s, creating some %s, then checking which %s is closest to center-right %s via %s"),
 			ARGUS_FUNCNAME,
-			ARGUS_NAMEOF(ArgusKDTree),
+			ARGUS_NAMEOF(ArgusEntityKDTree),
 			ARGUS_NAMEOF(ArgusEntity),
 			ARGUS_NAMEOF(ArgusEntity),
 			ARGUS_NAMEOF(ArgusEntity),
-			ARGUS_NAMEOF(ArgusKDTree::FindOtherArgusEntityIdClosestArgusEntity)
+			ARGUS_NAMEOF(ArgusEntityKDTree::FindOtherArgusEntityIdClosestArgusEntity)
 		),
 		nearestEntityIdToRightCenter,
 		ArgusKDTreeTestConstants::id4
@@ -296,7 +297,7 @@ bool ArgusUtilitiesArgusKDTreeFindOtherArgusEntityIdClosestArgusEntityTest::RunT
 		(
 			TEXT("Passed in %s is invalid. It cannot be added to or retrieved from %s."),
 			ARGUS_NAMEOF(ArgusEntity),
-			ARGUS_NAMEOF(ArgusKDTree)
+			ARGUS_NAMEOF(ArgusEntityKDTree)
 		)
 	);
 #pragma endregion
@@ -313,7 +314,7 @@ bool ArgusUtilitiesArgusKDTreeFindOtherArgusEntityIdClosestArgusEntityTest::RunT
 			TEXT("Retrieved %s is invalid. Its owning %s cannot be added to or retrieved from %s."),
 			ARGUS_NAMEOF(TransformComponent),
 			ARGUS_NAMEOF(ArgusEntity),
-			ARGUS_NAMEOF(ArgusKDTree)
+			ARGUS_NAMEOF(ArgusEntityKDTree)
 		)
 	);
 #pragma endregion
@@ -328,7 +329,7 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusKDTreeFindArgusEntityIdClose
 bool ArgusUtilitiesArgusKDTreeFindArgusEntityIdClosestToLocationTest::RunTest(const FString& Parameters)
 {
 	ArgusTesting::StartArgusTest();
-	ArgusKDTree tree;
+	ArgusEntityKDTree tree;
 	CollectionOfArgusEntities entities;
 	PopulateKDTreeForTests(tree, entities, true);
 
@@ -341,11 +342,11 @@ bool ArgusUtilitiesArgusKDTreeFindArgusEntityIdClosestToLocationTest::RunTest(co
 		(
 			TEXT("[%s] Creating a %s, creating some %s, then checking which %s is closest to center %s via %s"),
 			ARGUS_FUNCNAME,
-			ARGUS_NAMEOF(ArgusKDTree),
+			ARGUS_NAMEOF(ArgusEntityKDTree),
 			ARGUS_NAMEOF(ArgusEntity),
 			ARGUS_NAMEOF(ArgusEntity),
 			ARGUS_NAMEOF(ArgusEntity),
-			ARGUS_NAMEOF(ArgusKDTree::FindArgusEntityIdClosestToLocation)
+			ARGUS_NAMEOF(ArgusEntityKDTree::FindArgusEntityIdClosestToLocation)
 		),
 		nearestEntityIdToCenter,
 		ArgusKDTreeTestConstants::id0
@@ -361,11 +362,11 @@ bool ArgusUtilitiesArgusKDTreeFindArgusEntityIdClosestToLocationTest::RunTest(co
 		(
 			TEXT("[%s] Creating a %s, creating some %s, then checking which %s is closest to a z point %s via %s"),
 			ARGUS_FUNCNAME,
-			ARGUS_NAMEOF(ArgusKDTree),
+			ARGUS_NAMEOF(ArgusEntityKDTree),
 			ARGUS_NAMEOF(ArgusEntity),
 			ARGUS_NAMEOF(ArgusEntity),
 			ARGUS_NAMEOF(ArgusEntity),
-			ARGUS_NAMEOF(ArgusKDTree::FindArgusEntityIdClosestToLocation)
+			ARGUS_NAMEOF(ArgusEntityKDTree::FindArgusEntityIdClosestToLocation)
 		),
 		nearestEntityIdToZPoint,
 		ArgusKDTreeTestConstants::id4
@@ -380,7 +381,7 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusKDTreeFindArgusEntityIdsWith
 bool ArgusUtilitiesArgusKDTreeFindArgusEntityIdsWithinRangeOfLocationTest::RunTest(const FString& Parameters)
 {
 	ArgusTesting::StartArgusTest();
-	ArgusKDTree tree;
+	ArgusEntityKDTree tree;
 	CollectionOfArgusEntities entities;
 	PopulateKDTreeForTests(tree, entities, true);
 
@@ -394,10 +395,10 @@ bool ArgusUtilitiesArgusKDTreeFindArgusEntityIdsWithinRangeOfLocationTest::RunTe
 		(
 			TEXT("[%s] Creating a %s, creating some %s, then checking which %s are in range of a far away location via %s."),
 			ARGUS_FUNCNAME,
-			ARGUS_NAMEOF(ArgusKDTree),
+			ARGUS_NAMEOF(ArgusEntityKDTree),
 			ARGUS_NAMEOF(ArgusEntity),
 			ARGUS_NAMEOF(ArgusEntity),
-			ARGUS_NAMEOF(ArgusKDTree::FindArgusEntityIdsWithinRangeOfLocation)
+			ARGUS_NAMEOF(ArgusEntityKDTree::FindArgusEntityIdsWithinRangeOfLocation)
 		),
 		argusEntityIds.size(),
 		0
@@ -414,10 +415,10 @@ bool ArgusUtilitiesArgusKDTreeFindArgusEntityIdsWithinRangeOfLocationTest::RunTe
 		(
 			TEXT("[%s] Creating a %s, creating some %s, then checking that exactly one %s is in range of a central location via %s."),
 			ARGUS_FUNCNAME,
-			ARGUS_NAMEOF(ArgusKDTree),
+			ARGUS_NAMEOF(ArgusEntityKDTree),
 			ARGUS_NAMEOF(ArgusEntity),
 			ARGUS_NAMEOF(ArgusEntity),
-			ARGUS_NAMEOF(ArgusKDTree::FindArgusEntityIdsWithinRangeOfLocation)
+			ARGUS_NAMEOF(ArgusEntityKDTree::FindArgusEntityIdsWithinRangeOfLocation)
 		),
 		argusEntityIds.size(),
 		1
@@ -437,10 +438,10 @@ bool ArgusUtilitiesArgusKDTreeFindArgusEntityIdsWithinRangeOfLocationTest::RunTe
 		(
 			TEXT("[%s] Creating a %s, creating some %s, then checking that a specific %s is in range of a central location via %s."),
 			ARGUS_FUNCNAME,
-			ARGUS_NAMEOF(ArgusKDTree),
+			ARGUS_NAMEOF(ArgusEntityKDTree),
 			ARGUS_NAMEOF(ArgusEntity),
 			ARGUS_NAMEOF(ArgusEntity),
-			ARGUS_NAMEOF(ArgusKDTree::FindArgusEntityIdsWithinRangeOfLocation)
+			ARGUS_NAMEOF(ArgusEntityKDTree::FindArgusEntityIdsWithinRangeOfLocation)
 		),
 		argusEntityIds[0],
 		ArgusKDTreeTestConstants::id0
@@ -457,10 +458,10 @@ bool ArgusUtilitiesArgusKDTreeFindArgusEntityIdsWithinRangeOfLocationTest::RunTe
 		(
 			TEXT("[%s] Creating a %s, creating some %s, then checking that all %s are within a large range of a central location via %s."),
 			ARGUS_FUNCNAME,
-			ARGUS_NAMEOF(ArgusKDTree),
+			ARGUS_NAMEOF(ArgusEntityKDTree),
 			ARGUS_NAMEOF(ArgusEntity),
 			ARGUS_NAMEOF(ArgusEntity),
-			ARGUS_NAMEOF(ArgusKDTree::FindArgusEntityIdsWithinRangeOfLocation)
+			ARGUS_NAMEOF(ArgusEntityKDTree::FindArgusEntityIdsWithinRangeOfLocation)
 		),
 		argusEntityIds.size(),
 		5
@@ -477,10 +478,10 @@ bool ArgusUtilitiesArgusKDTreeFindArgusEntityIdsWithinRangeOfLocationTest::RunTe
 		(
 			TEXT("[%s] Creating a %s, creating some %s, then checking that exactly two %s are in range of a left location via %s."),
 			ARGUS_FUNCNAME,
-			ARGUS_NAMEOF(ArgusKDTree),
+			ARGUS_NAMEOF(ArgusEntityKDTree),
 			ARGUS_NAMEOF(ArgusEntity),
 			ARGUS_NAMEOF(ArgusEntity),
-			ARGUS_NAMEOF(ArgusKDTree::FindArgusEntityIdsWithinRangeOfLocation)
+			ARGUS_NAMEOF(ArgusEntityKDTree::FindArgusEntityIdsWithinRangeOfLocation)
 		),
 		argusEntityIds.size(),
 		2
@@ -503,10 +504,10 @@ bool ArgusUtilitiesArgusKDTreeFindArgusEntityIdsWithinRangeOfLocationTest::RunTe
 		(
 			TEXT("[%s] Creating a %s, creating some %s, then checking that specific %s are in range of a left location via %s."),
 			ARGUS_FUNCNAME,
-			ARGUS_NAMEOF(ArgusKDTree),
+			ARGUS_NAMEOF(ArgusEntityKDTree),
 			ARGUS_NAMEOF(ArgusEntity),
 			ARGUS_NAMEOF(ArgusEntity),
-			ARGUS_NAMEOF(ArgusKDTree::FindArgusEntityIdsWithinRangeOfLocation)
+			ARGUS_NAMEOF(ArgusEntityKDTree::FindArgusEntityIdsWithinRangeOfLocation)
 		),
 		entity1Present && entity3Present
 	);

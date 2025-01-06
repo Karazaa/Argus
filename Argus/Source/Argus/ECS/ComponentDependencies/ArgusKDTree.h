@@ -9,22 +9,21 @@
 
 class ArgusEntity;
 
+struct ArgusKDTreeNode : public IObjectPoolable
+{
+	FVector		m_worldSpaceLocation = FVector::ZeroVector;
+	uint16		m_entityId = ArgusECSConstants::k_maxEntities;
+	ArgusKDTreeNode* m_leftChild = nullptr;
+	ArgusKDTreeNode* m_rightChild = nullptr;
+
+	ArgusKDTreeNode() {};
+	void Populate(const FVector& worldSpaceLocation);
+	void Populate(const ArgusEntity& entityToRepresent);
+	virtual void Reset() override;
+};
+
 class ArgusKDTree
 {
-private:
-	struct ArgusKDTreeNode : public IObjectPoolable
-	{
-		FVector		m_worldSpaceLocation = FVector::ZeroVector;
-		uint16		m_entityId = ArgusECSConstants::k_maxEntities;
-		ArgusKDTreeNode* m_leftChild = nullptr;
-		ArgusKDTreeNode* m_rightChild = nullptr;
-
-		ArgusKDTreeNode() {};
-		void Populate(const FVector& worldSpaceLocation);
-		void Populate(const ArgusEntity& entityToRepresent);
-		virtual void Reset() override;
-	};
-
 public:
 	~ArgusKDTree();
 
@@ -44,11 +43,10 @@ public:
 	bool FindArgusEntityIdsWithinRangeOfLocation(std::vector<uint16>& outNearbyArgusEntityIds, const FVector& location, const float range, const ArgusEntity& entityToIgnore) const;
 	bool FindOtherArgusEntityIdsWithinRangeOfArgusEntity(std::vector<uint16>& outNearbyArgusEntityIds, const ArgusEntity& entityToSearchAround, const float range) const;
 
-
-private:
 	static void ErrorOnInvalidArgusEntity(const WIDECHAR* functionName);
 	static void ErrorOnInvalidTransformComponent(const WIDECHAR* functionName);
 
+private:
 	void ClearNodeRecursive(ArgusKDTreeNode* node, FVector& currentAverageLocation, uint16& priorNodeCount);
 	void InsertNodeIntoKDTreeRecursive(ArgusKDTreeNode* iterationNode, ArgusKDTreeNode* nodeToInsert, uint16 depth);
 
