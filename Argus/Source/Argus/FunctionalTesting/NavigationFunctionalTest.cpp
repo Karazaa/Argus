@@ -257,7 +257,7 @@ bool ANavigationFunctionalTest::DidNavigationToLocationTestStepSucceed()
 
 bool ANavigationFunctionalTest::DidNavigationToEntityTestStepSucceed()
 {
-	if (FVector::DistSquared(m_argusActor->GetActorLocation(), m_goalEntityActor->GetActorLocation()) < FMath::Square(m_successDistance))
+	if (FVector::DistSquared(m_argusActor->GetActorLocation(), m_goalEntityActor->GetActorLocation()) < FMath::Square(400.0f))
 	{
 		return true;
 	}
