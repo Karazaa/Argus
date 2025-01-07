@@ -12,43 +12,43 @@ class IObjectPoolable
 };
 
 // Type IObjectPoolable is an implicit constraint for using the ArgusObjectPool. Types you want to pool should inherit from IObjectPoolable 
-template <class IObjectPoolable>
+template <class PoolableType>
 class ArgusObjectPool
 {
 public:
 	~ArgusObjectPool();
 
-	IObjectPoolable* Take();
-	void Release(IObjectPoolable*& objectPointer);
+	PoolableType* Take();
+	void Release(PoolableType*& objectPointer);
 	void ClearPool();
 	std::size_t GetNumAvailableObjects();
 
 private:
-	std::queue<IObjectPoolable*> m_availableObjects;
+	std::queue<PoolableType*> m_availableObjects;
 
 };
 
-template <class IObjectPoolable>
-ArgusObjectPool<IObjectPoolable>::~ArgusObjectPool()
+template <class PoolableType>
+ArgusObjectPool<PoolableType>::~ArgusObjectPool()
 {
 	ClearPool();
 }
 
-template <class IObjectPoolable>
-IObjectPoolable* ArgusObjectPool<IObjectPoolable>::Take()
+template <class PoolableType>
+PoolableType* ArgusObjectPool<PoolableType>::Take()
 {
 	if (m_availableObjects.size() > 0)
 	{
-		IObjectPoolable* objectPointer = m_availableObjects.front();
+		PoolableType* objectPointer = m_availableObjects.front();
 		m_availableObjects.pop();
 		return objectPointer;
 	}
 
-	return new IObjectPoolable();
+	return new PoolableType();
 }
 
-template <class IObjectPoolable>
-void ArgusObjectPool<IObjectPoolable>::Release(IObjectPoolable*& objectPointer)
+template <class PoolableType>
+void ArgusObjectPool<PoolableType>::Release(PoolableType*& objectPointer)
 {
 	if (!objectPointer)
 	{
@@ -61,19 +61,19 @@ void ArgusObjectPool<IObjectPoolable>::Release(IObjectPoolable*& objectPointer)
 	objectPointer = nullptr;
 }
 
-template <class IObjectPoolable>
-void ArgusObjectPool<IObjectPoolable>::ClearPool()
+template <class PoolableType>
+void ArgusObjectPool<PoolableType>::ClearPool()
 {
 	while (m_availableObjects.size() > 0)
 	{
-		IObjectPoolable* objectPointer = m_availableObjects.front();
+		PoolableType* objectPointer = m_availableObjects.front();
 		m_availableObjects.pop();
 		delete objectPointer;
 	}
 }
 
-template <class IObjectPoolable>
-std::size_t ArgusObjectPool<IObjectPoolable>::GetNumAvailableObjects()
+template <class PoolableType>
+std::size_t ArgusObjectPool<PoolableType>::GetNumAvailableObjects()
 {
 	return m_availableObjects.size();
 }

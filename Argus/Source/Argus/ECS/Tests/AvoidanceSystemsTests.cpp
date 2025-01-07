@@ -83,7 +83,7 @@ bool AvoidanceSystemsProcessORCAvoidanceTest::RunTest(const FString& Parameters)
 
 	components.m_transformComponent->m_desiredSpeedUnitsPerSecond = desiredSpeed;
 	identityComponent->m_team = ETeam::TeamA;
-	spatialPartitioningComponent->m_argusKDTree.RebuildKDTreeForAllArgusEntities();
+	spatialPartitioningComponent->m_argusEntityKDTree.RebuildKDTreeForAllArgusEntities();
 
 #pragma region Test that a brand new entity has a zero proposed avoidance velocity
 	TestEqual
@@ -149,7 +149,7 @@ bool AvoidanceSystemsProcessORCAvoidanceTest::RunTest(const FString& Parameters)
 	components.m_navigationComponent->m_navigationPoints.push_back(targetLocation);
 	components.m_transformComponent->m_currentVelocity = velocity;
 
-	spatialPartitioningComponent->m_argusKDTree.RebuildKDTreeForAllArgusEntities();
+	spatialPartitioningComponent->m_argusEntityKDTree.RebuildKDTreeForAllArgusEntities();
 	AvoidanceSystems::ProcessORCAvoidance(dummyPointer, deltaTime, components);
 
 // TODO JAMES: Solve why this test is failing when prediction time is > 1.0f

@@ -3,13 +3,13 @@
 #pragma once
 
 #include "ArgusMacros.h"
-#include "ComponentDependencies/ArgusKDTree.h"
+#include "ComponentDependencies/ArgusEntityKDTree.h"
 #include "CoreMinimal.h"
 
 struct SpatialPartitioningComponent
 {
 	ARGUS_IGNORE()
-	ArgusKDTree m_argusKDTree;
+	ArgusEntityKDTree m_argusEntityKDTree;
 
 	void GetDebugString(FString& debugStringToAppendTo) const
 	{

@@ -17,7 +17,7 @@ void SpatialPartitioningSystems::RunSystems(const ArgusEntity& spatialPartitioni
 		return;
 	}
 
-	spatialPartitioningComponent->m_argusKDTree.ResetKDTreeWithAverageLocation();
+	spatialPartitioningComponent->m_argusEntityKDTree.ResetKDTreeWithAverageLocation();
 
 	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{
@@ -38,7 +38,7 @@ void SpatialPartitioningSystems::RunSystems(const ArgusEntity& spatialPartitioni
 		components.m_transformComponent = transformComponent;
 		components.m_singletonSpatialParitioningComponent = spatialPartitioningComponent;
 
-		spatialPartitioningComponent->m_argusKDTree.InsertArgusEntityIntoKDTree(retrievedEntity);
+		spatialPartitioningComponent->m_argusEntityKDTree.InsertArgusEntityIntoKDTree(retrievedEntity);
 	}
 }
 
