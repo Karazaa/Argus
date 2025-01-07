@@ -52,7 +52,7 @@ void ArgusSystemsManager::PopulateSingletonComponents()
 
 	if (SpatialPartitioningComponent* spatialPartitioningComponent = singletonEntity.AddComponent<SpatialPartitioningComponent>())
 	{
-		spatialPartitioningComponent->m_argusKDTree.RebuildKDTreeForAllArgusEntities();
+		spatialPartitioningComponent->m_argusEntityKDTree.RebuildKDTreeForAllArgusEntities();
 	}
 }
 

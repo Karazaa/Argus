@@ -63,14 +63,14 @@ bool ArgusComponentSpatialPartitioningComponentPersistenceTest::RunTest(const FS
 		return false;
 	}
 
-	spatialPartitioningComponent->m_argusKDTree.InsertArgusEntityIntoKDTree(entity);
+	spatialPartitioningComponent->m_argusEntityKDTree.InsertArgusEntityIntoKDTree(entity);
 	spatialPartitioningComponent = entity.GetComponent<SpatialPartitioningComponent>();
 
 #pragma region Test SpatialPartitioningComponent by inserting the source entity into the KD Tree.
 	TestTrue
 	(
 		FString::Printf(TEXT("[%s] Creating a %s, inserting an %s, then checking that it is still there after retrieval."), ARGUS_FUNCNAME, ARGUS_NAMEOF(SpatialPartitioningComponent), ARGUS_NAMEOF(ArgusEntity)),
-		spatialPartitioningComponent->m_argusKDTree.DoesArgusEntityExistInKDTree(entity)
+		spatialPartitioningComponent->m_argusEntityKDTree.DoesArgusEntityExistInKDTree(entity)
 	);
 #pragma endregion
 
@@ -80,7 +80,7 @@ bool ArgusComponentSpatialPartitioningComponentPersistenceTest::RunTest(const FS
 	TestFalse
 	(
 		FString::Printf(TEXT("[%s] Creating a %s, inserting an %s, resetting it, then checking the inserted %s is not present."), ARGUS_FUNCNAME, ARGUS_NAMEOF(SpatialPartitioningComponent), ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(ArgusEntity)),
-		spatialPartitioningComponent->m_argusKDTree.DoesArgusEntityExistInKDTree(entity)
+		spatialPartitioningComponent->m_argusEntityKDTree.DoesArgusEntityExistInKDTree(entity)
 	);
 #pragma endregion
 

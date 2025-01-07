@@ -95,7 +95,7 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 
 	// Search for nearby entities within a specific range.
 	std::vector<uint16> foundEntityIds;
-	if (!spatialPartitioningComponent->m_argusKDTree.FindOtherArgusEntityIdsWithinRangeOfArgusEntity(foundEntityIds, components.m_entity, ArgusECSConstants::k_avoidanceAgentSearchRadius))
+	if (!spatialPartitioningComponent->m_argusEntityKDTree.FindOtherArgusEntityIdsWithinRangeOfArgusEntity(foundEntityIds, components.m_entity, ArgusECSConstants::k_avoidanceAgentSearchRadius))
 	{
 		// If no entities nearby, then nothing can effect our navigation, so we should just early out at our desired speed. 
 		components.m_transformComponent->m_proposedAvoidanceVelocity = FVector(ArgusMath::ToUnrealVector2(desiredVelocity), 0.0f);
