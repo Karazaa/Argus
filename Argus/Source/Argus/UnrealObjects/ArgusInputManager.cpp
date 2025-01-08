@@ -7,6 +7,7 @@
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
 #include "ArgusPlayerController.h"
+#include "ArgusTesting.h"
 #include "Components/InputComponent.h"
 #include "EnhancedInputComponent.h"
 #include "Systems/TransformSystems.h"
@@ -125,6 +126,14 @@ void UArgusInputManager::ProcessPlayerInput(TObjectPtr<AArgusCameraActor>& argus
 {
 	ARGUS_MEMORY_TRACE(ArgusInputManager);
 	ARGUS_TRACE(UArgusInputManager::ProcessPlayerInput);
+
+#if WITH_AUTOMATION_TESTS
+	if (ArgusTesting::IsInTestingContext())
+	{
+		m_inputEventsThisFrame.Empty();
+		return;
+	}
+#endif // WITH_AUTOMATION_TESTS
 
 	const int inputsEventsThisFrameCount = m_inputEventsThisFrame.Num();
 	for (int i = 0; i < inputsEventsThisFrameCount; ++i)

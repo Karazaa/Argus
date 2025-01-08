@@ -7,15 +7,23 @@
 
 bool ArgusTesting::s_isInTestingContext = false;
 
-void ArgusTesting::StartArgusTest()
+void ArgusTesting::StartArgusTest(bool shouldFlushEntities)
 {
 	s_isInTestingContext = true;
-	ArgusEntity::FlushAllEntities();
+
+	if (shouldFlushEntities)
+	{
+		ArgusEntity::FlushAllEntities();
+	}
 }
 
-void ArgusTesting::EndArgusTest()
+void ArgusTesting::EndArgusTest(bool shouldFlushEntities)
 {
-	ArgusEntity::FlushAllEntities();
+	if (shouldFlushEntities)
+	{
+		ArgusEntity::FlushAllEntities();
+	}
+
 	s_isInTestingContext = false;
 }
 

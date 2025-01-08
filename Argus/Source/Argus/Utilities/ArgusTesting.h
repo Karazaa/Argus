@@ -10,8 +10,8 @@
 class ArgusTesting
 {
 public:
-	static void StartArgusTest();
-	static void EndArgusTest();
+	static void StartArgusTest(bool shouldFlushEntities = true);
+	static void EndArgusTest(bool shouldFlushEntities = true);
 	static bool IsInTestingContext() { return s_isInTestingContext; }
 
 private:

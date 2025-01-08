@@ -2,6 +2,7 @@
 
 #include "ArgusFunctionalTest.h"
 #include "ArgusEntity.h"
+#include "ArgusTesting.h"
 #include "Engine/World.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -73,6 +74,10 @@ bool AArgusFunctionalTest::DidArgusFunctionalTestSucceed()
 
 void AArgusFunctionalTest::StartArgusFunctionalTest()
 {
+#if WITH_AUTOMATION_TESTS
+	ArgusTesting::StartArgusTest(false);
+#endif // WITH_AUTOMATION_TESTS
+
 	RunTest();
 	StartNextTestStep();
 }
@@ -91,6 +96,10 @@ void AArgusFunctionalTest::ConcludeFailedArgusFunctionalTest()
 
 void AArgusFunctionalTest::ExitArgusFunctionalTest()
 {
+#if WITH_AUTOMATION_TESTS
+	ArgusTesting::EndArgusTest(false);
+#endif // WITH_AUTOMATION_TESTS
+
 	ArgusEntity::FlushAllEntities();
 	APlayerController* playerController = UGameplayStatics::GetPlayerController(this, 0);
 	if (playerController)
