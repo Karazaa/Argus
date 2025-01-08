@@ -7,14 +7,12 @@
 #include "CoreMinimal.h"
 #include <vector>
 
-class ArgusEntity;
-
 class IArgusKDTreeNode : public IObjectPoolable
 {
 };
 
 // Type IArgusKDTreeNode is an implicit constraint for using the ArgusKDTree. Types you want to pool should inherit from IArgusKDTreeNode 
-template <class NodeType>
+template <class NodeType, typename ValueComparisonType>
 class ArgusKDTree
 {
 public:
@@ -27,25 +25,25 @@ protected:
 	void ClearNodeRecursive(NodeType* node, FVector& currentAverageLocation, uint16& priorNodeCount);
 	void InsertNodeIntoKDTreeRecursive(NodeType* iterationNode, NodeType* nodeToInsert, uint16 depth);
 
-	const NodeType* FindNodeClosestToLocationRecursive(const NodeType* iterationNode, const FVector& targetLocation, uint16 entityIdToIgnore, uint16 depth) const;
-	const NodeType* ChooseNodeCloserToTarget(const NodeType* node0, const NodeType* node1, const FVector& targetLocation, uint16 entityIdToIgnore) const;
+	const NodeType* FindNodeClosestToLocationRecursive(const NodeType* iterationNode, const FVector& targetLocation, ValueComparisonType valueToSkip, uint16 depth) const;
+	const NodeType* ChooseNodeCloserToTarget(const NodeType* node0, const NodeType* node1, const FVector& targetLocation, ValueComparisonType valueToSkip) const;
 
-	void FindNodesWithinRangeOfLocationRecursive(std::vector<const NodeType*>& outNearbyNodes, const NodeType* iterationNode, const FVector& targetLocation, const float rangeSquared, uint16 entityIdToIgnore, uint16 depth) const;
+	void FindNodesWithinRangeOfLocationRecursive(std::vector<const NodeType*>& outNearbyNodes, const NodeType* iterationNode, const FVector& targetLocation, const float rangeSquared, ValueComparisonType valueToSkip, uint16 depth) const;
 	
 	NodeType* m_rootNode = nullptr;
 	ArgusObjectPool<NodeType> m_nodePool;
 };
 
-template <class NodeType>
-ArgusKDTree<NodeType>::~ArgusKDTree()
+template <class NodeType, typename ValueComparisonType>
+ArgusKDTree<NodeType, ValueComparisonType>::~ArgusKDTree()
 {
 	ARGUS_MEMORY_TRACE(ArgusKDTree);
 	FlushAllNodes();
 	m_nodePool.ClearPool();
 }
 
-template <class NodeType>
-FVector ArgusKDTree<NodeType>::FlushAllNodes()
+template <class NodeType, typename ValueComparisonType>
+FVector ArgusKDTree<NodeType, ValueComparisonType>::FlushAllNodes()
 {
 	ARGUS_MEMORY_TRACE(ArgusKDTree);
 	ARGUS_TRACE(ArgusKDTree::FlushAllNodes);
@@ -62,8 +60,8 @@ FVector ArgusKDTree<NodeType>::FlushAllNodes()
 	return  (sumLocation / static_cast<float>(numNodes));
 }
 
-template <class NodeType>
-void ArgusKDTree<NodeType>::ResetKDTreeWithAverageLocation()
+template <class NodeType, typename ValueComparisonType>
+void ArgusKDTree<NodeType, ValueComparisonType>::ResetKDTreeWithAverageLocation()
 {
 	ARGUS_MEMORY_TRACE(ArgusKDTree);
 	ARGUS_TRACE(ArgusKDTree::ResetKDTreeWithAverageLocation);
@@ -78,8 +76,8 @@ void ArgusKDTree<NodeType>::ResetKDTreeWithAverageLocation()
 	m_rootNode->Populate(averageLocation);
 }
 
-template <class NodeType>
-void ArgusKDTree<NodeType>::ClearNodeRecursive(NodeType* node, FVector& currentAverageLocation, uint16& priorNodeCount)
+template <class NodeType, typename ValueComparisonType>
+void ArgusKDTree<NodeType, ValueComparisonType>::ClearNodeRecursive(NodeType* node, FVector& currentAverageLocation, uint16& priorNodeCount)
 {
 	if (!node)
 	{
@@ -105,8 +103,8 @@ void ArgusKDTree<NodeType>::ClearNodeRecursive(NodeType* node, FVector& currentA
 	}
 }
 
-template <class NodeType>
-void ArgusKDTree<NodeType>::InsertNodeIntoKDTreeRecursive(NodeType* iterationNode, NodeType* nodeToInsert, uint16 depth)
+template <class NodeType, typename ValueComparisonType>
+void ArgusKDTree<NodeType, ValueComparisonType>::InsertNodeIntoKDTreeRecursive(NodeType* iterationNode, NodeType* nodeToInsert, uint16 depth)
 {
 	if (!iterationNode || !nodeToInsert)
 	{
@@ -155,8 +153,8 @@ void ArgusKDTree<NodeType>::InsertNodeIntoKDTreeRecursive(NodeType* iterationNod
 	}
 }
 
-template <class NodeType>
-const NodeType* ArgusKDTree<NodeType>::FindNodeClosestToLocationRecursive(const NodeType* iterationNode, const FVector& targetLocation, uint16 entityIdToIgnore, uint16 depth) const
+template <class NodeType, typename ValueComparisonType>
+const NodeType* ArgusKDTree<NodeType, ValueComparisonType>::FindNodeClosestToLocationRecursive(const NodeType* iterationNode, const FVector& targetLocation, ValueComparisonType valueToSkip, uint16 depth) const
 {
 	if (!iterationNode)
 	{
@@ -195,8 +193,8 @@ const NodeType* ArgusKDTree<NodeType>::FindNodeClosestToLocationRecursive(const 
 		secondBranch = iterationNode->m_leftChild;
 	}
 
-	const NodeType* potentialNearestNeighbor = FindNodeClosestToLocationRecursive(firstBranch, targetLocation, entityIdToIgnore, depth + 1);
-	potentialNearestNeighbor = ChooseNodeCloserToTarget(iterationNode, potentialNearestNeighbor, targetLocation, entityIdToIgnore);
+	const NodeType* potentialNearestNeighbor = FindNodeClosestToLocationRecursive(firstBranch, targetLocation, valueToSkip, depth + 1);
+	potentialNearestNeighbor = ChooseNodeCloserToTarget(iterationNode, potentialNearestNeighbor, targetLocation, valueToSkip);
 
 	if (potentialNearestNeighbor)
 	{
@@ -206,27 +204,27 @@ const NodeType* ArgusKDTree<NodeType>::FindNodeClosestToLocationRecursive(const 
 		if (potentialDistanceSquared > distanceAlongDimensionSquared)
 		{
 			const NodeType* cachedPotentialNearestNeighbor = potentialNearestNeighbor;
-			potentialNearestNeighbor = FindNodeClosestToLocationRecursive(secondBranch, targetLocation, entityIdToIgnore, depth + 1);
-			potentialNearestNeighbor = ChooseNodeCloserToTarget(ChooseNodeCloserToTarget(cachedPotentialNearestNeighbor, potentialNearestNeighbor, targetLocation, entityIdToIgnore), potentialNearestNeighbor, targetLocation, entityIdToIgnore);
+			potentialNearestNeighbor = FindNodeClosestToLocationRecursive(secondBranch, targetLocation, valueToSkip, depth + 1);
+			potentialNearestNeighbor = ChooseNodeCloserToTarget(ChooseNodeCloserToTarget(cachedPotentialNearestNeighbor, potentialNearestNeighbor, targetLocation, valueToSkip), potentialNearestNeighbor, targetLocation, valueToSkip);
 		}
 	}
 	else
 	{
-		potentialNearestNeighbor = FindNodeClosestToLocationRecursive(secondBranch, targetLocation, entityIdToIgnore, depth + 1);
-		potentialNearestNeighbor = ChooseNodeCloserToTarget(iterationNode, potentialNearestNeighbor, targetLocation, entityIdToIgnore);
+		potentialNearestNeighbor = FindNodeClosestToLocationRecursive(secondBranch, targetLocation, valueToSkip, depth + 1);
+		potentialNearestNeighbor = ChooseNodeCloserToTarget(iterationNode, potentialNearestNeighbor, targetLocation, valueToSkip);
 	}
 
 	return potentialNearestNeighbor;
 }
 
-template <class NodeType>
-const NodeType* ArgusKDTree<NodeType>::ChooseNodeCloserToTarget(const NodeType* node0, const NodeType* node1, const FVector& targetLocation, uint16 entityIdToIgnore) const
+template <class NodeType, typename ValueComparisonType>
+const NodeType* ArgusKDTree<NodeType, ValueComparisonType>::ChooseNodeCloserToTarget(const NodeType* node0, const NodeType* node1, const FVector& targetLocation, ValueComparisonType valueToSkip) const
 {
-	if (!node0 || node0->m_entityId == entityIdToIgnore || node0->m_entityId == ArgusECSConstants::k_maxEntities)
+	if (!node0 || node0->ShouldSkipNode(valueToSkip))
 	{
 		return node1;
 	}
-	if (!node1 || node1->m_entityId == entityIdToIgnore || node1->m_entityId == ArgusECSConstants::k_maxEntities)
+	if (!node1 || node1->ShouldSkipNode(valueToSkip))
 	{
 		return node0;
 	}
@@ -241,8 +239,8 @@ const NodeType* ArgusKDTree<NodeType>::ChooseNodeCloserToTarget(const NodeType* 
 	}
 }
 
-template <class NodeType>
-void ArgusKDTree<NodeType>::FindNodesWithinRangeOfLocationRecursive(std::vector<const NodeType*>& outNearbyNodes, const NodeType* iterationNode, const FVector& targetLocation, const float rangeSquared, uint16 entityIdToIgnore, uint16 depth) const
+template <class NodeType, typename ValueComparisonType>
+void ArgusKDTree<NodeType, ValueComparisonType>::FindNodesWithinRangeOfLocationRecursive(std::vector<const NodeType*>& outNearbyNodes, const NodeType* iterationNode, const FVector& targetLocation, const float rangeSquared, ValueComparisonType valueToSkip, uint16 depth) const
 {
 	if (!iterationNode)
 	{
@@ -251,13 +249,13 @@ void ArgusKDTree<NodeType>::FindNodesWithinRangeOfLocationRecursive(std::vector<
 
 	if (FVector::DistSquared(iterationNode->m_worldSpaceLocation, targetLocation) < rangeSquared)
 	{
-		if (iterationNode->m_entityId != entityIdToIgnore && iterationNode->m_entityId != ArgusECSConstants::k_maxEntities)
+		if (!iterationNode->ShouldSkipNode(valueToSkip))
 		{
 			outNearbyNodes.push_back(iterationNode);
 		}
 
-		FindNodesWithinRangeOfLocationRecursive(outNearbyNodes, iterationNode->m_rightChild, targetLocation, rangeSquared, entityIdToIgnore, depth + 1);
-		FindNodesWithinRangeOfLocationRecursive(outNearbyNodes, iterationNode->m_leftChild, targetLocation, rangeSquared, entityIdToIgnore, depth + 1);
+		FindNodesWithinRangeOfLocationRecursive(outNearbyNodes, iterationNode->m_rightChild, targetLocation, rangeSquared, valueToSkip, depth + 1);
+		FindNodesWithinRangeOfLocationRecursive(outNearbyNodes, iterationNode->m_leftChild, targetLocation, rangeSquared, valueToSkip, depth + 1);
 		return;
 	}
 
@@ -285,16 +283,16 @@ void ArgusKDTree<NodeType>::FindNodesWithinRangeOfLocationRecursive(std::vector<
 	{
 		if (differenceAlongDimension > 0.0f)
 		{
-			FindNodesWithinRangeOfLocationRecursive(outNearbyNodes, iterationNode->m_rightChild, targetLocation, rangeSquared, entityIdToIgnore, depth + 1);
+			FindNodesWithinRangeOfLocationRecursive(outNearbyNodes, iterationNode->m_rightChild, targetLocation, rangeSquared, valueToSkip, depth + 1);
 		}
 		else
 		{
-			FindNodesWithinRangeOfLocationRecursive(outNearbyNodes, iterationNode->m_leftChild, targetLocation, rangeSquared, entityIdToIgnore, depth + 1);
+			FindNodesWithinRangeOfLocationRecursive(outNearbyNodes, iterationNode->m_leftChild, targetLocation, rangeSquared, valueToSkip, depth + 1);
 		}
 	}
 	else
 	{
-		FindNodesWithinRangeOfLocationRecursive(outNearbyNodes, iterationNode->m_rightChild, targetLocation, rangeSquared, entityIdToIgnore, depth + 1);
-		FindNodesWithinRangeOfLocationRecursive(outNearbyNodes, iterationNode->m_leftChild, targetLocation, rangeSquared, entityIdToIgnore, depth + 1);
+		FindNodesWithinRangeOfLocationRecursive(outNearbyNodes, iterationNode->m_rightChild, targetLocation, rangeSquared, valueToSkip, depth + 1);
+		FindNodesWithinRangeOfLocationRecursive(outNearbyNodes, iterationNode->m_leftChild, targetLocation, rangeSquared, valueToSkip, depth + 1);
 	}
 }
