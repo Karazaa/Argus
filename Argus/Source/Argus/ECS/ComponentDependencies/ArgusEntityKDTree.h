@@ -4,6 +4,8 @@
 
 #include "ArgusKDTree.h"
 
+class ArgusEntity;
+
 struct ArgusEntityKDTreeNode : public IArgusKDTreeNode
 {
 	FVector		m_worldSpaceLocation = FVector::ZeroVector;
@@ -15,9 +17,11 @@ struct ArgusEntityKDTreeNode : public IArgusKDTreeNode
 	void Populate(const FVector& worldSpaceLocation);
 	void Populate(const ArgusEntity& entityToRepresent);
 	virtual void Reset() override;
+
+	bool ShouldSkipNode(uint16 valueToSkip) const;
 };
 
-class ArgusEntityKDTree : public ArgusKDTree<ArgusEntityKDTreeNode>
+class ArgusEntityKDTree : public ArgusKDTree<ArgusEntityKDTreeNode, uint16>
 {
 public:
 	static void ErrorOnInvalidArgusEntity(const WIDECHAR* functionName);
