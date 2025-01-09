@@ -485,7 +485,7 @@ void AvoidanceSystems::RetrieveRelevantNavEdges(UWorld* worldPointer, const Tran
 	}
 
 	ANavigationData* navData = unrealNavigationSystem->MainNavData;
-	if (!unrealNavigationSystem)
+	if (!navData)
 	{
 		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Could not retrieve a valid %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ANavigationData*));
 		return;

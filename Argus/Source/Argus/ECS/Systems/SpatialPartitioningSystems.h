@@ -19,4 +19,6 @@ public:
 
 		bool AreComponentsValidCheck(const WIDECHAR* functionName) const;
 	};
+
+	static void CalculateAvoidanceObstacles(UWorld* worldPointer);
 };

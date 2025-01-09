@@ -3,6 +3,10 @@
 #include "SpatialPartitioningSystems.h"
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
+#include "Detour/DetourNavMeshQuery.h"
+#include "NavigationData.h"
+#include "NavigationSystem.h"
+#include "NavMesh/RecastNavMesh.h"
 
 void SpatialPartitioningSystems::RunSystems(const ArgusEntity& spatialPartitioningEntity)
 {
@@ -40,6 +44,48 @@ void SpatialPartitioningSystems::RunSystems(const ArgusEntity& spatialPartitioni
 
 		spatialPartitioningComponent->m_argusEntityKDTree.InsertArgusEntityIntoKDTree(retrievedEntity);
 	}
+}
+
+void SpatialPartitioningSystems::CalculateAvoidanceObstacles(UWorld* worldPointer)
+{
+	if (!worldPointer)
+	{
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Passed in %s is nullptr."), ARGUS_FUNCNAME, ARGUS_NAMEOF(UWorld*));
+		return;
+	}
+
+	UNavigationSystemV1* unrealNavigationSystem = UNavigationSystemV1::GetCurrent(worldPointer);
+	if (!unrealNavigationSystem)
+	{
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Could not retrieve a valid %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(UNavigationSystemV1*));
+		return;
+	}
+
+	ARecastNavMesh* navMesh = Cast<ARecastNavMesh>(unrealNavigationSystem->MainNavData);
+	if (!navMesh)
+	{
+		// ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Could not retrieve a valid %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ANavigationData*));
+		return;
+	}
+
+	FNavLocation originLocation;
+	if (!unrealNavigationSystem->ProjectPointToNavigation(FVector::ZeroVector, originLocation))
+	{
+		return;
+	}
+
+	dtNavMeshQuery query;
+	const uint32 maxSearchNodes = navMesh->GetDefaultQueryFilter().Get()->GetMaxSearchNodes();
+	query.init(navMesh->GetRecastMesh(), maxSearchNodes);
+	//dtReal center[3];
+	//dtReal radius;
+	//dtStatus Status = query.findWallsInNeighbourhood(originLocation.NodeRef, center, radius, );
+
+	//TArray<FVector> navEdges;
+	//for (int32 i = 0; i < navEdges.Num(); i += 2)
+	//{
+	//	DrawDebugLine(worldPointer, navEdges[i], navEdges[i + 1], FColor::Red, false, 10.0f, 0u, 5.0f);
+	//}
 }
 
 bool SpatialPartitioningSystems::SpatialPartitioningSystemsComponentArgs::AreComponentsValidCheck(const WIDECHAR* functionName) const

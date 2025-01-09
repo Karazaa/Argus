@@ -12,6 +12,6 @@ public:
 	static void RunSystems(UWorld* worldPointer, float deltaTime);
 
 private:
-	static void PopulateSingletonComponents();
+	static void PopulateSingletonComponents(UWorld* worldPointer);
 	static void UpdateSingletonComponents(bool didMovementUpdateThisFrame);
 };

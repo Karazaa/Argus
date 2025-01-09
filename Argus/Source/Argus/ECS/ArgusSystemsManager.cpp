@@ -23,7 +23,7 @@ void ArgusSystemsManager::RunSystems(UWorld* worldPointer, float deltaTime)
 		return;
 	}
 
-	PopulateSingletonComponents();
+	PopulateSingletonComponents(worldPointer);
 
 	TimerSystems::RunSystems(deltaTime);
 	NavigationSystems::RunSystems(worldPointer);
@@ -36,7 +36,7 @@ void ArgusSystemsManager::RunSystems(UWorld* worldPointer, float deltaTime)
 	UpdateSingletonComponents(didMovementUpdateThisFrame);
 }
 
-void ArgusSystemsManager::PopulateSingletonComponents()
+void ArgusSystemsManager::PopulateSingletonComponents(UWorld* worldPointer)
 {
 	if (ArgusEntity::DoesEntityExist(ArgusECSConstants::k_singletonEntityId))
 	{
@@ -53,6 +53,11 @@ void ArgusSystemsManager::PopulateSingletonComponents()
 	if (SpatialPartitioningComponent* spatialPartitioningComponent = singletonEntity.AddComponent<SpatialPartitioningComponent>())
 	{
 		spatialPartitioningComponent->m_argusEntityKDTree.RebuildKDTreeForAllArgusEntities();
+	}
+
+	if (worldPointer)
+	{
+		SpatialPartitioningSystems::CalculateAvoidanceObstacles(worldPointer);
 	}
 }
 
