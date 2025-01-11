@@ -5,6 +5,8 @@
 #include "ArgusEntity.h"
 
 class UWorld;
+class ARecastNavMesh;
+struct FNavLocation;
 
 class SpatialPartitioningSystems
 {
@@ -21,4 +23,7 @@ public:
 	};
 
 	static void CalculateAvoidanceObstacles(UWorld* worldPointer);
+
+private:
+	static bool GetNavMeshWalls(const ARecastNavMesh* navMesh, const FNavLocation& originLocation, TArray<FVector>& outNavWalls);
 };
