@@ -124,7 +124,6 @@ bool SpatialPartitioningSystems::GetNavMeshWalls(const ARecastNavMesh* navMesh, 
 		return false;
 	}
 
-	const FVector rcCenter = Unreal2RecastPoint(originLocation.Location);
 	const int32 maxWalls = 1028;
 	int32 numWalls = 0;
 	FVector::FReal wallSegments[maxWalls * 3 * 2] = { 0 };
@@ -134,7 +133,30 @@ bool SpatialPartitioningSystems::GetNavMeshWalls(const ARecastNavMesh* navMesh, 
 	int32 numNeis = 0;
 	dtPolyRef neiPolys[maxNeis] = { 0 };
 
-	const dtStatus queryStatus = query.findWallsInNeighbourhood(originLocation.NodeRef, &rcCenter.X, 100000.0, queryFilter, neiPolys, &numNeis, maxNeis, wallSegments, wallPolys, &numWalls, maxWalls);
+	const float querySize = 10000.0f;
+	const int verts = 4;
+	TArray<FVector> queryShapePoints;
+	queryShapePoints.SetNumZeroed(verts);
+	queryShapePoints[0].X -= querySize;
+	queryShapePoints[1].X += querySize;
+	queryShapePoints[2].X += querySize;
+	queryShapePoints[3].X -= querySize;
+	queryShapePoints[0].Y += querySize;
+	queryShapePoints[1].Y += querySize;
+	queryShapePoints[2].Y -= querySize;
+	queryShapePoints[3].Y -= querySize;
+
+	FVector::FReal rcConvexPolygon[verts * 3] = { 0 };
+
+	for (int32 i = 0; i < verts; i++)
+	{
+		const FVector RcPoint = Unreal2RecastPoint(queryShapePoints[i]);
+		rcConvexPolygon[i * 3 + 0] = RcPoint.X;
+		rcConvexPolygon[i * 3 + 1] = RcPoint.Y;
+		rcConvexPolygon[i * 3 + 2] = RcPoint.Z;
+	}
+
+	const dtStatus queryStatus = query.findWallsOverlappingShape(originLocation.NodeRef, rcConvexPolygon, verts, queryFilter, neiPolys, &numNeis, maxNeis, wallSegments, wallPolys, &numWalls, maxWalls);
 
 	if (dtStatusSucceed(queryStatus))
 	{
