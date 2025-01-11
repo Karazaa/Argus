@@ -1,9 +1,9 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "SpatialPartitioningSystems.h"
+#include "ArgusDetourQuery.h"
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
-#include "Detour/DetourNavMeshQuery.h"
 #include "NavigationData.h"
 #include "NavigationSystem.h"
 #include "NavMesh/RecastHelpers.h"
@@ -109,8 +109,14 @@ bool SpatialPartitioningSystems::GetNavMeshWalls(const ARecastNavMesh* navMesh, 
 	}
 
 	dtNavMeshQuery query;
+	const dtNavMesh* detourMesh = navMesh->GetRecastMesh();
+	if (!detourMesh)
+	{
+		return false;
+	}
+
 	const uint32 maxSearchNodes = filter->GetMaxSearchNodes();
-	query.init(navMesh->GetRecastMesh(), maxSearchNodes);
+	query.init(detourMesh, maxSearchNodes);
 	
 	const FRecastQueryFilter* recastQueryFilter = static_cast<const FRecastQueryFilter*>(filter->GetImplementation());
 	if (!recastQueryFilter)
@@ -156,7 +162,7 @@ bool SpatialPartitioningSystems::GetNavMeshWalls(const ARecastNavMesh* navMesh, 
 		rcConvexPolygon[i * 3 + 2] = RcPoint.Z;
 	}
 
-	const dtStatus queryStatus = query.findWallsOverlappingShape(originLocation.NodeRef, rcConvexPolygon, verts, queryFilter, neiPolys, &numNeis, maxNeis, wallSegments, wallPolys, &numWalls, maxWalls);
+	dtStatus queryStatus = ArgusDetourQuery::FindWallsOverlappingShape(originLocation.NodeRef, rcConvexPolygon, verts, queryFilter, neiPolys, &numNeis, maxNeis, wallSegments, wallPolys, &numWalls, maxWalls);
 
 	if (dtStatusSucceed(queryStatus))
 	{
