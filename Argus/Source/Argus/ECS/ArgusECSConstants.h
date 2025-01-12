@@ -15,6 +15,13 @@ namespace ArgusECSConstants
 	static constexpr float k_avoidanceAgentSearchRadius = 200.0f;
 	static constexpr float k_avoidanceEpsilonValue = 0.00001f;
 	static constexpr float k_moveAlongPathWaypointTolerance = 0.001f;
+
+	static constexpr int32 k_maxDetourWalls = 1028;
+	static constexpr int32 k_maxDetourPolys = 1028;
+	static constexpr float k_detourQuerySize = 10000.0f;
+
+	static constexpr float k_debugDrawLineWidth = 3.0f;
+	static constexpr float k_debugDrawHeightAdjustment = 5.0f;
 }
 
 // Unreal complains like a dumbass if UENUM is in a namespace. Big dumb.

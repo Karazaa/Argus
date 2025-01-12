@@ -56,7 +56,4 @@ private:
 	static void			CalculateDirectionAndConvexForObstacles(const FVector2D& sourceEntityLocation, TArray<ObstaclePoint>& outObstacle);
 	static void			CalculateORCALineForObstacleSegment(const CreateEntityORCALinesParams& params, ObstaclePoint obstaclePoint0, ObstaclePoint obstaclePoint1, const FVector2D& previousObstaclePointDir, std::vector<ORCALine>& outORCALines);
 	static void			DrawORCADebugLines(UWorld* worldPointer, const CreateEntityORCALinesParams& params, const std::vector<ORCALine>& orcaLines, bool areObstacleLines, int startingLine);
-
-	static constexpr float k_debugVectorWidth = 3.0f;
-	static constexpr float k_debugVectorHeightAdjust = 5.0f;
 };

@@ -2,6 +2,7 @@
 
 #include "SpatialPartitioningSystems.h"
 #include "ArgusDetourQuery.h"
+#include "ArgusECSConstants.h"
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
 #include "NavigationData.h"
@@ -10,8 +11,12 @@
 #include "NavMesh/RecastNavMesh.h"
 #include "NavMesh/RecastQueryFilter.h"
 
+static TAutoConsoleVariable<bool> CVarShowObstacleDebug(TEXT("Argus.SpatialPartitioning.ShowAvoidanceObstacleDebug"), false, TEXT(""));
+
 void SpatialPartitioningSystems::RunSystems(const ArgusEntity& spatialPartitioningEntity)
 {
+	ARGUS_TRACE(SpatialPartitioningSystems::RunSystems);
+
 	if (!spatialPartitioningEntity)
 	{
 		return;
@@ -60,6 +65,8 @@ bool SpatialPartitioningSystems::SpatialPartitioningSystemsComponentArgs::AreCom
 
 void SpatialPartitioningSystems::CalculateAvoidanceObstacles(UWorld* worldPointer)
 {
+	ARGUS_TRACE(SpatialPartitioningSystems::CalculateAvoidanceObstacles);
+
 	if (!worldPointer)
 	{
 		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Passed in %s is nullptr."), ARGUS_FUNCNAME, ARGUS_NAMEOF(UWorld*));
@@ -88,15 +95,20 @@ void SpatialPartitioningSystems::CalculateAvoidanceObstacles(UWorld* worldPointe
 	TArray<FVector> navWalls;
 	GetNavMeshWalls(navMesh, originLocation, navWalls);
 
-	FVector heightAdjustment = FVector(0.0f, 0.0f, 5.0f);
-	for (int32 i = 0; i < navWalls.Num(); i += 2)
+	if (CVarShowObstacleDebug.GetValueOnGameThread())
 	{
-		DrawDebugLine(worldPointer, navWalls[i] + heightAdjustment, navWalls[i + 1] + heightAdjustment, FColor::Red, true, 1.0f, 0u, 5.0f);
+		const FVector heightAdjustment = FVector(0.0f, 0.0f, ArgusECSConstants::k_debugDrawHeightAdjustment);
+		for (int32 i = 0; i < navWalls.Num(); i += 2)
+		{
+			DrawDebugLine(worldPointer, navWalls[i] + heightAdjustment, navWalls[i + 1] + heightAdjustment, FColor::Red, true, 1.0f, 0u, ArgusECSConstants::k_debugDrawLineWidth);
+		}
 	}
 }
 
 bool SpatialPartitioningSystems::GetNavMeshWalls(const ARecastNavMesh* navMesh, const FNavLocation& originLocation, TArray<FVector>& outNavWalls)
 {
+	ARGUS_TRACE(SpatialPartitioningSystems::GetNavMeshWalls);
+
 	if (!navMesh)
 	{
 		return false;
@@ -108,7 +120,6 @@ bool SpatialPartitioningSystems::GetNavMeshWalls(const ARecastNavMesh* navMesh, 
 		return false;
 	}
 
-	dtNavMeshQuery query;
 	const dtNavMesh* detourMesh = navMesh->GetRecastMesh();
 	if (!detourMesh)
 	{
@@ -116,8 +127,6 @@ bool SpatialPartitioningSystems::GetNavMeshWalls(const ARecastNavMesh* navMesh, 
 	}
 
 	const uint32 maxSearchNodes = filter->GetMaxSearchNodes();
-	query.init(detourMesh, maxSearchNodes);
-	
 	const FRecastQueryFilter* recastQueryFilter = static_cast<const FRecastQueryFilter*>(filter->GetImplementation());
 	if (!recastQueryFilter)
 	{
@@ -130,27 +139,24 @@ bool SpatialPartitioningSystems::GetNavMeshWalls(const ARecastNavMesh* navMesh, 
 		return false;
 	}
 
-	const int32 maxWalls = 1028;
 	int32 numWalls = 0;
-	FVector::FReal wallSegments[maxWalls * 3 * 2] = { 0 };
-	dtPolyRef wallPolys[maxWalls * 2] = { 0 };
+	FVector::FReal wallSegments[ArgusECSConstants::k_maxDetourWalls * 3 * 2] = { 0 };
+	dtPolyRef wallPolys[ArgusECSConstants::k_maxDetourWalls * 2] = { 0 };
 
-	const int32 maxNeis = 1028;
 	int32 numNeis = 0;
-	dtPolyRef neiPolys[maxNeis] = { 0 };
+	dtPolyRef neiPolys[ArgusECSConstants::k_maxDetourPolys] = { 0 };
 
-	const float querySize = 10000.0f;
 	const int verts = 4;
 	TArray<FVector> queryShapePoints;
 	queryShapePoints.SetNumZeroed(verts);
-	queryShapePoints[0].X -= querySize;
-	queryShapePoints[1].X += querySize;
-	queryShapePoints[2].X += querySize;
-	queryShapePoints[3].X -= querySize;
-	queryShapePoints[0].Y += querySize;
-	queryShapePoints[1].Y += querySize;
-	queryShapePoints[2].Y -= querySize;
-	queryShapePoints[3].Y -= querySize;
+	queryShapePoints[0].X -= ArgusECSConstants::k_detourQuerySize;
+	queryShapePoints[1].X += ArgusECSConstants::k_detourQuerySize;
+	queryShapePoints[2].X += ArgusECSConstants::k_detourQuerySize;
+	queryShapePoints[3].X -= ArgusECSConstants::k_detourQuerySize;
+	queryShapePoints[0].Y += ArgusECSConstants::k_detourQuerySize;
+	queryShapePoints[1].Y += ArgusECSConstants::k_detourQuerySize;
+	queryShapePoints[2].Y -= ArgusECSConstants::k_detourQuerySize;
+	queryShapePoints[3].Y -= ArgusECSConstants::k_detourQuerySize;
 
 	FVector::FReal rcConvexPolygon[verts * 3] = { 0 };
 
@@ -162,7 +168,11 @@ bool SpatialPartitioningSystems::GetNavMeshWalls(const ARecastNavMesh* navMesh, 
 		rcConvexPolygon[i * 3 + 2] = RcPoint.Z;
 	}
 
-	dtStatus queryStatus = ArgusDetourQuery::FindWallsOverlappingShape(originLocation.NodeRef, rcConvexPolygon, verts, queryFilter, neiPolys, &numNeis, maxNeis, wallSegments, wallPolys, &numWalls, maxWalls);
+	dtStatus queryStatus = ArgusDetourQuery::FindWallsOverlappingShape
+	(
+		detourMesh, maxSearchNodes, originLocation.NodeRef, rcConvexPolygon, verts, queryFilter, 
+		neiPolys, &numNeis, ArgusECSConstants::k_maxDetourPolys, wallSegments, wallPolys, &numWalls, ArgusECSConstants::k_maxDetourWalls
+	);
 
 	if (dtStatusSucceed(queryStatus))
 	{

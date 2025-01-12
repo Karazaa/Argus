@@ -65,7 +65,7 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 
 	CreateEntityORCALinesParams params;
 	params.m_sourceEntityLocation3D = components.m_transformComponent->m_transform.GetLocation();
-	params.m_sourceEntityLocation3D.Z += k_debugVectorHeightAdjust;
+	params.m_sourceEntityLocation3D.Z += ArgusECSConstants::k_debugDrawHeightAdjustment;
 	params.m_sourceEntityLocation = ArgusMath::ToCartesianVector2(FVector2D(params.m_sourceEntityLocation3D));
 	params.m_sourceEntityVelocity = ArgusMath::ToCartesianVector2(FVector2D(components.m_transformComponent->m_currentVelocity));
 	params.m_deltaTime = deltaTime;
@@ -101,7 +101,7 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 		components.m_transformComponent->m_proposedAvoidanceVelocity = FVector(ArgusMath::ToUnrealVector2(desiredVelocity), 0.0f);
 		if (CVarShowAvoidanceDebug.GetValueOnGameThread() && worldPointer)
 		{
-			DrawDebugLine(worldPointer, params.m_sourceEntityLocation3D, params.m_sourceEntityLocation3D + components.m_transformComponent->m_proposedAvoidanceVelocity, FColor::Orange, false, -1.0f, 0, k_debugVectorWidth);
+			DrawDebugLine(worldPointer, params.m_sourceEntityLocation3D, params.m_sourceEntityLocation3D + components.m_transformComponent->m_proposedAvoidanceVelocity, FColor::Orange, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth);
 		}
 		return;
 	}
@@ -131,8 +131,8 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 	if (CVarShowAvoidanceDebug.GetValueOnGameThread() && worldPointer)
 	{
 		DrawORCADebugLines(worldPointer, params, calculatedORCALines, false, numStaticObstacles);
-		DrawDebugLine(worldPointer, params.m_sourceEntityLocation3D, params.m_sourceEntityLocation3D + FVector(ArgusMath::ToUnrealVector2(resultingVelocity), 0.0f), FColor::Orange, false, -1.0f, 0, k_debugVectorWidth);
-		DrawDebugLine(worldPointer, params.m_sourceEntityLocation3D, params.m_sourceEntityLocation3D + FVector(ArgusMath::ToUnrealVector2(desiredVelocity), 0.0f), FColor::Green, false, -1.0f, 0, k_debugVectorWidth);
+		DrawDebugLine(worldPointer, params.m_sourceEntityLocation3D, params.m_sourceEntityLocation3D + FVector(ArgusMath::ToUnrealVector2(resultingVelocity), 0.0f), FColor::Orange, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth);
+		DrawDebugLine(worldPointer, params.m_sourceEntityLocation3D, params.m_sourceEntityLocation3D + FVector(ArgusMath::ToUnrealVector2(desiredVelocity), 0.0f), FColor::Green, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth);
 	}
 
 	components.m_transformComponent->m_proposedAvoidanceVelocity = FVector(ArgusMath::ToUnrealVector2(resultingVelocity), 0.0f);
@@ -159,7 +159,7 @@ void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const Creat
 				DrawDebugString
 				(
 					worldPointer, 
-					FVector(ArgusMath::ToUnrealVector2(obstacles[i][j].m_point), k_debugVectorHeightAdjust),
+					FVector(ArgusMath::ToUnrealVector2(obstacles[i][j].m_point), ArgusECSConstants::k_debugDrawHeightAdjustment),
 					FString::Printf
 					(
 						TEXT("%d\nIsConvex: %d"),
@@ -175,25 +175,25 @@ void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const Creat
 				DrawDebugLine
 				(
 					worldPointer,
-					FVector(ArgusMath::ToUnrealVector2(obstacles[i][j].m_point), k_debugVectorHeightAdjust),
-					FVector(ArgusMath::ToUnrealVector2(obstacles[i][j].m_point + (obstacles[i][j].m_direction * 100.0f)), k_debugVectorHeightAdjust),
+					FVector(ArgusMath::ToUnrealVector2(obstacles[i][j].m_point), ArgusECSConstants::k_debugDrawHeightAdjustment),
+					FVector(ArgusMath::ToUnrealVector2(obstacles[i][j].m_point + (obstacles[i][j].m_direction * 100.0f)), ArgusECSConstants::k_debugDrawHeightAdjustment),
 					FColor::Purple,
 					false,
 					0.1f,
 					0u,
-					k_debugVectorWidth
+					ArgusECSConstants::k_debugDrawLineWidth
 				);
 				DrawDebugSphere
 				(
 					worldPointer,
-					FVector(ArgusMath::ToUnrealVector2(obstacles[i][j].m_point), k_debugVectorHeightAdjust),
+					FVector(ArgusMath::ToUnrealVector2(obstacles[i][j].m_point), ArgusECSConstants::k_debugDrawHeightAdjustment),
 					10.0f,
 					4u,
 					FColor::Purple,
 					false,
 					0.1f,
 					0u,
-					k_debugVectorWidth
+					ArgusECSConstants::k_debugDrawLineWidth
 				);
 			}
 
@@ -516,11 +516,11 @@ void AvoidanceSystems::RetrieveRelevantNavEdges(UWorld* worldPointer, const Tran
 
 	if (CVarShowAvoidanceDebug.GetValueOnGameThread())
 	{
-		const FVector zAdjust = FVector(0.0f, 0.0f, k_debugVectorHeightAdjust);
-		DrawDebugCircle(worldPointer, entityLocation + zAdjust, ArgusECSConstants::k_avoidanceAgentSearchRadius, 20, FColor::Yellow, false, -1.0f, 0, k_debugVectorWidth, FVector::RightVector, FVector::ForwardVector, false);
+		const FVector zAdjust = FVector(0.0f, 0.0f, ArgusECSConstants::k_debugDrawHeightAdjustment);
+		DrawDebugCircle(worldPointer, entityLocation + zAdjust, ArgusECSConstants::k_avoidanceAgentSearchRadius, 20, FColor::Yellow, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth, FVector::RightVector, FVector::ForwardVector, false);
 		for (int32 i = 0; i < 4; ++i)
 		{
-			DrawDebugLine(worldPointer, queryShapePoints[i] + zAdjust, queryShapePoints[(i + 1) % 4] + zAdjust, FColor::Yellow, false, -1.0f, k_debugVectorWidth);
+			DrawDebugLine(worldPointer, queryShapePoints[i] + zAdjust, queryShapePoints[(i + 1) % 4] + zAdjust, FColor::Yellow, false, -1.0f, ArgusECSConstants::k_debugDrawLineWidth);
 		}
 	}
 
@@ -973,9 +973,9 @@ void AvoidanceSystems::DrawORCADebugLines(UWorld* worldPointer, const CreateEnti
 		const FVector worldspaceDirection = basisTransform.TransformVector(FVector(ArgusMath::ToUnrealVector2(orcaLines[i].m_direction), 0.0f));
 		const FVector worldspaceOrthogonalDirectionScaled = worldspaceDirection.Cross(FVector::UpVector) * 1000.0f;
 
-		DrawDebugSphere(worldPointer, worldspacePoint, 10.0f, 10u, debugColor, false, -1.0f, 0u, k_debugVectorWidth);
-		DrawDebugLine(worldPointer, worldspacePoint, worldspacePoint + (worldspaceDirection * 100.0f), debugColor, false, -1.0f, 0u, k_debugVectorWidth);
-		DrawDebugLine(worldPointer, worldspacePoint - worldspaceOrthogonalDirectionScaled, worldspacePoint + worldspaceOrthogonalDirectionScaled, debugColor, false, -1.0f, 0u, k_debugVectorWidth);
+		DrawDebugSphere(worldPointer, worldspacePoint, 10.0f, 10u, debugColor, false, -1.0f, 0u, ArgusECSConstants::k_debugDrawLineWidth);
+		DrawDebugLine(worldPointer, worldspacePoint, worldspacePoint + (worldspaceDirection * 100.0f), debugColor, false, -1.0f, 0u, ArgusECSConstants::k_debugDrawLineWidth);
+		DrawDebugLine(worldPointer, worldspacePoint - worldspaceOrthogonalDirectionScaled, worldspacePoint + worldspaceOrthogonalDirectionScaled, debugColor, false, -1.0f, 0u, ArgusECSConstants::k_debugDrawLineWidth);
 	}
 }
 

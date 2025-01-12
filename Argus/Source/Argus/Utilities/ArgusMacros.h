@@ -17,6 +17,7 @@
 LLM_DECLARE_TAG(ArgusActorPool);
 LLM_DECLARE_TAG(ArgusAvoidanceSystems);
 LLM_DECLARE_TAG(ArgusComponentData);
+LLM_DECLARE_TAG(ArgusDetourQuery);
 LLM_DECLARE_TAG(ArgusInputManager);
 LLM_DECLARE_TAG(ArgusKDTree);
 LLM_DECLARE_TAG(ArgusNavigationSystems);
