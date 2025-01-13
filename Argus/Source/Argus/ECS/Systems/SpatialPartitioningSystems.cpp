@@ -5,6 +5,7 @@
 #include "ArgusECSConstants.h"
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
+#include "ArgusMath.h"
 #include "NavigationData.h"
 #include "NavigationSystem.h"
 #include "NavMesh/RecastHelpers.h"
@@ -95,14 +96,28 @@ void SpatialPartitioningSystems::CalculateAvoidanceObstacles(UWorld* worldPointe
 	TArray<FVector> navWalls;
 	GetNavMeshWalls(navMesh, originLocation, navWalls);
 
-	if (CVarShowObstacleDebug.GetValueOnGameThread())
+	TArray<TArray<ObstaclePoint>> obstacles;
+	ConvertWallsIntoObstacles(navWalls, obstacles);
+
+	DebugDrawObstacles(worldPointer, obstacles);
+}
+
+float SpatialPartitioningSystems::FindAreaOfObstacleCartesian(const TArray<ObstaclePoint>& obstaclePoints)
+{
+	float area = 0.0f;
+
+	for (int32 i = 0; i < obstaclePoints.Num(); ++i)
 	{
-		const FVector heightAdjustment = FVector(0.0f, 0.0f, ArgusECSConstants::k_debugDrawHeightAdjustment);
-		for (int32 i = 0; i < navWalls.Num(); i += 2)
-		{
-			DrawDebugLine(worldPointer, navWalls[i] + heightAdjustment, navWalls[i + 1] + heightAdjustment, FColor::Red, true, 1.0f, 0u, ArgusECSConstants::k_debugDrawLineWidth);
-		}
+		FVector2D point0 = obstaclePoints[i].m_point;
+		FVector2D point1 = obstaclePoints[(i + 1) % obstaclePoints.Num()].m_point;
+
+		float width = point1.X - point0.X;
+		float height = (point1.Y + point0.Y) / 2.0f;
+
+		area += width * height;
 	}
+
+	return area;
 }
 
 bool SpatialPartitioningSystems::GetNavMeshWalls(const ARecastNavMesh* navMesh, const FNavLocation& originLocation, TArray<FVector>& outNavWalls)
@@ -188,4 +203,161 @@ bool SpatialPartitioningSystems::GetNavMeshWalls(const ARecastNavMesh* navMesh, 
 	}
 
 	return false;
+}
+
+void SpatialPartitioningSystems::ConvertWallsIntoObstacles(const TArray<FVector>& navEdges, TArray<TArray<ObstaclePoint>>& outObstacles)
+{
+	const int32 numNavEdges = navEdges.Num();
+	if ((numNavEdges % 2) != 0 || numNavEdges == 0)
+	{
+		return;
+	}
+
+	for (int32 i = 0; i < numNavEdges; i += 2)
+	{
+		const FVector2D edgeVertex0 = ArgusMath::ToCartesianVector2(FVector2D(navEdges[i]));
+		const FVector2D edgeVertex1 = ArgusMath::ToCartesianVector2(FVector2D(navEdges[i + 1]));
+
+		bool handledEdge = false;
+		for (int32 j = 0; j < outObstacles.Num(); ++j)
+		{
+			const int32 numObstaclesInChain = outObstacles[j].Num();
+			if (numObstaclesInChain == 0)
+			{
+				continue;
+			}
+
+			const FVector2D startOfChainLocation = outObstacles[j][0].m_point;
+			const FVector2D endOfChainLocation = outObstacles[j][numObstaclesInChain - 1].m_point;
+			if (FVector2D::DistSquared(startOfChainLocation, edgeVertex0) < 5.0f)
+			{
+				ObstaclePoint vertex1Obstacle;
+				vertex1Obstacle.m_point = edgeVertex1;
+				outObstacles[j].Insert(vertex1Obstacle, 0);
+				handledEdge = true;
+				break;
+			}
+			if (FVector2D::DistSquared(startOfChainLocation, edgeVertex1) < 5.0f)
+			{
+				ObstaclePoint vertex0Obstacle;
+				vertex0Obstacle.m_point = edgeVertex0;
+				outObstacles[j].Insert(vertex0Obstacle, 0);
+				handledEdge = true;
+				break;
+			}
+			if (FVector2D::DistSquared(endOfChainLocation, edgeVertex0) < 5.0f)
+			{
+				ObstaclePoint vertex1Obstacle;
+				vertex1Obstacle.m_point = edgeVertex1;
+				outObstacles[j].Add(vertex1Obstacle);
+				handledEdge = true;
+				break;
+			}
+			if (FVector2D::DistSquared(endOfChainLocation, edgeVertex1) < 5.0f)
+			{
+				ObstaclePoint vertex0Obstacle;
+				vertex0Obstacle.m_point = edgeVertex0;
+				outObstacles[j].Add(vertex0Obstacle);
+				handledEdge = true;
+				break;
+			}
+		}
+
+		if (handledEdge)
+		{
+			continue;
+		}
+
+		ObstaclePoint vertex0Obstacle, vertex1Obstacle;
+		vertex0Obstacle.m_point = edgeVertex0;
+		vertex1Obstacle.m_point = edgeVertex1;
+		outObstacles.Add(TArray<ObstaclePoint>({ vertex0Obstacle, vertex1Obstacle }));
+	}
+
+	for (int32 i = 0; i < outObstacles.Num(); ++i)
+	{
+		CalculateDirectionAndConvexForObstacles(outObstacles[i]);
+	}
+}
+
+void SpatialPartitioningSystems::CalculateDirectionAndConvexForObstacles(TArray<ObstaclePoint>& outObstacle)
+{
+	const int32 numObstaclePoints = outObstacle.Num();
+	if (FindAreaOfObstacleCartesian(outObstacle) > 0.0f)
+	{
+		const int32 halfObstaclePoints = numObstaclePoints / 2;
+		for (int32 i = 0; i < halfObstaclePoints; ++i)
+		{
+			outObstacle.Swap(i, numObstaclePoints - (i + 1));
+		}
+	}
+
+	for (int32 i = 0; i < numObstaclePoints; ++i)
+	{
+		const int32 nextIndex = (i + 1) % numObstaclePoints;
+		outObstacle[i].m_direction = outObstacle[nextIndex].m_point - outObstacle[i].m_point;
+		outObstacle[i].m_direction.Normalize();
+
+		const int32 lastIndex = (i - 1) >= 0 ? (i - 1) : numObstaclePoints - 1;
+		outObstacle[i].m_isConvex = ArgusMath::IsLeftOfCartesian(outObstacle[lastIndex].m_point, outObstacle[i].m_point, outObstacle[nextIndex].m_point);
+	}
+}
+
+void SpatialPartitioningSystems::DebugDrawObstacles(UWorld* worldPointer, const TArray<TArray<ObstaclePoint>>& obstacles)
+{
+	if (!worldPointer)
+	{
+		return;
+	}
+
+	if (!CVarShowObstacleDebug.GetValueOnGameThread())
+	{
+		return;
+	}
+
+	for (int32 i = 0; i < obstacles.Num(); ++i)
+	{
+		for (int32 j = 0; j < obstacles[i].Num(); ++j)
+		{
+			DrawDebugString
+			(
+				worldPointer,
+				FVector(ArgusMath::ToUnrealVector2(obstacles[i][j].m_point), ArgusECSConstants::k_debugDrawHeightAdjustment),
+				FString::Printf
+				(
+					TEXT("%d\nIsConvex: %d"),
+					j,
+					obstacles[i][j].m_isConvex
+				),
+				nullptr,
+				FColor::Purple,
+				60.0f,
+				true,
+				0.75f
+			);
+			DrawDebugLine
+			(
+				worldPointer,
+				FVector(ArgusMath::ToUnrealVector2(obstacles[i][j].m_point), ArgusECSConstants::k_debugDrawHeightAdjustment),
+				FVector(ArgusMath::ToUnrealVector2(obstacles[i][j].m_point + (obstacles[i][j].m_direction * 100.0f)), ArgusECSConstants::k_debugDrawHeightAdjustment),
+				FColor::Purple,
+				true,
+				60.0f,
+				0u,
+				ArgusECSConstants::k_debugDrawLineWidth
+			);
+			DrawDebugSphere
+			(
+				worldPointer,
+				FVector(ArgusMath::ToUnrealVector2(obstacles[i][j].m_point), ArgusECSConstants::k_debugDrawHeightAdjustment),
+				10.0f,
+				4u,
+				FColor::Purple,
+				true,
+				60.0f,
+				0u,
+				ArgusECSConstants::k_debugDrawLineWidth
+			);
+		}
+	}
 }

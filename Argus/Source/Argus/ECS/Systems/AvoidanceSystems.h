@@ -3,6 +3,7 @@
 #pragma once
 
 #include "ArgusEntity.h"
+#include "ComponentDependencies/ObstaclePoint.h"
 #include "TransformSystems.h"
 
 class AvoidanceSystems
@@ -33,12 +34,6 @@ private:
 		FVector2D m_foundEntityLocation = FVector2D::ZeroVector;
 		FVector2D m_foundEntityVelocity = FVector2D::ZeroVector;
 		float m_entityRadius = 45.0f;
-	};
-	struct ObstaclePoint
-	{
-		FVector2D m_point = FVector2D::ZeroVector;
-		FVector2D m_direction = FVector2D::ZeroVector;
-		bool m_isConvex = false;
 	};
 
 	static void			CreateObstacleORCALines(UWorld* worldPointer, const CreateEntityORCALinesParams& params, const TransformSystems::TransformSystemsComponentArgs& components, std::vector<ORCALine>& outORCALines);
