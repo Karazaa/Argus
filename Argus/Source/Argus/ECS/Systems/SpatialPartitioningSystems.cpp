@@ -195,8 +195,18 @@ bool SpatialPartitioningSystems::GetNavMeshWalls(const ARecastNavMesh* navMesh, 
 		FNavigationWallEdge NewEdge;
 		for (int32 Idx = 0; Idx < numWalls; Idx++)
 		{
-			outNavWalls.Add(Recast2UnrealPoint(&wallSegments[Idx * 6]));
-			outNavWalls.Add(Recast2UnrealPoint(&wallSegments[Idx * 6 + 3]));
+			FVector vertex0 = Recast2UnrealPoint(&wallSegments[Idx * 6]);
+			FVector vertex1 = Recast2UnrealPoint(&wallSegments[Idx * 6 + 3]);
+
+			bool excluded = ((vertex0.X < -ArgusECSConstants::k_detourQuerySize || vertex0.X > ArgusECSConstants::k_detourQuerySize) || 
+							(vertex0.Y < -ArgusECSConstants::k_detourQuerySize || vertex0.Y > ArgusECSConstants::k_detourQuerySize)) &&
+							((vertex1.X < -ArgusECSConstants::k_detourQuerySize || vertex1.X > ArgusECSConstants::k_detourQuerySize) || 
+							(vertex1.Y < -ArgusECSConstants::k_detourQuerySize || vertex1.Y > ArgusECSConstants::k_detourQuerySize));
+			if (!excluded)
+			{
+				outNavWalls.Add(vertex0);
+				outNavWalls.Add(vertex1);
+			}
 		}
 
 		return true;

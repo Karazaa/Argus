@@ -18,7 +18,7 @@ namespace ArgusECSConstants
 
 	static constexpr int32 k_maxDetourWalls = 1028;
 	static constexpr int32 k_maxDetourPolys = 1028;
-	static constexpr float k_detourQuerySize = 10000.0f;
+	static constexpr float k_detourQuerySize = 3000.0f;
 
 	static constexpr float k_debugDrawLineWidth = 3.0f;
 	static constexpr float k_debugDrawHeightAdjustment = 5.0f;
