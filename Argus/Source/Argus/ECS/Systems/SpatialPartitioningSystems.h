@@ -24,11 +24,11 @@ public:
 	};
 
 	static void CalculateAvoidanceObstacles(UWorld* worldPointer);
-	static float FindAreaOfObstacleCartesian(const TArray<ObstaclePoint>& obstaclePoints);
+	static float FindAreaOfObstacleCartesian(const ObstaclePointArray& obstaclePoints);
 
 private:
 	static bool GetNavMeshWalls(const ARecastNavMesh* navMesh, const FNavLocation& originLocation, TArray<FVector>& outNavWalls);
-	static void ConvertWallsIntoObstacles(const TArray<FVector>& navEdges, TArray<TArray<ObstaclePoint>>& outObstacles);
-	static void CalculateDirectionAndConvexForObstacles(TArray<ObstaclePoint>& outObstacle);
-	static void DebugDrawObstacles(UWorld* worldPointer, const TArray<TArray<ObstaclePoint>>& obstacles);
+	static void ConvertWallsIntoObstacles(const TArray<FVector>& navEdges, TArray<ObstaclePointArray>& outObstacles);
+	static void CalculateDirectionAndConvexForObstacles(ObstaclePointArray& outObstacle);
+	static void DebugDrawObstacles(UWorld* worldPointer, const TArray<ObstaclePointArray>& obstacles);
 };

@@ -96,13 +96,13 @@ void SpatialPartitioningSystems::CalculateAvoidanceObstacles(UWorld* worldPointe
 	TArray<FVector> navWalls;
 	GetNavMeshWalls(navMesh, originLocation, navWalls);
 
-	TArray<TArray<ObstaclePoint>> obstacles;
+	TArray<ObstaclePointArray> obstacles;
 	ConvertWallsIntoObstacles(navWalls, obstacles);
 
 	DebugDrawObstacles(worldPointer, obstacles);
 }
 
-float SpatialPartitioningSystems::FindAreaOfObstacleCartesian(const TArray<ObstaclePoint>& obstaclePoints)
+float SpatialPartitioningSystems::FindAreaOfObstacleCartesian(const ObstaclePointArray& obstaclePoints)
 {
 	float area = 0.0f;
 
@@ -215,7 +215,7 @@ bool SpatialPartitioningSystems::GetNavMeshWalls(const ARecastNavMesh* navMesh, 
 	return false;
 }
 
-void SpatialPartitioningSystems::ConvertWallsIntoObstacles(const TArray<FVector>& navEdges, TArray<TArray<ObstaclePoint>>& outObstacles)
+void SpatialPartitioningSystems::ConvertWallsIntoObstacles(const TArray<FVector>& navEdges, TArray<ObstaclePointArray>& outObstacles)
 {
 	const int32 numNavEdges = navEdges.Num();
 	if ((numNavEdges % 2) != 0 || numNavEdges == 0)
@@ -281,7 +281,7 @@ void SpatialPartitioningSystems::ConvertWallsIntoObstacles(const TArray<FVector>
 		ObstaclePoint vertex0Obstacle, vertex1Obstacle;
 		vertex0Obstacle.m_point = edgeVertex0;
 		vertex1Obstacle.m_point = edgeVertex1;
-		outObstacles.Add(TArray<ObstaclePoint>({ vertex0Obstacle, vertex1Obstacle }));
+		outObstacles.Add(ObstaclePointArray({ vertex0Obstacle, vertex1Obstacle }));
 	}
 
 	for (int32 i = 0; i < outObstacles.Num(); ++i)
@@ -290,7 +290,7 @@ void SpatialPartitioningSystems::ConvertWallsIntoObstacles(const TArray<FVector>
 	}
 }
 
-void SpatialPartitioningSystems::CalculateDirectionAndConvexForObstacles(TArray<ObstaclePoint>& outObstacle)
+void SpatialPartitioningSystems::CalculateDirectionAndConvexForObstacles(ObstaclePointArray& outObstacle)
 {
 	const int32 numObstaclePoints = outObstacle.Num();
 	if (FindAreaOfObstacleCartesian(outObstacle) > 0.0f)
@@ -313,7 +313,7 @@ void SpatialPartitioningSystems::CalculateDirectionAndConvexForObstacles(TArray<
 	}
 }
 
-void SpatialPartitioningSystems::DebugDrawObstacles(UWorld* worldPointer, const TArray<TArray<ObstaclePoint>>& obstacles)
+void SpatialPartitioningSystems::DebugDrawObstacles(UWorld* worldPointer, const TArray<ObstaclePointArray>& obstacles)
 {
 	if (!worldPointer)
 	{
