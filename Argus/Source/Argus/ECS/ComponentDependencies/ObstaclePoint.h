@@ -14,7 +14,9 @@ struct ObstaclePoint
 class ObstaclePointArray : public TArray<ObstaclePoint>
 {
 public:
-	const ObstaclePoint* GetHead() const;
-	const ObstaclePoint* GetTail() const;
+	const ObstaclePoint& GetHead() const;
+	const ObstaclePoint& GetTail() const;
 	void Reverse();
+	void AppendOtherToThis(ObstaclePointArray& other);
+	void CloseLoop();
 };

@@ -217,6 +217,8 @@ bool SpatialPartitioningSystems::GetNavMeshWalls(const ARecastNavMesh* navMesh, 
 
 void SpatialPartitioningSystems::ConvertWallsIntoObstacles(const TArray<FVector>& navEdges, TArray<ObstaclePointArray>& outObstacles)
 {
+	ARGUS_TRACE(SpatialPartitioningSystems::ConvertWallsIntoObstacles);
+
 	const int32 numNavEdges = navEdges.Num();
 	if ((numNavEdges % 2) != 0 || numNavEdges == 0)
 	{
@@ -237,37 +239,46 @@ void SpatialPartitioningSystems::ConvertWallsIntoObstacles(const TArray<FVector>
 				continue;
 			}
 
-			const FVector2D startOfChainLocation = outObstacles[j][0].m_point;
-			const FVector2D endOfChainLocation = outObstacles[j][numObstaclesInChain - 1].m_point;
-			if (FVector2D::DistSquared(startOfChainLocation, edgeVertex0) < 5.0f)
+			const FVector2D startOfChainLocation = outObstacles[j].GetHead().m_point;
+			const FVector2D endOfChainLocation = outObstacles[j].GetTail().m_point;
+			ObstaclePoint pointToAdd;
+			bool matchesStart = false;
+			bool matchesEnd = false;
+			if (startOfChainLocation == edgeVertex0)
 			{
-				ObstaclePoint vertex1Obstacle;
-				vertex1Obstacle.m_point = edgeVertex1;
-				outObstacles[j].Insert(vertex1Obstacle, 0);
+				matchesStart = true;
+				pointToAdd.m_point = edgeVertex1;
+			}
+			if (startOfChainLocation == edgeVertex1)
+			{
+				matchesStart = true;
+				pointToAdd.m_point = edgeVertex0;
+			}
+			if (endOfChainLocation == edgeVertex0)
+			{
+				matchesEnd = true;
+				pointToAdd.m_point = edgeVertex1;
+			}
+			if (endOfChainLocation == edgeVertex1)
+			{
+				matchesEnd = true;
+				pointToAdd.m_point = edgeVertex0;
+			}
+
+			if (matchesStart && !matchesEnd)
+			{
+				outObstacles[j].Insert(pointToAdd, 0);
 				handledEdge = true;
 				break;
 			}
-			if (FVector2D::DistSquared(startOfChainLocation, edgeVertex1) < 5.0f)
+			if (!matchesStart && matchesEnd)
 			{
-				ObstaclePoint vertex0Obstacle;
-				vertex0Obstacle.m_point = edgeVertex0;
-				outObstacles[j].Insert(vertex0Obstacle, 0);
+				outObstacles[j].Add(pointToAdd);
 				handledEdge = true;
 				break;
 			}
-			if (FVector2D::DistSquared(endOfChainLocation, edgeVertex0) < 5.0f)
+			if (matchesStart && matchesEnd)
 			{
-				ObstaclePoint vertex1Obstacle;
-				vertex1Obstacle.m_point = edgeVertex1;
-				outObstacles[j].Add(vertex1Obstacle);
-				handledEdge = true;
-				break;
-			}
-			if (FVector2D::DistSquared(endOfChainLocation, edgeVertex1) < 5.0f)
-			{
-				ObstaclePoint vertex0Obstacle;
-				vertex0Obstacle.m_point = edgeVertex0;
-				outObstacles[j].Add(vertex0Obstacle);
 				handledEdge = true;
 				break;
 			}
@@ -284,22 +295,78 @@ void SpatialPartitioningSystems::ConvertWallsIntoObstacles(const TArray<FVector>
 		outObstacles.Add(ObstaclePointArray({ vertex0Obstacle, vertex1Obstacle }));
 	}
 
+	const int32 initialSize = outObstacles.Num();
+	for (int32 i = (initialSize - 1); i >= 0; --i)
+	{
+		ObstaclePointArray& appending = outObstacles[i];
+		FVector2D appendingObstacleHead = appending.GetHead().m_point;
+		FVector2D appendingObstacleTail = appending.GetTail().m_point;
+
+		bool didAppend = false;
+		for (int32 j = i - 1; j >= 0; --j)
+		{
+			ObstaclePointArray& receiving = outObstacles[j];
+			FVector2D receivingObstacleHead = receiving.GetHead().m_point;
+			FVector2D receivingObstacleTail = receiving.GetTail().m_point;
+
+			if (receivingObstacleTail == appendingObstacleHead)
+			{
+				// just append to receiving
+				receiving.AppendOtherToThis(appending);
+				didAppend = true;
+				break;
+			}
+			else if (receivingObstacleHead == appendingObstacleTail)
+			{
+				// append to appending, then assign appending to receiving
+				appending.AppendOtherToThis(receiving);
+				receiving = appending;
+				didAppend = true;
+				break;
+			}
+			else if (receivingObstacleHead == appendingObstacleHead)
+			{
+				// reverse appending, then append to appending, then assign to receiving
+				appending.Reverse();
+				appending.AppendOtherToThis(receiving);
+				receiving = appending;
+				didAppend = true;
+				break;
+			}
+			else if (receivingObstacleTail == appendingObstacleTail)
+			{
+				// reverse appending, then append to receiving
+				appending.Reverse();
+				receiving.AppendOtherToThis(appending);
+				didAppend = true;
+				break;
+			}
+		}
+
+		if (didAppend)
+		{
+			outObstacles.RemoveAt(i, EAllowShrinking::No);
+		}
+	}
+
+	outObstacles.Shrink();
+
 	for (int32 i = 0; i < outObstacles.Num(); ++i)
 	{
+		outObstacles[i].CloseLoop();
+		outObstacles[i].Shrink();
 		CalculateDirectionAndConvexForObstacles(outObstacles[i]);
 	}
 }
 
 void SpatialPartitioningSystems::CalculateDirectionAndConvexForObstacles(ObstaclePointArray& outObstacle)
 {
+	ARGUS_TRACE(SpatialPartitioningSystems::CalculateDirectionAndConvexForObstacles);
+
 	const int32 numObstaclePoints = outObstacle.Num();
 	if (FindAreaOfObstacleCartesian(outObstacle) > 0.0f)
 	{
-		const int32 halfObstaclePoints = numObstaclePoints / 2;
-		for (int32 i = 0; i < halfObstaclePoints; ++i)
-		{
-			outObstacle.Swap(i, numObstaclePoints - (i + 1));
-		}
+		outObstacle.Reverse();
 	}
 
 	for (int32 i = 0; i < numObstaclePoints; ++i)
