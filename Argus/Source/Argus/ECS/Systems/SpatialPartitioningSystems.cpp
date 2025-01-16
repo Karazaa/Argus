@@ -99,12 +99,17 @@ void SpatialPartitioningSystems::CalculateAvoidanceObstacles(SpatialPartitioning
 		return;
 	}
 
+	spatialPartitioningComponent->m_obstacles.Empty();
+	spatialPartitioningComponent->m_obstaclePointKDTree.ResetKDTreeWithAverageLocation();
+
 	TArray<FVector> navWalls;
 	GetNavMeshWalls(navMesh, originLocation, navWalls);
 
 	ConvertWallsIntoObstacles(navWalls, spatialPartitioningComponent->m_obstacles);
 
 	DrawDebugObstacles(worldPointer, spatialPartitioningComponent->m_obstacles);
+
+	spatialPartitioningComponent->m_obstaclePointKDTree.InsertObstaclesIntoKDTree(spatialPartitioningComponent->m_obstacles);
 }
 
 float SpatialPartitioningSystems::FindAreaOfObstacleCartesian(const ObstaclePointArray& obstaclePoints)

@@ -5,11 +5,16 @@
 #include "ArgusKDTree.h"
 #include "ObstaclePoint.h"
 
+struct ObstacleIndicies
+{
+	int32 m_obstacleIndex = -1;
+	int32 m_obstaclePointIndex = -1;
+};
+
 struct ObstaclePointKDTreeNode : public IArgusKDTreeNode<bool>
 {
-	FVector2D m_location;
-	int32 m_obstacleIndex = 0;
-	int32 m_obstaclePointIndex = 0;
+	FVector2D m_location = FVector2D::ZeroVector;
+	ObstacleIndicies m_indicies;
 	ObstaclePointKDTreeNode* m_leftChild = nullptr;
 	ObstaclePointKDTreeNode* m_rightChild = nullptr;
 
@@ -24,5 +29,7 @@ struct ObstaclePointKDTreeNode : public IArgusKDTreeNode<bool>
 
 class ObstaclePointKDTree : public ArgusKDTree<ObstaclePointKDTreeNode, bool>
 {
-
+public:
+	void InsertObstaclesIntoKDTree(const TArray<ObstaclePointArray>& obstacles);
+	bool FindObstacleIndiciesWithinRangeOfLocation(TArray<ObstacleIndicies>& obstacleIndicies, const FVector& location, const float range) const;
 };

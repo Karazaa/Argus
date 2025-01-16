@@ -62,7 +62,12 @@ FVector ArgusKDTree<NodeType, ValueComparisonType>::FlushAllNodes()
 		m_nodePool.Release(m_rootNode);
 	}
 
-	return  (sumLocation / static_cast<float>(numNodes));
+	if (numNodes > 0u)
+	{
+		return  (sumLocation / static_cast<float>(numNodes));
+	}
+	
+	return sumLocation;
 }
 
 template <class NodeType, typename ValueComparisonType>
