@@ -64,9 +64,15 @@ bool SpatialPartitioningSystems::SpatialPartitioningSystemsComponentArgs::AreCom
 	return true;
 }
 
-void SpatialPartitioningSystems::CalculateAvoidanceObstacles(UWorld* worldPointer)
+void SpatialPartitioningSystems::CalculateAvoidanceObstacles(SpatialPartitioningComponent* spatialPartitioningComponent, UWorld* worldPointer)
 {
 	ARGUS_TRACE(SpatialPartitioningSystems::CalculateAvoidanceObstacles);
+
+	if (!spatialPartitioningComponent)
+	{
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Passed in %s is nullptr."), ARGUS_FUNCNAME, ARGUS_NAMEOF(SpatialPartitioningComponent*));
+		return;
+	}
 
 	if (!worldPointer)
 	{
@@ -96,10 +102,9 @@ void SpatialPartitioningSystems::CalculateAvoidanceObstacles(UWorld* worldPointe
 	TArray<FVector> navWalls;
 	GetNavMeshWalls(navMesh, originLocation, navWalls);
 
-	TArray<ObstaclePointArray> obstacles;
-	ConvertWallsIntoObstacles(navWalls, obstacles);
+	ConvertWallsIntoObstacles(navWalls, spatialPartitioningComponent->m_obstacles);
 
-	DebugDrawObstacles(worldPointer, obstacles);
+	DrawDebugObstacles(worldPointer, spatialPartitioningComponent->m_obstacles);
 }
 
 float SpatialPartitioningSystems::FindAreaOfObstacleCartesian(const ObstaclePointArray& obstaclePoints)
@@ -380,7 +385,7 @@ void SpatialPartitioningSystems::CalculateDirectionAndConvexForObstacles(Obstacl
 	}
 }
 
-void SpatialPartitioningSystems::DebugDrawObstacles(UWorld* worldPointer, const TArray<ObstaclePointArray>& obstacles)
+void SpatialPartitioningSystems::DrawDebugObstacles(UWorld* worldPointer, const TArray<ObstaclePointArray>& obstacles)
 {
 	if (!worldPointer)
 	{

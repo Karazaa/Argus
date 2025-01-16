@@ -6,7 +6,7 @@
 
 class ArgusEntity;
 
-struct ArgusEntityKDTreeNode : public IArgusKDTreeNode
+struct ArgusEntityKDTreeNode : public IArgusKDTreeNode<uint16>
 {
 	FVector		m_worldSpaceLocation = FVector::ZeroVector;
 	uint16		m_entityId = ArgusECSConstants::k_maxEntities;
@@ -14,11 +14,14 @@ struct ArgusEntityKDTreeNode : public IArgusKDTreeNode
 	ArgusEntityKDTreeNode* m_rightChild = nullptr;
 
 	ArgusEntityKDTreeNode() {};
-	void Populate(const FVector& worldSpaceLocation);
-	void Populate(const ArgusEntity& entityToRepresent);
-	virtual void Reset() override;
 
-	bool ShouldSkipNode(uint16 valueToSkip) const;
+	virtual void	Reset() override;
+	virtual FVector GetLocation() const override { return m_worldSpaceLocation; }
+	virtual void	Populate(const FVector& worldSpaceLocation) override;
+	virtual bool	ShouldSkipNode() const override;
+	virtual bool	ShouldSkipNode(uint16 valueToSkip) const override;
+
+	void Populate(const ArgusEntity& entityToRepresent);
 };
 
 class ArgusEntityKDTree : public ArgusKDTree<ArgusEntityKDTreeNode, uint16>

@@ -36,6 +36,11 @@ void ArgusEntityKDTreeNode::Reset()
 	m_rightChild = nullptr;
 }
 
+bool ArgusEntityKDTreeNode::ShouldSkipNode() const
+{
+	return m_entityId == ArgusECSConstants::k_maxEntities;
+}
+
 bool ArgusEntityKDTreeNode::ShouldSkipNode(uint16 valueToSkip) const
 {
 	return m_entityId == valueToSkip || m_entityId == ArgusECSConstants::k_maxEntities;

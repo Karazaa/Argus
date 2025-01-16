@@ -23,12 +23,12 @@ public:
 		bool AreComponentsValidCheck(const WIDECHAR* functionName) const;
 	};
 
-	static void CalculateAvoidanceObstacles(UWorld* worldPointer);
+	static void CalculateAvoidanceObstacles(SpatialPartitioningComponent* spatialPartitioningComponent, UWorld* worldPointer);
 	static float FindAreaOfObstacleCartesian(const ObstaclePointArray& obstaclePoints);
 
 private:
 	static bool GetNavMeshWalls(const ARecastNavMesh* navMesh, const FNavLocation& originLocation, TArray<FVector>& outNavWalls);
 	static void ConvertWallsIntoObstacles(const TArray<FVector>& navEdges, TArray<ObstaclePointArray>& outObstacles);
 	static void CalculateDirectionAndConvexForObstacles(ObstaclePointArray& outObstacle);
-	static void DebugDrawObstacles(UWorld* worldPointer, const TArray<ObstaclePointArray>& obstacles);
+	static void DrawDebugObstacles(UWorld* worldPointer, const TArray<ObstaclePointArray>& obstacles);
 };

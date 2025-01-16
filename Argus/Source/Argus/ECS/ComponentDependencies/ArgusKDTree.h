@@ -7,8 +7,13 @@
 #include "CoreMinimal.h"
 #include <vector>
 
+template <typename ValueComparisonType>
 class IArgusKDTreeNode : public IObjectPoolable
 {
+	virtual FVector GetLocation() const = 0;
+	virtual void Populate(const FVector& worldSpaceLocation) = 0;
+	virtual bool ShouldSkipNode() const = 0;
+	virtual bool ShouldSkipNode(ValueComparisonType valueToSkip) const = 0;
 };
 
 // Type IArgusKDTreeNode is an implicit constraint for using the ArgusKDTree. Types you want to pool should inherit from IArgusKDTreeNode 
@@ -84,10 +89,10 @@ void ArgusKDTree<NodeType, ValueComparisonType>::ClearNodeRecursive(NodeType* no
 		return;
 	}
 
-	if (node->m_entityId != ArgusECSConstants::k_maxEntities)
+	if (!node->ShouldSkipNode())
 	{
 		priorNodeCount++;
-		currentAverageLocation += node->m_worldSpaceLocation;
+		currentAverageLocation += node->GetLocation();
 	}
 
 	if (node->m_leftChild)
@@ -118,16 +123,16 @@ void ArgusKDTree<NodeType, ValueComparisonType>::InsertNodeIntoKDTreeRecursive(N
 	switch (dimension)
 	{
 	case 0:
-		iterationNodeValue = iterationNode->m_worldSpaceLocation.X;
-		noteToInsertValue = nodeToInsert->m_worldSpaceLocation.X;
+		iterationNodeValue = iterationNode->GetLocation().X;
+		noteToInsertValue = nodeToInsert->GetLocation().X;
 		break;
 	case 1:
-		iterationNodeValue = iterationNode->m_worldSpaceLocation.Y;
-		noteToInsertValue = nodeToInsert->m_worldSpaceLocation.Y;
+		iterationNodeValue = iterationNode->GetLocation().Y;
+		noteToInsertValue = nodeToInsert->GetLocation().Y;
 		break;
 	case 2:
-		iterationNodeValue = iterationNode->m_worldSpaceLocation.Z;
-		noteToInsertValue = nodeToInsert->m_worldSpaceLocation.Z;
+		iterationNodeValue = iterationNode->GetLocation().Z;
+		noteToInsertValue = nodeToInsert->GetLocation().Z;
 		break;
 	}
 
@@ -167,15 +172,15 @@ const NodeType* ArgusKDTree<NodeType, ValueComparisonType>::FindNodeClosestToLoc
 	switch (dimension)
 	{
 	case 0:
-		iterationNodeValue = iterationNode->m_worldSpaceLocation.X;
+		iterationNodeValue = iterationNode->GetLocation().X;
 		targetLocationValue = targetLocation.X;
 		break;
 	case 1:
-		iterationNodeValue = iterationNode->m_worldSpaceLocation.Y;
+		iterationNodeValue = iterationNode->GetLocation().Y;
 		targetLocationValue = targetLocation.Y;
 		break;
 	case 2:
-		iterationNodeValue = iterationNode->m_worldSpaceLocation.Z;
+		iterationNodeValue = iterationNode->GetLocation().Z;
 		targetLocationValue = targetLocation.Z;
 		break;
 	}
@@ -198,7 +203,7 @@ const NodeType* ArgusKDTree<NodeType, ValueComparisonType>::FindNodeClosestToLoc
 
 	if (potentialNearestNeighbor)
 	{
-		const float potentialDistanceSquared = FVector::DistSquared(potentialNearestNeighbor->m_worldSpaceLocation, targetLocation);
+		const float potentialDistanceSquared = FVector::DistSquared(potentialNearestNeighbor->GetLocation(), targetLocation);
 		const float distanceAlongDimensionSquared = FMath::Square(iterationNodeValue - targetLocationValue);
 
 		if (potentialDistanceSquared > distanceAlongDimensionSquared)
@@ -229,7 +234,7 @@ const NodeType* ArgusKDTree<NodeType, ValueComparisonType>::ChooseNodeCloserToTa
 		return node0;
 	}
 
-	if (FVector::DistSquared(node0->m_worldSpaceLocation, targetLocation) > FVector::DistSquared(node1->m_worldSpaceLocation, targetLocation))
+	if (FVector::DistSquared(node0->GetLocation(), targetLocation) > FVector::DistSquared(node1->GetLocation(), targetLocation))
 	{
 		return node1;
 	}
@@ -247,7 +252,7 @@ void ArgusKDTree<NodeType, ValueComparisonType>::FindNodesWithinRangeOfLocationR
 		return;
 	}
 
-	if (FVector::DistSquared(iterationNode->m_worldSpaceLocation, targetLocation) < rangeSquared)
+	if (FVector::DistSquared(iterationNode->GetLocation(), targetLocation) < rangeSquared)
 	{
 		if (!iterationNode->ShouldSkipNode(valueToSkip))
 		{
@@ -265,15 +270,15 @@ void ArgusKDTree<NodeType, ValueComparisonType>::FindNodesWithinRangeOfLocationR
 	switch (dimension)
 	{
 	case 0:
-		iterationNodeValue = iterationNode->m_worldSpaceLocation.X;
+		iterationNodeValue = iterationNode->GetLocation().X;
 		targetLocationValue = targetLocation.X;
 		break;
 	case 1:
-		iterationNodeValue = iterationNode->m_worldSpaceLocation.Y;
+		iterationNodeValue = iterationNode->GetLocation().Y;
 		targetLocationValue = targetLocation.Y;
 		break;
 	case 2:
-		iterationNodeValue = iterationNode->m_worldSpaceLocation.Z;
+		iterationNodeValue = iterationNode->GetLocation().Z;
 		targetLocationValue = targetLocation.Z;
 		break;
 	}
