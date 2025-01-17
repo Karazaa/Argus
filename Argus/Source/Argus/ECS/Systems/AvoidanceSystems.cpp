@@ -72,6 +72,7 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 	params.m_entityRadius = components.m_transformComponent->m_radius;
 	params.m_inverseEntityPredictionTime = 1.0f / ArgusECSConstants::k_avoidanceEntityDetectionPredictionTime;
 	params.m_inverseObstaclePredictionTime = 1.0f / ArgusECSConstants::k_avoidanceObstacleDetectionPredictionTime;
+	params.m_spatialPartitioningComponent = spatialPartitioningComponent;
 	FVector2D desiredVelocity = FVector2D::ZeroVector;
 
 	// If we are moving, we need to get our desired velocity as the velocity that points towards the nearest pathing point at the desired speed.
@@ -140,70 +141,37 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 
 void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const CreateEntityORCALinesParams& params, const TransformSystems::TransformSystemsComponentArgs& components, std::vector<ORCALine>& outORCALines)
 {
-	if (!worldPointer)
+	if (!worldPointer || !params.m_spatialPartitioningComponent)
 	{
 		return;
 	}
 
-	TArray<FVector> foundNavEdges;
-	TArray<TArray<ObstaclePoint>> obstacles;
-	RetrieveRelevantNavEdges(worldPointer, components, foundNavEdges);
-	CalculateObstacles(params.m_sourceEntityLocation, foundNavEdges, obstacles);
-
-	for (int32 i = 0; i < obstacles.Num(); ++i)
+	if (CVarShowAvoidanceDebug.GetValueOnGameThread())
 	{
-		for (int32 j = 0; j < obstacles[i].Num(); ++j)
+		DrawDebugCircle(worldPointer, params.m_sourceEntityLocation3D, ArgusECSConstants::k_avoidanceAgentSearchRadius, 20, FColor::Yellow, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth, FVector::RightVector, FVector::ForwardVector, false);
+	}
+	
+	TArray<ObstacleIndicies> obstacleIndicies;
+	params.m_spatialPartitioningComponent->m_obstaclePointKDTree.FindObstacleIndiciesWithinRangeOfLocation
+	(
+		obstacleIndicies,
+		FVector(params.m_sourceEntityLocation, components.m_transformComponent->m_transform.GetLocation().Z),
+		ArgusECSConstants::k_avoidanceAgentSearchRadius
+	);
+
+	for (int32 i = 0; i < obstacleIndicies.Num(); ++i)
+	{
+		const ObstaclePoint& previous = params.m_spatialPartitioningComponent->m_obstacles[obstacleIndicies[i].m_obstacleIndex].GetPrevious(obstacleIndicies[i].m_obstaclePointIndex);
+		const ObstaclePoint& current = params.m_spatialPartitioningComponent->m_obstacles[obstacleIndicies[i].m_obstacleIndex][obstacleIndicies[i].m_obstaclePointIndex];
+		const ObstaclePoint& next = params.m_spatialPartitioningComponent->m_obstacles[obstacleIndicies[i].m_obstacleIndex].GetNext(obstacleIndicies[i].m_obstaclePointIndex);
+
+		CalculateORCALineForObstacleSegment(params, current, next, previous.m_direction, outORCALines);
+
+		if (CVarShowAvoidanceDebug.GetValueOnGameThread())
 		{
-			if (CVarShowAvoidanceDebug.GetValueOnGameThread())
-			{
-				DrawDebugString
-				(
-					worldPointer, 
-					FVector(ArgusMath::ToUnrealVector2(obstacles[i][j].m_point), ArgusECSConstants::k_debugDrawHeightAdjustment),
-					FString::Printf
-					(
-						TEXT("%d\nIsConvex: %d"),
-						j,
-						obstacles[i][j].m_isConvex
-					),
-					nullptr,
-					FColor::Purple,
-					0.1f,
-					true,
-					0.75f
-				);
-				DrawDebugLine
-				(
-					worldPointer,
-					FVector(ArgusMath::ToUnrealVector2(obstacles[i][j].m_point), ArgusECSConstants::k_debugDrawHeightAdjustment),
-					FVector(ArgusMath::ToUnrealVector2(obstacles[i][j].m_point + (obstacles[i][j].m_direction * 100.0f)), ArgusECSConstants::k_debugDrawHeightAdjustment),
-					FColor::Purple,
-					false,
-					0.1f,
-					0u,
-					ArgusECSConstants::k_debugDrawLineWidth
-				);
-				DrawDebugSphere
-				(
-					worldPointer,
-					FVector(ArgusMath::ToUnrealVector2(obstacles[i][j].m_point), ArgusECSConstants::k_debugDrawHeightAdjustment),
-					10.0f,
-					4u,
-					FColor::Purple,
-					false,
-					0.1f,
-					0u,
-					ArgusECSConstants::k_debugDrawLineWidth
-				);
-			}
-
-			if (j == obstacles[i].Num() - 1)
-			{
-				break;
-			}
-
-			const FVector2D previousObstaclePointDir = j == 0 ? obstacles[i][0].m_direction : obstacles[i][j - 1].m_direction;
-			CalculateORCALineForObstacleSegment(params, obstacles[i][j], obstacles[i][j + 1], previousObstaclePointDir, outORCALines);
+			previous.DrawDebugObstaclePoint(worldPointer);
+			current.DrawDebugObstaclePoint(worldPointer);
+			next.DrawDebugObstaclePoint(worldPointer);
 		}
 	}
 }
@@ -461,89 +429,6 @@ void AvoidanceSystems::ThreeDimensionalLinearProgram(const std::vector<ORCALine>
 	}
 }
 
-void AvoidanceSystems::RetrieveRelevantNavEdges(UWorld* worldPointer, const TransformSystems::TransformSystemsComponentArgs& components, TArray<FVector>& outNavEdges)
-{
-	ARGUS_MEMORY_TRACE(ArgusAvoidanceSystems);
-	ARGUS_TRACE(AvoidanceSystems::RetrieveRelevantNavEdges);
-
-	if (!worldPointer)
-	{
-		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Passed in %s is nullptr."), ARGUS_FUNCNAME, ARGUS_NAMEOF(UWorld*));
-		return;
-	}
-
-	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
-	{
-		return;
-	}
-
-	UNavigationSystemV1* unrealNavigationSystem = UNavigationSystemV1::GetCurrent(worldPointer);
-	if (!unrealNavigationSystem)
-	{
-		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Could not retrieve a valid %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(UNavigationSystemV1*));
-		return;
-	}
-
-	ANavigationData* navData = unrealNavigationSystem->MainNavData;
-	if (!navData)
-	{
-		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Could not retrieve a valid %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ANavigationData*));
-		return;
-	}
-
-	FVector entityLocation = components.m_transformComponent->m_transform.GetLocation();
-	FNavLocation originLocation;
-	if (!unrealNavigationSystem->ProjectPointToNavigation(entityLocation, originLocation))
-	{
-		return;
-	}
-
-	TArray<FVector> queryShapePoints;
-	queryShapePoints.SetNumZeroed(4);
-	queryShapePoints[0] = entityLocation;
-	queryShapePoints[1] = entityLocation;
-	queryShapePoints[2] = entityLocation;
-	queryShapePoints[3] = entityLocation;
-
-	queryShapePoints[0].X -= ArgusECSConstants::k_avoidanceAgentSearchRadius;
-	queryShapePoints[1].X += ArgusECSConstants::k_avoidanceAgentSearchRadius;
-	queryShapePoints[2].X += ArgusECSConstants::k_avoidanceAgentSearchRadius;
-	queryShapePoints[3].X -= ArgusECSConstants::k_avoidanceAgentSearchRadius;
-	queryShapePoints[0].Y += ArgusECSConstants::k_avoidanceAgentSearchRadius;
-	queryShapePoints[1].Y += ArgusECSConstants::k_avoidanceAgentSearchRadius;
-	queryShapePoints[2].Y -= ArgusECSConstants::k_avoidanceAgentSearchRadius;
-	queryShapePoints[3].Y -= ArgusECSConstants::k_avoidanceAgentSearchRadius;
-
-	if (CVarShowAvoidanceDebug.GetValueOnGameThread())
-	{
-		const FVector zAdjust = FVector(0.0f, 0.0f, ArgusECSConstants::k_debugDrawHeightAdjustment);
-		DrawDebugCircle(worldPointer, entityLocation + zAdjust, ArgusECSConstants::k_avoidanceAgentSearchRadius, 20, FColor::Yellow, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth, FVector::RightVector, FVector::ForwardVector, false);
-		for (int32 i = 0; i < 4; ++i)
-		{
-			DrawDebugLine(worldPointer, queryShapePoints[i] + zAdjust, queryShapePoints[(i + 1) % 4] + zAdjust, FColor::Yellow, false, -1.0f, ArgusECSConstants::k_debugDrawLineWidth);
-		}
-	}
-
-	TArray<FVector> unfilteredNavEdges;
-	navData->FindOverlappingEdges(originLocation, TConstArrayView<FVector>(queryShapePoints), unfilteredNavEdges);
-
-	int32 numNavEdges = unfilteredNavEdges.Num();
-	outNavEdges.Reserve(numNavEdges);
-	for (int32 i = 0; i < numNavEdges; i += 2)
-	{
-		const float searchRadiusSquared = FMath::Square(ArgusECSConstants::k_avoidanceAgentSearchRadius);
-		const bool isFirstOutOfRange = (unfilteredNavEdges[i] - entityLocation).SquaredLength() > searchRadiusSquared;
-		const bool isSecondOutOfRange = (unfilteredNavEdges[i + 1] - entityLocation).SquaredLength() > searchRadiusSquared;
-		if (isFirstOutOfRange && isSecondOutOfRange)
-		{
-			continue;
-		}
-
-		outNavEdges.Add(unfilteredNavEdges[i]);
-		outNavEdges.Add(unfilteredNavEdges[i + 1]);
-	}
-}
-
 float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems::TransformSystemsComponentArgs& sourceEntityComponents, const ArgusEntity& foundEntity)
 {
 	if (!sourceEntityComponents.m_entity || !sourceEntityComponents.m_taskComponent || !sourceEntityComponents.m_transformComponent ||
@@ -618,106 +503,6 @@ float AvoidanceSystems::FindAreaOfObstacleCartesian(const TArray<ObstaclePoint>&
 	}
 
 	return area;
-}
-
-void AvoidanceSystems::CalculateObstacles(const FVector2D& sourceEntityLocation, const TArray<FVector>& navEdges, TArray<TArray<ObstaclePoint>>& outObstacles)
-{
-	const int32 numNavEdges = navEdges.Num();
-	if ((numNavEdges % 2) != 0 || numNavEdges == 0)
-	{
-		return;
-	}
-
-	for (int32 i = 0; i < numNavEdges; i += 2)
-	{
-		const FVector2D edgeVertex0 = ArgusMath::ToCartesianVector2(FVector2D(navEdges[i]));
-		const FVector2D edgeVertex1 = ArgusMath::ToCartesianVector2(FVector2D(navEdges[i + 1]));
-
-		bool handledEdge = false;
-		for (int32 j = 0; j < outObstacles.Num(); ++j)
-		{
-			const int32 numObstaclesInChain = outObstacles[j].Num();
-			if (numObstaclesInChain == 0)
-			{
-				continue;
-			}
-
-			const FVector2D startOfChainLocation = outObstacles[j][0].m_point;
-			const FVector2D endOfChainLocation = outObstacles[j][numObstaclesInChain - 1].m_point;
-			if (startOfChainLocation == edgeVertex0)
-			{
-				ObstaclePoint vertex1Obstacle;
-				vertex1Obstacle.m_point = edgeVertex1;
-				outObstacles[j].Insert(vertex1Obstacle, 0);
-				handledEdge = true;
-				break;
-			}
-			if (startOfChainLocation == edgeVertex1)
-			{
-				ObstaclePoint vertex0Obstacle;
-				vertex0Obstacle.m_point = edgeVertex0;
-				outObstacles[j].Insert(vertex0Obstacle, 0);
-				handledEdge = true;
-				break;
-			}
-			if (endOfChainLocation == edgeVertex0)
-			{
-				ObstaclePoint vertex1Obstacle;
-				vertex1Obstacle.m_point = edgeVertex1;
-				outObstacles[j].Add(vertex1Obstacle);
-				handledEdge = true;
-				break;
-			}
-			if (endOfChainLocation == edgeVertex1)
-			{
-				ObstaclePoint vertex0Obstacle;
-				vertex0Obstacle.m_point = edgeVertex0;
-				outObstacles[j].Add(vertex0Obstacle);
-				handledEdge = true;
-				break;
-			}
-		}
-
-		if (handledEdge)
-		{
-			continue;
-		}
-		
-		ObstaclePoint vertex0Obstacle, vertex1Obstacle;
-		vertex0Obstacle.m_point = edgeVertex0;
-		vertex1Obstacle.m_point = edgeVertex1;
-		outObstacles.Add(TArray<ObstaclePoint>({ vertex0Obstacle, vertex1Obstacle }));
-	}
-
-	for (int32 i = 0; i < outObstacles.Num(); ++i)
-	{
-		CalculateDirectionAndConvexForObstacles(sourceEntityLocation, outObstacles[i]);
-	}
-}
-
-void AvoidanceSystems::CalculateDirectionAndConvexForObstacles(const FVector2D& sourceEntityLocation, TArray<ObstaclePoint>& outObstacle)
-{
-	const int32 numObstaclePoints = outObstacle.Num();
-
-	// Reverse the obstacle if it is ordered backwards relative to the entity we are calculating.
-	if (FindAreaOfObstacleCartesian(outObstacle) > 0.0f)
-	{
-		const int32 halfObstaclePoints = numObstaclePoints / 2;
-		for (int32 i = 0; i < halfObstaclePoints; ++i)
-		{
-			outObstacle.Swap(i, numObstaclePoints - (i + 1));
-		}
-	}
-
-	for (int32 i = 0; i < numObstaclePoints; ++i)
-	{
-		const int32 nextIndex = (i + 1) % numObstaclePoints;
-		outObstacle[i].m_direction = outObstacle[nextIndex].m_point - outObstacle[i].m_point;
-		outObstacle[i].m_direction.Normalize();
-
-		const int32 lastIndex = (i - 1) >= 0 ? (i - 1) : numObstaclePoints - 1;
-		outObstacle[i].m_isConvex = ArgusMath::IsLeftOfCartesian(outObstacle[lastIndex].m_point, outObstacle[i].m_point, outObstacle[nextIndex].m_point);
-	}
 }
 
 void AvoidanceSystems::CalculateORCALineForObstacleSegment(const CreateEntityORCALinesParams& params, ObstaclePoint obstaclePoint0, ObstaclePoint obstaclePoint1, const FVector2D& previousObstaclePointDir, std::vector<ORCALine>& outORCALines)

@@ -1,8 +1,53 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ObstaclePoint.h"
+#include "ArgusECSConstants.h"
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
+#include "ArgusMath.h"
+#include "DrawDebugHelpers.h"
+
+void ObstaclePoint::DrawDebugObstaclePoint(UWorld* worldPointer) const
+{
+	DrawDebugString
+	(
+		worldPointer,
+		FVector(ArgusMath::ToUnrealVector2(m_point), ArgusECSConstants::k_debugDrawHeightAdjustment),
+		FString::Printf
+		(
+			TEXT("IsConvex: %s"),
+			m_isConvex ? TEXT("true") : TEXT("false")
+		),
+		nullptr,
+		FColor::Purple,
+		0.1f,
+		true,
+		0.75f
+	);
+	DrawDebugLine
+	(
+		worldPointer,
+		FVector(ArgusMath::ToUnrealVector2(m_point), ArgusECSConstants::k_debugDrawHeightAdjustment),
+		FVector(ArgusMath::ToUnrealVector2(m_point + (m_direction * 100.0f)), ArgusECSConstants::k_debugDrawHeightAdjustment),
+		FColor::Purple,
+		false,
+		0.1f,
+		0u,
+		ArgusECSConstants::k_debugDrawLineWidth
+	);
+	DrawDebugSphere
+	(
+		worldPointer,
+		FVector(ArgusMath::ToUnrealVector2(m_point), ArgusECSConstants::k_debugDrawHeightAdjustment),
+		10.0f,
+		4u,
+		FColor::Purple,
+		false,
+		0.1f,
+		0u,
+		ArgusECSConstants::k_debugDrawLineWidth
+	);
+}
 
 const ObstaclePoint& ObstaclePointArray::GetHead() const
 {
@@ -24,6 +69,28 @@ const ObstaclePoint& ObstaclePointArray::GetTail() const
 	}
 
 	return (GetData()[Num() - 1]);
+}
+
+const ObstaclePoint& ObstaclePointArray::GetPrevious(int32 index) const
+{
+	if (index >= Num() || index < 0)
+	{
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Attempting to access invalid index(%d) of %s."), ARGUS_FUNCNAME, index, ARGUS_NAMEOF(ObstaclePointArray));
+		verify(false);
+	}
+
+	return (GetData()[(index - 1 + Num()) % Num()]);
+}
+
+const ObstaclePoint& ObstaclePointArray::GetNext(int32 index) const
+{
+	if (index >= Num() || index < 0)
+	{
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Attempting to access invalid index(%d) of %s."), ARGUS_FUNCNAME, index, ARGUS_NAMEOF(ObstaclePointArray));
+		verify(false);
+	}
+
+	return (GetData()[(index + 1) % Num()]);
 }
 
 void ObstaclePointArray::Reverse()
