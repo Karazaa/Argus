@@ -33,7 +33,7 @@ protected:
 	const NodeType* FindNodeClosestToLocationRecursive(const NodeType* iterationNode, const FVector& targetLocation, ValueComparisonType valueToSkip, uint16 depth) const;
 	const NodeType* ChooseNodeCloserToTarget(const NodeType* node0, const NodeType* node1, const FVector& targetLocation, ValueComparisonType valueToSkip) const;
 
-	void FindNodesWithinRangeOfLocationRecursive(std::vector<const NodeType*>& outNearbyNodes, const NodeType* iterationNode, const FVector& targetLocation, const float rangeSquared, ValueComparisonType valueToSkip, uint16 depth) const;
+	void FindNodesWithinRangeOfLocationRecursive(TArray<const NodeType*>& outNearbyNodes, const NodeType* iterationNode, const FVector& targetLocation, const float rangeSquared, ValueComparisonType valueToSkip, uint16 depth) const;
 	
 	NodeType* m_rootNode = nullptr;
 	ArgusObjectPool<NodeType> m_nodePool;
@@ -250,7 +250,7 @@ const NodeType* ArgusKDTree<NodeType, ValueComparisonType>::ChooseNodeCloserToTa
 }
 
 template <class NodeType, typename ValueComparisonType>
-void ArgusKDTree<NodeType, ValueComparisonType>::FindNodesWithinRangeOfLocationRecursive(std::vector<const NodeType*>& outNearbyNodes, const NodeType* iterationNode, const FVector& targetLocation, const float rangeSquared, ValueComparisonType valueToSkip, uint16 depth) const
+void ArgusKDTree<NodeType, ValueComparisonType>::FindNodesWithinRangeOfLocationRecursive(TArray<const NodeType*>& outNearbyNodes, const NodeType* iterationNode, const FVector& targetLocation, const float rangeSquared, ValueComparisonType valueToSkip, uint16 depth) const
 {
 	if (!iterationNode)
 	{
@@ -261,7 +261,7 @@ void ArgusKDTree<NodeType, ValueComparisonType>::FindNodesWithinRangeOfLocationR
 	{
 		if (!iterationNode->ShouldSkipNode(valueToSkip))
 		{
-			outNearbyNodes.push_back(iterationNode);
+			outNearbyNodes.Add(iterationNode);
 		}
 
 		FindNodesWithinRangeOfLocationRecursive(outNearbyNodes, iterationNode->m_rightChild, targetLocation, rangeSquared, valueToSkip, depth + 1);

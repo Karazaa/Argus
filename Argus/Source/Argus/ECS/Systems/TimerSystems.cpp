@@ -37,7 +37,7 @@ void TimerSystems::AdvaceTimers(TimerComponent* timerComponent, float deltaTime)
 		return;
 	}
 
-	for (size_t i = 0; i < timerComponent->m_timers.size(); ++i)
+	for (int32 i = 0; i < timerComponent->m_timers.Num(); ++i)
 	{
 		if (timerComponent->m_timers[i].m_timerState != TimerState::Ticking)
 		{

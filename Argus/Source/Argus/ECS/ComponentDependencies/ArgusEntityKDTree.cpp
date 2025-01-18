@@ -167,12 +167,12 @@ uint16 ArgusEntityKDTree::FindOtherArgusEntityIdClosestArgusEntity(const ArgusEn
 	return FindArgusEntityIdClosestToLocation(transformComponent->m_transform.GetLocation(), entityToSearchAround);
 }
 
-bool ArgusEntityKDTree::FindArgusEntityIdsWithinRangeOfLocation(std::vector<uint16>& outNearbyArgusEntityIds, const FVector& location, const float range) const
+bool ArgusEntityKDTree::FindArgusEntityIdsWithinRangeOfLocation(TArray<uint16>& outNearbyArgusEntityIds, const FVector& location, const float range) const
 {
 	return FindArgusEntityIdsWithinRangeOfLocation(outNearbyArgusEntityIds, location, range, ArgusEntity::k_emptyEntity);
 }
 
-bool ArgusEntityKDTree::FindArgusEntityIdsWithinRangeOfLocation(std::vector<uint16>& outNearbyArgusEntityIds, const FVector& location, const float range, const ArgusEntity& entityToIgnore) const
+bool ArgusEntityKDTree::FindArgusEntityIdsWithinRangeOfLocation(TArray<uint16>& outNearbyArgusEntityIds, const FVector& location, const float range, const ArgusEntity& entityToIgnore) const
 {
 	if (!m_rootNode)
 	{
@@ -185,23 +185,23 @@ bool ArgusEntityKDTree::FindArgusEntityIdsWithinRangeOfLocation(std::vector<uint
 		return false;
 	}
 
-	std::vector<const ArgusEntityKDTreeNode*> foundNodes;
+	TArray<const ArgusEntityKDTreeNode*> foundNodes;
 	FindNodesWithinRangeOfLocationRecursive(foundNodes, m_rootNode, location, FMath::Square(range), entityToIgnore.GetId(), 0u);
-	outNearbyArgusEntityIds.reserve(foundNodes.size());
-	for (int i = 0; i < foundNodes.size(); ++i)
+	outNearbyArgusEntityIds.Reserve(foundNodes.Num());
+	for (int32 i = 0; i < foundNodes.Num(); ++i)
 	{
 		if (!foundNodes[i])
 		{
 			continue;
 		}
 
-		outNearbyArgusEntityIds.push_back(foundNodes[i]->m_entityId);
+		outNearbyArgusEntityIds.Add(foundNodes[i]->m_entityId);
 	}
 
-	return outNearbyArgusEntityIds.size() > 0u;
+	return outNearbyArgusEntityIds.Num() > 0u;
 }
 
-bool ArgusEntityKDTree::FindOtherArgusEntityIdsWithinRangeOfArgusEntity(std::vector<uint16>& outNearbyArgusEntityIds, const ArgusEntity& entityToSearchAround, const float range) const
+bool ArgusEntityKDTree::FindOtherArgusEntityIdsWithinRangeOfArgusEntity(TArray<uint16>& outNearbyArgusEntityIds, const ArgusEntity& entityToSearchAround, const float range) const
 {
 	if (!entityToSearchAround)
 	{

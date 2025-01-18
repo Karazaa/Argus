@@ -29,7 +29,7 @@ void TimerHandle::StartTimer(const ArgusEntity& entityWithTimer, float seconds)
 		return;
 	}
 
-	for (size_t i = 0u; i < timerComponent->m_timers.size(); ++i)
+	for (int32 i = 0; i < timerComponent->m_timers.Num(); ++i)
 	{
 		if (timerComponent->m_timers[i].m_timerState == TimerState::NotSet)
 		{
@@ -43,8 +43,8 @@ void TimerHandle::StartTimer(const ArgusEntity& entityWithTimer, float seconds)
 	Timer timerToAdd;
 	timerToAdd.m_timerState = TimerState::Ticking;
 	timerToAdd.m_timeRemainingSeconds = seconds;
-	timerComponent->m_timers.push_back(timerToAdd);
-	m_timerIndex = static_cast<uint8>(timerComponent->m_timers.size() - 1);
+	timerComponent->m_timers.Add(timerToAdd);
+	m_timerIndex = static_cast<uint8>(timerComponent->m_timers.Num() - 1);
 }
 
 void TimerHandle::FinishTimerHandling(const ArgusEntity& entityWithTimer)

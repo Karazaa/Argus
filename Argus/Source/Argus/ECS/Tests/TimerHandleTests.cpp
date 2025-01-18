@@ -62,7 +62,7 @@ bool TimerHandleStartTimerTest::RunTest(const FString& Parameters)
 			ARGUS_NAMEOF(TimerComponent),
 			ARGUS_NAMEOF(Timer)
 		),
-		timerComponent->m_timers.empty()
+		timerComponent->m_timers.IsEmpty()
 	);
 #pragma endregion
 
@@ -112,7 +112,7 @@ bool TimerHandleStartTimerTest::RunTest(const FString& Parameters)
 		),
 		(timerComponent->m_timers[0].m_timeRemainingSeconds == expectedTimerDurationSeconds) &&
 		(timerComponent->m_timers[0].m_timerState == TimerState::Ticking) &&
-		(timerComponent->m_timers.size() == 1)
+		(timerComponent->m_timers.Num() == 1)
 	);
 #pragma endregion
 

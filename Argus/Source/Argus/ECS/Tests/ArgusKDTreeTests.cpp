@@ -385,7 +385,7 @@ bool ArgusUtilitiesArgusKDTreeFindArgusEntityIdsWithinRangeOfLocationTest::RunTe
 	CollectionOfArgusEntities entities;
 	PopulateKDTreeForTests(tree, entities, true);
 
-	std::vector<uint16> argusEntityIds;
+	TArray<uint16> argusEntityIds;
 	tree.FindArgusEntityIdsWithinRangeOfLocation(argusEntityIds, ArgusKDTreeTestConstants::location6, 1.0f);
 
 #pragma region Test that we cannot find any entities within a small range of a far away location
@@ -400,12 +400,12 @@ bool ArgusUtilitiesArgusKDTreeFindArgusEntityIdsWithinRangeOfLocationTest::RunTe
 			ARGUS_NAMEOF(ArgusEntity),
 			ARGUS_NAMEOF(ArgusEntityKDTree::FindArgusEntityIdsWithinRangeOfLocation)
 		),
-		argusEntityIds.size(),
+		argusEntityIds.Num(),
 		0
 	);
 #pragma endregion
 
-	argusEntityIds.clear();
+	argusEntityIds.Empty();
 	tree.FindArgusEntityIdsWithinRangeOfLocation(argusEntityIds, ArgusKDTreeTestConstants::location0, 1.0f);
 
 #pragma region Test that we can find exactly one entity near the center
@@ -420,12 +420,12 @@ bool ArgusUtilitiesArgusKDTreeFindArgusEntityIdsWithinRangeOfLocationTest::RunTe
 			ARGUS_NAMEOF(ArgusEntity),
 			ARGUS_NAMEOF(ArgusEntityKDTree::FindArgusEntityIdsWithinRangeOfLocation)
 		),
-		argusEntityIds.size(),
+		argusEntityIds.Num(),
 		1
 	);
 #pragma endregion
 
-	if (argusEntityIds.size() < 1)
+	if (argusEntityIds.Num() < 1)
 	{
 		ArgusTesting::EndArgusTest();
 		return false;
@@ -448,7 +448,7 @@ bool ArgusUtilitiesArgusKDTreeFindArgusEntityIdsWithinRangeOfLocationTest::RunTe
 	);
 #pragma endregion
 
-	argusEntityIds.clear();
+	argusEntityIds.Empty();
 	tree.FindArgusEntityIdsWithinRangeOfLocation(argusEntityIds, ArgusKDTreeTestConstants::location0, 200.0f);
 
 #pragma region Test that we can find all entities within a large range
@@ -463,12 +463,12 @@ bool ArgusUtilitiesArgusKDTreeFindArgusEntityIdsWithinRangeOfLocationTest::RunTe
 			ARGUS_NAMEOF(ArgusEntity),
 			ARGUS_NAMEOF(ArgusEntityKDTree::FindArgusEntityIdsWithinRangeOfLocation)
 		),
-		argusEntityIds.size(),
+		argusEntityIds.Num(),
 		5
 	);
 #pragma endregion
 
-	argusEntityIds.clear();
+	argusEntityIds.Empty();
 	tree.FindArgusEntityIdsWithinRangeOfLocation(argusEntityIds, ArgusKDTreeTestConstants::location7, 20.0f);
 
 #pragma region Test that we can find exactly two entities near a left point
@@ -483,12 +483,12 @@ bool ArgusUtilitiesArgusKDTreeFindArgusEntityIdsWithinRangeOfLocationTest::RunTe
 			ARGUS_NAMEOF(ArgusEntity),
 			ARGUS_NAMEOF(ArgusEntityKDTree::FindArgusEntityIdsWithinRangeOfLocation)
 		),
-		argusEntityIds.size(),
+		argusEntityIds.Num(),
 		2
 	);
 #pragma endregion
 
-	if (argusEntityIds.size() < 2)
+	if (argusEntityIds.Num() < 2)
 	{
 		ArgusTesting::EndArgusTest();
 		return false;

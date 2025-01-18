@@ -65,10 +65,10 @@ bool ObstaclePointKDTree::FindObstacleIndiciesWithinRangeOfLocation(TArray<Obsta
 		return false;
 	}
 
-	std::vector<const ObstaclePointKDTreeNode*> foundNodes;
+	TArray<const ObstaclePointKDTreeNode*> foundNodes;
 	FindNodesWithinRangeOfLocationRecursive(foundNodes, m_rootNode, location, FMath::Square(range), true, 0u);
-	obstacleIndicies.Reserve(foundNodes.size());
-	for (int i = 0; i < foundNodes.size(); ++i)
+	obstacleIndicies.Reserve(foundNodes.Num());
+	for (int32 i = 0; i < foundNodes.Num(); ++i)
 	{
 		if (!foundNodes[i])
 		{

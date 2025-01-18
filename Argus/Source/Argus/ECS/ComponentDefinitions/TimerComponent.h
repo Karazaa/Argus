@@ -11,7 +11,7 @@
 struct TimerComponent
 {
 	ARGUS_IGNORE()
-	std::vector<Timer> m_timers = std::vector<Timer>();
+	TArray<Timer> m_timers;
 
 	Timer* GetTimerFromHandle(const TimerHandle* timerHandle)
 	{
@@ -34,7 +34,7 @@ struct TimerComponent
 			return nullptr;
 		}
 
-		if (m_timers.size() <= timerHandle->GetTimerIndex())
+		if (m_timers.Num() <= timerHandle->GetTimerIndex())
 		{
 			return nullptr;
 		}
@@ -53,7 +53,7 @@ struct TimerComponent
 			)
 		);
 
-		for (size_t i = 0; i < m_timers.size(); ++i)
+		for (int32 i = 0; i < m_timers.Num(); ++i)
 		{
 			debugStringToAppendTo.Append
 			(

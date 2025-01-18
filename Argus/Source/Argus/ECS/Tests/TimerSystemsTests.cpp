@@ -45,9 +45,9 @@ bool TimerSystemsAdvanceTimersTest::RunTest(const FString& Parameters)
 	timer2.m_timerState = TimerState::NotSet;
 	timer0.m_timeRemainingSeconds = timer0expectedDuration;
 	timer1.m_timeRemainingSeconds = timer1expectedDuration;
-	timerComponent->m_timers.push_back(timer0);
-	timerComponent->m_timers.push_back(timer1);
-	timerComponent->m_timers.push_back(timer2);
+	timerComponent->m_timers.Add(timer0);
+	timerComponent->m_timers.Add(timer1);
+	timerComponent->m_timers.Add(timer2);
 
 	TimerSystems::AdvaceTimers(timerComponent, deltaTime);
 
