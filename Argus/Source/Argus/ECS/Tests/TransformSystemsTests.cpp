@@ -89,12 +89,12 @@ bool TransformSystemsGetPathingLocationAtTimeOffsetTest::RunTest(const FString& 
 	TransformSystems::GetPathingLocationAtTimeOffset(1.0f, components, results);
 
 	components.m_transformComponent->m_desiredSpeedUnitsPerSecond = 1.0f;
-	components.m_navigationComponent->m_navigationPoints.reserve(5);
-	components.m_navigationComponent->m_navigationPoints.push_back(twoSecondsInPast);
-	components.m_navigationComponent->m_navigationPoints.push_back(oneSecondInPast);
-	components.m_navigationComponent->m_navigationPoints.push_back(startLocation);
-	components.m_navigationComponent->m_navigationPoints.push_back(oneSecondInFuture);
-	components.m_navigationComponent->m_navigationPoints.push_back(twoSecondsInFuture);
+	components.m_navigationComponent->m_navigationPoints.Reserve(5);
+	components.m_navigationComponent->m_navigationPoints.Add(twoSecondsInPast);
+	components.m_navigationComponent->m_navigationPoints.Add(oneSecondInPast);
+	components.m_navigationComponent->m_navigationPoints.Add(startLocation);
+	components.m_navigationComponent->m_navigationPoints.Add(oneSecondInFuture);
+	components.m_navigationComponent->m_navigationPoints.Add(twoSecondsInFuture);
 
 	results.m_outputPredictedLocation = FVector::ZeroVector;
 	results.m_outputPredictedForwardDirection = FVector::ZeroVector;
@@ -483,11 +483,11 @@ bool TransformSystemsMoveAlongPathTest::RunTest(const FString& Parameters)
 
 	TransformSystems::MoveAlongNavigationPath(dummyWorldPointer, deltaSecondsPerStep, components);
 
-	components.m_navigationComponent->m_navigationPoints.reserve(4);
-	components.m_navigationComponent->m_navigationPoints.push_back(point0);
-	components.m_navigationComponent->m_navigationPoints.push_back(point1);
-	components.m_navigationComponent->m_navigationPoints.push_back(point2);
-	components.m_navigationComponent->m_navigationPoints.push_back(point3);
+	components.m_navigationComponent->m_navigationPoints.Reserve(4);
+	components.m_navigationComponent->m_navigationPoints.Add(point0);
+	components.m_navigationComponent->m_navigationPoints.Add(point1);
+	components.m_navigationComponent->m_navigationPoints.Add(point2);
+	components.m_navigationComponent->m_navigationPoints.Add(point3);
 	float secondCounter = 0.0f;
 
 #pragma region Test creating an initial entity at a specific location
@@ -599,7 +599,7 @@ bool TransformSystemsMoveAlongPathTest::RunTest(const FString& Parameters)
 	AvoidanceSystems::ProcessORCAvoidance(dummyWorldPointer, deltaSecondsPerStep, components);
 	TransformSystems::MoveAlongNavigationPath(dummyWorldPointer, deltaSecondsPerStep, components);
 	secondCounter += deltaSecondsPerStep;
-	const uint16 numPathPoints = components.m_navigationComponent->m_navigationPoints.size();
+	const int32 numPathPoints = components.m_navigationComponent->m_navigationPoints.Num();
 
 #pragma region Test navigation index after moving along path for four seconds
 	TestEqual

@@ -416,7 +416,7 @@ bool ArgusComponentNavigationComponentResetPathTest::RunTest(const FString& Para
 		return false;
 	}
 
-	navigationComponent->m_navigationPoints.resize(numPoints);
+	navigationComponent->m_navigationPoints.SetNumZeroed(numPoints);
 	navigationComponent->m_navigationPoints[0] = point0;
 	navigationComponent->m_navigationPoints[1] = point1;
 	navigationComponent->m_navigationPoints[2] = point2;
@@ -426,7 +426,7 @@ bool ArgusComponentNavigationComponentResetPathTest::RunTest(const FString& Para
 	TestEqual
 	(
 		FString::Printf(TEXT("[%s] Testing that %s has a size of %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(navigationComponent->m_navigationPoints), numPoints),
-		navigationComponent->m_navigationPoints.size(),
+		navigationComponent->m_navigationPoints.Num(),
 		numPoints
 	);
 #pragma endregion
@@ -473,7 +473,7 @@ bool ArgusComponentNavigationComponentResetPathTest::RunTest(const FString& Para
 	TestEqual
 	(
 		FString::Printf(TEXT("[%s] Testing that %s has a size of %d after path reset"), ARGUS_FUNCNAME, ARGUS_NAMEOF(navigationComponent->m_navigationPoints), 0),
-		navigationComponent->m_navigationPoints.size(),
+		navigationComponent->m_navigationPoints.Num(),
 		0
 	);
 #pragma endregion
@@ -508,45 +508,26 @@ bool ArgusComponentNavigationComponentResetQueuedWaypointsTest::RunTest(const FS
 		return false;
 	}
 
-	navigationComponent->m_queuedWaypoints.push(point0);
-	navigationComponent->m_queuedWaypoints.push(point1);
-	navigationComponent->m_queuedWaypoints.push(point2);
-
-#pragma region Test size of queued waypoints
-	TestEqual
-	(
-		FString::Printf(TEXT("[%s] Testing that %s has a size of %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(navigationComponent->m_queuedWaypoints), numPoints),
-		navigationComponent->m_queuedWaypoints.size(),
-		numPoints
-	);
-#pragma endregion
+	navigationComponent->m_queuedWaypoints.Enqueue(point0);
+	navigationComponent->m_queuedWaypoints.Enqueue(point1);
+	navigationComponent->m_queuedWaypoints.Enqueue(point2);
 
 #pragma region Test first element of queued waypoints
 	TestEqual
 	(
 		FString::Printf(TEXT("[%s] Testing that the first queued waypoint is {%f, %f, %f}"), ARGUS_FUNCNAME, point0.X, point0.Y, point0.Z),
-		navigationComponent->m_queuedWaypoints.front(),
+		*navigationComponent->m_queuedWaypoints.Peek(),
 		point0
-	);
-#pragma endregion
-
-#pragma region Test last element of queued waypoints
-	TestEqual
-	(
-		FString::Printf(TEXT("[%s] Testing that the last queued waypoint is {%f, %f, %f}"), ARGUS_FUNCNAME, point2.X, point2.Y, point2.Z),
-		navigationComponent->m_queuedWaypoints.back(),
-		point2
 	);
 #pragma endregion
 
 	navigationComponent->ResetQueuedWaypoints();
 
 #pragma region Test size of queued waypoints
-	TestEqual
+	TestTrue
 	(
-		FString::Printf(TEXT("[%s] Testing that %s has a size of %d after being reset"), ARGUS_FUNCNAME, ARGUS_NAMEOF(navigationComponent->m_queuedWaypoints), 0),
-		navigationComponent->m_queuedWaypoints.size(),
-		0
+		FString::Printf(TEXT("[%s] Testing that %s is empty after being reset"), ARGUS_FUNCNAME, ARGUS_NAMEOF(navigationComponent->m_queuedWaypoints), 0),
+		navigationComponent->m_queuedWaypoints.IsEmpty()
 	);
 #pragma endregion
 

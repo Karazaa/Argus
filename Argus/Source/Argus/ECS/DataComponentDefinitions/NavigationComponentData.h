@@ -12,9 +12,9 @@ class ARGUS_API UNavigationComponentData : public UComponentData
 	GENERATED_BODY()
 
 public:
-	std::vector<FVector> m_navigationPoints = std::vector<FVector>();
-	std::queue<FVector> m_queuedWaypoints = std::queue<FVector>();
-	uint16 m_lastPointIndex = 0u;
+	TArray<FVector> m_navigationPoints;
+	ArgusQueue<FVector> m_queuedWaypoints;
+	int32 m_lastPointIndex = 0;
 
 	void InstantiateComponentForEntity(ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;

@@ -78,8 +78,8 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 	// If we are moving, we need to get our desired velocity as the velocity that points towards the nearest pathing point at the desired speed.
 	if (components.m_taskComponent->IsExecutingMoveTask())
 	{
-		const uint16 futureIndex = components.m_navigationComponent->m_lastPointIndex + 1u;
-		const uint16 numNavigationPoints = components.m_navigationComponent->m_navigationPoints.size();
+		const int32 futureIndex = components.m_navigationComponent->m_lastPointIndex + 1;
+		const int32 numNavigationPoints = components.m_navigationComponent->m_navigationPoints.Num();
 		FVector desiredDirection = FVector::ZeroVector;
 		if (numNavigationPoints != 0u && futureIndex < numNavigationPoints)
 		{

@@ -64,7 +64,7 @@ void TransformSystems::GetPathingLocationAtTimeOffset(float timeOffsetSeconds, c
 	}
 
 	uint16 pointIndex = components.m_navigationComponent->m_lastPointIndex;
-	const uint16 numNavigationPoints = components.m_navigationComponent->m_navigationPoints.size();
+	const int32 numNavigationPoints = components.m_navigationComponent->m_navigationPoints.Num();
 
 	if (numNavigationPoints == 0u || pointIndex >= numNavigationPoints - 1u)
 	{
@@ -176,10 +176,10 @@ void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float delta
 	}
 
 	components.m_transformComponent->m_currentVelocity = components.m_transformComponent->m_proposedAvoidanceVelocity;
-	const uint16 lastPointIndex = components.m_navigationComponent->m_lastPointIndex;
-	const uint16 numNavigationPoints = components.m_navigationComponent->m_navigationPoints.size();
+	const int32 lastPointIndex = components.m_navigationComponent->m_lastPointIndex;
+	const int32 numNavigationPoints = components.m_navigationComponent->m_navigationPoints.Num();
 
-	if (numNavigationPoints == 0u || lastPointIndex >= numNavigationPoints - 1u)
+	if (numNavigationPoints == 0 || lastPointIndex >= numNavigationPoints - 1)
 	{
 		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] %s exceeded %s putting pathfinding in an invalid state."), ARGUS_FUNCNAME, ARGUS_NAMEOF(lastPointIndex), ARGUS_NAMEOF(numNavigationPoints));
 		return;
@@ -297,7 +297,7 @@ void TransformSystems::OnCompleteNavigationPath(const TransformSystemsComponentA
 		return;
 	}
 
-	if (components.m_navigationComponent->m_queuedWaypoints.size() == 0u)
+	if (components.m_navigationComponent->m_queuedWaypoints.IsEmpty())
 	{
 		components.m_taskComponent->m_movementState = MovementState::None;
 		components.m_navigationComponent->ResetPath();
@@ -307,8 +307,8 @@ void TransformSystems::OnCompleteNavigationPath(const TransformSystemsComponentA
 	{
 		components.m_taskComponent->m_movementState = MovementState::ProcessMoveToLocationCommand;
 		components.m_navigationComponent->ResetPath();
-		components.m_targetingComponent->m_targetLocation = components.m_navigationComponent->m_queuedWaypoints.front();
-		components.m_navigationComponent->m_queuedWaypoints.pop();
+		components.m_targetingComponent->m_targetLocation = *components.m_navigationComponent->m_queuedWaypoints.Peek();
+		components.m_navigationComponent->m_queuedWaypoints.Pop();
 	}
 }
 

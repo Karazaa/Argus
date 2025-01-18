@@ -116,10 +116,10 @@ void NavigationSystems::NavigateFromEntityToLocation(UWorld* worldPointer, std::
 		return;
 	}
 
-	components.m_navigationComponent->m_navigationPoints.reserve(numPathPoints);
+	components.m_navigationComponent->m_navigationPoints.Reserve(numPathPoints);
 	for (int i = 0; i < numPathPoints; ++i)
 	{
-		components.m_navigationComponent->m_navigationPoints.emplace_back(pathPoints[i].Location);
+		components.m_navigationComponent->m_navigationPoints.Add(pathPoints[i].Location);
 
 		if (!CVarShowNavigationDebug.GetValueOnGameThread())
 		{

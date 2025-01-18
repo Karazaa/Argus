@@ -3,32 +3,28 @@
 #pragma once
 
 #include "ArgusMacros.h"
-#include <queue>
-#include <vector>
+#include "ComponentDependencies/ArgusQueue.h"
 
 struct NavigationComponent
 {
 	ARGUS_IGNORE()
-	std::vector<FVector> m_navigationPoints = std::vector<FVector>();
+	TArray<FVector> m_navigationPoints;
 
 	ARGUS_IGNORE()
-	std::queue<FVector> m_queuedWaypoints = std::queue<FVector>();
+	ArgusQueue<FVector> m_queuedWaypoints;
 
 	ARGUS_IGNORE()
-	uint16 m_lastPointIndex = 0u;
+	int32 m_lastPointIndex = 0;
 
 	void ResetPath()
 	{
-		m_navigationPoints.clear();
+		m_navigationPoints.Empty();
 		m_lastPointIndex = 0u;
 	}
 
 	void ResetQueuedWaypoints()
 	{
-		while (m_queuedWaypoints.size() > 0)
-		{
-			m_queuedWaypoints.pop();
-		}
+		m_queuedWaypoints.Empty();
 	}
 
 	void GetDebugString(FString& debugStringToAppendTo) const
@@ -37,12 +33,12 @@ struct NavigationComponent
 		(
 			FString::Printf
 			(
-				TEXT("\n[%s] \n    (%s: %d) \n    (Num points: %d) \n    (Num queued waypoints: %d)"), 
+				TEXT("\n[%s] \n    (%s: %d) \n    (Num points: %d) \n    (Num queued waypoints: %s)"), 
 				ARGUS_NAMEOF(NavigationComponent),
 				ARGUS_NAMEOF(m_lastPointIndex),
 				m_lastPointIndex,
-				m_navigationPoints.size(),
-				m_queuedWaypoints.size()
+				m_navigationPoints.Num(),
+				m_queuedWaypoints.IsEmpty() ? TEXT("No") : TEXT("Yes")
 			)
 		);
 	}
