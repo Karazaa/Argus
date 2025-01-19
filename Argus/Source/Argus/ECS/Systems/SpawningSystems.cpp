@@ -154,6 +154,7 @@ void SpawningSystems::ProcessQueuedSpawnEntity(const SpawningSystemsComponentArg
 		// TODO JAMES: Error here.
 		return;
 	}
+	components.m_spawningComponent->m_currentQueueSize--;
 
 	components.m_spawningComponent->m_argusActorRecordId = spawnInfo.m_argusActorRecordId;
 	if (spawnInfo.m_timeToCastSeconds > 0.0f)

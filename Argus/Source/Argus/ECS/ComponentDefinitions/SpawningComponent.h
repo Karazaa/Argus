@@ -20,6 +20,9 @@ struct SpawningComponent
 	uint8 m_maximumQueueSize = 10u;
 
 	ARGUS_IGNORE()
+	uint8 m_currentQueueSize = 0u;
+
+	ARGUS_IGNORE()
 	TimerHandle m_spawnTimerHandle;
 
 	ARGUS_IGNORE()
@@ -31,12 +34,16 @@ struct SpawningComponent
 		(
 			FString::Printf
 			(
-				TEXT("\n[%s]\n    (%s: %d)\n    (%s: %f)"),
+				TEXT("\n[%s]\n    (%s: %d)\n    (%s: %f)\n    (%s: %d)\n    (%s: %d)"),
 				ARGUS_NAMEOF(SpawningComponent),
 				ARGUS_NAMEOF(m_argusActorRecordId),
 				m_argusActorRecordId,
 				ARGUS_NAMEOF(m_spawningRadius),
-				m_spawningRadius
+				m_spawningRadius,
+				ARGUS_NAMEOF(m_maximumQueueSize),
+				m_maximumQueueSize,
+				ARGUS_NAMEOF(m_currentQueueSize),
+				m_currentQueueSize
 			)
 		);
 	}

@@ -6,6 +6,7 @@
 #include "RecordDefinitions/AbilityRecord.h"
 #include "RecordDefinitions/ArgusActorRecord.h"
 #include "Systems/AbilitySystems.h"
+#include "Systems/SpawningSystems.h"
 
 #if WITH_AUTOMATION_TESTS
 
@@ -32,6 +33,8 @@ bool AbilitySystemsCastSpawnAbilityTest::RunTest(const FString& Parameters)
 	components.m_entity = ArgusEntity::CreateEntity();
 	components.m_abilityComponent = components.m_entity.AddComponent<AbilityComponent>();
 	components.m_taskComponent = components.m_entity.AddComponent<TaskComponent>();
+	components.m_entity.AddComponent<TargetingComponent>();
+	components.m_entity.AddComponent<TransformComponent>();
 
 #pragma region Test that passing in an invalid UAbilityRecord* errors
 	AddExpectedErrorPlain
@@ -105,13 +108,15 @@ bool AbilitySystemsCastSpawnAbilityTest::RunTest(const FString& Parameters)
 			ARGUS_FUNCNAME,
 			ARGUS_NAMEOF(ArgusEntity)
 		),
-		(spawnComponent->m_argusActorRecordId == argusActorRecordId) &&
-		(components.m_taskComponent->m_spawningState == SpawningState::SpawningEntity)
+		(spawnComponent->m_spawnQueue.Peek()->m_argusActorRecordId == argusActorRecordId) &&
+		(components.m_taskComponent->m_spawningState == SpawningState::ProcessQueuedSpawnEntity)
 	);
 #pragma endregion
 
+	spawnComponent->m_spawnQueue.Pop();
 	abilityRecord->m_timeToCastSeconds = 1.0f;
 	AbilitySystems::CastAbility(abilityRecord, components);
+	SpawningSystems::RunSystems(0.1f);
 
 #pragma region Test that task component/spawning component have been told to spawn.
 	TestTrue

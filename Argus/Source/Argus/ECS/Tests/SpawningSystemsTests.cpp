@@ -48,7 +48,9 @@ bool SpawningSystemsSpawnEntityTest::RunTest(const FString& Parameters)
 		(
 			TEXT("Passed in %s object has invalid component references."),
 			ARGUS_NAMEOF(SpawningSystemsComponentArgs)
-		)
+		),
+		EAutomationExpectedErrorFlags::Contains,
+		2
 	);
 #pragma endregion
 	SpawningSystems::SpawnEntity(components, argusActorRecord);

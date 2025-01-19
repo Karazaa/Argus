@@ -132,15 +132,21 @@ void AbilitySystems::CastSpawnAbility(const UAbilityRecord* abilityRecord, const
 		return;
 	}
 
+	if (spawningComponent->m_currentQueueSize >= spawningComponent->m_maximumQueueSize)
+	{
+		return;
+	}
+
 	if (components.m_taskComponent->m_spawningState == SpawningState::None)
 	{
 		components.m_taskComponent->m_spawningState = SpawningState::ProcessQueuedSpawnEntity;
 	}
-	
+
 	SpawnEntityInfo spawnInfo;
 	spawnInfo.m_argusActorRecordId = argusActorRecord->m_id;
 	spawnInfo.m_timeToCastSeconds = abilityRecord->m_timeToCastSeconds;
 	spawningComponent->m_spawnQueue.Enqueue(spawnInfo);
+	spawningComponent->m_currentQueueSize++;
 }
 
 void AbilitySystems::CastHealAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsComponentArgs& components)

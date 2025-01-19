@@ -18,6 +18,7 @@ public:
 	float m_spawningRadius = 100.0f;
 	UPROPERTY(EditAnywhere)
 	uint8 m_maximumQueueSize = 10u;
+	uint8 m_currentQueueSize = 0u;
 	TimerHandle m_spawnTimerHandle;
 	ArgusQueue<SpawnEntityInfo> m_spawnQueue;
 
