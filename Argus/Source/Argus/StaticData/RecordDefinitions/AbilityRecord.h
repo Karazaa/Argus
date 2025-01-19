@@ -15,9 +15,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	EAbilityTypes m_abilityType = EAbilityTypes::Spawn;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (EditCondition = "m_abilityType == EAbilityTypes::Spawn", EditConditionHides))
-	TSoftObjectPtr<UArgusActorRecord> m_argusActorRecordToSpawn;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float m_timeToCastSeconds = 0.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (EditCondition = "m_abilityType == EAbilityTypes::Spawn", EditConditionHides))
-	float m_timeToSpawnSeconds = 0.0f;
+	TSoftObjectPtr<UArgusActorRecord> m_argusActorRecordToSpawn;
 };

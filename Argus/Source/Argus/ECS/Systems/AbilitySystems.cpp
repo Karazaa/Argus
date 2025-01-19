@@ -4,6 +4,7 @@
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
 #include "ArgusStaticData.h"
+#include "ComponentDependencies/SpawnEntityInfo.h"
 
 void AbilitySystems::RunSystems(float deltaTime)
 {
@@ -124,8 +125,6 @@ void AbilitySystems::CastSpawnAbility(const UAbilityRecord* abilityRecord, const
 		return;
 	}
 
-	// TODO JAMES: We need to figure out a way to not have plain soft pointers as references between static data records.
-	// Ideally, these could be ID only.
 	UArgusActorRecord* argusActorRecord = abilityRecord->m_argusActorRecordToSpawn.LoadSynchronous();
 	if (!argusActorRecord)
 	{
@@ -133,16 +132,15 @@ void AbilitySystems::CastSpawnAbility(const UAbilityRecord* abilityRecord, const
 		return;
 	}
 
-	spawningComponent->m_argusActorRecordId = argusActorRecord->m_id;
-	if (abilityRecord->m_timeToSpawnSeconds > 0.0f)
+	if (components.m_taskComponent->m_spawningState == SpawningState::None)
 	{
-		spawningComponent->m_spawnTimerHandle.StartTimer(components.m_entity, abilityRecord->m_timeToSpawnSeconds);
-		components.m_taskComponent->m_spawningState = SpawningState::WaitingToSpawnEntity;
+		components.m_taskComponent->m_spawningState = SpawningState::ProcessQueuedSpawnEntity;
 	}
-	else
-	{
-		components.m_taskComponent->m_spawningState = SpawningState::SpawningEntity;
-	}
+	
+	SpawnEntityInfo spawnInfo;
+	spawnInfo.m_argusActorRecordId = argusActorRecord->m_id;
+	spawnInfo.m_timeToCastSeconds = abilityRecord->m_timeToCastSeconds;
+	spawningComponent->m_spawnQueue.Enqueue(spawnInfo);
 }
 
 void AbilitySystems::CastHealAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsComponentArgs& components)

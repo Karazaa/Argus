@@ -23,6 +23,8 @@ public:
 	static void SpawnEntity(const SpawningSystemsComponentArgs& components, const UArgusActorRecord* argusActorRecord);
 
 private:
+	static void SpawnEntityInternal(const SpawningSystemsComponentArgs& components, const UArgusActorRecord* argusActorRecord);
 	static void ProcessSpawningTaskCommands(float deltaTime, const SpawningSystemsComponentArgs& components);
+	static void ProcessQueuedSpawnEntity(const SpawningSystemsComponentArgs& components);
 	static void GetSpawnLocationAndNavigationState(const SpawningSystemsComponentArgs& components, FVector& outSpawnLocation, MovementState& outMovementState);
 };

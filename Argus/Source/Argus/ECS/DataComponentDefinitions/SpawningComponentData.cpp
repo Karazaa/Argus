@@ -9,7 +9,9 @@ void USpawningComponentData::InstantiateComponentForEntity(ArgusEntity& entity) 
 	SpawningComponent* SpawningComponentRef = entity.AddComponent<SpawningComponent>();
 	SpawningComponentRef->m_argusActorRecordId = m_argusActorRecordId.LoadSynchronous() ? m_argusActorRecordId.LoadSynchronous()->m_id : 0u;
 	SpawningComponentRef->m_spawningRadius = m_spawningRadius;
+	SpawningComponentRef->m_maximumQueueSize = m_maximumQueueSize;
 	SpawningComponentRef->m_spawnTimerHandle = m_spawnTimerHandle;
+	SpawningComponentRef->m_spawnQueue = m_spawnQueue;
 }
 
 bool USpawningComponentData::MatchesType(UComponentData* other) const

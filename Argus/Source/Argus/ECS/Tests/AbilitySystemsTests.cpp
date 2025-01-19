@@ -91,7 +91,7 @@ bool AbilitySystemsCastSpawnAbilityTest::RunTest(const FString& Parameters)
 		return false;
 	}
 	argusActorRecord->m_id = argusActorRecordId;
-	abilityRecord->m_timeToSpawnSeconds = 0.0f;
+	abilityRecord->m_timeToCastSeconds = 0.0f;
 	abilityRecord->m_argusActorRecordToSpawn = argusActorRecord;
 
 	AbilitySystems::CastAbility(abilityRecord, components);
@@ -110,7 +110,7 @@ bool AbilitySystemsCastSpawnAbilityTest::RunTest(const FString& Parameters)
 	);
 #pragma endregion
 
-	abilityRecord->m_timeToSpawnSeconds = 1.0f;
+	abilityRecord->m_timeToCastSeconds = 1.0f;
 	AbilitySystems::CastAbility(abilityRecord, components);
 
 #pragma region Test that task component/spawning component have been told to spawn.

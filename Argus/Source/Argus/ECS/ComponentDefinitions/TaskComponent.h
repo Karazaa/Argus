@@ -25,6 +25,7 @@ enum class MovementState : uint8
 enum class SpawningState : uint8
 {
 	None,
+	ProcessQueuedSpawnEntity,
 	WaitingToSpawnEntity,
 	SpawningEntity
 };
