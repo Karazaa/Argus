@@ -3,7 +3,7 @@
 #include "ArgusUserWidget.h"
 #include "ArgusInputManager.h"
 
-void UArgusUserWidget::InitializeWidget(UArgusInputManager* inputManager)
+void UArgusUserWidget::SetInputManager(UArgusInputManager* inputManager)
 {
 	m_inputManager = inputManager;
 }

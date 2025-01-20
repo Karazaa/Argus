@@ -1,9 +1,11 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusActor.h"
+#include "ArgusActorInfoWidget.h"
 #include "ArgusGameInstance.h"
 #include "ArgusGameModeBase.h"
 #include "ArgusStaticData.h"
+#include "Components/WidgetComponent.h"
 #include "DrawDebugHelpers.h"
 #include "Engine/World.h"
 
@@ -95,6 +97,8 @@ void AArgusActor::SetEntity(const ArgusEntity& entity)
 
 		OnPopulateTeam(gameMode->GetTeamColor(identityComponent->m_team));
 	}
+
+	InitializeWidgets();
 }
 
 void AArgusActor::SetSelectionState(bool isSelected)
@@ -207,5 +211,27 @@ void AArgusActor::Tick(float deltaTime)
 		{
 			DrawDebugString(GetWorld(), transformComponent->m_transform.GetLocation(), m_entity.GetDebugString(), nullptr, FColor::Yellow, 0.0f, true, 0.75f);
 		}
+	}
+}
+
+void AArgusActor::InitializeWidgets()
+{
+	if (m_argusActorInfoWidget.IsValid() || !m_argusActorInfoWidgetClass)
+	{
+		return;
+	}
+
+	UWidgetComponent* widgetComponent = GetComponentByClass<UWidgetComponent>();
+	if (!widgetComponent)
+	{
+		return;
+	}
+
+	widgetComponent->SetWidgetClass(m_argusActorInfoWidgetClass);
+	m_argusActorInfoWidget = Cast<UArgusActorInfoWidget>(widgetComponent->GetWidget());
+
+	if (m_argusActorInfoWidget.IsValid())
+	{
+		m_argusActorInfoWidget->SetInitialInfoState(m_entity);
 	}
 }

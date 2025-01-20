@@ -142,7 +142,7 @@ void AArgusPlayerController::InitializeUIWidgets()
 	m_selectedArgusEntityUserWidget = CreateWidget<UArgusUserWidget>(this, m_selectedArgusEntityUserWidgetClass, ARGUS_NAMEOF(m_selectedArgusEntityUserWidgetClass));
 	if (m_selectedArgusEntityUserWidget.IsValid())
 	{
-		m_selectedArgusEntityUserWidget->InitializeWidget(m_argusInputManager);
+		m_selectedArgusEntityUserWidget->SetInputManager(m_argusInputManager);
 		m_selectedArgusEntityUserWidget->AddToViewport();
 	}
 }

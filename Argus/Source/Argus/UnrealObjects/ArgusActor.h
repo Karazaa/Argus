@@ -7,6 +7,8 @@
 #include "ArgusEntityTemplate.h"
 #include "ArgusActor.generated.h"
 
+class UArgusActorInfoWidget;
+class UArgusActorRecord;
 class UFactionRecord;
 
 UCLASS()
@@ -29,15 +31,22 @@ public:
 protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnSelected();
+
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnDeselected();
+
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnPopulateFaction(const UFactionRecord* factionRecord);
+
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnPopulateTeam(FColor teamColor);
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	TSoftObjectPtr<UArgusActorRecord> m_argusActorRecord;
+	TSubclassOf<UArgusActorInfoWidget> m_argusActorInfoWidgetClass = nullptr;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	TSoftObjectPtr<UArgusActorRecord> m_argusActorRecord = nullptr;
+
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	bool m_shouldActorSpawnLocationSetEntityLocation = false;
 
@@ -45,7 +54,10 @@ protected:
 	virtual void EndPlay(const EEndPlayReason::Type endPlayReason) override;
 	virtual void Tick(float deltaTime) override;
 
+	void InitializeWidgets();
+
 private:
 	ArgusEntity m_entity = ArgusEntity::k_emptyEntity;
 	bool m_isSelected = false;
+	TWeakObjectPtr<UArgusActorInfoWidget> m_argusActorInfoWidget = nullptr;
 };

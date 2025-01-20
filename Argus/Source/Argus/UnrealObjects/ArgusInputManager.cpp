@@ -643,7 +643,7 @@ void UArgusInputManager::ProcessAbilityInputEvent(uint8 abilityIndex)
 		);
 	}
 
-	for (TWeakObjectPtr<AArgusActor>& selectedActor : m_selectedArgusActors)
+	for (TWeakObjectPtr<AArgusActor>& selectedActor : m_activeAbilityGroupArgusActors)
 	{
 		if (!selectedActor.IsValid())
 		{
