@@ -65,6 +65,7 @@ private:
 
 	TWeakObjectPtr<AArgusPlayerController> m_owningPlayerController = nullptr;
 	TSet<TWeakObjectPtr<AArgusActor>> m_selectedArgusActors;
+	TSet<TWeakObjectPtr<AArgusActor>> m_activeAbilityGroupArgusActors;
 	TArray<InputCache> m_inputEventsThisFrame;
 
 	void BindActions(TSoftObjectPtr<UArgusInputActionSet>& argusInputActionSet, TWeakObjectPtr<UEnhancedInputComponent>& enhancedInputComponent);
@@ -85,6 +86,7 @@ private:
 	void AddSelectedActorAdditive(AArgusActor* argusActor);
 	void AddMarqueeSelectedActorsExclusive(const TArray<AArgusActor*>& marqueeSelectedActors);
 	void AddMarqueeSelectedActorsAdditive(const TArray<AArgusActor*>& marqueeSelectedActors);
+	void OnSelectedArgusArgusActorsChanged();
 
 	FVector m_cachedLastSelectInputWorldspaceLocation = FVector::ZeroVector;
 };

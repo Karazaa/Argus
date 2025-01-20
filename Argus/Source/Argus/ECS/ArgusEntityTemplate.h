@@ -21,7 +21,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	TArray<TSoftObjectPtr<UComponentData>> m_componentData;
 
-	ArgusEntity MakeEntity();
+	ArgusEntity MakeEntity() const;
 
 #if WITH_EDITOR
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent) override;

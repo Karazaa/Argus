@@ -50,7 +50,7 @@ struct TaskComponent
 	ARGUS_IGNORE()
 	AbilityState m_abilityState = AbilityState::None;
 	ARGUS_IGNORE()
-	uint32 m_spawnedFromArgusActorRecordId = MAX_uint32;
+	uint32 m_spawnedFromArgusActorRecordId = 0u;
 
 	bool IsExecutingMoveTask() const
 	{

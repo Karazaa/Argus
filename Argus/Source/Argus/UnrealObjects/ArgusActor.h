@@ -37,7 +37,7 @@ protected:
 	void OnPopulateTeam(FColor teamColor);
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	TObjectPtr<UArgusEntityTemplate> m_entityTemplate = nullptr;
+	TSoftObjectPtr<UArgusActorRecord> m_argusActorRecord;
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	bool m_shouldActorSpawnLocationSetEntityLocation = false;
 

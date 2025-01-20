@@ -5,7 +5,7 @@
 #include "ArgusMacros.h"
 #include "DataComponentDefinitions/ComponentData.h"
 
-ArgusEntity UArgusEntityTemplate::MakeEntity()
+ArgusEntity UArgusEntityTemplate::MakeEntity() const
 {
 	ARGUS_MEMORY_TRACE(ArgusComponentData);
 

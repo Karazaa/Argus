@@ -7,7 +7,7 @@
 #include "ArgusInputManager.h"
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
-#include "Blueprint/UserWidget.h"
+#include "ArgusUserWidget.h"
 #include "Engine/GameViewportClient.h"
 #include "Engine/LocalPlayer.h"
 #include "Engine/World.h"
@@ -139,10 +139,19 @@ bool AArgusPlayerController::IsArgusActorOnPlayerTeam(const AArgusActor* const a
 
 void AArgusPlayerController::InitializeUIWidgets()
 {
-	UUserWidget* widget = CreateWidget<UUserWidget>(this, m_selectedArgusEntityUserWidgetClass, ARGUS_NAMEOF(m_selectedArgusEntityUserWidgetClass));
-	if (widget)
+	m_selectedArgusEntityUserWidget = CreateWidget<UArgusUserWidget>(this, m_selectedArgusEntityUserWidgetClass, ARGUS_NAMEOF(m_selectedArgusEntityUserWidgetClass));
+	if (m_selectedArgusEntityUserWidget.IsValid())
 	{
-		widget->AddToViewport();
+		m_selectedArgusEntityUserWidget->InitializeWidget(m_argusInputManager);
+		m_selectedArgusEntityUserWidget->AddToViewport();
+	}
+}
+
+void AArgusPlayerController::OnUpdateSelectedArgusActors(uint32 ability0RecordId, uint32 ability1RecordId, uint32 ability2RecordId, uint32 ability3RecordId)
+{
+	if (m_selectedArgusEntityUserWidget.IsValid())
+	{
+		m_selectedArgusEntityUserWidget->OnUpdateSelectedArgusActors(ability0RecordId, ability1RecordId, ability2RecordId, ability3RecordId);
 	}
 }
 

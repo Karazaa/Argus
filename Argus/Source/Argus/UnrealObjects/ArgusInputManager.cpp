@@ -721,6 +721,8 @@ void UArgusInputManager::AddSelectedActorExclusive(AArgusActor* argusActor)
 		argusActor->SetSelectionState(true);
 	}
 	m_selectedArgusActors.Emplace(argusActor);
+
+	OnSelectedArgusArgusActorsChanged();
 }
 
 void UArgusInputManager::AddSelectedActorAdditive(AArgusActor* argusActor)
@@ -742,6 +744,8 @@ void UArgusInputManager::AddSelectedActorAdditive(AArgusActor* argusActor)
 		argusActor->SetSelectionState(true);
 		m_selectedArgusActors.Emplace(argusActor);
 	}
+
+	OnSelectedArgusArgusActorsChanged();
 }
 
 void UArgusInputManager::AddMarqueeSelectedActorsExclusive(const TArray<AArgusActor*>& marqueeSelectedActors)
@@ -775,5 +779,62 @@ void UArgusInputManager::AddMarqueeSelectedActorsAdditive(const TArray<AArgusAct
 			marqueeSelectedActors[i]->SetSelectionState(true);
 			m_selectedArgusActors.Emplace(marqueeSelectedActors[i]);
 		}
+	}
+
+	OnSelectedArgusArgusActorsChanged();
+}
+
+void UArgusInputManager::OnSelectedArgusArgusActorsChanged()
+{
+	m_activeAbilityGroupArgusActors.Empty();
+	uint32 abilityUnitGroupActorRecordId = 0u;
+	uint32 ability0RecordId = 0u;
+	uint32 ability1RecordId = 0u;
+	uint32 ability2RecordId = 0u;
+	uint32 ability3RecordId = 0u;
+	for (TWeakObjectPtr<AArgusActor>& selectedActor : m_selectedArgusActors)
+	{
+		if (!selectedActor.IsValid())
+		{
+			continue;
+		}
+
+		const ArgusEntity entity = selectedActor->GetEntity();
+		if (!entity)
+		{
+			continue;
+		}
+
+		const AbilityComponent* abilityComponent = entity.GetComponent<AbilityComponent>();
+		if (!abilityComponent)
+		{
+			continue;
+		}
+
+		const TaskComponent* taskComponent = entity.GetComponent<TaskComponent>();
+		if (!taskComponent)
+		{
+			continue;
+		}
+
+		if (abilityUnitGroupActorRecordId == 0u)
+		{
+			abilityUnitGroupActorRecordId = taskComponent->m_spawnedFromArgusActorRecordId;
+			ability0RecordId = abilityComponent->m_ability0Id;
+			ability1RecordId = abilityComponent->m_ability1Id;
+			ability2RecordId = abilityComponent->m_ability2Id;
+			ability3RecordId = abilityComponent->m_ability3Id;
+
+			m_activeAbilityGroupArgusActors.Emplace(selectedActor);
+		}
+		else if (abilityUnitGroupActorRecordId == taskComponent->m_spawnedFromArgusActorRecordId)
+		{
+			m_activeAbilityGroupArgusActors.Emplace(selectedActor);
+		}
+	}
+
+	if (m_owningPlayerController.IsValid())
+	{
+		m_owningPlayerController->OnUpdateSelectedArgusActors(ability0RecordId, ability1RecordId, ability2RecordId, ability3RecordId);
 	}
 }

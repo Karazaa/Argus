@@ -30,7 +30,7 @@ void AArgusActor::Reset()
 		}
 	}
 
-	m_entityTemplate = nullptr;
+	m_argusActorRecord = nullptr;
 	m_isSelected = false;
 	m_entity = ArgusEntity::k_emptyEntity;
 
@@ -135,15 +135,32 @@ void AArgusActor::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	if (!m_entityTemplate)
+	if (m_argusActorRecord.IsNull())
 	{
 		return;
 	}
 
-	m_entity = m_entityTemplate->MakeEntity();
+	const UArgusActorRecord* loadedArgusActorRecord = m_argusActorRecord.LoadSynchronous();
+	if (!loadedArgusActorRecord)
+	{
+		return;
+	}
+
+	const UArgusEntityTemplate* loadedEntityTemplate = loadedArgusActorRecord->m_entityTemplateOverride.LoadSynchronous();
+	if (!loadedEntityTemplate)
+	{
+		return;
+	}
+
+	m_entity = loadedEntityTemplate->MakeEntity();
 	if (!m_entity)
 	{
 		return;
+	}
+
+	if (TaskComponent* entityTaskComponent = m_entity.GetComponent<TaskComponent>())
+	{
+		entityTaskComponent->m_spawnedFromArgusActorRecordId = loadedArgusActorRecord->m_id;
 	}
 	
 	SetEntity(m_entity);

@@ -15,6 +15,7 @@ class AArgusActor;
 class ArgusEntity;
 class UArgusInputActionSet;
 class UArgusInputManager;
+class UArgusUserWidget;
 
 UCLASS()
 class AArgusPlayerController : public APlayerController
@@ -33,6 +34,7 @@ public:
 	bool IsArgusActorOnPlayerTeam(const AArgusActor* const actor) const;
 
 	void InitializeUIWidgets();
+	void OnUpdateSelectedArgusActors(uint32 ability0RecordId, uint32 ability1RecordId, uint32 ability2RecordId, uint32 ability3RecordId);
 
 	UArgusInputManager* GetInputManager() const { return m_argusInputManager; }
 
@@ -47,10 +49,15 @@ protected:
 	TSoftObjectPtr<UArgusInputActionSet> m_argusInputActionSet = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	TSubclassOf<UUserWidget> m_selectedArgusEntityUserWidgetClass;
+	TSubclassOf<UArgusUserWidget> m_selectedArgusEntityUserWidgetClass = nullptr;
 
+	UPROPERTY(Transient)
 	TObjectPtr<AArgusCameraActor> m_argusCameraActor = nullptr;
+
+	UPROPERTY(Transient)
 	TObjectPtr<UArgusInputManager> m_argusInputManager = nullptr;
+
+	TWeakObjectPtr<UArgusUserWidget> m_selectedArgusEntityUserWidget;
 
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
