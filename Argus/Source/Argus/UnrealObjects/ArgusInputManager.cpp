@@ -120,6 +120,28 @@ void UArgusInputManager::OnAbility3(const FInputActionValue& value)
 
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::Ability3, value));
 }
+
+void UArgusInputManager::OnUserInterfaceButtonClicked(UArgusUIButtonClickedEventsEnum buttonClickedEvent)
+{
+	switch (buttonClickedEvent)
+	{
+		case UArgusUIButtonClickedEventsEnum::SelectedArgusEntityAbility0:
+			m_inputEventsThisFrame.Emplace(InputCache(InputType::Ability0, FInputActionValue()));
+			break;
+		case UArgusUIButtonClickedEventsEnum::SelectedArgusEntityAbility1:
+			m_inputEventsThisFrame.Emplace(InputCache(InputType::Ability1, FInputActionValue()));
+			break;
+		case UArgusUIButtonClickedEventsEnum::SelectedArgusEntityAbility2:
+			m_inputEventsThisFrame.Emplace(InputCache(InputType::Ability2, FInputActionValue()));
+			break;
+		case UArgusUIButtonClickedEventsEnum::SelectedArgusEntityAbility3:
+			m_inputEventsThisFrame.Emplace(InputCache(InputType::Ability3, FInputActionValue()));
+			break;
+		default:
+			break;
+	}
+}
+
 #pragma endregion
 
 void UArgusInputManager::ProcessPlayerInput(TObjectPtr<AArgusCameraActor>& argusCamera, const AArgusCameraActor::UpdateCameraPanningParameters& updateCameraParameters, float deltaTime)

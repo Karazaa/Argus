@@ -32,6 +32,9 @@ public:
 	void FilterArgusActorsToPlayerTeam(TArray<AArgusActor*>& argusActors) const;
 	bool IsArgusActorOnPlayerTeam(const AArgusActor* const actor) const;
 
+	void InitializeUIWidgets();
+
+	UArgusInputManager* GetInputManager() const { return m_argusInputManager; }
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
@@ -42,6 +45,9 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TSoftObjectPtr<UArgusInputActionSet> m_argusInputActionSet = nullptr;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	TSubclassOf<UUserWidget> m_selectedArgusEntityUserWidgetClass;
 
 	TObjectPtr<AArgusCameraActor> m_argusCameraActor = nullptr;
 	TObjectPtr<UArgusInputManager> m_argusInputManager = nullptr;

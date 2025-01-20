@@ -21,6 +21,17 @@ void AArgusGameModeBase::StartPlay()
 	ArgusEntity::FlushAllEntities();
 	Super::StartPlay();
 	ARGUS_LOG(ArgusUnrealObjectsLog, Display, TEXT("[%s] Argus game mode base starting play."), ARGUS_FUNCNAME);
+
+	for (AArgusPlayerController* argusPlayerController : TActorRange<AArgusPlayerController>(GetWorld()))
+	{
+		m_activePlayerController = argusPlayerController;
+		break;
+	}
+
+	if (m_activePlayerController)
+	{
+		m_activePlayerController->InitializeUIWidgets();
+	}
 }
 
 void AArgusGameModeBase::Tick(float deltaTime)
@@ -36,14 +47,14 @@ void AArgusGameModeBase::Tick(float deltaTime)
 		return;
 	}
 
-	// Update camera and process player input
-	for (AArgusPlayerController* argusPlayerController : TActorRange<AArgusPlayerController>(worldPointer))
+	if (!m_activePlayerController)
 	{
-		if (argusPlayerController)
-		{
-			argusPlayerController->ProcessArgusPlayerInput(deltaTime);
-		}
+		ARGUS_LOG(ArgusUnrealObjectsLog, Error, TEXT("[%s] Could not retrieve a valid %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(AArgusPlayerController*));
+		return;
 	}
+	
+	// Update camera and process player input
+	m_activePlayerController->ProcessArgusPlayerInput(deltaTime);
 
 	// Run all ECS systems.
 	m_argusSystemsManager.RunSystems(worldPointer, deltaTime);

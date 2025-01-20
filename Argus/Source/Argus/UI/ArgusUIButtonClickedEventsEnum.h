@@ -7,5 +7,8 @@
 UENUM(BlueprintType)
 enum class UArgusUIButtonClickedEventsEnum : uint8
 {
-	SelectedArgusEntityAbilityMenu,
+	SelectedArgusEntityAbility0,
+	SelectedArgusEntityAbility1,
+	SelectedArgusEntityAbility2,
+	SelectedArgusEntityAbility3,
 };

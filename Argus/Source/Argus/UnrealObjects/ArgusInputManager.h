@@ -4,6 +4,7 @@
 
 #include "ArgusActor.h"
 #include "ArgusCameraActor.h"
+#include "ArgusUIButtonClickedEventsEnum.h"
 #include "CoreMinimal.h"
 #include "InputActionValue.h"
 #include "UObject/SoftObjectPtr.h"
@@ -18,6 +19,7 @@ UCLASS()
 class UArgusInputManager : public UObject
 {
 	GENERATED_BODY()
+
 public:
 	void SetupInputComponent(TWeakObjectPtr<AArgusPlayerController> owningPlayerController, TSoftObjectPtr<UArgusInputActionSet>& argusInputActionSet);
 	void OnSelect(const FInputActionValue& value);
@@ -31,6 +33,7 @@ public:
 	void OnAbility1(const FInputActionValue& value);
 	void OnAbility2(const FInputActionValue& value);
 	void OnAbility3(const FInputActionValue& value);
+	void OnUserInterfaceButtonClicked(UArgusUIButtonClickedEventsEnum buttonClickedEvent);
 
 
 	void ProcessPlayerInput(TObjectPtr<AArgusCameraActor>& argusCamera, const AArgusCameraActor::UpdateCameraPanningParameters& updateCameraPanningParameters, float deltaTime);

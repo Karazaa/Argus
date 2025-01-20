@@ -10,6 +10,9 @@
 #include "RecordDefinitions/TeamColorRecord.h"
 #include "ArgusGameModeBase.generated.h"
 
+class AArgusPlayerController;
+class UUserWidget;
+
 UCLASS()
 class AArgusGameModeBase : public AGameModeBase
 {
@@ -22,9 +25,14 @@ public:
 	AArgusGameModeBase();
 	virtual void StartPlay() override;
 
+	AArgusPlayerController* GetActivePlayerController() const { return m_activePlayerController.Get(); }
+
 protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	TMap<ETeam, TObjectPtr<UTeamColorRecord>> m_teamColorMap;
+
+	UPROPERTY(Transient)
+	TObjectPtr<AArgusPlayerController> m_activePlayerController;
 
 	virtual void Tick(float deltaTime) override;
 

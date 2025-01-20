@@ -13,5 +13,5 @@ class UArgusUIBlueprintLibrary : public UBlueprintFunctionLibrary
 
 public:
 	UFUNCTION(BlueprintCallable)
-	static void OnUserInterfaceButtonClicked(UArgusUIButtonClickedEventsEnum buttonClickedEvent);
+	static void OnUserInterfaceButtonClicked(UArgusUIButtonClickedEventsEnum buttonClickedEvent, UObject* worldContextObject);
 };

@@ -7,6 +7,7 @@
 #include "ArgusInputManager.h"
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
+#include "Blueprint/UserWidget.h"
 #include "Engine/GameViewportClient.h"
 #include "Engine/LocalPlayer.h"
 #include "Engine/World.h"
@@ -134,6 +135,15 @@ bool AArgusPlayerController::IsArgusActorOnPlayerTeam(const AArgusActor* const a
 	}
 
 	return identityComponent->m_team == m_playerTeam;
+}
+
+void AArgusPlayerController::InitializeUIWidgets()
+{
+	UUserWidget* widget = CreateWidget<UUserWidget>(this, m_selectedArgusEntityUserWidgetClass, ARGUS_NAMEOF(m_selectedArgusEntityUserWidgetClass));
+	if (widget)
+	{
+		widget->AddToViewport();
+	}
 }
 
 void AArgusPlayerController::BeginPlay()
