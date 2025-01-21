@@ -10,22 +10,42 @@ void UArgusActorInfoWidget::SetInitialInfoState(ArgusEntity& argusEntity)
 		return;
 	}
 
-	AbilityComponent* abilityComponent = argusEntity.GetComponent<AbilityComponent>();
-	if (!abilityComponent)
+	if (m_castBarWidget)
 	{
-		if (m_castBarWidget)
-		{
-			SetVisibility(ESlateVisibility::Hidden);
-			m_castBarWidget->SetVisibility(ESlateVisibility::Hidden);
-		}
+		m_castBarWidget->SetVisibility(ESlateVisibility::Hidden);
+	}
+}
+
+void UArgusActorInfoWidget::RefreshInfoDisplay(ArgusEntity& argusEntity)
+{
+	if (!argusEntity)
+	{
 		return;
 	}
-	else
+
+	RefreshCastBarDisplay(argusEntity);
+}
+
+void UArgusActorInfoWidget::RefreshCastBarDisplay(ArgusEntity& argusEntity)
+{
+	if (!m_castBarWidget)
 	{
-		if (m_castBarWidget)
-		{
-			SetVisibility(ESlateVisibility::HitTestInvisible);
-			m_castBarWidget->SetVisibility(ESlateVisibility::HitTestInvisible);
-		}
+		return;
+	}
+
+	const SpawningComponent* spawningComponent = argusEntity.GetComponent<SpawningComponent>();
+	if (!spawningComponent)
+	{
+		return;
+	}
+
+	const float timeElapsedProportion = spawningComponent->m_spawnTimerHandle.GetTimeElapsedProportion(argusEntity);
+	if (timeElapsedProportion > 0.0f && m_castBarWidget->GetVisibility() == ESlateVisibility::Hidden)
+	{
+		m_castBarWidget->SetVisibility(ESlateVisibility::HitTestInvisible);
+	}
+	else if (timeElapsedProportion <= 0.0f && m_castBarWidget->GetVisibility() != ESlateVisibility::Hidden)
+	{
+		m_castBarWidget->SetVisibility(ESlateVisibility::Hidden);
 	}
 }

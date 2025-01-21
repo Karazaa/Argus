@@ -14,8 +14,11 @@ class UArgusActorInfoWidget : public UArgusUserWidget
 
 public:
 	void SetInitialInfoState(ArgusEntity& argusEntity);
+	void RefreshInfoDisplay(ArgusEntity& argusEntity);
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TObjectPtr<UUserWidget> m_castBarWidget = nullptr;
+
+	void RefreshCastBarDisplay(ArgusEntity& argusEntity);
 };

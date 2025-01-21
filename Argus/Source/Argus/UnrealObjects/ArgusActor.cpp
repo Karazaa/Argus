@@ -212,6 +212,11 @@ void AArgusActor::Tick(float deltaTime)
 			DrawDebugString(GetWorld(), transformComponent->m_transform.GetLocation(), m_entity.GetDebugString(), nullptr, FColor::Yellow, 0.0f, true, 0.75f);
 		}
 	}
+
+	if (m_argusActorInfoWidget.IsValid())
+	{
+		m_argusActorInfoWidget->RefreshInfoDisplay(m_entity);
+	}
 }
 
 void AArgusActor::InitializeWidgets()

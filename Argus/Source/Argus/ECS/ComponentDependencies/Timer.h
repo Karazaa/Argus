@@ -17,6 +17,7 @@ enum class TimerState : uint8
 struct Timer
 {
 	float m_timeRemainingSeconds = 0.0f;
+	float m_initialDurationSeconds = 0.0f;
 	TimerState m_timerState = TimerState::NotSet;
 };
 
@@ -26,7 +27,7 @@ public:
 	void StartTimer(const ArgusEntity& entityWithTimer, float seconds);
 	void FinishTimerHandling(const ArgusEntity& entityWithTimer);
 	void CancelTimer(const ArgusEntity& entityWithTimer);
-
+	float GetTimeElapsedProportion(const ArgusEntity& entityWithTimer) const;
 	bool IsTimerComplete(const ArgusEntity& entityWithTimer) const;
 
 	uint8 GetTimerIndex() const { return m_timerIndex; }

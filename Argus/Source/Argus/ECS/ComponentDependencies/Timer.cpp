@@ -34,6 +34,7 @@ void TimerHandle::StartTimer(const ArgusEntity& entityWithTimer, float seconds)
 		if (timerComponent->m_timers[i].m_timerState == TimerState::NotSet)
 		{
 			timerComponent->m_timers[i].m_timerState = TimerState::Ticking;
+			timerComponent->m_timers[i].m_initialDurationSeconds = seconds;
 			timerComponent->m_timers[i].m_timeRemainingSeconds = seconds;
 			m_timerIndex = static_cast<uint8>(i);
 			return;
@@ -42,6 +43,7 @@ void TimerHandle::StartTimer(const ArgusEntity& entityWithTimer, float seconds)
 
 	Timer timerToAdd;
 	timerToAdd.m_timerState = TimerState::Ticking;
+	timerToAdd.m_initialDurationSeconds = seconds;
 	timerToAdd.m_timeRemainingSeconds = seconds;
 	timerComponent->m_timers.Add(timerToAdd);
 	m_timerIndex = static_cast<uint8>(timerComponent->m_timers.Num() - 1);
@@ -60,6 +62,7 @@ void TimerHandle::FinishTimerHandling(const ArgusEntity& entityWithTimer)
 		return;
 	}
 
+	timer->m_initialDurationSeconds = 0.0f;
 	timer->m_timeRemainingSeconds = 0.0f;
 	timer->m_timerState = TimerState::NotSet;
 	m_timerIndex = UINT8_MAX;
@@ -73,9 +76,31 @@ void TimerHandle::CancelTimer(const ArgusEntity& entityWithTimer)
 		return;
 	}
 
+	timer->m_initialDurationSeconds = 0.0f;
 	timer->m_timeRemainingSeconds = 0.0f;
 	timer->m_timerState = TimerState::NotSet;
 	m_timerIndex = UINT8_MAX;
+}
+
+float TimerHandle::GetTimeElapsedProportion(const ArgusEntity& entityWithTimer) const
+{
+	if (m_timerIndex == UINT8_MAX)
+	{
+		return 0.0f;
+	}
+
+	Timer* timer = GetTimerForEntity(entityWithTimer, ARGUS_FUNCNAME);
+	if (!timer)
+	{
+		return 0.0f;
+	}
+
+	if (timer->m_initialDurationSeconds == 0.0f)
+	{
+		return 0.0f;
+	}
+
+	return timer->m_timeRemainingSeconds / timer->m_initialDurationSeconds;
 }
 
 bool TimerHandle::IsTimerComplete(const ArgusEntity& entityWithTimer) const
