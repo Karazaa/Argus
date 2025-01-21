@@ -42,7 +42,7 @@ protected:
 	void OnPopulateTeam(FColor teamColor);
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	TSubclassOf<UArgusActorInfoWidget> m_argusActorInfoWidgetClass = nullptr;
+	TSoftClassPtr<UArgusActorInfoWidget> m_argusActorInfoWidgetClass = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	TSoftObjectPtr<UArgusActorRecord> m_argusActorRecord = nullptr;

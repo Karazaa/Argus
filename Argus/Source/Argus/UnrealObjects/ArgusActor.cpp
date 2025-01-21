@@ -227,7 +227,7 @@ void AArgusActor::InitializeWidgets()
 		return;
 	}
 
-	widgetComponent->SetWidgetClass(m_argusActorInfoWidgetClass);
+	widgetComponent->SetWidgetClass(m_argusActorInfoWidgetClass.LoadSynchronous());
 	m_argusActorInfoWidget = Cast<UArgusActorInfoWidget>(widgetComponent->GetWidget());
 
 	if (m_argusActorInfoWidget.IsValid())

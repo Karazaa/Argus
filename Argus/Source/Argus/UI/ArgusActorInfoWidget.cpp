@@ -15,6 +15,7 @@ void UArgusActorInfoWidget::SetInitialInfoState(ArgusEntity& argusEntity)
 	{
 		if (m_castBarWidget)
 		{
+			SetVisibility(ESlateVisibility::Hidden);
 			m_castBarWidget->SetVisibility(ESlateVisibility::Hidden);
 		}
 		return;
@@ -23,6 +24,7 @@ void UArgusActorInfoWidget::SetInitialInfoState(ArgusEntity& argusEntity)
 	{
 		if (m_castBarWidget)
 		{
+			SetVisibility(ESlateVisibility::HitTestInvisible);
 			m_castBarWidget->SetVisibility(ESlateVisibility::HitTestInvisible);
 		}
 	}
