@@ -215,13 +215,14 @@ void AArgusActor::Tick(float deltaTime)
 
 	if (m_argusActorInfoWidget.IsValid())
 	{
-		m_argusActorInfoWidget->RefreshInfoDisplay(m_entity);
+		m_argusActorInfoWidget->RefreshDisplay(m_entity);
 	}
 }
 
 void AArgusActor::InitializeWidgets()
 {
-	if (m_argusActorInfoWidget.IsValid() || !m_argusActorInfoWidgetClass)
+	UClass* widgetClass = m_argusActorInfoWidgetClass.LoadSynchronous();
+	if (m_argusActorInfoWidget.IsValid() || !widgetClass)
 	{
 		return;
 	}
@@ -232,11 +233,11 @@ void AArgusActor::InitializeWidgets()
 		return;
 	}
 
-	widgetComponent->SetWidgetClass(m_argusActorInfoWidgetClass.LoadSynchronous());
+	widgetComponent->SetWidgetClass(widgetClass);
 	m_argusActorInfoWidget = Cast<UArgusActorInfoWidget>(widgetComponent->GetWidget());
 
 	if (m_argusActorInfoWidget.IsValid())
 	{
-		m_argusActorInfoWidget->SetInitialInfoState(m_entity);
+		m_argusActorInfoWidget->SetInitialDisplay(m_entity);
 	}
 }

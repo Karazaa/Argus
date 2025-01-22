@@ -2,14 +2,14 @@
 
 #pragma once
 
-#include "ArgusActorWidgetInterface.h"
-#include "Blueprint/UserWidget.h"
-#include "ArgusActorInfoWidget.generated.h"
+#include "ArgusActorInfoWidget.h"
+#include "ArgusActorCastBarWidget.generated.h"
 
 class ArgusEntity;
+class UProgressBar;
 
 UCLASS()
-class UArgusActorInfoWidget : public UUserWidget, public IArgusActorWidgetInterface
+class UArgusActorCastBarWidget : public UArgusActorInfoWidget
 {
 	GENERATED_BODY()
 
@@ -19,5 +19,5 @@ public:
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	TArray<TObjectPtr<UArgusActorInfoWidget>> m_childArgusActorWidgets;
+	TObjectPtr<UProgressBar> m_progressBar = nullptr;
 };
