@@ -78,36 +78,52 @@ void AArgusCameraActor::UpdateCameraPanning(const UpdateCameraPanningParameters&
 	FVector translation = FVector::ZeroVector;
 	const float scaledDesiredVerticalVelocity = FMath::Lerp(m_minimumDesiredVerticalVelocity, m_maximumDesiredVerticalVelocity, m_zoomLevelInterpolant);
 	const float scaledDesiredHorizontalVelocity = FMath::Lerp(m_minimumDesiredHorizontalVelocity, m_maximumDesiredHorizontalVelocity, m_zoomLevelInterpolant);
+	const float minVerticalVelocityBondaryModifier = 1.0f - m_verticalVelocityBoundaryModifier;
+	const float maxVerticalVelocityBondaryModifier = 1.0f + m_verticalVelocityBoundaryModifier;
+	const float minHorizontalVelocityBondaryModifier = 1.0f - m_horizontalVelocityBoundaryModifier;
+	const float maxHorizontalVelocityBondaryModifier = 1.0f + m_horizontalVelocityBoundaryModifier;
 
+	float verticalModification = 1.0f;
 	if (s_numWidgetPanningBlockers == 0u)
 	{
 		// UP
 		if (cameraParameters.m_screenSpaceMousePosition->Y < paddingAmountY)
 		{
 			desiredVerticalVelocity = scaledDesiredVerticalVelocity;
+			const float interpolator = 1.0f - (cameraParameters.m_screenSpaceMousePosition->Y / paddingAmountY);
+			verticalModification = FMath::Lerp(minVerticalVelocityBondaryModifier, maxVerticalVelocityBondaryModifier, interpolator);
 		}
 		// DOWN
 		else if (cameraParameters.m_screenSpaceMousePosition->Y > (cameraParameters.m_screenSpaceXYBounds->Y - paddingAmountY))
 		{
 			desiredVerticalVelocity = -scaledDesiredVerticalVelocity;
+			const float interpolator = (cameraParameters.m_screenSpaceMousePosition->Y - (cameraParameters.m_screenSpaceXYBounds->Y - paddingAmountY)) / paddingAmountY;
+			verticalModification = FMath::Lerp(minVerticalVelocityBondaryModifier, maxVerticalVelocityBondaryModifier, interpolator);
 		}
 	}
+	desiredVerticalVelocity *= verticalModification;
 	m_currentVerticalVelocity.SmoothChase(desiredVerticalVelocity, deltaTime);
 	translation += m_moveUpDir * (m_currentVerticalVelocity.GetValue() * deltaTime);
 
+	float horizontalModification = 1.0f;
 	if (s_numWidgetPanningBlockers == 0u)
 	{
 		// LEFT
 		if (cameraParameters.m_screenSpaceMousePosition->X < paddingAmountX)
 		{
 			desiredHorizontalVelocity = -scaledDesiredHorizontalVelocity;
+			const float interpolator = 1.0f - (cameraParameters.m_screenSpaceMousePosition->X / paddingAmountX);
+			horizontalModification = FMath::Lerp(minHorizontalVelocityBondaryModifier, maxHorizontalVelocityBondaryModifier, interpolator);
 		}
 		// RIGHT
 		else if (cameraParameters.m_screenSpaceMousePosition->X > (cameraParameters.m_screenSpaceXYBounds->X - paddingAmountX))
 		{
 			desiredHorizontalVelocity = scaledDesiredHorizontalVelocity;
+			const float interpolator = (cameraParameters.m_screenSpaceMousePosition->X - (cameraParameters.m_screenSpaceXYBounds->X - paddingAmountX)) / paddingAmountX;
+			horizontalModification = FMath::Lerp(minHorizontalVelocityBondaryModifier, maxHorizontalVelocityBondaryModifier, interpolator);
 		}
 	}
+	desiredHorizontalVelocity *= horizontalModification;
 	m_currentHorizontalVelocity.SmoothChase(desiredHorizontalVelocity, deltaTime);
 	translation += m_moveRightDir * (m_currentHorizontalVelocity.GetValue() * deltaTime);
 

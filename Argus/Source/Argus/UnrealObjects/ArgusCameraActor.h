@@ -47,6 +47,9 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Panning")
 	float m_maximumDesiredVerticalVelocity = 600.0f;
 
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Panning", Meta = (ClampMin = "0.0", ClampMax = "1.0"))
+	float m_verticalVelocityBoundaryModifier = 0.2f;
+
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Panning", Meta = (ClampMin = "1.0", ClampMax = "30.0"))
 	float m_verticalVelocitySmoothingDecayConstant = 5.0f;
 
@@ -55,6 +58,9 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Panning")
 	float m_maximumDesiredHorizontalVelocity = 600.0f;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Panning", Meta = (ClampMin = "0.0", ClampMax = "1.0"))
+	float m_horizontalVelocityBoundaryModifier = 0.2f;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Panning", Meta = (ClampMin = "1.0", ClampMax = "30.0"))
 	float m_horizontalVelocitySmoothingDecayConstant = 5.0f;
