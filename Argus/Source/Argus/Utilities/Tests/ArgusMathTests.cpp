@@ -342,4 +342,147 @@ bool ArgusUtilitiesArgusMathExponentialDecaySmootherFVectorTest::RunTest(const F
 	return true;
 }
 
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusMathCoordinateConversionTest, "Argus.Utilities.ArgusMath.CoordinateConversionTest", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+bool ArgusUtilitiesArgusMathCoordinateConversionTest::RunTest(const FString& Parameters)
+{
+	const FVector2D initialValue = FVector2D(100.0f, 100.0f);
+	const FVector2D expectedConvertedValue = FVector2D(100.0f, -100.0f);
+
+	ArgusTesting::StartArgusTest();
+
+#pragma region Test calling ToCartesianVector2 properly converts the FVector2D.
+	TestEqual
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Test calling %s properly converts the %s."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(ArgusMath::ToCartesianVector2),
+			ARGUS_NAMEOF(FVector2D)
+		),
+		ArgusMath::ToCartesianVector2(initialValue),
+		expectedConvertedValue
+	);
+#pragma endregion
+
+#pragma region Test calling ToUnrealVector2 properly converts the FVector2D.
+	TestEqual
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Test calling %s properly converts the %s."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(ArgusMath::ToUnrealVector2),
+			ARGUS_NAMEOF(FVector2D)
+		),
+		ArgusMath::ToUnrealVector2(initialValue),
+		expectedConvertedValue
+	);
+#pragma endregion
+
+	ArgusTesting::EndArgusTest();
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusMathIsLeftOfCartesianTest, "Argus.Utilities.ArgusMath.IsLeftOfCartesianTest", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+bool ArgusUtilitiesArgusMathIsLeftOfCartesianTest::RunTest(const FString& Parameters)
+{
+	const FVector2D point0 = FVector2D::ZeroVector;
+	const FVector2D point1 = FVector2D(0.0f, 1.0f);
+	ArgusTesting::StartArgusTest();
+
+	FVector2D testPoint = FVector2D(-1.0f, 1.0f);
+
+#pragma region Test that a point to the left is, in fact, to the left.
+	TestTrue
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Test that {%f, %f} is to the left of the line {%f, %f}."),
+			ARGUS_FUNCNAME,
+			testPoint.X,
+			testPoint.Y,
+			point1.X,
+			point1.Y
+		),
+		ArgusMath::IsLeftOfCartesian(point0, point1, testPoint)
+	);
+#pragma endregion
+
+	testPoint = FVector2D(1.0f, 1.0f);
+
+#pragma region Test that a point to the right is, in fact, not to the left.
+	TestFalse
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Test that {%f, %f} is not to the left of the line {%f, %f}."),
+			ARGUS_FUNCNAME,
+			testPoint.X,
+			testPoint.Y,
+			point1.X,
+			point1.Y
+		),
+		ArgusMath::IsLeftOfCartesian(point0, point1, testPoint)
+	);
+#pragma endregion
+
+	testPoint = FVector2D(0.0f, 2.0f);
+
+#pragma region Test that a point in line is, in fact, not to the left.
+	TestFalse
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Test that {%f, %f} is not to the left of the line {%f, %f}."),
+			ARGUS_FUNCNAME,
+			testPoint.X,
+			testPoint.Y,
+			point1.X,
+			point1.Y
+		),
+		ArgusMath::IsLeftOfCartesian(point0, point1, testPoint)
+	);
+#pragma endregion
+
+	testPoint = FVector2D(-1.0f, -1.0f);
+
+#pragma region Test that a point to the left is, in fact, to the left.
+	TestTrue
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Test that {%f, %f} is to the left of the line {%f, %f}."),
+			ARGUS_FUNCNAME,
+			testPoint.X,
+			testPoint.Y,
+			point1.X,
+			point1.Y
+		),
+		ArgusMath::IsLeftOfCartesian(point0, point1, testPoint)
+	);
+#pragma endregion
+
+	testPoint = FVector2D(1.0f, -1.0f);
+
+#pragma region Test that a point to the right is, in fact, not to the left.
+	TestFalse
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Test that {%f, %f} is not to the left of the line {%f, %f}."),
+			ARGUS_FUNCNAME,
+			testPoint.X,
+			testPoint.Y,
+			point1.X,
+			point1.Y
+		),
+		ArgusMath::IsLeftOfCartesian(point0, point1, testPoint)
+	);
+#pragma endregion
+
+	ArgusTesting::EndArgusTest();
+	return true;
+}
+
 #endif //WITH_AUTOMATION_TESTS

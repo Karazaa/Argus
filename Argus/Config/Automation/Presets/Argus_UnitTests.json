@@ -53,6 +53,8 @@
 		"Argus.Utilities.ArgusKDTree.RebuildKDTreeForAllArgusEntitiesTest",
 		"Argus.Utilities.ArgusMath.ExponentialDecaySmoother.FloatTest",
 		"Argus.Utilities.ArgusMath.ExponentialDecaySmoother.FVectorTest",
+		"Argus.Utilities.ArgusMath.CoordinateConversionTest",
+		"Argus.Utilities.ArgusMath.IsLeftOfCartesianTest",
 		"Argus.Utilities.ArgusObjectPool.ClearPool",
 		"Argus.Utilities.ArgusObjectPool.ReleaseTest",
 		"Argus.Utilities.ArgusObjectPool.TakeTest"

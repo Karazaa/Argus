@@ -13,6 +13,9 @@
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(AbilitySystemsCastSpawnAbilityTest, "Argus.ECS.Systems.AbilitySystems.CastSpawnAbility", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool AbilitySystemsCastSpawnAbilityTest::RunTest(const FString& Parameters)
 {
+	const float smallTimeStep = 0.1f;
+	const float timeToCastSeconds = 1.0f;
+	const int32 maximumSpawnQueueSize = 2;
 	const uint32 argusActorRecordId = 5u;
 	ArgusTesting::StartArgusTest();
 
@@ -72,6 +75,10 @@ bool AbilitySystemsCastSpawnAbilityTest::RunTest(const FString& Parameters)
 
 	SpawningComponent* spawnComponent = components.m_entity.AddComponent<SpawningComponent>();
 	TimerComponent* timerComponent = components.m_entity.AddComponent<TimerComponent>();
+	if (!spawnComponent || !timerComponent)
+	{
+		return false;
+	}
 
 #pragma region Test that spawning from an ability without an actor record specified errors
 	AddExpectedErrorPlain
@@ -114,9 +121,9 @@ bool AbilitySystemsCastSpawnAbilityTest::RunTest(const FString& Parameters)
 #pragma endregion
 
 	spawnComponent->m_spawnQueue.Pop();
-	abilityRecord->m_timeToCastSeconds = 1.0f;
+	abilityRecord->m_timeToCastSeconds = timeToCastSeconds;
 	AbilitySystems::CastAbility(abilityRecord, components);
-	SpawningSystems::RunSystems(0.1f);
+	SpawningSystems::RunSystems(smallTimeStep);
 
 #pragma region Test that task component/spawning component have been told to spawn.
 	TestTrue
@@ -130,6 +137,59 @@ bool AbilitySystemsCastSpawnAbilityTest::RunTest(const FString& Parameters)
 		(spawnComponent->m_argusActorRecordId == argusActorRecordId) &&
 		(components.m_taskComponent->m_spawningState == SpawningState::WaitingToSpawnEntity) &&
 		(spawnComponent->m_spawnTimerHandle.GetTimerIndex() != UINT8_MAX)
+	);
+#pragma endregion
+
+	spawnComponent->m_spawnQueue.Pop();
+	spawnComponent->m_spawnTimerHandle.CancelTimer(components.m_entity);
+	spawnComponent->m_maximumQueueSize = maximumSpawnQueueSize;
+	components.m_taskComponent->m_spawningState = SpawningState::None;
+	AbilitySystems::CastAbility(abilityRecord, components);
+	AbilitySystems::CastAbility(abilityRecord, components);
+
+#pragma region Test that casting a spawn ability multiple times queues the abilities.
+	TestTrue
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Test that casting a Spawn Ability multiple times properly queues spawn abilities."),
+			ARGUS_FUNCNAME
+		),
+		(spawnComponent->m_currentQueueSize == maximumSpawnQueueSize) &&
+		(components.m_taskComponent->m_spawningState == SpawningState::ProcessQueuedSpawnEntity)
+	);
+#pragma endregion
+
+	AbilitySystems::CastAbility(abilityRecord, components);
+
+#pragma region Test that casting a Spawn Ability at maximum queue size does not queue additional spawn abilities.
+	TestEqual
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Test that casting a Spawn Ability at maximum queue size does not queue additional spawn abilities."),
+			ARGUS_FUNCNAME
+		),
+		spawnComponent->m_currentQueueSize,
+		maximumSpawnQueueSize
+	);
+#pragma endregion
+
+	SpawningSystems::RunSystems(smallTimeStep);
+
+#pragma region Test that running spawn systems from a spawn queue will properly dequeue a spawn cast.
+	TestTrue
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Test that running spawn systems from a spawn queue will properly dequeue a spawn cast."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(ArgusEntity)
+		),
+		(spawnComponent->m_argusActorRecordId == argusActorRecordId) &&
+		(components.m_taskComponent->m_spawningState == SpawningState::WaitingToSpawnEntity) &&
+		(spawnComponent->m_spawnTimerHandle.GetTimerIndex() != UINT8_MAX) &&
+		(spawnComponent->m_currentQueueSize == maximumSpawnQueueSize - 1)
 	);
 #pragma endregion
 
