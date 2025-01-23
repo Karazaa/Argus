@@ -7,10 +7,19 @@
 #include "Engine/HitResult.h"
 #include "Engine/World.h"
 
-AArgusCameraActor::AArgusCameraActor() :	
-	m_currentVerticalVelocity(ArgusMath::ExponentialDecaySmoother<float>(0.0f, m_verticalVelocitySmoothingDecayConstant)),
-	m_currentHorizontalVelocity(ArgusMath::ExponentialDecaySmoother<float>(0.0f, m_horizontalVelocitySmoothingDecayConstant)),
-	m_currentLocation(ArgusMath::ExponentialDecaySmoother<FVector>(FVector::ZeroVector, m_zoomLocationSmoothingDecayConstant))
+uint8 AArgusCameraActor::s_numWidgetPanningBlockers = 0u;
+
+void AArgusCameraActor::IncrementPanningBlockers()
+{
+	s_numWidgetPanningBlockers++;
+}
+
+void AArgusCameraActor::DecrementPanningBlockers()
+{
+	s_numWidgetPanningBlockers--;
+}
+
+AArgusCameraActor::AArgusCameraActor()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	SetRootComponent(CreateDefaultSubobject<UCameraComponent>(FName("CameraComponent")));
@@ -46,6 +55,9 @@ void AArgusCameraActor::UpdateCameraZoom(const float inputZoomValue)
 void AArgusCameraActor::BeginPlay()
 {
 	Super::BeginPlay();
+	m_currentVerticalVelocity = ArgusMath::ExponentialDecaySmoother<float>(0.0f, m_verticalVelocitySmoothingDecayConstant);
+	m_currentHorizontalVelocity = ArgusMath::ExponentialDecaySmoother<float>(0.0f, m_horizontalVelocitySmoothingDecayConstant);
+	m_currentLocation = ArgusMath::ExponentialDecaySmoother<FVector>(FVector::ZeroVector, m_zoomLocationSmoothingDecayConstant);
 	ForceSetCameraPositionWithoutZoom(GetActorLocation());
 }
 
@@ -67,28 +79,34 @@ void AArgusCameraActor::UpdateCameraPanning(const UpdateCameraPanningParameters&
 	const float scaledDesiredVerticalVelocity = FMath::Lerp(m_minimumDesiredVerticalVelocity, m_maximumDesiredVerticalVelocity, m_zoomLevelInterpolant);
 	const float scaledDesiredHorizontalVelocity = FMath::Lerp(m_minimumDesiredHorizontalVelocity, m_maximumDesiredHorizontalVelocity, m_zoomLevelInterpolant);
 
-	// UP
-	if (cameraParameters.m_screenSpaceMousePosition->Y < paddingAmountY)
+	if (s_numWidgetPanningBlockers == 0u)
 	{
-		desiredVerticalVelocity = scaledDesiredVerticalVelocity;
-	}
-	// DOWN
-	else if (cameraParameters.m_screenSpaceMousePosition->Y > (cameraParameters.m_screenSpaceXYBounds->Y - paddingAmountY))
-	{
-		desiredVerticalVelocity = -scaledDesiredVerticalVelocity;
+		// UP
+		if (cameraParameters.m_screenSpaceMousePosition->Y < paddingAmountY)
+		{
+			desiredVerticalVelocity = scaledDesiredVerticalVelocity;
+		}
+		// DOWN
+		else if (cameraParameters.m_screenSpaceMousePosition->Y > (cameraParameters.m_screenSpaceXYBounds->Y - paddingAmountY))
+		{
+			desiredVerticalVelocity = -scaledDesiredVerticalVelocity;
+		}
 	}
 	m_currentVerticalVelocity.SmoothChase(desiredVerticalVelocity, deltaTime);
 	translation += m_moveUpDir * (m_currentVerticalVelocity.GetValue() * deltaTime);
 
-	// LEFT
-	if (cameraParameters.m_screenSpaceMousePosition->X < paddingAmountX)
+	if (s_numWidgetPanningBlockers == 0u)
 	{
-		desiredHorizontalVelocity = -scaledDesiredHorizontalVelocity;
-	}
-	// RIGHT
-	else if (cameraParameters.m_screenSpaceMousePosition->X > (cameraParameters.m_screenSpaceXYBounds->X - paddingAmountX))
-	{
-		desiredHorizontalVelocity = scaledDesiredHorizontalVelocity;
+		// LEFT
+		if (cameraParameters.m_screenSpaceMousePosition->X < paddingAmountX)
+		{
+			desiredHorizontalVelocity = -scaledDesiredHorizontalVelocity;
+		}
+		// RIGHT
+		else if (cameraParameters.m_screenSpaceMousePosition->X > (cameraParameters.m_screenSpaceXYBounds->X - paddingAmountX))
+		{
+			desiredHorizontalVelocity = scaledDesiredHorizontalVelocity;
+		}
 	}
 	m_currentHorizontalVelocity.SmoothChase(desiredHorizontalVelocity, deltaTime);
 	translation += m_moveRightDir * (m_currentHorizontalVelocity.GetValue() * deltaTime);

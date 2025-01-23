@@ -23,6 +23,12 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void OnUserInterfaceButtonClicked(UArgusUIButtonClickedEventsEnum buttonClickedEvent);
 
+	UPROPERTY(EditDefaultsOnly)
+	bool m_shouldBlockCameraPanning = true;
+
+	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
+
 private:
 	TWeakObjectPtr<UArgusInputManager> m_inputManager = nullptr;
 };

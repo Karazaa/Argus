@@ -14,6 +14,8 @@ class AArgusCameraActor : public AActor
 	
 public:	
 	static constexpr float k_cameraTraceLength = 10000.0f;
+	static void IncrementPanningBlockers();
+	static void DecrementPanningBlockers();
 
 	AArgusCameraActor();
 
@@ -72,6 +74,8 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
+	static uint8 s_numWidgetPanningBlockers;
+
 	void UpdateCameraPanning(const UpdateCameraPanningParameters& cameraParameters, const float deltaTime);
 	void UpdateCameraZoomInternal(const float deltaTime);
 
