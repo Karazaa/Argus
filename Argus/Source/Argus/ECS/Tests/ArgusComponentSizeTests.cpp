@@ -19,6 +19,11 @@ bool ArgusComponentComponentSizeTest::RunTest(const FString& Parameters)
 	netSize += AbilityComponentSize;
 	ARGUS_LOG(ArgusTestingLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(AbilityComponent), AbilityComponentSize);
 #pragma endregion
+#pragma region ConstructionComponent
+	const size_t ConstructionComponentSize = sizeof(ConstructionComponent);
+	netSize += ConstructionComponentSize;
+	ARGUS_LOG(ArgusTestingLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(ConstructionComponent), ConstructionComponentSize);
+#pragma endregion
 #pragma region HealthComponent
 	const size_t HealthComponentSize = sizeof(HealthComponent);
 	netSize += HealthComponentSize;

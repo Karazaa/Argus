@@ -7,11 +7,12 @@
 void UTaskComponentData::InstantiateComponentForEntity(ArgusEntity& entity) const
 {
 	TaskComponent* TaskComponentRef = entity.AddComponent<TaskComponent>();
+	TaskComponentRef->m_spawnedFromArgusActorRecordId = m_spawnedFromArgusActorRecordId;
 	TaskComponentRef->m_baseState = m_baseState;
 	TaskComponentRef->m_movementState = m_movementState;
 	TaskComponentRef->m_spawningState = m_spawningState;
 	TaskComponentRef->m_abilityState = m_abilityState;
-	TaskComponentRef->m_spawnedFromArgusActorRecordId = m_spawnedFromArgusActorRecordId;
+	TaskComponentRef->m_constructionState = m_constructionState;
 }
 
 bool UTaskComponentData::MatchesType(UComponentData* other) const
