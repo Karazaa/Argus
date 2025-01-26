@@ -35,7 +35,7 @@ struct ConstructionComponent
 				ARGUS_NAMEOF(m_requiredWorkSeconds),
 				m_requiredWorkSeconds,
 				ARGUS_NAMEOF(m_currentWorkSeconds),
-				m_currentWorkSeconds,
+				m_currentWorkSeconds
 			)
 		);
 	}

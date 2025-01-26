@@ -19,7 +19,7 @@ const char* ArgusCodeGeneratorUtil::s_dynamicAllocComponentDefinitionDirectorySu
 const char* ArgusCodeGeneratorUtil::s_staticDataRecordDefinitionsDirectoryName = "RecordDefinitions";
 const char* ArgusCodeGeneratorUtil::s_staticDataRecordDefinitionsDirectorySuffix = "Source/Argus/StaticData/RecordDefinitions";
 const char* ArgusCodeGeneratorUtil::s_templateDirectorySuffix = "Plugins/ArgusCodeGenerator/Source/ArgusCodeGenerator/Private/Templates/";
-const char* ArgusCodeGeneratorUtil::s_structDelimiter = "struct";
+const char* ArgusCodeGeneratorUtil::s_structDelimiter = "struct ";
 const char* ArgusCodeGeneratorUtil::s_argusAPIDelimiter = "ARGUS_API";
 const char* ArgusCodeGeneratorUtil::s_varDelimiter = "m_";
 
