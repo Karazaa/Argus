@@ -4,6 +4,7 @@
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
 #include "ArgusStaticData.h"
+#include "HAL/UnrealMemory.h"
 
 void SpawningSystems::RunSystems(float deltaTime)
 {
@@ -76,6 +77,14 @@ void SpawningSystems::SpawnEntityInternal(const SpawningSystemsComponentArgs& co
 
 	spawnedEntityTaskComponent->m_baseState = BaseState::SpawnedWaitingForActorTake;
 	spawnedEntityTaskComponent->m_spawnedFromArgusActorRecordId = argusActorRecord->m_id;
+
+	if (IdentityComponent* spawningEntityIdentityComponent = components.m_entity.GetComponent<IdentityComponent>())
+	{
+		if (IdentityComponent* spawnedEntityIdentityComponent = spawnedEntity.GetComponent<IdentityComponent>())
+		{
+			*spawnedEntityIdentityComponent = *spawningEntityIdentityComponent;
+		}
+	}
 
 	TransformComponent* spawnedEntityTransformComponent = spawnedEntity.GetComponent<TransformComponent>();
 	if (!spawnedEntityTransformComponent)

@@ -9,5 +9,6 @@ enum class EAbilityTypes : uint8
 {
 	Spawn,
 	Attack,
-	Heal
+	Heal,
+	Construct
 };

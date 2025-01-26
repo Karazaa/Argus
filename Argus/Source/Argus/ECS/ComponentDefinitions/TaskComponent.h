@@ -39,8 +39,17 @@ enum class AbilityState : uint8
 	ProcessCastAbility3Command
 };
 
+enum class ConstructionState : uint8
+{
+	None,
+	ConstructingOther,
+	BeingConstructed
+};
+
 struct TaskComponent
 {
+	ARGUS_IGNORE()
+	uint32 m_spawnedFromArgusActorRecordId = 0u;
 	ARGUS_IGNORE()
 	BaseState m_baseState = BaseState::None;
 	ARGUS_IGNORE()
@@ -50,7 +59,7 @@ struct TaskComponent
 	ARGUS_IGNORE()
 	AbilityState m_abilityState = AbilityState::None;
 	ARGUS_IGNORE()
-	uint32 m_spawnedFromArgusActorRecordId = 0u;
+	ConstructionState m_constructionState = ConstructionState::None;
 
 	bool IsExecutingMoveTask() const
 	{
