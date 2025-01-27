@@ -116,11 +116,6 @@ void ASpawnEntityAndActorFunctionalTest::StartSpawnArgusEntityTestStep()
 		return;
 	}
 
-	if (!m_loadedArgusActorRecord->m_entityTemplateOverride)
-	{
-		return;
-	}
-
 	const UArgusEntityTemplate* loadedEntityTemplate = m_loadedArgusActorRecord->m_entityTemplateOverride.LoadSynchronous();
 	if (!loadedEntityTemplate)
 	{
