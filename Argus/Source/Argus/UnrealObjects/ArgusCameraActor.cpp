@@ -22,6 +22,7 @@ void AArgusCameraActor::DecrementPanningBlockers()
 AArgusCameraActor::AArgusCameraActor()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.TickGroup = ETickingGroup::TG_LastDemotable;
 	SetRootComponent(CreateDefaultSubobject<UCameraComponent>(FName("CameraComponent")));
 
 	m_zoomRange = TRange<float>(m_minZoomDistanceToGround, m_maxZoomDistanceToGround);

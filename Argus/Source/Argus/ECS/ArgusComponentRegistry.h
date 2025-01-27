@@ -21,6 +21,7 @@
 #include "ComponentDefinitions\TransformComponent.h"
 
 // Begin dynamically allocated component specific includes.
+#include "DynamicAllocComponentDefinitions\ReticleComponent.h"
 #include "DynamicAllocComponentDefinitions\SpatialPartitioningComponent.h"
 
 class ArgusComponentRegistry
@@ -48,7 +49,7 @@ public:
 	static void FlushAllComponents();
 	static void AppendComponentDebugStrings(uint16 entityId, FString& debugStringToAppendTo);
 
-	static constexpr uint32 k_numComponentTypes = 11;
+	static constexpr uint32 k_numComponentTypes = 12;
 
 	// Begin component specific template specifiers.
 	
@@ -685,6 +686,62 @@ public:
 	
 	// Begin dynamically allocated component specific template specifiers.
 
+#pragma region ReticleComponent
+private:
+	static std::unordered_map<uint16, ReticleComponent> s_ReticleComponents;
+public:
+	template<>
+	inline ReticleComponent* GetComponent<ReticleComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(ReticleComponent));
+			return nullptr;
+		}
+
+		if (!s_ReticleComponents.contains(entityId))
+		{
+			return nullptr;
+		}
+
+		return &s_ReticleComponents[entityId];
+	}
+
+	template<>
+	inline ReticleComponent* AddComponent<ReticleComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(ReticleComponent));
+			return nullptr;
+		}
+
+		if (s_ReticleComponents.contains(entityId))
+		{
+			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ReticleComponent), entityId);
+			return &s_ReticleComponents[entityId];
+		}
+
+		s_ReticleComponents[entityId] = ReticleComponent();
+		return &s_ReticleComponents[entityId];
+	}
+
+	template<>
+	inline ReticleComponent* GetOrAddComponent<ReticleComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(ReticleComponent));
+			return nullptr;
+		}
+
+		if (!s_ReticleComponents.contains(entityId))
+		{
+			s_ReticleComponents[entityId] = ReticleComponent();
+		}
+		return &s_ReticleComponents[entityId];
+	}
+#pragma endregion
 #pragma region SpatialPartitioningComponent
 private:
 	static std::unordered_map<uint16, SpatialPartitioningComponent> s_SpatialPartitioningComponents;
