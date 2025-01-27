@@ -44,7 +44,7 @@ void UArgusEntityTemplate::PostEditChangeProperty(FPropertyChangedEvent& propert
 	const UComponentData* modifiedComponent = m_componentData[arrayIndex].LoadSynchronous();
 	if (modifiedComponent)
 	{
-		for (int i = 0; i < m_componentData.Num(); ++i)
+		for (int32 i = 0; i < m_componentData.Num(); ++i)
 		{
 			if (i == arrayIndex)
 			{

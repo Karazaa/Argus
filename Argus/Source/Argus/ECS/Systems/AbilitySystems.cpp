@@ -70,6 +70,9 @@ void AbilitySystems::CastAbility(const UAbilityRecord* abilityRecord, const Abil
 		case EAbilityTypes::Attack:
 			CastAttackAbility(abilityRecord, components);
 			break;
+
+		case EAbilityTypes::Construct:
+			CastConstructAbility(abilityRecord, components);
 	}
 
 	components.m_taskComponent->m_abilityState = AbilityState::None;
@@ -158,6 +161,35 @@ void AbilitySystems::CastAttackAbility(const UAbilityRecord* abilityRecord, cons
 {
 
 }
+
+void AbilitySystems::CastConstructAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsComponentArgs& components)
+{
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+
+	if (!abilityRecord)
+	{
+		LogAbilityRecordError(ARGUS_FUNCNAME);
+		return;
+	}
+
+	ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId);
+	if (!singletonEntity)
+	{
+		return;
+	}
+
+	ReticleComponent* reticleComponent = singletonEntity.GetComponent<ReticleComponent>();
+	if (!reticleComponent)
+	{
+		return;
+	}
+
+	reticleComponent->m_abilityRecordId = abilityRecord->m_id;
+}
+
 
 void AbilitySystems::LogAbilityRecordError(const WIDECHAR* functionName)
 {

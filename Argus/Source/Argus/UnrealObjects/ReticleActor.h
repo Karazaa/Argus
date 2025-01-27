@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "ReticleActor.generated.h"
 
+class UAbilityRecord;
 class UDecalComponent;
 
 UCLASS()
@@ -21,6 +22,8 @@ protected:
 	virtual void Tick(float deltaTime) override;
 
 	void EnableReticle(uint32 abilityRecordId);
+	void EnableConstructionReticle(const UAbilityRecord* abilityRecord);
+	void EnableAbilityReticle(const UAbilityRecord* abilityRecord);
 	void DisableReticle();
 
 	TObjectPtr<UDecalComponent> m_decalComponent = nullptr;

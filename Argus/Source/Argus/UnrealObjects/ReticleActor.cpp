@@ -2,7 +2,11 @@
 
 #include "ReticleActor.h"
 #include "ArgusEntity.h"
+#include "ArgusEntityTemplate.h"
+#include "ArgusStaticData.h"
 #include "Components/DecalComponent.h"
+#include "DataComponentDefinitions/TransformComponentData.h"
+#include "RecordDefinitions/AbilityRecord.h"
 
 AReticleActor::AReticleActor()
 {
@@ -54,6 +58,61 @@ void AReticleActor::EnableReticle(uint32 abilityRecordId)
 	{
 		return;
 	}
+
+	const UAbilityRecord* abilityRecord = ArgusStaticData::GetRecord<UAbilityRecord>(abilityRecordId);
+	if (!abilityRecord)
+	{
+		return;
+	}
+
+	if (!abilityRecord->m_requiresReticle)
+	{
+		return;
+	}
+
+	if (abilityRecord->m_abilityType == EAbilityTypes::Construct)
+	{
+		EnableConstructionReticle(abilityRecord);
+	}
+	else
+	{
+		EnableAbilityReticle(abilityRecord);
+	}
+
+	m_decalComponent->SetHiddenInGame(false);
+}
+
+void AReticleActor::EnableConstructionReticle(const UAbilityRecord* abilityRecord)
+{
+	if (!abilityRecord)
+	{
+		return;
+	}
+
+	const UArgusActorRecord* argusActorRecord = abilityRecord->m_argusActorRecord.LoadSynchronous();
+	if (!argusActorRecord)
+	{
+		return;
+	}
+
+	const UArgusEntityTemplate* argusEntityTemplate = argusActorRecord->m_entityTemplateOverride.LoadSynchronous();
+	if (!argusEntityTemplate)
+	{
+		return;
+	}
+
+	const UTransformComponentData* transformComponent = argusEntityTemplate->GetComponentFromTemplate<UTransformComponentData>();
+	if (!transformComponent)
+	{
+		return;
+	}
+
+	const float reticleRadius = transformComponent->m_radius;
+}
+
+void AReticleActor::EnableAbilityReticle(const UAbilityRecord* abilityRecord)
+{
+
 }
 
 void AReticleActor::DisableReticle()

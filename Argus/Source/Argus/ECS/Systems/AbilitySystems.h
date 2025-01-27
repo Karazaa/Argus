@@ -27,5 +27,6 @@ private:
 	static void CastSpawnAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsComponentArgs& components);
 	static void CastHealAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsComponentArgs& components);
 	static void CastAttackAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsComponentArgs& components);
+	static void CastConstructAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsComponentArgs& components);
 	static void LogAbilityRecordError(const WIDECHAR* functionName);
 };
