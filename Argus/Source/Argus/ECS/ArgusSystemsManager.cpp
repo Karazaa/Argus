@@ -59,6 +59,8 @@ void ArgusSystemsManager::PopulateSingletonComponents(UWorld* worldPointer)
 			SpatialPartitioningSystems::CalculateAvoidanceObstacles(spatialPartitioningComponent, worldPointer);
 		}
 	}
+
+	ReticleComponent* reticleComponent = singletonEntity.AddComponent<ReticleComponent>();
 }
 
 void ArgusSystemsManager::UpdateSingletonComponents(bool didMovementUpdateThisFrame)
