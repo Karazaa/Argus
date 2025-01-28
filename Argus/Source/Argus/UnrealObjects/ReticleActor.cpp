@@ -15,7 +15,7 @@ AReticleActor::AReticleActor()
 
 	m_decalComponent = CreateDefaultSubobject<UDecalComponent>(FName("DecalComponent"));
 	SetRootComponent(m_decalComponent);
-	DisableReticle();
+	DisableReticleDecalComponent();
 }
 
 void AReticleActor::BeginPlay()
@@ -42,17 +42,22 @@ void AReticleActor::Tick(float deltaTime)
 		return;
 	}
 
-	if (reticleComponent->m_abilityRecordId == 0u && !m_decalComponent->bHiddenInGame)
+	if (!reticleComponent->IsReticleEnabled() && !m_decalComponent->bHiddenInGame)
 	{
-		DisableReticle();
+		DisableReticleDecalComponent();
 	}
-	else if (reticleComponent->m_abilityRecordId != 0u && m_decalComponent->bHiddenInGame)
+	else if (reticleComponent->IsReticleEnabled())
 	{
-		EnableReticle(reticleComponent->m_abilityRecordId);
+		if (m_decalComponent->bHiddenInGame)
+		{
+			EnableReticleDecalComponent(reticleComponent->m_abilityRecordId);
+		}
+
+		// TODO JAMES: Update visual state of reticle based on whether or not the location is valid.
 	}
 }
 
-void AReticleActor::EnableReticle(uint32 abilityRecordId)
+void AReticleActor::EnableReticleDecalComponent(uint32 abilityRecordId)
 {
 	if (!m_decalComponent)
 	{
@@ -72,19 +77,24 @@ void AReticleActor::EnableReticle(uint32 abilityRecordId)
 
 	if (abilityRecord->m_abilityType == EAbilityTypes::Construct)
 	{
-		EnableConstructionReticle(abilityRecord);
+		EnableReticleDecalComponentForConstruction(abilityRecord);
 	}
 	else
 	{
-		EnableAbilityReticle(abilityRecord);
+		EnableReticleDecalComponentForAbility(abilityRecord);
 	}
 
 	m_decalComponent->SetHiddenInGame(false);
 }
 
-void AReticleActor::EnableConstructionReticle(const UAbilityRecord* abilityRecord)
+void AReticleActor::EnableReticleDecalComponentForConstruction(const UAbilityRecord* abilityRecord)
 {
 	if (!abilityRecord)
+	{
+		return;
+	}
+
+	if (!m_decalComponent)
 	{
 		return;
 	}
@@ -107,15 +117,18 @@ void AReticleActor::EnableConstructionReticle(const UAbilityRecord* abilityRecor
 		return;
 	}
 
-	const float reticleRadius = transformComponent->m_radius;
+	FVector currentDecalSize = m_decalComponent->DecalSize;
+	currentDecalSize.Y = transformComponent->m_radius;
+	currentDecalSize.Z = transformComponent->m_radius;
+	m_decalComponent->DecalSize = currentDecalSize;
 }
 
-void AReticleActor::EnableAbilityReticle(const UAbilityRecord* abilityRecord)
+void AReticleActor::EnableReticleDecalComponentForAbility(const UAbilityRecord* abilityRecord)
 {
 
 }
 
-void AReticleActor::DisableReticle()
+void AReticleActor::DisableReticleDecalComponent()
 {
 	if (!m_decalComponent)
 	{

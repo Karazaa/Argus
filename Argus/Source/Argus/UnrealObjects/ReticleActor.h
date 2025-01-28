@@ -21,10 +21,10 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float deltaTime) override;
 
-	void EnableReticle(uint32 abilityRecordId);
-	void EnableConstructionReticle(const UAbilityRecord* abilityRecord);
-	void EnableAbilityReticle(const UAbilityRecord* abilityRecord);
-	void DisableReticle();
+	void EnableReticleDecalComponent(uint32 abilityRecordId);
+	void EnableReticleDecalComponentForConstruction(const UAbilityRecord* abilityRecord);
+	void EnableReticleDecalComponentForAbility(const UAbilityRecord* abilityRecord);
+	void DisableReticleDecalComponent();
 
 	TObjectPtr<UDecalComponent> m_decalComponent = nullptr;
 };

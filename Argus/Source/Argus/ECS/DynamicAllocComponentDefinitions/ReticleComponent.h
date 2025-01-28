@@ -10,6 +10,8 @@ struct ReticleComponent
 	ARGUS_IGNORE()
 	uint32 m_abilityRecordId = 0u;
 
+	bool IsReticleEnabled() const { return m_abilityRecordId != 0u; }
+
 	void GetDebugString(FString& debugStringToAppendTo) const
 	{
 		debugStringToAppendTo.Append

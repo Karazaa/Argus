@@ -57,6 +57,27 @@ void AbilitySystems::CastAbility(const UAbilityRecord* abilityRecord, const Abil
 		return;
 	}
 
+	if (abilityRecord->m_requiresReticle)
+	{
+		ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId);
+		if (!singletonEntity)
+		{
+			return;
+		}
+
+		ReticleComponent* reticleComponent = singletonEntity.GetComponent<ReticleComponent>();
+		if (!reticleComponent)
+		{
+			return;
+		}
+
+		if (reticleComponent->m_abilityRecordId != abilityRecord->m_id)
+		{
+			reticleComponent->m_abilityRecordId = abilityRecord->m_id;
+			return;
+		}
+	}
+
 	switch (abilityRecord->m_abilityType)
 	{
 		case EAbilityTypes::Spawn:
@@ -164,32 +185,8 @@ void AbilitySystems::CastAttackAbility(const UAbilityRecord* abilityRecord, cons
 
 void AbilitySystems::CastConstructAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsComponentArgs& components)
 {
-	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
-	{
-		return;
-	}
 
-	if (!abilityRecord)
-	{
-		LogAbilityRecordError(ARGUS_FUNCNAME);
-		return;
-	}
-
-	ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId);
-	if (!singletonEntity)
-	{
-		return;
-	}
-
-	ReticleComponent* reticleComponent = singletonEntity.GetComponent<ReticleComponent>();
-	if (!reticleComponent)
-	{
-		return;
-	}
-
-	reticleComponent->m_abilityRecordId = abilityRecord->m_id;
 }
-
 
 void AbilitySystems::LogAbilityRecordError(const WIDECHAR* functionName)
 {

@@ -157,6 +157,17 @@ void UArgusInputManager::ProcessPlayerInput(TObjectPtr<AArgusCameraActor>& argus
 	}
 #endif // WITH_AUTOMATION_TESTS
 
+	if (ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId))
+	{
+		if (ReticleComponent* reticleComponent = singletonEntity.GetComponent<ReticleComponent>())
+		{
+			if (reticleComponent->IsReticleEnabled())
+			{
+				// TODO JAMES: Update reticle position.
+			}
+		}
+	}
+
 	const int inputsEventsThisFrameCount = m_inputEventsThisFrame.Num();
 	for (int i = 0; i < inputsEventsThisFrameCount; ++i)
 	{
