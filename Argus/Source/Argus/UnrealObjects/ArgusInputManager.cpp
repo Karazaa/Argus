@@ -157,16 +157,7 @@ void UArgusInputManager::ProcessPlayerInput(TObjectPtr<AArgusCameraActor>& argus
 	}
 #endif // WITH_AUTOMATION_TESTS
 
-	if (ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId))
-	{
-		if (ReticleComponent* reticleComponent = singletonEntity.GetComponent<ReticleComponent>())
-		{
-			if (reticleComponent->IsReticleEnabled())
-			{
-				// TODO JAMES: Update reticle position.
-			}
-		}
-	}
+	SetReticleLocation();
 
 	const int inputsEventsThisFrameCount = m_inputEventsThisFrame.Num();
 	for (int i = 0; i < inputsEventsThisFrameCount; ++i)
@@ -848,4 +839,54 @@ void UArgusInputManager::OnSelectedArgusArgusActorsChanged()
 	{
 		m_owningPlayerController->OnUpdateSelectedArgusActors(ability0RecordId, ability1RecordId, ability2RecordId, ability3RecordId);
 	}
+}
+
+void UArgusInputManager::SetReticleLocation()
+{
+	ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId);
+	if (!singletonEntity)
+	{
+		return;
+	}
+
+	ReticleComponent* reticleComponent = singletonEntity.GetComponent<ReticleComponent>();
+	if (!reticleComponent)
+	{
+		return;
+	}
+
+	if (!reticleComponent->IsReticleEnabled())
+	{
+		return;
+	}
+
+	FHitResult hitResult;
+	if (!m_owningPlayerController->GetMouseProjectionLocation(hitResult))
+	{
+		return;
+	}
+
+	reticleComponent->m_reticleLocation = hitResult.Location;
+
+	SpatialPartitioningComponent* spatialPartitioningComponent = singletonEntity.GetComponent<SpatialPartitioningComponent>();
+	if (!spatialPartitioningComponent)
+	{
+		return;
+	}
+
+	TArray<uint16> nearbyArgusEntityIds;
+	const float querySize = 75.0f; // TODO JAMES: Obviously fix. I think I need to populate the reticle component with the size from AbilitySystems.
+	spatialPartitioningComponent->m_argusEntityKDTree.FindArgusEntityIdsWithinRangeOfLocation(nearbyArgusEntityIds, reticleComponent->m_reticleLocation, querySize);
+	bool anyFound = nearbyArgusEntityIds.Num() > 0;
+
+	if (!anyFound)
+	{
+		TArray<ObstacleIndicies> obstacleIndicies;
+		FVector location = ArgusMath::ToCartesianVector(reticleComponent->m_reticleLocation);
+		location.Z = 0.0f;
+		spatialPartitioningComponent->m_obstaclePointKDTree.FindObstacleIndiciesWithinRangeOfLocation(obstacleIndicies, location, querySize);
+		anyFound = obstacleIndicies.Num() > 0;
+	}
+
+	reticleComponent->m_isBlocked = anyFound;
 }

@@ -8,7 +8,13 @@
 struct ReticleComponent
 {
 	ARGUS_IGNORE()
+	FVector m_reticleLocation = FVector::ZeroVector;
+
+	ARGUS_IGNORE()
 	uint32 m_abilityRecordId = 0u;
+
+	ARGUS_IGNORE()
+	bool m_isBlocked = false;
 
 	bool IsReticleEnabled() const { return m_abilityRecordId != 0u; }
 

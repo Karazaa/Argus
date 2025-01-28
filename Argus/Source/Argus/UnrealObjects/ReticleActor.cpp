@@ -53,7 +53,13 @@ void AReticleActor::Tick(float deltaTime)
 			EnableReticleDecalComponent(reticleComponent->m_abilityRecordId);
 		}
 
-		// TODO JAMES: Update visual state of reticle based on whether or not the location is valid.
+		SetActorLocation(reticleComponent->m_reticleLocation);
+
+		FLinearColor& proposedColor = reticleComponent->m_isBlocked ? m_invalidReticleColor : m_validReticleColor;
+		if (proposedColor != m_decalComponent->DecalColor)
+		{
+			m_decalComponent->SetDecalColor(proposedColor);
+		}
 	}
 }
 
@@ -82,6 +88,11 @@ void AReticleActor::EnableReticleDecalComponent(uint32 abilityRecordId)
 	else
 	{
 		EnableReticleDecalComponentForAbility(abilityRecord);
+	}
+
+	if (UMaterial* reticleMaterial = abilityRecord->m_reticleMaterial.LoadSynchronous())
+	{
+		m_decalComponent->SetDecalMaterial(reticleMaterial);
 	}
 
 	m_decalComponent->SetHiddenInGame(false);

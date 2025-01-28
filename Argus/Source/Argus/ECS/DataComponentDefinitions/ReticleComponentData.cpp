@@ -7,7 +7,9 @@
 void UReticleComponentData::InstantiateComponentForEntity(ArgusEntity& entity) const
 {
 	ReticleComponent* ReticleComponentRef = entity.AddComponent<ReticleComponent>();
+	ReticleComponentRef->m_reticleLocation = m_reticleLocation;
 	ReticleComponentRef->m_abilityRecordId = m_abilityRecordId;
+	ReticleComponentRef->m_isBlocked = m_isBlocked;
 }
 
 bool UReticleComponentData::MatchesType(UComponentData* other) const

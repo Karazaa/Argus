@@ -88,5 +88,7 @@ private:
 	void AddMarqueeSelectedActorsAdditive(const TArray<AArgusActor*>& marqueeSelectedActors);
 	void OnSelectedArgusArgusActorsChanged();
 
+	void SetReticleLocation();
+
 	FVector m_cachedLastSelectInputWorldspaceLocation = FVector::ZeroVector;
 };

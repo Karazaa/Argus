@@ -96,4 +96,18 @@ namespace ArgusMath
 		output.Y *= -1.0f;
 		return output;
 	}
+
+	static FVector ToCartesianVector(const FVector& vectorToConvert)
+	{
+		FVector output = vectorToConvert;
+		output.Y *= -1.0f;
+		return output;
+	}
+
+	static FVector ToUnrealVector(const FVector& vectorToConvert)
+	{
+		FVector output = vectorToConvert;
+		output.Y *= -1.0f;
+		return output;
+	}
 }

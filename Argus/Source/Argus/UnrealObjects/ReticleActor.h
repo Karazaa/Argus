@@ -17,6 +17,12 @@ class AReticleActor : public AActor
 public:
 	AReticleActor();
 
+	UPROPERTY(EditAnywhere);
+	FLinearColor m_validReticleColor = FLinearColor::Green;
+
+	UPROPERTY(EditAnywhere);
+	FLinearColor m_invalidReticleColor = FLinearColor::Red;
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float deltaTime) override;
