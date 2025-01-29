@@ -875,7 +875,7 @@ void UArgusInputManager::SetReticleLocation()
 	}
 
 	TArray<uint16> nearbyArgusEntityIds;
-	const float querySize = 75.0f; // TODO JAMES: Obviously fix. I think I need to populate the reticle component with the size from AbilitySystems.
+	const float querySize = reticleComponent->m_radius;
 	spatialPartitioningComponent->m_argusEntityKDTree.FindArgusEntityIdsWithinRangeOfLocation(nearbyArgusEntityIds, reticleComponent->m_reticleLocation, querySize);
 	bool anyFound = nearbyArgusEntityIds.Num() > 0;
 

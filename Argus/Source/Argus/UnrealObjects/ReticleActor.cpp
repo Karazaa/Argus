@@ -50,7 +50,7 @@ void AReticleActor::Tick(float deltaTime)
 	{
 		if (m_decalComponent->bHiddenInGame)
 		{
-			EnableReticleDecalComponent(reticleComponent->m_abilityRecordId);
+			EnableReticleDecalComponent(reticleComponent);
 		}
 
 		SetActorLocation(reticleComponent->m_reticleLocation);
@@ -63,14 +63,19 @@ void AReticleActor::Tick(float deltaTime)
 	}
 }
 
-void AReticleActor::EnableReticleDecalComponent(uint32 abilityRecordId)
+void AReticleActor::EnableReticleDecalComponent(const ReticleComponent* reticleComponent)
 {
 	if (!m_decalComponent)
 	{
 		return;
 	}
 
-	const UAbilityRecord* abilityRecord = ArgusStaticData::GetRecord<UAbilityRecord>(abilityRecordId);
+	if (!reticleComponent)
+	{
+		return;
+	}
+
+	const UAbilityRecord* abilityRecord = ArgusStaticData::GetRecord<UAbilityRecord>(reticleComponent->m_abilityRecordId);
 	if (!abilityRecord)
 	{
 		return;
@@ -81,14 +86,10 @@ void AReticleActor::EnableReticleDecalComponent(uint32 abilityRecordId)
 		return;
 	}
 
-	if (abilityRecord->m_abilityType == EAbilityTypes::Construct)
-	{
-		EnableReticleDecalComponentForConstruction(abilityRecord);
-	}
-	else
-	{
-		EnableReticleDecalComponentForAbility(abilityRecord);
-	}
+	FVector currentDecalSize = m_decalComponent->DecalSize;
+	currentDecalSize.Y = reticleComponent->m_radius;
+	currentDecalSize.Z = reticleComponent->m_radius;
+	m_decalComponent->DecalSize = currentDecalSize;
 
 	if (UMaterial* reticleMaterial = abilityRecord->m_reticleMaterial.LoadSynchronous())
 	{
@@ -96,47 +97,6 @@ void AReticleActor::EnableReticleDecalComponent(uint32 abilityRecordId)
 	}
 
 	m_decalComponent->SetHiddenInGame(false);
-}
-
-void AReticleActor::EnableReticleDecalComponentForConstruction(const UAbilityRecord* abilityRecord)
-{
-	if (!abilityRecord)
-	{
-		return;
-	}
-
-	if (!m_decalComponent)
-	{
-		return;
-	}
-
-	const UArgusActorRecord* argusActorRecord = abilityRecord->m_argusActorRecord.LoadSynchronous();
-	if (!argusActorRecord)
-	{
-		return;
-	}
-
-	const UArgusEntityTemplate* argusEntityTemplate = argusActorRecord->m_entityTemplateOverride.LoadSynchronous();
-	if (!argusEntityTemplate)
-	{
-		return;
-	}
-
-	const UTransformComponentData* transformComponent = argusEntityTemplate->GetComponentFromTemplate<UTransformComponentData>();
-	if (!transformComponent)
-	{
-		return;
-	}
-
-	FVector currentDecalSize = m_decalComponent->DecalSize;
-	currentDecalSize.Y = transformComponent->m_radius;
-	currentDecalSize.Z = transformComponent->m_radius;
-	m_decalComponent->DecalSize = currentDecalSize;
-}
-
-void AReticleActor::EnableReticleDecalComponentForAbility(const UAbilityRecord* abilityRecord)
-{
-
 }
 
 void AReticleActor::DisableReticleDecalComponent()

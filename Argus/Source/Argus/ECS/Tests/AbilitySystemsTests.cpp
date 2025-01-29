@@ -33,9 +33,12 @@ bool AbilitySystemsCastSpawnAbilityTest::RunTest(const FString& Parameters)
 	AbilitySystems::AbilitySystemsComponentArgs components;
 	AbilitySystems::CastAbility(nullptr, components);
 
+	ReticleComponent reticleComponent = ReticleComponent();
+
 	components.m_entity = ArgusEntity::CreateEntity();
 	components.m_abilityComponent = components.m_entity.AddComponent<AbilityComponent>();
 	components.m_taskComponent = components.m_entity.AddComponent<TaskComponent>();
+	components.m_reticleComponent = &reticleComponent;
 	components.m_entity.AddComponent<TargetingComponent>();
 	components.m_entity.AddComponent<TransformComponent>();
 

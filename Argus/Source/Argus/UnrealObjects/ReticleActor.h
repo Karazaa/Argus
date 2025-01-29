@@ -8,6 +8,7 @@
 
 class UAbilityRecord;
 class UDecalComponent;
+struct ReticleComponent;
 
 UCLASS()
 class AReticleActor : public AActor
@@ -27,9 +28,7 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float deltaTime) override;
 
-	void EnableReticleDecalComponent(uint32 abilityRecordId);
-	void EnableReticleDecalComponentForConstruction(const UAbilityRecord* abilityRecord);
-	void EnableReticleDecalComponentForAbility(const UAbilityRecord* abilityRecord);
+	void EnableReticleDecalComponent(const ReticleComponent* reticleComponent);
 	void DisableReticleDecalComponent();
 
 	TObjectPtr<UDecalComponent> m_decalComponent = nullptr;

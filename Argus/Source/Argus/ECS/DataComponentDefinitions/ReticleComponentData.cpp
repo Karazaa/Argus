@@ -9,6 +9,7 @@ void UReticleComponentData::InstantiateComponentForEntity(ArgusEntity& entity) c
 	ReticleComponent* ReticleComponentRef = entity.AddComponent<ReticleComponent>();
 	ReticleComponentRef->m_reticleLocation = m_reticleLocation;
 	ReticleComponentRef->m_abilityRecordId = m_abilityRecordId;
+	ReticleComponentRef->m_radius = m_radius;
 	ReticleComponentRef->m_isBlocked = m_isBlocked;
 }
 

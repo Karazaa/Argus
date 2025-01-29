@@ -14,6 +14,7 @@ class ARGUS_API UReticleComponentData : public UComponentData
 public:
 	FVector m_reticleLocation = FVector::ZeroVector;
 	uint32 m_abilityRecordId = 0u;
+	float m_radius = 100.0f;
 	bool m_isBlocked = false;
 
 	void InstantiateComponentForEntity(ArgusEntity& entity) const override;

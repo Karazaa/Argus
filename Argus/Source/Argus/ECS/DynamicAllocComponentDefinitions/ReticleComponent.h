@@ -14,6 +14,9 @@ struct ReticleComponent
 	uint32 m_abilityRecordId = 0u;
 
 	ARGUS_IGNORE()
+	float m_radius = 100.0f;
+
+	ARGUS_IGNORE()
 	bool m_isBlocked = false;
 
 	bool IsReticleEnabled() const { return m_abilityRecordId != 0u; }

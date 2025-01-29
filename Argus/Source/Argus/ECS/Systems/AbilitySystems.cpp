@@ -5,10 +5,17 @@
 #include "ArgusMacros.h"
 #include "ArgusStaticData.h"
 #include "ComponentDependencies/SpawnEntityInfo.h"
+#include "DataComponentDefinitions/TransformComponentData.h"
 
 void AbilitySystems::RunSystems(float deltaTime)
 {
 	ARGUS_TRACE(AbilitySystems::RunSystems);
+
+	ReticleComponent* reticleComponent = nullptr;
+	if (ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId))
+	{
+		reticleComponent = singletonEntity.GetComponent<ReticleComponent>();
+	}
 
 	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{
@@ -22,6 +29,7 @@ void AbilitySystems::RunSystems(float deltaTime)
 		components.m_entity = potentialEntity;
 		components.m_taskComponent = components.m_entity.GetComponent<TaskComponent>();
 		components.m_abilityComponent = components.m_entity.GetComponent<AbilityComponent>();
+		components.m_reticleComponent = reticleComponent;
 
 		if (!components.m_taskComponent || !components.m_abilityComponent)
 		{
@@ -34,7 +42,7 @@ void AbilitySystems::RunSystems(float deltaTime)
 
 bool AbilitySystems::AbilitySystemsComponentArgs::AreComponentsValidCheck(const WIDECHAR* functionName) const
 {
-	if (m_entity && m_abilityComponent && m_taskComponent)
+	if (m_entity && m_abilityComponent && m_taskComponent && m_reticleComponent)
 	{
 		return true;
 	}
@@ -59,21 +67,15 @@ void AbilitySystems::CastAbility(const UAbilityRecord* abilityRecord, const Abil
 
 	if (abilityRecord->m_requiresReticle)
 	{
-		ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId);
-		if (!singletonEntity)
+		if (components.m_reticleComponent->m_abilityRecordId != abilityRecord->m_id)
 		{
-			return;
-		}
+			components.m_reticleComponent->m_abilityRecordId = abilityRecord->m_id;
 
-		ReticleComponent* reticleComponent = singletonEntity.GetComponent<ReticleComponent>();
-		if (!reticleComponent)
-		{
-			return;
-		}
+			if (abilityRecord->m_abilityType == EAbilityTypes::Construct)
+			{
+				PrepReticleForConstructAbility(abilityRecord, components);
+			}
 
-		if (reticleComponent->m_abilityRecordId != abilityRecord->m_id)
-		{
-			reticleComponent->m_abilityRecordId = abilityRecord->m_id;
 			return;
 		}
 	}
@@ -94,6 +96,7 @@ void AbilitySystems::CastAbility(const UAbilityRecord* abilityRecord, const Abil
 
 		case EAbilityTypes::Construct:
 			CastConstructAbility(abilityRecord, components);
+			break;
 	}
 
 	components.m_taskComponent->m_abilityState = AbilityState::None;
@@ -186,6 +189,40 @@ void AbilitySystems::CastAttackAbility(const UAbilityRecord* abilityRecord, cons
 void AbilitySystems::CastConstructAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsComponentArgs& components)
 {
 
+}
+
+void AbilitySystems::PrepReticleForConstructAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsComponentArgs& components)
+{
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+
+	if (!abilityRecord)
+	{
+		LogAbilityRecordError(ARGUS_FUNCNAME);
+		return;
+	}
+
+	const UArgusActorRecord* argusActorRecord = abilityRecord->m_argusActorRecord.LoadSynchronous();
+	if (!argusActorRecord)
+	{
+		return;
+	}
+
+	const UArgusEntityTemplate* argusEntityTemplate = argusActorRecord->m_entityTemplateOverride.LoadSynchronous();
+	if (!argusEntityTemplate)
+	{
+		return;
+	}
+
+	const UTransformComponentData* transformComponent = argusEntityTemplate->GetComponentFromTemplate<UTransformComponentData>();
+	if (!transformComponent)
+	{
+		return;
+	}
+
+	components.m_reticleComponent->m_radius = transformComponent->m_radius;
 }
 
 void AbilitySystems::LogAbilityRecordError(const WIDECHAR* functionName)
