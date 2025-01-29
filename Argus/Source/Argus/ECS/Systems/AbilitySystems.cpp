@@ -97,6 +97,9 @@ void AbilitySystems::CastAbility(const UAbilityRecord* abilityRecord, const Abil
 		case EAbilityTypes::Construct:
 			CastConstructAbility(abilityRecord, components);
 			break;
+
+		default:
+			return;
 	}
 
 	components.m_taskComponent->m_abilityState = AbilityState::None;
