@@ -23,6 +23,7 @@ public:
 	};
 
 	static void CastAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsComponentArgs& components);
+	static void PrepReticle(const UAbilityRecord* abilityRecord, const AbilitySystemsComponentArgs& components);
 
 private:
 	static void ProcessAbilityTaskCommands(const AbilitySystemsComponentArgs& components);

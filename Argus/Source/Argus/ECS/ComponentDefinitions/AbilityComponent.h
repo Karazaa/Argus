@@ -21,6 +21,14 @@ struct AbilityComponent
 	ARGUS_STATIC_DATA(UAbilityRecord)
 	uint32 m_ability3Id = 0u;
 
+	bool HasAbility(uint32 abilityRecordId) const
+	{
+		return	m_ability0Id == abilityRecordId ||
+				m_ability1Id == abilityRecordId ||
+				m_ability2Id == abilityRecordId ||
+				m_ability3Id == abilityRecordId;
+	}
+
 	void GetDebugString(FString& debugStringToAppendTo) const
 	{
 		debugStringToAppendTo.Append

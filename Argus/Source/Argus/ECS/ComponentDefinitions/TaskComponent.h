@@ -36,7 +36,8 @@ enum class AbilityState : uint8
 	ProcessCastAbility0Command,
 	ProcessCastAbility1Command,
 	ProcessCastAbility2Command,
-	ProcessCastAbility3Command
+	ProcessCastAbility3Command,
+	ProcessCastReticleAbility
 };
 
 enum class ConstructionState : uint8

@@ -14,6 +14,7 @@ class	AArgusPlayerController;
 class	UArgusInputActionSet;
 class	UEnhancedInputComponent;
 struct	FInputActionValue;
+struct	ReticleComponent;
 
 UCLASS()
 class UArgusInputManager : public UObject
@@ -88,7 +89,9 @@ private:
 	void AddMarqueeSelectedActorsAdditive(const TArray<AArgusActor*>& marqueeSelectedActors);
 	void OnSelectedArgusArgusActorsChanged();
 
-	void SetReticleLocation();
+	void SetReticleState();
+	void ProcessReticleAbilityForSelectedActors(const ReticleComponent* reticleComponent);
+	void ProcessReticleAbilityPerSelectedActor(AArgusActor* argusActor, uint32 abilityRecordId);
 
 	FVector m_cachedLastSelectInputWorldspaceLocation = FVector::ZeroVector;
 };

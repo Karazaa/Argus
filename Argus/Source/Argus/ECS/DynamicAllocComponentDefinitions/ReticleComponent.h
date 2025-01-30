@@ -19,6 +19,15 @@ struct ReticleComponent
 	ARGUS_IGNORE()
 	bool m_isBlocked = false;
 
+	ARGUS_IGNORE()
+	bool m_wasAbilityCast = false;
+
+	void DisableReticle() 
+	{ 
+		m_abilityRecordId = 0u;
+		m_wasAbilityCast = false;
+	}
+
 	bool IsReticleEnabled() const { return m_abilityRecordId != 0u; }
 
 	void GetDebugString(FString& debugStringToAppendTo) const

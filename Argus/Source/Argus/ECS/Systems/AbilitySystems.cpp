@@ -65,21 +65,6 @@ void AbilitySystems::CastAbility(const UAbilityRecord* abilityRecord, const Abil
 		return;
 	}
 
-	if (abilityRecord->m_requiresReticle)
-	{
-		if (components.m_reticleComponent->m_abilityRecordId != abilityRecord->m_id)
-		{
-			components.m_reticleComponent->m_abilityRecordId = abilityRecord->m_id;
-
-			if (abilityRecord->m_abilityType == EAbilityTypes::Construct)
-			{
-				PrepReticleForConstructAbility(abilityRecord, components);
-			}
-
-			return;
-		}
-	}
-
 	switch (abilityRecord->m_abilityType)
 	{
 		case EAbilityTypes::Spawn:
@@ -102,6 +87,44 @@ void AbilitySystems::CastAbility(const UAbilityRecord* abilityRecord, const Abil
 			return;
 	}
 
+	if (abilityRecord->m_requiresReticle)
+	{
+		components.m_reticleComponent->m_wasAbilityCast = true;
+	}
+
+	components.m_taskComponent->m_abilityState = AbilityState::None;
+}
+
+void AbilitySystems::PrepReticle(const UAbilityRecord* abilityRecord, const AbilitySystemsComponentArgs& components)
+{
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+
+	if (!abilityRecord)
+	{
+		LogAbilityRecordError(ARGUS_FUNCNAME);
+		return;
+	}
+
+	if (!abilityRecord->m_requiresReticle)
+	{
+		return;
+	}
+
+	if (components.m_reticleComponent->m_abilityRecordId == abilityRecord->m_id)
+	{
+		return;
+	}
+
+	components.m_reticleComponent->m_abilityRecordId = abilityRecord->m_id;
+
+	if (abilityRecord->m_abilityType == EAbilityTypes::Construct)
+	{
+		PrepReticleForConstructAbility(abilityRecord, components);
+	}
+
 	components.m_taskComponent->m_abilityState = AbilityState::None;
 }
 
@@ -112,27 +135,51 @@ void AbilitySystems::ProcessAbilityTaskCommands(const AbilitySystemsComponentArg
 		return;
 	}
 
+	uint32 abilityId = 0u;
 	switch (components.m_taskComponent->m_abilityState)
 	{
 		case AbilityState::ProcessCastAbility0Command:
-			CastAbility(ArgusStaticData::GetRecord<UAbilityRecord>(components.m_abilityComponent->m_ability0Id), components);
+			abilityId = components.m_abilityComponent->m_ability0Id;
 			break;
 
 		case AbilityState::ProcessCastAbility1Command:
-			CastAbility(ArgusStaticData::GetRecord<UAbilityRecord>(components.m_abilityComponent->m_ability1Id), components);
+			abilityId = components.m_abilityComponent->m_ability1Id;
 			break;
 
 		case AbilityState::ProcessCastAbility2Command:
-			CastAbility(ArgusStaticData::GetRecord<UAbilityRecord>(components.m_abilityComponent->m_ability2Id), components);
+			abilityId = components.m_abilityComponent->m_ability2Id;
 			break;
 
 		case AbilityState::ProcessCastAbility3Command:
-			CastAbility(ArgusStaticData::GetRecord<UAbilityRecord>(components.m_abilityComponent->m_ability3Id), components);
+			abilityId = components.m_abilityComponent->m_ability3Id;
+			break;
+
+		case AbilityState::ProcessCastReticleAbility:
+			abilityId = components.m_reticleComponent->m_abilityRecordId;
+			if (!components.m_abilityComponent->HasAbility(abilityId))
+			{
+				return;
+			}
 			break;
 
 		default:
 			return;
 	}
+
+	const UAbilityRecord* abilityRecord = ArgusStaticData::GetRecord<UAbilityRecord>(abilityId);
+	if (!abilityRecord)
+	{
+		LogAbilityRecordError(ARGUS_FUNCNAME);
+		return;
+	}
+
+	if (abilityRecord->m_requiresReticle && components.m_taskComponent->m_abilityState != AbilityState::ProcessCastReticleAbility)
+	{
+		PrepReticle(abilityRecord, components);
+		return;
+	}
+
+	CastAbility(abilityRecord, components);
 }
 
 void AbilitySystems::CastSpawnAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsComponentArgs& components)

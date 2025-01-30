@@ -159,7 +159,7 @@ void UArgusInputManager::ProcessPlayerInput(TObjectPtr<AArgusCameraActor>& argus
 	}
 #endif // WITH_AUTOMATION_TESTS
 
-	SetReticleLocation();
+	SetReticleState();
 
 	const int inputsEventsThisFrameCount = m_inputEventsThisFrame.Num();
 	for (int i = 0; i < inputsEventsThisFrameCount; ++i)
@@ -329,6 +329,18 @@ void UArgusInputManager::ProcessSelectInputEvent(bool isAdditive)
 		return;
 	}
 	m_cachedLastSelectInputWorldspaceLocation = hitResult.Location;
+
+	if (ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId))
+	{
+		if (const ReticleComponent* reticleComponent = singletonEntity.GetComponent<ReticleComponent>())
+		{
+			if (reticleComponent->IsReticleEnabled())
+			{
+				ProcessReticleAbilityForSelectedActors(reticleComponent);
+				return;
+			}
+		}
+	}
 
 	AArgusActor* argusActor = Cast<AArgusActor>(hitResult.GetActor());
 	if (!argusActor)
@@ -843,7 +855,7 @@ void UArgusInputManager::OnSelectedArgusArgusActorsChanged()
 	}
 }
 
-void UArgusInputManager::SetReticleLocation()
+void UArgusInputManager::SetReticleState()
 {
 	ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId);
 	if (!singletonEntity)
@@ -859,6 +871,12 @@ void UArgusInputManager::SetReticleLocation()
 
 	if (!reticleComponent->IsReticleEnabled())
 	{
+		return;
+	}
+
+	if (reticleComponent->m_wasAbilityCast)
+	{
+		reticleComponent->DisableReticle();
 		return;
 	}
 
@@ -891,4 +909,65 @@ void UArgusInputManager::SetReticleLocation()
 	}
 
 	reticleComponent->m_isBlocked = anyFound;
+}
+
+void UArgusInputManager::ProcessReticleAbilityForSelectedActors(const ReticleComponent* reticleComponent)
+{
+	if (!reticleComponent)
+	{
+		return;
+	}
+
+	if (CVarEnableVerboseArgusInputLogging.GetValueOnGameThread())
+	{
+		ARGUS_LOG
+		(
+			ArgusInputLog, Display, TEXT("[%s] Pressed select for Reticle Ability %d."),
+			ARGUS_FUNCNAME,
+			reticleComponent->m_abilityRecordId
+		);
+	}
+
+	for (TWeakObjectPtr<AArgusActor>& selectedActor : m_activeAbilityGroupArgusActors)
+	{
+		if (!selectedActor.IsValid())
+		{
+			continue;
+		}
+
+		ProcessReticleAbilityPerSelectedActor(selectedActor.Get(), reticleComponent->m_abilityRecordId);
+	}
+}
+
+void UArgusInputManager::ProcessReticleAbilityPerSelectedActor(AArgusActor* argusActor, uint32 abilityRecordId)
+{
+	if (!argusActor)
+	{
+		return;
+	}
+
+	ArgusEntity entity = argusActor->GetEntity();
+	if (!entity)
+	{
+		return;
+	}
+
+	TaskComponent* taskComponent = entity.GetComponent<TaskComponent>();
+	if (!taskComponent)
+	{
+		return;
+	}
+
+	AbilityComponent* abilityComponent = entity.GetComponent<AbilityComponent>();
+	if (!abilityComponent)
+	{
+		return;
+	}
+
+	if (!abilityComponent->HasAbility(abilityRecordId))
+	{
+		return;
+	}
+
+	taskComponent->m_abilityState = AbilityState::ProcessCastReticleAbility;
 }
