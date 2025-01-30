@@ -89,6 +89,7 @@ private:
 	void AddMarqueeSelectedActorsAdditive(const TArray<AArgusActor*>& marqueeSelectedActors);
 	void OnSelectedArgusArgusActorsChanged();
 
+	void InterruptReticleFromInputEvent();
 	void SetReticleState();
 	void ProcessReticleAbilityForSelectedActors(const ReticleComponent* reticleComponent);
 	void ProcessReticleAbilityPerSelectedActor(AArgusActor* argusActor, uint32 abilityRecordId);

@@ -290,9 +290,11 @@ void UArgusInputManager::ProcessInputEvent(TObjectPtr<AArgusCameraActor>& argusC
 			ProcessMarqueeSelectInputEvent(true);
 			break;
 		case InputType::MoveTo:
+			InterruptReticleFromInputEvent();
 			ProcessMoveToInputEvent();
 			break;
 		case InputType::SetWaypoint:
+			InterruptReticleFromInputEvent();
 			ProcessSetWaypointInputEvent();
 			break;
 		case InputType::Zoom:
@@ -853,6 +855,28 @@ void UArgusInputManager::OnSelectedArgusArgusActorsChanged()
 	{
 		m_owningPlayerController->OnUpdateSelectedArgusActors(ability0RecordId, ability1RecordId, ability2RecordId, ability3RecordId);
 	}
+}
+
+void UArgusInputManager::InterruptReticleFromInputEvent()
+{
+	ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId);
+	if (!singletonEntity)
+	{
+		return;
+	}
+
+	ReticleComponent* reticleComponent = singletonEntity.GetComponent<ReticleComponent>();
+	if (!reticleComponent)
+	{
+		return;
+	}
+
+	if (!reticleComponent->IsReticleEnabled())
+	{
+		return;
+	}
+
+	reticleComponent->DisableReticle();
 }
 
 void UArgusInputManager::SetReticleState()

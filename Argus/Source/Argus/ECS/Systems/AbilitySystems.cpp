@@ -156,8 +156,9 @@ void AbilitySystems::ProcessAbilityTaskCommands(const AbilitySystemsComponentArg
 
 		case AbilityState::ProcessCastReticleAbility:
 			abilityId = components.m_reticleComponent->m_abilityRecordId;
-			if (!components.m_abilityComponent->HasAbility(abilityId))
+			if (!components.m_reticleComponent->IsReticleEnabled() || !components.m_abilityComponent->HasAbility(abilityId))
 			{
+				components.m_taskComponent->m_abilityState = AbilityState::None;
 				return;
 			}
 			break;
