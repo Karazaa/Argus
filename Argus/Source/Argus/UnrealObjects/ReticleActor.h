@@ -24,10 +24,9 @@ public:
 	UPROPERTY(EditAnywhere);
 	FLinearColor m_invalidReticleColor = FLinearColor::Red;
 
-protected:
-	virtual void BeginPlay() override;
-	virtual void Tick(float deltaTime) override;
+	void UpdateReticle();
 
+protected:
 	void EnableReticleDecalComponent(const ReticleComponent* reticleComponent);
 	void DisableReticleDecalComponent();
 

@@ -13,6 +13,7 @@
 #include "Engine/World.h"
 #include "EnhancedInputSubsystems.h"
 #include "Kismet/GameplayStatics.h"
+#include "ReticleActor.h"
 #include "Slate/SceneViewport.h"
 
 void AArgusPlayerController::ProcessArgusPlayerInput(float deltaTime)
@@ -23,6 +24,13 @@ void AArgusPlayerController::ProcessArgusPlayerInput(float deltaTime)
 	}
 
 	m_argusInputManager->ProcessPlayerInput(m_argusCameraActor, GetScreenSpaceInputValues(), deltaTime);
+
+	if (!m_reticleActor)
+	{
+		return;
+	}
+
+	m_reticleActor->UpdateReticle();
 }
 
 AArgusCameraActor::UpdateCameraPanningParameters AArgusPlayerController::GetScreenSpaceInputValues() const
@@ -53,7 +61,7 @@ AArgusCameraActor::UpdateCameraPanningParameters AArgusPlayerController::GetScre
 	return output;
 }
 
-bool AArgusPlayerController::GetMouseProjectionLocation(FHitResult& outHitResult) const
+bool AArgusPlayerController::GetMouseProjectionLocation(FHitResult& outHitResult, ECollisionChannel collisionTraceChannel) const
 {
 	FVector worldSpaceLocation = FVector::ZeroVector;
 	FVector worldSpaceDirection = FVector::ZeroVector;
@@ -68,7 +76,7 @@ bool AArgusPlayerController::GetMouseProjectionLocation(FHitResult& outHitResult
 		return false;
 	}
 
-	outcome &= world->LineTraceSingleByChannel(outHitResult, worldSpaceLocation, traceEndpoint, ECC_WorldStatic);
+	outcome &= world->LineTraceSingleByChannel(outHitResult, worldSpaceLocation, traceEndpoint, collisionTraceChannel);
 	return outcome;
 }
 
@@ -160,7 +168,18 @@ void AArgusPlayerController::BeginPlay()
 	m_argusCameraActor = Cast<AArgusCameraActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AArgusCameraActor::StaticClass()));
 	if (!m_argusCameraActor)
 	{
-		ARGUS_LOG(ArgusUnrealObjectsLog, Error, TEXT("[%s] Failed to get %s reference."), ARGUS_FUNCNAME, ARGUS_NAMEOF(AArgusCameraActor));
+		m_argusCameraActor = GetWorld()->SpawnActor<AArgusCameraActor>(m_argusCameraClass.LoadSynchronous(), m_defaultInitialCameraTransform.GetLocation(), m_defaultInitialCameraTransform.Rotator());
+		if (!m_argusCameraActor)
+		{
+			ARGUS_LOG(ArgusUnrealObjectsLog, Error, TEXT("[%s] Failed to get %s reference."), ARGUS_FUNCNAME, ARGUS_NAMEOF(AArgusCameraActor));
+			return;
+		}
+	}
+
+	m_reticleActor = GetWorld()->SpawnActor<AReticleActor>(m_reticleClass.LoadSynchronous(), m_defaultInitialReticleTransform.GetLocation(), m_defaultInitialReticleTransform.Rotator());
+	if (!m_reticleActor)
+	{
+		ARGUS_LOG(ArgusUnrealObjectsLog, Error, TEXT("[%s] Failed to get %s reference."), ARGUS_FUNCNAME, ARGUS_NAMEOF(AReticleActor));
 		return;
 	}
 

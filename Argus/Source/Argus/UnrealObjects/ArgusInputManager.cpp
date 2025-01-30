@@ -12,6 +12,8 @@
 #include "EnhancedInputComponent.h"
 #include "Systems/TransformSystems.h"
 
+#define ECC_RETICLE	ECC_GameTraceChannel1
+
 void UArgusInputManager::SetupInputComponent(TWeakObjectPtr<AArgusPlayerController> owningPlayerController, TSoftObjectPtr<UArgusInputActionSet>& argusInputActionSet)
 {
 	if (!owningPlayerController.IsValid())
@@ -322,7 +324,7 @@ void UArgusInputManager::ProcessSelectInputEvent(bool isAdditive)
 	}
 
 	FHitResult hitResult;
-	if (!m_owningPlayerController->GetMouseProjectionLocation(hitResult))
+	if (!m_owningPlayerController->GetMouseProjectionLocation(hitResult, ECC_WorldStatic))
 	{
 		return;
 	}
@@ -369,7 +371,7 @@ void UArgusInputManager::ProcessMarqueeSelectInputEvent(bool isAdditive)
 	}
 
 	FHitResult hitResult;
-	if (!m_owningPlayerController->GetMouseProjectionLocation(hitResult))
+	if (!m_owningPlayerController->GetMouseProjectionLocation(hitResult, ECC_WorldStatic))
 	{
 		return;
 	}
@@ -427,7 +429,7 @@ void UArgusInputManager::ProcessMoveToInputEvent()
 	}
 
 	FHitResult hitResult;
-	if (!m_owningPlayerController->GetMouseProjectionLocation(hitResult))
+	if (!m_owningPlayerController->GetMouseProjectionLocation(hitResult, ECC_WorldStatic))
 	{
 		return;
 	}
@@ -531,7 +533,7 @@ void UArgusInputManager::ProcessSetWaypointInputEvent()
 	}
 
 	FHitResult hitResult;
-	if (!m_owningPlayerController->GetMouseProjectionLocation(hitResult))
+	if (!m_owningPlayerController->GetMouseProjectionLocation(hitResult, ECC_WorldStatic))
 	{
 		return;
 	}
@@ -861,7 +863,7 @@ void UArgusInputManager::SetReticleLocation()
 	}
 
 	FHitResult hitResult;
-	if (!m_owningPlayerController->GetMouseProjectionLocation(hitResult))
+	if (!m_owningPlayerController->GetMouseProjectionLocation(hitResult, ECC_RETICLE))
 	{
 		return;
 	}

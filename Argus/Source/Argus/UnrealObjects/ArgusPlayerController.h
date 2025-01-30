@@ -13,6 +13,7 @@
 
 class AArgusActor;
 class ArgusEntity;
+class AReticleActor;
 class UArgusInputActionSet;
 class UArgusInputManager;
 class UArgusUserWidget;
@@ -27,7 +28,7 @@ public:
 
 	AArgusCameraActor::UpdateCameraPanningParameters GetScreenSpaceInputValues() const;
 
-	bool GetMouseProjectionLocation(FHitResult& outHitResult) const;
+	bool GetMouseProjectionLocation(FHitResult& outHitResult, ECollisionChannel collisionTraceChannel) const;
 	bool GetArgusActorsFromArgusEntities(const TArray<ArgusEntity>& inArgusEntities, TArray<AArgusActor*>& outArgusActors) const;
 
 	void FilterArgusActorsToPlayerTeam(TArray<AArgusActor*>& argusActors) const;
@@ -42,17 +43,32 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	ETeam m_playerTeam = ETeam::TeamA;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Input")
 	TSoftObjectPtr<UInputMappingContext> m_argusInputMappingContext = nullptr;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Input")
 	TSoftObjectPtr<UArgusInputActionSet> m_argusInputActionSet = nullptr;
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "UI")
 	TSubclassOf<UArgusUserWidget> m_selectedArgusEntityUserWidgetClass = nullptr;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Camera")
+	TSoftClassPtr<AArgusCameraActor> m_argusCameraClass = nullptr;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Camera")
+	FTransform m_defaultInitialCameraTransform = FTransform::Identity;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Reticle")
+	TSoftClassPtr<AReticleActor> m_reticleClass = nullptr;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Reticle")
+	FTransform m_defaultInitialReticleTransform = FTransform::Identity;
 
 	UPROPERTY(Transient)
 	TObjectPtr<AArgusCameraActor> m_argusCameraActor = nullptr;
+
+	UPROPERTY(Transient)
+	TObjectPtr<AReticleActor> m_reticleActor = nullptr;
 
 	UPROPERTY(Transient)
 	TObjectPtr<UArgusInputManager> m_argusInputManager = nullptr;

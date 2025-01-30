@@ -10,20 +10,12 @@
 
 AReticleActor::AReticleActor()
 {
-	PrimaryActorTick.bCanEverTick = true;
-	PrimaryActorTick.TickGroup = ETickingGroup::TG_LastDemotable;
-
 	m_decalComponent = CreateDefaultSubobject<UDecalComponent>(FName("DecalComponent"));
 	SetRootComponent(m_decalComponent);
 	DisableReticleDecalComponent();
 }
 
-void AReticleActor::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
-void AReticleActor::Tick(float deltaTime)
+void AReticleActor::UpdateReticle()
 {
 	if (!m_decalComponent)
 	{
