@@ -137,7 +137,7 @@ bool AbilitySystemsCastSpawnAbilityTest::RunTest(const FString& Parameters)
 			ARGUS_FUNCNAME,
 			ARGUS_NAMEOF(ArgusEntity)
 		),
-		(spawnComponent->m_argusActorRecordId == argusActorRecordId) &&
+		(spawnComponent->m_spawnQueue.Peek()->m_argusActorRecordId == argusActorRecordId) &&
 		(components.m_taskComponent->m_spawningState == SpawningState::WaitingToSpawnEntity) &&
 		(spawnComponent->m_spawnTimerHandle.GetTimerIndex() != UINT8_MAX)
 	);
@@ -189,7 +189,7 @@ bool AbilitySystemsCastSpawnAbilityTest::RunTest(const FString& Parameters)
 			ARGUS_FUNCNAME,
 			ARGUS_NAMEOF(ArgusEntity)
 		),
-		(spawnComponent->m_argusActorRecordId == argusActorRecordId) &&
+		(spawnComponent->m_spawnQueue.Peek()->m_argusActorRecordId == argusActorRecordId) &&
 		(components.m_taskComponent->m_spawningState == SpawningState::WaitingToSpawnEntity) &&
 		(spawnComponent->m_spawnTimerHandle.GetTimerIndex() != UINT8_MAX) &&
 		(spawnComponent->m_currentQueueSize == maximumSpawnQueueSize - 1)

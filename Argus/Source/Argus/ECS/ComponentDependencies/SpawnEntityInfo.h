@@ -7,7 +7,7 @@
 
 struct SpawnEntityInfo
 {
-	TOptional<FVector> m_spawnLocationOverride;
+	TOptional<FVector> m_spawnLocationOverride = NullOpt;
 	uint32 m_argusActorRecordId = 0u;
 	float m_timeToCastSeconds = 0.0f;
 	bool m_needsConstruction = false;
