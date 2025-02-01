@@ -47,14 +47,14 @@ bool SpawningSystems::SpawningSystemsComponentArgs::AreComponentsValidCheck(cons
 	return false;
 }
 
-void SpawningSystems::SpawnEntity(const SpawningSystemsComponentArgs& components, const UArgusActorRecord* argusActorRecord)
+void SpawningSystems::SpawnEntity(const SpawningSystemsComponentArgs& components, const UArgusActorRecord* argusActorRecord, bool needsConstruction, TOptional<FVector> overrideSpawnLocation)
 {
 	ARGUS_TRACE(SpawningSystems::SpawnEntity);
-	SpawnEntityInternal(components, argusActorRecord);
+	SpawnEntityInternal(components, argusActorRecord, needsConstruction, overrideSpawnLocation);
 	ProcessQueuedSpawnEntity(components);
 }
 
-void SpawningSystems::SpawnEntityInternal(const SpawningSystemsComponentArgs& components, const UArgusActorRecord* argusActorRecord)
+void SpawningSystems::SpawnEntityInternal(const SpawningSystemsComponentArgs& components, const UArgusActorRecord* argusActorRecord, bool needsConstruction, const TOptional<FVector>& overrideSpawnLocation)
 {
 	ARGUS_TRACE(SpawningSystems::SpawnEntityInternal);
 
@@ -94,9 +94,23 @@ void SpawningSystems::SpawnEntityInternal(const SpawningSystemsComponentArgs& co
 
 	FVector spawnLocation = components.m_transformComponent->m_transform.GetLocation();
 	MovementState initialSpawnMovementState = MovementState::None;
-	GetSpawnLocationAndNavigationState(components, spawnLocation, initialSpawnMovementState);
+
+	if (overrideSpawnLocation.IsSet())
+	{
+		spawnLocation = overrideSpawnLocation.GetValue();
+	}
+	else
+	{
+		GetSpawnLocationAndNavigationState(components, spawnLocation, initialSpawnMovementState);
+	}
 
 	spawnedEntityTransformComponent->m_transform.SetLocation(spawnLocation);
+
+	if (needsConstruction)
+	{
+		spawnedEntity.GetOrAddComponent<ConstructionComponent>();
+		spawnedEntityTaskComponent->m_constructionState = ConstructionState::BeingConstructed;
+	}
 
 	NavigationComponent* spawnedEntityNavigationComponent = spawnedEntity.GetComponent<NavigationComponent>();
 	TargetingComponent* spawnedEntityTargetingComponent = spawnedEntity.GetComponent<TargetingComponent>();

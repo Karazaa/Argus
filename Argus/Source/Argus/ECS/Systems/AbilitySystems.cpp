@@ -68,7 +68,7 @@ void AbilitySystems::CastAbility(const UAbilityRecord* abilityRecord, const Abil
 	switch (abilityRecord->m_abilityType)
 	{
 		case EAbilityTypes::Spawn:
-			CastSpawnAbility(abilityRecord, components);
+			CastSpawnAbility(abilityRecord, components, false, abilityRecord->m_requiresReticle);
 			break;
 
 		case EAbilityTypes::Heal:
@@ -80,7 +80,7 @@ void AbilitySystems::CastAbility(const UAbilityRecord* abilityRecord, const Abil
 			break;
 
 		case EAbilityTypes::Construct:
-			CastConstructAbility(abilityRecord, components);
+			CastSpawnAbility(abilityRecord, components, true, abilityRecord->m_requiresReticle);
 			break;
 
 		default:
@@ -183,7 +183,7 @@ void AbilitySystems::ProcessAbilityTaskCommands(const AbilitySystemsComponentArg
 	CastAbility(abilityRecord, components);
 }
 
-void AbilitySystems::CastSpawnAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsComponentArgs& components)
+void AbilitySystems::CastSpawnAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsComponentArgs& components, bool needsConstruction, bool atReticle)
 {
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
@@ -223,6 +223,11 @@ void AbilitySystems::CastSpawnAbility(const UAbilityRecord* abilityRecord, const
 	SpawnEntityInfo spawnInfo;
 	spawnInfo.m_argusActorRecordId = argusActorRecord->m_id;
 	spawnInfo.m_timeToCastSeconds = abilityRecord->m_timeToCastSeconds;
+	spawnInfo.m_needsConstruction = needsConstruction;
+	if (atReticle)
+	{
+		spawnInfo.m_spawnLocationOverride = components.m_reticleComponent->m_reticleLocation;
+	}
 	spawningComponent->m_spawnQueue.Enqueue(spawnInfo);
 	spawningComponent->m_currentQueueSize++;
 }

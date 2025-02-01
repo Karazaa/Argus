@@ -3,6 +3,7 @@
 #pragma once
 
 #include "ArgusEntity.h"
+#include "Misc/Optional.h"
 
 class SpawningSystems
 {
@@ -20,10 +21,10 @@ public:
 		bool AreComponentsValidCheck(const WIDECHAR* functionName) const;
 	};
 
-	static void SpawnEntity(const SpawningSystemsComponentArgs& components, const UArgusActorRecord* argusActorRecord);
+	static void SpawnEntity(const SpawningSystemsComponentArgs& components, const UArgusActorRecord* argusActorRecord, bool needsConstruction = false, TOptional<FVector> overrideSpawnLocation = NullOpt);
 
 private:
-	static void SpawnEntityInternal(const SpawningSystemsComponentArgs& components, const UArgusActorRecord* argusActorRecord);
+	static void SpawnEntityInternal(const SpawningSystemsComponentArgs& components, const UArgusActorRecord* argusActorRecord, bool needsConstruction, const TOptional<FVector>& overrideSpawnLocation);
 	static void ProcessSpawningTaskCommands(float deltaTime, const SpawningSystemsComponentArgs& components);
 	static void ProcessQueuedSpawnEntity(const SpawningSystemsComponentArgs& components);
 	static void GetSpawnLocationAndNavigationState(const SpawningSystemsComponentArgs& components, FVector& outSpawnLocation, MovementState& outMovementState);
