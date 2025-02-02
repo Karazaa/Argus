@@ -159,6 +159,7 @@ void UArgusInputManager::ProcessPlayerInput(TObjectPtr<AArgusCameraActor>& argus
 	}
 #endif // WITH_AUTOMATION_TESTS
 
+	PrepareToProcessInputEvents();
 	SetReticleState();
 
 	const int inputsEventsThisFrameCount = m_inputEventsThisFrame.Num();
@@ -181,6 +182,55 @@ void UArgusInputManager::ProcessPlayerInput(TObjectPtr<AArgusCameraActor>& argus
 	}
 
 	argusCamera->UpdateCamera(updateCameraParameters, deltaTime);
+}
+
+bool UArgusInputManager::ShouldUpdateSelectedActorDisplay(ArgusEntity& templateSelectedEntity)
+{
+	if (m_selectedArgusActorsChangedThisFrame)
+	{
+		if (m_activeAbilityGroupArgusActors.IsEmpty())
+		{
+			templateSelectedEntity = ArgusEntity::k_emptyEntity;
+		}
+		else if (AArgusActor* templateSelectedActor = (*m_activeAbilityGroupArgusActors.begin()).Get())
+		{
+			templateSelectedEntity = templateSelectedActor->GetEntity();
+		}
+		else
+		{
+			templateSelectedEntity = ArgusEntity::k_emptyEntity;
+		}
+		
+		return true;
+	}
+
+	for (TWeakObjectPtr<AArgusActor>& selectedActor : m_activeAbilityGroupArgusActors)
+	{
+		if (!selectedActor.IsValid())
+		{
+			continue;
+		}
+
+		ArgusEntity selectedEntity = selectedActor->GetEntity();
+		if (!selectedEntity)
+		{
+			continue;
+		}
+
+		TaskComponent* selectedTaskComponent = selectedEntity.GetComponent<TaskComponent>();
+		if (!selectedTaskComponent)
+		{
+			continue;
+		}
+
+		if (selectedTaskComponent->m_constructionState == ConstructionState::ConstructionFinished)
+		{
+			templateSelectedEntity = selectedEntity;
+			return true;
+		}
+	}
+
+	return false;
 }
 
 void UArgusInputManager::BindActions(TSoftObjectPtr<UArgusInputActionSet>& argusInputActionSet, TWeakObjectPtr<UEnhancedInputComponent>& enhancedInputComponent)
@@ -269,6 +319,11 @@ bool UArgusInputManager::ValidateOwningPlayerController()
 	}
 
 	return true;
+}
+
+void UArgusInputManager::PrepareToProcessInputEvents()
+{
+	m_selectedArgusActorsChangedThisFrame = false;
 }
 
 void UArgusInputManager::ProcessInputEvent(TObjectPtr<AArgusCameraActor>& argusCamera, const InputCache& inputType)
@@ -817,7 +872,6 @@ void UArgusInputManager::OnSelectedArgusArgusActorsChanged()
 {
 	m_activeAbilityGroupArgusActors.Empty();
 	uint32 abilityUnitGroupActorRecordId = 0u;
-	ArgusEntity templateEntity = ArgusEntity::k_emptyEntity;
 
 	for (TWeakObjectPtr<AArgusActor>& selectedActor : m_selectedArgusActors)
 	{
@@ -847,8 +901,6 @@ void UArgusInputManager::OnSelectedArgusArgusActorsChanged()
 		if (abilityUnitGroupActorRecordId == 0u)
 		{
 			abilityUnitGroupActorRecordId = taskComponent->m_spawnedFromArgusActorRecordId;
-			templateEntity = entity;
-
 			m_activeAbilityGroupArgusActors.Emplace(selectedActor);
 		}
 		else if (abilityUnitGroupActorRecordId == taskComponent->m_spawnedFromArgusActorRecordId)
@@ -857,10 +909,7 @@ void UArgusInputManager::OnSelectedArgusArgusActorsChanged()
 		}
 	}
 
-	if (m_owningPlayerController.IsValid())
-	{
-		m_owningPlayerController->OnUpdateSelectedArgusActors(templateEntity);
-	}
+	m_selectedArgusActorsChangedThisFrame = true;
 }
 
 void UArgusInputManager::InterruptReticleFromInputEvent()

@@ -38,6 +38,7 @@ public:
 
 
 	void ProcessPlayerInput(TObjectPtr<AArgusCameraActor>& argusCamera, const AArgusCameraActor::UpdateCameraPanningParameters& updateCameraPanningParameters, float deltaTime);
+	bool ShouldUpdateSelectedActorDisplay(ArgusEntity& templateSelectedEntity);
 
 private:
 	enum class InputType : uint8
@@ -72,6 +73,7 @@ private:
 	void BindActions(TSoftObjectPtr<UArgusInputActionSet>& argusInputActionSet, TWeakObjectPtr<UEnhancedInputComponent>& enhancedInputComponent);
 	bool ValidateOwningPlayerController();
 
+	void PrepareToProcessInputEvents();
 	void ProcessInputEvent(TObjectPtr<AArgusCameraActor>& argusCamera, const InputCache& inputEvent);
 	void ProcessSelectInputEvent(bool isAdditive);
 	void ProcessMarqueeSelectInputEvent(bool isAdditive);
@@ -95,4 +97,5 @@ private:
 	void ProcessReticleAbilityPerSelectedActor(AArgusActor* argusActor, uint32 abilityRecordId);
 
 	FVector m_cachedLastSelectInputWorldspaceLocation = FVector::ZeroVector;
+	bool m_selectedArgusActorsChangedThisFrame = false;
 };

@@ -25,6 +25,12 @@ void AArgusPlayerController::ProcessArgusPlayerInput(float deltaTime)
 
 	m_argusInputManager->ProcessPlayerInput(m_argusCameraActor, GetScreenSpaceInputValues(), deltaTime);
 
+	ArgusEntity uiTemplateEntity = ArgusEntity::k_emptyEntity;
+	if (m_argusInputManager->ShouldUpdateSelectedActorDisplay(uiTemplateEntity))
+	{
+		m_selectedArgusEntityUserWidget->OnUpdateSelectedArgusActors(uiTemplateEntity);
+	}
+
 	if (!m_reticleActor)
 	{
 		return;
@@ -152,14 +158,6 @@ void AArgusPlayerController::InitializeUIWidgets()
 	{
 		m_selectedArgusEntityUserWidget->SetInputManager(m_argusInputManager);
 		m_selectedArgusEntityUserWidget->AddToViewport();
-	}
-}
-
-void AArgusPlayerController::OnUpdateSelectedArgusActors(ArgusEntity& templateEntity)
-{
-	if (m_selectedArgusEntityUserWidget.IsValid())
-	{
-		m_selectedArgusEntityUserWidget->OnUpdateSelectedArgusActors(templateEntity);
 	}
 }
 

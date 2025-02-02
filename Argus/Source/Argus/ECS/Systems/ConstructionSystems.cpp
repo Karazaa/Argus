@@ -26,7 +26,19 @@ void ConstructionSystems::RunSystems(float deltaTime)
 			continue;
 		}
 
-		ProcessConstructionState(components, deltaTime);
+		switch (components.m_taskComponent->m_constructionState)
+		{
+			case ConstructionState::BeingConstructed:
+				ProcessBeingConstructedState(components, deltaTime);
+				break;
+			case ConstructionState::ConstructingOther:
+				break;
+			case ConstructionState::ConstructionFinished:
+				components.m_taskComponent->m_constructionState = ConstructionState::None;
+				break;
+			default:
+				break;
+		}
 	}
 }
 
@@ -41,9 +53,9 @@ bool ConstructionSystems::ConstructionSystemsComponentArgs::AreComponentsValidCh
 	return true;
 }
 
-void ConstructionSystems::ProcessConstructionState(const ConstructionSystemsComponentArgs& components, float deltaTime)
+void ConstructionSystems::ProcessBeingConstructedState(const ConstructionSystemsComponentArgs& components, float deltaTime)
 {
-	ARGUS_TRACE(ConstructionSystems::ProcessConstructionState);
+	ARGUS_TRACE(ConstructionSystems::ProcessBeingConstructedState);
 
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
@@ -61,14 +73,39 @@ void ConstructionSystems::ProcessConstructionState(const ConstructionSystemsComp
 		default:
 			break;
 	}
+
+	if (components.m_constructionComponent->m_currentWorkSeconds >= components.m_constructionComponent->m_requiredWorkSeconds)
+	{
+		components.m_taskComponent->m_constructionState = ConstructionState::ConstructionFinished;
+	}
 }
 
 void ConstructionSystems::ProcessAutomaticConstruction(const ConstructionSystemsComponentArgs& components, float deltaTime)
 {
+	ARGUS_TRACE(ConstructionSystems::ProcessAutomaticConstruction);
 
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+
+	if (components.m_constructionComponent->m_automaticConstructionTimerHandle.IsTimerComplete(components.m_entity))
+	{
+		components.m_constructionComponent->m_automaticConstructionTimerHandle.FinishTimerHandling(components.m_entity);
+		components.m_constructionComponent->m_currentWorkSeconds = components.m_constructionComponent->m_requiredWorkSeconds;
+		return;
+	}
+
+	const float timeElapsedProportion = 1.0f - components.m_constructionComponent->m_automaticConstructionTimerHandle.GetTimeRemainingProportion(components.m_entity);
+	components.m_constructionComponent->m_currentWorkSeconds = timeElapsedProportion * components.m_constructionComponent->m_requiredWorkSeconds;
 }
 
 void ConstructionSystems::ProcessManualConstruction(const ConstructionSystemsComponentArgs& components, float deltaTime)
 {
+	ARGUS_TRACE(ConstructionSystems::ProcessManualConstruction);
 
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
 }

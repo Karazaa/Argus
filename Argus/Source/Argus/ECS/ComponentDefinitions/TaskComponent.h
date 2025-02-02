@@ -44,7 +44,8 @@ enum class ConstructionState : uint8
 {
 	None,
 	ConstructingOther,
-	BeingConstructed
+	BeingConstructed,
+	ConstructionFinished
 };
 
 struct TaskComponent

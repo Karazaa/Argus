@@ -21,26 +21,26 @@ void UArgusActorCastBarWidget::RefreshDisplay(ArgusEntity& argusEntity)
 		return;
 	}
 
-	const float timeElapsedProportion = spawningComponent->m_spawnTimerHandle.GetTimeElapsedProportion(argusEntity);
+	const float timeRemainingProportion = spawningComponent->m_spawnTimerHandle.GetTimeRemainingProportion(argusEntity);
 	const bool isVisible = GetVisibility() != ESlateVisibility::Hidden;
 
 	if (isVisible)
 	{
-		if (timeElapsedProportion <= 0.0f)
+		if (timeRemainingProportion <= 0.0f)
 		{
 			SetVisibility(ESlateVisibility::Hidden);
 		}
 		else if (m_progressBar)
 		{
-			m_progressBar->SetPercent(1.0f - timeElapsedProportion);
+			m_progressBar->SetPercent(1.0f - timeRemainingProportion);
 		}
 	}
 	else
 	{
-		if (timeElapsedProportion > 0.0f)
+		if (timeRemainingProportion > 0.0f)
 		{
 			SetVisibility(ESlateVisibility::HitTestInvisible);
-			m_progressBar->SetPercent(1.0f - timeElapsedProportion);
+			m_progressBar->SetPercent(1.0f - timeRemainingProportion);
 		}
 	}
 }

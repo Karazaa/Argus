@@ -6,6 +6,7 @@
 #include "Engine/World.h"
 #include "Systems/AbilitySystems.h"
 #include "Systems/AvoidanceSystems.h"
+#include "Systems/ConstructionSystems.h"
 #include "Systems/NavigationSystems.h"
 #include "Systems/SpatialPartitioningSystems.h"
 #include "Systems/SpawningSystems.h"
@@ -27,6 +28,7 @@ void ArgusSystemsManager::RunSystems(UWorld* worldPointer, float deltaTime)
 	bool didEntityPositionChangeThisFrame = false;
 
 	TimerSystems::RunSystems(deltaTime);
+	ConstructionSystems::RunSystems(deltaTime);
 	NavigationSystems::RunSystems(worldPointer);
 	TargetingSystems::RunSystems(deltaTime);
 	AbilitySystems::RunSystems(deltaTime);

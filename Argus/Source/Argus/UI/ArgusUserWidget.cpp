@@ -8,7 +8,7 @@ void UArgusUserWidget::OnUpdateSelectedArgusActors(ArgusEntity& templateEntity)
 {
 	if (!templateEntity)
 	{
-		// TODO JAMES: Error here.
+		OnUpdateSelectedArgusActors(0, 0, 0, 0);
 		return;
 	}
 
