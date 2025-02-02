@@ -71,7 +71,11 @@ void SpawningSystems::SpawnEntityInternal(const SpawningSystemsComponentArgs& co
 
 	if (components.m_taskComponent->m_spawningState != SpawningState::SpawningEntity || !argusActorRecord || !argusActorRecord->m_entityTemplateOverride)
 	{
-		// TODO JAMES: Error here.
+		ARGUS_LOG
+		(
+			ArgusECSLog, Error, TEXT("[%s] Could not spawn %s. Spawner or %s is malformed."), 
+			ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(UArgusActorRecord)
+		);
 		return;
 	}
 
@@ -81,7 +85,11 @@ void SpawningSystems::SpawnEntityInternal(const SpawningSystemsComponentArgs& co
 	TaskComponent* spawnedEntityTaskComponent = spawnedEntity.GetOrAddComponent<TaskComponent>();
 	if (!spawnedEntityTaskComponent)
 	{
-		// TODO JAMES: Error here.
+		ARGUS_LOG
+		(
+			ArgusECSLog, Error, TEXT("[%s] Could not retrieve a %s from the spawned %s."), 
+			ARGUS_FUNCNAME, ARGUS_NAMEOF(TaskComponent), ARGUS_NAMEOF(ArgusEntity)
+		);
 		return;
 	}
 
@@ -142,14 +150,22 @@ void SpawningSystems::SpawnEntityFromQueue(const SpawningSystemsComponentArgs& c
 
 	if (components.m_taskComponent->m_spawningState != SpawningState::SpawningEntity)
 	{
-		// TODO JAMES: Error here
+		ARGUS_LOG
+		(
+			ArgusECSLog, Error, TEXT("[%s] The %s of the spawning %s is not %s"), 
+			ARGUS_FUNCNAME, ARGUS_NAMEOF(m_spawningState), ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(SpawningState::SpawningEntity)
+		);
 		return;
 	}
 
 	SpawnEntityInfo spawnInfo;
 	if (!components.m_spawningComponent->m_spawnQueue.Dequeue(spawnInfo))
 	{
-		// TODO JAMES: Error here
+		ARGUS_LOG
+		(
+			ArgusECSLog, Error, TEXT("[%s] Could not dequeue a %s from the spawner's %s."),
+			ARGUS_FUNCNAME, ARGUS_NAMEOF(SpawnEntityInfo), ARGUS_NAMEOF(SpawningComponent)
+		);
 		return;
 	}
 
@@ -214,7 +230,11 @@ bool SpawningSystems::ProcessQueuedSpawnEntity(const SpawningSystemsComponentArg
 	SpawnEntityInfo spawnInfo;
 	if (!components.m_spawningComponent->m_spawnQueue.Peek(spawnInfo))
 	{
-		// TODO JAMES: Error here.
+		ARGUS_LOG
+		(
+			ArgusECSLog, Error, TEXT("[%s] Could not peek a %s from the spawner's %s."),
+			ARGUS_FUNCNAME, ARGUS_NAMEOF(SpawnEntityInfo), ARGUS_NAMEOF(SpawningComponent)
+		);
 		return false;
 	}
 
