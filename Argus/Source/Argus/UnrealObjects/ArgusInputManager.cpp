@@ -7,6 +7,7 @@
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
 #include "ArgusPlayerController.h"
+#include "ArgusStaticData.h"
 #include "ArgusTesting.h"
 #include "Components/InputComponent.h"
 #include "EnhancedInputComponent.h"
@@ -955,8 +956,16 @@ void UArgusInputManager::SetReticleState()
 
 	if (reticleComponent->m_wasAbilityCast)
 	{
-		reticleComponent->DisableReticle();
-		return;
+		if (const UAbilityRecord* abilityRecord = ArgusStaticData::GetRecord<UAbilityRecord>(reticleComponent->m_abilityRecordId))
+		{
+			if (abilityRecord->GetDisableReticleAfterCast())
+			{
+				reticleComponent->DisableReticle();
+				return;
+			}
+			
+			reticleComponent->m_wasAbilityCast = false;
+		}
 	}
 
 	FHitResult hitResult;

@@ -78,10 +78,12 @@ void AbilitySystems::CastAbility(const UAbilityRecord* abilityRecord, const Abil
 		return;
 	}
 
-	if (abilityRecord->m_requiresReticle)
+	if (abilityRecord->GetRequiresReticle())
 	{
-		if (components.m_reticleComponent->m_isBlocked)
+		if (components.m_reticleComponent->m_isBlocked || 
+			(abilityRecord->GetSingleCastPerReticle() && components.m_reticleComponent->m_wasAbilityCast))
 		{
+			components.m_taskComponent->m_abilityState = AbilityState::None;
 			return;
 		}
 
@@ -91,7 +93,7 @@ void AbilitySystems::CastAbility(const UAbilityRecord* abilityRecord, const Abil
 	switch (abilityRecord->m_abilityType)
 	{
 		case EAbilityTypes::Spawn:
-			CastSpawnAbility(abilityRecord, components, false, abilityRecord->m_requiresReticle);
+			CastSpawnAbility(abilityRecord, components, false, abilityRecord->GetRequiresReticle());
 			break;
 
 		case EAbilityTypes::Heal:
@@ -103,7 +105,7 @@ void AbilitySystems::CastAbility(const UAbilityRecord* abilityRecord, const Abil
 			break;
 
 		case EAbilityTypes::Construct:
-			CastSpawnAbility(abilityRecord, components, true, abilityRecord->m_requiresReticle);
+			CastSpawnAbility(abilityRecord, components, true, abilityRecord->GetRequiresReticle());
 			break;
 
 		default:
@@ -126,7 +128,7 @@ void AbilitySystems::PrepReticle(const UAbilityRecord* abilityRecord, const Abil
 		return;
 	}
 
-	if (!abilityRecord->m_requiresReticle)
+	if (!abilityRecord->GetRequiresReticle())
 	{
 		return;
 	}
@@ -192,7 +194,7 @@ void AbilitySystems::ProcessAbilityTaskCommands(const AbilitySystemsComponentArg
 		return;
 	}
 
-	if (abilityRecord->m_requiresReticle && components.m_taskComponent->m_abilityState != AbilityState::ProcessCastReticleAbility)
+	if (abilityRecord->GetRequiresReticle() && components.m_taskComponent->m_abilityState != AbilityState::ProcessCastReticleAbility)
 	{
 		PrepReticle(abilityRecord, components);
 		return;

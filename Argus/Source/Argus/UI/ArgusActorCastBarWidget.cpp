@@ -15,7 +15,7 @@ void UArgusActorCastBarWidget::RefreshDisplay(ArgusEntity& argusEntity)
 {
 	Super::RefreshDisplay(argusEntity);
 
-	FLinearColor fillColor;
+	FLinearColor fillColor = FColor::White;
 	float timeElapsedProportion = -1.0f;
 	bool shouldBeVisible = false;
 

@@ -8,6 +8,16 @@
 
 class UMaterial;
 
+UENUM(meta = (Bitflags, UseEnumValuesAsMaskValuesInEditor = "true"))
+enum class EReticleFlags : uint8
+{
+	None = 0,
+	RequiresReticle = 1 << 0,
+	SingleCastPerReticle = 1 << 1,
+	DisableReticleAfterCast = 1 << 2
+};
+ENUM_CLASS_FLAGS(EReticleFlags);
+
 UCLASS(BlueprintType)
 class ARGUS_API UAbilityRecord : public UArgusStaticRecord
 {
@@ -20,12 +30,27 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	EAbilityTypes m_abilityType = EAbilityTypes::Spawn;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	bool m_requiresReticle = false;
+	UPROPERTY(EditAnywhere, meta = (Bitmask, BitmaskEnum = EReticleFlags))
+	uint8 m_reticleFlags = 0u;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (EditCondition = "m_abilityType == EAbilityTypes::Spawn || m_abilityType == EAbilityTypes::Construct", EditConditionHides))
 	TSoftObjectPtr<UArgusActorRecord> m_argusActorRecord;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (EditCondition = "m_requiresReticle", EditConditionHides))
 	TSoftObjectPtr<UMaterial> m_reticleMaterial;
+
+	bool GetRequiresReticle() const
+	{
+		return static_cast<bool>(m_reticleFlags & static_cast<uint8>(EReticleFlags::RequiresReticle));
+	}
+
+	bool GetSingleCastPerReticle() const
+	{
+		return static_cast<bool>(m_reticleFlags & static_cast<uint8>(EReticleFlags::SingleCastPerReticle));
+	}
+
+	bool GetDisableReticleAfterCast() const
+	{
+		return static_cast<bool>(m_reticleFlags & static_cast<uint8>(EReticleFlags::DisableReticleAfterCast));
+	}
 };

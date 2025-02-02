@@ -73,7 +73,7 @@ void AReticleActor::EnableReticleDecalComponent(const ReticleComponent* reticleC
 		return;
 	}
 
-	if (!abilityRecord->m_requiresReticle)
+	if (!abilityRecord->GetRequiresReticle())
 	{
 		return;
 	}
