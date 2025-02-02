@@ -24,16 +24,17 @@ void ArgusSystemsManager::RunSystems(UWorld* worldPointer, float deltaTime)
 	}
 
 	PopulateSingletonComponents(worldPointer);
+	bool didEntityPositionChangeThisFrame = false;
 
 	TimerSystems::RunSystems(deltaTime);
 	NavigationSystems::RunSystems(worldPointer);
 	TargetingSystems::RunSystems(deltaTime);
 	AbilitySystems::RunSystems(deltaTime);
-	SpawningSystems::RunSystems(deltaTime);
 	AvoidanceSystems::RunSystems(worldPointer, deltaTime);
-	const bool didMovementUpdateThisFrame = TransformSystems::RunSystems(worldPointer, deltaTime);
+	didEntityPositionChangeThisFrame |= TransformSystems::RunSystems(worldPointer, deltaTime);
+	didEntityPositionChangeThisFrame |= SpawningSystems::RunSystems(deltaTime);
 
-	UpdateSingletonComponents(didMovementUpdateThisFrame);
+	UpdateSingletonComponents(didEntityPositionChangeThisFrame);
 }
 
 void ArgusSystemsManager::PopulateSingletonComponents(UWorld* worldPointer)
@@ -63,7 +64,7 @@ void ArgusSystemsManager::PopulateSingletonComponents(UWorld* worldPointer)
 	ReticleComponent* reticleComponent = singletonEntity.AddComponent<ReticleComponent>();
 }
 
-void ArgusSystemsManager::UpdateSingletonComponents(bool didMovementUpdateThisFrame)
+void ArgusSystemsManager::UpdateSingletonComponents(bool didEntityPositionChangeThisFrame)
 {
 	ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId);
 	if (!singletonEntity)
@@ -79,7 +80,7 @@ void ArgusSystemsManager::UpdateSingletonComponents(bool didMovementUpdateThisFr
 		return;
 	}
 
-	if (didMovementUpdateThisFrame)
+	if (didEntityPositionChangeThisFrame)
 	{
 		SpatialPartitioningSystems::RunSystems(singletonEntity);
 	}

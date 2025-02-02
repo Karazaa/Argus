@@ -6,9 +6,11 @@
 #include "ArgusStaticData.h"
 #include "HAL/UnrealMemory.h"
 
-void SpawningSystems::RunSystems(float deltaTime)
+bool SpawningSystems::RunSystems(float deltaTime)
 {
 	ARGUS_TRACE(SpawningSystems::RunSystems);
+
+	bool spawnedAnEntityThisFrame = false;
 
 	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{
@@ -31,8 +33,10 @@ void SpawningSystems::RunSystems(float deltaTime)
 			continue;
 		}
 
-		ProcessSpawningTaskCommands(deltaTime, components);
+		spawnedAnEntityThisFrame |= ProcessSpawningTaskCommands(deltaTime, components);
 	}
+
+	return spawnedAnEntityThisFrame;
 }
 
 bool SpawningSystems::SpawningSystemsComponentArgs::AreComponentsValidCheck(const WIDECHAR* functionName) const
@@ -153,19 +157,21 @@ void SpawningSystems::SpawnEntityFromQueue(const SpawningSystemsComponentArgs& c
 	SpawnEntity(components, spawnInfo);
 }
 
-void SpawningSystems::ProcessSpawningTaskCommands(float deltaTime, const SpawningSystemsComponentArgs& components)
+bool SpawningSystems::ProcessSpawningTaskCommands(float deltaTime, const SpawningSystemsComponentArgs& components)
 {
 	ARGUS_TRACE(SpawningSystems::ProcessSpawningTaskCommands);
 
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
-		return;
+		return false;
 	}
+
+	bool spawnedAnEntityThisFrame = false;
 
 	switch (components.m_taskComponent->m_spawningState)
 	{
 		case SpawningState::ProcessQueuedSpawnEntity:
-			ProcessQueuedSpawnEntity(components);
+			spawnedAnEntityThisFrame = ProcessQueuedSpawnEntity(components);
 			break;
 		case SpawningState::WaitingToSpawnEntity:
 			if (components.m_spawningComponent->m_spawnTimerHandle.IsTimerComplete(components.m_entity))
@@ -174,40 +180,45 @@ void SpawningSystems::ProcessSpawningTaskCommands(float deltaTime, const Spawnin
 				components.m_taskComponent->m_spawningState = SpawningState::SpawningEntity;
 
 				SpawnEntityFromQueue(components);
+				spawnedAnEntityThisFrame = true;
 			}
 			break;
 
 		case SpawningState::SpawningEntity:
 			SpawnEntityFromQueue(components);
+			spawnedAnEntityThisFrame = true;
 			break;
 
 		default:
 			break;
 	}
+
+	return spawnedAnEntityThisFrame;
 }
 
-void SpawningSystems::ProcessQueuedSpawnEntity(const SpawningSystemsComponentArgs& components)
+bool SpawningSystems::ProcessQueuedSpawnEntity(const SpawningSystemsComponentArgs& components)
 {
 	ARGUS_TRACE(SpawningSystems::ProcessQueuedSpawnEntity);
 
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
-		return;
+		return false;
 	}
 
 	if (components.m_spawningComponent->m_spawnQueue.IsEmpty())
 	{
 		components.m_taskComponent->m_spawningState = SpawningState::None;
-		return;
+		return false;
 	}
 
 	SpawnEntityInfo spawnInfo;
 	if (!components.m_spawningComponent->m_spawnQueue.Peek(spawnInfo))
 	{
 		// TODO JAMES: Error here.
-		return;
+		return false;
 	}
 
+	bool spawnedAnEntityThisFrame = false;
 	if (spawnInfo.m_timeToCastSeconds > 0.0f)
 	{
 		components.m_taskComponent->m_spawningState = SpawningState::WaitingToSpawnEntity;
@@ -217,7 +228,10 @@ void SpawningSystems::ProcessQueuedSpawnEntity(const SpawningSystemsComponentArg
 	{
 		components.m_taskComponent->m_spawningState = SpawningState::SpawningEntity;
 		SpawnEntityFromQueue(components);
+		spawnedAnEntityThisFrame = true;
 	}
+
+	return spawnedAnEntityThisFrame;
 }
 
 void SpawningSystems::GetSpawnLocationAndNavigationState(const SpawningSystemsComponentArgs& components, FVector& outSpawnLocation, MovementState& outMovementState)

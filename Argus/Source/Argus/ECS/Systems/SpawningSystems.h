@@ -8,7 +8,7 @@
 class SpawningSystems
 {
 public:
-	static void RunSystems(float deltaTime);
+	static bool RunSystems(float deltaTime);
 
 	struct SpawningSystemsComponentArgs
 	{
@@ -26,7 +26,7 @@ public:
 private:
 	static void SpawnEntityInternal(const SpawningSystemsComponentArgs& components, const SpawnEntityInfo& spawnInfo, const UArgusActorRecord* overrideArgusActorRecord);
 	static void SpawnEntityFromQueue(const SpawningSystemsComponentArgs& components);
-	static void ProcessSpawningTaskCommands(float deltaTime, const SpawningSystemsComponentArgs& components);
-	static void ProcessQueuedSpawnEntity(const SpawningSystemsComponentArgs& components);
+	static bool ProcessSpawningTaskCommands(float deltaTime, const SpawningSystemsComponentArgs& components);
+	static bool ProcessQueuedSpawnEntity(const SpawningSystemsComponentArgs& components);
 	static void GetSpawnLocationAndNavigationState(const SpawningSystemsComponentArgs& components, FVector& outSpawnLocation, MovementState& outMovementState);
 };

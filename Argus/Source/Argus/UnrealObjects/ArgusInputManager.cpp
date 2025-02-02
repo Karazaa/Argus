@@ -338,7 +338,6 @@ void UArgusInputManager::ProcessSelectInputEvent(bool isAdditive)
 		{
 			if (reticleComponent->IsReticleEnabled())
 			{
-				ProcessReticleAbilityForSelectedActors(reticleComponent);
 				return;
 			}
 		}
@@ -388,6 +387,18 @@ void UArgusInputManager::ProcessMarqueeSelectInputEvent(bool isAdditive)
 	if (!m_owningPlayerController->GetMouseProjectionLocation(hitResult, ECC_WorldStatic))
 	{
 		return;
+	}
+
+	if (ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId))
+	{
+		if (const ReticleComponent* reticleComponent = singletonEntity.GetComponent<ReticleComponent>())
+		{
+			if (reticleComponent->IsReticleEnabled())
+			{
+				ProcessReticleAbilityForSelectedActors(reticleComponent);
+				return;
+			}
+		}
 	}
 
 	const FVector2D minXY = FVector2D

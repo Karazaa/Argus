@@ -65,6 +65,16 @@ void AbilitySystems::CastAbility(const UAbilityRecord* abilityRecord, const Abil
 		return;
 	}
 
+	if (abilityRecord->m_requiresReticle)
+	{
+		if (components.m_reticleComponent->m_isBlocked)
+		{
+			return;
+		}
+
+		components.m_reticleComponent->m_wasAbilityCast = true;
+	}
+
 	switch (abilityRecord->m_abilityType)
 	{
 		case EAbilityTypes::Spawn:
@@ -85,11 +95,6 @@ void AbilitySystems::CastAbility(const UAbilityRecord* abilityRecord, const Abil
 
 		default:
 			return;
-	}
-
-	if (abilityRecord->m_requiresReticle)
-	{
-		components.m_reticleComponent->m_wasAbilityCast = true;
 	}
 
 	components.m_taskComponent->m_abilityState = AbilityState::None;
