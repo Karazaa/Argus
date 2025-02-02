@@ -64,6 +64,7 @@ void ArgusSystemsManager::PopulateSingletonComponents(UWorld* worldPointer)
 	}
 
 	ReticleComponent* reticleComponent = singletonEntity.AddComponent<ReticleComponent>();
+	InputInterfaceComponent* inputInterfaceComponent = singletonEntity.AddComponent<InputInterfaceComponent>();
 }
 
 void ArgusSystemsManager::UpdateSingletonComponents(bool didEntityPositionChangeThisFrame)

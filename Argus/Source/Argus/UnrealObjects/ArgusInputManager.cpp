@@ -871,7 +871,24 @@ void UArgusInputManager::AddMarqueeSelectedActorsAdditive(const TArray<AArgusAct
 
 void UArgusInputManager::OnSelectedArgusArgusActorsChanged()
 {
-	m_activeAbilityGroupArgusActors.Empty();
+	ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId);
+	if (!singletonEntity)
+	{
+		ARGUS_LOG(ArgusInputLog, Error, TEXT("[%s] Could not retrieve %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(singletonEntity));
+		return;
+	}
+
+	InputInterfaceComponent* inputInterfaceComponent = singletonEntity.GetComponent<InputInterfaceComponent>();
+	if (!inputInterfaceComponent)
+	{
+		ARGUS_LOG(ArgusInputLog, Error, TEXT("[%s] Could not retrieve a valid %s from %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(InputInterfaceComponent), ARGUS_NAMEOF(singletonEntity));
+		return;
+	}
+
+	inputInterfaceComponent->m_selectedArgusEntityIds.Reset();
+	inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.Reset();
+	m_activeAbilityGroupArgusActors.Reset();
+
 	uint32 abilityUnitGroupActorRecordId = 0u;
 
 	for (TWeakObjectPtr<AArgusActor>& selectedActor : m_selectedArgusActors)
@@ -886,6 +903,7 @@ void UArgusInputManager::OnSelectedArgusArgusActorsChanged()
 		{
 			continue;
 		}
+		inputInterfaceComponent->m_selectedArgusEntityIds.Add(entity.GetId());
 
 		const AbilityComponent* abilityComponent = entity.GetComponent<AbilityComponent>();
 		if (!abilityComponent)
@@ -902,11 +920,13 @@ void UArgusInputManager::OnSelectedArgusArgusActorsChanged()
 		if (abilityUnitGroupActorRecordId == 0u)
 		{
 			abilityUnitGroupActorRecordId = taskComponent->m_spawnedFromArgusActorRecordId;
-			m_activeAbilityGroupArgusActors.Emplace(selectedActor);
+			inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.Add(entity.GetId());
+			m_activeAbilityGroupArgusActors.Add(selectedActor);
 		}
 		else if (abilityUnitGroupActorRecordId == taskComponent->m_spawnedFromArgusActorRecordId)
 		{
-			m_activeAbilityGroupArgusActors.Emplace(selectedActor);
+			inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.Add(entity.GetId());
+			m_activeAbilityGroupArgusActors.Add(selectedActor);
 		}
 	}
 

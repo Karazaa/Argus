@@ -14,14 +14,14 @@ void AbilitySystems::RunSystems(float deltaTime)
 	ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId);
 	if (!singletonEntity)
 	{
-		// TODO JAMES: Error here
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Could not retrieve a valid %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(singletonEntity));
 		return;
 	}
 
 	ReticleComponent* reticleComponent = singletonEntity.GetComponent<ReticleComponent>();
 	if (!reticleComponent)
 	{
-		// TODO JAMES: Error here
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Could not retrieve a valid %s from %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ReticleComponent), ARGUS_NAMEOF(singletonEntity));
 		return;
 	}
 

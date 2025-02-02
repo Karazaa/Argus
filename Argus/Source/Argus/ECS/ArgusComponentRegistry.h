@@ -21,6 +21,7 @@
 #include "ComponentDefinitions\TransformComponent.h"
 
 // Begin dynamically allocated component specific includes.
+#include "DynamicAllocComponentDefinitions\InputInterfaceComponent.h"
 #include "DynamicAllocComponentDefinitions\ReticleComponent.h"
 #include "DynamicAllocComponentDefinitions\SpatialPartitioningComponent.h"
 
@@ -49,7 +50,7 @@ public:
 	static void FlushAllComponents();
 	static void AppendComponentDebugStrings(uint16 entityId, FString& debugStringToAppendTo);
 
-	static constexpr uint32 k_numComponentTypes = 12;
+	static constexpr uint32 k_numComponentTypes = 13;
 
 	// Begin component specific template specifiers.
 	
@@ -686,6 +687,62 @@ public:
 	
 	// Begin dynamically allocated component specific template specifiers.
 
+#pragma region InputInterfaceComponent
+private:
+	static std::unordered_map<uint16, InputInterfaceComponent> s_InputInterfaceComponents;
+public:
+	template<>
+	inline InputInterfaceComponent* GetComponent<InputInterfaceComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(InputInterfaceComponent));
+			return nullptr;
+		}
+
+		if (!s_InputInterfaceComponents.contains(entityId))
+		{
+			return nullptr;
+		}
+
+		return &s_InputInterfaceComponents[entityId];
+	}
+
+	template<>
+	inline InputInterfaceComponent* AddComponent<InputInterfaceComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(InputInterfaceComponent));
+			return nullptr;
+		}
+
+		if (s_InputInterfaceComponents.contains(entityId))
+		{
+			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(InputInterfaceComponent), entityId);
+			return &s_InputInterfaceComponents[entityId];
+		}
+
+		s_InputInterfaceComponents[entityId] = InputInterfaceComponent();
+		return &s_InputInterfaceComponents[entityId];
+	}
+
+	template<>
+	inline InputInterfaceComponent* GetOrAddComponent<InputInterfaceComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(InputInterfaceComponent));
+			return nullptr;
+		}
+
+		if (!s_InputInterfaceComponents.contains(entityId))
+		{
+			s_InputInterfaceComponents[entityId] = InputInterfaceComponent();
+		}
+		return &s_InputInterfaceComponents[entityId];
+	}
+#pragma endregion
 #pragma region ReticleComponent
 private:
 	static std::unordered_map<uint16, ReticleComponent> s_ReticleComponents;
