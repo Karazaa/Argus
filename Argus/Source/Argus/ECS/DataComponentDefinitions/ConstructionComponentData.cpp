@@ -11,6 +11,7 @@ void UConstructionComponentData::InstantiateComponentForEntity(ArgusEntity& enti
 	ConstructionComponentRef->m_currentWorkSeconds = m_currentWorkSeconds;
 	ConstructionComponentRef->m_constructionAbilityRecordId = m_constructionAbilityRecordId;
 	ConstructionComponentRef->m_constructionType = m_constructionType;
+	ConstructionComponentRef->m_automaticConstructionTimerHandle = m_automaticConstructionTimerHandle;
 }
 
 bool UConstructionComponentData::MatchesType(UComponentData* other) const

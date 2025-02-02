@@ -18,6 +18,7 @@ public:
 	uint32 m_constructionAbilityRecordId = 0u;
 	UPROPERTY(EditAnywhere)
 	EConstructionType m_constructionType = EConstructionType::Automatic;
+	TimerHandle m_automaticConstructionTimerHandle;
 
 	void InstantiateComponentForEntity(ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;

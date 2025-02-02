@@ -11,10 +11,18 @@ void AbilitySystems::RunSystems(float deltaTime)
 {
 	ARGUS_TRACE(AbilitySystems::RunSystems);
 
-	ReticleComponent* reticleComponent = nullptr;
-	if (ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId))
+	ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId);
+	if (!singletonEntity)
 	{
-		reticleComponent = singletonEntity.GetComponent<ReticleComponent>();
+		// TODO JAMES: Error here
+		return;
+	}
+
+	ReticleComponent* reticleComponent = singletonEntity.GetComponent<ReticleComponent>();
+	if (!reticleComponent)
+	{
+		// TODO JAMES: Error here
+		return;
 	}
 
 	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
@@ -32,6 +40,11 @@ void AbilitySystems::RunSystems(float deltaTime)
 		components.m_reticleComponent = reticleComponent;
 
 		if (!components.m_taskComponent || !components.m_abilityComponent)
+		{
+			continue;
+		}
+
+		if (components.m_taskComponent->m_constructionState == ConstructionState::BeingConstructed)
 		{
 			continue;
 		}

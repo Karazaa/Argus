@@ -817,10 +817,8 @@ void UArgusInputManager::OnSelectedArgusArgusActorsChanged()
 {
 	m_activeAbilityGroupArgusActors.Empty();
 	uint32 abilityUnitGroupActorRecordId = 0u;
-	uint32 ability0RecordId = 0u;
-	uint32 ability1RecordId = 0u;
-	uint32 ability2RecordId = 0u;
-	uint32 ability3RecordId = 0u;
+	ArgusEntity templateEntity = ArgusEntity::k_emptyEntity;
+
 	for (TWeakObjectPtr<AArgusActor>& selectedActor : m_selectedArgusActors)
 	{
 		if (!selectedActor.IsValid())
@@ -849,10 +847,7 @@ void UArgusInputManager::OnSelectedArgusArgusActorsChanged()
 		if (abilityUnitGroupActorRecordId == 0u)
 		{
 			abilityUnitGroupActorRecordId = taskComponent->m_spawnedFromArgusActorRecordId;
-			ability0RecordId = abilityComponent->m_ability0Id;
-			ability1RecordId = abilityComponent->m_ability1Id;
-			ability2RecordId = abilityComponent->m_ability2Id;
-			ability3RecordId = abilityComponent->m_ability3Id;
+			templateEntity = entity;
 
 			m_activeAbilityGroupArgusActors.Emplace(selectedActor);
 		}
@@ -864,7 +859,7 @@ void UArgusInputManager::OnSelectedArgusArgusActorsChanged()
 
 	if (m_owningPlayerController.IsValid())
 	{
-		m_owningPlayerController->OnUpdateSelectedArgusActors(ability0RecordId, ability1RecordId, ability2RecordId, ability3RecordId);
+		m_owningPlayerController->OnUpdateSelectedArgusActors(templateEntity);
 	}
 }
 

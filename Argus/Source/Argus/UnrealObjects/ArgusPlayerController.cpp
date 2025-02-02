@@ -155,11 +155,11 @@ void AArgusPlayerController::InitializeUIWidgets()
 	}
 }
 
-void AArgusPlayerController::OnUpdateSelectedArgusActors(uint32 ability0RecordId, uint32 ability1RecordId, uint32 ability2RecordId, uint32 ability3RecordId)
+void AArgusPlayerController::OnUpdateSelectedArgusActors(ArgusEntity& templateEntity)
 {
 	if (m_selectedArgusEntityUserWidget.IsValid())
 	{
-		m_selectedArgusEntityUserWidget->OnUpdateSelectedArgusActors(ability0RecordId, ability1RecordId, ability2RecordId, ability3RecordId);
+		m_selectedArgusEntityUserWidget->OnUpdateSelectedArgusActors(templateEntity);
 	}
 }
 

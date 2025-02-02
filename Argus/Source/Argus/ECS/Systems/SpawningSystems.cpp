@@ -33,6 +33,11 @@ bool SpawningSystems::RunSystems(float deltaTime)
 			continue;
 		}
 
+		if (components.m_taskComponent->m_constructionState == ConstructionState::BeingConstructed)
+		{
+			continue;
+		}
+
 		spawnedAnEntityThisFrame |= ProcessSpawningTaskCommands(deltaTime, components);
 	}
 
@@ -126,8 +131,12 @@ void SpawningSystems::SpawnEntityInternal(const SpawningSystemsComponentArgs& co
 
 	if (spawnInfo.m_needsConstruction)
 	{
-		spawnedEntity.GetOrAddComponent<ConstructionComponent>();
 		spawnedEntityTaskComponent->m_constructionState = ConstructionState::BeingConstructed;
+		if (ConstructionComponent* constructionComponent = spawnedEntity.GetOrAddComponent<ConstructionComponent>())
+		{
+			constructionComponent->m_constructionAbilityRecordId = argusActorRecord->m_id;
+			constructionComponent->m_automaticConstructionTimerHandle.StartTimer(spawnedEntity, constructionComponent->m_requiredWorkSeconds);
+		}
 	}
 
 	NavigationComponent* spawnedEntityNavigationComponent = spawnedEntity.GetComponent<NavigationComponent>();

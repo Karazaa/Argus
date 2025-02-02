@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "ArgusUserWidget.generated.h"
 
+class ArgusEntity;
 class UArgusInputManager;
 
 UCLASS()
@@ -16,6 +17,8 @@ class UArgusUserWidget : public UUserWidget
 public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnUpdateSelectedArgusActors(int32 ability0RecordId, int32 ability1RecordId, int32 ability2RecordId, int32 ability3RecordId);
+
+	void OnUpdateSelectedArgusActors(ArgusEntity& templateEntity);
 
 	void SetInputManager(UArgusInputManager* inputManager);
 

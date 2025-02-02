@@ -36,6 +36,11 @@ void NavigationSystems::RunSystems(UWorld* worldPointer)
 			continue;
 		}
 
+		if (components.m_taskComponent->m_constructionState == ConstructionState::BeingConstructed)
+		{
+			continue;
+		}
+
 		ProcessNavigationTaskCommands(worldPointer, components);
 		RecalculateMoveToEntityPaths(worldPointer, components);
 	}

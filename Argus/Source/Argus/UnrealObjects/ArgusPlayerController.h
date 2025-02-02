@@ -35,7 +35,7 @@ public:
 	bool IsArgusActorOnPlayerTeam(const AArgusActor* const actor) const;
 
 	void InitializeUIWidgets();
-	void OnUpdateSelectedArgusActors(uint32 ability0RecordId, uint32 ability1RecordId, uint32 ability2RecordId, uint32 ability3RecordId);
+	void OnUpdateSelectedArgusActors(ArgusEntity& templateEntity);
 
 	UArgusInputManager* GetInputManager() const { return m_argusInputManager; }
 

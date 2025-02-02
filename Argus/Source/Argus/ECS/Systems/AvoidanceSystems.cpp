@@ -34,6 +34,11 @@ void AvoidanceSystems::RunSystems(UWorld* worldPointer, float deltaTime)
 			continue;
 		}
 
+		if (components.m_taskComponent->m_constructionState == ConstructionState::BeingConstructed)
+		{
+			continue;
+		}
+
 		ProcessORCAvoidance(worldPointer, deltaTime, components);
 	}
 }

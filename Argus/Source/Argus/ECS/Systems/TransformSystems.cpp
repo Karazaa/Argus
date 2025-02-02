@@ -31,6 +31,11 @@ bool TransformSystems::RunSystems(UWorld* worldPointer, float deltaTime)
 			continue;
 		}
 
+		if (components.m_taskComponent->m_constructionState == ConstructionState::BeingConstructed)
+		{
+			continue;
+		}
+
 		didMovementUpdateThisFrame |= ProcessMovementTaskCommands(worldPointer, deltaTime, components);
 	}
 
