@@ -13,8 +13,6 @@ class ARGUS_API USpawningComponentData : public UComponentData
 
 public:
 	UPROPERTY(EditAnywhere)
-	TSoftObjectPtr<UArgusActorRecord> m_argusActorRecordId;
-	UPROPERTY(EditAnywhere)
 	float m_spawningRadius = 100.0f;
 	UPROPERTY(EditAnywhere)
 	uint8 m_maximumQueueSize = 10u;

@@ -123,11 +123,13 @@ void ASpawnEntityAndActorFunctionalTest::StartSpawnArgusEntityTestStep()
 	}
 
 	m_expectedSpawnedEntityId = static_cast<uint16>(loadedEntityTemplate->m_entityPriority);
+	SpawnEntityInfo spawnInfo;
 	if (UArgusActorRecord* loadedRecord = m_argusActorRecord.LoadSynchronous())
 	{
-		SpawnEntityInfo spawnInfo;
 		spawnInfo.m_argusActorRecordId = loadedRecord->m_id;
 	}
+	spawnerSpawningComponent->m_spawnQueue.Enqueue(spawnInfo);
+	spawnerSpawningComponent->m_currentQueueSize++;
 	spawnerTaskComponent->m_spawningState = SpawningState::SpawningEntity;
 }
 

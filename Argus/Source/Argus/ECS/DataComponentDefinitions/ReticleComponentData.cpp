@@ -11,6 +11,7 @@ void UReticleComponentData::InstantiateComponentForEntity(ArgusEntity& entity) c
 	ReticleComponentRef->m_abilityRecordId = m_abilityRecordId;
 	ReticleComponentRef->m_radius = m_radius;
 	ReticleComponentRef->m_isBlocked = m_isBlocked;
+	ReticleComponentRef->m_wasAbilityCast = m_wasAbilityCast;
 }
 
 bool UReticleComponentData::MatchesType(UComponentData* other) const

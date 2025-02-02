@@ -47,22 +47,31 @@ bool SpawningSystems::SpawningSystemsComponentArgs::AreComponentsValidCheck(cons
 	return false;
 }
 
-void SpawningSystems::SpawnEntity(const SpawningSystemsComponentArgs& components, const SpawnEntityInfo& spawnInfo)
+void SpawningSystems::SpawnEntity(const SpawningSystemsComponentArgs& components, const SpawnEntityInfo& spawnInfo, const UArgusActorRecord* overrideArgusActorRecord)
 {
 	ARGUS_TRACE(SpawningSystems::SpawnEntity);
+	SpawnEntityInternal(components, spawnInfo, overrideArgusActorRecord);
+	ProcessQueuedSpawnEntity(components);
+}
+
+void SpawningSystems::SpawnEntityInternal(const SpawningSystemsComponentArgs& components, const SpawnEntityInfo& spawnInfo, const UArgusActorRecord* overrideArgusActorRecord)
+{
+	ARGUS_TRACE(SpawningSystems::SpawnEntityInternal);
 
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return;
 	}
 
-	const UArgusActorRecord* argusActorRecord = ArgusStaticData::GetRecord<UArgusActorRecord>(spawnInfo.m_argusActorRecordId);
+	const UArgusActorRecord* argusActorRecord = overrideArgusActorRecord ? overrideArgusActorRecord : ArgusStaticData::GetRecord<UArgusActorRecord>(spawnInfo.m_argusActorRecordId);
 
 	if (components.m_taskComponent->m_spawningState != SpawningState::SpawningEntity || !argusActorRecord || !argusActorRecord->m_entityTemplateOverride)
 	{
 		// TODO JAMES: Error here.
 		return;
 	}
+
+	components.m_taskComponent->m_spawningState = SpawningState::None;
 
 	ArgusEntity spawnedEntity = argusActorRecord->m_entityTemplateOverride->MakeEntity();
 	TaskComponent* spawnedEntityTaskComponent = spawnedEntity.GetOrAddComponent<TaskComponent>();

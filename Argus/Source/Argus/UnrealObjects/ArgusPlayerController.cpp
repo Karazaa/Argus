@@ -192,7 +192,7 @@ void AArgusPlayerController::SetupInputComponent()
 
 	if (!m_argusInputManager)
 	{
-		m_argusInputManager = NewObject<UArgusInputManager>(this);
+		m_argusInputManager = NewObject<UArgusInputManager>();
 		if (!m_argusInputManager)
 		{
 			ARGUS_LOG(ArgusUnrealObjectsLog, Error, TEXT("[%s] Failed to initialize %s when setting up input."), ARGUS_FUNCNAME, ARGUS_NAMEOF(m_argusInputManager));

@@ -21,9 +21,10 @@ public:
 		bool AreComponentsValidCheck(const WIDECHAR* functionName) const;
 	};
 
-	static void SpawnEntity(const SpawningSystemsComponentArgs& components, const SpawnEntityInfo& spawnInfo);
+	static void SpawnEntity(const SpawningSystemsComponentArgs& components, const SpawnEntityInfo& spawnInfo, const UArgusActorRecord* overrideArgusActorRecord = nullptr);
 
 private:
+	static void SpawnEntityInternal(const SpawningSystemsComponentArgs& components, const SpawnEntityInfo& spawnInfo, const UArgusActorRecord* overrideArgusActorRecord);
 	static void SpawnEntityFromQueue(const SpawningSystemsComponentArgs& components);
 	static void ProcessSpawningTaskCommands(float deltaTime, const SpawningSystemsComponentArgs& components);
 	static void ProcessQueuedSpawnEntity(const SpawningSystemsComponentArgs& components);

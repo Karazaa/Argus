@@ -23,6 +23,7 @@ bool SpawningSystemsSpawnEntityTest::RunTest(const FString& Parameters)
 	UTransformComponentData* transformComponentData = NewObject<UTransformComponentData>();
 	UArgusEntityTemplate* entityTemplate = NewObject<UArgusEntityTemplate>();
 	UArgusActorRecord* argusActorRecord = NewObject<UArgusActorRecord>();
+	SpawnEntityInfo spawnInfo;
 	if (!transformComponentData || !entityTemplate || !argusActorRecord)
 	{
 		ArgusTesting::EndArgusTest();
@@ -53,7 +54,7 @@ bool SpawningSystemsSpawnEntityTest::RunTest(const FString& Parameters)
 		2
 	);
 #pragma endregion
-	SpawningSystems::SpawnEntity(components, argusActorRecord);
+	SpawningSystems::SpawnEntity(components, spawnInfo, argusActorRecord);
 
 	components.m_entity = ArgusEntity::CreateEntity();
 	components.m_spawningComponent = components.m_entity.AddComponent<SpawningComponent>();
@@ -80,7 +81,7 @@ bool SpawningSystemsSpawnEntityTest::RunTest(const FString& Parameters)
 	);
 #pragma endregion
 
-	SpawningSystems::SpawnEntity(components, argusActorRecord);
+	SpawningSystems::SpawnEntity(components, spawnInfo, argusActorRecord);
 
 #pragma region Test that the to-be-spawned entity exists after spawning.
 	TestTrue

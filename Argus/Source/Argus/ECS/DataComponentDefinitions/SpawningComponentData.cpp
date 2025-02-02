@@ -7,7 +7,6 @@
 void USpawningComponentData::InstantiateComponentForEntity(ArgusEntity& entity) const
 {
 	SpawningComponent* SpawningComponentRef = entity.AddComponent<SpawningComponent>();
-	SpawningComponentRef->m_argusActorRecordId = m_argusActorRecordId.LoadSynchronous() ? m_argusActorRecordId.LoadSynchronous()->m_id : 0u;
 	SpawningComponentRef->m_spawningRadius = m_spawningRadius;
 	SpawningComponentRef->m_maximumQueueSize = m_maximumQueueSize;
 	SpawningComponentRef->m_currentQueueSize = m_currentQueueSize;

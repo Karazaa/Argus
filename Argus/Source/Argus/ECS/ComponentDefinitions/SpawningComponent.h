@@ -12,9 +12,6 @@ class UArgusActorRecord;
 
 struct SpawningComponent
 {
-	ARGUS_STATIC_DATA(UArgusActorRecord)
-	uint32 m_argusActorRecordId = 0u;
-
 	float m_spawningRadius = 100.0f;
 
 	uint8 m_maximumQueueSize = 10u;
@@ -34,10 +31,8 @@ struct SpawningComponent
 		(
 			FString::Printf
 			(
-				TEXT("\n[%s]\n    (%s: %d)\n    (%s: %f)\n    (%s: %d)\n    (%s: %d)"),
+				TEXT("\n[%s]\n    (%s: %f)\n    (%s: %d)\n    (%s: %d)"),
 				ARGUS_NAMEOF(SpawningComponent),
-				ARGUS_NAMEOF(m_argusActorRecordId),
-				m_argusActorRecordId,
 				ARGUS_NAMEOF(m_spawningRadius),
 				m_spawningRadius,
 				ARGUS_NAMEOF(m_maximumQueueSize),
