@@ -19,5 +19,11 @@ public:
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FLinearColor m_abilityCastColor;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FLinearColor m_constructionProgressColor;
+
+	UPROPERTY(BlueprintReadWrite, Transient)
 	TObjectPtr<UProgressBar> m_progressBar = nullptr;
 };

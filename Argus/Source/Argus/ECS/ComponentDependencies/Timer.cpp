@@ -82,7 +82,7 @@ void TimerHandle::CancelTimer(const ArgusEntity& entityWithTimer)
 	m_timerIndex = UINT8_MAX;
 }
 
-float TimerHandle::GetTimeRemainingProportion(const ArgusEntity& entityWithTimer) const
+float TimerHandle::GetTimeElapsedProportion(const ArgusEntity& entityWithTimer) const
 {
 	if (m_timerIndex == UINT8_MAX)
 	{
@@ -100,7 +100,7 @@ float TimerHandle::GetTimeRemainingProportion(const ArgusEntity& entityWithTimer
 		return 0.0f;
 	}
 
-	return timer->m_timeRemainingSeconds / timer->m_initialDurationSeconds;
+	return 1.0f - (timer->m_timeRemainingSeconds / timer->m_initialDurationSeconds);
 }
 
 bool TimerHandle::IsTimerComplete(const ArgusEntity& entityWithTimer) const

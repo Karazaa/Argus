@@ -35,6 +35,7 @@ void ConstructionSystems::RunSystems(float deltaTime)
 				break;
 			case ConstructionState::ConstructionFinished:
 				components.m_taskComponent->m_constructionState = ConstructionState::None;
+				components.m_constructionComponent->m_currentWorkSeconds = 0.0f;
 				break;
 			default:
 				break;
@@ -96,7 +97,7 @@ void ConstructionSystems::ProcessAutomaticConstruction(const ConstructionSystems
 		return;
 	}
 
-	const float timeElapsedProportion = 1.0f - components.m_constructionComponent->m_automaticConstructionTimerHandle.GetTimeRemainingProportion(components.m_entity);
+	const float timeElapsedProportion = components.m_constructionComponent->m_automaticConstructionTimerHandle.GetTimeElapsedProportion(components.m_entity);
 	components.m_constructionComponent->m_currentWorkSeconds = timeElapsedProportion * components.m_constructionComponent->m_requiredWorkSeconds;
 }
 

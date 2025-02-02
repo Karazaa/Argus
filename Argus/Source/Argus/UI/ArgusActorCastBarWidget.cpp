@@ -15,32 +15,50 @@ void UArgusActorCastBarWidget::RefreshDisplay(ArgusEntity& argusEntity)
 {
 	Super::RefreshDisplay(argusEntity);
 
-	const SpawningComponent* spawningComponent = argusEntity.GetComponent<SpawningComponent>();
-	if (!spawningComponent)
+	FLinearColor fillColor;
+	float timeElapsedProportion = -1.0f;
+	bool shouldBeVisible = false;
+
+	if (const ConstructionComponent* constructionComponent = argusEntity.GetComponent<ConstructionComponent>())
 	{
-		return;
+		if (const TaskComponent* taskComponent = argusEntity.GetComponent<TaskComponent>())
+		{
+			shouldBeVisible = taskComponent->m_constructionState == ConstructionState::BeingConstructed;
+			fillColor = m_constructionProgressColor;
+		}
+
+		if (shouldBeVisible)
+		{
+			const float denominator = constructionComponent->m_requiredWorkSeconds > 0.0f ? constructionComponent->m_requiredWorkSeconds : 1.0f;
+			timeElapsedProportion = constructionComponent->m_currentWorkSeconds / denominator;
+		}
 	}
 
-	const float timeRemainingProportion = spawningComponent->m_spawnTimerHandle.GetTimeRemainingProportion(argusEntity);
+	const SpawningComponent* spawningComponent = argusEntity.GetComponent<SpawningComponent>();
+	if (spawningComponent && !shouldBeVisible)
+	{
+		timeElapsedProportion = spawningComponent->m_spawnTimerHandle.GetTimeElapsedProportion(argusEntity);
+		shouldBeVisible = timeElapsedProportion > 0.0f;
+		fillColor = m_abilityCastColor;
+	}
+
 	const bool isVisible = GetVisibility() != ESlateVisibility::Hidden;
 
 	if (isVisible)
 	{
-		if (timeRemainingProportion <= 0.0f)
+		if (!shouldBeVisible)
 		{
 			SetVisibility(ESlateVisibility::Hidden);
 		}
 		else if (m_progressBar)
 		{
-			m_progressBar->SetPercent(1.0f - timeRemainingProportion);
+			m_progressBar->SetPercent(timeElapsedProportion);
 		}
 	}
-	else
+	else if (shouldBeVisible && m_progressBar)
 	{
-		if (timeRemainingProportion > 0.0f)
-		{
-			SetVisibility(ESlateVisibility::HitTestInvisible);
-			m_progressBar->SetPercent(1.0f - timeRemainingProportion);
-		}
+		SetVisibility(ESlateVisibility::HitTestInvisible);
+		m_progressBar->SetFillColorAndOpacity(fillColor);
+		m_progressBar->SetPercent(timeElapsedProportion);
 	}
 }
