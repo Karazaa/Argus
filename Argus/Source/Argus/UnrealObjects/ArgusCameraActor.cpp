@@ -3,6 +3,7 @@
 #include "ArgusCameraActor.h"
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
+#include "ArgusMath.h"
 #include "Camera/CameraComponent.h"
 #include "Engine/HitResult.h"
 #include "Engine/World.h"
@@ -91,14 +92,14 @@ void AArgusCameraActor::UpdateCameraPanning(const UpdateCameraPanningParameters&
 		if (cameraParameters.m_screenSpaceMousePosition->Y < paddingAmountY)
 		{
 			desiredVerticalVelocity = scaledDesiredVerticalVelocity;
-			const float interpolator = 1.0f - (cameraParameters.m_screenSpaceMousePosition->Y / paddingAmountY);
+			const float interpolator = 1.0f - ArgusMath::SafeDivide(cameraParameters.m_screenSpaceMousePosition->Y, paddingAmountY);
 			verticalModification = FMath::Lerp(minVerticalVelocityBondaryModifier, maxVerticalVelocityBondaryModifier, interpolator);
 		}
 		// DOWN
 		else if (cameraParameters.m_screenSpaceMousePosition->Y > (cameraParameters.m_screenSpaceXYBounds->Y - paddingAmountY))
 		{
 			desiredVerticalVelocity = -scaledDesiredVerticalVelocity;
-			const float interpolator = (cameraParameters.m_screenSpaceMousePosition->Y - (cameraParameters.m_screenSpaceXYBounds->Y - paddingAmountY)) / paddingAmountY;
+			const float interpolator = ArgusMath::SafeDivide(cameraParameters.m_screenSpaceMousePosition->Y - (cameraParameters.m_screenSpaceXYBounds->Y - paddingAmountY), paddingAmountY);
 			verticalModification = FMath::Lerp(minVerticalVelocityBondaryModifier, maxVerticalVelocityBondaryModifier, interpolator);
 		}
 	}
@@ -113,14 +114,14 @@ void AArgusCameraActor::UpdateCameraPanning(const UpdateCameraPanningParameters&
 		if (cameraParameters.m_screenSpaceMousePosition->X < paddingAmountX)
 		{
 			desiredHorizontalVelocity = -scaledDesiredHorizontalVelocity;
-			const float interpolator = 1.0f - (cameraParameters.m_screenSpaceMousePosition->X / paddingAmountX);
+			const float interpolator = 1.0f - ArgusMath::SafeDivide(cameraParameters.m_screenSpaceMousePosition->X, paddingAmountX);
 			horizontalModification = FMath::Lerp(minHorizontalVelocityBondaryModifier, maxHorizontalVelocityBondaryModifier, interpolator);
 		}
 		// RIGHT
 		else if (cameraParameters.m_screenSpaceMousePosition->X > (cameraParameters.m_screenSpaceXYBounds->X - paddingAmountX))
 		{
 			desiredHorizontalVelocity = scaledDesiredHorizontalVelocity;
-			const float interpolator = (cameraParameters.m_screenSpaceMousePosition->X - (cameraParameters.m_screenSpaceXYBounds->X - paddingAmountX)) / paddingAmountX;
+			const float interpolator = ArgusMath::SafeDivide(cameraParameters.m_screenSpaceMousePosition->X - (cameraParameters.m_screenSpaceXYBounds->X - paddingAmountX), paddingAmountX);
 			horizontalModification = FMath::Lerp(minHorizontalVelocityBondaryModifier, maxHorizontalVelocityBondaryModifier, interpolator);
 		}
 	}

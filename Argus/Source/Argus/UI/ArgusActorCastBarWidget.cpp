@@ -2,6 +2,7 @@
 
 #include "ArgusActorCastBarWidget.h"
 #include "ArgusEntity.h"
+#include "ArgusMath.h"
 #include "Components/ProgressBar.h"
 
 void UArgusActorCastBarWidget::SetInitialDisplay(ArgusEntity& argusEntity)
@@ -29,8 +30,7 @@ void UArgusActorCastBarWidget::RefreshDisplay(ArgusEntity& argusEntity)
 
 		if (shouldBeVisible)
 		{
-			const float denominator = constructionComponent->m_requiredWorkSeconds > 0.0f ? constructionComponent->m_requiredWorkSeconds : 1.0f;
-			timeElapsedProportion = constructionComponent->m_currentWorkSeconds / denominator;
+			timeElapsedProportion = ArgusMath::SafeDivide(constructionComponent->m_currentWorkSeconds, constructionComponent->m_requiredWorkSeconds);
 		}
 	}
 

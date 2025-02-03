@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "ArgusLogging.h"
+#include "ArgusMacros.h"
 #include "CoreMinimal.h"
 
 namespace ArgusMath
@@ -16,6 +18,12 @@ namespace ArgusMath
 	inline float GetZero<float>()
 	{
 		return 0.0f;
+	}
+
+	template<>
+	inline FVector2D GetZero<FVector2D>()
+	{
+		return FVector2D::ZeroVector;
 	}
 
 	template<>
@@ -71,6 +79,33 @@ namespace ArgusMath
 		T m_currentValue;
 		float m_decayConstant = k_minDecayConstant;
 	};
+
+	template <typename T>
+	static T SafeDivide(T numerator, float denominator, T fallbackValue)
+	{
+		if (FMath::IsNearlyZero(denominator))
+		{
+			ARGUS_LOG(ArgusUtilitiesLog, Warning, TEXT("[%s] Division by zero occured!"), ARGUS_FUNCNAME);
+			return fallbackValue;
+		}
+
+		return numerator / denominator;
+	}
+
+	static float SafeDivide(float numerator, float denominator, float fallbackValue = 0.0f)
+	{
+		return SafeDivide<float>(numerator, denominator, fallbackValue);
+	}
+
+	static FVector2D SafeDivide(FVector2D numerator, float denominator, FVector2D fallbackValue = FVector2D::ZeroVector)
+	{
+		return SafeDivide<FVector2D>(numerator, denominator, fallbackValue);
+	}
+
+	static FVector SafeDivide(FVector numerator, float denominator, FVector fallbackValue = FVector::ZeroVector)
+	{
+		return SafeDivide<FVector>(numerator, denominator, fallbackValue);
+	}
 
 	static float Determinant(const FVector2D& topRow, const FVector2D& bottomRow)
 	{
