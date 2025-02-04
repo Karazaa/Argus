@@ -60,7 +60,7 @@ void ChaseValue(ArgusMath::ExponentialDecaySmoother<FVector>& smoother, const FV
 	}
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusMathExponentialDecaySmootherFloatTest, "Argus.Utilities.ArgusMath.ExponentialDecaySmoother.FloatTest", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusMathExponentialDecaySmootherFloatTest, "Argus.Utilities.ArgusMath.ExponentialDecaySmoother.Float", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusUtilitiesArgusMathExponentialDecaySmootherFloatTest::RunTest(const FString& Parameters)
 {
 	const float value0 = 0.0f;
@@ -210,7 +210,7 @@ bool ArgusUtilitiesArgusMathExponentialDecaySmootherFloatTest::RunTest(const FSt
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusMathExponentialDecaySmootherFVectorTest, "Argus.Utilities.ArgusMath.ExponentialDecaySmoother.FVectorTest", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusMathExponentialDecaySmootherFVectorTest, "Argus.Utilities.ArgusMath.ExponentialDecaySmoother.FVector", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusUtilitiesArgusMathExponentialDecaySmootherFVectorTest::RunTest(const FString& Parameters)
 {
 	const FVector vector0 = FVector::ZeroVector;
@@ -342,7 +342,7 @@ bool ArgusUtilitiesArgusMathExponentialDecaySmootherFVectorTest::RunTest(const F
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusMathCoordinateConversionTest, "Argus.Utilities.ArgusMath.CoordinateConversionTest", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusMathCoordinateConversionTest, "Argus.Utilities.ArgusMath.CoordinateConversion", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusUtilitiesArgusMathCoordinateConversionTest::RunTest(const FString& Parameters)
 {
 	const FVector2D initialValue = FVector2D(100.0f, 100.0f);
@@ -384,7 +384,7 @@ bool ArgusUtilitiesArgusMathCoordinateConversionTest::RunTest(const FString& Par
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusMathIsLeftOfCartesianTest, "Argus.Utilities.ArgusMath.IsLeftOfCartesianTest", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusMathIsLeftOfCartesianTest, "Argus.Utilities.ArgusMath.IsLeftOfCartesian", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusUtilitiesArgusMathIsLeftOfCartesianTest::RunTest(const FString& Parameters)
 {
 	const FVector2D point0 = FVector2D::ZeroVector;
@@ -478,6 +478,134 @@ bool ArgusUtilitiesArgusMathIsLeftOfCartesianTest::RunTest(const FString& Parame
 			point1.Y
 		),
 		ArgusMath::IsLeftOfCartesian(point0, point1, testPoint)
+	);
+#pragma endregion
+
+	ArgusTesting::EndArgusTest();
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusMathSafeDivideTest, "Argus.Utilities.ArgusMath.SafeDivide", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+bool ArgusUtilitiesArgusMathSafeDivideTest::RunTest(const FString& Parameters)
+{
+	const float denominator = 2.0f;
+	const float numeratorFloat = 16.0f;
+	const float expectedResultFloat = 8.0f;
+	const FVector2D numeratorVec2 = FVector2D(3.0f, 5.0f);
+	const FVector2D expectedResultVec2 = FVector2D(1.5f, 2.5f);
+	const FVector numeratorVec3 = FVector(10.0f, 100.0f, 1000.0f);
+	const FVector expectedResultVec3 = FVector(5.0f, 50.0f, 500.0f);
+
+	ArgusTesting::StartArgusTest();
+
+#pragma region Add expected divide by 0 warnings.
+	AddExpectedErrorPlain
+	(
+		FString::Printf
+		(
+			TEXT("Division by zero occured!")
+		),
+		EAutomationExpectedMessageFlags::Contains,
+		3
+	);
+#pragma endregion
+
+	float resultFloat = ArgusMath::SafeDivide(numeratorFloat, 0.0f);
+
+#pragma region Float divide by 0.
+	TestEqual
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Test that using %s with a denominator of zero returns the correct value."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(ArgusMath::SafeDivide)
+		),
+		resultFloat,
+		0.0f
+	);
+#pragma endregion
+
+	FVector2D resultVec2 = ArgusMath::SafeDivide(numeratorVec2, 0.0f);
+
+#pragma region Vec2 divide by 0.
+	TestEqual
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Test that using %s with a denominator of zero returns the correct value."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(ArgusMath::SafeDivide)
+		),
+		resultVec2,
+		FVector2D::ZeroVector
+	);
+#pragma endregion
+
+	FVector resultVec3 = ArgusMath::SafeDivide(numeratorVec3, 0.0f);
+
+#pragma region Vec3 divide by 0.
+	TestEqual
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Test that using %s with a denominator of zero returns the correct value."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(ArgusMath::SafeDivide)
+		),
+		resultVec3,
+		FVector::ZeroVector
+	);
+#pragma endregion
+
+	resultFloat = ArgusMath::SafeDivide(numeratorFloat, denominator);
+
+#pragma region Float divide by good value.
+	TestEqual
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Test that using %s with a denominator of %f returns the correct value."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(ArgusMath::SafeDivide),
+			denominator
+		),
+		resultFloat,
+		expectedResultFloat
+	);
+#pragma endregion
+
+	resultVec2 = ArgusMath::SafeDivide(numeratorVec2, denominator);
+
+#pragma region Vec2 divide by good value.
+	TestEqual
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Test that using %s with a denominator of %f returns the correct value."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(ArgusMath::SafeDivide),
+			denominator
+		),
+		resultVec2,
+		expectedResultVec2
+	);
+#pragma endregion
+
+	resultVec3 = ArgusMath::SafeDivide(numeratorVec3, denominator);
+
+#pragma region Vec3 divide by good value.
+	TestEqual
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Test that using %s with a denominator of %f returns the correct value."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(ArgusMath::SafeDivide),
+			denominator
+		),
+		resultVec3,
+		expectedResultVec3
 	);
 #pragma endregion
 
