@@ -187,6 +187,12 @@ void AbilitySystems::ProcessAbilityTaskCommands(const AbilitySystemsComponentArg
 			return;
 	}
 
+	if (abilityId == 0u)
+	{
+		components.m_taskComponent->m_abilityState = AbilityState::None;
+		return;
+	}
+
 	const UAbilityRecord* abilityRecord = ArgusStaticData::GetRecord<UAbilityRecord>(abilityId);
 	if (!abilityRecord)
 	{
@@ -242,6 +248,7 @@ void AbilitySystems::CastSpawnAbility(const UAbilityRecord* abilityRecord, const
 
 	SpawnEntityInfo spawnInfo;
 	spawnInfo.m_argusActorRecordId = argusActorRecord->m_id;
+	spawnInfo.m_spawningAbilityRecordId = abilityRecord->m_id;
 	spawnInfo.m_timeToCastSeconds = abilityRecord->m_timeToCastSeconds;
 	spawnInfo.m_needsConstruction = needsConstruction;
 	if (atReticle)

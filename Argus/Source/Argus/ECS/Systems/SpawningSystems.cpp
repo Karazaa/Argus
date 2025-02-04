@@ -134,8 +134,9 @@ void SpawningSystems::SpawnEntityInternal(const SpawningSystemsComponentArgs& co
 		spawnedEntityTaskComponent->m_constructionState = ConstructionState::BeingConstructed;
 		if (ConstructionComponent* constructionComponent = spawnedEntity.GetOrAddComponent<ConstructionComponent>())
 		{
-			constructionComponent->m_constructionAbilityRecordId = argusActorRecord->m_id;
+			constructionComponent->m_constructionAbilityRecordId = spawnInfo.m_spawningAbilityRecordId;
 			constructionComponent->m_automaticConstructionTimerHandle.StartTimer(spawnedEntity, constructionComponent->m_requiredWorkSeconds);
+			CommandMoveSelectedEntitiesToSpawnedEntity(spawnedEntity, constructionComponent->m_constructionAbilityRecordId);
 		}
 	}
 
@@ -304,4 +305,70 @@ void SpawningSystems::GetSpawnLocationAndNavigationState(const SpawningSystemsCo
 	spawnForward.Normalize();
 	outSpawnLocation = spawnerLocation + (spawnForward * components.m_spawningComponent->m_spawningRadius);
 	outMovementState = MovementState::ProcessMoveToEntityCommand;
+}
+
+void SpawningSystems::CommandMoveSelectedEntitiesToSpawnedEntity(ArgusEntity& spawnedEntity, uint32 spawningAbiltyRecordId)
+{
+	if (!spawnedEntity)
+	{
+		ARGUS_LOG
+		(
+			ArgusECSLog, Error, TEXT("[%s] Move to %s. It is invalid."),
+			ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity)
+		);
+		return;
+	}
+
+	ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId);
+	if (!singletonEntity)
+	{
+		ARGUS_LOG
+		(
+			ArgusECSLog, Error, TEXT("[%s] Could not retrieve a valid reference to %s."),
+			ARGUS_FUNCNAME, ARGUS_NAMEOF(singletonEntity)
+		);
+		return;
+	}
+
+	InputInterfaceComponent* inputInterfaceComponent = singletonEntity.GetComponent<InputInterfaceComponent>();
+	if (!inputInterfaceComponent)
+	{
+		ARGUS_LOG
+		(
+			ArgusECSLog, Error, TEXT("[%s] Could not retrieve a valid reference to %s."),
+			ARGUS_FUNCNAME, ARGUS_NAMEOF(InputInterfaceComponent)
+		);
+		return;
+	}
+
+	for (int32 i = 0; i < inputInterfaceComponent->m_selectedArgusEntityIds.Num(); ++i)
+	{
+		ArgusEntity selectedEntity = ArgusEntity::RetrieveEntity(inputInterfaceComponent->m_selectedArgusEntityIds[i]);
+		if (!selectedEntity)
+		{
+			continue;
+		}
+
+		TaskComponent* selectedEntityTaskComponent = selectedEntity.GetComponent<TaskComponent>();
+		if (!selectedEntityTaskComponent)
+		{
+			continue;
+		}
+
+		TargetingComponent* selectedEntityTargetingComonent = selectedEntity.GetComponent<TargetingComponent>();
+		if (!selectedEntityTargetingComonent)
+		{
+			continue;
+		}
+
+		AbilityComponent* selectedEntityAbilityComponent = selectedEntity.GetComponent<AbilityComponent>();
+		if (!selectedEntityAbilityComponent || !selectedEntityAbilityComponent->HasAbility(spawningAbiltyRecordId))
+		{
+			continue;
+		}
+
+		selectedEntityTaskComponent->m_movementState = MovementState::ProcessMoveToEntityCommand;
+		selectedEntityTargetingComonent->m_targetEntityId = spawnedEntity.GetId();
+		selectedEntityTargetingComonent->m_targetLocation.Reset();
+	}
 }
