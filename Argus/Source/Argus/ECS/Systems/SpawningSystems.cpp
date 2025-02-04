@@ -135,8 +135,15 @@ void SpawningSystems::SpawnEntityInternal(const SpawningSystemsComponentArgs& co
 		if (ConstructionComponent* constructionComponent = spawnedEntity.GetOrAddComponent<ConstructionComponent>())
 		{
 			constructionComponent->m_constructionAbilityRecordId = spawnInfo.m_spawningAbilityRecordId;
-			constructionComponent->m_automaticConstructionTimerHandle.StartTimer(spawnedEntity, constructionComponent->m_requiredWorkSeconds);
-			CommandMoveSelectedEntitiesToSpawnedEntity(spawnedEntity, constructionComponent->m_constructionAbilityRecordId);
+
+			if (constructionComponent->m_constructionType == EConstructionType::Automatic)
+			{
+				constructionComponent->m_automaticConstructionTimerHandle.StartTimer(spawnedEntity, constructionComponent->m_requiredWorkSeconds);
+			}
+			else if (constructionComponent->m_constructionType == EConstructionType::Manual)
+			{
+				CommandMoveSelectedEntitiesToSpawnedEntity(spawnedEntity, constructionComponent->m_constructionAbilityRecordId);
+			}
 		}
 	}
 
