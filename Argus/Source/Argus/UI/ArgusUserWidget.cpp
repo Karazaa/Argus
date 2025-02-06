@@ -1,8 +1,10 @@
-#//Copyright Karazaa. This is a part of an RTS project called Argus.
+// Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusUserWidget.h"
 #include "ArgusCameraActor.h"
 #include "ArgusInputManager.h"
+#include "ArgusLogging.h"
+#include "ArgusMacros.h"
 
 void UArgusUserWidget::OnUpdateSelectedArgusActors(ArgusEntity& templateEntity)
 {
@@ -40,7 +42,7 @@ void UArgusUserWidget::OnUserInterfaceButtonClicked(UArgusUIButtonClickedEventsE
 {
 	if (!m_inputManager.IsValid())
 	{
-		// TODO JAMES: Error here.
+		ARGUS_LOG(ArgusInputLog, Error, TEXT("[%s] Invalid reference to %s"), ARGUS_FUNCNAME, ARGUS_NAMEOF(m_inputManager));
 		return;
 	}
 

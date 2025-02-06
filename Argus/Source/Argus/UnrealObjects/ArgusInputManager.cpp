@@ -957,6 +957,8 @@ void UArgusInputManager::InterruptReticleFromInputEvent()
 
 void UArgusInputManager::SetReticleState()
 {
+	ARGUS_TRACE(UArgusInputManager::SetReticleState);
+
 	ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId);
 	if (!singletonEntity)
 	{

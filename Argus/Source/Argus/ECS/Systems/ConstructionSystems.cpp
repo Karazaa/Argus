@@ -21,7 +21,7 @@ void ConstructionSystems::RunSystems(float deltaTime)
 		components.m_taskComponent = potentialEntity.GetComponent<TaskComponent>();
 		components.m_constructionComponent = potentialEntity.GetComponent<ConstructionComponent>();
 
-		if (!components.m_entity || !components.m_taskComponent || !components.m_constructionComponent)
+		if (!components.m_entity || !components.m_taskComponent)
 		{
 			continue;
 		}
@@ -29,9 +29,13 @@ void ConstructionSystems::RunSystems(float deltaTime)
 		switch (components.m_taskComponent->m_constructionState)
 		{
 			case ConstructionState::BeingConstructed:
-				ProcessBeingConstructedState(components, deltaTime);
+				if (components.m_constructionComponent)
+				{
+					ProcessBeingConstructedState(components, deltaTime);
+				}
 				break;
 			case ConstructionState::ConstructingOther:
+				ProcessConstructingOtherState(components, deltaTime);
 				break;
 			case ConstructionState::ConstructionFinished:
 				components.m_taskComponent->m_constructionState = ConstructionState::None;
@@ -47,13 +51,13 @@ bool ConstructionSystems::CanEntityConstructOtherEntity(const ArgusEntity& poten
 {
 	if (!potentialConstructor)
 	{
-		// TODO JAMES: Error here
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid reference to %s, %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(potentialConstructor));
 		return false;
 	}
 
 	if (!potentialConstructee)
 	{
-		// TODO JAMES: Error here
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid reference to %s, %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(potentialConstructee));
 		return false;
 	}
 
@@ -69,12 +73,18 @@ bool ConstructionSystems::CanEntityConstructOtherEntity(const ArgusEntity& poten
 		return false;
 	}
 
-	return true;
+	const TaskComponent* taskComponent = potentialConstructee.GetComponent<TaskComponent>();
+	if (!taskComponent)
+	{
+		return false;
+	}
+
+	return (taskComponent->m_constructionState == ConstructionState::BeingConstructed) && (constructionComponent->m_constructionType == EConstructionType::Manual);
 }
 
 bool ConstructionSystems::ConstructionSystemsComponentArgs::AreComponentsValidCheck(const WIDECHAR* functionName) const
 {
-	if (!m_taskComponent || !m_constructionComponent)
+	if (!m_entity || !m_taskComponent)
 	{
 		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Construction Systems were run with invalid component arguments passed."), functionName);
 		return false;
@@ -87,7 +97,7 @@ void ConstructionSystems::ProcessBeingConstructedState(const ConstructionSystems
 {
 	ARGUS_TRACE(ConstructionSystems::ProcessBeingConstructedState);
 
-	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME) || !components.m_constructionComponent)
 	{
 		return;
 	}
@@ -108,6 +118,60 @@ void ConstructionSystems::ProcessBeingConstructedState(const ConstructionSystems
 	{
 		components.m_taskComponent->m_constructionState = ConstructionState::ConstructionFinished;
 	}
+}
+
+void ConstructionSystems::ProcessConstructingOtherState(const ConstructionSystemsComponentArgs& components, float deltaTime)
+{
+	ARGUS_TRACE(ConstructionSystems::ProcessConstructingOtherState);
+
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+
+	const TargetingComponent* targetingComponent = components.m_entity.GetComponent<TargetingComponent>();
+	if (!targetingComponent)
+	{
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TargetingComponent*));
+		components.m_taskComponent->m_constructionState = ConstructionState::None;
+		return;
+	}
+
+	const ArgusEntity constructee = ArgusEntity::RetrieveEntity(targetingComponent->m_targetEntityId);
+	if (!constructee)
+	{
+		components.m_taskComponent->m_constructionState = ConstructionState::None;
+		return;
+	}
+
+	if (!CanEntityConstructOtherEntity(components.m_entity, constructee))
+	{
+		components.m_taskComponent->m_constructionState = ConstructionState::None;
+		return;
+	}
+
+	const TransformComponent* constructorTransformComponent = components.m_entity.GetComponent<TransformComponent>();
+	const TransformComponent* constructeeTransformComponent = constructee.GetComponent<TransformComponent>();
+	if (!constructeeTransformComponent || !constructeeTransformComponent)
+	{
+		components.m_taskComponent->m_constructionState = ConstructionState::None;
+		return;
+	}
+
+	if (FVector::DistSquared(constructorTransformComponent->m_transform.GetLocation(), constructeeTransformComponent->m_transform.GetLocation()) > 
+		FMath::Square(targetingComponent->m_targetingRange))
+	{
+		return;
+	}
+
+	ConstructionComponent* constructeeConstructionComponent = constructee.GetComponent<ConstructionComponent>();
+	if (!constructeeConstructionComponent)
+	{
+		components.m_taskComponent->m_constructionState = ConstructionState::None;
+		return;
+	}
+
+	constructeeConstructionComponent->m_currentWorkSeconds += deltaTime;
 }
 
 void ConstructionSystems::ProcessAutomaticConstruction(const ConstructionSystemsComponentArgs& components, float deltaTime)
