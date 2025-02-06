@@ -17,6 +17,7 @@ struct ObstaclePointKDTreeNode : public IArgusKDTreeNode<bool>
 	ObstacleIndicies m_indicies;
 	ObstaclePointKDTreeNode* m_leftChild = nullptr;
 	ObstaclePointKDTreeNode* m_rightChild = nullptr;
+	bool forceFullSearch = true;
 
 	ObstaclePointKDTreeNode() {};
 
@@ -26,6 +27,7 @@ struct ObstaclePointKDTreeNode : public IArgusKDTreeNode<bool>
 	virtual bool	ShouldSkipNode() const override;
 	virtual bool	ShouldSkipNode(bool valueToSkip) const override;
 	virtual bool	PassesRangeCheck(const FVector& targetLocation, float rangeSquared) const override;
+	virtual float   GetValueForDimension(uint16 dimension) const override;
 };
 
 class ObstaclePointKDTree : public ArgusKDTree<ObstaclePointKDTreeNode, bool>

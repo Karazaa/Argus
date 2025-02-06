@@ -12,6 +12,7 @@ struct ArgusEntityKDTreeNode : public IArgusKDTreeNode<uint16>
 	uint16		m_entityId = ArgusECSConstants::k_maxEntities;
 	ArgusEntityKDTreeNode* m_leftChild = nullptr;
 	ArgusEntityKDTreeNode* m_rightChild = nullptr;
+	bool forceFullSearch = false;
 
 	ArgusEntityKDTreeNode() {};
 
@@ -21,6 +22,7 @@ struct ArgusEntityKDTreeNode : public IArgusKDTreeNode<uint16>
 	virtual bool	ShouldSkipNode() const override;
 	virtual bool	ShouldSkipNode(uint16 valueToSkip) const override;
 	virtual bool	PassesRangeCheck(const FVector& targetLocation, float rangeSquared) const override;
+	virtual float   GetValueForDimension(uint16 dimension) const override;
 
 	void Populate(const ArgusEntity& entityToRepresent);
 };

@@ -75,6 +75,22 @@ bool ObstaclePointKDTreeNode::PassesRangeCheck(const FVector& targetLocation, fl
 	return result;
 }
 
+float ObstaclePointKDTreeNode::GetValueForDimension(uint16 dimension) const
+{
+	FVector location = GetLocation();
+	switch (dimension)
+	{
+		case 0:
+			return location.X;
+		case 1:
+			return location.Y;
+		case 2:
+			return location.Z;
+		default:
+			return 0.0f;
+	}
+}
+
 void ObstaclePointKDTree::InsertObstaclesIntoKDTree(const TArray<ObstaclePointArray>& obstacles)
 {
 	ARGUS_MEMORY_TRACE(ArgusKDTree);

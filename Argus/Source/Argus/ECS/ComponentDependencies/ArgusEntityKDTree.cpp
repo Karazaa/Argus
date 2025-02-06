@@ -51,6 +51,21 @@ bool ArgusEntityKDTreeNode::PassesRangeCheck(const FVector& targetLocation, floa
 	return FVector::DistSquared(GetLocation(), targetLocation) < rangeSquared;
 }
 
+float ArgusEntityKDTreeNode::GetValueForDimension(uint16 dimension) const
+{
+	switch (dimension)
+	{
+		case 0:
+			return m_worldSpaceLocation.X;
+		case 1:
+			return m_worldSpaceLocation.Y;
+		case 2:
+			return m_worldSpaceLocation.Z;
+		default: 
+			return 0.0f;
+	}
+}
+
 void ArgusEntityKDTree::ErrorOnInvalidArgusEntity(const WIDECHAR* functionName)
 {
 	ARGUS_LOG
