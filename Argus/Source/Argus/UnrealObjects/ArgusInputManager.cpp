@@ -124,6 +124,13 @@ void UArgusInputManager::OnAbility3(const FInputActionValue& value)
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::Ability3, value));
 }
 
+void UArgusInputManager::OnEscape(const FInputActionValue& value)
+{
+	ARGUS_MEMORY_TRACE(ArgusInputManager);
+
+	m_inputEventsThisFrame.Emplace(InputCache(InputType::Escape, value));
+}
+
 void UArgusInputManager::OnUserInterfaceButtonClicked(UArgusUIButtonClickedEventsEnum buttonClickedEvent)
 {
 	switch (buttonClickedEvent)
@@ -309,6 +316,11 @@ void UArgusInputManager::BindActions(TSoftObjectPtr<UArgusInputActionSet>& argus
 	{
 		enhancedInputComponent->BindAction(ability3Action, ETriggerEvent::Triggered, this, &UArgusInputManager::OnAbility3);
 	}
+
+	if (const UInputAction* escapeAction = actionSet->m_escapeAction.LoadSynchronous())
+	{
+		enhancedInputComponent->BindAction(escapeAction, ETriggerEvent::Triggered, this, &UArgusInputManager::OnEscape);
+	}
 }
 
 bool UArgusInputManager::ValidateOwningPlayerController()
@@ -367,6 +379,9 @@ void UArgusInputManager::ProcessInputEvent(TObjectPtr<AArgusCameraActor>& argusC
 			break;
 		case InputType::Ability3:
 			ProcessAbilityInputEvent(3u);
+			break;
+		case InputType::Escape:
+			ProcessEscapeInputEvent();
 			break;
 		default:
 			break;
@@ -776,6 +791,38 @@ void UArgusInputManager::ProcessAbilityInputEventPerSelectedActor(AArgusActor* a
 			break;
 	}
 }
+
+void UArgusInputManager::ProcessEscapeInputEvent()
+{
+	ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId);
+	if (!singletonEntity)
+	{
+		ARGUS_LOG
+		(
+			ArgusInputLog, Error, TEXT("[%s] Could not retrieve a valid %s."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(singletonEntity)
+		);
+		return;
+	}
+
+	ReticleComponent* reticleComponent = singletonEntity.GetComponent<ReticleComponent>();
+	if (!reticleComponent)
+	{
+		ARGUS_LOG
+		(
+			ArgusInputLog, Error, TEXT("[%s] Could not retrieve a valid %s."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(ReticleComponent*)
+		);
+		return;
+	}
+
+	if (reticleComponent->IsReticleEnabled())
+	{
+		reticleComponent->DisableReticle();
+	}
+;}
 #pragma endregion
 
 void UArgusInputManager::AddSelectedActorExclusive(AArgusActor* argusActor)

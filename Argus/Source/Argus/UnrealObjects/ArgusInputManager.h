@@ -34,6 +34,7 @@ public:
 	void OnAbility1(const FInputActionValue& value);
 	void OnAbility2(const FInputActionValue& value);
 	void OnAbility3(const FInputActionValue& value);
+	void OnEscape(const FInputActionValue& value);
 	void OnUserInterfaceButtonClicked(UArgusUIButtonClickedEventsEnum buttonClickedEvent);
 
 
@@ -54,7 +55,8 @@ private:
 		Ability0,
 		Ability1,
 		Ability2,
-		Ability3
+		Ability3,
+		Escape
 	};
 
 	struct InputCache
@@ -84,6 +86,7 @@ private:
 	void ProcessZoomInputEvent(TObjectPtr<AArgusCameraActor>& argusCamera, const FInputActionValue& value);
 	void ProcessAbilityInputEvent(uint8 abilityIndex);
 	void ProcessAbilityInputEventPerSelectedActor(AArgusActor* argusActor, uint8 abilityIndex);
+	void ProcessEscapeInputEvent();
 
 	void AddSelectedActorExclusive(AArgusActor* argusActor);
 	void AddSelectedActorAdditive(AArgusActor* argusActor);
