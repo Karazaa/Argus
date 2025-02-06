@@ -29,5 +29,5 @@ private:
 	static bool ProcessSpawningTaskCommands(float deltaTime, const SpawningSystemsComponentArgs& components);
 	static bool ProcessQueuedSpawnEntity(const SpawningSystemsComponentArgs& components);
 	static void GetSpawnLocationAndNavigationState(const SpawningSystemsComponentArgs& components, FVector& outSpawnLocation, MovementState& outMovementState);
-	static void CommandMoveSelectedEntitiesToSpawnedEntity(ArgusEntity& spawnedEntity, uint32 spawningAbiltyRecordId);
+	static void CommandMoveSelectedEntitiesToSpawnedEntity(const ArgusEntity& spawnedEntity, bool requireConstructionTarget = false);
 };

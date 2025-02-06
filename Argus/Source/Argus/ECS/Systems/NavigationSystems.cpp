@@ -6,6 +6,7 @@
 #include "NavigationData.h"
 #include "NavigationSystem.h"
 #include "NavigationSystemTypes.h"
+#include "Systems/ConstructionSystems.h"
 
 static TAutoConsoleVariable<bool> CVarShowNavigationDebug(TEXT("Argus.Navigation.ShowNavigationDebug"), false, TEXT(""));
 
@@ -27,6 +28,7 @@ void NavigationSystems::RunSystems(UWorld* worldPointer)
 		}
 
 		NavigationSystemsComponentArgs components;
+		components.m_entity = potentialEntity;
 		components.m_taskComponent = potentialEntity.GetComponent<TaskComponent>();
 		components.m_navigationComponent = potentialEntity.GetComponent<NavigationComponent>();
 		components.m_targetingComponent = potentialEntity.GetComponent<TargetingComponent>();
@@ -48,7 +50,7 @@ void NavigationSystems::RunSystems(UWorld* worldPointer)
 
 bool NavigationSystems::NavigationSystemsComponentArgs::AreComponentsValidCheck(const WIDECHAR* functionName) const
 {
-	if (!m_taskComponent || !m_navigationComponent || !m_targetingComponent || !m_transformComponent)
+	if (!m_entity || !m_taskComponent || !m_navigationComponent || !m_targetingComponent || !m_transformComponent)
 	{
 		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Navigation Systems were run with invalid component arguments passed."), functionName);
 		return false;
@@ -76,6 +78,11 @@ void NavigationSystems::NavigateFromEntityToEntity(UWorld* worldPointer, ArgusEn
 	}
 
 	NavigateFromEntityToLocation(worldPointer, targetEntityTransform->m_transform.GetLocation(), components);
+
+	if (ConstructionSystems::CanEntityConstructOtherEntity(components.m_entity, targetEntity))
+	{
+		components.m_taskComponent->m_constructionState = ConstructionState::ConstructingOther;
+	}
 }
 
 void NavigationSystems::NavigateFromEntityToLocation(UWorld* worldPointer, std::optional<FVector> targetLocation, const NavigationSystemsComponentArgs& components)
@@ -86,6 +93,8 @@ void NavigationSystems::NavigateFromEntityToLocation(UWorld* worldPointer, std::
 	{
 		return;
 	}
+
+	components.m_taskComponent->m_constructionState = ConstructionState::None;
 
 	components.m_navigationComponent->ResetPath();
 

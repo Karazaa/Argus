@@ -12,6 +12,7 @@ public:
 
 	struct NavigationSystemsComponentArgs
 	{
+		ArgusEntity m_entity = ArgusEntity::k_emptyEntity;
 		TaskComponent* m_taskComponent = nullptr;
 		NavigationComponent* m_navigationComponent = nullptr;
 		TargetingComponent* m_targetingComponent = nullptr;

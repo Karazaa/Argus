@@ -5,6 +5,7 @@
 #include "ArgusMacros.h"
 #include "ArgusStaticData.h"
 #include "HAL/UnrealMemory.h"
+#include "Systems/ConstructionSystems.h"
 
 bool SpawningSystems::RunSystems(float deltaTime)
 {
@@ -142,7 +143,7 @@ void SpawningSystems::SpawnEntityInternal(const SpawningSystemsComponentArgs& co
 			}
 			else if (constructionComponent->m_constructionType == EConstructionType::Manual)
 			{
-				CommandMoveSelectedEntitiesToSpawnedEntity(spawnedEntity, constructionComponent->m_constructionAbilityRecordId);
+				CommandMoveSelectedEntitiesToSpawnedEntity(spawnedEntity, true);
 			}
 		}
 	}
@@ -314,7 +315,7 @@ void SpawningSystems::GetSpawnLocationAndNavigationState(const SpawningSystemsCo
 	outMovementState = MovementState::ProcessMoveToEntityCommand;
 }
 
-void SpawningSystems::CommandMoveSelectedEntitiesToSpawnedEntity(ArgusEntity& spawnedEntity, uint32 spawningAbiltyRecordId)
+void SpawningSystems::CommandMoveSelectedEntitiesToSpawnedEntity(const ArgusEntity& spawnedEntity, bool requireConstructionTarget)
 {
 	if (!spawnedEntity)
 	{
@@ -368,8 +369,7 @@ void SpawningSystems::CommandMoveSelectedEntitiesToSpawnedEntity(ArgusEntity& sp
 			continue;
 		}
 
-		AbilityComponent* selectedEntityAbilityComponent = selectedEntity.GetComponent<AbilityComponent>();
-		if (!selectedEntityAbilityComponent || !selectedEntityAbilityComponent->HasAbility(spawningAbiltyRecordId))
+		if (requireConstructionTarget && !ConstructionSystems::CanEntityConstructOtherEntity(selectedEntity, spawnedEntity))
 		{
 			continue;
 		}

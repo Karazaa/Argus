@@ -17,6 +17,8 @@ public:
 		bool AreComponentsValidCheck(const WIDECHAR* functionName) const;
 	};
 
+	static bool CanEntityConstructOtherEntity(const ArgusEntity& potentialConstructor, const ArgusEntity& potentialConstructee);
+
 private:
 	static void ProcessBeingConstructedState(const ConstructionSystemsComponentArgs& components, float deltaTime);
 	static void ProcessAutomaticConstruction(const ConstructionSystemsComponentArgs& components, float deltaTime);

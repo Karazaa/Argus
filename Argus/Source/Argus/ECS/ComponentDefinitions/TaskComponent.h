@@ -70,7 +70,7 @@ struct TaskComponent
 
 	void GetDebugString(FString& debugStringToAppendTo) const
 	{
-		auto baseStateName = TEXT("");
+		const WIDECHAR* baseStateName = TEXT("");
 		switch (m_baseState)
 		{
 			case BaseState::None:
@@ -86,7 +86,7 @@ struct TaskComponent
 				break;
 		}
 
-		auto movementStateName = TEXT("");
+		const WIDECHAR* movementStateName = TEXT("");
 		switch (m_movementState)
 		{
 			case MovementState::None:
@@ -111,7 +111,7 @@ struct TaskComponent
 				break;
 		}
 
-		auto spawningStateName = TEXT("");
+		const WIDECHAR* spawningStateName = TEXT("");
 		switch (m_spawningState)
 		{
 			case SpawningState::None:
@@ -127,7 +127,7 @@ struct TaskComponent
 				break;
 		}
 
-		auto abilityStateName = TEXT("");
+		const WIDECHAR* abilityStateName = TEXT("");
 		switch (m_abilityState)
 		{
 			case AbilityState::None:
@@ -149,11 +149,30 @@ struct TaskComponent
 				break;
 		}
 
+		const WIDECHAR* constructionStateName = TEXT("");
+		switch (m_constructionState)
+		{
+			case ConstructionState::None:
+				constructionStateName = ARGUS_NAMEOF(ConstructionState::None);
+				break;
+			case ConstructionState::ConstructingOther:
+				constructionStateName = ARGUS_NAMEOF(ConstructionState::ConstructingOther);
+				break;
+			case ConstructionState::BeingConstructed:
+				constructionStateName = ARGUS_NAMEOF(ConstructionState::BeingConstructed);
+				break;
+			case ConstructionState::ConstructionFinished:
+				constructionStateName = ARGUS_NAMEOF(ConstructionState::ConstructionFinished);
+				break;
+			default:
+				break;
+		}
+
 		debugStringToAppendTo.Append
 		(
 			FString::Printf
 			(
-				TEXT("\n[%s] \n    (%s: %s)\n    (%s: %s)\n    (%s: %s)\n    (%s: %s)"), 
+				TEXT("\n[%s] \n    (%s: %s)\n    (%s: %s)\n    (%s: %s)\n    (%s: %s)\n    (%s: %s)"), 
 				ARGUS_NAMEOF(TaskComponent),
 				ARGUS_NAMEOF(m_baseState),
 				baseStateName,
@@ -162,7 +181,9 @@ struct TaskComponent
 				ARGUS_NAMEOF(m_spawningState),
 				spawningStateName,
 				ARGUS_NAMEOF(m_abilityState),
-				abilityStateName
+				abilityStateName,
+				ARGUS_NAMEOF(m_constructionState),
+				constructionStateName
 			)
 		);
 	}

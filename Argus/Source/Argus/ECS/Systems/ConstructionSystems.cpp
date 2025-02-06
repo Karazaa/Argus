@@ -43,6 +43,35 @@ void ConstructionSystems::RunSystems(float deltaTime)
 	}
 }
 
+bool ConstructionSystems::CanEntityConstructOtherEntity(const ArgusEntity& potentialConstructor, const ArgusEntity& potentialConstructee)
+{
+	if (!potentialConstructor)
+	{
+		// TODO JAMES: Error here
+		return false;
+	}
+
+	if (!potentialConstructee)
+	{
+		// TODO JAMES: Error here
+		return false;
+	}
+
+	const ConstructionComponent* constructionComponent = potentialConstructee.GetComponent<ConstructionComponent>();
+	if (!constructionComponent)
+	{
+		return false;
+	}
+
+	const AbilityComponent* potentialConstructorAbilityComponent = potentialConstructor.GetComponent<AbilityComponent>();
+	if (!potentialConstructorAbilityComponent || !potentialConstructorAbilityComponent->HasAbility(constructionComponent->m_constructionAbilityRecordId))
+	{
+		return false;
+	}
+
+	return true;
+}
+
 bool ConstructionSystems::ConstructionSystemsComponentArgs::AreComponentsValidCheck(const WIDECHAR* functionName) const
 {
 	if (!m_taskComponent || !m_constructionComponent)
