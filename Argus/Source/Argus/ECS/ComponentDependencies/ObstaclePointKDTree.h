@@ -25,6 +25,7 @@ struct ObstaclePointKDTreeNode : public IArgusKDTreeNode<bool>
 	virtual void	Populate(const FVector& worldSpaceLocation) override;
 	virtual bool	ShouldSkipNode() const override;
 	virtual bool	ShouldSkipNode(bool valueToSkip) const override;
+	virtual bool	PassesRangeCheck(const FVector& targetLocation, float rangeSquared) const override;
 };
 
 class ObstaclePointKDTree : public ArgusKDTree<ObstaclePointKDTreeNode, bool>

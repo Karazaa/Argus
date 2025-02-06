@@ -1,6 +1,8 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ObstaclePointKDTree.h"
+#include "ArgusEntity.h"
+#include "ArgusMath.h"
 
 void ObstaclePointKDTreeNode::Reset()
 {
@@ -24,6 +26,53 @@ bool ObstaclePointKDTreeNode::ShouldSkipNode() const
 bool ObstaclePointKDTreeNode::ShouldSkipNode(bool valueToSkip) const
 {
 	return m_indicies.m_obstacleIndex < 0 || m_indicies.m_obstaclePointIndex < 0;
+}
+
+bool ObstaclePointKDTreeNode::PassesRangeCheck(const FVector& targetLocation, float rangeSquared) const
+{
+	if (ShouldSkipNode())
+	{
+		return false;
+	}
+
+	ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId);
+	if (!singletonEntity)
+	{
+		return false;
+	}
+
+	SpatialPartitioningComponent* spatialPartitioningComponent = singletonEntity.GetComponent<SpatialPartitioningComponent>();
+	if (!spatialPartitioningComponent)
+	{
+		return false;
+	}
+
+	if (FVector::DistSquared(GetLocation(), targetLocation) < rangeSquared)
+	{
+		return true;
+	}
+
+	const ObstaclePoint& next = spatialPartitioningComponent->m_obstacles[m_indicies.m_obstacleIndex].GetNext(m_indicies.m_obstaclePointIndex);
+
+	const FVector2D targetLocation2D = FVector2D(targetLocation);
+	const FVector2D location2D = FVector2D(m_location);
+
+	if ((next.m_point - location2D).Dot(targetLocation2D - location2D) < 0.0f)
+	{
+		return false;
+	}
+
+	if ((location2D - next.m_point).Dot(targetLocation2D - next.m_point) < 0.0f)
+	{
+		return false;
+	}
+
+	const float amountLeftOfLine = ArgusMath::AmountLeftOf(location2D, next.m_point, targetLocation2D);
+	const float distanceSquaredLeftLine = ArgusMath::SafeDivide(FMath::Square(amountLeftOfLine), FVector2D::DistSquared(location2D, next.m_point));
+
+	const bool result = (distanceSquaredLeftLine < rangeSquared);
+
+	return result;
 }
 
 void ObstaclePointKDTree::InsertObstaclesIntoKDTree(const TArray<ObstaclePointArray>& obstacles)

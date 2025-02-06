@@ -46,6 +46,11 @@ bool ArgusEntityKDTreeNode::ShouldSkipNode(uint16 valueToSkip) const
 	return m_entityId == valueToSkip || m_entityId == ArgusECSConstants::k_maxEntities;
 }
 
+bool ArgusEntityKDTreeNode::PassesRangeCheck(const FVector& targetLocation, float rangeSquared) const
+{
+	return FVector::DistSquared(GetLocation(), targetLocation) < rangeSquared;
+}
+
 void ArgusEntityKDTree::ErrorOnInvalidArgusEntity(const WIDECHAR* functionName)
 {
 	ARGUS_LOG

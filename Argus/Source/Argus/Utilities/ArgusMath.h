@@ -112,9 +112,14 @@ namespace ArgusMath
 		return (topRow.X * bottomRow.Y) - (topRow.Y * bottomRow.X);
 	}
 
+	static float AmountLeftOf(const FVector2D& lineSegmentPoint0, const FVector2D& lineSegmentPoint1, const FVector2D& evaluationPoint)
+	{
+		return Determinant(lineSegmentPoint0 - evaluationPoint, lineSegmentPoint1 - lineSegmentPoint0);
+	}
+
 	static bool IsLeftOfCartesian(const FVector2D& lineSegmentPoint0, const FVector2D& lineSegmentPoint1, const FVector2D& evaluationPoint)
 	{
-		return Determinant(lineSegmentPoint0 - evaluationPoint, lineSegmentPoint1 - lineSegmentPoint0) > 0.0f;
+		return AmountLeftOf(lineSegmentPoint0, lineSegmentPoint1, evaluationPoint) > 0.0f;
 	}
 
 	// Unreal being left handed hurts my soul. Defining two functions here simply for code readability. 

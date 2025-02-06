@@ -20,6 +20,7 @@ struct ArgusEntityKDTreeNode : public IArgusKDTreeNode<uint16>
 	virtual void	Populate(const FVector& worldSpaceLocation) override;
 	virtual bool	ShouldSkipNode() const override;
 	virtual bool	ShouldSkipNode(uint16 valueToSkip) const override;
+	virtual bool	PassesRangeCheck(const FVector& targetLocation, float rangeSquared) const override;
 
 	void Populate(const ArgusEntity& entityToRepresent);
 };

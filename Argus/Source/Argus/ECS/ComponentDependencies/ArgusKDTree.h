@@ -14,6 +14,7 @@ class IArgusKDTreeNode : public IObjectPoolable
 	virtual void Populate(const FVector& worldSpaceLocation) = 0;
 	virtual bool ShouldSkipNode() const = 0;
 	virtual bool ShouldSkipNode(ValueComparisonType valueToSkip) const = 0;
+	virtual bool PassesRangeCheck(const FVector& targetLocation, float rangeSquared) const = 0;
 };
 
 // Type IArgusKDTreeNode is an implicit constraint for using the ArgusKDTree. Types you want to pool should inherit from IArgusKDTreeNode 
@@ -257,7 +258,7 @@ void ArgusKDTree<NodeType, ValueComparisonType>::FindNodesWithinRangeOfLocationR
 		return;
 	}
 
-	if (FVector::DistSquared(iterationNode->GetLocation(), targetLocation) < rangeSquared)
+	if (iterationNode->PassesRangeCheck(targetLocation, rangeSquared))
 	{
 		if (!iterationNode->ShouldSkipNode(valueToSkip))
 		{
@@ -288,21 +289,25 @@ void ArgusKDTree<NodeType, ValueComparisonType>::FindNodesWithinRangeOfLocationR
 		break;
 	}
 
-	const float differenceAlongDimension = targetLocationValue - iterationNodeValue;
-	if (FMath::Square(differenceAlongDimension) > rangeSquared)
-	{
-		if (differenceAlongDimension > 0.0f)
-		{
-			FindNodesWithinRangeOfLocationRecursive(outNearbyNodes, iterationNode->m_rightChild, targetLocation, rangeSquared, valueToSkip, depth + 1);
-		}
-		else
-		{
-			FindNodesWithinRangeOfLocationRecursive(outNearbyNodes, iterationNode->m_leftChild, targetLocation, rangeSquared, valueToSkip, depth + 1);
-		}
-	}
-	else
-	{
-		FindNodesWithinRangeOfLocationRecursive(outNearbyNodes, iterationNode->m_rightChild, targetLocation, rangeSquared, valueToSkip, depth + 1);
-		FindNodesWithinRangeOfLocationRecursive(outNearbyNodes, iterationNode->m_leftChild, targetLocation, rangeSquared, valueToSkip, depth + 1);
-	}
+	FindNodesWithinRangeOfLocationRecursive(outNearbyNodes, iterationNode->m_rightChild, targetLocation, rangeSquared, valueToSkip, depth + 1);
+	FindNodesWithinRangeOfLocationRecursive(outNearbyNodes, iterationNode->m_leftChild, targetLocation, rangeSquared, valueToSkip, depth + 1);
+
+	// TODO JAMES: Yo, this doesn't work fam. How can I constrain the search parameters for performance reasons while still guaranteeing accuracy?
+	//const float differenceAlongDimension = targetLocationValue - iterationNodeValue;
+	//if (FMath::Square(differenceAlongDimension) > rangeSquared)
+	//{
+	//	if (differenceAlongDimension > 0.0f)
+	//	{
+	//		FindNodesWithinRangeOfLocationRecursive(outNearbyNodes, iterationNode->m_rightChild, targetLocation, rangeSquared, valueToSkip, depth + 1);
+	//	}
+	//	else
+	//	{
+	//		FindNodesWithinRangeOfLocationRecursive(outNearbyNodes, iterationNode->m_leftChild, targetLocation, rangeSquared, valueToSkip, depth + 1);
+	//	}
+	//}
+	//else
+	//{
+	//	FindNodesWithinRangeOfLocationRecursive(outNearbyNodes, iterationNode->m_rightChild, targetLocation, rangeSquared, valueToSkip, depth + 1);
+	//	FindNodesWithinRangeOfLocationRecursive(outNearbyNodes, iterationNode->m_leftChild, targetLocation, rangeSquared, valueToSkip, depth + 1);
+	//}
 }
