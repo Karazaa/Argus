@@ -289,7 +289,7 @@ void ArgusKDTree<NodeType, ValueComparisonType>::FindNodesWithinRangeOfLocationR
 			break;
 	}
 
-	const float differenceInDimension = iterationNode->GetValueForDimension(dimension) - targetLocationValue;
+	const float differenceInDimension = targetLocationValue - iterationNode->GetValueForDimension(dimension);
 	if (FMath::Square(differenceInDimension) < rangeSquared)
 	{
 		FindNodesWithinRangeOfLocationRecursive(outNearbyNodes, iterationNode->m_leftChild, targetLocation, rangeSquared, valueToSkip, depth + 1);
