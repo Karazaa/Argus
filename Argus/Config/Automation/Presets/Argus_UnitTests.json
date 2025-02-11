@@ -33,6 +33,8 @@
 		"Argus.ECS.EntityTemplate.InstantiateEntity",
 		"Argus.ECS.Systems.AbilitySystems.CastSpawnAbility",
 		"Argus.ECS.Systems.AvoidanceSystems.ProcessORCAvoidance",
+		"Argus.ECS.Systems.ConstructionSystems.BeingConstructed.Automatic",
+		"Argus.ECS.Systems.ConstructionSystems.BeingConstructed.Manual",
 		"Argus.ECS.Systems.SpawningSystems.SpawnEntity",
 		"Argus.ECS.Systems.TargetingSystems.TargetNearestEntityMatchingTeamMask",
 		"Argus.ECS.Systems.TimerSystems.AdvanceTimers",
