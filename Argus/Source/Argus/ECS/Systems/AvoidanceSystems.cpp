@@ -120,6 +120,7 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 		DrawORCADebugLines(worldPointer, params, calculatedORCALines, true, 0);
 	}
 	const int32 numStaticObstacles = calculatedORCALines.Num();
+	
 	CreateEntityORCALines(params, components, foundEntityIds, calculatedORCALines);
 
 	int32 failureLine = -1;
@@ -206,7 +207,7 @@ void AvoidanceSystems::CreateEntityORCALines(const CreateEntityORCALinesParams& 
 		CreateEntityORCALinesParamsPerEntity perEntityParams;
 		perEntityParams.m_foundEntityLocation = ArgusMath::ToCartesianVector2(FVector2D(foundTransformComponent->m_transform.GetLocation()));
 		perEntityParams.m_foundEntityVelocity = ArgusMath::ToCartesianVector2(FVector2D(foundTransformComponent->m_currentVelocity));
-		perEntityParams.m_entityRadius = components.m_transformComponent->m_radius;
+		perEntityParams.m_entityRadius = foundTransformComponent->m_radius;
 
 		FVector2D velocityToBoundaryOfVO = FVector2D::ZeroVector;
 		ORCALine calculatedORCALine;
@@ -234,7 +235,7 @@ void AvoidanceSystems::FindORCALineAndVelocityToBoundaryPerEntity(const CreateEn
 		const float cutoffCenterToRelativeVelocityLengthSqared = cutoffCenterToRelativeVelocity.SquaredLength();
 		const float dotProduct = cutoffCenterToRelativeVelocity.Dot(relativeLocation);
 
-		if (dotProduct > 0.0f && FMath::Square(dotProduct) > combinedRadiusSquared * cutoffCenterToRelativeVelocityLengthSqared)
+		if (dotProduct < 0.0f && FMath::Square(dotProduct) > combinedRadiusSquared * cutoffCenterToRelativeVelocityLengthSqared)
 		{
 			const float cutoffCenterToRelativeVelocityLength = FMath::Sqrt(cutoffCenterToRelativeVelocityLengthSqared);
 			const FVector2D unitCutoffCenterToRelativeVelocity = cutoffCenterToRelativeVelocity / cutoffCenterToRelativeVelocityLength;
