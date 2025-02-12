@@ -13,6 +13,7 @@ namespace ArgusECSConstants
 	static constexpr float k_avoidanceEntityDetectionPredictionTime = 2.0f;
 	static constexpr float k_avoidanceObstacleDetectionPredictionTime = 2.0f;
 	static constexpr float k_avoidanceAgentSearchRadius = 200.0f;
+	static constexpr float k_avoidanceAgentAdditionalBufferRadius = 25.0f;
 	static constexpr float k_avoidanceEpsilonValue = 0.00001f;
 	static constexpr float k_moveAlongPathWaypointTolerance = 0.001f;
 

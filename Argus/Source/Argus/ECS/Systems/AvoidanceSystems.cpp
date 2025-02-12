@@ -121,7 +121,7 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 	}
 	const int32 numStaticObstacles = calculatedORCALines.Num();
 	
-	CreateEntityORCALines(params, components, foundEntityIds, calculatedORCALines);
+	CreateEntityORCALines(params, components, foundEntityIds, calculatedORCALines, desiredVelocity);
 
 	int32 failureLine = -1;
 	FVector2D resultingVelocity = FVector2D::ZeroVector;
@@ -138,8 +138,8 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 	if (CVarShowAvoidanceDebug.GetValueOnGameThread() && worldPointer && components.m_entity.IsSelected())
 	{
 		DrawORCADebugLines(worldPointer, params, calculatedORCALines, false, numStaticObstacles);
-		DrawDebugLine(worldPointer, params.m_sourceEntityLocation3D, params.m_sourceEntityLocation3D + FVector(ArgusMath::ToUnrealVector2(resultingVelocity), 0.0f), FColor::Orange, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth);
-		DrawDebugLine(worldPointer, params.m_sourceEntityLocation3D, params.m_sourceEntityLocation3D + FVector(ArgusMath::ToUnrealVector2(desiredVelocity), 0.0f), FColor::Green, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth);
+		DrawDebugLine(worldPointer, params.m_sourceEntityLocation3D, params.m_sourceEntityLocation3D + FVector(ArgusMath::ToUnrealVector2(resultingVelocity), 0.0f), FColor::Magenta, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth);
+		DrawDebugLine(worldPointer, params.m_sourceEntityLocation3D, params.m_sourceEntityLocation3D + FVector(ArgusMath::ToUnrealVector2(desiredVelocity), 0.0f), FColor::Turquoise, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth);
 	}
 
 	components.m_transformComponent->m_proposedAvoidanceVelocity = FVector(ArgusMath::ToUnrealVector2(resultingVelocity), 0.0f);
@@ -182,8 +182,12 @@ void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const Creat
 	}
 }
 
-void AvoidanceSystems::CreateEntityORCALines(const CreateEntityORCALinesParams& params, const TransformSystems::TransformSystemsComponentArgs& components, TArray<uint16>& foundEntityIds, TArray<ORCALine>& outORCALines)
+void AvoidanceSystems::CreateEntityORCALines(const CreateEntityORCALinesParams& params, const TransformSystems::TransformSystemsComponentArgs& components, TArray<uint16>& foundEntityIds, TArray<ORCALine>& outORCALines, FVector2D& outDesiredVelocity)
 {
+	const bool calculateAverageLocationOfOtherEntities = outDesiredVelocity.IsNearlyZero() && !params.m_sourceEntityVelocity.IsNearlyZero();
+	FVector2D averageLocationOfOtherEntities = FVector2D::ZeroVector;
+	float numberOfEntitiesInAverage = 0.0f;
+
 	for (int32 i = 0; i < foundEntityIds.Num(); ++i)
 	{
 		ArgusEntity foundEntity = ArgusEntity::RetrieveEntity(foundEntityIds[i]);
@@ -209,6 +213,16 @@ void AvoidanceSystems::CreateEntityORCALines(const CreateEntityORCALinesParams& 
 		perEntityParams.m_foundEntityVelocity = ArgusMath::ToCartesianVector2(FVector2D(foundTransformComponent->m_currentVelocity));
 		perEntityParams.m_entityRadius = foundTransformComponent->m_radius;
 
+		if (calculateAverageLocationOfOtherEntities)
+		{
+			const float bufferRadius = ArgusECSConstants::k_avoidanceAgentAdditionalBufferRadius + components.m_transformComponent->m_radius + perEntityParams.m_entityRadius;
+			if (FVector2D::DistSquared(params.m_sourceEntityLocation, perEntityParams.m_foundEntityLocation) < FMath::Square(bufferRadius))
+			{
+				numberOfEntitiesInAverage += 1.0f;
+				averageLocationOfOtherEntities += perEntityParams.m_foundEntityLocation + (perEntityParams.m_foundEntityVelocity * ArgusECSConstants::k_avoidanceEntityDetectionPredictionTime);
+			}
+		}
+
 		FVector2D velocityToBoundaryOfVO = FVector2D::ZeroVector;
 		ORCALine calculatedORCALine;
 		FindORCALineAndVelocityToBoundaryPerEntity(params, perEntityParams, velocityToBoundaryOfVO, calculatedORCALine);
@@ -216,6 +230,14 @@ void AvoidanceSystems::CreateEntityORCALines(const CreateEntityORCALinesParams& 
 		calculatedORCALine.m_point = params.m_sourceEntityVelocity + (velocityToBoundaryOfVO * effortCoefficient);
 		outORCALines.Add(calculatedORCALine);
 	}
+
+	if (!calculateAverageLocationOfOtherEntities || (numberOfEntitiesInAverage == 0.0f))
+	{
+		return;
+	}
+
+	averageLocationOfOtherEntities /= numberOfEntitiesInAverage;
+	outDesiredVelocity = (params.m_sourceEntityLocation - averageLocationOfOtherEntities).GetSafeNormal() * components.m_transformComponent->m_desiredSpeedUnitsPerSecond;
 }
 
 void AvoidanceSystems::FindORCALineAndVelocityToBoundaryPerEntity(const CreateEntityORCALinesParams& params, const CreateEntityORCALinesParamsPerEntity& perEntityParams, FVector2D& velocityToBoundaryOfVO, ORCALine& calculatedORCALine)
@@ -766,7 +788,8 @@ void AvoidanceSystems::DrawORCADebugLines(UWorld* worldPointer, const CreateEnti
 		const FVector worldspaceOrthogonalDirectionScaled = worldspaceDirection.Cross(FVector::UpVector) * 1000.0f;
 
 		DrawDebugSphere(worldPointer, worldspacePoint, 10.0f, 10u, debugColor, false, -1.0f, 0u, ArgusECSConstants::k_debugDrawLineWidth);
-		DrawDebugLine(worldPointer, worldspacePoint, worldspacePoint + (worldspaceDirection * 100.0f), debugColor, false, -1.0f, 0u, ArgusECSConstants::k_debugDrawLineWidth);
+		DrawDebugLine(worldPointer, worldspacePoint, worldspacePoint + (worldspaceDirection * 100.0f), FColor::Red, false, -1.0f, 0u, ArgusECSConstants::k_debugDrawLineWidth);
+		DrawDebugLine(worldPointer, worldspacePoint, worldspacePoint + (worldspaceDirection * -100.0f), FColor::Green, false, -1.0f, 0u, ArgusECSConstants::k_debugDrawLineWidth);
 		DrawDebugLine(worldPointer, worldspacePoint - worldspaceOrthogonalDirectionScaled, worldspacePoint + worldspaceOrthogonalDirectionScaled, debugColor, false, -1.0f, 0u, ArgusECSConstants::k_debugDrawLineWidth);
 	}
 }
