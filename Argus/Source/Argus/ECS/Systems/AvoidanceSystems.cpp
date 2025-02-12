@@ -105,7 +105,7 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 	{
 		// If no entities nearby, then nothing can effect our navigation, so we should just early out at our desired speed. 
 		components.m_transformComponent->m_proposedAvoidanceVelocity = FVector(ArgusMath::ToUnrealVector2(desiredVelocity), 0.0f);
-		if (CVarShowAvoidanceDebug.GetValueOnGameThread() && worldPointer)
+		if (CVarShowAvoidanceDebug.GetValueOnGameThread() && worldPointer && components.m_entity.IsSelected())
 		{
 			DrawDebugLine(worldPointer, params.m_sourceEntityLocation3D, params.m_sourceEntityLocation3D + components.m_transformComponent->m_proposedAvoidanceVelocity, FColor::Orange, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth);
 		}
@@ -115,7 +115,7 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 	// Iterate over the found entities and generate ORCA lines based on their current states.
 	TArray<ORCALine> calculatedORCALines;
 	CreateObstacleORCALines(worldPointer, params, components, calculatedORCALines);
-	if (CVarShowAvoidanceDebug.GetValueOnGameThread() && worldPointer)
+	if (CVarShowAvoidanceDebug.GetValueOnGameThread() && worldPointer && components.m_entity.IsSelected())
 	{
 		DrawORCADebugLines(worldPointer, params, calculatedORCALines, true, 0);
 	}
@@ -135,7 +135,7 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 		resultingVelocity = resultingVelocity.GetSafeNormal() * components.m_transformComponent->m_desiredSpeedUnitsPerSecond;
 	}
 
-	if (CVarShowAvoidanceDebug.GetValueOnGameThread() && worldPointer)
+	if (CVarShowAvoidanceDebug.GetValueOnGameThread() && worldPointer && components.m_entity.IsSelected())
 	{
 		DrawORCADebugLines(worldPointer, params, calculatedORCALines, false, numStaticObstacles);
 		DrawDebugLine(worldPointer, params.m_sourceEntityLocation3D, params.m_sourceEntityLocation3D + FVector(ArgusMath::ToUnrealVector2(resultingVelocity), 0.0f), FColor::Orange, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth);
@@ -235,7 +235,7 @@ void AvoidanceSystems::FindORCALineAndVelocityToBoundaryPerEntity(const CreateEn
 		const float cutoffCenterToRelativeVelocityLengthSqared = cutoffCenterToRelativeVelocity.SquaredLength();
 		const float dotProduct = cutoffCenterToRelativeVelocity.Dot(relativeLocation);
 
-		if (dotProduct < 0.0f && FMath::Square(dotProduct) > combinedRadiusSquared * cutoffCenterToRelativeVelocityLengthSqared)
+		if ((dotProduct < 0.0f) && (FMath::Square(dotProduct) > (combinedRadiusSquared * cutoffCenterToRelativeVelocityLengthSqared)))
 		{
 			const float cutoffCenterToRelativeVelocityLength = FMath::Sqrt(cutoffCenterToRelativeVelocityLengthSqared);
 			const FVector2D unitCutoffCenterToRelativeVelocity = cutoffCenterToRelativeVelocity / cutoffCenterToRelativeVelocityLength;

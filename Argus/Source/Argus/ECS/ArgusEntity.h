@@ -36,6 +36,7 @@ public:
 	uint16			GetId() const;
 	const FString	GetDebugString() const;
 	bool			IsMoveable() const;
+	bool			IsSelected() const;
 
 	template<class ArgusComponent>
 	ArgusComponent* GetComponent() const

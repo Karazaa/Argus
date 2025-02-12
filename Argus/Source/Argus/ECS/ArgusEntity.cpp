@@ -199,3 +199,28 @@ bool ArgusEntity::IsMoveable() const
 
 	return isValidEntity && hasNavigationComponent && hasTransformComponent && hasTargetingComponent;
 }
+
+bool ArgusEntity::IsSelected() const
+{
+	const ArgusEntity singletonEntity = ArgusECSConstants::k_singletonEntityId;
+	if (!singletonEntity)
+	{
+		return false;
+	}
+
+	const InputInterfaceComponent* inputInterfaceComponent = singletonEntity.GetComponent<InputInterfaceComponent>();
+	if (!inputInterfaceComponent)
+	{
+		return false;
+	}
+
+	for (int32 i = 0; i < inputInterfaceComponent->m_selectedArgusEntityIds.Num(); ++i)
+	{
+		if (inputInterfaceComponent->m_selectedArgusEntityIds[i] == m_id)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
