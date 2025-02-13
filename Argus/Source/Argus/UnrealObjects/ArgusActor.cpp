@@ -80,6 +80,12 @@ void AArgusActor::SetEntity(const ArgusEntity& entity)
 		{
 			SetActorTransform(transformComponent->m_transform);
 		}
+
+		if (NavigationComponent* navigationComponent = m_entity.GetComponent<NavigationComponent>())
+		{
+			navigationComponent->m_endedNavigationLocation = transformComponent->m_transform.GetLocation();
+			navigationComponent->m_endedNavigationLocation;
+		}
 	}
 
 	AArgusGameModeBase* gameMode = Cast<AArgusGameModeBase>(world->GetAuthGameMode());

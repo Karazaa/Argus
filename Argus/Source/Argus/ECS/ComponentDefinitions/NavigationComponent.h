@@ -14,6 +14,9 @@ struct NavigationComponent
 	ArgusQueue<FVector> m_queuedWaypoints;
 
 	ARGUS_IGNORE()
+	FVector m_endedNavigationLocation;
+
+	ARGUS_IGNORE()
 	int32 m_lastPointIndex = 0;
 
 	void ResetPath()
@@ -33,7 +36,7 @@ struct NavigationComponent
 		(
 			FString::Printf
 			(
-				TEXT("\n[%s] \n    (%s: %d) \n    (Num points: %d) \n    (Num queued waypoints: %s)"), 
+				TEXT("\n[%s] \n    (%s: %d) \n    (Num points: %d) \n    (Queued waypoints Empty?: %s)"), 
 				ARGUS_NAMEOF(NavigationComponent),
 				ARGUS_NAMEOF(m_lastPointIndex),
 				m_lastPointIndex,

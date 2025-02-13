@@ -14,6 +14,7 @@ class ARGUS_API UNavigationComponentData : public UComponentData
 public:
 	TArray<FVector> m_navigationPoints;
 	ArgusQueue<FVector> m_queuedWaypoints;
+	FVector m_endedNavigationLocation;
 	int32 m_lastPointIndex = 0;
 
 	void InstantiateComponentForEntity(ArgusEntity& entity) const override;

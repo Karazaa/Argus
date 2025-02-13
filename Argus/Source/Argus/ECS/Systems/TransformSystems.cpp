@@ -229,7 +229,7 @@ void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float delta
 	
 	if (isAtEndOfNavigationPath || isWithinRangeOfTargetEntity)
 	{
-		OnCompleteNavigationPath(components);
+		OnCompleteNavigationPath(components, moverLocation);
 	}
 }
 
@@ -295,12 +295,14 @@ bool TransformSystems::ProcessMovementTaskCommands(UWorld* worldPointer, float d
 	}
 }
 
-void TransformSystems::OnCompleteNavigationPath(const TransformSystemsComponentArgs& components)
+void TransformSystems::OnCompleteNavigationPath(const TransformSystemsComponentArgs& components, const FVector& moverLocation)
 {
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return;
 	}
+
+	components.m_navigationComponent->m_endedNavigationLocation = moverLocation;
 
 	if (components.m_navigationComponent->m_queuedWaypoints.IsEmpty())
 	{

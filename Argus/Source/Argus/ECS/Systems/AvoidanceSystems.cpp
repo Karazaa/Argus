@@ -103,6 +103,11 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 	TArray<uint16> foundEntityIds;
 	if (!spatialPartitioningComponent->m_argusEntityKDTree.FindOtherArgusEntityIdsWithinRangeOfArgusEntity(foundEntityIds, components.m_entity, ArgusECSConstants::k_avoidanceAgentSearchRadius))
 	{
+		if (desiredVelocity.IsNearlyZero())
+		{
+			desiredVelocity = GetVelocityTowardsEndofNavPoint(params, components);
+		}
+
 		// If no entities nearby, then nothing can effect our navigation, so we should just early out at our desired speed. 
 		components.m_transformComponent->m_proposedAvoidanceVelocity = FVector(ArgusMath::ToUnrealVector2(desiredVelocity), 0.0f);
 		if (CVarShowAvoidanceDebug.GetValueOnGameThread() && worldPointer && components.m_entity.IsSelected())
@@ -231,7 +236,7 @@ void AvoidanceSystems::CreateEntityORCALines(const CreateEntityORCALinesParams& 
 		outORCALines.Add(calculatedORCALine);
 	}
 
-	if (!calculateAverageLocationOfOtherEntities || (numberOfEntitiesInAverage == 0.0f))
+	if (!calculateAverageLocationOfOtherEntities || numberOfEntitiesInAverage == 0.0f)
 	{
 		return;
 	}
@@ -456,6 +461,20 @@ void AvoidanceSystems::ThreeDimensionalLinearProgram(const TArray<ORCALine>& orc
 
 		distance = ArgusMath::Determinant(orcaLines[i].m_direction, orcaLines[i].m_point - resultingVelocity);
 	}
+}
+
+FVector2D AvoidanceSystems::GetVelocityTowardsEndofNavPoint(const CreateEntityORCALinesParams& params, const TransformSystems::TransformSystemsComponentArgs& components)
+{
+	const FVector2D endedNavigationLocation = ArgusMath::ToCartesianVector2(FVector2D(components.m_navigationComponent->m_endedNavigationLocation));
+	const FVector2D towardsEndNavigationLocation = endedNavigationLocation - params.m_sourceEntityLocation;
+	float squareDistance = towardsEndNavigationLocation.SquaredLength();
+
+	if (squareDistance > FMath::Square(ArgusECSConstants::k_avoidanceAgentReturnToEndNavRadius))
+	{
+		return towardsEndNavigationLocation.GetSafeNormal() * components.m_transformComponent->m_desiredSpeedUnitsPerSecond;
+	}
+
+	return FVector2D::ZeroVector;
 }
 
 float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems::TransformSystemsComponentArgs& sourceEntityComponents, const ArgusEntity& foundEntity)
