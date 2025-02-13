@@ -93,6 +93,49 @@ const ObstaclePoint& ObstaclePointArray::GetNext(int32 index) const
 	return (GetData()[(index + 1) % Num()]);
 }
 
+void ObstaclePointArray::FillInBetweenObstaclePoints(const ObstaclePoint& fromPoint, const ObstaclePoint& toPoint, TArray<ObstaclePoint>& outPoints)
+{
+	const FVector2D betweenObstaclePoints = toPoint.m_point - fromPoint.m_point;
+	float distanceBetweenObstaclePoints = betweenObstaclePoints.Length();
+	const FVector2D directionBetweenObstaclePoints = betweenObstaclePoints / distanceBetweenObstaclePoints;
+
+	outPoints.Reserve(2 + FMath::FloorToInt32(distanceBetweenObstaclePoints / ArgusECSConstants::k_avoidanceAgentSearchRadius));
+
+	float iterations = 0.0f;
+	while (distanceBetweenObstaclePoints > ArgusECSConstants::k_avoidanceAgentSearchRadius)
+	{
+		iterations += 1.0f;
+		distanceBetweenObstaclePoints -= ArgusECSConstants::k_avoidanceAgentSearchRadius;
+
+		ObstaclePoint& pointToInsert = outPoints.Emplace_GetRef();
+		pointToInsert.m_point = fromPoint.m_point + ((iterations * ArgusECSConstants::k_avoidanceAgentSearchRadius) * directionBetweenObstaclePoints);
+	}
+}
+
+void ObstaclePointArray::AddObstaclePointsWithFillIn(const ObstaclePoint& instigatingObstacle, bool addToHead)
+{
+	TArray<ObstaclePoint> obstaclePointsToAdd;
+
+	const ObstaclePoint& attachPoint = addToHead ? GetHead() : GetTail();
+	const ObstaclePoint& startPoint = addToHead ? instigatingObstacle : attachPoint;
+	const ObstaclePoint& endPoint = addToHead ? attachPoint : instigatingObstacle;
+	const int32 index = addToHead ? 0 : Num();
+
+	if (addToHead)
+	{
+		obstaclePointsToAdd.Add(startPoint);
+	}
+
+	FillInBetweenObstaclePoints(startPoint, endPoint, obstaclePointsToAdd);
+
+	if (!addToHead)
+	{
+		obstaclePointsToAdd.Add(endPoint);
+	}
+
+	Insert(obstaclePointsToAdd, index);
+}
+
 void ObstaclePointArray::Reverse()
 {
 	const int32 halfObstaclePoints = Num() / 2;
@@ -109,6 +152,13 @@ void ObstaclePointArray::AppendOtherToThis(ObstaclePointArray& other)
 		return;
 	}
 
+	TArray<ObstaclePoint> obstaclePointsToAdd;
+	FillInBetweenObstaclePoints(GetTail(), other[1], obstaclePointsToAdd);
+	if (obstaclePointsToAdd.Num() > 0)
+	{
+		Insert(obstaclePointsToAdd, Num());
+	}
+
 	Append(&other[1], other.Num() - 1);
 }
 
@@ -117,5 +167,12 @@ void ObstaclePointArray::CloseLoop()
 	if (GetHead().m_point == GetTail().m_point)
 	{
 		RemoveAt(Num() - 1, EAllowShrinking::No);
+	}
+
+	TArray<ObstaclePoint> obstaclePointsToAdd;
+	FillInBetweenObstaclePoints(GetTail(), GetHead(), obstaclePointsToAdd);
+	if (obstaclePointsToAdd.Num() > 0)
+	{
+		Insert(obstaclePointsToAdd, Num());
 	}
 }

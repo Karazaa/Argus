@@ -22,6 +22,9 @@ public:
 	const ObstaclePoint& GetTail() const;
 	const ObstaclePoint& GetPrevious(int32 index) const;
 	const ObstaclePoint& GetNext(int32 index) const;
+
+	void FillInBetweenObstaclePoints(const ObstaclePoint& fromPoint, const ObstaclePoint& toPoint, TArray<ObstaclePoint>& outPoints);
+	void AddObstaclePointsWithFillIn(const ObstaclePoint& instigatingObstacle, bool addToHead);
 	void Reverse();
 	void AppendOtherToThis(ObstaclePointArray& other);
 	void CloseLoop();

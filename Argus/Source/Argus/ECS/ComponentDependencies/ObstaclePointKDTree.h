@@ -17,7 +17,7 @@ struct ObstaclePointKDTreeNode : public IArgusKDTreeNode<bool>
 	ObstacleIndicies m_indicies;
 	ObstaclePointKDTreeNode* m_leftChild = nullptr;
 	ObstaclePointKDTreeNode* m_rightChild = nullptr;
-	bool forceFullSearch = true;
+	bool forceFullSearch = false;
 
 	ObstaclePointKDTreeNode() {};
 

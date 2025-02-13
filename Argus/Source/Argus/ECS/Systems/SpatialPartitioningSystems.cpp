@@ -277,13 +277,13 @@ void SpatialPartitioningSystems::ConvertWallsIntoObstacles(const TArray<FVector>
 
 			if (matchesStart && !matchesEnd)
 			{
-				outObstacles[j].Insert(pointToAdd, 0);
+				outObstacles[j].AddObstaclePointsWithFillIn(pointToAdd, true);
 				handledEdge = true;
 				break;
 			}
 			if (!matchesStart && matchesEnd)
 			{
-				outObstacles[j].Add(pointToAdd);
+				outObstacles[j].AddObstaclePointsWithFillIn(pointToAdd, false);
 				handledEdge = true;
 				break;
 			}
@@ -302,7 +302,9 @@ void SpatialPartitioningSystems::ConvertWallsIntoObstacles(const TArray<FVector>
 		ObstaclePoint vertex0Obstacle, vertex1Obstacle;
 		vertex0Obstacle.m_point = edgeVertex0;
 		vertex1Obstacle.m_point = edgeVertex1;
-		outObstacles.Add(ObstaclePointArray({ vertex0Obstacle, vertex1Obstacle }));
+		ObstaclePointArray& array = outObstacles.Emplace_GetRef();
+		array.Add(vertex0Obstacle);
+		array.AddObstaclePointsWithFillIn(vertex1Obstacle, false);
 	}
 
 	const int32 initialSize = outObstacles.Num();
