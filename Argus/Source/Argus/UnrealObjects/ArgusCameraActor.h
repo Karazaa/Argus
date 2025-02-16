@@ -27,11 +27,12 @@ public:
 
 	void ForceSetCameraPositionWithoutZoom(const FVector& position);
 	void UpdateCamera(const UpdateCameraPanningParameters& cameraParameters, const float deltaTime);
+	void UpdateCameraOrbit(const float inputOrbitValue);
 	void UpdateCameraZoom(const float inputZoomValue);
 
 	const FVector& GetPanUpVector() { return m_moveUpDir; }
 	const FVector& GetPanRightVector() { return m_moveRightDir; }
-	const FVector& GetZoomTargetTranslation() { return m_zoomTargetTranslation; }
+	const FVector GetZoomTargetTranslation() { return m_currentZoomTranslationAmount.GetValue() * GetActorForwardVector(); }
 	const FVector& GetCameraPositionWithoutZoom() { return m_cameraPositionWithoutZoom; }
 
 protected:
@@ -82,22 +83,28 @@ protected:
 private:
 	static uint8 s_numWidgetPanningBlockers;
 
+	bool IsPanningBlocked() const { return s_numWidgetPanningBlockers != 0u || m_orbitInputThisFrame != 0.0f; }
+
+	void UpdateCameraOrbitInternal(const TOptional<FHitResult>& hitResult, const float deltaTime);
 	void UpdateCameraPanning(const UpdateCameraPanningParameters& cameraParameters, const float deltaTime);
-	void UpdateCameraZoomInternal(const float deltaTime);
+	void UpdateCameraZoomInternal(const TOptional<FHitResult>& hitResult, const float deltaTime);
+
+	void TraceToGround(TOptional<FHitResult>& hitResult);
 
 	ArgusMath::ExponentialDecaySmoother<float>		m_currentVerticalVelocity;
 	ArgusMath::ExponentialDecaySmoother<float>		m_currentHorizontalVelocity;
-	ArgusMath::ExponentialDecaySmoother<FVector>	m_currentLocation;
+	ArgusMath::ExponentialDecaySmoother<float>		m_currentZoomTranslationAmount;
 
+	float m_currentOrbitTheta = 0.0f;
+	float m_orbitInputThisFrame = 0.0f;
 	float m_zoomInputThisFrame = 0.0f;
 	float m_zoomLevelInterpolant = 0.5f;
+	float m_targetZoomTranslationAmount = 0.0f;
 	TRange<float> m_zoomRange;
 	TRange<float> m_zeroToOne;
 
-	FVector m_zoomTargetTranslation = FVector::ZeroVector;
 	FVector m_cameraPositionWithoutZoom = FVector::ZeroVector;
 
-	// TODO JAMES: Do these for real.
 	FVector m_moveUpDir		= FVector::ForwardVector;
 	FVector m_moveRightDir	= FVector::RightVector;
 };
