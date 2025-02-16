@@ -55,7 +55,8 @@ void ArgusSystemsManager::PopulateSingletonComponents(UWorld* worldPointer)
 
 	if (SpatialPartitioningComponent* spatialPartitioningComponent = singletonEntity.AddComponent<SpatialPartitioningComponent>())
 	{
-		spatialPartitioningComponent->m_argusEntityKDTree.RebuildKDTreeForAllArgusEntities();
+		spatialPartitioningComponent->m_argusEntityKDTree.SeedTreeWithAverageEntityLocation();
+		spatialPartitioningComponent->m_argusEntityKDTree.InsertAllArgusEntitiesIntoKDTree();
 
 		if (worldPointer)
 		{

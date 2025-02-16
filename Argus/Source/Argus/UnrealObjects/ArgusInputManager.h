@@ -109,4 +109,5 @@ private:
 
 	FVector m_cachedLastSelectInputWorldspaceLocation = FVector::ZeroVector;
 	bool m_selectedArgusActorsChangedThisFrame = false;
+	bool m_canRotateCamera = false;
 };

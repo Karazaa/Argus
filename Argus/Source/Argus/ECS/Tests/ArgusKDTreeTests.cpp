@@ -193,7 +193,7 @@ bool ArgusUtilitiesArgusKDTreeRebuildKDTreeForAllArgusEntitiesTest::RunTest(cons
 	CollectionOfArgusEntities entities;
 	PopulateKDTreeForTests(tree, entities, false);
 
-	tree.RebuildKDTreeForAllArgusEntities();
+	tree.InsertAllArgusEntitiesIntoKDTree();
 
 #pragma region Test that entities are present in the KD tree after full rebuild of tree.
 	TestTrue
@@ -204,7 +204,7 @@ bool ArgusUtilitiesArgusKDTreeRebuildKDTreeForAllArgusEntitiesTest::RunTest(cons
 			ARGUS_FUNCNAME, 
 			ARGUS_NAMEOF(ArgusEntityKDTree),
 			ARGUS_NAMEOF(ArgusEntity), 
-			ARGUS_NAMEOF(ArgusEntityKDTree::RebuildKDTreeForAllArgusEntities),
+			ARGUS_NAMEOF(ArgusEntityKDTree::InsertAllArgusEntitiesIntoKDTree),
 			ARGUS_NAMEOF(ArgusEntity), 
 			ARGUS_NAMEOF(ArgusEntityKDTree)
 		),

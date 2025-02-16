@@ -408,12 +408,14 @@ void UArgusInputManager::ProcessInputEvent(TObjectPtr<AArgusCameraActor>& argusC
 		case InputType::StartPanningLockout:
 			if (argusCamera)
 			{
+				m_canRotateCamera = true;
 				argusCamera->IncrementPanningBlockers();
 			}
 			break;
 		case InputType::StopPanningLockout:
 			if (argusCamera)
 			{
+				m_canRotateCamera = false;
 				argusCamera->DecrementPanningBlockers();
 			}
 			break;
@@ -558,6 +560,11 @@ void UArgusInputManager::ProcessMoveToInputEvent()
 		return;
 	}
 
+	if (m_canRotateCamera)
+	{
+		return;
+	}
+
 	FHitResult hitResult;
 	if (!m_owningPlayerController->GetMouseProjectionLocation(hitResult, ECC_WorldStatic))
 	{
@@ -658,6 +665,11 @@ void UArgusInputManager::ProcessMoveToInputEventPerSelectedActor(AArgusActor* ar
 void UArgusInputManager::ProcessSetWaypointInputEvent()
 {
 	if (!ValidateOwningPlayerController())
+	{
+		return;
+	}
+
+	if (m_canRotateCamera)
 	{
 		return;
 	}

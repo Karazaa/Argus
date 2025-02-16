@@ -93,13 +93,42 @@ void ArgusEntityKDTree::ErrorOnInvalidTransformComponent(const WIDECHAR* functio
 	);
 }
 
-void ArgusEntityKDTree::RebuildKDTreeForAllArgusEntities()
+void ArgusEntityKDTree::SeedTreeWithAverageEntityLocation()
 {
-	ARGUS_MEMORY_TRACE(ArgusKDTree);
-	ARGUS_TRACE(ArgusKDTree::RebuildKDTreeForAllArgusEntities);
+	FlushAllNodes();
 
-	ResetKDTreeWithAverageLocation();
+	FVector averageLocation = FVector::ZeroVector;
+	float numIncludedEntities = 0.0f;
+	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
+	{
+		ArgusEntity retrievedEntity = ArgusEntity::RetrieveEntity(i);
+		if (!retrievedEntity)
+		{
+			continue;
+		}
 
+		const TransformComponent* transformComponent = retrievedEntity.GetComponent<TransformComponent>();
+		if (!transformComponent)
+		{
+			continue;
+		}
+
+		averageLocation += transformComponent->m_transform.GetLocation();
+		numIncludedEntities += 1.0f;
+	}
+
+	averageLocation /= numIncludedEntities;
+
+	if (m_rootNode)
+	{
+		m_nodePool.Release(m_rootNode);
+	}
+	m_rootNode = m_nodePool.Take();
+	m_rootNode->Populate(averageLocation);
+}
+
+void ArgusEntityKDTree::InsertAllArgusEntitiesIntoKDTree()
+{
 	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{
 		ArgusEntity retrievedEntity = ArgusEntity::RetrieveEntity(i);
@@ -115,6 +144,17 @@ void ArgusEntityKDTree::RebuildKDTreeForAllArgusEntities()
 		}
 
 		InsertArgusEntityIntoKDTree(retrievedEntity);
+	}
+}
+
+void ArgusEntityKDTree::RebuildKDTreeForAllArgusEntities()
+{
+	ARGUS_MEMORY_TRACE(ArgusKDTree);
+	ARGUS_TRACE(ArgusKDTree::RebuildKDTreeForAllArgusEntities);
+
+	if (m_rootNode)
+	{
+		RebuildSubTreeForArgusEntitiesRecursive(m_rootNode, false);
 	}
 }
 
@@ -278,4 +318,67 @@ bool ArgusEntityKDTree::SearchForEntityIdRecursive(const ArgusEntityKDTreeNode* 
 	}
 
 	return false;
+}
+
+void ArgusEntityKDTree::RebuildSubTreeForArgusEntitiesRecursive(ArgusEntityKDTreeNode*& node, bool forceReInsertChildren)
+{
+	if (!node)
+	{
+		return;
+	}
+
+	if (forceReInsertChildren)
+	{
+		ArgusEntityKDTreeNode* leftChild = node->m_leftChild;
+		ArgusEntityKDTreeNode* rightChild = node->m_rightChild;
+		ClearNodeWithReInsert(node);
+		RebuildSubTreeForArgusEntitiesRecursive(leftChild, true);
+		RebuildSubTreeForArgusEntitiesRecursive(rightChild, true);
+		return;
+	}
+
+	if (node->ShouldSkipNode())
+	{
+		RebuildSubTreeForArgusEntitiesRecursive(node->m_leftChild, false);
+		RebuildSubTreeForArgusEntitiesRecursive(node->m_rightChild, false);
+		return;
+	}
+
+	const ArgusEntity entity = ArgusEntity::RetrieveEntity(node->m_entityId);
+	if (!entity)
+	{
+		return;
+	}
+
+	const TransformComponent* transformComponent = entity.GetComponent<TransformComponent>();
+	if (!transformComponent)
+	{
+		return;
+	}
+
+	if (transformComponent->m_transform.GetLocation() != node->m_worldSpaceLocation)
+	{
+		ArgusEntityKDTreeNode* leftChild = node->m_leftChild;
+		ArgusEntityKDTreeNode* rightChild = node->m_rightChild;
+		ClearNodeWithReInsert(node);
+		RebuildSubTreeForArgusEntitiesRecursive(leftChild, true);
+		RebuildSubTreeForArgusEntitiesRecursive(rightChild, true);
+	}
+	else
+	{
+		RebuildSubTreeForArgusEntitiesRecursive(node->m_leftChild, false);
+		RebuildSubTreeForArgusEntitiesRecursive(node->m_rightChild, false);
+	}
+}
+
+void ArgusEntityKDTree::ClearNodeWithReInsert(ArgusEntityKDTreeNode*& node)
+{
+	const ArgusEntity entity = ArgusEntity::RetrieveEntity(node->m_entityId);
+	if (!entity)
+	{
+		return;
+	}
+
+	m_nodePool.Release(node);
+	InsertArgusEntityIntoKDTree(entity);
 }

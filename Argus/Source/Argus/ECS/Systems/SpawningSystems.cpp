@@ -148,6 +148,14 @@ void SpawningSystems::SpawnEntityInternal(const SpawningSystemsComponentArgs& co
 		}
 	}
 
+	if (ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId))
+	{
+		if (SpatialPartitioningComponent* spatialPartitioningComponent = singletonEntity.GetComponent<SpatialPartitioningComponent>())
+		{
+			spatialPartitioningComponent->m_argusEntityKDTree.InsertArgusEntityIntoKDTree(spawnedEntity);
+		}
+	}
+
 	NavigationComponent* spawnedEntityNavigationComponent = spawnedEntity.GetComponent<NavigationComponent>();
 	TargetingComponent* spawnedEntityTargetingComponent = spawnedEntity.GetComponent<TargetingComponent>();
 	if (!spawnedEntityNavigationComponent || !spawnedEntityTargetingComponent)

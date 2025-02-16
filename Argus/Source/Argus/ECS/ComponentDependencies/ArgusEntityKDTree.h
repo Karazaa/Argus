@@ -33,6 +33,8 @@ public:
 	static void ErrorOnInvalidArgusEntity(const WIDECHAR* functionName);
 	static void ErrorOnInvalidTransformComponent(const WIDECHAR* functionName);
 
+	void SeedTreeWithAverageEntityLocation();
+	void InsertAllArgusEntitiesIntoKDTree();
 	void RebuildKDTreeForAllArgusEntities();
 	void InsertArgusEntityIntoKDTree(const ArgusEntity& entityToRepresent);
 
@@ -47,4 +49,6 @@ public:
 
 protected:
 	bool SearchForEntityIdRecursive(const ArgusEntityKDTreeNode* node, uint16 entityId) const;
+	void RebuildSubTreeForArgusEntitiesRecursive(ArgusEntityKDTreeNode*& node, bool forceReInsertChildren);
+	void ClearNodeWithReInsert(ArgusEntityKDTreeNode*& node);
 };
