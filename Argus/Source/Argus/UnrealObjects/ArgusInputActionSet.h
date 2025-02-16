@@ -48,4 +48,13 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TSoftObjectPtr<UInputAction> m_escapeAction = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TSoftObjectPtr<UInputAction> m_rotateCameraAction = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TSoftObjectPtr<UInputAction> m_startPanningLockoutAction = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TSoftObjectPtr<UInputAction> m_stopPanningLockoutAction = nullptr;
 };

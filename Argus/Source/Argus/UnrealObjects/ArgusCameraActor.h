@@ -78,6 +78,15 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Zoom")
 	float m_maxZoomDistanceToGround = 10000.0f;
 
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Orbit")
+	bool m_shouldInvertOrbitDirection = false;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Orbit")
+	float m_desiredOrbitVelocity = 0.1f;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Orbit")
+	float m_orbitThetaSmoothingDecayConstant = 5.0f;
+
 	virtual void BeginPlay() override;
 
 private:
@@ -94,9 +103,11 @@ private:
 	ArgusMath::ExponentialDecaySmoother<float>		m_currentVerticalVelocity;
 	ArgusMath::ExponentialDecaySmoother<float>		m_currentHorizontalVelocity;
 	ArgusMath::ExponentialDecaySmoother<float>		m_currentZoomTranslationAmount;
+	ArgusMath::ExponentialDecaySmoother<float>		m_currentOrbitThetaAmount;
 
-	float m_currentOrbitTheta = 0.0f;
 	float m_orbitInputThisFrame = 0.0f;
+	float m_targetOrbitTheta = 0.0f;
+
 	float m_zoomInputThisFrame = 0.0f;
 	float m_zoomLevelInterpolant = 0.5f;
 	float m_targetZoomTranslationAmount = 0.0f;

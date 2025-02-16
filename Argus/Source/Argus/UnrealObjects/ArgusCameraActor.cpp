@@ -5,9 +5,9 @@
 #include "ArgusMacros.h"
 #include "ArgusMath.h"
 #include "Camera/CameraComponent.h"
+#include "DrawDebugHelpers.h"
 #include "Engine/HitResult.h"
 #include "Engine/World.h"
-#include "DrawDebugHelpers.h"
 #include "Misc/Optional.h"
 
 uint8 AArgusCameraActor::s_numWidgetPanningBlockers = 0u;
@@ -52,6 +52,7 @@ void AArgusCameraActor::UpdateCamera(const UpdateCameraPanningParameters& camera
 	UpdateCameraZoomInternal(hitResult, deltaTime);
 
 	m_zoomInputThisFrame = 0.0f;
+	m_orbitInputThisFrame = 0.0f;
 }
 
 void AArgusCameraActor::UpdateCameraOrbit(const float inputOrbitValue)
@@ -70,6 +71,7 @@ void AArgusCameraActor::BeginPlay()
 	m_currentVerticalVelocity = ArgusMath::ExponentialDecaySmoother<float>(0.0f, m_verticalVelocitySmoothingDecayConstant);
 	m_currentHorizontalVelocity = ArgusMath::ExponentialDecaySmoother<float>(0.0f, m_horizontalVelocitySmoothingDecayConstant);
 	m_currentZoomTranslationAmount = ArgusMath::ExponentialDecaySmoother<float>(0.0f, m_zoomLocationSmoothingDecayConstant);
+	m_currentOrbitThetaAmount = ArgusMath::ExponentialDecaySmoother<float>(UE_PI, m_orbitThetaSmoothingDecayConstant);
 
 	ForceSetCameraPositionWithoutZoom(GetActorLocation());
 
@@ -84,28 +86,29 @@ void AArgusCameraActor::BeginPlay()
 		float arccosine = FMath::Acos(unitCircleLocation.X);
 		if (arcsine >= 0.0f)
 		{
-			m_currentOrbitTheta = arccosine;
+			m_currentOrbitThetaAmount.Reset(arccosine);
 		}
 		else if (arccosine < UE_HALF_PI)
 		{
-			m_currentOrbitTheta = UE_TWO_PI + arcsine;
+			m_currentOrbitThetaAmount.Reset(UE_TWO_PI + arcsine);
 		}
 		else
 		{
-			m_currentOrbitTheta = UE_PI - arcsine;
+			m_currentOrbitThetaAmount.Reset(UE_PI - arcsine);
 		}
 	}
 	else
 	{
-		m_currentOrbitTheta = UE_PI;
+		m_currentOrbitThetaAmount.Reset(UE_PI);
 	}
+	m_targetOrbitTheta = m_currentOrbitThetaAmount.GetValue();
 }
 
 void AArgusCameraActor::UpdateCameraOrbitInternal(const TOptional<FHitResult>& hitResult, const float deltaTime)
 {
 	ARGUS_TRACE(AArgusCameraActor::UpdateCameraOrbitInternal);
 
-	if (!hitResult || m_orbitInputThisFrame == 0.0f)
+	if (!hitResult)
 	{
 		return;
 	}
@@ -113,12 +116,18 @@ void AArgusCameraActor::UpdateCameraOrbitInternal(const TOptional<FHitResult>& h
 	// Set camera position without zoom
 	const FVector2D hitResultLocation = FVector2D(hitResult.GetValue().Location);
 	const float radius = FVector2D::Distance(hitResultLocation, FVector2D(m_cameraPositionWithoutZoom));
-	const float thetaChangeThisFrame = m_orbitInputThisFrame * deltaTime;
-	m_currentOrbitTheta += thetaChangeThisFrame;
+	float thetaChangeThisFrame = m_orbitInputThisFrame * m_desiredOrbitVelocity * deltaTime;
+	if (m_shouldInvertOrbitDirection)
+	{
+		thetaChangeThisFrame = -thetaChangeThisFrame;
+	}
+	m_targetOrbitTheta += thetaChangeThisFrame;
+	m_currentOrbitThetaAmount.SmoothChase(m_targetOrbitTheta, deltaTime);
 
 	FVector2D updatedLocation = FVector2D();
-	updatedLocation.X = FMath::Cos(m_currentOrbitTheta);
-	updatedLocation.Y = FMath::Sin(m_currentOrbitTheta);
+	const float currentOrbitTheta = m_currentOrbitThetaAmount.GetValue();
+	updatedLocation.X = FMath::Cos(currentOrbitTheta);
+	updatedLocation.Y = FMath::Sin(currentOrbitTheta);
 	updatedLocation = ArgusMath::ToUnrealVector2(updatedLocation);
 
 	m_moveUpDir = FVector(-updatedLocation, 0.0f);

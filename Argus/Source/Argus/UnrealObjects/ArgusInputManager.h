@@ -13,6 +13,7 @@
 class	AArgusPlayerController;
 class	UArgusInputActionSet;
 class	UEnhancedInputComponent;
+class   UEnhancedPlayerInput;
 struct	FInputActionValue;
 struct	ReticleComponent;
 
@@ -22,7 +23,7 @@ class UArgusInputManager : public UObject
 	GENERATED_BODY()
 
 public:
-	void SetupInputComponent(TWeakObjectPtr<AArgusPlayerController> owningPlayerController, TSoftObjectPtr<UArgusInputActionSet>& argusInputActionSet);
+	void SetupInputComponent(AArgusPlayerController* owningPlayerController, TSoftObjectPtr<UArgusInputActionSet>& argusInputActionSet);
 	void OnSelect(const FInputActionValue& value);
 	void OnSelectAdditive(const FInputActionValue& value);
 	void OnMarqueeSelect(const FInputActionValue& value);
@@ -35,6 +36,9 @@ public:
 	void OnAbility2(const FInputActionValue& value);
 	void OnAbility3(const FInputActionValue& value);
 	void OnEscape(const FInputActionValue& value);
+	void OnRotateCamera(const FInputActionValue& value);
+	void OnStartPanningLockout(const FInputActionValue& value);
+	void OnStopPanningLockout(const FInputActionValue& value);
 	void OnUserInterfaceButtonClicked(UArgusUIButtonClickedEventsEnum buttonClickedEvent);
 
 
@@ -56,7 +60,10 @@ private:
 		Ability1,
 		Ability2,
 		Ability3,
-		Escape
+		Escape,
+		RotateCamera,
+		StartPanningLockout,
+		StopPanningLockout
 	};
 
 	struct InputCache
@@ -72,7 +79,7 @@ private:
 	TSet<TWeakObjectPtr<AArgusActor>> m_activeAbilityGroupArgusActors;
 	TArray<InputCache> m_inputEventsThisFrame;
 
-	void BindActions(TSoftObjectPtr<UArgusInputActionSet>& argusInputActionSet, TWeakObjectPtr<UEnhancedInputComponent>& enhancedInputComponent);
+	void BindActions(TSoftObjectPtr<UArgusInputActionSet>& argusInputActionSet, UEnhancedInputComponent* enhancedInputComponent, UEnhancedPlayerInput* enhancedInput);
 	bool ValidateOwningPlayerController();
 
 	void PrepareToProcessInputEvents();
@@ -87,6 +94,7 @@ private:
 	void ProcessAbilityInputEvent(uint8 abilityIndex);
 	void ProcessAbilityInputEventPerSelectedActor(AArgusActor* argusActor, uint8 abilityIndex);
 	void ProcessEscapeInputEvent();
+	void ProcessRotateCameraInputEvent(TObjectPtr<AArgusCameraActor>& argusCamera, const FInputActionValue& value);
 
 	void AddSelectedActorExclusive(AArgusActor* argusActor);
 	void AddSelectedActorAdditive(AArgusActor* argusActor);

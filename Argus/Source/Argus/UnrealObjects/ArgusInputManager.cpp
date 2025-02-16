@@ -11,13 +11,14 @@
 #include "ArgusTesting.h"
 #include "Components/InputComponent.h"
 #include "EnhancedInputComponent.h"
+#include "EnhancedPlayerInput.h"
 #include "Systems/TransformSystems.h"
 
 #define ECC_RETICLE	ECC_GameTraceChannel1
 
-void UArgusInputManager::SetupInputComponent(TWeakObjectPtr<AArgusPlayerController> owningPlayerController, TSoftObjectPtr<UArgusInputActionSet>& argusInputActionSet)
+void UArgusInputManager::SetupInputComponent(AArgusPlayerController* owningPlayerController, TSoftObjectPtr<UArgusInputActionSet>& argusInputActionSet)
 {
-	if (!owningPlayerController.IsValid())
+	if (!owningPlayerController)
 	{
 		ARGUS_LOG
 		(
@@ -42,93 +43,100 @@ void UArgusInputManager::SetupInputComponent(TWeakObjectPtr<AArgusPlayerControll
 		return;
 	}
 
-	TWeakObjectPtr<UEnhancedInputComponent> enhancedInputComponent = Cast<UEnhancedInputComponent>(m_owningPlayerController->InputComponent.Get());	
-	BindActions(argusInputActionSet, enhancedInputComponent);
+	UEnhancedInputComponent* enhancedInputComponent = Cast<UEnhancedInputComponent>(m_owningPlayerController->InputComponent.Get());
+	UEnhancedPlayerInput* enhancedInput = Cast<UEnhancedPlayerInput>(m_owningPlayerController->PlayerInput);
+	BindActions(argusInputActionSet, enhancedInputComponent, enhancedInput);
 }
 
 #pragma region Input Action Delegates
 void UArgusInputManager::OnSelect(const FInputActionValue& value)
 {
 	ARGUS_MEMORY_TRACE(ArgusInputManager);
-
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::Select, value));
 }
 
 void UArgusInputManager::OnSelectAdditive(const FInputActionValue& value)
 {
 	ARGUS_MEMORY_TRACE(ArgusInputManager);
-
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::SelectAdditive, value));
 }
 
 void UArgusInputManager::OnMarqueeSelect(const FInputActionValue& value)
 {
 	ARGUS_MEMORY_TRACE(ArgusInputManager);
-
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::MarqueeSelect, value));
 }
 
 void UArgusInputManager::OnMarqueeSelectAdditive(const FInputActionValue& value)
 {
 	ARGUS_MEMORY_TRACE(ArgusInputManager);
-
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::MarqueeSelectAdditive, value));
 }
 
 void UArgusInputManager::OnMoveTo(const FInputActionValue& value)
 {
 	ARGUS_MEMORY_TRACE(ArgusInputManager);
-
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::MoveTo, value));
 }
 
 void UArgusInputManager::OnSetWaypoint(const FInputActionValue& value)
 {
 	ARGUS_MEMORY_TRACE(ArgusInputManager);
-
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::SetWaypoint, value));
 }
 
 void UArgusInputManager::OnZoom(const FInputActionValue& value)
 {
 	ARGUS_MEMORY_TRACE(ArgusInputManager);
-
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::Zoom, value));
 }
 
 void UArgusInputManager::OnAbility0(const FInputActionValue& value)
 {
 	ARGUS_MEMORY_TRACE(ArgusInputManager);
-
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::Ability0, value));
 }
 
 void UArgusInputManager::OnAbility1(const FInputActionValue& value)
 {
 	ARGUS_MEMORY_TRACE(ArgusInputManager);
-
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::Ability1, value));
 }
 
 void UArgusInputManager::OnAbility2(const FInputActionValue& value)
 {
 	ARGUS_MEMORY_TRACE(ArgusInputManager);
-
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::Ability2, value));
 }
 
 void UArgusInputManager::OnAbility3(const FInputActionValue& value)
 {
 	ARGUS_MEMORY_TRACE(ArgusInputManager);
-
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::Ability3, value));
 }
 
 void UArgusInputManager::OnEscape(const FInputActionValue& value)
 {
 	ARGUS_MEMORY_TRACE(ArgusInputManager);
-
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::Escape, value));
+}
+
+void UArgusInputManager::OnRotateCamera(const FInputActionValue& value)
+{
+	ARGUS_MEMORY_TRACE(ArgusInputManager);
+	m_inputEventsThisFrame.Emplace(InputCache(InputType::RotateCamera, value));
+}
+
+void UArgusInputManager::OnStartPanningLockout(const FInputActionValue& value)
+{
+	ARGUS_MEMORY_TRACE(ArgusInputManager);
+	m_inputEventsThisFrame.Emplace(InputCache(InputType::StartPanningLockout, value));
+}
+
+void UArgusInputManager::OnStopPanningLockout(const FInputActionValue& value)
+{
+	ARGUS_MEMORY_TRACE(ArgusInputManager);
+	m_inputEventsThisFrame.Emplace(InputCache(InputType::StopPanningLockout, value));
 }
 
 void UArgusInputManager::OnUserInterfaceButtonClicked(UArgusUIButtonClickedEventsEnum buttonClickedEvent)
@@ -241,9 +249,9 @@ bool UArgusInputManager::ShouldUpdateSelectedActorDisplay(ArgusEntity& templateS
 	return false;
 }
 
-void UArgusInputManager::BindActions(TSoftObjectPtr<UArgusInputActionSet>& argusInputActionSet, TWeakObjectPtr<UEnhancedInputComponent>& enhancedInputComponent)
+void UArgusInputManager::BindActions(TSoftObjectPtr<UArgusInputActionSet>& argusInputActionSet, UEnhancedInputComponent* enhancedInputComponent, UEnhancedPlayerInput* enhancedInput)
 {
-	if (!enhancedInputComponent.IsValid())
+	if (!enhancedInputComponent)
 	{
 		ARGUS_LOG
 		(
@@ -254,6 +262,17 @@ void UArgusInputManager::BindActions(TSoftObjectPtr<UArgusInputActionSet>& argus
 		);
 		return;
 	}
+	if (!enhancedInput)
+	{
+		ARGUS_LOG
+		(
+			ArgusInputLog, Error, TEXT("[%s] Failed to cast player input, %s, to a %s."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(m_owningPlayerController->PlayerInput),
+			ARGUS_NAMEOF(UEnhancedPlayerInput)
+		);
+		return;
+	}
 
 	const UArgusInputActionSet* actionSet = argusInputActionSet.LoadSynchronous();
 	if (!actionSet)
@@ -261,65 +280,65 @@ void UArgusInputManager::BindActions(TSoftObjectPtr<UArgusInputActionSet>& argus
 		ARGUS_LOG(ArgusInputLog, Error, TEXT("[%s] Failed to retrieve input action set, %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(argusInputActionSet));
 		return;
 	}
-
 	if (const UInputAction* selectAction = actionSet->m_selectAction.LoadSynchronous())
 	{
 		enhancedInputComponent->BindAction(selectAction, ETriggerEvent::Triggered, this, &UArgusInputManager::OnSelect);
 	}
-
 	if (const UInputAction* selectAdditiveAction = actionSet->m_selectAdditiveAction.LoadSynchronous())
 	{
 		enhancedInputComponent->BindAction(selectAdditiveAction, ETriggerEvent::Triggered, this, &UArgusInputManager::OnSelectAdditive);
 	}
-
 	if (const UInputAction* marqueeSelectAction = actionSet->m_marqueeSelectAction.LoadSynchronous())
 	{
 		enhancedInputComponent->BindAction(marqueeSelectAction, ETriggerEvent::Triggered, this, &UArgusInputManager::OnMarqueeSelect);
 	}
-
 	if (const UInputAction* marqueeSelectAdditiveAction = actionSet->m_marqueeSelectAdditiveAction.LoadSynchronous())
 	{
 		enhancedInputComponent->BindAction(marqueeSelectAdditiveAction, ETriggerEvent::Triggered, this, &UArgusInputManager::OnMarqueeSelectAdditive);
 	}
-
 	if (const UInputAction* moveToAction = actionSet->m_moveToAction.LoadSynchronous())
 	{
 		enhancedInputComponent->BindAction(moveToAction, ETriggerEvent::Triggered, this, &UArgusInputManager::OnMoveTo);
 	}
-
 	if (const UInputAction* setWaypointAction = actionSet->m_setWaypointAction.LoadSynchronous())
 	{
 		enhancedInputComponent->BindAction(setWaypointAction, ETriggerEvent::Triggered, this, &UArgusInputManager::OnSetWaypoint);
 	}
-
 	if (const UInputAction* zoomAction = actionSet->m_zoomAction.LoadSynchronous())
 	{
 		enhancedInputComponent->BindAction(zoomAction, ETriggerEvent::Triggered, this, &UArgusInputManager::OnZoom);
 	}
-
 	if (const UInputAction* ability0Action = actionSet->m_ability0Action.LoadSynchronous())
 	{
 		enhancedInputComponent->BindAction(ability0Action, ETriggerEvent::Triggered, this, &UArgusInputManager::OnAbility0);
 	}
-
 	if (const UInputAction* ability1Action = actionSet->m_ability1Action.LoadSynchronous())
 	{
 		enhancedInputComponent->BindAction(ability1Action, ETriggerEvent::Triggered, this, &UArgusInputManager::OnAbility1);
 	}
-
 	if (const UInputAction* ability2Action = actionSet->m_ability2Action.LoadSynchronous())
 	{
 		enhancedInputComponent->BindAction(ability2Action, ETriggerEvent::Triggered, this, &UArgusInputManager::OnAbility2);
 	}
-
 	if (const UInputAction* ability3Action = actionSet->m_ability3Action.LoadSynchronous())
 	{
 		enhancedInputComponent->BindAction(ability3Action, ETriggerEvent::Triggered, this, &UArgusInputManager::OnAbility3);
 	}
-
 	if (const UInputAction* escapeAction = actionSet->m_escapeAction.LoadSynchronous())
 	{
 		enhancedInputComponent->BindAction(escapeAction, ETriggerEvent::Triggered, this, &UArgusInputManager::OnEscape);
+	}
+	if (const UInputAction* rotateCameraAction = actionSet->m_rotateCameraAction.LoadSynchronous())
+	{
+		enhancedInputComponent->BindAction(rotateCameraAction, ETriggerEvent::Triggered, this, &UArgusInputManager::OnRotateCamera);
+	}
+	if (const UInputAction* startPanningLockoutAction = actionSet->m_startPanningLockoutAction.LoadSynchronous())
+	{
+		enhancedInputComponent->BindAction(startPanningLockoutAction, ETriggerEvent::Triggered, this, &UArgusInputManager::OnStartPanningLockout);
+	}
+	if (const UInputAction* stopPanningLockoutAction = actionSet->m_stopPanningLockoutAction.LoadSynchronous())
+	{
+		enhancedInputComponent->BindAction(stopPanningLockoutAction, ETriggerEvent::Triggered, this, &UArgusInputManager::OnStopPanningLockout);
 	}
 }
 
@@ -382,6 +401,21 @@ void UArgusInputManager::ProcessInputEvent(TObjectPtr<AArgusCameraActor>& argusC
 			break;
 		case InputType::Escape:
 			ProcessEscapeInputEvent();
+			break;
+		case InputType::RotateCamera:
+			ProcessRotateCameraInputEvent(argusCamera, inputType.m_value);
+			break;
+		case InputType::StartPanningLockout:
+			if (argusCamera)
+			{
+				argusCamera->IncrementPanningBlockers();
+			}
+			break;
+		case InputType::StopPanningLockout:
+			if (argusCamera)
+			{
+				argusCamera->DecrementPanningBlockers();
+			}
 			break;
 		default:
 			break;
@@ -823,6 +857,35 @@ void UArgusInputManager::ProcessEscapeInputEvent()
 		reticleComponent->DisableReticle();
 	}
 ;}
+
+void UArgusInputManager::ProcessRotateCameraInputEvent(TObjectPtr<AArgusCameraActor>& argusCamera, const FInputActionValue& value)
+{
+	const float rotationValue = value.Get<float>();
+	if (CVarEnableVerboseArgusInputLogging.GetValueOnGameThread())
+	{
+		ARGUS_LOG
+		(
+			ArgusInputLog, Display, TEXT("[%s] Rotate Camera with a value of %f occurred."),
+			ARGUS_FUNCNAME,
+			rotationValue
+		);
+	}
+
+	if (!argusCamera)
+	{
+		ARGUS_LOG
+		(
+			ArgusInputLog, Error, TEXT("[%s] Did not recieve a valid reference to %s. Cannot call %s."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(AArgusCameraActor),
+			ARGUS_NAMEOF(AArgusCameraActor::UpdateCameraOrbit)
+		);
+		return;
+	}
+
+	argusCamera->UpdateCameraOrbit(rotationValue);
+}
+
 #pragma endregion
 
 void UArgusInputManager::AddSelectedActorExclusive(AArgusActor* argusActor)
