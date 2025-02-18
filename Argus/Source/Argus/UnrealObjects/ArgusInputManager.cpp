@@ -371,10 +371,10 @@ void UArgusInputManager::ProcessInputEvent(TObjectPtr<AArgusCameraActor>& argusC
 			ProcessSelectInputEvent(true);
 			break;
 		case InputType::MarqueeSelect:
-			ProcessMarqueeSelectInputEvent(false);
+			ProcessMarqueeSelectInputEvent(argusCamera, false);
 			break;
 		case InputType::MarqueeSelectAdditive:
-			ProcessMarqueeSelectInputEvent(true);
+			ProcessMarqueeSelectInputEvent(argusCamera, true);
 			break;
 		case InputType::MoveTo:
 			InterruptReticleFromInputEvent();
@@ -483,9 +483,21 @@ void UArgusInputManager::ProcessSelectInputEvent(bool isAdditive)
 	}
 }
 
-void UArgusInputManager::ProcessMarqueeSelectInputEvent(bool isAdditive)
+void UArgusInputManager::ProcessMarqueeSelectInputEvent(TObjectPtr<AArgusCameraActor>& argusCamera, bool isAdditive)
 {
-	if (!ValidateOwningPlayerController())
+	if (!ValidateOwningPlayerController() || !argusCamera)
+	{
+		return;
+	}
+
+	ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId);
+	if (!singletonEntity)
+	{
+		return;
+	}
+
+	const SpatialPartitioningComponent* spatialPartitioningComponent = singletonEntity.GetComponent<SpatialPartitioningComponent>();
+	if (!spatialPartitioningComponent)
 	{
 		return;
 	}
@@ -496,17 +508,67 @@ void UArgusInputManager::ProcessMarqueeSelectInputEvent(bool isAdditive)
 		return;
 	}
 
-	if (ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId))
+	if (const ReticleComponent* reticleComponent = singletonEntity.GetComponent<ReticleComponent>())
 	{
-		if (const ReticleComponent* reticleComponent = singletonEntity.GetComponent<ReticleComponent>())
+		if (reticleComponent->IsReticleEnabled())
 		{
-			if (reticleComponent->IsReticleEnabled())
-			{
-				ProcessReticleAbilityForSelectedActors(reticleComponent);
-				return;
-			}
+			ProcessReticleAbilityForSelectedActors(reticleComponent);
+			return;
 		}
 	}
+
+	TArray<FVector2D> convexPolygon;
+	convexPolygon.SetNumZeroed(4);
+	const FVector2D panUpDirection = FVector2D(argusCamera->GetPanUpVector());
+	const FVector2D panRightDirection = FVector2D(argusCamera->GetPanRightVector());
+	const FVector2D cameraLocation = FVector2D(argusCamera->GetCameraPositionWithoutZoom());
+	convexPolygon[0] = FVector2D(m_cachedLastSelectInputWorldspaceLocation);
+	convexPolygon[2] = FVector2D(hitResult.Location);
+	const FVector2D fromCameraToFirstPoint = convexPolygon[0] - cameraLocation;
+	const FVector2D fromCameraToLastPoint = convexPolygon[2] - cameraLocation;
+
+	float dotFirstForward = fromCameraToFirstPoint.Dot(panUpDirection);
+	float dotLastForward = fromCameraToLastPoint.Dot(panUpDirection);
+	float dotFirstRight = fromCameraToFirstPoint.Dot(panRightDirection);
+	float dotLastRight = fromCameraToLastPoint.Dot(panRightDirection);
+
+	FVector2D generatedVerticalPoint = convexPolygon[0] + (panUpDirection * (dotLastForward - dotFirstForward));
+	FVector2D generatedHorizontalPoint = convexPolygon[0] + (panRightDirection * (dotLastRight - dotFirstRight));
+	if (dotFirstForward > dotLastForward)
+	{
+		// Down and to the left in screen space.
+		if (dotFirstRight > dotLastRight)
+		{
+			convexPolygon[1] = generatedVerticalPoint;
+			convexPolygon[3] = generatedHorizontalPoint;
+		}
+		// Down and to the right in screen space.
+		else
+		{
+			convexPolygon[1] = generatedHorizontalPoint;
+			convexPolygon[3] = generatedVerticalPoint;
+		}
+	}
+	else
+	{
+		// Up and to the left in screen space.
+		if (dotFirstRight > dotLastRight)
+		{
+			convexPolygon[1] = generatedHorizontalPoint;
+			convexPolygon[3] = generatedVerticalPoint;
+		}
+		// Up and to the right in screen space.
+		else
+		{
+			convexPolygon[1] = generatedVerticalPoint;
+			convexPolygon[3] = generatedHorizontalPoint;
+		}
+	}
+
+	TArray<uint16> entityIdsWithinBounds;
+	spatialPartitioningComponent->m_argusEntityKDTree.FindArgusEntityIdsWithinConvexPoly(entityIdsWithinBounds, convexPolygon);
+
+	// TODO JAMES: Delete beneath here and retrieve actors from entity Ids.
 
 	const FVector2D minXY = FVector2D
 	(

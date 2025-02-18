@@ -85,7 +85,7 @@ private:
 	void PrepareToProcessInputEvents();
 	void ProcessInputEvent(TObjectPtr<AArgusCameraActor>& argusCamera, const InputCache& inputEvent);
 	void ProcessSelectInputEvent(bool isAdditive);
-	void ProcessMarqueeSelectInputEvent(bool isAdditive);
+	void ProcessMarqueeSelectInputEvent(TObjectPtr<AArgusCameraActor>& argusCamera, bool isAdditive);
 	void ProcessMoveToInputEvent();
 	void ProcessMoveToInputEventPerSelectedActor(AArgusActor* argusActor, MovementState inputMovementState, ArgusEntity targetEntity, FVector targetLocation);
 	void ProcessSetWaypointInputEvent();

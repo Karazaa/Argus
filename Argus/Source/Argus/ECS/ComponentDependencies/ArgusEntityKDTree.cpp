@@ -308,6 +308,17 @@ bool ArgusEntityKDTree::FindArgusEntityIdsWithinConvexPoly(TArray<uint16>& outNe
 	return outNearbyArgusEntityIds.Num() > 0;
 }
 
+bool ArgusEntityKDTree::FindArgusEntityIdsWithinConvexPoly(TArray<uint16>& outNearbyArgusEntityIds, const TArray<FVector2D>& convexPolygonPoints) const
+{
+	TArray<FVector> convexPolyPoints3D;
+	convexPolyPoints3D.Reserve(convexPolygonPoints.Num());
+	for (int32 i = 0; i < convexPolygonPoints.Num(); ++i)
+	{
+		convexPolyPoints3D.Add(FVector(convexPolygonPoints[i], 0.0f));
+	}
+	return FindArgusEntityIdsWithinConvexPoly(outNearbyArgusEntityIds, convexPolyPoints3D);
+}
+
 bool ArgusEntityKDTree::DoesArgusEntityExistInKDTree(const ArgusEntity& entityToRepresent) const
 {
 	if (!entityToRepresent)
