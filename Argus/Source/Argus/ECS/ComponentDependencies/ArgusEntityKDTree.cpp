@@ -279,6 +279,35 @@ bool ArgusEntityKDTree::FindOtherArgusEntityIdsWithinRangeOfArgusEntity(TArray<u
 	return FindArgusEntityIdsWithinRangeOfLocation(outNearbyArgusEntityIds, transformComponent->m_transform.GetLocation(), range, entityToSearchAround);
 }
 
+bool ArgusEntityKDTree::FindArgusEntityIdsWithinConvexPoly(TArray<uint16>& outNearbyArgusEntityIds, const TArray<FVector>& convexPolygonPoints) const
+{
+	if (!m_rootNode)
+	{
+		return false;
+	}
+
+	if (convexPolygonPoints.Num() < 3)
+	{
+		ARGUS_LOG(ArgusUtilitiesLog, Error, TEXT("[%s] Number of points in %s is less than three. You can't have a polygon with fewer than three points."), ARGUS_FUNCNAME, ARGUS_NAMEOF(convexPolygonPoints));
+		return false;
+	}
+
+	TArray<const ArgusEntityKDTreeNode*> foundNodes;
+	FindNodesWithinConvexPolyRecursive(foundNodes, m_rootNode, convexPolygonPoints, ArgusECSConstants::k_maxEntities, 0u);
+	outNearbyArgusEntityIds.Reserve(foundNodes.Num());
+	for (int32 i = 0; i < foundNodes.Num(); ++i)
+	{
+		if (!foundNodes[i])
+		{
+			continue;
+		}
+
+		outNearbyArgusEntityIds.Add(foundNodes[i]->m_entityId);
+	}
+
+	return outNearbyArgusEntityIds.Num() > 0;
+}
+
 bool ArgusEntityKDTree::DoesArgusEntityExistInKDTree(const ArgusEntity& entityToRepresent) const
 {
 	if (!entityToRepresent)

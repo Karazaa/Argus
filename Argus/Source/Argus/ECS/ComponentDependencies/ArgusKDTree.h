@@ -315,48 +315,68 @@ void ArgusKDTree<NodeType, ValueComparisonType>::FindNodesWithinConvexPolyRecurs
 		return;
 	}
 
+	uint16 dimension = (depth) % 3u;
+	bool allDifferencesSameSign = false;
 	bool isInside = true;
-	FVector averageLocation = FVector::ZeroVector;
-	const int32 endIndex = convexPolygonPoints.Num() - 1;
-	for (int32 i = 0; i < endIndex; ++i)
+	float minDifferenceInDimension = FLT_MAX;
+	float currentSign = 0.0f;
+	for (int32 i = 0; i < convexPolygonPoints.Num(); ++i)
 	{
-		if (isInside && ArgusMath::IsLeftOfUnreal(convexPolygonPoints[i], convexPolygonPoints[i + 1], FVector2D(iterationNode->GetLocation())))
+		if (isInside && ((i + 1) != convexPolygonPoints.Num()) && ArgusMath::IsLeftOfUnreal(FVector2D(convexPolygonPoints[i]), FVector2D(convexPolygonPoints[i + 1]), FVector2D(iterationNode->GetLocation())))
 		{
 			isInside = false;
 			break;
 		}
 
-		averageLocation += convexPolygonPoints[i + 1];
+		float pointValueInDimension = 0.0f;
+		switch (dimension)
+		{
+			case 0:
+				pointValueInDimension = convexPolygonPoints[i].X;
+				break;
+			case 1:
+				pointValueInDimension = convexPolygonPoints[i].Y;
+				break;
+			case 2:
+				continue;
+		}
+
+		const float differenceInDimension = pointValueInDimension - iterationNode->GetValueForDimension(dimension);
+		if (i == 0)
+		{
+			currentSign = FMath::Sign(differenceInDimension);
+		}
+		else if (allDifferencesSameSign)
+		{
+			if (FMath::Sign(differenceInDimension) != currentSign)
+			{
+				allDifferencesSameSign = false;
+			}
+			else if (FMath::Abs(differenceInDimension) < FMath::Abs(minDifferenceInDimension))
+			{
+				minDifferenceInDimension = differenceInDimension;
+			}
+		}
 	}
-	averageLocation + convexPolygonPoints[0];
-	averageLocation /= static_cast<float>(convexPolygonPoints.Num());
 
 	if (isInside && !iterationNode->ShouldSkipNode(valueToSkip))
 	{
 		outNearbyNodes.Add(iterationNode);
 	}
 
-	if (iterationNode->forceFullSearch)
+	if (iterationNode->forceFullSearch || dimension == 2 || !allDifferencesSameSign)
 	{
 		FindNodesWithinConvexPolyRecursive(outNearbyNodes, iterationNode->m_leftChild, convexPolygonPoints, valueToSkip, depth + 1);
 		FindNodesWithinConvexPolyRecursive(outNearbyNodes, iterationNode->m_rightChild, convexPolygonPoints, valueToSkip, depth + 1);
 		return;
 	}
 
-	uint16 dimension = (depth) % 3u;
-	float averagePolygonValue = 0.0f;
-	switch (dimension)
+	if (minDifferenceInDimension < 0.0f)
 	{
-	case 0:
-		averagePolygonValue = averageLocation.X;
-		break;
-	case 1:
-		averagePolygonValue = averageLocation.Y;
-		break;
-	case 2:
-		averagePolygonValue = averageLocation.Z;
-		break;
+		FindNodesWithinConvexPolyRecursive(outNearbyNodes, iterationNode->m_leftChild, convexPolygonPoints, valueToSkip, depth + 1);
 	}
-
-	// TODO JAMES: Create search criteria for subtrees.
+	else
+	{
+		FindNodesWithinConvexPolyRecursive(outNearbyNodes, iterationNode->m_rightChild, convexPolygonPoints, valueToSkip, depth + 1);
+	}
 }
