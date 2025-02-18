@@ -117,11 +117,6 @@ namespace ArgusMath
 		return Determinant(lineSegmentPoint0 - evaluationPoint, lineSegmentPoint1 - lineSegmentPoint0);
 	}
 
-	static bool IsLeftOfCartesian(const FVector2D& lineSegmentPoint0, const FVector2D& lineSegmentPoint1, const FVector2D& evaluationPoint)
-	{
-		return AmountLeftOf(lineSegmentPoint0, lineSegmentPoint1, evaluationPoint) > 0.0f;
-	}
-
 	// Unreal being left handed hurts my soul. Defining two functions here simply for code readability. 
 	static FVector2D ToCartesianVector2(const FVector2D& vectorToConvert)
 	{
@@ -149,5 +144,15 @@ namespace ArgusMath
 		FVector output = vectorToConvert;
 		output.Y *= -1.0f;
 		return output;
+	}
+
+	static bool IsLeftOfCartesian(const FVector2D& lineSegmentPoint0, const FVector2D& lineSegmentPoint1, const FVector2D& evaluationPoint)
+	{
+		return AmountLeftOf(lineSegmentPoint0, lineSegmentPoint1, evaluationPoint) > 0.0f;
+	}
+
+	static bool IsLeftOfUnreal(const FVector2D& lineSegmentPoint0, const FVector2D& lineSegmentPoint1, const FVector2D& evaluationPoint)
+	{
+		return AmountLeftOf(ToCartesianVector2(lineSegmentPoint0), ToCartesianVector2(lineSegmentPoint1), ToCartesianVector2(evaluationPoint)) > 0.0f;
 	}
 }

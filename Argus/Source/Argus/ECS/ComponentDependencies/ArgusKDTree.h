@@ -3,6 +3,7 @@
 #pragma once
 
 #include "ArgusECSConstants.h"
+#include "ArgusMath.h"
 #include "ArgusObjectPool.h"
 #include "CoreMinimal.h"
 #include <vector>
@@ -36,7 +37,8 @@ protected:
 	const NodeType* ChooseNodeCloserToTarget(const NodeType* node0, const NodeType* node1, const FVector& targetLocation, ValueComparisonType valueToSkip) const;
 
 	void FindNodesWithinRangeOfLocationRecursive(TArray<const NodeType*>& outNearbyNodes, const NodeType* iterationNode, const FVector& targetLocation, const float rangeSquared, ValueComparisonType valueToSkip, uint16 depth) const;
-	
+	void FindNodesWithinConvexPolyRecursive(TArray<const NodeType*>& outOverlappingNodes, const NodeType* iterationNode, const TArray<FVector>& convexPolygonPoints, ValueComparisonType valueToSkip, uint16 depth) const;
+
 	NodeType* m_rootNode = nullptr;
 	ArgusObjectPool<NodeType> m_nodePool;
 };
@@ -259,12 +261,9 @@ void ArgusKDTree<NodeType, ValueComparisonType>::FindNodesWithinRangeOfLocationR
 		return;
 	}
 
-	if (iterationNode->PassesRangeCheck(targetLocation, rangeSquared))
+	if (iterationNode->PassesRangeCheck(targetLocation, rangeSquared) && !iterationNode->ShouldSkipNode(valueToSkip))
 	{
-		if (!iterationNode->ShouldSkipNode(valueToSkip))
-		{
-			outNearbyNodes.Add(iterationNode);
-		}
+		outNearbyNodes.Add(iterationNode);
 	}
 
 	if (iterationNode->forceFullSearch)
@@ -306,4 +305,58 @@ void ArgusKDTree<NodeType, ValueComparisonType>::FindNodesWithinRangeOfLocationR
 			FindNodesWithinRangeOfLocationRecursive(outNearbyNodes, iterationNode->m_rightChild, targetLocation, rangeSquared, valueToSkip, depth + 1);
 		}
 	}
+}
+
+template <class NodeType, typename ValueComparisonType>
+void ArgusKDTree<NodeType, ValueComparisonType>::FindNodesWithinConvexPolyRecursive(TArray<const NodeType*>& outNearbyNodes, const NodeType* iterationNode, const TArray<FVector>& convexPolygonPoints, ValueComparisonType valueToSkip, uint16 depth) const
+{
+	if (!iterationNode)
+	{
+		return;
+	}
+
+	bool isInside = true;
+	FVector averageLocation = FVector::ZeroVector;
+	const int32 endIndex = convexPolygonPoints.Num() - 1;
+	for (int32 i = 0; i < endIndex; ++i)
+	{
+		if (isInside && ArgusMath::IsLeftOfUnreal(convexPolygonPoints[i], convexPolygonPoints[i + 1], FVector2D(iterationNode->GetLocation())))
+		{
+			isInside = false;
+			break;
+		}
+
+		averageLocation += convexPolygonPoints[i + 1];
+	}
+	averageLocation + convexPolygonPoints[0];
+	averageLocation /= static_cast<float>(convexPolygonPoints.Num());
+
+	if (isInside && !iterationNode->ShouldSkipNode(valueToSkip))
+	{
+		outNearbyNodes.Add(iterationNode);
+	}
+
+	if (iterationNode->forceFullSearch)
+	{
+		FindNodesWithinConvexPolyRecursive(outNearbyNodes, iterationNode->m_leftChild, convexPolygonPoints, valueToSkip, depth + 1);
+		FindNodesWithinConvexPolyRecursive(outNearbyNodes, iterationNode->m_rightChild, convexPolygonPoints, valueToSkip, depth + 1);
+		return;
+	}
+
+	uint16 dimension = (depth) % 3u;
+	float averagePolygonValue = 0.0f;
+	switch (dimension)
+	{
+	case 0:
+		averagePolygonValue = averageLocation.X;
+		break;
+	case 1:
+		averagePolygonValue = averageLocation.Y;
+		break;
+	case 2:
+		averagePolygonValue = averageLocation.Z;
+		break;
+	}
+
+	// TODO JAMES: Create search criteria for subtrees.
 }
