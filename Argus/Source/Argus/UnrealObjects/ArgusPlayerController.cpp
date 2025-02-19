@@ -86,6 +86,30 @@ bool AArgusPlayerController::GetMouseProjectionLocation(FHitResult& outHitResult
 	return outcome;
 }
 
+bool AArgusPlayerController::GetArgusActorsFromArgusEntityIds(const TArray<uint16>& inArgusEntityIds, TArray<AArgusActor*>& outArgusActors) const
+{
+	outArgusActors.SetNumZeroed(inArgusEntityIds.Num());
+
+	const UWorld* world = GetWorld();
+	if (!world)
+	{
+		return false;
+	}
+
+	const UArgusGameInstance* gameInstance = world->GetGameInstance<UArgusGameInstance>();
+	if (!gameInstance)
+	{
+		return false;
+	}
+
+	for (int i = 0; i < inArgusEntityIds.Num(); ++i)
+	{
+		outArgusActors[i] = gameInstance->GetArgusActorFromArgusEntity(ArgusEntity::RetrieveEntity(inArgusEntityIds[i]));
+	}
+
+	return true;
+}
+
 bool AArgusPlayerController::GetArgusActorsFromArgusEntities(const TArray<ArgusEntity>& inArgusEntities, TArray<AArgusActor*>& outArgusActors) const
 {
 	outArgusActors.SetNumZeroed(inArgusEntities.Num());

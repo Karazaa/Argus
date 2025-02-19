@@ -322,7 +322,7 @@ void ArgusKDTree<NodeType, ValueComparisonType>::FindNodesWithinConvexPolyRecurs
 	float currentSign = 0.0f;
 	for (int32 i = 0; i < convexPolygonPoints.Num(); ++i)
 	{
-		if (isInside && ((i + 1) != convexPolygonPoints.Num()) && ArgusMath::IsLeftOfUnreal(FVector2D(convexPolygonPoints[i]), FVector2D(convexPolygonPoints[i + 1]), FVector2D(iterationNode->GetLocation())))
+		if (isInside && ArgusMath::IsLeftOfUnreal(FVector2D(convexPolygonPoints[i]), FVector2D(convexPolygonPoints[(i + 1) % convexPolygonPoints.Num()]), FVector2D(iterationNode->GetLocation())))
 		{
 			isInside = false;
 			break;

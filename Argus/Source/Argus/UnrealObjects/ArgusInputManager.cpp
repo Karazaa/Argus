@@ -568,24 +568,8 @@ void UArgusInputManager::ProcessMarqueeSelectInputEvent(TObjectPtr<AArgusCameraA
 	TArray<uint16> entityIdsWithinBounds;
 	spatialPartitioningComponent->m_argusEntityKDTree.FindArgusEntityIdsWithinConvexPoly(entityIdsWithinBounds, convexPolygon);
 
-	// TODO JAMES: Delete beneath here and retrieve actors from entity Ids.
-
-	const FVector2D minXY = FVector2D
-	(
-		FMath::Min(hitResult.Location.X, m_cachedLastSelectInputWorldspaceLocation.X), 
-		FMath::Min(hitResult.Location.Y, m_cachedLastSelectInputWorldspaceLocation.Y)
-	);
-	const FVector2D maxXY = FVector2D
-	(
-		FMath::Max(hitResult.Location.X, m_cachedLastSelectInputWorldspaceLocation.X),
-		FMath::Max(hitResult.Location.Y, m_cachedLastSelectInputWorldspaceLocation.Y)
-	);
-
-	TArray<ArgusEntity> entitiesWithinBounds;
 	TArray<AArgusActor*> actorsWithinBounds;
-	TransformSystems::FindEntitiesWithinXYBounds(minXY, maxXY, entitiesWithinBounds);
-
-	if (!m_owningPlayerController->GetArgusActorsFromArgusEntities(entitiesWithinBounds, actorsWithinBounds))
+	if (!m_owningPlayerController->GetArgusActorsFromArgusEntityIds(entityIdsWithinBounds, actorsWithinBounds))
 	{
 		return;
 	}
@@ -598,8 +582,8 @@ void UArgusInputManager::ProcessMarqueeSelectInputEvent(TObjectPtr<AArgusCameraA
 		(
 			ArgusInputLog, Display, TEXT("[%s] Did a Marquee Select from {%f, %f} to {%f, %f}. Found %d entities. Is additive? %s"),
 			ARGUS_FUNCNAME,
-			minXY.X, minXY.Y,
-			maxXY.X, maxXY.Y,
+			convexPolygon[0].X, convexPolygon[0].Y,
+			convexPolygon[2].X, convexPolygon[2].Y,
 			numFoundEntities,
 			isAdditive ? TEXT("Yes") : TEXT("No")
 		);
