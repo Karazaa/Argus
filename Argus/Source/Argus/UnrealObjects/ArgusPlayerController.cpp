@@ -57,7 +57,7 @@ AArgusCameraActor::UpdateCameraPanningParameters AArgusPlayerController::GetScre
 	FVector2D screenPosition;
 	if (localPlayer->ViewportClient->GetMousePosition(screenPosition))
 	{
-		output.m_screenSpaceMousePosition = screenPosition;
+		output.m_screenSpaceMouseLocation = screenPosition;
 	}
 	if (const FSceneViewport* const gameViewport = localPlayer->ViewportClient->GetGameViewport())
 	{

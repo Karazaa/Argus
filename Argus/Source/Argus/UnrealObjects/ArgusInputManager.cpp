@@ -162,7 +162,7 @@ void UArgusInputManager::OnUserInterfaceButtonClicked(UArgusUIButtonClickedEvent
 
 #pragma endregion
 
-void UArgusInputManager::ProcessPlayerInput(TObjectPtr<AArgusCameraActor>& argusCamera, const AArgusCameraActor::UpdateCameraPanningParameters& updateCameraParameters, float deltaTime)
+void UArgusInputManager::ProcessPlayerInput(AArgusCameraActor* argusCamera, const AArgusCameraActor::UpdateCameraPanningParameters& updateCameraParameters, float deltaTime)
 {
 	ARGUS_MEMORY_TRACE(ArgusInputManager);
 	ARGUS_TRACE(UArgusInputManager::ProcessPlayerInput);
@@ -358,7 +358,7 @@ void UArgusInputManager::PrepareToProcessInputEvents()
 	m_selectedArgusActorsChangedThisFrame = false;
 }
 
-void UArgusInputManager::ProcessInputEvent(TObjectPtr<AArgusCameraActor>& argusCamera, const InputCache& inputType)
+void UArgusInputManager::ProcessInputEvent(AArgusCameraActor* argusCamera, const InputCache& inputType)
 {
 	ARGUS_TRACE(UArgusInputManager::ProcessInputEvent);
 
@@ -483,7 +483,7 @@ void UArgusInputManager::ProcessSelectInputEvent(bool isAdditive)
 	}
 }
 
-void UArgusInputManager::ProcessMarqueeSelectInputEvent(TObjectPtr<AArgusCameraActor>& argusCamera, bool isAdditive)
+void UArgusInputManager::ProcessMarqueeSelectInputEvent(AArgusCameraActor* argusCamera, bool isAdditive)
 {
 	if (!ValidateOwningPlayerController() || !argusCamera)
 	{
@@ -521,7 +521,7 @@ void UArgusInputManager::ProcessMarqueeSelectInputEvent(TObjectPtr<AArgusCameraA
 	convexPolygon.SetNumZeroed(4);
 	const FVector2D panUpDirection = FVector2D(argusCamera->GetPanUpVector());
 	const FVector2D panRightDirection = FVector2D(argusCamera->GetPanRightVector());
-	const FVector2D cameraLocation = FVector2D(argusCamera->GetCameraPositionWithoutZoom());
+	const FVector2D cameraLocation = FVector2D(argusCamera->GetCameraLocationWithoutZoom());
 	convexPolygon[0] = FVector2D(m_cachedLastSelectInputWorldspaceLocation);
 	convexPolygon[2] = FVector2D(hitResult.Location);
 	const FVector2D fromCameraToFirstPoint = convexPolygon[0] - cameraLocation;
@@ -795,7 +795,7 @@ void UArgusInputManager::ProcessSetWaypointInputEventPerSelectedActor(AArgusActo
 	}
 }
 
-void UArgusInputManager::ProcessZoomInputEvent(TObjectPtr<AArgusCameraActor>& argusCamera, const FInputActionValue& value)
+void UArgusInputManager::ProcessZoomInputEvent(AArgusCameraActor* argusCamera, const FInputActionValue& value)
 {
 	const float zoomValue = value.Get<float>();
 	if (CVarEnableVerboseArgusInputLogging.GetValueOnGameThread())
@@ -916,7 +916,7 @@ void UArgusInputManager::ProcessEscapeInputEvent()
 	}
 ;}
 
-void UArgusInputManager::ProcessRotateCameraInputEvent(TObjectPtr<AArgusCameraActor>& argusCamera, const FInputActionValue& value)
+void UArgusInputManager::ProcessRotateCameraInputEvent(AArgusCameraActor* argusCamera, const FInputActionValue& value)
 {
 	const float rotationValue = value.Get<float>();
 	if (CVarEnableVerboseArgusInputLogging.GetValueOnGameThread())

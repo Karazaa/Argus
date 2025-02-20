@@ -21,11 +21,11 @@ public:
 
 	struct UpdateCameraPanningParameters
 	{
-		TOptional<FVector2D> m_screenSpaceMousePosition;
+		TOptional<FVector2D> m_screenSpaceMouseLocation;
 		TOptional<FVector2D> m_screenSpaceXYBounds;
 	};
 
-	void ForceSetCameraPositionWithoutZoom(const FVector& position);
+	void ForceSetCameraLocationWithoutZoom(const FVector& location);
 	void UpdateCamera(const UpdateCameraPanningParameters& cameraParameters, const float deltaTime);
 	void UpdateCameraOrbit(const float inputOrbitValue);
 	void UpdateCameraZoom(const float inputZoomValue);
@@ -33,7 +33,7 @@ public:
 	const FVector& GetPanUpVector() { return m_moveUpDir; }
 	const FVector& GetPanRightVector() { return m_moveRightDir; }
 	const FVector GetZoomTargetTranslation() { return m_currentZoomTranslationAmount.GetValue() * GetActorForwardVector(); }
-	const FVector& GetCameraPositionWithoutZoom() { return m_cameraPositionWithoutZoom; }
+	const FVector& GetCameraLocationWithoutZoom() { return m_cameraLocationWithoutZoom; }
 
 protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Panning")
@@ -114,7 +114,7 @@ private:
 	TRange<float> m_zoomRange;
 	TRange<float> m_zeroToOne;
 
-	FVector m_cameraPositionWithoutZoom = FVector::ZeroVector;
+	FVector m_cameraLocationWithoutZoom = FVector::ZeroVector;
 
 	FVector m_moveUpDir		= FVector::ForwardVector;
 	FVector m_moveRightDir	= FVector::RightVector;

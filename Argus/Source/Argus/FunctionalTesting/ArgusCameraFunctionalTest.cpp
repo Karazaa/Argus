@@ -45,7 +45,7 @@ void AArgusCameraFunctionalTest::StartNextTestStep()
 		m_testStartingLocation = m_argusCameraActor->GetActorLocation();
 	}
 
-	m_argusCameraActor->ForceSetCameraPositionWithoutZoom(m_testStartingLocation);
+	m_argusCameraActor->ForceSetCameraLocationWithoutZoom(m_testStartingLocation);
 
 	switch (m_testStepIndex)
 	{
@@ -140,7 +140,7 @@ bool AArgusCameraFunctionalTest::DidPanLeftTestStepSucceed(const FVector& locati
 
 	AArgusCameraActor::UpdateCameraPanningParameters cameraParameters;
 	cameraParameters.m_screenSpaceXYBounds = k_screenBounds;
-	cameraParameters.m_screenSpaceMousePosition = k_leftScreenPos;
+	cameraParameters.m_screenSpaceMouseLocation = k_leftScreenPos;
 	m_argusCameraActor->UpdateCamera(cameraParameters, m_currentDeltaSeconds);
 
 	return false;
@@ -155,7 +155,7 @@ bool AArgusCameraFunctionalTest::DidPanRightTestStepSucceed(const FVector& locat
 
 	AArgusCameraActor::UpdateCameraPanningParameters cameraParameters;
 	cameraParameters.m_screenSpaceXYBounds = k_screenBounds;
-	cameraParameters.m_screenSpaceMousePosition = k_rightScreenPos;
+	cameraParameters.m_screenSpaceMouseLocation = k_rightScreenPos;
 	m_argusCameraActor->UpdateCamera(cameraParameters, m_currentDeltaSeconds);
 
 	return false;
@@ -170,7 +170,7 @@ bool AArgusCameraFunctionalTest::DidPanUpTestStepSucceed(const FVector& location
 
 	AArgusCameraActor::UpdateCameraPanningParameters cameraParameters;
 	cameraParameters.m_screenSpaceXYBounds = k_screenBounds;
-	cameraParameters.m_screenSpaceMousePosition = k_upScreenPos;
+	cameraParameters.m_screenSpaceMouseLocation = k_upScreenPos;
 	m_argusCameraActor->UpdateCamera(cameraParameters, m_currentDeltaSeconds);
 
 	return false;
@@ -185,7 +185,7 @@ bool AArgusCameraFunctionalTest::DidPanDownTestStepSucceed(const FVector& locati
 
 	AArgusCameraActor::UpdateCameraPanningParameters cameraParameters;
 	cameraParameters.m_screenSpaceXYBounds = k_screenBounds;
-	cameraParameters.m_screenSpaceMousePosition = k_downScreenPos;
+	cameraParameters.m_screenSpaceMouseLocation = k_downScreenPos;
 	m_argusCameraActor->UpdateCamera(cameraParameters, m_currentDeltaSeconds);
 
 	return false;
@@ -211,11 +211,11 @@ bool AArgusCameraFunctionalTest::UpdateCameraZoomAndCheckAtBoundaries(const FVec
 {
 	AArgusCameraActor::UpdateCameraPanningParameters cameraParameters;
 	cameraParameters.m_screenSpaceXYBounds = k_screenBounds;
-	cameraParameters.m_screenSpaceMousePosition = k_neutralScreenPos;
+	cameraParameters.m_screenSpaceMouseLocation = k_neutralScreenPos;
 	m_argusCameraActor->UpdateCamera(cameraParameters, m_currentDeltaSeconds);
 
 	const FVector postUpdateZoomTargetTranslation = m_argusCameraActor->GetZoomTargetTranslation();
-	const FVector cameraPositionWithoutZoom = m_argusCameraActor->GetCameraPositionWithoutZoom();
+	const FVector cameraPositionWithoutZoom = m_argusCameraActor->GetCameraLocationWithoutZoom();
 
 	const float translationMagnitudeSquaredDifference = FMath::Abs(initialZoomTargetTranslation.SquaredLength() - postUpdateZoomTargetTranslation.SquaredLength());
 	const float locationMagnitudeSquaredDifference = FMath::Abs((postUpdateZoomTargetTranslation + cameraPositionWithoutZoom).SquaredLength() - m_argusCameraActor->GetActorLocation().SquaredLength());

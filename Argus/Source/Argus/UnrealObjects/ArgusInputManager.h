@@ -42,7 +42,7 @@ public:
 	void OnUserInterfaceButtonClicked(UArgusUIButtonClickedEventsEnum buttonClickedEvent);
 
 
-	void ProcessPlayerInput(TObjectPtr<AArgusCameraActor>& argusCamera, const AArgusCameraActor::UpdateCameraPanningParameters& updateCameraPanningParameters, float deltaTime);
+	void ProcessPlayerInput(AArgusCameraActor* argusCamera, const AArgusCameraActor::UpdateCameraPanningParameters& updateCameraPanningParameters, float deltaTime);
 	bool ShouldUpdateSelectedActorDisplay(ArgusEntity& templateSelectedEntity);
 
 private:
@@ -83,18 +83,18 @@ private:
 	bool ValidateOwningPlayerController();
 
 	void PrepareToProcessInputEvents();
-	void ProcessInputEvent(TObjectPtr<AArgusCameraActor>& argusCamera, const InputCache& inputEvent);
+	void ProcessInputEvent(AArgusCameraActor* argusCamera, const InputCache& inputEvent);
 	void ProcessSelectInputEvent(bool isAdditive);
-	void ProcessMarqueeSelectInputEvent(TObjectPtr<AArgusCameraActor>& argusCamera, bool isAdditive);
+	void ProcessMarqueeSelectInputEvent(AArgusCameraActor* argusCamera, bool isAdditive);
 	void ProcessMoveToInputEvent();
 	void ProcessMoveToInputEventPerSelectedActor(AArgusActor* argusActor, MovementState inputMovementState, ArgusEntity targetEntity, FVector targetLocation);
 	void ProcessSetWaypointInputEvent();
 	void ProcessSetWaypointInputEventPerSelectedActor(AArgusActor* argusActor, FVector targetLocation);
-	void ProcessZoomInputEvent(TObjectPtr<AArgusCameraActor>& argusCamera, const FInputActionValue& value);
+	void ProcessZoomInputEvent(AArgusCameraActor* argusCamera, const FInputActionValue& value);
 	void ProcessAbilityInputEvent(uint8 abilityIndex);
 	void ProcessAbilityInputEventPerSelectedActor(AArgusActor* argusActor, uint8 abilityIndex);
 	void ProcessEscapeInputEvent();
-	void ProcessRotateCameraInputEvent(TObjectPtr<AArgusCameraActor>& argusCamera, const FInputActionValue& value);
+	void ProcessRotateCameraInputEvent(AArgusCameraActor* argusCamera, const FInputActionValue& value);
 
 	void AddSelectedActorExclusive(AArgusActor* argusActor);
 	void AddSelectedActorAdditive(AArgusActor* argusActor);

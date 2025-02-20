@@ -32,13 +32,13 @@ AArgusCameraActor::AArgusCameraActor()
 	m_zeroToOne = TRange<float>(0.0f, 1.0f);
 }
 
-void AArgusCameraActor::ForceSetCameraPositionWithoutZoom(const FVector& position)
+void AArgusCameraActor::ForceSetCameraLocationWithoutZoom(const FVector& location)
 {
-	m_cameraPositionWithoutZoom = position;
+	m_cameraLocationWithoutZoom = location;
 	m_currentVerticalVelocity.ResetZero();
 	m_currentHorizontalVelocity.ResetZero();
 	m_currentZoomTranslationAmount.ResetZero();
-	SetActorLocation(position);
+	SetActorLocation(location);
 }
 
 void AArgusCameraActor::UpdateCamera(const UpdateCameraPanningParameters& cameraParameters, const float deltaTime)
@@ -73,14 +73,14 @@ void AArgusCameraActor::BeginPlay()
 	m_currentZoomTranslationAmount = ArgusMath::ExponentialDecaySmoother<float>(0.0f, m_zoomLocationSmoothingDecayConstant);
 	m_currentOrbitThetaAmount = ArgusMath::ExponentialDecaySmoother<float>(UE_PI, m_orbitThetaSmoothingDecayConstant);
 
-	ForceSetCameraPositionWithoutZoom(GetActorLocation());
+	ForceSetCameraLocationWithoutZoom(GetActorLocation());
 
 	TOptional<FHitResult> hitResult = NullOpt;
 	TraceToGround(hitResult);
 	if (hitResult)
 	{
 		const FVector2D hitLocation2D = FVector2D(hitResult.GetValue().Location);
-		const FVector2D cameraLocation2D = FVector2D(m_cameraPositionWithoutZoom);
+		const FVector2D cameraLocation2D = FVector2D(m_cameraLocationWithoutZoom);
 		const FVector2D unitCircleLocation = ArgusMath::ToCartesianVector2((cameraLocation2D - hitLocation2D).GetSafeNormal());
 		float arcsine = FMath::Asin(unitCircleLocation.Y);
 		float arccosine = FMath::Acos(unitCircleLocation.X);
@@ -113,9 +113,9 @@ void AArgusCameraActor::UpdateCameraOrbitInternal(const TOptional<FHitResult>& h
 		return;
 	}
 
-	// Set camera position without zoom
+	// Set camera location without zoom
 	const FVector2D hitResultLocation = FVector2D(hitResult.GetValue().Location);
-	const float radius = FVector2D::Distance(hitResultLocation, FVector2D(m_cameraPositionWithoutZoom));
+	const float radius = FVector2D::Distance(hitResultLocation, FVector2D(m_cameraLocationWithoutZoom));
 	float thetaChangeThisFrame = m_orbitInputThisFrame * m_desiredOrbitVelocity * deltaTime;
 	if (m_shouldInvertOrbitDirection)
 	{
@@ -133,11 +133,11 @@ void AArgusCameraActor::UpdateCameraOrbitInternal(const TOptional<FHitResult>& h
 	m_moveUpDir = FVector(-updatedLocation, 0.0f);
 
 	updatedLocation *= radius;
-	m_cameraPositionWithoutZoom.X = hitResultLocation.X + updatedLocation.X;
-	m_cameraPositionWithoutZoom.Y = hitResultLocation.Y + updatedLocation.Y;
+	m_cameraLocationWithoutZoom.X = hitResultLocation.X + updatedLocation.X;
+	m_cameraLocationWithoutZoom.Y = hitResultLocation.Y + updatedLocation.Y;
 
 	// Counter rotate camera actor.
-	const FVector forwardVector = hitResult.GetValue().Location - m_cameraPositionWithoutZoom;
+	const FVector forwardVector = hitResult.GetValue().Location - m_cameraLocationWithoutZoom;
 	const FVector rightVector = -forwardVector.Cross(FVector::UpVector);
 	SetActorRotation(FRotationMatrix::MakeFromXY(forwardVector, rightVector).ToQuat());
 
@@ -148,7 +148,7 @@ void AArgusCameraActor::UpdateCameraPanning(const UpdateCameraPanningParameters&
 {
 	ARGUS_TRACE(AArgusCameraActor::UpdateCameraPanning);
 
-	if (!cameraParameters.m_screenSpaceMousePosition || !cameraParameters.m_screenSpaceXYBounds)
+	if (!cameraParameters.m_screenSpaceMouseLocation || !cameraParameters.m_screenSpaceXYBounds)
 	{
 		return;
 	}
@@ -170,17 +170,17 @@ void AArgusCameraActor::UpdateCameraPanning(const UpdateCameraPanningParameters&
 	if (!IsPanningBlocked())
 	{
 		// UP
-		if (cameraParameters.m_screenSpaceMousePosition->Y < paddingAmountY)
+		if (cameraParameters.m_screenSpaceMouseLocation->Y < paddingAmountY)
 		{
 			desiredVerticalVelocity = scaledDesiredVerticalVelocity;
-			const float interpolator = 1.0f - ArgusMath::SafeDivide(cameraParameters.m_screenSpaceMousePosition->Y, paddingAmountY);
+			const float interpolator = 1.0f - ArgusMath::SafeDivide(cameraParameters.m_screenSpaceMouseLocation->Y, paddingAmountY);
 			verticalModification = FMath::Lerp(minVerticalVelocityBondaryModifier, maxVerticalVelocityBondaryModifier, interpolator);
 		}
 		// DOWN
-		else if (cameraParameters.m_screenSpaceMousePosition->Y > (cameraParameters.m_screenSpaceXYBounds->Y - paddingAmountY))
+		else if (cameraParameters.m_screenSpaceMouseLocation->Y > (cameraParameters.m_screenSpaceXYBounds->Y - paddingAmountY))
 		{
 			desiredVerticalVelocity = -scaledDesiredVerticalVelocity;
-			const float interpolator = ArgusMath::SafeDivide(cameraParameters.m_screenSpaceMousePosition->Y - (cameraParameters.m_screenSpaceXYBounds->Y - paddingAmountY), paddingAmountY);
+			const float interpolator = ArgusMath::SafeDivide(cameraParameters.m_screenSpaceMouseLocation->Y - (cameraParameters.m_screenSpaceXYBounds->Y - paddingAmountY), paddingAmountY);
 			verticalModification = FMath::Lerp(minVerticalVelocityBondaryModifier, maxVerticalVelocityBondaryModifier, interpolator);
 		}
 	}
@@ -192,17 +192,17 @@ void AArgusCameraActor::UpdateCameraPanning(const UpdateCameraPanningParameters&
 	if (!IsPanningBlocked())
 	{
 		// LEFT
-		if (cameraParameters.m_screenSpaceMousePosition->X < paddingAmountX)
+		if (cameraParameters.m_screenSpaceMouseLocation->X < paddingAmountX)
 		{
 			desiredHorizontalVelocity = -scaledDesiredHorizontalVelocity;
-			const float interpolator = 1.0f - ArgusMath::SafeDivide(cameraParameters.m_screenSpaceMousePosition->X, paddingAmountX);
+			const float interpolator = 1.0f - ArgusMath::SafeDivide(cameraParameters.m_screenSpaceMouseLocation->X, paddingAmountX);
 			horizontalModification = FMath::Lerp(minHorizontalVelocityBondaryModifier, maxHorizontalVelocityBondaryModifier, interpolator);
 		}
 		// RIGHT
-		else if (cameraParameters.m_screenSpaceMousePosition->X > (cameraParameters.m_screenSpaceXYBounds->X - paddingAmountX))
+		else if (cameraParameters.m_screenSpaceMouseLocation->X > (cameraParameters.m_screenSpaceXYBounds->X - paddingAmountX))
 		{
 			desiredHorizontalVelocity = scaledDesiredHorizontalVelocity;
-			const float interpolator = ArgusMath::SafeDivide(cameraParameters.m_screenSpaceMousePosition->X - (cameraParameters.m_screenSpaceXYBounds->X - paddingAmountX), paddingAmountX);
+			const float interpolator = ArgusMath::SafeDivide(cameraParameters.m_screenSpaceMouseLocation->X - (cameraParameters.m_screenSpaceXYBounds->X - paddingAmountX), paddingAmountX);
 			horizontalModification = FMath::Lerp(minHorizontalVelocityBondaryModifier, maxHorizontalVelocityBondaryModifier, interpolator);
 		}
 	}
@@ -210,7 +210,7 @@ void AArgusCameraActor::UpdateCameraPanning(const UpdateCameraPanningParameters&
 	m_currentHorizontalVelocity.SmoothChase(desiredHorizontalVelocity, deltaTime);
 	translation += m_moveRightDir * (m_currentHorizontalVelocity.GetValue() * deltaTime);
 
-	m_cameraPositionWithoutZoom += translation;
+	m_cameraLocationWithoutZoom += translation;
 }
 
 void AArgusCameraActor::UpdateCameraZoomInternal(const TOptional<FHitResult>& hitResult, const float deltaTime)
@@ -225,7 +225,7 @@ void AArgusCameraActor::UpdateCameraZoomInternal(const TOptional<FHitResult>& hi
 
 	float proposedZoomUpdateThisFrame = 0.0f;
 	const FVector forwardVector = GetActorForwardVector();
-	FVector proposedPosition = m_cameraPositionWithoutZoom + (m_targetZoomTranslationAmount * forwardVector);
+	FVector proposedLocation = m_cameraLocationWithoutZoom + (m_targetZoomTranslationAmount * forwardVector);
 	if (!FMath::IsNearlyZero(FMath::Sign(m_zoomInputThisFrame)))
 	{
 		proposedZoomUpdateThisFrame = m_zoomInputThisFrame * m_desiredZoomVelocity * deltaTime;
@@ -239,41 +239,41 @@ void AArgusCameraActor::UpdateCameraZoomInternal(const TOptional<FHitResult>& hi
 		// Camera is too close to terrain
 		if ((distanceUpdateThisFrame + hitResult.GetValue().Distance) < m_minZoomDistanceToGround)
 		{
-			proposedPosition = hitResult.GetValue().Location + (-forwardVector * m_minZoomDistanceToGround);
-			m_targetZoomTranslationAmount = FVector::Dist(proposedPosition, m_cameraPositionWithoutZoom);
+			proposedLocation = hitResult.GetValue().Location + (-forwardVector * m_minZoomDistanceToGround);
+			m_targetZoomTranslationAmount = FVector::Dist(proposedLocation, m_cameraLocationWithoutZoom);
 		}
 		// Camera is too far from terrain
 		else if ((distanceUpdateThisFrame + hitResult.GetValue().Distance) > m_maxZoomDistanceToGround)
 		{
-			proposedPosition = hitResult.GetValue().Location + (-forwardVector * m_maxZoomDistanceToGround);
-			m_targetZoomTranslationAmount = -FVector::Dist(proposedPosition, m_cameraPositionWithoutZoom);
+			proposedLocation = hitResult.GetValue().Location + (-forwardVector * m_maxZoomDistanceToGround);
+			m_targetZoomTranslationAmount = -FVector::Dist(proposedLocation, m_cameraLocationWithoutZoom);
 		}
 		// Camera is neither too far nor too close to terrain
 		else
 		{
 			m_targetZoomTranslationAmount += proposedZoomUpdateThisFrame;
-			proposedPosition = m_cameraPositionWithoutZoom + (m_targetZoomTranslationAmount * forwardVector);
+			proposedLocation = m_cameraLocationWithoutZoom + (m_targetZoomTranslationAmount * forwardVector);
 		}
 	}
 	// Camera can't find any terrain
 	else
 	{
 		m_targetZoomTranslationAmount += proposedZoomUpdateThisFrame;
-		proposedPosition = m_cameraPositionWithoutZoom + (m_targetZoomTranslationAmount * forwardVector);
+		proposedLocation = m_cameraLocationWithoutZoom + (m_targetZoomTranslationAmount * forwardVector);
 	}
 
 	m_currentZoomTranslationAmount.SmoothChase(m_targetZoomTranslationAmount, deltaTime);
-	SetActorLocation(m_cameraPositionWithoutZoom + (m_currentZoomTranslationAmount.GetValue() * forwardVector));
+	SetActorLocation(m_cameraLocationWithoutZoom + (m_currentZoomTranslationAmount.GetValue() * forwardVector));
 }
 
 void AArgusCameraActor::TraceToGround(TOptional<FHitResult>& hitResult)
 {
 	FHitResult underlyingHitResult;
 	const FVector forwardVector = GetActorForwardVector();
-	const FVector proposedPosition = m_cameraPositionWithoutZoom + (m_currentZoomTranslationAmount.GetValue() * forwardVector);
-	const FVector traceEndpoint = proposedPosition + (forwardVector * AArgusCameraActor::k_cameraTraceLength);
+	const FVector proposedLocation = m_cameraLocationWithoutZoom + (m_currentZoomTranslationAmount.GetValue() * forwardVector);
+	const FVector traceEndpoint = proposedLocation + (forwardVector * AArgusCameraActor::k_cameraTraceLength);
 	UWorld* worldPointer = GetWorld();
-	if (worldPointer->LineTraceSingleByChannel(underlyingHitResult, proposedPosition, traceEndpoint, ECC_WorldStatic))
+	if (worldPointer->LineTraceSingleByChannel(underlyingHitResult, proposedLocation, traceEndpoint, ECC_WorldStatic))
 	{
 		hitResult = underlyingHitResult;
 	}
