@@ -108,7 +108,6 @@ void ConstructionSystems::ProcessBeingConstructedState(const ConstructionSystems
 			ProcessAutomaticConstruction(components, deltaTime);
 			break;
 		case EConstructionType::Manual:
-			ProcessManualConstruction(components, deltaTime);
 			break;
 		default:
 			break;
@@ -172,6 +171,17 @@ void ConstructionSystems::ProcessConstructingOtherState(const ConstructionSystem
 	}
 
 	constructeeConstructionComponent->m_currentWorkSeconds += deltaTime;
+
+	if (constructeeConstructionComponent->m_currentWorkSeconds >= constructeeConstructionComponent->m_requiredWorkSeconds)
+	{
+		constructeeConstructionComponent->m_currentWorkSeconds = constructeeConstructionComponent->m_requiredWorkSeconds;
+		if (TaskComponent* contructeeTaskComponent = constructee.GetComponent<TaskComponent>())
+		{
+			contructeeTaskComponent->m_constructionState = ConstructionState::ConstructionFinished;
+		}
+
+		components.m_taskComponent->m_constructionState = ConstructionState::None;
+	}
 }
 
 void ConstructionSystems::ProcessAutomaticConstruction(const ConstructionSystemsComponentArgs& components, float deltaTime)
@@ -192,14 +202,4 @@ void ConstructionSystems::ProcessAutomaticConstruction(const ConstructionSystems
 
 	const float timeElapsedProportion = components.m_constructionComponent->m_automaticConstructionTimerHandle.GetTimeElapsedProportion(components.m_entity);
 	components.m_constructionComponent->m_currentWorkSeconds = timeElapsedProportion * components.m_constructionComponent->m_requiredWorkSeconds;
-}
-
-void ConstructionSystems::ProcessManualConstruction(const ConstructionSystemsComponentArgs& components, float deltaTime)
-{
-	ARGUS_TRACE(ConstructionSystems::ProcessManualConstruction);
-
-	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
-	{
-		return;
-	}
 }

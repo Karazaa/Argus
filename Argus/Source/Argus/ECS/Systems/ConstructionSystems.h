@@ -23,5 +23,4 @@ private:
 	static void ProcessBeingConstructedState(const ConstructionSystemsComponentArgs& components, float deltaTime);
 	static void ProcessConstructingOtherState(const ConstructionSystemsComponentArgs& components, float deltaTime);
 	static void ProcessAutomaticConstruction(const ConstructionSystemsComponentArgs& components, float deltaTime);
-	static void ProcessManualConstruction(const ConstructionSystemsComponentArgs& components, float deltaTime);
 };

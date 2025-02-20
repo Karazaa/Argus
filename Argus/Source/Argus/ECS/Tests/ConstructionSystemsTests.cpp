@@ -19,6 +19,11 @@ bool ConstructionSystemsBeingConstructedAutomaticTest::RunTest(const FString& Pa
 	ArgusTesting::StartArgusTest();
 
 	ArgusEntity entityToConstruct = ArgusEntity::CreateEntity();
+	if (!entityToConstruct)
+	{
+		return false;
+	}
+
 	TaskComponent* constructedTaskComponent = entityToConstruct.AddComponent<TaskComponent>();
 	ConstructionComponent* constructedConstructionComponent = entityToConstruct.AddComponent<ConstructionComponent>();
 	entityToConstruct.AddComponent<TimerComponent>();
@@ -33,28 +38,9 @@ bool ConstructionSystemsBeingConstructedAutomaticTest::RunTest(const FString& Pa
 	constructedConstructionComponent->m_requiredWorkSeconds = constructionTimeSeconds;
 	constructedConstructionComponent->m_automaticConstructionTimerHandle.StartTimer(entityToConstruct, constructionTimeSeconds);
 
-	ConstructionSystems::RunSystems(timestep);
 	TimerSystems::RunSystems(timestep);
-
-#pragma region Automatically construct and verifying correct state after one second.
-	TestEqual
-	(
-		FString::Printf
-		(
-			TEXT("[%s] Creating an %s to automatically construct and verifying that the %s is in the correct state after %f seconds."),
-			ARGUS_FUNCNAME,
-			ARGUS_NAMEOF(ArgusEntity),
-			ARGUS_NAMEOF(ConstructionComponent),
-			timestep
-		),
-		constructedConstructionComponent->m_automaticConstructionTimerHandle.GetTimeElapsedProportion(entityToConstruct),
-		expectedElapsedTimerProportion
-	);
-#pragma endregion
-
 	ConstructionSystems::RunSystems(timestep);
-	TimerSystems::RunSystems(timestep);
-
+	
 #pragma region Verifying that current work seconds equals one after two timesteps of automatic construction.
 	TestEqual
 	(
@@ -70,27 +56,15 @@ bool ConstructionSystemsBeingConstructedAutomaticTest::RunTest(const FString& Pa
 	);
 #pragma endregion
 
-#pragma region Checking that the automatic construction timer is finished after two timesteps.
-	TestTrue
-	(
-		FString::Printf
-		(
-			TEXT("[%s] Checking that the automatic construction timer of %s is finished after two timesteps."),
-			ARGUS_FUNCNAME,
-			ARGUS_NAMEOF(ConstructionComponent)
-		),
-		constructedConstructionComponent->m_automaticConstructionTimerHandle.IsTimerComplete(entityToConstruct)
-	);
-#pragma endregion
-
+	TimerSystems::RunSystems(timestep);
 	ConstructionSystems::RunSystems(timestep);
 
-#pragma region Verifying that construction state equals construction finished after three timesteps of automatic construction.
+#pragma region Verifying that construction state equals construction finished after two timesteps of automatic construction.
 	TestEqual
 	(
 		FString::Printf
 		(
-			TEXT("[%s] Verifying that %s equals %s after three timesteps of automatic construction."),
+			TEXT("[%s] Verifying that %s equals %s after two timesteps of automatic construction."),
 			ARGUS_FUNCNAME,
 			ARGUS_NAMEOF(m_constructionState),
 			ARGUS_NAMEOF(ConstructionState::ConstructionFinished)
@@ -100,7 +74,7 @@ bool ConstructionSystemsBeingConstructedAutomaticTest::RunTest(const FString& Pa
 	);
 #pragma endregion
 
-#pragma region Verifying that current work seconds equals required work seconds after three timesteps of automatic construction.
+#pragma region Verifying that current work seconds equals required work seconds after two timesteps of automatic construction.
 	TestEqual
 	(
 		FString::Printf
@@ -122,7 +96,132 @@ bool ConstructionSystemsBeingConstructedAutomaticTest::RunTest(const FString& Pa
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(ConstructionSystemsBeingConstructedManualTest, "Argus.ECS.Systems.ConstructionSystems.BeingConstructed.Manual", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ConstructionSystemsBeingConstructedManualTest::RunTest(const FString& Parameters)
 {
+	const float timestep = 1.0f;
+	const float constructionTimeSeconds = 2.0f;
+	const float expectedElapsedTimerProportion = 0.5f;
+	const float constructionRange = 100.0f;
+	const int32 abilityRecordId = 100;
+	const FVector constructedLocation = FVector(0.0f, 100.0f, 0.0f);
+	const FVector initialConstructingLocation = FVector(500.0f, 500.0f, 0.0f);
+	const FVector constructingLocation = FVector(50.0f, 50.0f, 0.0f);
+
 	ArgusTesting::StartArgusTest();
+
+	ArgusEntity entityToConstruct = ArgusEntity::CreateEntity();
+	ArgusEntity constructingEntity = ArgusEntity::CreateEntity();
+	if (!entityToConstruct || !constructingEntity)
+	{
+		return false;
+	}
+
+	TaskComponent* constructedTaskComponent = entityToConstruct.AddComponent<TaskComponent>();
+	ConstructionComponent* constructedConstructionComponent = entityToConstruct.AddComponent<ConstructionComponent>();
+	TransformComponent* constructedTransformComponent = entityToConstruct.AddComponent<TransformComponent>();
+
+	AbilityComponent* constructingAbilityComponent = constructingEntity.AddComponent<AbilityComponent>();
+	TaskComponent* constructingTaskComponent = constructingEntity.AddComponent<TaskComponent>();
+	TargetingComponent* constructingTargetingComponent = constructingEntity.AddComponent<TargetingComponent>();
+	TransformComponent* constructingTransformComponent = constructingEntity.AddComponent<TransformComponent>();
+
+	if (!constructedTaskComponent || !constructedConstructionComponent || !constructedTransformComponent || !constructingAbilityComponent || 
+		!constructingTaskComponent || !constructingTargetingComponent || !constructingTransformComponent)
+	{
+		return false;
+	}
+
+	constructedTaskComponent->m_constructionState = ConstructionState::BeingConstructed;
+	constructedConstructionComponent->m_constructionType = EConstructionType::Manual;
+	constructedConstructionComponent->m_requiredWorkSeconds = constructionTimeSeconds;
+	constructedConstructionComponent->m_constructionAbilityRecordId = abilityRecordId;
+	constructedTransformComponent->m_transform.SetLocation(constructedLocation);
+
+	constructingAbilityComponent->m_ability0Id = abilityRecordId;
+	constructingTaskComponent->m_constructionState = ConstructionState::ConstructingOther;
+	constructingTargetingComponent->m_targetEntityId = entityToConstruct.GetId();
+	constructingTargetingComponent->m_targetingRange = constructionRange;
+	constructingTransformComponent->m_transform.SetLocation(initialConstructingLocation);
+
+	ConstructionSystems::RunSystems(timestep);
+
+#pragma region Verifying that current work seconds equals zero after one timestep of out of range manual construction.
+	TestEqual
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Verifying that %s equals %f after one timestep of out of range manual construction."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(m_currentWorkSeconds),
+			0.0f
+		),
+		constructedConstructionComponent->m_currentWorkSeconds,
+		0.0f
+	);
+#pragma endregion
+
+	constructingTransformComponent->m_transform.SetLocation(constructingLocation);
+	ConstructionSystems::RunSystems(timestep);
+
+#pragma region Verifying that current work seconds equals one after one timestep of in range manual construction.
+	TestEqual
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Verifying that %s equals %f after one timestep of in range manual construction."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(m_currentWorkSeconds),
+			timestep
+		),
+		constructedConstructionComponent->m_currentWorkSeconds,
+		timestep
+	);
+#pragma endregion
+
+	ConstructionSystems::RunSystems(timestep);
+
+#pragma region Verifying that construction state equals construction finished after two timesteps of in range manual construction.
+	TestEqual
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Verifying that %s equals %s after two timesteps of in range manual construction."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(m_constructionState),
+			ARGUS_NAMEOF(ConstructionState::ConstructionFinished)
+		),
+		constructedTaskComponent->m_constructionState,
+		ConstructionState::ConstructionFinished
+	);
+#pragma endregion
+
+#pragma region Verifying that construction state equals none after two timesteps of in range manual construction.
+	TestEqual
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Verifying that %s equals %s after two timesteps of in range manual construction."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(m_constructionState),
+			ARGUS_NAMEOF(ConstructionState::None)
+		),
+		constructingTaskComponent->m_constructionState,
+		ConstructionState::None
+	);
+#pragma endregion
+
+#pragma region Verifying that current work seconds equals required work seconds after two timesteps of in range manual construction.
+	TestEqual
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Verifying that %s equals %s after two timesteps of in range manual construction."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(m_currentWorkSeconds),
+			ARGUS_NAMEOF(m_requiredWorkSeconds)
+		),
+		constructedConstructionComponent->m_currentWorkSeconds,
+		constructedConstructionComponent->m_requiredWorkSeconds
+	);
+#pragma endregion
 
 	ArgusTesting::EndArgusTest();
 	return true;
