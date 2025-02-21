@@ -17,6 +17,7 @@ class AReticleActor;
 class UArgusInputActionSet;
 class UArgusInputManager;
 class UArgusUserWidget;
+class USelectedArgusEntitiesWidget;
 
 UCLASS()
 class AArgusPlayerController : public APlayerController
@@ -28,7 +29,7 @@ public:
 
 	AArgusCameraActor::UpdateCameraPanningParameters GetScreenSpaceInputValues() const;
 
-	bool GetMouseProjectionLocation(FHitResult& outHitResult, ECollisionChannel collisionTraceChannel) const;
+	bool GetMouseProjectionLocation(ECollisionChannel collisionTraceChannel, FHitResult& outHitResult, FVector2D& outMouseScreenSpaceLocation) const;
 	bool GetArgusActorsFromArgusEntityIds(const TArray<uint16>& inArgusEntityIds, TArray<AArgusActor*>& outArgusActors) const;
 	bool GetArgusActorsFromArgusEntities(const TArray<ArgusEntity>& inArgusEntities, TArray<AArgusActor*>& outArgusActors) const;
 
@@ -36,7 +37,6 @@ public:
 	bool IsArgusActorOnPlayerTeam(const AArgusActor* const actor) const;
 
 	void InitializeUIWidgets();
-	void OnUpdateSelectedArgusActors(ArgusEntity& templateEntity);
 
 	UArgusInputManager* GetInputManager() const { return m_argusInputManager; }
 
@@ -51,7 +51,10 @@ protected:
 	TSoftObjectPtr<UArgusInputActionSet> m_argusInputActionSet = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "UI")
-	TSubclassOf<UArgusUserWidget> m_selectedArgusEntityUserWidgetClass = nullptr;
+	TSubclassOf<UArgusUserWidget> m_baseCanvasUserWidgetClass = nullptr;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "UI")
+	TSubclassOf<USelectedArgusEntitiesWidget> m_selectedArgusEntityUserWidgetClass = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Camera")
 	TSoftClassPtr<AArgusCameraActor> m_argusCameraClass = nullptr;
@@ -74,7 +77,11 @@ protected:
 	UPROPERTY(Transient)
 	TObjectPtr<UArgusInputManager> m_argusInputManager = nullptr;
 
-	TWeakObjectPtr<UArgusUserWidget> m_selectedArgusEntityUserWidget;
+	UPROPERTY(Transient)
+	TObjectPtr<UArgusUserWidget> m_baseCanvasUserWidget;
+
+	UPROPERTY(Transient)
+	TObjectPtr<USelectedArgusEntitiesWidget> m_selectedArgusEntityUserWidget;
 
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;

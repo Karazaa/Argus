@@ -14,6 +14,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Kismet/GameplayStatics.h"
 #include "ReticleActor.h"
+#include "SelectedArgusEntitiesWidget.h"
 #include "Slate/SceneViewport.h"
 
 void AArgusPlayerController::ProcessArgusPlayerInput(float deltaTime)
@@ -26,7 +27,7 @@ void AArgusPlayerController::ProcessArgusPlayerInput(float deltaTime)
 	m_argusInputManager->ProcessPlayerInput(m_argusCameraActor, GetScreenSpaceInputValues(), deltaTime);
 
 	ArgusEntity uiTemplateEntity = ArgusEntity::k_emptyEntity;
-	if (m_argusInputManager->ShouldUpdateSelectedActorDisplay(uiTemplateEntity))
+	if (m_argusInputManager->ShouldUpdateSelectedActorDisplay(uiTemplateEntity) && m_selectedArgusEntityUserWidget)
 	{
 		m_selectedArgusEntityUserWidget->OnUpdateSelectedArgusActors(uiTemplateEntity);
 	}
@@ -67,10 +68,16 @@ AArgusCameraActor::UpdateCameraPanningParameters AArgusPlayerController::GetScre
 	return output;
 }
 
-bool AArgusPlayerController::GetMouseProjectionLocation(FHitResult& outHitResult, ECollisionChannel collisionTraceChannel) const
+bool AArgusPlayerController::GetMouseProjectionLocation(ECollisionChannel collisionTraceChannel, FHitResult& outHitResult, FVector2D& outMouseScreenSpaceLocation) const
 {
 	FVector worldSpaceLocation = FVector::ZeroVector;
 	FVector worldSpaceDirection = FVector::ZeroVector;
+
+	if (!GetMousePosition(outMouseScreenSpaceLocation.X, outMouseScreenSpaceLocation.Y))
+	{
+		ARGUS_LOG(ArgusUnrealObjectsLog, Error, TEXT("[%s] Failed to get mouse screenspace location."), ARGUS_FUNCNAME);
+		return false;
+	}
 
 	bool outcome = DeprojectMousePositionToWorld(worldSpaceLocation, worldSpaceDirection);
 	FVector traceEndpoint = worldSpaceLocation + (worldSpaceDirection * AArgusCameraActor::k_cameraTraceLength);
@@ -177,8 +184,8 @@ bool AArgusPlayerController::IsArgusActorOnPlayerTeam(const AArgusActor* const a
 
 void AArgusPlayerController::InitializeUIWidgets()
 {
-	m_selectedArgusEntityUserWidget = CreateWidget<UArgusUserWidget>(this, m_selectedArgusEntityUserWidgetClass, ARGUS_NAMEOF(m_selectedArgusEntityUserWidgetClass));
-	if (m_selectedArgusEntityUserWidget.IsValid())
+	m_selectedArgusEntityUserWidget = CreateWidget<USelectedArgusEntitiesWidget>(this, m_selectedArgusEntityUserWidgetClass, ARGUS_NAMEOF(m_selectedArgusEntityUserWidgetClass));
+	if (m_selectedArgusEntityUserWidget)
 	{
 		m_selectedArgusEntityUserWidget->SetInputManager(m_argusInputManager);
 		m_selectedArgusEntityUserWidget->AddToViewport();

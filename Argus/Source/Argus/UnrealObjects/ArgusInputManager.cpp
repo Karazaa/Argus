@@ -433,7 +433,8 @@ void UArgusInputManager::ProcessSelectInputEvent(bool isAdditive)
 	}
 
 	FHitResult hitResult;
-	if (!m_owningPlayerController->GetMouseProjectionLocation(hitResult, ECC_WorldStatic))
+	FVector2D screenSpaceLocation = FVector2D::ZeroVector;
+	if (!m_owningPlayerController->GetMouseProjectionLocation(ECC_WorldStatic, hitResult, screenSpaceLocation))
 	{
 		return;
 	}
@@ -503,7 +504,8 @@ void UArgusInputManager::ProcessMarqueeSelectInputEvent(AArgusCameraActor* argus
 	}
 
 	FHitResult hitResult;
-	if (!m_owningPlayerController->GetMouseProjectionLocation(hitResult, ECC_WorldStatic))
+	FVector2D screenSpaceLocation = FVector2D::ZeroVector;
+	if (!m_owningPlayerController->GetMouseProjectionLocation(ECC_WorldStatic, hitResult, screenSpaceLocation))
 	{
 		return;
 	}
@@ -612,7 +614,8 @@ void UArgusInputManager::ProcessMoveToInputEvent()
 	}
 
 	FHitResult hitResult;
-	if (!m_owningPlayerController->GetMouseProjectionLocation(hitResult, ECC_WorldStatic))
+	FVector2D screenSpaceLocation = FVector2D::ZeroVector;
+	if (!m_owningPlayerController->GetMouseProjectionLocation(ECC_WorldStatic, hitResult, screenSpaceLocation))
 	{
 		return;
 	}
@@ -721,7 +724,8 @@ void UArgusInputManager::ProcessSetWaypointInputEvent()
 	}
 
 	FHitResult hitResult;
-	if (!m_owningPlayerController->GetMouseProjectionLocation(hitResult, ECC_WorldStatic))
+	FVector2D screenSpaceLocation = FVector2D::ZeroVector;
+	if (!m_owningPlayerController->GetMouseProjectionLocation(ECC_WorldStatic, hitResult, screenSpaceLocation))
 	{
 		return;
 	}
@@ -1159,7 +1163,8 @@ void UArgusInputManager::SetReticleState()
 	}
 
 	FHitResult hitResult;
-	if (!m_owningPlayerController->GetMouseProjectionLocation(hitResult, ECC_RETICLE))
+	FVector2D screenSpaceLocation = FVector2D::ZeroVector;
+	if (!m_owningPlayerController->GetMouseProjectionLocation(ECC_RETICLE, hitResult, screenSpaceLocation))
 	{
 		return;
 	}
