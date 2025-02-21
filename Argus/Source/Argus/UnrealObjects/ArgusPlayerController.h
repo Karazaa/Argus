@@ -17,7 +17,6 @@ class AReticleActor;
 class UArgusInputActionSet;
 class UArgusInputManager;
 class UArgusUserWidget;
-class USelectedArgusEntitiesWidget;
 
 UCLASS()
 class AArgusPlayerController : public APlayerController
@@ -29,7 +28,7 @@ public:
 
 	AArgusCameraActor::UpdateCameraPanningParameters GetScreenSpaceInputValues() const;
 
-	bool GetMouseProjectionLocation(ECollisionChannel collisionTraceChannel, FHitResult& outHitResult, FVector2D& outMouseScreenSpaceLocation) const;
+	bool GetMouseProjectionLocation(ECollisionChannel collisionTraceChannel, FHitResult& outHitResult, FVector2D& outMouseScreenpaceLocation) const;
 	bool GetArgusActorsFromArgusEntityIds(const TArray<uint16>& inArgusEntityIds, TArray<AArgusActor*>& outArgusActors) const;
 	bool GetArgusActorsFromArgusEntities(const TArray<ArgusEntity>& inArgusEntities, TArray<AArgusActor*>& outArgusActors) const;
 
@@ -54,7 +53,7 @@ protected:
 	TSubclassOf<UArgusUserWidget> m_baseCanvasUserWidgetClass = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "UI")
-	TSubclassOf<USelectedArgusEntitiesWidget> m_selectedArgusEntityUserWidgetClass = nullptr;
+	TSubclassOf<UArgusUserWidget> m_selectedArgusEntityUserWidgetClass = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Camera")
 	TSoftClassPtr<AArgusCameraActor> m_argusCameraClass = nullptr;
@@ -81,7 +80,7 @@ protected:
 	TObjectPtr<UArgusUserWidget> m_baseCanvasUserWidget;
 
 	UPROPERTY(Transient)
-	TObjectPtr<USelectedArgusEntitiesWidget> m_selectedArgusEntityUserWidget;
+	TObjectPtr<UArgusUserWidget> m_selectedArgusEntityUserWidget;
 
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;

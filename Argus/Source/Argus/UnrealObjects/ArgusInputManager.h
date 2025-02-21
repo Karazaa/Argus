@@ -43,7 +43,11 @@ public:
 
 
 	void ProcessPlayerInput(AArgusCameraActor* argusCamera, const AArgusCameraActor::UpdateCameraPanningParameters& updateCameraPanningParameters, float deltaTime);
-	bool ShouldUpdateSelectedActorDisplay(ArgusEntity& templateSelectedEntity);
+	bool ShouldUpdateSelectedActorDisplay(ArgusEntity& templateSelectedEntity) const;
+	bool ShouldDrawMarqueeBox() const;
+
+	const FVector& GetSelectionStartWorldSpaceLocation() const;
+	const FVector2D& GetSelectionStartScreenSpaceLocation() const;
 
 private:
 	enum class InputType : uint8
@@ -107,7 +111,9 @@ private:
 	void ProcessReticleAbilityForSelectedActors(const ReticleComponent* reticleComponent);
 	void ProcessReticleAbilityPerSelectedActor(AArgusActor* argusActor, uint32 abilityRecordId);
 
-	FVector m_cachedLastSelectInputWorldspaceLocation = FVector::ZeroVector;
+	FVector m_cachedLastSelectInputWorldSpaceLocation = FVector::ZeroVector;
+	FVector2D m_cachedLastSelectInputScreenspaceLocation = FVector2D::ZeroVector;
 	bool m_selectedArgusActorsChangedThisFrame = false;
+	bool m_selectInputDown = false;
 	bool m_canRotateCamera = false;
 };

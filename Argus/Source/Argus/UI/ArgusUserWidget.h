@@ -15,6 +15,7 @@ class UArgusUserWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
+	virtual void UpdateFromInputManager(const FVector2D& currentMouseLocation);
 	virtual void OnUpdateSelectedArgusActors(ArgusEntity& templateEntity);
 
 	void SetInputManager(UArgusInputManager* inputManager);

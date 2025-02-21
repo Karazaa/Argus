@@ -14,7 +14,6 @@
 #include "EnhancedInputSubsystems.h"
 #include "Kismet/GameplayStatics.h"
 #include "ReticleActor.h"
-#include "SelectedArgusEntitiesWidget.h"
 #include "Slate/SceneViewport.h"
 
 void AArgusPlayerController::ProcessArgusPlayerInput(float deltaTime)
@@ -24,12 +23,17 @@ void AArgusPlayerController::ProcessArgusPlayerInput(float deltaTime)
 		return;
 	}
 
-	m_argusInputManager->ProcessPlayerInput(m_argusCameraActor, GetScreenSpaceInputValues(), deltaTime);
+	const AArgusCameraActor::UpdateCameraPanningParameters params = GetScreenSpaceInputValues();
+	const FVector2D mouseScreenSpaceLocation = params.m_screenSpaceMouseLocation.IsSet() ? params.m_screenSpaceMouseLocation.GetValue() : FVector2D::ZeroVector;
+	m_argusInputManager->ProcessPlayerInput(m_argusCameraActor, params, deltaTime);
 
-	ArgusEntity uiTemplateEntity = ArgusEntity::k_emptyEntity;
-	if (m_argusInputManager->ShouldUpdateSelectedActorDisplay(uiTemplateEntity) && m_selectedArgusEntityUserWidget)
+	if (m_baseCanvasUserWidget)
 	{
-		m_selectedArgusEntityUserWidget->OnUpdateSelectedArgusActors(uiTemplateEntity);
+		m_baseCanvasUserWidget->UpdateFromInputManager(mouseScreenSpaceLocation);
+	}
+	if (m_selectedArgusEntityUserWidget)
+	{
+		m_selectedArgusEntityUserWidget->UpdateFromInputManager(mouseScreenSpaceLocation);
 	}
 
 	if (!m_reticleActor)
@@ -184,7 +188,7 @@ bool AArgusPlayerController::IsArgusActorOnPlayerTeam(const AArgusActor* const a
 
 void AArgusPlayerController::InitializeUIWidgets()
 {
-	m_selectedArgusEntityUserWidget = CreateWidget<USelectedArgusEntitiesWidget>(this, m_selectedArgusEntityUserWidgetClass, ARGUS_NAMEOF(m_selectedArgusEntityUserWidgetClass));
+	m_selectedArgusEntityUserWidget = CreateWidget<UArgusUserWidget>(this, m_selectedArgusEntityUserWidgetClass, ARGUS_NAMEOF(m_selectedArgusEntityUserWidgetClass));
 	if (m_selectedArgusEntityUserWidget)
 	{
 		m_selectedArgusEntityUserWidget->SetInputManager(m_argusInputManager);

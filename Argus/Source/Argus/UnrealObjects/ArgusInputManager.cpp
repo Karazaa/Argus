@@ -200,7 +200,7 @@ void UArgusInputManager::ProcessPlayerInput(AArgusCameraActor* argusCamera, cons
 	argusCamera->UpdateCamera(updateCameraParameters, deltaTime);
 }
 
-bool UArgusInputManager::ShouldUpdateSelectedActorDisplay(ArgusEntity& templateSelectedEntity)
+bool UArgusInputManager::ShouldUpdateSelectedActorDisplay(ArgusEntity& templateSelectedEntity) const
 {
 	if (m_selectedArgusActorsChangedThisFrame)
 	{
@@ -220,7 +220,7 @@ bool UArgusInputManager::ShouldUpdateSelectedActorDisplay(ArgusEntity& templateS
 		return true;
 	}
 
-	for (TWeakObjectPtr<AArgusActor>& selectedActor : m_activeAbilityGroupArgusActors)
+	for (const TWeakObjectPtr<AArgusActor>& selectedActor : m_activeAbilityGroupArgusActors)
 	{
 		if (!selectedActor.IsValid())
 		{
@@ -247,6 +247,21 @@ bool UArgusInputManager::ShouldUpdateSelectedActorDisplay(ArgusEntity& templateS
 	}
 
 	return false;
+}
+
+bool UArgusInputManager::ShouldDrawMarqueeBox() const
+{
+	return m_selectInputDown;
+}
+
+const FVector& UArgusInputManager::GetSelectionStartWorldSpaceLocation() const
+{
+	return m_cachedLastSelectInputWorldSpaceLocation;
+}
+
+const FVector2D& UArgusInputManager::GetSelectionStartScreenSpaceLocation() const
+{
+	return m_cachedLastSelectInputScreenspaceLocation;
 }
 
 void UArgusInputManager::BindActions(TSoftObjectPtr<UArgusInputActionSet>& argusInputActionSet, UEnhancedInputComponent* enhancedInputComponent, UEnhancedPlayerInput* enhancedInput)
@@ -433,12 +448,12 @@ void UArgusInputManager::ProcessSelectInputEvent(bool isAdditive)
 	}
 
 	FHitResult hitResult;
-	FVector2D screenSpaceLocation = FVector2D::ZeroVector;
-	if (!m_owningPlayerController->GetMouseProjectionLocation(ECC_WorldStatic, hitResult, screenSpaceLocation))
+	if (!m_owningPlayerController->GetMouseProjectionLocation(ECC_WorldStatic, hitResult, m_cachedLastSelectInputScreenspaceLocation))
 	{
 		return;
 	}
-	m_cachedLastSelectInputWorldspaceLocation = hitResult.Location;
+	m_cachedLastSelectInputWorldSpaceLocation = hitResult.Location;
+	m_selectInputDown = true;
 
 	if (ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId))
 	{
@@ -504,11 +519,12 @@ void UArgusInputManager::ProcessMarqueeSelectInputEvent(AArgusCameraActor* argus
 	}
 
 	FHitResult hitResult;
-	FVector2D screenSpaceLocation = FVector2D::ZeroVector;
+	FVector2D screenSpaceLocation;
 	if (!m_owningPlayerController->GetMouseProjectionLocation(ECC_WorldStatic, hitResult, screenSpaceLocation))
 	{
 		return;
 	}
+	m_selectInputDown = false;
 
 	if (const ReticleComponent* reticleComponent = singletonEntity.GetComponent<ReticleComponent>())
 	{
@@ -524,7 +540,7 @@ void UArgusInputManager::ProcessMarqueeSelectInputEvent(AArgusCameraActor* argus
 	const FVector2D panUpDirection = FVector2D(argusCamera->GetPanUpVector());
 	const FVector2D panRightDirection = FVector2D(argusCamera->GetPanRightVector());
 	const FVector2D cameraLocation = FVector2D(argusCamera->GetCameraLocationWithoutZoom());
-	convexPolygon[0] = FVector2D(m_cachedLastSelectInputWorldspaceLocation);
+	convexPolygon[0] = FVector2D(m_cachedLastSelectInputWorldSpaceLocation);
 	convexPolygon[2] = FVector2D(hitResult.Location);
 	const FVector2D fromCameraToFirstPoint = convexPolygon[0] - cameraLocation;
 	const FVector2D fromCameraToLastPoint = convexPolygon[2] - cameraLocation;

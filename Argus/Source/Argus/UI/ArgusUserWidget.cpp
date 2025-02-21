@@ -6,6 +6,24 @@
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
 
+void UArgusUserWidget::UpdateFromInputManager(const FVector2D& currentMouseLocation)
+{
+	ArgusEntity uiTemplateEntity = ArgusEntity::k_emptyEntity;
+
+	if (!m_inputManager.IsValid())
+	{
+		// TODO JAMES: Error here
+		return;
+	}
+
+	if (!m_inputManager->ShouldUpdateSelectedActorDisplay(uiTemplateEntity))
+	{
+		return;
+	}
+
+	OnUpdateSelectedArgusActors(uiTemplateEntity);
+}
+
 void UArgusUserWidget::OnUpdateSelectedArgusActors(ArgusEntity& templateEntity)
 {
 

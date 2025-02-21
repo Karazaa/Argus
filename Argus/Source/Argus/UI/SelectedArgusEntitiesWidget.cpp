@@ -8,6 +8,8 @@
 
 void USelectedArgusEntitiesWidget::OnUpdateSelectedArgusActors(ArgusEntity& templateEntity)
 {
+	Super::OnUpdateSelectedArgusActors(templateEntity);
+
 	if (!templateEntity)
 	{
 		OnUpdateSelectedArgusActors(0, 0, 0, 0);
