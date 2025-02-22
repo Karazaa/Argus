@@ -7,6 +7,7 @@
 
 class ArgusEntity;
 class UArgusInputManager;
+class UCanvasPanel;
 
 UCLASS()
 class UMarqueeCanvasWidget : public UArgusUserWidget
@@ -15,4 +16,14 @@ class UMarqueeCanvasWidget : public UArgusUserWidget
 
 public:
 	virtual void UpdateFromInputManager(const FVector2D& currentMouseLocation) override;
+
+protected:
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	bool ShouldDrawMarqueeSelectionBox() const;
+
+	UPROPERTY(BlueprintReadOnly)
+	FVector2D m_marqueeBoxScreenSpaceStartLocation = FVector2D::ZeroVector;
+
+	UPROPERTY(BlueprintReadOnly)
+	FVector2D m_marqueeBoxScreenSpaceEndLocation = FVector2D::ZeroVector;
 };

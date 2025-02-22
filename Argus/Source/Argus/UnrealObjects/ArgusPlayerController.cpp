@@ -188,6 +188,13 @@ bool AArgusPlayerController::IsArgusActorOnPlayerTeam(const AArgusActor* const a
 
 void AArgusPlayerController::InitializeUIWidgets()
 {
+	m_baseCanvasUserWidget = CreateWidget<UArgusUserWidget>(this, m_baseCanvasUserWidgetClass, ARGUS_NAMEOF(m_baseCanvasUserWidgetClass));
+	if (m_baseCanvasUserWidget)
+	{
+		m_baseCanvasUserWidget->SetInputManager(m_argusInputManager);
+		m_baseCanvasUserWidget->AddToViewport();
+	}
+
 	m_selectedArgusEntityUserWidget = CreateWidget<UArgusUserWidget>(this, m_selectedArgusEntityUserWidgetClass, ARGUS_NAMEOF(m_selectedArgusEntityUserWidgetClass));
 	if (m_selectedArgusEntityUserWidget)
 	{
