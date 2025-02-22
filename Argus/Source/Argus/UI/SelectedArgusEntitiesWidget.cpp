@@ -39,7 +39,7 @@ void USelectedArgusEntitiesWidget::OnUserInterfaceButtonClicked(UArgusUIButtonCl
 {
 	if (!m_inputManager.IsValid())
 	{
-		ARGUS_LOG(ArgusInputLog, Error, TEXT("[%s] Invalid reference to %s"), ARGUS_FUNCNAME, ARGUS_NAMEOF(m_inputManager));
+		ARGUS_LOG(ArgusUILog, Error, TEXT("[%s] Invalid reference to %s"), ARGUS_FUNCNAME, ARGUS_NAMEOF(m_inputManager));
 		return;
 	}
 

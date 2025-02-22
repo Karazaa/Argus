@@ -9,8 +9,9 @@
 DEFINE_LOG_CATEGORY(ArgusECSLog);
 DEFINE_LOG_CATEGORY(ArgusInputLog);
 DEFINE_LOG_CATEGORY(ArgusStaticDataLog);
-DEFINE_LOG_CATEGORY(ArgusUnrealObjectsLog);
 DEFINE_LOG_CATEGORY(ArgusTestingLog);
+DEFINE_LOG_CATEGORY(ArgusUILog);
+DEFINE_LOG_CATEGORY(ArgusUnrealObjectsLog);
 DEFINE_LOG_CATEGORY(ArgusUtilitiesLog);
 
 void ArgusLogging::ShowEditorNotification(const FString& text, const FString& subText, ELogVerbosity::Type logVerbosity, float durationSeconds)

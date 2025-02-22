@@ -18,12 +18,14 @@ public:
 	virtual void UpdateFromInputManager(const FVector2D& currentMouseLocation) override;
 
 protected:
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-	bool ShouldDrawMarqueeSelectionBox() const;
+	UPROPERTY(EditDefaultsOnly)
+	FLinearColor m_marqueeBoxColor = FColor::Green;
 
-	UPROPERTY(BlueprintReadOnly)
-	FVector2D m_marqueeBoxScreenSpaceStartLocation = FVector2D::ZeroVector;
+	UPROPERTY(EditDefaultsOnly)
+	float m_marqueeBoxThickness = 1.0f;
 
-	UPROPERTY(BlueprintReadOnly)
-	FVector2D m_marqueeBoxScreenSpaceEndLocation = FVector2D::ZeroVector;
+	virtual void NativeOnInitialized() override;
+	virtual int32 NativePaint(const FPaintArgs& args, const FGeometry& allottedGeometry, const FSlateRect& myCullingRect, FSlateWindowElementList& outDrawElements, int32 layerId, const FWidgetStyle& inWidgetStyle, bool parentEnabled) const override;
+
+	TArray<FVector2D> m_marqueeBoxPoints;
 };

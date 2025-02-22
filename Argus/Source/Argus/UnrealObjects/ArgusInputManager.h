@@ -47,7 +47,7 @@ public:
 	bool ShouldDrawMarqueeBox() const;
 
 	const FVector& GetSelectionStartWorldSpaceLocation() const;
-	const FVector2D& GetSelectionStartScreenSpaceLocation() const;
+	const FVector2D GetSelectionStartScreenSpaceLocation() const;
 
 private:
 	enum class InputType : uint8
@@ -112,7 +112,6 @@ private:
 	void ProcessReticleAbilityPerSelectedActor(AArgusActor* argusActor, uint32 abilityRecordId);
 
 	FVector m_cachedLastSelectInputWorldSpaceLocation = FVector::ZeroVector;
-	FVector2D m_cachedLastSelectInputScreenspaceLocation = FVector2D::ZeroVector;
 	bool m_selectedArgusActorsChangedThisFrame = false;
 	bool m_selectInputDown = false;
 	bool m_canRotateCamera = false;

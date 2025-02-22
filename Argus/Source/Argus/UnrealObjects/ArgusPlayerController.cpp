@@ -72,16 +72,10 @@ AArgusCameraActor::UpdateCameraPanningParameters AArgusPlayerController::GetScre
 	return output;
 }
 
-bool AArgusPlayerController::GetMouseProjectionLocation(ECollisionChannel collisionTraceChannel, FHitResult& outHitResult, FVector2D& outMouseScreenSpaceLocation) const
+bool AArgusPlayerController::GetMouseProjectionLocation(ECollisionChannel collisionTraceChannel, FHitResult& outHitResult) const
 {
 	FVector worldSpaceLocation = FVector::ZeroVector;
 	FVector worldSpaceDirection = FVector::ZeroVector;
-
-	if (!GetMousePosition(outMouseScreenSpaceLocation.X, outMouseScreenSpaceLocation.Y))
-	{
-		ARGUS_LOG(ArgusUnrealObjectsLog, Error, TEXT("[%s] Failed to get mouse screenspace location."), ARGUS_FUNCNAME);
-		return false;
-	}
 
 	bool outcome = DeprojectMousePositionToWorld(worldSpaceLocation, worldSpaceDirection);
 	FVector traceEndpoint = worldSpaceLocation + (worldSpaceDirection * AArgusCameraActor::k_cameraTraceLength);
