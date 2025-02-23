@@ -12,7 +12,6 @@ class ARGUS_API UTransformComponentData : public UComponentData
 	GENERATED_BODY()
 
 public:
-	FTransform m_transform = FTransform::Identity;
 	FVector m_location = FVector::ZeroVector;
 	FVector m_currentVelocity = FVector::ZeroVector;
 	FVector m_proposedAvoidanceVelocity = FVector::ZeroVector;
