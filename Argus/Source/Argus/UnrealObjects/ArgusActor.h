@@ -2,9 +2,9 @@
 
 #pragma once
 
+#include "ArgusEntityTemplate.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "ArgusEntityTemplate.h"
 #include "ArgusActor.generated.h"
 
 class UArgusActorInfoWidget;

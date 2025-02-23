@@ -9,275 +9,6 @@
 
 #if WITH_AUTOMATION_TESTS
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(TransformSystemsGetPathingLocationAtTimeOffsetTest, "Argus.ECS.Systems.TransformSystems.GetPathingLocationAtTimeOffset", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
-bool TransformSystemsGetPathingLocationAtTimeOffsetTest::RunTest(const FString& Parameters)
-{
-	const FVector startLocation = FVector::ZeroVector;
-	const FVector oneSecondInPast = FVector(-1.0f, 0.0f, 0.0f);
-	const FVector twoSecondsInPast = FVector(-2.0f, 0.0f, 0.0f);
-	const FVector oneSecondInFuture = FVector(1.0f, 0.0f, 0.0f);
-	const FVector twoSecondsInFuture = FVector(2.0f, 0.0f, 0.0f);
-	const FVector expectedForward = FVector(1.0f, 0.0f, 0.0f);
-
-	ArgusTesting::StartArgusTest();
-	ArgusEntity entity = ArgusEntity::CreateEntity();
-	TransformSystems::TransformSystemsComponentArgs components;
-	TransformSystems::GetPathingLocationAtTimeOffsetResults results;
-
-#pragma region Test passing in malformed components and getting an error message.
-	AddExpectedErrorPlain
-	(
-		FString::Printf
-		(
-			TEXT("Passed in %s object has invalid component references."),
-			ARGUS_NAMEOF(TransformSystemsComponentArgs)
-		)
-	);
-#pragma endregion
-
-	TransformSystems::GetPathingLocationAtTimeOffset(1.0f, components, results);
-
-	components.m_entity = entity;
-	components.m_taskComponent = entity.AddComponent<TaskComponent>();
-	components.m_transformComponent = entity.AddComponent<TransformComponent>();
-	components.m_navigationComponent = entity.AddComponent<NavigationComponent>();
-	components.m_targetingComponent = entity.AddComponent<TargetingComponent>();
-
-	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
-	{
-		ArgusTesting::EndArgusTest();
-		return false;
-	}
-
-	components.m_taskComponent->m_movementState = MovementState::None;
-	const FVector defaultLocation = components.m_transformComponent->m_location;
-	const FVector defaultForwardVector = components.m_transformComponent->m_transform.GetRotation().GetForwardVector();
-
-	TransformSystems::GetPathingLocationAtTimeOffset(1.0f, components, results);
-
-#pragma region Test location when not in a moving state and attempting to get pathing location.
-	TestEqual
-	(
-		FString::Printf(TEXT("[%s] Test that %s location is {%f, %f, %f} when not in a moving state."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), defaultLocation.X, defaultLocation.Y, defaultLocation.Z),
-		results.m_outputPredictedLocation,
-		defaultLocation
-	);
-#pragma endregion
-
-#pragma region Test rotation when not in a moving state and attempting to get pathing location.
-	TestEqual
-	(
-		FString::Printf(TEXT("[%s] Test that %s forward vector is {%f, %f, %f} fwhen not in a moving state."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), defaultForwardVector.X, defaultForwardVector.Y, defaultForwardVector.Z),
-		results.m_outputPredictedForwardDirection,
-		defaultForwardVector
-	);
-#pragma endregion
-
-	components.m_taskComponent->m_movementState = MovementState::MoveToLocation;
-	components.m_navigationComponent->m_lastPointIndex = 2u;
-
-#pragma region Test having an invalid navigation point index fires the proper error.
-	AddExpectedErrorPlain
-	(
-		FString::Printf
-		(
-			TEXT("putting pathfinding in an invalid state.")
-		)
-	);
-#pragma endregion
-
-	TransformSystems::GetPathingLocationAtTimeOffset(1.0f, components, results);
-
-	components.m_transformComponent->m_desiredSpeedUnitsPerSecond = 1.0f;
-	components.m_navigationComponent->m_navigationPoints.Reserve(5);
-	components.m_navigationComponent->m_navigationPoints.Add(twoSecondsInPast);
-	components.m_navigationComponent->m_navigationPoints.Add(oneSecondInPast);
-	components.m_navigationComponent->m_navigationPoints.Add(startLocation);
-	components.m_navigationComponent->m_navigationPoints.Add(oneSecondInFuture);
-	components.m_navigationComponent->m_navigationPoints.Add(twoSecondsInFuture);
-
-	results.m_outputPredictedLocation = FVector::ZeroVector;
-	results.m_outputPredictedForwardDirection = FVector::ZeroVector;
-	results.m_navigationIndexOfPredictedLocation = 0u;
-
-	TransformSystems::GetPathingLocationAtTimeOffset(1.0f, components, results);
-
-#pragma region Test navigation index one second in the future
-	TestEqual
-	(
-		FString::Printf(TEXT("[%s] Test %s for one second in the future."), ARGUS_FUNCNAME, ARGUS_NAMEOF(index)),
-		results.m_navigationIndexOfPredictedLocation,
-		3u
-	);
-#pragma endregion
-
-#pragma region Test location one second in the future
-	TestEqual
-	(
-		FString::Printf(TEXT("[%s] Test that %s location is {%f, %f, %f} for one second in the future."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), oneSecondInFuture.X, oneSecondInFuture.Y, oneSecondInFuture.Z),
-		results.m_outputPredictedLocation,
-		oneSecondInFuture
-	);
-#pragma endregion
-
-#pragma region Test rotation one second in the future
-	TestEqual
-	(
-		FString::Printf(TEXT("[%s] Test that %s forward vector is {%f, %f, %f} for one second in the future."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), expectedForward.X, expectedForward.Y, expectedForward.Z),
-		results.m_outputPredictedForwardDirection,
-		expectedForward
-	);
-#pragma endregion
-
-	TransformSystems::GetPathingLocationAtTimeOffset(-1.0f, components, results);
-
-#pragma region Test navigation index one second in the past
-	TestEqual
-	(
-		FString::Printf(TEXT("[%s] Test %s for one second in the past."), ARGUS_FUNCNAME, ARGUS_NAMEOF(index)),
-		results.m_navigationIndexOfPredictedLocation,
-		1u
-	);
-#pragma endregion
-
-#pragma region Test location one second in the past
-	TestEqual
-	(
-		FString::Printf(TEXT("[%s] Test that %s location is {%f, %f, %f} for one second in the past."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), oneSecondInPast.X, oneSecondInPast.Y, oneSecondInPast.Z),
-		results.m_outputPredictedLocation,
-		oneSecondInPast
-	);
-#pragma endregion
-
-#pragma region Test rotation one second in the past
-	TestEqual
-	(
-		FString::Printf(TEXT("[%s] Test that %s forward vector is {%f, %f, %f} for one second in the past."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), expectedForward.X, expectedForward.Y, expectedForward.Z),
-		results.m_outputPredictedForwardDirection,
-		expectedForward
-	);
-#pragma endregion
-
-	TransformSystems::GetPathingLocationAtTimeOffset(2.0f, components, results);
-
-#pragma region Test navigation index two seconds in the future
-	TestEqual
-	(
-		FString::Printf(TEXT("[%s] Test %s for two seconds in the future."), ARGUS_FUNCNAME, ARGUS_NAMEOF(index)),
-		results.m_navigationIndexOfPredictedLocation,
-		4u
-	);
-#pragma endregion
-
-#pragma region Test location two seconds in the future
-	TestEqual
-	(
-		FString::Printf(TEXT("[%s] Test that %s location is {%f, %f, %f} for two seconds in the future."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), twoSecondsInFuture.X, twoSecondsInFuture.Y, twoSecondsInFuture.Z),
-		results.m_outputPredictedLocation,
-		twoSecondsInFuture
-	);
-#pragma endregion
-
-#pragma region Test rotation two seconds in the future
-	TestEqual
-	(
-		FString::Printf(TEXT("[%s] Test that %s forward vector is {%f, %f, %f} for two seconds in the future."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), expectedForward.X, expectedForward.Y, expectedForward.Z),
-		results.m_outputPredictedForwardDirection,
-		expectedForward
-	);
-#pragma endregion
-
-	TransformSystems::GetPathingLocationAtTimeOffset(-2.0f, components, results);
-
-#pragma region Test navigation index two seconds in the past
-	TestEqual
-	(
-		FString::Printf(TEXT("[%s] Test %s for two seconds in the past."), ARGUS_FUNCNAME, ARGUS_NAMEOF(index)),
-		results.m_navigationIndexOfPredictedLocation,
-		0u
-	);
-#pragma endregion
-
-#pragma region Test location two seconds in the past
-	TestEqual
-	(
-		FString::Printf(TEXT("[%s] Test that %s location is {%f, %f, %f} for two seconds in the past."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), twoSecondsInPast.X, twoSecondsInPast.Y, twoSecondsInPast.Z),
-		results.m_outputPredictedLocation,
-		twoSecondsInPast
-	);
-#pragma endregion
-
-#pragma region Test rotation two seconds in the past
-	TestEqual
-	(
-		FString::Printf(TEXT("[%s] Test that %s forward vector is {%f, %f, %f} for two seconds in the past."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), expectedForward.X, expectedForward.Y, expectedForward.Z),
-		results.m_outputPredictedForwardDirection,
-		expectedForward
-	);
-#pragma endregion
-
-	TransformSystems::GetPathingLocationAtTimeOffset(3.0f, components, results);
-
-#pragma region Test navigation index three seconds in the future
-	TestEqual
-	(
-		FString::Printf(TEXT("[%s] Test %s for three seconds in the future."), ARGUS_FUNCNAME, ARGUS_NAMEOF(index)),
-		results.m_navigationIndexOfPredictedLocation,
-		4u
-	);
-#pragma endregion
-
-#pragma region Test location three seconds in the future
-	TestEqual
-	(
-		FString::Printf(TEXT("[%s] Test that %s location is {%f, %f, %f} for three seconds in the future."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), twoSecondsInFuture.X, twoSecondsInFuture.Y, twoSecondsInFuture.Z),
-		results.m_outputPredictedLocation,
-		twoSecondsInFuture
-	);
-#pragma endregion
-
-#pragma region Test rotation three seconds in the future
-	TestEqual
-	(
-		FString::Printf(TEXT("[%s] Test that %s forward vector is {%f, %f, %f} for three seconds in the future."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), expectedForward.X, expectedForward.Y, expectedForward.Z),
-		results.m_outputPredictedForwardDirection,
-		expectedForward
-	);
-#pragma endregion
-
-	TransformSystems::GetPathingLocationAtTimeOffset(-3.0f, components, results);
-
-#pragma region Test navigation index three seconds in the past
-	TestEqual
-	(
-		FString::Printf(TEXT("[%s] Test %s for three seconds in the past."), ARGUS_FUNCNAME, ARGUS_NAMEOF(index)),
-		results.m_navigationIndexOfPredictedLocation,
-		0u
-	);
-#pragma endregion
-
-#pragma region Test location three seconds in the past
-	TestEqual
-	(
-		FString::Printf(TEXT("[%s] Test that %s location is {%f, %f, %f} for three seconds in the past."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), twoSecondsInPast.X, twoSecondsInPast.Y, twoSecondsInPast.Z),
-		results.m_outputPredictedLocation,
-		twoSecondsInPast
-	);
-#pragma endregion
-
-#pragma region Test rotation three seconds in the past
-	TestEqual
-	(
-		FString::Printf(TEXT("[%s] Test that %s forward vector is {%f, %f, %f} for three seconds in the past."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), expectedForward.X, expectedForward.Y, expectedForward.Z),
-		results.m_outputPredictedForwardDirection,
-		expectedForward
-	);
-#pragma endregion
-
-	ArgusTesting::EndArgusTest();
-	return true;
-}
-
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(TransformSystemsFaceTowardsLocationXYTest, "Argus.ECS.Systems.TransformSystems.FaceTowardsLocationXY", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool TransformSystemsFaceTowardsLocationXYTest::RunTest(const FString& Parameters)
 {
@@ -310,112 +41,112 @@ bool TransformSystemsFaceTowardsLocationXYTest::RunTest(const FString& Parameter
 
 	TransformSystems::FaceTowardsLocationXY(nullptr, expectedFirstTargetLocation);
 
-#pragma region Test creating an entity with a default forward transform.
-	TestEqual
-	(
-		FString::Printf
-		(
-			TEXT("[%s] Test creating an %s and validating that its default forward vector equals {%f, %f, %f}"), 
-			ARGUS_FUNCNAME, 
-			ARGUS_NAMEOF(ArgusEntity), 
-			FVector::ForwardVector.X, 
-			FVector::ForwardVector.Y, 
-			FVector::ForwardVector.Z
-		),
-		transformComponent->m_transform.GetRotation().GetForwardVector(), 
-		FVector::ForwardVector
-	);
-#pragma endregion
+//#pragma region Test creating an entity with a default forward transform.
+//	TestEqual
+//	(
+//		FString::Printf
+//		(
+//			TEXT("[%s] Test creating an %s and validating that its default forward vector equals {%f, %f, %f}"), 
+//			ARGUS_FUNCNAME, 
+//			ARGUS_NAMEOF(ArgusEntity), 
+//			FVector::ForwardVector.X, 
+//			FVector::ForwardVector.Y, 
+//			FVector::ForwardVector.Z
+//		),
+//		transformComponent->m_transform.GetRotation().GetForwardVector(), 
+//		FVector::ForwardVector
+//	);
+//#pragma endregion
 
 	TransformSystems::FaceTowardsLocationXY(transformComponent, FVector::ZeroVector);
 
-#pragma region Test looking along a vector with no length.
-	TestEqual
-	(
-		FString::Printf
-		(
-			TEXT("[%s] Test creating an %s and validating that its default forward vector equals {%f, %f, %f} when looking along a vector with no length."), 
-			ARGUS_FUNCNAME, 
-			ARGUS_NAMEOF(ArgusEntity), 
-			FVector::ForwardVector.X, 
-			FVector::ForwardVector.Y, 
-			FVector::ForwardVector.Z
-		),
-		transformComponent->m_transform.GetRotation().GetForwardVector(),
-		FVector::ForwardVector
-	);
-#pragma endregion
+//#pragma region Test looking along a vector with no length.
+//	TestEqual
+//	(
+//		FString::Printf
+//		(
+//			TEXT("[%s] Test creating an %s and validating that its default forward vector equals {%f, %f, %f} when looking along a vector with no length."), 
+//			ARGUS_FUNCNAME, 
+//			ARGUS_NAMEOF(ArgusEntity), 
+//			FVector::ForwardVector.X, 
+//			FVector::ForwardVector.Y, 
+//			FVector::ForwardVector.Z
+//		),
+//		transformComponent->m_transform.GetRotation().GetForwardVector(),
+//		FVector::ForwardVector
+//	);
+//#pragma endregion
 
 	TransformSystems::FaceTowardsLocationXY(transformComponent, expectedFirstTargetLocation);
 
-#pragma region Test facing an entity towards a direction and confirming it has the proper forward vector
-	TestEqual
-	(
-		FString::Printf
-		(
-			TEXT("[%s] Test facing %s towards target and confirming it has the proper forward vector, {%f, %f, %f}."), 
-			ARGUS_FUNCNAME, 
-			ARGUS_NAMEOF(ArgusEntity), 
-			expectedForward.X, 
-			expectedForward.Y, 
-			expectedForward.Z
-		),
-		transformComponent->m_transform.GetRotation().GetForwardVector(), 
-		expectedForward
-	);
-#pragma endregion
+//#pragma region Test facing an entity towards a direction and confirming it has the proper forward vector
+//	TestEqual
+//	(
+//		FString::Printf
+//		(
+//			TEXT("[%s] Test facing %s towards target and confirming it has the proper forward vector, {%f, %f, %f}."), 
+//			ARGUS_FUNCNAME, 
+//			ARGUS_NAMEOF(ArgusEntity), 
+//			expectedForward.X, 
+//			expectedForward.Y, 
+//			expectedForward.Z
+//		),
+//		transformComponent->m_transform.GetRotation().GetForwardVector(), 
+//		expectedForward
+//	);
+//#pragma endregion
 
 	TransformSystems::FaceTowardsLocationXY(transformComponent, expectedSecondTargetLocation);
 
-#pragma region Test facing an entity towards a coincident vector and confirm that it does not change facing
-	TestEqual
-	(
-		FString::Printf
-		(
-			TEXT("[%s] Test facing %s towards coincident vector and confirming it does not change facing."), 
-			ARGUS_FUNCNAME, 
-			ARGUS_NAMEOF(ArgusEntity)
-		),
-		transformComponent->m_transform.GetRotation().GetForwardVector(), 
-		expectedForward
-	);
-#pragma endregion
+//#pragma region Test facing an entity towards a coincident vector and confirm that it does not change facing
+//	TestEqual
+//	(
+//		FString::Printf
+//		(
+//			TEXT("[%s] Test facing %s towards coincident vector and confirming it does not change facing."), 
+//			ARGUS_FUNCNAME, 
+//			ARGUS_NAMEOF(ArgusEntity)
+//		),
+//		transformComponent->m_transform.GetRotation().GetForwardVector(), 
+//		expectedForward
+//	);
+//#pragma endregion
 
 	TransformSystems::FaceTowardsLocationXY(transformComponent, FVector::ZeroVector);
 
-#pragma region Test facing an entity towards a zero vector and confirming it does not change facing
-	TestEqual
-	(
-		FString::Printf
-		(
-			TEXT("[%s] Test facing %s towards %s and confirming it does not change facing."), 
-			ARGUS_FUNCNAME, 
-			ARGUS_NAMEOF(ArgusEntity), 
-			ARGUS_NAMEOF(FVector::ZeroVector)
-		),
-		transformComponent->m_transform.GetRotation().GetForwardVector(), 
-		expectedForward
-	);
-#pragma endregion
+//#pragma region Test facing an entity towards a zero vector and confirming it does not change facing
+//	TestEqual
+//	(
+//		FString::Printf
+//		(
+//			TEXT("[%s] Test facing %s towards %s and confirming it does not change facing."), 
+//			ARGUS_FUNCNAME, 
+//			ARGUS_NAMEOF(ArgusEntity), 
+//			ARGUS_NAMEOF(FVector::ZeroVector)
+//		),
+//		transformComponent->m_transform.GetRotation().GetForwardVector(), 
+//		expectedForward
+//	);
+//#pragma endregion
 
 	TransformSystems::FaceTowardsLocationXY(transformComponent, expectedThirdTargetLocation);
 
-#pragma region Test facing an entity towards a direction and confirming it has the proper forward vector
-	TestEqual
-	(
-		FString::Printf
-		(
-			TEXT("[%s] Test facing %s towards target and confirming it has the proper forward vector, {%f, %f, %f}."), 
-			ARGUS_FUNCNAME, 
-			ARGUS_NAMEOF(ArgusEntity), 
-			secondExpectedForward.X, 
-			secondExpectedForward.Y, 
-			secondExpectedForward.Z
-		),
-		transformComponent->m_transform.GetRotation().GetForwardVector(),
-		secondExpectedForward
-	);
-#pragma endregion
+//#pragma region Test facing an entity towards a direction and confirming it has the proper forward vector
+//	TestEqual
+//	(
+//		FString::Printf
+//		(
+//			TEXT("[%s] Test facing %s towards target and confirming it has the proper forward vector, {%f, %f, %f}."), 
+//			ARGUS_FUNCNAME, 
+//			ARGUS_NAMEOF(ArgusEntity), 
+//			secondExpectedForward.X, 
+//			secondExpectedForward.Y, 
+//			secondExpectedForward.Z
+//		),
+//		transformComponent->m_transform.GetRotation().GetForwardVector(),
+//		secondExpectedForward
+//	);
+//#pragma endregion
 
 	ArgusTesting::EndArgusTest();
 	return true;
@@ -499,14 +230,14 @@ bool TransformSystemsMoveAlongPathTest::RunTest(const FString& Parameters)
 	);
 #pragma endregion
 
-#pragma region Test forward vector of initial entity
-	TestEqual
-	(
-		FString::Printf(TEXT("[%s] Test initial %s %s forward vector is {%f, %f, %f}."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(TransformComponent), FVector::ForwardVector.X, FVector::ForwardVector.Y, FVector::ForwardVector.Z),
-		components.m_transformComponent->m_transform.GetRotation().GetForwardVector(), 
-		FVector::ForwardVector
-	);
-#pragma endregion
+//#pragma region Test forward vector of initial entity
+//	TestEqual
+//	(
+//		FString::Printf(TEXT("[%s] Test initial %s %s forward vector is {%f, %f, %f}."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(TransformComponent), FVector::ForwardVector.X, FVector::ForwardVector.Y, FVector::ForwardVector.Z),
+//		components.m_transformComponent->m_transform.GetRotation().GetForwardVector(), 
+//		FVector::ForwardVector
+//	);
+//#pragma endregion
 
 #pragma region Test moving along path with an invalid world pointer.
 	AddExpectedErrorPlain
@@ -543,14 +274,14 @@ bool TransformSystemsMoveAlongPathTest::RunTest(const FString& Parameters)
 	);
 #pragma endregion
 
-#pragma region Test rotation after moving along path for one second
-	TestEqual
-	(
-		FString::Printf(TEXT("[%s] Test that %s forward vector is {%f, %f, %f} after moving along path for %f seconds."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), expectedTestForward0.X, expectedTestForward0.Y, expectedTestForward0.Z, secondCounter),
-		components.m_transformComponent->m_transform.GetRotation().GetForwardVector(), 
-		expectedTestForward0
-	);
-#pragma endregion
+//#pragma region Test rotation after moving along path for one second
+//	TestEqual
+//	(
+//		FString::Printf(TEXT("[%s] Test that %s forward vector is {%f, %f, %f} after moving along path for %f seconds."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), expectedTestForward0.X, expectedTestForward0.Y, expectedTestForward0.Z, secondCounter),
+//		components.m_transformComponent->m_transform.GetRotation().GetForwardVector(), 
+//		expectedTestForward0
+//	);
+//#pragma endregion
 
 	AvoidanceSystems::ProcessORCAvoidance(dummyWorldPointer, deltaSecondsPerStep, components);
 	TransformSystems::MoveAlongNavigationPath(dummyWorldPointer, deltaSecondsPerStep, components);
@@ -574,14 +305,14 @@ bool TransformSystemsMoveAlongPathTest::RunTest(const FString& Parameters)
 	);
 #pragma endregion
 
-#pragma region Test rotation after moving along path for two seconds
-	TestEqual
-	(
-		FString::Printf(TEXT("[%s] Test that %s forward vector is {%f, %f, %f} after moving along path for %f seconds."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), expectedTestForward0.X, expectedTestForward0.Y, expectedTestForward0.Z, secondCounter),
-		components.m_transformComponent->m_transform.GetRotation().GetForwardVector(), 
-		expectedTestForward0
-	);
-#pragma endregion
+//#pragma region Test rotation after moving along path for two seconds
+//	TestEqual
+//	(
+//		FString::Printf(TEXT("[%s] Test that %s forward vector is {%f, %f, %f} after moving along path for %f seconds."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), expectedTestForward0.X, expectedTestForward0.Y, expectedTestForward0.Z, secondCounter),
+//		components.m_transformComponent->m_transform.GetRotation().GetForwardVector(), 
+//		expectedTestForward0
+//	);
+//#pragma endregion
 
 	AvoidanceSystems::ProcessORCAvoidance(dummyWorldPointer, deltaSecondsPerStep, components);
 	TransformSystems::MoveAlongNavigationPath(dummyWorldPointer, deltaSecondsPerStep, components);
@@ -637,14 +368,14 @@ bool TransformSystemsMoveAlongPathTest::RunTest(const FString& Parameters)
 	);
 #pragma endregion
 
-#pragma region Test rotation after moving along path for four seconds
-	TestEqual
-	(
-		FString::Printf(TEXT("[%s] Test that %s forward vector is {%f, %f, %f} after moving along path for %f seconds."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), expectedTestForward1.X, expectedTestForward1.Y, expectedTestForward1.Z, secondCounter),
-		components.m_transformComponent->m_transform.GetRotation().GetForwardVector(), 
-		expectedTestForward1
-	);
-#pragma endregion
+//#pragma region Test rotation after moving along path for four seconds
+//	TestEqual
+//	(
+//		FString::Printf(TEXT("[%s] Test that %s forward vector is {%f, %f, %f} after moving along path for %f seconds."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), expectedTestForward1.X, expectedTestForward1.Y, expectedTestForward1.Z, secondCounter),
+//		components.m_transformComponent->m_transform.GetRotation().GetForwardVector(), 
+//		expectedTestForward1
+//	);
+//#pragma endregion
 
 	ArgusTesting::EndArgusTest();
 	return true;

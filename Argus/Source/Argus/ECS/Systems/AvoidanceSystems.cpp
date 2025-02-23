@@ -93,7 +93,7 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 		else
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Attempting to process ORCA, but the source %s's %s is in an invalid state."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(NavigationComponent));
-			desiredDirection = ArgusMath::GetDirectionVectorForYaw(components.m_transformComponent->GetCurrentYaw());
+			desiredDirection = ArgusMath::GetDirectionFromYaw(components.m_transformComponent->GetCurrentYaw());
 		}
 
 		desiredVelocity = ArgusMath::ToCartesianVector2(FVector2D(desiredDirection).GetSafeNormal() * components.m_transformComponent->m_desiredSpeedUnitsPerSecond);
