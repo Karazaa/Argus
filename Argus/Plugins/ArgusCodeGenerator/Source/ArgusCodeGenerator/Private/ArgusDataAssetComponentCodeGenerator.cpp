@@ -218,7 +218,8 @@ bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetCppFileTemplateWithRepl
 					}
 					else if (exponentialDecaySmootherIndex != std::string::npos)
 					{
-						variableAssignment.append(parsedComponentData.m_componentVariableData[i][j].m_typeName);
+						const size_t lengthTypeName = parsedComponentData.m_componentVariableData[i][j].m_typeName.length();
+						variableAssignment.append(parsedComponentData.m_componentVariableData[i][j].m_typeName.substr(1, (lengthTypeName - 1)));
 						variableAssignment.append("(");
 						variableAssignment.append(parsedComponentData.m_componentVariableData[i][j].m_varName);
 						variableAssignment.append("DecayConstant");
