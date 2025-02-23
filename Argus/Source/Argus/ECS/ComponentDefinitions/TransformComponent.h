@@ -37,11 +37,13 @@ struct TransformComponent
 		(
 			FString::Printf
 			(
-				TEXT("\n[%s] \n    (Location: {%f, %f, %f}) \n    (%s: %f)"),
+				TEXT("\n[%s] \n    (Location: {%f, %f, %f}) \n    (%s: %f) \n    (%s: %f)"),
 				ARGUS_NAMEOF(TransformComponent),
 				m_location.X,
 				m_location.Y,
 				m_location.Z,
+				ARGUS_NAMEOF(m_targetYaw),
+				m_targetYaw,
 				ARGUS_NAMEOF(m_desiredSpeedUnitsPerSecond),
 				m_desiredSpeedUnitsPerSecond
 			)
