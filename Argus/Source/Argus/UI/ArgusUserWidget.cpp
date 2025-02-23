@@ -12,7 +12,7 @@ void UArgusUserWidget::UpdateFromInputManager(const FVector2D& currentMouseLocat
 
 	if (!m_inputManager.IsValid())
 	{
-		// TODO JAMES: Error here
+		ARGUS_LOG(ArgusUILog, Error, TEXT("[%s] Invalid reference to %s"), ARGUS_FUNCNAME, ARGUS_NAMEOF(m_inputManager));
 		return;
 	}
 

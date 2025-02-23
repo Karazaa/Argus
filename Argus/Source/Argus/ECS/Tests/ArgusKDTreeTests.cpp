@@ -517,4 +517,6 @@ bool ArgusUtilitiesArgusKDTreeFindArgusEntityIdsWithinRangeOfLocationTest::RunTe
 	return true;
 }
 
+// TODO JAMES: Add convex polygon tests.
+
 #endif //WITH_AUTOMATION_TESTS

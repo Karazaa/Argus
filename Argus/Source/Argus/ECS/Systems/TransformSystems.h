@@ -26,7 +26,6 @@ public:
 		uint16  m_navigationIndexOfPredictedLocation;
 	};
 	static void MoveAlongNavigationPath(UWorld* worldPointer, float deltaTime, const TransformSystemsComponentArgs& components);
-	static void FindEntitiesWithinXYBounds(FVector2D minXY, FVector2D maxXY, TArray<ArgusEntity>& outEntitiesWithinBounds);
 
 private:
 	static bool ProcessMovementTaskCommands(UWorld* worldPointer, float deltaTime, const TransformSystemsComponentArgs& components);
