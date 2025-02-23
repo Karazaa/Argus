@@ -128,7 +128,7 @@ void SpawningSystems::SpawnEntityInternal(const SpawningSystemsComponentArgs& co
 		GetSpawnLocationAndNavigationState(components, spawnLocation, initialSpawnMovementState);
 	}
 
-	spawnedEntityTransformComponent->m_location;
+	spawnedEntityTransformComponent->m_location = spawnLocation;
 
 	if (spawnInfo.m_needsConstruction)
 	{
