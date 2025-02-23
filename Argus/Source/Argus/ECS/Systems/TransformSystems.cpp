@@ -2,8 +2,8 @@
 
 #include "TransformSystems.h"
 #include "ArgusEntity.h"
+#include "ArgusMath.h"
 #include "ArgusSystemsManager.h"
-#include "Math/UnrealMathUtility.h"
 #include "NavigationSystem.h"
 
 bool TransformSystems::RunSystems(UWorld* worldPointer, float deltaTime)
@@ -54,101 +54,6 @@ bool TransformSystems::TransformSystemsComponentArgs::AreComponentsValidCheck(co
 	return false;
 }
 
-void TransformSystems::GetPathingLocationAtTimeOffset(float timeOffsetSeconds, const TransformSystemsComponentArgs& components, GetPathingLocationAtTimeOffsetResults& results)
-{
-	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
-	{
-		return;
-	}
-
-	if (!components.m_taskComponent->IsExecutingMoveTask())
-	{
-		results.m_outputPredictedLocation = components.m_transformComponent->m_location;
-		results.m_outputPredictedForwardDirection = components.m_transformComponent->m_transform.GetRotation().GetForwardVector();
-		return;
-	}
-
-	uint16 pointIndex = components.m_navigationComponent->m_lastPointIndex;
-	const int32 numNavigationPoints = components.m_navigationComponent->m_navigationPoints.Num();
-
-	if (numNavigationPoints == 0u || pointIndex >= numNavigationPoints - 1u)
-	{
-		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] %s exceeded %s putting pathfinding in an invalid state."), ARGUS_FUNCNAME, ARGUS_NAMEOF(lastPointIndex), ARGUS_NAMEOF(numNavigationPoints));
-		return;
-	}
-
-	FVector currentLocation = components.m_transformComponent->m_location;
-
-	if (timeOffsetSeconds == 0.0f)
-	{
-		results.m_outputPredictedLocation = currentLocation;
-		results.m_outputPredictedForwardDirection = components.m_transformComponent->m_transform.GetRotation().GetForwardVector();
-		results.m_navigationIndexOfPredictedLocation = pointIndex;
-		return;
-	}
-
-	float translationMagnitude = FMath::Abs(components.m_transformComponent->m_desiredSpeedUnitsPerSecond * timeOffsetSeconds);
-	FVector positionDifferenceNormalized = FVector::ZeroVector;
-
-	if (timeOffsetSeconds > 0.0f)
-	{
-		FVector upcomingPoint = components.m_navigationComponent->m_navigationPoints[pointIndex + 1u];
-		FVector positionDifference = upcomingPoint - currentLocation;
-		float positionDifferenceMagnitude = positionDifference.Length();
-		positionDifferenceNormalized = positionDifference.GetSafeNormal();
-
-		while (translationMagnitude >= positionDifferenceMagnitude)
-		{
-			pointIndex++;
-			if (pointIndex >= numNavigationPoints - 1u)
-			{
-				results.m_outputPredictedLocation = components.m_navigationComponent->m_navigationPoints[pointIndex];
-				results.m_navigationIndexOfPredictedLocation = pointIndex;
-				return;
-			}
-
-			translationMagnitude -= positionDifferenceMagnitude;
-			upcomingPoint = components.m_navigationComponent->m_navigationPoints[pointIndex + 1u];
-			currentLocation = components.m_navigationComponent->m_navigationPoints[pointIndex];
-			positionDifference = upcomingPoint - currentLocation;
-			positionDifferenceMagnitude = positionDifference.Length();
-			positionDifferenceNormalized = positionDifference.GetSafeNormal();
-		}
-
-		results.m_outputPredictedForwardDirection = positionDifferenceNormalized;
-	}
-	else
-	{
-		FVector upcomingPoint = components.m_navigationComponent->m_navigationPoints[pointIndex];
-		FVector positionDifference = upcomingPoint - currentLocation;
-		float positionDifferenceMagnitude = positionDifference.Length();
-		positionDifferenceNormalized = positionDifference.GetSafeNormal();
-
-		while (translationMagnitude > positionDifferenceMagnitude)
-		{
-			if (pointIndex == 0u)
-			{
-				results.m_outputPredictedLocation = components.m_navigationComponent->m_navigationPoints[pointIndex];
-				results.m_navigationIndexOfPredictedLocation = 0u;
-				return;
-			}
-			pointIndex--;
-			translationMagnitude -= positionDifferenceMagnitude;
-
-			upcomingPoint = components.m_navigationComponent->m_navigationPoints[pointIndex];
-			currentLocation = components.m_navigationComponent->m_navigationPoints[pointIndex + 1];
-			positionDifference = upcomingPoint - currentLocation;
-			positionDifferenceMagnitude = positionDifference.Length();
-			positionDifferenceNormalized = positionDifference.GetSafeNormal();
-		}
-
-		results.m_outputPredictedForwardDirection = -positionDifferenceNormalized;
-	}
-
-	results.m_outputPredictedLocation = currentLocation + (translationMagnitude * positionDifferenceNormalized);
-	results.m_navigationIndexOfPredictedLocation = pointIndex;
-}
-
 void TransformSystems::FaceTowardsLocationXY(TransformComponent* transformComponent, FVector vectorFromTransformToTarget)
 {
 	if (vectorFromTransformToTarget.Equals(FVector::ZeroVector))
@@ -162,13 +67,12 @@ void TransformSystems::FaceTowardsLocationXY(TransformComponent* transformCompon
 		return;
 	}
 
-	vectorFromTransformToTarget.Z = 0.0f;
-	if (vectorFromTransformToTarget.GetSafeNormal().Equals(transformComponent->m_transform.GetRotation().GetForwardVector()))
-	{
-		return;
-	}
+	vectorFromTransformToTarget = ArgusMath::ToCartesianVector(vectorFromTransformToTarget).GetSafeNormal();
+	const FVector currentDirection = ArgusMath::ToCartesianVector(ArgusMath::GetDirectionFromYaw(transformComponent->m_targetYaw));
+	const FVector crossProduct = currentDirection.Cross(vectorFromTransformToTarget);
+	const float angleDifference = FMath::Acos(vectorFromTransformToTarget.Dot(currentDirection));
 
-	transformComponent->m_transform.SetRotation(FRotationMatrix::MakeFromXZ(vectorFromTransformToTarget, FVector::UpVector).ToQuat());
+	transformComponent->m_targetYaw += (angleDifference * FMath::Sign(crossProduct.Z));
 }
 
 void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float deltaTime, const TransformSystemsComponentArgs& components)
@@ -226,6 +130,7 @@ void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float delta
 
 	moverLocation = ProjectLocationOntoNavigationData(worldPointer, components.m_transformComponent, moverLocation);
 	components.m_transformComponent->m_location = moverLocation;
+	components.m_transformComponent->m_smoothedYaw.SmoothChase(components.m_transformComponent->m_targetYaw, deltaTime);
 	
 	if (isAtEndOfNavigationPath || isWithinRangeOfTargetEntity)
 	{
@@ -286,6 +191,7 @@ bool TransformSystems::ProcessMovementTaskCommands(UWorld* worldPointer, float d
 				const FVector velocity = components.m_transformComponent->m_currentVelocity * deltaTime;
 				FaceTowardsLocationXY(components.m_transformComponent, components.m_transformComponent->m_currentVelocity);
 				components.m_transformComponent->m_location = components.m_transformComponent->m_location + velocity;
+				components.m_transformComponent->m_smoothedYaw.SmoothChase(components.m_transformComponent->m_targetYaw, deltaTime);
 				return true;
 			}
 			return false;

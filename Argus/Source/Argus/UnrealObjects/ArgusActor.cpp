@@ -4,6 +4,7 @@
 #include "ArgusActorInfoWidget.h"
 #include "ArgusGameInstance.h"
 #include "ArgusGameModeBase.h"
+#include "ArgusMath.h"
 #include "ArgusStaticData.h"
 #include "Components/WidgetComponent.h"
 #include "DrawDebugHelpers.h"
@@ -75,10 +76,14 @@ void AArgusActor::SetEntity(const ArgusEntity& entity)
 		if (m_shouldActorSpawnLocationSetEntityLocation)
 		{
 			transformComponent->m_location = GetActorLocation();
+			const float desiredYaw = ArgusMath::GetYawFromDirection(GetActorForwardVector());
+			transformComponent->m_targetYaw = desiredYaw;
+			transformComponent->m_smoothedYaw.Reset(desiredYaw);
 		}
 		else
 		{
 			SetActorLocation(transformComponent->m_location);
+			SetActorRotation(FRotationMatrix::MakeFromXZ(ArgusMath::GetDirectionFromYaw(transformComponent->GetCurrentYaw()), FVector::UpVector).ToQuat());
 		}
 
 		if (NavigationComponent* navigationComponent = m_entity.GetComponent<NavigationComponent>())
@@ -212,6 +217,7 @@ void AArgusActor::Tick(float deltaTime)
 	if (const TransformComponent* transformComponent = m_entity.GetComponent<TransformComponent>())
 	{
 		SetActorLocation(transformComponent->m_location);
+		SetActorRotation(FRotationMatrix::MakeFromXZ(ArgusMath::GetDirectionFromYaw(transformComponent->GetCurrentYaw()), FVector::UpVector).ToQuat());
 
 		if (CVarShowAllArgusEntitiesDebug.GetValueOnGameThread() || (CVarShowSelectedArgusEntityDebug.GetValueOnGameThread() && m_isSelected))
 		{

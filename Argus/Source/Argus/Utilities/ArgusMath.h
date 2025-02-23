@@ -5,6 +5,7 @@
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
 #include "CoreMinimal.h"
+#include "Math/UnrealMathUtility.h"
 
 namespace ArgusMath
 {
@@ -167,14 +168,16 @@ namespace ArgusMath
 		return AmountLeftOf(ToCartesianVector2(lineSegmentPoint0), ToCartesianVector2(lineSegmentPoint1), ToCartesianVector2(evaluationPoint)) > 0.0f;
 	}
 
-	static FVector GetDirectionVectorForYaw(float yaw)
+	static FVector GetDirectionFromYaw(float yaw)
 	{
 		return FVector(FMath::Cos(yaw), -FMath::Sin(yaw), 0.0f);
 	}
 
 	static float GetYawFromDirection(const FVector& direction)
 	{
-		const FVector normalizedDirection = direction.GetSafeNormal();
+		FVector normalizedDirection = direction;
+		normalizedDirection.Z = 0.0f;
+		normalizedDirection.Normalize();
 		const float arcsine = FMath::Asin(-normalizedDirection.Y);
 		const float arccosine = FMath::Acos(normalizedDirection.X);
 
