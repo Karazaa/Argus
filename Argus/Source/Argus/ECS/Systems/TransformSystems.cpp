@@ -63,7 +63,7 @@ void TransformSystems::GetPathingLocationAtTimeOffset(float timeOffsetSeconds, c
 
 	if (!components.m_taskComponent->IsExecutingMoveTask())
 	{
-		results.m_outputPredictedLocation = components.m_transformComponent->m_transform.GetLocation();
+		results.m_outputPredictedLocation = components.m_transformComponent->m_location;
 		results.m_outputPredictedForwardDirection = components.m_transformComponent->m_transform.GetRotation().GetForwardVector();
 		return;
 	}
@@ -77,7 +77,7 @@ void TransformSystems::GetPathingLocationAtTimeOffset(float timeOffsetSeconds, c
 		return;
 	}
 
-	FVector currentLocation = components.m_transformComponent->m_transform.GetLocation();
+	FVector currentLocation = components.m_transformComponent->m_location;
 
 	if (timeOffsetSeconds == 0.0f)
 	{
@@ -190,7 +190,7 @@ void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float delta
 		return;
 	}
 
-	FVector moverLocation = components.m_transformComponent->m_transform.GetLocation();
+	FVector moverLocation = components.m_transformComponent->m_location;
 	const FVector targetLocation = components.m_navigationComponent->m_navigationPoints[lastPointIndex + 1u];
 	const FVector velocity = components.m_transformComponent->m_currentVelocity * deltaTime;
 	const FVector2D moverLocation2D = FVector2D(moverLocation);
@@ -225,7 +225,7 @@ void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float delta
 	}
 
 	moverLocation = ProjectLocationOntoNavigationData(worldPointer, components.m_transformComponent, moverLocation);
-	components.m_transformComponent->m_transform.SetLocation(moverLocation);
+	components.m_transformComponent->m_location = moverLocation;
 	
 	if (isAtEndOfNavigationPath || isWithinRangeOfTargetEntity)
 	{
@@ -251,7 +251,7 @@ void TransformSystems::FindEntitiesWithinXYBounds(FVector2D minXY, FVector2D max
 			continue;
 		}
 
-		FVector location = transformComponent->m_transform.GetLocation();
+		FVector location = transformComponent->m_location;
 
 		if (location.X >= minXY.X &&
 			location.X <= maxXY.X &&
@@ -285,7 +285,7 @@ bool TransformSystems::ProcessMovementTaskCommands(UWorld* worldPointer, float d
 			{
 				const FVector velocity = components.m_transformComponent->m_currentVelocity * deltaTime;
 				FaceTowardsLocationXY(components.m_transformComponent, components.m_transformComponent->m_currentVelocity);
-				components.m_transformComponent->m_transform.SetLocation(components.m_transformComponent->m_transform.GetLocation() + velocity);
+				components.m_transformComponent->m_location = components.m_transformComponent->m_location + velocity;
 				return true;
 			}
 			return false;

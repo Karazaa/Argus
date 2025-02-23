@@ -13,8 +13,12 @@ class ARGUS_API UTransformComponentData : public UComponentData
 
 public:
 	FTransform m_transform = FTransform::Identity;
+	FVector m_location = FVector::ZeroVector;
 	FVector m_currentVelocity = FVector::ZeroVector;
 	FVector m_proposedAvoidanceVelocity = FVector::ZeroVector;
+	UPROPERTY(EditAnywhere)
+float m_smoothedYawDecayConstant = 1.0f;
+	float m_targetYaw;
 	UPROPERTY(EditAnywhere)
 	float m_desiredSpeedUnitsPerSecond = 100.0f;
 	UPROPERTY(EditAnywhere)

@@ -29,9 +29,9 @@ bool TargetingSystemsTargetNearestEntityMatchingTeamMaskTest::RunTest(const FStr
 		return false;
 	}
 
-	sourceTransformComponent->m_transform = FTransform(FVector(0.0f, 0.0f, 0.0f));
-	closeTransformComponent->m_transform = FTransform(FVector(50.0f, 0.0f, 0.0f));
-	fartherTransformComponent->m_transform = FTransform(FVector(100.0f, 0.0f, 0.0f));
+	sourceTransformComponent->m_location = FVector(0.0f, 0.0f, 0.0f);
+	closeTransformComponent->m_location = FVector(50.0f, 0.0f, 0.0f);
+	fartherTransformComponent->m_location = FVector(100.0f, 0.0f, 0.0f);
 	sourceIdentityComponent->m_team = ETeam::TeamA;
 	closeIdentityComponent->m_team = ETeam::TeamB;
 	fartherIdentityComponent->m_team = ETeam::TeamC;
@@ -68,7 +68,7 @@ bool TargetingSystemsTargetNearestEntityMatchingTeamMaskTest::RunTest(const FStr
 	);
 #pragma endregion
 
-	fartherTransformComponent->m_transform.SetLocation(FVector(49.0f, 0.0f, 0.0f));
+	fartherTransformComponent->m_location = FVector(49.0f, 0.0f, 0.0f);
 	TargetingSystems::TargetNearestEntityMatchingTeamMask(sourceEntity.GetId(), sourceIdentityComponent->m_enemies, components);
 
 #pragma region Test target farther enemy after moving
@@ -87,7 +87,7 @@ bool TargetingSystemsTargetNearestEntityMatchingTeamMaskTest::RunTest(const FStr
 	);
 #pragma endregion
 
-	fartherTransformComponent->m_transform.SetLocation(FVector(50.0f, 0.0f, 0.0f));
+	fartherTransformComponent->m_location = FVector(50.0f, 0.0f, 0.0f);
 	TargetingSystems::TargetNearestEntityMatchingTeamMask(sourceEntity.GetId(), sourceIdentityComponent->m_enemies, components);
 
 #pragma region Test tiebreaking

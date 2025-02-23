@@ -133,13 +133,13 @@ bool ConstructionSystemsBeingConstructedManualTest::RunTest(const FString& Param
 	constructedConstructionComponent->m_constructionType = EConstructionType::Manual;
 	constructedConstructionComponent->m_requiredWorkSeconds = constructionTimeSeconds;
 	constructedConstructionComponent->m_constructionAbilityRecordId = abilityRecordId;
-	constructedTransformComponent->m_transform.SetLocation(constructedLocation);
+	constructedTransformComponent->m_location = constructedLocation;
 
 	constructingAbilityComponent->m_ability0Id = abilityRecordId;
 	constructingTaskComponent->m_constructionState = ConstructionState::ConstructingOther;
 	constructingTargetingComponent->m_targetEntityId = entityToConstruct.GetId();
 	constructingTargetingComponent->m_targetingRange = constructionRange;
-	constructingTransformComponent->m_transform.SetLocation(initialConstructingLocation);
+	constructingTransformComponent->m_location = initialConstructingLocation;
 
 	ConstructionSystems::RunSystems(timestep);
 
@@ -158,7 +158,7 @@ bool ConstructionSystemsBeingConstructedManualTest::RunTest(const FString& Param
 	);
 #pragma endregion
 
-	constructingTransformComponent->m_transform.SetLocation(constructingLocation);
+	constructingTransformComponent->m_location = constructingLocation;
 	ConstructionSystems::RunSystems(timestep);
 
 #pragma region Verifying that current work seconds equals one after one timestep of in range manual construction.

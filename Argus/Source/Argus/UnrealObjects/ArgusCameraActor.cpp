@@ -82,8 +82,8 @@ void AArgusCameraActor::BeginPlay()
 		const FVector2D hitLocation2D = FVector2D(hitResult.GetValue().Location);
 		const FVector2D cameraLocation2D = FVector2D(m_cameraLocationWithoutZoom);
 		const FVector2D unitCircleLocation = ArgusMath::ToCartesianVector2((cameraLocation2D - hitLocation2D).GetSafeNormal());
-		float arcsine = FMath::Asin(unitCircleLocation.Y);
-		float arccosine = FMath::Acos(unitCircleLocation.X);
+		const float arcsine = FMath::Asin(unitCircleLocation.Y);
+		const float arccosine = FMath::Acos(unitCircleLocation.X);
 		if (arcsine >= 0.0f)
 		{
 			m_currentOrbitThetaAmount.Reset(arccosine);

@@ -157,7 +157,7 @@ void ConstructionSystems::ProcessConstructingOtherState(const ConstructionSystem
 		return;
 	}
 
-	if (FVector::DistSquared(constructorTransformComponent->m_transform.GetLocation(), constructeeTransformComponent->m_transform.GetLocation()) > 
+	if (FVector::DistSquared(constructorTransformComponent->m_location, constructeeTransformComponent->m_location) > 
 		FMath::Square(targetingComponent->m_targetingRange))
 	{
 		return;

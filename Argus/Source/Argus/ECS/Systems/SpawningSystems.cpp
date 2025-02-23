@@ -116,7 +116,7 @@ void SpawningSystems::SpawnEntityInternal(const SpawningSystemsComponentArgs& co
 		return;
 	}
 
-	FVector spawnLocation = components.m_transformComponent->m_transform.GetLocation();
+	FVector spawnLocation = components.m_transformComponent->m_location;
 	MovementState initialSpawnMovementState = MovementState::None;
 
 	if (spawnInfo.m_spawnLocationOverride.IsSet())
@@ -128,7 +128,7 @@ void SpawningSystems::SpawnEntityInternal(const SpawningSystemsComponentArgs& co
 		GetSpawnLocationAndNavigationState(components, spawnLocation, initialSpawnMovementState);
 	}
 
-	spawnedEntityTransformComponent->m_transform.SetLocation(spawnLocation);
+	spawnedEntityTransformComponent->m_location;
 
 	if (spawnInfo.m_needsConstruction)
 	{
@@ -287,7 +287,7 @@ void SpawningSystems::GetSpawnLocationAndNavigationState(const SpawningSystemsCo
 		return;
 	}
 
-	const FVector spawnerLocation = components.m_transformComponent->m_transform.GetLocation();
+	const FVector spawnerLocation = components.m_transformComponent->m_location;
 	outSpawnLocation = spawnerLocation;
 	outMovementState = MovementState::None;
 
@@ -317,7 +317,7 @@ void SpawningSystems::GetSpawnLocationAndNavigationState(const SpawningSystemsCo
 		return;
 	}
 
-	FVector spawnForward = targetTransformComponent->m_transform.GetLocation() - spawnerLocation;
+	FVector spawnForward = targetTransformComponent->m_location - spawnerLocation;
 	spawnForward.Normalize();
 	outSpawnLocation = spawnerLocation + (spawnForward * components.m_spawningComponent->m_spawningRadius);
 	outMovementState = MovementState::ProcessMoveToEntityCommand;

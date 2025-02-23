@@ -69,7 +69,7 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 	}
 
 	CreateEntityORCALinesParams params;
-	params.m_sourceEntityLocation3D = components.m_transformComponent->m_transform.GetLocation();
+	params.m_sourceEntityLocation3D = components.m_transformComponent->m_location;
 	params.m_sourceEntityLocation3D.Z += ArgusECSConstants::k_debugDrawHeightAdjustment;
 	params.m_sourceEntityLocation = ArgusMath::ToCartesianVector2(FVector2D(params.m_sourceEntityLocation3D));
 	params.m_sourceEntityVelocity = ArgusMath::ToCartesianVector2(FVector2D(components.m_transformComponent->m_currentVelocity));
@@ -88,12 +88,12 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 		FVector desiredDirection = FVector::ZeroVector;
 		if (numNavigationPoints != 0u && futureIndex < numNavigationPoints)
 		{
-			desiredDirection = (components.m_navigationComponent->m_navigationPoints[futureIndex] - components.m_transformComponent->m_transform.GetLocation());
+			desiredDirection = (components.m_navigationComponent->m_navigationPoints[futureIndex] - components.m_transformComponent->m_location);
 		}
 		else
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Attempting to process ORCA, but the source %s's %s is in an invalid state."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(NavigationComponent));
-			desiredDirection = components.m_transformComponent->m_transform.GetRotation().GetForwardVector();
+			desiredDirection = ArgusMath::GetDirectionVectorForYaw(components.m_transformComponent->GetCurrentYaw());
 		}
 
 		desiredVelocity = ArgusMath::ToCartesianVector2(FVector2D(desiredDirection).GetSafeNormal() * components.m_transformComponent->m_desiredSpeedUnitsPerSecond);
@@ -166,7 +166,7 @@ void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const Creat
 	params.m_spatialPartitioningComponent->m_obstaclePointKDTree.FindObstacleIndiciesWithinRangeOfLocation
 	(
 		obstacleIndicies,
-		FVector(params.m_sourceEntityLocation, components.m_transformComponent->m_transform.GetLocation().Z),
+		FVector(params.m_sourceEntityLocation, components.m_transformComponent->m_location.Z),
 		ArgusECSConstants::k_avoidanceAgentSearchRadius
 	);
 
@@ -214,7 +214,7 @@ void AvoidanceSystems::CreateEntityORCALines(const CreateEntityORCALinesParams& 
 		}
 
 		CreateEntityORCALinesParamsPerEntity perEntityParams;
-		perEntityParams.m_foundEntityLocation = ArgusMath::ToCartesianVector2(FVector2D(foundTransformComponent->m_transform.GetLocation()));
+		perEntityParams.m_foundEntityLocation = ArgusMath::ToCartesianVector2(FVector2D(foundTransformComponent->m_location));
 		perEntityParams.m_foundEntityVelocity = ArgusMath::ToCartesianVector2(FVector2D(foundTransformComponent->m_currentVelocity));
 		perEntityParams.m_entityRadius = foundTransformComponent->m_radius;
 

@@ -45,7 +45,7 @@ void TargetingSystems::TargetNearestEntityMatchingTeamMask(uint16 sourceEntityID
 		return;
 	}
 
-	const FVector fromLocation = components.m_transformComponent->m_transform.GetLocation();
+	const FVector fromLocation = components.m_transformComponent->m_location;
 	float minDistSquared = FLT_MAX;
 	uint16 minDistEntityId = ArgusECSConstants::k_maxEntities;
 	for (uint16 i = 0; i < ArgusECSConstants::k_maxEntities; ++i)
@@ -78,7 +78,7 @@ void TargetingSystems::TargetNearestEntityMatchingTeamMask(uint16 sourceEntityID
 			continue;
 		}
 
-		const FVector otherLocation = otherTransfromComponent->m_transform.GetLocation();
+		const FVector otherLocation = otherTransfromComponent->m_location;
 		const float distSquared = FVector::DistSquared(fromLocation, otherLocation);
 		if (distSquared < minDistSquared)
 		{

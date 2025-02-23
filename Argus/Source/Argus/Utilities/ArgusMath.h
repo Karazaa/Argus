@@ -166,4 +166,28 @@ namespace ArgusMath
 	{
 		return AmountLeftOf(ToCartesianVector2(lineSegmentPoint0), ToCartesianVector2(lineSegmentPoint1), ToCartesianVector2(evaluationPoint)) > 0.0f;
 	}
+
+	static FVector GetDirectionVectorForYaw(float yaw)
+	{
+		return FVector(FMath::Cos(yaw), -FMath::Sin(yaw), 0.0f);
+	}
+
+	static float GetYawFromDirection(const FVector& direction)
+	{
+		const FVector normalizedDirection = direction.GetSafeNormal();
+		const float arcsine = FMath::Asin(-normalizedDirection.Y);
+		const float arccosine = FMath::Acos(normalizedDirection.X);
+
+		if (arcsine >= 0.0f)
+		{
+			return arccosine;
+		}
+		
+		if (arccosine < UE_HALF_PI)
+		{
+			return UE_TWO_PI + arcsine;
+		}
+
+		return UE_PI - arcsine;
+	}
 }
