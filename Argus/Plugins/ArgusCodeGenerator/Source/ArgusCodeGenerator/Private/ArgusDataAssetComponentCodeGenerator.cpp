@@ -14,6 +14,7 @@ const char* ArgusDataAssetComponentCodeGenerator::s_componentDataCppSuffix = "Da
 const char* ArgusDataAssetComponentCodeGenerator::s_propertyMacro = "\tUPROPERTY(EditAnywhere)";
 const char* ArgusDataAssetComponentCodeGenerator::s_upropertyPrefix = "UPROPERTY";
 const char* ArgusDataAssetComponentCodeGenerator::s_dataAssetComponentTemplateDirectorySuffix = "ComponentDataAssets/";
+const char* ArgusDataAssetComponentCodeGenerator::s_exponentialDecaySmootherTypeName = "ArgusMath::ExponentialDecaySmoother";
 
 void ArgusDataAssetComponentCodeGenerator::GenerateDataAssetComponentsCode(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData)
 {
@@ -115,13 +116,25 @@ bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetHeaderFileTemplateWithR
 
 					if (variable.empty())
 					{
-						variable = parsedComponentData.m_componentVariableData[i][j].m_typeName;
-						variable.append(" ");
-						variable.append(parsedComponentData.m_componentVariableData[i][j].m_varName);
-						if (!parsedComponentData.m_componentVariableData[i][j].m_defaultValue.empty())
+						const size_t exponentialDecaySmootherIndex = parsedComponentData.m_componentVariableData[i][j].m_typeName.find(s_exponentialDecaySmootherTypeName);
+						if (exponentialDecaySmootherIndex != std::string::npos)
 						{
-							variable.append(" = ");
-							variable.append(parsedComponentData.m_componentVariableData[i][j].m_defaultValue);
+							variable = "float";
+							variable.append(" ");
+							variable.append(parsedComponentData.m_componentVariableData[i][j].m_varName);
+							variable.append("DecayConstant");
+							variable.append(" = 1.0f");
+						}
+						else
+						{
+							variable = parsedComponentData.m_componentVariableData[i][j].m_typeName;
+							variable.append(" ");
+							variable.append(parsedComponentData.m_componentVariableData[i][j].m_varName);
+							if (!parsedComponentData.m_componentVariableData[i][j].m_defaultValue.empty())
+							{
+								variable.append(" = ");
+								variable.append(parsedComponentData.m_componentVariableData[i][j].m_defaultValue);
+							}
 						}
 					}
 					else
@@ -197,10 +210,19 @@ bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetCppFileTemplateWithRepl
 					variableAssignment.append(" = ");
 
 					const size_t propertyStaticDataDelimiterIndex = parsedComponentData.m_componentVariableData[i][j].m_propertyMacro.find(ArgusCodeGeneratorUtil::s_propertyStaticDataDelimiter);
+					const size_t exponentialDecaySmootherIndex = parsedComponentData.m_componentVariableData[i][j].m_typeName.find(s_exponentialDecaySmootherTypeName);
 					if (propertyStaticDataDelimiterIndex != std::string::npos)
 					{
 						std::string staticDataStatement = std::regex_replace("XXXXX.LoadSynchronous() ? XXXXX.LoadSynchronous()->m_id : 0u", std::regex("XXXXX"), parsedComponentData.m_componentVariableData[i][j].m_varName);
 						variableAssignment.append(staticDataStatement);
+					}
+					else if (exponentialDecaySmootherIndex != std::string::npos)
+					{
+						variableAssignment.append(parsedComponentData.m_componentVariableData[i][j].m_typeName);
+						variableAssignment.append("(");
+						variableAssignment.append(parsedComponentData.m_componentVariableData[i][j].m_varName);
+						variableAssignment.append("DecayConstant");
+						variableAssignment.append(")");
 					}
 					else
 					{

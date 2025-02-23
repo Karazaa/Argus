@@ -36,10 +36,21 @@ namespace ArgusMath
 	class ExponentialDecaySmoother
 	{
 	public:
+		static float GetDefaultDecayConstant()
+		{
+			(k_maxDecayConstant - k_minDecayConstant) / 2.0f;
+		}
+
 		ExponentialDecaySmoother()
 		{
 			m_currentValue = GetZero<T>();
-			m_decayConstant = (k_maxDecayConstant - k_minDecayConstant) / 2.0f;
+			m_decayConstant = GetDefaultDecayConstant();
+		}
+
+		ExponentialDecaySmoother(float decayConstant)
+		{
+			m_currentValue = GetZero<T>();
+			m_decayConstant = FMath::Clamp(decayConstant, k_minDecayConstant, k_maxDecayConstant);
 		}
 
 		ExponentialDecaySmoother(T initialValue, float decayConstant) : m_currentValue(initialValue)
