@@ -9,9 +9,6 @@
 struct TransformComponent
 {
 	ARGUS_IGNORE()
-	FTransform m_transform = FTransform::Identity;
-
-	ARGUS_IGNORE()
 	FVector m_location = FVector::ZeroVector;
 
 	ARGUS_IGNORE()

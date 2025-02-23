@@ -7,7 +7,6 @@
 void UTransformComponentData::InstantiateComponentForEntity(ArgusEntity& entity) const
 {
 	TransformComponent* TransformComponentRef = entity.AddComponent<TransformComponent>();
-	TransformComponentRef->m_transform = m_transform;
 	TransformComponentRef->m_location = m_location;
 	TransformComponentRef->m_currentVelocity = m_currentVelocity;
 	TransformComponentRef->m_proposedAvoidanceVelocity = m_proposedAvoidanceVelocity;
