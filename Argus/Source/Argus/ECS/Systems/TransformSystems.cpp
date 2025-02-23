@@ -54,27 +54,6 @@ bool TransformSystems::TransformSystemsComponentArgs::AreComponentsValidCheck(co
 	return false;
 }
 
-void TransformSystems::FaceTowardsLocationXY(TransformComponent* transformComponent, FVector vectorFromTransformToTarget)
-{
-	if (vectorFromTransformToTarget.Equals(FVector::ZeroVector))
-	{
-		return;
-	}
-
-	if (!transformComponent)
-	{
-		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Passed in an invalid %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent*));
-		return;
-	}
-
-	vectorFromTransformToTarget = ArgusMath::ToCartesianVector(vectorFromTransformToTarget).GetSafeNormal();
-	const FVector currentDirection = ArgusMath::ToCartesianVector(ArgusMath::GetDirectionFromYaw(transformComponent->m_targetYaw));
-	const FVector crossProduct = currentDirection.Cross(vectorFromTransformToTarget);
-	const float angleDifference = FMath::Acos(vectorFromTransformToTarget.Dot(currentDirection));
-
-	transformComponent->m_targetYaw += (angleDifference * FMath::Sign(crossProduct.Z));
-}
-
 void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float deltaTime, const TransformSystemsComponentArgs& components)
 {
 	ARGUS_TRACE(TransformSystems::MoveAlongNavigationPath);
@@ -199,6 +178,27 @@ bool TransformSystems::ProcessMovementTaskCommands(UWorld* worldPointer, float d
 		default:
 			return false;
 	}
+}
+
+void TransformSystems::FaceTowardsLocationXY(TransformComponent* transformComponent, FVector vectorFromTransformToTarget)
+{
+	if (vectorFromTransformToTarget.Equals(FVector::ZeroVector))
+	{
+		return;
+	}
+
+	if (!transformComponent)
+	{
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Passed in an invalid %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent*));
+		return;
+	}
+
+	vectorFromTransformToTarget = ArgusMath::ToCartesianVector(vectorFromTransformToTarget).GetSafeNormal();
+	const FVector currentDirection = ArgusMath::ToCartesianVector(ArgusMath::GetDirectionFromYaw(transformComponent->m_targetYaw));
+	const FVector crossProduct = currentDirection.Cross(vectorFromTransformToTarget);
+	const float angleDifference = FMath::Acos(vectorFromTransformToTarget.Dot(currentDirection));
+
+	transformComponent->m_targetYaw += (angleDifference * FMath::Sign(crossProduct.Z));
 }
 
 void TransformSystems::OnCompleteNavigationPath(const TransformSystemsComponentArgs& components, const FVector& moverLocation)
