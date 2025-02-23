@@ -25,13 +25,12 @@ public:
 		FVector m_outputPredictedForwardDirection;
 		uint16  m_navigationIndexOfPredictedLocation;
 	};
-
-	static void FaceTowardsLocationXY(TransformComponent* transformComponent, FVector vectorFromTransformToTarget);
 	static void MoveAlongNavigationPath(UWorld* worldPointer, float deltaTime, const TransformSystemsComponentArgs& components);
 	static void FindEntitiesWithinXYBounds(FVector2D minXY, FVector2D maxXY, TArray<ArgusEntity>& outEntitiesWithinBounds);
 
 private:
 	static bool ProcessMovementTaskCommands(UWorld* worldPointer, float deltaTime, const TransformSystemsComponentArgs& components);
+	static void FaceTowardsLocationXY(TransformComponent* transformComponent, FVector vectorFromTransformToTarget);
 	static void OnCompleteNavigationPath(const TransformSystemsComponentArgs& components, const FVector& moverLocation);
 	static FVector ProjectLocationOntoNavigationData(UWorld* worldPointer, TransformComponent* transformComponent, const FVector& location);
 };
