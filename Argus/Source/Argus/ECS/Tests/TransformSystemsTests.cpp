@@ -50,7 +50,7 @@ bool TransformSystemsGetPathingLocationAtTimeOffsetTest::RunTest(const FString& 
 	}
 
 	components.m_taskComponent->m_movementState = MovementState::None;
-	const FVector defaultLocation = components.m_transformComponent->m_transform.GetLocation();
+	const FVector defaultLocation = components.m_transformComponent->m_location;
 	const FVector defaultForwardVector = components.m_transformComponent->m_transform.GetRotation().GetForwardVector();
 
 	TransformSystems::GetPathingLocationAtTimeOffset(1.0f, components, results);
@@ -494,7 +494,7 @@ bool TransformSystemsMoveAlongPathTest::RunTest(const FString& Parameters)
 	TestEqual
 	(
 		FString::Printf(TEXT("[%s] Test creating initial %s and confirming %s location is {%f, %f, %f}"), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(TransformComponent), FVector::ZeroVector.X, FVector::ZeroVector.Y, FVector::ZeroVector.Z),
-		components.m_transformComponent->m_transform.GetLocation(), 
+		components.m_transformComponent->m_location, 
 		FVector::ZeroVector
 	);
 #pragma endregion
@@ -538,7 +538,7 @@ bool TransformSystemsMoveAlongPathTest::RunTest(const FString& Parameters)
 	TestEqual
 	(
 		FString::Printf(TEXT("[%s] Test that %s location is {%f, %f, %f} after moving along path for %f seconds."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), expectedTestLocation0.X, expectedTestLocation0.Y, expectedTestLocation0.Z, secondCounter),
-		components.m_transformComponent->m_transform.GetLocation(), 
+		components.m_transformComponent->m_location, 
 		expectedTestLocation0
 	);
 #pragma endregion
@@ -569,7 +569,7 @@ bool TransformSystemsMoveAlongPathTest::RunTest(const FString& Parameters)
 	TestEqual
 	(
 		FString::Printf(TEXT("[%s] Test that %s location is {%f, %f, %f} after moving along path for %f seconds."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), point1.X, point1.Y, point1.Z, secondCounter),
-		components.m_transformComponent->m_transform.GetLocation(), 
+		components.m_transformComponent->m_location, 
 		point1
 	);
 #pragma endregion
@@ -632,7 +632,7 @@ bool TransformSystemsMoveAlongPathTest::RunTest(const FString& Parameters)
 	TestEqual
 	(
 		FString::Printf(TEXT("[%s] Test that %s location is {%f, %f, %f} after moving along path for %f seconds."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), point3.X, point3.Y, point3.Z, secondCounter),
-		components.m_transformComponent->m_transform.GetLocation(), 
+		components.m_transformComponent->m_location, 
 		point3
 	);
 #pragma endregion
@@ -675,10 +675,10 @@ bool TransformSystemsFindEntitiesWithinXYBoundsTest::RunTest(const FString& Para
 	TransformComponent* transformComponent2 = entity2.AddComponent<TransformComponent>();
 	TransformComponent* transformComponent3 = entity3.AddComponent<TransformComponent>();
 
-	transformComponent0->m_transform.SetLocation(location0);
-	transformComponent1->m_transform.SetLocation(location1);
-	transformComponent2->m_transform.SetLocation(location2);
-	transformComponent3->m_transform.SetLocation(location3);
+	transformComponent0->m_location = location0;
+	transformComponent1->m_location = location1;
+	transformComponent2->m_location = location2;
+	transformComponent3->m_location = location3;
 
 	TArray<ArgusEntity> foundEntities;
 	foundEntities.Reserve(totalNumEntities);

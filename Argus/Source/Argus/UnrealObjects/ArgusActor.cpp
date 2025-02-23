@@ -74,16 +74,16 @@ void AArgusActor::SetEntity(const ArgusEntity& entity)
 	{
 		if (m_shouldActorSpawnLocationSetEntityLocation)
 		{
-			transformComponent->m_transform = GetActorTransform();
+			transformComponent->m_location = GetActorLocation();
 		}
 		else
 		{
-			SetActorTransform(transformComponent->m_transform);
+			SetActorLocation(transformComponent->m_location);
 		}
 
 		if (NavigationComponent* navigationComponent = m_entity.GetComponent<NavigationComponent>())
 		{
-			navigationComponent->m_endedNavigationLocation = transformComponent->m_transform.GetLocation();
+			navigationComponent->m_endedNavigationLocation = transformComponent->m_location;
 			navigationComponent->m_endedNavigationLocation;
 		}
 	}
@@ -211,11 +211,11 @@ void AArgusActor::Tick(float deltaTime)
 
 	if (const TransformComponent* transformComponent = m_entity.GetComponent<TransformComponent>())
 	{
-		SetActorTransform(transformComponent->m_transform);
+		SetActorLocation(transformComponent->m_location);
 
 		if (CVarShowAllArgusEntitiesDebug.GetValueOnGameThread() || (CVarShowSelectedArgusEntityDebug.GetValueOnGameThread() && m_isSelected))
 		{
-			DrawDebugString(GetWorld(), transformComponent->m_transform.GetLocation(), m_entity.GetDebugString(), nullptr, FColor::Yellow, 0.0f, true, 0.75f);
+			DrawDebugString(GetWorld(), transformComponent->m_location, m_entity.GetDebugString(), nullptr, FColor::Yellow, 0.0f, true, 0.75f);
 		}
 	}
 

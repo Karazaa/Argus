@@ -48,11 +48,11 @@ void PopulateKDTreeForTests(ArgusEntityKDTree& tree, CollectionOfArgusEntities& 
 		transformComponent3 &&
 		transformComponent4)
 	{
-		transformComponent0->m_transform.SetLocation(ArgusKDTreeTestConstants::location0);
-		transformComponent1->m_transform.SetLocation(ArgusKDTreeTestConstants::location1);
-		transformComponent2->m_transform.SetLocation(ArgusKDTreeTestConstants::location2);
-		transformComponent3->m_transform.SetLocation(ArgusKDTreeTestConstants::location3);
-		transformComponent4->m_transform.SetLocation(ArgusKDTreeTestConstants::location4);
+		transformComponent0->m_location = ArgusKDTreeTestConstants::location0;
+		transformComponent1->m_location = ArgusKDTreeTestConstants::location1;
+		transformComponent2->m_location = ArgusKDTreeTestConstants::location2;
+		transformComponent3->m_location = ArgusKDTreeTestConstants::location3;
+		transformComponent4->m_location = ArgusKDTreeTestConstants::location4;
 	}
 
 	if (insertIntoTree)

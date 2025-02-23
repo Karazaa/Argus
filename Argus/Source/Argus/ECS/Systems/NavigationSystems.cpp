@@ -77,7 +77,7 @@ void NavigationSystems::NavigateFromEntityToEntity(UWorld* worldPointer, ArgusEn
 		return;
 	}
 
-	NavigateFromEntityToLocation(worldPointer, targetEntityTransform->m_transform.GetLocation(), components);
+	NavigateFromEntityToLocation(worldPointer, targetEntityTransform->m_location, components);
 
 	if (ConstructionSystems::CanEntityConstructOtherEntity(components.m_entity, targetEntity))
 	{
@@ -109,7 +109,7 @@ void NavigationSystems::NavigateFromEntityToLocation(UWorld* worldPointer, std::
 	(
 		nullptr, 
 		*(unrealNavigationSystem->MainNavData), 
-		components.m_transformComponent->m_transform.GetLocation(), 
+		components.m_transformComponent->m_location, 
 		targetLocation.value()
 	);
 	pathFindingQuery.SetNavAgentProperties(FNavAgentProperties(components.m_transformComponent->m_radius, components.m_transformComponent->m_height));

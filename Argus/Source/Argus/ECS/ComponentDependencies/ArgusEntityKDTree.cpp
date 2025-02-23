@@ -24,7 +24,7 @@ void ArgusEntityKDTreeNode::Populate(const ArgusEntity& entityToRepresent)
 		return;
 	}
 
-	m_worldSpaceLocation = transformComponent->m_transform.GetLocation();
+	m_worldSpaceLocation = transformComponent->m_location;
 	m_entityId = entityToRepresent.GetId();
 }
 
@@ -113,7 +113,7 @@ void ArgusEntityKDTree::SeedTreeWithAverageEntityLocation()
 			continue;
 		}
 
-		averageLocation += transformComponent->m_transform.GetLocation();
+		averageLocation += transformComponent->m_location;
 		numIncludedEntities += 1.0f;
 	}
 
@@ -224,7 +224,7 @@ uint16 ArgusEntityKDTree::FindOtherArgusEntityIdClosestArgusEntity(const ArgusEn
 		return ArgusECSConstants::k_maxEntities;
 	}
 
-	return FindArgusEntityIdClosestToLocation(transformComponent->m_transform.GetLocation(), entityToSearchAround);
+	return FindArgusEntityIdClosestToLocation(transformComponent->m_location, entityToSearchAround);
 }
 
 bool ArgusEntityKDTree::FindArgusEntityIdsWithinRangeOfLocation(TArray<uint16>& outNearbyArgusEntityIds, const FVector& location, const float range) const
@@ -276,7 +276,7 @@ bool ArgusEntityKDTree::FindOtherArgusEntityIdsWithinRangeOfArgusEntity(TArray<u
 		return false;
 	}
 
-	return FindArgusEntityIdsWithinRangeOfLocation(outNearbyArgusEntityIds, transformComponent->m_transform.GetLocation(), range, entityToSearchAround);
+	return FindArgusEntityIdsWithinRangeOfLocation(outNearbyArgusEntityIds, transformComponent->m_location, range, entityToSearchAround);
 }
 
 bool ArgusEntityKDTree::FindArgusEntityIdsWithinConvexPoly(TArray<uint16>& outNearbyArgusEntityIds, const TArray<FVector>& convexPolygonPoints) const
@@ -396,7 +396,7 @@ void ArgusEntityKDTree::RebuildSubTreeForArgusEntitiesRecursive(ArgusEntityKDTre
 		return;
 	}
 
-	if (transformComponent->m_transform.GetLocation() != node->m_worldSpaceLocation)
+	if (transformComponent->m_location != node->m_worldSpaceLocation)
 	{
 		ArgusEntityKDTreeNode* leftChild = node->m_leftChild;
 		ArgusEntityKDTreeNode* rightChild = node->m_rightChild;
