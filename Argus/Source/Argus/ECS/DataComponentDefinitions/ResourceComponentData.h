@@ -4,16 +4,16 @@
 #pragma once
 
 #include "ComponentData.h"
-#include "InputInterfaceComponentData.generated.h"
+#include "ResourceComponentData.generated.h"
 
 UCLASS()
-class ARGUS_API UInputInterfaceComponentData : public UComponentData
+class ARGUS_API UResourceComponentData : public UComponentData
 {
 	GENERATED_BODY()
 
 public:
-	TArray<uint16> m_selectedArgusEntityIds;
-	TArray<uint16> m_activeAbilityGroupArgusEntityIds;
+	UPROPERTY(EditAnywhere)
+	FResourceSet m_resourceSet;
 
 	void InstantiateComponentForEntity(ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;

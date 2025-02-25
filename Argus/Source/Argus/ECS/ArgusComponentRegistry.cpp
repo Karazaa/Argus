@@ -47,6 +47,9 @@ std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isTransf
 #pragma region InputInterfaceComponent
 std::unordered_map<uint16, InputInterfaceComponent> ArgusComponentRegistry::s_InputInterfaceComponents;
 #pragma endregion
+#pragma region ResourceComponent
+std::unordered_map<uint16, ResourceComponent> ArgusComponentRegistry::s_ResourceComponents;
+#pragma endregion
 #pragma region ReticleComponent
 std::unordered_map<uint16, ReticleComponent> ArgusComponentRegistry::s_ReticleComponents;
 #pragma endregion
@@ -91,6 +94,10 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 	{
 		s_InputInterfaceComponents.erase(entityId);
 	}
+	if (s_ResourceComponents.contains(entityId))
+	{
+		s_ResourceComponents.erase(entityId);
+	}
 	if (s_ReticleComponents.contains(entityId))
 	{
 		s_ReticleComponents.erase(entityId);
@@ -132,6 +139,7 @@ void ArgusComponentRegistry::FlushAllComponents()
 
 	// Begin flush dynamically allocated components
 	s_InputInterfaceComponents.clear();
+	s_ResourceComponents.clear();
 	s_ReticleComponents.clear();
 	s_SpatialPartitioningComponents.clear();
 }
@@ -181,6 +189,10 @@ void ArgusComponentRegistry::AppendComponentDebugStrings(uint16 entityId, FStrin
 	if (const InputInterfaceComponent* InputInterfaceComponentPtr = GetComponent<InputInterfaceComponent>(entityId))
 	{
 		InputInterfaceComponentPtr->GetDebugString(debugStringToAppendTo);
+	}
+	if (const ResourceComponent* ResourceComponentPtr = GetComponent<ResourceComponent>(entityId))
+	{
+		ResourceComponentPtr->GetDebugString(debugStringToAppendTo);
 	}
 	if (const ReticleComponent* ReticleComponentPtr = GetComponent<ReticleComponent>(entityId))
 	{

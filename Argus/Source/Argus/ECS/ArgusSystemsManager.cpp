@@ -100,6 +100,8 @@ void ArgusSystemsManager::PopulateTeamComponents()
 		{
 			continue;
 		}
+
+		teamEntity.AddComponent<ResourceComponent>();
 	}
 }
 

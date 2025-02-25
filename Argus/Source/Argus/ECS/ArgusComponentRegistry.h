@@ -22,6 +22,7 @@
 
 // Begin dynamically allocated component specific includes.
 #include "DynamicAllocComponentDefinitions\InputInterfaceComponent.h"
+#include "DynamicAllocComponentDefinitions\ResourceComponent.h"
 #include "DynamicAllocComponentDefinitions\ReticleComponent.h"
 #include "DynamicAllocComponentDefinitions\SpatialPartitioningComponent.h"
 
@@ -50,7 +51,7 @@ public:
 	static void FlushAllComponents();
 	static void AppendComponentDebugStrings(uint16 entityId, FString& debugStringToAppendTo);
 
-	static constexpr uint32 k_numComponentTypes = 13;
+	static constexpr uint32 k_numComponentTypes = 14;
 
 	// Begin component specific template specifiers.
 	
@@ -741,6 +742,62 @@ public:
 			s_InputInterfaceComponents[entityId] = InputInterfaceComponent();
 		}
 		return &s_InputInterfaceComponents[entityId];
+	}
+#pragma endregion
+#pragma region ResourceComponent
+private:
+	static std::unordered_map<uint16, ResourceComponent> s_ResourceComponents;
+public:
+	template<>
+	inline ResourceComponent* GetComponent<ResourceComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(ResourceComponent));
+			return nullptr;
+		}
+
+		if (!s_ResourceComponents.contains(entityId))
+		{
+			return nullptr;
+		}
+
+		return &s_ResourceComponents[entityId];
+	}
+
+	template<>
+	inline ResourceComponent* AddComponent<ResourceComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(ResourceComponent));
+			return nullptr;
+		}
+
+		if (s_ResourceComponents.contains(entityId))
+		{
+			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ResourceComponent), entityId);
+			return &s_ResourceComponents[entityId];
+		}
+
+		s_ResourceComponents[entityId] = ResourceComponent();
+		return &s_ResourceComponents[entityId];
+	}
+
+	template<>
+	inline ResourceComponent* GetOrAddComponent<ResourceComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(ResourceComponent));
+			return nullptr;
+		}
+
+		if (!s_ResourceComponents.contains(entityId))
+		{
+			s_ResourceComponents[entityId] = ResourceComponent();
+		}
+		return &s_ResourceComponents[entityId];
 	}
 #pragma endregion
 #pragma region ReticleComponent
