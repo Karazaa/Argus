@@ -146,6 +146,11 @@ void NavigationSystems::NavigateFromEntityToLocation(UWorld* worldPointer, std::
 			DrawDebugLine(worldPointer, components.m_navigationComponent->m_navigationPoints[i], pathPoints[i + 1].Location, FColor::Magenta, false, 3.0f, 0, 5.0f);
 		}
 	}
+
+	// Need to set initial velocity when starting pathing so that avoidance systems can properly consider desired velocity when starting movement.
+	FVector moverLocation = components.m_transformComponent->m_location;
+	const FVector firstLocation = components.m_navigationComponent->m_navigationPoints[1];
+	components.m_transformComponent->m_currentVelocity = (firstLocation - moverLocation).GetSafeNormal() * components.m_transformComponent->m_desiredSpeedUnitsPerSecond;
 }
 
 void NavigationSystems::ProcessNavigationTaskCommands(UWorld* worldPointer, const NavigationSystemsComponentArgs& components)
