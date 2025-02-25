@@ -32,6 +32,15 @@ void AArgusGameModeBase::StartPlay()
 	{
 		m_activePlayerController->InitializeUIWidgets();
 	}
+
+	UWorld* worldPointer = GetWorld();
+	if (!worldPointer)
+	{
+		ARGUS_LOG(ArgusUnrealObjectsLog, Error, TEXT("[%s] Could not retrieve a valid %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(UWorld*));
+		return;
+	}
+
+	ArgusSystemsManager::Initialize(worldPointer);
 }
 
 void AArgusGameModeBase::Tick(float deltaTime)
@@ -57,7 +66,7 @@ void AArgusGameModeBase::Tick(float deltaTime)
 	m_activePlayerController->ProcessArgusPlayerInput(deltaTime);
 
 	// Run all ECS systems.
-	m_argusSystemsManager.RunSystems(worldPointer, deltaTime);
+	ArgusSystemsManager::RunSystems(worldPointer, deltaTime);
 
 	// Take/Release ArgusActors based on ECS state.
 	ManageActorStateForEntities();

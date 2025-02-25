@@ -41,6 +41,5 @@ private:
 	void SpawnActorForEntity(ArgusEntity spawnedEntity);
 	void DespawnActorForEntity(ArgusEntity despawnedEntity);
 
-	ArgusSystemsManager m_argusSystemsManager = ArgusSystemsManager();
 	ArgusActorPool m_argusActorPool = ArgusActorPool();
 };

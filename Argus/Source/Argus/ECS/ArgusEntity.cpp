@@ -28,6 +28,12 @@ bool ArgusEntity::DoesEntityExist(uint16 id)
 	return s_takenEntityIds[id];
 }
 
+bool ArgusEntity::IsReservedEntityId(uint16 id)
+{
+	uint16 sizeOfTeamEnum = sizeof(ETeam) * 8;
+	return id > (ArgusECSConstants::k_singletonEntityId - sizeOfTeamEnum);
+}
+
 ArgusEntity ArgusEntity::CreateEntity(uint16 lowestId)
 {
 	const uint16 id = GetNextLowestUntakenId(lowestId);
@@ -46,7 +52,7 @@ ArgusEntity ArgusEntity::CreateEntity(uint16 lowestId)
 
 	s_takenEntityIds.set(id);
 
-	if (id != ArgusECSConstants::k_singletonEntityId)
+	if (!IsReservedEntityId(id))
 	{
 		if (id < s_lowestTakenEntityId)
 		{
@@ -75,7 +81,7 @@ void ArgusEntity::DestroyEntity(ArgusEntity& entityToDestroy)
 
 	entityToDestroy = k_emptyEntity;
 	
-	if (entityToDestoryId == ArgusECSConstants::k_singletonEntityId)
+	if (IsReservedEntityId(entityToDestoryId))
 	{
 		return;
 	}
@@ -147,6 +153,12 @@ uint16 ArgusEntity::GetNextLowestUntakenId(uint16 lowestId)
 	}
 
 	return lowestId;
+}
+
+ArgusEntity ArgusEntity::GetTeamEntity(ETeam team)
+{
+	uint32 logValue = FMath::FloorLog2(static_cast<uint32>(team));
+	return RetrieveEntity(ArgusECSConstants::k_singletonEntityId - 1 - logValue);
 }
 
 ArgusEntity::ArgusEntity(const ArgusEntity& other)

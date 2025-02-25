@@ -12,6 +12,7 @@ class ArgusEntity
 public:
 	static void				FlushAllEntities();
 	static bool				DoesEntityExist(uint16 id);
+	static bool				IsReservedEntityId(uint16 id);
 	static ArgusEntity		CreateEntity(uint16 lowestId = 0u);
 	static void				DestroyEntity(ArgusEntity& entityToDestroy);
 	static void				DestroyEntity(uint16 entityIdToDestroy);
@@ -19,6 +20,8 @@ public:
 	static uint16			GetNextLowestUntakenId(uint16 lowestId);
 	static uint16			GetLowestTakenEntityId() { return s_lowestTakenEntityId; }
 	static uint16			GetHighestTakenEntityId() { return s_highestTakenEntityId; }
+	static ArgusEntity		GetSingletonEntity() { return RetrieveEntity(ArgusECSConstants::k_singletonEntityId); }
+	static ArgusEntity		GetTeamEntity(ETeam team);
 
 	static const ArgusEntity k_emptyEntity;
 

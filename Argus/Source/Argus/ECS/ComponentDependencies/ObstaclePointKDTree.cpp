@@ -35,7 +35,7 @@ bool ObstaclePointKDTreeNode::PassesRangeCheck(const FVector& targetLocation, fl
 		return false;
 	}
 
-	ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId);
+	ArgusEntity singletonEntity = ArgusEntity::GetSingletonEntity();
 	if (!singletonEntity)
 	{
 		return false;

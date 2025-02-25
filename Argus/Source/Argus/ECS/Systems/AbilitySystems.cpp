@@ -11,7 +11,7 @@ void AbilitySystems::RunSystems(float deltaTime)
 {
 	ARGUS_TRACE(AbilitySystems::RunSystems);
 
-	ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId);
+	ArgusEntity singletonEntity = ArgusEntity::GetSingletonEntity();
 	if (!singletonEntity)
 	{
 		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Could not retrieve a valid %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(singletonEntity));

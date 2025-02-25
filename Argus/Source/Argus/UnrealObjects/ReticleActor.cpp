@@ -22,7 +22,7 @@ void AReticleActor::UpdateReticle()
 		return;
 	}
 
-	ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId);
+	ArgusEntity singletonEntity = ArgusEntity::GetSingletonEntity();
 	if (!singletonEntity)
 	{
 		return;

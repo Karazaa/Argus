@@ -148,7 +148,7 @@ void SpawningSystems::SpawnEntityInternal(const SpawningSystemsComponentArgs& co
 		}
 	}
 
-	if (ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId))
+	if (ArgusEntity singletonEntity = ArgusEntity::GetSingletonEntity())
 	{
 		if (SpatialPartitioningComponent* spatialPartitioningComponent = singletonEntity.GetComponent<SpatialPartitioningComponent>())
 		{
@@ -335,7 +335,7 @@ void SpawningSystems::CommandMoveSelectedEntitiesToSpawnedEntity(const ArgusEnti
 		return;
 	}
 
-	ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId);
+	ArgusEntity singletonEntity = ArgusEntity::GetSingletonEntity();
 	if (!singletonEntity)
 	{
 		ARGUS_LOG

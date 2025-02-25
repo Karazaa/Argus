@@ -466,7 +466,7 @@ void UArgusInputManager::ProcessSelectInputEvent(bool isAdditive)
 	m_cachedLastSelectInputWorldSpaceLocation = hitResult.Location;
 	m_selectInputDown = true;
 
-	if (ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId))
+	if (ArgusEntity singletonEntity = ArgusEntity::GetSingletonEntity())
 	{
 		if (const ReticleComponent* reticleComponent = singletonEntity.GetComponent<ReticleComponent>())
 		{
@@ -517,7 +517,7 @@ void UArgusInputManager::ProcessMarqueeSelectInputEvent(AArgusCameraActor* argus
 		return;
 	}
 
-	ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId);
+	ArgusEntity singletonEntity = ArgusEntity::GetSingletonEntity();
 	if (!singletonEntity)
 	{
 		return;
@@ -914,7 +914,7 @@ void UArgusInputManager::ProcessAbilityInputEventPerSelectedActor(AArgusActor* a
 
 void UArgusInputManager::ProcessEscapeInputEvent()
 {
-	ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId);
+	ArgusEntity singletonEntity = ArgusEntity::GetSingletonEntity();
 	if (!singletonEntity)
 	{
 		ARGUS_LOG
@@ -1067,7 +1067,7 @@ void UArgusInputManager::AddMarqueeSelectedActorsAdditive(const TArray<AArgusAct
 
 void UArgusInputManager::OnSelectedArgusArgusActorsChanged()
 {
-	ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId);
+	ArgusEntity singletonEntity = ArgusEntity::GetSingletonEntity();
 	if (!singletonEntity)
 	{
 		ARGUS_LOG(ArgusInputLog, Error, TEXT("[%s] Could not retrieve %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(singletonEntity));
@@ -1131,7 +1131,7 @@ void UArgusInputManager::OnSelectedArgusArgusActorsChanged()
 
 void UArgusInputManager::InterruptReticleFromInputEvent()
 {
-	ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId);
+	ArgusEntity singletonEntity = ArgusEntity::GetSingletonEntity();
 	if (!singletonEntity)
 	{
 		return;
@@ -1155,7 +1155,7 @@ void UArgusInputManager::SetReticleState()
 {
 	ARGUS_TRACE(UArgusInputManager::SetReticleState);
 
-	ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId);
+	ArgusEntity singletonEntity = ArgusEntity::GetSingletonEntity();
 	if (!singletonEntity)
 	{
 		return;
