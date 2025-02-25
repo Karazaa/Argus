@@ -257,6 +257,9 @@ void AvoidanceSystems::FindORCALineAndVelocityToBoundaryPerEntity(const CreateEn
 
 	if (relativeLocationDistanceSquared > combinedRadiusSquared)
 	{
+		// This appears to work... for reasons... I just observed that the ORCA direction appeared inverted for the trailing entity in a set moving in roughly the same direction.
+		const bool invertDirection = params.m_sourceEntityVelocity.Dot(perEntityParams.m_foundEntityVelocity) > 0.0f && params.m_sourceEntityVelocity.Dot(relativeLocation) > 0.0f;
+
 		// No collision yet.
 		const FVector2D cutoffCenterToRelativeVelocity = relativeVelocity - (params.m_inverseEntityPredictionTime * relativeLocation);
 		const float cutoffCenterToRelativeVelocityLengthSqared = cutoffCenterToRelativeVelocity.SquaredLength();
@@ -267,6 +270,10 @@ void AvoidanceSystems::FindORCALineAndVelocityToBoundaryPerEntity(const CreateEn
 			const float cutoffCenterToRelativeVelocityLength = FMath::Sqrt(cutoffCenterToRelativeVelocityLengthSqared);
 			const FVector2D unitCutoffCenterToRelativeVelocity = cutoffCenterToRelativeVelocity / cutoffCenterToRelativeVelocityLength;
 			calculatedORCALine.m_direction = FVector2D(unitCutoffCenterToRelativeVelocity.Y, -unitCutoffCenterToRelativeVelocity.X);
+			if (invertDirection)
+			{
+				calculatedORCALine.m_direction *= -1.0f;
+			}
 			velocityToBoundaryOfVO = ((combinedRadius * params.m_inverseEntityPredictionTime) - cutoffCenterToRelativeVelocityLength) * unitCutoffCenterToRelativeVelocity;
 		}
 		else
