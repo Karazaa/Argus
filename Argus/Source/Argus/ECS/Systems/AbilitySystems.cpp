@@ -6,6 +6,7 @@
 #include "ArgusStaticData.h"
 #include "ComponentDependencies/SpawnEntityInfo.h"
 #include "DataComponentDefinitions/TransformComponentData.h"
+#include "Systems/ResourceSystems.h"
 
 void AbilitySystems::RunSystems(float deltaTime)
 {
@@ -75,6 +76,12 @@ void AbilitySystems::CastAbility(const UAbilityRecord* abilityRecord, const Abil
 	if (!abilityRecord)
 	{
 		LogAbilityRecordError(ARGUS_FUNCNAME);
+		return;
+	}
+
+	if (!ResourceSystems::ApplyResourceChangeIfAffordable(components.m_entity, abilityRecord->m_requiredResourceChangeToCast))
+	{
+		components.m_taskComponent->m_abilityState = AbilityState::None;
 		return;
 	}
 
