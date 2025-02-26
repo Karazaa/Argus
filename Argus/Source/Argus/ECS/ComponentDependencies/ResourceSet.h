@@ -5,17 +5,20 @@
 #include "CoreMinimal.h"
 #include "ResourceSet.generated.h"
 
-USTRUCT()
+UENUM(BlueprintType)
+enum class EResourceType : uint8
+{
+	ResourceA,
+	ResourceB,
+	ResourceC,
+	Count UMETA(Hidden)
+};
+
+USTRUCT(BlueprintType)
 struct FResourceSet
 {
 	GENERATED_BODY()
 
 	UPROPERTY(EditDefaultsOnly)
-	float m_resourceAQuantity = 0.0f;
-
-	UPROPERTY(EditDefaultsOnly)
-	float m_resourceBQuantity = 0.0f;
-
-	UPROPERTY(EditDefaultsOnly)
-	float m_resourceCQuantity = 0.0f;
+	int32 m_resourceQuantities[(uint8)EResourceType::Count];
 };

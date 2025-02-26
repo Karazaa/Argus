@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "ComponentDependencies/ResourceSet.h"
 #include "RecordDefinitions/ArgusActorRecord.h"
 #include "RecordDependencies/AbilityTypes.h"
 #include "AbilityRecord.generated.h"
@@ -29,6 +30,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	EAbilityTypes m_abilityType = EAbilityTypes::Spawn;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FResourceSet m_requiredResourceChangeToCast;
 
 	UPROPERTY(EditAnywhere, meta = (Bitmask, BitmaskEnum = EReticleFlags))
 	uint8 m_reticleFlags = 0u;
