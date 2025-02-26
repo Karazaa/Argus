@@ -251,7 +251,23 @@ bool UArgusInputManager::ShouldUpdateSelectedActorDisplay(ArgusEntity& templateS
 
 bool UArgusInputManager::ShouldDrawMarqueeBox() const
 {
-	return m_selectInputDown;
+	if (!m_selectInputDown)
+	{
+		return false;
+	}
+
+	if (ArgusEntity singletonEntity = ArgusEntity::GetSingletonEntity())
+	{
+		if (const ReticleComponent* reticleComponent = singletonEntity.GetComponent<ReticleComponent>())
+		{
+			if (reticleComponent->IsReticleEnabled())
+			{
+				return false;
+			}
+		}
+	}
+
+	return true;
 }
 
 const FVector& UArgusInputManager::GetSelectionStartWorldSpaceLocation() const

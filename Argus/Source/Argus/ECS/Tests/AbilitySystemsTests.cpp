@@ -41,6 +41,19 @@ bool AbilitySystemsCastSpawnAbilityTest::RunTest(const FString& Parameters)
 	components.m_reticleComponent = &reticleComponent;
 	components.m_entity.AddComponent<TargetingComponent>();
 	components.m_entity.AddComponent<TransformComponent>();
+	IdentityComponent* identityComponent = components.m_entity.AddComponent<IdentityComponent>();
+	if (!identityComponent)
+	{
+		return false;
+	}
+
+	identityComponent->m_team = ETeam::TeamA;
+	ArgusEntity teamEntity = ArgusEntity::CreateEntity(ArgusEntity::GetTeamEntityId(ETeam::TeamA));
+	if (!teamEntity)
+	{
+		return false;
+	}
+	teamEntity.AddComponent<ResourceComponent>();
 
 #pragma region Test that passing in an invalid UAbilityRecord* errors
 	AddExpectedErrorPlain
