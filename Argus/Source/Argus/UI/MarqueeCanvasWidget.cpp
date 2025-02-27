@@ -7,9 +7,9 @@
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/CanvasPanel.h"
 
-void UMarqueeCanvasWidget::UpdateFromInputManager(const FVector2D& currentMouseLocation)
+void UMarqueeCanvasWidget::UpdateDisplay(const UpdateDisplayParameters& updateDisplayParams)
 {
-	Super::UpdateFromInputManager(currentMouseLocation);
+	Super::UpdateDisplay(updateDisplayParams);
 
 	if (!m_inputManager.IsValid())
 	{
@@ -26,7 +26,7 @@ void UMarqueeCanvasWidget::UpdateFromInputManager(const FVector2D& currentMouseL
 	const float dpiScale = UWidgetLayoutLibrary::GetViewportScale(this);
 
 	m_marqueeBoxPoints[0] = ArgusMath::SafeDivide(selectionStartScreenSpaceLocation, dpiScale);
-	m_marqueeBoxPoints[2] = ArgusMath::SafeDivide(currentMouseLocation, dpiScale);
+	m_marqueeBoxPoints[2] = ArgusMath::SafeDivide(updateDisplayParams.m_currentMouseLocation, dpiScale);
 	m_marqueeBoxPoints[4] = m_marqueeBoxPoints[0];
 	m_marqueeBoxPoints[1].X = m_marqueeBoxPoints[2].X;
 	m_marqueeBoxPoints[1].Y = m_marqueeBoxPoints[0].Y;

@@ -15,7 +15,7 @@ class UMarqueeCanvasWidget : public UArgusUserWidget
 	GENERATED_BODY()
 
 public:
-	virtual void UpdateFromInputManager(const FVector2D& currentMouseLocation) override;
+	virtual void UpdateDisplay(const UpdateDisplayParameters& updateDisplayParams) override;
 
 protected:
 	UPROPERTY(EditDefaultsOnly)

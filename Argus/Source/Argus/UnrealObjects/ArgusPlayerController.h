@@ -55,6 +55,9 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "UI")
 	TSubclassOf<UArgusUserWidget> m_selectedArgusEntityUserWidgetClass = nullptr;
 
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "UI")
+	TSubclassOf<UArgusUserWidget> m_teamResourcesUserWidgetClass = nullptr;
+
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Camera")
 	TSoftClassPtr<AArgusCameraActor> m_argusCameraClass = nullptr;
 
@@ -82,6 +85,11 @@ protected:
 	UPROPERTY(Transient)
 	TObjectPtr<UArgusUserWidget> m_selectedArgusEntityUserWidget;
 
+	UPROPERTY(Transient)
+	TObjectPtr<UArgusUserWidget> m_teamResourcesUserWidget;
+
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
+
+	void UpdateUIWidgetDisplay(const FVector2D& mouseScreenSpaceLocation);
 };

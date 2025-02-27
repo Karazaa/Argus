@@ -6,7 +6,7 @@
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
 
-void UArgusUserWidget::UpdateFromInputManager(const FVector2D& currentMouseLocation)
+void UArgusUserWidget::UpdateDisplay(const UpdateDisplayParameters& updateDisplayParams)
 {
 	ArgusEntity uiTemplateEntity = ArgusEntity::k_emptyEntity;
 

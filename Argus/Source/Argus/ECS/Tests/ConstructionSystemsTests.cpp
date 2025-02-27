@@ -178,21 +178,6 @@ bool ConstructionSystemsBeingConstructedManualTest::RunTest(const FString& Param
 
 	ConstructionSystems::RunSystems(timestep);
 
-#pragma region Verifying that construction state equals construction finished after two timesteps of in range manual construction.
-	TestEqual
-	(
-		FString::Printf
-		(
-			TEXT("[%s] Verifying that %s equals %s after two timesteps of in range manual construction."),
-			ARGUS_FUNCNAME,
-			ARGUS_NAMEOF(m_constructionState),
-			ARGUS_NAMEOF(ConstructionState::ConstructionFinished)
-		),
-		constructedTaskComponent->m_constructionState,
-		ConstructionState::ConstructionFinished
-	);
-#pragma endregion
-
 #pragma region Verifying that construction state equals none after two timesteps of in range manual construction.
 	TestEqual
 	(
@@ -220,6 +205,23 @@ bool ConstructionSystemsBeingConstructedManualTest::RunTest(const FString& Param
 		),
 		constructedConstructionComponent->m_currentWorkSeconds,
 		constructedConstructionComponent->m_requiredWorkSeconds
+	);
+#pragma endregion
+
+	ConstructionSystems::RunSystems(timestep);
+
+#pragma region Verifying that construction state equals construction finished after three timesteps of in range manual construction.
+	TestEqual
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Verifying that %s equals %s after three timesteps of in range manual construction."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(m_constructionState),
+			ARGUS_NAMEOF(ConstructionState::ConstructionFinished)
+		),
+		constructedTaskComponent->m_constructionState,
+		ConstructionState::ConstructionFinished
 	);
 #pragma endregion
 

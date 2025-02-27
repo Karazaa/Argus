@@ -23,18 +23,11 @@ void AArgusPlayerController::ProcessArgusPlayerInput(float deltaTime)
 		return;
 	}
 
-	const AArgusCameraActor::UpdateCameraPanningParameters params = GetScreenSpaceInputValues();
-	const FVector2D mouseScreenSpaceLocation = params.m_screenSpaceMouseLocation.IsSet() ? params.m_screenSpaceMouseLocation.GetValue() : FVector2D::ZeroVector;
-	m_argusInputManager->ProcessPlayerInput(m_argusCameraActor, params, deltaTime);
+	const AArgusCameraActor::UpdateCameraPanningParameters cameraParams = GetScreenSpaceInputValues();
+	const FVector2D mouseScreenSpaceLocation = cameraParams.m_screenSpaceMouseLocation.IsSet() ? cameraParams.m_screenSpaceMouseLocation.GetValue() : FVector2D::ZeroVector;
 
-	if (m_baseCanvasUserWidget)
-	{
-		m_baseCanvasUserWidget->UpdateFromInputManager(mouseScreenSpaceLocation);
-	}
-	if (m_selectedArgusEntityUserWidget)
-	{
-		m_selectedArgusEntityUserWidget->UpdateFromInputManager(mouseScreenSpaceLocation);
-	}
+	m_argusInputManager->ProcessPlayerInput(m_argusCameraActor, cameraParams, deltaTime);
+	UpdateUIWidgetDisplay(mouseScreenSpaceLocation);
 
 	if (!m_reticleActor)
 	{
@@ -195,6 +188,13 @@ void AArgusPlayerController::InitializeUIWidgets()
 		m_selectedArgusEntityUserWidget->SetInputManager(m_argusInputManager);
 		m_selectedArgusEntityUserWidget->AddToViewport();
 	}
+
+	m_teamResourcesUserWidget = CreateWidget<UArgusUserWidget>(this, m_teamResourcesUserWidgetClass, ARGUS_NAMEOF(m_teamResourcesUserWidgetClass));
+	if (m_teamResourcesUserWidget)
+	{
+		m_teamResourcesUserWidget->SetInputManager(m_argusInputManager);
+		m_teamResourcesUserWidget->AddToViewport();
+	}
 }
 
 void AArgusPlayerController::BeginPlay()
@@ -244,4 +244,22 @@ void AArgusPlayerController::SetupInputComponent()
 	}
 
 	m_argusInputManager->SetupInputComponent(this, m_argusInputActionSet);
+}
+
+void AArgusPlayerController::UpdateUIWidgetDisplay(const FVector2D& mouseScreenSpaceLocation)
+{
+	UArgusUserWidget::UpdateDisplayParameters uiParams = UArgusUserWidget::UpdateDisplayParameters(mouseScreenSpaceLocation, m_playerTeam);
+
+	if (m_baseCanvasUserWidget)
+	{
+		m_baseCanvasUserWidget->UpdateDisplay(uiParams);
+	}
+	if (m_selectedArgusEntityUserWidget)
+	{
+		m_selectedArgusEntityUserWidget->UpdateDisplay(uiParams);
+	}
+	if (m_teamResourcesUserWidget)
+	{
+		m_teamResourcesUserWidget->UpdateDisplay(uiParams);
+	}
 }

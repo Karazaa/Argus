@@ -175,11 +175,6 @@ void ConstructionSystems::ProcessConstructingOtherState(const ConstructionSystem
 	if (constructeeConstructionComponent->m_currentWorkSeconds >= constructeeConstructionComponent->m_requiredWorkSeconds)
 	{
 		constructeeConstructionComponent->m_currentWorkSeconds = constructeeConstructionComponent->m_requiredWorkSeconds;
-		if (TaskComponent* contructeeTaskComponent = constructee.GetComponent<TaskComponent>())
-		{
-			contructeeTaskComponent->m_constructionState = ConstructionState::ConstructionFinished;
-		}
-
 		components.m_taskComponent->m_constructionState = ConstructionState::None;
 	}
 }
