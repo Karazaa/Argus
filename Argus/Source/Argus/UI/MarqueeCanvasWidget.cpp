@@ -45,9 +45,9 @@ int32 UMarqueeCanvasWidget::NativePaint(const FPaintArgs& args, const FGeometry&
 {
 	int32 newLayerId = Super::NativePaint(args, allottedGeometry, myCullingRect, outDrawElements, layerId, inWidgetStyle, parentEnabled);
 
+	// Not erroring here since NativePaint can be called at edit time and not runtime.
 	if (!m_inputManager.IsValid())
 	{
-		ARGUS_LOG(ArgusUILog, Error, TEXT("[%s] Invalid reference to %s"), ARGUS_FUNCNAME, ARGUS_NAMEOF(m_inputManager));
 		return newLayerId;
 	}
 

@@ -2,6 +2,19 @@
 
 #include "TeamResourcesWidget.h"
 #include "ArgusEntity.h"
+#include "Blueprint/WidgetTree.h"
+
+void UTeamResourcesWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+	uint8 numResources = static_cast<uint8>(EResourceType::Count);
+	m_resourceWidgetInstances.SetNumUninitialized(numResources);
+	for (uint8 i = 0u; i < numResources; ++i)
+	{
+		m_resourceWidgetInstances[i] = WidgetTree->ConstructWidget<UResourceWidget>(m_resourceWidgetClass, ARGUS_NAMEOF(m_resourceWidgetClass));
+	}
+}
 
 void UTeamResourcesWidget::UpdateDisplay(const UpdateDisplayParameters& updateDisplayParams)
 {
