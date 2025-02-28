@@ -492,19 +492,32 @@ float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems
 		return 0.0f;
 	}
 
-	TaskComponent* foundEntityTaskComponent = foundEntity.GetComponent<TaskComponent>();
+	if (sourceEntityComponents.m_taskComponent->m_constructionState == ConstructionState::ConstructingOther && sourceEntityComponents.m_targetingComponent->HasEntityTarget())
+	{
+		if (const TransformComponent* targetedEntityTransformComponent = ArgusEntity::RetrieveEntity(sourceEntityComponents.m_targetingComponent->m_targetEntityId).GetComponent<TransformComponent>())
+		{
+			const float squaredDistance = FVector::DistSquared(targetedEntityTransformComponent->m_location, sourceEntityComponents.m_transformComponent->m_location);
+
+			if (squaredDistance < FMath::Square(sourceEntityComponents.m_targetingComponent->m_targetingRange))
+			{
+				return 0.0f;
+			}
+		}
+	}
+
+	const TaskComponent* foundEntityTaskComponent = foundEntity.GetComponent<TaskComponent>();
 	if (!foundEntityTaskComponent)
 	{
 		return 1.0f;
 	}
 
-	IdentityComponent* foundEntityIdentityComponent = foundEntity.GetComponent<IdentityComponent>();
+	const IdentityComponent* foundEntityIdentityComponent = foundEntity.GetComponent<IdentityComponent>();
 	if (!foundEntityIdentityComponent)
 	{
 		return 1.0f;
 	}
 
-	IdentityComponent* sourceEntityIdentityComponent = sourceEntityComponents.m_entity.GetComponent<IdentityComponent>();
+	const IdentityComponent* sourceEntityIdentityComponent = sourceEntityComponents.m_entity.GetComponent<IdentityComponent>();
 	if (!sourceEntityIdentityComponent)
 	{
 		return 1.0f;
@@ -513,6 +526,28 @@ float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems
 	if (sourceEntityIdentityComponent->IsInTeamMask(foundEntityIdentityComponent->m_enemies))
 	{
 		return 1.0f;
+	}
+
+	if (foundEntityTaskComponent->m_constructionState == ConstructionState::ConstructingOther)
+	{
+		const TargetingComponent* foundEntityTargetingComponent = foundEntity.GetComponent<TargetingComponent>();
+		const TransformComponent* foundEntityTransformComponent = foundEntity.GetComponent<TransformComponent>();
+		const TransformComponent* foundEntityTargetTransformComponent = nullptr;
+
+		if (foundEntityTransformComponent && foundEntityTargetingComponent && foundEntityTargetingComponent->HasEntityTarget())
+		{
+			foundEntityTargetTransformComponent = ArgusEntity::RetrieveEntity(foundEntityTargetingComponent->m_targetEntityId).GetComponent<TransformComponent>();
+		}
+
+		if (foundEntityTargetTransformComponent)
+		{
+			const float squaredDistance = FVector::DistSquared(foundEntityTargetTransformComponent->m_location, foundEntityTransformComponent->m_location);
+
+			if (squaredDistance < FMath::Square(foundEntityTargetingComponent->m_targetingRange))
+			{
+				return 1.0f;
+			}
+		}
 	}
 
 	if (sourceEntityComponents.m_taskComponent->IsExecutingMoveTask() && (!foundEntityTaskComponent->IsExecutingMoveTask()))
