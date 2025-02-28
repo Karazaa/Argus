@@ -7,6 +7,8 @@
 #include "Misc/Optional.h"
 #include "ResourceWidget.generated.h"
 
+class UTextBlock;
+
 UCLASS()
 class UResourceWidget : public UUserWidget
 {
@@ -20,6 +22,9 @@ private:
 	void ChangeResourceQuantity(int32 newQuantity);
 
 protected:
+	UPROPERTY(BlueprintReadWrite)
+	TObjectPtr<UTextBlock> m_quantityTextBlock = nullptr;
+
 	TOptional<EResourceType> m_currentResourceType = NullOpt;
 	TOptional<int32> m_currentResourceQuantity = NullOpt;
 };

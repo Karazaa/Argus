@@ -6,6 +6,8 @@
 #include "ResourceWidget.h"
 #include "TeamResourcesWidget.generated.h"
 
+class UHorizontalBox;
+
 UCLASS()
 class UTeamResourcesWidget : public UArgusUserWidget
 {
@@ -18,6 +20,9 @@ public:
 protected:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UResourceWidget> m_resourceWidgetClass = nullptr;
+
+	UPROPERTY(BlueprintReadWrite)
+	TObjectPtr<UHorizontalBox> m_resourceWidgetBar = nullptr;
 
 	TArray<TObjectPtr<UResourceWidget>> m_resourceWidgetInstances;
 };

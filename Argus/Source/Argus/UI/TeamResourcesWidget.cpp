@@ -5,10 +5,17 @@
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
 #include "Blueprint/WidgetTree.h"
+#include "Components/HorizontalBox.h"
 
 void UTeamResourcesWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+
+	if (!m_resourceWidgetBar)
+	{
+		ARGUS_LOG(ArgusUILog, Error, TEXT("[%s] %s is unset."), ARGUS_FUNCNAME, ARGUS_NAMEOF(m_resourceWidgetBar));
+		return;
+	}
 
 	uint8 numResources = static_cast<uint8>(EResourceType::Count);
 	m_resourceWidgetInstances.SetNumUninitialized(numResources);
@@ -20,6 +27,8 @@ void UTeamResourcesWidget::NativeConstruct()
 			ARGUS_LOG(ArgusUILog, Error, TEXT("[%s] Did not successfully initialize %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(UResourceWidget));
 			break;
 		}
+
+		m_resourceWidgetBar->AddChildToHorizontalBox(m_resourceWidgetInstances[i]);
 	}
 }
 
