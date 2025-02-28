@@ -5,8 +5,9 @@
 #include "CoreMinimal.h"
 #include "ArgusActorPool.h"
 #include "ArgusSystemsManager.h"
-#include "GameFramework/GameModeBase.h"
 #include "ComponentDefinitions/IdentityComponent.h"
+#include "ComponentDependencies/ResourceSet.h"
+#include "GameFramework/GameModeBase.h"
 #include "RecordDefinitions/TeamColorRecord.h"
 #include "ArgusGameModeBase.generated.h"
 
@@ -28,7 +29,10 @@ public:
 	AArgusPlayerController* GetActivePlayerController() const { return m_activePlayerController.Get(); }
 
 protected:
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(EditDefaultsOnly)
+	FResourceSet m_initialTeamResourceSet;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	TMap<ETeam, TObjectPtr<UTeamColorRecord>> m_teamColorMap;
 
 	UPROPERTY(Transient)

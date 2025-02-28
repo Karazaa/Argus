@@ -40,7 +40,7 @@ void AArgusGameModeBase::StartPlay()
 		return;
 	}
 
-	ArgusSystemsManager::Initialize(worldPointer);
+	ArgusSystemsManager::Initialize(worldPointer, m_initialTeamResourceSet);
 }
 
 void AArgusGameModeBase::Tick(float deltaTime)

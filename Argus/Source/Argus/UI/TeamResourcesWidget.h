@@ -3,6 +3,7 @@
 #pragma once
 
 #include "ArgusUserWidget.h"
+#include "Layout/Margin.h"
 #include "ResourceWidget.h"
 #include "TeamResourcesWidget.generated.h"
 
@@ -18,6 +19,9 @@ public:
 	virtual void UpdateDisplay(const UpdateDisplayParameters& updateDisplayParams) override;
 
 protected:
+	UPROPERTY(EditAnywhere)
+	FMargin m_resourceWidgetMargin;
+
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UResourceWidget> m_resourceWidgetClass = nullptr;
 

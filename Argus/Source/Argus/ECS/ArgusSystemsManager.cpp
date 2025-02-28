@@ -14,7 +14,7 @@
 #include "Systems/TimerSystems.h"
 #include "Systems/TransformSystems.h"
 
-void ArgusSystemsManager::Initialize(UWorld* worldPointer)
+void ArgusSystemsManager::Initialize(UWorld* worldPointer, const FResourceSet& initialTeamResourceSet)
 {
 	if (!worldPointer)
 	{
@@ -23,7 +23,7 @@ void ArgusSystemsManager::Initialize(UWorld* worldPointer)
 	}
 
 	PopulateSingletonComponents(worldPointer);
-	PopulateTeamComponents();
+	PopulateTeamComponents(initialTeamResourceSet);
 }
 
 void ArgusSystemsManager::RunSystems(UWorld* worldPointer, float deltaTime)
@@ -85,7 +85,7 @@ void ArgusSystemsManager::PopulateSingletonComponents(UWorld* worldPointer)
 	InputInterfaceComponent* inputInterfaceComponent = singletonEntity.AddComponent<InputInterfaceComponent>();
 }
 
-void ArgusSystemsManager::PopulateTeamComponents()
+void ArgusSystemsManager::PopulateTeamComponents(const FResourceSet& initialTeamResourceSet)
 {
 	uint16 sizeOfTeamEnum = sizeof(ETeam) * 8;
 	for (uint16 i = ArgusECSConstants::k_singletonEntityId - sizeOfTeamEnum; i < ArgusECSConstants::k_singletonEntityId; ++i)
@@ -101,7 +101,13 @@ void ArgusSystemsManager::PopulateTeamComponents()
 			continue;
 		}
 
-		teamEntity.AddComponent<ResourceComponent>();
+		ResourceComponent* teamResourceComponent = teamEntity.AddComponent<ResourceComponent>();
+		if (!teamResourceComponent)
+		{
+			continue;
+		}
+
+		teamResourceComponent->m_resourceSet.ApplyResourceChange(initialTeamResourceSet);
 	}
 }
 

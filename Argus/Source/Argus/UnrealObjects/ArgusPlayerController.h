@@ -35,6 +35,7 @@ public:
 	void FilterArgusActorsToPlayerTeam(TArray<AArgusActor*>& argusActors) const;
 	bool IsArgusActorOnPlayerTeam(const AArgusActor* const actor) const;
 
+	void InitializeTeamResources();
 	void InitializeUIWidgets();
 
 	UArgusInputManager* GetInputManager() const { return m_argusInputManager; }

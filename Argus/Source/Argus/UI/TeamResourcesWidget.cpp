@@ -29,6 +29,7 @@ void UTeamResourcesWidget::NativeConstruct()
 		}
 
 		m_resourceWidgetBar->AddChildToHorizontalBox(m_resourceWidgetInstances[i]);
+		m_resourceWidgetInstances[i]->SetPadding(m_resourceWidgetMargin);
 	}
 }
 

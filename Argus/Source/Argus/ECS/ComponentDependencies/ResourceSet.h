@@ -21,12 +21,7 @@ struct FResourceSet
 	GENERATED_BODY()
 
 	UPROPERTY(EditDefaultsOnly)
-	int32 m_resourceQuantities[(uint8)EResourceType::Count] = 
-	{ 
-		ArgusECSConstants::k_initialResourcesQuantity,
-		ArgusECSConstants::k_initialResourcesQuantity,
-		ArgusECSConstants::k_initialResourcesQuantity
-	};
+	int32 m_resourceQuantities[(uint8)EResourceType::Count] = { 0, 0, 0 };
 
 	bool CanAffordResourceChange(const FResourceSet& otherResourceSetRepresentingChange) const
 	{
