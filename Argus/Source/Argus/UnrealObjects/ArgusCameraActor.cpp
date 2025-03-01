@@ -11,6 +11,8 @@
 #include "Misc/Optional.h"
 
 uint8 AArgusCameraActor::s_numWidgetPanningBlockers = 0u;
+FVector AArgusCameraActor::s_moveUpDir = FVector::UpVector;
+FVector AArgusCameraActor::s_moveRightDir = FVector::RightVector;
 
 void AArgusCameraActor::IncrementPanningBlockers()
 {
@@ -27,6 +29,10 @@ AArgusCameraActor::AArgusCameraActor()
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.TickGroup = ETickingGroup::TG_LastDemotable;
 	SetRootComponent(CreateDefaultSubobject<UCameraComponent>(FName("CameraComponent")));
+
+	s_numWidgetPanningBlockers = 0u;
+	s_moveUpDir = FVector::UpVector;
+	s_moveRightDir = FVector::RightVector;
 
 	m_zoomRange = TRange<float>(m_minZoomDistanceToGround, m_maxZoomDistanceToGround);
 	m_zeroToOne = TRange<float>(0.0f, 1.0f);
@@ -130,7 +136,7 @@ void AArgusCameraActor::UpdateCameraOrbitInternal(const TOptional<FHitResult>& h
 	updatedLocation.Y = FMath::Sin(currentOrbitTheta);
 	updatedLocation = ArgusMath::ToUnrealVector2(updatedLocation);
 
-	m_moveUpDir = FVector(-updatedLocation, 0.0f);
+	s_moveUpDir = FVector(-updatedLocation, 0.0f);
 
 	updatedLocation *= radius;
 	m_cameraLocationWithoutZoom.X = hitResultLocation.X + updatedLocation.X;
@@ -141,7 +147,7 @@ void AArgusCameraActor::UpdateCameraOrbitInternal(const TOptional<FHitResult>& h
 	const FVector rightVector = -forwardVector.Cross(FVector::UpVector);
 	SetActorRotation(FRotationMatrix::MakeFromXY(forwardVector, rightVector).ToQuat());
 
-	m_moveRightDir = rightVector.GetSafeNormal();
+	s_moveRightDir = rightVector.GetSafeNormal();
 }
 
 void AArgusCameraActor::UpdateCameraPanning(const UpdateCameraPanningParameters& cameraParameters, const float deltaTime)
@@ -186,7 +192,7 @@ void AArgusCameraActor::UpdateCameraPanning(const UpdateCameraPanningParameters&
 	}
 	desiredVerticalVelocity *= verticalModification;
 	m_currentVerticalVelocity.SmoothChase(desiredVerticalVelocity, deltaTime);
-	translation += m_moveUpDir * (m_currentVerticalVelocity.GetValue() * deltaTime);
+	translation += s_moveUpDir * (m_currentVerticalVelocity.GetValue() * deltaTime);
 
 	float horizontalModification = 1.0f;
 	if (!IsPanningBlocked())
@@ -208,7 +214,7 @@ void AArgusCameraActor::UpdateCameraPanning(const UpdateCameraPanningParameters&
 	}
 	desiredHorizontalVelocity *= horizontalModification;
 	m_currentHorizontalVelocity.SmoothChase(desiredHorizontalVelocity, deltaTime);
-	translation += m_moveRightDir * (m_currentHorizontalVelocity.GetValue() * deltaTime);
+	translation += s_moveRightDir * (m_currentHorizontalVelocity.GetValue() * deltaTime);
 
 	m_cameraLocationWithoutZoom += translation;
 }

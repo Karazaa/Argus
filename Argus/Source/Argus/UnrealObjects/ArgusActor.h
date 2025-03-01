@@ -50,11 +50,15 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	bool m_shouldActorSpawnLocationSetEntityLocation = false;
 
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	float m_uiWidgetOffsetDistance = 50.0f;
+
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type endPlayReason) override;
 	virtual void Tick(float deltaTime) override;
 
 	void InitializeWidgets();
+	void UpdateUIWidgetComponentLocation();
 
 private:
 	ArgusEntity m_entity = ArgusEntity::k_emptyEntity;

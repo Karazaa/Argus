@@ -163,7 +163,7 @@ bool AArgusCameraFunctionalTest::DidPanRightTestStepSucceed(const FVector& locat
 
 bool AArgusCameraFunctionalTest::DidPanUpTestStepSucceed(const FVector& locationDifference)
 {
-	if (FVector::Coincident(m_argusCameraActor->GetPanUpVector(), locationDifference.GetSafeNormal()) && locationDifference.SquaredLength() > FMath::Square(m_targetPanUpDownQuantity))
+	if (FVector::Coincident(AArgusCameraActor::GetPanUpVector(), locationDifference.GetSafeNormal()) && locationDifference.SquaredLength() > FMath::Square(m_targetPanUpDownQuantity))
 	{
 		return true;
 	}
@@ -178,7 +178,7 @@ bool AArgusCameraFunctionalTest::DidPanUpTestStepSucceed(const FVector& location
 
 bool AArgusCameraFunctionalTest::DidPanDownTestStepSucceed(const FVector& locationDifference)
 {
-	if (FVector::Coincident(-m_argusCameraActor->GetPanUpVector(), locationDifference.GetSafeNormal()) && locationDifference.SquaredLength() > FMath::Square(m_targetPanUpDownQuantity))
+	if (FVector::Coincident(-AArgusCameraActor::GetPanUpVector(), locationDifference.GetSafeNormal()) && locationDifference.SquaredLength() > FMath::Square(m_targetPanUpDownQuantity))
 	{
 		return true;
 	}

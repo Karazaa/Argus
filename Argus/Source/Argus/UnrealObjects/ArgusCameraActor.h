@@ -16,6 +16,8 @@ public:
 	static constexpr float k_cameraTraceLength = 10000.0f;
 	static void IncrementPanningBlockers();
 	static void DecrementPanningBlockers();
+	static FVector& GetPanUpVector() { return s_moveUpDir; }
+	static FVector& GetPanRightVector() { return s_moveRightDir; }
 
 	AArgusCameraActor();
 
@@ -30,8 +32,6 @@ public:
 	void UpdateCameraOrbit(const float inputOrbitValue);
 	void UpdateCameraZoom(const float inputZoomValue);
 
-	const FVector& GetPanUpVector() { return m_moveUpDir; }
-	const FVector& GetPanRightVector() { return m_moveRightDir; }
 	const FVector GetZoomTargetTranslation() { return m_currentZoomTranslationAmount.GetValue() * GetActorForwardVector(); }
 	const FVector& GetCameraLocationWithoutZoom() { return m_cameraLocationWithoutZoom; }
 
@@ -91,6 +91,8 @@ protected:
 
 private:
 	static uint8 s_numWidgetPanningBlockers;
+	static FVector s_moveUpDir;
+	static FVector s_moveRightDir;
 
 	bool IsPanningBlocked() const { return s_numWidgetPanningBlockers != 0u || m_orbitInputThisFrame != 0.0f; }
 
@@ -115,7 +117,4 @@ private:
 	TRange<float> m_zeroToOne;
 
 	FVector m_cameraLocationWithoutZoom = FVector::ZeroVector;
-
-	FVector m_moveUpDir		= FVector::ForwardVector;
-	FVector m_moveRightDir	= FVector::RightVector;
 };

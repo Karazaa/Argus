@@ -563,8 +563,8 @@ void UArgusInputManager::ProcessMarqueeSelectInputEvent(AArgusCameraActor* argus
 
 	TArray<FVector2D> convexPolygon;
 	convexPolygon.SetNumZeroed(4);
-	const FVector2D panUpDirection = FVector2D(argusCamera->GetPanUpVector());
-	const FVector2D panRightDirection = FVector2D(argusCamera->GetPanRightVector());
+	const FVector2D panUpDirection = FVector2D(AArgusCameraActor::GetPanUpVector());
+	const FVector2D panRightDirection = FVector2D(AArgusCameraActor::GetPanRightVector());
 	const FVector2D cameraLocation = FVector2D(argusCamera->GetCameraLocationWithoutZoom());
 	convexPolygon[0] = FVector2D(m_cachedLastSelectInputWorldSpaceLocation);
 	convexPolygon[2] = FVector2D(hitResult.Location);

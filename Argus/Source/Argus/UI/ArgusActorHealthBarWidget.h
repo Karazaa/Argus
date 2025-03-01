@@ -19,7 +19,10 @@ public:
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	FLinearColor m_healthBarColor;
+	FLinearColor m_fullHealthBarColor;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FLinearColor m_lowHealthBarColor;
 
 	UPROPERTY(BlueprintReadWrite, Transient)
 	TObjectPtr<UProgressBar> m_progressBar = nullptr;

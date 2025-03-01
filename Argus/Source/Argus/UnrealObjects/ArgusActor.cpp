@@ -2,6 +2,7 @@
 
 #include "ArgusActor.h"
 #include "ArgusActorInfoWidget.h"
+#include "ArgusCameraActor.h"
 #include "ArgusGameInstance.h"
 #include "ArgusGameModeBase.h"
 #include "ArgusMath.h"
@@ -227,6 +228,7 @@ void AArgusActor::Tick(float deltaTime)
 
 	if (m_argusActorInfoWidget.IsValid())
 	{
+		UpdateUIWidgetComponentLocation();
 		m_argusActorInfoWidget->RefreshDisplay(m_entity);
 	}
 }
@@ -250,6 +252,21 @@ void AArgusActor::InitializeWidgets()
 
 	if (m_argusActorInfoWidget.IsValid())
 	{
+		UpdateUIWidgetComponentLocation();
 		m_argusActorInfoWidget->SetInitialDisplay(m_entity);
 	}
+}
+
+void AArgusActor::UpdateUIWidgetComponentLocation()
+{
+	UWidgetComponent* widgetComponent = GetComponentByClass<UWidgetComponent>();
+	if (!widgetComponent)
+	{
+		return;
+	}
+
+	float zValue = widgetComponent->GetRelativeLocation().Z;
+	FVector offsetLocation = AArgusCameraActor::GetPanUpVector() * m_uiWidgetOffsetDistance;
+	offsetLocation.Z = zValue;
+	widgetComponent->SetRelativeLocation(offsetLocation);
 }
