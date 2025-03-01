@@ -24,7 +24,7 @@ bool ArgusEntityTemplateInstantiateEntityTest::RunTest(const FString& Parameters
 #pragma endregion
 
 	UHealthComponentData* healthComponentData = NewObject<UHealthComponentData>();
-	healthComponentData->m_health = expectedHealthValue;
+	healthComponentData->m_currentHealth = expectedHealthValue;
 
 	UArgusEntityTemplate* entityTemplate = NewObject<UArgusEntityTemplate>();
 	entityTemplate->m_entityPriority = UEntityPriority::MediumPriority;
@@ -40,7 +40,7 @@ bool ArgusEntityTemplateInstantiateEntityTest::RunTest(const FString& Parameters
 	);
 #pragma endregion
 
-	uint32 healthValue = newEntity.GetComponent<HealthComponent>()->m_health;
+	uint32 healthValue = newEntity.GetComponent<HealthComponent>()->m_currentHealth;
 
 #pragma region Test that a health component exists on the new entity with a specific health value.
 	TestEqual

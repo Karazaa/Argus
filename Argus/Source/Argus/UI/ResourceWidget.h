@@ -22,7 +22,7 @@ private:
 	void ChangeResourceQuantity(int32 newQuantity);
 
 protected:
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite, Transient)
 	TObjectPtr<UTextBlock> m_quantityTextBlock = nullptr;
 
 	TOptional<EResourceType> m_currentResourceType = NullOpt;

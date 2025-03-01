@@ -7,7 +7,8 @@
 void UHealthComponentData::InstantiateComponentForEntity(ArgusEntity& entity) const
 {
 	HealthComponent* HealthComponentRef = entity.AddComponent<HealthComponent>();
-	HealthComponentRef->m_health = m_health;
+	HealthComponentRef->m_currentHealth = m_currentHealth;
+	HealthComponentRef->m_maximumHealth = m_maximumHealth;
 }
 
 bool UHealthComponentData::MatchesType(UComponentData* other) const

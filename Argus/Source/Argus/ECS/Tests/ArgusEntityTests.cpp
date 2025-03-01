@@ -552,7 +552,7 @@ bool ArgusEntityGetOrAddComponentTest::RunTest(const FString& Parameters)
 	);
 #pragma endregion
 
-	healthComponent->m_health = 400u;
+	healthComponent->m_currentHealth = 400u;
 	healthComponent = entity.GetOrAddComponent<HealthComponent>();
 
 #pragma region Test creating an ArgusEntity. getting or adding a HealthComponent twice, and making sure the same component is returned
@@ -566,7 +566,7 @@ bool ArgusEntityGetOrAddComponentTest::RunTest(const FString& Parameters)
 			ARGUS_NAMEOF(ArgusEntity::GetOrAddComponent), 
 			ARGUS_NAMEOF(HealthComponent)
 		),
-		healthComponent->m_health, 
+		healthComponent->m_currentHealth, 
 		400u
 	);
 #pragma endregion

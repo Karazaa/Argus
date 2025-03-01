@@ -13,7 +13,9 @@ class ARGUS_API UHealthComponentData : public UComponentData
 
 public:
 	UPROPERTY(EditAnywhere)
-	uint32 m_health = 1000u;
+	uint32 m_currentHealth = 1000u;
+	UPROPERTY(EditAnywhere)
+	uint32 m_maximumHealth = 1000u;
 
 	void InstantiateComponentForEntity(ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;

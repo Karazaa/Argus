@@ -16,6 +16,12 @@ void UArgusActorCastBarWidget::RefreshDisplay(ArgusEntity& argusEntity)
 {
 	Super::RefreshDisplay(argusEntity);
 
+	if (!m_progressBar)
+	{
+		ARGUS_LOG(ArgusUILog, Error, TEXT("[%s] Invalid reference to %s"), ARGUS_FUNCNAME, ARGUS_NAMEOF(m_progressBar));
+		return;
+	}
+
 	FLinearColor fillColor = FColor::White;
 	float timeElapsedProportion = -1.0f;
 	bool shouldBeVisible = false;
@@ -50,12 +56,12 @@ void UArgusActorCastBarWidget::RefreshDisplay(ArgusEntity& argusEntity)
 		{
 			SetVisibility(ESlateVisibility::Hidden);
 		}
-		else if (m_progressBar)
+		else
 		{
 			m_progressBar->SetPercent(timeElapsedProportion);
 		}
 	}
-	else if (shouldBeVisible && m_progressBar)
+	else if (shouldBeVisible)
 	{
 		SetVisibility(ESlateVisibility::HitTestInvisible);
 		m_progressBar->SetFillColorAndOpacity(fillColor);

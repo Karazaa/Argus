@@ -25,7 +25,7 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UResourceWidget> m_resourceWidgetClass = nullptr;
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite, Transient)
 	TObjectPtr<UHorizontalBox> m_resourceWidgetBar = nullptr;
 
 	TArray<TObjectPtr<UResourceWidget>> m_resourceWidgetInstances;

@@ -22,14 +22,14 @@ bool ArgusComponentHealthComponentPersistenceTest::RunTest(const FString& Parame
 		return false;
 	}
 
-	healthComponent->m_health = expectedSetHealthValue;
+	healthComponent->m_currentHealth = expectedSetHealthValue;
 	healthComponent = entity.GetComponent<HealthComponent>();
 
 #pragma region Test HealthComponent setting health value.
 	TestEqual
 	(
 		FString::Printf(TEXT("[%s] Creating a %s, setting it to %d, then checking the value is %d on retrieval."), ARGUS_FUNCNAME, ARGUS_NAMEOF(HealthComponent), expectedSetHealthValue, expectedSetHealthValue), 
-		healthComponent->m_health, 
+		healthComponent->m_currentHealth,
 		expectedSetHealthValue
 	);
 #pragma endregion
@@ -40,7 +40,7 @@ bool ArgusComponentHealthComponentPersistenceTest::RunTest(const FString& Parame
 	TestEqual
 	(
 		FString::Printf(TEXT("[%s] Creating a %s, setting it to %d, resetting it, then checking the value is %d after reset."), ARGUS_FUNCNAME, ARGUS_NAMEOF(HealthComponent), expectedSetHealthValue, expectedPostResetHealthValue), 
-		healthComponent->m_health,
+		healthComponent->m_currentHealth,
 		expectedPostResetHealthValue
 	);
 #pragma endregion

@@ -18,6 +18,6 @@ public:
 	virtual void RefreshDisplay(ArgusEntity& argusEntity) override;
 
 protected:
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite, Transient)
 	TArray<TObjectPtr<UArgusActorInfoWidget>> m_childArgusActorWidgets;
 };
