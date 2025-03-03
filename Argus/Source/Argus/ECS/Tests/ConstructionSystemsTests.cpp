@@ -138,7 +138,7 @@ bool ConstructionSystemsBeingConstructedManualTest::RunTest(const FString& Param
 	constructingAbilityComponent->m_ability0Id = abilityRecordId;
 	constructingTaskComponent->m_constructionState = ConstructionState::ConstructingOther;
 	constructingTargetingComponent->m_targetEntityId = entityToConstruct.GetId();
-	constructingTargetingComponent->m_targetingRange = constructionRange;
+	constructingTargetingComponent->m_meleeRange = constructionRange;
 	constructingTransformComponent->m_location = initialConstructingLocation;
 
 	ConstructionSystems::RunSystems(timestep);

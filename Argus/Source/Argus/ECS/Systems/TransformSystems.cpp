@@ -107,7 +107,7 @@ void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float delta
 
 	const bool isWithinRangeOfTargetEntity	=	components.m_navigationComponent->m_lastPointIndex == numNavigationPoints - 2u &&
 												components.m_taskComponent->m_movementState == MovementState::MoveToEntity &&
-												components.m_targetingComponent->m_targetingRange > distanceToTarget;
+												components.m_targetingComponent->m_meleeRange > distanceToTarget;
 
 	if (isWithinRangeOfTargetEntity && !isAtEndOfNavigationPath)
 	{

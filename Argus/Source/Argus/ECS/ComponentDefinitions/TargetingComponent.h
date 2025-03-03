@@ -11,7 +11,8 @@ struct TargetingComponent
 	ARGUS_IGNORE()
 	TOptional<FVector> m_targetLocation = TOptional<FVector>();
 
-	float m_targetingRange = 400.0f;
+	float m_meleeRange = 400.0f;
+	float m_rangedRange = 400.0f;
 
 	ARGUS_IGNORE()
 	uint16 m_targetEntityId = ArgusECSConstants::k_maxEntities;
@@ -32,10 +33,12 @@ struct TargetingComponent
 		(
 			FString::Printf
 			(
-				TEXT("\n[%s] \n    (%s: %f)"), 
+				TEXT("\n[%s] \n    (%s: %f) \n    (%s: %f)"), 
 				ARGUS_NAMEOF(TargetingComponent),
-				ARGUS_NAMEOF(m_targetingRange),
-				m_targetingRange
+				ARGUS_NAMEOF(m_meleeRange),
+				m_meleeRange,
+				ARGUS_NAMEOF(m_rangedRange),
+				m_rangedRange
 			)
 		);
 	}

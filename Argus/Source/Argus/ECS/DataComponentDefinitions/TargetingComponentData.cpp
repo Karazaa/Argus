@@ -8,7 +8,8 @@ void UTargetingComponentData::InstantiateComponentForEntity(ArgusEntity& entity)
 {
 	TargetingComponent* TargetingComponentRef = entity.AddComponent<TargetingComponent>();
 	TargetingComponentRef->m_targetLocation = m_targetLocation;
-	TargetingComponentRef->m_targetingRange = m_targetingRange;
+	TargetingComponentRef->m_meleeRange = m_meleeRange;
+	TargetingComponentRef->m_rangedRange = m_rangedRange;
 	TargetingComponentRef->m_targetEntityId = m_targetEntityId;
 }
 

@@ -4,20 +4,18 @@
 #pragma once
 
 #include "ComponentData.h"
-#include "TargetingComponentData.generated.h"
+#include "CombatComponentData.generated.h"
 
 UCLASS()
-class ARGUS_API UTargetingComponentData : public UComponentData
+class ARGUS_API UCombatComponentData : public UComponentData
 {
 	GENERATED_BODY()
 
 public:
-	TOptional<FVector> m_targetLocation = TOptional<FVector>();
 	UPROPERTY(EditAnywhere)
-	float m_meleeRange = 400.0f;
+	uint32 m_baseDamagePerSecond = 100u;
 	UPROPERTY(EditAnywhere)
-	float m_rangedRange = 400.0f;
-	uint16 m_targetEntityId = ArgusECSConstants::k_maxEntities;
+	EAttackType m_attackType = EAttackType::Melee;
 
 	void InstantiateComponentForEntity(ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;

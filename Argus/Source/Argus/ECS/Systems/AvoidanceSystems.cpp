@@ -498,7 +498,7 @@ float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems
 		{
 			const float squaredDistance = FVector::DistSquared(targetedEntityTransformComponent->m_location, sourceEntityComponents.m_transformComponent->m_location);
 
-			if (squaredDistance < FMath::Square(sourceEntityComponents.m_targetingComponent->m_targetingRange))
+			if (squaredDistance < FMath::Square(sourceEntityComponents.m_targetingComponent->m_meleeRange))
 			{
 				return 0.0f;
 			}
@@ -543,7 +543,7 @@ float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems
 		{
 			const float squaredDistance = FVector::DistSquared(foundEntityTargetTransformComponent->m_location, foundEntityTransformComponent->m_location);
 
-			if (squaredDistance < FMath::Square(foundEntityTargetingComponent->m_targetingRange))
+			if (squaredDistance < FMath::Square(foundEntityTargetingComponent->m_meleeRange))
 			{
 				return 1.0f;
 			}

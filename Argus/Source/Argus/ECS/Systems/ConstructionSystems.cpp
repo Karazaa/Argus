@@ -158,7 +158,7 @@ void ConstructionSystems::ProcessConstructingOtherState(const ConstructionSystem
 	}
 
 	if (FVector::DistSquared(constructorTransformComponent->m_location, constructeeTransformComponent->m_location) > 
-		FMath::Square(targetingComponent->m_targetingRange))
+		FMath::Square(targetingComponent->m_meleeRange))
 	{
 		return;
 	}

@@ -10,6 +10,7 @@
 
 // Begin component specific includes.
 #include "ComponentDefinitions\AbilityComponent.h"
+#include "ComponentDefinitions\CombatComponent.h"
 #include "ComponentDefinitions\ConstructionComponent.h"
 #include "ComponentDefinitions\HealthComponent.h"
 #include "ComponentDefinitions\IdentityComponent.h"
@@ -51,7 +52,7 @@ public:
 	static void FlushAllComponents();
 	static void AppendComponentDebugStrings(uint16 entityId, FString& debugStringToAppendTo);
 
-	static constexpr uint32 k_numComponentTypes = 14;
+	static constexpr uint32 k_numComponentTypes = 15;
 
 	// Begin component specific template specifiers.
 	
@@ -115,6 +116,69 @@ public:
 			s_AbilityComponents[entityId] = AbilityComponent();
 			s_isAbilityComponentActive.set(entityId);
 			return &s_AbilityComponents[entityId];
+		}
+	}
+#pragma endregion
+#pragma region CombatComponent
+private:
+	static CombatComponent s_CombatComponents[ArgusECSConstants::k_maxEntities];
+	static std::bitset<ArgusECSConstants::k_maxEntities> s_isCombatComponentActive;
+public:
+	template<>
+	inline CombatComponent* GetComponent<CombatComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(CombatComponent));
+			return nullptr;
+		}
+
+		if (!s_isCombatComponentActive[entityId])
+		{
+			return nullptr;
+		}
+
+		return &s_CombatComponents[entityId];
+	}
+
+	template<>
+	inline CombatComponent* AddComponent<CombatComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(CombatComponent));
+			return nullptr;
+		}
+
+		if (s_isCombatComponentActive[entityId])
+		{
+			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(CombatComponent), entityId);
+			return &s_CombatComponents[entityId];
+		}
+
+		s_CombatComponents[entityId] = CombatComponent();
+		s_isCombatComponentActive.set(entityId);
+		return &s_CombatComponents[entityId];
+	}
+
+	template<>
+	inline CombatComponent* GetOrAddComponent<CombatComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(CombatComponent));
+			return nullptr;
+		}
+
+		if (s_isCombatComponentActive[entityId])
+		{
+			return &s_CombatComponents[entityId];
+		}
+		else
+		{
+			s_CombatComponents[entityId] = CombatComponent();
+			s_isCombatComponentActive.set(entityId);
+			return &s_CombatComponents[entityId];
 		}
 	}
 #pragma endregion
