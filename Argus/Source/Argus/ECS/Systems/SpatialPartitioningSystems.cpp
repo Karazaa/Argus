@@ -32,16 +32,6 @@ void SpatialPartitioningSystems::RunSystems(const ArgusEntity& spatialPartitioni
 	spatialPartitioningComponent->m_argusEntityKDTree.RebuildKDTreeForAllArgusEntities();
 }
 
-bool SpatialPartitioningSystems::SpatialPartitioningSystemsComponentArgs::AreComponentsValidCheck(const WIDECHAR* functionName) const
-{
-	if (!m_entity || !m_singletonSpatialParitioningComponent)
-	{
-		ArgusLogging::LogInvalidComponentReferences(functionName, ARGUS_NAMEOF(SpatialPartitioningSystemsComponentArgs));
-		return false;
-	}
-	return true;
-}
-
 void SpatialPartitioningSystems::CalculateAvoidanceObstacles(SpatialPartitioningComponent* spatialPartitioningComponent, UWorld* worldPointer)
 {
 	ARGUS_TRACE(SpatialPartitioningSystems::CalculateAvoidanceObstacles);

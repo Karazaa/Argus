@@ -26,7 +26,7 @@ bool TimerSystemsAdvanceTimersTest::RunTest(const FString& Parameters)
 	);
 #pragma endregion
 
-	TimerSystems::AdvaceTimers(nullptr, deltaTime);
+	TimerSystems::AdvaceTimers(deltaTime, nullptr);
 
 	ArgusEntity timerEntity = ArgusEntity::CreateEntity();
 	TimerComponent* timerComponent = timerEntity.AddComponent<TimerComponent>();
@@ -37,7 +37,7 @@ bool TimerSystemsAdvanceTimersTest::RunTest(const FString& Parameters)
 	}
 
 	// Test that this doesn't cause an error when there are no timers.
-	TimerSystems::AdvaceTimers(timerComponent, deltaTime);
+	TimerSystems::AdvaceTimers(deltaTime, timerComponent);
 
 	Timer timer0, timer1, timer2;
 	timer0.m_timerState = TimerState::Ticking;
@@ -49,7 +49,7 @@ bool TimerSystemsAdvanceTimersTest::RunTest(const FString& Parameters)
 	timerComponent->m_timers.Add(timer1);
 	timerComponent->m_timers.Add(timer2);
 
-	TimerSystems::AdvaceTimers(timerComponent, deltaTime);
+	TimerSystems::AdvaceTimers(deltaTime, timerComponent);
 
 #pragma region Test timer states after advancing 1 second
 	TestTrue
@@ -68,7 +68,7 @@ bool TimerSystemsAdvanceTimersTest::RunTest(const FString& Parameters)
 	);
 #pragma endregion
 
-	TimerSystems::AdvaceTimers(timerComponent, deltaTime);
+	TimerSystems::AdvaceTimers(deltaTime, timerComponent);
 
 #pragma region Test timer states after advancing 2 second
 	TestTrue
@@ -89,6 +89,5 @@ bool TimerSystemsAdvanceTimersTest::RunTest(const FString& Parameters)
 	ArgusTesting::EndArgusTest();
 	return true;
 }
-
 
 #endif //WITH_AUTOMATION_TESTS

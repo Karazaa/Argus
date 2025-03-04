@@ -43,19 +43,19 @@ public:
 	bool			IsSelected() const;
 
 	template<class ArgusComponent>
-	ArgusComponent* GetComponent() const
+	inline ArgusComponent* GetComponent() const
 	{
 		return ArgusComponentRegistry::GetComponent<ArgusComponent>(m_id);
 	}
 
 	template<class ArgusComponent>
-	ArgusComponent* AddComponent() const
+	inline ArgusComponent* AddComponent() const
 	{
 		return ArgusComponentRegistry::AddComponent<ArgusComponent>(m_id);
 	}
 
 	template<class ArgusComponent>
-	ArgusComponent* GetOrAddComponent() const
+	inline ArgusComponent* GetOrAddComponent() const
 	{
 		return ArgusComponentRegistry::GetOrAddComponent<ArgusComponent>(m_id);
 	}

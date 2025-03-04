@@ -8,5 +8,5 @@ class TimerSystems
 {
 public:
 	static void RunSystems(float deltaTime);
-	static void AdvaceTimers(TimerComponent* timerComponent, float deltaTime);
+	static void AdvaceTimers(float deltaTime, TimerComponent* timerComponent);
 };

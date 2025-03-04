@@ -20,7 +20,8 @@ public:
 	static bool CanEntityConstructOtherEntity(const ArgusEntity& potentialConstructor, const ArgusEntity& potentialConstructee);
 
 private:
-	static void ProcessBeingConstructedState(const ConstructionSystemsComponentArgs& components, float deltaTime);
-	static void ProcessConstructingOtherState(const ConstructionSystemsComponentArgs& components, float deltaTime);
-	static void ProcessAutomaticConstruction(const ConstructionSystemsComponentArgs& components, float deltaTime);
+	static void ProcessConstructionTaskCommands(float deltaTime, const ConstructionSystemsComponentArgs& components);
+	static void ProcessBeingConstructedState(float deltaTime, const ConstructionSystemsComponentArgs& components);
+	static void ProcessConstructingOtherState(float deltaTime, const ConstructionSystemsComponentArgs& components);
+	static void ProcessAutomaticConstruction(float deltaTime, const ConstructionSystemsComponentArgs& components);
 };

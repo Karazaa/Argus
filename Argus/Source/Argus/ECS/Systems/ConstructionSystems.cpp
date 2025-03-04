@@ -26,24 +26,7 @@ void ConstructionSystems::RunSystems(float deltaTime)
 			continue;
 		}
 
-		switch (components.m_taskComponent->m_constructionState)
-		{
-			case ConstructionState::BeingConstructed:
-				if (components.m_constructionComponent)
-				{
-					ProcessBeingConstructedState(components, deltaTime);
-				}
-				break;
-			case ConstructionState::ConstructingOther:
-				ProcessConstructingOtherState(components, deltaTime);
-				break;
-			case ConstructionState::ConstructionFinished:
-				components.m_taskComponent->m_constructionState = ConstructionState::None;
-				components.m_constructionComponent->m_currentWorkSeconds = 0.0f;
-				break;
-			default:
-				break;
-		}
+		ProcessConstructionTaskCommands(deltaTime, components);
 	}
 }
 
@@ -93,7 +76,29 @@ bool ConstructionSystems::ConstructionSystemsComponentArgs::AreComponentsValidCh
 	return true;
 }
 
-void ConstructionSystems::ProcessBeingConstructedState(const ConstructionSystemsComponentArgs& components, float deltaTime)
+void ConstructionSystems::ProcessConstructionTaskCommands(float deltaTime, const ConstructionSystemsComponentArgs& components)
+{
+	switch (components.m_taskComponent->m_constructionState)
+	{
+		case ConstructionState::BeingConstructed:
+			if (components.m_constructionComponent)
+			{
+				ProcessBeingConstructedState(deltaTime, components);
+			}
+			break;
+		case ConstructionState::ConstructingOther:
+			ProcessConstructingOtherState(deltaTime, components);
+			break;
+		case ConstructionState::ConstructionFinished:
+			components.m_taskComponent->m_constructionState = ConstructionState::None;
+			components.m_constructionComponent->m_currentWorkSeconds = 0.0f;
+			break;
+		default:
+			break;
+	}
+}
+
+void ConstructionSystems::ProcessBeingConstructedState(float deltaTime, const ConstructionSystemsComponentArgs& components)
 {
 	ARGUS_TRACE(ConstructionSystems::ProcessBeingConstructedState);
 
@@ -105,7 +110,7 @@ void ConstructionSystems::ProcessBeingConstructedState(const ConstructionSystems
 	switch (components.m_constructionComponent->m_constructionType)
 	{
 		case EConstructionType::Automatic:
-			ProcessAutomaticConstruction(components, deltaTime);
+			ProcessAutomaticConstruction(deltaTime, components);
 			break;
 		case EConstructionType::Manual:
 			break;
@@ -119,7 +124,7 @@ void ConstructionSystems::ProcessBeingConstructedState(const ConstructionSystems
 	}
 }
 
-void ConstructionSystems::ProcessConstructingOtherState(const ConstructionSystemsComponentArgs& components, float deltaTime)
+void ConstructionSystems::ProcessConstructingOtherState(float deltaTime, const ConstructionSystemsComponentArgs& components)
 {
 	ARGUS_TRACE(ConstructionSystems::ProcessConstructingOtherState);
 
@@ -179,7 +184,7 @@ void ConstructionSystems::ProcessConstructingOtherState(const ConstructionSystem
 	}
 }
 
-void ConstructionSystems::ProcessAutomaticConstruction(const ConstructionSystemsComponentArgs& components, float deltaTime)
+void ConstructionSystems::ProcessAutomaticConstruction(float deltaTime, const ConstructionSystemsComponentArgs& components)
 {
 	ARGUS_TRACE(ConstructionSystems::ProcessAutomaticConstruction);
 

@@ -23,11 +23,11 @@ void TimerSystems::RunSystems(float deltaTime)
 			continue;
 		}
 
-		AdvaceTimers(timerComponent, deltaTime);
+		AdvaceTimers(deltaTime, timerComponent);
 	}
 }
 
-void TimerSystems::AdvaceTimers(TimerComponent* timerComponent, float deltaTime)
+void TimerSystems::AdvaceTimers(float deltaTime, TimerComponent* timerComponent)
 {
 	ARGUS_TRACE(TimerSystems::AdvaceTimers);
 
