@@ -31,7 +31,7 @@ bool ArgusEntity::DoesEntityExist(uint16 id)
 bool ArgusEntity::IsReservedEntityId(uint16 id)
 {
 	uint16 sizeOfTeamEnum = sizeof(ETeam) * 8;
-	return id > (ArgusECSConstants::k_singletonEntityId - sizeOfTeamEnum);
+	return id >= (ArgusECSConstants::k_singletonEntityId - sizeOfTeamEnum);
 }
 
 ArgusEntity ArgusEntity::CreateEntity(uint16 lowestId)
