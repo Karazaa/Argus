@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "ComponentDependencies/Timer.h"
 #include "CoreMinimal.h"
 #include "ArgusMacros.h"
 
@@ -14,9 +15,14 @@ enum class EAttackType : uint8
 
 struct CombatComponent
 {
-	uint32 m_baseDamagePerSecond = 100u;
+	uint32 m_baseDamagePerIntervalOrPerSecond = 100u;
+
+	float m_intervalDurationSeconds = 1.0f;
 
 	EAttackType m_attackType = EAttackType::Melee;
+
+	ARGUS_IGNORE()
+	TimerHandle m_attackTimerHandle;
 
 	void GetDebugString(FString& debugStringToAppendTo) const
 	{

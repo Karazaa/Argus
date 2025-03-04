@@ -50,4 +50,17 @@ void CombatSystems::ProcessCombatTaskCommands(float deltaTime, const CombatSyste
 	{
 		return;
 	}
+
+	switch (components.m_taskComponent->m_combatState)
+	{
+		case CombatState::None:
+			break;
+		case CombatState::Attack:
+			ProcessAttackCommand(deltaTime, components);
+			break;
+	}
+}
+
+void CombatSystems::ProcessAttackCommand(float deltaTime, const CombatSystemsComponentArgs& components)
+{
 }

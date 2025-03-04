@@ -7,8 +7,10 @@
 void UCombatComponentData::InstantiateComponentForEntity(ArgusEntity& entity) const
 {
 	CombatComponent* CombatComponentRef = entity.AddComponent<CombatComponent>();
-	CombatComponentRef->m_baseDamagePerSecond = m_baseDamagePerSecond;
+	CombatComponentRef->m_baseDamagePerIntervalOrPerSecond = m_baseDamagePerIntervalOrPerSecond;
+	CombatComponentRef->m_intervalDurationSeconds = m_intervalDurationSeconds;
 	CombatComponentRef->m_attackType = m_attackType;
+	CombatComponentRef->m_attackTimerHandle = m_attackTimerHandle;
 }
 
 bool UCombatComponentData::MatchesType(UComponentData* other) const

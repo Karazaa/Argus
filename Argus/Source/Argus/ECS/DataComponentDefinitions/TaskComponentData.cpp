@@ -13,6 +13,7 @@ void UTaskComponentData::InstantiateComponentForEntity(ArgusEntity& entity) cons
 	TaskComponentRef->m_spawningState = m_spawningState;
 	TaskComponentRef->m_abilityState = m_abilityState;
 	TaskComponentRef->m_constructionState = m_constructionState;
+	TaskComponentRef->m_combatState = m_combatState;
 }
 
 bool UTaskComponentData::MatchesType(UComponentData* other) const

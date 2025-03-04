@@ -18,6 +18,7 @@ public:
 	SpawningState m_spawningState = SpawningState::None;
 	AbilityState m_abilityState = AbilityState::None;
 	ConstructionState m_constructionState = ConstructionState::None;
+	CombatState m_combatState = CombatState::None;
 
 	void InstantiateComponentForEntity(ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;

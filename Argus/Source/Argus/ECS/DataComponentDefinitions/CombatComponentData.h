@@ -13,9 +13,12 @@ class ARGUS_API UCombatComponentData : public UComponentData
 
 public:
 	UPROPERTY(EditAnywhere)
-	uint32 m_baseDamagePerSecond = 100u;
+	uint32 m_baseDamagePerIntervalOrPerSecond = 100u;
+	UPROPERTY(EditAnywhere)
+	float m_intervalDurationSeconds = 1.0f;
 	UPROPERTY(EditAnywhere)
 	EAttackType m_attackType = EAttackType::Melee;
+	TimerHandle m_attackTimerHandle;
 
 	void InstantiateComponentForEntity(ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;

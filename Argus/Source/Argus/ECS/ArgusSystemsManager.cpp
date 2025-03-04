@@ -40,11 +40,11 @@ void ArgusSystemsManager::RunSystems(UWorld* worldPointer, float deltaTime)
 	bool didEntityPositionChangeThisFrame = false;
 
 	TimerSystems::RunSystems(deltaTime);
-	ConstructionSystems::RunSystems(deltaTime);
-	NavigationSystems::RunSystems(worldPointer);
 	TargetingSystems::RunSystems(deltaTime);
 	AbilitySystems::RunSystems(deltaTime);
 	CombatSystems::RunSystems(deltaTime);
+	ConstructionSystems::RunSystems(deltaTime);
+	NavigationSystems::RunSystems(worldPointer);
 	AvoidanceSystems::RunSystems(worldPointer, deltaTime);
 	didEntityPositionChangeThisFrame |= TransformSystems::RunSystems(worldPointer, deltaTime);
 	didEntityPositionChangeThisFrame |= SpawningSystems::RunSystems(deltaTime);

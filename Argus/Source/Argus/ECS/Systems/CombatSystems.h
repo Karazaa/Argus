@@ -23,4 +23,5 @@ public:
 
 private:
 	static void ProcessCombatTaskCommands(float deltaTime, const CombatSystemsComponentArgs& components);
+	static void ProcessAttackCommand(float deltaTime, const CombatSystemsComponentArgs& components);
 };

@@ -48,6 +48,12 @@ enum class ConstructionState : uint8
 	ConstructionFinished
 };
 
+enum class CombatState : uint8
+{
+	None,
+	Attack
+};
+
 struct TaskComponent
 {
 	ARGUS_IGNORE()
@@ -62,6 +68,8 @@ struct TaskComponent
 	AbilityState m_abilityState = AbilityState::None;
 	ARGUS_IGNORE()
 	ConstructionState m_constructionState = ConstructionState::None;
+	ARGUS_IGNORE()
+	CombatState m_combatState = CombatState::None;
 
 	bool IsExecutingMoveTask() const
 	{
@@ -168,11 +176,24 @@ struct TaskComponent
 				break;
 		}
 
+		const WIDECHAR* combatStateName = TEXT("");
+		switch (m_combatState)
+		{
+			case CombatState::None:
+				combatStateName = ARGUS_NAMEOF(CombatState::None);
+				break;
+			case CombatState::Attack:
+				combatStateName = ARGUS_NAMEOF(CombatState::Attack);
+				break;
+			default:
+				break;
+		}
+
 		debugStringToAppendTo.Append
 		(
 			FString::Printf
 			(
-				TEXT("\n[%s] \n    (%s: %s)\n    (%s: %s)\n    (%s: %s)\n    (%s: %s)\n    (%s: %s)"), 
+				TEXT("\n[%s] \n    (%s: %s)\n    (%s: %s)\n    (%s: %s)\n    (%s: %s)\n    (%s: %s)\n    (%s: %s)"), 
 				ARGUS_NAMEOF(TaskComponent),
 				ARGUS_NAMEOF(m_baseState),
 				baseStateName,
@@ -183,7 +204,9 @@ struct TaskComponent
 				ARGUS_NAMEOF(m_abilityState),
 				abilityStateName,
 				ARGUS_NAMEOF(m_constructionState),
-				constructionStateName
+				constructionStateName,
+				ARGUS_NAMEOF(m_combatState),
+				combatStateName
 			)
 		);
 	}
