@@ -174,6 +174,7 @@ FColor AArgusGameModeBase::GetTeamColor(ETeam team)
 			TEXT("[%s] Trying to retrieve color for %s, but the %s does not have an entry in %s."), 
 			ARGUS_FUNCNAME, 
 			ARGUS_NAMEOF(ETeam), 
+			ARGUS_NAMEOF(team),
 			ARGUS_NAMEOF(m_teamColorMap)
 		);
 		return FColor::Red;

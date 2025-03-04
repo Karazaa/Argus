@@ -525,7 +525,7 @@ float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems
 
 	if (sourceEntityIdentityComponent->IsInTeamMask(foundEntityIdentityComponent->m_enemies))
 	{
-		return 1.0f;
+		return sourceEntityComponents.m_taskComponent->IsExecutingMoveTask() ? 1.0f : 0.0f;
 	}
 
 	if (foundEntityTaskComponent->m_constructionState == ConstructionState::ConstructingOther)
