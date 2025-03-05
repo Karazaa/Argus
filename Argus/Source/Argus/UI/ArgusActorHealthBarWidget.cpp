@@ -53,6 +53,7 @@ void UArgusActorHealthBarWidget::SetHealthBarPercentForEntity(ArgusEntity& argus
 
 	if (healthBarPortion != m_progressBar->GetPercent())
 	{
+		SetVisibility(ESlateVisibility::Visible);
 		m_progressBar->SetPercent(healthBarPortion);
 		m_progressBar->SetFillColorAndOpacity(FMath::Lerp(m_lowHealthBarColor, m_fullHealthBarColor, healthBarPortion));
 	}

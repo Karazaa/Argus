@@ -173,11 +173,6 @@ bool AArgusPlayerController::IsArgusActorOnPlayerTeam(const AArgusActor* const a
 	return identityComponent->m_team == m_playerTeam;
 }
 
-void AArgusPlayerController::InitializeTeamResources()
-{
-
-}
-
 void AArgusPlayerController::InitializeUIWidgets()
 {
 	m_baseCanvasUserWidget = CreateWidget<UArgusUserWidget>(this, m_baseCanvasUserWidgetClass, ARGUS_NAMEOF(m_baseCanvasUserWidgetClass));

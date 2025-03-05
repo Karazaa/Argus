@@ -21,7 +21,12 @@ public:
 		bool AreComponentsValidCheck(const WIDECHAR* functionName) const;
 	};
 
+	static bool CanEntityAttackOtherEntity(const ArgusEntity& potentialAttacker, const ArgusEntity& potentialVictim);
+
 private:
 	static void ProcessCombatTaskCommands(float deltaTime, const CombatSystemsComponentArgs& components);
 	static void ProcessAttackCommand(float deltaTime, const CombatSystemsComponentArgs& components);
+	static void PerformTimerAttack(const TransformComponent* targetTransformComponent, HealthComponent* targetHealthComponent, const CombatSystemsComponentArgs& components);
+	static void PerformContinuousAttack(float deltaTime, const TransformComponent* targetTransformComponent, HealthComponent* targetHealthComponent, const CombatSystemsComponentArgs& components);
+	static void ApplyDamage(uint32 damageAmount, const TransformComponent* targetTransformComponent, HealthComponent* targetHealthComponent, const CombatSystemsComponentArgs& components);
 };

@@ -27,7 +27,10 @@ public:
 	void StartTimer(const ArgusEntity& entityWithTimer, float seconds);
 	void FinishTimerHandling(const ArgusEntity& entityWithTimer);
 	void CancelTimer(const ArgusEntity& entityWithTimer);
+
 	float GetTimeElapsedProportion(const ArgusEntity& entityWithTimer) const;
+
+	bool IsTimerTicking(const ArgusEntity& entityWithTimer) const;
 	bool IsTimerComplete(const ArgusEntity& entityWithTimer) const;
 
 	uint8 GetTimerIndex() const { return m_timerIndex; }

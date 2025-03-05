@@ -6,6 +6,7 @@
 #include "NavigationData.h"
 #include "NavigationSystem.h"
 #include "NavigationSystemTypes.h"
+#include "Systems/CombatSystems.h"
 #include "Systems/ConstructionSystems.h"
 
 static TAutoConsoleVariable<bool> CVarShowNavigationDebug(TEXT("Argus.Navigation.ShowNavigationDebug"), false, TEXT(""));
@@ -79,6 +80,10 @@ void NavigationSystems::NavigateFromEntityToEntity(UWorld* worldPointer, ArgusEn
 
 	NavigateFromEntityToLocation(worldPointer, targetEntityTransform->m_location, components);
 
+	if (CombatSystems::CanEntityAttackOtherEntity(components.m_entity, targetEntity))
+	{
+		components.m_taskComponent->m_combatState = CombatState::Attack;
+	}
 	if (ConstructionSystems::CanEntityConstructOtherEntity(components.m_entity, targetEntity))
 	{
 		components.m_taskComponent->m_constructionState = ConstructionState::ConstructingOther;

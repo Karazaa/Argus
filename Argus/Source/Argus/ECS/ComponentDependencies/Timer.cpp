@@ -103,6 +103,22 @@ float TimerHandle::GetTimeElapsedProportion(const ArgusEntity& entityWithTimer) 
 	return 1.0f - (timer->m_timeRemainingSeconds / timer->m_initialDurationSeconds);
 }
 
+bool TimerHandle::IsTimerTicking(const ArgusEntity& entityWithTimer) const
+{
+	if (m_timerIndex == UINT8_MAX)
+	{
+		return false;
+	}
+
+	Timer* timer = GetTimerForEntity(entityWithTimer, ARGUS_FUNCNAME);
+	if (!timer)
+	{
+		return false;
+	}
+
+	return timer->m_timerState == TimerState::Ticking;
+}
+
 bool TimerHandle::IsTimerComplete(const ArgusEntity& entityWithTimer) const
 {
 	if (m_timerIndex == UINT8_MAX)
