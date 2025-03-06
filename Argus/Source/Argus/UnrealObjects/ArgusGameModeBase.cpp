@@ -128,7 +128,7 @@ void AArgusGameModeBase::SpawnActorForEntity(ArgusEntity spawnedEntity)
 	}
 
 	spawnedActor->SetEntity(spawnedEntity);
-	taskComponent->m_baseState = BaseState::None;
+	taskComponent->m_baseState = BaseState::Alive;
 }
 
 void AArgusGameModeBase::DespawnActorForEntity(ArgusEntity spawnedEntity)
@@ -158,7 +158,7 @@ void AArgusGameModeBase::DespawnActorForEntity(ArgusEntity spawnedEntity)
 	{
 		return;
 	}
-	taskComponent->m_baseState = BaseState::None;
+	taskComponent->m_baseState = BaseState::Alive;
 
 	ArgusEntity::DestroyEntity(spawnedEntity);
 }

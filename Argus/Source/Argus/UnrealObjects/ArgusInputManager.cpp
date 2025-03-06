@@ -504,6 +504,11 @@ void UArgusInputManager::ProcessSelectInputEvent(bool isAdditive)
 		return;
 	}
 
+	if (!argusActor->GetEntity().IsAlive())
+	{
+		return;
+	}
+
 	if (isAdditive)
 	{
 		AddSelectedActorAdditive(argusActor);

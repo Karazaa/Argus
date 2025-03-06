@@ -7,9 +7,10 @@
 
 enum class BaseState : uint8
 {
-	None,
 	SpawnedWaitingForActorTake,
-	DestroyedWaitingForActorRelease
+	Alive,
+	Dead,
+	DestroyedWaitingForActorRelease	
 };
 
 enum class MovementState : uint8
@@ -59,7 +60,7 @@ struct TaskComponent
 	ARGUS_IGNORE()
 	uint32 m_spawnedFromArgusActorRecordId = 0u;
 	ARGUS_IGNORE()
-	BaseState m_baseState = BaseState::None;
+	BaseState m_baseState = BaseState::Alive;
 	ARGUS_IGNORE()
 	MovementState m_movementState = MovementState::None;
 	ARGUS_IGNORE()
@@ -76,13 +77,26 @@ struct TaskComponent
 		return m_movementState == MovementState::MoveToLocation || m_movementState == MovementState::MoveToEntity;
 	}
 
+	void SetToKillState()
+	{
+		m_baseState = BaseState::Dead;
+		m_movementState = MovementState::None;
+		m_spawningState = SpawningState::None;
+		m_abilityState = AbilityState::None;
+		m_constructionState = ConstructionState::None;
+		m_combatState = CombatState::None;
+	}
+
 	void GetDebugString(FString& debugStringToAppendTo) const
 	{
 		const WIDECHAR* baseStateName = TEXT("");
 		switch (m_baseState)
 		{
-			case BaseState::None:
-				baseStateName = ARGUS_NAMEOF(BaseState::None);
+			case BaseState::Alive:
+				baseStateName = ARGUS_NAMEOF(BaseState::Alive);
+				break;
+			case BaseState::Dead:
+				baseStateName = ARGUS_NAMEOF(BaseState::Dead);
 				break;
 			case BaseState::SpawnedWaitingForActorTake:
 				baseStateName = ARGUS_NAMEOF(BaseState::SpawnedWaitingForActorTake);
@@ -98,7 +112,7 @@ struct TaskComponent
 		switch (m_movementState)
 		{
 			case MovementState::None:
-				movementStateName = ARGUS_NAMEOF(BaseState::None);
+				movementStateName = ARGUS_NAMEOF(MovementState::None);
 				break;
 			case MovementState::ProcessMoveToLocationCommand:
 				movementStateName = ARGUS_NAMEOF(MovementState::ProcessMoveToLocationCommand);

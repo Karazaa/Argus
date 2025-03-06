@@ -13,7 +13,7 @@ class ARGUS_API UTaskComponentData : public UComponentData
 
 public:
 	uint32 m_spawnedFromArgusActorRecordId = 0u;
-	BaseState m_baseState = BaseState::None;
+	BaseState m_baseState = BaseState::Alive;
 	MovementState m_movementState = MovementState::None;
 	SpawningState m_spawningState = SpawningState::None;
 	AbilityState m_abilityState = AbilityState::None;

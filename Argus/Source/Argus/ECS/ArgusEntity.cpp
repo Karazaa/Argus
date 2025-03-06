@@ -224,13 +224,13 @@ bool ArgusEntity::IsAlive() const
 		return false;
 	}
 
-	HealthComponent* healthComponent = GetComponent<HealthComponent>();
-	if (!healthComponent)
+	TaskComponent* taskComponent = GetComponent<TaskComponent>();
+	if (!taskComponent)
 	{
 		return false;
 	}
 
-	return healthComponent->m_currentHealth > 0;
+	return taskComponent->m_baseState == BaseState::Alive;
 }
 
 bool ArgusEntity::IsMoveable() const

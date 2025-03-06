@@ -205,6 +205,11 @@ void AvoidanceSystems::CreateEntityORCALines(const CreateEntityORCALinesParams& 
 			continue;
 		}
 
+		if (foundEntity.IsKillable() && !foundEntity.IsAlive())
+		{
+			continue;
+		}
+
 		TransformComponent* foundTransformComponent = foundEntity.GetComponent<TransformComponent>();
 		if (!foundTransformComponent)
 		{

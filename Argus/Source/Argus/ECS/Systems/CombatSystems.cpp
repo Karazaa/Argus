@@ -101,8 +101,7 @@ void CombatSystems::ProcessAttackCommand(float deltaTime, const CombatSystemsCom
 	}
 
 	const TransformComponent* targetTransformComponent = targetEntity.GetComponent<TransformComponent>();
-	HealthComponent* targetHealthComponent = targetEntity.GetComponent<HealthComponent>();
-	if (!targetTransformComponent || !targetHealthComponent)
+	if (!targetTransformComponent)
 	{
 		return;
 	}
@@ -125,15 +124,15 @@ void CombatSystems::ProcessAttackCommand(float deltaTime, const CombatSystemsCom
 
 	if (components.m_combatComponent->m_intervalDurationSeconds > 0.0f)
 	{
-		PerformTimerAttack(targetTransformComponent, targetHealthComponent, components);
+		PerformTimerAttack(targetEntity, components);
 	}
 	else
 	{
-		PerformContinuousAttack(deltaTime, targetTransformComponent, targetHealthComponent, components);
+		PerformContinuousAttack(deltaTime, targetEntity, components);
 	}
 }
 
-void CombatSystems::PerformTimerAttack(const TransformComponent* targetTransformComponent, HealthComponent* targetHealthComponent, const CombatSystemsComponentArgs& components)
+void CombatSystems::PerformTimerAttack(ArgusEntity& targetEntity, const CombatSystemsComponentArgs& components)
 {
 	if (components.m_combatComponent->m_attackTimerHandle.IsTimerTicking(components.m_entity))
 	{
@@ -145,22 +144,31 @@ void CombatSystems::PerformTimerAttack(const TransformComponent* targetTransform
 		components.m_combatComponent->m_attackTimerHandle.FinishTimerHandling(components.m_entity);
 	}
 
-	ApplyDamage(components.m_combatComponent->m_baseDamagePerIntervalOrPerSecond, targetTransformComponent, targetHealthComponent, components);
+	ApplyDamage(components.m_combatComponent->m_baseDamagePerIntervalOrPerSecond, targetEntity, components);
 
 	components.m_combatComponent->m_attackTimerHandle.StartTimer(components.m_entity, components.m_combatComponent->m_intervalDurationSeconds);
 }
 
-void CombatSystems::PerformContinuousAttack(float deltaTime, const TransformComponent* targetTransformComponent, HealthComponent* targetHealthComponent, const CombatSystemsComponentArgs& components)
+void CombatSystems::PerformContinuousAttack(float deltaTime, ArgusEntity& targetEntity, const CombatSystemsComponentArgs& components)
 {
 	float amountPerTick = components.m_combatComponent->m_baseDamagePerIntervalOrPerSecond * deltaTime;
 	uint32 damage = FMath::FloorToInt32(amountPerTick);
-	ApplyDamage(damage, targetTransformComponent, targetHealthComponent, components);
+	ApplyDamage(damage, targetEntity, components);
 }
 
-void CombatSystems::ApplyDamage(uint32 damageAmount, const TransformComponent* targetTransformComponent, HealthComponent* targetHealthComponent, const CombatSystemsComponentArgs& components)
+void CombatSystems::ApplyDamage(uint32 damageAmount, ArgusEntity& targetEntity, const CombatSystemsComponentArgs& components)
 {
-	if (targetHealthComponent->m_currentHealth < damageAmount)
+	TaskComponent* targetTaskComponent = targetEntity.GetComponent<TaskComponent>();
+	HealthComponent* targetHealthComponent = targetEntity.GetComponent<HealthComponent>();
+	if (!targetTaskComponent || !targetHealthComponent)
 	{
+		return;
+	}
+
+	// The entity has taken lethal damage. "Kill" the entity.
+	if (targetHealthComponent->m_currentHealth <= damageAmount)
+	{
+		targetTaskComponent->SetToKillState();
 		targetHealthComponent->m_currentHealth = 0u;
 		components.m_targetingComponent->m_targetEntityId = ArgusECSConstants::k_maxEntities;
 		components.m_taskComponent->m_combatState = CombatState::None;
