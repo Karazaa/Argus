@@ -88,9 +88,18 @@ void NavigationSystems::NavigateFromEntityToEntity(UWorld* worldPointer, ArgusEn
 	{
 		components.m_taskComponent->m_combatState = CombatState::Attack;
 	}
+	else
+	{
+		components.m_taskComponent->m_combatState = CombatState::None;
+	}
+
 	if (ConstructionSystems::CanEntityConstructOtherEntity(components.m_entity, targetEntity))
 	{
 		components.m_taskComponent->m_constructionState = ConstructionState::ConstructingOther;
+	}
+	else
+	{
+		components.m_taskComponent->m_constructionState = ConstructionState::None;
 	}
 }
 
