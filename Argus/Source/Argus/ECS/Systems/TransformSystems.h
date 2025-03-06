@@ -32,4 +32,5 @@ private:
 	static void FaceTowardsLocationXY(TransformComponent* transformComponent, FVector vectorFromTransformToTarget);
 	static void OnCompleteNavigationPath(const TransformSystemsComponentArgs& components, const FVector& moverLocation);
 	static FVector ProjectLocationOntoNavigationData(UWorld* worldPointer, TransformComponent* transformComponent, const FVector& location);
+	static float GetEndMoveRange(const TransformSystemsComponentArgs& components);
 };

@@ -5,6 +5,7 @@
 #include "ArgusMath.h"
 #include "ArgusSystemsManager.h"
 #include "NavigationSystem.h"
+#include "Systems/CombatSystems.h"
 
 bool TransformSystems::RunSystems(UWorld* worldPointer, float deltaTime)
 {
@@ -111,7 +112,7 @@ void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float delta
 
 	const bool isWithinRangeOfTargetEntity	=	components.m_navigationComponent->m_lastPointIndex == numNavigationPoints - 2u &&
 												components.m_taskComponent->m_movementState == MovementState::MoveToEntity &&
-												components.m_targetingComponent->m_meleeRange > distanceToTarget;
+												GetEndMoveRange(components) > distanceToTarget;
 
 	if (isWithinRangeOfTargetEntity && !isAtEndOfNavigationPath)
 	{
@@ -239,4 +240,52 @@ FVector TransformSystems::ProjectLocationOntoNavigationData(UWorld* worldPointer
 	{
 		return location;
 	}
+}
+
+float TransformSystems::GetEndMoveRange(const TransformSystemsComponentArgs& components)
+{
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return ArgusECSConstants::k_avoidanceAgentSearchRadius;
+	}
+
+	float range = components.m_targetingComponent->m_meleeRange;
+	if (components.m_taskComponent->m_movementState != MovementState::MoveToEntity)
+	{
+		return range;
+	}
+
+	if (!components.m_targetingComponent->HasEntityTarget())
+	{
+		return range;
+	}
+
+	ArgusEntity targetEntity = ArgusEntity::RetrieveEntity(components.m_targetingComponent->m_targetEntityId);
+	if (!targetEntity)
+	{
+		return range;
+	}
+
+	if (!CombatSystems::CanEntityAttackOtherEntity(components.m_entity, targetEntity))
+	{
+		return range;
+	}
+
+	const CombatComponent* combatComponent = components.m_entity.GetComponent<CombatComponent>();
+	if (!combatComponent)
+	{
+		return range;
+	}
+
+	switch (combatComponent->m_attackType)
+	{
+		case EAttackType::Melee:
+			return components.m_targetingComponent->m_meleeRange;
+		case EAttackType::Ranged:
+			return components.m_targetingComponent->m_rangedRange;
+		default:
+			break;
+	}
+
+	return range;
 }
