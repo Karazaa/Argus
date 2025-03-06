@@ -28,6 +28,10 @@ std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isIdenti
 NavigationComponent ArgusComponentRegistry::s_NavigationComponents[ArgusECSConstants::k_maxEntities];
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isNavigationComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
 #pragma endregion
+#pragma region ObserversComponent
+ObserversComponent ArgusComponentRegistry::s_ObserversComponents[ArgusECSConstants::k_maxEntities];
+std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isObserversComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
+#pragma endregion
 #pragma region SpawningComponent
 SpawningComponent ArgusComponentRegistry::s_SpawningComponents[ArgusECSConstants::k_maxEntities];
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isSpawningComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
@@ -76,6 +80,7 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 	s_isHealthComponentActive.set(entityId, false);
 	s_isIdentityComponentActive.set(entityId, false);
 	s_isNavigationComponentActive.set(entityId, false);
+	s_isObserversComponentActive.set(entityId, false);
 	s_isSpawningComponentActive.set(entityId, false);
 	s_isTargetingComponentActive.set(entityId, false);
 	s_isTaskComponentActive.set(entityId, false);
@@ -89,6 +94,7 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 	s_HealthComponents[entityId] = HealthComponent();
 	s_IdentityComponents[entityId] = IdentityComponent();
 	s_NavigationComponents[entityId] = NavigationComponent();
+	s_ObserversComponents[entityId] = ObserversComponent();
 	s_SpawningComponents[entityId] = SpawningComponent();
 	s_TargetingComponents[entityId] = TargetingComponent();
 	s_TaskComponents[entityId] = TaskComponent();
@@ -123,6 +129,7 @@ void ArgusComponentRegistry::FlushAllComponents()
 	s_isHealthComponentActive.reset();
 	s_isIdentityComponentActive.reset();
 	s_isNavigationComponentActive.reset();
+	s_isObserversComponentActive.reset();
 	s_isSpawningComponentActive.reset();
 	s_isTargetingComponentActive.reset();
 	s_isTaskComponentActive.reset();
@@ -138,6 +145,7 @@ void ArgusComponentRegistry::FlushAllComponents()
 		s_HealthComponents[i] = HealthComponent();
 		s_IdentityComponents[i] = IdentityComponent();
 		s_NavigationComponents[i] = NavigationComponent();
+		s_ObserversComponents[i] = ObserversComponent();
 		s_SpawningComponents[i] = SpawningComponent();
 		s_TargetingComponents[i] = TargetingComponent();
 		s_TaskComponents[i] = TaskComponent();
@@ -177,6 +185,10 @@ void ArgusComponentRegistry::AppendComponentDebugStrings(uint16 entityId, FStrin
 	if (const NavigationComponent* NavigationComponentPtr = GetComponent<NavigationComponent>(entityId))
 	{
 		NavigationComponentPtr->GetDebugString(debugStringToAppendTo);
+	}
+	if (const ObserversComponent* ObserversComponentPtr = GetComponent<ObserversComponent>(entityId))
+	{
+		ObserversComponentPtr->GetDebugString(debugStringToAppendTo);
 	}
 	if (const SpawningComponent* SpawningComponentPtr = GetComponent<SpawningComponent>(entityId))
 	{

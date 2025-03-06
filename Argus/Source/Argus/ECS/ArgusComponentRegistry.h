@@ -15,6 +15,7 @@
 #include "ComponentDefinitions\HealthComponent.h"
 #include "ComponentDefinitions\IdentityComponent.h"
 #include "ComponentDefinitions\NavigationComponent.h"
+#include "ComponentDefinitions\ObserversComponent.h"
 #include "ComponentDefinitions\SpawningComponent.h"
 #include "ComponentDefinitions\TargetingComponent.h"
 #include "ComponentDefinitions\TaskComponent.h"
@@ -52,7 +53,7 @@ public:
 	static void FlushAllComponents();
 	static void AppendComponentDebugStrings(uint16 entityId, FString& debugStringToAppendTo);
 
-	static constexpr uint32 k_numComponentTypes = 15;
+	static constexpr uint32 k_numComponentTypes = 16;
 
 	// Begin component specific template specifiers.
 	
@@ -431,6 +432,69 @@ public:
 			s_NavigationComponents[entityId] = NavigationComponent();
 			s_isNavigationComponentActive.set(entityId);
 			return &s_NavigationComponents[entityId];
+		}
+	}
+#pragma endregion
+#pragma region ObserversComponent
+private:
+	static ObserversComponent s_ObserversComponents[ArgusECSConstants::k_maxEntities];
+	static std::bitset<ArgusECSConstants::k_maxEntities> s_isObserversComponentActive;
+public:
+	template<>
+	inline ObserversComponent* GetComponent<ObserversComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(ObserversComponent));
+			return nullptr;
+		}
+
+		if (!s_isObserversComponentActive[entityId])
+		{
+			return nullptr;
+		}
+
+		return &s_ObserversComponents[entityId];
+	}
+
+	template<>
+	inline ObserversComponent* AddComponent<ObserversComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(ObserversComponent));
+			return nullptr;
+		}
+
+		if (s_isObserversComponentActive[entityId])
+		{
+			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ObserversComponent), entityId);
+			return &s_ObserversComponents[entityId];
+		}
+
+		s_ObserversComponents[entityId] = ObserversComponent();
+		s_isObserversComponentActive.set(entityId);
+		return &s_ObserversComponents[entityId];
+	}
+
+	template<>
+	inline ObserversComponent* GetOrAddComponent<ObserversComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(ObserversComponent));
+			return nullptr;
+		}
+
+		if (s_isObserversComponentActive[entityId])
+		{
+			return &s_ObserversComponents[entityId];
+		}
+		else
+		{
+			s_ObserversComponents[entityId] = ObserversComponent();
+			s_isObserversComponentActive.set(entityId);
+			return &s_ObserversComponents[entityId];
 		}
 	}
 #pragma endregion

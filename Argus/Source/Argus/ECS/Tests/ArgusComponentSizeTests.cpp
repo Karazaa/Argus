@@ -44,6 +44,11 @@ bool ArgusComponentComponentSizeTest::RunTest(const FString& Parameters)
 	netSize += NavigationComponentSize;
 	ARGUS_LOG(ArgusTestingLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(NavigationComponent), NavigationComponentSize);
 #pragma endregion
+#pragma region ObserversComponent
+	const size_t ObserversComponentSize = sizeof(ObserversComponent);
+	netSize += ObserversComponentSize;
+	ARGUS_LOG(ArgusTestingLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(ObserversComponent), ObserversComponentSize);
+#pragma endregion
 #pragma region SpawningComponent
 	const size_t SpawningComponentSize = sizeof(SpawningComponent);
 	netSize += SpawningComponentSize;

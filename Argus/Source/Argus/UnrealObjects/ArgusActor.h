@@ -12,7 +12,7 @@ class UArgusActorRecord;
 class UFactionRecord;
 
 UCLASS()
-class AArgusActor : public AActor
+class AArgusActor : public AActor, public ITaskComponentObserver
 {
 	GENERATED_BODY()
 	
@@ -56,6 +56,7 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type endPlayReason) override;
 	virtual void Tick(float deltaTime) override;
+	virtual void OnChanged_m_baseState(BaseState oldValue, BaseState newValue) {};
 
 	void InitializeWidgets();
 	void UpdateUIWidgetComponentLocation();
