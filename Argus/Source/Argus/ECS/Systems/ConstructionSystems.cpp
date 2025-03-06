@@ -10,16 +10,21 @@ void ConstructionSystems::RunSystems(float deltaTime)
 
 	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{
-		ArgusEntity potentialEntity = ArgusEntity::RetrieveEntity(i);
-		if (!potentialEntity)
+		ConstructionSystemsComponentArgs components;
+		components.m_entity = ArgusEntity::RetrieveEntity(i);
+		if (!components.m_entity)
 		{
 			continue;
 		}
 
-		ConstructionSystemsComponentArgs components;
-		components.m_entity = potentialEntity;
-		components.m_taskComponent = potentialEntity.GetComponent<TaskComponent>();
-		components.m_constructionComponent = potentialEntity.GetComponent<ConstructionComponent>();
+		if (components.m_entity.IsKillable() && !components.m_entity.IsAlive())
+		{
+			continue;
+		}
+
+		components.m_entity = components.m_entity;
+		components.m_taskComponent = components.m_entity.GetComponent<TaskComponent>();
+		components.m_constructionComponent = components.m_entity.GetComponent<ConstructionComponent>();
 
 		if (!components.m_entity || !components.m_taskComponent)
 		{

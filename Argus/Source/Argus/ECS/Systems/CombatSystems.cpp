@@ -15,6 +15,11 @@ void CombatSystems::RunSystems(float deltaTime)
 			continue;
 		}
 
+		if (components.m_entity.IsKillable() && !components.m_entity.IsAlive())
+		{
+			continue;
+		}
+
 		components.m_combatComponent = components.m_entity.GetComponent<CombatComponent>();
 		components.m_identityComponent = components.m_entity.GetComponent<IdentityComponent>();
 		components.m_targetingComponent = components.m_entity.GetComponent<TargetingComponent>();

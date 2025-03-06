@@ -22,18 +22,22 @@ void NavigationSystems::RunSystems(UWorld* worldPointer)
 
 	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{
-		ArgusEntity potentialEntity = ArgusEntity::RetrieveEntity(i);
-		if (!potentialEntity)
+		NavigationSystemsComponentArgs components;
+		components.m_entity = ArgusEntity::RetrieveEntity(i);
+		if (!components.m_entity)
 		{
 			continue;
 		}
 
-		NavigationSystemsComponentArgs components;
-		components.m_entity = potentialEntity;
-		components.m_taskComponent = potentialEntity.GetComponent<TaskComponent>();
-		components.m_navigationComponent = potentialEntity.GetComponent<NavigationComponent>();
-		components.m_targetingComponent = potentialEntity.GetComponent<TargetingComponent>();
-		components.m_transformComponent = potentialEntity.GetComponent<TransformComponent>();
+		if (components.m_entity.IsKillable() && !components.m_entity.IsAlive())
+		{
+			continue;
+		}
+
+		components.m_taskComponent = components.m_entity.GetComponent<TaskComponent>();
+		components.m_navigationComponent = components.m_entity.GetComponent<NavigationComponent>();
+		components.m_targetingComponent = components.m_entity.GetComponent<TargetingComponent>();
+		components.m_transformComponent = components.m_entity.GetComponent<TransformComponent>();
 		if (!components.m_taskComponent || !components.m_navigationComponent || !components.m_targetingComponent || !components.m_transformComponent)
 		{
 			continue;

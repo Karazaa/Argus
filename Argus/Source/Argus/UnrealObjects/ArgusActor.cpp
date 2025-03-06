@@ -268,5 +268,5 @@ void AArgusActor::UpdateUIWidgetComponentLocation()
 	float zValue = widgetComponent->GetRelativeLocation().Z;
 	FVector offsetLocation = AArgusCameraActor::GetPanUpVector() * m_uiWidgetOffsetDistance;
 	offsetLocation.Z = zValue;
-	widgetComponent->SetRelativeLocation(offsetLocation);
+	widgetComponent->SetWorldLocation(offsetLocation + GetActorLocation());
 }

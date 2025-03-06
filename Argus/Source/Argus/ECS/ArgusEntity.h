@@ -39,6 +39,8 @@ public:
 
 	uint16			GetId() const;
 	const FString	GetDebugString() const;
+	bool			IsKillable() const;
+	bool			IsAlive() const;
 	bool			IsMoveable() const;
 	bool			IsSelected() const;
 

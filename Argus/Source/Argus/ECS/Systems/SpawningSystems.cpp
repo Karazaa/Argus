@@ -15,14 +15,18 @@ bool SpawningSystems::RunSystems(float deltaTime)
 
 	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{
-		ArgusEntity potentialEntity = ArgusEntity::RetrieveEntity(i);
-		if (!potentialEntity)
+		SpawningSystemsComponentArgs components;
+		components.m_entity = ArgusEntity::RetrieveEntity(i);
+		if (!components.m_entity)
 		{
 			continue;
 		}
 
-		SpawningSystemsComponentArgs components;
-		components.m_entity = potentialEntity;
+		if (components.m_entity.IsKillable() && !components.m_entity.IsAlive())
+		{
+			continue;
+		}
+
 		components.m_spawningComponent = components.m_entity.GetComponent<SpawningComponent>();
 		components.m_taskComponent = components.m_entity.GetComponent<TaskComponent>();
 		components.m_targetingComponent = components.m_entity.GetComponent<TargetingComponent>();

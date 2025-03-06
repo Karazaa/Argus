@@ -207,14 +207,44 @@ const FString ArgusEntity::GetDebugString() const
 	return debugString;
 }
 
+bool ArgusEntity::IsKillable() const
+{
+	if (!DoesEntityExist(m_id))
+	{
+		return false;
+	}
+
+	return GetComponent<HealthComponent>() != nullptr;
+}
+
+bool ArgusEntity::IsAlive() const
+{
+	if (!DoesEntityExist(m_id))
+	{
+		return false;
+	}
+
+	HealthComponent* healthComponent = GetComponent<HealthComponent>();
+	if (!healthComponent)
+	{
+		return false;
+	}
+
+	return healthComponent->m_currentHealth > 0;
+}
+
 bool ArgusEntity::IsMoveable() const
 {
-	const bool isValidEntity = DoesEntityExist(m_id);
+	if (!DoesEntityExist(m_id))
+	{
+		return false;
+	}
+
 	const bool hasNavigationComponent = GetComponent<NavigationComponent>() != nullptr;
 	const bool hasTransformComponent = GetComponent<TransformComponent>() != nullptr;
 	const bool hasTargetingComponent = GetComponent<TargetingComponent>() != nullptr;
 
-	return isValidEntity && hasNavigationComponent && hasTransformComponent && hasTargetingComponent;
+	return hasNavigationComponent && hasTransformComponent && hasTargetingComponent;
 }
 
 bool ArgusEntity::IsSelected() const

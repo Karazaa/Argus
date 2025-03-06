@@ -28,14 +28,18 @@ void AbilitySystems::RunSystems(float deltaTime)
 
 	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{
-		ArgusEntity potentialEntity = ArgusEntity::RetrieveEntity(i);
-		if (!potentialEntity)
+		AbilitySystemsComponentArgs components;
+		components.m_entity = ArgusEntity::RetrieveEntity(i);
+		if (!components.m_entity)
 		{
 			continue;
 		}
 
-		AbilitySystemsComponentArgs components;
-		components.m_entity = potentialEntity;
+		if (components.m_entity.IsKillable() && !components.m_entity.IsAlive())
+		{
+			continue;
+		}
+
 		components.m_taskComponent = components.m_entity.GetComponent<TaskComponent>();
 		components.m_abilityComponent = components.m_entity.GetComponent<AbilityComponent>();
 		components.m_reticleComponent = reticleComponent;
