@@ -24,6 +24,9 @@ struct TaskComponent
 	ARGUS_IGNORE()
 	CombatState m_combatState = CombatState::None;
 
+	uint16 GetOwningEntityId() const;
+	void Set_m_baseState(BaseState newState);
+
 	bool IsExecutingMoveTask() const
 	{
 		return m_movementState == MovementState::MoveToLocation || m_movementState == MovementState::MoveToEntity;
@@ -31,7 +34,7 @@ struct TaskComponent
 
 	void SetToKillState()
 	{
-		m_baseState = BaseState::Dead;
+		Set_m_baseState(BaseState::Dead);
 		m_movementState = MovementState::None;
 		m_spawningState = SpawningState::None;
 		m_abilityState = AbilityState::None;

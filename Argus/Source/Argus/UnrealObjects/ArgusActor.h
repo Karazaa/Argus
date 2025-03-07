@@ -56,7 +56,7 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type endPlayReason) override;
 	virtual void Tick(float deltaTime) override;
-	virtual void OnChanged_m_baseState(BaseState oldValue, BaseState newValue) {};
+	virtual void OnChanged_m_baseState(BaseState oldValue, BaseState newValue) override;
 
 	void InitializeWidgets();
 	void UpdateUIWidgetComponentLocation();

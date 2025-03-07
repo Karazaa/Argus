@@ -23,6 +23,11 @@ AArgusActor::AArgusActor()
 
 void AArgusActor::Reset()
 {
+	if (ObserversComponent* observersComponent = m_entity.GetComponent<ObserversComponent>())
+	{
+		observersComponent->m_taskComponentObservers.RemoveObserver(this);
+	}
+
 	if (const UWorld* world = GetWorld())
 	{
 		if (UArgusGameInstance* gameInstance = world->GetGameInstance<UArgusGameInstance>())
@@ -71,6 +76,11 @@ void AArgusActor::SetEntity(const ArgusEntity& entity)
 	}
 	m_entity = entity;
 	gameInstance->RegisterArgusEntityActor(this);
+
+	if (ObserversComponent* observersComponent = m_entity.GetComponent<ObserversComponent>())
+	{
+		observersComponent->m_taskComponentObservers.AddObserver(this);
+	}
 
 	if (TransformComponent* transformComponent = m_entity.GetComponent<TransformComponent>())
 	{
@@ -231,6 +241,11 @@ void AArgusActor::Tick(float deltaTime)
 		UpdateUIWidgetComponentLocation();
 		m_argusActorInfoWidget->RefreshDisplay(m_entity);
 	}
+}
+
+void AArgusActor::OnChanged_m_baseState(BaseState oldState, BaseState newState)
+{
+	ARGUS_LOG(ArgusUnrealObjectsLog, Display, TEXT("[%s] CALLED!"), ARGUS_FUNCNAME);
 }
 
 void AArgusActor::InitializeWidgets()

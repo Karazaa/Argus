@@ -48,4 +48,6 @@ public:
 	// Begin dynamically allocated component specific template specifiers.
 
 	&&&&&
+
+	friend struct TaskComponent;
 };

@@ -1040,4 +1040,6 @@ public:
 		return &s_SpatialPartitioningComponents[entityId];
 	}
 #pragma endregion
+
+	friend struct TaskComponent;
 };
