@@ -6,6 +6,10 @@
 
 #define ARGUS_NAMEOF(x) TEXT(#x)
 #define ARGUS_FUNCNAME TEXT(__FUNCTION__)
+#define ARGUS_COMPONENT_SHARED uint16 GetOwningEntityId() const;
+#define ARGUS_OBSERVABLE(x, y) void Set_##y(x newValue);
+#define ARGUS_OBSERVABLE_DECLARATION(x, y, z)	x y = z; \
+												void Set_##y(x newValue);
 
 #if LOGTRACE_ENABLED 
 #define ARGUS_TRACE(x) TRACE_CPUPROFILER_EVENT_SCOPE(x)

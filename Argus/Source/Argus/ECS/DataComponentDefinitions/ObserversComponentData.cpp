@@ -7,7 +7,7 @@
 void UObserversComponentData::InstantiateComponentForEntity(ArgusEntity& entity) const
 {
 	ObserversComponent* ObserversComponentRef = entity.AddComponent<ObserversComponent>();
-	ObserversComponentRef->m_taskComponentObservers = m_taskComponentObservers;
+	ObserversComponentRef->m_TaskComponentObservers = m_TaskComponentObservers;
 }
 
 bool UObserversComponentData::MatchesType(UComponentData* other) const

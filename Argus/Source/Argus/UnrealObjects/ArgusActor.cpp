@@ -23,16 +23,16 @@ AArgusActor::AArgusActor()
 
 void AArgusActor::Reset()
 {
-	if (ObserversComponent* observersComponent = m_entity.GetComponent<ObserversComponent>())
+	if (m_entity)
 	{
-		observersComponent->m_taskComponentObservers.RemoveObserver(this);
-	}
-
-	if (const UWorld* world = GetWorld())
-	{
-		if (UArgusGameInstance* gameInstance = world->GetGameInstance<UArgusGameInstance>())
+		if (ObserversComponent* observersComponent = m_entity.GetComponent<ObserversComponent>())
 		{
-			if (m_entity)
+			observersComponent->m_TaskComponentObservers.RemoveObserver(this);
+		}
+
+		if (const UWorld* world = GetWorld())
+		{
+			if (UArgusGameInstance* gameInstance = world->GetGameInstance<UArgusGameInstance>())
 			{
 				gameInstance->DeregisterArgusEntityActor(this);
 			}
@@ -79,7 +79,7 @@ void AArgusActor::SetEntity(const ArgusEntity& entity)
 
 	if (ObserversComponent* observersComponent = m_entity.GetComponent<ObserversComponent>())
 	{
-		observersComponent->m_taskComponentObservers.AddObserver(this);
+		observersComponent->m_TaskComponentObservers.AddObserver(this);
 	}
 
 	if (TransformComponent* transformComponent = m_entity.GetComponent<TransformComponent>())

@@ -9,23 +9,29 @@
 
 struct TaskComponent
 {
+	ARGUS_COMPONENT_SHARED
+
 	ARGUS_IGNORE()
 	uint32 m_spawnedFromArgusActorRecordId = 0u;
+
 	ARGUS_IGNORE()
 	BaseState m_baseState = BaseState::Alive;
+	ARGUS_OBSERVABLE(BaseState, m_baseState)
+
 	ARGUS_IGNORE()
 	MovementState m_movementState = MovementState::None;
+
 	ARGUS_IGNORE()
 	SpawningState m_spawningState = SpawningState::None;
+
 	ARGUS_IGNORE()
 	AbilityState m_abilityState = AbilityState::None;
+
 	ARGUS_IGNORE()
 	ConstructionState m_constructionState = ConstructionState::None;
+
 	ARGUS_IGNORE()
 	CombatState m_combatState = CombatState::None;
-
-	uint16 GetOwningEntityId() const;
-	void Set_m_baseState(BaseState newState);
 
 	bool IsExecutingMoveTask() const
 	{

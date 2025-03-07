@@ -12,7 +12,7 @@ class ARGUS_API UObserversComponentData : public UComponentData
 	GENERATED_BODY()
 
 public:
-	TaskComponentObservers m_taskComponentObservers;
+	TaskComponentObservers m_TaskComponentObservers;
 
 	void InstantiateComponentForEntity(ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;
