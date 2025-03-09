@@ -10,6 +10,7 @@
 class UArgusActorInfoWidget;
 class UArgusActorRecord;
 class UFactionRecord;
+class UPlacedArgusActorTeamInfoRecord;
 
 UCLASS()
 class AArgusActor : public AActor, public ITaskComponentObserver
@@ -49,6 +50,9 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	TSoftObjectPtr<UArgusActorRecord> m_argusActorRecord = nullptr;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	TSoftObjectPtr<UPlacedArgusActorTeamInfoRecord> m_initialTeamInfoRecord = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	bool m_shouldActorSpawnLocationSetEntityLocation = false;

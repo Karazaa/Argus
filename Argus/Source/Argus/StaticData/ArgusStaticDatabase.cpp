@@ -102,6 +102,39 @@ const UFactionRecord* UArgusStaticDatabase::GetUFactionRecord(uint32 id)
 	return m_UFactionRecordDatabasePersistent->GetRecord(id);
 }
 #pragma endregion
+#pragma region UPlacedArgusActorTeamInfoRecord
+const UPlacedArgusActorTeamInfoRecord* UArgusStaticDatabase::GetUPlacedArgusActorTeamInfoRecord(uint32 id)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	if (!m_UPlacedArgusActorTeamInfoRecordDatabasePersistent)
+	{
+		m_UPlacedArgusActorTeamInfoRecordDatabasePersistent = m_UPlacedArgusActorTeamInfoRecordDatabase.LoadSynchronous();
+		if (!m_UPlacedArgusActorTeamInfoRecordDatabasePersistent)
+		{
+			ARGUS_LOG(ArgusStaticDataLog, Error, TEXT("[%s] Could not find %s reference. Need to set reference in %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(m_UPlacedArgusActorTeamInfoRecordDatabase), ARGUS_NAMEOF(UArgusStaticDatabase));
+			return nullptr;
+		}
+
+		m_UPlacedArgusActorTeamInfoRecordDatabasePersistent->ResizePersistentObjectPointerArray();
+	}
+
+	if (!m_UPlacedArgusActorTeamInfoRecordDatabasePersistent)
+	{
+		ARGUS_LOG
+		(
+			ArgusStaticDataLog, Error,
+			TEXT("[%s] Could not retrieve %s. %s might not be properly assigned."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(m_UPlacedArgusActorTeamInfoRecordDatabasePersistent),
+			ARGUS_NAMEOF(m_UPlacedArgusActorTeamInfoRecordDatabase)
+		);
+		return nullptr;
+	}
+
+	return m_UPlacedArgusActorTeamInfoRecordDatabasePersistent->GetRecord(id);
+}
+#pragma endregion
 #pragma region UTeamColorRecord
 const UTeamColorRecord* UArgusStaticDatabase::GetUTeamColorRecord(uint32 id)
 {

@@ -8,6 +8,7 @@
 #include "RecordDatabases/AbilityRecordDatabase.h"
 #include "RecordDatabases/ArgusActorRecordDatabase.h"
 #include "RecordDatabases/FactionRecordDatabase.h"
+#include "RecordDatabases/PlacedArgusActorTeamInfoRecordDatabase.h"
 #include "RecordDatabases/TeamColorRecordDatabase.h"
 #include "ArgusStaticDatabase.generated.h"
 
@@ -45,6 +46,16 @@ protected:
 	TSoftObjectPtr<UFactionRecordDatabase> m_UFactionRecordDatabase;
 	UPROPERTY(Transient)
 	TObjectPtr<UFactionRecordDatabase> m_UFactionRecordDatabasePersistent;
+#pragma endregion
+#pragma region UPlacedArgusActorTeamInfoRecord
+public:
+	const UPlacedArgusActorTeamInfoRecord* GetUPlacedArgusActorTeamInfoRecord(uint32 id);
+
+protected:
+	UPROPERTY(EditAnywhere)
+	TSoftObjectPtr<UPlacedArgusActorTeamInfoRecordDatabase> m_UPlacedArgusActorTeamInfoRecordDatabase;
+	UPROPERTY(Transient)
+	TObjectPtr<UPlacedArgusActorTeamInfoRecordDatabase> m_UPlacedArgusActorTeamInfoRecordDatabasePersistent;
 #pragma endregion
 #pragma region UTeamColorRecord
 public:

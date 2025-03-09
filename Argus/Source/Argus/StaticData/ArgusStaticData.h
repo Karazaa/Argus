@@ -56,6 +56,20 @@ public:
 		return staticDatabase->GetUFactionRecord(id);
 	}
 #pragma endregion
+#pragma region UPlacedArgusActorTeamInfoRecord
+	template<>
+	inline const UPlacedArgusActorTeamInfoRecord* GetRecord(uint32 id)
+	{
+		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
+
+		if (!staticDatabase)
+		{
+			return nullptr;
+		}
+
+		return staticDatabase->GetUPlacedArgusActorTeamInfoRecord(id);
+	}
+#pragma endregion
 #pragma region UTeamColorRecord
 	template<>
 	inline const UTeamColorRecord* GetRecord(uint32 id)

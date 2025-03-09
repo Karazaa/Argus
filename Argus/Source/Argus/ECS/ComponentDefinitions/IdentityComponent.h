@@ -27,12 +27,13 @@ struct IdentityComponent
 	ARGUS_STATIC_DATA(UFactionRecord)
 	uint32 m_factionId = 0u;
 
+	ARGUS_IGNORE()
 	ETeam m_team = ETeam::None;
 
-	ARGUS_PROPERTY(EditAnywhere, meta = (Bitmask, BitmaskEnum = ETeam))
+	ARGUS_IGNORE()
 	uint8 m_allies = 0u;
 
-	ARGUS_PROPERTY(EditAnywhere, meta = (Bitmask, BitmaskEnum = ETeam))
+	ARGUS_IGNORE()
 	uint8 m_enemies = 0u;
 
 	void AddEnemyTeam(ETeam enemyTeam)

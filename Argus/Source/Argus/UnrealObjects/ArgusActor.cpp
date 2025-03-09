@@ -40,6 +40,7 @@ void AArgusActor::Reset()
 	}
 
 	m_argusActorRecord = nullptr;
+	m_initialTeamInfoRecord = nullptr;
 	m_isSelected = false;
 	m_entity = ArgusEntity::k_emptyEntity;
 
@@ -182,6 +183,16 @@ void AArgusActor::BeginPlay()
 	if (!m_entity)
 	{
 		return;
+	}
+
+	if (const UPlacedArgusActorTeamInfoRecord* loadedTeamInfoRecord = m_initialTeamInfoRecord.LoadSynchronous())
+	{
+		if (IdentityComponent* identityComponent = m_entity.GetComponent<IdentityComponent>())
+		{
+			identityComponent->m_team = loadedTeamInfoRecord->m_team;
+			identityComponent->m_allies = loadedTeamInfoRecord->m_allies;
+			identityComponent->m_enemies = loadedTeamInfoRecord->m_enemies;
+		}
 	}
 
 	if (TaskComponent* entityTaskComponent = m_entity.GetComponent<TaskComponent>())
