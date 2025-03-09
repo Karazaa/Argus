@@ -41,6 +41,9 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnPopulateTeam(FColor teamColor);
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnArgusEntityDeath();
+
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	TSoftClassPtr<UArgusActorInfoWidget> m_argusActorInfoWidgetClass = nullptr;
 
