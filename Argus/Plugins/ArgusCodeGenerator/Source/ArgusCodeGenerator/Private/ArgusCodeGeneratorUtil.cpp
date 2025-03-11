@@ -11,6 +11,8 @@ DEFINE_LOG_CATEGORY(ArgusCodeGeneratorLog);
 const char* ArgusCodeGeneratorUtil::s_propertyDelimiter = "ARGUS_PROPERTY";
 const char* ArgusCodeGeneratorUtil::s_propertyIgnoreDelimiter = "ARGUS_IGNORE";
 const char* ArgusCodeGeneratorUtil::s_propertyStaticDataDelimiter = "ARGUS_STATIC_DATA";
+const char* ArgusCodeGeneratorUtil::s_propertyObservableDelimiter = "ARGUS_OBSERVABLE";
+const char* ArgusCodeGeneratorUtil::s_propertyObservableDeclarationDelimiter = "ARGUS_OBSERVABLE_DECLARATION";
 const char* ArgusCodeGeneratorUtil::s_uePropertyDelimiter = "UPROPERTY";
 const char* ArgusCodeGeneratorUtil::s_componentDefinitionDirectoryName = "ComponentDefinitions";
 const char* ArgusCodeGeneratorUtil::s_componentDefinitionDirectorySuffix = "Source/Argus/ECS/ComponentDefinitions";
@@ -235,6 +237,12 @@ bool ArgusCodeGeneratorUtil::ParseStaticDataDataRecordsFromFile(const std::strin
 			continue;
 		}
 
+		if (ParseJointPropertyAndDeclarationMacro(lineText, output.m_staticDataRecordVariableData))
+		{
+			didParsePropertyDeclaration = false;
+			continue;
+		}
+
 		if (ParsePropertyMacro(lineText, output.m_staticDataRecordVariableData))
 		{
 			didParsePropertyDeclaration = true;
@@ -361,10 +369,12 @@ bool ArgusCodeGeneratorUtil::ParsePropertyMacro(std::string lineText, std::vecto
 	const size_t propertyDelimiterIndex = lineText.find(s_propertyDelimiter);
 	const size_t propertyIgnoreDelimiterIndex = lineText.find(s_propertyIgnoreDelimiter);
 	const size_t propertyStaticDataDelimiterIndex = lineText.find(s_propertyStaticDataDelimiter);
+	const size_t propertyObservableDelimiter = lineText.find(s_propertyObservableDelimiter);
 	const size_t uePropertyDelimiterIndex = lineText.find(s_uePropertyDelimiter);
 	if (propertyDelimiterIndex == std::string::npos && 
 		propertyIgnoreDelimiterIndex == std::string::npos &&
 		propertyStaticDataDelimiterIndex == std::string::npos &&
+		propertyObservableDelimiter == std::string::npos &&
 		uePropertyDelimiterIndex == std::string::npos)
 	{
 		return false;
@@ -436,6 +446,29 @@ bool ArgusCodeGeneratorUtil::ParseVariableDeclarations(std::string lineText, boo
 
 		parsedVariableData.back().push_back(variableData);
 	}
+	return true;
+}
+
+bool ArgusCodeGeneratorUtil::ParseJointPropertyAndDeclarationMacro(std::string lineText, std::vector < std::vector<ParsedVariableData> >& parsedVariableData)
+{
+	const size_t propertyObservableDeclarationDelimiter = lineText.find(s_propertyObservableDeclarationDelimiter);
+	if (propertyObservableDeclarationDelimiter == std::string::npos)
+	{
+		return false;
+	}
+
+	const size_t observableDeclarationDelimiterLength = std::strlen(s_propertyObservableDeclarationDelimiter);
+	const size_t startIndex = lineText.find('(') + 1;
+	const size_t endIndex = lineText.find(')');
+	lineText = lineText.substr(startIndex, endIndex - endIndex);
+	
+	const size_t firstCommaIndex = lineText.find_first_of(',');
+	const size_t lastCommaIndex = lineText.find_first_of(',');
+
+	std::string nameOfType = lineText.substr(0, firstCommaIndex);
+	std::string nameOfVariable = lineText.substr(firstCommaIndex, lastCommaIndex - firstCommaIndex);
+	std::string nameOfType = lineText.substr(lastCommaIndex, lineText.size() - lastCommaIndex);
+
 	return true;
 }
 

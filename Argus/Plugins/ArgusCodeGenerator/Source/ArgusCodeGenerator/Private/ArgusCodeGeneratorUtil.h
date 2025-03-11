@@ -18,6 +18,8 @@ public:
 	static const char* s_propertyDelimiter;
 	static const char* s_propertyIgnoreDelimiter;
 	static const char* s_propertyStaticDataDelimiter;
+	static const char* s_propertyObservableDelimiter;
+	static const char* s_propertyObservableDeclarationDelimiter;
 	static const char* s_uePropertyDelimiter;
 
 	static FString GetProjectDirectory();
@@ -90,5 +92,6 @@ private:
 	static bool ParseStructDeclarations(std::string lineText, const std::string& componentDataAssetIncludeStatement, ParseComponentDataOutput& output, bool isDynamicallyAllocated);
 	static bool ParsePropertyMacro(std::string lineText, std::vector < std::vector<ParsedVariableData> >& parsedVariableData);
 	static bool ParseVariableDeclarations(std::string lineText, bool withProperty, std::vector < std::vector<ParsedVariableData> >& parsedVariableData);
+	static bool ParseJointPropertyAndDeclarationMacro(std::string lineText, std::vector < std::vector<ParsedVariableData> >& parsedVariableData);
 	static bool ParseRecordClassDeclarations(std::string lineText, ParseStaticDataRecordsOutput& output);
 };
