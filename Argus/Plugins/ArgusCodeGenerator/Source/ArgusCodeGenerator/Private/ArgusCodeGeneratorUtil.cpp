@@ -467,7 +467,7 @@ bool ArgusCodeGeneratorUtil::ParseJointPropertyAndDeclarationMacro(std::string l
 
 	std::string nameOfType = lineText.substr(0, firstCommaIndex);
 	std::string nameOfVariable = lineText.substr(firstCommaIndex, lastCommaIndex - firstCommaIndex);
-	std::string nameOfType = lineText.substr(lastCommaIndex, lineText.size() - lastCommaIndex);
+	std::string nameOfValue = lineText.substr(lastCommaIndex, lineText.size() - lastCommaIndex);
 
 	return true;
 }
