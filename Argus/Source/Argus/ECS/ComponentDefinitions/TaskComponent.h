@@ -14,9 +14,7 @@ struct TaskComponent
 	ARGUS_IGNORE()
 	uint32 m_spawnedFromArgusActorRecordId = 0u;
 
-	ARGUS_IGNORE()
-	BaseState m_baseState = BaseState::Alive;
-	ARGUS_OBSERVABLE(BaseState, m_baseState)
+	ARGUS_OBSERVABLE_DECLARATION(BaseState, m_baseState, BaseState::Alive)
 
 	ARGUS_IGNORE()
 	MovementState m_movementState = MovementState::None;

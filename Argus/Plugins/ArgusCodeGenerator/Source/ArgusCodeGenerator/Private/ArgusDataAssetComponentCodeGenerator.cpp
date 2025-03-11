@@ -94,6 +94,7 @@ bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetHeaderFileTemplateWithR
 					if (!parsedComponentData.m_componentVariableData[i][j].m_propertyMacro.empty())
 					{
 						const size_t propertyIgnoreDelimiterIndex = parsedComponentData.m_componentVariableData[i][j].m_propertyMacro.find(ArgusCodeGeneratorUtil::s_propertyIgnoreDelimiter);
+						const size_t propertyObservableDelimiterIndex = parsedComponentData.m_componentVariableData[i][j].m_propertyMacro.find(ArgusCodeGeneratorUtil::s_propertyObservableDelimiter);
 						const size_t propertyStaticDataDelimiterIndex = parsedComponentData.m_componentVariableData[i][j].m_propertyMacro.find(ArgusCodeGeneratorUtil::s_propertyStaticDataDelimiter);
 
 						if (propertyStaticDataDelimiterIndex != std::string::npos)
@@ -102,6 +103,10 @@ bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetHeaderFileTemplateWithR
 							const size_t startIndex = parsedComponentData.m_componentVariableData[i][j].m_propertyMacro.find('(') + 1;
 							variable = parsedComponentData.m_componentVariableData[i][j].m_propertyMacro.substr(startIndex, (lineSize - 1) - startIndex);
 							outParsedFileContents[i].m_lines.push_back(s_propertyMacro);
+						}
+						else if (propertyObservableDelimiterIndex != std::string::npos)
+						{
+							// TOOD JAMES: Do stuff here for observables. 
 						}
 						else if (propertyIgnoreDelimiterIndex == std::string::npos)
 						{

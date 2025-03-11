@@ -141,6 +141,12 @@ bool ArgusCodeGeneratorUtil::ParseComponentDataFromFile(const std::string& fileP
 			continue;
 		}
 
+		if (ParseJointPropertyAndDeclarationMacro(lineText, isDynamicallyAllocated ? output.m_dynamicAllocComponentVariableData : output.m_componentVariableData))
+		{
+			didParsePropertyDeclaration = false;
+			continue;
+		}
+
 		if (ParseVariableDeclarations(lineText, didParsePropertyDeclaration, isDynamicallyAllocated ? output.m_dynamicAllocComponentVariableData : output.m_componentVariableData))
 		{
 			didParsePropertyDeclaration = false;
@@ -232,12 +238,6 @@ bool ArgusCodeGeneratorUtil::ParseStaticDataDataRecordsFromFile(const std::strin
 		}
 
 		if (ParseVariableDeclarations(lineText, didParsePropertyDeclaration, output.m_staticDataRecordVariableData))
-		{
-			didParsePropertyDeclaration = false;
-			continue;
-		}
-
-		if (ParseJointPropertyAndDeclarationMacro(lineText, output.m_staticDataRecordVariableData))
 		{
 			didParsePropertyDeclaration = false;
 			continue;
@@ -460,14 +460,20 @@ bool ArgusCodeGeneratorUtil::ParseJointPropertyAndDeclarationMacro(std::string l
 	const size_t observableDeclarationDelimiterLength = std::strlen(s_propertyObservableDeclarationDelimiter);
 	const size_t startIndex = lineText.find('(') + 1;
 	const size_t endIndex = lineText.find(')');
-	lineText = lineText.substr(startIndex, endIndex - endIndex);
+	lineText = lineText.substr(startIndex, endIndex - startIndex);
 	
 	const size_t firstCommaIndex = lineText.find_first_of(',');
-	const size_t lastCommaIndex = lineText.find_first_of(',');
+	const size_t firstCommaIndexPlus2 = firstCommaIndex + 2;
+	const size_t lastCommaIndex = lineText.find_last_of(',');
+	const size_t lastCommaIndexPlus2 = lineText.find_last_of(',') + 2;
 
-	std::string nameOfType = lineText.substr(0, firstCommaIndex);
-	std::string nameOfVariable = lineText.substr(firstCommaIndex, lastCommaIndex - firstCommaIndex);
-	std::string nameOfValue = lineText.substr(lastCommaIndex, lineText.size() - lastCommaIndex);
+	ParsedVariableData variableData;
+	variableData.m_typeName = "\t";
+	variableData.m_typeName.append(lineText.substr(0, firstCommaIndex));
+	variableData.m_varName = lineText.substr(firstCommaIndexPlus2, lastCommaIndex - firstCommaIndexPlus2);
+	variableData.m_defaultValue = lineText.substr(lastCommaIndexPlus2, lineText.size() - lastCommaIndexPlus2);
+	variableData.m_propertyMacro = s_propertyObservableDelimiter;
+	parsedVariableData.back().push_back(variableData);
 
 	return true;
 }
