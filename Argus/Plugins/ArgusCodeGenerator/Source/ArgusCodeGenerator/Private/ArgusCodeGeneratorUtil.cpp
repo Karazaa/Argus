@@ -14,6 +14,7 @@ const char* ArgusCodeGeneratorUtil::s_propertyStaticDataDelimiter = "ARGUS_STATI
 const char* ArgusCodeGeneratorUtil::s_propertyObservableDelimiter = "ARGUS_OBSERVABLE";
 const char* ArgusCodeGeneratorUtil::s_propertyObservableDeclarationDelimiter = "ARGUS_OBSERVABLE_DECLARATION";
 const char* ArgusCodeGeneratorUtil::s_uePropertyDelimiter = "UPROPERTY";
+const char* ArgusCodeGeneratorUtil::s_sharedFunctionDeclarationDelimiter = "ARGUS_COMPONENT_SHARED";
 const char* ArgusCodeGeneratorUtil::s_componentDefinitionDirectoryName = "ComponentDefinitions";
 const char* ArgusCodeGeneratorUtil::s_componentDefinitionDirectorySuffix = "Source/Argus/ECS/ComponentDefinitions";
 const char* ArgusCodeGeneratorUtil::s_dynamicAllocComponentDefinitionDirectoryName = "DynamicAllocComponentDefinitions";
@@ -141,13 +142,20 @@ bool ArgusCodeGeneratorUtil::ParseComponentDataFromFile(const std::string& fileP
 			continue;
 		}
 
-		if (ParseJointPropertyAndDeclarationMacro(lineText, isDynamicallyAllocated ? output.m_dynamicAllocComponentVariableData : output.m_componentVariableData))
+		const size_t sharedFunctionDeclarationDelimiter = lineText.find(s_sharedFunctionDeclarationDelimiter);
+		if (sharedFunctionDeclarationDelimiter != std::string::npos)
+		{
+			output.m_componentInfo.back().m_useSharedFunctions = true;
+			continue;
+		}
+
+		if (ParseJointPropertyAndDeclarationMacro(lineText, isDynamicallyAllocated ? output.m_dynamicAllocComponentVariableData : output.m_componentVariableData, output.m_componentInfo.back().m_hasObservables))
 		{
 			didParsePropertyDeclaration = false;
 			continue;
 		}
 
-		if (ParseVariableDeclarations(lineText, didParsePropertyDeclaration, isDynamicallyAllocated ? output.m_dynamicAllocComponentVariableData : output.m_componentVariableData))
+		if (ParseVariableDeclarations(lineText, didParsePropertyDeclaration, isDynamicallyAllocated ? output.m_dynamicAllocComponentVariableData : output.m_componentVariableData, output.m_componentInfo.back().m_hasObservables))
 		{
 			didParsePropertyDeclaration = false;
 			continue;
@@ -230,6 +238,7 @@ bool ArgusCodeGeneratorUtil::ParseStaticDataDataRecordsFromFile(const std::strin
 
 	std::string lineText;
 	bool didParsePropertyDeclaration = false;
+	bool hasObservables = false;
 	while (std::getline(inStream, lineText))
 	{
 		if (ParseRecordClassDeclarations(lineText, output))
@@ -237,7 +246,7 @@ bool ArgusCodeGeneratorUtil::ParseStaticDataDataRecordsFromFile(const std::strin
 			continue;
 		}
 
-		if (ParseVariableDeclarations(lineText, didParsePropertyDeclaration, output.m_staticDataRecordVariableData))
+		if (ParseVariableDeclarations(lineText, didParsePropertyDeclaration, output.m_staticDataRecordVariableData, hasObservables))
 		{
 			didParsePropertyDeclaration = false;
 			continue;
@@ -361,6 +370,8 @@ bool ArgusCodeGeneratorUtil::ParseStructDeclarations(std::string lineText, const
 		output.m_componentDataAssetIncludeStatements.push_back(componentDataAssetIncludeStatement);
 		output.m_componentVariableData.push_back(std::vector<ParsedVariableData>());
 	}
+	PerComponentData data;
+	output.m_componentInfo.push_back(data);
 	return true;
 }
 
@@ -382,12 +393,13 @@ bool ArgusCodeGeneratorUtil::ParsePropertyMacro(std::string lineText, std::vecto
 
 	ParsedVariableData variableData;
 	variableData.m_propertyMacro = lineText;
+	variableData.m_isObservable = propertyObservableDelimiter != std::string::npos;
 	parsedVariableData.back().push_back(variableData);
 
 	return true;
 }
 
-bool ArgusCodeGeneratorUtil::ParseVariableDeclarations(std::string lineText, bool withProperty, std::vector < std::vector<ParsedVariableData> >& parsedVariableData)
+bool ArgusCodeGeneratorUtil::ParseVariableDeclarations(std::string lineText, bool withProperty, std::vector < std::vector<ParsedVariableData> >& parsedVariableData, bool& hasObservables)
 {
 	const size_t variableDelimiterIndex = lineText.find(s_varDelimiter);
 	if (variableDelimiterIndex == std::string::npos)
@@ -432,6 +444,7 @@ bool ArgusCodeGeneratorUtil::ParseVariableDeclarations(std::string lineText, boo
 		parsedVariableData.back()[index].m_typeName = variableData.m_typeName;
 		parsedVariableData.back()[index].m_varName = variableData.m_varName;
 		parsedVariableData.back()[index].m_defaultValue = variableData.m_defaultValue;
+		hasObservables |= parsedVariableData.back()[index].m_isObservable;
 	}
 	else
 	{
@@ -449,7 +462,7 @@ bool ArgusCodeGeneratorUtil::ParseVariableDeclarations(std::string lineText, boo
 	return true;
 }
 
-bool ArgusCodeGeneratorUtil::ParseJointPropertyAndDeclarationMacro(std::string lineText, std::vector < std::vector<ParsedVariableData> >& parsedVariableData)
+bool ArgusCodeGeneratorUtil::ParseJointPropertyAndDeclarationMacro(std::string lineText, std::vector < std::vector<ParsedVariableData> >& parsedVariableData, bool& hasObservables)
 {
 	const size_t propertyObservableDeclarationDelimiter = lineText.find(s_propertyObservableDeclarationDelimiter);
 	if (propertyObservableDeclarationDelimiter == std::string::npos)
@@ -473,6 +486,8 @@ bool ArgusCodeGeneratorUtil::ParseJointPropertyAndDeclarationMacro(std::string l
 	variableData.m_varName = lineText.substr(firstCommaIndexPlus2, lastCommaIndex - firstCommaIndexPlus2);
 	variableData.m_defaultValue = lineText.substr(lastCommaIndexPlus2, lineText.size() - lastCommaIndexPlus2);
 	variableData.m_propertyMacro = s_propertyObservableDelimiter;
+	variableData.m_isObservable = true;
+	hasObservables = true;
 	parsedVariableData.back().push_back(variableData);
 
 	return true;

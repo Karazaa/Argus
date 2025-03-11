@@ -21,6 +21,7 @@ public:
 	static const char* s_propertyObservableDelimiter;
 	static const char* s_propertyObservableDeclarationDelimiter;
 	static const char* s_uePropertyDelimiter;
+	static const char* s_sharedFunctionDeclarationDelimiter;
 
 	static FString GetProjectDirectory();
 	static FString GetTemplateDirectory(const char* subdirectorySuffix);
@@ -35,7 +36,15 @@ public:
 		std::string m_defaultValue = "";
 		std::string m_propertyMacro = "";
 		std::string m_staticDataTypeName = "";
+		bool m_isObservable = false;
 	};
+
+	struct PerComponentData
+	{
+		bool m_hasObservables = false;
+		bool m_useSharedFunctions = false;
+	};
+
 	struct ParseComponentDataOutput
 	{
 		std::vector<std::string> m_componentNames;
@@ -47,6 +56,8 @@ public:
 		std::vector<std::string> m_dynamicAllocComponentRegistryIncludeStatements;
 		std::vector<std::string> m_dynamicAllocComponentDataAssetIncludeStatements;
 		std::vector< std::vector<ParsedVariableData> > m_dynamicAllocComponentVariableData;
+
+		std::vector<PerComponentData> m_componentInfo;
 	};
 	struct CombinedComponentDataOutput
 	{
@@ -91,7 +102,7 @@ private:
 
 	static bool ParseStructDeclarations(std::string lineText, const std::string& componentDataAssetIncludeStatement, ParseComponentDataOutput& output, bool isDynamicallyAllocated);
 	static bool ParsePropertyMacro(std::string lineText, std::vector < std::vector<ParsedVariableData> >& parsedVariableData);
-	static bool ParseVariableDeclarations(std::string lineText, bool withProperty, std::vector < std::vector<ParsedVariableData> >& parsedVariableData);
-	static bool ParseJointPropertyAndDeclarationMacro(std::string lineText, std::vector < std::vector<ParsedVariableData> >& parsedVariableData);
+	static bool ParseVariableDeclarations(std::string lineText, bool withProperty, std::vector < std::vector<ParsedVariableData> >& parsedVariableData, bool& hasObservables);
+	static bool ParseJointPropertyAndDeclarationMacro(std::string lineText, std::vector < std::vector<ParsedVariableData> >& parsedVariableData, bool& hasObservables);
 	static bool ParseRecordClassDeclarations(std::string lineText, ParseStaticDataRecordsOutput& output);
 };
