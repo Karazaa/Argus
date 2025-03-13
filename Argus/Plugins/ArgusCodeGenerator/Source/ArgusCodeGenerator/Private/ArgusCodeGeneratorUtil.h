@@ -58,6 +58,7 @@ public:
 		std::vector< std::vector<ParsedVariableData> > m_dynamicAllocComponentVariableData;
 
 		std::vector<PerComponentData> m_componentInfo;
+		std::vector<PerComponentData> m_dynamicAllocComponentInfo;
 	};
 	struct CombinedComponentDataOutput
 	{
@@ -65,6 +66,7 @@ public:
 		std::vector<std::string> m_componentRegistryIncludeStatements;
 		std::vector<std::string> m_componentDataAssetIncludeStatements;
 		std::vector< std::vector<ParsedVariableData> > m_componentVariableData;
+		std::vector<PerComponentData> m_componentInfo;
 	};
 	struct ParseStaticDataRecordsOutput
 	{

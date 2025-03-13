@@ -142,26 +142,29 @@ bool ArgusCodeGeneratorUtil::ParseComponentDataFromFile(const std::string& fileP
 			continue;
 		}
 
+		std::vector < std::vector<ParsedVariableData> >& parsedVariableData = isDynamicallyAllocated ? output.m_dynamicAllocComponentVariableData : output.m_componentVariableData;
+		std::vector<PerComponentData>& componentInfo = isDynamicallyAllocated ? output.m_dynamicAllocComponentInfo : output.m_componentInfo;
+
 		const size_t sharedFunctionDeclarationDelimiter = lineText.find(s_sharedFunctionDeclarationDelimiter);
 		if (sharedFunctionDeclarationDelimiter != std::string::npos)
 		{
-			output.m_componentInfo.back().m_useSharedFunctions = true;
+			componentInfo.back().m_useSharedFunctions = true;
 			continue;
 		}
 
-		if (ParseJointPropertyAndDeclarationMacro(lineText, isDynamicallyAllocated ? output.m_dynamicAllocComponentVariableData : output.m_componentVariableData, output.m_componentInfo.back().m_hasObservables))
+		if (ParseJointPropertyAndDeclarationMacro(lineText, parsedVariableData, componentInfo.back().m_hasObservables))
 		{
 			didParsePropertyDeclaration = false;
 			continue;
 		}
 
-		if (ParseVariableDeclarations(lineText, didParsePropertyDeclaration, isDynamicallyAllocated ? output.m_dynamicAllocComponentVariableData : output.m_componentVariableData, output.m_componentInfo.back().m_hasObservables))
+		if (ParseVariableDeclarations(lineText, didParsePropertyDeclaration, parsedVariableData, componentInfo.back().m_hasObservables))
 		{
 			didParsePropertyDeclaration = false;
 			continue;
 		}
 
-		if (ParsePropertyMacro(lineText, isDynamicallyAllocated ? output.m_dynamicAllocComponentVariableData : output.m_componentVariableData))
+		if (ParsePropertyMacro(lineText, parsedVariableData))
 		{
 			didParsePropertyDeclaration = true;
 			continue;
@@ -290,6 +293,8 @@ void ArgusCodeGeneratorUtil::CombineStaticAndDynamicComponentData(const ParseCom
 	output.m_componentDataAssetIncludeStatements.reserve(input.m_componentDataAssetIncludeStatements.size() + input.m_dynamicAllocComponentDataAssetIncludeStatements.size());
 	output.m_componentVariableData.clear();
 	output.m_componentVariableData.reserve(input.m_componentVariableData.size() + input.m_dynamicAllocComponentVariableData.size());
+	output.m_componentInfo.clear();
+	output.m_componentInfo.reserve(input.m_componentInfo.size() + input.m_componentInfo.size());
 
 	for (int i = 0; i < input.m_componentNames.size(); ++i)
 	{
@@ -325,6 +330,15 @@ void ArgusCodeGeneratorUtil::CombineStaticAndDynamicComponentData(const ParseCom
 	for (int i = 0; i < input.m_dynamicAllocComponentVariableData.size(); ++i)
 	{
 		output.m_componentVariableData.emplace_back(input.m_dynamicAllocComponentVariableData[i]);
+	}
+
+	for (int i = 0; i < input.m_componentInfo.size(); ++i)
+	{
+		output.m_componentInfo.emplace_back(input.m_componentInfo[i]);
+	}
+	for (int i = 0; i < input.m_dynamicAllocComponentInfo.size(); ++i)
+	{
+		output.m_componentInfo.emplace_back(input.m_dynamicAllocComponentInfo[i]);
 	}
 }
 
@@ -363,15 +377,17 @@ bool ArgusCodeGeneratorUtil::ParseStructDeclarations(std::string lineText, const
 		output.m_dynamicAllocComponentNames.push_back(lineText);
 		output.m_dynamicAllocComponentDataAssetIncludeStatements.push_back(componentDataAssetIncludeStatement);
 		output.m_dynamicAllocComponentVariableData.push_back(std::vector<ParsedVariableData>());
+		PerComponentData data;
+		output.m_dynamicAllocComponentInfo.push_back(data);
 	}
 	else
 	{
 		output.m_componentNames.push_back(lineText);
 		output.m_componentDataAssetIncludeStatements.push_back(componentDataAssetIncludeStatement);
 		output.m_componentVariableData.push_back(std::vector<ParsedVariableData>());
+		PerComponentData data;
+		output.m_componentInfo.push_back(data);
 	}
-	PerComponentData data;
-	output.m_componentInfo.push_back(data);
 	return true;
 }
 

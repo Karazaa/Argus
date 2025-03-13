@@ -7,5 +7,19 @@
 class ComponentImplementationGenerator
 {
 public:
-	static void GenerateComponentImplementationCode(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponents);
+	static void GenerateComponentImplementationCode(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData);
+
+private:
+	static const char* s_componentImplementationsDirectorySuffix;
+	static const char* s_componentImplementationCppTemplateFilename;
+	static const char* s_perObservableTemplateFilename;
+	static const char* s_sharedFunctionalityTemplateFilename;
+	static const char* s_componentHeaderSuffix;
+	static const char* s_componentCppSuffix;
+	static const char* s_componentImplementationsTemplateDirectorySuffix;
+
+	static bool ParseComponentImplementationCppFileTemplateWithReplacements(const ArgusCodeGeneratorUtil::CombinedComponentDataOutput& parsedComponentData, std::string& templateFilePath, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents);
+	static bool ParsePerObservableFileTemplateWithReplacements(const ArgusCodeGeneratorUtil::CombinedComponentDataOutput& parsedComponentData, std::string& templateFilePath, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents);
+	static bool ParseSharedFunctionalityFileTemplateWithReplacements(const ArgusCodeGeneratorUtil::CombinedComponentDataOutput& parsedComponentData, std::string& templateFilePath, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents);
+	static void DeleteObsoleteFiles(const ArgusCodeGeneratorUtil::CombinedComponentDataOutput& parsedComponentData, const char* componentDataDirectory);
 };
