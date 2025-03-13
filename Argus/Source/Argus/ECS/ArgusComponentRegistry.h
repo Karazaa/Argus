@@ -119,6 +119,8 @@ public:
 			return &s_AbilityComponents[entityId];
 		}
 	}
+
+	friend struct AbilityComponent;
 #pragma endregion
 #pragma region CombatComponent
 private:
@@ -182,6 +184,8 @@ public:
 			return &s_CombatComponents[entityId];
 		}
 	}
+
+	friend struct CombatComponent;
 #pragma endregion
 #pragma region ConstructionComponent
 private:
@@ -245,6 +249,8 @@ public:
 			return &s_ConstructionComponents[entityId];
 		}
 	}
+
+	friend struct ConstructionComponent;
 #pragma endregion
 #pragma region HealthComponent
 private:
@@ -308,6 +314,8 @@ public:
 			return &s_HealthComponents[entityId];
 		}
 	}
+
+	friend struct HealthComponent;
 #pragma endregion
 #pragma region IdentityComponent
 private:
@@ -371,6 +379,8 @@ public:
 			return &s_IdentityComponents[entityId];
 		}
 	}
+
+	friend struct IdentityComponent;
 #pragma endregion
 #pragma region NavigationComponent
 private:
@@ -434,6 +444,8 @@ public:
 			return &s_NavigationComponents[entityId];
 		}
 	}
+
+	friend struct NavigationComponent;
 #pragma endregion
 #pragma region ObserversComponent
 private:
@@ -497,6 +509,8 @@ public:
 			return &s_ObserversComponents[entityId];
 		}
 	}
+
+	friend struct ObserversComponent;
 #pragma endregion
 #pragma region SpawningComponent
 private:
@@ -560,6 +574,8 @@ public:
 			return &s_SpawningComponents[entityId];
 		}
 	}
+
+	friend struct SpawningComponent;
 #pragma endregion
 #pragma region TargetingComponent
 private:
@@ -623,6 +639,8 @@ public:
 			return &s_TargetingComponents[entityId];
 		}
 	}
+
+	friend struct TargetingComponent;
 #pragma endregion
 #pragma region TaskComponent
 private:
@@ -686,6 +704,8 @@ public:
 			return &s_TaskComponents[entityId];
 		}
 	}
+
+	friend struct TaskComponent;
 #pragma endregion
 #pragma region TimerComponent
 private:
@@ -749,6 +769,8 @@ public:
 			return &s_TimerComponents[entityId];
 		}
 	}
+
+	friend struct TimerComponent;
 #pragma endregion
 #pragma region TransformComponent
 private:
@@ -812,6 +834,8 @@ public:
 			return &s_TransformComponents[entityId];
 		}
 	}
+
+	friend struct TransformComponent;
 #pragma endregion
 	
 	// Begin dynamically allocated component specific template specifiers.
@@ -1040,6 +1064,4 @@ public:
 		return &s_SpatialPartitioningComponents[entityId];
 	}
 #pragma endregion
-
-	friend struct TaskComponent;
 };
