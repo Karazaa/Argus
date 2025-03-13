@@ -1,0 +1,7 @@
+	void OnChanged_^^^^^(&&&&& oldValue, &&&&& newValue)
+	{
+		for (int32 i = 0; i < m_#####Observers.Num(); ++i)
+		{
+			m_#####Observers[i]->OnChanged_^^^^^(oldValue, newValue);
+		}
+	};

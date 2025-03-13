@@ -1,0 +1,14 @@
+void #####::Set_^^^^^(&&&&& newValue)
+{
+	&&&&& oldValue = ^^^^^;
+	^^^^^ = newValue;
+
+	ObserversComponent* observersComponent = ArgusComponentRegistry::GetComponent<ObserversComponent>(GetOwningEntityId());
+	if (!observersComponent)
+	{
+		// TODO JAMES: error here.
+		return;
+	}
+
+	observersComponent->m_#####Observers.OnChanged_^^^^^(oldValue, newValue);
+}

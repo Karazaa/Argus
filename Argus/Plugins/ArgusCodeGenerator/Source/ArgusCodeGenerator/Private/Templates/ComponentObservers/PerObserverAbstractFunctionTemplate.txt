@@ -1,0 +1,1 @@
+	virtual void OnChanged_^^^^^(&&&&& oldValue, &&&&& newValue) = 0;

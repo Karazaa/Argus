@@ -1,0 +1,4 @@
+uint16 #####::GetOwningEntityId() const
+{
+	return this - &ArgusComponentRegistry::s_#####s[0];
+}
