@@ -60,4 +60,6 @@ public:
 			return &s_#####s[entityId];
 		}
 	}
+
+	friend struct #####;
 #pragma endregion

@@ -21,12 +21,9 @@ void ComponentImplementationGenerator::GenerateComponentImplementationCode(const
 
 	UE_LOG(ArgusCodeGeneratorLog, Display, TEXT("[%s] Parsing from template files to generate component implementation code."), ARGUS_FUNCNAME)
 
-	ArgusCodeGeneratorUtil::CombinedComponentDataOutput combinedComponentData;
-	ArgusCodeGeneratorUtil::CombineStaticAndDynamicComponentData(parsedComponentData, combinedComponentData);
-
 	// Parse Implementation file
 	std::vector<ArgusCodeGeneratorUtil::FileWriteData> outParsedImplementationCppFileContents = std::vector<ArgusCodeGeneratorUtil::FileWriteData>();
-	didSucceed &= ParseComponentImplementationCppFileTemplateWithReplacements(combinedComponentData, outParsedImplementationCppFileContents);
+	didSucceed &= ParseComponentImplementationCppFileTemplateWithReplacements(parsedComponentData, outParsedImplementationCppFileContents);
 
 	// Construct a directory path to registry location and to tests location. 
 	FString componentImplementationDirectory = ArgusCodeGeneratorUtil::GetProjectDirectory();
@@ -42,12 +39,12 @@ void ComponentImplementationGenerator::GenerateComponentImplementationCode(const
 
 	if (didSucceed)
 	{
-		DeleteObsoleteFiles(combinedComponentData, cStrComponentImplementationDirectory);
+		DeleteObsoleteFiles(parsedComponentData, cStrComponentImplementationDirectory);
 		UE_LOG(ArgusCodeGeneratorLog, Display, TEXT("[%s] Successfully wrote out Argus ECS component implementation code."), ARGUS_FUNCNAME)
 	}
 }
 
-bool ComponentImplementationGenerator::ParseComponentImplementationCppFileTemplateWithReplacements(const ArgusCodeGeneratorUtil::CombinedComponentDataOutput& parsedComponentData, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents)
+bool ComponentImplementationGenerator::ParseComponentImplementationCppFileTemplateWithReplacements(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents)
 {
 	const char* cStrTemplateDirectory = ARGUS_FSTRING_TO_CHAR(ArgusCodeGeneratorUtil::GetTemplateDirectory(s_componentImplementationsTemplateDirectorySuffix));
 	std::string componentImplementationCppTemplateFilename = std::string(cStrTemplateDirectory).append(s_componentImplementationCppTemplateFilename);
@@ -77,11 +74,6 @@ bool ComponentImplementationGenerator::ParseComponentImplementationCppFileTempla
 		{
 			for (int i = 0; i < parsedComponentData.m_componentNames.size(); ++i)
 			{
-				if (!parsedComponentData.m_componentInfo[i].m_useSharedFunctions && !parsedComponentData.m_componentInfo[i].m_hasObservables)
-				{
-					continue;
-				}
-
 				std::string perComponentLineText = lineText;
 				outParsedFileContents[i].m_lines.push_back(std::regex_replace(perComponentLineText, std::regex("#####"), parsedComponentData.m_componentNames[i]));
 			}
@@ -176,17 +168,7 @@ bool ComponentImplementationGenerator::ParseComponentImplementationCppFileTempla
 	return true;
 }
 
-bool ComponentImplementationGenerator::ParsePerObservableFileTemplateWithReplacements(const ArgusCodeGeneratorUtil::CombinedComponentDataOutput& parsedComponentData, std::string& templateFilePath, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents)
-{
-	return true;
-}
-
-bool ComponentImplementationGenerator::ParseSharedFunctionalityFileTemplateWithReplacements(const ArgusCodeGeneratorUtil::CombinedComponentDataOutput& parsedComponentData, std::string& templateFilePath, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents)
-{
-	return true;
-}
-
-void ComponentImplementationGenerator::DeleteObsoleteFiles(const ArgusCodeGeneratorUtil::CombinedComponentDataOutput& parsedComponentData, const char* componentDataDirectory)
+void ComponentImplementationGenerator::DeleteObsoleteFiles(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData, const char* componentDataDirectory)
 {
 	return;
 }

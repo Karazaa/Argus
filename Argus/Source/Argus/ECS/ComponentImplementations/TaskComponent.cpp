@@ -4,15 +4,17 @@
 #include "ComponentDefinitions/TaskComponent.h"
 #include "ArgusComponentRegistry.h"
 
+// Component shared functionality
 uint16 TaskComponent::GetOwningEntityId() const
 {
 	return this - &ArgusComponentRegistry::s_TaskComponents[0];
 }
 
-void TaskComponent::Set_m_baseState(BaseState newState)
+// Per observable logic
+void TaskComponent::Set_m_baseState(BaseState newValue)
 {
-	BaseState oldState = m_baseState;
-	m_baseState = newState;
+	BaseState oldValue = m_baseState;
+	m_baseState = newValue;
 
 	ObserversComponent* observersComponent = ArgusComponentRegistry::GetComponent<ObserversComponent>(GetOwningEntityId());
 	if (!observersComponent)
@@ -21,5 +23,5 @@ void TaskComponent::Set_m_baseState(BaseState newState)
 		return;
 	}
 
-	observersComponent->m_TaskComponentObservers.OnChanged_m_baseState(oldState, newState);
+	observersComponent->m_TaskComponentObservers.OnChanged_m_baseState(oldValue, newValue);
 }
