@@ -1,7 +1,7 @@
-void #####::Set_^^^^^(&&&&& newValue)
+void #####::Set_#&#&#(&&&&& newValue)
 {
-	&&&&& oldValue = ^^^^^;
-	^^^^^ = newValue;
+	&&&&& oldValue = #&#&#;
+	#&#&# = newValue;
 
 	ObserversComponent* observersComponent = ArgusComponentRegistry::GetComponent<ObserversComponent>(GetOwningEntityId());
 	if (!observersComponent)
@@ -10,5 +10,5 @@ void #####::Set_^^^^^(&&&&& newValue)
 		return;
 	}
 
-	observersComponent->m_#####Observers.OnChanged_^^^^^(oldValue, newValue);
+	observersComponent->m_#####Observers.OnChanged_#&#&#(oldValue, newValue);
 }
