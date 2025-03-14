@@ -8,6 +8,8 @@
 
 struct TargetingComponent
 {
+	ARGUS_COMPONENT_SHARED
+
 	ARGUS_IGNORE()
 	TOptional<FVector> m_targetLocation = TOptional<FVector>();
 

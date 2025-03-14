@@ -8,6 +8,8 @@
 
 struct ObserversComponent
 {
+	ARGUS_COMPONENT_SHARED
+
 	ARGUS_IGNORE()
 	TaskComponentObservers m_TaskComponentObservers;
 

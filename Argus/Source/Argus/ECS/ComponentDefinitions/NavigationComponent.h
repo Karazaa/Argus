@@ -7,6 +7,8 @@
 
 struct NavigationComponent
 {
+	ARGUS_COMPONENT_SHARED
+
 	ARGUS_IGNORE()
 	TArray<FVector> m_navigationPoints;
 

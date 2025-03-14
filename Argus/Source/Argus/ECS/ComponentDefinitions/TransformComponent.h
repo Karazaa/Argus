@@ -8,6 +8,8 @@
 
 struct TransformComponent
 {
+	ARGUS_COMPONENT_SHARED
+
 	ARGUS_IGNORE()
 	FVector m_location = FVector::ZeroVector;
 

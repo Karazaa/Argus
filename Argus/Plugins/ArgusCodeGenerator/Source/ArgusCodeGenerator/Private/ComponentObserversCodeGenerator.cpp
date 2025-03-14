@@ -10,7 +10,7 @@ const char* ComponentObserversGenerator::s_componentObserversDirectorySuffix = "
 const char* ComponentObserversGenerator::s_componentObserversHeaderTemplateFilename = "ComponentObserversHeaderTemplate.txt";
 const char* ComponentObserversGenerator::s_perObservableAbstractFuncTemplateFilename = "PerObservableAbstractFunctionTemplate.txt";
 const char* ComponentObserversGenerator::s_perObservableOnChangedTemplateFilename = "PerObservableOnChangedTemplate.txt";
-const char* ComponentObserversGenerator::s_componentObserversHeaderSuffix = ".h";
+const char* ComponentObserversGenerator::s_componentObserversHeaderSuffix = "Observers.h";
 const char* ComponentObserversGenerator::s_componentObserversTemplateDirectorySuffix = "ComponentObservers/";
 
 void ComponentObserversGenerator::GenerateComponentObserversCode(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData)

@@ -15,6 +15,8 @@ enum class EAttackType : uint8
 
 struct CombatComponent
 {
+	ARGUS_COMPONENT_SHARED
+
 	uint32 m_baseDamagePerIntervalOrPerSecond = 100u;
 
 	float m_intervalDurationSeconds = 1.0f;

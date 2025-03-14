@@ -12,6 +12,8 @@ class UArgusActorRecord;
 
 struct SpawningComponent
 {
+	ARGUS_COMPONENT_SHARED
+
 	float m_spawningRadius = 100.0f;
 
 	uint8 m_maximumQueueSize = 10u;

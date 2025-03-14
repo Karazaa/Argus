@@ -10,6 +10,8 @@
 
 struct TimerComponent
 {
+	ARGUS_COMPONENT_SHARED
+
 	ARGUS_IGNORE()
 	TArray<Timer> m_timers;
 

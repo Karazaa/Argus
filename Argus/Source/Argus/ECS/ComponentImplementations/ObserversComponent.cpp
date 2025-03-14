@@ -5,5 +5,9 @@
 #include "ArgusComponentRegistry.h"
 
 // Component shared functionality
+uint16 ObserversComponent::GetOwningEntityId() const
+{
+	return this - &ArgusComponentRegistry::s_ObserversComponents[0];
+}
 
 // Per observable logic
