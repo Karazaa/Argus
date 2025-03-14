@@ -86,9 +86,11 @@ public:
 	static bool ParseStaticDataRecords(ParseStaticDataRecordsOutput& output);
 	static bool ParseStaticDataDataRecordsFromFile(const std::string& filePath, ParseStaticDataRecordsOutput& output);
 
+	static bool GetRawLinesFromFile(const std::string& filePath, std::vector<std::string>& outFileContents);
 	static bool WriteOutFile(const std::string& filePath, const std::vector<std::string>& inFileContents);
 
 	static void CombineStaticAndDynamicComponentData(const ParseComponentDataOutput& input, CombinedComponentDataOutput& output);
+	static void DoPerObservableReplacements(const ParseComponentDataOutput& input, const std::vector<std::string>& rawFileContents, std::vector<FileWriteData>& outParsedFileContents);
 
 private:
 	static const char* s_componentDefinitionDirectoryName;

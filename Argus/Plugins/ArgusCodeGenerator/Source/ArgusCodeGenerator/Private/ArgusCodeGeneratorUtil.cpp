@@ -265,6 +265,28 @@ bool ArgusCodeGeneratorUtil::ParseStaticDataDataRecordsFromFile(const std::strin
 	return true;
 }
 
+bool ArgusCodeGeneratorUtil::GetRawLinesFromFile(const std::string& filePath, std::vector<std::string>& outFileContents)
+{
+	outFileContents.clear();
+
+	// Read from definitions template
+	std::ifstream inStream = std::ifstream(filePath);
+	const FString ueFilePath = FString(filePath.c_str());
+	if (!inStream.is_open())
+	{
+		UE_LOG(ArgusCodeGeneratorLog, Error, TEXT("[%s] Failed to read from template file: %s"), ARGUS_FUNCNAME, *ueFilePath);
+		return false;
+	}
+
+	std::string lineText;
+	while (std::getline(inStream, lineText))
+	{
+		outFileContents.push_back(lineText);
+	}
+	inStream.close();
+	return true;
+}
+
 bool ArgusCodeGeneratorUtil::WriteOutFile(const std::string& filePath, const std::vector<std::string>& inFileContents)
 {
 	std::ofstream outStream = std::ofstream(filePath, std::ofstream::out | std::ofstream::trunc);
@@ -339,6 +361,34 @@ void ArgusCodeGeneratorUtil::CombineStaticAndDynamicComponentData(const ParseCom
 	for (int i = 0; i < input.m_dynamicAllocComponentInfo.size(); ++i)
 	{
 		output.m_componentInfo.emplace_back(input.m_dynamicAllocComponentInfo[i]);
+	}
+}
+
+void ArgusCodeGeneratorUtil::DoPerObservableReplacements(const ParseComponentDataOutput& input, const std::vector<std::string>& rawFileContents, std::vector<FileWriteData>& outParsedFileContents)
+{
+	for (int i = 0; i < input.m_componentNames.size(); ++i)
+	{
+		if (!input.m_componentInfo[i].m_hasObservables)
+		{
+			continue;
+		}
+
+		for (int j = 0; j < input.m_componentVariableData[i].size(); ++j)
+		{
+			if (!input.m_componentVariableData[i][j].m_isObservable)
+			{
+				continue;
+			}
+
+			for (int k = 0; k < rawFileContents.size(); ++k)
+			{
+				std::string finalizedText = std::regex_replace(rawFileContents[k], std::regex("#####"), input.m_componentNames[i]);
+				finalizedText = std::regex_replace(finalizedText, std::regex("#&#&#"), input.m_componentVariableData[i][j].m_varName);
+				finalizedText = std::regex_replace(finalizedText, std::regex("&&&&&"), input.m_componentVariableData[i][j].m_typeName.substr(1));
+
+				outParsedFileContents[i].m_lines.push_back(finalizedText);
+			}
+		}
 	}
 }
 

@@ -14,7 +14,6 @@ private:
 	static const char* s_componentImplementationCppTemplateFilename;
 	static const char* s_perObservableTemplateFilename;
 	static const char* s_sharedFunctionalityTemplateFilename;
-	static const char* s_componentHeaderSuffix;
 	static const char* s_componentCppSuffix;
 	static const char* s_componentImplementationsTemplateDirectorySuffix;
 

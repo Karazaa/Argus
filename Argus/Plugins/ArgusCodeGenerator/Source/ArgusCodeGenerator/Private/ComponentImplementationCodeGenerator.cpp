@@ -10,7 +10,6 @@ const char* ComponentImplementationGenerator::s_componentImplementationsDirector
 const char* ComponentImplementationGenerator::s_componentImplementationCppTemplateFilename = "ComponentImplementationCppTemplate.txt";
 const char* ComponentImplementationGenerator::s_perObservableTemplateFilename = "PerObservableTemplate.txt";
 const char* ComponentImplementationGenerator::s_sharedFunctionalityTemplateFilename = "SharedFunctionalityTemplate.txt";
-const char* ComponentImplementationGenerator::s_componentHeaderSuffix = ".h";
 const char* ComponentImplementationGenerator::s_componentCppSuffix = ".cpp";
 const char* ComponentImplementationGenerator::s_componentImplementationsTemplateDirectorySuffix = "ComponentImplementations/";
 
@@ -80,22 +79,8 @@ bool ComponentImplementationGenerator::ParseComponentImplementationCppFileTempla
 		}
 		else if (lineText.find("$$$$$") != std::string::npos)
 		{
-			// Read from definitions template
-			std::ifstream inStream = std::ifstream(sharedFunctionalityTemplateFilename);
-			const FString ueFilePath = FString(sharedFunctionalityTemplateFilename.c_str());
-			if (!inStream.is_open())
-			{
-				UE_LOG(ArgusCodeGeneratorLog, Error, TEXT("[%s] Failed to read from template file: %s"), ARGUS_FUNCNAME, *ueFilePath);
-				return false;
-			}
-
 			std::vector<std::string> rawLines = std::vector<std::string>();
-			std::string templateLineText;
-			while (std::getline(inStream, templateLineText))
-			{
-				rawLines.push_back(templateLineText);
-			}
-			inStream.close();
+			ArgusCodeGeneratorUtil::GetRawLinesFromFile(sharedFunctionalityTemplateFilename, rawLines);
 
 			// Parse per component template into one section
 			for (int i = 0; i < parsedComponentData.m_componentNames.size(); ++i)
@@ -113,48 +98,9 @@ bool ComponentImplementationGenerator::ParseComponentImplementationCppFileTempla
 		}
 		else if (lineText.find("%%%%%") != std::string::npos)
 		{
-			// Read from definitions template
-			std::ifstream inStream = std::ifstream(perObservableTemplateFilename);
-			const FString ueFilePath = FString(perObservableTemplateFilename.c_str());
-			if (!inStream.is_open())
-			{
-				UE_LOG(ArgusCodeGeneratorLog, Error, TEXT("[%s] Failed to read from template file: %s"), ARGUS_FUNCNAME, *ueFilePath);
-				return false;
-			}
-
 			std::vector<std::string> rawLines = std::vector<std::string>();
-			std::string templateLineText;
-			while (std::getline(inStream, templateLineText))
-			{
-				rawLines.push_back(templateLineText);
-			}
-			inStream.close();
-
-			// Parse per component template into one section
-			for (int i = 0; i < parsedComponentData.m_componentNames.size(); ++i)
-			{
-				if (!parsedComponentData.m_componentInfo[i].m_hasObservables)
-				{
-					continue;
-				}
-
-				for (int j = 0; j < parsedComponentData.m_componentVariableData[i].size(); ++j)
-				{
-					if (!parsedComponentData.m_componentVariableData[i][j].m_isObservable)
-					{
-						continue;
-					}
-
-					for (int k = 0; k < rawLines.size(); ++k)
-					{
-						std::string finalizedText = std::regex_replace(rawLines[k], std::regex("#####"), parsedComponentData.m_componentNames[i]);
-						finalizedText = std::regex_replace(finalizedText, std::regex("#&#&#"), parsedComponentData.m_componentVariableData[i][j].m_varName);
-						finalizedText = std::regex_replace(finalizedText, std::regex("&&&&&"), parsedComponentData.m_componentVariableData[i][j].m_typeName.substr(1));
-
-						outParsedFileContents[i].m_lines.push_back(finalizedText);
-					}
-				}
-			}
+			ArgusCodeGeneratorUtil::GetRawLinesFromFile(perObservableTemplateFilename, rawLines);
+			ArgusCodeGeneratorUtil::DoPerObservableReplacements(parsedComponentData, rawLines, outParsedFileContents);
 		}
 		else
 		{

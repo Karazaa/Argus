@@ -7,6 +7,7 @@
 #include "ArgusDataAssetComponentCodeGenerator.h"
 #include "ArgusStaticDataCodeGenerator.h"
 #include "ComponentImplementationCodeGenerator.h"
+#include "ComponentObserversCodeGenerator.h"
 #include "Misc/MessageDialog.h"
 #include "ToolMenus.h"
 
@@ -87,6 +88,7 @@ void FArgusCodeGeneratorModule::PluginButtonClicked()
 	ArgusComponentRegistryCodeGenerator::GenerateComponentRegistryCode(parsedComponentData);
 	ArgusDataAssetComponentCodeGenerator::GenerateDataAssetComponentsCode(parsedComponentData);
 	ComponentImplementationGenerator::GenerateComponentImplementationCode(parsedComponentData);
+	ComponentObserversGenerator::GenerateComponentObserversCode(parsedComponentData);
 	ArgusStaticDataCodeGenerator::GenerateStaticDataCode(parsedStaticDataRecords);
 }
 
