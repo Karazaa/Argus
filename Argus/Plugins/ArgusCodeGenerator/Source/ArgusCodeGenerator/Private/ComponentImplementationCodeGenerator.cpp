@@ -38,7 +38,7 @@ void ComponentImplementationGenerator::GenerateComponentImplementationCode(const
 
 	if (didSucceed)
 	{
-		DeleteObsoleteFiles(parsedComponentData, cStrComponentImplementationDirectory);
+		ArgusCodeGeneratorUtil::DeleteObsoleteComponentDependentFiles(parsedComponentData, cStrComponentImplementationDirectory);
 		UE_LOG(ArgusCodeGeneratorLog, Display, TEXT("[%s] Successfully wrote out Argus ECS component implementation code."), ARGUS_FUNCNAME)
 	}
 }
@@ -112,9 +112,4 @@ bool ComponentImplementationGenerator::ParseComponentImplementationCppFileTempla
 	}
 
 	return true;
-}
-
-void ComponentImplementationGenerator::DeleteObsoleteFiles(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData, const char* componentDataDirectory)
-{
-	return;
 }

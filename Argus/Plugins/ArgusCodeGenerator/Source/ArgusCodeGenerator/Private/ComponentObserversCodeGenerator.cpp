@@ -38,7 +38,7 @@ void ComponentObserversGenerator::GenerateComponentObserversCode(const ArgusCode
 
 	if (didSucceed)
 	{
-		DeleteObsoleteFiles(parsedComponentData, cStrComponentObserversDirectory);
+		ArgusCodeGeneratorUtil::DeleteObsoleteComponentDependentFiles(parsedComponentData, cStrComponentObserversDirectory);
 		UE_LOG(ArgusCodeGeneratorLog, Display, TEXT("[%s] Successfully wrote out Argus ECS component observers code."), ARGUS_FUNCNAME)
 	}
 }
@@ -99,9 +99,4 @@ bool ComponentObserversGenerator::ParseComponentObserversHeaderFileTemplateWithR
 	}
 
 	return true;
-}
-
-void ComponentObserversGenerator::DeleteObsoleteFiles(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData, const char* componentDataDirectory)
-{
-	return;
 }

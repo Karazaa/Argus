@@ -2,7 +2,6 @@
 
 #include "ArgusCodeGeneratorUtil.h"
 #include "Misc/Paths.h"
-#include <filesystem>
 #include <fstream>
 #include <regex>
 

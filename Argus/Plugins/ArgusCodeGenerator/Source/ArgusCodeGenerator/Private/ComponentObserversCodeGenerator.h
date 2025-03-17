@@ -18,5 +18,4 @@ private:
 	static const char* s_componentObserversTemplateDirectorySuffix;
 
 	static bool ParseComponentObserversHeaderFileTemplateWithReplacements(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents);
-	static void DeleteObsoleteFiles(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData, const char* componentDataDirectory);
 };
