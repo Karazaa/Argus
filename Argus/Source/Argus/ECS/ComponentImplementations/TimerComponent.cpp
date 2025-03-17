@@ -5,5 +5,9 @@
 #include "ArgusComponentRegistry.h"
 
 // Component shared functionality
+uint16 TimerComponent::GetOwningEntityId() const
+{
+	return this - &ArgusComponentRegistry::s_TimerComponents[0];
+}
 
 // Per observable logic

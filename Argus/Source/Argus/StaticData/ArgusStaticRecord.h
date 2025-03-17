@@ -14,4 +14,6 @@ class UArgusStaticRecord : public UDataAsset
 public:
 	UPROPERTY(VisibleAnywhere)
 	uint32 m_id;
+
+	virtual void PreSave(FObjectPreSaveContext SaveContext) override;
 };
