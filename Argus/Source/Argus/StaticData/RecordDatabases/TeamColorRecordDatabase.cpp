@@ -97,4 +97,26 @@ void UTeamColorRecordDatabase::PostEditChangeProperty(FPropertyChangedEvent& pro
 	editorAssetSubsystem->SaveLoadedAsset(modifiedUTeamColorRecord, false);
 	editorAssetSubsystem->SaveLoadedAsset(this, false);
 }
+
+void UTeamColorRecordDatabase::AddUTeamColorRecordToDatabase(UTeamColorRecord* teamColorRecord)
+{
+	const int32 arrayIndex = m_UTeamColorRecords.Num();
+	m_UTeamColorRecords.Add(TSoftObjectPtr(teamColorRecord));
+
+	teamColorRecord->m_id = arrayIndex;
+
+	if (!GEditor)
+	{
+		return;
+	}
+
+	UEditorAssetSubsystem* editorAssetSubsystem = GEditor->GetEditorSubsystem<UEditorAssetSubsystem>();
+	if (!editorAssetSubsystem)
+	{
+		return;
+	}
+
+	editorAssetSubsystem->SaveLoadedAsset(this, false);
+}
+
 #endif //WITH_EDITOR

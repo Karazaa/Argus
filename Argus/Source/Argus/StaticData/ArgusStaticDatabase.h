@@ -60,11 +60,16 @@ protected:
 #pragma region UTeamColorRecord
 public:
 	const UTeamColorRecord* GetUTeamColorRecord(uint32 id);
+#if WITH_EDITOR
+	const uint32 AddUTeamColorRecordToDatabase(UTeamColorRecord* record);
+#endif
 
 protected:
 	UPROPERTY(EditAnywhere)
 	TSoftObjectPtr<UTeamColorRecordDatabase> m_UTeamColorRecordDatabase;
 	UPROPERTY(Transient)
 	TObjectPtr<UTeamColorRecordDatabase> m_UTeamColorRecordDatabasePersistent;
+
+	void LazyLoadUTeamColorRecordDatabase();
 #pragma endregion
 };

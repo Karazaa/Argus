@@ -140,13 +140,41 @@ const UTeamColorRecord* UArgusStaticDatabase::GetUTeamColorRecord(uint32 id)
 {
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
+	LazyLoadUTeamColorRecordDatabase();
+
+	if (!m_UTeamColorRecordDatabasePersistent)
+	{
+		return nullptr;
+	}
+
+	return m_UTeamColorRecordDatabasePersistent->GetRecord(id);
+}
+
+#if WITH_EDITOR
+const uint32 UArgusStaticDatabase::AddUTeamColorRecordToDatabase(UTeamColorRecord* record)
+{
+	LazyLoadUTeamColorRecordDatabase();
+
+	if (!m_UTeamColorRecordDatabasePersistent)
+	{
+		return 0u;
+	}
+
+	m_UTeamColorRecordDatabasePersistent->AddUTeamColorRecordToDatabase(record);
+	
+	return record->m_id;
+}
+#endif
+
+void UArgusStaticDatabase::LazyLoadUTeamColorRecordDatabase()
+{
 	if (!m_UTeamColorRecordDatabasePersistent)
 	{
 		m_UTeamColorRecordDatabasePersistent = m_UTeamColorRecordDatabase.LoadSynchronous();
 		if (!m_UTeamColorRecordDatabasePersistent)
 		{
 			ARGUS_LOG(ArgusStaticDataLog, Error, TEXT("[%s] Could not find %s reference. Need to set reference in %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(m_UTeamColorRecordDatabase), ARGUS_NAMEOF(UArgusStaticDatabase));
-			return nullptr;
+			return;
 		}
 
 		m_UTeamColorRecordDatabasePersistent->ResizePersistentObjectPointerArray();
@@ -162,9 +190,8 @@ const UTeamColorRecord* UArgusStaticDatabase::GetUTeamColorRecord(uint32 id)
 			ARGUS_NAMEOF(m_UTeamColorRecordDatabasePersistent),
 			ARGUS_NAMEOF(m_UTeamColorRecordDatabase)
 		);
-		return nullptr;
+		return;
 	}
-
-	return m_UTeamColorRecordDatabasePersistent->GetRecord(id);
 }
+
 #pragma endregion

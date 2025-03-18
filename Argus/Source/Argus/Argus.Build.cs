@@ -15,7 +15,7 @@ public class Argus : ModuleRules
         // Editor only modules
         if (Target.bBuildEditor)
         {
-            PrivateDependencyModuleNames.Add("UnrealEd");
+            PrivateDependencyModuleNames.AddRange(new string[] { "EditorScriptingUtilities", "UnrealEd" });
         }
 
         PrivateIncludePaths.AddRange(new string[] { "Argus/ECS/", "Argus/Utilities/", "Argus/UnrealObjects/", "Argus/FunctionalTesting/", "Argus/StaticData/", "Argus/UI"});
