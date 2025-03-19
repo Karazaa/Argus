@@ -25,5 +25,6 @@ protected:
 public:
 #if WITH_EDITOR
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent) override;
-#endif
+	void AddUAbilityRecordToDatabase(UAbilityRecord* record);
+#endif //WITH_EDITOR
 };

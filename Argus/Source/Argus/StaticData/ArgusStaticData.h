@@ -35,7 +35,23 @@ public:
 		{
 			return 0u;
 		}
-
+		
+		if (UAbilityRecord* UAbilityRecordInstance = dynamic_cast<UAbilityRecord*>(record))
+		{
+			return staticDatabase->AddUAbilityRecordToDatabase(UAbilityRecordInstance);
+		}
+		if (UArgusActorRecord* UArgusActorRecordInstance = dynamic_cast<UArgusActorRecord*>(record))
+		{
+			return staticDatabase->AddUArgusActorRecordToDatabase(UArgusActorRecordInstance);
+		}
+		if (UFactionRecord* UFactionRecordInstance = dynamic_cast<UFactionRecord*>(record))
+		{
+			return staticDatabase->AddUFactionRecordToDatabase(UFactionRecordInstance);
+		}
+		if (UPlacedArgusActorTeamInfoRecord* UPlacedArgusActorTeamInfoRecordInstance = dynamic_cast<UPlacedArgusActorTeamInfoRecord*>(record))
+		{
+			return staticDatabase->AddUPlacedArgusActorTeamInfoRecordToDatabase(UPlacedArgusActorTeamInfoRecordInstance);
+		}
 		if (UTeamColorRecord* UTeamColorRecordInstance = dynamic_cast<UTeamColorRecord*>(record))
 		{
 			return staticDatabase->AddUTeamColorRecordToDatabase(UTeamColorRecordInstance);
@@ -43,7 +59,7 @@ public:
 
 		return 0u;
 	}
-#endif
+#endif //WITH_EDITOR
 
 #pragma region UAbilityRecord
 	template<>

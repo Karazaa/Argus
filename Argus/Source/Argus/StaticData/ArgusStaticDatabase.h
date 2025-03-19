@@ -20,49 +20,69 @@ class UArgusStaticDatabase : public UDataAsset
 #pragma region UAbilityRecord
 public:
 	const UAbilityRecord* GetUAbilityRecord(uint32 id);
+#if WITH_EDITOR
+	const uint32 AddUAbilityRecordToDatabase(UAbilityRecord* record);
+#endif //WITH_EDITOR
 
 protected:
 	UPROPERTY(EditAnywhere)
 	TSoftObjectPtr<UAbilityRecordDatabase> m_UAbilityRecordDatabase;
 	UPROPERTY(Transient)
 	TObjectPtr<UAbilityRecordDatabase> m_UAbilityRecordDatabasePersistent;
+
+	void LazyLoadUAbilityRecordDatabase();
 #pragma endregion
 #pragma region UArgusActorRecord
 public:
 	const UArgusActorRecord* GetUArgusActorRecord(uint32 id);
+#if WITH_EDITOR
+	const uint32 AddUArgusActorRecordToDatabase(UArgusActorRecord* record);
+#endif //WITH_EDITOR
 
 protected:
 	UPROPERTY(EditAnywhere)
 	TSoftObjectPtr<UArgusActorRecordDatabase> m_UArgusActorRecordDatabase;
 	UPROPERTY(Transient)
 	TObjectPtr<UArgusActorRecordDatabase> m_UArgusActorRecordDatabasePersistent;
+
+	void LazyLoadUArgusActorRecordDatabase();
 #pragma endregion
 #pragma region UFactionRecord
 public:
 	const UFactionRecord* GetUFactionRecord(uint32 id);
+#if WITH_EDITOR
+	const uint32 AddUFactionRecordToDatabase(UFactionRecord* record);
+#endif //WITH_EDITOR
 
 protected:
 	UPROPERTY(EditAnywhere)
 	TSoftObjectPtr<UFactionRecordDatabase> m_UFactionRecordDatabase;
 	UPROPERTY(Transient)
 	TObjectPtr<UFactionRecordDatabase> m_UFactionRecordDatabasePersistent;
+
+	void LazyLoadUFactionRecordDatabase();
 #pragma endregion
 #pragma region UPlacedArgusActorTeamInfoRecord
 public:
 	const UPlacedArgusActorTeamInfoRecord* GetUPlacedArgusActorTeamInfoRecord(uint32 id);
+#if WITH_EDITOR
+	const uint32 AddUPlacedArgusActorTeamInfoRecordToDatabase(UPlacedArgusActorTeamInfoRecord* record);
+#endif //WITH_EDITOR
 
 protected:
 	UPROPERTY(EditAnywhere)
 	TSoftObjectPtr<UPlacedArgusActorTeamInfoRecordDatabase> m_UPlacedArgusActorTeamInfoRecordDatabase;
 	UPROPERTY(Transient)
 	TObjectPtr<UPlacedArgusActorTeamInfoRecordDatabase> m_UPlacedArgusActorTeamInfoRecordDatabasePersistent;
+
+	void LazyLoadUPlacedArgusActorTeamInfoRecordDatabase();
 #pragma endregion
 #pragma region UTeamColorRecord
 public:
 	const UTeamColorRecord* GetUTeamColorRecord(uint32 id);
 #if WITH_EDITOR
 	const uint32 AddUTeamColorRecordToDatabase(UTeamColorRecord* record);
-#endif
+#endif //WITH_EDITOR
 
 protected:
 	UPROPERTY(EditAnywhere)

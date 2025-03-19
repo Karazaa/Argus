@@ -97,4 +97,25 @@ void UPlacedArgusActorTeamInfoRecordDatabase::PostEditChangeProperty(FPropertyCh
 	editorAssetSubsystem->SaveLoadedAsset(modifiedUPlacedArgusActorTeamInfoRecord, false);
 	editorAssetSubsystem->SaveLoadedAsset(this, false);
 }
+
+void UPlacedArgusActorTeamInfoRecordDatabase::AddUPlacedArgusActorTeamInfoRecordToDatabase(UPlacedArgusActorTeamInfoRecord* record)
+{
+	const int32 arrayIndex = m_UPlacedArgusActorTeamInfoRecords.Num();
+	m_UPlacedArgusActorTeamInfoRecords.Add(TSoftObjectPtr(record));
+
+	record->m_id = arrayIndex;
+
+	if (!GEditor)
+	{
+		return;
+	}
+
+	UEditorAssetSubsystem* editorAssetSubsystem = GEditor->GetEditorSubsystem<UEditorAssetSubsystem>();
+	if (!editorAssetSubsystem)
+	{
+		return;
+	}
+
+	editorAssetSubsystem->SaveLoadedAsset(this, false);
+}
 #endif //WITH_EDITOR

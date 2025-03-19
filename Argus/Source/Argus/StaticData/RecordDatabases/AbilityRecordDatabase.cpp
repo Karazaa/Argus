@@ -97,4 +97,25 @@ void UAbilityRecordDatabase::PostEditChangeProperty(FPropertyChangedEvent& prope
 	editorAssetSubsystem->SaveLoadedAsset(modifiedUAbilityRecord, false);
 	editorAssetSubsystem->SaveLoadedAsset(this, false);
 }
+
+void UAbilityRecordDatabase::AddUAbilityRecordToDatabase(UAbilityRecord* record)
+{
+	const int32 arrayIndex = m_UAbilityRecords.Num();
+	m_UAbilityRecords.Add(TSoftObjectPtr(record));
+
+	record->m_id = arrayIndex;
+
+	if (!GEditor)
+	{
+		return;
+	}
+
+	UEditorAssetSubsystem* editorAssetSubsystem = GEditor->GetEditorSubsystem<UEditorAssetSubsystem>();
+	if (!editorAssetSubsystem)
+	{
+		return;
+	}
+
+	editorAssetSubsystem->SaveLoadedAsset(this, false);
+}
 #endif //WITH_EDITOR

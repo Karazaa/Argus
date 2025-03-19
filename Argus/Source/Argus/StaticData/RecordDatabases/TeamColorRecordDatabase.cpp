@@ -98,12 +98,12 @@ void UTeamColorRecordDatabase::PostEditChangeProperty(FPropertyChangedEvent& pro
 	editorAssetSubsystem->SaveLoadedAsset(this, false);
 }
 
-void UTeamColorRecordDatabase::AddUTeamColorRecordToDatabase(UTeamColorRecord* teamColorRecord)
+void UTeamColorRecordDatabase::AddUTeamColorRecordToDatabase(UTeamColorRecord* record)
 {
 	const int32 arrayIndex = m_UTeamColorRecords.Num();
-	m_UTeamColorRecords.Add(TSoftObjectPtr(teamColorRecord));
+	m_UTeamColorRecords.Add(TSoftObjectPtr(record));
 
-	teamColorRecord->m_id = arrayIndex;
+	record->m_id = arrayIndex;
 
 	if (!GEditor)
 	{

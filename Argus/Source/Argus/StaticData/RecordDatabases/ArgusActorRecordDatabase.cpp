@@ -97,4 +97,25 @@ void UArgusActorRecordDatabase::PostEditChangeProperty(FPropertyChangedEvent& pr
 	editorAssetSubsystem->SaveLoadedAsset(modifiedUArgusActorRecord, false);
 	editorAssetSubsystem->SaveLoadedAsset(this, false);
 }
+
+void UArgusActorRecordDatabase::AddUArgusActorRecordToDatabase(UArgusActorRecord* record)
+{
+	const int32 arrayIndex = m_UArgusActorRecords.Num();
+	m_UArgusActorRecords.Add(TSoftObjectPtr(record));
+
+	record->m_id = arrayIndex;
+
+	if (!GEditor)
+	{
+		return;
+	}
+
+	UEditorAssetSubsystem* editorAssetSubsystem = GEditor->GetEditorSubsystem<UEditorAssetSubsystem>();
+	if (!editorAssetSubsystem)
+	{
+		return;
+	}
+
+	editorAssetSubsystem->SaveLoadedAsset(this, false);
+}
 #endif //WITH_EDITOR

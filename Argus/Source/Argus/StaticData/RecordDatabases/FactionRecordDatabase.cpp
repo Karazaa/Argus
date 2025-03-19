@@ -97,4 +97,25 @@ void UFactionRecordDatabase::PostEditChangeProperty(FPropertyChangedEvent& prope
 	editorAssetSubsystem->SaveLoadedAsset(modifiedUFactionRecord, false);
 	editorAssetSubsystem->SaveLoadedAsset(this, false);
 }
+
+void UFactionRecordDatabase::AddUFactionRecordToDatabase(UFactionRecord* record)
+{
+	const int32 arrayIndex = m_UFactionRecords.Num();
+	m_UFactionRecords.Add(TSoftObjectPtr(record));
+
+	record->m_id = arrayIndex;
+
+	if (!GEditor)
+	{
+		return;
+	}
+
+	UEditorAssetSubsystem* editorAssetSubsystem = GEditor->GetEditorSubsystem<UEditorAssetSubsystem>();
+	if (!editorAssetSubsystem)
+	{
+		return;
+	}
+
+	editorAssetSubsystem->SaveLoadedAsset(this, false);
+}
 #endif //WITH_EDITOR
