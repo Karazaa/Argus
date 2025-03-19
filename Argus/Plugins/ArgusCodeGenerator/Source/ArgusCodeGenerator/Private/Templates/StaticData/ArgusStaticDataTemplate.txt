@@ -5,6 +5,11 @@
 
 #include "ArgusGameInstance.h"
 
+#if WITH_EDITOR
+#include "Editor.h"
+#include "Subsystems/EditorAssetSubsystem.h"
+#endif
+
 class ArgusStaticData
 {
 public:
@@ -13,6 +18,29 @@ public:
 	{
 		return nullptr;
 	}
+
+#if WITH_EDITOR
+	static const uint32 AddRecordToDatabase(UArgusStaticRecord* record)
+	{
+		if (!GEditor)
+		{
+			return 0u;
+		}
+
+		UEditorAssetSubsystem* editorAssetSubsystem = GEditor->GetEditorSubsystem<UEditorAssetSubsystem>();
+		const FString assetPath = FString(TEXT("/Game/StaticData/ArgusStaticDatabase.ArgusStaticDatabase"));
+		UArgusStaticDatabase* staticDatabase = Cast<UArgusStaticDatabase>(editorAssetSubsystem->LoadAsset(assetPath));
+
+		if (!staticDatabase)
+		{
+			return 0u;
+		}
+		
+		$$$$$
+
+		return 0u;
+	}
+#endif
 
 @@@@@
 };

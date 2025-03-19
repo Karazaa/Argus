@@ -12,6 +12,7 @@ const char* ArgusStaticDataCodeGenerator::s_staticDataTemplateDirectorySuffix = 
 const char* ArgusStaticDataCodeGenerator::s_staticDataDirectorySuffix = "Source/Argus/StaticData/";
 const char* ArgusStaticDataCodeGenerator::s_argusStaticDataTemplateFileName = "ArgusStaticDataTemplate.txt";
 const char* ArgusStaticDataCodeGenerator::s_argusStaticDataPerRecordTemplateFileName = "ArgusStaticDataPerRecordTemplate.txt";
+const char* ArgusStaticDataCodeGenerator::s_argusStaticDataPerRecordEditorTemplateFileName = "ArgusStaticDataPerRecordEditorTemplate.txt";
 const char* ArgusStaticDataCodeGenerator::s_argusStaticDatabaseHeaderTemplateFileName = "ArgusStaticDatabaseHeaderTemplate.txt";
 const char* ArgusStaticDataCodeGenerator::s_argusStaticDatabaseHeaderPerRecordTemplateFileName = "ArgusStaticDatabaseHeaderPerRecordTemplate.txt";
 const char* ArgusStaticDataCodeGenerator::s_argusStaticDatabaseHeaderFileName = "ArgusStaticDatabase.h";
@@ -92,6 +93,10 @@ bool ArgusStaticDataCodeGenerator::ParseArgusStaticDataTemplate(const ArgusCodeG
 		if (templateLineText.find("@@@@@") != std::string::npos)
 		{
 			ParsePerRecordTemplate(parsedStaticDataRecords, templateParams, outParsedFileContents.back());
+		}
+		else if (templateLineText.find("$$$$$") != std::string::npos)
+		{
+			ParsePerRecordEditorTemplate(parsedStaticDataRecords, templateParams, outParsedFileContents.back());
 		}
 		else
 		{
@@ -326,6 +331,13 @@ bool ArgusStaticDataCodeGenerator::ParsePerRecordTemplate(const ArgusCodeGenerat
 			}
 		}
 	}
+
+	return true;
+}
+
+bool ArgusStaticDataCodeGenerator::ParsePerRecordEditorTemplate(const ArgusCodeGeneratorUtil::ParseStaticDataRecordsOutput& parsedStaticDataRecords, const ParseTemplateParams& templateParams, ArgusCodeGeneratorUtil::FileWriteData& outParsedFileContents)
+{
+	// TODO JAMES: Populate
 
 	return true;
 }
