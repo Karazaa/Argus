@@ -31,6 +31,7 @@ private:
 	{
 		std::string templateFilePath = "";
 		std::string perRecordTemplateFilePath = "";
+		std::string perRecordEditorTemplateFilePath = "";
 	};
 
 	static bool ParseArgusStaticDataTemplate(const ArgusCodeGeneratorUtil::ParseStaticDataRecordsOutput& parsedStaticDataRecords, const ParseTemplateParams& templateParams, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents);

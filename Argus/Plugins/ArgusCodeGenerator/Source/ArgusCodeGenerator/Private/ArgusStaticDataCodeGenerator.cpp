@@ -36,6 +36,7 @@ void ArgusStaticDataCodeGenerator::GenerateStaticDataCode(const ArgusCodeGenerat
 	ParseTemplateParams parseArgusStaticDataTemplateParams;
 	parseArgusStaticDataTemplateParams.templateFilePath = std::string(cStrTemplateDirectory).append(s_argusStaticDataTemplateFileName);
 	parseArgusStaticDataTemplateParams.perRecordTemplateFilePath = std::string(cStrTemplateDirectory).append(s_argusStaticDataPerRecordTemplateFileName);
+	parseArgusStaticDataTemplateParams.perRecordEditorTemplateFilePath = std::string(cStrTemplateDirectory).append(s_argusStaticDataPerRecordEditorTemplateFileName);
 
 	ParseTemplateParams parseRecordDatabaseHeaderTemplateParams;
 	parseRecordDatabaseHeaderTemplateParams.templateFilePath = std::string(cStrTemplateDirectory).append(s_recordDatabaseHeaderTemplateFileName);
@@ -322,8 +323,8 @@ bool ArgusStaticDataCodeGenerator::ParsePerRecordTemplate(const ArgusCodeGenerat
 		{
 			if (fileContents[j].find("#####") != std::string::npos)
 			{
-				std::string perComponentHeaderLineText = fileContents[j];
-				outParsedFileContents.m_lines.push_back(std::regex_replace(perComponentHeaderLineText, std::regex("#####"), parsedStaticDataRecords.m_staticDataRecordNames[i]));
+				std::string perRecordLineText = fileContents[j];
+				outParsedFileContents.m_lines.push_back(std::regex_replace(perRecordLineText, std::regex("#####"), parsedStaticDataRecords.m_staticDataRecordNames[i]));
 			}
 			else
 			{
@@ -337,7 +338,38 @@ bool ArgusStaticDataCodeGenerator::ParsePerRecordTemplate(const ArgusCodeGenerat
 
 bool ArgusStaticDataCodeGenerator::ParsePerRecordEditorTemplate(const ArgusCodeGeneratorUtil::ParseStaticDataRecordsOutput& parsedStaticDataRecords, const ParseTemplateParams& templateParams, ArgusCodeGeneratorUtil::FileWriteData& outParsedFileContents)
 {
-	// TODO JAMES: Populate
+	std::ifstream inPerRecordEditorTemplateStream = std::ifstream(templateParams.perRecordEditorTemplateFilePath);
+	const FString uePerRecordEditorTemplateFilePath = FString(templateParams.perRecordTemplateFilePath.c_str());
+	if (!inPerRecordEditorTemplateStream.is_open())
+	{
+		UE_LOG(ArgusCodeGeneratorLog, Error, TEXT("[%s] Failed to read from template file: %s"), ARGUS_FUNCNAME, *uePerRecordEditorTemplateFilePath);
+		return false;
+	}
+
+	std::vector<std::string> fileContents;
+
+	std::string templateLineText;
+	while (std::getline(inPerRecordEditorTemplateStream, templateLineText))
+	{
+		fileContents.push_back(templateLineText);
+	}
+	inPerRecordEditorTemplateStream.close();
+
+	for (int i = 0; i < parsedStaticDataRecords.m_staticDataRecordNames.size(); ++i)
+	{
+		for (int j = 0; j < fileContents.size(); ++j)
+		{
+			if (fileContents[j].find("#####") != std::string::npos)
+			{
+				std::string perRecordLineText = fileContents[j];
+				outParsedFileContents.m_lines.push_back(std::regex_replace(perRecordLineText, std::regex("#####"), parsedStaticDataRecords.m_staticDataRecordNames[i]));
+			}
+			else
+			{
+				outParsedFileContents.m_lines.push_back(fileContents[j]);
+			}
+		}
+	}
 
 	return true;
 }
