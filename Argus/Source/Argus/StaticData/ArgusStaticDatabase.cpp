@@ -193,5 +193,4 @@ void UArgusStaticDatabase::LazyLoadUTeamColorRecordDatabase()
 		return;
 	}
 }
-
 #pragma endregion

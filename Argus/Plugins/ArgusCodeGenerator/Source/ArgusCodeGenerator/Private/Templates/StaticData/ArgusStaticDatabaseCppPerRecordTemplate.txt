@@ -3,13 +3,41 @@ const #####* UArgusStaticDatabase::Get#####(uint32 id)
 {
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
+	LazyLoad#####Database();
+
+	if (!m_#####DatabasePersistent)
+	{
+		return nullptr;
+	}
+
+	return m_#####DatabasePersistent->GetRecord(id);
+}
+
+#if WITH_EDITOR
+const uint32 UArgusStaticDatabase::Add#####ToDatabase(#####* record)
+{
+	LazyLoad#####Database();
+
+	if (!m_#####DatabasePersistent)
+	{
+		return 0u;
+	}
+
+	m_#####DatabasePersistent->Add#####ToDatabase(record);
+	
+	return record->m_id;
+}
+#endif //WITH_EDITOR
+
+void UArgusStaticDatabase::LazyLoad#####Database()
+{
 	if (!m_#####DatabasePersistent)
 	{
 		m_#####DatabasePersistent = m_#####Database.LoadSynchronous();
 		if (!m_#####DatabasePersistent)
 		{
 			ARGUS_LOG(ArgusStaticDataLog, Error, TEXT("[%s] Could not find %s reference. Need to set reference in %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(m_#####Database), ARGUS_NAMEOF(UArgusStaticDatabase));
-			return nullptr;
+			return;
 		}
 
 		m_#####DatabasePersistent->ResizePersistentObjectPointerArray();
@@ -25,9 +53,7 @@ const #####* UArgusStaticDatabase::Get#####(uint32 id)
 			ARGUS_NAMEOF(m_#####DatabasePersistent),
 			ARGUS_NAMEOF(m_#####Database)
 		);
-		return nullptr;
+		return;
 	}
-
-	return m_#####DatabasePersistent->GetRecord(id);
 }
 #pragma endregion

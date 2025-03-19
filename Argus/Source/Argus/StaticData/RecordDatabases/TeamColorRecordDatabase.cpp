@@ -118,5 +118,4 @@ void UTeamColorRecordDatabase::AddUTeamColorRecordToDatabase(UTeamColorRecord* t
 
 	editorAssetSubsystem->SaveLoadedAsset(this, false);
 }
-
 #endif //WITH_EDITOR

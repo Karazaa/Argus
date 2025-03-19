@@ -40,7 +40,7 @@ public:
 
 		return 0u;
 	}
-#endif
+#endif //WITH_EDITOR
 
 @@@@@
 };

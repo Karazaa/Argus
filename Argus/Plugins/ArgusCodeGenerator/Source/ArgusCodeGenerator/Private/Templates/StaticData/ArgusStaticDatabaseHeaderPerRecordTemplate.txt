@@ -3,11 +3,13 @@ public:
 	const #####* Get#####(uint32 id);
 #if WITH_EDITOR
 	const uint32 Add#####ToDatabase(#####* record);
-#endif
+#endif //WITH_EDITOR
 
 protected:
 	UPROPERTY(EditAnywhere)
 	TSoftObjectPtr<#####Database> m_#####Database;
 	UPROPERTY(Transient)
 	TObjectPtr<#####Database> m_#####DatabasePersistent;
+
+	void LazyLoad#####Database();
 #pragma endregion
