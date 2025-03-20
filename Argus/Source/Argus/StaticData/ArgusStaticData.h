@@ -20,16 +20,23 @@ public:
 	}
 
 #if WITH_EDITOR
-	static const uint32 AddRecordToDatabase(UArgusStaticRecord* record)
+private:
+	static UArgusStaticDatabase* GetParentDatabase()
 	{
 		if (!GEditor)
 		{
-			return 0u;
+			return nullptr;
 		}
 
 		UEditorAssetSubsystem* editorAssetSubsystem = GEditor->GetEditorSubsystem<UEditorAssetSubsystem>();
-		const FString assetPath = FString(TEXT("/Game/StaticData/ArgusStaticDatabase.ArgusStaticDatabase"));
-		UArgusStaticDatabase* staticDatabase = Cast<UArgusStaticDatabase>(editorAssetSubsystem->LoadAsset(assetPath));
+		return Cast<UArgusStaticDatabase>(editorAssetSubsystem->LoadAsset(FString(k_argusStaticDatabaseAssetPath)));
+	}
+
+public:
+	static constexpr char* k_argusStaticDatabaseAssetPath = "/Game/StaticData/ArgusStaticDatabase.ArgusStaticDatabase";
+	static uint32 AddRecordToDatabase(UArgusStaticRecord* record)
+	{
+		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
 
 		if (!staticDatabase)
 		{
@@ -59,6 +66,21 @@ public:
 
 		return 0u;
 	}
+
+	template<typename Database>
+	static void RegisterNewDatabase(const Database* database) { }
+
+	template<>
+	inline void RegisterNewDatabase(const UTeamColorRecordDatabase* database) 
+	{
+		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
+
+		if (!staticDatabase)
+		{
+			return;
+		}
+	}
+
 #endif //WITH_EDITOR
 
 #pragma region UAbilityRecord

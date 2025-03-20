@@ -6,6 +6,7 @@
 #include "ArgusMacros.h"
 
 #if WITH_EDITOR
+#include "ArgusStaticData.h"
 #include "Editor.h"
 #include "Misc/Paths.h"
 #include "Subsystems/EditorAssetSubsystem.h"
@@ -66,6 +67,19 @@ void UTeamColorRecordDatabase::ResizePersistentObjectPointerArray()
 #if WITH_EDITOR
 void UTeamColorRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
 {
+	FString fullPath = FPaths::ConvertRelativePathToFull(saveContext.GetTargetFilename());
+	if (!std::filesystem::exists(TCHAR_TO_UTF8(*fullPath)))
+	{
+		TArray<FReferencerInformation> internalReferencers;
+		TArray<FReferencerInformation> externalReferencers;
+		RetrieveReferencers(&internalReferencers, &externalReferencers);
+
+		if (internalReferencers.IsEmpty() && externalReferencers.IsEmpty())
+		{
+			ArgusStaticData::RegisterNewDatabase(this);
+		}
+	}
+
 	Super::PreSave(saveContext);
 }
 
