@@ -15,5 +15,7 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	uint32 m_id;
 
+#if WITH_EDITOR
 	virtual void PreSave(FObjectPreSaveContext SaveContext) override;
+#endif //WITH_EDITOR
 };

@@ -7,7 +7,11 @@
 
 #if WITH_EDITOR
 #include "Editor.h"
+#include "Misc/Paths.h"
 #include "Subsystems/EditorAssetSubsystem.h"
+#include "UObject/ObjectMacros.h"
+#include "UObject/ObjectSaveContext.h"
+#include <filesystem>
 #endif
 
 const UTeamColorRecord* UTeamColorRecordDatabase::GetRecord(uint32 id)
@@ -60,6 +64,11 @@ void UTeamColorRecordDatabase::ResizePersistentObjectPointerArray()
 }
 
 #if WITH_EDITOR
+void UTeamColorRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
+{
+	Super::PreSave(saveContext);
+}
+
 void UTeamColorRecordDatabase::PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent)
 {
 	if (propertyChangedEvent.ChangeType != EPropertyChangeType::ValueSet)

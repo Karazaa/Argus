@@ -1,6 +1,8 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusStaticRecord.h"
+
+#if WITH_EDITOR
 #include "ArgusStaticData.h"
 #include "Misc/Paths.h"
 #include "UObject/ObjectMacros.h"
@@ -9,7 +11,6 @@
 
 void UArgusStaticRecord::PreSave(FObjectPreSaveContext saveContext)
 {
-#if WITH_EDITOR
 	FString fullPath = FPaths::ConvertRelativePathToFull(saveContext.GetTargetFilename());
 	if (!std::filesystem::exists(TCHAR_TO_UTF8(*fullPath)))
 	{
@@ -19,12 +20,10 @@ void UArgusStaticRecord::PreSave(FObjectPreSaveContext saveContext)
 
 		if (internalReferencers.IsEmpty() && externalReferencers.IsEmpty())
 		{
-			// TODO JAMES: We are saving this record for the first time! We need
-			// to retrieve the associated database and automatically save this record inside of it.
 			ArgusStaticData::AddRecordToDatabase(this);
 		}
 	}
-#endif
 
 	Super::PreSave(saveContext);
 }
+#endif //WITH_EDITOR
