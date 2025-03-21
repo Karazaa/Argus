@@ -3,6 +3,11 @@
 
 #include "ArgusStaticDatabase.h"
 
+#if WITH_EDITOR
+#include "Editor.h"
+#include "Subsystems/EditorAssetSubsystem.h"
+#endif
+
 #pragma region UAbilityRecord
 const UAbilityRecord* UArgusStaticDatabase::GetUAbilityRecord(uint32 id)
 {
@@ -276,7 +281,21 @@ void UArgusStaticDatabase::RegisterNewUTeamColorRecordDatabase(const UTeamColorR
 		return;
 	}
 
+	if (!m_UTeamColorRecordDatabase.IsNull())
+	{
+		ARGUS_LOG
+		(
+			ArgusStaticDataLog,
+			Error,
+			TEXT("[%s] Trying to assign to %s. Potential duplicate databases."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(m_UTeamColorRecordDatabase)
+		);
+		return;
+	}
+
 	m_UTeamColorRecordDatabase = database;
+	SaveDatabase();
 }
 #endif //WITH_EDITOR
 
@@ -308,3 +327,21 @@ void UArgusStaticDatabase::LazyLoadUTeamColorRecordDatabase()
 	}
 }
 #pragma endregion
+
+#if WITH_EDITOR
+void UArgusStaticDatabase::SaveDatabase()
+{
+	if (!GEditor)
+	{
+		return;
+	}
+
+	UEditorAssetSubsystem* editorAssetSubsystem = GEditor->GetEditorSubsystem<UEditorAssetSubsystem>();
+	if (!editorAssetSubsystem)
+	{
+		return;
+	}
+
+	editorAssetSubsystem->SaveLoadedAsset(this, false);
+}
+#endif //WITH_EDITOR

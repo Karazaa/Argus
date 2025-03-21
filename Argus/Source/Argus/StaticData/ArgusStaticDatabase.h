@@ -93,4 +93,9 @@ protected:
 
 	void LazyLoadUTeamColorRecordDatabase();
 #pragma endregion
+
+#if WITH_EDITOR
+private:
+	void SaveDatabase();
+#endif // WITH_EDITOR
 };
