@@ -76,7 +76,7 @@ void UTeamColorRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
 
 		if (internalReferencers.IsEmpty() && externalReferencers.IsEmpty())
 		{
-			ArgusStaticData::RegisterNewDatabase(this);
+			ArgusStaticData::RegisterNewUTeamColorRecordDatabase(this);
 		}
 	}
 

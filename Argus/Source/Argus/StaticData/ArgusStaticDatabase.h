@@ -81,7 +81,8 @@ protected:
 public:
 	const UTeamColorRecord* GetUTeamColorRecord(uint32 id);
 #if WITH_EDITOR
-	const uint32 AddUTeamColorRecordToDatabase(UTeamColorRecord* record);
+	uint32 AddUTeamColorRecordToDatabase(UTeamColorRecord* record);
+	void RegisterNewUTeamColorRecordDatabase(const UTeamColorRecordDatabase* database);
 #endif //WITH_EDITOR
 
 protected:

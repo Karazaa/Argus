@@ -255,7 +255,7 @@ const UTeamColorRecord* UArgusStaticDatabase::GetUTeamColorRecord(uint32 id)
 }
 
 #if WITH_EDITOR
-const uint32 UArgusStaticDatabase::AddUTeamColorRecordToDatabase(UTeamColorRecord* record)
+uint32 UArgusStaticDatabase::AddUTeamColorRecordToDatabase(UTeamColorRecord* record)
 {
 	LazyLoadUTeamColorRecordDatabase();
 
@@ -267,6 +267,16 @@ const uint32 UArgusStaticDatabase::AddUTeamColorRecordToDatabase(UTeamColorRecor
 	m_UTeamColorRecordDatabasePersistent->AddUTeamColorRecordToDatabase(record);
 	
 	return record->m_id;
+}
+
+void UArgusStaticDatabase::RegisterNewUTeamColorRecordDatabase(const UTeamColorRecordDatabase* database)
+{
+	if (!database)
+	{
+		return;
+	}
+
+	m_UTeamColorRecordDatabase = database;
 }
 #endif //WITH_EDITOR
 

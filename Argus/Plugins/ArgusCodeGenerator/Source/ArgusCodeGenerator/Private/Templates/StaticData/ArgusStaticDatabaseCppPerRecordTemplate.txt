@@ -14,7 +14,7 @@ const #####* UArgusStaticDatabase::Get#####(uint32 id)
 }
 
 #if WITH_EDITOR
-const uint32 UArgusStaticDatabase::Add#####ToDatabase(#####* record)
+uint32 UArgusStaticDatabase::Add#####ToDatabase(#####* record)
 {
 	LazyLoad#####Database();
 

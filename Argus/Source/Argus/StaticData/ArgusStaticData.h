@@ -29,11 +29,10 @@ private:
 		}
 
 		UEditorAssetSubsystem* editorAssetSubsystem = GEditor->GetEditorSubsystem<UEditorAssetSubsystem>();
-		return Cast<UArgusStaticDatabase>(editorAssetSubsystem->LoadAsset(FString(k_argusStaticDatabaseAssetPath)));
+		return Cast<UArgusStaticDatabase>(editorAssetSubsystem->LoadAsset(FString("/Game/StaticData/ArgusStaticDatabase.ArgusStaticDatabase")));
 	}
 
 public:
-	static constexpr char* k_argusStaticDatabaseAssetPath = "/Game/StaticData/ArgusStaticDatabase.ArgusStaticDatabase";
 	static uint32 AddRecordToDatabase(UArgusStaticRecord* record)
 	{
 		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
@@ -66,21 +65,6 @@ public:
 
 		return 0u;
 	}
-
-	template<typename Database>
-	static void RegisterNewDatabase(const Database* database) { }
-
-	template<>
-	inline void RegisterNewDatabase(const UTeamColorRecordDatabase* database) 
-	{
-		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
-
-		if (!staticDatabase)
-		{
-			return;
-		}
-	}
-
 #endif //WITH_EDITOR
 
 #pragma region UAbilityRecord
@@ -152,5 +136,19 @@ public:
 
 		return staticDatabase->GetUTeamColorRecord(id);
 	}
+
+#if WITH_EDITOR
+	static void RegisterNewUTeamColorRecordDatabase(const UTeamColorRecordDatabase* database)
+	{
+		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
+
+		if (!staticDatabase)
+		{
+			return;
+		}
+
+		staticDatabase->RegisterNewUTeamColorRecordDatabase(database);
+	}
+#endif //WITH_EDITOR
 #pragma endregion
 };

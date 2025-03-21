@@ -2,7 +2,7 @@
 public:
 	const #####* Get#####(uint32 id);
 #if WITH_EDITOR
-	const uint32 Add#####ToDatabase(#####* record);
+	uint32 Add#####ToDatabase(#####* record);
 #endif //WITH_EDITOR
 
 protected:
