@@ -3,4 +3,27 @@
 
 #include "ArgusStaticDatabase.h"
 
+#if WITH_EDITOR
+#include "Editor.h"
+#include "Subsystems/EditorAssetSubsystem.h"
+#endif
+
 @@@@@
+
+#if WITH_EDITOR
+void UArgusStaticDatabase::SaveDatabase()
+{
+	if (!GEditor)
+	{
+		return;
+	}
+
+	UEditorAssetSubsystem* editorAssetSubsystem = GEditor->GetEditorSubsystem<UEditorAssetSubsystem>();
+	if (!editorAssetSubsystem)
+	{
+		return;
+	}
+
+	editorAssetSubsystem->SaveLoadedAsset(this, false);
+}
+#endif //WITH_EDITOR

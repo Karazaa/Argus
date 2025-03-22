@@ -10,7 +10,6 @@
 #include "Editor.h"
 #include "Misc/Paths.h"
 #include "Subsystems/EditorAssetSubsystem.h"
-#include "UObject/ObjectMacros.h"
 #include "UObject/ObjectSaveContext.h"
 #include <filesystem>
 #endif

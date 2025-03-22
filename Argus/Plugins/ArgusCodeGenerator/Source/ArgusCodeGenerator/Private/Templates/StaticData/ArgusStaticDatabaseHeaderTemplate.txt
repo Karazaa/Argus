@@ -14,4 +14,9 @@ class UArgusStaticDatabase : public UDataAsset
 	GENERATED_BODY()
 
 @@@@@
+
+#if WITH_EDITOR
+private:
+	void SaveDatabase();
+#endif // WITH_EDITOR
 };

@@ -11,4 +11,18 @@
 
 		return staticDatabase->Get#####(id);
 	}
+
+#if WITH_EDITOR
+	static void RegisterNew#####Database(const #####Database* database)
+	{
+		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
+
+		if (!staticDatabase)
+		{
+			return;
+		}
+
+		staticDatabase->RegisterNew#####Database(database);
+	}
+#endif //WITH_EDITOR
 #pragma endregion

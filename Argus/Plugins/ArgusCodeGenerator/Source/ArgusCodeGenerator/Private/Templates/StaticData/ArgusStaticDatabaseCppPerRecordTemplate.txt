@@ -27,6 +27,30 @@ uint32 UArgusStaticDatabase::Add#####ToDatabase(#####* record)
 	
 	return record->m_id;
 }
+
+void UArgusStaticDatabase::RegisterNew#####Database(const #####Database* database)
+{
+	if (!database)
+	{
+		return;
+	}
+
+	if (!m_#####Database.IsNull())
+	{
+		ARGUS_LOG
+		(
+			ArgusStaticDataLog,
+			Error,
+			TEXT("[%s] Trying to assign to %s. Potential duplicate databases."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(m_#####Database)
+		);
+		return;
+	}
+
+	m_#####Database = database;
+	SaveDatabase();
+}
 #endif //WITH_EDITOR
 
 void UArgusStaticDatabase::LazyLoad#####Database()
