@@ -48,7 +48,7 @@ void UArgusStaticDatabase::RegisterNew#####Database(const #####Database* databas
 		return;
 	}
 
-	m_#####Database = database;
+	m_#####Database = TSoftObjectPtr<#####Database>(database);
 	SaveDatabase();
 }
 #endif //WITH_EDITOR

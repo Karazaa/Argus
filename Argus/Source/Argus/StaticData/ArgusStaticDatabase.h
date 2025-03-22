@@ -21,7 +21,8 @@ class UArgusStaticDatabase : public UDataAsset
 public:
 	const UAbilityRecord* GetUAbilityRecord(uint32 id);
 #if WITH_EDITOR
-	const uint32 AddUAbilityRecordToDatabase(UAbilityRecord* record);
+	uint32 AddUAbilityRecordToDatabase(UAbilityRecord* record);
+	void RegisterNewUAbilityRecordDatabase(const UAbilityRecordDatabase* database);
 #endif //WITH_EDITOR
 
 protected:
@@ -36,7 +37,8 @@ protected:
 public:
 	const UArgusActorRecord* GetUArgusActorRecord(uint32 id);
 #if WITH_EDITOR
-	const uint32 AddUArgusActorRecordToDatabase(UArgusActorRecord* record);
+	uint32 AddUArgusActorRecordToDatabase(UArgusActorRecord* record);
+	void RegisterNewUArgusActorRecordDatabase(const UArgusActorRecordDatabase* database);
 #endif //WITH_EDITOR
 
 protected:
@@ -51,7 +53,8 @@ protected:
 public:
 	const UFactionRecord* GetUFactionRecord(uint32 id);
 #if WITH_EDITOR
-	const uint32 AddUFactionRecordToDatabase(UFactionRecord* record);
+	uint32 AddUFactionRecordToDatabase(UFactionRecord* record);
+	void RegisterNewUFactionRecordDatabase(const UFactionRecordDatabase* database);
 #endif //WITH_EDITOR
 
 protected:
@@ -66,7 +69,8 @@ protected:
 public:
 	const UPlacedArgusActorTeamInfoRecord* GetUPlacedArgusActorTeamInfoRecord(uint32 id);
 #if WITH_EDITOR
-	const uint32 AddUPlacedArgusActorTeamInfoRecordToDatabase(UPlacedArgusActorTeamInfoRecord* record);
+	uint32 AddUPlacedArgusActorTeamInfoRecordToDatabase(UPlacedArgusActorTeamInfoRecord* record);
+	void RegisterNewUPlacedArgusActorTeamInfoRecordDatabase(const UPlacedArgusActorTeamInfoRecordDatabase* database);
 #endif //WITH_EDITOR
 
 protected:

@@ -24,7 +24,7 @@ const UAbilityRecord* UArgusStaticDatabase::GetUAbilityRecord(uint32 id)
 }
 
 #if WITH_EDITOR
-const uint32 UArgusStaticDatabase::AddUAbilityRecordToDatabase(UAbilityRecord* record)
+uint32 UArgusStaticDatabase::AddUAbilityRecordToDatabase(UAbilityRecord* record)
 {
 	LazyLoadUAbilityRecordDatabase();
 
@@ -36,6 +36,30 @@ const uint32 UArgusStaticDatabase::AddUAbilityRecordToDatabase(UAbilityRecord* r
 	m_UAbilityRecordDatabasePersistent->AddUAbilityRecordToDatabase(record);
 	
 	return record->m_id;
+}
+
+void UArgusStaticDatabase::RegisterNewUAbilityRecordDatabase(const UAbilityRecordDatabase* database)
+{
+	if (!database)
+	{
+		return;
+	}
+
+	if (!m_UAbilityRecordDatabase.IsNull())
+	{
+		ARGUS_LOG
+		(
+			ArgusStaticDataLog,
+			Error,
+			TEXT("[%s] Trying to assign to %s. Potential duplicate databases."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(m_UAbilityRecordDatabase)
+		);
+		return;
+	}
+
+	m_UAbilityRecordDatabase = TSoftObjectPtr<UAbilityRecordDatabase>(database);
+	SaveDatabase();
 }
 #endif //WITH_EDITOR
 
@@ -83,7 +107,7 @@ const UArgusActorRecord* UArgusStaticDatabase::GetUArgusActorRecord(uint32 id)
 }
 
 #if WITH_EDITOR
-const uint32 UArgusStaticDatabase::AddUArgusActorRecordToDatabase(UArgusActorRecord* record)
+uint32 UArgusStaticDatabase::AddUArgusActorRecordToDatabase(UArgusActorRecord* record)
 {
 	LazyLoadUArgusActorRecordDatabase();
 
@@ -95,6 +119,30 @@ const uint32 UArgusStaticDatabase::AddUArgusActorRecordToDatabase(UArgusActorRec
 	m_UArgusActorRecordDatabasePersistent->AddUArgusActorRecordToDatabase(record);
 	
 	return record->m_id;
+}
+
+void UArgusStaticDatabase::RegisterNewUArgusActorRecordDatabase(const UArgusActorRecordDatabase* database)
+{
+	if (!database)
+	{
+		return;
+	}
+
+	if (!m_UArgusActorRecordDatabase.IsNull())
+	{
+		ARGUS_LOG
+		(
+			ArgusStaticDataLog,
+			Error,
+			TEXT("[%s] Trying to assign to %s. Potential duplicate databases."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(m_UArgusActorRecordDatabase)
+		);
+		return;
+	}
+
+	m_UArgusActorRecordDatabase = TSoftObjectPtr<UArgusActorRecordDatabase>(database);
+	SaveDatabase();
 }
 #endif //WITH_EDITOR
 
@@ -142,7 +190,7 @@ const UFactionRecord* UArgusStaticDatabase::GetUFactionRecord(uint32 id)
 }
 
 #if WITH_EDITOR
-const uint32 UArgusStaticDatabase::AddUFactionRecordToDatabase(UFactionRecord* record)
+uint32 UArgusStaticDatabase::AddUFactionRecordToDatabase(UFactionRecord* record)
 {
 	LazyLoadUFactionRecordDatabase();
 
@@ -154,6 +202,30 @@ const uint32 UArgusStaticDatabase::AddUFactionRecordToDatabase(UFactionRecord* r
 	m_UFactionRecordDatabasePersistent->AddUFactionRecordToDatabase(record);
 	
 	return record->m_id;
+}
+
+void UArgusStaticDatabase::RegisterNewUFactionRecordDatabase(const UFactionRecordDatabase* database)
+{
+	if (!database)
+	{
+		return;
+	}
+
+	if (!m_UFactionRecordDatabase.IsNull())
+	{
+		ARGUS_LOG
+		(
+			ArgusStaticDataLog,
+			Error,
+			TEXT("[%s] Trying to assign to %s. Potential duplicate databases."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(m_UFactionRecordDatabase)
+		);
+		return;
+	}
+
+	m_UFactionRecordDatabase = TSoftObjectPtr<UFactionRecordDatabase>(database);
+	SaveDatabase();
 }
 #endif //WITH_EDITOR
 
@@ -201,7 +273,7 @@ const UPlacedArgusActorTeamInfoRecord* UArgusStaticDatabase::GetUPlacedArgusActo
 }
 
 #if WITH_EDITOR
-const uint32 UArgusStaticDatabase::AddUPlacedArgusActorTeamInfoRecordToDatabase(UPlacedArgusActorTeamInfoRecord* record)
+uint32 UArgusStaticDatabase::AddUPlacedArgusActorTeamInfoRecordToDatabase(UPlacedArgusActorTeamInfoRecord* record)
 {
 	LazyLoadUPlacedArgusActorTeamInfoRecordDatabase();
 
@@ -213,6 +285,30 @@ const uint32 UArgusStaticDatabase::AddUPlacedArgusActorTeamInfoRecordToDatabase(
 	m_UPlacedArgusActorTeamInfoRecordDatabasePersistent->AddUPlacedArgusActorTeamInfoRecordToDatabase(record);
 	
 	return record->m_id;
+}
+
+void UArgusStaticDatabase::RegisterNewUPlacedArgusActorTeamInfoRecordDatabase(const UPlacedArgusActorTeamInfoRecordDatabase* database)
+{
+	if (!database)
+	{
+		return;
+	}
+
+	if (!m_UPlacedArgusActorTeamInfoRecordDatabase.IsNull())
+	{
+		ARGUS_LOG
+		(
+			ArgusStaticDataLog,
+			Error,
+			TEXT("[%s] Trying to assign to %s. Potential duplicate databases."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(m_UPlacedArgusActorTeamInfoRecordDatabase)
+		);
+		return;
+	}
+
+	m_UPlacedArgusActorTeamInfoRecordDatabase = TSoftObjectPtr<UPlacedArgusActorTeamInfoRecordDatabase>(database);
+	SaveDatabase();
 }
 #endif //WITH_EDITOR
 
@@ -294,7 +390,7 @@ void UArgusStaticDatabase::RegisterNewUTeamColorRecordDatabase(const UTeamColorR
 		return;
 	}
 
-	m_UTeamColorRecordDatabase = database;
+	m_UTeamColorRecordDatabase = TSoftObjectPtr<UTeamColorRecordDatabase>(database);
 	SaveDatabase();
 }
 #endif //WITH_EDITOR

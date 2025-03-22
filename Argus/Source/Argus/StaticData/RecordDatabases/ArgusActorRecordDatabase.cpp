@@ -6,8 +6,12 @@
 #include "ArgusMacros.h"
 
 #if WITH_EDITOR
+#include "ArgusStaticData.h"
 #include "Editor.h"
+#include "Misc/Paths.h"
 #include "Subsystems/EditorAssetSubsystem.h"
+#include "UObject/ObjectSaveContext.h"
+#include <filesystem>
 #endif
 
 const UArgusActorRecord* UArgusActorRecordDatabase::GetRecord(uint32 id)
@@ -60,6 +64,24 @@ void UArgusActorRecordDatabase::ResizePersistentObjectPointerArray()
 }
 
 #if WITH_EDITOR
+void UArgusActorRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
+{
+	FString fullPath = FPaths::ConvertRelativePathToFull(saveContext.GetTargetFilename());
+	if (!std::filesystem::exists(TCHAR_TO_UTF8(*fullPath)))
+	{
+		TArray<FReferencerInformation> internalReferencers;
+		TArray<FReferencerInformation> externalReferencers;
+		RetrieveReferencers(&internalReferencers, &externalReferencers);
+
+		if (internalReferencers.IsEmpty() && externalReferencers.IsEmpty())
+		{
+			ArgusStaticData::RegisterNewUArgusActorRecordDatabase(this);
+		}
+	}
+
+	Super::PreSave(saveContext);
+}
+
 void UArgusActorRecordDatabase::PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent)
 {
 	if (propertyChangedEvent.ChangeType != EPropertyChangeType::ValueSet)

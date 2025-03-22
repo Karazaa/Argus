@@ -43,4 +43,23 @@ public:
 #endif //WITH_EDITOR
 
 @@@@@
+
+#if WITH_EDITOR
+private:
+	static UArgusStaticDatabase* GetParentDatabase()
+	{
+		if (!GEditor)
+		{
+			return nullptr;
+		}
+
+		UEditorAssetSubsystem* editorAssetSubsystem = GEditor->GetEditorSubsystem<UEditorAssetSubsystem>();
+		if (!editorAssetSubsystem)
+		{
+			return nullptr;
+		}
+
+		return Cast<UArgusStaticDatabase>(editorAssetSubsystem->LoadAsset(FString("/Game/StaticData/ArgusStaticDatabase.ArgusStaticDatabase")));
+	}
+#endif //WITH_EDITOR
 };
