@@ -79,20 +79,30 @@ void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float delta
 	}
 
 	FVector moverLocation = components.m_transformComponent->m_location;
-	const FVector targetLocation = components.m_navigationComponent->m_navigationPoints[lastPointIndex + 1u];
 	const FVector velocity = components.m_transformComponent->m_currentVelocity * deltaTime;
+	moverLocation += velocity;
+
+	const FVector sourceLocation = components.m_navigationComponent->m_navigationPoints[lastPointIndex];
+	const FVector targetLocation = components.m_navigationComponent->m_navigationPoints[lastPointIndex + 1u];
+	const FVector segment = targetLocation - sourceLocation;
+	const FVector actual = moverLocation - sourceLocation;
+
+	const float dotProd = actual.Dot(segment);
+	const float segmentLength = segment.Length();
+	const bool didMovePast = (dotProd / segmentLength) > segmentLength;
+
 	const FVector2D moverLocation2D = FVector2D(moverLocation);
 	const FVector2D targetLocation2D = FVector2D(targetLocation);
-	const FVector2D velocity2D = FVector2D(velocity);
+	// const FVector2D velocity2D = FVector2D(velocity);
 
 	const float distanceToTarget = FVector2D::Distance(moverLocation2D, targetLocation2D);
-	const float distanceVelocityUpdateToTarget = FVector2D::Distance(moverLocation2D + velocity2D, targetLocation2D);
-	const float velocityLength = velocity2D.Length();
+	//const float distanceVelocityUpdateToTarget = FVector2D::Distance(moverLocation2D + velocity2D, targetLocation2D);
+	//const float velocityLength = velocity2D.Length();
+
 	bool isAtEndOfNavigationPath = false;
-	if (FMath::IsNearlyEqual(velocityLength, distanceToTarget + distanceVelocityUpdateToTarget, ArgusECSConstants::k_moveAlongPathWaypointTolerance))
+	if (didMovePast)
 	{
 		components.m_navigationComponent->m_lastPointIndex++;
-		moverLocation = targetLocation;
 
 		// Need to set velocity when starting pathing segment so that avoidance systems can properly consider desired velocity when proposing movement velocity.
 		if (components.m_navigationComponent->m_lastPointIndex == numNavigationPoints - 1u)
@@ -104,10 +114,6 @@ void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float delta
 			const FVector nextTargetLocation = components.m_navigationComponent->m_navigationPoints[components.m_navigationComponent->m_lastPointIndex + 1];
 			components.m_transformComponent->m_currentVelocity = (nextTargetLocation - moverLocation).GetSafeNormal() * components.m_transformComponent->m_desiredSpeedUnitsPerSecond;
 		}
-	}
-	else
-	{
-		moverLocation += velocity;
 	}
 
 	const bool isWithinRangeOfTargetEntity	=	components.m_navigationComponent->m_lastPointIndex == numNavigationPoints - 2u &&
