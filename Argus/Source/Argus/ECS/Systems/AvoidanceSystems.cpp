@@ -84,6 +84,10 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 	params.m_spatialPartitioningComponent = spatialPartitioningComponent;
 	FVector2D desiredVelocity = FVector2D::ZeroVector;
 
+	// Search for nearby entities within a specific range.
+	TArray<uint16> foundEntityIds;
+	const bool didFindOtherEntities = spatialPartitioningComponent->m_argusEntityKDTree.FindOtherArgusEntityIdsWithinRangeOfArgusEntity(foundEntityIds, components.m_entity, ArgusECSConstants::k_avoidanceAgentSearchRadius);
+
 	// If we are moving, we need to get our desired velocity as the velocity that points towards the nearest pathing point at the desired speed.
 	if (components.m_taskComponent->IsExecutingMoveTask())
 	{
@@ -92,7 +96,8 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 		FVector desiredDirection = FVector::ZeroVector;
 		if (numNavigationPoints != 0u && futureIndex < numNavigationPoints)
 		{
-			desiredDirection = (components.m_navigationComponent->m_navigationPoints[futureIndex] - components.m_transformComponent->m_location);
+			components.m_transformComponent->m_avoidanceGroupSourceLocation = GetAvoidanceGroupSourceLocation(components, foundEntityIds, components.m_navigationComponent->m_navigationPoints[futureIndex]);
+			desiredDirection = (components.m_navigationComponent->m_navigationPoints[futureIndex] - components.m_transformComponent->m_avoidanceGroupSourceLocation);
 		}
 		else
 		{
@@ -103,16 +108,15 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 		desiredVelocity = ArgusMath::ToCartesianVector2(FVector2D(desiredDirection).GetSafeNormal() * components.m_transformComponent->m_desiredSpeedUnitsPerSecond);
 	}
 
-	// Search for nearby entities within a specific range.
-	TArray<uint16> foundEntityIds;
-	if (!spatialPartitioningComponent->m_argusEntityKDTree.FindOtherArgusEntityIdsWithinRangeOfArgusEntity(foundEntityIds, components.m_entity, ArgusECSConstants::k_avoidanceAgentSearchRadius))
+	// If no entities nearby, then nothing can effect our navigation, so we should just early out with a desired velocity. 
+	if (!didFindOtherEntities)
 	{
-		if (desiredVelocity.IsNearlyZero())
+		// If we have no desired velocity, we should try to get a desired velocity direction towards where we last navigated too.
+		if (!components.m_taskComponent->IsExecutingMoveTask())
 		{
-			desiredVelocity = GetVelocityTowardsEndofNavPoint(params, components);
+			desiredVelocity = GetVelocityTowardsEndOfNavPoint(params, components);
 		}
 
-		// If no entities nearby, then nothing can effect our navigation, so we should just early out at our desired speed. 
 		components.m_transformComponent->m_proposedAvoidanceVelocity = FVector(ArgusMath::ToUnrealVector2(desiredVelocity), 0.0f);
 		if (CVarShowAvoidanceDebug.GetValueOnGameThread() && worldPointer && components.m_entity.IsSelected())
 		{
@@ -191,7 +195,7 @@ void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const Creat
 	}
 }
 
-void AvoidanceSystems::CreateEntityORCALines(const CreateEntityORCALinesParams& params, const TransformSystems::TransformSystemsComponentArgs& components, TArray<uint16>& foundEntityIds, TArray<ORCALine>& outORCALines, FVector2D& outDesiredVelocity)
+void AvoidanceSystems::CreateEntityORCALines(const CreateEntityORCALinesParams& params, const TransformSystems::TransformSystemsComponentArgs& components, const TArray<uint16>& foundEntityIds, TArray<ORCALine>& outORCALines, FVector2D& outDesiredVelocity)
 {
 	const bool calculateAverageLocationOfOtherEntities = outDesiredVelocity.IsNearlyZero() && !params.m_sourceEntityVelocity.IsNearlyZero();
 	FVector2D averageLocationOfOtherEntities = FVector2D::ZeroVector;
@@ -479,7 +483,7 @@ void AvoidanceSystems::ThreeDimensionalLinearProgram(const TArray<ORCALine>& orc
 	}
 }
 
-FVector2D AvoidanceSystems::GetVelocityTowardsEndofNavPoint(const CreateEntityORCALinesParams& params, const TransformSystems::TransformSystemsComponentArgs& components)
+FVector2D AvoidanceSystems::GetVelocityTowardsEndOfNavPoint(const CreateEntityORCALinesParams& params, const TransformSystems::TransformSystemsComponentArgs& components)
 {
 	const FVector2D endedNavigationLocation = ArgusMath::ToCartesianVector2(FVector2D(components.m_navigationComponent->m_endedNavigationLocation));
 	const FVector2D towardsEndNavigationLocation = endedNavigationLocation - params.m_sourceEntityLocation;
@@ -491,6 +495,66 @@ FVector2D AvoidanceSystems::GetVelocityTowardsEndofNavPoint(const CreateEntityOR
 	}
 
 	return FVector2D::ZeroVector;
+}
+
+FVector AvoidanceSystems::GetAvoidanceGroupSourceLocation(const TransformSystems::TransformSystemsComponentArgs& components, const TArray<uint16>& foundEntityIds, const FVector& pointToNavigateTo)
+{
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return pointToNavigateTo;
+	}
+
+	const IdentityComponent* sourceEntityIdentityComponent = components.m_entity.GetComponent<IdentityComponent>();
+	if (!sourceEntityIdentityComponent)
+	{
+		return pointToNavigateTo;
+	}
+
+	FVector averageLocation = components.m_transformComponent->m_location;
+	float entityCount = 1.0f;
+	for (int32 i = 0; i < foundEntityIds.Num(); ++i)
+	{
+		ArgusEntity foundEntity = ArgusEntity::RetrieveEntity(foundEntityIds[i]);
+		if (!foundEntity)
+		{
+			continue;
+		}
+
+		if (foundEntity.IsKillable() && !foundEntity.IsAlive())
+		{
+			continue;
+		}
+
+		const TaskComponent* foundEntityTaskComponent = foundEntity.GetComponent<TaskComponent>();
+		const IdentityComponent* foundEntityIdentityComponent = foundEntity.GetComponent<IdentityComponent>();
+		const NavigationComponent* foundEntityNavigationComponent = foundEntity.GetComponent<NavigationComponent>();
+		const TransformComponent* foundEntityTransformComponent = foundEntity.GetComponent<TransformComponent>();
+		if (!foundEntityIdentityComponent || !foundEntityNavigationComponent || !foundEntityTransformComponent || !foundEntityTaskComponent)
+		{
+			continue;
+		}
+
+		if (!foundEntityTaskComponent->IsExecutingMoveTask())
+		{
+			continue;
+		}
+
+		if (foundEntityIdentityComponent->m_team != sourceEntityIdentityComponent->m_team)
+		{
+			continue;
+		}
+
+		const int32 futureIndex = foundEntityNavigationComponent->m_lastPointIndex + 1;
+		if (foundEntityNavigationComponent->m_navigationPoints[futureIndex] != pointToNavigateTo)
+		{
+			continue;
+		}
+
+		averageLocation += foundEntityTransformComponent->m_location;
+		entityCount += 1.0f;
+	}
+
+	return ArgusMath::SafeDivide(averageLocation, entityCount, pointToNavigateTo);
 }
 
 float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems::TransformSystemsComponentArgs& sourceEntityComponents, const ArgusEntity& foundEntity)
