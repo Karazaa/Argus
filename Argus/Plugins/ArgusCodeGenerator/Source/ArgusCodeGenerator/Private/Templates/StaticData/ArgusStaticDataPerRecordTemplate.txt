@@ -13,7 +13,7 @@
 	}
 
 #if WITH_EDITOR
-	static void RegisterNew#####Database(const #####Database* database)
+	static void RegisterNew#####Database(#####Database* database)
 	{
 		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
 

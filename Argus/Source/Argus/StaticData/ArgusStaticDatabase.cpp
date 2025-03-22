@@ -38,7 +38,7 @@ uint32 UArgusStaticDatabase::AddUAbilityRecordToDatabase(UAbilityRecord* record)
 	return record->m_id;
 }
 
-void UArgusStaticDatabase::RegisterNewUAbilityRecordDatabase(const UAbilityRecordDatabase* database)
+void UArgusStaticDatabase::RegisterNewUAbilityRecordDatabase(UAbilityRecordDatabase* database)
 {
 	if (!database)
 	{
@@ -58,7 +58,7 @@ void UArgusStaticDatabase::RegisterNewUAbilityRecordDatabase(const UAbilityRecor
 		return;
 	}
 
-	m_UAbilityRecordDatabase = TSoftObjectPtr<UAbilityRecordDatabase>(database);
+	m_UAbilityRecordDatabase = database;
 	SaveDatabase();
 }
 #endif //WITH_EDITOR
@@ -121,7 +121,7 @@ uint32 UArgusStaticDatabase::AddUArgusActorRecordToDatabase(UArgusActorRecord* r
 	return record->m_id;
 }
 
-void UArgusStaticDatabase::RegisterNewUArgusActorRecordDatabase(const UArgusActorRecordDatabase* database)
+void UArgusStaticDatabase::RegisterNewUArgusActorRecordDatabase(UArgusActorRecordDatabase* database)
 {
 	if (!database)
 	{
@@ -141,7 +141,7 @@ void UArgusStaticDatabase::RegisterNewUArgusActorRecordDatabase(const UArgusActo
 		return;
 	}
 
-	m_UArgusActorRecordDatabase = TSoftObjectPtr<UArgusActorRecordDatabase>(database);
+	m_UArgusActorRecordDatabase = database;
 	SaveDatabase();
 }
 #endif //WITH_EDITOR
@@ -204,7 +204,7 @@ uint32 UArgusStaticDatabase::AddUFactionRecordToDatabase(UFactionRecord* record)
 	return record->m_id;
 }
 
-void UArgusStaticDatabase::RegisterNewUFactionRecordDatabase(const UFactionRecordDatabase* database)
+void UArgusStaticDatabase::RegisterNewUFactionRecordDatabase(UFactionRecordDatabase* database)
 {
 	if (!database)
 	{
@@ -224,7 +224,7 @@ void UArgusStaticDatabase::RegisterNewUFactionRecordDatabase(const UFactionRecor
 		return;
 	}
 
-	m_UFactionRecordDatabase = TSoftObjectPtr<UFactionRecordDatabase>(database);
+	m_UFactionRecordDatabase = database;
 	SaveDatabase();
 }
 #endif //WITH_EDITOR
@@ -287,7 +287,7 @@ uint32 UArgusStaticDatabase::AddUPlacedArgusActorTeamInfoRecordToDatabase(UPlace
 	return record->m_id;
 }
 
-void UArgusStaticDatabase::RegisterNewUPlacedArgusActorTeamInfoRecordDatabase(const UPlacedArgusActorTeamInfoRecordDatabase* database)
+void UArgusStaticDatabase::RegisterNewUPlacedArgusActorTeamInfoRecordDatabase(UPlacedArgusActorTeamInfoRecordDatabase* database)
 {
 	if (!database)
 	{
@@ -307,7 +307,7 @@ void UArgusStaticDatabase::RegisterNewUPlacedArgusActorTeamInfoRecordDatabase(co
 		return;
 	}
 
-	m_UPlacedArgusActorTeamInfoRecordDatabase = TSoftObjectPtr<UPlacedArgusActorTeamInfoRecordDatabase>(database);
+	m_UPlacedArgusActorTeamInfoRecordDatabase = database;
 	SaveDatabase();
 }
 #endif //WITH_EDITOR
@@ -370,7 +370,7 @@ uint32 UArgusStaticDatabase::AddUTeamColorRecordToDatabase(UTeamColorRecord* rec
 	return record->m_id;
 }
 
-void UArgusStaticDatabase::RegisterNewUTeamColorRecordDatabase(const UTeamColorRecordDatabase* database)
+void UArgusStaticDatabase::RegisterNewUTeamColorRecordDatabase(UTeamColorRecordDatabase* database)
 {
 	if (!database)
 	{
@@ -390,7 +390,7 @@ void UArgusStaticDatabase::RegisterNewUTeamColorRecordDatabase(const UTeamColorR
 		return;
 	}
 
-	m_UTeamColorRecordDatabase = TSoftObjectPtr<UTeamColorRecordDatabase>(database);
+	m_UTeamColorRecordDatabase = database;
 	SaveDatabase();
 }
 #endif //WITH_EDITOR

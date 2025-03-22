@@ -22,7 +22,7 @@ public:
 	const UAbilityRecord* GetUAbilityRecord(uint32 id);
 #if WITH_EDITOR
 	uint32 AddUAbilityRecordToDatabase(UAbilityRecord* record);
-	void RegisterNewUAbilityRecordDatabase(const UAbilityRecordDatabase* database);
+	void RegisterNewUAbilityRecordDatabase(UAbilityRecordDatabase* database);
 #endif //WITH_EDITOR
 
 protected:
@@ -38,7 +38,7 @@ public:
 	const UArgusActorRecord* GetUArgusActorRecord(uint32 id);
 #if WITH_EDITOR
 	uint32 AddUArgusActorRecordToDatabase(UArgusActorRecord* record);
-	void RegisterNewUArgusActorRecordDatabase(const UArgusActorRecordDatabase* database);
+	void RegisterNewUArgusActorRecordDatabase(UArgusActorRecordDatabase* database);
 #endif //WITH_EDITOR
 
 protected:
@@ -54,7 +54,7 @@ public:
 	const UFactionRecord* GetUFactionRecord(uint32 id);
 #if WITH_EDITOR
 	uint32 AddUFactionRecordToDatabase(UFactionRecord* record);
-	void RegisterNewUFactionRecordDatabase(const UFactionRecordDatabase* database);
+	void RegisterNewUFactionRecordDatabase(UFactionRecordDatabase* database);
 #endif //WITH_EDITOR
 
 protected:
@@ -70,7 +70,7 @@ public:
 	const UPlacedArgusActorTeamInfoRecord* GetUPlacedArgusActorTeamInfoRecord(uint32 id);
 #if WITH_EDITOR
 	uint32 AddUPlacedArgusActorTeamInfoRecordToDatabase(UPlacedArgusActorTeamInfoRecord* record);
-	void RegisterNewUPlacedArgusActorTeamInfoRecordDatabase(const UPlacedArgusActorTeamInfoRecordDatabase* database);
+	void RegisterNewUPlacedArgusActorTeamInfoRecordDatabase(UPlacedArgusActorTeamInfoRecordDatabase* database);
 #endif //WITH_EDITOR
 
 protected:
@@ -86,7 +86,7 @@ public:
 	const UTeamColorRecord* GetUTeamColorRecord(uint32 id);
 #if WITH_EDITOR
 	uint32 AddUTeamColorRecordToDatabase(UTeamColorRecord* record);
-	void RegisterNewUTeamColorRecordDatabase(const UTeamColorRecordDatabase* database);
+	void RegisterNewUTeamColorRecordDatabase(UTeamColorRecordDatabase* database);
 #endif //WITH_EDITOR
 
 protected:

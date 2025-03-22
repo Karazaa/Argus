@@ -28,7 +28,7 @@ uint32 UArgusStaticDatabase::Add#####ToDatabase(#####* record)
 	return record->m_id;
 }
 
-void UArgusStaticDatabase::RegisterNew#####Database(const #####Database* database)
+void UArgusStaticDatabase::RegisterNew#####Database(#####Database* database)
 {
 	if (!database)
 	{
@@ -48,7 +48,7 @@ void UArgusStaticDatabase::RegisterNew#####Database(const #####Database* databas
 		return;
 	}
 
-	m_#####Database = TSoftObjectPtr<#####Database>(database);
+	m_#####Database = database;
 	SaveDatabase();
 }
 #endif //WITH_EDITOR

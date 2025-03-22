@@ -76,7 +76,7 @@ public:
 	}
 
 #if WITH_EDITOR
-	static void RegisterNewUAbilityRecordDatabase(const UAbilityRecordDatabase* database)
+	static void RegisterNewUAbilityRecordDatabase(UAbilityRecordDatabase* database)
 	{
 		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
 
@@ -104,7 +104,7 @@ public:
 	}
 
 #if WITH_EDITOR
-	static void RegisterNewUArgusActorRecordDatabase(const UArgusActorRecordDatabase* database)
+	static void RegisterNewUArgusActorRecordDatabase(UArgusActorRecordDatabase* database)
 	{
 		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
 
@@ -132,7 +132,7 @@ public:
 	}
 
 #if WITH_EDITOR
-	static void RegisterNewUFactionRecordDatabase(const UFactionRecordDatabase* database)
+	static void RegisterNewUFactionRecordDatabase(UFactionRecordDatabase* database)
 	{
 		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
 
@@ -160,7 +160,7 @@ public:
 	}
 
 #if WITH_EDITOR
-	static void RegisterNewUPlacedArgusActorTeamInfoRecordDatabase(const UPlacedArgusActorTeamInfoRecordDatabase* database)
+	static void RegisterNewUPlacedArgusActorTeamInfoRecordDatabase(UPlacedArgusActorTeamInfoRecordDatabase* database)
 	{
 		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
 
@@ -188,7 +188,7 @@ public:
 	}
 
 #if WITH_EDITOR
-	static void RegisterNewUTeamColorRecordDatabase(const UTeamColorRecordDatabase* database)
+	static void RegisterNewUTeamColorRecordDatabase(UTeamColorRecordDatabase* database)
 	{
 		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
 
