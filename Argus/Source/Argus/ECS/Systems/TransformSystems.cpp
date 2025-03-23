@@ -78,44 +78,35 @@ void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float delta
 		return;
 	}
 
+	const bool isLastPoint = components.m_navigationComponent->m_lastPointIndex == numNavigationPoints - 2u;
 	FVector moverLocation = components.m_transformComponent->m_location;
 	const FVector velocity = components.m_transformComponent->m_currentVelocity * deltaTime;
 	moverLocation += velocity;
 
+	const FVector evaluationPoint = isLastPoint ? components.m_transformComponent->m_avoidanceGroupSourceLocation + velocity : moverLocation;
 	const FVector sourceLocation = components.m_navigationComponent->m_navigationPoints[lastPointIndex];
 	const FVector targetLocation = components.m_navigationComponent->m_navigationPoints[lastPointIndex + 1u];
 	const FVector segment = targetLocation - sourceLocation;
-	const FVector actual = moverLocation - sourceLocation;
-
-	const float dotProd = actual.Dot(segment);
+	const FVector actual = evaluationPoint - sourceLocation;
 	const float segmentLength = segment.Length();
-	const bool didMovePast = (dotProd / segmentLength) > segmentLength;
-
-	const FVector2D moverLocation2D = FVector2D(moverLocation);
-	const FVector2D targetLocation2D = FVector2D(targetLocation);
-	// const FVector2D velocity2D = FVector2D(velocity);
-
-	const float distanceToTarget = FVector2D::Distance(moverLocation2D, targetLocation2D);
-	//const float distanceVelocityUpdateToTarget = FVector2D::Distance(moverLocation2D + velocity2D, targetLocation2D);
-	//const float velocityLength = velocity2D.Length();
 
 	bool isAtEndOfNavigationPath = false;
-	if (didMovePast)
+	if ((actual.Dot(segment) / segmentLength) > segmentLength)
 	{
 		components.m_navigationComponent->m_lastPointIndex++;
+		isAtEndOfNavigationPath = isLastPoint;
 
 		// Need to set velocity when starting pathing segment so that avoidance systems can properly consider desired velocity when proposing movement velocity.
-		if (components.m_navigationComponent->m_lastPointIndex == numNavigationPoints - 1u)
-		{
-			isAtEndOfNavigationPath = true;
-		}
-		else
+		if (!isLastPoint)
 		{
 			const FVector nextTargetLocation = components.m_navigationComponent->m_navigationPoints[components.m_navigationComponent->m_lastPointIndex + 1];
 			components.m_transformComponent->m_currentVelocity = (nextTargetLocation - moverLocation).GetSafeNormal() * components.m_transformComponent->m_desiredSpeedUnitsPerSecond;
 		}
 	}
 
+	const FVector2D moverLocation2D = FVector2D(moverLocation);
+	const FVector2D targetLocation2D = FVector2D(targetLocation);
+	const float distanceToTarget = FVector2D::Distance(moverLocation2D, targetLocation2D);
 	const bool isWithinRangeOfTargetEntity	=	components.m_navigationComponent->m_lastPointIndex == numNavigationPoints - 2u &&
 												components.m_taskComponent->m_movementState == MovementState::MoveToEntity &&
 												GetEndMoveRange(components) > distanceToTarget;
