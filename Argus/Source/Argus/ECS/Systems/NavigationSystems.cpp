@@ -86,7 +86,7 @@ void NavigationSystems::NavigateFromEntityToEntity(UWorld* worldPointer, ArgusEn
 
 	if (CombatSystems::CanEntityAttackOtherEntity(components.m_entity, targetEntity))
 	{
-		components.m_taskComponent->m_combatState = CombatState::Attack;
+		components.m_taskComponent->m_combatState = CombatState::ShouldAttack;
 	}
 	else
 	{
