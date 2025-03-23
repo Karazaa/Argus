@@ -146,6 +146,10 @@ bool TransformSystems::ProcessMovementTaskCommands(UWorld* worldPointer, float d
 			MoveAlongNavigationPath(worldPointer, deltaTime, components);
 			return true;
 
+		case MovementState::AwaitingFinish:
+			OnCompleteNavigationPath(components, components.m_transformComponent->m_location);
+			return false;
+
 		case MovementState::None:
 			components.m_transformComponent->m_currentVelocity = components.m_transformComponent->m_proposedAvoidanceVelocity;
 			if (!components.m_transformComponent->m_currentVelocity.IsNearlyZero())

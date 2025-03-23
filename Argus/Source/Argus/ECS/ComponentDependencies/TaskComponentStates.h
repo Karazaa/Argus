@@ -19,7 +19,8 @@ enum class MovementState : uint8
 	ProcessMoveToEntityCommand,
 	MoveToLocation,
 	MoveToEntity,
-	FailedToFindPath
+	AwaitingFinish,
+	FailedToFindPath,
 };
 
 enum class SpawningState : uint8
@@ -51,5 +52,6 @@ enum class ConstructionState : uint8
 enum class CombatState : uint8
 {
 	None,
-	Attack
+	ShouldAttack,
+	Attacking
 };

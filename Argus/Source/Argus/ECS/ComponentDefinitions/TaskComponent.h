@@ -85,6 +85,9 @@ struct TaskComponent
 			case MovementState::MoveToEntity:
 				movementStateName = ARGUS_NAMEOF(MovementState::ProcessMoveToEntityCommand);
 				break;
+			case MovementState::AwaitingFinish:
+				movementStateName = ARGUS_NAMEOF(MovementState::AwaitingFinish);
+				break;
 			case MovementState::FailedToFindPath:
 				movementStateName = ARGUS_NAMEOF(MovementState::FailedToFindPath);
 				break;
@@ -155,8 +158,11 @@ struct TaskComponent
 			case CombatState::None:
 				combatStateName = ARGUS_NAMEOF(CombatState::None);
 				break;
-			case CombatState::Attack:
-				combatStateName = ARGUS_NAMEOF(CombatState::Attack);
+			case CombatState::ShouldAttack:
+				combatStateName = ARGUS_NAMEOF(CombatState::ShouldAttack);
+				break;
+			case CombatState::Attacking:
+				combatStateName = ARGUS_NAMEOF(CombatState::Attacking);
 				break;
 			default:
 				break;

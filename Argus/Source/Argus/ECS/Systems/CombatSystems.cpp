@@ -73,7 +73,8 @@ void CombatSystems::ProcessCombatTaskCommands(float deltaTime, const CombatSyste
 	{
 		case CombatState::None:
 			break;
-		case CombatState::Attack:
+		case CombatState::ShouldAttack:
+		case CombatState::Attacking:
 			ProcessAttackCommand(deltaTime, components);
 			break;
 	}
@@ -119,9 +120,11 @@ void CombatSystems::ProcessAttackCommand(float deltaTime, const CombatSystemsCom
 
 	if (FVector::DistSquared(components.m_transformComponent->m_location, targetTransformComponent->m_location) > FMath::Square(neededRange))
 	{
+		components.m_taskComponent->m_combatState = CombatState::ShouldAttack;
 		return;
 	}
 
+	components.m_taskComponent->m_combatState = CombatState::Attacking;
 	if (components.m_combatComponent->m_intervalDurationSeconds > 0.0f)
 	{
 		PerformTimerAttack(targetEntity, components);

@@ -6,6 +6,7 @@
 #include "DrawDebugHelpers.h"
 #include "NavigationData.h"
 #include "NavigationSystem.h"
+#include "Systems/CombatSystems.h"
 #include <limits>
 
 static TAutoConsoleVariable<bool> CVarShowAvoidanceDebug(TEXT("Argus.Avoidance.ShowAvoidanceDebug"), false, TEXT(""));
@@ -534,12 +535,12 @@ FVector AvoidanceSystems::GetAvoidanceGroupSourceLocation(const TransformSystems
 			continue;
 		}
 
-		if (!foundEntityTaskComponent->IsExecutingMoveTask())
+		if (foundEntityIdentityComponent->m_team != sourceEntityIdentityComponent->m_team)
 		{
 			continue;
 		}
 
-		if (foundEntityIdentityComponent->m_team != sourceEntityIdentityComponent->m_team)
+		if (!foundEntityTaskComponent->IsExecutingMoveTask())
 		{
 			continue;
 		}
@@ -561,6 +562,11 @@ float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems
 {
 	if (!sourceEntityComponents.m_entity || !sourceEntityComponents.m_taskComponent || !sourceEntityComponents.m_transformComponent ||
 		!sourceEntityComponents.m_navigationComponent || !sourceEntityComponents.m_targetingComponent)
+	{
+		return 0.0f;
+	}
+
+	if (sourceEntityComponents.m_taskComponent->m_combatState == CombatState::Attacking)
 	{
 		return 0.0f;
 	}
@@ -599,6 +605,11 @@ float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems
 	if (sourceEntityIdentityComponent->IsInTeamMask(foundEntityIdentityComponent->m_enemies))
 	{
 		return sourceEntityComponents.m_taskComponent->IsExecutingMoveTask() ? 1.0f : 0.0f;
+	}
+
+	if (foundEntityTaskComponent->m_combatState == CombatState::Attacking)
+	{
+		return 1.0f;
 	}
 
 	if (foundEntityTaskComponent->m_constructionState == ConstructionState::ConstructingOther)
