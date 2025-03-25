@@ -36,7 +36,7 @@ bool AvoidanceSystemsProcessORCAvoidanceTest::RunTest(const FString& Parameters)
 	);
 #pragma endregion
 
-	AvoidanceSystems::ProcessORCAvoidance(dummyPointer, deltaTime, components);
+	AvoidanceSystems::ProcessORCAvoidance(dummyPointer, deltaTime, components, nullptr);
 
 	components.m_entity = entity;
 	components.m_taskComponent = entity.AddComponent<TaskComponent>();
@@ -44,6 +44,7 @@ bool AvoidanceSystemsProcessORCAvoidanceTest::RunTest(const FString& Parameters)
 	components.m_navigationComponent = entity.AddComponent<NavigationComponent>();
 	components.m_targetingComponent = entity.AddComponent<TargetingComponent>();
 	IdentityComponent* identityComponent = entity.AddComponent<IdentityComponent>();
+	AvoidanceGroupingComponent* avoidanceGroupingComponent = entity.AddComponent<AvoidanceGroupingComponent>();
 
 #pragma region Test that an error is reported if there is no singleton entity.
 	AddExpectedErrorPlain
@@ -56,7 +57,7 @@ bool AvoidanceSystemsProcessORCAvoidanceTest::RunTest(const FString& Parameters)
 	);
 #pragma endregion
 
-	AvoidanceSystems::ProcessORCAvoidance(dummyPointer, deltaTime, components);
+	AvoidanceSystems::ProcessORCAvoidance(dummyPointer, deltaTime, components, avoidanceGroupingComponent);
 
 	ArgusEntity singletonEntity = ArgusEntity::CreateEntity(ArgusECSConstants::k_singletonEntityId);
 
@@ -71,7 +72,7 @@ bool AvoidanceSystemsProcessORCAvoidanceTest::RunTest(const FString& Parameters)
 	);
 #pragma endregion
 
-	AvoidanceSystems::ProcessORCAvoidance(dummyPointer, deltaTime, components);
+	AvoidanceSystems::ProcessORCAvoidance(dummyPointer, deltaTime, components, avoidanceGroupingComponent);
 
 	SpatialPartitioningComponent* spatialPartitioningComponent = singletonEntity.AddComponent<SpatialPartitioningComponent>();
 
@@ -100,7 +101,7 @@ bool AvoidanceSystemsProcessORCAvoidanceTest::RunTest(const FString& Parameters)
 	);
 #pragma endregion
 
-	AvoidanceSystems::ProcessORCAvoidance(dummyPointer, deltaTime, components);
+	AvoidanceSystems::ProcessORCAvoidance(dummyPointer, deltaTime, components, avoidanceGroupingComponent);
 
 #pragma region Test that a lone entity with no velocity would have a proposed avoidance velocity of 0 after running ProcessORCAvoidance
 	TestEqual
@@ -143,14 +144,14 @@ bool AvoidanceSystemsProcessORCAvoidanceTest::RunTest(const FString& Parameters)
 	);
 #pragma endregion
 
-	AvoidanceSystems::ProcessORCAvoidance(dummyPointer, deltaTime, components);
+	AvoidanceSystems::ProcessORCAvoidance(dummyPointer, deltaTime, components, avoidanceGroupingComponent);
 
 	components.m_navigationComponent->m_navigationPoints.Add(components.m_transformComponent->m_location);
 	components.m_navigationComponent->m_navigationPoints.Add(targetLocation);
 	components.m_transformComponent->m_currentVelocity = velocity;
 
 	spatialPartitioningComponent->m_argusEntityKDTree.RebuildKDTreeForAllArgusEntities();
-	AvoidanceSystems::ProcessORCAvoidance(dummyPointer, deltaTime, components);
+	AvoidanceSystems::ProcessORCAvoidance(dummyPointer, deltaTime, components, avoidanceGroupingComponent);
 
 // TODO JAMES: Solve why this test is failing when prediction time is > 1.0f
 //#pragma region Test that a moving entity would not maintain its velocity when about to collide with a static entity.
@@ -214,8 +215,8 @@ bool AvoidanceSystemsProcessORCAvoidanceTest::RunTest(const FString& Parameters)
 	}
 	secondIdentityComponent->m_team = ETeam::TeamA;
 
-	AvoidanceSystems::ProcessORCAvoidance(dummyPointer, deltaTime, components);
-	AvoidanceSystems::ProcessORCAvoidance(dummyPointer, deltaTime, secondComponents);
+	AvoidanceSystems::ProcessORCAvoidance(dummyPointer, deltaTime, components, avoidanceGroupingComponent);
+	AvoidanceSystems::ProcessORCAvoidance(dummyPointer, deltaTime, secondComponents, avoidanceGroupingComponent);
 
 #pragma region Test that a moving entity would maintain its velocity when about to collide with a static but movable entity.
 	TestEqual
@@ -257,8 +258,8 @@ bool AvoidanceSystemsProcessORCAvoidanceTest::RunTest(const FString& Parameters)
 	secondComponents.m_transformComponent->m_currentVelocity = secondVelocity;
 	secondComponents.m_transformComponent->m_desiredSpeedUnitsPerSecond = desiredSpeed;
 
-	AvoidanceSystems::ProcessORCAvoidance(dummyPointer, deltaTime, components);
-	AvoidanceSystems::ProcessORCAvoidance(dummyPointer, deltaTime, secondComponents);
+	AvoidanceSystems::ProcessORCAvoidance(dummyPointer, deltaTime, components, avoidanceGroupingComponent);
+	AvoidanceSystems::ProcessORCAvoidance(dummyPointer, deltaTime, secondComponents, avoidanceGroupingComponent);
 
 #pragma region Test that a moving entity would not maintain its velocity when about to collide with another moving entity.
 	// TODO JAMES: Bug in avoidance. Need to better handle the case where current velocity points to the dead center of another agent.

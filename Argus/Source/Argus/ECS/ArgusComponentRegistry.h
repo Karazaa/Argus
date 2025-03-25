@@ -10,6 +10,7 @@
 
 // Begin component specific includes.
 #include "ComponentDefinitions\AbilityComponent.h"
+#include "ComponentDefinitions\AvoidanceGroupingComponent.h"
 #include "ComponentDefinitions\CombatComponent.h"
 #include "ComponentDefinitions\ConstructionComponent.h"
 #include "ComponentDefinitions\HealthComponent.h"
@@ -53,7 +54,7 @@ public:
 	static void FlushAllComponents();
 	static void AppendComponentDebugStrings(uint16 entityId, FString& debugStringToAppendTo);
 
-	static constexpr uint32 k_numComponentTypes = 16;
+	static constexpr uint32 k_numComponentTypes = 17;
 
 	// Begin component specific template specifiers.
 	
@@ -121,6 +122,71 @@ public:
 	}
 
 	friend struct AbilityComponent;
+#pragma endregion
+#pragma region AvoidanceGroupingComponent
+private:
+	static AvoidanceGroupingComponent s_AvoidanceGroupingComponents[ArgusECSConstants::k_maxEntities];
+	static std::bitset<ArgusECSConstants::k_maxEntities> s_isAvoidanceGroupingComponentActive;
+public:
+	template<>
+	inline AvoidanceGroupingComponent* GetComponent<AvoidanceGroupingComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(AvoidanceGroupingComponent));
+			return nullptr;
+		}
+
+		if (!s_isAvoidanceGroupingComponentActive[entityId])
+		{
+			return nullptr;
+		}
+
+		return &s_AvoidanceGroupingComponents[entityId];
+	}
+
+	template<>
+	inline AvoidanceGroupingComponent* AddComponent<AvoidanceGroupingComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(AvoidanceGroupingComponent));
+			return nullptr;
+		}
+
+		if (s_isAvoidanceGroupingComponentActive[entityId])
+		{
+			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(AvoidanceGroupingComponent), entityId);
+			return &s_AvoidanceGroupingComponents[entityId];
+		}
+
+		s_AvoidanceGroupingComponents[entityId] = AvoidanceGroupingComponent();
+		s_isAvoidanceGroupingComponentActive.set(entityId);
+		return &s_AvoidanceGroupingComponents[entityId];
+	}
+
+	template<>
+	inline AvoidanceGroupingComponent* GetOrAddComponent<AvoidanceGroupingComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(AvoidanceGroupingComponent));
+			return nullptr;
+		}
+
+		if (s_isAvoidanceGroupingComponentActive[entityId])
+		{
+			return &s_AvoidanceGroupingComponents[entityId];
+		}
+		else
+		{
+			s_AvoidanceGroupingComponents[entityId] = AvoidanceGroupingComponent();
+			s_isAvoidanceGroupingComponentActive.set(entityId);
+			return &s_AvoidanceGroupingComponents[entityId];
+		}
+	}
+
+	friend struct AvoidanceGroupingComponent;
 #pragma endregion
 #pragma region CombatComponent
 private:
