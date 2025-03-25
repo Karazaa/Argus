@@ -17,6 +17,8 @@ public:
 	static float FindAreaOfObstacleCartesian(const ObstaclePointArray& obstaclePoints);
 
 private:
+	static void CacheAdjacentEntityIds(const SpatialPartitioningComponent* spatialPartitioningComponent);
+	static void CalculateAdjacentEntityGroups();
 	static bool GetNavMeshWalls(const ARecastNavMesh* navMesh, const FNavLocation& originLocation, TArray<FVector>& outNavWalls);
 	static void ConvertWallsIntoObstacles(const TArray<FVector>& navEdges, TArray<ObstaclePointArray>& outObstacles);
 	static void CalculateDirectionAndConvexForObstacles(ObstaclePointArray& outObstacle);

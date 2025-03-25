@@ -31,11 +31,19 @@ void SpatialPartitioningSystems::RunSystems(const ArgusEntity& spatialPartitioni
 
 	spatialPartitioningComponent->m_argusEntityKDTree.RebuildKDTreeForAllArgusEntities();
 
+	CacheAdjacentEntityIds(spatialPartitioningComponent);
+	CalculateAdjacentEntityGroups();
+}
+
+void SpatialPartitioningSystems::CacheAdjacentEntityIds(const SpatialPartitioningComponent* spatialPartitioningComponent)
+{
+	ARGUS_TRACE(SpatialPartitioningSystems::CacheAdjacentEntityIds);
+
 	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{
 		ArgusEntity entity = ArgusEntity::RetrieveEntity(i);
 
-		if (!entity)
+		if (!entity || !entity.IsMoveable())
 		{
 			continue;
 		}
@@ -48,6 +56,32 @@ void SpatialPartitioningSystems::RunSystems(const ArgusEntity& spatialPartitioni
 
 		avoidanceGroupingComponent->m_adjacentEntities.Reset();
 		spatialPartitioningComponent->m_argusEntityKDTree.FindOtherArgusEntityIdsWithinRangeOfArgusEntity(avoidanceGroupingComponent->m_adjacentEntities, entity, ArgusECSConstants::k_avoidanceAgentSearchRadius);
+	}
+}
+
+void SpatialPartitioningSystems::CalculateAdjacentEntityGroups()
+{
+	ARGUS_TRACE(SpatialPartitioningSystems::CalculateAdjacentEntityGroups);
+
+	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
+	{
+		ArgusEntity entity = ArgusEntity::RetrieveEntity(i);
+
+		if (!entity || !entity.IsMoveable())
+		{
+			continue;
+		}
+
+		AvoidanceGroupingComponent* avoidanceGroupingComponent = entity.GetComponent<AvoidanceGroupingComponent>();
+		if (!avoidanceGroupingComponent)
+		{
+			continue;
+		}
+
+		if (avoidanceGroupingComponent->m_adjacentEntities.IsEmpty())
+		{
+			continue;
+		}
 	}
 }
 

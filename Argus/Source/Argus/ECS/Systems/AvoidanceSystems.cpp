@@ -93,7 +93,6 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 
 	// Retrieve cached adjacent entities list.
 	const TArray<uint16>& foundEntityIds = avoidanceGroupingComponent->m_adjacentEntities;
-	const bool didFindOtherEntities = foundEntityIds.Num() > 0;
 
 	// If we are moving, we need to get our desired velocity as the velocity that points towards the nearest pathing point at the desired speed.
 	if (components.m_taskComponent->IsExecutingMoveTask())
@@ -116,7 +115,7 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 	}
 
 	// If no entities nearby, then nothing can effect our navigation, so we should just early out with a desired velocity. 
-	if (!didFindOtherEntities)
+	if (foundEntityIds.IsEmpty())
 	{
 		// If we have no desired velocity, we should try to get a desired velocity direction towards where we last navigated too.
 		if (!components.m_taskComponent->IsExecutingMoveTask())
