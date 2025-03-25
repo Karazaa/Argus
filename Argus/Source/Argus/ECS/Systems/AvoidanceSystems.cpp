@@ -102,7 +102,7 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 		FVector desiredDirection = FVector::ZeroVector;
 		if (numNavigationPoints != 0u && futureIndex < numNavigationPoints)
 		{
-			components.m_transformComponent->m_avoidanceGroupSourceLocation = GetAvoidanceGroupSourceLocation(components, foundEntityIds, components.m_navigationComponent->m_navigationPoints[futureIndex]);
+			CalcAvoidanceGroupSourceLocation(components, components.m_transformComponent->m_avoidanceGroupSourceLocation);
 			desiredDirection = (components.m_navigationComponent->m_navigationPoints[futureIndex] - components.m_transformComponent->m_avoidanceGroupSourceLocation);
 		}
 		else
@@ -503,64 +503,55 @@ FVector2D AvoidanceSystems::GetVelocityTowardsEndOfNavPoint(const CreateEntityOR
 	return FVector2D::ZeroVector;
 }
 
-FVector AvoidanceSystems::GetAvoidanceGroupSourceLocation(const TransformSystems::TransformSystemsComponentArgs& components, const TArray<uint16>& foundEntityIds, const FVector& pointToNavigateTo)
+bool AvoidanceSystems::CalcAvoidanceGroupDestinationLocation(const TransformSystems::TransformSystemsComponentArgs& components, FVector& outDestinationLocation)
 {
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
-		return pointToNavigateTo;
+		return false;
 	}
 
-	const IdentityComponent* sourceEntityIdentityComponent = components.m_entity.GetComponent<IdentityComponent>();
-	if (!sourceEntityIdentityComponent)
+	const AvoidanceGroupingComponent* avoidanceGroupingComponent = components.m_entity.GetComponent<AvoidanceGroupingComponent>();
+	if (!avoidanceGroupingComponent)
 	{
-		return pointToNavigateTo;
+		return false;
 	}
 
-	FVector averageLocation = components.m_transformComponent->m_location;
-	float entityCount = 1.0f;
-	for (int32 i = 0; i < foundEntityIds.Num(); ++i)
+	ArgusEntity groupLeaderEntity = ArgusEntity::RetrieveEntity(avoidanceGroupingComponent->m_groupId);
+	if (!groupLeaderEntity)
 	{
-		ArgusEntity foundEntity = ArgusEntity::RetrieveEntity(foundEntityIds[i]);
-		if (!foundEntity)
-		{
-			continue;
-		}
-
-		if (foundEntity.IsKillable() && !foundEntity.IsAlive())
-		{
-			continue;
-		}
-
-		const TaskComponent* foundEntityTaskComponent = foundEntity.GetComponent<TaskComponent>();
-		const IdentityComponent* foundEntityIdentityComponent = foundEntity.GetComponent<IdentityComponent>();
-		const NavigationComponent* foundEntityNavigationComponent = foundEntity.GetComponent<NavigationComponent>();
-		const TransformComponent* foundEntityTransformComponent = foundEntity.GetComponent<TransformComponent>();
-		if (!foundEntityIdentityComponent || !foundEntityNavigationComponent || !foundEntityTransformComponent || !foundEntityTaskComponent)
-		{
-			continue;
-		}
-
-		if (foundEntityIdentityComponent->m_team != sourceEntityIdentityComponent->m_team)
-		{
-			continue;
-		}
-
-		if (!foundEntityTaskComponent->IsExecutingMoveTask())
-		{
-			continue;
-		}
-
-		const int32 futureIndex = foundEntityNavigationComponent->m_lastPointIndex + 1;
-		if (foundEntityNavigationComponent->m_navigationPoints[futureIndex] != pointToNavigateTo)
-		{
-			continue;
-		}
-
-		averageLocation += foundEntityTransformComponent->m_location;
-		entityCount += 1.0f;
+		return false;
 	}
 
-	return ArgusMath::SafeDivide(averageLocation, entityCount, pointToNavigateTo);
+	return true;
+}
+
+bool AvoidanceSystems::CalcAvoidanceGroupSourceLocation(const TransformSystems::TransformSystemsComponentArgs& components, FVector& outSourceLocation)
+{
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return false;
+	}
+
+	const AvoidanceGroupingComponent* avoidanceGroupingComponent = components.m_entity.GetComponent<AvoidanceGroupingComponent>();
+	if (!avoidanceGroupingComponent)
+	{
+		return false;
+	}
+
+	ArgusEntity groupLeaderEntity = ArgusEntity::RetrieveEntity(avoidanceGroupingComponent->m_groupId);
+	if (!groupLeaderEntity)
+	{
+		return false;
+	}
+
+	const AvoidanceGroupingComponent* groupLeaderAvoidanceGroupingComponent = components.m_entity.GetComponent<AvoidanceGroupingComponent>();
+	if (!groupLeaderAvoidanceGroupingComponent)
+	{
+		return false;
+	}
+
+	outSourceLocation = groupLeaderAvoidanceGroupingComponent->m_groupAverageLocation;
+	return true;
 }
 
 float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems::TransformSystemsComponentArgs& sourceEntityComponents, const ArgusEntity& foundEntity)

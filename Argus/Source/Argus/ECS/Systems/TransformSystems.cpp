@@ -85,7 +85,7 @@ void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float delta
 
 	const FVector evaluationPoint = isLastPoint ? components.m_transformComponent->m_avoidanceGroupSourceLocation + velocity : moverLocation;
 	const FVector sourceLocation = components.m_navigationComponent->m_navigationPoints[lastPointIndex];
-	const FVector targetLocation = components.m_navigationComponent->m_navigationPoints[lastPointIndex + 1u];
+	FVector targetLocation = components.m_navigationComponent->m_navigationPoints[lastPointIndex + 1u];
 	const FVector segment = targetLocation - sourceLocation;
 	const FVector actual = evaluationPoint - sourceLocation;
 	const float segmentLength = segment.Length();
@@ -99,8 +99,8 @@ void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float delta
 		// Need to set velocity when starting pathing segment so that avoidance systems can properly consider desired velocity when proposing movement velocity.
 		if (!isLastPoint)
 		{
-			const FVector nextTargetLocation = components.m_navigationComponent->m_navigationPoints[components.m_navigationComponent->m_lastPointIndex + 1];
-			components.m_transformComponent->m_currentVelocity = (nextTargetLocation - moverLocation).GetSafeNormal() * components.m_transformComponent->m_desiredSpeedUnitsPerSecond;
+			targetLocation = components.m_navigationComponent->m_navigationPoints[components.m_navigationComponent->m_lastPointIndex + 1];
+			components.m_transformComponent->m_currentVelocity = (targetLocation - moverLocation).GetSafeNormal() * components.m_transformComponent->m_desiredSpeedUnitsPerSecond;
 		}
 	}
 

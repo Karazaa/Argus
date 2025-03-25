@@ -131,18 +131,18 @@ void ArgusKDTree<NodeType, ValueComparisonType>::InsertNodeIntoKDTreeRecursive(N
 	float noteToInsertValue = 0.0f;
 	switch (dimension)
 	{
-	case 0:
-		iterationNodeValue = iterationNode->GetLocation().X;
-		noteToInsertValue = nodeToInsert->GetLocation().X;
-		break;
-	case 1:
-		iterationNodeValue = iterationNode->GetLocation().Y;
-		noteToInsertValue = nodeToInsert->GetLocation().Y;
-		break;
-	case 2:
-		iterationNodeValue = iterationNode->GetLocation().Z;
-		noteToInsertValue = nodeToInsert->GetLocation().Z;
-		break;
+		case 0:
+			iterationNodeValue = iterationNode->GetLocation().X;
+			noteToInsertValue = nodeToInsert->GetLocation().X;
+			break;
+		case 1:
+			iterationNodeValue = iterationNode->GetLocation().Y;
+			noteToInsertValue = nodeToInsert->GetLocation().Y;
+			break;
+		case 2:
+			iterationNodeValue = iterationNode->GetLocation().Z;
+			noteToInsertValue = nodeToInsert->GetLocation().Z;
+			break;
 	}
 
 	if (noteToInsertValue < iterationNodeValue)
@@ -180,18 +180,18 @@ const NodeType* ArgusKDTree<NodeType, ValueComparisonType>::FindNodeClosestToLoc
 	float targetLocationValue = 0.0f;
 	switch (dimension)
 	{
-	case 0:
-		iterationNodeValue = iterationNode->GetLocation().X;
-		targetLocationValue = targetLocation.X;
-		break;
-	case 1:
-		iterationNodeValue = iterationNode->GetLocation().Y;
-		targetLocationValue = targetLocation.Y;
-		break;
-	case 2:
-		iterationNodeValue = iterationNode->GetLocation().Z;
-		targetLocationValue = targetLocation.Z;
-		break;
+		case 0:
+			iterationNodeValue = iterationNode->GetLocation().X;
+			targetLocationValue = targetLocation.X;
+			break;
+		case 1:
+			iterationNodeValue = iterationNode->GetLocation().Y;
+			targetLocationValue = targetLocation.Y;
+			break;
+		case 2:
+			iterationNodeValue = iterationNode->GetLocation().Z;
+			targetLocationValue = targetLocation.Z;
+			break;
 	}
 
 	NodeType* firstBranch = nullptr;

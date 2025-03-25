@@ -55,6 +55,8 @@ void SpatialPartitioningSystems::CacheAdjacentEntityIds(const SpatialPartitionin
 		}
 
 		avoidanceGroupingComponent->m_adjacentEntities.Reset();
+		avoidanceGroupingComponent->m_groupId = ArgusECSConstants::k_maxEntities;
+		avoidanceGroupingComponent->m_groupAverageLocation = FVector::ZeroVector;
 		spatialPartitioningComponent->m_argusEntityKDTree.FindOtherArgusEntityIdsWithinRangeOfArgusEntity(avoidanceGroupingComponent->m_adjacentEntities, entity, ArgusECSConstants::k_avoidanceAgentSearchRadius);
 	}
 }
@@ -65,9 +67,15 @@ void SpatialPartitioningSystems::CalculateAdjacentEntityGroups()
 
 	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{
+		FVector averageLocation = FVector::ZeroVector;
+		float numberOfEntitiesInGroup = 0.0f;
+		if (!FloodFillGroupRecursive(i, i, averageLocation, numberOfEntitiesInGroup))
+		{
+			continue;
+		}
+		
 		ArgusEntity entity = ArgusEntity::RetrieveEntity(i);
-
-		if (!entity || !entity.IsMoveable())
+		if (!entity)
 		{
 			continue;
 		}
@@ -78,11 +86,54 @@ void SpatialPartitioningSystems::CalculateAdjacentEntityGroups()
 			continue;
 		}
 
-		if (avoidanceGroupingComponent->m_adjacentEntities.IsEmpty())
-		{
-			continue;
-		}
+		avoidanceGroupingComponent->m_groupAverageLocation = ArgusMath::SafeDivide(averageLocation, numberOfEntitiesInGroup);
 	}
+}
+
+bool SpatialPartitioningSystems::FloodFillGroupRecursive(uint16 groupId, uint16 entityId, FVector& averageLocation, float& numberOfEntitiesInGroup)
+{
+	ArgusEntity entity = ArgusEntity::RetrieveEntity(entityId);
+	ArgusEntity groupLeaderEntity = ArgusEntity::RetrieveEntity(groupId);
+	if (!entity || !groupLeaderEntity || !entity.IsMoveable())
+	{
+		return false;
+	}
+
+	AvoidanceGroupingComponent* avoidanceGroupingComponent = entity.GetComponent<AvoidanceGroupingComponent>();
+	const TransformComponent* transformComponent = entity.GetComponent<TransformComponent>();
+	const IdentityComponent* identityComponent = entity.GetComponent<IdentityComponent>();
+	const TargetingComponent* targetingComponent = entity.GetComponent<TargetingComponent>();
+	const IdentityComponent* groupLeaderIdentityComponent = groupLeaderEntity.GetComponent<IdentityComponent>();
+	const TargetingComponent* groupLeaderTargetingComponent = groupLeaderEntity.GetComponent<TargetingComponent>();
+	if (!avoidanceGroupingComponent || !transformComponent || !identityComponent || !targetingComponent || !groupLeaderIdentityComponent || !groupLeaderTargetingComponent)
+	{
+		return false;
+	}
+
+	if (avoidanceGroupingComponent->m_groupId == groupId)
+	{
+		return false;
+	}
+
+	if (identityComponent->m_team != groupLeaderIdentityComponent->m_team)
+	{
+		return false;
+	}
+
+	if (!targetingComponent->HasSameTarget(groupLeaderTargetingComponent))
+	{
+		return false;
+	}
+
+	avoidanceGroupingComponent->m_groupId = groupId;
+	averageLocation += transformComponent->m_location;
+	numberOfEntitiesInGroup += 1.0f;
+	for (int32 i = 0; i < avoidanceGroupingComponent->m_adjacentEntities.Num(); ++i)
+	{
+		FloodFillGroupRecursive(groupId, avoidanceGroupingComponent->m_adjacentEntities[i], averageLocation, numberOfEntitiesInGroup);
+	}
+
+	return groupId == entityId;
 }
 
 void SpatialPartitioningSystems::CalculateAvoidanceObstacles(SpatialPartitioningComponent* spatialPartitioningComponent, UWorld* worldPointer)
