@@ -49,8 +49,9 @@ bool TransformSystemsMoveAlongPathTest::RunTest(const FString& Parameters)
 	components.m_transformComponent = entity.AddComponent<TransformComponent>();
 	components.m_navigationComponent = entity.AddComponent<NavigationComponent>();
 	components.m_targetingComponent = entity.AddComponent<TargetingComponent>();
+	AvoidanceGroupingComponent* avoidanceGroupingComponent = entity.AddComponent<AvoidanceGroupingComponent>();
 
-	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME) || !avoidanceGroupingComponent)
 	{
 		ArgusTesting::EndArgusTest();
 		return false;
@@ -100,7 +101,7 @@ bool TransformSystemsMoveAlongPathTest::RunTest(const FString& Parameters)
 	);
 #pragma endregion
 
-	AvoidanceSystems::ProcessORCAvoidance(dummyWorldPointer, deltaSecondsPerStep, components);
+	AvoidanceSystems::ProcessORCAvoidance(dummyWorldPointer, deltaSecondsPerStep, components, avoidanceGroupingComponent);
 	TransformSystems::MoveAlongNavigationPath(dummyWorldPointer, deltaSecondsPerStep, components);
 	secondCounter += deltaSecondsPerStep;
 
@@ -122,7 +123,7 @@ bool TransformSystemsMoveAlongPathTest::RunTest(const FString& Parameters)
 	);
 #pragma endregion
 
-	AvoidanceSystems::ProcessORCAvoidance(dummyWorldPointer, deltaSecondsPerStep, components);
+	AvoidanceSystems::ProcessORCAvoidance(dummyWorldPointer, deltaSecondsPerStep, components, avoidanceGroupingComponent);
 	TransformSystems::MoveAlongNavigationPath(dummyWorldPointer, deltaSecondsPerStep, components);
 	secondCounter += deltaSecondsPerStep;
 
@@ -144,7 +145,7 @@ bool TransformSystemsMoveAlongPathTest::RunTest(const FString& Parameters)
 	);
 #pragma endregion
 
-	AvoidanceSystems::ProcessORCAvoidance(dummyWorldPointer, deltaSecondsPerStep, components);
+	AvoidanceSystems::ProcessORCAvoidance(dummyWorldPointer, deltaSecondsPerStep, components, avoidanceGroupingComponent);
 	TransformSystems::MoveAlongNavigationPath(dummyWorldPointer, deltaSecondsPerStep, components);
 	secondCounter += deltaSecondsPerStep;
 
@@ -157,7 +158,7 @@ bool TransformSystemsMoveAlongPathTest::RunTest(const FString& Parameters)
 	);
 #pragma endregion
 
-	AvoidanceSystems::ProcessORCAvoidance(dummyWorldPointer, deltaSecondsPerStep, components);
+	AvoidanceSystems::ProcessORCAvoidance(dummyWorldPointer, deltaSecondsPerStep, components, avoidanceGroupingComponent);
 	TransformSystems::MoveAlongNavigationPath(dummyWorldPointer, deltaSecondsPerStep, components);
 	secondCounter += deltaSecondsPerStep;
 	const int32 numPathPoints = components.m_navigationComponent->m_navigationPoints.Num();

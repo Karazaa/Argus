@@ -44,17 +44,23 @@ void AvoidanceSystems::RunSystems(UWorld* worldPointer, float deltaTime)
 			continue;
 		}
 
-		ProcessORCAvoidance(worldPointer, deltaTime, components);
+		const AvoidanceGroupingComponent* avoidanceGroupingComponent = components.m_entity.GetComponent<AvoidanceGroupingComponent>();
+		if (!avoidanceGroupingComponent)
+		{
+			continue;
+		}
+
+		ProcessORCAvoidance(worldPointer, deltaTime, components, avoidanceGroupingComponent);
 	}
 }
 
 #pragma region Optimal Reciprocal Collision Avoidance
-void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime, const TransformSystems::TransformSystemsComponentArgs& components)
+void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime, const TransformSystems::TransformSystemsComponentArgs& components, const AvoidanceGroupingComponent* avoidanceGroupingComponent)
 {
 	ARGUS_MEMORY_TRACE(ArgusAvoidanceSystems);
 	ARGUS_TRACE(AvoidanceSystems::ProcessORCAvoidance);
 
-	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME) || !avoidanceGroupingComponent)
 	{
 		return;
 	}
@@ -85,9 +91,9 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 	params.m_spatialPartitioningComponent = spatialPartitioningComponent;
 	FVector2D desiredVelocity = FVector2D::ZeroVector;
 
-	// Search for nearby entities within a specific range.
-	TArray<uint16> foundEntityIds;
-	const bool didFindOtherEntities = spatialPartitioningComponent->m_argusEntityKDTree.FindOtherArgusEntityIdsWithinRangeOfArgusEntity(foundEntityIds, components.m_entity, ArgusECSConstants::k_avoidanceAgentSearchRadius);
+	// Retrieve cached adjacent entities list.
+	const TArray<uint16>& foundEntityIds = avoidanceGroupingComponent->m_adjacentEntities;
+	const bool didFindOtherEntities = foundEntityIds.Num() > 0;
 
 	// If we are moving, we need to get our desired velocity as the velocity that points towards the nearest pathing point at the desired speed.
 	if (components.m_taskComponent->IsExecutingMoveTask())

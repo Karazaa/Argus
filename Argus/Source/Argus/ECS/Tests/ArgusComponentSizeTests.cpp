@@ -19,6 +19,11 @@ bool ArgusComponentComponentSizeTest::RunTest(const FString& Parameters)
 	netSize += AbilityComponentSize;
 	ARGUS_LOG(ArgusTestingLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(AbilityComponent), AbilityComponentSize);
 #pragma endregion
+#pragma region AvoidanceGroupingComponent
+	const size_t AvoidanceGroupingComponentSize = sizeof(AvoidanceGroupingComponent);
+	netSize += AvoidanceGroupingComponentSize;
+	ARGUS_LOG(ArgusTestingLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(AvoidanceGroupingComponent), AvoidanceGroupingComponentSize);
+#pragma endregion
 #pragma region CombatComponent
 	const size_t CombatComponentSize = sizeof(CombatComponent);
 	netSize += CombatComponentSize;

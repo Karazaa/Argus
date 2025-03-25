@@ -30,6 +30,25 @@ void SpatialPartitioningSystems::RunSystems(const ArgusEntity& spatialPartitioni
 	}
 
 	spatialPartitioningComponent->m_argusEntityKDTree.RebuildKDTreeForAllArgusEntities();
+
+	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
+	{
+		ArgusEntity entity = ArgusEntity::RetrieveEntity(i);
+
+		if (!entity)
+		{
+			continue;
+		}
+
+		AvoidanceGroupingComponent* avoidanceGroupingComponent = entity.GetComponent<AvoidanceGroupingComponent>();
+		if (!avoidanceGroupingComponent)
+		{
+			continue;
+		}
+
+		avoidanceGroupingComponent->m_adjacentEntities.Reset();
+		spatialPartitioningComponent->m_argusEntityKDTree.FindOtherArgusEntityIdsWithinRangeOfArgusEntity(avoidanceGroupingComponent->m_adjacentEntities, entity, ArgusECSConstants::k_avoidanceAgentSearchRadius);
+	}
 }
 
 void SpatialPartitioningSystems::CalculateAvoidanceObstacles(SpatialPartitioningComponent* spatialPartitioningComponent, UWorld* worldPointer)

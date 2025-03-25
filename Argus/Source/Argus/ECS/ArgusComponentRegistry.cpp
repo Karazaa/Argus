@@ -8,6 +8,10 @@
 AbilityComponent ArgusComponentRegistry::s_AbilityComponents[ArgusECSConstants::k_maxEntities];
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isAbilityComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
 #pragma endregion
+#pragma region AvoidanceGroupingComponent
+AvoidanceGroupingComponent ArgusComponentRegistry::s_AvoidanceGroupingComponents[ArgusECSConstants::k_maxEntities];
+std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isAvoidanceGroupingComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
+#pragma endregion
 #pragma region CombatComponent
 CombatComponent ArgusComponentRegistry::s_CombatComponents[ArgusECSConstants::k_maxEntities];
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isCombatComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
@@ -75,6 +79,7 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 
 	// Begin set bitset bits to false
 	s_isAbilityComponentActive.set(entityId, false);
+	s_isAvoidanceGroupingComponentActive.set(entityId, false);
 	s_isCombatComponentActive.set(entityId, false);
 	s_isConstructionComponentActive.set(entityId, false);
 	s_isHealthComponentActive.set(entityId, false);
@@ -89,6 +94,7 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 
 	// Begin set component values
 	s_AbilityComponents[entityId] = AbilityComponent();
+	s_AvoidanceGroupingComponents[entityId] = AvoidanceGroupingComponent();
 	s_CombatComponents[entityId] = CombatComponent();
 	s_ConstructionComponents[entityId] = ConstructionComponent();
 	s_HealthComponents[entityId] = HealthComponent();
@@ -124,6 +130,7 @@ void ArgusComponentRegistry::FlushAllComponents()
 {
 	// Begin flush active component bitsets
 	s_isAbilityComponentActive.reset();
+	s_isAvoidanceGroupingComponentActive.reset();
 	s_isCombatComponentActive.reset();
 	s_isConstructionComponentActive.reset();
 	s_isHealthComponentActive.reset();
@@ -140,6 +147,7 @@ void ArgusComponentRegistry::FlushAllComponents()
 	for (uint16 i = 0u; i < ArgusECSConstants::k_maxEntities; ++i)
 	{
 		s_AbilityComponents[i] = AbilityComponent();
+		s_AvoidanceGroupingComponents[i] = AvoidanceGroupingComponent();
 		s_CombatComponents[i] = CombatComponent();
 		s_ConstructionComponents[i] = ConstructionComponent();
 		s_HealthComponents[i] = HealthComponent();
@@ -165,6 +173,10 @@ void ArgusComponentRegistry::AppendComponentDebugStrings(uint16 entityId, FStrin
 	if (const AbilityComponent* AbilityComponentPtr = GetComponent<AbilityComponent>(entityId))
 	{
 		AbilityComponentPtr->GetDebugString(debugStringToAppendTo);
+	}
+	if (const AvoidanceGroupingComponent* AvoidanceGroupingComponentPtr = GetComponent<AvoidanceGroupingComponent>(entityId))
+	{
+		AvoidanceGroupingComponentPtr->GetDebugString(debugStringToAppendTo);
 	}
 	if (const CombatComponent* CombatComponentPtr = GetComponent<CombatComponent>(entityId))
 	{

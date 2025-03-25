@@ -11,7 +11,7 @@ class AvoidanceSystems
 {
 public:
 	static void RunSystems(UWorld* worldPointer, float deltaTime);
-	static void ProcessORCAvoidance(UWorld* worldPointer, float deltaTime, const TransformSystems::TransformSystemsComponentArgs& components);
+	static void ProcessORCAvoidance(UWorld* worldPointer, float deltaTime, const TransformSystems::TransformSystemsComponentArgs& components, const AvoidanceGroupingComponent* avoidanceGroupingComponent);
 	
 private:
 	struct ORCALine
