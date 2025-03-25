@@ -88,3 +88,36 @@ void TargetingSystems::TargetNearestEntityMatchingTeamMask(uint16 sourceEntityID
 	}
 	components.m_targetingComponent->m_targetEntityId = minDistEntityId;
 }
+
+TOptional<FVector> TargetingSystems::GetCurrentTargetLocationForEntity(const ArgusEntity& entity)
+{
+	const TargetingComponent* targetingComponent = entity.GetComponent<TargetingComponent>();
+	if (!targetingComponent)
+	{
+		return NullOpt;
+	}
+
+	TOptional<FVector> output = NullOpt;
+	if (targetingComponent->HasLocationTarget())
+	{
+		output = targetingComponent->m_targetLocation.GetValue();
+	}
+	else if (targetingComponent->HasEntityTarget())
+	{
+		ArgusEntity targetEntity = ArgusEntity::RetrieveEntity(targetingComponent->m_targetEntityId);
+		if (!targetEntity)
+		{
+			return NullOpt;
+		}
+
+		TransformComponent* targetEntityTransformComponent = targetEntity.GetComponent<TransformComponent>();
+		if (!targetEntityTransformComponent)
+		{
+			return NullOpt;
+		}
+
+		output = targetEntityTransformComponent->m_location;
+	}
+
+	return output;
+}

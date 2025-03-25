@@ -29,6 +29,26 @@ struct TargetingComponent
 		return m_targetEntityId < ArgusECSConstants::k_maxEntities;
 	}
 
+	bool HasSameTarget(const TargetingComponent* other) const
+	{
+		if (!other)
+		{
+			return false;
+		}
+
+		if (HasLocationTarget() && other->HasLocationTarget())
+		{
+			return m_targetLocation.GetValue() == other->m_targetLocation.GetValue();
+		}
+		
+		if (HasEntityTarget() && other->HasEntityTarget())
+		{
+			return m_targetEntityId == other->m_targetEntityId;
+		}
+
+		return false;
+	}
+
 	void GetDebugString(FString& debugStringToAppendTo) const
 	{
 		debugStringToAppendTo.Append

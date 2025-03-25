@@ -16,5 +16,7 @@ public:
 
 		bool AreComponentsValidCheck() const;
 	};
+
 	static void TargetNearestEntityMatchingTeamMask(uint16 sourceEntityID, uint8 teamMask, const TargetingSystemsComponentArgs& components);
+	static TOptional<FVector> GetCurrentTargetLocationForEntity(const ArgusEntity& entity);
 };
