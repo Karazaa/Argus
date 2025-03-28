@@ -47,6 +47,7 @@ private:
 	static FVector2D	GetVelocityTowardsEndOfNavPoint(const CreateEntityORCALinesParams& params, const TransformSystems::TransformSystemsComponentArgs& components);
 	static bool			CalcAvoidanceGroupDestinationLocation(const TransformSystems::TransformSystemsComponentArgs& components, FVector& outDestinationLocation);
 	static bool			CalcAvoidanceGroupSourceLocation(const TransformSystems::TransformSystemsComponentArgs& components, FVector& outSourceLocation);
+	static bool			AreInSameAvoidanceGroup(const ArgusEntity& entity, const ArgusEntity& otherEntity);
 
 	static float		GetEffortCoefficientForEntityPair(const TransformSystems::TransformSystemsComponentArgs& sourceEntityComponents, const ArgusEntity& foundEntity);
 	static float		FindAreaOfObstacleCartesian(const TArray<ObstaclePoint>& obstaclePoints);
