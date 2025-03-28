@@ -7,6 +7,7 @@
 #include "NavigationData.h"
 #include "NavigationSystem.h"
 #include "Systems/CombatSystems.h"
+#include "Systems/TargetingSystems.h"
 #include <limits>
 
 static TAutoConsoleVariable<bool> CVarShowAvoidanceDebug(TEXT("Argus.Avoidance.ShowAvoidanceDebug"), false, TEXT(""));
@@ -522,6 +523,13 @@ bool AvoidanceSystems::CalcAvoidanceGroupDestinationLocation(const TransformSyst
 		return false;
 	}
 
+	TOptional<FVector> groupDestinationLocation = TargetingSystems::GetCurrentTargetLocationForEntity(components.m_entity);
+	if (!groupDestinationLocation.IsSet())
+	{
+		return false;
+	}
+
+	outDestinationLocation = groupDestinationLocation.GetValue();
 	return true;
 }
 
@@ -552,6 +560,23 @@ bool AvoidanceSystems::CalcAvoidanceGroupSourceLocation(const TransformSystems::
 
 	outSourceLocation = groupLeaderAvoidanceGroupingComponent->m_groupAverageLocation;
 	return true;
+}
+
+bool AvoidanceSystems::AreInSameAvoidanceGroup(const ArgusEntity& entity, const ArgusEntity& otherEntity)
+ {
+	const AvoidanceGroupingComponent* avoidanceGroupingComponent = entity.GetComponent<AvoidanceGroupingComponent>();
+	if (!avoidanceGroupingComponent)
+	{
+		return false;
+	}
+	
+	const AvoidanceGroupingComponent* otherAvoidanceGroupingComponent = otherEntity.GetComponent<AvoidanceGroupingComponent>();
+	if (!otherAvoidanceGroupingComponent)
+	{
+		return false;
+	}
+	
+	return avoidanceGroupingComponent->m_groupId == otherAvoidanceGroupingComponent->m_groupId;
 }
 
 float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems::TransformSystemsComponentArgs& sourceEntityComponents, const ArgusEntity& foundEntity)
