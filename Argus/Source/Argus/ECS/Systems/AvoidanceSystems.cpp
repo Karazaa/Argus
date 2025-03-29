@@ -103,8 +103,12 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 		FVector desiredDirection = FVector::ZeroVector;
 		if (numNavigationPoints != 0u && futureIndex < numNavigationPoints)
 		{
-			CalcAvoidanceGroupSourceLocation(components, components.m_transformComponent->m_avoidanceGroupSourceLocation);
-			desiredDirection = (components.m_navigationComponent->m_navigationPoints[futureIndex] - components.m_transformComponent->m_avoidanceGroupSourceLocation);
+			TOptional<FVector> sourceLocation = GetAvoidanceGroupSourceLocation(components);
+			if (!sourceLocation.IsSet())
+			{
+				sourceLocation = components.m_transformComponent->m_location;
+			}
+			desiredDirection = (components.m_navigationComponent->m_navigationPoints[futureIndex] - sourceLocation.GetValue());
 		}
 		else
 		{
@@ -163,6 +167,80 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 	}
 
 	components.m_transformComponent->m_proposedAvoidanceVelocity = FVector(ArgusMath::ToUnrealVector2(resultingVelocity), 0.0f);
+}
+
+bool AvoidanceSystems::AreInSameAvoidanceGroup(const ArgusEntity& entity, const ArgusEntity& otherEntity)
+{
+	const AvoidanceGroupingComponent* avoidanceGroupingComponent = entity.GetComponent<AvoidanceGroupingComponent>();
+	if (!avoidanceGroupingComponent)
+	{
+		return false;
+	}
+
+	const AvoidanceGroupingComponent* otherAvoidanceGroupingComponent = otherEntity.GetComponent<AvoidanceGroupingComponent>();
+	if (!otherAvoidanceGroupingComponent)
+	{
+		return false;
+	}
+
+	return avoidanceGroupingComponent->m_groupId == otherAvoidanceGroupingComponent->m_groupId;
+}
+
+TOptional<FVector> AvoidanceSystems::GetAvoidanceGroupDestinationLocation(const TransformSystems::TransformSystemsComponentArgs& components)
+{
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return NullOpt;
+	}
+
+	const AvoidanceGroupingComponent* avoidanceGroupingComponent = components.m_entity.GetComponent<AvoidanceGroupingComponent>();
+	if (!avoidanceGroupingComponent)
+	{
+		return NullOpt;
+	}
+
+	ArgusEntity groupLeaderEntity = ArgusEntity::RetrieveEntity(avoidanceGroupingComponent->m_groupId);
+	if (!groupLeaderEntity)
+	{
+		return NullOpt;
+	}
+
+	TOptional<FVector> groupDestinationLocation = TargetingSystems::GetCurrentTargetLocationForEntity(components.m_entity);
+	if (!groupDestinationLocation.IsSet())
+	{
+		return NullOpt;
+	}
+
+	return groupDestinationLocation;
+}
+
+TOptional<FVector> AvoidanceSystems::GetAvoidanceGroupSourceLocation(const TransformSystems::TransformSystemsComponentArgs& components)
+{
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return NullOpt;
+	}
+
+	const AvoidanceGroupingComponent* avoidanceGroupingComponent = components.m_entity.GetComponent<AvoidanceGroupingComponent>();
+	if (!avoidanceGroupingComponent)
+	{
+		return NullOpt;
+	}
+
+	ArgusEntity groupLeaderEntity = ArgusEntity::RetrieveEntity(avoidanceGroupingComponent->m_groupId);
+	if (!groupLeaderEntity)
+	{
+		return NullOpt;
+	}
+
+	const AvoidanceGroupingComponent* groupLeaderAvoidanceGroupingComponent = components.m_entity.GetComponent<AvoidanceGroupingComponent>();
+	if (!groupLeaderAvoidanceGroupingComponent)
+	{
+		return NullOpt;
+	}
+
+	TOptional<FVector> output = TOptional<FVector>(groupLeaderAvoidanceGroupingComponent->m_groupAverageLocation);
+	return output;
 }
 
 void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const CreateEntityORCALinesParams& params, const TransformSystems::TransformSystemsComponentArgs& components, TArray<ORCALine>& outORCALines)
@@ -502,81 +580,6 @@ FVector2D AvoidanceSystems::GetVelocityTowardsEndOfNavPoint(const CreateEntityOR
 	}
 
 	return FVector2D::ZeroVector;
-}
-
-bool AvoidanceSystems::CalcAvoidanceGroupDestinationLocation(const TransformSystems::TransformSystemsComponentArgs& components, FVector& outDestinationLocation)
-{
-	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
-	{
-		return false;
-	}
-
-	const AvoidanceGroupingComponent* avoidanceGroupingComponent = components.m_entity.GetComponent<AvoidanceGroupingComponent>();
-	if (!avoidanceGroupingComponent)
-	{
-		return false;
-	}
-
-	ArgusEntity groupLeaderEntity = ArgusEntity::RetrieveEntity(avoidanceGroupingComponent->m_groupId);
-	if (!groupLeaderEntity)
-	{
-		return false;
-	}
-
-	TOptional<FVector> groupDestinationLocation = TargetingSystems::GetCurrentTargetLocationForEntity(components.m_entity);
-	if (!groupDestinationLocation.IsSet())
-	{
-		return false;
-	}
-
-	outDestinationLocation = groupDestinationLocation.GetValue();
-	return true;
-}
-
-bool AvoidanceSystems::CalcAvoidanceGroupSourceLocation(const TransformSystems::TransformSystemsComponentArgs& components, FVector& outSourceLocation)
-{
-	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
-	{
-		return false;
-	}
-
-	const AvoidanceGroupingComponent* avoidanceGroupingComponent = components.m_entity.GetComponent<AvoidanceGroupingComponent>();
-	if (!avoidanceGroupingComponent)
-	{
-		return false;
-	}
-
-	ArgusEntity groupLeaderEntity = ArgusEntity::RetrieveEntity(avoidanceGroupingComponent->m_groupId);
-	if (!groupLeaderEntity)
-	{
-		return false;
-	}
-
-	const AvoidanceGroupingComponent* groupLeaderAvoidanceGroupingComponent = components.m_entity.GetComponent<AvoidanceGroupingComponent>();
-	if (!groupLeaderAvoidanceGroupingComponent)
-	{
-		return false;
-	}
-
-	outSourceLocation = groupLeaderAvoidanceGroupingComponent->m_groupAverageLocation;
-	return true;
-}
-
-bool AvoidanceSystems::AreInSameAvoidanceGroup(const ArgusEntity& entity, const ArgusEntity& otherEntity)
- {
-	const AvoidanceGroupingComponent* avoidanceGroupingComponent = entity.GetComponent<AvoidanceGroupingComponent>();
-	if (!avoidanceGroupingComponent)
-	{
-		return false;
-	}
-	
-	const AvoidanceGroupingComponent* otherAvoidanceGroupingComponent = otherEntity.GetComponent<AvoidanceGroupingComponent>();
-	if (!otherAvoidanceGroupingComponent)
-	{
-		return false;
-	}
-	
-	return avoidanceGroupingComponent->m_groupId == otherAvoidanceGroupingComponent->m_groupId;
 }
 
 float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems::TransformSystemsComponentArgs& sourceEntityComponents, const ArgusEntity& foundEntity)

@@ -13,7 +13,6 @@ class ARGUS_API UTransformComponentData : public UComponentData
 
 public:
 	FVector m_location = FVector::ZeroVector;
-	FVector m_avoidanceGroupSourceLocation = FVector::ZeroVector;
 	FVector m_currentVelocity = FVector::ZeroVector;
 	FVector m_proposedAvoidanceVelocity = FVector::ZeroVector;
 	UPROPERTY(EditAnywhere)

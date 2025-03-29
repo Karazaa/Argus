@@ -14,9 +14,6 @@ struct TransformComponent
 	FVector m_location = FVector::ZeroVector;
 
 	ARGUS_IGNORE()
-	FVector m_avoidanceGroupSourceLocation = FVector::ZeroVector;
-
-	ARGUS_IGNORE()
 	FVector m_currentVelocity = FVector::ZeroVector;
 
 	ARGUS_IGNORE()

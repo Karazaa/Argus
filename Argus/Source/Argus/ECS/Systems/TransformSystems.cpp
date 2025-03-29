@@ -5,6 +5,7 @@
 #include "ArgusMath.h"
 #include "ArgusSystemsManager.h"
 #include "NavigationSystem.h"
+#include "Systems/AvoidanceSystems.h"
 #include "Systems/CombatSystems.h"
 
 bool TransformSystems::RunSystems(UWorld* worldPointer, float deltaTime)
@@ -83,7 +84,17 @@ void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float delta
 	const FVector velocity = components.m_transformComponent->m_currentVelocity * deltaTime;
 	moverLocation += velocity;
 
-	const FVector evaluationPoint = isLastPoint ? components.m_transformComponent->m_avoidanceGroupSourceLocation + velocity : moverLocation;
+	TOptional<FVector> groupSourceLocation = AvoidanceSystems::GetAvoidanceGroupSourceLocation(components);
+	if (groupSourceLocation.IsSet())
+	{
+		groupSourceLocation = groupSourceLocation.GetValue() + velocity;
+	}
+	else
+	{
+		groupSourceLocation = moverLocation;
+	}
+
+	const FVector evaluationPoint = isLastPoint ? groupSourceLocation.GetValue() : moverLocation;
 	const FVector sourceLocation = components.m_navigationComponent->m_navigationPoints[lastPointIndex];
 	FVector targetLocation = components.m_navigationComponent->m_navigationPoints[lastPointIndex + 1u];
 	const FVector segment = targetLocation - sourceLocation;

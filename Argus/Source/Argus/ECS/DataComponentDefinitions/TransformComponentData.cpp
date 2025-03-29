@@ -8,7 +8,6 @@ void UTransformComponentData::InstantiateComponentForEntity(ArgusEntity& entity)
 {
 	TransformComponent* TransformComponentRef = entity.AddComponent<TransformComponent>();
 	TransformComponentRef->m_location = m_location;
-	TransformComponentRef->m_avoidanceGroupSourceLocation = m_avoidanceGroupSourceLocation;
 	TransformComponentRef->m_currentVelocity = m_currentVelocity;
 	TransformComponentRef->m_proposedAvoidanceVelocity = m_proposedAvoidanceVelocity;
 	TransformComponentRef->m_smoothedYaw = ArgusMath::ExponentialDecaySmoother<float>(m_smoothedYawDecayConstant);
