@@ -90,36 +90,10 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 	params.m_inverseEntityPredictionTime = 1.0f / ArgusECSConstants::k_avoidanceEntityDetectionPredictionTime;
 	params.m_inverseObstaclePredictionTime = 1.0f / ArgusECSConstants::k_avoidanceObstacleDetectionPredictionTime;
 	params.m_spatialPartitioningComponent = spatialPartitioningComponent;
-	FVector2D desiredVelocity = FVector2D::ZeroVector;
-
-	// Retrieve cached adjacent entities list.
-	const TArray<uint16>& foundEntityIds = avoidanceGroupingComponent->m_adjacentEntities;
-
-	// If we are moving, we need to get our desired velocity as the velocity that points towards the nearest pathing point at the desired speed.
-	if (components.m_taskComponent->IsExecutingMoveTask())
-	{
-		const int32 futureIndex = components.m_navigationComponent->m_lastPointIndex + 1;
-		const int32 numNavigationPoints = components.m_navigationComponent->m_navigationPoints.Num();
-		FVector desiredDirection = FVector::ZeroVector;
-		if (numNavigationPoints != 0u && futureIndex < numNavigationPoints)
-		{
-			TOptional<FVector> sourceLocation = GetAvoidanceGroupSourceLocation(components);
-			if (!sourceLocation.IsSet())
-			{
-				sourceLocation = components.m_transformComponent->m_location;
-			}
-			desiredDirection = (components.m_navigationComponent->m_navigationPoints[futureIndex] - sourceLocation.GetValue());
-		}
-		else
-		{
-			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Attempting to process ORCA, but the source %s's %s is in an invalid state."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(NavigationComponent));
-			desiredDirection = ArgusMath::GetDirectionFromYaw(components.m_transformComponent->GetCurrentYaw());
-		}
-
-		desiredVelocity = ArgusMath::ToCartesianVector2(FVector2D(desiredDirection).GetSafeNormal() * components.m_transformComponent->m_desiredSpeedUnitsPerSecond);
-	}
+	FVector2D desiredVelocity = GetDesiredVelocity(components);
 
 	// If no entities nearby, then nothing can effect our navigation, so we should just early out with a desired velocity. 
+	const TArray<uint16>& foundEntityIds = avoidanceGroupingComponent->m_adjacentEntities;
 	if (foundEntityIds.IsEmpty())
 	{
 		// If we have no desired velocity, we should try to get a desired velocity direction towards where we last navigated too.
@@ -167,6 +141,22 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 	}
 
 	components.m_transformComponent->m_proposedAvoidanceVelocity = FVector(ArgusMath::ToUnrealVector2(resultingVelocity), 0.0f);
+}
+
+ArgusEntity AvoidanceSystems::GetAvoidanceGroupLeader(const ArgusEntity& entity)
+{
+	if (!entity)
+	{
+		return ArgusEntity::k_emptyEntity;
+	}
+
+	const AvoidanceGroupingComponent* avoidanceGroupingComponent = entity.GetComponent<AvoidanceGroupingComponent>();
+	if (!avoidanceGroupingComponent)
+	{
+		return ArgusEntity::k_emptyEntity;
+	}
+
+	return ArgusEntity::RetrieveEntity(avoidanceGroupingComponent->m_groupId);
 }
 
 bool AvoidanceSystems::AreInSameAvoidanceGroup(const ArgusEntity& entity, const ArgusEntity& otherEntity)
@@ -580,6 +570,48 @@ FVector2D AvoidanceSystems::GetVelocityTowardsEndOfNavPoint(const CreateEntityOR
 	}
 
 	return FVector2D::ZeroVector;
+}
+
+FVector2D AvoidanceSystems::GetDesiredVelocity(const TransformSystems::TransformSystemsComponentArgs& components)
+{
+	// If we are not executing a move task, we would like to early out with zero velocity as our desired velocity (this may change as we define more functionality for AvoidanceGroups)
+	if (!components.m_taskComponent->IsExecutingMoveTask())
+	{
+		return FVector2D::ZeroVector;
+	}
+
+	// If our group leader is stopped, we should come to a stop as well.
+	ArgusEntity groupLeader = GetAvoidanceGroupLeader(components.m_entity);
+	if (groupLeader)
+	{
+		TaskComponent* groupLeaderTaskComponent = groupLeader.GetComponent<TaskComponent>();
+		if (groupLeaderTaskComponent && groupLeaderTaskComponent->m_movementState == MovementState::None)
+		{
+			components.m_taskComponent->m_movementState = MovementState::AwaitingFinish;
+			return FVector2D::ZeroVector;
+		}
+	}
+
+	// If we are moving, we need to get our desired velocity as the velocity that points towards the nearest pathing point at the desired speed.
+	const int32 futureIndex = components.m_navigationComponent->m_lastPointIndex + 1;
+	const int32 numNavigationPoints = components.m_navigationComponent->m_navigationPoints.Num();
+	FVector desiredDirection = FVector::ZeroVector;
+	if (numNavigationPoints != 0u && futureIndex < numNavigationPoints)
+	{
+		TOptional<FVector> sourceLocation = GetAvoidanceGroupSourceLocation(components);
+		if (!sourceLocation.IsSet())
+		{
+			sourceLocation = components.m_transformComponent->m_location;
+		}
+		desiredDirection = (components.m_navigationComponent->m_navigationPoints[futureIndex] - sourceLocation.GetValue());
+	}
+	else
+	{
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Attempting to process ORCA, but the source %s's %s is in an invalid state."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(NavigationComponent));
+		desiredDirection = ArgusMath::GetDirectionFromYaw(components.m_transformComponent->GetCurrentYaw());
+	}
+
+	return ArgusMath::ToCartesianVector2(FVector2D(desiredDirection).GetSafeNormal() * components.m_transformComponent->m_desiredSpeedUnitsPerSecond);
 }
 
 float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems::TransformSystemsComponentArgs& sourceEntityComponents, const ArgusEntity& foundEntity)
