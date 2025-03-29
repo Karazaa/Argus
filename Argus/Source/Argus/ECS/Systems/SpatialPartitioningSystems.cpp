@@ -115,6 +115,11 @@ bool SpatialPartitioningSystems::FloodFillGroupRecursive(uint16 groupId, uint16 
 		return false;
 	}
 
+	//if (avoidanceGroupingComponent->m_groupId != ArgusECSConstants::k_maxEntities && groupId == entityId)
+	//{
+	//	return false; 
+	//}
+
 	if (identityComponent->m_team != groupLeaderIdentityComponent->m_team)
 	{
 		return false;

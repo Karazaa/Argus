@@ -13,6 +13,7 @@ public:
 	static void RunSystems(UWorld* worldPointer, float deltaTime);
 	static void ProcessORCAvoidance(UWorld* worldPointer, float deltaTime, const TransformSystems::TransformSystemsComponentArgs& components, const AvoidanceGroupingComponent* avoidanceGroupingComponent);
 	
+	static ArgusEntity			GetAvoidanceGroupLeader(const ArgusEntity& entity);
 	static bool					AreInSameAvoidanceGroup(const ArgusEntity& entity, const ArgusEntity& otherEntity);
 	static TOptional<FVector>	GetAvoidanceGroupDestinationLocation(const TransformSystems::TransformSystemsComponentArgs& components);
 	static TOptional<FVector>	GetAvoidanceGroupSourceLocation(const TransformSystems::TransformSystemsComponentArgs& components);
@@ -49,6 +50,7 @@ private:
 	static bool			TwoDimensionalLinearProgram(const TArray<ORCALine>& orcaLines, const float radius, const FVector2D& preferredVelocity, bool shouldOptimizeDirection, FVector2D& resultingVelocity, int32& failureLine);
 	static void			ThreeDimensionalLinearProgram(const TArray<ORCALine>& orcaLines, const float radius, const int32 lineIndex, const int numStaticObstacleORCALines, FVector2D& resultingVelocity);
 	static FVector2D	GetVelocityTowardsEndOfNavPoint(const CreateEntityORCALinesParams& params, const TransformSystems::TransformSystemsComponentArgs& components);
+	static FVector2D	GetDesiredVelocity(const TransformSystems::TransformSystemsComponentArgs& components);
 
 	static float		GetEffortCoefficientForEntityPair(const TransformSystems::TransformSystemsComponentArgs& sourceEntityComponents, const ArgusEntity& foundEntity);
 	static float		FindAreaOfObstacleCartesian(const TArray<ObstaclePoint>& obstaclePoints);
