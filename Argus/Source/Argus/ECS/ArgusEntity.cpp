@@ -282,5 +282,6 @@ bool ArgusEntity::IsIdle() const
 
 	return	taskComponent->m_movementState == MovementState::None &&
 			taskComponent->m_combatState == CombatState::None &&
-			taskComponent->m_constructionState == ConstructionState::None;
+			taskComponent->m_constructionState == ConstructionState::None &&
+			taskComponent->m_spawningState == SpawningState::None;
 }

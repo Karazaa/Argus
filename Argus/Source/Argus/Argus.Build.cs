@@ -8,7 +8,7 @@ public class Argus : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "EnhancedInput", "InputCore", "NavigationSystem", "Navmesh", "UMG"});
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "EnhancedInput", "ImGui", "InputCore", "NavigationSystem", "Navmesh", "UMG"});
 
         PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
 
