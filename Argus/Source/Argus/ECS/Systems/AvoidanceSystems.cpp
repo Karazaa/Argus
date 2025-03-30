@@ -80,6 +80,8 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 		return;
 	}
 
+	FVector2D desiredVelocity = GetDesiredVelocity(components);
+
 	CreateEntityORCALinesParams params;
 	params.m_sourceEntityLocation3D = components.m_transformComponent->m_location;
 	params.m_sourceEntityLocation3D.Z += ArgusECSConstants::k_debugDrawHeightAdjustment;
@@ -90,7 +92,6 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 	params.m_inverseEntityPredictionTime = 1.0f / ArgusECSConstants::k_avoidanceEntityDetectionPredictionTime;
 	params.m_inverseObstaclePredictionTime = 1.0f / ArgusECSConstants::k_avoidanceObstacleDetectionPredictionTime;
 	params.m_spatialPartitioningComponent = spatialPartitioningComponent;
-	FVector2D desiredVelocity = GetDesiredVelocity(components);
 
 	// If no entities nearby, then nothing can effect our navigation, so we should just early out with a desired velocity. 
 	const TArray<uint16>& foundEntityIds = avoidanceGroupingComponent->m_adjacentEntities;
@@ -176,6 +177,28 @@ bool AvoidanceSystems::AreInSameAvoidanceGroup(const ArgusEntity& entity, const 
 	return avoidanceGroupingComponent->m_groupId == otherAvoidanceGroupingComponent->m_groupId;
 }
 
+void AvoidanceSystems::DecrementIdleEntitiesInGroup(const ArgusEntity& entity)
+{
+	if (!entity)
+	{
+		return;
+	}
+
+	ArgusEntity groupLeader = GetAvoidanceGroupLeader(entity);
+	if (!groupLeader)
+	{
+		return;
+	}
+
+	if (AvoidanceGroupingComponent* groupingComponent = groupLeader.GetComponent<AvoidanceGroupingComponent>())
+	{
+		if (entity.IsIdle())
+		{
+			groupingComponent->m_numberOfIdleEntities--;
+		}
+	}
+}
+
 TOptional<FVector> AvoidanceSystems::GetAvoidanceGroupDestinationLocation(const TransformSystems::TransformSystemsComponentArgs& components)
 {
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
@@ -223,7 +246,7 @@ TOptional<FVector> AvoidanceSystems::GetAvoidanceGroupSourceLocation(const Trans
 		return NullOpt;
 	}
 
-	const AvoidanceGroupingComponent* groupLeaderAvoidanceGroupingComponent = components.m_entity.GetComponent<AvoidanceGroupingComponent>();
+	const AvoidanceGroupingComponent* groupLeaderAvoidanceGroupingComponent = groupLeaderEntity.GetComponent<AvoidanceGroupingComponent>();
 	if (!groupLeaderAvoidanceGroupingComponent)
 	{
 		return NullOpt;
@@ -309,7 +332,7 @@ void AvoidanceSystems::CreateEntityORCALines(const CreateEntityORCALinesParams& 
 		if (calculateAverageLocationOfOtherEntities)
 		{
 			const float bufferRadius = ArgusECSConstants::k_avoidanceAgentAdditionalBufferRadius + components.m_transformComponent->m_radius + perEntityParams.m_entityRadius;
-			if (FVector2D::DistSquared(params.m_sourceEntityLocation, perEntityParams.m_foundEntityLocation) < FMath::Square(bufferRadius))
+			if (!AreInSameAvoidanceGroup(components.m_entity, foundEntity) && FVector2D::DistSquared(params.m_sourceEntityLocation, perEntityParams.m_foundEntityLocation) < FMath::Square(bufferRadius))
 			{
 				numberOfEntitiesInAverage += 1.0f;
 				averageLocationOfOtherEntities += perEntityParams.m_foundEntityLocation + (perEntityParams.m_foundEntityVelocity * ArgusECSConstants::k_avoidanceEntityDetectionPredictionTime);
@@ -584,10 +607,11 @@ FVector2D AvoidanceSystems::GetDesiredVelocity(const TransformSystems::Transform
 	ArgusEntity groupLeader = GetAvoidanceGroupLeader(components.m_entity);
 	if (groupLeader)
 	{
-		TaskComponent* groupLeaderTaskComponent = groupLeader.GetComponent<TaskComponent>();
-		if (groupLeaderTaskComponent && groupLeaderTaskComponent->m_movementState == MovementState::None)
+		AvoidanceGroupingComponent* groupLeaderAvoidanceGroupingComponent = groupLeader.GetComponent<AvoidanceGroupingComponent>();
+		if (groupLeaderAvoidanceGroupingComponent && groupLeaderAvoidanceGroupingComponent->m_numberOfIdleEntities > 0u)
 		{
 			components.m_taskComponent->m_movementState = MovementState::AwaitingFinish;
+			components.m_transformComponent->m_currentVelocity = FVector::ZeroVector;
 			return FVector2D::ZeroVector;
 		}
 	}
@@ -706,7 +730,7 @@ float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems
 	{
 		if (sourceEntityComponents.m_entity.IsMoveable())
 		{
-			return 1.0f;
+			return AreInSameAvoidanceGroup(sourceEntityComponents.m_entity, foundEntity) ? 0.0f : 1.0f;
 		}
 		else
 		{

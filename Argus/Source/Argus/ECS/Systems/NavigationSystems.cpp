@@ -6,6 +6,7 @@
 #include "NavigationData.h"
 #include "NavigationSystem.h"
 #include "NavigationSystemTypes.h"
+#include "Systems/AvoidanceSystems.h"
 #include "Systems/CombatSystems.h"
 #include "Systems/ConstructionSystems.h"
 

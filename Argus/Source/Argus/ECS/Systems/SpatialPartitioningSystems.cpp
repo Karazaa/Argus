@@ -57,6 +57,7 @@ void SpatialPartitioningSystems::CacheAdjacentEntityIds(const SpatialPartitionin
 		avoidanceGroupingComponent->m_adjacentEntities.Reset();
 		avoidanceGroupingComponent->m_groupId = ArgusECSConstants::k_maxEntities;
 		avoidanceGroupingComponent->m_groupAverageLocation = FVector::ZeroVector;
+		avoidanceGroupingComponent->m_numberOfIdleEntities = 0u;
 		spatialPartitioningComponent->m_argusEntityKDTree.FindOtherArgusEntityIdsWithinRangeOfArgusEntity(avoidanceGroupingComponent->m_adjacentEntities, entity, ArgusECSConstants::k_avoidanceAgentSearchRadius);
 	}
 }
@@ -69,7 +70,8 @@ void SpatialPartitioningSystems::CalculateAdjacentEntityGroups()
 	{
 		FVector averageLocation = FVector::ZeroVector;
 		float numberOfEntitiesInGroup = 0.0f;
-		if (!FloodFillGroupRecursive(i, i, averageLocation, numberOfEntitiesInGroup))
+		uint16 numberOfStoppedEntities = 0u;
+		if (!FloodFillGroupRecursive(i, i, averageLocation, numberOfEntitiesInGroup, numberOfStoppedEntities))
 		{
 			continue;
 		}
@@ -87,10 +89,11 @@ void SpatialPartitioningSystems::CalculateAdjacentEntityGroups()
 		}
 
 		avoidanceGroupingComponent->m_groupAverageLocation = ArgusMath::SafeDivide(averageLocation, numberOfEntitiesInGroup);
+		avoidanceGroupingComponent->m_numberOfIdleEntities = numberOfStoppedEntities;
 	}
 }
 
-bool SpatialPartitioningSystems::FloodFillGroupRecursive(uint16 groupId, uint16 entityId, FVector& averageLocation, float& numberOfEntitiesInGroup)
+bool SpatialPartitioningSystems::FloodFillGroupRecursive(uint16 groupId, uint16 entityId, FVector& averageLocation, float& numberOfEntitiesInGroup, uint16& numberOfStoppedEntities)
 {
 	ArgusEntity entity = ArgusEntity::RetrieveEntity(entityId);
 	ArgusEntity groupLeaderEntity = ArgusEntity::RetrieveEntity(groupId);
@@ -110,15 +113,10 @@ bool SpatialPartitioningSystems::FloodFillGroupRecursive(uint16 groupId, uint16 
 		return false;
 	}
 
-	if (avoidanceGroupingComponent->m_groupId == groupId)
+	if (avoidanceGroupingComponent->m_groupId != ArgusECSConstants::k_maxEntities)
 	{
 		return false;
 	}
-
-	//if (avoidanceGroupingComponent->m_groupId != ArgusECSConstants::k_maxEntities && groupId == entityId)
-	//{
-	//	return false; 
-	//}
 
 	if (identityComponent->m_team != groupLeaderIdentityComponent->m_team)
 	{
@@ -133,9 +131,14 @@ bool SpatialPartitioningSystems::FloodFillGroupRecursive(uint16 groupId, uint16 
 	avoidanceGroupingComponent->m_groupId = groupId;
 	averageLocation += transformComponent->m_location;
 	numberOfEntitiesInGroup += 1.0f;
+	if (entity.IsIdle())
+	{
+		numberOfStoppedEntities++;
+	}
+
 	for (int32 i = 0; i < avoidanceGroupingComponent->m_adjacentEntities.Num(); ++i)
 	{
-		FloodFillGroupRecursive(groupId, avoidanceGroupingComponent->m_adjacentEntities[i], averageLocation, numberOfEntitiesInGroup);
+		FloodFillGroupRecursive(groupId, avoidanceGroupingComponent->m_adjacentEntities[i], averageLocation, numberOfEntitiesInGroup, numberOfStoppedEntities);
 	}
 
 	return groupId == entityId;

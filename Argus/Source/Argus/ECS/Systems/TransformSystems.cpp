@@ -159,7 +159,7 @@ bool TransformSystems::ProcessMovementTaskCommands(UWorld* worldPointer, float d
 
 		case MovementState::AwaitingFinish:
 			OnCompleteNavigationPath(components, components.m_transformComponent->m_location);
-			return false;
+			return true;
 
 		case MovementState::None:
 			components.m_transformComponent->m_currentVelocity = components.m_transformComponent->m_proposedAvoidanceVelocity;

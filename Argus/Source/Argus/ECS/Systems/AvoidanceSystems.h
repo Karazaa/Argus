@@ -15,6 +15,7 @@ public:
 	
 	static ArgusEntity			GetAvoidanceGroupLeader(const ArgusEntity& entity);
 	static bool					AreInSameAvoidanceGroup(const ArgusEntity& entity, const ArgusEntity& otherEntity);
+	static void					DecrementIdleEntitiesInGroup(const ArgusEntity& entity);
 	static TOptional<FVector>	GetAvoidanceGroupDestinationLocation(const TransformSystems::TransformSystemsComponentArgs& components);
 	static TOptional<FVector>	GetAvoidanceGroupSourceLocation(const TransformSystems::TransformSystemsComponentArgs& components);
 
