@@ -15,6 +15,7 @@ public:
 	TArray<uint16> m_adjacentEntities;
 	FVector m_groupAverageLocation = FVector::ZeroVector;
 	uint16 m_groupId = ArgusECSConstants::k_maxEntities;
+	uint16 m_numberOfIdleEntities = 0u;
 
 	void InstantiateComponentForEntity(ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;

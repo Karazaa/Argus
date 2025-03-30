@@ -10,6 +10,7 @@ void UAvoidanceGroupingComponentData::InstantiateComponentForEntity(ArgusEntity&
 	AvoidanceGroupingComponentRef->m_adjacentEntities = m_adjacentEntities;
 	AvoidanceGroupingComponentRef->m_groupAverageLocation = m_groupAverageLocation;
 	AvoidanceGroupingComponentRef->m_groupId = m_groupId;
+	AvoidanceGroupingComponentRef->m_numberOfIdleEntities = m_numberOfIdleEntities;
 }
 
 bool UAvoidanceGroupingComponentData::MatchesType(UComponentData* other) const
