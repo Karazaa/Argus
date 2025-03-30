@@ -43,6 +43,7 @@ public:
 	bool			IsAlive() const;
 	bool			IsMoveable() const;
 	bool			IsSelected() const;
+	bool			IsIdle() const;
 
 	template<class ArgusComponent>
 	inline ArgusComponent* GetComponent() const

@@ -12,6 +12,7 @@
 #include "Components/InputComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedPlayerInput.h"
+#include "Systems/AvoidanceSystems.h"
 #include "Systems/TransformSystems.h"
 
 #define ECC_RETICLE	ECC_GameTraceChannel1
@@ -738,6 +739,7 @@ void UArgusInputManager::ProcessMoveToInputEventPerSelectedActor(AArgusActor* ar
 		{
 			if (navigationComponent)
 			{
+				AvoidanceSystems::DecrementIdleEntitiesInGroup(selectedEntity);
 				taskComponent->m_movementState = inputMovementState;
 			}
 			
@@ -749,6 +751,7 @@ void UArgusInputManager::ProcessMoveToInputEventPerSelectedActor(AArgusActor* ar
 	{
 		if (navigationComponent)
 		{
+			AvoidanceSystems::DecrementIdleEntitiesInGroup(selectedEntity);
 			taskComponent->m_movementState = inputMovementState;
 		}
 		

@@ -271,3 +271,16 @@ bool ArgusEntity::IsSelected() const
 
 	return false;
 }
+
+bool ArgusEntity::IsIdle() const
+{
+	const TaskComponent* taskComponent = GetComponent<TaskComponent>();
+	if (!taskComponent)
+	{
+		return false;
+	}
+
+	return	taskComponent->m_movementState == MovementState::None &&
+			taskComponent->m_combatState == CombatState::None &&
+			taskComponent->m_constructionState == ConstructionState::None;
+}
