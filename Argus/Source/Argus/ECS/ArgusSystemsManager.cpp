@@ -15,6 +15,10 @@
 #include "Systems/TimerSystems.h"
 #include "Systems/TransformSystems.h"
 
+#if !UE_BUILD_SHIPPING
+#include "ArgusECSDebugger.h"
+#endif //!UE_BUILD_SHIPPING
+
 void ArgusSystemsManager::Initialize(UWorld* worldPointer, const FResourceSet& initialTeamResourceSet)
 {
 	if (!worldPointer)
@@ -50,6 +54,10 @@ void ArgusSystemsManager::RunSystems(UWorld* worldPointer, float deltaTime)
 	didEntityPositionChangeThisFrame |= SpawningSystems::RunSystems(deltaTime);
 
 	UpdateSingletonComponents(didEntityPositionChangeThisFrame);
+
+#if !UE_BUILD_SHIPPING
+	ArgusECSDebugger::DrawECSDebugger();
+#endif //!UE_BUILD_SHIPPING
 }
 
 void ArgusSystemsManager::PopulateSingletonComponents(UWorld* worldPointer)
