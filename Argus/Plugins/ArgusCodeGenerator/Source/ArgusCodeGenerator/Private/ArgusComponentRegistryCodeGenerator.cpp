@@ -22,6 +22,7 @@ const char* ArgusComponentRegistryCodeGenerator::s_componentCppTemplateFlushFile
 const char* ArgusComponentRegistryCodeGenerator::s_componentCppTemplateResetFilename = "ComponentCppTemplateReset.txt";
 const char* ArgusComponentRegistryCodeGenerator::s_dynamicAllocComponentCppTemplateResetFilename = "DynamicAllocComponentCppTemplateReset.txt";
 const char* ArgusComponentRegistryCodeGenerator::s_debugStringLinesTemplateFilename = "AppendDebugStringCppTemplate.txt";
+const char* ArgusComponentRegistryCodeGenerator::s_debugDrawLinesTemplateFilename = "DebugDrawCppTemplate.txt";
 const char* ArgusComponentRegistryCodeGenerator::s_argusComponentSizeTestsTemplateFilename = "ArgusComponentSizeTestsTemplate.txt";
 const char* ArgusComponentRegistryCodeGenerator::s_perComponentSizeTestsTemplateFilename = "PerComponentSizeTestsTemplate.txt";
 const char* ArgusComponentRegistryCodeGenerator::s_argusComponentRegistryHeaderFilename = "ArgusComponentRegistry.h";
@@ -57,6 +58,7 @@ void ArgusComponentRegistryCodeGenerator::GenerateComponentRegistryCode(const Ar
 	params.componentCppTemplateFlushFilePath = std::string(cStrTemplateDirectory).append(s_componentCppTemplateFlushFilename);
 	params.dynamicAllocComponentCppTemplateResetFilePath = std::string(cStrTemplateDirectory).append(s_dynamicAllocComponentCppTemplateResetFilename);
 	params.debugStringLinesTemplateFilePath = std::string(cStrTemplateDirectory).append(s_debugStringLinesTemplateFilename);
+	params.debugDrawLinesTemplateFilePath = std::string(cStrTemplateDirectory).append(s_debugDrawLinesTemplateFilename);
 	params.argusComponentSizeTestsTemplateFilePath = std::string(cStrTemplateDirectory).append(s_argusComponentSizeTestsTemplateFilename);
 	params.perComponentSizeTestsTemplateFilePath = std::string(cStrTemplateDirectory).append(s_perComponentSizeTestsTemplateFilename);
 
@@ -196,10 +198,12 @@ bool ArgusComponentRegistryCodeGenerator::ParseComponentRegistryCppTemplateWithR
 
 	// Parse debug string lines template into one section
 	std::vector<std::string> parsedDebugStringLines = std::vector<std::string>();
+	std::vector<std::string> parsedDebugDrawLines = std::vector<std::string>();
 	std::vector<std::string> allComponentNames = std::vector<std::string>();
 	allComponentNames.insert(allComponentNames.end(), params.inComponentNames.begin(), params.inComponentNames.end());
 	allComponentNames.insert(allComponentNames.end(), params.inDynamicAllocComponentNames.begin(), params.inDynamicAllocComponentNames.end());
 	didSucceed &= ArgusCodeGeneratorUtil::ParseComponentSpecificTemplate(params.debugStringLinesTemplateFilePath, allComponentNames, parsedDebugStringLines);
+	didSucceed &= ArgusCodeGeneratorUtil::ParseComponentSpecificTemplate(params.debugDrawLinesTemplateFilePath, allComponentNames, parsedDebugDrawLines);
 
 	std::ifstream inCppStream = std::ifstream(params.argusComponentRegistryCppTemplateFilePath);
 	const FString ueCppFilePath = FString(params.argusComponentRegistryCppTemplateFilePath.c_str());
@@ -271,6 +275,13 @@ bool ArgusComponentRegistryCodeGenerator::ParseComponentRegistryCppTemplateWithR
 		else if (cppLineText.find("%%%%%") != std::string::npos)
 		{
 			for (std::string parsedLine : parsedDebugStringLines)
+			{
+				outFileContents.push_back(parsedLine);
+			}
+		}
+		else if (cppLineText.find("!!!!!") != std::string::npos)
+		{
+			for (std::string parsedLine : parsedDebugDrawLines)
 			{
 				outFileContents.push_back(parsedLine);
 			}

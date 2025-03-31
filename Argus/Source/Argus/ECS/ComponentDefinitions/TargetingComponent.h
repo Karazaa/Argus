@@ -48,20 +48,4 @@ struct TargetingComponent
 
 		return false;
 	}
-
-	void GetDebugString(FString& debugStringToAppendTo) const
-	{
-		debugStringToAppendTo.Append
-		(
-			FString::Printf
-			(
-				TEXT("\n[%s] \n    (%s: %f) \n    (%s: %f)"), 
-				ARGUS_NAMEOF(TargetingComponent),
-				ARGUS_NAMEOF(m_meleeRange),
-				m_meleeRange,
-				ARGUS_NAMEOF(m_rangedRange),
-				m_rangedRange
-			)
-		);
-	}
 };

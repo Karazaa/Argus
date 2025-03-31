@@ -4,10 +4,24 @@
 #include "ComponentDefinitions/ConstructionComponent.h"
 #include "ArgusComponentRegistry.h"
 
+#if !UE_BUILD_SHIPPING
+#include "imgui.h"
+#endif //!UE_BUILD_SHIPPING
+
 // Component shared functionality
 uint16 ConstructionComponent::GetOwningEntityId() const
 {
 	return this - &ArgusComponentRegistry::s_ConstructionComponents[0];
+}
+
+void ConstructionComponent::DrawComponentDebug() const
+{
+#if !UE_BUILD_SHIPPING
+	if (!ImGui::CollapsingHeader("ConstructionComponent"))
+	{
+		return;
+	}   
+#endif //!UE_BUILD_SHIPPING
 }
 
 // Per observable logic

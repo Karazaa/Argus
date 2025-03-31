@@ -1,4 +1,4 @@
-	if (const #####* #####Ptr = GetComponent<#####>(entityId))
-	{
-		#####Ptr->GetDebugString(debugStringToAppendTo);
-	}
+//	if (const #####* #####Ptr = GetComponent<#####>(entityId))
+//	{
+//		#####Ptr->GetDebugString(debugStringToAppendTo);
+//	}

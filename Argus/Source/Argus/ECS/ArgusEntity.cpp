@@ -200,13 +200,6 @@ uint16 ArgusEntity::GetId() const
 	return m_id;
 }
 
-const FString ArgusEntity::GetDebugString() const
-{
-	FString debugString = FString::Printf(TEXT("(%s: %d)"), ARGUS_NAMEOF(m_id), m_id);
-	ArgusComponentRegistry::AppendComponentDebugStrings(m_id, debugString);
-	return debugString;
-}
-
 bool ArgusEntity::IsKillable() const
 {
 	if (!DoesEntityExist(m_id))
@@ -280,8 +273,20 @@ bool ArgusEntity::IsIdle() const
 		return false;
 	}
 
+	if (!IsAlive())
+	{
+		return false;
+	}
+
 	return	taskComponent->m_movementState == MovementState::None &&
 			taskComponent->m_combatState == CombatState::None &&
 			taskComponent->m_constructionState == ConstructionState::None &&
 			taskComponent->m_spawningState == SpawningState::None;
 }
+
+#if !UE_BUILD_SHIPPING
+const FString ArgusEntity::GetDebugString() const
+{
+	return FString::Printf(TEXT("(%s: %d)"), ARGUS_NAMEOF(m_id), m_id);
+}
+#endif //!UE_BUILD_SHIPPING

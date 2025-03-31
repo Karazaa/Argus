@@ -43,29 +43,4 @@ struct TimerComponent
 
 		return &m_timers[timerIndex];
 	}
-
-	void GetDebugString(FString& debugStringToAppendTo) const
-	{
-		debugStringToAppendTo.Append
-		(
-			FString::Printf
-			(
-				TEXT("\n[%s]"),
-				ARGUS_NAMEOF(TimerComponent)
-			)
-		);
-
-		for (int32 i = 0; i < m_timers.Num(); ++i)
-		{
-			debugStringToAppendTo.Append
-			(
-				FString::Printf
-				(
-					TEXT("\n    (%d: %f)"),
-					i,
-					m_timers[i].m_timeRemainingSeconds
-				)
-			);
-		}
-	}
 };

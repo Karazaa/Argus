@@ -4,10 +4,24 @@
 #include "ComponentDefinitions/SpawningComponent.h"
 #include "ArgusComponentRegistry.h"
 
+#if !UE_BUILD_SHIPPING
+#include "imgui.h"
+#endif //!UE_BUILD_SHIPPING
+
 // Component shared functionality
 uint16 SpawningComponent::GetOwningEntityId() const
 {
 	return this - &ArgusComponentRegistry::s_SpawningComponents[0];
+}
+
+void SpawningComponent::DrawComponentDebug() const
+{
+#if !UE_BUILD_SHIPPING
+	if (!ImGui::CollapsingHeader("SpawningComponent"))
+	{
+		return;
+	}   
+#endif //!UE_BUILD_SHIPPING
 }
 
 // Per observable logic

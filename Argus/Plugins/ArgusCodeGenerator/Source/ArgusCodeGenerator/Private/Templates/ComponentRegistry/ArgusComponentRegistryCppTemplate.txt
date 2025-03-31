@@ -44,3 +44,10 @@ void ArgusComponentRegistry::AppendComponentDebugStrings(uint16 entityId, FStrin
 {
 	%%%%%
 }
+
+#if !UE_BUILD_SHIPPING
+void ArgusComponentRegistry::DrawComponentsDebug(uint16 entityId)
+{
+	!!!!!
+}
+#endif //!UE_BUILD_SHIPPING

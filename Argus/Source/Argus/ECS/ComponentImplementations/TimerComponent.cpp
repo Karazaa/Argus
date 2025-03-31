@@ -4,10 +4,24 @@
 #include "ComponentDefinitions/TimerComponent.h"
 #include "ArgusComponentRegistry.h"
 
+#if !UE_BUILD_SHIPPING
+#include "imgui.h"
+#endif //!UE_BUILD_SHIPPING
+
 // Component shared functionality
 uint16 TimerComponent::GetOwningEntityId() const
 {
 	return this - &ArgusComponentRegistry::s_TimerComponents[0];
+}
+
+void TimerComponent::DrawComponentDebug() const
+{
+#if !UE_BUILD_SHIPPING
+	if (!ImGui::CollapsingHeader("TimerComponent"))
+	{
+		return;
+	}   
+#endif //!UE_BUILD_SHIPPING
 }
 
 // Per observable logic

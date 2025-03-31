@@ -9,6 +9,8 @@
 
 struct SpatialPartitioningComponent
 {
+	ARGUS_DYNAMIC_COMPONENT_SHARED
+
 	ARGUS_IGNORE()
 	ArgusEntityKDTree m_argusEntityKDTree;
 
@@ -17,9 +19,4 @@ struct SpatialPartitioningComponent
 
 	ARGUS_IGNORE()
 	TArray<ObstaclePointArray> m_obstacles;
-
-	void GetDebugString(FString& debugStringToAppendTo) const
-	{
-		debugStringToAppendTo.Append(FString::Printf(TEXT("\n[%s]"), ARGUS_NAMEOF(SpatialPartitioningComponent)));
-	}
 };

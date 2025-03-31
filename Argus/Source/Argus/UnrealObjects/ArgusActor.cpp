@@ -11,6 +11,10 @@
 #include "DrawDebugHelpers.h"
 #include "Engine/World.h"
 
+#if !UE_BUILD_SHIPPING
+#include "ArgusECSDebugger.h"
+#endif //!UE_BUILD_SHIPPING
+
 static TAutoConsoleVariable<bool> CVarShowAllArgusEntitiesDebug(TEXT("Argus.ArgusEntity.ShowAllArgusEntitiesDebug"), false, TEXT(""));
 static TAutoConsoleVariable<bool> CVarShowSelectedArgusEntityDebug(TEXT("Argus.ArgusEntity.ShowSelectedArgusEntityDebug"), false, TEXT(""));
 
@@ -241,10 +245,12 @@ void AArgusActor::Tick(float deltaTime)
 		SetActorLocation(transformComponent->m_location);
 		SetActorRotation(FRotationMatrix::MakeFromXZ(ArgusMath::GetDirectionFromYaw(transformComponent->GetCurrentYaw()), FVector::UpVector).ToQuat());
 
-		if (CVarShowAllArgusEntitiesDebug.GetValueOnGameThread() || (CVarShowSelectedArgusEntityDebug.GetValueOnGameThread() && m_isSelected))
+#if !UE_BUILD_SHIPPING
+		if (ArgusECSDebugger::IsEntityBeingDebugged(m_entity.GetId()))
 		{
 			DrawDebugString(GetWorld(), transformComponent->m_location, m_entity.GetDebugString(), nullptr, FColor::Yellow, 0.0f, true, 0.75f);
 		}
+#endif //!UE_BUILD_SHIPPING
 	}
 
 	if (m_argusActorInfoWidget.IsValid())

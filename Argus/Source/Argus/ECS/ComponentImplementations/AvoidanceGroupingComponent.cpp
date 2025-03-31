@@ -4,10 +4,24 @@
 #include "ComponentDefinitions/AvoidanceGroupingComponent.h"
 #include "ArgusComponentRegistry.h"
 
+#if !UE_BUILD_SHIPPING
+#include "imgui.h"
+#endif //!UE_BUILD_SHIPPING
+
 // Component shared functionality
 uint16 AvoidanceGroupingComponent::GetOwningEntityId() const
 {
 	return this - &ArgusComponentRegistry::s_AvoidanceGroupingComponents[0];
+}
+
+void AvoidanceGroupingComponent::DrawComponentDebug() const
+{
+#if !UE_BUILD_SHIPPING
+	if (!ImGui::CollapsingHeader("AvoidanceGroupingComponent"))
+	{
+		return;
+	}   
+#endif //!UE_BUILD_SHIPPING
 }
 
 // Per observable logic

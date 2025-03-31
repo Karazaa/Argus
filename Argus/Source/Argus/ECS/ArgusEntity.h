@@ -38,12 +38,15 @@ public:
 	operator bool() const;
 
 	uint16			GetId() const;
-	const FString	GetDebugString() const;
 	bool			IsKillable() const;
 	bool			IsAlive() const;
 	bool			IsMoveable() const;
 	bool			IsSelected() const;
 	bool			IsIdle() const;
+
+#if !UE_BUILD_SHIPPING
+	const FString	GetDebugString() const;
+#endif //!UE_BUILD_SHIPPING
 
 	template<class ArgusComponent>
 	inline ArgusComponent* GetComponent() const

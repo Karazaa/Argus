@@ -7,13 +7,11 @@
 
 struct InputInterfaceComponent
 {
+	ARGUS_DYNAMIC_COMPONENT_SHARED
+
 	ARGUS_IGNORE()
 	TArray<uint16> m_selectedArgusEntityIds;
 
 	ARGUS_IGNORE()
 	TArray<uint16> m_activeAbilityGroupArgusEntityIds;
-
-	void GetDebugString(FString& debugStringToAppendTo) const
-	{
-	}
 };

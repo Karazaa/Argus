@@ -4,10 +4,24 @@
 #include "ComponentDefinitions/TransformComponent.h"
 #include "ArgusComponentRegistry.h"
 
+#if !UE_BUILD_SHIPPING
+#include "imgui.h"
+#endif //!UE_BUILD_SHIPPING
+
 // Component shared functionality
 uint16 TransformComponent::GetOwningEntityId() const
 {
 	return this - &ArgusComponentRegistry::s_TransformComponents[0];
+}
+
+void TransformComponent::DrawComponentDebug() const
+{
+#if !UE_BUILD_SHIPPING
+	if (!ImGui::CollapsingHeader("TransformComponent"))
+	{
+		return;
+	}   
+#endif //!UE_BUILD_SHIPPING
 }
 
 // Per observable logic

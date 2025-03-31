@@ -22,7 +22,7 @@ void ArgusECSDebugger::DrawECSDebugger()
 		return;
 	}
 
-	ImGui::ShowDemoWindow();
+	// ImGui::ShowDemoWindow();
 
 	ImGui::SetNextWindowSize(ImVec2(260, 260), ImGuiCond_FirstUseEver);
 	if (!ImGui::Begin("ECS"))
@@ -35,6 +35,11 @@ void ArgusECSDebugger::DrawECSDebugger()
 	DrawEntityDockSpace();
 
 	ImGui::End();
+}
+
+bool ArgusECSDebugger::IsEntityBeingDebugged(uint16 entityId)
+{
+	return s_entityDebugToggles[entityId];
 }
 
 void ArgusECSDebugger::DrawEntityScrollRegion()
@@ -73,6 +78,11 @@ void ArgusECSDebugger::DrawEntityScrollRegion()
 
 void ArgusECSDebugger::DrawEntityScrollRegionMenuItems()
 {
+	if (ImGui::MenuItem("Clear All Entity Debug Windows"))
+	{
+		ClearAllEntityDebugWindows();
+	}
+
 	if (ImGui::MenuItem("Debug Currently Selected Entities"))
 	{
 		DrawCurrentlySelectedEntities();
@@ -137,7 +147,18 @@ void ArgusECSDebugger::DrawWindowForEntity(uint16 entityId)
 		return;
 	}
 
+	ImGui::SeparatorText("Components");
+	ArgusComponentRegistry::DrawComponentsDebug(entityId);
+
 	ImGui::End();
+}
+
+void ArgusECSDebugger::ClearAllEntityDebugWindows()
+{
+	for (uint16 i = 0u; i < ArgusECSConstants::k_maxEntities; ++i)
+	{
+		s_entityDebugToggles[i] = false;
+	}
 }
 
 #endif //!UE_BUILD_SHIPPING

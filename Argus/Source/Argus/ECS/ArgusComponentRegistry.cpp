@@ -170,72 +170,146 @@ void ArgusComponentRegistry::FlushAllComponents()
 
 void ArgusComponentRegistry::AppendComponentDebugStrings(uint16 entityId, FString& debugStringToAppendTo)
 {
+//	if (const AbilityComponent* AbilityComponentPtr = GetComponent<AbilityComponent>(entityId))
+//	{
+//		AbilityComponentPtr->GetDebugString(debugStringToAppendTo);
+//	}
+//	if (const AvoidanceGroupingComponent* AvoidanceGroupingComponentPtr = GetComponent<AvoidanceGroupingComponent>(entityId))
+//	{
+//		AvoidanceGroupingComponentPtr->GetDebugString(debugStringToAppendTo);
+//	}
+//	if (const CombatComponent* CombatComponentPtr = GetComponent<CombatComponent>(entityId))
+//	{
+//		CombatComponentPtr->GetDebugString(debugStringToAppendTo);
+//	}
+//	if (const ConstructionComponent* ConstructionComponentPtr = GetComponent<ConstructionComponent>(entityId))
+//	{
+//		ConstructionComponentPtr->GetDebugString(debugStringToAppendTo);
+//	}
+//	if (const HealthComponent* HealthComponentPtr = GetComponent<HealthComponent>(entityId))
+//	{
+//		HealthComponentPtr->GetDebugString(debugStringToAppendTo);
+//	}
+//	if (const IdentityComponent* IdentityComponentPtr = GetComponent<IdentityComponent>(entityId))
+//	{
+//		IdentityComponentPtr->GetDebugString(debugStringToAppendTo);
+//	}
+//	if (const NavigationComponent* NavigationComponentPtr = GetComponent<NavigationComponent>(entityId))
+//	{
+//		NavigationComponentPtr->GetDebugString(debugStringToAppendTo);
+//	}
+//	if (const ObserversComponent* ObserversComponentPtr = GetComponent<ObserversComponent>(entityId))
+//	{
+//		ObserversComponentPtr->GetDebugString(debugStringToAppendTo);
+//	}
+//	if (const SpawningComponent* SpawningComponentPtr = GetComponent<SpawningComponent>(entityId))
+//	{
+//		SpawningComponentPtr->GetDebugString(debugStringToAppendTo);
+//	}
+//	if (const TargetingComponent* TargetingComponentPtr = GetComponent<TargetingComponent>(entityId))
+//	{
+//		TargetingComponentPtr->GetDebugString(debugStringToAppendTo);
+//	}
+//	if (const TaskComponent* TaskComponentPtr = GetComponent<TaskComponent>(entityId))
+//	{
+//		TaskComponentPtr->GetDebugString(debugStringToAppendTo);
+//	}
+//	if (const TimerComponent* TimerComponentPtr = GetComponent<TimerComponent>(entityId))
+//	{
+//		TimerComponentPtr->GetDebugString(debugStringToAppendTo);
+//	}
+//	if (const TransformComponent* TransformComponentPtr = GetComponent<TransformComponent>(entityId))
+//	{
+//		TransformComponentPtr->GetDebugString(debugStringToAppendTo);
+//	}
+//	if (const InputInterfaceComponent* InputInterfaceComponentPtr = GetComponent<InputInterfaceComponent>(entityId))
+//	{
+//		InputInterfaceComponentPtr->GetDebugString(debugStringToAppendTo);
+//	}
+//	if (const ResourceComponent* ResourceComponentPtr = GetComponent<ResourceComponent>(entityId))
+//	{
+//		ResourceComponentPtr->GetDebugString(debugStringToAppendTo);
+//	}
+//	if (const ReticleComponent* ReticleComponentPtr = GetComponent<ReticleComponent>(entityId))
+//	{
+//		ReticleComponentPtr->GetDebugString(debugStringToAppendTo);
+//	}
+//	if (const SpatialPartitioningComponent* SpatialPartitioningComponentPtr = GetComponent<SpatialPartitioningComponent>(entityId))
+//	{
+//		SpatialPartitioningComponentPtr->GetDebugString(debugStringToAppendTo);
+//	}
+}
+
+#if !UE_BUILD_SHIPPING
+void ArgusComponentRegistry::DrawComponentsDebug(uint16 entityId)
+{
 	if (const AbilityComponent* AbilityComponentPtr = GetComponent<AbilityComponent>(entityId))
 	{
-		AbilityComponentPtr->GetDebugString(debugStringToAppendTo);
+		AbilityComponentPtr->DrawComponentDebug();
 	}
 	if (const AvoidanceGroupingComponent* AvoidanceGroupingComponentPtr = GetComponent<AvoidanceGroupingComponent>(entityId))
 	{
-		AvoidanceGroupingComponentPtr->GetDebugString(debugStringToAppendTo);
+		AvoidanceGroupingComponentPtr->DrawComponentDebug();
 	}
 	if (const CombatComponent* CombatComponentPtr = GetComponent<CombatComponent>(entityId))
 	{
-		CombatComponentPtr->GetDebugString(debugStringToAppendTo);
+		CombatComponentPtr->DrawComponentDebug();
 	}
 	if (const ConstructionComponent* ConstructionComponentPtr = GetComponent<ConstructionComponent>(entityId))
 	{
-		ConstructionComponentPtr->GetDebugString(debugStringToAppendTo);
+		ConstructionComponentPtr->DrawComponentDebug();
 	}
 	if (const HealthComponent* HealthComponentPtr = GetComponent<HealthComponent>(entityId))
 	{
-		HealthComponentPtr->GetDebugString(debugStringToAppendTo);
+		HealthComponentPtr->DrawComponentDebug();
 	}
 	if (const IdentityComponent* IdentityComponentPtr = GetComponent<IdentityComponent>(entityId))
 	{
-		IdentityComponentPtr->GetDebugString(debugStringToAppendTo);
+		IdentityComponentPtr->DrawComponentDebug();
 	}
 	if (const NavigationComponent* NavigationComponentPtr = GetComponent<NavigationComponent>(entityId))
 	{
-		NavigationComponentPtr->GetDebugString(debugStringToAppendTo);
+		NavigationComponentPtr->DrawComponentDebug();
 	}
 	if (const ObserversComponent* ObserversComponentPtr = GetComponent<ObserversComponent>(entityId))
 	{
-		ObserversComponentPtr->GetDebugString(debugStringToAppendTo);
+		ObserversComponentPtr->DrawComponentDebug();
 	}
 	if (const SpawningComponent* SpawningComponentPtr = GetComponent<SpawningComponent>(entityId))
 	{
-		SpawningComponentPtr->GetDebugString(debugStringToAppendTo);
+		SpawningComponentPtr->DrawComponentDebug();
 	}
 	if (const TargetingComponent* TargetingComponentPtr = GetComponent<TargetingComponent>(entityId))
 	{
-		TargetingComponentPtr->GetDebugString(debugStringToAppendTo);
+		TargetingComponentPtr->DrawComponentDebug();
 	}
 	if (const TaskComponent* TaskComponentPtr = GetComponent<TaskComponent>(entityId))
 	{
-		TaskComponentPtr->GetDebugString(debugStringToAppendTo);
+		TaskComponentPtr->DrawComponentDebug();
 	}
 	if (const TimerComponent* TimerComponentPtr = GetComponent<TimerComponent>(entityId))
 	{
-		TimerComponentPtr->GetDebugString(debugStringToAppendTo);
+		TimerComponentPtr->DrawComponentDebug();
 	}
 	if (const TransformComponent* TransformComponentPtr = GetComponent<TransformComponent>(entityId))
 	{
-		TransformComponentPtr->GetDebugString(debugStringToAppendTo);
+		TransformComponentPtr->DrawComponentDebug();
 	}
 	if (const InputInterfaceComponent* InputInterfaceComponentPtr = GetComponent<InputInterfaceComponent>(entityId))
 	{
-		InputInterfaceComponentPtr->GetDebugString(debugStringToAppendTo);
+		InputInterfaceComponentPtr->DrawComponentDebug();
 	}
 	if (const ResourceComponent* ResourceComponentPtr = GetComponent<ResourceComponent>(entityId))
 	{
-		ResourceComponentPtr->GetDebugString(debugStringToAppendTo);
+		ResourceComponentPtr->DrawComponentDebug();
 	}
 	if (const ReticleComponent* ReticleComponentPtr = GetComponent<ReticleComponent>(entityId))
 	{
-		ReticleComponentPtr->GetDebugString(debugStringToAppendTo);
+		ReticleComponentPtr->DrawComponentDebug();
 	}
 	if (const SpatialPartitioningComponent* SpatialPartitioningComponentPtr = GetComponent<SpatialPartitioningComponent>(entityId))
 	{
-		SpatialPartitioningComponentPtr->GetDebugString(debugStringToAppendTo);
+		SpatialPartitioningComponentPtr->DrawComponentDebug();
 	}
 }
+#endif //!UE_BUILD_SHIPPING

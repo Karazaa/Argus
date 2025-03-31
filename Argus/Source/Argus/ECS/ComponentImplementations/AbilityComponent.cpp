@@ -4,10 +4,24 @@
 #include "ComponentDefinitions/AbilityComponent.h"
 #include "ArgusComponentRegistry.h"
 
+#if !UE_BUILD_SHIPPING
+#include "imgui.h"
+#endif //!UE_BUILD_SHIPPING
+
 // Component shared functionality
 uint16 AbilityComponent::GetOwningEntityId() const
 {
 	return this - &ArgusComponentRegistry::s_AbilityComponents[0];
+}
+
+void AbilityComponent::DrawComponentDebug() const
+{
+#if !UE_BUILD_SHIPPING
+	if (!ImGui::CollapsingHeader("AbilityComponent"))
+	{
+		return;
+	}   
+#endif //!UE_BUILD_SHIPPING
 }
 
 // Per observable logic

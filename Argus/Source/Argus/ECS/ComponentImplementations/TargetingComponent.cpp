@@ -4,10 +4,24 @@
 #include "ComponentDefinitions/TargetingComponent.h"
 #include "ArgusComponentRegistry.h"
 
+#if !UE_BUILD_SHIPPING
+#include "imgui.h"
+#endif //!UE_BUILD_SHIPPING
+
 // Component shared functionality
 uint16 TargetingComponent::GetOwningEntityId() const
 {
 	return this - &ArgusComponentRegistry::s_TargetingComponents[0];
+}
+
+void TargetingComponent::DrawComponentDebug() const
+{
+#if !UE_BUILD_SHIPPING
+	if (!ImGui::CollapsingHeader("TargetingComponent"))
+	{
+		return;
+	}   
+#endif //!UE_BUILD_SHIPPING
 }
 
 // Per observable logic

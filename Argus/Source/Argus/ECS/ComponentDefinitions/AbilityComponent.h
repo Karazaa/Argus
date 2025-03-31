@@ -30,24 +30,4 @@ struct AbilityComponent
 				m_ability2Id == abilityRecordId ||
 				m_ability3Id == abilityRecordId;
 	}
-
-	void GetDebugString(FString& debugStringToAppendTo) const
-	{
-		debugStringToAppendTo.Append
-		(
-			FString::Printf
-			(
-				TEXT("\n[%s] \n    (%s: %d)\n    (%s: %d)\n    (%s: %d)\n    (%s: %d)"),
-				ARGUS_NAMEOF(AbilityComponent),
-				ARGUS_NAMEOF(m_ability0Id),
-				m_ability0Id,
-				ARGUS_NAMEOF(m_ability1Id),
-				m_ability1Id,
-				ARGUS_NAMEOF(m_ability2Id),
-				m_ability2Id,
-				ARGUS_NAMEOF(m_ability3Id),
-				m_ability3Id
-			)
-		);
-	}
 };

@@ -4,10 +4,24 @@
 #include "ComponentDefinitions/TaskComponent.h"
 #include "ArgusComponentRegistry.h"
 
+#if !UE_BUILD_SHIPPING
+#include "imgui.h"
+#endif //!UE_BUILD_SHIPPING
+
 // Component shared functionality
 uint16 TaskComponent::GetOwningEntityId() const
 {
 	return this - &ArgusComponentRegistry::s_TaskComponents[0];
+}
+
+void TaskComponent::DrawComponentDebug() const
+{
+#if !UE_BUILD_SHIPPING
+	if (!ImGui::CollapsingHeader("TaskComponent"))
+	{
+		return;
+	}   
+#endif //!UE_BUILD_SHIPPING
 }
 
 // Per observable logic

@@ -21,20 +21,4 @@ struct AvoidanceGroupingComponent
 
 	ARGUS_IGNORE()
 	uint16 m_numberOfIdleEntities = 0u;
-
-	void GetDebugString(FString& debugStringToAppendTo) const
-	{
-		debugStringToAppendTo.Append
-		(
-			FString::Printf
-			(
-				TEXT("\n[%s]\n    (%s, %d)\n    (%s, %d)"),
-				ARGUS_NAMEOF(AvoidanceGroupingComponent),
-				ARGUS_NAMEOF(m_groupId),
-				m_groupId,
-				ARGUS_NAMEOF(m_numberOfIdleEntities),
-				m_numberOfIdleEntities
-			)
-		);
-	}
 };

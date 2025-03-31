@@ -4,10 +4,24 @@
 #include "ComponentDefinitions/NavigationComponent.h"
 #include "ArgusComponentRegistry.h"
 
+#if !UE_BUILD_SHIPPING
+#include "imgui.h"
+#endif //!UE_BUILD_SHIPPING
+
 // Component shared functionality
 uint16 NavigationComponent::GetOwningEntityId() const
 {
 	return this - &ArgusComponentRegistry::s_NavigationComponents[0];
+}
+
+void NavigationComponent::DrawComponentDebug() const
+{
+#if !UE_BUILD_SHIPPING
+	if (!ImGui::CollapsingHeader("NavigationComponent"))
+	{
+		return;
+	}   
+#endif //!UE_BUILD_SHIPPING
 }
 
 // Per observable logic

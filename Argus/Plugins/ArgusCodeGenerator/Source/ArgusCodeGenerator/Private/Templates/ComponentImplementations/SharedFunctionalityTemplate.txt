@@ -2,3 +2,13 @@ uint16 #####::GetOwningEntityId() const
 {
 	return this - &ArgusComponentRegistry::s_#####s[0];
 }
+
+void #####::DrawComponentDebug() const
+{
+#if !UE_BUILD_SHIPPING
+	if (!ImGui::CollapsingHeader("#####"))
+	{
+		return;
+	}   
+#endif //!UE_BUILD_SHIPPING
+}

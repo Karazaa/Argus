@@ -4,6 +4,10 @@
 #include "ComponentDefinitions/#####.h"
 #include "ArgusComponentRegistry.h"
 
+#if !UE_BUILD_SHIPPING
+#include "imgui.h"
+#endif //!UE_BUILD_SHIPPING
+
 // Component shared functionality
 $$$$$
 

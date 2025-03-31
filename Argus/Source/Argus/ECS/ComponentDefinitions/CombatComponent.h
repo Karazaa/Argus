@@ -25,8 +25,4 @@ struct CombatComponent
 
 	ARGUS_IGNORE()
 	TimerHandle m_attackTimerHandle;
-
-	void GetDebugString(FString& debugStringToAppendTo) const
-	{
-	}
 };

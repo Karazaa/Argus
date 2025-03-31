@@ -8,9 +8,7 @@
 
 struct ResourceComponent
 {
-	FResourceSet m_resourceSet;
+	ARGUS_DYNAMIC_COMPONENT_SHARED
 
-	void GetDebugString(FString& debugStringToAppendTo) const
-	{
-	}
+	FResourceSet m_resourceSet;
 };

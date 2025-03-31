@@ -26,22 +26,4 @@ struct SpawningComponent
 
 	ARGUS_IGNORE()
 	ArgusQueue<SpawnEntityInfo> m_spawnQueue;
-
-	void GetDebugString(FString& debugStringToAppendTo) const
-	{
-		debugStringToAppendTo.Append
-		(
-			FString::Printf
-			(
-				TEXT("\n[%s]\n    (%s: %f)\n    (%s: %d)\n    (%s: %d)"),
-				ARGUS_NAMEOF(SpawningComponent),
-				ARGUS_NAMEOF(m_spawningRadius),
-				m_spawningRadius,
-				ARGUS_NAMEOF(m_maximumQueueSize),
-				m_maximumQueueSize,
-				ARGUS_NAMEOF(m_currentQueueSize),
-				m_currentQueueSize
-			)
-		);
-	}
 };

@@ -31,20 +31,4 @@ struct NavigationComponent
 	{
 		m_queuedWaypoints.Empty();
 	}
-
-	void GetDebugString(FString& debugStringToAppendTo) const
-	{
-		debugStringToAppendTo.Append
-		(
-			FString::Printf
-			(
-				TEXT("\n[%s] \n    (%s: %d) \n    (Num points: %d) \n    (Queued waypoints Empty?: %s)"), 
-				ARGUS_NAMEOF(NavigationComponent),
-				ARGUS_NAMEOF(m_lastPointIndex),
-				m_lastPointIndex,
-				m_navigationPoints.Num(),
-				m_queuedWaypoints.IsEmpty() ? TEXT("No") : TEXT("Yes")
-			)
-		);
-	}
 };

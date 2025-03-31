@@ -12,8 +12,4 @@ struct ObserversComponent
 
 	ARGUS_IGNORE()
 	TaskComponentObservers m_TaskComponentObservers;
-
-	void GetDebugString(FString& debugStringToAppendTo) const
-	{
-	}
 };

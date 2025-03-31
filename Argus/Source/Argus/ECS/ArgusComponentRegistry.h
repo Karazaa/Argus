@@ -54,6 +54,10 @@ public:
 	static void FlushAllComponents();
 	static void AppendComponentDebugStrings(uint16 entityId, FString& debugStringToAppendTo);
 
+#if !UE_BUILD_SHIPPING
+	static void DrawComponentsDebug(uint16 entityId);
+#endif //!UE_BUILD_SHIPPING
+
 	static constexpr uint32 k_numComponentTypes = 17;
 
 	// Begin component specific template specifiers.

@@ -10,6 +10,7 @@ class ArgusECSDebugger
 {
 public:
 	static void DrawECSDebugger();
+	static bool IsEntityBeingDebugged(uint16 entityId);
 
 private:
 	static bool s_entityDebugToggles[ArgusECSConstants::k_maxEntities];
@@ -19,5 +20,7 @@ private:
 	static void DrawCurrentlySelectedEntities();
 	static void DrawEntityDockSpace();
 	static void DrawWindowForEntity(uint16 entityId);
+
+	static void ClearAllEntityDebugWindows();
 };
 #endif //!UE_BUILD_SHIPPING

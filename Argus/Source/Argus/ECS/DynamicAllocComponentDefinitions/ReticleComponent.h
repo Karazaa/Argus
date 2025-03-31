@@ -7,6 +7,8 @@
 
 struct ReticleComponent
 {
+	ARGUS_DYNAMIC_COMPONENT_SHARED
+
 	ARGUS_IGNORE()
 	FVector m_reticleLocation = FVector::ZeroVector;
 
@@ -29,18 +31,4 @@ struct ReticleComponent
 	}
 
 	bool IsReticleEnabled() const { return m_abilityRecordId != 0u; }
-
-	void GetDebugString(FString& debugStringToAppendTo) const
-	{
-		debugStringToAppendTo.Append
-		(
-			FString::Printf
-			(
-				TEXT("\n[%s] \n    (%s: %d)"),
-				ARGUS_NAMEOF(ReticleComponent),
-				ARGUS_NAMEOF(m_abilityRecordId),
-				m_abilityRecordId
-			)
-		);
-	}
 };

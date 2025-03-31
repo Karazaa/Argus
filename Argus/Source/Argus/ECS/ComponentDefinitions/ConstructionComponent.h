@@ -29,20 +29,4 @@ struct ConstructionComponent
 
 	ARGUS_IGNORE()
 	TimerHandle m_automaticConstructionTimerHandle;
-
-	void GetDebugString(FString& debugStringToAppendTo) const
-	{
-		debugStringToAppendTo.Append
-		(
-			FString::Printf
-			(
-				TEXT("\n[%s] \n    (%s: %f)    \n(%s: %f)"),
-				ARGUS_NAMEOF(ConstructionComponent),
-				ARGUS_NAMEOF(m_requiredWorkSeconds),
-				m_requiredWorkSeconds,
-				ARGUS_NAMEOF(m_currentWorkSeconds),
-				m_currentWorkSeconds
-			)
-		);
-	}
 };
