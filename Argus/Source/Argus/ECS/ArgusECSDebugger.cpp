@@ -22,7 +22,7 @@ void ArgusECSDebugger::DrawECSDebugger()
 		return;
 	}
 
-	// ImGui::ShowDemoWindow();
+	ImGui::ShowDemoWindow();
 
 	ImGui::SetNextWindowSize(ImVec2(260, 260), ImGuiCond_FirstUseEver);
 	if (!ImGui::Begin("ECS"))

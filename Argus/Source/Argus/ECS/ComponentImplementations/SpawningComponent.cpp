@@ -20,7 +20,24 @@ void SpawningComponent::DrawComponentDebug() const
 	if (!ImGui::CollapsingHeader("SpawningComponent"))
 	{
 		return;
-	}   
+	}
+
+	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings))
+	{
+		ImGui::TableNextColumn();
+		ImGui::Text("m_spawningRadius");
+		ImGui::TableNextColumn();
+		ImGui::Text("%f", m_spawningRadius);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_maximumQueueSize");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_maximumQueueSize);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_currentQueueSize");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_currentQueueSize);
+		ImGui::EndTable();
+	}
 #endif //!UE_BUILD_SHIPPING
 }
 

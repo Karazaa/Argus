@@ -20,7 +20,28 @@ void AbilityComponent::DrawComponentDebug() const
 	if (!ImGui::CollapsingHeader("AbilityComponent"))
 	{
 		return;
-	}   
+	}
+
+	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings))
+	{
+		ImGui::TableNextColumn();
+		ImGui::Text("m_ability0Id");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_ability0Id);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_ability1Id");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_ability1Id);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_ability2Id");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_ability2Id);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_ability3Id");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_ability3Id);
+		ImGui::EndTable();
+	}
 #endif //!UE_BUILD_SHIPPING
 }
 

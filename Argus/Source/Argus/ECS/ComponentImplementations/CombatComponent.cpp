@@ -20,7 +20,20 @@ void CombatComponent::DrawComponentDebug() const
 	if (!ImGui::CollapsingHeader("CombatComponent"))
 	{
 		return;
-	}   
+	}
+
+	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings))
+	{
+		ImGui::TableNextColumn();
+		ImGui::Text("m_baseDamagePerIntervalOrPerSecond");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_baseDamagePerIntervalOrPerSecond);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_intervalDurationSeconds");
+		ImGui::TableNextColumn();
+		ImGui::Text("%f", m_intervalDurationSeconds);
+		ImGui::EndTable();
+	}
 #endif //!UE_BUILD_SHIPPING
 }
 

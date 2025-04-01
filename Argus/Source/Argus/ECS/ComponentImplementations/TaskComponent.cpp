@@ -20,7 +20,16 @@ void TaskComponent::DrawComponentDebug() const
 	if (!ImGui::CollapsingHeader("TaskComponent"))
 	{
 		return;
-	}   
+	}
+
+	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings))
+	{
+		ImGui::TableNextColumn();
+		ImGui::Text("m_spawnedFromArgusActorRecordId");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_spawnedFromArgusActorRecordId);
+		ImGui::EndTable();
+	}
 #endif //!UE_BUILD_SHIPPING
 }
 

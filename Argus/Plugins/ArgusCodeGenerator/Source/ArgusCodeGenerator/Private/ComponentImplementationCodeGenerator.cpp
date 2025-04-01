@@ -92,7 +92,18 @@ bool ComponentImplementationGenerator::ParseComponentImplementationCppFileTempla
 
 				for (int j = 0; j < rawLines.size(); ++j)
 				{
-					outParsedFileContents[i].m_lines.push_back(std::regex_replace(rawLines[j], std::regex("#####"), parsedComponentData.m_componentNames[i]));
+					if (rawLines[j].find("$$$$$") != std::string::npos)
+					{
+						outParsedFileContents[i].m_lines.push_back("\tif (ImGui::BeginTable(\"ComponentValues\", 2, ImGuiTableFlags_NoSavedSettings))");
+						outParsedFileContents[i].m_lines.push_back("\t{");
+						GeneratePerVariableImGuiText(parsedComponentData.m_componentVariableData[i], outParsedFileContents[i].m_lines);
+						outParsedFileContents[i].m_lines.push_back("\t\tImGui::EndTable();");
+						outParsedFileContents[i].m_lines.push_back("\t}");
+					}
+					else
+					{
+						outParsedFileContents[i].m_lines.push_back(std::regex_replace(rawLines[j], std::regex("#####"), parsedComponentData.m_componentNames[i]));
+					}
 				}
 			}
 		}
@@ -111,5 +122,107 @@ bool ComponentImplementationGenerator::ParseComponentImplementationCppFileTempla
 		}
 	}
 
+	return true;
+}
+
+bool ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::vector<ArgusCodeGeneratorUtil::ParsedVariableData>& parsedVariableData, std::vector<std::string>& outParsedVariableContents)
+{
+	for (int i = 0; i < parsedVariableData.size(); ++i)
+	{
+		const size_t unsignedInteger8Token = parsedVariableData[i].m_typeName.find("uint8");
+		const size_t unsignedInteger16Token = parsedVariableData[i].m_typeName.find("uint16");
+		const size_t unsignedInteger32Token = parsedVariableData[i].m_typeName.find("uint32");
+		const size_t signedInteger8Token = parsedVariableData[i].m_typeName.find("int8");
+		const size_t signedInteger16Token = parsedVariableData[i].m_typeName.find("int16");
+		const size_t signedInteger32Token = parsedVariableData[i].m_typeName.find("int32");
+		const bool isInteger =	unsignedInteger8Token != std::string::npos ||
+								unsignedInteger16Token != std::string::npos ||
+								unsignedInteger32Token != std::string::npos ||
+								signedInteger8Token != std::string::npos ||
+								signedInteger16Token != std::string::npos ||
+								signedInteger32Token != std::string::npos;
+
+		const bool isFloat = parsedVariableData[i].m_typeName.find("float") != std::string::npos;
+		const bool isOptional = parsedVariableData[i].m_typeName.find("TOptional") != std::string::npos;
+		const bool isArray = parsedVariableData[i].m_typeName.find("TArray") != std::string::npos;
+		const bool isQueue = parsedVariableData[i].m_typeName.find("ArgusQueue") != std::string::npos;
+		const bool isVector = parsedVariableData[i].m_typeName.find("FVector") != std::string::npos;
+
+		if (isInteger)
+		{
+			if (isArray)
+			{
+
+			}
+			else
+			{
+				outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
+				std::string variable = "\t\tImGui::Text(\"";
+				variable.append(parsedVariableData[i].m_varName);
+				variable.append("\");");
+				outParsedVariableContents.push_back(variable);
+				outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
+				std::string value = "\t\tImGui::Text(\"%d\", ";
+				value.append(parsedVariableData[i].m_varName);
+				value.append(");");
+				outParsedVariableContents.push_back(value);
+			}
+		}
+		else if (isFloat)
+		{
+			if (isArray)
+			{
+
+			}
+			else
+			{
+				outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
+				std::string variable = "\t\tImGui::Text(\"";
+				variable.append(parsedVariableData[i].m_varName);
+				variable.append("\");");
+				outParsedVariableContents.push_back(variable);
+				outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
+				std::string value = "\t\tImGui::Text(\"%f\", ";
+				value.append(parsedVariableData[i].m_varName);
+				value.append(");");
+				outParsedVariableContents.push_back(value);
+			}
+		}
+		else if (isVector)
+		{
+			if (isOptional)
+			{
+
+			}
+			else if (isArray)
+			{
+
+			}
+			else if (isQueue)
+			{
+
+			}
+			else
+			{
+				outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
+				std::string variable = "\t\tImGui::Text(\"";
+				variable.append(parsedVariableData[i].m_varName);
+				variable.append("\");");
+				outParsedVariableContents.push_back(variable);
+				outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
+				std::string value = "\t\tImGui::Text(\"{%f, %f, %f}\", ";
+				value.append(parsedVariableData[i].m_varName);
+				value.append(".X");
+				value.append(", ");
+				value.append(parsedVariableData[i].m_varName);
+				value.append(".Y");
+				value.append(", ");
+				value.append(parsedVariableData[i].m_varName);
+				value.append(".Z");
+				value.append(");");
+				outParsedVariableContents.push_back(value);
+			}
+		}
+	}
 	return true;
 }

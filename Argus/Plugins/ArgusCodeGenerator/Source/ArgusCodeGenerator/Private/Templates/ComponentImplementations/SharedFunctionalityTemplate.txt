@@ -9,6 +9,8 @@ void #####::DrawComponentDebug() const
 	if (!ImGui::CollapsingHeader("#####"))
 	{
 		return;
-	}   
+	}
+
+	$$$$$   
 #endif //!UE_BUILD_SHIPPING
 }

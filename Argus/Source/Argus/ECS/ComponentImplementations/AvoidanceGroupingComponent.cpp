@@ -20,7 +20,24 @@ void AvoidanceGroupingComponent::DrawComponentDebug() const
 	if (!ImGui::CollapsingHeader("AvoidanceGroupingComponent"))
 	{
 		return;
-	}   
+	}
+
+	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings))
+	{
+		ImGui::TableNextColumn();
+		ImGui::Text("m_groupAverageLocation");
+		ImGui::TableNextColumn();
+		ImGui::Text("{%f, %f, %f}", m_groupAverageLocation.X, m_groupAverageLocation.Y, m_groupAverageLocation.Z);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_groupId");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_groupId);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_numberOfIdleEntities");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_numberOfIdleEntities);
+		ImGui::EndTable();
+	}
 #endif //!UE_BUILD_SHIPPING
 }
 

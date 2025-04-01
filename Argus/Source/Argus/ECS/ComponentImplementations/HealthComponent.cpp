@@ -20,7 +20,20 @@ void HealthComponent::DrawComponentDebug() const
 	if (!ImGui::CollapsingHeader("HealthComponent"))
 	{
 		return;
-	}   
+	}
+
+	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings))
+	{
+		ImGui::TableNextColumn();
+		ImGui::Text("m_currentHealth");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_currentHealth);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_maximumHealth");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_maximumHealth);
+		ImGui::EndTable();
+	}
 #endif //!UE_BUILD_SHIPPING
 }
 

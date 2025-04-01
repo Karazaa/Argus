@@ -20,7 +20,24 @@ void ConstructionComponent::DrawComponentDebug() const
 	if (!ImGui::CollapsingHeader("ConstructionComponent"))
 	{
 		return;
-	}   
+	}
+
+	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings))
+	{
+		ImGui::TableNextColumn();
+		ImGui::Text("m_requiredWorkSeconds");
+		ImGui::TableNextColumn();
+		ImGui::Text("%f", m_requiredWorkSeconds);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_currentWorkSeconds");
+		ImGui::TableNextColumn();
+		ImGui::Text("%f", m_currentWorkSeconds);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_constructionAbilityRecordId");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_constructionAbilityRecordId);
+		ImGui::EndTable();
+	}
 #endif //!UE_BUILD_SHIPPING
 }
 

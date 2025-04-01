@@ -20,7 +20,12 @@ void ObserversComponent::DrawComponentDebug() const
 	if (!ImGui::CollapsingHeader("ObserversComponent"))
 	{
 		return;
-	}   
+	}
+
+	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings))
+	{
+		ImGui::EndTable();
+	}
 #endif //!UE_BUILD_SHIPPING
 }
 

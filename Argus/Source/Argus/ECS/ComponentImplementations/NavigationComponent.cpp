@@ -20,7 +20,20 @@ void NavigationComponent::DrawComponentDebug() const
 	if (!ImGui::CollapsingHeader("NavigationComponent"))
 	{
 		return;
-	}   
+	}
+
+	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings))
+	{
+		ImGui::TableNextColumn();
+		ImGui::Text("m_endedNavigationLocation");
+		ImGui::TableNextColumn();
+		ImGui::Text("{%f, %f, %f}", m_endedNavigationLocation.X, m_endedNavigationLocation.Y, m_endedNavigationLocation.Z);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_lastPointIndex");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_lastPointIndex);
+		ImGui::EndTable();
+	}
 #endif //!UE_BUILD_SHIPPING
 }
 

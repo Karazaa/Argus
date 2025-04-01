@@ -20,7 +20,24 @@ void TargetingComponent::DrawComponentDebug() const
 	if (!ImGui::CollapsingHeader("TargetingComponent"))
 	{
 		return;
-	}   
+	}
+
+	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings))
+	{
+		ImGui::TableNextColumn();
+		ImGui::Text("m_meleeRange");
+		ImGui::TableNextColumn();
+		ImGui::Text("%f", m_meleeRange);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_rangedRange");
+		ImGui::TableNextColumn();
+		ImGui::Text("%f", m_rangedRange);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_targetEntityId");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_targetEntityId);
+		ImGui::EndTable();
+	}
 #endif //!UE_BUILD_SHIPPING
 }
 

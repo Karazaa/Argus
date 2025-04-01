@@ -20,7 +20,24 @@ void IdentityComponent::DrawComponentDebug() const
 	if (!ImGui::CollapsingHeader("IdentityComponent"))
 	{
 		return;
-	}   
+	}
+
+	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings))
+	{
+		ImGui::TableNextColumn();
+		ImGui::Text("m_factionId");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_factionId);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_allies");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_allies);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_enemies");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_enemies);
+		ImGui::EndTable();
+	}
 #endif //!UE_BUILD_SHIPPING
 }
 
