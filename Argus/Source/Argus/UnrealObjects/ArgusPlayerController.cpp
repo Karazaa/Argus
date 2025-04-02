@@ -166,7 +166,6 @@ bool AArgusPlayerController::IsArgusActorOnPlayerTeam(const AArgusActor* const a
 	const IdentityComponent* identityComponent = entity.GetComponent<IdentityComponent>();
 	if (!identityComponent)
 	{
-		ARGUS_LOG(ArgusUnrealObjectsLog, Error, TEXT("[%s] Could not retrieve %s from %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(IdentityComponent), ARGUS_NAMEOF(ArgusEntity));
 		return false;
 	}
 
