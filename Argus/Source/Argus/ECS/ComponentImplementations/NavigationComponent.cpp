@@ -28,13 +28,21 @@ void NavigationComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_navigationPoints");
 		ImGui::TableNextColumn();
+		if (m_navigationPoints.Num() == 0)
+		{
+			ImGui::Text("Array is empty.");
+		}
+		else
+		{
+			ImGui::Text("Size of array = %d", m_navigationPoints.Num());
+		}
 		ImGui::TableNextColumn();
 		ImGui::Text("m_queuedWaypoints");
 		ImGui::TableNextColumn();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_endedNavigationLocation");
 		ImGui::TableNextColumn();
-		ImGui::Text("{%f, %f, %f}", m_endedNavigationLocation.X, m_endedNavigationLocation.Y, m_endedNavigationLocation.Z);
+		ImGui::Text("(%f, %f, %f)", m_endedNavigationLocation.X, m_endedNavigationLocation.Y, m_endedNavigationLocation.Z);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_lastPointIndex");
 		ImGui::TableNextColumn();

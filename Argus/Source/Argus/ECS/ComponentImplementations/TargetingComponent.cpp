@@ -30,7 +30,11 @@ void TargetingComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		if (m_targetLocation.IsSet())
 		{
-			ImGui::Text("{%f, %f, %f}", m_targetLocation.GetValue().X, m_targetLocation.GetValue().Y, m_targetLocation.GetValue().Z);
+			ImGui::Text("(%f, %f, %f)", m_targetLocation.GetValue().X, m_targetLocation.GetValue().Y, m_targetLocation.GetValue().Z);
+		}
+		else
+		{
+			ImGui::Text("Optional not set.");
 		}
 		ImGui::TableNextColumn();
 		ImGui::Text("m_meleeRange");

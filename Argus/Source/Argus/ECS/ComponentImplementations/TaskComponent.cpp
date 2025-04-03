@@ -32,33 +32,33 @@ void TaskComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_baseState");
 		ImGui::TableNextColumn();
-		const char* valueNamem_baseState = ARGUS_FSTRING_TO_CHAR(StaticEnum<EBaseState>()->GetNameStringByValue(static_cast<uint8>(m_baseState)));
-		ImGui::Text(valueNamem_baseState);
+		const char* valueName_m_baseState = ARGUS_FSTRING_TO_CHAR(StaticEnum<EBaseState>()->GetNameStringByValue(static_cast<uint8>(m_baseState)))
+		ImGui::Text(valueName_m_baseState);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_movementState");
 		ImGui::TableNextColumn();
-		const char* valueNamem_movementState = ARGUS_FSTRING_TO_CHAR(StaticEnum<EMovementState>()->GetNameStringByValue(static_cast<uint8>(m_movementState)));
-		ImGui::Text(valueNamem_movementState);
+		const char* valueName_m_movementState = ARGUS_FSTRING_TO_CHAR(StaticEnum<EMovementState>()->GetNameStringByValue(static_cast<uint8>(m_movementState)))
+		ImGui::Text(valueName_m_movementState);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_spawningState");
 		ImGui::TableNextColumn();
-		const char* valueNamem_spawningState = ARGUS_FSTRING_TO_CHAR(StaticEnum<ESpawningState>()->GetNameStringByValue(static_cast<uint8>(m_spawningState)));
-		ImGui::Text(valueNamem_spawningState);
+		const char* valueName_m_spawningState = ARGUS_FSTRING_TO_CHAR(StaticEnum<ESpawningState>()->GetNameStringByValue(static_cast<uint8>(m_spawningState)))
+		ImGui::Text(valueName_m_spawningState);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_abilityState");
 		ImGui::TableNextColumn();
-		const char* valueNamem_abilityState = ARGUS_FSTRING_TO_CHAR(StaticEnum<EAbilityState>()->GetNameStringByValue(static_cast<uint8>(m_abilityState)));
-		ImGui::Text(valueNamem_abilityState);
+		const char* valueName_m_abilityState = ARGUS_FSTRING_TO_CHAR(StaticEnum<EAbilityState>()->GetNameStringByValue(static_cast<uint8>(m_abilityState)))
+		ImGui::Text(valueName_m_abilityState);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_constructionState");
 		ImGui::TableNextColumn();
-		const char* valueNamem_constructionState = ARGUS_FSTRING_TO_CHAR(StaticEnum<EConstructionState>()->GetNameStringByValue(static_cast<uint8>(m_constructionState)));
-		ImGui::Text(valueNamem_constructionState);
+		const char* valueName_m_constructionState = ARGUS_FSTRING_TO_CHAR(StaticEnum<EConstructionState>()->GetNameStringByValue(static_cast<uint8>(m_constructionState)))
+		ImGui::Text(valueName_m_constructionState);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_combatState");
 		ImGui::TableNextColumn();
-		const char* valueNamem_combatState = ARGUS_FSTRING_TO_CHAR(StaticEnum<ECombatState>()->GetNameStringByValue(static_cast<uint8>(m_combatState)));
-		ImGui::Text(valueNamem_combatState);
+		const char* valueName_m_combatState = ARGUS_FSTRING_TO_CHAR(StaticEnum<ECombatState>()->GetNameStringByValue(static_cast<uint8>(m_combatState)))
+		ImGui::Text(valueName_m_combatState);
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

@@ -36,8 +36,8 @@ void CombatComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_attackType");
 		ImGui::TableNextColumn();
-		const char* valueNamem_attackType = ARGUS_FSTRING_TO_CHAR(StaticEnum<EAttackType>()->GetNameStringByValue(static_cast<uint8>(m_attackType)));
-		ImGui::Text(valueNamem_attackType);
+		const char* valueName_m_attackType = ARGUS_FSTRING_TO_CHAR(StaticEnum<EAttackType>()->GetNameStringByValue(static_cast<uint8>(m_attackType)))
+		ImGui::Text(valueName_m_attackType);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_attackTimerHandle");
 		ImGui::TableNextColumn();

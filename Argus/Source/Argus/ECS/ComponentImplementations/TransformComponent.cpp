@@ -28,15 +28,15 @@ void TransformComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_location");
 		ImGui::TableNextColumn();
-		ImGui::Text("{%f, %f, %f}", m_location.X, m_location.Y, m_location.Z);
+		ImGui::Text("(%f, %f, %f)", m_location.X, m_location.Y, m_location.Z);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_currentVelocity");
 		ImGui::TableNextColumn();
-		ImGui::Text("{%f, %f, %f}", m_currentVelocity.X, m_currentVelocity.Y, m_currentVelocity.Z);
+		ImGui::Text("(%f, %f, %f)", m_currentVelocity.X, m_currentVelocity.Y, m_currentVelocity.Z);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_proposedAvoidanceVelocity");
 		ImGui::TableNextColumn();
-		ImGui::Text("{%f, %f, %f}", m_proposedAvoidanceVelocity.X, m_proposedAvoidanceVelocity.Y, m_proposedAvoidanceVelocity.Z);
+		ImGui::Text("(%f, %f, %f)", m_proposedAvoidanceVelocity.X, m_proposedAvoidanceVelocity.Y, m_proposedAvoidanceVelocity.Z);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_smoothedYaw");
 		ImGui::TableNextColumn();

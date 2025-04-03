@@ -3,6 +3,7 @@
 #include "ComponentImplementationCodeGenerator.h"
 #include "Misc/Paths.h"
 #include <filesystem>
+#include <format>
 #include <fstream>
 #include <regex>
 
@@ -155,17 +156,14 @@ bool ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 		const bool isEnum = cleanTypeName.at(0) == 'E';
 
 		outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
-		std::string variable = "\t\tImGui::Text(\"";
-		variable.append(parsedVariableData[i].m_varName);
-		variable.append("\");");
-		outParsedVariableContents.push_back(variable);
+		outParsedVariableContents.push_back(std::vformat("\t\tImGui::Text(\"{}\");", std::make_format_args(parsedVariableData[i].m_varName)));
 		outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
 
 		if (isInteger)
 		{
 			if (isArray)
 			{
-
+				FormatImGuiArrayField(parsedVariableData[i].m_varName, outParsedVariableContents);
 			}
 			else
 			{
@@ -178,7 +176,7 @@ bool ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 		{
 			if (isArray)
 			{
-
+				FormatImGuiArrayField(parsedVariableData[i].m_varName, outParsedVariableContents);
 			}
 			else
 			{
@@ -194,29 +192,16 @@ bool ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 		}
 		else if (isEnum)
 		{
-			std::string newVariableName = "valueName";
+			std::string newVariableName = "valueName_";
 			newVariableName.append(parsedVariableData[i].m_varName);
-			std::string constCharStatement = "\t\tconst char* ";
-			constCharStatement.append(newVariableName);
-			constCharStatement.append(" = ARGUS_FSTRING_TO_CHAR(StaticEnum<");
-			constCharStatement.append(cleanTypeName);
-			constCharStatement.append(">()->GetNameStringByValue(static_cast<uint8>(");
-			constCharStatement.append(parsedVariableData[i].m_varName);
-			constCharStatement.append(")));");
-			outParsedVariableContents.push_back(constCharStatement);
-			std::string textStatement = "\t\tImGui::Text(";
-			textStatement.append(newVariableName);
-			textStatement.append(");");
-			outParsedVariableContents.push_back(textStatement);
+			outParsedVariableContents.push_back(std::vformat("\t\tconst char* {} = ARGUS_FSTRING_TO_CHAR(StaticEnum<{}>()->GetNameStringByValue(static_cast<uint8>({})))", std::make_format_args(newVariableName, cleanTypeName, parsedVariableData[i].m_varName)));
+			outParsedVariableContents.push_back(std::vformat("\t\tImGui::Text({});", std::make_format_args(newVariableName)));
 		}
 		else if (isVector)
 		{
 			if (isOptional)
 			{
-				std::string condition = "\t\tif (";
-				condition.append(parsedVariableData[i].m_varName);
-				condition.append(".IsSet())");
-				outParsedVariableContents.push_back(condition);
+				outParsedVariableContents.push_back(std::vformat("\t\tif ({}.IsSet())", std::make_format_args(parsedVariableData[i].m_varName)));
 				outParsedVariableContents.push_back("\t\t{");
 				std::string variableName = parsedVariableData[i].m_varName;
 				variableName.append(".GetValue()");
@@ -224,10 +209,14 @@ bool ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 				FormatImGuiFVectorField(variableName, value);
 				outParsedVariableContents.push_back(value);
 				outParsedVariableContents.push_back("\t\t}");
+				outParsedVariableContents.push_back("\t\telse");
+				outParsedVariableContents.push_back("\t\t{");
+				outParsedVariableContents.push_back("\t\t\tImGui::Text(\"Optional not set.\");");
+				outParsedVariableContents.push_back("\t\t}");
 			}
 			else if (isArray)
 			{
-
+				FormatImGuiArrayField(parsedVariableData[i].m_varName, outParsedVariableContents);
 			}
 			else if (isQueue)
 			{
@@ -249,30 +238,36 @@ bool ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 	return true;
 }
 
+void ComponentImplementationGenerator::FormatImGuiArrayField(const std::string& variableName, std::vector<std::string>& outParsedVariableContents)
+{
+	outParsedVariableContents.push_back(std::vformat("\t\tif ({}.Num() == 0)", std::make_format_args(variableName)));
+	outParsedVariableContents.push_back("\t\t{");
+	outParsedVariableContents.push_back("\t\t\tImGui::Text(\"Array is empty.\");");
+	outParsedVariableContents.push_back("\t\t}");
+	outParsedVariableContents.push_back("\t\telse");
+	outParsedVariableContents.push_back("\t\t{");
+	outParsedVariableContents.push_back(std::vformat("\t\t\tImGui::Text(\"Size of array = %d\", {}.Num());", std::make_format_args(variableName)));
+	outParsedVariableContents.push_back("\t\t}");
+}
+
 void ComponentImplementationGenerator::FormatImGuiFloatField(const std::string& variableName, std::string& outFormattedString)
 {
-	outFormattedString.append("\t\tImGui::Text(\"%f\", ");
-	outFormattedString.append(variableName);
-	outFormattedString.append(");");
+	outFormattedString.append(std::vformat("\t\tImGui::Text(\"%f\", {});", std::make_format_args(variableName)));
 }
 
 void ComponentImplementationGenerator::FormatImGuiIntField(const std::string& variableName, std::string& outFormattedString)
 {
-	outFormattedString.append("\t\tImGui::Text(\"%d\", ");
-	outFormattedString.append(variableName);
-	outFormattedString.append(");");
+	outFormattedString.append(std::vformat("\t\tImGui::Text(\"%d\", {});", std::make_format_args(variableName)));
 }
 
 void ComponentImplementationGenerator::FormatImGuiFVectorField(const std::string& variableName, std::string& outFormattedString)
 {
-	outFormattedString.append("\t\tImGui::Text(\"{%f, %f, %f}\", ");
-	outFormattedString.append(variableName);
-	outFormattedString.append(".X");
-	outFormattedString.append(", ");
-	outFormattedString.append(variableName);
-	outFormattedString.append(".Y");
-	outFormattedString.append(", ");
-	outFormattedString.append(variableName);
-	outFormattedString.append(".Z");
-	outFormattedString.append(");");
+	std::string xValue = variableName;
+	std::string yValue = variableName;
+	std::string zValue = variableName;
+	xValue.append(".X");
+	yValue.append(".Y");
+	zValue.append(".Z");
+
+	outFormattedString.append(std::vformat("\t\tImGui::Text(\"(%f, %f, %f)\", {}, {}, {});", std::make_format_args(xValue, yValue, zValue)));
 }
