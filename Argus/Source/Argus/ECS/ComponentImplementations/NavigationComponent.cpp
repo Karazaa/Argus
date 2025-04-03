@@ -25,6 +25,12 @@ void NavigationComponent::DrawComponentDebug() const
 	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings))
 	{
 		ImGui::TableNextColumn();
+		ImGui::Text("m_navigationPoints");
+		ImGui::TableNextColumn();
+		ImGui::TableNextColumn();
+		ImGui::Text("m_queuedWaypoints");
+		ImGui::TableNextColumn();
+		ImGui::TableNextColumn();
 		ImGui::Text("m_endedNavigationLocation");
 		ImGui::TableNextColumn();
 		ImGui::Text("{%f, %f, %f}", m_endedNavigationLocation.X, m_endedNavigationLocation.Y, m_endedNavigationLocation.Z);

@@ -19,4 +19,7 @@ private:
 
 	static bool ParseComponentImplementationCppFileTemplateWithReplacements(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents);
 	static bool GeneratePerVariableImGuiText(const std::vector<ArgusCodeGeneratorUtil::ParsedVariableData>& parsedVariableData, std::vector<std::string>& outParsedVariableContents);
+	static void FormatImGuiFloatField(const std::string& variableName, std::string& outFormattedString);
+	static void FormatImGuiIntField(const std::string& variableName, std::string& outFormattedString);
+	static void FormatImGuiFVectorField(const std::string& variableName, std::string& outFormattedString);
 };

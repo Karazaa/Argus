@@ -36,6 +36,12 @@ void ConstructionComponent::DrawComponentDebug() const
 		ImGui::Text("m_constructionAbilityRecordId");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_constructionAbilityRecordId);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_constructionType");
+		ImGui::TableNextColumn();
+		ImGui::TableNextColumn();
+		ImGui::Text("m_automaticConstructionTimerHandle");
+		ImGui::TableNextColumn();
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

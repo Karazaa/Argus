@@ -143,10 +143,18 @@ bool ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 								signedInteger32Token != std::string::npos;
 
 		const bool isFloat = parsedVariableData[i].m_typeName.find("float") != std::string::npos;
+		const bool isSmoother = parsedVariableData[i].m_typeName.find("ExponentialDecaySmoother") != std::string::npos;
 		const bool isOptional = parsedVariableData[i].m_typeName.find("TOptional") != std::string::npos;
 		const bool isArray = parsedVariableData[i].m_typeName.find("TArray") != std::string::npos;
 		const bool isQueue = parsedVariableData[i].m_typeName.find("ArgusQueue") != std::string::npos;
 		const bool isVector = parsedVariableData[i].m_typeName.find("FVector") != std::string::npos;
+
+		outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
+		std::string variable = "\t\tImGui::Text(\"";
+		variable.append(parsedVariableData[i].m_varName);
+		variable.append("\");");
+		outParsedVariableContents.push_back(variable);
+		outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
 
 		if (isInteger)
 		{
@@ -156,15 +164,8 @@ bool ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 			}
 			else
 			{
-				outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
-				std::string variable = "\t\tImGui::Text(\"";
-				variable.append(parsedVariableData[i].m_varName);
-				variable.append("\");");
-				outParsedVariableContents.push_back(variable);
-				outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
-				std::string value = "\t\tImGui::Text(\"%d\", ";
-				value.append(parsedVariableData[i].m_varName);
-				value.append(");");
+				std::string value = "";
+				FormatImGuiIntField(parsedVariableData[i].m_varName, value);
 				outParsedVariableContents.push_back(value);
 			}
 		}
@@ -176,15 +177,13 @@ bool ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 			}
 			else
 			{
-				outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
-				std::string variable = "\t\tImGui::Text(\"";
-				variable.append(parsedVariableData[i].m_varName);
-				variable.append("\");");
-				outParsedVariableContents.push_back(variable);
-				outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
-				std::string value = "\t\tImGui::Text(\"%f\", ";
-				value.append(parsedVariableData[i].m_varName);
-				value.append(");");
+				std::string variableName = parsedVariableData[i].m_varName;
+				if (isSmoother)
+				{
+					variableName.append(".GetValue()");
+				}
+				std::string value = "";
+				FormatImGuiFloatField(variableName, value);
 				outParsedVariableContents.push_back(value);
 			}
 		}
@@ -192,7 +191,17 @@ bool ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 		{
 			if (isOptional)
 			{
-
+				std::string condition = "\t\tif (";
+				condition.append(parsedVariableData[i].m_varName);
+				condition.append(".IsSet())");
+				outParsedVariableContents.push_back(condition);
+				outParsedVariableContents.push_back("\t\t{");
+				std::string variableName = parsedVariableData[i].m_varName;
+				variableName.append(".GetValue()");
+				std::string value = "\t";
+				FormatImGuiFVectorField(variableName, value);
+				outParsedVariableContents.push_back(value);
+				outParsedVariableContents.push_back("\t\t}");
 			}
 			else if (isArray)
 			{
@@ -204,25 +213,44 @@ bool ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 			}
 			else
 			{
-				outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
-				std::string variable = "\t\tImGui::Text(\"";
-				variable.append(parsedVariableData[i].m_varName);
-				variable.append("\");");
-				outParsedVariableContents.push_back(variable);
-				outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
-				std::string value = "\t\tImGui::Text(\"{%f, %f, %f}\", ";
-				value.append(parsedVariableData[i].m_varName);
-				value.append(".X");
-				value.append(", ");
-				value.append(parsedVariableData[i].m_varName);
-				value.append(".Y");
-				value.append(", ");
-				value.append(parsedVariableData[i].m_varName);
-				value.append(".Z");
-				value.append(");");
+				std::string variableName = parsedVariableData[i].m_varName;
+				if (isSmoother)
+				{
+					variableName.append(".GetValue()");
+				}
+				std::string value = "";
+				FormatImGuiFVectorField(variableName, value);
 				outParsedVariableContents.push_back(value);
 			}
 		}
 	}
 	return true;
+}
+
+void ComponentImplementationGenerator::FormatImGuiFloatField(const std::string& variableName, std::string& outFormattedString)
+{
+	outFormattedString.append("\t\tImGui::Text(\"%f\", ");
+	outFormattedString.append(variableName);
+	outFormattedString.append(");");
+}
+
+void ComponentImplementationGenerator::FormatImGuiIntField(const std::string& variableName, std::string& outFormattedString)
+{
+	outFormattedString.append("\t\tImGui::Text(\"%d\", ");
+	outFormattedString.append(variableName);
+	outFormattedString.append(");");
+}
+
+void ComponentImplementationGenerator::FormatImGuiFVectorField(const std::string& variableName, std::string& outFormattedString)
+{
+	outFormattedString.append("\t\tImGui::Text(\"{%f, %f, %f}\", ");
+	outFormattedString.append(variableName);
+	outFormattedString.append(".X");
+	outFormattedString.append(", ");
+	outFormattedString.append(variableName);
+	outFormattedString.append(".Y");
+	outFormattedString.append(", ");
+	outFormattedString.append(variableName);
+	outFormattedString.append(".Z");
+	outFormattedString.append(");");
 }

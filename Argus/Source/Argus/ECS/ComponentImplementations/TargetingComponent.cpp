@@ -25,6 +25,13 @@ void TargetingComponent::DrawComponentDebug() const
 	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings))
 	{
 		ImGui::TableNextColumn();
+		ImGui::Text("m_targetLocation");
+		ImGui::TableNextColumn();
+		if (m_targetLocation.IsSet())
+		{
+			ImGui::Text("{%f, %f, %f}", m_targetLocation.GetValue().X, m_targetLocation.GetValue().Y, m_targetLocation.GetValue().Z);
+		}
+		ImGui::TableNextColumn();
 		ImGui::Text("m_meleeRange");
 		ImGui::TableNextColumn();
 		ImGui::Text("%f", m_meleeRange);

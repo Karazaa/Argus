@@ -25,6 +25,9 @@ void AvoidanceGroupingComponent::DrawComponentDebug() const
 	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings))
 	{
 		ImGui::TableNextColumn();
+		ImGui::Text("m_adjacentEntities");
+		ImGui::TableNextColumn();
+		ImGui::TableNextColumn();
 		ImGui::Text("m_groupAverageLocation");
 		ImGui::TableNextColumn();
 		ImGui::Text("{%f, %f, %f}", m_groupAverageLocation.X, m_groupAverageLocation.Y, m_groupAverageLocation.Z);

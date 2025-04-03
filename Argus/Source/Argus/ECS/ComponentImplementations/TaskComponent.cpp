@@ -28,6 +28,24 @@ void TaskComponent::DrawComponentDebug() const
 		ImGui::Text("m_spawnedFromArgusActorRecordId");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_spawnedFromArgusActorRecordId);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_baseState");
+		ImGui::TableNextColumn();
+		ImGui::TableNextColumn();
+		ImGui::Text("m_movementState");
+		ImGui::TableNextColumn();
+		ImGui::TableNextColumn();
+		ImGui::Text("m_spawningState");
+		ImGui::TableNextColumn();
+		ImGui::TableNextColumn();
+		ImGui::Text("m_abilityState");
+		ImGui::TableNextColumn();
+		ImGui::TableNextColumn();
+		ImGui::Text("m_constructionState");
+		ImGui::TableNextColumn();
+		ImGui::TableNextColumn();
+		ImGui::Text("m_combatState");
+		ImGui::TableNextColumn();
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

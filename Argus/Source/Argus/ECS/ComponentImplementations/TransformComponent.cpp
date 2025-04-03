@@ -39,7 +39,7 @@ void TransformComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_smoothedYaw");
 		ImGui::TableNextColumn();
-		ImGui::Text("%f", m_smoothedYaw);
+		ImGui::Text("%f", m_smoothedYaw.GetValue());
 		ImGui::TableNextColumn();
 		ImGui::Text("m_targetYaw");
 		ImGui::TableNextColumn();

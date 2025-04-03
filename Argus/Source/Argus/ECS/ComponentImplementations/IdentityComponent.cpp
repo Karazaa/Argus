@@ -29,6 +29,9 @@ void IdentityComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_factionId);
 		ImGui::TableNextColumn();
+		ImGui::Text("m_team");
+		ImGui::TableNextColumn();
+		ImGui::TableNextColumn();
 		ImGui::Text("m_allies");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_allies);

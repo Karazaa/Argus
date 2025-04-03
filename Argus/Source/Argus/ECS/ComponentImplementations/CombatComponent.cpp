@@ -32,6 +32,12 @@ void CombatComponent::DrawComponentDebug() const
 		ImGui::Text("m_intervalDurationSeconds");
 		ImGui::TableNextColumn();
 		ImGui::Text("%f", m_intervalDurationSeconds);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_attackType");
+		ImGui::TableNextColumn();
+		ImGui::TableNextColumn();
+		ImGui::Text("m_attackTimerHandle");
+		ImGui::TableNextColumn();
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

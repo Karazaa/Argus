@@ -36,6 +36,12 @@ void SpawningComponent::DrawComponentDebug() const
 		ImGui::Text("m_currentQueueSize");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_currentQueueSize);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_spawnTimerHandle");
+		ImGui::TableNextColumn();
+		ImGui::TableNextColumn();
+		ImGui::Text("m_spawnQueue");
+		ImGui::TableNextColumn();
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING
