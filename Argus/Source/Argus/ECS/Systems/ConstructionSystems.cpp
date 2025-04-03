@@ -67,7 +67,7 @@ bool ConstructionSystems::CanEntityConstructOtherEntity(const ArgusEntity& poten
 		return false;
 	}
 
-	return (taskComponent->m_constructionState == ConstructionState::BeingConstructed) && (constructionComponent->m_constructionType == EConstructionType::Manual);
+	return (taskComponent->m_constructionState == EConstructionState::BeingConstructed) && (constructionComponent->m_constructionType == EConstructionType::Manual);
 }
 
 bool ConstructionSystems::ConstructionSystemsComponentArgs::AreComponentsValidCheck(const WIDECHAR* functionName) const
@@ -85,17 +85,17 @@ void ConstructionSystems::ProcessConstructionTaskCommands(float deltaTime, const
 {
 	switch (components.m_taskComponent->m_constructionState)
 	{
-		case ConstructionState::BeingConstructed:
+		case EConstructionState::BeingConstructed:
 			if (components.m_constructionComponent)
 			{
 				ProcessBeingConstructedState(deltaTime, components);
 			}
 			break;
-		case ConstructionState::ConstructingOther:
+		case EConstructionState::ConstructingOther:
 			ProcessConstructingOtherState(deltaTime, components);
 			break;
-		case ConstructionState::ConstructionFinished:
-			components.m_taskComponent->m_constructionState = ConstructionState::None;
+		case EConstructionState::ConstructionFinished:
+			components.m_taskComponent->m_constructionState = EConstructionState::None;
 			components.m_constructionComponent->m_currentWorkSeconds = 0.0f;
 			break;
 		default:
@@ -125,7 +125,7 @@ void ConstructionSystems::ProcessBeingConstructedState(float deltaTime, const Co
 
 	if (components.m_constructionComponent->m_currentWorkSeconds >= components.m_constructionComponent->m_requiredWorkSeconds)
 	{
-		components.m_taskComponent->m_constructionState = ConstructionState::ConstructionFinished;
+		components.m_taskComponent->m_constructionState = EConstructionState::ConstructionFinished;
 	}
 }
 
@@ -142,20 +142,20 @@ void ConstructionSystems::ProcessConstructingOtherState(float deltaTime, const C
 	if (!targetingComponent)
 	{
 		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TargetingComponent*));
-		components.m_taskComponent->m_constructionState = ConstructionState::None;
+		components.m_taskComponent->m_constructionState = EConstructionState::None;
 		return;
 	}
 
 	const ArgusEntity constructee = ArgusEntity::RetrieveEntity(targetingComponent->m_targetEntityId);
 	if (!constructee)
 	{
-		components.m_taskComponent->m_constructionState = ConstructionState::None;
+		components.m_taskComponent->m_constructionState = EConstructionState::None;
 		return;
 	}
 
 	if (!CanEntityConstructOtherEntity(components.m_entity, constructee))
 	{
-		components.m_taskComponent->m_constructionState = ConstructionState::None;
+		components.m_taskComponent->m_constructionState = EConstructionState::None;
 		return;
 	}
 
@@ -163,7 +163,7 @@ void ConstructionSystems::ProcessConstructingOtherState(float deltaTime, const C
 	const TransformComponent* constructeeTransformComponent = constructee.GetComponent<TransformComponent>();
 	if (!constructeeTransformComponent || !constructeeTransformComponent)
 	{
-		components.m_taskComponent->m_constructionState = ConstructionState::None;
+		components.m_taskComponent->m_constructionState = EConstructionState::None;
 		return;
 	}
 
@@ -176,7 +176,7 @@ void ConstructionSystems::ProcessConstructingOtherState(float deltaTime, const C
 	ConstructionComponent* constructeeConstructionComponent = constructee.GetComponent<ConstructionComponent>();
 	if (!constructeeConstructionComponent)
 	{
-		components.m_taskComponent->m_constructionState = ConstructionState::None;
+		components.m_taskComponent->m_constructionState = EConstructionState::None;
 		return;
 	}
 
@@ -185,7 +185,7 @@ void ConstructionSystems::ProcessConstructingOtherState(float deltaTime, const C
 	if (constructeeConstructionComponent->m_currentWorkSeconds >= constructeeConstructionComponent->m_requiredWorkSeconds)
 	{
 		constructeeConstructionComponent->m_currentWorkSeconds = constructeeConstructionComponent->m_requiredWorkSeconds;
-		components.m_taskComponent->m_constructionState = ConstructionState::None;
+		components.m_taskComponent->m_constructionState = EConstructionState::None;
 	}
 }
 

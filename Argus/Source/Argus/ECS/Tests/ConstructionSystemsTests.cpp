@@ -33,7 +33,7 @@ bool ConstructionSystemsBeingConstructedAutomaticTest::RunTest(const FString& Pa
 		return false;
 	}
 
-	constructedTaskComponent->m_constructionState = ConstructionState::BeingConstructed;
+	constructedTaskComponent->m_constructionState = EConstructionState::BeingConstructed;
 	constructedConstructionComponent->m_constructionType = EConstructionType::Automatic;
 	constructedConstructionComponent->m_requiredWorkSeconds = constructionTimeSeconds;
 	constructedConstructionComponent->m_automaticConstructionTimerHandle.StartTimer(entityToConstruct, constructionTimeSeconds);
@@ -67,10 +67,10 @@ bool ConstructionSystemsBeingConstructedAutomaticTest::RunTest(const FString& Pa
 			TEXT("[%s] Verifying that %s equals %s after two timesteps of automatic construction."),
 			ARGUS_FUNCNAME,
 			ARGUS_NAMEOF(m_constructionState),
-			ARGUS_NAMEOF(ConstructionState::ConstructionFinished)
+			ARGUS_NAMEOF(EConstructionState::ConstructionFinished)
 		),
 		constructedTaskComponent->m_constructionState,
-		ConstructionState::ConstructionFinished
+		EConstructionState::ConstructionFinished
 	);
 #pragma endregion
 
@@ -129,14 +129,14 @@ bool ConstructionSystemsBeingConstructedManualTest::RunTest(const FString& Param
 		return false;
 	}
 
-	constructedTaskComponent->m_constructionState = ConstructionState::BeingConstructed;
+	constructedTaskComponent->m_constructionState = EConstructionState::BeingConstructed;
 	constructedConstructionComponent->m_constructionType = EConstructionType::Manual;
 	constructedConstructionComponent->m_requiredWorkSeconds = constructionTimeSeconds;
 	constructedConstructionComponent->m_constructionAbilityRecordId = abilityRecordId;
 	constructedTransformComponent->m_location = constructedLocation;
 
 	constructingAbilityComponent->m_ability0Id = abilityRecordId;
-	constructingTaskComponent->m_constructionState = ConstructionState::ConstructingOther;
+	constructingTaskComponent->m_constructionState = EConstructionState::ConstructingOther;
 	constructingTargetingComponent->m_targetEntityId = entityToConstruct.GetId();
 	constructingTargetingComponent->m_meleeRange = constructionRange;
 	constructingTransformComponent->m_location = initialConstructingLocation;
@@ -186,10 +186,10 @@ bool ConstructionSystemsBeingConstructedManualTest::RunTest(const FString& Param
 			TEXT("[%s] Verifying that %s equals %s after two timesteps of in range manual construction."),
 			ARGUS_FUNCNAME,
 			ARGUS_NAMEOF(m_constructionState),
-			ARGUS_NAMEOF(ConstructionState::None)
+			ARGUS_NAMEOF(EConstructionState::None)
 		),
 		constructingTaskComponent->m_constructionState,
-		ConstructionState::None
+		EConstructionState::None
 	);
 #pragma endregion
 
@@ -218,10 +218,10 @@ bool ConstructionSystemsBeingConstructedManualTest::RunTest(const FString& Param
 			TEXT("[%s] Verifying that %s equals %s after three timesteps of in range manual construction."),
 			ARGUS_FUNCNAME,
 			ARGUS_NAMEOF(m_constructionState),
-			ARGUS_NAMEOF(ConstructionState::ConstructionFinished)
+			ARGUS_NAMEOF(EConstructionState::ConstructionFinished)
 		),
 		constructedTaskComponent->m_constructionState,
-		ConstructionState::ConstructionFinished
+		EConstructionState::ConstructionFinished
 	);
 #pragma endregion
 

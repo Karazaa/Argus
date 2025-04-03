@@ -6,6 +6,7 @@
 
 #if !UE_BUILD_SHIPPING
 #include "imgui.h"
+#include "UObject/ReflectedTypeAccessors.h"
 #endif //!UE_BUILD_SHIPPING
 
 // Component shared functionality
@@ -35,6 +36,8 @@ void CombatComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_attackType");
 		ImGui::TableNextColumn();
+		const char* valueNamem_attackType = ARGUS_FSTRING_TO_CHAR(StaticEnum<EAttackType>()->GetNameStringByValue(static_cast<uint8>(m_attackType)));
+		ImGui::Text(valueNamem_attackType);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_attackTimerHandle");
 		ImGui::TableNextColumn();

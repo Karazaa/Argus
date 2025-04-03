@@ -4,7 +4,8 @@
 
 #include "CoreMinimal.h"
 
-enum class BaseState : uint8
+UENUM()
+enum class EBaseState : uint8
 {
 	SpawnedWaitingForActorTake,
 	Alive,
@@ -12,7 +13,8 @@ enum class BaseState : uint8
 	DestroyedWaitingForActorRelease	
 };
 
-enum class MovementState : uint8
+UENUM()
+enum class EMovementState : uint8
 {
 	None,
 	ProcessMoveToLocationCommand,
@@ -23,7 +25,8 @@ enum class MovementState : uint8
 	FailedToFindPath,
 };
 
-enum class SpawningState : uint8
+UENUM()
+enum class ESpawningState : uint8
 {
 	None,
 	ProcessQueuedSpawnEntity,
@@ -31,7 +34,8 @@ enum class SpawningState : uint8
 	SpawningEntity
 };
 
-enum class AbilityState : uint8
+UENUM()
+enum class EAbilityState : uint8
 {
 	None,
 	ProcessCastAbility0Command,
@@ -41,7 +45,8 @@ enum class AbilityState : uint8
 	ProcessCastReticleAbility
 };
 
-enum class ConstructionState : uint8
+UENUM()
+enum class EConstructionState : uint8
 {
 	None,
 	ConstructingOther,
@@ -49,7 +54,8 @@ enum class ConstructionState : uint8
 	ConstructionFinished
 };
 
-enum class CombatState : uint8
+UENUM()
+enum class ECombatState : uint8
 {
 	None,
 	ShouldAttack,

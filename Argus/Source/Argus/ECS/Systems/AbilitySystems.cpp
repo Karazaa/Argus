@@ -49,7 +49,7 @@ void AbilitySystems::RunSystems(float deltaTime)
 			continue;
 		}
 
-		if (components.m_taskComponent->m_constructionState == ConstructionState::BeingConstructed)
+		if (components.m_taskComponent->m_constructionState == EConstructionState::BeingConstructed)
 		{
 			continue;
 		}
@@ -85,7 +85,7 @@ void AbilitySystems::CastAbility(const UAbilityRecord* abilityRecord, const Abil
 
 	if (!ResourceSystems::ApplyResourceChangeIfAffordable(components.m_entity, abilityRecord->m_requiredResourceChangeToCast))
 	{
-		components.m_taskComponent->m_abilityState = AbilityState::None;
+		components.m_taskComponent->m_abilityState = EAbilityState::None;
 		return;
 	}
 
@@ -94,7 +94,7 @@ void AbilitySystems::CastAbility(const UAbilityRecord* abilityRecord, const Abil
 		if (components.m_reticleComponent->m_isBlocked || 
 			(abilityRecord->GetSingleCastPerReticle() && components.m_reticleComponent->m_wasAbilityCast))
 		{
-			components.m_taskComponent->m_abilityState = AbilityState::None;
+			components.m_taskComponent->m_abilityState = EAbilityState::None;
 			return;
 		}
 
@@ -123,7 +123,7 @@ void AbilitySystems::CastAbility(const UAbilityRecord* abilityRecord, const Abil
 			return;
 	}
 
-	components.m_taskComponent->m_abilityState = AbilityState::None;
+	components.m_taskComponent->m_abilityState = EAbilityState::None;
 }
 
 void AbilitySystems::PrepReticle(const UAbilityRecord* abilityRecord, const AbilitySystemsComponentArgs& components)
@@ -156,7 +156,7 @@ void AbilitySystems::PrepReticle(const UAbilityRecord* abilityRecord, const Abil
 		PrepReticleForConstructAbility(abilityRecord, components);
 	}
 
-	components.m_taskComponent->m_abilityState = AbilityState::None;
+	components.m_taskComponent->m_abilityState = EAbilityState::None;
 }
 
 void AbilitySystems::ProcessAbilityTaskCommands(const AbilitySystemsComponentArgs& components)
@@ -169,27 +169,27 @@ void AbilitySystems::ProcessAbilityTaskCommands(const AbilitySystemsComponentArg
 	uint32 abilityId = 0u;
 	switch (components.m_taskComponent->m_abilityState)
 	{
-		case AbilityState::ProcessCastAbility0Command:
+		case EAbilityState::ProcessCastAbility0Command:
 			abilityId = components.m_abilityComponent->m_ability0Id;
 			break;
 
-		case AbilityState::ProcessCastAbility1Command:
+		case EAbilityState::ProcessCastAbility1Command:
 			abilityId = components.m_abilityComponent->m_ability1Id;
 			break;
 
-		case AbilityState::ProcessCastAbility2Command:
+		case EAbilityState::ProcessCastAbility2Command:
 			abilityId = components.m_abilityComponent->m_ability2Id;
 			break;
 
-		case AbilityState::ProcessCastAbility3Command:
+		case EAbilityState::ProcessCastAbility3Command:
 			abilityId = components.m_abilityComponent->m_ability3Id;
 			break;
 
-		case AbilityState::ProcessCastReticleAbility:
+		case EAbilityState::ProcessCastReticleAbility:
 			abilityId = components.m_reticleComponent->m_abilityRecordId;
 			if (!components.m_reticleComponent->IsReticleEnabled() || !components.m_abilityComponent->HasAbility(abilityId))
 			{
-				components.m_taskComponent->m_abilityState = AbilityState::None;
+				components.m_taskComponent->m_abilityState = EAbilityState::None;
 				return;
 			}
 			break;
@@ -200,7 +200,7 @@ void AbilitySystems::ProcessAbilityTaskCommands(const AbilitySystemsComponentArg
 
 	if (abilityId == 0u)
 	{
-		components.m_taskComponent->m_abilityState = AbilityState::None;
+		components.m_taskComponent->m_abilityState = EAbilityState::None;
 		return;
 	}
 
@@ -211,7 +211,7 @@ void AbilitySystems::ProcessAbilityTaskCommands(const AbilitySystemsComponentArg
 		return;
 	}
 
-	if (abilityRecord->GetRequiresReticle() && components.m_taskComponent->m_abilityState != AbilityState::ProcessCastReticleAbility)
+	if (abilityRecord->GetRequiresReticle() && components.m_taskComponent->m_abilityState != EAbilityState::ProcessCastReticleAbility)
 	{
 		PrepReticle(abilityRecord, components);
 		return;
@@ -252,9 +252,9 @@ void AbilitySystems::CastSpawnAbility(const UAbilityRecord* abilityRecord, const
 		return;
 	}
 
-	if (components.m_taskComponent->m_spawningState == SpawningState::None)
+	if (components.m_taskComponent->m_spawningState == ESpawningState::None)
 	{
-		components.m_taskComponent->m_spawningState = SpawningState::ProcessQueuedSpawnEntity;
+		components.m_taskComponent->m_spawningState = ESpawningState::ProcessQueuedSpawnEntity;
 	}
 
 	SpawnEntityInfo spawnInfo;

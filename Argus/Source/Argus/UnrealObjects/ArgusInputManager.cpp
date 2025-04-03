@@ -240,7 +240,7 @@ bool UArgusInputManager::ShouldUpdateSelectedActorDisplay(ArgusEntity& templateS
 			continue;
 		}
 
-		if (selectedTaskComponent->m_constructionState == ConstructionState::ConstructionFinished)
+		if (selectedTaskComponent->m_constructionState == EConstructionState::ConstructionFinished)
 		{
 			templateSelectedEntity = selectedEntity;
 			return true;
@@ -680,14 +680,14 @@ void UArgusInputManager::ProcessMoveToInputEvent()
 		);
 	}
 
-	MovementState inputMovementState = MovementState::ProcessMoveToLocationCommand;
+	EMovementState inputMovementState = EMovementState::ProcessMoveToLocationCommand;
 	ArgusEntity targetEntity = ArgusEntity::k_emptyEntity;
 	if (AArgusActor* argusActor = Cast<AArgusActor>(hitResult.GetActor()))
 	{
 		targetEntity = argusActor->GetEntity();
 		if (targetEntity && targetEntity.GetComponent<TransformComponent>())
 		{
-			inputMovementState = MovementState::ProcessMoveToEntityCommand;
+			inputMovementState = EMovementState::ProcessMoveToEntityCommand;
 		}
 	}
 
@@ -702,7 +702,7 @@ void UArgusInputManager::ProcessMoveToInputEvent()
 	}
 }
 
-void UArgusInputManager::ProcessMoveToInputEventPerSelectedActor(AArgusActor* argusActor, MovementState inputMovementState, ArgusEntity targetEntity, FVector targetLocation)
+void UArgusInputManager::ProcessMoveToInputEventPerSelectedActor(AArgusActor* argusActor, EMovementState inputMovementState, ArgusEntity targetEntity, FVector targetLocation)
 {
 	if (!argusActor)
 	{
@@ -729,11 +729,11 @@ void UArgusInputManager::ProcessMoveToInputEventPerSelectedActor(AArgusActor* ar
 		navigationComponent->ResetQueuedWaypoints();
 	}
 	
-	if (inputMovementState == MovementState::ProcessMoveToEntityCommand)
+	if (inputMovementState == EMovementState::ProcessMoveToEntityCommand)
 	{
 		if (targetEntity == selectedEntity)
 		{
-			taskComponent->m_movementState = MovementState::None;
+			taskComponent->m_movementState = EMovementState::None;
 		}
 		else
 		{
@@ -747,7 +747,7 @@ void UArgusInputManager::ProcessMoveToInputEventPerSelectedActor(AArgusActor* ar
 			targetingComponent->m_targetLocation.Reset();
 		}
 	}
-	else if (inputMovementState == MovementState::ProcessMoveToLocationCommand)
+	else if (inputMovementState == EMovementState::ProcessMoveToLocationCommand)
 	{
 		if (navigationComponent)
 		{
@@ -828,18 +828,18 @@ void UArgusInputManager::ProcessSetWaypointInputEventPerSelectedActor(AArgusActo
 
 	switch (taskComponent->m_movementState)
 	{
-		case MovementState::None:
-		case MovementState::FailedToFindPath:
-		case MovementState::ProcessMoveToEntityCommand:
-		case MovementState::MoveToEntity:
-			taskComponent->m_movementState = MovementState::ProcessMoveToLocationCommand;
+		case EMovementState::None:
+		case EMovementState::FailedToFindPath:
+		case EMovementState::ProcessMoveToEntityCommand:
+		case EMovementState::MoveToEntity:
+			taskComponent->m_movementState = EMovementState::ProcessMoveToLocationCommand;
 			targetingComponent->m_targetEntityId = ArgusEntity::k_emptyEntity.GetId();
 			targetingComponent->m_targetLocation = targetLocation;
 			navigationComponent->ResetQueuedWaypoints();
 			break;
-		case MovementState::ProcessMoveToLocationCommand:
-		case MovementState::MoveToLocation:
-			taskComponent->m_movementState = MovementState::ProcessMoveToLocationCommand;
+		case EMovementState::ProcessMoveToLocationCommand:
+		case EMovementState::MoveToLocation:
+			taskComponent->m_movementState = EMovementState::ProcessMoveToLocationCommand;
 			navigationComponent->m_queuedWaypoints.Enqueue(targetLocation);
 			break;
 		default:
@@ -920,16 +920,16 @@ void UArgusInputManager::ProcessAbilityInputEventPerSelectedActor(AArgusActor* a
 	switch (abilityIndex)
 	{
 		case 0u:
-			taskComponent->m_abilityState = AbilityState::ProcessCastAbility0Command;
+			taskComponent->m_abilityState = EAbilityState::ProcessCastAbility0Command;
 			break;
 		case 1u:
-			taskComponent->m_abilityState = AbilityState::ProcessCastAbility1Command;
+			taskComponent->m_abilityState = EAbilityState::ProcessCastAbility1Command;
 			break;
 		case 2u:
-			taskComponent->m_abilityState = AbilityState::ProcessCastAbility2Command;
+			taskComponent->m_abilityState = EAbilityState::ProcessCastAbility2Command;
 			break;
 		case 3u:
-			taskComponent->m_abilityState = AbilityState::ProcessCastAbility3Command;
+			taskComponent->m_abilityState = EAbilityState::ProcessCastAbility3Command;
 			break;
 		default:
 			break;
@@ -1299,5 +1299,5 @@ void UArgusInputManager::ProcessReticleAbilityPerSelectedActor(AArgusActor* argu
 		return;
 	}
 
-	taskComponent->m_abilityState = AbilityState::ProcessCastReticleAbility;
+	taskComponent->m_abilityState = EAbilityState::ProcessCastReticleAbility;
 }

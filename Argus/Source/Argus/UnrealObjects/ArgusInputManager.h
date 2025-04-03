@@ -91,7 +91,7 @@ private:
 	void ProcessSelectInputEvent(bool isAdditive);
 	void ProcessMarqueeSelectInputEvent(AArgusCameraActor* argusCamera, bool isAdditive);
 	void ProcessMoveToInputEvent();
-	void ProcessMoveToInputEventPerSelectedActor(AArgusActor* argusActor, MovementState inputMovementState, ArgusEntity targetEntity, FVector targetLocation);
+	void ProcessMoveToInputEventPerSelectedActor(AArgusActor* argusActor, EMovementState inputMovementState, ArgusEntity targetEntity, FVector targetLocation);
 	void ProcessSetWaypointInputEvent();
 	void ProcessSetWaypointInputEventPerSelectedActor(AArgusActor* argusActor, FVector targetLocation);
 	void ProcessZoomInputEvent(AArgusCameraActor* argusCamera, const FInputActionValue& value);

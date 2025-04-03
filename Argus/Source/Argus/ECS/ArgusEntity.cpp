@@ -223,7 +223,7 @@ bool ArgusEntity::IsAlive() const
 		return false;
 	}
 
-	return taskComponent->m_baseState == BaseState::Alive;
+	return taskComponent->m_baseState == EBaseState::Alive;
 }
 
 bool ArgusEntity::IsMoveable() const
@@ -278,10 +278,10 @@ bool ArgusEntity::IsIdle() const
 		return false;
 	}
 
-	return	taskComponent->m_movementState == MovementState::None &&
-			taskComponent->m_combatState == CombatState::None &&
-			taskComponent->m_constructionState == ConstructionState::None &&
-			taskComponent->m_spawningState == SpawningState::None;
+	return	taskComponent->m_movementState == EMovementState::None &&
+			taskComponent->m_combatState == ECombatState::None &&
+			taskComponent->m_constructionState == EConstructionState::None &&
+			taskComponent->m_spawningState == ESpawningState::None;
 }
 
 #if !UE_BUILD_SHIPPING

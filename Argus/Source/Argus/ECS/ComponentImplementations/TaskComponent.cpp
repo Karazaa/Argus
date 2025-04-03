@@ -6,6 +6,7 @@
 
 #if !UE_BUILD_SHIPPING
 #include "imgui.h"
+#include "UObject/ReflectedTypeAccessors.h"
 #endif //!UE_BUILD_SHIPPING
 
 // Component shared functionality
@@ -31,30 +32,42 @@ void TaskComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_baseState");
 		ImGui::TableNextColumn();
+		const char* valueNamem_baseState = ARGUS_FSTRING_TO_CHAR(StaticEnum<EBaseState>()->GetNameStringByValue(static_cast<uint8>(m_baseState)));
+		ImGui::Text(valueNamem_baseState);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_movementState");
 		ImGui::TableNextColumn();
+		const char* valueNamem_movementState = ARGUS_FSTRING_TO_CHAR(StaticEnum<EMovementState>()->GetNameStringByValue(static_cast<uint8>(m_movementState)));
+		ImGui::Text(valueNamem_movementState);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_spawningState");
 		ImGui::TableNextColumn();
+		const char* valueNamem_spawningState = ARGUS_FSTRING_TO_CHAR(StaticEnum<ESpawningState>()->GetNameStringByValue(static_cast<uint8>(m_spawningState)));
+		ImGui::Text(valueNamem_spawningState);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_abilityState");
 		ImGui::TableNextColumn();
+		const char* valueNamem_abilityState = ARGUS_FSTRING_TO_CHAR(StaticEnum<EAbilityState>()->GetNameStringByValue(static_cast<uint8>(m_abilityState)));
+		ImGui::Text(valueNamem_abilityState);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_constructionState");
 		ImGui::TableNextColumn();
+		const char* valueNamem_constructionState = ARGUS_FSTRING_TO_CHAR(StaticEnum<EConstructionState>()->GetNameStringByValue(static_cast<uint8>(m_constructionState)));
+		ImGui::Text(valueNamem_constructionState);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_combatState");
 		ImGui::TableNextColumn();
+		const char* valueNamem_combatState = ARGUS_FSTRING_TO_CHAR(StaticEnum<ECombatState>()->GetNameStringByValue(static_cast<uint8>(m_combatState)));
+		ImGui::Text(valueNamem_combatState);
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING
 }
 
 // Per observable logic
-void TaskComponent::Set_m_baseState(BaseState newValue)
+void TaskComponent::Set_m_baseState(EBaseState newValue)
 {
-	BaseState oldValue = m_baseState;
+	EBaseState oldValue = m_baseState;
 	m_baseState = newValue;
 
 	ObserversComponent* observersComponent = ArgusComponentRegistry::GetComponent<ObserversComponent>(GetOwningEntityId());

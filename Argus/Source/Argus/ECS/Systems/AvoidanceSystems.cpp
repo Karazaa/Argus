@@ -40,7 +40,7 @@ void AvoidanceSystems::RunSystems(UWorld* worldPointer, float deltaTime)
 			continue;
 		}
 
-		if (components.m_taskComponent->m_constructionState == ConstructionState::BeingConstructed)
+		if (components.m_taskComponent->m_constructionState == EConstructionState::BeingConstructed)
 		{
 			continue;
 		}
@@ -610,7 +610,7 @@ FVector2D AvoidanceSystems::GetDesiredVelocity(const TransformSystems::Transform
 		AvoidanceGroupingComponent* groupLeaderAvoidanceGroupingComponent = groupLeader.GetComponent<AvoidanceGroupingComponent>();
 		if (groupLeaderAvoidanceGroupingComponent && groupLeaderAvoidanceGroupingComponent->m_numberOfIdleEntities > 0u)
 		{
-			components.m_taskComponent->m_movementState = MovementState::AwaitingFinish;
+			components.m_taskComponent->m_movementState = EMovementState::AwaitingFinish;
 			components.m_transformComponent->m_currentVelocity = FVector::ZeroVector;
 			return FVector2D::ZeroVector;
 		}
@@ -646,12 +646,12 @@ float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems
 		return 0.0f;
 	}
 
-	if (sourceEntityComponents.m_taskComponent->m_combatState == CombatState::Attacking)
+	if (sourceEntityComponents.m_taskComponent->m_combatState == ECombatState::Attacking)
 	{
 		return 0.0f;
 	}
 
-	if (sourceEntityComponents.m_taskComponent->m_constructionState == ConstructionState::ConstructingOther && sourceEntityComponents.m_targetingComponent->HasEntityTarget())
+	if (sourceEntityComponents.m_taskComponent->m_constructionState == EConstructionState::ConstructingOther && sourceEntityComponents.m_targetingComponent->HasEntityTarget())
 	{
 		if (const TransformComponent* targetedEntityTransformComponent = ArgusEntity::RetrieveEntity(sourceEntityComponents.m_targetingComponent->m_targetEntityId).GetComponent<TransformComponent>())
 		{
@@ -687,12 +687,12 @@ float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems
 		return sourceEntityComponents.m_taskComponent->IsExecutingMoveTask() ? 1.0f : 0.0f;
 	}
 
-	if (foundEntityTaskComponent->m_combatState == CombatState::Attacking)
+	if (foundEntityTaskComponent->m_combatState == ECombatState::Attacking)
 	{
 		return 1.0f;
 	}
 
-	if (foundEntityTaskComponent->m_constructionState == ConstructionState::ConstructingOther)
+	if (foundEntityTaskComponent->m_constructionState == EConstructionState::ConstructingOther)
 	{
 		const TargetingComponent* foundEntityTargetingComponent = foundEntity.GetComponent<TargetingComponent>();
 		const TransformComponent* foundEntityTransformComponent = foundEntity.GetComponent<TransformComponent>();

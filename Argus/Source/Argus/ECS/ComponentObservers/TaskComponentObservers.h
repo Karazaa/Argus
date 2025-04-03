@@ -9,7 +9,7 @@
 class ITaskComponentObserver
 {
 public:
-	virtual void OnChanged_m_baseState(BaseState oldValue, BaseState newValue) = 0;
+	virtual void OnChanged_m_baseState(EBaseState oldValue, EBaseState newValue) = 0;
 };
 
 class TaskComponentObservers
@@ -45,7 +45,7 @@ public:
 	}
 
 private:
-	void OnChanged_m_baseState(BaseState oldValue, BaseState newValue)
+	void OnChanged_m_baseState(EBaseState oldValue, EBaseState newValue)
 	{
 		for (int32 i = 0; i < m_TaskComponentObservers.Num(); ++i)
 		{

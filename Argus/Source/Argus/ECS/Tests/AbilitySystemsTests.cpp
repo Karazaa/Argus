@@ -134,7 +134,7 @@ bool AbilitySystemsCastSpawnAbilityTest::RunTest(const FString& Parameters)
 			ARGUS_NAMEOF(ArgusEntity)
 		),
 		(info.m_argusActorRecordId == argusActorRecordId) &&
-		(components.m_taskComponent->m_spawningState == SpawningState::ProcessQueuedSpawnEntity)
+		(components.m_taskComponent->m_spawningState == ESpawningState::ProcessQueuedSpawnEntity)
 	);
 #pragma endregion
 
@@ -155,7 +155,7 @@ bool AbilitySystemsCastSpawnAbilityTest::RunTest(const FString& Parameters)
 			ARGUS_NAMEOF(ArgusEntity)
 		),
 		(info.m_argusActorRecordId == argusActorRecordId) &&
-		(components.m_taskComponent->m_spawningState == SpawningState::WaitingToSpawnEntity) &&
+		(components.m_taskComponent->m_spawningState == ESpawningState::WaitingToSpawnEntity) &&
 		(spawnComponent->m_spawnTimerHandle.GetTimerIndex() != UINT8_MAX)
 	);
 #pragma endregion
@@ -164,7 +164,7 @@ bool AbilitySystemsCastSpawnAbilityTest::RunTest(const FString& Parameters)
 	spawnComponent->m_spawnTimerHandle.CancelTimer(components.m_entity);
 	spawnComponent->m_maximumQueueSize = maximumSpawnQueueSize;
 	spawnComponent->m_currentQueueSize = 0u;
-	components.m_taskComponent->m_spawningState = SpawningState::None;
+	components.m_taskComponent->m_spawningState = ESpawningState::None;
 	AbilitySystems::CastAbility(abilityRecord, components);
 	AbilitySystems::CastAbility(abilityRecord, components);
 
@@ -177,7 +177,7 @@ bool AbilitySystemsCastSpawnAbilityTest::RunTest(const FString& Parameters)
 			ARGUS_FUNCNAME
 		),
 		(spawnComponent->m_currentQueueSize == maximumSpawnQueueSize) &&
-		(components.m_taskComponent->m_spawningState == SpawningState::ProcessQueuedSpawnEntity)
+		(components.m_taskComponent->m_spawningState == ESpawningState::ProcessQueuedSpawnEntity)
 	);
 #pragma endregion
 
@@ -209,7 +209,7 @@ bool AbilitySystemsCastSpawnAbilityTest::RunTest(const FString& Parameters)
 			ARGUS_NAMEOF(ArgusEntity)
 		),
 		(info.m_argusActorRecordId == argusActorRecordId) &&
-		(components.m_taskComponent->m_spawningState == SpawningState::WaitingToSpawnEntity) &&
+		(components.m_taskComponent->m_spawningState == ESpawningState::WaitingToSpawnEntity) &&
 		(spawnComponent->m_spawnTimerHandle.GetTimerIndex() != UINT8_MAX)
 	);
 #pragma endregion

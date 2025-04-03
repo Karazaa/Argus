@@ -37,7 +37,7 @@ bool TransformSystems::RunSystems(UWorld* worldPointer, float deltaTime)
 			continue;
 		}
 
-		if (components.m_taskComponent->m_constructionState == ConstructionState::BeingConstructed)
+		if (components.m_taskComponent->m_constructionState == EConstructionState::BeingConstructed)
 		{
 			continue;
 		}
@@ -119,7 +119,7 @@ void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float delta
 	const FVector2D targetLocation2D = FVector2D(targetLocation);
 	const float distanceToTarget = FVector2D::Distance(moverLocation2D, targetLocation2D);
 	const bool isWithinRangeOfTargetEntity	=	components.m_navigationComponent->m_lastPointIndex == numNavigationPoints - 2u &&
-												components.m_taskComponent->m_movementState == MovementState::MoveToEntity &&
+												components.m_taskComponent->m_movementState == EMovementState::MoveToEntity &&
 												GetEndMoveRange(components) > distanceToTarget;
 
 	if (isWithinRangeOfTargetEntity && !isAtEndOfNavigationPath)
@@ -152,16 +152,16 @@ bool TransformSystems::ProcessMovementTaskCommands(UWorld* worldPointer, float d
 
 	switch (components.m_taskComponent->m_movementState)
 	{
-		case MovementState::MoveToLocation:
-		case MovementState::MoveToEntity:
+		case EMovementState::MoveToLocation:
+		case EMovementState::MoveToEntity:
 			MoveAlongNavigationPath(worldPointer, deltaTime, components);
 			return true;
 
-		case MovementState::AwaitingFinish:
+		case EMovementState::AwaitingFinish:
 			OnCompleteNavigationPath(components, components.m_transformComponent->m_location);
 			return true;
 
-		case MovementState::None:
+		case EMovementState::None:
 			components.m_transformComponent->m_currentVelocity = components.m_transformComponent->m_proposedAvoidanceVelocity;
 			if (!components.m_transformComponent->m_currentVelocity.IsNearlyZero())
 			{
@@ -210,13 +210,13 @@ void TransformSystems::OnCompleteNavigationPath(const TransformSystemsComponentA
 
 	if (components.m_navigationComponent->m_queuedWaypoints.IsEmpty())
 	{
-		components.m_taskComponent->m_movementState = MovementState::None;
+		components.m_taskComponent->m_movementState = EMovementState::None;
 		components.m_navigationComponent->ResetPath();
 		components.m_transformComponent->m_currentVelocity = FVector::ZeroVector;
 	}
 	else
 	{
-		components.m_taskComponent->m_movementState = MovementState::ProcessMoveToLocationCommand;
+		components.m_taskComponent->m_movementState = EMovementState::ProcessMoveToLocationCommand;
 		components.m_navigationComponent->ResetPath();
 		components.m_targetingComponent->m_targetLocation = *components.m_navigationComponent->m_queuedWaypoints.Peek();
 		components.m_navigationComponent->m_queuedWaypoints.Pop();
@@ -262,7 +262,7 @@ float TransformSystems::GetEndMoveRange(const TransformSystemsComponentArgs& com
 	}
 
 	float range = components.m_targetingComponent->m_meleeRange;
-	if (components.m_taskComponent->m_movementState != MovementState::MoveToEntity)
+	if (components.m_taskComponent->m_movementState != EMovementState::MoveToEntity)
 	{
 		return range;
 	}

@@ -6,6 +6,7 @@
 
 #if !UE_BUILD_SHIPPING
 #include "imgui.h"
+#include "UObject/ReflectedTypeAccessors.h"
 #endif //!UE_BUILD_SHIPPING
 
 // Component shared functionality
@@ -31,6 +32,8 @@ void IdentityComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_team");
 		ImGui::TableNextColumn();
+		const char* valueNamem_team = ARGUS_FSTRING_TO_CHAR(StaticEnum<ETeam>()->GetNameStringByValue(static_cast<uint8>(m_team)));
+		ImGui::Text(valueNamem_team);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_allies");
 		ImGui::TableNextColumn();

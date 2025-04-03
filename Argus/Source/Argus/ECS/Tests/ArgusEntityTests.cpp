@@ -846,7 +846,7 @@ bool ArgusEntityDestroyEntityTest::RunTest(const FString& Parameters)
 		ArgusTesting::EndArgusTest();
 		return false;
 	}
-	taskComponent->m_abilityState = AbilityState::ProcessCastAbility0Command;
+	taskComponent->m_abilityState = EAbilityState::ProcessCastAbility0Command;
 
 #pragma region Test that the attacking state of the spawned task component is correct.
 	TestEqual
@@ -859,7 +859,7 @@ bool ArgusEntityDestroyEntityTest::RunTest(const FString& Parameters)
 			ARGUS_NAMEOF(EAttackingState::Attacking)
 		),
 		taskComponent->m_abilityState,
-		AbilityState::ProcessCastAbility0Command
+		EAbilityState::ProcessCastAbility0Command
 	);
 #pragma endregion
 
@@ -891,7 +891,7 @@ bool ArgusEntityDestroyEntityTest::RunTest(const FString& Parameters)
 			ARGUS_NAMEOF(ArgusEntity::DestroyEntity)
 		),
 		taskComponent->m_abilityState,
-		AbilityState::None
+		EAbilityState::None
 	);
 #pragma endregion
 

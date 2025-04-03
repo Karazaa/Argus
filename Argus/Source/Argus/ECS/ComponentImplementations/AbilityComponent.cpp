@@ -6,6 +6,7 @@
 
 #if !UE_BUILD_SHIPPING
 #include "imgui.h"
+#include "UObject/ReflectedTypeAccessors.h"
 #endif //!UE_BUILD_SHIPPING
 
 // Component shared functionality

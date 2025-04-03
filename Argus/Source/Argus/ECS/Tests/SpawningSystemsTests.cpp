@@ -66,7 +66,7 @@ bool SpawningSystemsSpawnEntityTest::RunTest(const FString& Parameters)
 		ArgusTesting::EndArgusTest();
 		return false;
 	}
-	components.m_taskComponent->m_spawningState = SpawningState::SpawningEntity;
+	components.m_taskComponent->m_spawningState = ESpawningState::SpawningEntity;
 
 #pragma region Test that the to-be-spawned entity does not yet exist.
 	TestFalse
@@ -144,7 +144,7 @@ bool SpawningSystemsSpawnEntityTest::RunTest(const FString& Parameters)
 			ARGUS_NAMEOF(SpawningSystems::SpawnEntity)
 		),
 		spawnedTaskComponent->m_baseState,
-		BaseState::SpawnedWaitingForActorTake
+		EBaseState::SpawnedWaitingForActorTake
 	);
 #pragma endregion
 
@@ -229,7 +229,7 @@ bool SpawningSystemsSpawnEntityTest::RunTest(const FString& Parameters)
 			ARGUS_NAMEOF(SpawningSystems::SpawnEntity)
 		),
 		components.m_taskComponent->m_spawningState,
-		SpawningState::None
+		ESpawningState::None
 	);
 #pragma endregion
 

@@ -260,9 +260,9 @@ void AArgusActor::Tick(float deltaTime)
 	}
 }
 
-void AArgusActor::OnChanged_m_baseState(BaseState oldState, BaseState newState)
+void AArgusActor::OnChanged_m_baseState(EBaseState oldState, EBaseState newState)
 {
-	if (oldState != BaseState::Dead && newState == BaseState::Dead)
+	if (oldState != EBaseState::Dead && newState == EBaseState::Dead)
 	{
 		OnArgusEntityDeath();
 	}

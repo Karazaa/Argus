@@ -14,35 +14,35 @@ struct TaskComponent
 	ARGUS_IGNORE()
 	uint32 m_spawnedFromArgusActorRecordId = 0u;
 
-	ARGUS_OBSERVABLE_DECLARATION(BaseState, m_baseState, BaseState::Alive)
+	ARGUS_OBSERVABLE_DECLARATION(EBaseState, m_baseState, EBaseState::Alive)
 
 	ARGUS_IGNORE()
-	MovementState m_movementState = MovementState::None;
+	EMovementState m_movementState = EMovementState::None;
 
 	ARGUS_IGNORE()
-	SpawningState m_spawningState = SpawningState::None;
+	ESpawningState m_spawningState = ESpawningState::None;
 
 	ARGUS_IGNORE()
-	AbilityState m_abilityState = AbilityState::None;
+	EAbilityState m_abilityState = EAbilityState::None;
 
 	ARGUS_IGNORE()
-	ConstructionState m_constructionState = ConstructionState::None;
+	EConstructionState m_constructionState = EConstructionState::None;
 
 	ARGUS_IGNORE()
-	CombatState m_combatState = CombatState::None;
+	ECombatState m_combatState = ECombatState::None;
 
 	bool IsExecutingMoveTask() const
 	{
-		return m_movementState == MovementState::MoveToLocation || m_movementState == MovementState::MoveToEntity;
+		return m_movementState == EMovementState::MoveToLocation || m_movementState == EMovementState::MoveToEntity;
 	}
 
 	void SetToKillState()
 	{
-		Set_m_baseState(BaseState::Dead);
-		m_movementState = MovementState::None;
-		m_spawningState = SpawningState::None;
-		m_abilityState = AbilityState::None;
-		m_constructionState = ConstructionState::None;
-		m_combatState = CombatState::None;
+		Set_m_baseState(EBaseState::Dead);
+		m_movementState = EMovementState::None;
+		m_spawningState = ESpawningState::None;
+		m_abilityState = EAbilityState::None;
+		m_constructionState = EConstructionState::None;
+		m_combatState = ECombatState::None;
 	}
 };

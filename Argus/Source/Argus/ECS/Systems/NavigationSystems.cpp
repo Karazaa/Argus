@@ -44,7 +44,7 @@ void NavigationSystems::RunSystems(UWorld* worldPointer)
 			continue;
 		}
 
-		if (components.m_taskComponent->m_constructionState == ConstructionState::BeingConstructed)
+		if (components.m_taskComponent->m_constructionState == EConstructionState::BeingConstructed)
 		{
 			continue;
 		}
@@ -87,20 +87,20 @@ void NavigationSystems::NavigateFromEntityToEntity(UWorld* worldPointer, ArgusEn
 
 	if (CombatSystems::CanEntityAttackOtherEntity(components.m_entity, targetEntity))
 	{
-		components.m_taskComponent->m_combatState = CombatState::ShouldAttack;
+		components.m_taskComponent->m_combatState = ECombatState::ShouldAttack;
 	}
 	else
 	{
-		components.m_taskComponent->m_combatState = CombatState::None;
+		components.m_taskComponent->m_combatState = ECombatState::None;
 	}
 
 	if (ConstructionSystems::CanEntityConstructOtherEntity(components.m_entity, targetEntity))
 	{
-		components.m_taskComponent->m_constructionState = ConstructionState::ConstructingOther;
+		components.m_taskComponent->m_constructionState = EConstructionState::ConstructingOther;
 	}
 	else
 	{
-		components.m_taskComponent->m_constructionState = ConstructionState::None;
+		components.m_taskComponent->m_constructionState = EConstructionState::None;
 	}
 }
 
@@ -113,7 +113,7 @@ void NavigationSystems::NavigateFromEntityToLocation(UWorld* worldPointer, std::
 		return;
 	}
 
-	components.m_taskComponent->m_constructionState = ConstructionState::None;
+	components.m_taskComponent->m_constructionState = EConstructionState::None;
 
 	components.m_navigationComponent->ResetPath();
 
@@ -136,7 +136,7 @@ void NavigationSystems::NavigateFromEntityToLocation(UWorld* worldPointer, std::
 
 	if (!pathFindingResult.IsSuccessful() || !pathFindingResult.Path)
 	{
-		components.m_taskComponent->m_movementState = MovementState::FailedToFindPath;
+		components.m_taskComponent->m_movementState = EMovementState::FailedToFindPath;
 		return;
 	}
 	
@@ -145,7 +145,7 @@ void NavigationSystems::NavigateFromEntityToLocation(UWorld* worldPointer, std::
 
 	if (numPathPoints <= 1u)
 	{
-		components.m_taskComponent->m_movementState = MovementState::None;
+		components.m_taskComponent->m_movementState = EMovementState::None;
 		return;
 	}
 
@@ -183,13 +183,13 @@ void NavigationSystems::ProcessNavigationTaskCommands(UWorld* worldPointer, cons
 
 	switch (components.m_taskComponent->m_movementState)
 	{
-		case MovementState::ProcessMoveToLocationCommand:
-			components.m_taskComponent->m_movementState = MovementState::MoveToLocation;
+		case EMovementState::ProcessMoveToLocationCommand:
+			components.m_taskComponent->m_movementState = EMovementState::MoveToLocation;
 			NavigateFromEntityToLocation(worldPointer, components.m_targetingComponent->m_targetLocation.GetValue(), components);
 			break;
 
-		case MovementState::ProcessMoveToEntityCommand:
-			components.m_taskComponent->m_movementState = MovementState::MoveToEntity;
+		case EMovementState::ProcessMoveToEntityCommand:
+			components.m_taskComponent->m_movementState = EMovementState::MoveToEntity;
 			NavigateFromEntityToEntity(worldPointer, ArgusEntity::RetrieveEntity(components.m_targetingComponent->m_targetEntityId), components);
 			break;
 
@@ -207,7 +207,7 @@ void NavigationSystems::RecalculateMoveToEntityPaths(UWorld* worldPointer, const
 		return;
 	}
 
-	if (components.m_taskComponent->m_movementState != MovementState::MoveToEntity)
+	if (components.m_taskComponent->m_movementState != EMovementState::MoveToEntity)
 	{
 		return;
 	}

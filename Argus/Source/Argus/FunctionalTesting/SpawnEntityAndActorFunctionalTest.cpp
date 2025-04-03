@@ -130,7 +130,7 @@ void ASpawnEntityAndActorFunctionalTest::StartSpawnArgusEntityTestStep()
 	}
 	spawnerSpawningComponent->m_spawnQueue.Enqueue(spawnInfo);
 	spawnerSpawningComponent->m_currentQueueSize++;
-	spawnerTaskComponent->m_spawningState = SpawningState::SpawningEntity;
+	spawnerTaskComponent->m_spawningState = ESpawningState::SpawningEntity;
 }
 
 void ASpawnEntityAndActorFunctionalTest::StartSpawnArgusActorTestStep()
@@ -156,7 +156,7 @@ void ASpawnEntityAndActorFunctionalTest::StartDespawnArgusActorTestStep()
 		return;
 	}
 
-	taskComponent->m_baseState = BaseState::DestroyedWaitingForActorRelease;
+	taskComponent->m_baseState = EBaseState::DestroyedWaitingForActorRelease;
 }
 
 

@@ -38,7 +38,7 @@ bool SpawningSystems::RunSystems(float deltaTime)
 			continue;
 		}
 
-		if (components.m_taskComponent->m_constructionState == ConstructionState::BeingConstructed)
+		if (components.m_taskComponent->m_constructionState == EConstructionState::BeingConstructed)
 		{
 			continue;
 		}
@@ -79,7 +79,7 @@ void SpawningSystems::SpawnEntityInternal(const SpawningSystemsComponentArgs& co
 
 	const UArgusActorRecord* argusActorRecord = overrideArgusActorRecord ? overrideArgusActorRecord : ArgusStaticData::GetRecord<UArgusActorRecord>(spawnInfo.m_argusActorRecordId);
 
-	if (components.m_taskComponent->m_spawningState != SpawningState::SpawningEntity || !argusActorRecord || !argusActorRecord->m_entityTemplateOverride)
+	if (components.m_taskComponent->m_spawningState != ESpawningState::SpawningEntity || !argusActorRecord || !argusActorRecord->m_entityTemplateOverride)
 	{
 		ARGUS_LOG
 		(
@@ -89,7 +89,7 @@ void SpawningSystems::SpawnEntityInternal(const SpawningSystemsComponentArgs& co
 		return;
 	}
 
-	components.m_taskComponent->m_spawningState = SpawningState::None;
+	components.m_taskComponent->m_spawningState = ESpawningState::None;
 
 	ArgusEntity spawnedEntity = argusActorRecord->m_entityTemplateOverride->MakeEntity();
 	TaskComponent* spawnedEntityTaskComponent = spawnedEntity.GetOrAddComponent<TaskComponent>();
@@ -103,7 +103,7 @@ void SpawningSystems::SpawnEntityInternal(const SpawningSystemsComponentArgs& co
 		return;
 	}
 
-	spawnedEntityTaskComponent->m_baseState = BaseState::SpawnedWaitingForActorTake;
+	spawnedEntityTaskComponent->m_baseState = EBaseState::SpawnedWaitingForActorTake;
 	spawnedEntityTaskComponent->m_spawnedFromArgusActorRecordId = argusActorRecord->m_id;
 
 	if (IdentityComponent* spawningEntityIdentityComponent = components.m_entity.GetComponent<IdentityComponent>())
@@ -121,7 +121,7 @@ void SpawningSystems::SpawnEntityInternal(const SpawningSystemsComponentArgs& co
 	}
 
 	FVector spawnLocation = components.m_transformComponent->m_location;
-	MovementState initialSpawnMovementState = MovementState::None;
+	EMovementState initialSpawnMovementState = EMovementState::None;
 
 	if (spawnInfo.m_spawnLocationOverride.IsSet())
 	{
@@ -136,7 +136,7 @@ void SpawningSystems::SpawnEntityInternal(const SpawningSystemsComponentArgs& co
 
 	if (spawnInfo.m_needsConstruction)
 	{
-		spawnedEntityTaskComponent->m_constructionState = ConstructionState::BeingConstructed;
+		spawnedEntityTaskComponent->m_constructionState = EConstructionState::BeingConstructed;
 		if (ConstructionComponent* constructionComponent = spawnedEntity.GetOrAddComponent<ConstructionComponent>())
 		{
 			constructionComponent->m_constructionAbilityRecordId = spawnInfo.m_spawningAbilityRecordId;
@@ -178,12 +178,12 @@ void SpawningSystems::SpawnEntityFromQueue(const SpawningSystemsComponentArgs& c
 		return;
 	}
 
-	if (components.m_taskComponent->m_spawningState != SpawningState::SpawningEntity)
+	if (components.m_taskComponent->m_spawningState != ESpawningState::SpawningEntity)
 	{
 		ARGUS_LOG
 		(
 			ArgusECSLog, Error, TEXT("[%s] The %s of the spawning %s is not %s"), 
-			ARGUS_FUNCNAME, ARGUS_NAMEOF(m_spawningState), ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(SpawningState::SpawningEntity)
+			ARGUS_FUNCNAME, ARGUS_NAMEOF(m_spawningState), ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(ESpawningState::SpawningEntity)
 		);
 		return;
 	}
@@ -216,21 +216,21 @@ bool SpawningSystems::ProcessSpawningTaskCommands(float deltaTime, const Spawnin
 
 	switch (components.m_taskComponent->m_spawningState)
 	{
-		case SpawningState::ProcessQueuedSpawnEntity:
+		case ESpawningState::ProcessQueuedSpawnEntity:
 			spawnedAnEntityThisFrame = ProcessQueuedSpawnEntity(components);
 			break;
-		case SpawningState::WaitingToSpawnEntity:
+		case ESpawningState::WaitingToSpawnEntity:
 			if (components.m_spawningComponent->m_spawnTimerHandle.IsTimerComplete(components.m_entity))
 			{
 				components.m_spawningComponent->m_spawnTimerHandle.FinishTimerHandling(components.m_entity);
-				components.m_taskComponent->m_spawningState = SpawningState::SpawningEntity;
+				components.m_taskComponent->m_spawningState = ESpawningState::SpawningEntity;
 
 				SpawnEntityFromQueue(components);
 				spawnedAnEntityThisFrame = true;
 			}
 			break;
 
-		case SpawningState::SpawningEntity:
+		case ESpawningState::SpawningEntity:
 			SpawnEntityFromQueue(components);
 			spawnedAnEntityThisFrame = true;
 			break;
@@ -253,7 +253,7 @@ bool SpawningSystems::ProcessQueuedSpawnEntity(const SpawningSystemsComponentArg
 
 	if (components.m_spawningComponent->m_spawnQueue.IsEmpty())
 	{
-		components.m_taskComponent->m_spawningState = SpawningState::None;
+		components.m_taskComponent->m_spawningState = ESpawningState::None;
 		return false;
 	}
 
@@ -271,12 +271,12 @@ bool SpawningSystems::ProcessQueuedSpawnEntity(const SpawningSystemsComponentArg
 	bool spawnedAnEntityThisFrame = false;
 	if (spawnInfo.m_timeToCastSeconds > 0.0f)
 	{
-		components.m_taskComponent->m_spawningState = SpawningState::WaitingToSpawnEntity;
+		components.m_taskComponent->m_spawningState = ESpawningState::WaitingToSpawnEntity;
 		components.m_spawningComponent->m_spawnTimerHandle.StartTimer(components.m_entity, spawnInfo.m_timeToCastSeconds);
 	}
 	else
 	{
-		components.m_taskComponent->m_spawningState = SpawningState::SpawningEntity;
+		components.m_taskComponent->m_spawningState = ESpawningState::SpawningEntity;
 		SpawnEntityFromQueue(components);
 		spawnedAnEntityThisFrame = true;
 	}
@@ -284,7 +284,7 @@ bool SpawningSystems::ProcessQueuedSpawnEntity(const SpawningSystemsComponentArg
 	return spawnedAnEntityThisFrame;
 }
 
-void SpawningSystems::GetSpawnLocationAndNavigationState(const SpawningSystemsComponentArgs& components, FVector& outSpawnLocation, MovementState& outMovementState)
+void SpawningSystems::GetSpawnLocationAndNavigationState(const SpawningSystemsComponentArgs& components, FVector& outSpawnLocation, EMovementState& outMovementState)
 {
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
@@ -293,14 +293,14 @@ void SpawningSystems::GetSpawnLocationAndNavigationState(const SpawningSystemsCo
 
 	const FVector spawnerLocation = components.m_transformComponent->m_location;
 	outSpawnLocation = spawnerLocation;
-	outMovementState = MovementState::None;
+	outMovementState = EMovementState::None;
 
 	if (components.m_targetingComponent->HasLocationTarget())
 	{
 		FVector spawnForward = components.m_targetingComponent->m_targetLocation.GetValue() - spawnerLocation;
 		spawnForward.Normalize();
 		outSpawnLocation = spawnerLocation + (spawnForward * components.m_spawningComponent->m_spawningRadius);
-		outMovementState = MovementState::ProcessMoveToLocationCommand;
+		outMovementState = EMovementState::ProcessMoveToLocationCommand;
 		return;
 	}
 
@@ -324,7 +324,7 @@ void SpawningSystems::GetSpawnLocationAndNavigationState(const SpawningSystemsCo
 	FVector spawnForward = targetTransformComponent->m_location - spawnerLocation;
 	spawnForward.Normalize();
 	outSpawnLocation = spawnerLocation + (spawnForward * components.m_spawningComponent->m_spawningRadius);
-	outMovementState = MovementState::ProcessMoveToEntityCommand;
+	outMovementState = EMovementState::ProcessMoveToEntityCommand;
 }
 
 void SpawningSystems::CommandMoveSelectedEntitiesToSpawnedEntity(const ArgusEntity& spawnedEntity, bool requireConstructionTarget)
@@ -386,7 +386,7 @@ void SpawningSystems::CommandMoveSelectedEntitiesToSpawnedEntity(const ArgusEnti
 			continue;
 		}
 
-		selectedEntityTaskComponent->m_movementState = MovementState::ProcessMoveToEntityCommand;
+		selectedEntityTaskComponent->m_movementState = EMovementState::ProcessMoveToEntityCommand;
 		selectedEntityTargetingComonent->m_targetEntityId = spawnedEntity.GetId();
 		selectedEntityTargetingComonent->m_targetLocation.Reset();
 	}

@@ -28,6 +28,6 @@ private:
 	static void SpawnEntityFromQueue(const SpawningSystemsComponentArgs& components);
 	static bool ProcessSpawningTaskCommands(float deltaTime, const SpawningSystemsComponentArgs& components);
 	static bool ProcessQueuedSpawnEntity(const SpawningSystemsComponentArgs& components);
-	static void GetSpawnLocationAndNavigationState(const SpawningSystemsComponentArgs& components, FVector& outSpawnLocation, MovementState& outMovementState);
+	static void GetSpawnLocationAndNavigationState(const SpawningSystemsComponentArgs& components, FVector& outSpawnLocation, EMovementState& outMovementState);
 	static void CommandMoveSelectedEntitiesToSpawnedEntity(const ArgusEntity& spawnedEntity, bool requireConstructionTarget = false);
 };

@@ -148,6 +148,11 @@ bool ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 		const bool isArray = parsedVariableData[i].m_typeName.find("TArray") != std::string::npos;
 		const bool isQueue = parsedVariableData[i].m_typeName.find("ArgusQueue") != std::string::npos;
 		const bool isVector = parsedVariableData[i].m_typeName.find("FVector") != std::string::npos;
+		
+		std::string cleanTypeName = parsedVariableData[i].m_typeName.substr(1, parsedVariableData[i].m_typeName.length() - 1);
+
+		// BRUH REALLY? Yes. Until I find a better way to differentiate enum types... here we are.
+		const bool isEnum = cleanTypeName.at(0) == 'E';
 
 		outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
 		std::string variable = "\t\tImGui::Text(\"";
@@ -186,6 +191,23 @@ bool ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 				FormatImGuiFloatField(variableName, value);
 				outParsedVariableContents.push_back(value);
 			}
+		}
+		else if (isEnum)
+		{
+			std::string newVariableName = "valueName";
+			newVariableName.append(parsedVariableData[i].m_varName);
+			std::string constCharStatement = "\t\tconst char* ";
+			constCharStatement.append(newVariableName);
+			constCharStatement.append(" = ARGUS_FSTRING_TO_CHAR(StaticEnum<");
+			constCharStatement.append(cleanTypeName);
+			constCharStatement.append(">()->GetNameStringByValue(static_cast<uint8>(");
+			constCharStatement.append(parsedVariableData[i].m_varName);
+			constCharStatement.append(")));");
+			outParsedVariableContents.push_back(constCharStatement);
+			std::string textStatement = "\t\tImGui::Text(";
+			textStatement.append(newVariableName);
+			textStatement.append(");");
+			outParsedVariableContents.push_back(textStatement);
 		}
 		else if (isVector)
 		{

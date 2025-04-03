@@ -30,7 +30,7 @@ void UArgusActorCastBarWidget::RefreshDisplay(ArgusEntity& argusEntity)
 	{
 		if (const TaskComponent* taskComponent = argusEntity.GetComponent<TaskComponent>())
 		{
-			shouldBeVisible = taskComponent->m_constructionState == ConstructionState::BeingConstructed;
+			shouldBeVisible = taskComponent->m_constructionState == EConstructionState::BeingConstructed;
 			fillColor = m_constructionProgressColor;
 		}
 

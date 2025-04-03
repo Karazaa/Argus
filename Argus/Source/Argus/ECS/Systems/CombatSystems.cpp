@@ -71,10 +71,10 @@ void CombatSystems::ProcessCombatTaskCommands(float deltaTime, const CombatSyste
 
 	switch (components.m_taskComponent->m_combatState)
 	{
-		case CombatState::None:
+		case ECombatState::None:
 			break;
-		case CombatState::ShouldAttack:
-		case CombatState::Attacking:
+		case ECombatState::ShouldAttack:
+		case ECombatState::Attacking:
 			ProcessAttackCommand(deltaTime, components);
 			break;
 	}
@@ -91,7 +91,7 @@ void CombatSystems::ProcessAttackCommand(float deltaTime, const CombatSystemsCom
 
 	if (!components.m_targetingComponent->HasEntityTarget())
 	{
-		components.m_taskComponent->m_combatState = CombatState::None;
+		components.m_taskComponent->m_combatState = ECombatState::None;
 		return;
 	}
 
@@ -120,11 +120,11 @@ void CombatSystems::ProcessAttackCommand(float deltaTime, const CombatSystemsCom
 
 	if (FVector::DistSquared(components.m_transformComponent->m_location, targetTransformComponent->m_location) > FMath::Square(neededRange))
 	{
-		components.m_taskComponent->m_combatState = CombatState::ShouldAttack;
+		components.m_taskComponent->m_combatState = ECombatState::ShouldAttack;
 		return;
 	}
 
-	components.m_taskComponent->m_combatState = CombatState::Attacking;
+	components.m_taskComponent->m_combatState = ECombatState::Attacking;
 	if (components.m_combatComponent->m_intervalDurationSeconds > 0.0f)
 	{
 		PerformTimerAttack(targetEntity, components);
@@ -174,7 +174,7 @@ void CombatSystems::ApplyDamage(uint32 damageAmount, ArgusEntity& targetEntity, 
 		targetTaskComponent->SetToKillState();
 		targetHealthComponent->m_currentHealth = 0u;
 		components.m_targetingComponent->m_targetEntityId = ArgusECSConstants::k_maxEntities;
-		components.m_taskComponent->m_combatState = CombatState::None;
+		components.m_taskComponent->m_combatState = ECombatState::None;
 	}
 	else
 	{

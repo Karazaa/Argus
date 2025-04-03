@@ -18,7 +18,7 @@ void USelectedArgusEntitiesWidget::OnUpdateSelectedArgusActors(ArgusEntity& temp
 
 	if (const TaskComponent* taskComponent = templateEntity.GetComponent<TaskComponent>())
 	{
-		if (taskComponent->m_constructionState == ConstructionState::BeingConstructed)
+		if (taskComponent->m_constructionState == EConstructionState::BeingConstructed)
 		{
 			OnUpdateSelectedArgusActors(0, 0, 0, 0);
 			return;
