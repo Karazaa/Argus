@@ -34,7 +34,7 @@ void TargetingComponent::DrawComponentDebug() const
 		}
 		else
 		{
-			ImGui::Text("Optional not set.");
+			ImGui::Text("Optional not set");
 		}
 		ImGui::TableNextColumn();
 		ImGui::Text("m_meleeRange");

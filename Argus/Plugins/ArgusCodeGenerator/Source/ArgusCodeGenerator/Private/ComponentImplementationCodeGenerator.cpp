@@ -211,7 +211,7 @@ bool ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 				outParsedVariableContents.push_back("\t\t}");
 				outParsedVariableContents.push_back("\t\telse");
 				outParsedVariableContents.push_back("\t\t{");
-				outParsedVariableContents.push_back("\t\t\tImGui::Text(\"Optional not set.\");");
+				outParsedVariableContents.push_back("\t\t\tImGui::Text(\"Optional not set\");");
 				outParsedVariableContents.push_back("\t\t}");
 			}
 			else if (isArray)
@@ -242,7 +242,7 @@ void ComponentImplementationGenerator::FormatImGuiArrayField(const std::string& 
 {
 	outParsedVariableContents.push_back(std::vformat("\t\tif ({}.Num() == 0)", std::make_format_args(variableName)));
 	outParsedVariableContents.push_back("\t\t{");
-	outParsedVariableContents.push_back("\t\t\tImGui::Text(\"Array is empty.\");");
+	outParsedVariableContents.push_back("\t\t\tImGui::Text(\"Array is empty\");");
 	outParsedVariableContents.push_back("\t\t}");
 	outParsedVariableContents.push_back("\t\telse");
 	outParsedVariableContents.push_back("\t\t{");

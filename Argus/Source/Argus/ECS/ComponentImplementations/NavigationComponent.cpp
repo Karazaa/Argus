@@ -30,7 +30,7 @@ void NavigationComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		if (m_navigationPoints.Num() == 0)
 		{
-			ImGui::Text("Array is empty.");
+			ImGui::Text("Array is empty");
 		}
 		else
 		{

@@ -30,7 +30,7 @@ void AvoidanceGroupingComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		if (m_adjacentEntities.Num() == 0)
 		{
-			ImGui::Text("Array is empty.");
+			ImGui::Text("Array is empty");
 		}
 		else
 		{
