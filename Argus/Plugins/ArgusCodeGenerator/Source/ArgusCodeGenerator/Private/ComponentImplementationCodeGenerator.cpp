@@ -150,6 +150,7 @@ bool ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 		const bool isQueue = parsedVariableData[i].m_typeName.find("ArgusQueue") != std::string::npos;
 		const bool isVector = parsedVariableData[i].m_typeName.find("FVector") != std::string::npos;
 		const bool isTimer = parsedVariableData[i].m_typeName.find("TimerHandle") != std::string::npos;
+		const bool isStaticData = parsedVariableData[i].m_propertyMacro.find(ArgusCodeGeneratorUtil::s_propertyStaticDataDelimiter) != std::string::npos;
 		
 		std::string cleanTypeName = parsedVariableData[i].m_typeName.substr(1, parsedVariableData[i].m_typeName.length() - 1);
 
@@ -162,7 +163,26 @@ bool ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 
 		if (isInteger)
 		{
-			if (isArray)
+			if (isStaticData)
+			{
+				const size_t lineSize = parsedVariableData[i].m_propertyMacro.length();
+				const size_t startIndex = parsedVariableData[i].m_propertyMacro.find('(') + 1;
+				std::string recordType = parsedVariableData[i].m_propertyMacro.substr(startIndex, (lineSize - 1) - startIndex);
+				outParsedVariableContents.push_back(std::vformat("\t\tif ({} != 0u)", std::make_format_args(parsedVariableData[i].m_varName)));
+				outParsedVariableContents.push_back("\t\t{");
+				outParsedVariableContents.push_back(std::vformat("\t\t\tif (const {}* record_{} = ArgusStaticData::GetRecord<{}>({}))", 
+					std::make_format_args(recordType, parsedVariableData[i].m_varName, recordType, parsedVariableData[i].m_varName)));
+				outParsedVariableContents.push_back("\t\t\t{");
+				outParsedVariableContents.push_back(std::vformat("\t\t\t\tconst char* name_{} = ARGUS_FSTRING_TO_CHAR(record_{}->GetName());", std::make_format_args(parsedVariableData[i].m_varName, parsedVariableData[i].m_varName)));
+				outParsedVariableContents.push_back(std::vformat("\t\t\t\tImGui::Text(\"%s\", name_{});", std::make_format_args(parsedVariableData[i].m_varName)));
+				outParsedVariableContents.push_back("\t\t\t}");
+				outParsedVariableContents.push_back("\t\t}");
+				outParsedVariableContents.push_back("\t\telse");
+				outParsedVariableContents.push_back("\t\t{");
+				outParsedVariableContents.push_back(std::vformat("\t\t\tImGui::Text(\"None\", {});", std::make_format_args(parsedVariableData[i].m_varName)));
+				outParsedVariableContents.push_back("\t\t}");
+			}
+			else if (isArray)
 			{
 				FormatImGuiArrayField(parsedVariableData[i].m_varName, outParsedVariableContents);
 			}

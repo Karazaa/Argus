@@ -5,6 +5,7 @@
 #include "ArgusEntity.h"
 
 #if !UE_BUILD_SHIPPING
+#include "ArgusStaticData.h"
 #include "imgui.h"
 #include "UObject/ReflectedTypeAccessors.h"
 #endif //!UE_BUILD_SHIPPING
@@ -28,19 +29,63 @@ void AbilityComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_ability0Id");
 		ImGui::TableNextColumn();
-		ImGui::Text("%d", m_ability0Id);
+		if (m_ability0Id != 0u)
+		{
+			if (const UAbilityRecord* record_m_ability0Id = ArgusStaticData::GetRecord<UAbilityRecord>(m_ability0Id))
+			{
+				const char* name_m_ability0Id = ARGUS_FSTRING_TO_CHAR(record_m_ability0Id->GetName());
+				ImGui::Text("%s", name_m_ability0Id);
+			}
+		}
+		else
+		{
+			ImGui::Text("None", m_ability0Id);
+		}
 		ImGui::TableNextColumn();
 		ImGui::Text("m_ability1Id");
 		ImGui::TableNextColumn();
-		ImGui::Text("%d", m_ability1Id);
+		if (m_ability1Id != 0u)
+		{
+			if (const UAbilityRecord* record_m_ability1Id = ArgusStaticData::GetRecord<UAbilityRecord>(m_ability1Id))
+			{
+				const char* name_m_ability1Id = ARGUS_FSTRING_TO_CHAR(record_m_ability1Id->GetName());
+				ImGui::Text("%s", name_m_ability1Id);
+			}
+		}
+		else
+		{
+			ImGui::Text("None", m_ability1Id);
+		}
 		ImGui::TableNextColumn();
 		ImGui::Text("m_ability2Id");
 		ImGui::TableNextColumn();
-		ImGui::Text("%d", m_ability2Id);
+		if (m_ability2Id != 0u)
+		{
+			if (const UAbilityRecord* record_m_ability2Id = ArgusStaticData::GetRecord<UAbilityRecord>(m_ability2Id))
+			{
+				const char* name_m_ability2Id = ARGUS_FSTRING_TO_CHAR(record_m_ability2Id->GetName());
+				ImGui::Text("%s", name_m_ability2Id);
+			}
+		}
+		else
+		{
+			ImGui::Text("None", m_ability2Id);
+		}
 		ImGui::TableNextColumn();
 		ImGui::Text("m_ability3Id");
 		ImGui::TableNextColumn();
-		ImGui::Text("%d", m_ability3Id);
+		if (m_ability3Id != 0u)
+		{
+			if (const UAbilityRecord* record_m_ability3Id = ArgusStaticData::GetRecord<UAbilityRecord>(m_ability3Id))
+			{
+				const char* name_m_ability3Id = ARGUS_FSTRING_TO_CHAR(record_m_ability3Id->GetName());
+				ImGui::Text("%s", name_m_ability3Id);
+			}
+		}
+		else
+		{
+			ImGui::Text("None", m_ability3Id);
+		}
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

@@ -5,6 +5,7 @@
 #include "ArgusEntity.h"
 
 #if !UE_BUILD_SHIPPING
+#include "ArgusStaticData.h"
 #include "imgui.h"
 #include "UObject/ReflectedTypeAccessors.h"
 #endif //!UE_BUILD_SHIPPING
@@ -28,7 +29,18 @@ void IdentityComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_factionId");
 		ImGui::TableNextColumn();
-		ImGui::Text("%d", m_factionId);
+		if (m_factionId != 0u)
+		{
+			if (const UFactionRecord* record_m_factionId = ArgusStaticData::GetRecord<UFactionRecord>(m_factionId))
+			{
+				const char* name_m_factionId = ARGUS_FSTRING_TO_CHAR(record_m_factionId->GetName());
+				ImGui::Text("%s", name_m_factionId);
+			}
+		}
+		else
+		{
+			ImGui::Text("None", m_factionId);
+		}
 		ImGui::TableNextColumn();
 		ImGui::Text("m_team");
 		ImGui::TableNextColumn();
