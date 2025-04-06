@@ -15,9 +15,6 @@
 #include "ArgusECSDebugger.h"
 #endif //!UE_BUILD_SHIPPING
 
-static TAutoConsoleVariable<bool> CVarShowAllArgusEntitiesDebug(TEXT("Argus.ArgusEntity.ShowAllArgusEntitiesDebug"), false, TEXT(""));
-static TAutoConsoleVariable<bool> CVarShowSelectedArgusEntityDebug(TEXT("Argus.ArgusEntity.ShowSelectedArgusEntityDebug"), false, TEXT(""));
-
 AArgusActor::AArgusActor()
 {
 	PrimaryActorTick.bCanEverTick = true;

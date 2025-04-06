@@ -10,7 +10,9 @@
 #include "Systems/CombatSystems.h"
 #include "Systems/ConstructionSystems.h"
 
-static TAutoConsoleVariable<bool> CVarShowNavigationDebug(TEXT("Argus.Navigation.ShowNavigationDebug"), false, TEXT(""));
+#if !UE_BUILD_SHIPPING
+#include "ArgusECSDebugger.h"
+#endif //!UE_BUILD_SHIPPING
 
 void NavigationSystems::RunSystems(UWorld* worldPointer)
 {
@@ -154,7 +156,8 @@ void NavigationSystems::NavigateFromEntityToLocation(UWorld* worldPointer, std::
 	{
 		components.m_navigationComponent->m_navigationPoints.Add(pathPoints[i].Location);
 
-		if (!CVarShowNavigationDebug.GetValueOnGameThread())
+#if !UE_BUILD_SHIPPING
+		if (!ArgusECSDebugger::ShouldShowNavigationDebugForEntity(components.m_entity.GetId()))
 		{
 			continue;
 		}
@@ -164,6 +167,7 @@ void NavigationSystems::NavigateFromEntityToLocation(UWorld* worldPointer, std::
 		{
 			DrawDebugLine(worldPointer, components.m_navigationComponent->m_navigationPoints[i], pathPoints[i + 1].Location, FColor::Magenta, false, 3.0f, 0, 5.0f);
 		}
+#endif //!UE_BUILD_SHIPPING
 	}
 
 	// Need to set initial velocity when starting pathing so that avoidance systems can properly consider desired velocity when starting movement.

@@ -7,7 +7,10 @@
 #if !UE_BUILD_SHIPPING
 
 static TAutoConsoleVariable<bool> CVarDrawECSDebugger(TEXT("Argus.Debug.ECS"), false, TEXT("Whether or not the ECS ImGui debugger should be drawn."));
+bool ArgusECSDebugger::s_onlyDebugSelectedEntities = false;
 bool ArgusECSDebugger::s_entityDebugToggles[ArgusECSConstants::k_maxEntities];
+bool ArgusECSDebugger::s_entityShowAvoidanceDebug[ArgusECSConstants::k_maxEntities];
+bool ArgusECSDebugger::s_entityShowNavigationDebug[ArgusECSConstants::k_maxEntities];
 
 void ArgusECSDebugger::DrawECSDebugger()
 {
@@ -42,8 +45,20 @@ bool ArgusECSDebugger::IsEntityBeingDebugged(uint16 entityId)
 	return s_entityDebugToggles[entityId];
 }
 
+bool ArgusECSDebugger::ShouldShowAvoidanceDebugForEntity(uint16 entityId)
+{
+	return s_entityShowAvoidanceDebug[entityId];
+}
+
+bool ArgusECSDebugger::ShouldShowNavigationDebugForEntity(uint16 entityId)
+{
+	return s_entityShowNavigationDebug[entityId];
+}
+
 void ArgusECSDebugger::DrawEntityScrollRegion()
 {
+	ImGui::Checkbox("Only debug selected entities", &s_onlyDebugSelectedEntities);
+
 	ImGuiWindowFlags window_flags = ImGuiWindowFlags_None | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_MenuBar;
 	ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 5.0f);
 	ImGui::BeginChild("EntitiesScrollRegion", ImVec2(0, 0), ImGuiChildFlags_Borders, window_flags);
@@ -60,9 +75,15 @@ void ArgusECSDebugger::DrawEntityScrollRegion()
 	{
 		for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 		{
-			if (!ArgusEntity::DoesEntityExist(i))
+			ArgusEntity entity = ArgusEntity::RetrieveEntity(i);
+			if (!entity)
 			{
 				continue;
+			}
+
+			if (s_onlyDebugSelectedEntities)
+			{
+				s_entityDebugToggles[i] = entity.IsSelected();
 			}
 
 			char buf[32];
@@ -146,6 +167,10 @@ void ArgusECSDebugger::DrawWindowForEntity(uint16 entityId)
 		ImGui::End();
 		return;
 	}
+
+	ImGui::Checkbox("Show Avoidance debug", &s_entityShowAvoidanceDebug[entityId]);
+	ImGui::SameLine();
+	ImGui::Checkbox("Show Navigation debug", &s_entityShowNavigationDebug[entityId]);
 
 	ImGui::SeparatorText("Components");
 	ArgusComponentRegistry::DrawComponentsDebug(entityId);

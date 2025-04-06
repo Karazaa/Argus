@@ -10,7 +10,9 @@
 #include "Systems/TargetingSystems.h"
 #include <limits>
 
-static TAutoConsoleVariable<bool> CVarShowAvoidanceDebug(TEXT("Argus.Avoidance.ShowAvoidanceDebug"), false, TEXT(""));
+#if !UE_BUILD_SHIPPING
+#include "ArgusECSDebugger.h"
+#endif //!UE_BUILD_SHIPPING
 
 void AvoidanceSystems::RunSystems(UWorld* worldPointer, float deltaTime)
 {
@@ -104,20 +106,24 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 		}
 
 		components.m_transformComponent->m_proposedAvoidanceVelocity = FVector(ArgusMath::ToUnrealVector2(desiredVelocity), 0.0f);
-		if (CVarShowAvoidanceDebug.GetValueOnGameThread() && worldPointer && components.m_entity.IsSelected())
+#if !UE_BUILD_SHIPPING
+		if (worldPointer && ArgusECSDebugger::ShouldShowAvoidanceDebugForEntity(components.m_entity.GetId()))
 		{
 			DrawDebugLine(worldPointer, params.m_sourceEntityLocation3D, params.m_sourceEntityLocation3D + components.m_transformComponent->m_proposedAvoidanceVelocity, FColor::Orange, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth);
 		}
+#endif //!UE_BUILD_SHIPPING
 		return;
 	}
 
 	// Iterate over the found entities and generate ORCA lines based on their current states.
 	TArray<ORCALine> calculatedORCALines;
 	CreateObstacleORCALines(worldPointer, params, components, calculatedORCALines);
-	if (CVarShowAvoidanceDebug.GetValueOnGameThread() && worldPointer && components.m_entity.IsSelected())
+#if !UE_BUILD_SHIPPING
+	if (worldPointer && ArgusECSDebugger::ShouldShowAvoidanceDebugForEntity(components.m_entity.GetId()))
 	{
 		DrawORCADebugLines(worldPointer, params, calculatedORCALines, true, 0);
 	}
+#endif //!UE_BUILD_SHIPPING
 	const int32 numStaticObstacles = calculatedORCALines.Num();
 	
 	CreateEntityORCALines(params, components, foundEntityIds, calculatedORCALines, desiredVelocity);
@@ -134,12 +140,14 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 		resultingVelocity = resultingVelocity.GetSafeNormal() * components.m_transformComponent->m_desiredSpeedUnitsPerSecond;
 	}
 
-	if (CVarShowAvoidanceDebug.GetValueOnGameThread() && worldPointer && components.m_entity.IsSelected())
+#if !UE_BUILD_SHIPPING
+	if (worldPointer && ArgusECSDebugger::ShouldShowAvoidanceDebugForEntity(components.m_entity.GetId()))
 	{
 		DrawORCADebugLines(worldPointer, params, calculatedORCALines, false, numStaticObstacles);
 		DrawDebugLine(worldPointer, params.m_sourceEntityLocation3D, params.m_sourceEntityLocation3D + FVector(ArgusMath::ToUnrealVector2(resultingVelocity), 0.0f), FColor::Magenta, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth);
 		DrawDebugLine(worldPointer, params.m_sourceEntityLocation3D, params.m_sourceEntityLocation3D + FVector(ArgusMath::ToUnrealVector2(desiredVelocity), 0.0f), FColor::Turquoise, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth);
 	}
+#endif //!UE_BUILD_SHIPPING
 
 	components.m_transformComponent->m_proposedAvoidanceVelocity = FVector(ArgusMath::ToUnrealVector2(resultingVelocity), 0.0f);
 }
@@ -263,10 +271,12 @@ void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const Creat
 		return;
 	}
 
-	if (CVarShowAvoidanceDebug.GetValueOnGameThread())
+#if !UE_BUILD_SHIPPING
+	if (ArgusECSDebugger::ShouldShowAvoidanceDebugForEntity(components.m_entity.GetId()))
 	{
 		DrawDebugCircle(worldPointer, params.m_sourceEntityLocation3D, ArgusECSConstants::k_avoidanceAgentSearchRadius, 20, FColor::Yellow, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth, FVector::RightVector, FVector::ForwardVector, false);
 	}
+#endif //!UE_BUILD_SHIPPING
 	
 	TArray<ObstacleIndicies> obstacleIndicies;
 	params.m_spatialPartitioningComponent->m_obstaclePointKDTree.FindObstacleIndiciesWithinRangeOfLocation
@@ -284,12 +294,14 @@ void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const Creat
 
 		CalculateORCALineForObstacleSegment(params, current, next, previous.m_direction, outORCALines);
 
-		if (CVarShowAvoidanceDebug.GetValueOnGameThread())
+#if !UE_BUILD_SHIPPING
+		if (ArgusECSDebugger::ShouldShowAvoidanceDebugForEntity(components.m_entity.GetId()))
 		{
 			previous.DrawDebugObstaclePoint(worldPointer);
 			current.DrawDebugObstaclePoint(worldPointer);
 			next.DrawDebugObstaclePoint(worldPointer);
 		}
+#endif //!UE_BUILD_SHIPPING
 	}
 }
 
@@ -995,7 +1007,7 @@ void AvoidanceSystems::CalculateORCALineForObstacleSegment(const CreateEntityORC
 
 void AvoidanceSystems::DrawORCADebugLines(UWorld* worldPointer, const CreateEntityORCALinesParams& params, const TArray<ORCALine>& orcaLines, bool areObstacleLines, int32 startingLine)
 {
-	if (!CVarShowAvoidanceDebug.GetValueOnGameThread() || !worldPointer)
+	if (!worldPointer)
 	{
 		return;
 	}
