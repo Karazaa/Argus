@@ -13,9 +13,11 @@ public:
 	static bool IsEntityBeingDebugged(uint16 entityId);
 	static bool ShouldShowAvoidanceDebugForEntity(uint16 entityId);
 	static bool ShouldShowNavigationDebugForEntity(uint16 entityId);
+	static bool ShouldIgnoreTeamRequirementsForSelectingEntities() { return s_ignoreTeamRequirementsForSelectingEntities; };
 
 private:
 	static bool s_onlyDebugSelectedEntities;
+	static bool s_ignoreTeamRequirementsForSelectingEntities;
 	static bool s_entityDebugToggles[ArgusECSConstants::k_maxEntities];
 	static bool s_entityShowAvoidanceDebug[ArgusECSConstants::k_maxEntities];
 	static bool s_entityShowNavigationDebug[ArgusECSConstants::k_maxEntities];

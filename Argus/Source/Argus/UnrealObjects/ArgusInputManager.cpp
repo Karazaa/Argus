@@ -3,6 +3,7 @@
 #include "ArgusInputManager.h"
 #include "ArgusActor.h"
 #include "ArgusCameraActor.h"
+#include "ArgusECSDebugger.h"
 #include "ArgusInputActionSet.h"
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
@@ -500,7 +501,13 @@ void UArgusInputManager::ProcessSelectInputEvent(bool isAdditive)
 		return;
 	}
 
-	if (!m_owningPlayerController->IsArgusActorOnPlayerTeam(argusActor))
+	bool shouldIgnoreTeamRequirement = false;
+
+#if !UE_BUILD_SHIPPING
+	shouldIgnoreTeamRequirement = ArgusECSDebugger::ShouldIgnoreTeamRequirementsForSelectingEntities();
+#endif //!UE_BUILD_SHIPPING
+
+	if (!shouldIgnoreTeamRequirement && !m_owningPlayerController->IsArgusActorOnPlayerTeam(argusActor))
 	{
 		return;
 	}
@@ -623,7 +630,17 @@ void UArgusInputManager::ProcessMarqueeSelectInputEvent(AArgusCameraActor* argus
 	{
 		return;
 	}
-	m_owningPlayerController->FilterArgusActorsToPlayerTeam(actorsWithinBounds);
+
+	bool shouldIgnoreTeamRequirement = false;
+
+#if !UE_BUILD_SHIPPING
+	shouldIgnoreTeamRequirement = ArgusECSDebugger::ShouldIgnoreTeamRequirementsForSelectingEntities();
+#endif //!UE_BUILD_SHIPPING
+
+	if (!shouldIgnoreTeamRequirement)
+	{
+		m_owningPlayerController->FilterArgusActorsToPlayerTeam(actorsWithinBounds);
+	}
 	
 	const int numFoundEntities = actorsWithinBounds.Num();
 	if (CVarEnableVerboseArgusInputLogging.GetValueOnGameThread())

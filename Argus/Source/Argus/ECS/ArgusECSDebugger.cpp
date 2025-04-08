@@ -8,6 +8,7 @@
 
 static TAutoConsoleVariable<bool> CVarDrawECSDebugger(TEXT("Argus.Debug.ECS"), false, TEXT("Whether or not the ECS ImGui debugger should be drawn."));
 bool ArgusECSDebugger::s_onlyDebugSelectedEntities = false;
+bool ArgusECSDebugger::s_ignoreTeamRequirementsForSelectingEntities = false;
 bool ArgusECSDebugger::s_entityDebugToggles[ArgusECSConstants::k_maxEntities];
 bool ArgusECSDebugger::s_entityShowAvoidanceDebug[ArgusECSConstants::k_maxEntities];
 bool ArgusECSDebugger::s_entityShowNavigationDebug[ArgusECSConstants::k_maxEntities];
@@ -58,6 +59,8 @@ bool ArgusECSDebugger::ShouldShowNavigationDebugForEntity(uint16 entityId)
 void ArgusECSDebugger::DrawEntityScrollRegion()
 {
 	ImGui::Checkbox("Only debug selected entities", &s_onlyDebugSelectedEntities);
+	ImGui::SameLine();
+	ImGui::Checkbox("Ignore team requirements for selection", &s_ignoreTeamRequirementsForSelectingEntities);
 
 	ImGuiWindowFlags window_flags = ImGuiWindowFlags_None | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_MenuBar;
 	ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 5.0f);
