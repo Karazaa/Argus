@@ -76,11 +76,12 @@ void ArgusECSDebugger::DrawEntityScrollRegion()
 	}
 	if (ImGui::BeginTable("EntitiesTable", 4, ImGuiTableFlags_NoSavedSettings))
 	{
-		for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
+		for (uint16 i = 0u; i < ArgusECSConstants::k_maxEntities; ++i)
 		{
 			ArgusEntity entity = ArgusEntity::RetrieveEntity(i);
-			if (!entity)
+			if (!entity || ArgusEntity::IsReservedEntityId(i))
 			{
+				s_entityDebugToggles[i] = false;
 				continue;
 			}
 
@@ -145,10 +146,12 @@ void ArgusECSDebugger::DrawEntityDockSpace()
 	ImGuiID dockspaceId = ImGui::GetID("Entity Dock Space");
 	ImGui::DockSpace(dockspaceId, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
 
-	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
+	for (uint16 i = 0u; i < ArgusECSConstants::k_maxEntities; ++i)
 	{
 		if (!ArgusEntity::DoesEntityExist(i) || !s_entityDebugToggles[i])
 		{
+			s_entityShowAvoidanceDebug[i] = false;
+			s_entityShowNavigationDebug[i] = false;
 			continue;
 		}
 

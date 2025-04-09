@@ -6,7 +6,7 @@ void CombatSystems::RunSystems(float deltaTime)
 {
 	ARGUS_TRACE(CombatSystems::RunSystems);
 
-	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i < ArgusEntity::GetHighestTakenEntityId(); ++i)
+	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{
 		CombatSystemsComponentArgs components;
 		components.m_entity = ArgusEntity::RetrieveEntity(i);
