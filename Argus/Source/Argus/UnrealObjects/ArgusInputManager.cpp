@@ -400,6 +400,30 @@ bool UArgusInputManager::ValidateOwningPlayerController()
 void UArgusInputManager::PrepareToProcessInputEvents()
 {
 	m_selectedArgusActorsChangedThisFrame = false;
+
+	TArray<TWeakObjectPtr<AArgusActor>> deadArgusActors;
+	for (TWeakObjectPtr<AArgusActor>& selectedActor : m_selectedArgusActors)
+	{
+		if (!selectedActor.IsValid())
+		{
+			continue;
+		}
+
+		if (selectedActor->GetEntity().IsAlive())
+		{
+			continue;
+		}
+
+		selectedActor->SetSelectionState(false);
+		deadArgusActors.Add(selectedActor);
+	}
+
+	for (TWeakObjectPtr<AArgusActor>& deadSelectedActor : deadArgusActors)
+	{
+		m_selectedArgusActors.Remove(deadSelectedActor);
+	}
+
+	OnSelectedArgusArgusActorsChanged();
 }
 
 void UArgusInputManager::ProcessInputEvent(AArgusCameraActor* argusCamera, const InputCache& inputType)
@@ -512,7 +536,7 @@ void UArgusInputManager::ProcessSelectInputEvent(bool isAdditive)
 		return;
 	}
 
-	if (!argusActor->GetEntity().IsAlive())
+	if (!shouldIgnoreTeamRequirement && !argusActor->GetEntity().IsAlive())
 	{
 		return;
 	}

@@ -46,7 +46,7 @@ void SpatialPartitioningSystems::CacheAdjacentEntityIds(const SpatialPartitionin
 	{
 		ArgusEntity entity = ArgusEntity::RetrieveEntity(i);
 
-		if (!entity || !entity.IsMoveable())
+		if (!entity)
 		{
 			continue;
 		}
@@ -61,6 +61,11 @@ void SpatialPartitioningSystems::CacheAdjacentEntityIds(const SpatialPartitionin
 		avoidanceGroupingComponent->m_groupId = ArgusECSConstants::k_maxEntities;
 		avoidanceGroupingComponent->m_groupAverageLocation = FVector::ZeroVector;
 		avoidanceGroupingComponent->m_numberOfIdleEntities = 0u;
+
+		if (!entity.IsMoveable())
+		{
+			continue;
+		}
 		spatialPartitioningComponent->m_argusEntityKDTree.FindOtherArgusEntityIdsWithinRangeOfArgusEntity(avoidanceGroupingComponent->m_adjacentEntities, entity, ArgusECSConstants::k_avoidanceAgentSearchRadius);
 	}
 }

@@ -143,7 +143,7 @@ void AArgusPlayerController::FilterArgusActorsToPlayerTeam(TArray<AArgusActor*>&
 				return false;
 			}
 
-			return IsArgusActorOnPlayerTeam(actorToCheck);
+			return actorToCheck->GetEntity().IsAlive() && IsArgusActorOnPlayerTeam(actorToCheck);
 		}
 	);
 }

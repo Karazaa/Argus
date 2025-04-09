@@ -233,6 +233,11 @@ bool ArgusEntity::IsMoveable() const
 		return false;
 	}
 
+	if (!IsAlive())
+	{
+		return false;
+	}
+
 	const bool hasNavigationComponent = GetComponent<NavigationComponent>() != nullptr;
 	const bool hasTransformComponent = GetComponent<TransformComponent>() != nullptr;
 	const bool hasTargetingComponent = GetComponent<TargetingComponent>() != nullptr;
