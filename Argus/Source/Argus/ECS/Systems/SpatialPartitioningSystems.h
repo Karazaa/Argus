@@ -12,7 +12,7 @@ struct FNavLocation;
 class SpatialPartitioningSystems
 {
 public:
-	static void RunSystems(const ArgusEntity& spatialPartitioningEntity);
+	static void RunSystems(const ArgusEntity& spatialPartitioningEntity, bool didEntityPositionChangeThisFrame);
 	static void CalculateAvoidanceObstacles(SpatialPartitioningComponent* spatialPartitioningComponent, UWorld* worldPointer);
 	static float FindAreaOfObstacleCartesian(const ObstaclePointArray& obstaclePoints);
 

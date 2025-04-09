@@ -137,8 +137,5 @@ void ArgusSystemsManager::UpdateSingletonComponents(bool didEntityPositionChange
 		return;
 	}
 
-	if (didEntityPositionChangeThisFrame)
-	{
-		SpatialPartitioningSystems::RunSystems(singletonEntity);
-	}
+	SpatialPartitioningSystems::RunSystems(singletonEntity, didEntityPositionChangeThisFrame);
 }

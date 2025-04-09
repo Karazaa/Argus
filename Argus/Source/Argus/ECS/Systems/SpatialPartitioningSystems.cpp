@@ -14,7 +14,7 @@
 
 static TAutoConsoleVariable<bool> CVarShowObstacleDebug(TEXT("Argus.SpatialPartitioning.ShowAvoidanceObstacleDebug"), false, TEXT(""));
 
-void SpatialPartitioningSystems::RunSystems(const ArgusEntity& spatialPartitioningEntity)
+void SpatialPartitioningSystems::RunSystems(const ArgusEntity& spatialPartitioningEntity, bool didEntityPositionChangeThisFrame)
 {
 	ARGUS_TRACE(SpatialPartitioningSystems::RunSystems);
 
@@ -29,7 +29,10 @@ void SpatialPartitioningSystems::RunSystems(const ArgusEntity& spatialPartitioni
 		return;
 	}
 
-	spatialPartitioningComponent->m_argusEntityKDTree.RebuildKDTreeForAllArgusEntities();
+	if (didEntityPositionChangeThisFrame)
+	{
+		spatialPartitioningComponent->m_argusEntityKDTree.RebuildKDTreeForAllArgusEntities();
+	}
 
 	CacheAdjacentEntityIds(spatialPartitioningComponent);
 	CalculateAdjacentEntityGroups();
