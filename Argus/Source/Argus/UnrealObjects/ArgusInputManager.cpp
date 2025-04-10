@@ -162,6 +162,78 @@ void UArgusInputManager::OnUserInterfaceButtonClicked(UArgusUIButtonClickedEvent
 	}
 }
 
+void UArgusInputManager::OnControlGroup0(const FInputActionValue& value)
+{
+	ARGUS_MEMORY_TRACE(ArgusInputManager);
+	m_inputEventsThisFrame.Emplace(InputCache(InputType::ControlGroup0, value));
+}
+
+void UArgusInputManager::OnControlGroup1(const FInputActionValue& value)
+{
+	ARGUS_MEMORY_TRACE(ArgusInputManager);
+	m_inputEventsThisFrame.Emplace(InputCache(InputType::ControlGroup1, value));
+}
+
+void UArgusInputManager::OnControlGroup2(const FInputActionValue& value)
+{
+	ARGUS_MEMORY_TRACE(ArgusInputManager);
+	m_inputEventsThisFrame.Emplace(InputCache(InputType::ControlGroup2, value));
+}
+
+void UArgusInputManager::OnControlGroup3(const FInputActionValue& value)
+{
+	ARGUS_MEMORY_TRACE(ArgusInputManager);
+	m_inputEventsThisFrame.Emplace(InputCache(InputType::ControlGroup3, value));
+}
+
+void UArgusInputManager::OnControlGroup4(const FInputActionValue& value)
+{
+	ARGUS_MEMORY_TRACE(ArgusInputManager);
+	m_inputEventsThisFrame.Emplace(InputCache(InputType::ControlGroup4, value));
+}
+
+void UArgusInputManager::OnControlGroup5(const FInputActionValue& value)
+{
+	ARGUS_MEMORY_TRACE(ArgusInputManager);
+	m_inputEventsThisFrame.Emplace(InputCache(InputType::ControlGroup5, value));
+}
+
+void UArgusInputManager::OnSetControlGroup0(const FInputActionValue& value)
+{
+	ARGUS_MEMORY_TRACE(ArgusInputManager);
+	m_inputEventsThisFrame.Emplace(InputCache(InputType::SetControlGroup0, value));
+}
+
+void UArgusInputManager::OnSetControlGroup1(const FInputActionValue& value)
+{
+	ARGUS_MEMORY_TRACE(ArgusInputManager);
+	m_inputEventsThisFrame.Emplace(InputCache(InputType::SetControlGroup1, value));
+}
+
+void UArgusInputManager::OnSetControlGroup2(const FInputActionValue& value)
+{
+	ARGUS_MEMORY_TRACE(ArgusInputManager);
+	m_inputEventsThisFrame.Emplace(InputCache(InputType::SetControlGroup2, value));
+}
+
+void UArgusInputManager::OnSetControlGroup3(const FInputActionValue& value)
+{
+	ARGUS_MEMORY_TRACE(ArgusInputManager);
+	m_inputEventsThisFrame.Emplace(InputCache(InputType::SetControlGroup3, value));
+}
+
+void UArgusInputManager::OnSetControlGroup4(const FInputActionValue& value)
+{
+	ARGUS_MEMORY_TRACE(ArgusInputManager);
+	m_inputEventsThisFrame.Emplace(InputCache(InputType::SetControlGroup4, value));
+}
+
+void UArgusInputManager::OnSetControlGroup5(const FInputActionValue& value)
+{
+	ARGUS_MEMORY_TRACE(ArgusInputManager);
+	m_inputEventsThisFrame.Emplace(InputCache(InputType::SetControlGroup5, value));
+}
+
 #pragma endregion
 
 void UArgusInputManager::ProcessPlayerInput(AArgusCameraActor* argusCamera, const AArgusCameraActor::UpdateCameraPanningParameters& updateCameraParameters, float deltaTime)
@@ -384,6 +456,54 @@ void UArgusInputManager::BindActions(TSoftObjectPtr<UArgusInputActionSet>& argus
 	{
 		enhancedInputComponent->BindAction(stopPanningLockoutAction, ETriggerEvent::Triggered, this, &UArgusInputManager::OnStopPanningLockout);
 	}
+	if (const UInputAction* controlGroupAction0 = actionSet->m_controlGroup0.LoadSynchronous())
+	{
+		enhancedInputComponent->BindAction(controlGroupAction0, ETriggerEvent::Triggered, this, &UArgusInputManager::OnControlGroup0);
+	}
+	if (const UInputAction* controlGroupAction1 = actionSet->m_controlGroup1.LoadSynchronous())
+	{
+		enhancedInputComponent->BindAction(controlGroupAction1, ETriggerEvent::Triggered, this, &UArgusInputManager::OnControlGroup1);
+	}
+	if (const UInputAction* controlGroupAction2 = actionSet->m_controlGroup2.LoadSynchronous())
+	{
+		enhancedInputComponent->BindAction(controlGroupAction2, ETriggerEvent::Triggered, this, &UArgusInputManager::OnControlGroup2);
+	}
+	if (const UInputAction* controlGroupAction3 = actionSet->m_controlGroup3.LoadSynchronous())
+	{
+		enhancedInputComponent->BindAction(controlGroupAction3, ETriggerEvent::Triggered, this, &UArgusInputManager::OnControlGroup3);
+	}
+	if (const UInputAction* controlGroupAction4 = actionSet->m_controlGroup4.LoadSynchronous())
+	{
+		enhancedInputComponent->BindAction(controlGroupAction4, ETriggerEvent::Triggered, this, &UArgusInputManager::OnControlGroup4);
+	}
+	if (const UInputAction* controlGroupAction5 = actionSet->m_controlGroup5.LoadSynchronous())
+	{
+		enhancedInputComponent->BindAction(controlGroupAction5, ETriggerEvent::Triggered, this, &UArgusInputManager::OnControlGroup5);
+	}
+	if (const UInputAction* setControlGroupAction0 = actionSet->m_setControlGroup0.LoadSynchronous())
+	{
+		enhancedInputComponent->BindAction(setControlGroupAction0, ETriggerEvent::Triggered, this, &UArgusInputManager::OnSetControlGroup0);
+	}
+	if (const UInputAction* setControlGroupAction1 = actionSet->m_setControlGroup1.LoadSynchronous())
+	{
+		enhancedInputComponent->BindAction(setControlGroupAction1, ETriggerEvent::Triggered, this, &UArgusInputManager::OnSetControlGroup1);
+	}
+	if (const UInputAction* setControlGroupAction2 = actionSet->m_setControlGroup2.LoadSynchronous())
+	{
+		enhancedInputComponent->BindAction(setControlGroupAction2, ETriggerEvent::Triggered, this, &UArgusInputManager::OnSetControlGroup2);
+	}
+	if (const UInputAction* setControlGroupAction3 = actionSet->m_setControlGroup3.LoadSynchronous())
+	{
+		enhancedInputComponent->BindAction(setControlGroupAction3, ETriggerEvent::Triggered, this, &UArgusInputManager::OnSetControlGroup3);
+	}
+	if (const UInputAction* setControlGroupAction4 = actionSet->m_setControlGroup4.LoadSynchronous())
+	{
+		enhancedInputComponent->BindAction(setControlGroupAction4, ETriggerEvent::Triggered, this, &UArgusInputManager::OnSetControlGroup4);
+	}
+	if (const UInputAction* setControlGroupAction5 = actionSet->m_setControlGroup5.LoadSynchronous())
+	{
+		enhancedInputComponent->BindAction(setControlGroupAction5, ETriggerEvent::Triggered, this, &UArgusInputManager::OnSetControlGroup5);
+	}
 }
 
 bool UArgusInputManager::ValidateOwningPlayerController()
@@ -486,6 +606,42 @@ void UArgusInputManager::ProcessInputEvent(AArgusCameraActor* argusCamera, const
 				m_canRotateCamera = false;
 				argusCamera->DecrementPanningBlockers();
 			}
+			break;
+		case InputType::ControlGroup0:
+			ProcessControlGroup(0u);
+			break;
+		case InputType::ControlGroup1:
+			ProcessControlGroup(1u);
+			break;
+		case InputType::ControlGroup2:
+			ProcessControlGroup(2u);
+			break;
+		case InputType::ControlGroup3:
+			ProcessControlGroup(3u);
+			break;
+		case InputType::ControlGroup4:
+			ProcessControlGroup(4u);
+			break;
+		case InputType::ControlGroup5:
+			ProcessControlGroup(5u);
+			break;
+		case InputType::SetControlGroup0:
+			ProcessSetControlGroup(0u);
+			break;
+		case InputType::SetControlGroup1:
+			ProcessSetControlGroup(1u);
+			break;
+		case InputType::SetControlGroup2:
+			ProcessSetControlGroup(2u);
+			break;
+		case InputType::SetControlGroup3:
+			ProcessSetControlGroup(3u);
+			break;
+		case InputType::SetControlGroup4:
+			ProcessSetControlGroup(4u);
+			break;
+		case InputType::SetControlGroup5:
+			ProcessSetControlGroup(5u);
 			break;
 		default:
 			break;
@@ -1035,6 +1191,16 @@ void UArgusInputManager::ProcessRotateCameraInputEvent(AArgusCameraActor* argusC
 	}
 
 	argusCamera->UpdateCameraOrbit(rotationValue);
+}
+
+void UArgusInputManager::ProcessControlGroup(uint8 controlGroupIndex)
+{
+
+}
+
+void UArgusInputManager::ProcessSetControlGroup(uint8 controlGroupIndex)
+{
+
 }
 
 #pragma endregion

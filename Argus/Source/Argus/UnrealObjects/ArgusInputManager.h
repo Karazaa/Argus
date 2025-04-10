@@ -40,6 +40,18 @@ public:
 	void OnStartPanningLockout(const FInputActionValue& value);
 	void OnStopPanningLockout(const FInputActionValue& value);
 	void OnUserInterfaceButtonClicked(UArgusUIButtonClickedEventsEnum buttonClickedEvent);
+	void OnControlGroup0(const FInputActionValue& value);
+	void OnControlGroup1(const FInputActionValue& value);
+	void OnControlGroup2(const FInputActionValue& value);
+	void OnControlGroup3(const FInputActionValue& value);
+	void OnControlGroup4(const FInputActionValue& value);
+	void OnControlGroup5(const FInputActionValue& value);
+	void OnSetControlGroup0(const FInputActionValue& value);
+	void OnSetControlGroup1(const FInputActionValue& value);
+	void OnSetControlGroup2(const FInputActionValue& value);
+	void OnSetControlGroup3(const FInputActionValue& value);
+	void OnSetControlGroup4(const FInputActionValue& value);
+	void OnSetControlGroup5(const FInputActionValue& value);
 
 
 	void ProcessPlayerInput(AArgusCameraActor* argusCamera, const AArgusCameraActor::UpdateCameraPanningParameters& updateCameraPanningParameters, float deltaTime);
@@ -67,7 +79,19 @@ private:
 		Escape,
 		RotateCamera,
 		StartPanningLockout,
-		StopPanningLockout
+		StopPanningLockout,
+		ControlGroup0,
+		ControlGroup1,
+		ControlGroup2,
+		ControlGroup3,
+		ControlGroup4,
+		ControlGroup5,
+		SetControlGroup0,
+		SetControlGroup1,
+		SetControlGroup2,
+		SetControlGroup3,
+		SetControlGroup4,
+		SetControlGroup5
 	};
 
 	struct InputCache
@@ -99,6 +123,8 @@ private:
 	void ProcessAbilityInputEventPerSelectedActor(AArgusActor* argusActor, uint8 abilityIndex);
 	void ProcessEscapeInputEvent();
 	void ProcessRotateCameraInputEvent(AArgusCameraActor* argusCamera, const FInputActionValue& value);
+	void ProcessControlGroup(uint8 controlGroupIndex);
+	void ProcessSetControlGroup(uint8 controlGroupIndex);
 
 	void AddSelectedActorExclusive(AArgusActor* argusActor);
 	void AddSelectedActorAdditive(AArgusActor* argusActor);
