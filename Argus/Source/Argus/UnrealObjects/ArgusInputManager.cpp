@@ -521,29 +521,10 @@ void UArgusInputManager::PrepareToProcessInputEvents()
 {
 	m_selectedArgusActorsChangedThisFrame = false;
 
-	TArray<TWeakObjectPtr<AArgusActor>> deadArgusActors;
-	for (TWeakObjectPtr<AArgusActor>& selectedActor : m_selectedArgusActors)
+	if (CleanUpSelectedActors())
 	{
-		if (!selectedActor.IsValid())
-		{
-			continue;
-		}
-
-		if (selectedActor->GetEntity().IsAlive())
-		{
-			continue;
-		}
-
-		selectedActor->SetSelectionState(false);
-		deadArgusActors.Add(selectedActor);
+		OnSelectedArgusArgusActorsChanged();
 	}
-
-	for (TWeakObjectPtr<AArgusActor>& deadSelectedActor : deadArgusActors)
-	{
-		m_selectedArgusActors.Remove(deadSelectedActor);
-	}
-
-	OnSelectedArgusArgusActorsChanged();
 }
 
 void UArgusInputManager::ProcessInputEvent(AArgusCameraActor* argusCamera, const InputCache& inputType)
@@ -1195,12 +1176,28 @@ void UArgusInputManager::ProcessRotateCameraInputEvent(AArgusCameraActor* argusC
 
 void UArgusInputManager::ProcessControlGroup(uint8 controlGroupIndex)
 {
+	if (m_controlGroupActors[controlGroupIndex].IsEmpty())
+	{
+		return;
+	}
 
+	for (TWeakObjectPtr<AArgusActor>& selectedActor : m_selectedArgusActors)
+	{
+		if (!selectedActor.IsValid())
+		{
+			continue;
+		}
+
+		selectedActor->SetSelectionState(false);
+	}
+	m_selectedArgusActors = m_controlGroupActors[controlGroupIndex];
+	CleanUpSelectedActors();
+	OnSelectedArgusArgusActorsChanged();
 }
 
 void UArgusInputManager::ProcessSetControlGroup(uint8 controlGroupIndex)
 {
-
+	m_controlGroupActors[controlGroupIndex] = m_selectedArgusActors;
 }
 
 #pragma endregion
@@ -1294,6 +1291,37 @@ void UArgusInputManager::AddMarqueeSelectedActorsAdditive(const TArray<AArgusAct
 	}
 
 	OnSelectedArgusArgusActorsChanged();
+}
+
+bool UArgusInputManager::CleanUpSelectedActors()
+{
+	bool removedActors = false;
+
+	TArray<TWeakObjectPtr<AArgusActor>> deadArgusActors;
+	for (TWeakObjectPtr<AArgusActor>& selectedActor : m_selectedArgusActors)
+	{
+		if (!selectedActor.IsValid())
+		{
+			continue;
+		}
+
+		if (selectedActor->GetEntity().IsAlive())
+		{
+			selectedActor->SetSelectionState(true);
+			continue;
+		}
+
+		selectedActor->SetSelectionState(false);
+		deadArgusActors.Add(selectedActor);
+	}
+
+	for (TWeakObjectPtr<AArgusActor>& deadSelectedActor : deadArgusActors)
+	{
+		removedActors = true;
+		m_selectedArgusActors.Remove(deadSelectedActor);
+	}
+
+	return removedActors;
 }
 
 void UArgusInputManager::OnSelectedArgusArgusActorsChanged()

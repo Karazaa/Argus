@@ -104,6 +104,7 @@ private:
 
 	TWeakObjectPtr<AArgusPlayerController> m_owningPlayerController = nullptr;
 	TSet<TWeakObjectPtr<AArgusActor>> m_selectedArgusActors;
+	TSet<TWeakObjectPtr<AArgusActor>> m_controlGroupActors[6];
 	TSet<TWeakObjectPtr<AArgusActor>> m_activeAbilityGroupArgusActors;
 	TArray<InputCache> m_inputEventsThisFrame;
 
@@ -130,6 +131,7 @@ private:
 	void AddSelectedActorAdditive(AArgusActor* argusActor);
 	void AddMarqueeSelectedActorsExclusive(const TArray<AArgusActor*>& marqueeSelectedActors);
 	void AddMarqueeSelectedActorsAdditive(const TArray<AArgusActor*>& marqueeSelectedActors);
+	bool CleanUpSelectedActors();
 	void OnSelectedArgusArgusActorsChanged();
 
 	void InterruptReticleFromInputEvent();
