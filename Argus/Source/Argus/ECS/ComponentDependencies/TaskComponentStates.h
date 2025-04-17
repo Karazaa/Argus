@@ -61,3 +61,10 @@ enum class ECombatState : uint8
 	ShouldAttack,
 	Attacking
 };
+
+UENUM()
+enum class EResourceExtractionState : uint8
+{
+	None,
+	Extracting
+};

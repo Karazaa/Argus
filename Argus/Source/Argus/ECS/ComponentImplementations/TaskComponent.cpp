@@ -60,6 +60,11 @@ void TaskComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		const char* valueName_m_combatState = ARGUS_FSTRING_TO_CHAR(StaticEnum<ECombatState>()->GetNameStringByValue(static_cast<uint8>(m_combatState)))
 		ImGui::Text(valueName_m_combatState);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_resourceExtractionState");
+		ImGui::TableNextColumn();
+		const char* valueName_m_resourceExtractionState = ARGUS_FSTRING_TO_CHAR(StaticEnum<EResourceExtractionState>()->GetNameStringByValue(static_cast<uint8>(m_resourceExtractionState)))
+		ImGui::Text(valueName_m_resourceExtractionState);
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

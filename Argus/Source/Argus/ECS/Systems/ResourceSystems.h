@@ -3,7 +3,7 @@
 #pragma once
 
 #include "ComponentDependencies/ResourceSet.h"
-#include "DynamicAllocComponentDefinitions/ResourceComponent.h"
+#include "ComponentDefinitions/ResourceComponent.h"
 
 class ArgusEntity;
 

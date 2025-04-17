@@ -31,6 +31,9 @@ struct TaskComponent
 	ARGUS_IGNORE()
 	ECombatState m_combatState = ECombatState::None;
 
+	ARGUS_IGNORE()
+	EResourceExtractionState m_resourceExtractionState = EResourceExtractionState::None;
+
 	bool IsExecutingMoveTask() const
 	{
 		return m_movementState == EMovementState::MoveToLocation || m_movementState == EMovementState::MoveToEntity;
@@ -44,5 +47,6 @@ struct TaskComponent
 		m_abilityState = EAbilityState::None;
 		m_constructionState = EConstructionState::None;
 		m_combatState = ECombatState::None;
+		m_resourceExtractionState = EResourceExtractionState::None;
 	}
 };

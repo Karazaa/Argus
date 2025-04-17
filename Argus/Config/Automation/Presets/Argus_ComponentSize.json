@@ -1,0 +1,7 @@
+{
+	"id": "Argus_ComponentSize",
+	"name": "Argus_ComponentSize",
+	"enabledTests": [
+		"Argus.ECS.Component.ComponentSize"
+	]
+}

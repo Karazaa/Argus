@@ -19,6 +19,7 @@ public:
 	EAbilityState m_abilityState = EAbilityState::None;
 	EConstructionState m_constructionState = EConstructionState::None;
 	ECombatState m_combatState = ECombatState::None;
+	EResourceExtractionState m_resourceExtractionState = EResourceExtractionState::None;
 
 	void InstantiateComponentForEntity(ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;

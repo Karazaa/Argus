@@ -17,6 +17,8 @@
 #include "ComponentDefinitions\IdentityComponent.h"
 #include "ComponentDefinitions\NavigationComponent.h"
 #include "ComponentDefinitions\ObserversComponent.h"
+#include "ComponentDefinitions\ResourceComponent.h"
+#include "ComponentDefinitions\ResourceExtractionComponent.h"
 #include "ComponentDefinitions\SpawningComponent.h"
 #include "ComponentDefinitions\TargetingComponent.h"
 #include "ComponentDefinitions\TaskComponent.h"
@@ -25,7 +27,6 @@
 
 // Begin dynamically allocated component specific includes.
 #include "DynamicAllocComponentDefinitions\InputInterfaceComponent.h"
-#include "DynamicAllocComponentDefinitions\ResourceComponent.h"
 #include "DynamicAllocComponentDefinitions\ReticleComponent.h"
 #include "DynamicAllocComponentDefinitions\SpatialPartitioningComponent.h"
 
@@ -58,7 +59,7 @@ public:
 	static void DrawComponentsDebug(uint16 entityId);
 #endif //!UE_BUILD_SHIPPING
 
-	static constexpr uint32 k_numComponentTypes = 17;
+	static constexpr uint32 k_numComponentTypes = 18;
 
 	// Begin component specific template specifiers.
 	
@@ -582,6 +583,136 @@ public:
 
 	friend struct ObserversComponent;
 #pragma endregion
+#pragma region ResourceComponent
+private:
+	static ResourceComponent s_ResourceComponents[ArgusECSConstants::k_maxEntities];
+	static std::bitset<ArgusECSConstants::k_maxEntities> s_isResourceComponentActive;
+public:
+	template<>
+	inline ResourceComponent* GetComponent<ResourceComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(ResourceComponent));
+			return nullptr;
+		}
+
+		if (!s_isResourceComponentActive[entityId])
+		{
+			return nullptr;
+		}
+
+		return &s_ResourceComponents[entityId];
+	}
+
+	template<>
+	inline ResourceComponent* AddComponent<ResourceComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(ResourceComponent));
+			return nullptr;
+		}
+
+		if (s_isResourceComponentActive[entityId])
+		{
+			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ResourceComponent), entityId);
+			return &s_ResourceComponents[entityId];
+		}
+
+		s_ResourceComponents[entityId] = ResourceComponent();
+		s_isResourceComponentActive.set(entityId);
+		return &s_ResourceComponents[entityId];
+	}
+
+	template<>
+	inline ResourceComponent* GetOrAddComponent<ResourceComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(ResourceComponent));
+			return nullptr;
+		}
+
+		if (s_isResourceComponentActive[entityId])
+		{
+			return &s_ResourceComponents[entityId];
+		}
+		else
+		{
+			s_ResourceComponents[entityId] = ResourceComponent();
+			s_isResourceComponentActive.set(entityId);
+			return &s_ResourceComponents[entityId];
+		}
+	}
+
+	friend struct ResourceComponent;
+#pragma endregion
+#pragma region ResourceExtractionComponent
+private:
+	static ResourceExtractionComponent s_ResourceExtractionComponents[ArgusECSConstants::k_maxEntities];
+	static std::bitset<ArgusECSConstants::k_maxEntities> s_isResourceExtractionComponentActive;
+public:
+	template<>
+	inline ResourceExtractionComponent* GetComponent<ResourceExtractionComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(ResourceExtractionComponent));
+			return nullptr;
+		}
+
+		if (!s_isResourceExtractionComponentActive[entityId])
+		{
+			return nullptr;
+		}
+
+		return &s_ResourceExtractionComponents[entityId];
+	}
+
+	template<>
+	inline ResourceExtractionComponent* AddComponent<ResourceExtractionComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(ResourceExtractionComponent));
+			return nullptr;
+		}
+
+		if (s_isResourceExtractionComponentActive[entityId])
+		{
+			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ResourceExtractionComponent), entityId);
+			return &s_ResourceExtractionComponents[entityId];
+		}
+
+		s_ResourceExtractionComponents[entityId] = ResourceExtractionComponent();
+		s_isResourceExtractionComponentActive.set(entityId);
+		return &s_ResourceExtractionComponents[entityId];
+	}
+
+	template<>
+	inline ResourceExtractionComponent* GetOrAddComponent<ResourceExtractionComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(ResourceExtractionComponent));
+			return nullptr;
+		}
+
+		if (s_isResourceExtractionComponentActive[entityId])
+		{
+			return &s_ResourceExtractionComponents[entityId];
+		}
+		else
+		{
+			s_ResourceExtractionComponents[entityId] = ResourceExtractionComponent();
+			s_isResourceExtractionComponentActive.set(entityId);
+			return &s_ResourceExtractionComponents[entityId];
+		}
+	}
+
+	friend struct ResourceExtractionComponent;
+#pragma endregion
 #pragma region SpawningComponent
 private:
 	static SpawningComponent s_SpawningComponents[ArgusECSConstants::k_maxEntities];
@@ -964,62 +1095,6 @@ public:
 			s_InputInterfaceComponents[entityId] = InputInterfaceComponent();
 		}
 		return &s_InputInterfaceComponents[entityId];
-	}
-#pragma endregion
-#pragma region ResourceComponent
-private:
-	static std::unordered_map<uint16, ResourceComponent> s_ResourceComponents;
-public:
-	template<>
-	inline ResourceComponent* GetComponent<ResourceComponent>(uint16 entityId)
-	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
-		{
-			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(ResourceComponent));
-			return nullptr;
-		}
-
-		if (!s_ResourceComponents.contains(entityId))
-		{
-			return nullptr;
-		}
-
-		return &s_ResourceComponents[entityId];
-	}
-
-	template<>
-	inline ResourceComponent* AddComponent<ResourceComponent>(uint16 entityId)
-	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
-		{
-			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(ResourceComponent));
-			return nullptr;
-		}
-
-		if (s_ResourceComponents.contains(entityId))
-		{
-			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ResourceComponent), entityId);
-			return &s_ResourceComponents[entityId];
-		}
-
-		s_ResourceComponents[entityId] = ResourceComponent();
-		return &s_ResourceComponents[entityId];
-	}
-
-	template<>
-	inline ResourceComponent* GetOrAddComponent<ResourceComponent>(uint16 entityId)
-	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
-		{
-			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(ResourceComponent));
-			return nullptr;
-		}
-
-		if (!s_ResourceComponents.contains(entityId))
-		{
-			s_ResourceComponents[entityId] = ResourceComponent();
-		}
-		return &s_ResourceComponents[entityId];
 	}
 #pragma endregion
 #pragma region ReticleComponent
