@@ -1,6 +1,7 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusCameraActor.h"
+#include "ArgusEntity.h"
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
 #include "ArgusMath.h"
@@ -38,13 +39,37 @@ AArgusCameraActor::AArgusCameraActor()
 	m_zeroToOne = TRange<float>(0.0f, 1.0f);
 }
 
-void AArgusCameraActor::ForceSetCameraLocationWithoutZoom(const FVector& location)
+void AArgusCameraActor::ForceSetCameraLocationWithoutZoom(const FVector& location, bool resetZoomSmoothing)
 {
 	m_cameraLocationWithoutZoom = location;
 	m_currentVerticalVelocity.ResetZero();
 	m_currentHorizontalVelocity.ResetZero();
-	m_currentZoomTranslationAmount.ResetZero();
+	if (resetZoomSmoothing)
+	{
+		m_currentZoomTranslationAmount.ResetZero();
+	}
+	
 	SetActorLocation(location);
+}
+
+void AArgusCameraActor::FocusOnArgusEntity(const ArgusEntity& entity)
+{
+	if (!entity)
+	{
+		return;
+	}
+
+	const TransformComponent* transformComponent = entity.GetComponent<TransformComponent>();
+	if (!transformComponent)
+	{
+		return;
+	}
+
+	FVector locationToJumpTo = transformComponent->m_location;
+	locationToJumpTo.Z = m_cameraLocationWithoutZoom.Z;
+	locationToJumpTo -= s_moveUpDir * m_currentOffsetRadius;
+
+	ForceSetCameraLocationWithoutZoom(locationToJumpTo, false);
 }
 
 void AArgusCameraActor::UpdateCamera(const UpdateCameraPanningParameters& cameraParameters, const float deltaTime)
@@ -121,7 +146,7 @@ void AArgusCameraActor::UpdateCameraOrbitInternal(const TOptional<FHitResult>& h
 
 	// Set camera location without zoom
 	const FVector2D hitResultLocation = FVector2D(hitResult.GetValue().Location);
-	const float radius = FVector2D::Distance(hitResultLocation, FVector2D(m_cameraLocationWithoutZoom));
+	m_currentOffsetRadius = FVector2D::Distance(hitResultLocation, FVector2D(m_cameraLocationWithoutZoom));
 	float thetaChangeThisFrame = m_orbitInputThisFrame * m_desiredOrbitVelocity * deltaTime;
 	if (m_shouldInvertOrbitDirection)
 	{
@@ -138,7 +163,7 @@ void AArgusCameraActor::UpdateCameraOrbitInternal(const TOptional<FHitResult>& h
 
 	s_moveUpDir = FVector(-updatedLocation, 0.0f);
 
-	updatedLocation *= radius;
+	updatedLocation *= m_currentOffsetRadius;
 	m_cameraLocationWithoutZoom.X = hitResultLocation.X + updatedLocation.X;
 	m_cameraLocationWithoutZoom.Y = hitResultLocation.Y + updatedLocation.Y;
 

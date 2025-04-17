@@ -7,6 +7,8 @@
 #include "GameFramework/Actor.h"
 #include "ArgusCameraActor.generated.h"
 
+class ArgusEntity;
+
 UCLASS()
 class AArgusCameraActor : public AActor
 {
@@ -27,7 +29,8 @@ public:
 		TOptional<FVector2D> m_screenSpaceXYBounds;
 	};
 
-	void ForceSetCameraLocationWithoutZoom(const FVector& location);
+	void ForceSetCameraLocationWithoutZoom(const FVector& location, bool resetZoomSmoothing = true);
+	void FocusOnArgusEntity(const ArgusEntity& entity);
 	void UpdateCamera(const UpdateCameraPanningParameters& cameraParameters, const float deltaTime);
 	void UpdateCameraOrbit(const float inputOrbitValue);
 	void UpdateCameraZoom(const float inputZoomValue);
@@ -109,7 +112,7 @@ private:
 
 	float m_orbitInputThisFrame = 0.0f;
 	float m_targetOrbitTheta = 0.0f;
-
+	float m_currentOffsetRadius = 0.0f;
 	float m_zoomInputThisFrame = 0.0f;
 	float m_zoomLevelInterpolant = 0.5f;
 	float m_targetZoomTranslationAmount = 0.0f;

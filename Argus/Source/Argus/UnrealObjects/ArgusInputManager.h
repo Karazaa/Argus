@@ -124,7 +124,7 @@ private:
 	void ProcessAbilityInputEventPerSelectedActor(AArgusActor* argusActor, uint8 abilityIndex);
 	void ProcessEscapeInputEvent();
 	void ProcessRotateCameraInputEvent(AArgusCameraActor* argusCamera, const FInputActionValue& value);
-	void ProcessControlGroup(uint8 controlGroupIndex);
+	void ProcessControlGroup(uint8 controlGroupIndex, AArgusCameraActor* argusCamera);
 	void ProcessSetControlGroup(uint8 controlGroupIndex);
 
 	void AddSelectedActorExclusive(AArgusActor* argusActor);

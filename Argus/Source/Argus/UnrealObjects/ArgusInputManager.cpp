@@ -589,22 +589,22 @@ void UArgusInputManager::ProcessInputEvent(AArgusCameraActor* argusCamera, const
 			}
 			break;
 		case InputType::ControlGroup0:
-			ProcessControlGroup(0u);
+			ProcessControlGroup(0u, argusCamera);
 			break;
 		case InputType::ControlGroup1:
-			ProcessControlGroup(1u);
+			ProcessControlGroup(1u, argusCamera);
 			break;
 		case InputType::ControlGroup2:
-			ProcessControlGroup(2u);
+			ProcessControlGroup(2u, argusCamera);
 			break;
 		case InputType::ControlGroup3:
-			ProcessControlGroup(3u);
+			ProcessControlGroup(3u, argusCamera);
 			break;
 		case InputType::ControlGroup4:
-			ProcessControlGroup(4u);
+			ProcessControlGroup(4u, argusCamera);
 			break;
 		case InputType::ControlGroup5:
-			ProcessControlGroup(5u);
+			ProcessControlGroup(5u, argusCamera);
 			break;
 		case InputType::SetControlGroup0:
 			ProcessSetControlGroup(0u);
@@ -1174,7 +1174,7 @@ void UArgusInputManager::ProcessRotateCameraInputEvent(AArgusCameraActor* argusC
 	argusCamera->UpdateCameraOrbit(rotationValue);
 }
 
-void UArgusInputManager::ProcessControlGroup(uint8 controlGroupIndex)
+void UArgusInputManager::ProcessControlGroup(uint8 controlGroupIndex, AArgusCameraActor* argusCamera)
 {
 	if (m_controlGroupActors[controlGroupIndex].IsEmpty())
 	{
@@ -1193,6 +1193,12 @@ void UArgusInputManager::ProcessControlGroup(uint8 controlGroupIndex)
 	m_selectedArgusActors = m_controlGroupActors[controlGroupIndex];
 	CleanUpSelectedActors();
 	OnSelectedArgusArgusActorsChanged();
+
+	if (AArgusActor* templateSelectedActor = (*m_activeAbilityGroupArgusActors.begin()).Get())
+	{
+		const ArgusEntity entityToFocusOn = templateSelectedActor->GetEntity();
+		argusCamera->FocusOnArgusEntity(entityToFocusOn);
+	}
 }
 
 void UArgusInputManager::ProcessSetControlGroup(uint8 controlGroupIndex)
