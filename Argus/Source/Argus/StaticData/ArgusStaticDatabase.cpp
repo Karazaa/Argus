@@ -340,6 +340,89 @@ void UArgusStaticDatabase::LazyLoadUPlacedArgusActorTeamInfoRecordDatabase()
 	}
 }
 #pragma endregion
+#pragma region UResourceSetRecord
+const UResourceSetRecord* UArgusStaticDatabase::GetUResourceSetRecord(uint32 id)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUResourceSetRecordDatabase();
+
+	if (!m_UResourceSetRecordDatabasePersistent)
+	{
+		return nullptr;
+	}
+
+	return m_UResourceSetRecordDatabasePersistent->GetRecord(id);
+}
+
+#if WITH_EDITOR
+uint32 UArgusStaticDatabase::AddUResourceSetRecordToDatabase(UResourceSetRecord* record)
+{
+	LazyLoadUResourceSetRecordDatabase();
+
+	if (!m_UResourceSetRecordDatabasePersistent)
+	{
+		return 0u;
+	}
+
+	m_UResourceSetRecordDatabasePersistent->AddUResourceSetRecordToDatabase(record);
+	
+	return record->m_id;
+}
+
+void UArgusStaticDatabase::RegisterNewUResourceSetRecordDatabase(UResourceSetRecordDatabase* database)
+{
+	if (!database)
+	{
+		return;
+	}
+
+	if (!m_UResourceSetRecordDatabase.IsNull())
+	{
+		ARGUS_LOG
+		(
+			ArgusStaticDataLog,
+			Error,
+			TEXT("[%s] Trying to assign to %s. Potential duplicate databases."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(m_UResourceSetRecordDatabase)
+		);
+		return;
+	}
+
+	m_UResourceSetRecordDatabase = database;
+	SaveDatabase();
+}
+#endif //WITH_EDITOR
+
+void UArgusStaticDatabase::LazyLoadUResourceSetRecordDatabase()
+{
+	if (!m_UResourceSetRecordDatabasePersistent)
+	{
+		m_UResourceSetRecordDatabasePersistent = m_UResourceSetRecordDatabase.LoadSynchronous();
+		if (!m_UResourceSetRecordDatabasePersistent)
+		{
+			ARGUS_LOG(ArgusStaticDataLog, Error, TEXT("[%s] Could not find %s reference. Need to set reference in %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(m_UResourceSetRecordDatabase), ARGUS_NAMEOF(UArgusStaticDatabase));
+			return;
+		}
+
+		m_UResourceSetRecordDatabasePersistent->ResizePersistentObjectPointerArray();
+	}
+
+	if (!m_UResourceSetRecordDatabasePersistent)
+	{
+		ARGUS_LOG
+		(
+			ArgusStaticDataLog, Error,
+			TEXT("[%s] Could not retrieve %s. %s might not be properly assigned."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(m_UResourceSetRecordDatabasePersistent),
+			ARGUS_NAMEOF(m_UResourceSetRecordDatabase)
+		);
+		return;
+	}
+}
+#pragma endregion
 #pragma region UTeamColorRecord
 const UTeamColorRecord* UArgusStaticDatabase::GetUTeamColorRecord(uint32 id)
 {

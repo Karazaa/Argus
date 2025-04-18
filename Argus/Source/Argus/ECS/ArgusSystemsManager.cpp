@@ -117,7 +117,7 @@ void ArgusSystemsManager::PopulateTeamComponents(const FResourceSet& initialTeam
 			continue;
 		}
 
-		teamResourceComponent->m_resourceSet.ApplyResourceChange(initialTeamResourceSet);
+		teamResourceComponent->m_currentResources.ApplyResourceChange(initialTeamResourceSet);
 	}
 }
 

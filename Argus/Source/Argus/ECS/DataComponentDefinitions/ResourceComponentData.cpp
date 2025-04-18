@@ -7,7 +7,7 @@
 void UResourceComponentData::InstantiateComponentForEntity(ArgusEntity& entity) const
 {
 	ResourceComponent* ResourceComponentRef = entity.AddComponent<ResourceComponent>();
-	ResourceComponentRef->m_resourceSet = m_resourceSet;
+	ResourceComponentRef->m_currentResources = m_currentResources;
 }
 
 bool UResourceComponentData::MatchesType(UComponentData* other) const

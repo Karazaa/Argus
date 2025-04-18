@@ -27,7 +27,7 @@ void ResourceComponent::DrawComponentDebug() const
 	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings))
 	{
 		ImGui::TableNextColumn();
-		ImGui::Text("m_resourceSet");
+		ImGui::Text("m_currentResources");
 		ImGui::TableNextColumn();
 		ImGui::EndTable();
 	}

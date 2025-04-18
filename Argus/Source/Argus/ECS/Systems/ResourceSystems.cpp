@@ -13,7 +13,7 @@ bool ResourceSystems::CanEntityAffordResourceChange(const ArgusEntity& entity, c
 		return false;
 	}
 
-	return teamResourceComponent->m_resourceSet.CanAffordResourceChange(resourceChange);
+	return teamResourceComponent->m_currentResources.CanAffordResourceChange(resourceChange);
 }
 
 bool ResourceSystems::ApplyResourceChangeIfAffordable(const ArgusEntity& entity, const FResourceSet& resourceChange)
@@ -24,12 +24,12 @@ bool ResourceSystems::ApplyResourceChangeIfAffordable(const ArgusEntity& entity,
 		return false;
 	}
 
-	if (!teamResourceComponent->m_resourceSet.CanAffordResourceChange(resourceChange))
+	if (!teamResourceComponent->m_currentResources.CanAffordResourceChange(resourceChange))
 	{
 		return false;
 	}
 
-	teamResourceComponent->m_resourceSet.ApplyResourceChange(resourceChange);
+	teamResourceComponent->m_currentResources.ApplyResourceChange(resourceChange);
 	return true;
 }
 

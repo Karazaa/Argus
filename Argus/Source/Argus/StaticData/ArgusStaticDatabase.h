@@ -9,6 +9,7 @@
 #include "RecordDatabases/ArgusActorRecordDatabase.h"
 #include "RecordDatabases/FactionRecordDatabase.h"
 #include "RecordDatabases/PlacedArgusActorTeamInfoRecordDatabase.h"
+#include "RecordDatabases/ResourceSetRecordDatabase.h"
 #include "RecordDatabases/TeamColorRecordDatabase.h"
 #include "ArgusStaticDatabase.generated.h"
 
@@ -80,6 +81,22 @@ protected:
 	TObjectPtr<UPlacedArgusActorTeamInfoRecordDatabase> m_UPlacedArgusActorTeamInfoRecordDatabasePersistent;
 
 	void LazyLoadUPlacedArgusActorTeamInfoRecordDatabase();
+#pragma endregion
+#pragma region UResourceSetRecord
+public:
+	const UResourceSetRecord* GetUResourceSetRecord(uint32 id);
+#if WITH_EDITOR
+	uint32 AddUResourceSetRecordToDatabase(UResourceSetRecord* record);
+	void RegisterNewUResourceSetRecordDatabase(UResourceSetRecordDatabase* database);
+#endif //WITH_EDITOR
+
+protected:
+	UPROPERTY(EditAnywhere)
+	TSoftObjectPtr<UResourceSetRecordDatabase> m_UResourceSetRecordDatabase;
+	UPROPERTY(Transient)
+	TObjectPtr<UResourceSetRecordDatabase> m_UResourceSetRecordDatabasePersistent;
+
+	void LazyLoadUResourceSetRecordDatabase();
 #pragma endregion
 #pragma region UTeamColorRecord
 public:

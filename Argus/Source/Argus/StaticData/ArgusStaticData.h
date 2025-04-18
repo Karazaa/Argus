@@ -52,6 +52,10 @@ public:
 		{
 			return staticDatabase->AddUPlacedArgusActorTeamInfoRecordToDatabase(UPlacedArgusActorTeamInfoRecordInstance);
 		}
+		if (UResourceSetRecord* UResourceSetRecordInstance = dynamic_cast<UResourceSetRecord*>(record))
+		{
+			return staticDatabase->AddUResourceSetRecordToDatabase(UResourceSetRecordInstance);
+		}
 		if (UTeamColorRecord* UTeamColorRecordInstance = dynamic_cast<UTeamColorRecord*>(record))
 		{
 			return staticDatabase->AddUTeamColorRecordToDatabase(UTeamColorRecordInstance);
@@ -170,6 +174,34 @@ public:
 		}
 
 		staticDatabase->RegisterNewUPlacedArgusActorTeamInfoRecordDatabase(database);
+	}
+#endif //WITH_EDITOR
+#pragma endregion
+#pragma region UResourceSetRecord
+	template<>
+	inline const UResourceSetRecord* GetRecord(uint32 id)
+	{
+		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
+
+		if (!staticDatabase)
+		{
+			return nullptr;
+		}
+
+		return staticDatabase->GetUResourceSetRecord(id);
+	}
+
+#if WITH_EDITOR
+	static void RegisterNewUResourceSetRecordDatabase(UResourceSetRecordDatabase* database)
+	{
+		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
+
+		if (!staticDatabase)
+		{
+			return;
+		}
+
+		staticDatabase->RegisterNewUResourceSetRecordDatabase(database);
 	}
 #endif //WITH_EDITOR
 #pragma endregion

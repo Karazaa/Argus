@@ -13,7 +13,7 @@ class ARGUS_API UResourceComponentData : public UComponentData
 
 public:
 	UPROPERTY(EditAnywhere)
-	FResourceSet m_resourceSet;
+	FResourceSet m_currentResources;
 
 	void InstantiateComponentForEntity(ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;

@@ -10,5 +10,5 @@ struct ResourceComponent
 {
 	ARGUS_COMPONENT_SHARED
 
-	FResourceSet m_resourceSet;
+	FResourceSet m_currentResources;
 };

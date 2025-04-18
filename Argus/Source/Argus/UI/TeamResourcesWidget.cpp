@@ -62,6 +62,6 @@ void UTeamResourcesWidget::UpdateDisplay(const UpdateDisplayParameters& updateDi
 			ARGUS_LOG(ArgusUILog, Error, TEXT("[%s] Did not successfully initialize %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(UResourceWidget));
 			break;
 		}
-		m_resourceWidgetInstances[i]->UpdateDisplay(static_cast<EResourceType>(i), teamResourceComponent->m_resourceSet.m_resourceQuantities[i]);
+		m_resourceWidgetInstances[i]->UpdateDisplay(static_cast<EResourceType>(i), teamResourceComponent->m_currentResources.m_resourceQuantities[i]);
 	}
 }
