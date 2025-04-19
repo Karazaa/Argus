@@ -14,6 +14,10 @@ class ARGUS_API UResourceComponentData : public UComponentData
 public:
 	UPROPERTY(EditAnywhere)
 	FResourceSet m_currentResources;
+	UPROPERTY(EditAnywhere)
+	TSoftObjectPtr<UResourceSetRecord> m_resourceCapacityRecordId;
+	UPROPERTY(EditAnywhere)
+	bool m_isExtractionSource = false;
 
 	void InstantiateComponentForEntity(ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;

@@ -29,6 +29,24 @@ void ResourceComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_currentResources");
 		ImGui::TableNextColumn();
+		ImGui::TableNextColumn();
+		ImGui::Text("m_resourceCapacityRecordId");
+		ImGui::TableNextColumn();
+		if (m_resourceCapacityRecordId != 0u)
+		{
+			if (const UResourceSetRecord* record_m_resourceCapacityRecordId = ArgusStaticData::GetRecord<UResourceSetRecord>(m_resourceCapacityRecordId))
+			{
+				const char* name_m_resourceCapacityRecordId = ARGUS_FSTRING_TO_CHAR(record_m_resourceCapacityRecordId->GetName());
+				ImGui::Text("%s", name_m_resourceCapacityRecordId);
+			}
+		}
+		else
+		{
+			ImGui::Text("None", m_resourceCapacityRecordId);
+		}
+		ImGui::TableNextColumn();
+		ImGui::Text("m_isExtractionSource");
+		ImGui::TableNextColumn();
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING
