@@ -1,9 +1,52 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ResourceSystems.h"
-#include "ArgusEntity.h"
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
+
+void ResourceSystems::RunSystems(float deltaTime)
+{
+	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
+	{
+		ResourceComponents components;
+		components.m_entity = ArgusEntity::RetrieveEntity(i);
+		if (!components.m_entity)
+		{
+			continue;
+		}
+
+		components.m_taskComponent = components.m_entity.GetComponent<TaskComponent>();
+		components.m_resourceComponent = components.m_entity.GetComponent<ResourceComponent>();
+		components.m_resourceExtractionComponent = components.m_entity.GetComponent<ResourceExtractionComponent>();
+		components.m_targetingComponent = components.m_entity.GetComponent<TargetingComponent>();
+		if (!components.m_taskComponent || !components.m_resourceComponent ||
+			!components.m_resourceExtractionComponent || !components.m_targetingComponent)
+		{
+			continue;
+		}
+
+		ProcessResourceExtraction(components);
+	}
+};
+
+bool ResourceSystems::ResourceComponents::AreComponentsValidCheck(const WIDECHAR* functionName) const
+{
+	if (!m_entity || !m_taskComponent || !m_resourceComponent || !m_resourceExtractionComponent || !m_targetingComponent)
+	{
+		ArgusLogging::LogInvalidComponentReferences(functionName, ARGUS_NAMEOF(ResourceComponents));
+		return false;
+	}
+
+	return true;
+}
+
+void ResourceSystems::ProcessResourceExtraction(const ResourceComponents& components)
+{
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+}
 
 bool ResourceSystems::CanEntityAffordResourceChange(const ArgusEntity& entity, const FResourceSet& resourceChange)
 {

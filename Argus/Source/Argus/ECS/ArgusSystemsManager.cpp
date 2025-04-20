@@ -9,6 +9,7 @@
 #include "Systems/CombatSystems.h"
 #include "Systems/ConstructionSystems.h"
 #include "Systems/NavigationSystems.h"
+#include "Systems/ResourceSystems.h"
 #include "Systems/SpatialPartitioningSystems.h"
 #include "Systems/SpawningSystems.h"
 #include "Systems/TargetingSystems.h"
@@ -47,6 +48,7 @@ void ArgusSystemsManager::RunSystems(UWorld* worldPointer, float deltaTime)
 	TargetingSystems::RunSystems(deltaTime);
 	AbilitySystems::RunSystems(deltaTime);
 	CombatSystems::RunSystems(deltaTime);
+	ResourceSystems::RunSystems(deltaTime);
 	ConstructionSystems::RunSystems(deltaTime);
 	NavigationSystems::RunSystems(worldPointer);
 	AvoidanceSystems::RunSystems(worldPointer, deltaTime);

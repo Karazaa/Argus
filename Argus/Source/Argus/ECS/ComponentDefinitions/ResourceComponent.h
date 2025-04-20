@@ -8,6 +8,15 @@
 
 class UResourceSetRecord;
 
+UENUM()
+enum class EResourceComponentOwnerType
+{
+	TeamPool,
+	Carrier,
+	Source,
+	Sink
+};
+
 struct ResourceComponent
 {
 	ARGUS_COMPONENT_SHARED
@@ -17,5 +26,5 @@ struct ResourceComponent
 	ARGUS_STATIC_DATA(UResourceSetRecord)
 	uint32 m_resourceCapacityRecordId = 0u;
 
-	bool m_isExtractionSource = false;
+	EResourceComponentOwnerType m_rsourceComponentOwnerType = EResourceComponentOwnerType::TeamPool;
 };

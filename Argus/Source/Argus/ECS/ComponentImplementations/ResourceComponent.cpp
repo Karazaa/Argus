@@ -45,8 +45,10 @@ void ResourceComponent::DrawComponentDebug() const
 			ImGui::Text("None", m_resourceCapacityRecordId);
 		}
 		ImGui::TableNextColumn();
-		ImGui::Text("m_isExtractionSource");
+		ImGui::Text("m_rsourceComponentOwnerType");
 		ImGui::TableNextColumn();
+		const char* valueName_m_rsourceComponentOwnerType = ARGUS_FSTRING_TO_CHAR(StaticEnum<EResourceComponentOwnerType>()->GetNameStringByValue(static_cast<uint8>(m_rsourceComponentOwnerType)))
+		ImGui::Text(valueName_m_rsourceComponentOwnerType);
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

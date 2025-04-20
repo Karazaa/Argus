@@ -9,7 +9,7 @@ void UResourceComponentData::InstantiateComponentForEntity(ArgusEntity& entity) 
 	ResourceComponent* ResourceComponentRef = entity.AddComponent<ResourceComponent>();
 	ResourceComponentRef->m_currentResources = m_currentResources;
 	ResourceComponentRef->m_resourceCapacityRecordId = m_resourceCapacityRecordId.LoadSynchronous() ? m_resourceCapacityRecordId.LoadSynchronous()->m_id : 0u;
-	ResourceComponentRef->m_isExtractionSource = m_isExtractionSource;
+	ResourceComponentRef->m_rsourceComponentOwnerType = m_rsourceComponentOwnerType;
 }
 
 bool UResourceComponentData::MatchesType(UComponentData* other) const
