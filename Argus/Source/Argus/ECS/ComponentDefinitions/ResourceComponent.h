@@ -26,5 +26,5 @@ struct ResourceComponent
 	ARGUS_STATIC_DATA(UResourceSetRecord)
 	uint32 m_resourceCapacityRecordId = 0u;
 
-	EResourceComponentOwnerType m_rsourceComponentOwnerType = EResourceComponentOwnerType::TeamPool;
+	EResourceComponentOwnerType m_resourceComponentOwnerType = EResourceComponentOwnerType::TeamPool;
 };

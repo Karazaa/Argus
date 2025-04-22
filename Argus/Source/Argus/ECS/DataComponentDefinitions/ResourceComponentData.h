@@ -17,7 +17,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	TSoftObjectPtr<UResourceSetRecord> m_resourceCapacityRecordId;
 	UPROPERTY(EditAnywhere)
-	EResourceComponentOwnerType m_rsourceComponentOwnerType = EResourceComponentOwnerType::TeamPool;
+	EResourceComponentOwnerType m_resourceComponentOwnerType = EResourceComponentOwnerType::TeamPool;
 
 	void InstantiateComponentForEntity(ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;
