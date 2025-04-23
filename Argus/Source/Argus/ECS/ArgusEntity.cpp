@@ -284,9 +284,11 @@ bool ArgusEntity::IsIdle() const
 	}
 
 	return	taskComponent->m_movementState == EMovementState::None &&
+			taskComponent->m_abilityState == EAbilityState::None &&
 			taskComponent->m_combatState == ECombatState::None &&
 			taskComponent->m_constructionState == EConstructionState::None &&
-			taskComponent->m_spawningState == ESpawningState::None;
+			taskComponent->m_spawningState == ESpawningState::None &&
+			taskComponent->m_resourceExtractionState == EResourceExtractionState::None;
 }
 
 #if !UE_BUILD_SHIPPING

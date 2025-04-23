@@ -28,5 +28,5 @@ private:
 	static void ProcessNavigationTaskCommands(UWorld* worldPointer, const NavigationSystemsComponentArgs& components);
 	static void RecalculateMoveToEntityPaths(UWorld* worldPointer, const NavigationSystemsComponentArgs& components);
 	static bool IsWorldPointerValidCheck(UWorld* worldPointer, const WIDECHAR* functionName);
-	static void DecrementStoppedEntityCount(const NavigationSystemsComponentArgs& components);
+	static void ChangeTasksOnNavigatingToEntity(ArgusEntity targetEntity, const NavigationSystemsComponentArgs& components);
 };

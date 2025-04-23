@@ -9,6 +9,7 @@
 #include "Systems/AvoidanceSystems.h"
 #include "Systems/CombatSystems.h"
 #include "Systems/ConstructionSystems.h"
+#include "Systems/ResourceSystems.h"
 
 #if !UE_BUILD_SHIPPING
 #include "ArgusECSDebugger.h"
@@ -86,24 +87,7 @@ void NavigationSystems::NavigateFromEntityToEntity(UWorld* worldPointer, ArgusEn
 	}
 
 	NavigateFromEntityToLocation(worldPointer, targetEntityTransform->m_location, components);
-
-	if (CombatSystems::CanEntityAttackOtherEntity(components.m_entity, targetEntity))
-	{
-		components.m_taskComponent->m_combatState = ECombatState::ShouldAttack;
-	}
-	else
-	{
-		components.m_taskComponent->m_combatState = ECombatState::None;
-	}
-
-	if (ConstructionSystems::CanEntityConstructOtherEntity(components.m_entity, targetEntity))
-	{
-		components.m_taskComponent->m_constructionState = EConstructionState::ConstructingOther;
-	}
-	else
-	{
-		components.m_taskComponent->m_constructionState = EConstructionState::None;
-	}
+	ChangeTasksOnNavigatingToEntity(targetEntity, components);
 }
 
 void NavigationSystems::NavigateFromEntityToLocation(UWorld* worldPointer, std::optional<FVector> targetLocation, const NavigationSystemsComponentArgs& components)
@@ -251,4 +235,39 @@ bool NavigationSystems::IsWorldPointerValidCheck(UWorld* worldPointer, const WID
 	}
 
 	return true;
+}
+
+void NavigationSystems::ChangeTasksOnNavigatingToEntity(ArgusEntity targetEntity, const NavigationSystemsComponentArgs& components)
+{
+	if (!targetEntity || !components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+
+	if (CombatSystems::CanEntityAttackOtherEntity(components.m_entity, targetEntity))
+	{
+		components.m_taskComponent->m_combatState = ECombatState::ShouldAttack;
+	}
+	else
+	{
+		components.m_taskComponent->m_combatState = ECombatState::None;
+	}
+
+	if (ConstructionSystems::CanEntityConstructOtherEntity(components.m_entity, targetEntity))
+	{
+		components.m_taskComponent->m_constructionState = EConstructionState::ConstructingOther;
+	}
+	else
+	{
+		components.m_taskComponent->m_constructionState = EConstructionState::None;
+	}
+
+	if (ResourceSystems::CanEntityExtractResourcesFromOtherEntity(components.m_entity, targetEntity))
+	{
+		components.m_taskComponent->m_resourceExtractionState = EResourceExtractionState::Extracting;
+	}
+	else
+	{
+		components.m_taskComponent->m_resourceExtractionState = EResourceExtractionState::None;
+	}
 }

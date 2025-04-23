@@ -26,6 +26,7 @@ public:
 
 	static void ProcessResourceExtraction(const ResourceComponents& components);
 
+	static bool CanEntityExtractResourcesFromOtherEntity(const ArgusEntity& entity, const ArgusEntity& otherEntity);
 	static bool CanEntityAffordResourceChange(const ArgusEntity& entity, const FResourceSet& resourceChange);
 	static bool ApplyResourceChangeIfAffordable(const ArgusEntity& entity, const FResourceSet& resourceChange);
 	

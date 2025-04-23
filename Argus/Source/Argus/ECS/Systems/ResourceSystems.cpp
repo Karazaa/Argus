@@ -46,6 +46,27 @@ void ResourceSystems::ProcessResourceExtraction(const ResourceComponents& compon
 	{
 		return;
 	}
+
+	switch (components.m_taskComponent->m_resourceExtractionState)
+	{
+		case EResourceExtractionState::None:
+			break;
+		case EResourceExtractionState::Extracting:
+			if (!components.m_targetingComponent->HasEntityTarget())
+			{
+				components.m_taskComponent->m_resourceExtractionState = EResourceExtractionState::None;
+				return;
+			}
+			// TODO JAMES: Actually do resource extraction.
+			break;
+	}
+}
+
+bool ResourceSystems::CanEntityExtractResourcesFromOtherEntity(const ArgusEntity& entity, const ArgusEntity& otherEntity)
+{
+	// TODO JAMES: Populate this.
+
+	return false;
 }
 
 bool ResourceSystems::CanEntityAffordResourceChange(const ArgusEntity& entity, const FResourceSet& resourceChange)
