@@ -19,4 +19,6 @@ public:
 
 	static void TargetNearestEntityMatchingTeamMask(uint16 sourceEntityID, uint8 teamMask, const TargetingSystemsComponentArgs& components);
 	static TOptional<FVector> GetCurrentTargetLocationForEntity(const ArgusEntity& entity);
+	static bool IsInMeleeRangeOfOtherEntity(const ArgusEntity& entity, const ArgusEntity& otherEntity);
+	static bool IsInRangedRangeOfOtherEntity(const ArgusEntity& entity, const ArgusEntity& otherEntity);
 };

@@ -121,3 +121,35 @@ TOptional<FVector> TargetingSystems::GetCurrentTargetLocationForEntity(const Arg
 
 	return output;
 }
+
+bool TargetingSystems::IsInMeleeRangeOfOtherEntity(const ArgusEntity& entity, const ArgusEntity& otherEntity)
+{
+	if (!entity || !otherEntity)
+	{
+		return false;
+	}
+
+	const TargetingComponent* targetingComponent = entity.GetComponent<TargetingComponent>();
+	if (!targetingComponent)
+	{
+		return false;
+	}
+
+	return entity.IsInRangeOfOtherEntity(otherEntity, targetingComponent->m_meleeRange);
+}
+
+bool TargetingSystems::IsInRangedRangeOfOtherEntity(const ArgusEntity& entity, const ArgusEntity& otherEntity)
+{
+	if (!entity || !otherEntity)
+	{
+		return false;
+	}
+
+	const TargetingComponent* targetingComponent = entity.GetComponent<TargetingComponent>();
+	if (!targetingComponent)
+	{
+		return false;
+	}
+
+	return entity.IsInRangeOfOtherEntity(otherEntity, targetingComponent->m_meleeRange);
+}

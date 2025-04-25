@@ -66,5 +66,6 @@ UENUM()
 enum class EResourceExtractionState : uint8
 {
 	None,
-	Extracting
+	Extracting,
+	Depositing
 };

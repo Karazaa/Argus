@@ -3,6 +3,7 @@
 #include "ResourceSystems.h"
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
+#include "Systems/TargetingSystems.h"
 
 void ResourceSystems::RunSystems(float deltaTime)
 {
@@ -52,21 +53,45 @@ void ResourceSystems::ProcessResourceExtraction(const ResourceComponents& compon
 		case EResourceExtractionState::None:
 			break;
 		case EResourceExtractionState::Extracting:
+		{
 			if (!components.m_targetingComponent->HasEntityTarget())
 			{
 				components.m_taskComponent->m_resourceExtractionState = EResourceExtractionState::None;
 				return;
 			}
-			// TODO JAMES: Actually do resource extraction.
+
+			const ArgusEntity targetEntity = ArgusEntity::RetrieveEntity(components.m_targetingComponent->m_targetEntityId);
+			if (TargetingSystems::IsInMeleeRangeOfOtherEntity(components.m_entity, targetEntity) && CanEntityExtractResourcesFromOtherEntity(components.m_entity, targetEntity))
+			{
+				// TODO JAMES: Actually do resource extraction.
+			}
+			break;
+		}
+		case EResourceExtractionState::Depositing:
 			break;
 	}
 }
 
 bool ResourceSystems::CanEntityExtractResourcesFromOtherEntity(const ArgusEntity& entity, const ArgusEntity& otherEntity)
 {
-	// TODO JAMES: Populate this.
+	if (!entity || !otherEntity)
+	{
+		return false;
+	}
 
-	return false;
+	const ResourceExtractionComponent* resourceExtractionComponent = entity.GetComponent<ResourceExtractionComponent>();
+	if (!resourceExtractionComponent)
+	{
+		return false;
+	}
+
+	const ResourceComponent* otherEntityResourceComponent = otherEntity.GetComponent<ResourceComponent>();
+	if (!otherEntityResourceComponent)
+	{
+		return false;
+	}
+
+	return otherEntityResourceComponent->m_currentResources.CanAffordResourceChange(resourceExtractionComponent->m_resourcesToExtract);
 }
 
 bool ResourceSystems::CanEntityAffordResourceChange(const ArgusEntity& entity, const FResourceSet& resourceChange)

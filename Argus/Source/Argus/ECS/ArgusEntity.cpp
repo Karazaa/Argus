@@ -291,6 +291,23 @@ bool ArgusEntity::IsIdle() const
 			taskComponent->m_resourceExtractionState == EResourceExtractionState::None;
 }
 
+bool ArgusEntity::IsInRangeOfOtherEntity(const ArgusEntity& other, float range) const
+{
+	const TransformComponent* transformComponent = GetComponent<TransformComponent>();
+	if (!transformComponent)
+	{
+		return false;
+	}
+
+	const TransformComponent* otherTransformComponent = other.GetComponent<TransformComponent>();
+	if (!otherTransformComponent)
+	{
+		return false;
+	}
+
+	return FMath::Square(range) < FVector::DistSquared(transformComponent->m_location, otherTransformComponent->m_location);
+}
+
 #if !UE_BUILD_SHIPPING
 const FString ArgusEntity::GetDebugString() const
 {

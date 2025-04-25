@@ -43,6 +43,7 @@ public:
 	bool			IsMoveable() const;
 	bool			IsSelected() const;
 	bool			IsIdle() const;
+	bool			IsInRangeOfOtherEntity(const ArgusEntity& other, float range) const;
 
 #if !UE_BUILD_SHIPPING
 	const FString	GetDebugString() const;
