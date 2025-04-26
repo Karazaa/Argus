@@ -26,7 +26,7 @@ void ResourceSystems::RunSystems(float deltaTime)
 			continue;
 		}
 
-		ProcessResourceExtraction(components);
+		ProcessResourceExtractionState(components);
 	}
 };
 
@@ -41,7 +41,7 @@ bool ResourceSystems::ResourceComponents::AreComponentsValidCheck(const WIDECHAR
 	return true;
 }
 
-void ResourceSystems::ProcessResourceExtraction(const ResourceComponents& components)
+void ResourceSystems::ProcessResourceExtractionState(const ResourceComponents& components)
 {
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
@@ -53,22 +53,65 @@ void ResourceSystems::ProcessResourceExtraction(const ResourceComponents& compon
 		case EResourceExtractionState::None:
 			break;
 		case EResourceExtractionState::Extracting:
-		{
-			if (!components.m_targetingComponent->HasEntityTarget())
-			{
-				components.m_taskComponent->m_resourceExtractionState = EResourceExtractionState::None;
-				return;
-			}
-
-			const ArgusEntity targetEntity = ArgusEntity::RetrieveEntity(components.m_targetingComponent->m_targetEntityId);
-			if (TargetingSystems::IsInMeleeRangeOfOtherEntity(components.m_entity, targetEntity) && CanEntityExtractResourcesFromOtherEntity(components.m_entity, targetEntity))
-			{
-				// TODO JAMES: Actually do resource extraction.
-			}
+			ProcessResourceExtractionTiming(components);
 			break;
-		}
 		case EResourceExtractionState::Depositing:
 			break;
+	}
+}
+
+void ResourceSystems::ProcessResourceExtractionTiming(const ResourceComponents& components)
+{
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+
+	if (components.m_resourceExtractionComponent->m_resourceExtractionTimer.IsTimerTicking(components.m_entity))
+	{
+		return;
+	}
+
+	if (!components.m_targetingComponent->HasEntityTarget())
+	{
+		components.m_taskComponent->m_resourceExtractionState = EResourceExtractionState::None;
+		return;
+	}
+
+	const ArgusEntity targetEntity = ArgusEntity::RetrieveEntity(components.m_targetingComponent->m_targetEntityId);
+	if (!TargetingSystems::IsInMeleeRangeOfOtherEntity(components.m_entity, targetEntity) || !CanEntityExtractResourcesFromOtherEntity(components.m_entity, targetEntity))
+	{
+		return;
+	}
+
+	if (components.m_resourceExtractionComponent->m_resourceExtractionTimer.IsTimerComplete(components.m_entity))
+	{
+		ExtractResources(components);
+		components.m_resourceExtractionComponent->m_resourceExtractionTimer.FinishTimerHandling(components.m_entity);
+	}
+	components.m_resourceExtractionComponent->m_resourceExtractionTimer.StartTimer
+	(
+		components.m_entity,
+		components.m_resourceExtractionComponent->m_extractionLengthSeconds
+	);
+}
+
+void ResourceSystems::ExtractResources(const ResourceComponents& components)
+{
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+
+	ResourceComponent* extractionTargetResourceComponent = ArgusEntity::RetrieveEntity(components.m_targetingComponent->m_targetEntityId).GetComponent<ResourceComponent>();
+	TransferResourcesBetweenComponents(extractionTargetResourceComponent, components.m_resourceComponent, components.m_resourceExtractionComponent->m_resourcesToExtract);
+}
+
+void ResourceSystems::DepositResources(const ResourceComponents& components)
+{
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
 	}
 }
 
@@ -144,4 +187,9 @@ ResourceComponent* ResourceSystems::GetTeamResourceComponentForEntity(const Argu
 	}
 
 	return teamEntity.GetComponent<ResourceComponent>();
+}
+
+bool ResourceSystems::TransferResourcesBetweenComponents(ResourceComponent* sourceComponent, ResourceComponent* targetComponent, FResourceSet& amount)
+{
+	return true;
 }

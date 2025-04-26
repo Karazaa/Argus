@@ -7,6 +7,8 @@
 #include "ComponentDefinitions/ResourceComponent.h"
 
 class ArgusEntity;
+struct FResourceSet;
+struct ResourceComponent;
 
 class ResourceSystems
 {
@@ -24,11 +26,18 @@ public:
 		bool AreComponentsValidCheck(const WIDECHAR* functionName) const;
 	};
 
-	static void ProcessResourceExtraction(const ResourceComponents& components);
+	static void ProcessResourceExtractionState(const ResourceComponents& components);
+	static void ProcessResourceExtractionTiming(const ResourceComponents& components);
+	static void ExtractResources(const ResourceComponents& components);
+	static void DepositResources(const ResourceComponents& components);
+
 
 	static bool CanEntityExtractResourcesFromOtherEntity(const ArgusEntity& entity, const ArgusEntity& otherEntity);
 	static bool CanEntityAffordResourceChange(const ArgusEntity& entity, const FResourceSet& resourceChange);
 	static bool ApplyResourceChangeIfAffordable(const ArgusEntity& entity, const FResourceSet& resourceChange);
 	
 	static ResourceComponent* GetTeamResourceComponentForEntity(const ArgusEntity& entity);
+
+private:
+	static bool TransferResourcesBetweenComponents(ResourceComponent* sourceComponent, ResourceComponent* targetComponent, FResourceSet& amount);
 };

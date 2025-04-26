@@ -305,7 +305,7 @@ bool ArgusEntity::IsInRangeOfOtherEntity(const ArgusEntity& other, float range) 
 		return false;
 	}
 
-	return FMath::Square(range) < FVector::DistSquared(transformComponent->m_location, otherTransformComponent->m_location);
+	return FVector::DistSquared(transformComponent->m_location, otherTransformComponent->m_location) <= FMath::Square(range);
 }
 
 #if !UE_BUILD_SHIPPING
