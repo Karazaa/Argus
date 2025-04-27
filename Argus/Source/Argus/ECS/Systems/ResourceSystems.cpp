@@ -87,13 +87,9 @@ void ResourceSystems::ProcessResourceExtractionTiming(const ResourceComponents& 
 	if (components.m_resourceExtractionComponent->m_resourceExtractionTimer.IsTimerComplete(components.m_entity))
 	{
 		ExtractResources(components);
-		components.m_resourceExtractionComponent->m_resourceExtractionTimer.FinishTimerHandling(components.m_entity);
+		components.m_resourceExtractionComponent->m_resourceExtractionTimer.FinishTimerHandling();
 	}
-	components.m_resourceExtractionComponent->m_resourceExtractionTimer.StartTimer
-	(
-		components.m_entity,
-		components.m_resourceExtractionComponent->m_extractionLengthSeconds
-	);
+	components.m_resourceExtractionComponent->m_resourceExtractionTimer.StartTimer(components.m_resourceExtractionComponent->m_extractionLengthSeconds);
 }
 
 void ResourceSystems::ExtractResources(const ResourceComponents& components)

@@ -23,6 +23,7 @@ const char* ArgusComponentRegistryCodeGenerator::s_componentCppTemplateResetFile
 const char* ArgusComponentRegistryCodeGenerator::s_dynamicAllocComponentCppTemplateResetFilename = "DynamicAllocComponentCppTemplateReset.txt";
 const char* ArgusComponentRegistryCodeGenerator::s_debugStringLinesTemplateFilename = "AppendDebugStringCppTemplate.txt";
 const char* ArgusComponentRegistryCodeGenerator::s_debugDrawLinesTemplateFilename = "DebugDrawCppTemplate.txt";
+const char* ArgusComponentRegistryCodeGenerator::s_owningEntityIdLinesTemplateFilename = "OwningEntityIdCppTemplate.txt";
 const char* ArgusComponentRegistryCodeGenerator::s_argusComponentSizeTestsTemplateFilename = "ArgusComponentSizeTestsTemplate.txt";
 const char* ArgusComponentRegistryCodeGenerator::s_perComponentSizeTestsTemplateFilename = "PerComponentSizeTestsTemplate.txt";
 const char* ArgusComponentRegistryCodeGenerator::s_argusComponentRegistryHeaderFilename = "ArgusComponentRegistry.h";
@@ -59,6 +60,7 @@ void ArgusComponentRegistryCodeGenerator::GenerateComponentRegistryCode(const Ar
 	params.dynamicAllocComponentCppTemplateResetFilePath = std::string(cStrTemplateDirectory).append(s_dynamicAllocComponentCppTemplateResetFilename);
 	params.debugStringLinesTemplateFilePath = std::string(cStrTemplateDirectory).append(s_debugStringLinesTemplateFilename);
 	params.debugDrawLinesTemplateFilePath = std::string(cStrTemplateDirectory).append(s_debugDrawLinesTemplateFilename);
+	params.owningEntityIdLinesTemplateFilePath = std::string(cStrTemplateDirectory).append(s_owningEntityIdLinesTemplateFilename);
 	params.argusComponentSizeTestsTemplateFilePath = std::string(cStrTemplateDirectory).append(s_argusComponentSizeTestsTemplateFilename);
 	params.perComponentSizeTestsTemplateFilePath = std::string(cStrTemplateDirectory).append(s_perComponentSizeTestsTemplateFilename);
 
@@ -196,6 +198,10 @@ bool ArgusComponentRegistryCodeGenerator::ParseComponentRegistryCppTemplateWithR
 	std::vector<std::string> parsedDynamicAllocResetLines = std::vector<std::string>();
 	didSucceed &= ArgusCodeGeneratorUtil::ParseComponentSpecificTemplate(params.dynamicAllocComponentCppTemplateResetFilePath, params.inDynamicAllocComponentNames, parsedDynamicAllocResetLines);
 
+	// Parse owning entity id logic into one section
+	std::vector<std::string> parsedOwningEntityIdLines = std::vector<std::string>();
+	didSucceed &= ArgusCodeGeneratorUtil::ParseComponentSpecificTemplate(params.owningEntityIdLinesTemplateFilePath, params.inComponentNames, parsedOwningEntityIdLines);
+
 	// Parse debug string lines template into one section
 	std::vector<std::string> parsedDebugStringLines = std::vector<std::string>();
 	std::vector<std::string> parsedDebugDrawLines = std::vector<std::string>();
@@ -282,6 +288,13 @@ bool ArgusComponentRegistryCodeGenerator::ParseComponentRegistryCppTemplateWithR
 		else if (cppLineText.find("!!!!!") != std::string::npos)
 		{
 			for (std::string parsedLine : parsedDebugDrawLines)
+			{
+				outFileContents.push_back(parsedLine);
+			}
+		}
+		else if (cppLineText.find("#&#&#") != std::string::npos)
+		{
+			for (std::string parsedLine : parsedOwningEntityIdLines)
 			{
 				outFileContents.push_back(parsedLine);
 			}

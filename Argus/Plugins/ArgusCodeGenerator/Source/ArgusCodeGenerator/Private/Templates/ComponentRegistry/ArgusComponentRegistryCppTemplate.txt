@@ -40,6 +40,13 @@ void ArgusComponentRegistry::FlushAllComponents()
 	&&&&&
 }
 
+uint16 ArgusComponentRegistry::GetOwningEntityIdForComponentMember(void* memberAddress)
+{
+	#&#&#
+
+	return ArgusECSConstants::k_maxEntities;
+}
+
 void ArgusComponentRegistry::AppendComponentDebugStrings(uint16 entityId, FString& debugStringToAppendTo)
 {
 	%%%%%

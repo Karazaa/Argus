@@ -6,6 +6,12 @@
 #include "ArgusMacros.h"
 #include "ComponentDefinitions/TimerComponent.h"
 
+void TimerHandle::StartTimer(float seconds)
+{
+	ArgusEntity entity = ArgusEntity::RetrieveEntity(ArgusComponentRegistry::GetOwningEntityIdForComponentMember(this));
+	StartTimer(entity, seconds);
+}
+
 void TimerHandle::StartTimer(const ArgusEntity& entityWithTimer, float seconds)
 {
 	ARGUS_MEMORY_TRACE(ArgusTimerSystems);
@@ -49,6 +55,12 @@ void TimerHandle::StartTimer(const ArgusEntity& entityWithTimer, float seconds)
 	m_timerIndex = static_cast<uint8>(timerComponent->m_timers.Num() - 1);
 }
 
+void TimerHandle::FinishTimerHandling()
+{
+	ArgusEntity entity = ArgusEntity::RetrieveEntity(ArgusComponentRegistry::GetOwningEntityIdForComponentMember(this));
+	FinishTimerHandling(entity);
+}
+
 void TimerHandle::FinishTimerHandling(const ArgusEntity& entityWithTimer)
 {
 	Timer* timer = GetTimerForEntity(entityWithTimer, ARGUS_FUNCNAME);
@@ -66,6 +78,12 @@ void TimerHandle::FinishTimerHandling(const ArgusEntity& entityWithTimer)
 	timer->m_timeRemainingSeconds = 0.0f;
 	timer->m_timerState = TimerState::NotSet;
 	m_timerIndex = UINT8_MAX;
+}
+
+void TimerHandle::CancelTimer()
+{
+	ArgusEntity entity = ArgusEntity::RetrieveEntity(ArgusComponentRegistry::GetOwningEntityIdForComponentMember(this));
+	CancelTimer(entity);
 }
 
 void TimerHandle::CancelTimer(const ArgusEntity& entityWithTimer)

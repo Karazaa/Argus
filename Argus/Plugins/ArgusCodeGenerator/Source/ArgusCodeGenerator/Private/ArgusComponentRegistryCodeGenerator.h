@@ -29,6 +29,7 @@ private:
 	static const char* s_dynamicAllocComponentCppTemplateResetFilename;
 	static const char* s_debugStringLinesTemplateFilename;	
 	static const char* s_debugDrawLinesTemplateFilename;
+	static const char* s_owningEntityIdLinesTemplateFilename;
 	static const char* s_argusComponentSizeTestsTemplateFilename;
 	static const char* s_perComponentSizeTestsTemplateFilename;
 	static const char* s_argusComponentRegistryHeaderFilename;
@@ -52,6 +53,7 @@ private:
 		std::string dynamicAllocComponentCppTemplateResetFilePath = "";
 		std::string debugStringLinesTemplateFilePath = "";
 		std::string debugDrawLinesTemplateFilePath = "";
+		std::string owningEntityIdLinesTemplateFilePath = "";
 		std::string argusComponentSizeTestsTemplateFilePath = "";
 		std::string perComponentSizeTestsTemplateFilePath = "";
 		std::vector<std::string> inComponentNames = std::vector<std::string>();

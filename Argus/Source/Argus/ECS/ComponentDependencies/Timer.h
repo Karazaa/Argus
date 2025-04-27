@@ -24,8 +24,11 @@ struct Timer
 class TimerHandle
 {
 public:
+	void StartTimer(float seconds);
 	void StartTimer(const ArgusEntity& entityWithTimer, float seconds);
+	void FinishTimerHandling();
 	void FinishTimerHandling(const ArgusEntity& entityWithTimer);
+	void CancelTimer();
 	void CancelTimer(const ArgusEntity& entityWithTimer);
 
 	float GetTimeRemaining(const ArgusEntity& entityWithTimer) const;

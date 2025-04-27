@@ -176,6 +176,87 @@ void ArgusComponentRegistry::FlushAllComponents()
 	s_SpatialPartitioningComponents.clear();
 }
 
+uint16 ArgusComponentRegistry::GetOwningEntityIdForComponentMember(void* memberAddress)
+{
+	if (memberAddress >= &s_AbilityComponents[0] && memberAddress <= &s_AbilityComponents[ArgusECSConstants::k_maxEntities - 1])
+	{
+		AbilityComponent* pretendComponent = reinterpret_cast<AbilityComponent*>(memberAddress);
+		return pretendComponent - &s_AbilityComponents[0];
+	}
+	if (memberAddress >= &s_AvoidanceGroupingComponents[0] && memberAddress <= &s_AvoidanceGroupingComponents[ArgusECSConstants::k_maxEntities - 1])
+	{
+		AvoidanceGroupingComponent* pretendComponent = reinterpret_cast<AvoidanceGroupingComponent*>(memberAddress);
+		return pretendComponent - &s_AvoidanceGroupingComponents[0];
+	}
+	if (memberAddress >= &s_CombatComponents[0] && memberAddress <= &s_CombatComponents[ArgusECSConstants::k_maxEntities - 1])
+	{
+		CombatComponent* pretendComponent = reinterpret_cast<CombatComponent*>(memberAddress);
+		return pretendComponent - &s_CombatComponents[0];
+	}
+	if (memberAddress >= &s_ConstructionComponents[0] && memberAddress <= &s_ConstructionComponents[ArgusECSConstants::k_maxEntities - 1])
+	{
+		ConstructionComponent* pretendComponent = reinterpret_cast<ConstructionComponent*>(memberAddress);
+		return pretendComponent - &s_ConstructionComponents[0];
+	}
+	if (memberAddress >= &s_HealthComponents[0] && memberAddress <= &s_HealthComponents[ArgusECSConstants::k_maxEntities - 1])
+	{
+		HealthComponent* pretendComponent = reinterpret_cast<HealthComponent*>(memberAddress);
+		return pretendComponent - &s_HealthComponents[0];
+	}
+	if (memberAddress >= &s_IdentityComponents[0] && memberAddress <= &s_IdentityComponents[ArgusECSConstants::k_maxEntities - 1])
+	{
+		IdentityComponent* pretendComponent = reinterpret_cast<IdentityComponent*>(memberAddress);
+		return pretendComponent - &s_IdentityComponents[0];
+	}
+	if (memberAddress >= &s_NavigationComponents[0] && memberAddress <= &s_NavigationComponents[ArgusECSConstants::k_maxEntities - 1])
+	{
+		NavigationComponent* pretendComponent = reinterpret_cast<NavigationComponent*>(memberAddress);
+		return pretendComponent - &s_NavigationComponents[0];
+	}
+	if (memberAddress >= &s_ObserversComponents[0] && memberAddress <= &s_ObserversComponents[ArgusECSConstants::k_maxEntities - 1])
+	{
+		ObserversComponent* pretendComponent = reinterpret_cast<ObserversComponent*>(memberAddress);
+		return pretendComponent - &s_ObserversComponents[0];
+	}
+	if (memberAddress >= &s_ResourceComponents[0] && memberAddress <= &s_ResourceComponents[ArgusECSConstants::k_maxEntities - 1])
+	{
+		ResourceComponent* pretendComponent = reinterpret_cast<ResourceComponent*>(memberAddress);
+		return pretendComponent - &s_ResourceComponents[0];
+	}
+	if (memberAddress >= &s_ResourceExtractionComponents[0] && memberAddress <= &s_ResourceExtractionComponents[ArgusECSConstants::k_maxEntities - 1])
+	{
+		ResourceExtractionComponent* pretendComponent = reinterpret_cast<ResourceExtractionComponent*>(memberAddress);
+		return pretendComponent - &s_ResourceExtractionComponents[0];
+	}
+	if (memberAddress >= &s_SpawningComponents[0] && memberAddress <= &s_SpawningComponents[ArgusECSConstants::k_maxEntities - 1])
+	{
+		SpawningComponent* pretendComponent = reinterpret_cast<SpawningComponent*>(memberAddress);
+		return pretendComponent - &s_SpawningComponents[0];
+	}
+	if (memberAddress >= &s_TargetingComponents[0] && memberAddress <= &s_TargetingComponents[ArgusECSConstants::k_maxEntities - 1])
+	{
+		TargetingComponent* pretendComponent = reinterpret_cast<TargetingComponent*>(memberAddress);
+		return pretendComponent - &s_TargetingComponents[0];
+	}
+	if (memberAddress >= &s_TaskComponents[0] && memberAddress <= &s_TaskComponents[ArgusECSConstants::k_maxEntities - 1])
+	{
+		TaskComponent* pretendComponent = reinterpret_cast<TaskComponent*>(memberAddress);
+		return pretendComponent - &s_TaskComponents[0];
+	}
+	if (memberAddress >= &s_TimerComponents[0] && memberAddress <= &s_TimerComponents[ArgusECSConstants::k_maxEntities - 1])
+	{
+		TimerComponent* pretendComponent = reinterpret_cast<TimerComponent*>(memberAddress);
+		return pretendComponent - &s_TimerComponents[0];
+	}
+	if (memberAddress >= &s_TransformComponents[0] && memberAddress <= &s_TransformComponents[ArgusECSConstants::k_maxEntities - 1])
+	{
+		TransformComponent* pretendComponent = reinterpret_cast<TransformComponent*>(memberAddress);
+		return pretendComponent - &s_TransformComponents[0];
+	}
+
+	return ArgusECSConstants::k_maxEntities;
+}
+
 void ArgusComponentRegistry::AppendComponentDebugStrings(uint16 entityId, FString& debugStringToAppendTo)
 {
 //	if (const AbilityComponent* AbilityComponentPtr = GetComponent<AbilityComponent>(entityId))
