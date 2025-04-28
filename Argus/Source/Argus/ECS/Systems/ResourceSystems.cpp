@@ -3,6 +3,7 @@
 #include "ResourceSystems.h"
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
+#include "ArgusStaticData.h"
 #include "Systems/TargetingSystems.h"
 
 void ResourceSystems::RunSystems(float deltaTime)
@@ -100,7 +101,11 @@ void ResourceSystems::ExtractResources(const ResourceComponents& components)
 	}
 
 	ResourceComponent* extractionTargetResourceComponent = ArgusEntity::RetrieveEntity(components.m_targetingComponent->m_targetEntityId).GetComponent<ResourceComponent>();
-	TransferResourcesBetweenComponents(extractionTargetResourceComponent, components.m_resourceComponent, components.m_resourceExtractionComponent->m_resourcesToExtract);
+	
+	if (!TransferResourcesBetweenComponents(extractionTargetResourceComponent, components.m_resourceComponent, components.m_resourceExtractionComponent->m_resourcesToExtract))
+	{
+		components.m_taskComponent->m_resourceExtractionState = EResourceExtractionState::None;
+	}
 }
 
 void ResourceSystems::DepositResources(const ResourceComponents& components)
@@ -187,5 +192,30 @@ ResourceComponent* ResourceSystems::GetTeamResourceComponentForEntity(const Argu
 
 bool ResourceSystems::TransferResourcesBetweenComponents(ResourceComponent* sourceComponent, ResourceComponent* targetComponent, FResourceSet& amount)
 {
+	if (!sourceComponent || !targetComponent)
+	{
+		return false;
+	}
+
+	FResourceSet resourceChange = -amount;
+
+	if (!sourceComponent->m_currentResources.CanAffordResourceChange(resourceChange))
+	{
+		return false;
+	}
+
+	const UResourceSetRecord* resourceCapacityRecord = ArgusStaticData::GetRecord<UResourceSetRecord>(targetComponent->m_resourceCapacityRecordId);
+	if (!resourceCapacityRecord)
+	{
+		return false;
+	}
+
+	if (targetComponent->m_currentResources >= resourceCapacityRecord->m_resourceSet)
+	{
+		return false;
+	}
+
+	sourceComponent->m_currentResources.ApplyResourceChange(resourceChange);
+	targetComponent->m_currentResources.ApplyResourceChange(amount);
 	return true;
 }
