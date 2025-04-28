@@ -130,7 +130,7 @@ bool ResourceSystems::CanEntityExtractResourcesFromOtherEntity(const ArgusEntity
 	}
 
 	const ResourceComponent* otherEntityResourceComponent = otherEntity.GetComponent<ResourceComponent>();
-	if (!otherEntityResourceComponent)
+	if (!otherEntityResourceComponent || otherEntityResourceComponent->m_resourceComponentOwnerType != EResourceComponentOwnerType::Source)
 	{
 		return false;
 	}

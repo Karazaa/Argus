@@ -29,6 +29,12 @@ void ResourceComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_currentResources");
 		ImGui::TableNextColumn();
+		const uint8 numResources = static_cast<uint8>(EResourceType::Count);
+		for (int32 i = 0; i < numResources; ++i)
+		{
+			ImGui::Text("%d", m_currentResources.m_resourceQuantities[i]);
+			ImGui::NewLine();
+		}
 		ImGui::TableNextColumn();
 		ImGui::Text("m_resourceCapacityRecordId");
 		ImGui::TableNextColumn();
