@@ -29,11 +29,11 @@ void ResourceComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_currentResources");
 		ImGui::TableNextColumn();
-		const uint8 numResources = static_cast<uint8>(EResourceType::Count);
-		for (int32 i = 0; i < numResources; ++i)
+		const uint8 m_currentResources_numResources = static_cast<uint8>(EResourceType::Count);
+		for (int32 i = 0; i < m_currentResources_numResources; ++i)
 		{
-			ImGui::Text("%d", m_currentResources.m_resourceQuantities[i]);
-			ImGui::NewLine();
+			ImGui::SameLine();
+			ImGui::Text("%d ", m_currentResources.m_resourceQuantities[i]);
 		}
 		ImGui::TableNextColumn();
 		ImGui::Text("m_resourceCapacityRecordId");

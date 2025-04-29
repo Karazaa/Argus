@@ -29,6 +29,12 @@ void ResourceExtractionComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_resourcesToExtract");
 		ImGui::TableNextColumn();
+		const uint8 m_resourcesToExtract_numResources = static_cast<uint8>(EResourceType::Count);
+		for (int32 i = 0; i < m_resourcesToExtract_numResources; ++i)
+		{
+			ImGui::SameLine();
+			ImGui::Text("%d ", m_resourcesToExtract.m_resourceQuantities[i]);
+		}
 		ImGui::TableNextColumn();
 		ImGui::Text("m_extractionLengthSeconds");
 		ImGui::TableNextColumn();

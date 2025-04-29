@@ -87,25 +87,32 @@ void ResourceSystems::ProcessResourceExtractionTiming(const ResourceComponents& 
 
 	if (components.m_resourceExtractionComponent->m_resourceExtractionTimer.IsTimerComplete(components.m_entity))
 	{
-		ExtractResources(components);
 		components.m_resourceExtractionComponent->m_resourceExtractionTimer.FinishTimerHandling();
+		if (ExtractResources(components))
+		{
+			components.m_resourceExtractionComponent->m_resourceExtractionTimer.StartTimer(components.m_resourceExtractionComponent->m_extractionLengthSeconds);
+		}
+		else
+		{
+			components.m_taskComponent->m_resourceExtractionState = EResourceExtractionState::None;
+		}
 	}
-	components.m_resourceExtractionComponent->m_resourceExtractionTimer.StartTimer(components.m_resourceExtractionComponent->m_extractionLengthSeconds);
+	else
+	{
+		components.m_resourceExtractionComponent->m_resourceExtractionTimer.StartTimer(components.m_resourceExtractionComponent->m_extractionLengthSeconds);
+	}
 }
 
-void ResourceSystems::ExtractResources(const ResourceComponents& components)
+bool ResourceSystems::ExtractResources(const ResourceComponents& components)
 {
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
-		return;
+		return false;
 	}
 
 	ResourceComponent* extractionTargetResourceComponent = ArgusEntity::RetrieveEntity(components.m_targetingComponent->m_targetEntityId).GetComponent<ResourceComponent>();
 	
-	if (!TransferResourcesBetweenComponents(extractionTargetResourceComponent, components.m_resourceComponent, components.m_resourceExtractionComponent->m_resourcesToExtract))
-	{
-		components.m_taskComponent->m_resourceExtractionState = EResourceExtractionState::None;
-	}
+	return TransferResourcesBetweenComponents(extractionTargetResourceComponent, components.m_resourceComponent, components.m_resourceExtractionComponent->m_resourcesToExtract);
 }
 
 void ResourceSystems::DepositResources(const ResourceComponents& components)
@@ -138,7 +145,7 @@ bool ResourceSystems::CanEntityExtractResourcesFromOtherEntity(const ArgusEntity
 	return otherEntityResourceComponent->m_currentResources.CanAffordResourceChange(resourceExtractionComponent->m_resourcesToExtract);
 }
 
-bool ResourceSystems::CanEntityAffordResourceChange(const ArgusEntity& entity, const FResourceSet& resourceChange)
+bool ResourceSystems::CanEntityAffordTeamResourceChange(const ArgusEntity& entity, const FResourceSet& resourceChange)
 {
 	ResourceComponent* teamResourceComponent = GetTeamResourceComponentForEntity(entity);
 	if (!teamResourceComponent)
@@ -149,7 +156,7 @@ bool ResourceSystems::CanEntityAffordResourceChange(const ArgusEntity& entity, c
 	return teamResourceComponent->m_currentResources.CanAffordResourceChange(resourceChange);
 }
 
-bool ResourceSystems::ApplyResourceChangeIfAffordable(const ArgusEntity& entity, const FResourceSet& resourceChange)
+bool ResourceSystems::ApplyTeamResourceChangeIfAffordable(const ArgusEntity& entity, const FResourceSet& resourceChange)
 {
 	ResourceComponent* teamResourceComponent = GetTeamResourceComponentForEntity(entity);
 	if (!teamResourceComponent)

@@ -83,7 +83,7 @@ void AbilitySystems::CastAbility(const UAbilityRecord* abilityRecord, const Abil
 		return;
 	}
 
-	if (!ResourceSystems::ApplyResourceChangeIfAffordable(components.m_entity, abilityRecord->m_requiredResourceChangeToCast))
+	if (!ResourceSystems::ApplyTeamResourceChangeIfAffordable(components.m_entity, abilityRecord->m_requiredResourceChangeToCast))
 	{
 		components.m_taskComponent->m_abilityState = EAbilityState::None;
 		return;
