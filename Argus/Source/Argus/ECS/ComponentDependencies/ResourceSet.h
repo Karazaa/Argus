@@ -23,7 +23,7 @@ struct FResourceSet
 	UPROPERTY(EditDefaultsOnly)
 	int32 m_resourceQuantities[(uint8)EResourceType::Count] = { 0, 0, 0 };
 
-	FResourceSet operator-()
+	FResourceSet operator-() const
 	{
 		FResourceSet outResources;
 		const uint8 numResources = static_cast<uint8>(EResourceType::Count);

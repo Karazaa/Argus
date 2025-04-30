@@ -39,5 +39,5 @@ public:
 	static ResourceComponent* GetTeamResourceComponentForEntity(const ArgusEntity& entity);
 
 private:
-	static bool TransferResourcesBetweenComponents(ResourceComponent* sourceComponent, ResourceComponent* targetComponent, FResourceSet& amount);
+	static bool TransferResourcesBetweenComponents(ResourceComponent* sourceComponent, ResourceComponent* targetComponent, const FResourceSet& amount);
 };

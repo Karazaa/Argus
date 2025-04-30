@@ -112,7 +112,13 @@ bool ResourceSystems::ExtractResources(const ResourceComponents& components)
 
 	ResourceComponent* extractionTargetResourceComponent = ArgusEntity::RetrieveEntity(components.m_targetingComponent->m_targetEntityId).GetComponent<ResourceComponent>();
 	
-	return TransferResourcesBetweenComponents(extractionTargetResourceComponent, components.m_resourceComponent, components.m_resourceExtractionComponent->m_resourcesToExtract);
+	const UResourceSetRecord* extractionResourceRecord = ArgusStaticData::GetRecord<UResourceSetRecord>(components.m_resourceExtractionComponent->m_resourcesToExtractRecordId);
+	if (!extractionResourceRecord)
+	{
+		return false;
+	}
+
+	return TransferResourcesBetweenComponents(extractionTargetResourceComponent, components.m_resourceComponent, extractionResourceRecord->m_resourceSet);
 }
 
 void ResourceSystems::DepositResources(const ResourceComponents& components)
@@ -142,7 +148,13 @@ bool ResourceSystems::CanEntityExtractResourcesFromOtherEntity(const ArgusEntity
 		return false;
 	}
 
-	return otherEntityResourceComponent->m_currentResources.CanAffordResourceChange(resourceExtractionComponent->m_resourcesToExtract);
+	const UResourceSetRecord* extractionResourceRecord = ArgusStaticData::GetRecord<UResourceSetRecord>(resourceExtractionComponent->m_resourcesToExtractRecordId);
+	if (!extractionResourceRecord)
+	{
+		return false;
+	}
+
+	return otherEntityResourceComponent->m_currentResources.CanAffordResourceChange(extractionResourceRecord->m_resourceSet);
 }
 
 bool ResourceSystems::CanEntityAffordTeamResourceChange(const ArgusEntity& entity, const FResourceSet& resourceChange)
@@ -197,7 +209,7 @@ ResourceComponent* ResourceSystems::GetTeamResourceComponentForEntity(const Argu
 	return teamEntity.GetComponent<ResourceComponent>();
 }
 
-bool ResourceSystems::TransferResourcesBetweenComponents(ResourceComponent* sourceComponent, ResourceComponent* targetComponent, FResourceSet& amount)
+bool ResourceSystems::TransferResourcesBetweenComponents(ResourceComponent* sourceComponent, ResourceComponent* targetComponent, const FResourceSet& amount)
 {
 	if (!sourceComponent || !targetComponent)
 	{
@@ -224,5 +236,11 @@ bool ResourceSystems::TransferResourcesBetweenComponents(ResourceComponent* sour
 
 	sourceComponent->m_currentResources.ApplyResourceChange(resourceChange);
 	targetComponent->m_currentResources.ApplyResourceChange(amount);
+
+	if (targetComponent->m_currentResources >= resourceCapacityRecord->m_resourceSet)
+	{
+		return false;
+	}
+
 	return true;
 }

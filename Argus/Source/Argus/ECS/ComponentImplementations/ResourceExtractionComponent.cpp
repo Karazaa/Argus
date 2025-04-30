@@ -27,13 +27,19 @@ void ResourceExtractionComponent::DrawComponentDebug() const
 	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings))
 	{
 		ImGui::TableNextColumn();
-		ImGui::Text("m_resourcesToExtract");
+		ImGui::Text("m_resourcesToExtractRecordId");
 		ImGui::TableNextColumn();
-		const uint8 m_resourcesToExtract_numResources = static_cast<uint8>(EResourceType::Count);
-		for (int32 i = 0; i < m_resourcesToExtract_numResources; ++i)
+		if (m_resourcesToExtractRecordId != 0u)
 		{
-			ImGui::SameLine();
-			ImGui::Text("%d ", m_resourcesToExtract.m_resourceQuantities[i]);
+			if (const UResourceSetRecord* record_m_resourcesToExtractRecordId = ArgusStaticData::GetRecord<UResourceSetRecord>(m_resourcesToExtractRecordId))
+			{
+				const char* name_m_resourcesToExtractRecordId = ARGUS_FSTRING_TO_CHAR(record_m_resourcesToExtractRecordId->GetName());
+				ImGui::Text("%s", name_m_resourcesToExtractRecordId);
+			}
+		}
+		else
+		{
+			ImGui::Text("None", m_resourcesToExtractRecordId);
 		}
 		ImGui::TableNextColumn();
 		ImGui::Text("m_extractionLengthSeconds");

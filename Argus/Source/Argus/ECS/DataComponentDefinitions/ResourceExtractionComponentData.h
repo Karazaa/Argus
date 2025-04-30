@@ -13,7 +13,7 @@ class ARGUS_API UResourceExtractionComponentData : public UComponentData
 
 public:
 	UPROPERTY(EditAnywhere)
-	FResourceSet m_resourcesToExtract;
+	TSoftObjectPtr<UResourceSetRecord> m_resourcesToExtractRecordId;
 	UPROPERTY(EditAnywhere)
 	float m_extractionLengthSeconds = 1.0f;
 	TimerHandle m_resourceExtractionTimer;

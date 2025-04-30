@@ -12,7 +12,9 @@ struct ResourceExtractionComponent
 {
 	ARGUS_COMPONENT_SHARED
 
-	FResourceSet m_resourcesToExtract;
+	ARGUS_STATIC_DATA(UResourceSetRecord)
+	uint32 m_resourcesToExtractRecordId = 0u;
+
 	float m_extractionLengthSeconds = 1.0f;
 
 	ARGUS_IGNORE()
