@@ -28,11 +28,13 @@ public:
 
 	static void ProcessResourceExtractionState(const ResourceComponents& components);
 	static void ProcessResourceExtractionTiming(const ResourceComponents& components);
+	static void ProcessResourceDepositing(const ResourceComponents& components);
 	static bool ExtractResources(const ResourceComponents& components);
 	static void DepositResources(const ResourceComponents& components);
 
 
 	static bool CanEntityExtractResourcesFromOtherEntity(const ArgusEntity& entity, const ArgusEntity& otherEntity);
+	static bool CanEntityDepositResourcesToOtherEntity(const ArgusEntity& entity, const ArgusEntity& otherEntity);
 	static bool CanEntityAffordTeamResourceChange(const ArgusEntity& entity, const FResourceSet& resourceChange);
 	static bool ApplyTeamResourceChangeIfAffordable(const ArgusEntity& entity, const FResourceSet& resourceChange);
 	
