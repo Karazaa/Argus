@@ -14,7 +14,7 @@ class IArgusKDTreeNode : public IObjectPoolable
 	virtual FVector GetLocation() const = 0;
 	virtual void Populate(const FVector& worldSpaceLocation) = 0;
 	virtual bool ShouldSkipNode() const = 0;
-	virtual bool ShouldSkipNode(ValueComparisonType valueToSkip) const = 0;
+	virtual bool ShouldSkipNode(TFunction<bool(ValueComparisonType)> queryFilter) const = 0;
 	virtual bool PassesRangeCheck(const FVector& targetLocation, float rangeSquared) const = 0;
 	virtual float GetValueForDimension(uint16 dimension) const = 0;
 };
@@ -33,11 +33,11 @@ protected:
 	void ClearNodeRecursive(NodeType* node, FVector& currentAverageLocation, uint16& priorNodeCount);
 	void InsertNodeIntoKDTreeRecursive(NodeType* iterationNode, NodeType* nodeToInsert, uint16 depth);
 
-	const NodeType* FindNodeClosestToLocationRecursive(const NodeType* iterationNode, const FVector& targetLocation, ValueComparisonType valueToSkip, uint16 depth) const;
-	const NodeType* ChooseNodeCloserToTarget(const NodeType* node0, const NodeType* node1, const FVector& targetLocation, ValueComparisonType valueToSkip) const;
+	const NodeType* FindNodeClosestToLocationRecursive(const NodeType* iterationNode, const FVector& targetLocation, TFunction<bool(ValueComparisonType)> queryFilter, uint16 depth) const;
+	const NodeType* ChooseNodeCloserToTarget(const NodeType* node0, const NodeType* node1, const FVector& targetLocation, TFunction<bool(ValueComparisonType)> queryFilter) const;
 
-	void FindNodesWithinRangeOfLocationRecursive(TArray<const NodeType*>& outNearbyNodes, const NodeType* iterationNode, const FVector& targetLocation, const float rangeSquared, ValueComparisonType valueToSkip, uint16 depth) const;
-	void FindNodesWithinConvexPolyRecursive(TArray<const NodeType*>& outOverlappingNodes, const NodeType* iterationNode, const TArray<FVector>& convexPolygonPoints, ValueComparisonType valueToSkip, uint16 depth) const;
+	void FindNodesWithinRangeOfLocationRecursive(TArray<const NodeType*>& outNearbyNodes, const NodeType* iterationNode, const FVector& targetLocation, const float rangeSquared, TFunction<bool(ValueComparisonType)> queryFilter, uint16 depth) const;
+	void FindNodesWithinConvexPolyRecursive(TArray<const NodeType*>& outOverlappingNodes, const NodeType* iterationNode, const TArray<FVector>& convexPolygonPoints, TFunction<bool(ValueComparisonType)> queryFilter, uint16 depth) const;
 
 	NodeType* m_rootNode = nullptr;
 	ArgusObjectPool<NodeType> m_nodePool;
@@ -168,7 +168,7 @@ void ArgusKDTree<NodeType, ValueComparisonType>::InsertNodeIntoKDTreeRecursive(N
 }
 
 template <class NodeType, typename ValueComparisonType>
-const NodeType* ArgusKDTree<NodeType, ValueComparisonType>::FindNodeClosestToLocationRecursive(const NodeType* iterationNode, const FVector& targetLocation, ValueComparisonType valueToSkip, uint16 depth) const
+const NodeType* ArgusKDTree<NodeType, ValueComparisonType>::FindNodeClosestToLocationRecursive(const NodeType* iterationNode, const FVector& targetLocation, TFunction<bool(ValueComparisonType)> queryFilter, uint16 depth) const
 {
 	if (!iterationNode)
 	{
@@ -207,8 +207,8 @@ const NodeType* ArgusKDTree<NodeType, ValueComparisonType>::FindNodeClosestToLoc
 		secondBranch = iterationNode->m_leftChild;
 	}
 
-	const NodeType* potentialNearestNeighbor = FindNodeClosestToLocationRecursive(firstBranch, targetLocation, valueToSkip, depth + 1);
-	potentialNearestNeighbor = ChooseNodeCloserToTarget(iterationNode, potentialNearestNeighbor, targetLocation, valueToSkip);
+	const NodeType* potentialNearestNeighbor = FindNodeClosestToLocationRecursive(firstBranch, targetLocation, queryFilter, depth + 1);
+	potentialNearestNeighbor = ChooseNodeCloserToTarget(iterationNode, potentialNearestNeighbor, targetLocation, queryFilter);
 
 	if (potentialNearestNeighbor)
 	{
@@ -218,27 +218,27 @@ const NodeType* ArgusKDTree<NodeType, ValueComparisonType>::FindNodeClosestToLoc
 		if (potentialDistanceSquared > distanceAlongDimensionSquared)
 		{
 			const NodeType* cachedPotentialNearestNeighbor = potentialNearestNeighbor;
-			potentialNearestNeighbor = FindNodeClosestToLocationRecursive(secondBranch, targetLocation, valueToSkip, depth + 1);
-			potentialNearestNeighbor = ChooseNodeCloserToTarget(ChooseNodeCloserToTarget(cachedPotentialNearestNeighbor, potentialNearestNeighbor, targetLocation, valueToSkip), potentialNearestNeighbor, targetLocation, valueToSkip);
+			potentialNearestNeighbor = FindNodeClosestToLocationRecursive(secondBranch, targetLocation, queryFilter, depth + 1);
+			potentialNearestNeighbor = ChooseNodeCloserToTarget(ChooseNodeCloserToTarget(cachedPotentialNearestNeighbor, potentialNearestNeighbor, targetLocation, queryFilter), potentialNearestNeighbor, targetLocation, queryFilter);
 		}
 	}
 	else
 	{
-		potentialNearestNeighbor = FindNodeClosestToLocationRecursive(secondBranch, targetLocation, valueToSkip, depth + 1);
-		potentialNearestNeighbor = ChooseNodeCloserToTarget(iterationNode, potentialNearestNeighbor, targetLocation, valueToSkip);
+		potentialNearestNeighbor = FindNodeClosestToLocationRecursive(secondBranch, targetLocation, queryFilter, depth + 1);
+		potentialNearestNeighbor = ChooseNodeCloserToTarget(iterationNode, potentialNearestNeighbor, targetLocation, queryFilter);
 	}
 
 	return potentialNearestNeighbor;
 }
 
 template <class NodeType, typename ValueComparisonType>
-const NodeType* ArgusKDTree<NodeType, ValueComparisonType>::ChooseNodeCloserToTarget(const NodeType* node0, const NodeType* node1, const FVector& targetLocation, ValueComparisonType valueToSkip) const
+const NodeType* ArgusKDTree<NodeType, ValueComparisonType>::ChooseNodeCloserToTarget(const NodeType* node0, const NodeType* node1, const FVector& targetLocation, TFunction<bool(ValueComparisonType)> queryFilter) const
 {
-	if (!node0 || node0->ShouldSkipNode(valueToSkip))
+	if (!node0 || node0->ShouldSkipNode(queryFilter))
 	{
 		return node1;
 	}
-	if (!node1 || node1->ShouldSkipNode(valueToSkip))
+	if (!node1 || node1->ShouldSkipNode(queryFilter))
 	{
 		return node0;
 	}
@@ -254,22 +254,22 @@ const NodeType* ArgusKDTree<NodeType, ValueComparisonType>::ChooseNodeCloserToTa
 }
 
 template <class NodeType, typename ValueComparisonType>
-void ArgusKDTree<NodeType, ValueComparisonType>::FindNodesWithinRangeOfLocationRecursive(TArray<const NodeType*>& outNearbyNodes, const NodeType* iterationNode, const FVector& targetLocation, const float rangeSquared, ValueComparisonType valueToSkip, uint16 depth) const
+void ArgusKDTree<NodeType, ValueComparisonType>::FindNodesWithinRangeOfLocationRecursive(TArray<const NodeType*>& outNearbyNodes, const NodeType* iterationNode, const FVector& targetLocation, const float rangeSquared, TFunction<bool(ValueComparisonType)> queryFilter, uint16 depth) const
 {
 	if (!iterationNode)
 	{
 		return;
 	}
 
-	if (iterationNode->PassesRangeCheck(targetLocation, rangeSquared) && !iterationNode->ShouldSkipNode(valueToSkip))
+	if (iterationNode->PassesRangeCheck(targetLocation, rangeSquared) && !iterationNode->ShouldSkipNode(queryFilter))
 	{
 		outNearbyNodes.Add(iterationNode);
 	}
 
 	if (iterationNode->forceFullSearch)
 	{
-		FindNodesWithinRangeOfLocationRecursive(outNearbyNodes, iterationNode->m_leftChild, targetLocation, rangeSquared, valueToSkip, depth + 1);
-		FindNodesWithinRangeOfLocationRecursive(outNearbyNodes, iterationNode->m_rightChild, targetLocation, rangeSquared, valueToSkip, depth + 1);
+		FindNodesWithinRangeOfLocationRecursive(outNearbyNodes, iterationNode->m_leftChild, targetLocation, rangeSquared, queryFilter, depth + 1);
+		FindNodesWithinRangeOfLocationRecursive(outNearbyNodes, iterationNode->m_rightChild, targetLocation, rangeSquared, queryFilter, depth + 1);
 		return;
 	}
 
@@ -291,24 +291,24 @@ void ArgusKDTree<NodeType, ValueComparisonType>::FindNodesWithinRangeOfLocationR
 	const float differenceInDimension = targetLocationValue - iterationNode->GetValueForDimension(dimension);
 	if (FMath::Square(differenceInDimension) < rangeSquared)
 	{
-		FindNodesWithinRangeOfLocationRecursive(outNearbyNodes, iterationNode->m_leftChild, targetLocation, rangeSquared, valueToSkip, depth + 1);
-		FindNodesWithinRangeOfLocationRecursive(outNearbyNodes, iterationNode->m_rightChild, targetLocation, rangeSquared, valueToSkip, depth + 1);
+		FindNodesWithinRangeOfLocationRecursive(outNearbyNodes, iterationNode->m_leftChild, targetLocation, rangeSquared, queryFilter, depth + 1);
+		FindNodesWithinRangeOfLocationRecursive(outNearbyNodes, iterationNode->m_rightChild, targetLocation, rangeSquared, queryFilter, depth + 1);
 	}
 	else
 	{
 		if (differenceInDimension < 0.0f)
 		{
-			FindNodesWithinRangeOfLocationRecursive(outNearbyNodes, iterationNode->m_leftChild, targetLocation, rangeSquared, valueToSkip, depth + 1);
+			FindNodesWithinRangeOfLocationRecursive(outNearbyNodes, iterationNode->m_leftChild, targetLocation, rangeSquared, queryFilter, depth + 1);
 		}
 		else
 		{
-			FindNodesWithinRangeOfLocationRecursive(outNearbyNodes, iterationNode->m_rightChild, targetLocation, rangeSquared, valueToSkip, depth + 1);
+			FindNodesWithinRangeOfLocationRecursive(outNearbyNodes, iterationNode->m_rightChild, targetLocation, rangeSquared, queryFilter, depth + 1);
 		}
 	}
 }
 
 template <class NodeType, typename ValueComparisonType>
-void ArgusKDTree<NodeType, ValueComparisonType>::FindNodesWithinConvexPolyRecursive(TArray<const NodeType*>& outNearbyNodes, const NodeType* iterationNode, const TArray<FVector>& convexPolygonPoints, ValueComparisonType valueToSkip, uint16 depth) const
+void ArgusKDTree<NodeType, ValueComparisonType>::FindNodesWithinConvexPolyRecursive(TArray<const NodeType*>& outNearbyNodes, const NodeType* iterationNode, const TArray<FVector>& convexPolygonPoints, TFunction<bool(ValueComparisonType)> queryFilter, uint16 depth) const
 {
 	if (!iterationNode)
 	{
@@ -359,24 +359,24 @@ void ArgusKDTree<NodeType, ValueComparisonType>::FindNodesWithinConvexPolyRecurs
 		}
 	}
 
-	if (isInside && !iterationNode->ShouldSkipNode(valueToSkip))
+	if (isInside && !iterationNode->ShouldSkipNode(queryFilter))
 	{
 		outNearbyNodes.Add(iterationNode);
 	}
 
 	if (iterationNode->forceFullSearch || dimension == 2 || !allDifferencesSameSign)
 	{
-		FindNodesWithinConvexPolyRecursive(outNearbyNodes, iterationNode->m_leftChild, convexPolygonPoints, valueToSkip, depth + 1);
-		FindNodesWithinConvexPolyRecursive(outNearbyNodes, iterationNode->m_rightChild, convexPolygonPoints, valueToSkip, depth + 1);
+		FindNodesWithinConvexPolyRecursive(outNearbyNodes, iterationNode->m_leftChild, convexPolygonPoints, queryFilter, depth + 1);
+		FindNodesWithinConvexPolyRecursive(outNearbyNodes, iterationNode->m_rightChild, convexPolygonPoints, queryFilter, depth + 1);
 		return;
 	}
 
 	if (minDifferenceInDimension < 0.0f)
 	{
-		FindNodesWithinConvexPolyRecursive(outNearbyNodes, iterationNode->m_leftChild, convexPolygonPoints, valueToSkip, depth + 1);
+		FindNodesWithinConvexPolyRecursive(outNearbyNodes, iterationNode->m_leftChild, convexPolygonPoints, queryFilter, depth + 1);
 	}
 	else
 	{
-		FindNodesWithinConvexPolyRecursive(outNearbyNodes, iterationNode->m_rightChild, convexPolygonPoints, valueToSkip, depth + 1);
+		FindNodesWithinConvexPolyRecursive(outNearbyNodes, iterationNode->m_rightChild, convexPolygonPoints, queryFilter, depth + 1);
 	}
 }

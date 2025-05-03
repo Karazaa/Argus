@@ -23,7 +23,7 @@ bool ObstaclePointKDTreeNode::ShouldSkipNode() const
 	return m_indicies.m_obstacleIndex < 0 || m_indicies.m_obstaclePointIndex < 0;
 }
 
-bool ObstaclePointKDTreeNode::ShouldSkipNode(bool valueToSkip) const
+bool ObstaclePointKDTreeNode::ShouldSkipNode(TFunction<bool(bool)> queryFilter) const
 {
 	return m_indicies.m_obstacleIndex < 0 || m_indicies.m_obstaclePointIndex < 0;
 }
@@ -131,7 +131,7 @@ bool ObstaclePointKDTree::FindObstacleIndiciesWithinRangeOfLocation(TArray<Obsta
 	}
 
 	TArray<const ObstaclePointKDTreeNode*> foundNodes;
-	FindNodesWithinRangeOfLocationRecursive(foundNodes, m_rootNode, location, FMath::Square(range), true, 0u);
+	FindNodesWithinRangeOfLocationRecursive(foundNodes, m_rootNode, location, FMath::Square(range), nullptr, 0u);
 	obstacleIndicies.Reserve(foundNodes.Num());
 	for (int32 i = 0; i < foundNodes.Num(); ++i)
 	{

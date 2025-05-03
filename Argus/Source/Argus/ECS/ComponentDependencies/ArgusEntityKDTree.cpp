@@ -41,9 +41,19 @@ bool ArgusEntityKDTreeNode::ShouldSkipNode() const
 	return m_entityId == ArgusECSConstants::k_maxEntities;
 }
 
-bool ArgusEntityKDTreeNode::ShouldSkipNode(uint16 valueToSkip) const
+bool ArgusEntityKDTreeNode::ShouldSkipNode(TFunction<bool(uint16)> queryFilter) const
 {
-	return m_entityId == valueToSkip || m_entityId == ArgusECSConstants::k_maxEntities;
+	if (m_entityId == ArgusECSConstants::k_maxEntities)
+	{
+		return true;
+	}
+
+	if (!queryFilter)
+	{
+		return false;
+	}
+
+	return !queryFilter(m_entityId);
 }
 
 bool ArgusEntityKDTreeNode::PassesRangeCheck(const FVector& targetLocation, float rangeSquared) const
@@ -199,7 +209,13 @@ uint16 ArgusEntityKDTree::FindArgusEntityIdClosestToLocation(const FVector& loca
 		return ArgusECSConstants::k_maxEntities;
 	}
 
-	const ArgusEntityKDTreeNode* foundNode = FindNodeClosestToLocationRecursive(m_rootNode, location, entityToIgnore.GetId(), 0u);
+	uint16 entityIdToIgnore = entityToIgnore.GetId();
+	TFunction<bool(uint16)> predicate = nullptr;
+	if (entityIdToIgnore != ArgusECSConstants::k_maxEntities)
+	{
+		predicate = [entityIdToIgnore](uint16 valueToSkip) { return valueToSkip != entityIdToIgnore; };
+	}
+	const ArgusEntityKDTreeNode* foundNode = FindNodeClosestToLocationRecursive(m_rootNode, location, predicate, 0u);
 
 	if (!foundNode)
 	{
@@ -245,8 +261,15 @@ bool ArgusEntityKDTree::FindArgusEntityIdsWithinRangeOfLocation(TArray<uint16>& 
 		return false;
 	}
 
+	uint16 entityIdToIgnore = entityToIgnore.GetId();
+	TFunction<bool(uint16)> predicate = nullptr;
+	if (entityIdToIgnore != ArgusECSConstants::k_maxEntities)
+	{
+		predicate = [entityIdToIgnore](uint16 valueToSkip) { return valueToSkip != entityIdToIgnore; };
+	}
+
 	TArray<const ArgusEntityKDTreeNode*> foundNodes;
-	FindNodesWithinRangeOfLocationRecursive(foundNodes, m_rootNode, location, FMath::Square(range), entityToIgnore.GetId(), 0u);
+	FindNodesWithinRangeOfLocationRecursive(foundNodes, m_rootNode, location, FMath::Square(range), predicate, 0u);
 	outNearbyArgusEntityIds.Reserve(foundNodes.Num());
 	for (int32 i = 0; i < foundNodes.Num(); ++i)
 	{
@@ -293,7 +316,7 @@ bool ArgusEntityKDTree::FindArgusEntityIdsWithinConvexPoly(TArray<uint16>& outNe
 	}
 
 	TArray<const ArgusEntityKDTreeNode*> foundNodes;
-	FindNodesWithinConvexPolyRecursive(foundNodes, m_rootNode, convexPolygonPoints, ArgusECSConstants::k_maxEntities, 0u);
+	FindNodesWithinConvexPolyRecursive(foundNodes, m_rootNode, convexPolygonPoints, nullptr, 0u);
 	outNearbyArgusEntityIds.Reserve(foundNodes.Num());
 	for (int32 i = 0; i < foundNodes.Num(); ++i)
 	{

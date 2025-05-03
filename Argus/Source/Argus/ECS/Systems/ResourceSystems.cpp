@@ -80,6 +80,11 @@ void ResourceSystems::ProcessResourceExtractionTiming(const ResourceComponents& 
 		return;
 	}
 
+	if (components.m_resourceExtractionComponent->m_lastExtractionSourceEntityId == ArgusECSConstants::k_maxEntities)
+	{
+		components.m_resourceExtractionComponent->m_lastExtractionSourceEntityId = components.m_targetingComponent->m_targetEntityId;
+	}
+
 	const ArgusEntity targetEntity = ArgusEntity::RetrieveEntity(components.m_targetingComponent->m_targetEntityId);
 	if (!TargetingSystems::IsInMeleeRangeOfOtherEntity(components.m_entity, targetEntity) || !CanEntityExtractResourcesFromOtherEntity(components.m_entity, targetEntity))
 	{
@@ -146,7 +151,7 @@ bool ResourceSystems::ExtractResources(const ResourceComponents& components)
 
 void ResourceSystems::DepositResources(const ResourceComponents& components)
 {
-		if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return;
 	}
@@ -158,7 +163,36 @@ void ResourceSystems::DepositResources(const ResourceComponents& components)
 	}
 
 	TransferResourcesBetweenComponents(components.m_resourceComponent, teamResourceComponent, components.m_resourceComponent->m_currentResources);
-	components.m_taskComponent->m_resourceExtractionState = EResourceExtractionState::None;
+	MoveToLastExtractionSource(components);
+}
+
+void ResourceSystems::MoveToNearestDepositSink(const ResourceComponents& components)
+{
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+
+	components.m_taskComponent->m_resourceExtractionState = EResourceExtractionState::Depositing;
+	components.m_taskComponent->m_movementState = EMovementState::ProcessMoveToEntityCommand;
+}
+
+void ResourceSystems::MoveToLastExtractionSource(const ResourceComponents& components)
+{
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+
+	if (components.m_resourceExtractionComponent->m_lastExtractionSourceEntityId == ArgusECSConstants::k_maxEntities)
+	{
+		components.m_taskComponent->m_resourceExtractionState = EResourceExtractionState::None;
+		return;
+	}
+
+	components.m_taskComponent->m_resourceExtractionState = EResourceExtractionState::Extracting;
+	components.m_taskComponent->m_movementState = EMovementState::ProcessMoveToEntityCommand;
+	components.m_targetingComponent->m_targetEntityId = components.m_resourceExtractionComponent->m_lastExtractionSourceEntityId;
 }
 
 bool ResourceSystems::CanEntityExtractResourcesFromOtherEntity(const ArgusEntity& entity, const ArgusEntity& otherEntity)

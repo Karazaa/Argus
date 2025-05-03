@@ -31,6 +31,8 @@ public:
 	static void ProcessResourceDepositing(const ResourceComponents& components);
 	static bool ExtractResources(const ResourceComponents& components);
 	static void DepositResources(const ResourceComponents& components);
+	static void MoveToNearestDepositSink(const ResourceComponents& components);
+	static void MoveToLastExtractionSource(const ResourceComponents& components);
 
 
 	static bool CanEntityExtractResourcesFromOtherEntity(const ArgusEntity& entity, const ArgusEntity& otherEntity);
