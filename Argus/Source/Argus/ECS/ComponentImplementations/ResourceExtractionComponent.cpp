@@ -46,6 +46,10 @@ void ResourceExtractionComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_extractionLengthSeconds);
 		ImGui::TableNextColumn();
+		ImGui::Text("m_lastExtractionSourceEntityId");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_lastExtractionSourceEntityId);
+		ImGui::TableNextColumn();
 		ImGui::Text("m_resourceExtractionTimer");
 		ImGui::TableNextColumn();
 		const ArgusEntity owningEntity = ArgusEntity::RetrieveEntity(GetOwningEntityId());

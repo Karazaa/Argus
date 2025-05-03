@@ -9,6 +9,7 @@ void UResourceExtractionComponentData::InstantiateComponentForEntity(ArgusEntity
 	ResourceExtractionComponent* ResourceExtractionComponentRef = entity.AddComponent<ResourceExtractionComponent>();
 	ResourceExtractionComponentRef->m_resourcesToExtractRecordId = m_resourcesToExtractRecordId.LoadSynchronous() ? m_resourcesToExtractRecordId.LoadSynchronous()->m_id : 0u;
 	ResourceExtractionComponentRef->m_extractionLengthSeconds = m_extractionLengthSeconds;
+	ResourceExtractionComponentRef->m_lastExtractionSourceEntityId = m_lastExtractionSourceEntityId;
 	ResourceExtractionComponentRef->m_resourceExtractionTimer = m_resourceExtractionTimer;
 }
 
