@@ -204,18 +204,24 @@ uint16 ArgusEntityKDTree::FindArgusEntityIdClosestToLocation(const FVector& loca
 
 uint16 ArgusEntityKDTree::FindArgusEntityIdClosestToLocation(const FVector& location, const ArgusEntity& entityToIgnore) const
 {
-	if (!m_rootNode)
-	{
-		return ArgusECSConstants::k_maxEntities;
-	}
-
-	uint16 entityIdToIgnore = entityToIgnore.GetId();
+	const uint16 entityIdToIgnore = entityToIgnore.GetId();
 	TFunction<bool(uint16)> predicate = nullptr;
 	if (entityIdToIgnore != ArgusECSConstants::k_maxEntities)
 	{
 		predicate = [entityIdToIgnore](uint16 valueToSkip) { return valueToSkip != entityIdToIgnore; };
 	}
-	const ArgusEntityKDTreeNode* foundNode = FindNodeClosestToLocationRecursive(m_rootNode, location, predicate, 0u);
+
+	return FindArgusEntityIdClosestToLocation(location, predicate);
+}
+
+uint16 ArgusEntityKDTree::FindArgusEntityIdClosestToLocation(const FVector& location, TFunction<bool(uint16)> queryFilter) const
+{
+	if (!m_rootNode)
+	{
+		return ArgusECSConstants::k_maxEntities;
+	}
+
+	const ArgusEntityKDTreeNode* foundNode = FindNodeClosestToLocationRecursive(m_rootNode, location, queryFilter, 0u);
 
 	if (!foundNode)
 	{
@@ -225,7 +231,7 @@ uint16 ArgusEntityKDTree::FindArgusEntityIdClosestToLocation(const FVector& loca
 	return foundNode->m_entityId;
 }
 
-uint16 ArgusEntityKDTree::FindOtherArgusEntityIdClosestArgusEntity(const ArgusEntity& entityToSearchAround) const
+uint16 ArgusEntityKDTree::FindOtherArgusEntityIdClosestToArgusEntity(const ArgusEntity& entityToSearchAround, TFunction<bool(uint16)> queryFilterOverride) const
 {
 	if (!entityToSearchAround)
 	{
@@ -238,6 +244,11 @@ uint16 ArgusEntityKDTree::FindOtherArgusEntityIdClosestArgusEntity(const ArgusEn
 	{
 		ErrorOnInvalidTransformComponent(ARGUS_FUNCNAME);
 		return ArgusECSConstants::k_maxEntities;
+	}
+
+	if (queryFilterOverride)
+	{
+		return FindArgusEntityIdClosestToLocation(transformComponent->m_location, queryFilterOverride);
 	}
 
 	return FindArgusEntityIdClosestToLocation(transformComponent->m_location, entityToSearchAround);

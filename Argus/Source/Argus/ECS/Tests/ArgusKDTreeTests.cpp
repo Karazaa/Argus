@@ -228,7 +228,7 @@ bool ArgusUtilitiesArgusKDTreeFindOtherArgusEntityIdClosestArgusEntityTest::RunT
 	CollectionOfArgusEntities entities;
 	PopulateKDTreeForTests(tree, entities, true);
 
-	uint16 nearestEntityIdToCenter = tree.FindOtherArgusEntityIdClosestArgusEntity(entities.entity0);
+	uint16 nearestEntityIdToCenter = tree.FindOtherArgusEntityIdClosestToArgusEntity(entities.entity0);
 
 #pragma region Test that we can find the nearest entity to the center entity
 	TestEqual
@@ -241,14 +241,14 @@ bool ArgusUtilitiesArgusKDTreeFindOtherArgusEntityIdClosestArgusEntityTest::RunT
 			ARGUS_NAMEOF(ArgusEntity),
 			ARGUS_NAMEOF(ArgusEntity),
 			ARGUS_NAMEOF(ArgusEntity),
-			ARGUS_NAMEOF(ArgusEntityKDTree::FindOtherArgusEntityIdClosestArgusEntity)
+			ARGUS_NAMEOF(ArgusEntityKDTree::FindOtherArgusEntityIdClosestToArgusEntity)
 		),
 		nearestEntityIdToCenter,
 		ArgusKDTreeTestConstants::id1
 	);
 #pragma endregion
 
-	uint16 nearestEntityIdToLeftCenter = tree.FindOtherArgusEntityIdClosestArgusEntity(entities.entity1);
+	uint16 nearestEntityIdToLeftCenter = tree.FindOtherArgusEntityIdClosestToArgusEntity(entities.entity1);
 
 #pragma region Test that we can find the nearest entity to the center-left entity
 	TestEqual
@@ -261,14 +261,14 @@ bool ArgusUtilitiesArgusKDTreeFindOtherArgusEntityIdClosestArgusEntityTest::RunT
 			ARGUS_NAMEOF(ArgusEntity),
 			ARGUS_NAMEOF(ArgusEntity),
 			ARGUS_NAMEOF(ArgusEntity),
-			ARGUS_NAMEOF(ArgusEntityKDTree::FindOtherArgusEntityIdClosestArgusEntity)
+			ARGUS_NAMEOF(ArgusEntityKDTree::FindOtherArgusEntityIdClosestToArgusEntity)
 		),
 		nearestEntityIdToLeftCenter,
 		ArgusKDTreeTestConstants::id3
 	);
 #pragma endregion
 
-	uint16 nearestEntityIdToRightCenter = tree.FindOtherArgusEntityIdClosestArgusEntity(entities.entity2);
+	uint16 nearestEntityIdToRightCenter = tree.FindOtherArgusEntityIdClosestToArgusEntity(entities.entity2);
 
 #pragma region Test that we can find the nearest entity to the center-right entity
 	TestEqual
@@ -281,7 +281,7 @@ bool ArgusUtilitiesArgusKDTreeFindOtherArgusEntityIdClosestArgusEntityTest::RunT
 			ARGUS_NAMEOF(ArgusEntity),
 			ARGUS_NAMEOF(ArgusEntity),
 			ARGUS_NAMEOF(ArgusEntity),
-			ARGUS_NAMEOF(ArgusEntityKDTree::FindOtherArgusEntityIdClosestArgusEntity)
+			ARGUS_NAMEOF(ArgusEntityKDTree::FindOtherArgusEntityIdClosestToArgusEntity)
 		),
 		nearestEntityIdToRightCenter,
 		ArgusKDTreeTestConstants::id4
@@ -302,7 +302,7 @@ bool ArgusUtilitiesArgusKDTreeFindOtherArgusEntityIdClosestArgusEntityTest::RunT
 	);
 #pragma endregion
 
-	tree.FindOtherArgusEntityIdClosestArgusEntity(errorEntity);
+	tree.FindOtherArgusEntityIdClosestToArgusEntity(errorEntity);
 	errorEntity = ArgusEntity::CreateEntity(105u);
 	TransformComponent* errorEntityTransformComponent = nullptr;
 
@@ -319,7 +319,7 @@ bool ArgusUtilitiesArgusKDTreeFindOtherArgusEntityIdClosestArgusEntityTest::RunT
 	);
 #pragma endregion
 
-	tree.FindOtherArgusEntityIdClosestArgusEntity(errorEntity);
+	tree.FindOtherArgusEntityIdClosestToArgusEntity(errorEntity);
 
 	ArgusTesting::EndArgusTest();
 	return true;

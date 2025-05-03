@@ -100,7 +100,7 @@ void ResourceSystems::ProcessResourceExtractionTiming(const ResourceComponents& 
 		}
 		else
 		{
-			components.m_taskComponent->m_resourceExtractionState = EResourceExtractionState::None;
+			MoveToNearestDepositSink(components);
 		}
 	}
 	else
@@ -173,8 +173,44 @@ void ResourceSystems::MoveToNearestDepositSink(const ResourceComponents& compone
 		return;
 	}
 
+	const SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::GetSingletonEntity().GetComponent<SpatialPartitioningComponent>();
+	if (!spatialPartitioningComponent)
+	{
+		return;
+	}
+
+	const uint16 entityId = components.m_entity.GetId();
+	TFunction<bool(uint16)> queryFilter = [entityId](uint16 nodeEntityId)
+	{
+		if (nodeEntityId == entityId)
+		{
+			return false;
+		}
+
+		const ArgusEntity entity = ArgusEntity::RetrieveEntity(entityId);
+		const IdentityComponent* identityComponent = entity.GetComponent<IdentityComponent>();
+		const ArgusEntity nodeEntity = ArgusEntity::RetrieveEntity(nodeEntityId);
+		const IdentityComponent* nodeIdentityComponent = nodeEntity.GetComponent<IdentityComponent>();
+		const ResourceComponent* nodeResourceComponent = nodeEntity.GetComponent<ResourceComponent>();
+		if (!identityComponent || !nodeIdentityComponent || !nodeResourceComponent)
+		{
+			return false;
+		}
+
+		return (identityComponent->m_team == nodeIdentityComponent->m_team) && 
+				nodeResourceComponent->m_resourceComponentOwnerType == EResourceComponentOwnerType::Sink;
+	};
+
+	const uint16 targetDepositEntityId = spatialPartitioningComponent->m_argusEntityKDTree.FindOtherArgusEntityIdClosestToArgusEntity(components.m_entity, queryFilter);
+	if (targetDepositEntityId == ArgusECSConstants::k_maxEntities)
+	{
+		components.m_taskComponent->m_resourceExtractionState = EResourceExtractionState::None;
+		return;
+	}
+
 	components.m_taskComponent->m_resourceExtractionState = EResourceExtractionState::Depositing;
 	components.m_taskComponent->m_movementState = EMovementState::ProcessMoveToEntityCommand;
+	components.m_targetingComponent->m_targetEntityId = targetDepositEntityId;
 }
 
 void ResourceSystems::MoveToLastExtractionSource(const ResourceComponents& components)
