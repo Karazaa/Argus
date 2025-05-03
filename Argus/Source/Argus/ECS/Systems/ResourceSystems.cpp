@@ -146,17 +146,30 @@ bool ResourceSystems::ExtractResources(const ResourceComponents& components)
 
 void ResourceSystems::DepositResources(const ResourceComponents& components)
 {
-	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+		if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return;
 	}
 
-	// TODO JAMES: Actually deposit the resources to the team resource component
+	ResourceComponent* teamResourceComponent = GetTeamResourceComponentForEntity(components.m_entity);
+	if (!teamResourceComponent)
+	{
+		return;
+	}
+
+	TransferResourcesBetweenComponents(components.m_resourceComponent, teamResourceComponent, components.m_resourceComponent->m_currentResources);
+	components.m_taskComponent->m_resourceExtractionState = EResourceExtractionState::None;
 }
 
 bool ResourceSystems::CanEntityExtractResourcesFromOtherEntity(const ArgusEntity& entity, const ArgusEntity& otherEntity)
 {
 	if (!entity || !otherEntity)
+	{
+		return false;
+	}
+
+	const ResourceComponent* resourceComponent = entity.GetComponent<ResourceComponent>();
+	if (!resourceComponent || resourceComponent->m_resourceComponentOwnerType != EResourceComponentOwnerType::Carrier)
 	{
 		return false;
 	}
@@ -189,8 +202,8 @@ bool ResourceSystems::CanEntityDepositResourcesToOtherEntity(const ArgusEntity& 
 		return false;
 	}
 
-	const ResourceComponent* resourceComponentComponent = entity.GetComponent<ResourceComponent>();
-	if (!resourceComponentComponent)
+	const ResourceComponent* resourceComponent = entity.GetComponent<ResourceComponent>();
+	if (!resourceComponent || resourceComponent->m_resourceComponentOwnerType != EResourceComponentOwnerType::Carrier)
 	{
 		return false;
 	}
@@ -279,20 +292,15 @@ bool ResourceSystems::TransferResourcesBetweenComponents(ResourceComponent* sour
 	}
 
 	const UResourceSetRecord* resourceCapacityRecord = ArgusStaticData::GetRecord<UResourceSetRecord>(targetComponent->m_resourceCapacityRecordId);
-	if (!resourceCapacityRecord)
+	if (resourceCapacityRecord && targetComponent->m_currentResources >= resourceCapacityRecord->m_resourceSet)
 	{
 		return false;
 	}
 
-	if (targetComponent->m_currentResources >= resourceCapacityRecord->m_resourceSet)
-	{
-		return false;
-	}
-
-	sourceComponent->m_currentResources.ApplyResourceChange(resourceChange);
 	targetComponent->m_currentResources.ApplyResourceChange(amount);
+	sourceComponent->m_currentResources.ApplyResourceChange(resourceChange);
 
-	if (targetComponent->m_currentResources >= resourceCapacityRecord->m_resourceSet)
+	if (resourceCapacityRecord && targetComponent->m_currentResources >= resourceCapacityRecord->m_resourceSet)
 	{
 		return false;
 	}

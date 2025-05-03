@@ -266,6 +266,10 @@ void NavigationSystems::ChangeTasksOnNavigatingToEntity(ArgusEntity targetEntity
 	{
 		components.m_taskComponent->m_resourceExtractionState = EResourceExtractionState::Extracting;
 	}
+	else if (ResourceSystems::CanEntityDepositResourcesToOtherEntity(components.m_entity, targetEntity))
+	{
+		components.m_taskComponent->m_resourceExtractionState = EResourceExtractionState::Depositing;
+	}
 	else
 	{
 		components.m_taskComponent->m_resourceExtractionState = EResourceExtractionState::None;
