@@ -8,6 +8,8 @@
 
 void ResourceSystems::RunSystems(float deltaTime)
 {
+	ARGUS_TRACE(ResourceSystems::RunSystems);
+
 	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{
 		ResourceComponents components;
@@ -44,6 +46,8 @@ bool ResourceSystems::ResourceComponents::AreComponentsValidCheck(const WIDECHAR
 
 void ResourceSystems::ProcessResourceExtractionState(const ResourceComponents& components)
 {
+	ARGUS_TRACE(ResourceSystems::ProcessResourceExtractionState);
+
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return;
@@ -64,6 +68,8 @@ void ResourceSystems::ProcessResourceExtractionState(const ResourceComponents& c
 
 void ResourceSystems::ProcessResourceExtractionTiming(const ResourceComponents& components)
 {
+	ARGUS_TRACE(ResourceSystems::ProcessResourceExtractionTiming);
+
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return;
@@ -111,6 +117,8 @@ void ResourceSystems::ProcessResourceExtractionTiming(const ResourceComponents& 
 
 void ResourceSystems::ProcessResourceDepositing(const ResourceComponents& components)
 {
+	ARGUS_TRACE(ResourceSystems::ProcessResourceDepositing);
+
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return;
@@ -282,6 +290,14 @@ bool ResourceSystems::CanEntityDepositResourcesToOtherEntity(const ArgusEntity& 
 	if (!otherEntityResourceComponent || otherEntityResourceComponent->m_resourceComponentOwnerType != EResourceComponentOwnerType::Sink)
 	{
 		return false;
+	}
+
+	if (const TaskComponent* otherEntityTaskComponent = otherEntity.GetComponent<TaskComponent>())
+	{
+		if (otherEntityTaskComponent->m_constructionState == EConstructionState::BeingConstructed)
+		{
+			return false;
+		}
 	}
 
 	const IdentityComponent* identityComponent = entity.GetComponent<IdentityComponent>();
