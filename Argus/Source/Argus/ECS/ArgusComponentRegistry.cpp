@@ -12,6 +12,10 @@ std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isAbilit
 AvoidanceGroupingComponent ArgusComponentRegistry::s_AvoidanceGroupingComponents[ArgusECSConstants::k_maxEntities];
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isAvoidanceGroupingComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
 #pragma endregion
+#pragma region CarrierComponent
+CarrierComponent ArgusComponentRegistry::s_CarrierComponents[ArgusECSConstants::k_maxEntities];
+std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isCarrierComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
+#pragma endregion
 #pragma region CombatComponent
 CombatComponent ArgusComponentRegistry::s_CombatComponents[ArgusECSConstants::k_maxEntities];
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isCombatComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
@@ -35,6 +39,10 @@ std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isNaviga
 #pragma region ObserversComponent
 ObserversComponent ArgusComponentRegistry::s_ObserversComponents[ArgusECSConstants::k_maxEntities];
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isObserversComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
+#pragma endregion
+#pragma region PassengerComponent
+PassengerComponent ArgusComponentRegistry::s_PassengerComponents[ArgusECSConstants::k_maxEntities];
+std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isPassengerComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
 #pragma endregion
 #pragma region ResourceComponent
 ResourceComponent ArgusComponentRegistry::s_ResourceComponents[ArgusECSConstants::k_maxEntities];
@@ -85,12 +93,14 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 	// Begin set bitset bits to false
 	s_isAbilityComponentActive.set(entityId, false);
 	s_isAvoidanceGroupingComponentActive.set(entityId, false);
+	s_isCarrierComponentActive.set(entityId, false);
 	s_isCombatComponentActive.set(entityId, false);
 	s_isConstructionComponentActive.set(entityId, false);
 	s_isHealthComponentActive.set(entityId, false);
 	s_isIdentityComponentActive.set(entityId, false);
 	s_isNavigationComponentActive.set(entityId, false);
 	s_isObserversComponentActive.set(entityId, false);
+	s_isPassengerComponentActive.set(entityId, false);
 	s_isResourceComponentActive.set(entityId, false);
 	s_isResourceExtractionComponentActive.set(entityId, false);
 	s_isSpawningComponentActive.set(entityId, false);
@@ -102,12 +112,14 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 	// Begin set component values
 	s_AbilityComponents[entityId] = AbilityComponent();
 	s_AvoidanceGroupingComponents[entityId] = AvoidanceGroupingComponent();
+	s_CarrierComponents[entityId] = CarrierComponent();
 	s_CombatComponents[entityId] = CombatComponent();
 	s_ConstructionComponents[entityId] = ConstructionComponent();
 	s_HealthComponents[entityId] = HealthComponent();
 	s_IdentityComponents[entityId] = IdentityComponent();
 	s_NavigationComponents[entityId] = NavigationComponent();
 	s_ObserversComponents[entityId] = ObserversComponent();
+	s_PassengerComponents[entityId] = PassengerComponent();
 	s_ResourceComponents[entityId] = ResourceComponent();
 	s_ResourceExtractionComponents[entityId] = ResourceExtractionComponent();
 	s_SpawningComponents[entityId] = SpawningComponent();
@@ -136,12 +148,14 @@ void ArgusComponentRegistry::FlushAllComponents()
 	// Begin flush active component bitsets
 	s_isAbilityComponentActive.reset();
 	s_isAvoidanceGroupingComponentActive.reset();
+	s_isCarrierComponentActive.reset();
 	s_isCombatComponentActive.reset();
 	s_isConstructionComponentActive.reset();
 	s_isHealthComponentActive.reset();
 	s_isIdentityComponentActive.reset();
 	s_isNavigationComponentActive.reset();
 	s_isObserversComponentActive.reset();
+	s_isPassengerComponentActive.reset();
 	s_isResourceComponentActive.reset();
 	s_isResourceExtractionComponentActive.reset();
 	s_isSpawningComponentActive.reset();
@@ -155,12 +169,14 @@ void ArgusComponentRegistry::FlushAllComponents()
 	{
 		s_AbilityComponents[i] = AbilityComponent();
 		s_AvoidanceGroupingComponents[i] = AvoidanceGroupingComponent();
+		s_CarrierComponents[i] = CarrierComponent();
 		s_CombatComponents[i] = CombatComponent();
 		s_ConstructionComponents[i] = ConstructionComponent();
 		s_HealthComponents[i] = HealthComponent();
 		s_IdentityComponents[i] = IdentityComponent();
 		s_NavigationComponents[i] = NavigationComponent();
 		s_ObserversComponents[i] = ObserversComponent();
+		s_PassengerComponents[i] = PassengerComponent();
 		s_ResourceComponents[i] = ResourceComponent();
 		s_ResourceExtractionComponents[i] = ResourceExtractionComponent();
 		s_SpawningComponents[i] = SpawningComponent();
@@ -187,6 +203,11 @@ uint16 ArgusComponentRegistry::GetOwningEntityIdForComponentMember(void* memberA
 	{
 		AvoidanceGroupingComponent* pretendComponent = reinterpret_cast<AvoidanceGroupingComponent*>(memberAddress);
 		return pretendComponent - &s_AvoidanceGroupingComponents[0];
+	}
+	if (memberAddress >= &s_CarrierComponents[0] && memberAddress <= &s_CarrierComponents[ArgusECSConstants::k_maxEntities - 1])
+	{
+		CarrierComponent* pretendComponent = reinterpret_cast<CarrierComponent*>(memberAddress);
+		return pretendComponent - &s_CarrierComponents[0];
 	}
 	if (memberAddress >= &s_CombatComponents[0] && memberAddress <= &s_CombatComponents[ArgusECSConstants::k_maxEntities - 1])
 	{
@@ -217,6 +238,11 @@ uint16 ArgusComponentRegistry::GetOwningEntityIdForComponentMember(void* memberA
 	{
 		ObserversComponent* pretendComponent = reinterpret_cast<ObserversComponent*>(memberAddress);
 		return pretendComponent - &s_ObserversComponents[0];
+	}
+	if (memberAddress >= &s_PassengerComponents[0] && memberAddress <= &s_PassengerComponents[ArgusECSConstants::k_maxEntities - 1])
+	{
+		PassengerComponent* pretendComponent = reinterpret_cast<PassengerComponent*>(memberAddress);
+		return pretendComponent - &s_PassengerComponents[0];
 	}
 	if (memberAddress >= &s_ResourceComponents[0] && memberAddress <= &s_ResourceComponents[ArgusECSConstants::k_maxEntities - 1])
 	{
@@ -267,6 +293,10 @@ void ArgusComponentRegistry::AppendComponentDebugStrings(uint16 entityId, FStrin
 //	{
 //		AvoidanceGroupingComponentPtr->GetDebugString(debugStringToAppendTo);
 //	}
+//	if (const CarrierComponent* CarrierComponentPtr = GetComponent<CarrierComponent>(entityId))
+//	{
+//		CarrierComponentPtr->GetDebugString(debugStringToAppendTo);
+//	}
 //	if (const CombatComponent* CombatComponentPtr = GetComponent<CombatComponent>(entityId))
 //	{
 //		CombatComponentPtr->GetDebugString(debugStringToAppendTo);
@@ -290,6 +320,10 @@ void ArgusComponentRegistry::AppendComponentDebugStrings(uint16 entityId, FStrin
 //	if (const ObserversComponent* ObserversComponentPtr = GetComponent<ObserversComponent>(entityId))
 //	{
 //		ObserversComponentPtr->GetDebugString(debugStringToAppendTo);
+//	}
+//	if (const PassengerComponent* PassengerComponentPtr = GetComponent<PassengerComponent>(entityId))
+//	{
+//		PassengerComponentPtr->GetDebugString(debugStringToAppendTo);
 //	}
 //	if (const ResourceComponent* ResourceComponentPtr = GetComponent<ResourceComponent>(entityId))
 //	{
@@ -344,6 +378,10 @@ void ArgusComponentRegistry::DrawComponentsDebug(uint16 entityId)
 	{
 		AvoidanceGroupingComponentPtr->DrawComponentDebug();
 	}
+	if (const CarrierComponent* CarrierComponentPtr = GetComponent<CarrierComponent>(entityId))
+	{
+		CarrierComponentPtr->DrawComponentDebug();
+	}
 	if (const CombatComponent* CombatComponentPtr = GetComponent<CombatComponent>(entityId))
 	{
 		CombatComponentPtr->DrawComponentDebug();
@@ -367,6 +405,10 @@ void ArgusComponentRegistry::DrawComponentsDebug(uint16 entityId)
 	if (const ObserversComponent* ObserversComponentPtr = GetComponent<ObserversComponent>(entityId))
 	{
 		ObserversComponentPtr->DrawComponentDebug();
+	}
+	if (const PassengerComponent* PassengerComponentPtr = GetComponent<PassengerComponent>(entityId))
+	{
+		PassengerComponentPtr->DrawComponentDebug();
 	}
 	if (const ResourceComponent* ResourceComponentPtr = GetComponent<ResourceComponent>(entityId))
 	{

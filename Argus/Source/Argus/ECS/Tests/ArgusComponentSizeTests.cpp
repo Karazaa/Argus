@@ -24,6 +24,11 @@ bool ArgusComponentComponentSizeTest::RunTest(const FString& Parameters)
 	netSize += AvoidanceGroupingComponentSize;
 	ARGUS_LOG(ArgusTestingLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(AvoidanceGroupingComponent), AvoidanceGroupingComponentSize);
 #pragma endregion
+#pragma region CarrierComponent
+	const size_t CarrierComponentSize = sizeof(CarrierComponent);
+	netSize += CarrierComponentSize;
+	ARGUS_LOG(ArgusTestingLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(CarrierComponent), CarrierComponentSize);
+#pragma endregion
 #pragma region CombatComponent
 	const size_t CombatComponentSize = sizeof(CombatComponent);
 	netSize += CombatComponentSize;
@@ -53,6 +58,11 @@ bool ArgusComponentComponentSizeTest::RunTest(const FString& Parameters)
 	const size_t ObserversComponentSize = sizeof(ObserversComponent);
 	netSize += ObserversComponentSize;
 	ARGUS_LOG(ArgusTestingLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(ObserversComponent), ObserversComponentSize);
+#pragma endregion
+#pragma region PassengerComponent
+	const size_t PassengerComponentSize = sizeof(PassengerComponent);
+	netSize += PassengerComponentSize;
+	ARGUS_LOG(ArgusTestingLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(PassengerComponent), PassengerComponentSize);
 #pragma endregion
 #pragma region ResourceComponent
 	const size_t ResourceComponentSize = sizeof(ResourceComponent);

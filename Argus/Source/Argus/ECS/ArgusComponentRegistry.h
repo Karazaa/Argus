@@ -11,12 +11,14 @@
 // Begin component specific includes.
 #include "ComponentDefinitions\AbilityComponent.h"
 #include "ComponentDefinitions\AvoidanceGroupingComponent.h"
+#include "ComponentDefinitions\CarrierComponent.h"
 #include "ComponentDefinitions\CombatComponent.h"
 #include "ComponentDefinitions\ConstructionComponent.h"
 #include "ComponentDefinitions\HealthComponent.h"
 #include "ComponentDefinitions\IdentityComponent.h"
 #include "ComponentDefinitions\NavigationComponent.h"
 #include "ComponentDefinitions\ObserversComponent.h"
+#include "ComponentDefinitions\PassengerComponent.h"
 #include "ComponentDefinitions\ResourceComponent.h"
 #include "ComponentDefinitions\ResourceExtractionComponent.h"
 #include "ComponentDefinitions\SpawningComponent.h"
@@ -61,7 +63,7 @@ public:
 	static void DrawComponentsDebug(uint16 entityId);
 #endif //!UE_BUILD_SHIPPING
 
-	static constexpr uint32 k_numComponentTypes = 18;
+	static constexpr uint32 k_numComponentTypes = 20;
 
 	// Begin component specific template specifiers.
 	
@@ -194,6 +196,71 @@ public:
 	}
 
 	friend struct AvoidanceGroupingComponent;
+#pragma endregion
+#pragma region CarrierComponent
+private:
+	static CarrierComponent s_CarrierComponents[ArgusECSConstants::k_maxEntities];
+	static std::bitset<ArgusECSConstants::k_maxEntities> s_isCarrierComponentActive;
+public:
+	template<>
+	inline CarrierComponent* GetComponent<CarrierComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(CarrierComponent));
+			return nullptr;
+		}
+
+		if (!s_isCarrierComponentActive[entityId])
+		{
+			return nullptr;
+		}
+
+		return &s_CarrierComponents[entityId];
+	}
+
+	template<>
+	inline CarrierComponent* AddComponent<CarrierComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(CarrierComponent));
+			return nullptr;
+		}
+
+		if (s_isCarrierComponentActive[entityId])
+		{
+			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(CarrierComponent), entityId);
+			return &s_CarrierComponents[entityId];
+		}
+
+		s_CarrierComponents[entityId] = CarrierComponent();
+		s_isCarrierComponentActive.set(entityId);
+		return &s_CarrierComponents[entityId];
+	}
+
+	template<>
+	inline CarrierComponent* GetOrAddComponent<CarrierComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(CarrierComponent));
+			return nullptr;
+		}
+
+		if (s_isCarrierComponentActive[entityId])
+		{
+			return &s_CarrierComponents[entityId];
+		}
+		else
+		{
+			s_CarrierComponents[entityId] = CarrierComponent();
+			s_isCarrierComponentActive.set(entityId);
+			return &s_CarrierComponents[entityId];
+		}
+	}
+
+	friend struct CarrierComponent;
 #pragma endregion
 #pragma region CombatComponent
 private:
@@ -584,6 +651,71 @@ public:
 	}
 
 	friend struct ObserversComponent;
+#pragma endregion
+#pragma region PassengerComponent
+private:
+	static PassengerComponent s_PassengerComponents[ArgusECSConstants::k_maxEntities];
+	static std::bitset<ArgusECSConstants::k_maxEntities> s_isPassengerComponentActive;
+public:
+	template<>
+	inline PassengerComponent* GetComponent<PassengerComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(PassengerComponent));
+			return nullptr;
+		}
+
+		if (!s_isPassengerComponentActive[entityId])
+		{
+			return nullptr;
+		}
+
+		return &s_PassengerComponents[entityId];
+	}
+
+	template<>
+	inline PassengerComponent* AddComponent<PassengerComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(PassengerComponent));
+			return nullptr;
+		}
+
+		if (s_isPassengerComponentActive[entityId])
+		{
+			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(PassengerComponent), entityId);
+			return &s_PassengerComponents[entityId];
+		}
+
+		s_PassengerComponents[entityId] = PassengerComponent();
+		s_isPassengerComponentActive.set(entityId);
+		return &s_PassengerComponents[entityId];
+	}
+
+	template<>
+	inline PassengerComponent* GetOrAddComponent<PassengerComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(PassengerComponent));
+			return nullptr;
+		}
+
+		if (s_isPassengerComponentActive[entityId])
+		{
+			return &s_PassengerComponents[entityId];
+		}
+		else
+		{
+			s_PassengerComponents[entityId] = PassengerComponent();
+			s_isPassengerComponentActive.set(entityId);
+			return &s_PassengerComponents[entityId];
+		}
+	}
+
+	friend struct PassengerComponent;
 #pragma endregion
 #pragma region ResourceComponent
 private:
