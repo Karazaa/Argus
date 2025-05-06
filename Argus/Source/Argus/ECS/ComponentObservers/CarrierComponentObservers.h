@@ -4,7 +4,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ComponentDependencies/CarrierComponentStates.h"
+#include "ComponentDependencies/TaskComponentStates.h"
 
 class ICarrierComponentObserver
 {

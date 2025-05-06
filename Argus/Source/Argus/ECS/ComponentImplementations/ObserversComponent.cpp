@@ -27,6 +27,9 @@ void ObserversComponent::DrawComponentDebug() const
 	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings))
 	{
 		ImGui::TableNextColumn();
+		ImGui::Text("m_PassengerComponentObservers");
+		ImGui::TableNextColumn();
+		ImGui::TableNextColumn();
 		ImGui::Text("m_TaskComponentObservers");
 		ImGui::TableNextColumn();
 		ImGui::EndTable();

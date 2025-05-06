@@ -10,6 +10,5 @@ struct PassengerComponent
 {
 	ARGUS_COMPONENT_SHARED
 
-	ARGUS_IGNORE()
-	uint16 m_carrierEntityId = ArgusECSConstants::k_maxEntities;
+	ARGUS_OBSERVABLE_DECLARATION(uint16, m_carrierEntityId, ArgusECSConstants::k_maxEntities)
 };

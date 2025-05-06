@@ -4,7 +4,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ComponentDependencies/ConstructionComponentStates.h"
+#include "ComponentDependencies/TaskComponentStates.h"
 
 class IConstructionComponentObserver
 {

@@ -44,6 +44,8 @@ public:
 	bool			IsSelected() const;
 	bool			IsIdle() const;
 	bool			IsInRangeOfOtherEntity(const ArgusEntity& other, float range) const;
+	bool			IsPassenger() const;
+	bool			IsCarryingPassengers() const;
 
 #if !UE_BUILD_SHIPPING
 	const FString	GetDebugString() const;

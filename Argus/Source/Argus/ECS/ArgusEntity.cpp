@@ -308,6 +308,28 @@ bool ArgusEntity::IsInRangeOfOtherEntity(const ArgusEntity& other, float range) 
 	return FVector::DistSquared(transformComponent->m_location, otherTransformComponent->m_location) <= FMath::Square(range);
 }
 
+bool ArgusEntity::IsPassenger() const
+{
+	const PassengerComponent* passengerComponent = GetComponent<PassengerComponent>();
+	if (!passengerComponent)
+	{
+		return false;
+	}
+
+	return passengerComponent->m_carrierEntityId != ArgusECSConstants::k_maxEntities;
+}
+
+bool ArgusEntity::IsCarryingPassengers() const
+{
+	const CarrierComponent* carrierComponent = GetComponent<CarrierComponent>();
+	if (!carrierComponent)
+	{
+		return false;
+	}
+
+	return carrierComponent->m_passengerEntityIds.Num() > 0;
+}
+
 #if !UE_BUILD_SHIPPING
 const FString ArgusEntity::GetDebugString() const
 {

@@ -29,6 +29,10 @@ void AArgusActor::Reset()
 		if (ObserversComponent* observersComponent = m_entity.GetComponent<ObserversComponent>())
 		{
 			observersComponent->m_TaskComponentObservers.RemoveObserver(this);
+			if (PassengerComponent* passengerComponent = m_entity.GetComponent<PassengerComponent>())
+			{
+				observersComponent->m_PassengerComponentObservers.RemoveObserver(this);
+			}
 		}
 
 		if (const UWorld* world = GetWorld())
@@ -82,6 +86,10 @@ void AArgusActor::SetEntity(const ArgusEntity& entity)
 	if (ObserversComponent* observersComponent = m_entity.GetComponent<ObserversComponent>())
 	{
 		observersComponent->m_TaskComponentObservers.AddObserver(this);
+		if (PassengerComponent* passengerComponent = m_entity.GetComponent<PassengerComponent>())
+		{
+			observersComponent->m_PassengerComponentObservers.AddObserver(this);
+		}
 	}
 
 	if (TransformComponent* transformComponent = m_entity.GetComponent<TransformComponent>())
@@ -263,6 +271,11 @@ void AArgusActor::OnChanged_m_baseState(EBaseState oldState, EBaseState newState
 	{
 		OnArgusEntityDeath();
 	}
+}
+
+void AArgusActor::OnChanged_m_carrierEntityId(uint16 oldValue, uint16 newValue)
+{
+	OnArgusEntityPassengerStateChanged(newValue != ArgusECSConstants::k_maxEntities);
 }
 
 void AArgusActor::InitializeWidgets()

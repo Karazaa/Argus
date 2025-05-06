@@ -12,6 +12,7 @@ class ARGUS_API UObserversComponentData : public UComponentData
 	GENERATED_BODY()
 
 public:
+	PassengerComponentObservers m_PassengerComponentObservers;
 	TaskComponentObservers m_TaskComponentObservers;
 
 	void InstantiateComponentForEntity(ArgusEntity& entity) const override;

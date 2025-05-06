@@ -4,7 +4,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ComponentDependencies/SpawningComponentStates.h"
+#include "ComponentDependencies/TaskComponentStates.h"
 
 class ISpawningComponentObserver
 {

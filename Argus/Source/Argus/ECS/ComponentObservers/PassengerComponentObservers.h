@@ -4,11 +4,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ComponentDependencies/PassengerComponentStates.h"
+#include "ComponentDependencies/TaskComponentStates.h"
 
 class IPassengerComponentObserver
 {
 public:
+	virtual void OnChanged_m_carrierEntityId(uint16 oldValue, uint16 newValue) = 0;
 };
 
 class PassengerComponentObservers
@@ -44,6 +45,13 @@ public:
 	}
 
 private:
+	void OnChanged_m_carrierEntityId(uint16 oldValue, uint16 newValue)
+	{
+		for (int32 i = 0; i < m_PassengerComponentObservers.Num(); ++i)
+		{
+			m_PassengerComponentObservers[i]->OnChanged_m_carrierEntityId(oldValue, newValue);
+		}
+	};
 
 	friend struct PassengerComponent;
 };

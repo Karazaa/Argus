@@ -4,7 +4,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ComponentDependencies/ResourceExtractionComponentStates.h"
+#include "ComponentDependencies/TaskComponentStates.h"
 
 class IResourceExtractionComponentObserver
 {

@@ -36,3 +36,17 @@ void PassengerComponent::DrawComponentDebug() const
 }
 
 // Per observable logic
+void PassengerComponent::Set_m_carrierEntityId(uint16 newValue)
+{
+	uint16 oldValue = m_carrierEntityId;
+	m_carrierEntityId = newValue;
+
+	ObserversComponent* observersComponent = ArgusComponentRegistry::GetComponent<ObserversComponent>(GetOwningEntityId());
+	if (!observersComponent)
+	{
+		// TODO JAMES: error here.
+		return;
+	}
+
+	observersComponent->m_PassengerComponentObservers.OnChanged_m_carrierEntityId(oldValue, newValue);
+}

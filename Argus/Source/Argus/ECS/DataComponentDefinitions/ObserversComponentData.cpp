@@ -7,6 +7,7 @@
 void UObserversComponentData::InstantiateComponentForEntity(ArgusEntity& entity) const
 {
 	ObserversComponent* ObserversComponentRef = entity.AddComponent<ObserversComponent>();
+	ObserversComponentRef->m_PassengerComponentObservers = m_PassengerComponentObservers;
 	ObserversComponentRef->m_TaskComponentObservers = m_TaskComponentObservers;
 }
 

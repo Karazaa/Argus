@@ -4,7 +4,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ComponentDependencies/TransformComponentStates.h"
+#include "ComponentDependencies/TaskComponentStates.h"
 
 class ITransformComponentObserver
 {

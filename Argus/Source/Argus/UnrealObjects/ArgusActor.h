@@ -13,7 +13,7 @@ class UFactionRecord;
 class UPlacedArgusActorTeamInfoRecord;
 
 UCLASS()
-class AArgusActor : public AActor, public ITaskComponentObserver
+class AArgusActor : public AActor, public IPassengerComponentObserver, public ITaskComponentObserver
 {
 	GENERATED_BODY()
 	
@@ -45,6 +45,9 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnArgusEntityDeath();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnArgusEntityPassengerStateChanged(bool isPassenger);
+
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	TSoftClassPtr<UArgusActorInfoWidget> m_argusActorInfoWidgetClass = nullptr;
 
@@ -64,6 +67,7 @@ protected:
 	virtual void EndPlay(const EEndPlayReason::Type endPlayReason) override;
 	virtual void Tick(float deltaTime) override;
 	virtual void OnChanged_m_baseState(EBaseState oldValue, EBaseState newValue) override;
+	virtual void OnChanged_m_carrierEntityId(uint16 oldValue, uint16 newValue) override;
 
 	void InitializeWidgets();
 	void UpdateUIWidgetComponentLocation();
