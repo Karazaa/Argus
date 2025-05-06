@@ -247,6 +247,11 @@ bool ArgusEntity::IsMoveable() const
 
 bool ArgusEntity::IsSelected() const
 {
+	if (!DoesEntityExist(m_id))
+	{
+		return false;
+	}
+
 	const ArgusEntity singletonEntity = ArgusECSConstants::k_singletonEntityId;
 	if (!singletonEntity)
 	{
@@ -272,6 +277,11 @@ bool ArgusEntity::IsSelected() const
 
 bool ArgusEntity::IsIdle() const
 {
+	if (!DoesEntityExist(m_id))
+	{
+		return false;
+	}
+
 	const TaskComponent* taskComponent = GetComponent<TaskComponent>();
 	if (!taskComponent)
 	{
@@ -293,6 +303,11 @@ bool ArgusEntity::IsIdle() const
 
 bool ArgusEntity::IsInRangeOfOtherEntity(const ArgusEntity& other, float range) const
 {
+	if (!DoesEntityExist(m_id))
+	{
+		return false;
+	}
+
 	const TransformComponent* transformComponent = GetComponent<TransformComponent>();
 	if (!transformComponent)
 	{
@@ -310,6 +325,11 @@ bool ArgusEntity::IsInRangeOfOtherEntity(const ArgusEntity& other, float range) 
 
 bool ArgusEntity::IsPassenger() const
 {
+	if (!DoesEntityExist(m_id))
+	{
+		return false;
+	}
+
 	const PassengerComponent* passengerComponent = GetComponent<PassengerComponent>();
 	if (!passengerComponent)
 	{
@@ -321,6 +341,11 @@ bool ArgusEntity::IsPassenger() const
 
 bool ArgusEntity::IsCarryingPassengers() const
 {
+	if (!DoesEntityExist(m_id))
+	{
+		return false;
+	}
+
 	const CarrierComponent* carrierComponent = GetComponent<CarrierComponent>();
 	if (!carrierComponent)
 	{
