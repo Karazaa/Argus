@@ -22,7 +22,7 @@ bool TransformSystems::RunSystems(UWorld* worldPointer, float deltaTime)
 			continue;
 		}
 
-		if (components.m_entity.IsKillable() && !components.m_entity.IsAlive())
+		if ((components.m_entity.IsKillable() && !components.m_entity.IsAlive()) || components.m_entity.IsPassenger())
 		{
 			continue;
 		}
@@ -42,7 +42,14 @@ bool TransformSystems::RunSystems(UWorld* worldPointer, float deltaTime)
 			continue;
 		}
 
-		didMovementUpdateThisFrame |= ProcessMovementTaskCommands(worldPointer, deltaTime, components);
+		const bool didEntityMove = ProcessMovementTaskCommands(worldPointer, deltaTime, components);
+		didMovementUpdateThisFrame |= didEntityMove;
+
+		// Carriers should update their passengers locations to match their location after doing an update.
+		if (didEntityMove && components.m_entity.IsCarryingPassengers())
+		{
+			UpdatePassengerLocations(components);
+		}
 	}
 
 	return didMovementUpdateThisFrame;
@@ -300,4 +307,37 @@ float TransformSystems::GetEndMoveRange(const TransformSystemsComponentArgs& com
 	}
 
 	return range;
+}
+
+void TransformSystems::UpdatePassengerLocations(const TransformSystemsComponentArgs& components)
+{
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+
+	const CarrierComponent* carrierComponent = components.m_entity.GetComponent<CarrierComponent>();
+	if (!carrierComponent)
+	{
+		return;
+	}
+
+	for (int32 i = 0; i < carrierComponent->m_passengerEntityIds.Num(); ++i)
+	{
+		ArgusEntity passenger = ArgusEntity::RetrieveEntity(carrierComponent->m_passengerEntityIds[i]);
+		if (!passenger)
+		{
+			return;
+		}
+
+		TransformComponent* passengerTransformComponent = passenger.GetComponent<TransformComponent>();
+		if (!passengerTransformComponent)
+		{
+			continue;
+		}
+
+		passengerTransformComponent->m_location = components.m_transformComponent->m_location;
+		passengerTransformComponent->m_targetYaw = components.m_transformComponent->m_targetYaw;
+		passengerTransformComponent->m_smoothedYaw.Reset(components.m_transformComponent->m_smoothedYaw.GetValue());
+	}
 }

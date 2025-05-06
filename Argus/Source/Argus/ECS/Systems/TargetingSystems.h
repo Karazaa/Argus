@@ -11,6 +11,7 @@ public:
 
 	struct TargetingSystemsComponentArgs
 	{
+		ArgusEntity m_entity = ArgusEntity::k_emptyEntity;
 		TargetingComponent* m_targetingComponent = nullptr;
 		const TransformComponent* m_transformComponent = nullptr;
 

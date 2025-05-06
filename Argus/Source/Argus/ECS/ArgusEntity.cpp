@@ -233,7 +233,7 @@ bool ArgusEntity::IsMoveable() const
 		return false;
 	}
 
-	if (!IsAlive())
+	if (!IsAlive() || IsPassenger())
 	{
 		return false;
 	}

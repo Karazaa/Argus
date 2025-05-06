@@ -35,7 +35,7 @@ void AbilitySystems::RunSystems(float deltaTime)
 			continue;
 		}
 
-		if (components.m_entity.IsKillable() && !components.m_entity.IsAlive())
+		if ((components.m_entity.IsKillable() && !components.m_entity.IsAlive()) || components.m_entity.IsPassenger())
 		{
 			continue;
 		}

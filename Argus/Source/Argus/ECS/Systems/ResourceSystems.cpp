@@ -19,6 +19,11 @@ void ResourceSystems::RunSystems(float deltaTime)
 			continue;
 		}
 
+		if ((components.m_entity.IsKillable() && !components.m_entity.IsAlive()) || components.m_entity.IsPassenger())
+		{
+			continue;
+		}
+
 		components.m_taskComponent = components.m_entity.GetComponent<TaskComponent>();
 		components.m_resourceComponent = components.m_entity.GetComponent<ResourceComponent>();
 		components.m_resourceExtractionComponent = components.m_entity.GetComponent<ResourceExtractionComponent>();

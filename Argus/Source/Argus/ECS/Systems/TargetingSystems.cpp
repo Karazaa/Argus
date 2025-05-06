@@ -8,15 +8,20 @@ void TargetingSystems::RunSystems(float deltaTime)
 
 	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{
-		ArgusEntity potentialEntity = ArgusEntity::RetrieveEntity(i);
-		if (!potentialEntity)
+		TargetingSystemsComponentArgs components;
+		components.m_entity = ArgusEntity::RetrieveEntity(i);
+		if (!components.m_entity)
 		{
 			continue;
 		}
 
-		TargetingSystemsComponentArgs components;
-		components.m_targetingComponent = potentialEntity.GetComponent<TargetingComponent>();
-		components.m_transformComponent = potentialEntity.GetComponent<TransformComponent>();
+		if ((components.m_entity.IsKillable() && !components.m_entity.IsAlive()) || components.m_entity.IsPassenger())
+		{
+			continue;
+		}
+
+		components.m_targetingComponent = components.m_entity.GetComponent<TargetingComponent>();
+		components.m_transformComponent = components.m_entity.GetComponent<TransformComponent>();
 
 		if (!components.m_targetingComponent || !components.m_transformComponent)
 		{
