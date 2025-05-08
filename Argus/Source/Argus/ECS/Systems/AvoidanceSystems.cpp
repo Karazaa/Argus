@@ -319,7 +319,7 @@ void AvoidanceSystems::CreateEntityORCALines(const CreateEntityORCALinesParams& 
 			continue;
 		}
 
-		if ((components.m_entity.IsKillable() && !components.m_entity.IsAlive()) || components.m_entity.IsPassenger())
+		if ((foundEntity.IsKillable() && !foundEntity.IsAlive()) || foundEntity.IsPassenger())
 		{
 			continue;
 		}

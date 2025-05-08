@@ -673,7 +673,7 @@ void UArgusInputManager::ProcessSelectInputEvent(bool isAdditive)
 		return;
 	}
 
-	if (!shouldIgnoreTeamRequirement && !argusActor->GetEntity().IsAlive())
+	if (!shouldIgnoreTeamRequirement && (!argusActor->GetEntity().IsAlive() || argusActor->GetEntity().IsPassenger()))
 	{
 		return;
 	}
