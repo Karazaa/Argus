@@ -119,6 +119,10 @@ void AbilitySystems::CastAbility(const UAbilityRecord* abilityRecord, const Abil
 			CastSpawnAbility(abilityRecord, components, true, abilityRecord->GetRequiresReticle());
 			break;
 
+		case EAbilityTypes::Vacate:
+			CastVacateAbility(abilityRecord, components);
+			break;
+
 		default:
 			return;
 	}
@@ -280,9 +284,43 @@ void AbilitySystems::CastAttackAbility(const UAbilityRecord* abilityRecord, cons
 
 }
 
-void AbilitySystems::CastConstructAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsComponentArgs& components)
+void AbilitySystems::CastVacateAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsComponentArgs& components)
 {
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
 
+	if (!abilityRecord)
+	{
+		LogAbilityRecordError(ARGUS_FUNCNAME);
+		return;
+	}
+
+	CarrierComponent* carrierComponent = components.m_entity.GetComponent<CarrierComponent>();
+	if (!carrierComponent)
+	{
+		return;
+	}
+
+	for (int32 i = 0; i < carrierComponent->m_passengerEntityIds.Num(); ++i)
+	{
+		ArgusEntity passengerEntity = ArgusEntity::RetrieveEntity(carrierComponent->m_passengerEntityIds[i]);
+		if (!passengerEntity)
+		{
+			continue;
+		}
+
+		PassengerComponent* passengerComponent = passengerEntity.GetComponent<PassengerComponent>();
+		if (!passengerComponent)
+		{
+			continue;
+		}
+
+		passengerComponent->Set_m_carrierEntityId(ArgusECSConstants::k_maxEntities);
+	}
+
+	carrierComponent->m_passengerEntityIds.Empty();
 }
 
 void AbilitySystems::PrepReticleForConstructAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsComponentArgs& components)
