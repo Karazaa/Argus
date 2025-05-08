@@ -142,6 +142,11 @@ void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float delta
 	components.m_transformComponent->m_location = moverLocation;
 	components.m_transformComponent->m_smoothedYaw.SmoothChase(components.m_transformComponent->m_targetYaw, deltaTime);
 	
+	if (isWithinRangeOfTargetEntity)
+	{
+		OnWithinRangeOfTargetEntity(components);
+	}
+
 	if (isAtEndOfNavigationPath || isWithinRangeOfTargetEntity)
 	{
 		OnCompleteNavigationPath(components, moverLocation);
@@ -204,6 +209,50 @@ void TransformSystems::FaceTowardsLocationXY(TransformComponent* transformCompon
 	const float angleDifference = FMath::Acos(vectorFromTransformToTarget.Dot(currentDirection));
 
 	transformComponent->m_targetYaw += (angleDifference * FMath::Sign(crossProduct.Z));
+}
+
+void TransformSystems::OnWithinRangeOfTargetEntity(const TransformSystemsComponentArgs& components)
+{
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+
+	if (!components.m_targetingComponent->HasEntityTarget())
+	{
+		return;
+	}
+
+	ArgusEntity targetEntity = ArgusEntity::RetrieveEntity(components.m_targetingComponent->m_targetEntityId);
+	if (!targetEntity)
+	{
+		return;
+	}
+
+	PassengerComponent* passengerComponent = components.m_entity.GetComponent<PassengerComponent>();
+	if (!passengerComponent)
+	{
+		return;
+	}
+
+	if (passengerComponent->m_carrierEntityId != ArgusECSConstants::k_maxEntities)
+	{
+		return;
+	}
+
+	CarrierComponent* targetCarrierComponent = targetEntity.GetComponent<CarrierComponent>();
+	if (!targetCarrierComponent)
+	{
+		return;
+	}
+
+	if (targetCarrierComponent->m_passengerEntityIds.Num() >= targetCarrierComponent->m_carrierCapacity)
+	{
+		return;
+	}
+
+	passengerComponent->Set_m_carrierEntityId(targetEntity.GetId());
+	targetCarrierComponent->m_passengerEntityIds.Add(components.m_entity.GetId());
 }
 
 void TransformSystems::OnCompleteNavigationPath(const TransformSystemsComponentArgs& components, const FVector& moverLocation)
