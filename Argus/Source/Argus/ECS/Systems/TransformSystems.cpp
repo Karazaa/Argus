@@ -314,7 +314,7 @@ float TransformSystems::GetEndMoveRange(const TransformSystemsComponentArgs& com
 {
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
-		return ArgusECSConstants::k_avoidanceAgentSearchRadius;
+		return components.m_transformComponent->m_desiredSpeedUnitsPerSecond + components.m_transformComponent->m_radius;
 	}
 
 	float range = components.m_targetingComponent->m_meleeRange;

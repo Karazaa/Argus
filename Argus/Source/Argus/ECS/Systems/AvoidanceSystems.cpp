@@ -271,10 +271,12 @@ void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const Creat
 		return;
 	}
 
+	const float adjacentEntityRange = components.m_transformComponent->m_desiredSpeedUnitsPerSecond + components.m_transformComponent->m_radius;
+
 #if !UE_BUILD_SHIPPING
 	if (ArgusECSDebugger::ShouldShowAvoidanceDebugForEntity(components.m_entity.GetId()))
 	{
-		DrawDebugCircle(worldPointer, params.m_sourceEntityLocation3D, ArgusECSConstants::k_avoidanceAgentSearchRadius, 20, FColor::Yellow, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth, FVector::RightVector, FVector::ForwardVector, false);
+		DrawDebugCircle(worldPointer, params.m_sourceEntityLocation3D, adjacentEntityRange, 20, FColor::Yellow, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth, FVector::RightVector, FVector::ForwardVector, false);
 	}
 #endif //!UE_BUILD_SHIPPING
 	
@@ -283,7 +285,7 @@ void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const Creat
 	(
 		obstacleIndicies,
 		FVector(params.m_sourceEntityLocation, components.m_transformComponent->m_location.Z),
-		ArgusECSConstants::k_avoidanceAgentSearchRadius
+		adjacentEntityRange
 	);
 
 	for (int32 i = 0; i < obstacleIndicies.Num(); ++i)

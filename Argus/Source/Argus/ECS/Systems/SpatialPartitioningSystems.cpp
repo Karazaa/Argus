@@ -66,7 +66,15 @@ void SpatialPartitioningSystems::CacheAdjacentEntityIds(const SpatialPartitionin
 		{
 			continue;
 		}
-		spatialPartitioningComponent->m_argusEntityKDTree.FindOtherArgusEntityIdsWithinRangeOfArgusEntity(avoidanceGroupingComponent->m_adjacentEntities, entity, ArgusECSConstants::k_avoidanceAgentSearchRadius);
+
+		const TransformComponent* transformComponent = entity.GetComponent<TransformComponent>();
+		if (!transformComponent)
+		{
+			continue;
+		}
+
+		const float adjacentEntityRange = transformComponent->m_desiredSpeedUnitsPerSecond + transformComponent->m_radius;
+		spatialPartitioningComponent->m_argusEntityKDTree.FindOtherArgusEntityIdsWithinRangeOfArgusEntity(avoidanceGroupingComponent->m_adjacentEntities, entity, adjacentEntityRange);
 	}
 }
 

@@ -1303,7 +1303,7 @@ bool UArgusInputManager::CleanUpSelectedActors()
 {
 	bool removedActors = false;
 
-	TArray<TWeakObjectPtr<AArgusActor>> deadArgusActors;
+	TArray<TWeakObjectPtr<AArgusActor>> noLongerSelectableArgusActors;
 	for (TWeakObjectPtr<AArgusActor>& selectedActor : m_selectedArgusActors)
 	{
 		if (!selectedActor.IsValid())
@@ -1311,20 +1311,20 @@ bool UArgusInputManager::CleanUpSelectedActors()
 			continue;
 		}
 
-		if (selectedActor->GetEntity().IsAlive())
+		if (selectedActor->GetEntity().IsAlive() && !selectedActor->GetEntity().IsPassenger())
 		{
 			selectedActor->SetSelectionState(true);
 			continue;
 		}
 
 		selectedActor->SetSelectionState(false);
-		deadArgusActors.Add(selectedActor);
+		noLongerSelectableArgusActors.Add(selectedActor);
 	}
 
-	for (TWeakObjectPtr<AArgusActor>& deadSelectedActor : deadArgusActors)
+	for (TWeakObjectPtr<AArgusActor>& noLongerSelectableArgusActor : noLongerSelectableArgusActors)
 	{
 		removedActors = true;
-		m_selectedArgusActors.Remove(deadSelectedActor);
+		m_selectedArgusActors.Remove(noLongerSelectableArgusActor);
 	}
 
 	return removedActors;

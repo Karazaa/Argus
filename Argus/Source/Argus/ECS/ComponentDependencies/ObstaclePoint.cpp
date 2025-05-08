@@ -99,16 +99,16 @@ void ObstaclePointArray::FillInBetweenObstaclePoints(const ObstaclePoint& fromPo
 	float distanceBetweenObstaclePoints = betweenObstaclePoints.Length();
 	const FVector2D directionBetweenObstaclePoints = betweenObstaclePoints / distanceBetweenObstaclePoints;
 
-	outPoints.Reserve(2 + FMath::FloorToInt32(distanceBetweenObstaclePoints / ArgusECSConstants::k_avoidanceAgentSearchRadius));
+	outPoints.Reserve(2 + FMath::FloorToInt32(distanceBetweenObstaclePoints / ArgusECSConstants::k_avoidanceObstacleSplitDistance));
 
 	float iterations = 0.0f;
-	while (distanceBetweenObstaclePoints > ArgusECSConstants::k_avoidanceAgentSearchRadius)
+	while (distanceBetweenObstaclePoints > ArgusECSConstants::k_avoidanceObstacleSplitDistance)
 	{
 		iterations += 1.0f;
-		distanceBetweenObstaclePoints -= ArgusECSConstants::k_avoidanceAgentSearchRadius;
+		distanceBetweenObstaclePoints -= ArgusECSConstants::k_avoidanceObstacleSplitDistance;
 
 		ObstaclePoint& pointToInsert = outPoints.Emplace_GetRef();
-		pointToInsert.m_point = fromPoint.m_point + ((iterations * ArgusECSConstants::k_avoidanceAgentSearchRadius) * directionBetweenObstaclePoints);
+		pointToInsert.m_point = fromPoint.m_point + ((iterations * ArgusECSConstants::k_avoidanceObstacleSplitDistance) * directionBetweenObstaclePoints);
 	}
 }
 
