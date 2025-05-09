@@ -74,7 +74,23 @@ void SpatialPartitioningSystems::CacheAdjacentEntityIds(const SpatialPartitionin
 		}
 
 		const float adjacentEntityRange = transformComponent->m_desiredSpeedUnitsPerSecond + transformComponent->m_radius;
-		spatialPartitioningComponent->m_argusEntityKDTree.FindOtherArgusEntityIdsWithinRangeOfArgusEntity(avoidanceGroupingComponent->m_adjacentEntities, entity, adjacentEntityRange);
+		const TFunction<bool(uint16)> queryFilter = [entity](uint16 entityId)
+		{
+			if (entity.GetId() == entityId)
+			{
+				return false;
+			}
+
+			ArgusEntity otherEntity = ArgusEntity::RetrieveEntity(entityId);
+			if (!otherEntity || !otherEntity.IsAlive() || otherEntity.IsPassenger())
+			{
+				return false;
+			}
+
+			return true;
+		};
+
+		spatialPartitioningComponent->m_argusEntityKDTree.FindOtherArgusEntityIdsWithinRangeOfArgusEntity(avoidanceGroupingComponent->m_adjacentEntities, entity, adjacentEntityRange, queryFilter);
 	}
 }
 

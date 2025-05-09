@@ -214,7 +214,7 @@ uint16 ArgusEntityKDTree::FindArgusEntityIdClosestToLocation(const FVector& loca
 	return FindArgusEntityIdClosestToLocation(location, predicate);
 }
 
-uint16 ArgusEntityKDTree::FindArgusEntityIdClosestToLocation(const FVector& location, TFunction<bool(uint16)> queryFilter) const
+uint16 ArgusEntityKDTree::FindArgusEntityIdClosestToLocation(const FVector& location, const TFunction<bool(uint16)> queryFilter) const
 {
 	if (!m_rootNode)
 	{
@@ -231,7 +231,7 @@ uint16 ArgusEntityKDTree::FindArgusEntityIdClosestToLocation(const FVector& loca
 	return foundNode->m_entityId;
 }
 
-uint16 ArgusEntityKDTree::FindOtherArgusEntityIdClosestToArgusEntity(const ArgusEntity& entityToSearchAround, TFunction<bool(uint16)> queryFilterOverride) const
+uint16 ArgusEntityKDTree::FindOtherArgusEntityIdClosestToArgusEntity(const ArgusEntity& entityToSearchAround, const TFunction<bool(uint16)> queryFilterOverride) const
 {
 	if (!entityToSearchAround)
 	{
@@ -266,12 +266,6 @@ bool ArgusEntityKDTree::FindArgusEntityIdsWithinRangeOfLocation(TArray<uint16>& 
 		return false;
 	}
 
-	if (range <= 0.0f)
-	{
-		ARGUS_LOG(ArgusUtilitiesLog, Error, TEXT("[%s] Searching range is less than or equal to 0."), ARGUS_FUNCNAME);
-		return false;
-	}
-
 	uint16 entityIdToIgnore = entityToIgnore.GetId();
 	TFunction<bool(uint16)> predicate = nullptr;
 	if (entityIdToIgnore != ArgusECSConstants::k_maxEntities)
@@ -279,8 +273,19 @@ bool ArgusEntityKDTree::FindArgusEntityIdsWithinRangeOfLocation(TArray<uint16>& 
 		predicate = [entityIdToIgnore](uint16 valueToSkip) { return valueToSkip != entityIdToIgnore; };
 	}
 
+	return FindArgusEntityIdsWithinRangeOfLocation(outNearbyArgusEntityIds, location, range, predicate);
+}
+
+bool ArgusEntityKDTree::FindArgusEntityIdsWithinRangeOfLocation(TArray<uint16>& outNearbyArgusEntityIds, const FVector& location, const float range, const TFunction<bool(uint16)> queryFilterOverride) const
+{
+	if (range <= 0.0f)
+	{
+		ARGUS_LOG(ArgusUtilitiesLog, Error, TEXT("[%s] Searching range is less than or equal to 0."), ARGUS_FUNCNAME);
+		return false;
+	}
+
 	TArray<const ArgusEntityKDTreeNode*> foundNodes;
-	FindNodesWithinRangeOfLocationRecursive(foundNodes, m_rootNode, location, FMath::Square(range), predicate, 0u);
+	FindNodesWithinRangeOfLocationRecursive(foundNodes, m_rootNode, location, FMath::Square(range), queryFilterOverride, 0u);
 	outNearbyArgusEntityIds.Reserve(foundNodes.Num());
 	for (int32 i = 0; i < foundNodes.Num(); ++i)
 	{
@@ -295,7 +300,7 @@ bool ArgusEntityKDTree::FindArgusEntityIdsWithinRangeOfLocation(TArray<uint16>& 
 	return outNearbyArgusEntityIds.Num() > 0u;
 }
 
-bool ArgusEntityKDTree::FindOtherArgusEntityIdsWithinRangeOfArgusEntity(TArray<uint16>& outNearbyArgusEntityIds, const ArgusEntity& entityToSearchAround, const float range) const
+bool ArgusEntityKDTree::FindOtherArgusEntityIdsWithinRangeOfArgusEntity(TArray<uint16>& outNearbyArgusEntityIds, const ArgusEntity& entityToSearchAround, const float range, const TFunction<bool(uint16)> queryFilterOverride) const
 {
 	if (!entityToSearchAround)
 	{
@@ -308,6 +313,11 @@ bool ArgusEntityKDTree::FindOtherArgusEntityIdsWithinRangeOfArgusEntity(TArray<u
 	{
 		ErrorOnInvalidTransformComponent(ARGUS_FUNCNAME);
 		return false;
+	}
+
+	if (queryFilterOverride)
+	{
+		return FindArgusEntityIdsWithinRangeOfLocation(outNearbyArgusEntityIds, transformComponent->m_location, range, queryFilterOverride);
 	}
 
 	return FindArgusEntityIdsWithinRangeOfLocation(outNearbyArgusEntityIds, transformComponent->m_location, range, entityToSearchAround);

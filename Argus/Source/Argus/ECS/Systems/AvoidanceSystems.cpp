@@ -654,6 +654,8 @@ FVector2D AvoidanceSystems::GetDesiredVelocity(const TransformSystems::Transform
 
 float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems::TransformSystemsComponentArgs& sourceEntityComponents, const ArgusEntity& foundEntity)
 {
+	ARGUS_TRACE(AvoidanceSystems::GetEffortCoefficientForEntityPair);
+
 	if (!sourceEntityComponents.m_entity || !sourceEntityComponents.m_taskComponent || !sourceEntityComponents.m_transformComponent ||
 		!sourceEntityComponents.m_navigationComponent || !sourceEntityComponents.m_targetingComponent)
 	{
@@ -706,9 +708,9 @@ float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems
 		return 1.0f;
 	}
 
+	const TargetingComponent* foundEntityTargetingComponent = foundEntity.GetComponent<TargetingComponent>();
 	if (foundEntityTaskComponent->m_constructionState == EConstructionState::ConstructingOther)
 	{
-		const TargetingComponent* foundEntityTargetingComponent = foundEntity.GetComponent<TargetingComponent>();
 		const TransformComponent* foundEntityTransformComponent = foundEntity.GetComponent<TransformComponent>();
 		const TransformComponent* foundEntityTargetTransformComponent = nullptr;
 
@@ -726,6 +728,30 @@ float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems
 				return 1.0f;
 			}
 		}
+	}
+
+	const TargetingComponent* sourceEntityTargetingComponent = sourceEntityComponents.m_entity.GetComponent<TargetingComponent>();
+	const PassengerComponent* sourceEntityPassengerComponent = sourceEntityComponents.m_entity.GetComponent<PassengerComponent>();
+	const CarrierComponent* sourceEntityCarrierComponent = sourceEntityComponents.m_entity.GetComponent<CarrierComponent>();
+	const PassengerComponent* foundEntityPassengerComponent = foundEntity.GetComponent<PassengerComponent>();
+	const CarrierComponent* foundEntityCarrierComponent = foundEntity.GetComponent<CarrierComponent>();
+	if (sourceEntityTargetingComponent &&
+		sourceEntityPassengerComponent &&
+		foundEntityCarrierComponent &&
+		sourceEntityTargetingComponent->HasEntityTarget() &&
+		sourceEntityTargetingComponent->m_targetEntityId == foundEntity.GetId() &&
+		sourceEntityComponents.m_taskComponent->m_movementState == EMovementState::MoveToEntity)
+	{
+		return 0.0f;
+	}
+	else if (foundEntityTargetingComponent &&
+		sourceEntityCarrierComponent &&
+		foundEntityPassengerComponent &&
+		foundEntityTargetingComponent->HasEntityTarget() &&
+		foundEntityTargetingComponent->m_targetEntityId == sourceEntityComponents.m_entity.GetId() &&
+		foundEntityTaskComponent->m_movementState == EMovementState::MoveToEntity)
+	{
+		return 0.0f;
 	}
 
 	if (sourceEntityComponents.m_taskComponent->IsExecutingMoveTask() && (!foundEntityTaskComponent->IsExecutingMoveTask()))
