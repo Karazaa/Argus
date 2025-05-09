@@ -14,8 +14,8 @@ class UArgusActorInfoWidget : public UUserWidget, public IArgusActorWidgetInterf
 	GENERATED_BODY()
 
 public:
-	virtual void SetInitialDisplay(ArgusEntity& argusEntity) override;
-	virtual void RefreshDisplay(ArgusEntity& argusEntity) override;
+	virtual void SetInitialDisplay(const ArgusEntity& argusEntity) override;
+	virtual void RefreshDisplay(const ArgusEntity& argusEntity) override;
 
 protected:
 	UPROPERTY(BlueprintReadWrite, Transient)

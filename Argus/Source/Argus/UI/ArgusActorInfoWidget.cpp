@@ -3,7 +3,7 @@
 #include "ArgusActorInfoWidget.h"
 #include "ArgusEntity.h"
 
-void UArgusActorInfoWidget::SetInitialDisplay(ArgusEntity& argusEntity)
+void UArgusActorInfoWidget::SetInitialDisplay(const ArgusEntity& argusEntity)
 {
 	if (!argusEntity)
 	{
@@ -21,7 +21,7 @@ void UArgusActorInfoWidget::SetInitialDisplay(ArgusEntity& argusEntity)
 	}
 }
 
-void UArgusActorInfoWidget::RefreshDisplay(ArgusEntity& argusEntity)
+void UArgusActorInfoWidget::RefreshDisplay(const ArgusEntity& argusEntity)
 {
 	if (!argusEntity)
 	{

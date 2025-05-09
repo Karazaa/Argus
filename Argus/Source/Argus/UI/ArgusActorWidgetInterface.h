@@ -7,6 +7,6 @@ class ArgusEntity;
 class IArgusActorWidgetInterface
 {
 public:
-	virtual void SetInitialDisplay(ArgusEntity& argusEntity) = 0;
-	virtual void RefreshDisplay(ArgusEntity& argusEntity) = 0;
+	virtual void SetInitialDisplay(const ArgusEntity& argusEntity) = 0;
+	virtual void RefreshDisplay(const ArgusEntity& argusEntity) = 0;
 };

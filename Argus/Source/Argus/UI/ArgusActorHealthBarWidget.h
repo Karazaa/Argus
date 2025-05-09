@@ -14,8 +14,8 @@ class UArgusActorHealthBarWidget : public UArgusActorInfoWidget
 	GENERATED_BODY()
 
 public:
-	virtual void SetInitialDisplay(ArgusEntity& argusEntity) override;
-	virtual void RefreshDisplay(ArgusEntity& argusEntity) override;
+	virtual void SetInitialDisplay(const ArgusEntity& argusEntity) override;
+	virtual void RefreshDisplay(const ArgusEntity& argusEntity) override;
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
@@ -27,5 +27,5 @@ protected:
 	UPROPERTY(BlueprintReadWrite, Transient)
 	TObjectPtr<UProgressBar> m_progressBar = nullptr;
 
-	void SetHealthBarPercentForEntity(ArgusEntity& argusEntity);
+	void SetHealthBarPercentForEntity(const ArgusEntity& argusEntity);
 };

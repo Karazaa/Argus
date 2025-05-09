@@ -5,14 +5,14 @@
 #include "ArgusMath.h"
 #include "Components/ProgressBar.h"
 
-void UArgusActorCastBarWidget::SetInitialDisplay(ArgusEntity& argusEntity)
+void UArgusActorCastBarWidget::SetInitialDisplay(const ArgusEntity& argusEntity)
 {
 	Super::SetInitialDisplay(argusEntity);
 
-	SetVisibility(ESlateVisibility::Hidden);
+	SetVisibility(ESlateVisibility::Collapsed);
 }
 
-void UArgusActorCastBarWidget::RefreshDisplay(ArgusEntity& argusEntity)
+void UArgusActorCastBarWidget::RefreshDisplay(const ArgusEntity& argusEntity)
 {
 	Super::RefreshDisplay(argusEntity);
 
@@ -48,13 +48,13 @@ void UArgusActorCastBarWidget::RefreshDisplay(ArgusEntity& argusEntity)
 		fillColor = m_abilityCastColor;
 	}
 
-	const bool isVisible = GetVisibility() != ESlateVisibility::Hidden;
+	const bool isVisible = GetVisibility() != ESlateVisibility::Collapsed;
 
 	if (isVisible)
 	{
 		if (!shouldBeVisible)
 		{
-			SetVisibility(ESlateVisibility::Hidden);
+			SetVisibility(ESlateVisibility::Collapsed);
 		}
 		else
 		{

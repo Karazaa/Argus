@@ -5,7 +5,7 @@
 #include "ArgusMath.h"
 #include "Components/ProgressBar.h"
 
-void UArgusActorHealthBarWidget::SetInitialDisplay(ArgusEntity& argusEntity)
+void UArgusActorHealthBarWidget::SetInitialDisplay(const ArgusEntity& argusEntity)
 {
 	Super::SetInitialDisplay(argusEntity);
 
@@ -22,17 +22,17 @@ void UArgusActorHealthBarWidget::SetInitialDisplay(ArgusEntity& argusEntity)
 	}
 	else
 	{
-		SetVisibility(ESlateVisibility::Hidden);
+		SetVisibility(ESlateVisibility::Collapsed);
 	}
 }
 
-void UArgusActorHealthBarWidget::RefreshDisplay(ArgusEntity& argusEntity)
+void UArgusActorHealthBarWidget::RefreshDisplay(const ArgusEntity& argusEntity)
 {
 	Super::RefreshDisplay(argusEntity);
 	SetHealthBarPercentForEntity(argusEntity);
 }
 
-void UArgusActorHealthBarWidget::SetHealthBarPercentForEntity(ArgusEntity& argusEntity)
+void UArgusActorHealthBarWidget::SetHealthBarPercentForEntity(const ArgusEntity& argusEntity)
 {
 	if (!m_progressBar)
 	{
@@ -43,7 +43,7 @@ void UArgusActorHealthBarWidget::SetHealthBarPercentForEntity(ArgusEntity& argus
 	const HealthComponent* healthComponent = argusEntity.GetComponent<HealthComponent>();
 	if (!healthComponent)
 	{
-		SetVisibility(ESlateVisibility::Hidden);
+		SetVisibility(ESlateVisibility::Collapsed);
 		return;
 	}
 
@@ -60,6 +60,6 @@ void UArgusActorHealthBarWidget::SetHealthBarPercentForEntity(ArgusEntity& argus
 
 	if (healthBarPortion >= 1.0f || healthBarPortion <= 0.0f)
 	{
-		SetVisibility(ESlateVisibility::Hidden);
+		SetVisibility(ESlateVisibility::Collapsed);
 	}
 }
