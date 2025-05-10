@@ -17,7 +17,7 @@ void UArgusActorHealthBarWidget::SetInitialDisplay(const ArgusEntity& argusEntit
 
 	if (const HealthComponent* healthComponent = argusEntity.GetComponent<HealthComponent>())
 	{
-		SetVisibility(ESlateVisibility::Visible);
+		SetVisibility(ESlateVisibility::HitTestInvisible);
 		SetHealthBarPercentForEntity(argusEntity);
 	}
 	else
@@ -53,7 +53,7 @@ void UArgusActorHealthBarWidget::SetHealthBarPercentForEntity(const ArgusEntity&
 
 	if (healthBarPortion != m_progressBar->GetPercent())
 	{
-		SetVisibility(ESlateVisibility::Visible);
+		SetVisibility(ESlateVisibility::HitTestInvisible);
 		m_progressBar->SetPercent(healthBarPortion);
 		m_progressBar->SetFillColorAndOpacity(FMath::Lerp(m_lowHealthBarColor, m_fullHealthBarColor, healthBarPortion));
 	}
