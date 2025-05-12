@@ -272,6 +272,7 @@ void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const Creat
 	}
 
 	const float adjacentEntityRange = components.m_transformComponent->m_desiredSpeedUnitsPerSecond + components.m_transformComponent->m_radius;
+	const float obstacleQueryRange = components.m_transformComponent->m_radius * ArgusECSConstants::k_avoidanceObstacleQueryRadiusMultiplier;
 
 #if !UE_BUILD_SHIPPING
 	if (ArgusECSDebugger::ShouldShowAvoidanceDebugForEntity(components.m_entity.GetId()))
@@ -285,7 +286,7 @@ void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const Creat
 	(
 		obstacleIndicies,
 		FVector(params.m_sourceEntityLocation, components.m_transformComponent->m_location.Z),
-		adjacentEntityRange
+		obstacleQueryRange
 	);
 
 	for (int32 i = 0; i < obstacleIndicies.Num(); ++i)
