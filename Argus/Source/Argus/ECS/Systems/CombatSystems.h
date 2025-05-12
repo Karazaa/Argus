@@ -26,7 +26,8 @@ public:
 private:
 	static void ProcessCombatTaskCommands(float deltaTime, const CombatSystemsComponentArgs& components);
 	static void ProcessAttackCommand(float deltaTime, const CombatSystemsComponentArgs& components);
-	static void PerformTimerAttack(ArgusEntity& targetEntity, const CombatSystemsComponentArgs& components);
-	static void PerformContinuousAttack(float deltaTime, ArgusEntity& targetEntity, const CombatSystemsComponentArgs& components);
-	static void ApplyDamage(uint32 damageAmount, ArgusEntity& targetEntity, const CombatSystemsComponentArgs& components);
+	static void PerformTimerAttack(const ArgusEntity& targetEntity, const CombatSystemsComponentArgs& components);
+	static void PerformContinuousAttack(float deltaTime, const ArgusEntity& targetEntity, const CombatSystemsComponentArgs& components);
+	static void ApplyDamage(uint32 damageAmount, const ArgusEntity& targetEntity, const CombatSystemsComponentArgs& components);
+	static void KillEntity(const ArgusEntity& targetEntity, HealthComponent* targetHealthComponent);
 };
