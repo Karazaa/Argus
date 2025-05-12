@@ -20,6 +20,16 @@ void UArgusActorCarrierBarWidget::RefreshDisplay(const ArgusEntity& entity)
 	Super::RefreshDisplay(entity);
 
 	const bool isVisible = GetVisibility() != ESlateVisibility::Collapsed;
+
+	if (!entity.IsAlive())
+	{
+		if (isVisible)
+		{
+			SetVisibility(ESlateVisibility::Collapsed);
+		}
+		return;
+	}
+
 	const CarrierComponent* carrierComponent = entity.GetComponent<CarrierComponent>();
 	if (!carrierComponent)
 	{
@@ -64,7 +74,6 @@ void UArgusActorCarrierBarWidget::PopulateCarrierSlots(const ArgusEntity& entity
 		{
 			continue;
 		}
-		m_slotImages[i]->SetColorAndOpacity(FLinearColor::Black);
 
 		UHorizontalBoxSlot* boxSlot = m_horizontalBox->AddChildToHorizontalBox(m_slotImages[i]);
 		if (!boxSlot)
@@ -72,7 +81,7 @@ void UArgusActorCarrierBarWidget::PopulateCarrierSlots(const ArgusEntity& entity
 			continue;
 		}
 
-		boxSlot->Size.SizeRule = ESlateSizeRule::Fill;
+		boxSlot->SetSize(FSlateChildSize());
 		boxSlot->SetPadding(FMargin(1.0f, 1.0f, 1.0f, 1.0f));
 	}
 }
