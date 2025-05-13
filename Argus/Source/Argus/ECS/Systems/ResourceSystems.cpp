@@ -151,15 +151,29 @@ bool ResourceSystems::ExtractResources(const ResourceComponents& components)
 		return false;
 	}
 
-	ResourceComponent* extractionTargetResourceComponent = ArgusEntity::RetrieveEntity(components.m_targetingComponent->m_targetEntityId).GetComponent<ResourceComponent>();
-	
-	const UResourceSetRecord* extractionResourceRecord = ArgusStaticData::GetRecord<UResourceSetRecord>(components.m_resourceExtractionComponent->m_resourcesToExtractRecordId);
-	if (!extractionResourceRecord)
+	ArgusEntity targetEntity = ArgusEntity::RetrieveEntity(components.m_targetingComponent->m_targetEntityId);
+	if (!targetEntity)
 	{
 		return false;
 	}
 
-	return TransferResourcesBetweenComponents(extractionTargetResourceComponent, components.m_resourceComponent, extractionResourceRecord->m_resourceSet);
+	ResourceComponent* extractionTargetResourceComponent = targetEntity.GetComponent<ResourceComponent>();
+	const UResourceSetRecord* extractionResourceRecord = ArgusStaticData::GetRecord<UResourceSetRecord>(components.m_resourceExtractionComponent->m_resourcesToExtractRecordId);
+	if (!extractionResourceRecord || !extractionTargetResourceComponent)
+	{
+		return false;
+	}
+
+	const bool canExtractAgain = TransferResourcesBetweenComponents(extractionTargetResourceComponent, components.m_resourceComponent, extractionResourceRecord->m_resourceSet);
+	if (extractionTargetResourceComponent->m_currentResources.IsEmpty())
+	{
+		if (TaskComponent* targetTaskComponent = targetEntity.GetComponent<TaskComponent>())
+		{
+			targetTaskComponent->SetToKillState();
+		}
+	}
+
+	return canExtractAgain;
 }
 
 void ResourceSystems::DepositResources(const ResourceComponents& components)
@@ -239,6 +253,13 @@ void ResourceSystems::MoveToLastExtractionSource(const ResourceComponents& compo
 		return;
 	}
 
+	ArgusEntity lastExtractionSource = ArgusEntity::RetrieveEntity(components.m_resourceExtractionComponent->m_lastExtractionSourceEntityId);
+	if (!lastExtractionSource || !lastExtractionSource.IsAlive())
+	{
+		components.m_taskComponent->m_resourceExtractionState = EResourceExtractionState::None;
+		return;
+	}
+
 	components.m_taskComponent->m_resourceExtractionState = EResourceExtractionState::Extracting;
 	components.m_taskComponent->m_movementState = EMovementState::ProcessMoveToEntityCommand;
 	components.m_targetingComponent->m_targetEntityId = components.m_resourceExtractionComponent->m_lastExtractionSourceEntityId;
@@ -247,6 +268,11 @@ void ResourceSystems::MoveToLastExtractionSource(const ResourceComponents& compo
 bool ResourceSystems::CanEntityExtractResourcesFromOtherEntity(const ArgusEntity& entity, const ArgusEntity& otherEntity)
 {
 	if (!entity || !otherEntity)
+	{
+		return false;
+	}
+
+	if (!otherEntity.IsAlive())
 	{
 		return false;
 	}
@@ -379,6 +405,9 @@ bool ResourceSystems::TransferResourcesBetweenComponents(ResourceComponent* sour
 
 	if (!sourceComponent->m_currentResources.CanAffordResourceChange(resourceChange))
 	{
+		FResourceSet remainingAmount = sourceComponent->m_currentResources;
+		targetComponent->m_currentResources.ApplyResourceChange(remainingAmount);
+		sourceComponent->m_currentResources.ApplyResourceChange(-remainingAmount);
 		return false;
 	}
 

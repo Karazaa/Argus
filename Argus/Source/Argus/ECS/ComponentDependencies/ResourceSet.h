@@ -35,6 +35,18 @@ struct FResourceSet
 		return outResources;
 	}
 
+	FResourceSet operator-(const FResourceSet& right) const
+	{
+		FResourceSet outResources;
+		const uint8 numResources = static_cast<uint8>(EResourceType::Count);
+		for (uint8 i = 0u; i < numResources; ++i)
+		{
+			outResources.m_resourceQuantities[i] = m_resourceQuantities[i] - right.m_resourceQuantities[i];
+		}
+
+		return outResources;
+	}
+
 	friend bool operator>(const FResourceSet& left, const FResourceSet& right)
 	{
 		const uint8 numResources = static_cast<uint8>(EResourceType::Count);
@@ -112,5 +124,18 @@ struct FResourceSet
 		{
 			m_resourceQuantities[i] += otherResourceSetRepresentingChange.m_resourceQuantities[i];
 		}
+	}
+
+	bool IsEmpty() const
+	{
+		const uint8 numResources = static_cast<uint8>(EResourceType::Count);
+		for (uint8 i = 0u; i < numResources; ++i)
+		{
+			if (m_resourceQuantities[i] != 0)
+			{
+				return false;
+			}
+		}
+		return true;
 	}
 };
