@@ -7,6 +7,7 @@
 #include "ComponentDefinitions/ResourceComponent.h"
 
 class ArgusEntity;
+class UResourceSetRecord;
 struct FResourceSet;
 struct ResourceComponent;
 
@@ -43,5 +44,5 @@ public:
 	static ResourceComponent* GetTeamResourceComponentForEntity(const ArgusEntity& entity);
 
 private:
-	static bool TransferResourcesBetweenComponents(ResourceComponent* sourceComponent, ResourceComponent* targetComponent, const FResourceSet& amount);
+	static void TransferResourcesBetweenComponents(ResourceComponent* sourceComponent, ResourceComponent* targetComponent, const FResourceSet& amount, const UResourceSetRecord* resourceCapacityRecord = nullptr);
 };

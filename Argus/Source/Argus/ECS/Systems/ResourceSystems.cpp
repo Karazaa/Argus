@@ -164,16 +164,23 @@ bool ResourceSystems::ExtractResources(const ResourceComponents& components)
 		return false;
 	}
 
-	const bool canExtractAgain = TransferResourcesBetweenComponents(extractionTargetResourceComponent, components.m_resourceComponent, extractionResourceRecord->m_resourceSet);
+	const UResourceSetRecord* resourceCapacityRecord = ArgusStaticData::GetRecord<UResourceSetRecord>(components.m_resourceComponent->m_resourceCapacityRecordId);
+	TransferResourcesBetweenComponents(extractionTargetResourceComponent, components.m_resourceComponent, extractionResourceRecord->m_resourceSet, resourceCapacityRecord);
 	if (extractionTargetResourceComponent->m_currentResources.IsEmpty())
 	{
 		if (TaskComponent* targetTaskComponent = targetEntity.GetComponent<TaskComponent>())
 		{
 			targetTaskComponent->SetToKillState();
 		}
+		return false;
 	}
 
-	return canExtractAgain;
+	if (resourceCapacityRecord)
+	{
+		return components.m_resourceComponent->m_currentResources < resourceCapacityRecord->m_resourceSet;
+	}
+
+	return true;
 }
 
 void ResourceSystems::DepositResources(const ResourceComponents& components)
@@ -394,36 +401,22 @@ ResourceComponent* ResourceSystems::GetTeamResourceComponentForEntity(const Argu
 	return teamEntity.GetComponent<ResourceComponent>();
 }
 
-bool ResourceSystems::TransferResourcesBetweenComponents(ResourceComponent* sourceComponent, ResourceComponent* targetComponent, const FResourceSet& amount)
+void ResourceSystems::TransferResourcesBetweenComponents(ResourceComponent* sourceComponent, ResourceComponent* targetComponent, const FResourceSet& amount, const UResourceSetRecord* resourceCapacityRecord)
 {
 	if (!sourceComponent || !targetComponent)
 	{
-		return false;
+		return;
 	}
 
-	FResourceSet resourceChange = -amount;
-
-	if (!sourceComponent->m_currentResources.CanAffordResourceChange(resourceChange))
+	const FResourceSet* resourceCapacityPointer = nullptr;
+	if (resourceCapacityRecord)
 	{
-		FResourceSet remainingAmount = sourceComponent->m_currentResources;
-		targetComponent->m_currentResources.ApplyResourceChange(remainingAmount);
-		sourceComponent->m_currentResources.ApplyResourceChange(-remainingAmount);
-		return false;
+		resourceCapacityPointer = &resourceCapacityRecord->m_resourceSet;
 	}
 
-	const UResourceSetRecord* resourceCapacityRecord = ArgusStaticData::GetRecord<UResourceSetRecord>(targetComponent->m_resourceCapacityRecordId);
-	if (resourceCapacityRecord && targetComponent->m_currentResources >= resourceCapacityRecord->m_resourceSet)
-	{
-		return false;
-	}
+	FResourceSet potentialResourceChange = sourceComponent->m_currentResources.CalculateResourceChangeAffordable(-amount);
+	potentialResourceChange = targetComponent->m_currentResources.CalculateResourceChangeAffordable(-potentialResourceChange, resourceCapacityPointer);
 
-	targetComponent->m_currentResources.ApplyResourceChange(amount);
-	sourceComponent->m_currentResources.ApplyResourceChange(resourceChange);
-
-	if (resourceCapacityRecord && targetComponent->m_currentResources >= resourceCapacityRecord->m_resourceSet)
-	{
-		return false;
-	}
-
-	return true;
+	sourceComponent->m_currentResources.ApplyResourceChange(-potentialResourceChange);
+	targetComponent->m_currentResources.ApplyResourceChange(potentialResourceChange);
 }
