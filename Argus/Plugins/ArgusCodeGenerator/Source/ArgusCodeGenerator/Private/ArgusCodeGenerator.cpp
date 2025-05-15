@@ -11,7 +11,7 @@
 #include "Misc/MessageDialog.h"
 #include "ToolMenus.h"
 
-static const FName ArgusCodeGeneratorTabName("ArgusCodeGenerator");
+static const FName ArgusCodeGeneratorTabName("Add Components");
 
 #define LOCTEXT_NAMESPACE "FArgusCodeGeneratorModule"
 
@@ -38,6 +38,10 @@ void FArgusCodeGeneratorModule::StartupModule()
 		FCanExecuteAction());
 
 	UToolMenus::RegisterStartupCallback(FSimpleMulticastDelegate::FDelegate::CreateRaw(this, &FArgusCodeGeneratorModule::RegisterMenus));
+
+	FGlobalTabmanager::Get()->RegisterNomadTabSpawner(ArgusCodeGeneratorTabName, FOnSpawnTab::CreateRaw(this, &FArgusCodeGeneratorModule::OnSpawnPluginTab))
+		.SetDisplayName(LOCTEXT("FArgusCodeGeneratorTabTitle", "Add Components"))
+		.SetMenuType(ETabSpawnerMenuType::Hidden);
 }
 
 void FArgusCodeGeneratorModule::ShutdownModule()
@@ -52,6 +56,8 @@ void FArgusCodeGeneratorModule::ShutdownModule()
 	FArgusCodeGeneratorStyle::Shutdown();
 
 	FArgusCodeGeneratorCommands::Unregister();
+
+	FGlobalTabmanager::Get()->UnregisterNomadTabSpawner(ArgusCodeGeneratorTabName);
 }
 
 void FArgusCodeGeneratorModule::RegisterMenus()
@@ -63,8 +69,12 @@ void FArgusCodeGeneratorModule::RegisterMenus()
 		UToolMenu* Menu = UToolMenus::Get()->ExtendMenu("LevelEditor.MainMenu.Window");
 		{
 			FToolMenuSection& Section = Menu->FindOrAddSection("WindowLayout");
-			Section.AddMenuEntryWithCommandList(FArgusCodeGeneratorCommands::Get().GenerateCode, PluginCommands);
-			Section.AddMenuEntryWithCommandList(FArgusCodeGeneratorCommands::Get().AddComponent, PluginCommands);
+			{
+				FToolMenuEntry& Entry = Section.AddEntry(FToolMenuEntry::InitMenuEntry(FArgusCodeGeneratorCommands::Get().GenerateCode));
+				FToolMenuEntry& SecondEntry = Section.AddEntry(FToolMenuEntry::InitMenuEntry(FArgusCodeGeneratorCommands::Get().AddComponent));
+				Entry.SetCommandList(PluginCommands);
+				SecondEntry.SetCommandList(PluginCommands);
+			}
 		}
 	}
 
@@ -102,7 +112,29 @@ void FArgusCodeGeneratorModule::GenerateCode()
 
 void FArgusCodeGeneratorModule::AddComponent()
 {
-	SAssignNew(m_AddComponentWindow, SWindow).Title(FText::FromString(TEXT("Add Component"))).ClientSize(FVector2f(1000, 1000)).IsPopupWindow(true).IsTopmostWindow(true);
+	FGlobalTabmanager::Get()->TryInvokeTab(ArgusCodeGeneratorTabName);
+}
+
+TSharedRef<SDockTab> FArgusCodeGeneratorModule::OnSpawnPluginTab(const FSpawnTabArgs& SpawnTabArgs)
+{
+	FText WidgetText = FText::Format(
+		LOCTEXT("WindowWidgetText", "TODO JAMES: Add code to {0} in {1} to override this window's contents"),
+		FText::FromString(TEXT("FArgusCodeGeneratorModule::OnSpawnPluginTab")),
+		FText::FromString(TEXT("ArgusCodeGenerator.cpp"))
+	);
+
+	return SNew(SDockTab)
+		.TabRole(ETabRole::NomadTab)
+		[
+			// Put your tab content here!
+			SNew(SBox)
+				.HAlign(HAlign_Center)
+				.VAlign(VAlign_Center)
+				[
+					SNew(STextBlock)
+						.Text(WidgetText)
+				]
+		];
 }
 
 #undef LOCTEXT_NAMESPACE
