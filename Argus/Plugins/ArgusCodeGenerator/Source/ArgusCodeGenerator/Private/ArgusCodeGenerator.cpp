@@ -28,8 +28,13 @@ void FArgusCodeGeneratorModule::StartupModule()
 	PluginCommands = MakeShareable(new FUICommandList);
 
 	PluginCommands->MapAction(
-		FArgusCodeGeneratorCommands::Get().PluginAction,
-		FExecuteAction::CreateRaw(this, &FArgusCodeGeneratorModule::PluginButtonClicked),
+		FArgusCodeGeneratorCommands::Get().GenerateCode,
+		FExecuteAction::CreateRaw(this, &FArgusCodeGeneratorModule::GenerateCode),
+		FCanExecuteAction());
+
+	PluginCommands->MapAction(
+		FArgusCodeGeneratorCommands::Get().AddComponent,
+		FExecuteAction::CreateRaw(this, &FArgusCodeGeneratorModule::AddComponent),
 		FCanExecuteAction());
 
 	UToolMenus::RegisterStartupCallback(FSimpleMulticastDelegate::FDelegate::CreateRaw(this, &FArgusCodeGeneratorModule::RegisterMenus));
@@ -58,7 +63,8 @@ void FArgusCodeGeneratorModule::RegisterMenus()
 		UToolMenu* Menu = UToolMenus::Get()->ExtendMenu("LevelEditor.MainMenu.Window");
 		{
 			FToolMenuSection& Section = Menu->FindOrAddSection("WindowLayout");
-			Section.AddMenuEntryWithCommandList(FArgusCodeGeneratorCommands::Get().PluginAction, PluginCommands);
+			Section.AddMenuEntryWithCommandList(FArgusCodeGeneratorCommands::Get().GenerateCode, PluginCommands);
+			Section.AddMenuEntryWithCommandList(FArgusCodeGeneratorCommands::Get().AddComponent, PluginCommands);
 		}
 	}
 
@@ -67,15 +73,17 @@ void FArgusCodeGeneratorModule::RegisterMenus()
 		{
 			FToolMenuSection& Section = ToolbarMenu->FindOrAddSection("PluginTools");
 			{
-				FToolMenuEntry& Entry = Section.AddEntry(FToolMenuEntry::InitToolBarButton(FArgusCodeGeneratorCommands::Get().PluginAction));
+				FToolMenuEntry& Entry = Section.AddEntry(FToolMenuEntry::InitToolBarButton(FArgusCodeGeneratorCommands::Get().GenerateCode));
+				FToolMenuEntry& SecondEntry = Section.AddEntry(FToolMenuEntry::InitToolBarButton(FArgusCodeGeneratorCommands::Get().AddComponent));
 				Entry.SetCommandList(PluginCommands);
+				SecondEntry.SetCommandList(PluginCommands);
 			}
 		}
 	}
 }
 #pragma endregion
 
-void FArgusCodeGeneratorModule::PluginButtonClicked()
+void FArgusCodeGeneratorModule::GenerateCode()
 {
 	ArgusCodeGeneratorUtil::ParseComponentDataOutput parsedComponentData;
 	ArgusCodeGeneratorUtil::ParseStaticDataRecordsOutput parsedStaticDataRecords;
@@ -90,6 +98,11 @@ void FArgusCodeGeneratorModule::PluginButtonClicked()
 	ComponentImplementationGenerator::GenerateComponentImplementationCode(parsedComponentData);
 	ComponentObserversGenerator::GenerateComponentObserversCode(parsedComponentData);
 	ArgusStaticDataCodeGenerator::GenerateStaticDataCode(parsedStaticDataRecords);
+}
+
+void FArgusCodeGeneratorModule::AddComponent()
+{
+	SAssignNew(m_AddComponentWindow, SWindow).Title(FText::FromString(TEXT("Add Component"))).ClientSize(FVector2f(1000, 1000)).IsPopupWindow(true).IsTopmostWindow(true);
 }
 
 #undef LOCTEXT_NAMESPACE

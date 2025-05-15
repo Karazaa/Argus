@@ -7,6 +7,7 @@
 
 class FToolBarBuilder;
 class FMenuBuilder;
+class SWindow;
 
 class FArgusCodeGeneratorModule : public IModuleInterface
 {
@@ -16,9 +17,9 @@ public:
 	virtual void StartupModule() override;
 	virtual void ShutdownModule() override;
 	
-	/** This function will be bound to Command. */
-	void PluginButtonClicked();
-	
+	void GenerateCode();
+	void AddComponent();
+
 private:
 
 	void RegisterMenus();
@@ -26,4 +27,5 @@ private:
 
 private:
 	TSharedPtr<class FUICommandList> PluginCommands;
+	TSharedPtr<SWindow> m_AddComponentWindow;
 };

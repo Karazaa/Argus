@@ -44,7 +44,8 @@ TSharedRef< FSlateStyleSet > FArgusCodeGeneratorStyle::Create()
 	TSharedRef< FSlateStyleSet > Style = MakeShareable(new FSlateStyleSet("ArgusCodeGeneratorStyle"));
 	Style->SetContentRoot(IPluginManager::Get().FindPlugin("ArgusCodeGenerator")->GetBaseDir() / TEXT("Resources"));
 
-	Style->Set("ArgusCodeGenerator.PluginAction", new IMAGE_BRUSH(TEXT("ArgusCodeGeneratorPluginLogo"), Icon50x50));
+	Style->Set("ArgusCodeGenerator.GenerateCode", new IMAGE_BRUSH(TEXT("ArgusCodeGeneratorPluginLogo"), Icon50x50));
+	Style->Set("ArgusCodeGenerator.AddComponent", new IMAGE_BRUSH(TEXT("ArgusCodeGeneratorAddComponent"), Icon50x50));
 	return Style;
 }
 
