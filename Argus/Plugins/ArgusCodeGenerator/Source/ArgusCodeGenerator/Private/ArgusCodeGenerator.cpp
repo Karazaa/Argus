@@ -5,6 +5,7 @@
 #include "ArgusCodeGeneratorCommands.h"
 #include "ArgusComponentRegistryCodeGenerator.h"
 #include "ArgusDataAssetComponentCodeGenerator.h"
+#include "ArgusECSComponentAdder.h"
 #include "ArgusStaticDataCodeGenerator.h"
 #include "ComponentImplementationCodeGenerator.h"
 #include "ComponentObserversCodeGenerator.h"
@@ -115,26 +116,9 @@ void FArgusCodeGeneratorModule::AddComponent()
 	FGlobalTabmanager::Get()->TryInvokeTab(ArgusCodeGeneratorTabName);
 }
 
-TSharedRef<SDockTab> FArgusCodeGeneratorModule::OnSpawnPluginTab(const FSpawnTabArgs& SpawnTabArgs)
+TSharedRef<SDockTab> FArgusCodeGeneratorModule::OnSpawnPluginTab(const FSpawnTabArgs& spawnTabArgs)
 {
-	FText WidgetText = FText::Format(
-		LOCTEXT("WindowWidgetText", "TODO JAMES: Add code to {0} in {1} to override this window's contents"),
-		FText::FromString(TEXT("FArgusCodeGeneratorModule::OnSpawnPluginTab")),
-		FText::FromString(TEXT("ArgusCodeGenerator.cpp"))
-	);
-
-	return SNew(SDockTab)
-		.TabRole(ETabRole::NomadTab)
-		[
-			// Put your tab content here!
-			SNew(SBox)
-				.HAlign(HAlign_Center)
-				.VAlign(VAlign_Center)
-				[
-					SNew(STextBlock)
-						.Text(WidgetText)
-				]
-		];
+	return ArgusECSComponentAdder::OnSpawnPluginTab(spawnTabArgs);
 }
 
 #undef LOCTEXT_NAMESPACE
