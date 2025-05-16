@@ -13,4 +13,9 @@ public:
 	static void OnClicked();
 	static void OnCheckBoxChecked(ECheckBoxState checkBoxState);
 	static void OnTextChanged(const FText& text);
+
+private:
+	static FText s_inputFieldText;
+	static FText s_messageText;
+	static bool s_isDynamicallyAllocated;
 };

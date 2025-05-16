@@ -11,7 +11,7 @@ class ArgusComponentRegistryCodeGenerator
 public:
 	static void GenerateComponentRegistryCode(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData);
 
-private:
+public:
 	// Constants for file parsing
 	static const char* s_componentRegistryDirectorySuffix;
 	static const char* s_ecsTestsDirectorySuffix;
@@ -37,6 +37,7 @@ private:
 	static const char* s_argusComponentSizeTestsFilename;
 	static const char* s_componentRegistryTemplateDirectorySuffix;
 
+private:
 	struct ParseComponentTemplateParams
 	{
 		std::string argusComponentRegistryHeaderTemplateFilePath = "";
