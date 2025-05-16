@@ -1,7 +1,7 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
-#include "ArgusComponentRegistryCodeGenerator.h"
 #include "ArgusECSComponentAdder.h"
+#include "ArgusComponentRegistryCodeGenerator.h"
 
 #define LOCTEXT_NAMESPACE "FArgusCodeGeneratorModule"
 
@@ -153,7 +153,7 @@ void ArgusECSComponentAdder::OnClicked()
 
 	// Construct a directory path to component definition location
 	FString definitionsDirectory = ArgusCodeGeneratorUtil::GetProjectDirectory();
-	std::string directorySuffix = s_isDynamicallyAllocated ? "Source/Argus/ECS/DynamicAllocComponentDefinitions" : "Source/Argus/ECS/ComponentDefinitions";
+	std::string directorySuffix = s_isDynamicallyAllocated ? "Source/Argus/ECS/DynamicAllocComponentDefinitions/" : "Source/Argus/ECS/ComponentDefinitions/";
 	definitionsDirectory.Append(directorySuffix.c_str());
 	FPaths::MakeStandardFilename(definitionsDirectory);
 	const char* cStrDefinitionsDirectory = ARGUS_FSTRING_TO_CHAR(definitionsDirectory);
