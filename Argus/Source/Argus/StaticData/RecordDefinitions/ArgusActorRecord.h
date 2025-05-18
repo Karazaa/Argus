@@ -4,6 +4,7 @@
 
 #include "ArgusEntityTemplate.h"
 #include "ArgusStaticRecord.h"
+#include "Engine/Texture.h"
 #include "ArgusActorRecord.generated.h"
 
 class AArgusActor;
@@ -19,4 +20,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TSoftObjectPtr<UArgusEntityTemplate> m_entityTemplateOverride;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TSoftObjectPtr<UTexture> m_actorInfoIcon;
 };
