@@ -7,6 +7,7 @@
 #include "SelectedArgusEntitiesWidget.generated.h"
 
 class ArgusEntity;
+class UAbilityRecord;
 class UArgusInputManager;
 
 UCLASS()
@@ -16,7 +17,7 @@ class USelectedArgusEntitiesWidget : public UArgusUserWidget
 
 public:
 	UFUNCTION(BlueprintImplementableEvent)
-	void OnUpdateSelectedArgusActors(int32 ability0RecordId, int32 ability1RecordId, int32 ability2RecordId, int32 ability3RecordId);
+	void OnUpdateSelectedArgusActors(const UAbilityRecord* ability0Record, const UAbilityRecord* ability1Record, const UAbilityRecord* ability2Record, const UAbilityRecord* ability3Record);
 
 	virtual void OnUpdateSelectedArgusActors(ArgusEntity& templateEntity) override;
 

@@ -32,6 +32,9 @@ public:
 	EAbilityTypes m_abilityType = EAbilityTypes::Spawn;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TSoftObjectPtr<UTexture> m_abilityIcon;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FResourceSet m_requiredResourceChangeToCast;
 
 	UPROPERTY(EditAnywhere, meta = (Bitmask, BitmaskEnum = EReticleFlags))
