@@ -6,6 +6,7 @@
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
 #include "ArgusStaticData.h"
+#include "Components/Button.h"
 
 void USelectedArgusEntitiesWidget::OnUpdateSelectedArgusActors(ArgusEntity& templateEntity)
 {
@@ -39,6 +40,35 @@ void USelectedArgusEntitiesWidget::OnUpdateSelectedArgusActors(ArgusEntity& temp
 	{
 		OnUpdateSelectedArgusActors(nullptr, nullptr, nullptr, nullptr);
 	}
+}
+
+void USelectedArgusEntitiesWidget::UpdateAbilityButtonDisplay(UButton* button, const UAbilityRecord* abilityRecord)
+{
+	if (!button)
+	{
+		return;
+	}
+
+	if (!abilityRecord)
+	{
+		button->SetVisibility(ESlateVisibility::Hidden);
+		return;
+	}
+	button->SetVisibility(ESlateVisibility::Visible);
+
+	UTexture* texture = nullptr;
+	if (!abilityRecord->m_abilityIcon.IsNull())
+	{
+		texture = abilityRecord->m_abilityIcon.LoadSynchronous();
+	}
+
+	m_abilityButtonNormalSlateBrush.SetResourceObject(texture);
+	m_abilityButtonHoveredSlateBrush.SetResourceObject(texture);
+	m_abilityButtonPressedSlateBrush.SetResourceObject(texture);
+	m_abilityButtonStyle.SetNormal(m_abilityButtonNormalSlateBrush);
+	m_abilityButtonStyle.SetHovered(m_abilityButtonHoveredSlateBrush);
+	m_abilityButtonStyle.SetPressed(m_abilityButtonPressedSlateBrush);
+	button->SetStyle(m_abilityButtonStyle);
 }
 
 void USelectedArgusEntitiesWidget::OnUserInterfaceButtonClicked(UArgusUIButtonClickedEventsEnum buttonClickedEvent)
