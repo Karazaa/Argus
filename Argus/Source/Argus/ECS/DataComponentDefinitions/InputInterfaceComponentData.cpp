@@ -9,6 +9,7 @@ void UInputInterfaceComponentData::InstantiateComponentForEntity(ArgusEntity& en
 	InputInterfaceComponent* InputInterfaceComponentRef = entity.AddComponent<InputInterfaceComponent>();
 	InputInterfaceComponentRef->m_selectedArgusEntityIds = m_selectedArgusEntityIds;
 	InputInterfaceComponentRef->m_activeAbilityGroupArgusEntityIds = m_activeAbilityGroupArgusEntityIds;
+	InputInterfaceComponentRef->m_selectedActorsDisplayState = m_selectedActorsDisplayState;
 }
 
 bool UInputInterfaceComponentData::MatchesType(UComponentData* other) const

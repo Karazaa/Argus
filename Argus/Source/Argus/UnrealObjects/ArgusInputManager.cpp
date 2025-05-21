@@ -18,6 +18,60 @@
 
 #define ECC_RETICLE	ECC_GameTraceChannel1
 
+bool UArgusInputManager::ShouldUpdateSelectedActorDisplay(ArgusEntity& templateSelectedEntity)
+{
+	ArgusEntity singletonEntity = ArgusEntity::GetSingletonEntity();
+	if (!singletonEntity)
+	{
+		ARGUS_LOG(ArgusInputLog, Error, TEXT("[%s] Could not retrieve %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(singletonEntity));
+		return false;
+	}
+
+	InputInterfaceComponent* inputInterfaceComponent = singletonEntity.GetComponent<InputInterfaceComponent>();
+	if (!inputInterfaceComponent)
+	{
+		ARGUS_LOG(ArgusInputLog, Error, TEXT("[%s] Could not retrieve a valid %s from %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(InputInterfaceComponent), ARGUS_NAMEOF(singletonEntity));
+		return false;
+	}
+
+	if (inputInterfaceComponent->m_selectedActorsDisplayState == ESelectedActorsDisplayState::ChangedThisFrame)
+	{
+		if (inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.IsEmpty())
+		{
+			templateSelectedEntity = ArgusEntity::k_emptyEntity;
+		}
+		else
+		{
+			templateSelectedEntity = ArgusEntity::RetrieveEntity(inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds[0]);
+		}
+
+		return true;
+	}
+
+	for (int32 i = 0; i < inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.Num(); ++i)
+	{
+		ArgusEntity potentialTemplate = ArgusEntity::RetrieveEntity(inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds[0]);
+		if (!potentialTemplate)
+		{
+			continue;
+		}
+
+		TaskComponent* potentialTemplateTaskComponent = potentialTemplate.GetComponent<TaskComponent>();
+		if (!potentialTemplateTaskComponent)
+		{
+			continue;
+		}
+
+		if (potentialTemplateTaskComponent->m_constructionState == EConstructionState::ConstructionFinished)
+		{
+			templateSelectedEntity = potentialTemplate;
+			return true;
+		}
+	}
+
+	return false;
+}
+
 void UArgusInputManager::SetupInputComponent(AArgusPlayerController* owningPlayerController, TSoftObjectPtr<UArgusInputActionSet>& argusInputActionSet)
 {
 	if (!owningPlayerController)
@@ -274,55 +328,6 @@ void UArgusInputManager::ProcessPlayerInput(AArgusCameraActor* argusCamera, cons
 	argusCamera->UpdateCamera(updateCameraParameters, deltaTime);
 }
 
-bool UArgusInputManager::ShouldUpdateSelectedActorDisplay(ArgusEntity& templateSelectedEntity) const
-{
-	if (m_selectedArgusActorsChangedThisFrame)
-	{
-		if (m_activeAbilityGroupArgusActors.IsEmpty())
-		{
-			templateSelectedEntity = ArgusEntity::k_emptyEntity;
-		}
-		else if (AArgusActor* templateSelectedActor = (*m_activeAbilityGroupArgusActors.begin()).Get())
-		{
-			templateSelectedEntity = templateSelectedActor->GetEntity();
-		}
-		else
-		{
-			templateSelectedEntity = ArgusEntity::k_emptyEntity;
-		}
-		
-		return true;
-	}
-
-	for (const TWeakObjectPtr<AArgusActor>& selectedActor : m_activeAbilityGroupArgusActors)
-	{
-		if (!selectedActor.IsValid())
-		{
-			continue;
-		}
-
-		ArgusEntity selectedEntity = selectedActor->GetEntity();
-		if (!selectedEntity)
-		{
-			continue;
-		}
-
-		TaskComponent* selectedTaskComponent = selectedEntity.GetComponent<TaskComponent>();
-		if (!selectedTaskComponent)
-		{
-			continue;
-		}
-
-		if (selectedTaskComponent->m_constructionState == EConstructionState::ConstructionFinished)
-		{
-			templateSelectedEntity = selectedEntity;
-			return true;
-		}
-	}
-
-	return false;
-}
-
 bool UArgusInputManager::ShouldDrawMarqueeBox() const
 {
 	if (!m_selectInputDown)
@@ -519,7 +524,21 @@ bool UArgusInputManager::ValidateOwningPlayerController()
 
 void UArgusInputManager::PrepareToProcessInputEvents()
 {
-	m_selectedArgusActorsChangedThisFrame = false;
+	ArgusEntity singletonEntity = ArgusEntity::GetSingletonEntity();
+	if (!singletonEntity)
+	{
+		ARGUS_LOG(ArgusInputLog, Error, TEXT("[%s] Could not retrieve %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(singletonEntity));
+		return;
+	}
+
+	InputInterfaceComponent* inputInterfaceComponent = singletonEntity.GetComponent<InputInterfaceComponent>();
+	if (!inputInterfaceComponent)
+	{
+		ARGUS_LOG(ArgusInputLog, Error, TEXT("[%s] Could not retrieve a valid %s from %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(InputInterfaceComponent), ARGUS_NAMEOF(singletonEntity));
+		return;
+	}
+
+	inputInterfaceComponent->m_selectedActorsDisplayState = ESelectedActorsDisplayState::NotChanged;
 
 	if (CleanUpSelectedActors())
 	{
@@ -1391,7 +1410,7 @@ void UArgusInputManager::OnSelectedArgusArgusActorsChanged()
 		}
 	}
 
-	m_selectedArgusActorsChangedThisFrame = true;
+	inputInterfaceComponent->m_selectedActorsDisplayState = ESelectedActorsDisplayState::ChangedThisFrame;
 }
 
 void UArgusInputManager::InterruptReticleFromInputEvent()

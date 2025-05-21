@@ -16,7 +16,7 @@ void UArgusUserWidget::UpdateDisplay(const UpdateDisplayParameters& updateDispla
 		return;
 	}
 
-	if (!m_inputManager->ShouldUpdateSelectedActorDisplay(uiTemplateEntity))
+	if (!UArgusInputManager::ShouldUpdateSelectedActorDisplay(uiTemplateEntity))
 	{
 		return;
 	}

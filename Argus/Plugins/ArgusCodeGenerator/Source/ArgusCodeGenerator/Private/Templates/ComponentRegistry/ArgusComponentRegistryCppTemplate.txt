@@ -47,11 +47,6 @@ uint16 ArgusComponentRegistry::GetOwningEntityIdForComponentMember(void* memberA
 	return ArgusECSConstants::k_maxEntities;
 }
 
-void ArgusComponentRegistry::AppendComponentDebugStrings(uint16 entityId, FString& debugStringToAppendTo)
-{
-	%%%%%
-}
-
 #if !UE_BUILD_SHIPPING
 void ArgusComponentRegistry::DrawComponentsDebug(uint16 entityId)
 {

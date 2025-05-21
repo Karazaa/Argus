@@ -40,6 +40,27 @@ void USelectedArgusEntitiesWidget::OnUpdateSelectedArgusActors(ArgusEntity& temp
 	{
 		OnUpdateSelectedArgusActors(nullptr, nullptr, nullptr, nullptr);
 	}
+
+	ArgusEntity singletonEntity = ArgusEntity::GetSingletonEntity();
+	if (!singletonEntity)
+	{
+		return;
+	}
+
+	InputInterfaceComponent* inputInterfaceComponent = singletonEntity.GetComponent<InputInterfaceComponent>();
+	if (!inputInterfaceComponent)
+	{
+		return;
+	}
+
+	if (inputInterfaceComponent->m_selectedArgusEntityIds.Num() > 1)
+	{
+		// TODO JAMES: Show multiple entity display.
+	}
+	else
+	{
+		// TODO JAMES: Show single entity display.
+	}
 }
 
 void USelectedArgusEntitiesWidget::UpdateAbilityButtonDisplay(UButton* button, const UAbilityRecord* abilityRecord)

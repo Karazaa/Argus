@@ -23,6 +23,8 @@ class UArgusInputManager : public UObject
 	GENERATED_BODY()
 
 public:
+	static bool ShouldUpdateSelectedActorDisplay(ArgusEntity& templateSelectedEntity);
+
 	void SetupInputComponent(AArgusPlayerController* owningPlayerController, TSoftObjectPtr<UArgusInputActionSet>& argusInputActionSet);
 	void OnSelect(const FInputActionValue& value);
 	void OnSelectAdditive(const FInputActionValue& value);
@@ -55,7 +57,6 @@ public:
 
 
 	void ProcessPlayerInput(AArgusCameraActor* argusCamera, const AArgusCameraActor::UpdateCameraPanningParameters& updateCameraPanningParameters, float deltaTime);
-	bool ShouldUpdateSelectedActorDisplay(ArgusEntity& templateSelectedEntity) const;
 	bool ShouldDrawMarqueeBox() const;
 
 	const FVector& GetSelectionStartWorldSpaceLocation() const;
@@ -140,7 +141,6 @@ private:
 	void ProcessReticleAbilityPerSelectedActor(AArgusActor* argusActor, uint32 abilityRecordId);
 
 	FVector m_cachedLastSelectInputWorldSpaceLocation = FVector::ZeroVector;
-	bool m_selectedArgusActorsChangedThisFrame = false;
 	bool m_selectInputDown = false;
 	bool m_canRotateCamera = false;
 };
