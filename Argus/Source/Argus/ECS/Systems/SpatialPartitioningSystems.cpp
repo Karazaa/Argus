@@ -73,7 +73,12 @@ void SpatialPartitioningSystems::CacheAdjacentEntityIds(const SpatialPartitionin
 			continue;
 		}
 
-		const float adjacentEntityRange = transformComponent->m_desiredSpeedUnitsPerSecond + transformComponent->m_radius;
+		float adjacentEntityRange = transformComponent->m_radius;
+		if (const VelocityComponent* velocityComponent = entity.GetComponent<VelocityComponent>())
+		{
+			adjacentEntityRange += velocityComponent->m_desiredSpeedUnitsPerSecond;
+		}
+
 		const TFunction<bool(uint16)> queryFilter = [entity](uint16 entityId)
 		{
 			if (entity.GetId() == entityId)

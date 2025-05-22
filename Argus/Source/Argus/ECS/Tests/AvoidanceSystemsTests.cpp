@@ -41,6 +41,7 @@ bool AvoidanceSystemsProcessORCAvoidanceTest::RunTest(const FString& Parameters)
 	components.m_entity = entity;
 	components.m_taskComponent = entity.AddComponent<TaskComponent>();
 	components.m_transformComponent = entity.AddComponent<TransformComponent>();
+	components.m_velocityComponent = entity.AddComponent<VelocityComponent>();
 	components.m_navigationComponent = entity.AddComponent<NavigationComponent>();
 	components.m_targetingComponent = entity.AddComponent<TargetingComponent>();
 	IdentityComponent* identityComponent = entity.AddComponent<IdentityComponent>();
@@ -82,7 +83,7 @@ bool AvoidanceSystemsProcessORCAvoidanceTest::RunTest(const FString& Parameters)
 		return false;
 	}
 
-	components.m_transformComponent->m_desiredSpeedUnitsPerSecond = desiredSpeed;
+	components.m_velocityComponent->m_desiredSpeedUnitsPerSecond = desiredSpeed;
 	identityComponent->m_team = ETeam::TeamA;
 	spatialPartitioningComponent->m_argusEntityKDTree.RebuildKDTreeForAllArgusEntities();
 
@@ -96,7 +97,7 @@ bool AvoidanceSystemsProcessORCAvoidanceTest::RunTest(const FString& Parameters)
 			ARGUS_NAMEOF(ArgusEntity),
 			ARGUS_NAMEOF(m_proposedAvoidanceVelocity)
 		),
-		components.m_transformComponent->m_proposedAvoidanceVelocity,
+		components.m_velocityComponent->m_proposedAvoidanceVelocity,
 		FVector::ZeroVector
 	);
 #pragma endregion
@@ -114,7 +115,7 @@ bool AvoidanceSystemsProcessORCAvoidanceTest::RunTest(const FString& Parameters)
 			ARGUS_NAMEOF(m_proposedAvoidanceVelocity),
 			ARGUS_NAMEOF(AvoidanceSystems::ProcessORCAvoidance)
 		),
-		components.m_transformComponent->m_proposedAvoidanceVelocity,
+		components.m_velocityComponent->m_proposedAvoidanceVelocity,
 		FVector::ZeroVector
 	);
 #pragma endregion
@@ -123,7 +124,8 @@ bool AvoidanceSystemsProcessORCAvoidanceTest::RunTest(const FString& Parameters)
 	TransformSystems::TransformSystemsComponentArgs secondComponents;
 	secondComponents.m_entity = secondEntity;
 	secondComponents.m_transformComponent = secondEntity.AddComponent<TransformComponent>();
-	if (!secondComponents.m_transformComponent)
+	secondComponents.m_velocityComponent = secondEntity.AddComponent<VelocityComponent>();
+	if (!secondComponents.m_transformComponent || !secondComponents.m_velocityComponent)
 	{
 		ArgusTesting::EndArgusTest();
 		return false;
@@ -148,7 +150,7 @@ bool AvoidanceSystemsProcessORCAvoidanceTest::RunTest(const FString& Parameters)
 
 	components.m_navigationComponent->m_navigationPoints.Add(components.m_transformComponent->m_location);
 	components.m_navigationComponent->m_navigationPoints.Add(targetLocation);
-	components.m_transformComponent->m_currentVelocity = velocity;
+	components.m_velocityComponent->m_currentVelocity = velocity;
 
 	spatialPartitioningComponent->m_argusEntityKDTree.RebuildKDTreeForAllArgusEntities();
 	AvoidanceSystems::ProcessORCAvoidance(dummyPointer, deltaTime, components, avoidanceGroupingComponent);
@@ -182,7 +184,7 @@ bool AvoidanceSystemsProcessORCAvoidanceTest::RunTest(const FString& Parameters)
 			ARGUS_NAMEOF(AvoidanceSystems::ProcessORCAvoidance),
 			ARGUS_NAMEOF(ArgusEntity)
 		),
-		components.m_transformComponent->m_proposedAvoidanceVelocity,
+		components.m_velocityComponent->m_proposedAvoidanceVelocity,
 		FVector::ZeroVector
 	);
 #pragma endregion
@@ -198,7 +200,7 @@ bool AvoidanceSystemsProcessORCAvoidanceTest::RunTest(const FString& Parameters)
 			ARGUS_NAMEOF(ArgusEntity),
 			ARGUS_NAMEOF(AvoidanceSystems::ProcessORCAvoidance)
 		),
-		secondComponents.m_transformComponent->m_proposedAvoidanceVelocity,
+		secondComponents.m_velocityComponent->m_proposedAvoidanceVelocity,
 		FVector::ZeroVector
 	);
 #pragma endregion
@@ -230,8 +232,8 @@ bool AvoidanceSystemsProcessORCAvoidanceTest::RunTest(const FString& Parameters)
 			ARGUS_NAMEOF(AvoidanceSystems::ProcessORCAvoidance),
 			ARGUS_NAMEOF(ArgusEntity)
 		),
-		components.m_transformComponent->m_proposedAvoidanceVelocity,
-		components.m_transformComponent->m_currentVelocity
+		components.m_velocityComponent->m_proposedAvoidanceVelocity,
+		components.m_velocityComponent->m_currentVelocity
 	);
 #pragma endregion
 
@@ -255,8 +257,8 @@ bool AvoidanceSystemsProcessORCAvoidanceTest::RunTest(const FString& Parameters)
 	secondComponents.m_navigationComponent->m_navigationPoints.Add(secondComponents.m_transformComponent->m_location);
 	secondComponents.m_navigationComponent->m_navigationPoints.Add(secondTargetLocation);
 	secondComponents.m_taskComponent->m_movementState = EMovementState::MoveToLocation;
-	secondComponents.m_transformComponent->m_currentVelocity = secondVelocity;
-	secondComponents.m_transformComponent->m_desiredSpeedUnitsPerSecond = desiredSpeed;
+	secondComponents.m_velocityComponent->m_currentVelocity = secondVelocity;
+	secondComponents.m_velocityComponent->m_desiredSpeedUnitsPerSecond = desiredSpeed;
 
 	AvoidanceSystems::ProcessORCAvoidance(dummyPointer, deltaTime, components, avoidanceGroupingComponent);
 	AvoidanceSystems::ProcessORCAvoidance(dummyPointer, deltaTime, secondComponents, avoidanceGroupingComponent);
@@ -290,7 +292,7 @@ bool AvoidanceSystemsProcessORCAvoidanceTest::RunTest(const FString& Parameters)
 			ARGUS_NAMEOF(AvoidanceSystems::ProcessORCAvoidance),
 			ARGUS_NAMEOF(ArgusEntity)
 		),
-		components.m_transformComponent->m_proposedAvoidanceVelocity,
+		components.m_velocityComponent->m_proposedAvoidanceVelocity,
 		FVector::ZeroVector
 	);
 #pragma endregion
@@ -324,7 +326,7 @@ bool AvoidanceSystemsProcessORCAvoidanceTest::RunTest(const FString& Parameters)
 			ARGUS_NAMEOF(AvoidanceSystems::ProcessORCAvoidance),
 			ARGUS_NAMEOF(ArgusEntity)
 		),
-		secondComponents.m_transformComponent->m_proposedAvoidanceVelocity,
+		secondComponents.m_velocityComponent->m_proposedAvoidanceVelocity,
 		FVector::ZeroVector
 	);
 #pragma endregion

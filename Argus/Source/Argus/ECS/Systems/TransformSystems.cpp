@@ -29,6 +29,7 @@ bool TransformSystems::RunSystems(UWorld* worldPointer, float deltaTime)
 
 		components.m_taskComponent = components.m_entity.GetComponent<TaskComponent>();
 		components.m_transformComponent = components.m_entity.GetComponent<TransformComponent>();
+		components.m_velocityComponent = components.m_entity.GetComponent<VelocityComponent>();
 		components.m_navigationComponent = components.m_entity.GetComponent<NavigationComponent>();
 		components.m_targetingComponent = components.m_entity.GetComponent<TargetingComponent>();
 		if (!components.m_entity || !components.m_taskComponent || !components.m_transformComponent || 
@@ -57,7 +58,7 @@ bool TransformSystems::RunSystems(UWorld* worldPointer, float deltaTime)
 
 bool TransformSystems::TransformSystemsComponentArgs::AreComponentsValidCheck(const WIDECHAR* functionName) const
 {
-	if (m_entity && m_taskComponent && m_navigationComponent && m_transformComponent && m_targetingComponent)
+	if (m_entity && m_taskComponent && m_navigationComponent && m_transformComponent && m_targetingComponent && m_velocityComponent)
 	{
 		return true;
 	}
@@ -76,7 +77,7 @@ void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float delta
 		return;
 	}
 
-	components.m_transformComponent->m_currentVelocity = components.m_transformComponent->m_proposedAvoidanceVelocity;
+	components.m_velocityComponent->m_currentVelocity = components.m_velocityComponent->m_proposedAvoidanceVelocity;
 	const int32 lastPointIndex = components.m_navigationComponent->m_lastPointIndex;
 	const int32 numNavigationPoints = components.m_navigationComponent->m_navigationPoints.Num();
 
@@ -88,7 +89,7 @@ void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float delta
 
 	const bool isLastPoint = components.m_navigationComponent->m_lastPointIndex == numNavigationPoints - 2u;
 	FVector moverLocation = components.m_transformComponent->m_location;
-	const FVector velocity = components.m_transformComponent->m_currentVelocity * deltaTime;
+	const FVector velocity = components.m_velocityComponent->m_currentVelocity * deltaTime;
 	moverLocation += velocity;
 
 	TOptional<FVector> groupSourceLocation = AvoidanceSystems::GetAvoidanceGroupSourceLocation(components);
@@ -118,7 +119,7 @@ void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float delta
 		if (!isLastPoint)
 		{
 			targetLocation = components.m_navigationComponent->m_navigationPoints[components.m_navigationComponent->m_lastPointIndex + 1];
-			components.m_transformComponent->m_currentVelocity = (targetLocation - moverLocation).GetSafeNormal() * components.m_transformComponent->m_desiredSpeedUnitsPerSecond;
+			components.m_velocityComponent->m_currentVelocity = (targetLocation - moverLocation).GetSafeNormal() * components.m_velocityComponent->m_desiredSpeedUnitsPerSecond;
 		}
 	}
 
@@ -135,7 +136,7 @@ void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float delta
 	}
 	else
 	{
-		FaceTowardsLocationXY(components.m_transformComponent, components.m_transformComponent->m_currentVelocity);
+		FaceTowardsLocationXY(components.m_transformComponent, components.m_velocityComponent->m_currentVelocity);
 	}
 
 	moverLocation = ProjectLocationOntoNavigationData(worldPointer, components.m_transformComponent, moverLocation);
@@ -174,11 +175,11 @@ bool TransformSystems::ProcessMovementTaskCommands(UWorld* worldPointer, float d
 			return true;
 
 		case EMovementState::None:
-			components.m_transformComponent->m_currentVelocity = components.m_transformComponent->m_proposedAvoidanceVelocity;
-			if (!components.m_transformComponent->m_currentVelocity.IsNearlyZero())
+			components.m_velocityComponent->m_currentVelocity = components.m_velocityComponent->m_proposedAvoidanceVelocity;
+			if (!components.m_velocityComponent->m_currentVelocity.IsNearlyZero())
 			{
-				const FVector velocity = components.m_transformComponent->m_currentVelocity * deltaTime;
-				FaceTowardsLocationXY(components.m_transformComponent, components.m_transformComponent->m_currentVelocity);
+				const FVector velocity = components.m_velocityComponent->m_currentVelocity * deltaTime;
+				FaceTowardsLocationXY(components.m_transformComponent, components.m_velocityComponent->m_currentVelocity);
 				components.m_transformComponent->m_location = components.m_transformComponent->m_location + velocity;
 				components.m_transformComponent->m_smoothedYaw.SmoothChase(components.m_transformComponent->m_targetYaw, deltaTime);
 				return true;
@@ -268,7 +269,7 @@ void TransformSystems::OnCompleteNavigationPath(const TransformSystemsComponentA
 	{
 		components.m_taskComponent->m_movementState = EMovementState::None;
 		components.m_navigationComponent->ResetPath();
-		components.m_transformComponent->m_currentVelocity = FVector::ZeroVector;
+		components.m_velocityComponent->m_currentVelocity = FVector::ZeroVector;
 	}
 	else
 	{
@@ -314,7 +315,7 @@ float TransformSystems::GetEndMoveRange(const TransformSystemsComponentArgs& com
 {
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
-		return components.m_transformComponent->m_desiredSpeedUnitsPerSecond + components.m_transformComponent->m_radius;
+		return components.m_velocityComponent->m_desiredSpeedUnitsPerSecond + components.m_transformComponent->m_radius;
 	}
 
 	float range = components.m_targetingComponent->m_meleeRange;

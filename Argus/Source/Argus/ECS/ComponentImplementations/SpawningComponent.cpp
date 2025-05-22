@@ -27,6 +27,9 @@ void SpawningComponent::DrawComponentDebug() const
 	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings))
 	{
 		ImGui::TableNextColumn();
+		ImGui::Text("m_spawnQueue");
+		ImGui::TableNextColumn();
+		ImGui::TableNextColumn();
 		ImGui::Text("m_spawningRadius");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_spawningRadius);
@@ -56,9 +59,6 @@ void SpawningComponent::DrawComponentDebug() const
 		{
 			ImGui::Text("Not set");
 		}
-		ImGui::TableNextColumn();
-		ImGui::Text("m_spawnQueue");
-		ImGui::TableNextColumn();
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

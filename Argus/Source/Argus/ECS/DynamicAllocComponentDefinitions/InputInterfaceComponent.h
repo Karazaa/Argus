@@ -14,7 +14,7 @@ enum class ESelectedActorsDisplayState : uint8
 
 struct InputInterfaceComponent
 {
-	ARGUS_DYNAMIC_COMPONENT_SHARED
+	ARGUS_DYNAMIC_COMPONENT_SHARED;
 
 	ARGUS_IGNORE()
 	TArray<uint16> m_selectedArgusEntityIds;

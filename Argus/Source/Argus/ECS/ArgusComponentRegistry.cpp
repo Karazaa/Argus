@@ -72,6 +72,10 @@ std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isTimerC
 TransformComponent ArgusComponentRegistry::s_TransformComponents[ArgusECSConstants::k_maxEntities];
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isTransformComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
 #pragma endregion
+#pragma region VelocityComponent
+VelocityComponent ArgusComponentRegistry::s_VelocityComponents[ArgusECSConstants::k_maxEntities];
+std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isVelocityComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
+#pragma endregion
 #pragma region InputInterfaceComponent
 std::unordered_map<uint16, InputInterfaceComponent> ArgusComponentRegistry::s_InputInterfaceComponents;
 #pragma endregion
@@ -108,6 +112,7 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 	s_isTaskComponentActive.set(entityId, false);
 	s_isTimerComponentActive.set(entityId, false);
 	s_isTransformComponentActive.set(entityId, false);
+	s_isVelocityComponentActive.set(entityId, false);
 
 	// Begin set component values
 	s_AbilityComponents[entityId] = AbilityComponent();
@@ -127,6 +132,7 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 	s_TaskComponents[entityId] = TaskComponent();
 	s_TimerComponents[entityId] = TimerComponent();
 	s_TransformComponents[entityId] = TransformComponent();
+	s_VelocityComponents[entityId] = VelocityComponent();
 
 	// Begin remove dynamically allocated components
 	if (s_InputInterfaceComponents.contains(entityId))
@@ -163,6 +169,7 @@ void ArgusComponentRegistry::FlushAllComponents()
 	s_isTaskComponentActive.reset();
 	s_isTimerComponentActive.reset();
 	s_isTransformComponentActive.reset();
+	s_isVelocityComponentActive.reset();
 
 	// Begin flush component values
 	for (uint16 i = 0u; i < ArgusECSConstants::k_maxEntities; ++i)
@@ -184,6 +191,7 @@ void ArgusComponentRegistry::FlushAllComponents()
 		s_TaskComponents[i] = TaskComponent();
 		s_TimerComponents[i] = TimerComponent();
 		s_TransformComponents[i] = TransformComponent();
+		s_VelocityComponents[i] = VelocityComponent();
 	}
 
 	// Begin flush dynamically allocated components
@@ -279,6 +287,11 @@ uint16 ArgusComponentRegistry::GetOwningEntityIdForComponentMember(void* memberA
 		TransformComponent* pretendComponent = reinterpret_cast<TransformComponent*>(memberAddress);
 		return pretendComponent - &s_TransformComponents[0];
 	}
+	if (memberAddress >= &s_VelocityComponents[0] && memberAddress <= &s_VelocityComponents[ArgusECSConstants::k_maxEntities - 1])
+	{
+		VelocityComponent* pretendComponent = reinterpret_cast<VelocityComponent*>(memberAddress);
+		return pretendComponent - &s_VelocityComponents[0];
+	}
 
 	return ArgusECSConstants::k_maxEntities;
 }
@@ -353,6 +366,10 @@ void ArgusComponentRegistry::DrawComponentsDebug(uint16 entityId)
 	if (const TransformComponent* TransformComponentPtr = GetComponent<TransformComponent>(entityId))
 	{
 		TransformComponentPtr->DrawComponentDebug();
+	}
+	if (const VelocityComponent* VelocityComponentPtr = GetComponent<VelocityComponent>(entityId))
+	{
+		VelocityComponentPtr->DrawComponentDebug();
 	}
 	if (const InputInterfaceComponent* InputInterfaceComponentPtr = GetComponent<InputInterfaceComponent>(entityId))
 	{

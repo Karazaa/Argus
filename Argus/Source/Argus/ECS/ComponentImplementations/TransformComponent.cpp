@@ -31,14 +31,6 @@ void TransformComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("(%.2f, %.2f, %.2f)", m_location.X, m_location.Y, m_location.Z);
 		ImGui::TableNextColumn();
-		ImGui::Text("m_currentVelocity");
-		ImGui::TableNextColumn();
-		ImGui::Text("(%.2f, %.2f, %.2f)", m_currentVelocity.X, m_currentVelocity.Y, m_currentVelocity.Z);
-		ImGui::TableNextColumn();
-		ImGui::Text("m_proposedAvoidanceVelocity");
-		ImGui::TableNextColumn();
-		ImGui::Text("(%.2f, %.2f, %.2f)", m_proposedAvoidanceVelocity.X, m_proposedAvoidanceVelocity.Y, m_proposedAvoidanceVelocity.Z);
-		ImGui::TableNextColumn();
 		ImGui::Text("m_smoothedYaw");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_smoothedYaw.GetValue());
@@ -46,10 +38,6 @@ void TransformComponent::DrawComponentDebug() const
 		ImGui::Text("m_targetYaw");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_targetYaw);
-		ImGui::TableNextColumn();
-		ImGui::Text("m_desiredSpeedUnitsPerSecond");
-		ImGui::TableNextColumn();
-		ImGui::Text("%.2f", m_desiredSpeedUnitsPerSecond);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_radius");
 		ImGui::TableNextColumn();

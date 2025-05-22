@@ -32,7 +32,6 @@ bool SpawningSystemsSpawnEntityTest::RunTest(const FString& Parameters)
 
 	transformComponentData->m_height = dummyHeight;
 	transformComponentData->m_radius = dummyRadius;
-	transformComponentData->m_desiredSpeedUnitsPerSecond = dummySpeed;
 
 	entityTemplate->m_entityPriority = dummyEntityPriority;
 	entityTemplate->m_componentData.Add(transformComponentData);
@@ -196,23 +195,6 @@ bool SpawningSystemsSpawnEntityTest::RunTest(const FString& Parameters)
 		),
 		spawnedTransformComponent->m_radius,
 		dummyRadius
-	);
-#pragma endregion
-
-#pragma region Test that the spawned entity has a correct value for its TransformComponents desired speed.
-	TestEqual
-	(
-		FString::Printf
-		(
-			TEXT("[%s] Test that the %s of the spawned %s has the correct value for %s after calling %s."),
-			ARGUS_FUNCNAME,
-			ARGUS_NAMEOF(TransformComponent),
-			ARGUS_NAMEOF(ArgusEntity),
-			ARGUS_NAMEOF(m_desiredSpeedUnitsPerSecond),
-			ARGUS_NAMEOF(SpawningSystems::SpawnEntity)
-		),
-		spawnedTransformComponent->m_desiredSpeedUnitsPerSecond,
-		dummySpeed
 	);
 #pragma endregion
 

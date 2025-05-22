@@ -17,6 +17,7 @@ public:
 		NavigationComponent* m_navigationComponent = nullptr;
 		TargetingComponent* m_targetingComponent = nullptr;
 		TransformComponent* m_transformComponent = nullptr;
+		VelocityComponent* m_velocityComponent = nullptr;
 
 		bool AreComponentsValidCheck(const WIDECHAR* functionName) const;
 	};

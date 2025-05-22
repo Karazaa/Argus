@@ -13,18 +13,11 @@ struct TransformComponent
 	ARGUS_IGNORE()
 	FVector m_location = FVector::ZeroVector;
 
-	ARGUS_IGNORE()
-	FVector m_currentVelocity = FVector::ZeroVector;
-
-	ARGUS_IGNORE()
-	FVector m_proposedAvoidanceVelocity = FVector::ZeroVector;
-
 	ArgusMath::ExponentialDecaySmoother<float> m_smoothedYaw;
 
 	ARGUS_IGNORE()
 	float m_targetYaw;
 
-	float m_desiredSpeedUnitsPerSecond = 100.0f;
 	float m_radius = 45.0f;
 	float m_height = 100.0f;
 

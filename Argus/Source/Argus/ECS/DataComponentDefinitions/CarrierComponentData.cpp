@@ -7,8 +7,8 @@
 void UCarrierComponentData::InstantiateComponentForEntity(ArgusEntity& entity) const
 {
 	CarrierComponent* CarrierComponentRef = entity.AddComponent<CarrierComponent>();
-	CarrierComponentRef->m_carrierCapacity = m_carrierCapacity;
 	CarrierComponentRef->m_passengerEntityIds = m_passengerEntityIds;
+	CarrierComponentRef->m_carrierCapacity = m_carrierCapacity;
 }
 
 bool UCarrierComponentData::MatchesType(UComponentData* other) const

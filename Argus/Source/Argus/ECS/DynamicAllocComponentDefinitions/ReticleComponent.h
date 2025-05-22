@@ -7,7 +7,7 @@
 
 struct ReticleComponent
 {
-	ARGUS_DYNAMIC_COMPONENT_SHARED
+	ARGUS_DYNAMIC_COMPONENT_SHARED;
 
 	ARGUS_IGNORE()
 	FVector m_reticleLocation = FVector::ZeroVector;

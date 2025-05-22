@@ -4,21 +4,18 @@
 #pragma once
 
 #include "ComponentData.h"
-#include "SpawningComponentData.generated.h"
+#include "VelocityComponentData.generated.h"
 
 UCLASS()
-class ARGUS_API USpawningComponentData : public UComponentData
+class ARGUS_API UVelocityComponentData : public UComponentData
 {
 	GENERATED_BODY()
 
 public:
-	ArgusQueue<SpawnEntityInfo> m_spawnQueue;
+	FVector m_currentVelocity = FVector::ZeroVector;
+	FVector m_proposedAvoidanceVelocity = FVector::ZeroVector;
 	UPROPERTY(EditAnywhere)
-	float m_spawningRadius = 100.0f;
-	UPROPERTY(EditAnywhere)
-	uint8 m_maximumQueueSize = 10u;
-	uint8 m_currentQueueSize = 0u;
-	TimerHandle m_spawnTimerHandle;
+	float m_desiredSpeedUnitsPerSecond = 100.0f;
 
 	void InstantiateComponentForEntity(ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;

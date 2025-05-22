@@ -27,10 +27,6 @@ void CarrierComponent::DrawComponentDebug() const
 	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings))
 	{
 		ImGui::TableNextColumn();
-		ImGui::Text("m_carrierCapacity");
-		ImGui::TableNextColumn();
-		ImGui::Text("%d", m_carrierCapacity);
-		ImGui::TableNextColumn();
 		ImGui::Text("m_passengerEntityIds");
 		ImGui::TableNextColumn();
 		if (m_passengerEntityIds.Num() == 0)
@@ -41,6 +37,10 @@ void CarrierComponent::DrawComponentDebug() const
 		{
 			ImGui::Text("Size of array = %d", m_passengerEntityIds.Num());
 		}
+		ImGui::TableNextColumn();
+		ImGui::Text("m_carrierCapacity");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_carrierCapacity);
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

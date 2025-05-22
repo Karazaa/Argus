@@ -26,6 +26,7 @@
 #include "ComponentDefinitions\TaskComponent.h"
 #include "ComponentDefinitions\TimerComponent.h"
 #include "ComponentDefinitions\TransformComponent.h"
+#include "ComponentDefinitions\VelocityComponent.h"
 
 // Begin dynamically allocated component specific includes.
 #include "DynamicAllocComponentDefinitions\InputInterfaceComponent.h"
@@ -63,7 +64,7 @@ public:
 	static void DrawComponentsDebug(uint16 entityId);
 #endif //!UE_BUILD_SHIPPING
 
-	static constexpr uint32 k_numComponentTypes = 20;
+	static constexpr uint32 k_numComponentTypes = 21;
 
 	// Begin component specific template specifiers.
 	
@@ -1171,6 +1172,71 @@ public:
 	}
 
 	friend struct TransformComponent;
+#pragma endregion
+#pragma region VelocityComponent
+private:
+	static VelocityComponent s_VelocityComponents[ArgusECSConstants::k_maxEntities];
+	static std::bitset<ArgusECSConstants::k_maxEntities> s_isVelocityComponentActive;
+public:
+	template<>
+	inline VelocityComponent* GetComponent<VelocityComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(VelocityComponent));
+			return nullptr;
+		}
+
+		if (!s_isVelocityComponentActive[entityId])
+		{
+			return nullptr;
+		}
+
+		return &s_VelocityComponents[entityId];
+	}
+
+	template<>
+	inline VelocityComponent* AddComponent<VelocityComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(VelocityComponent));
+			return nullptr;
+		}
+
+		if (s_isVelocityComponentActive[entityId])
+		{
+			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(VelocityComponent), entityId);
+			return &s_VelocityComponents[entityId];
+		}
+
+		s_VelocityComponents[entityId] = VelocityComponent();
+		s_isVelocityComponentActive.set(entityId);
+		return &s_VelocityComponents[entityId];
+	}
+
+	template<>
+	inline VelocityComponent* GetOrAddComponent<VelocityComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(VelocityComponent));
+			return nullptr;
+		}
+
+		if (s_isVelocityComponentActive[entityId])
+		{
+			return &s_VelocityComponents[entityId];
+		}
+		else
+		{
+			s_VelocityComponents[entityId] = VelocityComponent();
+			s_isVelocityComponentActive.set(entityId);
+			return &s_VelocityComponents[entityId];
+		}
+	}
+
+	friend struct VelocityComponent;
 #pragma endregion
 	
 	// Begin dynamically allocated component specific template specifiers.

@@ -42,7 +42,8 @@ void NavigationSystems::RunSystems(UWorld* worldPointer)
 		components.m_navigationComponent = components.m_entity.GetComponent<NavigationComponent>();
 		components.m_targetingComponent = components.m_entity.GetComponent<TargetingComponent>();
 		components.m_transformComponent = components.m_entity.GetComponent<TransformComponent>();
-		if (!components.m_taskComponent || !components.m_navigationComponent || !components.m_targetingComponent || !components.m_transformComponent)
+		components.m_velocityComponent = components.m_entity.GetComponent<VelocityComponent>();
+		if (!components.m_taskComponent || !components.m_navigationComponent || !components.m_targetingComponent || !components.m_transformComponent || !components.m_velocityComponent)
 		{
 			continue;
 		}
@@ -59,13 +60,14 @@ void NavigationSystems::RunSystems(UWorld* worldPointer)
 
 bool NavigationSystems::NavigationSystemsComponentArgs::AreComponentsValidCheck(const WIDECHAR* functionName) const
 {
-	if (!m_entity || !m_taskComponent || !m_navigationComponent || !m_targetingComponent || !m_transformComponent)
+	if (m_entity && m_taskComponent && m_navigationComponent && m_transformComponent && m_targetingComponent && m_velocityComponent)
 	{
-		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Navigation Systems were run with invalid component arguments passed."), functionName);
-		return false;
+		return true;
 	}
 
-	return true;
+	ArgusLogging::LogInvalidComponentReferences(functionName, ARGUS_NAMEOF(NavigationSystemsComponentArgs));
+
+	return false;
 }
 
 void NavigationSystems::NavigateFromEntityToEntity(UWorld* worldPointer, ArgusEntity targetEntity, const NavigationSystemsComponentArgs& components)
@@ -157,7 +159,7 @@ void NavigationSystems::NavigateFromEntityToLocation(UWorld* worldPointer, std::
 	// Need to set initial velocity when starting pathing so that avoidance systems can properly consider desired velocity when starting movement.
 	FVector moverLocation = components.m_transformComponent->m_location;
 	const FVector firstLocation = components.m_navigationComponent->m_navigationPoints[1];
-	components.m_transformComponent->m_currentVelocity = (firstLocation - moverLocation).GetSafeNormal() * components.m_transformComponent->m_desiredSpeedUnitsPerSecond;
+	components.m_velocityComponent->m_currentVelocity = (firstLocation - moverLocation).GetSafeNormal() * components.m_velocityComponent->m_desiredSpeedUnitsPerSecond;
 }
 
 void NavigationSystems::ProcessNavigationTaskCommands(UWorld* worldPointer, const NavigationSystemsComponentArgs& components)

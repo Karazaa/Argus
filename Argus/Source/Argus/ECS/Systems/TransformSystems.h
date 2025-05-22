@@ -14,6 +14,7 @@ public:
 		ArgusEntity m_entity = ArgusEntity::k_emptyEntity;
 		TaskComponent* m_taskComponent = nullptr;
 		TransformComponent* m_transformComponent = nullptr;
+		VelocityComponent* m_velocityComponent = nullptr;
 		NavigationComponent* m_navigationComponent = nullptr;
 		TargetingComponent* m_targetingComponent = nullptr;
 
