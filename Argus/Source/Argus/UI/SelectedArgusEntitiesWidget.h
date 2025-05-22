@@ -12,6 +12,8 @@ class ArgusEntity;
 class UAbilityRecord;
 class UArgusInputManager;
 class UButton;
+class UMultipleSelectedEntitiesWidget;
+class USingleSelectedEntityWidget;
 
 UCLASS()
 class USelectedArgusEntitiesWidget : public UArgusUserWidget
@@ -20,7 +22,7 @@ class USelectedArgusEntitiesWidget : public UArgusUserWidget
 
 public:
 	UFUNCTION(BlueprintImplementableEvent)
-	void OnUpdateSelectedArgusActors(const UAbilityRecord* ability0Record, const UAbilityRecord* ability1Record, const UAbilityRecord* ability2Record, const UAbilityRecord* ability3Record);
+	void OnUpdateSelectedArgusActorAbilities(const UAbilityRecord* ability0Record, const UAbilityRecord* ability1Record, const UAbilityRecord* ability2Record, const UAbilityRecord* ability3Record);
 
 	virtual void OnUpdateSelectedArgusActors(ArgusEntity& templateEntity) override;
 
@@ -43,8 +45,16 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	FSlateBrush m_abilityButtonPressedSlateBrush;
 
+	UPROPERTY(BlueprintReadWrite, Transient)
+	TObjectPtr<USingleSelectedEntityWidget> m_singleSelectedEntityWidget = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, Transient)
+	TObjectPtr<UMultipleSelectedEntitiesWidget> m_multipleSelectedEntitiesWidget = nullptr;
+
 	FButtonStyle m_abilityButtonStyle;
 
 	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
+
+	void HideAllElements();
 };

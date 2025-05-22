@@ -7,6 +7,8 @@
 #include "ArgusMacros.h"
 #include "ArgusStaticData.h"
 #include "Components/Button.h"
+#include "MultipleSelectedEntitiesWidget.h"
+#include "SingleSelectedEntityWidget.h"
 
 void USelectedArgusEntitiesWidget::OnUpdateSelectedArgusActors(ArgusEntity& templateEntity)
 {
@@ -14,7 +16,7 @@ void USelectedArgusEntitiesWidget::OnUpdateSelectedArgusActors(ArgusEntity& temp
 
 	if (!templateEntity)
 	{
-		OnUpdateSelectedArgusActors(nullptr, nullptr, nullptr, nullptr);
+		HideAllElements();
 		return;
 	}
 
@@ -22,7 +24,7 @@ void USelectedArgusEntitiesWidget::OnUpdateSelectedArgusActors(ArgusEntity& temp
 	{
 		if (taskComponent->m_constructionState == EConstructionState::BeingConstructed)
 		{
-			OnUpdateSelectedArgusActors(nullptr, nullptr, nullptr, nullptr);
+			HideAllElements();
 			return;
 		}
 	}
@@ -34,11 +36,11 @@ void USelectedArgusEntitiesWidget::OnUpdateSelectedArgusActors(ArgusEntity& temp
 		const UAbilityRecord* ability2Record = abilityComponent->m_ability2Id == 0 ? nullptr : ArgusStaticData::GetRecord<UAbilityRecord>(abilityComponent->m_ability2Id);
 		const UAbilityRecord* ability3Record = abilityComponent->m_ability3Id == 0 ? nullptr : ArgusStaticData::GetRecord<UAbilityRecord>(abilityComponent->m_ability3Id);
 
-		OnUpdateSelectedArgusActors(ability0Record, ability1Record, ability2Record, ability3Record);
+		OnUpdateSelectedArgusActorAbilities(ability0Record, ability1Record, ability2Record, ability3Record);
 	}
 	else
 	{
-		OnUpdateSelectedArgusActors(nullptr, nullptr, nullptr, nullptr);
+		OnUpdateSelectedArgusActorAbilities(nullptr, nullptr, nullptr, nullptr);
 	}
 
 	ArgusEntity singletonEntity = ArgusEntity::GetSingletonEntity();
@@ -55,11 +57,25 @@ void USelectedArgusEntitiesWidget::OnUpdateSelectedArgusActors(ArgusEntity& temp
 
 	if (inputInterfaceComponent->m_selectedArgusEntityIds.Num() > 1)
 	{
-		// TODO JAMES: Show multiple entity display.
+		if (m_singleSelectedEntityWidget)
+		{
+			m_singleSelectedEntityWidget->SetVisibility(ESlateVisibility::Collapsed);
+		}
+		if (m_multipleSelectedEntitiesWidget)
+		{
+			m_multipleSelectedEntitiesWidget->SetVisibility(ESlateVisibility::Visible);
+		}
 	}
 	else
 	{
-		// TODO JAMES: Show single entity display.
+		if (m_singleSelectedEntityWidget)
+		{
+			m_singleSelectedEntityWidget->SetVisibility(ESlateVisibility::Visible);
+		}
+		if (m_multipleSelectedEntitiesWidget)
+		{
+			m_multipleSelectedEntitiesWidget->SetVisibility(ESlateVisibility::Collapsed);
+		}
 	}
 }
 
@@ -116,5 +132,20 @@ void USelectedArgusEntitiesWidget::NativeOnMouseLeave(const FPointerEvent& InMou
 	if (m_shouldBlockCameraPanning)
 	{
 		AArgusCameraActor::DecrementPanningBlockers();
+	}
+}
+
+void USelectedArgusEntitiesWidget::HideAllElements()
+{
+	OnUpdateSelectedArgusActorAbilities(nullptr, nullptr, nullptr, nullptr);
+
+	if (m_singleSelectedEntityWidget)
+	{
+		m_singleSelectedEntityWidget->SetVisibility(ESlateVisibility::Collapsed);
+	}
+
+	if (m_multipleSelectedEntitiesWidget)
+	{
+		m_multipleSelectedEntitiesWidget->SetVisibility(ESlateVisibility::Collapsed);
 	}
 }
