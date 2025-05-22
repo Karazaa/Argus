@@ -54,7 +54,7 @@ public:
 	void OnSetControlGroup3(const FInputActionValue& value);
 	void OnSetControlGroup4(const FInputActionValue& value);
 	void OnSetControlGroup5(const FInputActionValue& value);
-
+	void OnChangeActiveAbilityGroup(const FInputActionValue& value);
 
 	void ProcessPlayerInput(AArgusCameraActor* argusCamera, const AArgusCameraActor::UpdateCameraPanningParameters& updateCameraPanningParameters, float deltaTime);
 	bool ShouldDrawMarqueeBox() const;
@@ -92,7 +92,8 @@ private:
 		SetControlGroup2,
 		SetControlGroup3,
 		SetControlGroup4,
-		SetControlGroup5
+		SetControlGroup5,
+		ChangeActiveAbilityGroup,
 	};
 
 	struct InputCache
@@ -127,6 +128,7 @@ private:
 	void ProcessRotateCameraInputEvent(AArgusCameraActor* argusCamera, const FInputActionValue& value);
 	void ProcessControlGroup(uint8 controlGroupIndex, AArgusCameraActor* argusCamera);
 	void ProcessSetControlGroup(uint8 controlGroupIndex);
+	void ProcessChangeActiveAbilityGroup();
 
 	void AddSelectedActorExclusive(AArgusActor* argusActor);
 	void AddSelectedActorAdditive(AArgusActor* argusActor);

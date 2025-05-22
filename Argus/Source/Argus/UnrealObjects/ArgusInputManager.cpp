@@ -288,6 +288,12 @@ void UArgusInputManager::OnSetControlGroup5(const FInputActionValue& value)
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::SetControlGroup5, value));
 }
 
+void UArgusInputManager::OnChangeActiveAbilityGroup(const FInputActionValue& value)
+{
+	ARGUS_MEMORY_TRACE(ArgusInputManager);
+	m_inputEventsThisFrame.Emplace(InputCache(InputType::ChangeActiveAbilityGroup, value));
+}
+
 #pragma endregion
 
 void UArgusInputManager::ProcessPlayerInput(AArgusCameraActor* argusCamera, const AArgusCameraActor::UpdateCameraPanningParameters& updateCameraParameters, float deltaTime)
@@ -509,6 +515,10 @@ void UArgusInputManager::BindActions(TSoftObjectPtr<UArgusInputActionSet>& argus
 	{
 		enhancedInputComponent->BindAction(setControlGroupAction5, ETriggerEvent::Triggered, this, &UArgusInputManager::OnSetControlGroup5);
 	}
+	if (const UInputAction* changeActiveAbilityGroupAction = actionSet->m_changeActiveAbilityGroup.LoadSynchronous())
+	{
+		enhancedInputComponent->BindAction(changeActiveAbilityGroupAction, ETriggerEvent::Triggered, this, &UArgusInputManager::OnChangeActiveAbilityGroup);
+	}
 }
 
 bool UArgusInputManager::ValidateOwningPlayerController()
@@ -642,6 +652,9 @@ void UArgusInputManager::ProcessInputEvent(AArgusCameraActor* argusCamera, const
 			break;
 		case InputType::SetControlGroup5:
 			ProcessSetControlGroup(5u);
+			break;
+		case InputType::ChangeActiveAbilityGroup:
+			ProcessChangeActiveAbilityGroup();
 			break;
 		default:
 			break;
@@ -1225,6 +1238,11 @@ void UArgusInputManager::ProcessSetControlGroup(uint8 controlGroupIndex)
 	m_controlGroupActors[controlGroupIndex] = m_selectedArgusActors;
 }
 
+void UArgusInputManager::ProcessChangeActiveAbilityGroup()
+{
+
+}
+
 #pragma endregion
 
 void UArgusInputManager::AddSelectedActorExclusive(AArgusActor* argusActor)
@@ -1367,6 +1385,7 @@ void UArgusInputManager::OnSelectedArgusArgusActorsChanged()
 
 	inputInterfaceComponent->m_selectedArgusEntityIds.Reset();
 	inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.Reset();
+	inputInterfaceComponent->m_indexOfActiveAbilityGroup = -1;
 	m_activeAbilityGroupArgusActors.Reset();
 
 	uint32 abilityUnitGroupActorRecordId = 0u;
@@ -1401,6 +1420,7 @@ void UArgusInputManager::OnSelectedArgusArgusActorsChanged()
 		{
 			abilityUnitGroupActorRecordId = taskComponent->m_spawnedFromArgusActorRecordId;
 			inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.Add(entity.GetId());
+			inputInterfaceComponent->m_indexOfActiveAbilityGroup = static_cast<uint8>(inputInterfaceComponent->m_selectedArgusEntityIds.Num() - 1);
 			m_activeAbilityGroupArgusActors.Add(selectedActor);
 		}
 		else if (abilityUnitGroupActorRecordId == taskComponent->m_spawnedFromArgusActorRecordId)

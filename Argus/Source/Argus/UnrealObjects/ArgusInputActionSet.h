@@ -93,4 +93,7 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TSoftObjectPtr<UInputAction> m_setControlGroup5 = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TSoftObjectPtr<UInputAction> m_changeActiveAbilityGroup = nullptr;
 };

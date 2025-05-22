@@ -24,4 +24,7 @@ struct InputInterfaceComponent
 
 	ARGUS_IGNORE()
 	ESelectedActorsDisplayState m_selectedActorsDisplayState = ESelectedActorsDisplayState::NotChanged;
+
+	ARGUS_IGNORE()
+	int8 m_indexOfActiveAbilityGroup = 0;
 };
