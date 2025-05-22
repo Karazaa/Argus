@@ -7,10 +7,10 @@
 
 struct CarrierComponent
 {
-	ARGUS_COMPONENT_SHARED
-
-	uint8 m_carrierCapacity = 0u;
+	ARGUS_COMPONENT_SHARED;
 
 	ARGUS_IGNORE()
 	TArray<uint16> m_passengerEntityIds;
+
+	uint8 m_carrierCapacity = 0u;
 };

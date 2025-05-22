@@ -8,7 +8,7 @@
 
 struct AvoidanceGroupingComponent
 {
-	ARGUS_COMPONENT_SHARED
+	ARGUS_COMPONENT_SHARED;
 
 	ARGUS_IGNORE()
 	TArray<uint16> m_adjacentEntities;

@@ -8,7 +8,7 @@
 
 struct PassengerComponent
 {
-	ARGUS_COMPONENT_SHARED
+	ARGUS_COMPONENT_SHARED;
 
 	ARGUS_OBSERVABLE_DECLARATION(uint16, m_carrierEntityId, ArgusECSConstants::k_maxEntities)
 };

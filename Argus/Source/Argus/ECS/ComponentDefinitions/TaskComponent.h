@@ -9,7 +9,7 @@
 
 struct TaskComponent
 {
-	ARGUS_COMPONENT_SHARED
+	ARGUS_COMPONENT_SHARED;
 
 	ARGUS_IGNORE()
 	uint32 m_spawnedFromArgusActorRecordId = 0u;

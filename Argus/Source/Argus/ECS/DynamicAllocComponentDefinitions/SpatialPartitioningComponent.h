@@ -9,7 +9,7 @@
 
 struct SpatialPartitioningComponent
 {
-	ARGUS_DYNAMIC_COMPONENT_SHARED
+	ARGUS_DYNAMIC_COMPONENT_SHARED;
 
 	ARGUS_IGNORE()
 	ArgusEntityKDTree m_argusEntityKDTree;

@@ -9,7 +9,7 @@
 
 struct ObserversComponent
 {
-	ARGUS_COMPONENT_SHARED
+	ARGUS_COMPONENT_SHARED;
 
 	ARGUS_IGNORE()
 	PassengerComponentObservers m_PassengerComponentObservers;

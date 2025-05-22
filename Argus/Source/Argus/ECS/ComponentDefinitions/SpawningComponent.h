@@ -14,6 +14,9 @@ struct SpawningComponent
 {
 	ARGUS_COMPONENT_SHARED
 
+	ARGUS_IGNORE()
+	ArgusQueue<SpawnEntityInfo> m_spawnQueue;
+
 	float m_spawningRadius = 100.0f;
 
 	uint8 m_maximumQueueSize = 10u;
@@ -23,7 +26,4 @@ struct SpawningComponent
 
 	ARGUS_IGNORE()
 	TimerHandle m_spawnTimerHandle;
-
-	ARGUS_IGNORE()
-	ArgusQueue<SpawnEntityInfo> m_spawnQueue;
 };

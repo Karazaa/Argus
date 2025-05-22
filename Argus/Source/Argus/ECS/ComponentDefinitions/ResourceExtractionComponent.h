@@ -10,7 +10,7 @@
 
 struct ResourceExtractionComponent
 {
-	ARGUS_COMPONENT_SHARED
+	ARGUS_COMPONENT_SHARED;
 
 	ARGUS_STATIC_DATA(UResourceSetRecord)
 	uint32 m_resourcesToExtractRecordId = 0u;

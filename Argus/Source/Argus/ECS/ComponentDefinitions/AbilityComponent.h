@@ -9,7 +9,7 @@ class UAbilityRecord;
 
 struct AbilityComponent
 {
-	ARGUS_COMPONENT_SHARED
+	ARGUS_COMPONENT_SHARED;
 
 	ARGUS_STATIC_DATA(UAbilityRecord)
 	uint32 m_ability0Id = 0u;

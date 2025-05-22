@@ -19,7 +19,7 @@ enum class EResourceComponentOwnerType
 
 struct ResourceComponent
 {
-	ARGUS_COMPONENT_SHARED
+	ARGUS_COMPONENT_SHARED;
 
 	FResourceSet m_currentResources;
 
