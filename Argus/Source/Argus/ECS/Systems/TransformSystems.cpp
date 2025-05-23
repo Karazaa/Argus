@@ -89,7 +89,7 @@ void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float delta
 
 	const bool isLastPoint = components.m_navigationComponent->m_lastPointIndex == numNavigationPoints - 2u;
 	FVector moverLocation = components.m_transformComponent->m_location;
-	const FVector velocity = components.m_velocityComponent->m_currentVelocity * deltaTime;
+	const FVector velocity = FVector((components.m_velocityComponent->m_currentVelocity * deltaTime), 0.0f);
 	moverLocation += velocity;
 
 	TOptional<FVector> groupSourceLocation = AvoidanceSystems::GetAvoidanceGroupSourceLocation(components);
@@ -119,7 +119,7 @@ void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float delta
 		if (!isLastPoint)
 		{
 			targetLocation = components.m_navigationComponent->m_navigationPoints[components.m_navigationComponent->m_lastPointIndex + 1];
-			components.m_velocityComponent->m_currentVelocity = (targetLocation - moverLocation).GetSafeNormal() * components.m_velocityComponent->m_desiredSpeedUnitsPerSecond;
+			components.m_velocityComponent->m_currentVelocity = FVector2D((targetLocation - moverLocation).GetSafeNormal() * components.m_velocityComponent->m_desiredSpeedUnitsPerSecond);
 		}
 	}
 
@@ -136,7 +136,7 @@ void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float delta
 	}
 	else
 	{
-		FaceTowardsLocationXY(components.m_transformComponent, components.m_velocityComponent->m_currentVelocity);
+		FaceTowardsLocationXY(components.m_transformComponent, FVector(components.m_velocityComponent->m_currentVelocity, 0.0f));
 	}
 
 	moverLocation = ProjectLocationOntoNavigationData(worldPointer, components.m_transformComponent, moverLocation);
@@ -178,9 +178,10 @@ bool TransformSystems::ProcessMovementTaskCommands(UWorld* worldPointer, float d
 			components.m_velocityComponent->m_currentVelocity = components.m_velocityComponent->m_proposedAvoidanceVelocity;
 			if (!components.m_velocityComponent->m_currentVelocity.IsNearlyZero())
 			{
-				const FVector velocity = components.m_velocityComponent->m_currentVelocity * deltaTime;
-				FaceTowardsLocationXY(components.m_transformComponent, components.m_velocityComponent->m_currentVelocity);
-				components.m_transformComponent->m_location = components.m_transformComponent->m_location + velocity;
+				const FVector velocity = FVector(components.m_velocityComponent->m_currentVelocity, 0.0f);
+				const FVector velocityScaled = velocity * deltaTime;
+				FaceTowardsLocationXY(components.m_transformComponent, velocity);
+				components.m_transformComponent->m_location = components.m_transformComponent->m_location + velocityScaled;
 				components.m_transformComponent->m_smoothedYaw.SmoothChase(components.m_transformComponent->m_targetYaw, deltaTime);
 				return true;
 			}
@@ -269,7 +270,7 @@ void TransformSystems::OnCompleteNavigationPath(const TransformSystemsComponentA
 	{
 		components.m_taskComponent->m_movementState = EMovementState::None;
 		components.m_navigationComponent->ResetPath();
-		components.m_velocityComponent->m_currentVelocity = FVector::ZeroVector;
+		components.m_velocityComponent->m_currentVelocity = FVector2D::ZeroVector;
 	}
 	else
 	{

@@ -89,7 +89,7 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 	params.m_sourceEntityLocation3D = components.m_transformComponent->m_location;
 	params.m_sourceEntityLocation3D.Z += ArgusECSConstants::k_debugDrawHeightAdjustment;
 	params.m_sourceEntityLocation = ArgusMath::ToCartesianVector2(FVector2D(params.m_sourceEntityLocation3D));
-	params.m_sourceEntityVelocity = ArgusMath::ToCartesianVector2(FVector2D(components.m_velocityComponent->m_currentVelocity));
+	params.m_sourceEntityVelocity = ArgusMath::ToCartesianVector2(components.m_velocityComponent->m_currentVelocity);
 	params.m_deltaTime = deltaTime;
 	params.m_entityRadius = components.m_transformComponent->m_radius;
 	params.m_inverseEntityPredictionTime = 1.0f / ArgusECSConstants::k_avoidanceEntityDetectionPredictionTime;
@@ -106,11 +106,11 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 			desiredVelocity = GetVelocityTowardsEndOfNavPoint(params, components);
 		}
 
-		components.m_velocityComponent->m_proposedAvoidanceVelocity = FVector(ArgusMath::ToUnrealVector2(desiredVelocity), 0.0f);
+		components.m_velocityComponent->m_proposedAvoidanceVelocity = ArgusMath::ToUnrealVector2(desiredVelocity);
 #if !UE_BUILD_SHIPPING
 		if (worldPointer && ArgusECSDebugger::ShouldShowAvoidanceDebugForEntity(components.m_entity.GetId()))
 		{
-			DrawDebugLine(worldPointer, params.m_sourceEntityLocation3D, params.m_sourceEntityLocation3D + components.m_velocityComponent->m_proposedAvoidanceVelocity, FColor::Orange, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth);
+			DrawDebugLine(worldPointer, params.m_sourceEntityLocation3D, params.m_sourceEntityLocation3D + FVector(components.m_velocityComponent->m_proposedAvoidanceVelocity, 0.0f), FColor::Orange, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth);
 		}
 #endif //!UE_BUILD_SHIPPING
 		return;
@@ -150,7 +150,7 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 	}
 #endif //!UE_BUILD_SHIPPING
 
-	components.m_velocityComponent->m_proposedAvoidanceVelocity = FVector(ArgusMath::ToUnrealVector2(resultingVelocity), 0.0f);
+	components.m_velocityComponent->m_proposedAvoidanceVelocity = ArgusMath::ToUnrealVector2(resultingVelocity);
 }
 
 ArgusEntity AvoidanceSystems::GetAvoidanceGroupLeader(const ArgusEntity& entity)
@@ -345,7 +345,7 @@ void AvoidanceSystems::CreateEntityORCALines(const CreateEntityORCALinesParams& 
 
 		if (const VelocityComponent* foundVelocityComponent = foundEntity.GetComponent<VelocityComponent>())
 		{
-			perEntityParams.m_foundEntityVelocity = ArgusMath::ToCartesianVector2(FVector2D(foundVelocityComponent->m_currentVelocity));
+			perEntityParams.m_foundEntityVelocity = ArgusMath::ToCartesianVector2(foundVelocityComponent->m_currentVelocity);
 		}
 		else
 		{
@@ -636,7 +636,7 @@ FVector2D AvoidanceSystems::GetDesiredVelocity(const TransformSystems::Transform
 		if (groupLeaderAvoidanceGroupingComponent && groupLeaderAvoidanceGroupingComponent->m_numberOfIdleEntities > 0u)
 		{
 			components.m_taskComponent->m_movementState = EMovementState::AwaitingFinish;
-			components.m_velocityComponent->m_currentVelocity = FVector::ZeroVector;
+			components.m_velocityComponent->m_currentVelocity = FVector2D::ZeroVector;
 			return FVector2D::ZeroVector;
 		}
 	}

@@ -10,10 +10,10 @@ struct VelocityComponent
 	ARGUS_COMPONENT_SHARED;
 
 	ARGUS_IGNORE()
-	FVector m_currentVelocity = FVector::ZeroVector;
+	FVector2D m_currentVelocity = FVector2D::ZeroVector;
 
 	ARGUS_IGNORE()
-	FVector m_proposedAvoidanceVelocity = FVector::ZeroVector;
+	FVector2D m_proposedAvoidanceVelocity = FVector2D::ZeroVector;
 
 	float m_desiredSpeedUnitsPerSecond = 100.0f;
 };

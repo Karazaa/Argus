@@ -14,8 +14,8 @@ bool AvoidanceSystemsProcessORCAvoidanceTest::RunTest(const FString& Parameters)
 {
 	const float deltaTime = 1.0f;
 	const float desiredSpeed = 100.0f;
-	const FVector velocity = FVector(100.0f, 0.0f, 0.0f);
-	const FVector secondVelocity = FVector(-100.0f, 0.0f, 0.0f);
+	const FVector2D velocity = FVector2D(100.0f, 0.0f);
+	const FVector2D secondVelocity = FVector2D(-100.0f, 0.0f);
 	const FVector secondEntityLocation = FVector(100.0f, 0.0f, 0.0f);
 	const FVector targetLocation = FVector(200.0f, 0.0f, 0.0f);
 	const FVector secondTargetLocation = FVector(-100.0f, 0.0f, 0.0f);
@@ -98,7 +98,7 @@ bool AvoidanceSystemsProcessORCAvoidanceTest::RunTest(const FString& Parameters)
 			ARGUS_NAMEOF(m_proposedAvoidanceVelocity)
 		),
 		components.m_velocityComponent->m_proposedAvoidanceVelocity,
-		FVector::ZeroVector
+		FVector2D::ZeroVector
 	);
 #pragma endregion
 
@@ -116,7 +116,7 @@ bool AvoidanceSystemsProcessORCAvoidanceTest::RunTest(const FString& Parameters)
 			ARGUS_NAMEOF(AvoidanceSystems::ProcessORCAvoidance)
 		),
 		components.m_velocityComponent->m_proposedAvoidanceVelocity,
-		FVector::ZeroVector
+		FVector2D::ZeroVector
 	);
 #pragma endregion
 
@@ -185,7 +185,7 @@ bool AvoidanceSystemsProcessORCAvoidanceTest::RunTest(const FString& Parameters)
 			ARGUS_NAMEOF(ArgusEntity)
 		),
 		components.m_velocityComponent->m_proposedAvoidanceVelocity,
-		FVector::ZeroVector
+		FVector2D::ZeroVector
 	);
 #pragma endregion
 
@@ -201,7 +201,7 @@ bool AvoidanceSystemsProcessORCAvoidanceTest::RunTest(const FString& Parameters)
 			ARGUS_NAMEOF(AvoidanceSystems::ProcessORCAvoidance)
 		),
 		secondComponents.m_velocityComponent->m_proposedAvoidanceVelocity,
-		FVector::ZeroVector
+		FVector2D::ZeroVector
 	);
 #pragma endregion
 
@@ -293,7 +293,7 @@ bool AvoidanceSystemsProcessORCAvoidanceTest::RunTest(const FString& Parameters)
 			ARGUS_NAMEOF(ArgusEntity)
 		),
 		components.m_velocityComponent->m_proposedAvoidanceVelocity,
-		FVector::ZeroVector
+		FVector2D::ZeroVector
 	);
 #pragma endregion
 
@@ -327,7 +327,7 @@ bool AvoidanceSystemsProcessORCAvoidanceTest::RunTest(const FString& Parameters)
 			ARGUS_NAMEOF(ArgusEntity)
 		),
 		secondComponents.m_velocityComponent->m_proposedAvoidanceVelocity,
-		FVector::ZeroVector
+		FVector2D::ZeroVector
 	);
 #pragma endregion
 

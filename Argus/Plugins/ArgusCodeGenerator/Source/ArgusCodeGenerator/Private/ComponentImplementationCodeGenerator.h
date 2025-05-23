@@ -23,4 +23,5 @@ private:
 	static void FormatImGuiFloatField(const std::string& variableName, std::string& outFormattedString);
 	static void FormatImGuiIntField(const std::string& variableName, std::string& outFormattedString);
 	static void FormatImGuiFVectorField(const std::string& variableName, std::string& outFormattedString);
+	static void FormatImGuiFVector2DField(const std::string& variableName, std::string& outFormattedString);
 };

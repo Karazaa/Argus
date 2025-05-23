@@ -148,6 +148,7 @@ bool ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 		const bool isOptional = parsedVariableData[i].m_typeName.find("TOptional") != std::string::npos;
 		const bool isArray = parsedVariableData[i].m_typeName.find("TArray") != std::string::npos;
 		const bool isQueue = parsedVariableData[i].m_typeName.find("ArgusQueue") != std::string::npos;
+		const bool isVector2 = parsedVariableData[i].m_typeName.find("FVector2D") != std::string::npos;
 		const bool isVector = parsedVariableData[i].m_typeName.find("FVector") != std::string::npos;
 		const bool isTimer = parsedVariableData[i].m_typeName.find("TimerHandle") != std::string::npos;
 		const bool isResourceSet = parsedVariableData[i].m_typeName.find("FResourceSet") != std::string::npos;
@@ -218,6 +219,44 @@ bool ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 			newVariableName.append(parsedVariableData[i].m_varName);
 			outParsedVariableContents.push_back(std::vformat("\t\tconst char* {} = ARGUS_FSTRING_TO_CHAR(StaticEnum<{}>()->GetNameStringByValue(static_cast<uint8>({})))", std::make_format_args(newVariableName, cleanTypeName, parsedVariableData[i].m_varName)));
 			outParsedVariableContents.push_back(std::vformat("\t\tImGui::Text({});", std::make_format_args(newVariableName)));
+		}
+		else if (isVector2)
+		{
+			if (isOptional)
+			{
+				outParsedVariableContents.push_back(std::vformat("\t\tif ({}.IsSet())", std::make_format_args(parsedVariableData[i].m_varName)));
+				outParsedVariableContents.push_back("\t\t{");
+				std::string variableName = parsedVariableData[i].m_varName;
+				variableName.append(".GetValue()");
+				std::string value = "\t";
+				FormatImGuiFVector2DField(variableName, value);
+				outParsedVariableContents.push_back(value);
+				outParsedVariableContents.push_back("\t\t}");
+				outParsedVariableContents.push_back("\t\telse");
+				outParsedVariableContents.push_back("\t\t{");
+				outParsedVariableContents.push_back("\t\t\tImGui::Text(\"Optional not set\");");
+				outParsedVariableContents.push_back("\t\t}");
+			}
+			else if (isArray)
+			{
+				FormatImGuiArrayField(parsedVariableData[i].m_varName, outParsedVariableContents);
+			}
+			else if (isQueue)
+			{
+
+			}
+			else
+			{
+				std::string variableName = parsedVariableData[i].m_varName;
+				if (isSmoother)
+				{
+					variableName.append(".GetValue()");
+				}
+				std::string value = "";
+				FormatImGuiFVector2DField(variableName, value);
+				outParsedVariableContents.push_back(value);
+			}
+
 		}
 		else if (isVector)
 		{
@@ -319,4 +358,14 @@ void ComponentImplementationGenerator::FormatImGuiFVectorField(const std::string
 	zValue.append(".Z");
 
 	outFormattedString.append(std::vformat("\t\tImGui::Text(\"(%.2f, %.2f, %.2f)\", {}, {}, {});", std::make_format_args(xValue, yValue, zValue)));
+}
+
+void ComponentImplementationGenerator::FormatImGuiFVector2DField(const std::string& variableName, std::string& outFormattedString)
+{
+	std::string xValue = variableName;
+	std::string yValue = variableName;
+	xValue.append(".X");
+	yValue.append(".Y");
+
+	outFormattedString.append(std::vformat("\t\tImGui::Text(\"(%.2f, %.2f)\", {}, {});", std::make_format_args(xValue, yValue)));
 }
