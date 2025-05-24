@@ -22,7 +22,7 @@ bool AvoidanceSystemsProcessORCAvoidanceTest::RunTest(const FString& Parameters)
 
 	ArgusTesting::StartArgusTest();
 	ArgusEntity entity = ArgusEntity::CreateEntity();
-	TransformSystems::TransformSystemsComponentArgs components;
+	TransformSystemsArgs components;
 	UWorld* dummyPointer = nullptr;
 
 #pragma region Test that invalid components report the proper error.
@@ -121,7 +121,7 @@ bool AvoidanceSystemsProcessORCAvoidanceTest::RunTest(const FString& Parameters)
 #pragma endregion
 
 	ArgusEntity secondEntity = ArgusEntity::CreateEntity();
-	TransformSystems::TransformSystemsComponentArgs secondComponents;
+	TransformSystemsArgs secondComponents;
 	secondComponents.m_entity = secondEntity;
 	secondComponents.m_transformComponent = secondEntity.AddComponent<TransformComponent>();
 	secondComponents.m_velocityComponent = secondEntity.AddComponent<VelocityComponent>();

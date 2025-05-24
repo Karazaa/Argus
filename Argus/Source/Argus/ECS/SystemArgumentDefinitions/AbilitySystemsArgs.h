@@ -8,4 +8,8 @@
 struct AbilitySystemsArgs
 {
 	ARGUS_SYSTEM_ARGS_SHARED;
+
+	TaskComponent* m_taskComponent = nullptr;
+	const AbilityComponent* m_abilityComponent = nullptr;
+	ReticleComponent* m_reticleComponent = nullptr;
 };

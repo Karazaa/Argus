@@ -13,27 +13,15 @@ bool TransformSystems::RunSystems(UWorld* worldPointer, float deltaTime)
 	ARGUS_TRACE(TransformSystems::RunSystems);
 
 	bool didMovementUpdateThisFrame = false;
+	TransformSystemsArgs components;
 	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{
-		TransformSystemsComponentArgs components;
-		components.m_entity = ArgusEntity::RetrieveEntity(i);
-		if (!components.m_entity)
+		if (!components.PopulateArguments(ArgusEntity::RetrieveEntity(i)))
 		{
 			continue;
 		}
 
 		if ((components.m_entity.IsKillable() && !components.m_entity.IsAlive()) || components.m_entity.IsPassenger())
-		{
-			continue;
-		}
-
-		components.m_taskComponent = components.m_entity.GetComponent<TaskComponent>();
-		components.m_transformComponent = components.m_entity.GetComponent<TransformComponent>();
-		components.m_velocityComponent = components.m_entity.GetComponent<VelocityComponent>();
-		components.m_navigationComponent = components.m_entity.GetComponent<NavigationComponent>();
-		components.m_targetingComponent = components.m_entity.GetComponent<TargetingComponent>();
-		if (!components.m_entity || !components.m_taskComponent || !components.m_transformComponent || 
-			!components.m_navigationComponent || !components.m_targetingComponent)
 		{
 			continue;
 		}
@@ -56,19 +44,7 @@ bool TransformSystems::RunSystems(UWorld* worldPointer, float deltaTime)
 	return didMovementUpdateThisFrame;
 }
 
-bool TransformSystems::TransformSystemsComponentArgs::AreComponentsValidCheck(const WIDECHAR* functionName) const
-{
-	if (m_entity && m_taskComponent && m_navigationComponent && m_transformComponent && m_targetingComponent && m_velocityComponent)
-	{
-		return true;
-	}
-
-	ArgusLogging::LogInvalidComponentReferences(functionName, ARGUS_NAMEOF(TransformSystemsComponentArgs));
-
-	return false;
-}
-
-void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float deltaTime, const TransformSystemsComponentArgs& components)
+void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float deltaTime, const TransformSystemsArgs& components)
 {
 	ARGUS_TRACE(TransformSystems::MoveAlongNavigationPath);
 
@@ -154,7 +130,7 @@ void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float delta
 	}
 }
 
-bool TransformSystems::ProcessMovementTaskCommands(UWorld* worldPointer, float deltaTime, const TransformSystemsComponentArgs& components)
+bool TransformSystems::ProcessMovementTaskCommands(UWorld* worldPointer, float deltaTime, const TransformSystemsArgs& components)
 {
 	ARGUS_TRACE(TransformSystems::ProcessMovementTaskCommands);
 
@@ -213,7 +189,7 @@ void TransformSystems::FaceTowardsLocationXY(TransformComponent* transformCompon
 	transformComponent->m_targetYaw += (angleDifference * FMath::Sign(crossProduct.Z));
 }
 
-void TransformSystems::OnWithinRangeOfTargetEntity(const TransformSystemsComponentArgs& components)
+void TransformSystems::OnWithinRangeOfTargetEntity(const TransformSystemsArgs& components)
 {
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
@@ -257,7 +233,7 @@ void TransformSystems::OnWithinRangeOfTargetEntity(const TransformSystemsCompone
 	targetCarrierComponent->m_passengerEntityIds.Add(components.m_entity.GetId());
 }
 
-void TransformSystems::OnCompleteNavigationPath(const TransformSystemsComponentArgs& components, const FVector& moverLocation)
+void TransformSystems::OnCompleteNavigationPath(const TransformSystemsArgs& components, const FVector& moverLocation)
 {
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
@@ -312,7 +288,7 @@ FVector TransformSystems::ProjectLocationOntoNavigationData(UWorld* worldPointer
 	}
 }
 
-float TransformSystems::GetEndMoveRange(const TransformSystemsComponentArgs& components)
+float TransformSystems::GetEndMoveRange(const TransformSystemsArgs& components)
 {
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
@@ -360,7 +336,7 @@ float TransformSystems::GetEndMoveRange(const TransformSystemsComponentArgs& com
 	return range;
 }
 
-void TransformSystems::UpdatePassengerLocations(const TransformSystemsComponentArgs& components)
+void TransformSystems::UpdatePassengerLocations(const TransformSystemsArgs& components)
 {
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{

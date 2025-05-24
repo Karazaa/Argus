@@ -30,7 +30,7 @@ bool AbilitySystemsCastSpawnAbilityTest::RunTest(const FString& Parameters)
 	);
 #pragma endregion
 
-	AbilitySystems::AbilitySystemsComponentArgs components;
+	AbilitySystemsArgs components;
 	AbilitySystems::CastAbility(nullptr, components);
 
 	ReticleComponent reticleComponent = ReticleComponent();

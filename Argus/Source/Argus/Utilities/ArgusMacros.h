@@ -11,7 +11,8 @@
 								void DrawComponentDebug() const;
 #define ARGUS_DYNAMIC_COMPONENT_SHARED void DrawComponentDebug() const {}
 
-#define ARGUS_SYSTEM_ARGS_SHARED bool AreComponentsValidCheck(const WIDECHAR* functionName) const; \
+#define ARGUS_SYSTEM_ARGS_SHARED bool PopulateArguments(const ArgusEntity& entity); \
+								 bool AreComponentsValidCheck(const WIDECHAR* functionName) const; \
 								 ArgusEntity m_entity = ArgusEntity::k_emptyEntity;
 
 #define ARGUS_OBSERVABLE(x, y) void Set_##y(x newValue);

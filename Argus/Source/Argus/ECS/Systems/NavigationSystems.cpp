@@ -24,26 +24,15 @@ void NavigationSystems::RunSystems(UWorld* worldPointer)
 		return;
 	}
 
+	NavigationSystemsArgs components;
 	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{
-		NavigationSystemsComponentArgs components;
-		components.m_entity = ArgusEntity::RetrieveEntity(i);
-		if (!components.m_entity)
+		if (!components.PopulateArguments(ArgusEntity::RetrieveEntity(i)))
 		{
 			continue;
 		}
 
 		if ((components.m_entity.IsKillable() && !components.m_entity.IsAlive()) || components.m_entity.IsPassenger())
-		{
-			continue;
-		}
-
-		components.m_taskComponent = components.m_entity.GetComponent<TaskComponent>();
-		components.m_navigationComponent = components.m_entity.GetComponent<NavigationComponent>();
-		components.m_targetingComponent = components.m_entity.GetComponent<TargetingComponent>();
-		components.m_transformComponent = components.m_entity.GetComponent<TransformComponent>();
-		components.m_velocityComponent = components.m_entity.GetComponent<VelocityComponent>();
-		if (!components.m_taskComponent || !components.m_navigationComponent || !components.m_targetingComponent || !components.m_transformComponent || !components.m_velocityComponent)
 		{
 			continue;
 		}
@@ -58,19 +47,7 @@ void NavigationSystems::RunSystems(UWorld* worldPointer)
 	}
 }
 
-bool NavigationSystems::NavigationSystemsComponentArgs::AreComponentsValidCheck(const WIDECHAR* functionName) const
-{
-	if (m_entity && m_taskComponent && m_navigationComponent && m_transformComponent && m_targetingComponent && m_velocityComponent)
-	{
-		return true;
-	}
-
-	ArgusLogging::LogInvalidComponentReferences(functionName, ARGUS_NAMEOF(NavigationSystemsComponentArgs));
-
-	return false;
-}
-
-void NavigationSystems::NavigateFromEntityToEntity(UWorld* worldPointer, ArgusEntity targetEntity, const NavigationSystemsComponentArgs& components)
+void NavigationSystems::NavigateFromEntityToEntity(UWorld* worldPointer, ArgusEntity targetEntity, const NavigationSystemsArgs& components)
 {
 	if (!IsWorldPointerValidCheck(worldPointer, ARGUS_FUNCNAME) || !components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
@@ -92,7 +69,7 @@ void NavigationSystems::NavigateFromEntityToEntity(UWorld* worldPointer, ArgusEn
 	ChangeTasksOnNavigatingToEntity(targetEntity, components);
 }
 
-void NavigationSystems::NavigateFromEntityToLocation(UWorld* worldPointer, std::optional<FVector> targetLocation, const NavigationSystemsComponentArgs& components)
+void NavigationSystems::NavigateFromEntityToLocation(UWorld* worldPointer, std::optional<FVector> targetLocation, const NavigationSystemsArgs& components)
 {
 	ARGUS_MEMORY_TRACE(ArgusNavigationSystems);
 
@@ -162,7 +139,7 @@ void NavigationSystems::NavigateFromEntityToLocation(UWorld* worldPointer, std::
 	components.m_velocityComponent->m_currentVelocity = FVector2D((firstLocation - moverLocation).GetSafeNormal() * components.m_velocityComponent->m_desiredSpeedUnitsPerSecond);
 }
 
-void NavigationSystems::ProcessNavigationTaskCommands(UWorld* worldPointer, const NavigationSystemsComponentArgs& components)
+void NavigationSystems::ProcessNavigationTaskCommands(UWorld* worldPointer, const NavigationSystemsArgs& components)
 {
 	ARGUS_TRACE(NavigationSystems::ProcessNavigationTaskCommands);
 
@@ -188,7 +165,7 @@ void NavigationSystems::ProcessNavigationTaskCommands(UWorld* worldPointer, cons
 	}
 }
 
-void NavigationSystems::RecalculateMoveToEntityPaths(UWorld* worldPointer, const NavigationSystemsComponentArgs& components)
+void NavigationSystems::RecalculateMoveToEntityPaths(UWorld* worldPointer, const NavigationSystemsArgs& components)
 {
 	ARGUS_TRACE(NavigationSystems::RecalculateMoveToEntityPaths);
 
@@ -239,7 +216,7 @@ bool NavigationSystems::IsWorldPointerValidCheck(UWorld* worldPointer, const WID
 	return true;
 }
 
-void NavigationSystems::ChangeTasksOnNavigatingToEntity(ArgusEntity targetEntity, const NavigationSystemsComponentArgs& components)
+void NavigationSystems::ChangeTasksOnNavigatingToEntity(ArgusEntity targetEntity, const NavigationSystemsArgs& components)
 {
 	if (!targetEntity || !components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{

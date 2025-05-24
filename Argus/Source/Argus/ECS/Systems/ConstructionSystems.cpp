@@ -8,25 +8,15 @@ void ConstructionSystems::RunSystems(float deltaTime)
 {
 	ARGUS_TRACE(ConstructionSystems::RunSystems);
 
+	ConstructionSystemsArgs components;
 	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{
-		ConstructionSystemsComponentArgs components;
-		components.m_entity = ArgusEntity::RetrieveEntity(i);
-		if (!components.m_entity)
+		if (!components.PopulateArguments(ArgusEntity::RetrieveEntity(i)))
 		{
 			continue;
 		}
 
 		if ((components.m_entity.IsKillable() && !components.m_entity.IsAlive()) || components.m_entity.IsPassenger())
-		{
-			continue;
-		}
-
-		components.m_entity = components.m_entity;
-		components.m_taskComponent = components.m_entity.GetComponent<TaskComponent>();
-		components.m_constructionComponent = components.m_entity.GetComponent<ConstructionComponent>();
-
-		if (!components.m_entity || !components.m_taskComponent)
 		{
 			continue;
 		}
@@ -70,18 +60,7 @@ bool ConstructionSystems::CanEntityConstructOtherEntity(const ArgusEntity& poten
 	return (taskComponent->m_constructionState == EConstructionState::BeingConstructed) && (constructionComponent->m_constructionType == EConstructionType::Manual);
 }
 
-bool ConstructionSystems::ConstructionSystemsComponentArgs::AreComponentsValidCheck(const WIDECHAR* functionName) const
-{
-	if (!m_entity || !m_taskComponent)
-	{
-		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Construction Systems were run with invalid component arguments passed."), functionName);
-		return false;
-	}
-
-	return true;
-}
-
-void ConstructionSystems::ProcessConstructionTaskCommands(float deltaTime, const ConstructionSystemsComponentArgs& components)
+void ConstructionSystems::ProcessConstructionTaskCommands(float deltaTime, const ConstructionSystemsArgs& components)
 {
 	switch (components.m_taskComponent->m_constructionState)
 	{
@@ -103,7 +82,7 @@ void ConstructionSystems::ProcessConstructionTaskCommands(float deltaTime, const
 	}
 }
 
-void ConstructionSystems::ProcessBeingConstructedState(float deltaTime, const ConstructionSystemsComponentArgs& components)
+void ConstructionSystems::ProcessBeingConstructedState(float deltaTime, const ConstructionSystemsArgs& components)
 {
 	ARGUS_TRACE(ConstructionSystems::ProcessBeingConstructedState);
 
@@ -129,7 +108,7 @@ void ConstructionSystems::ProcessBeingConstructedState(float deltaTime, const Co
 	}
 }
 
-void ConstructionSystems::ProcessConstructingOtherState(float deltaTime, const ConstructionSystemsComponentArgs& components)
+void ConstructionSystems::ProcessConstructingOtherState(float deltaTime, const ConstructionSystemsArgs& components)
 {
 	ARGUS_TRACE(ConstructionSystems::ProcessConstructingOtherState);
 
@@ -189,7 +168,7 @@ void ConstructionSystems::ProcessConstructingOtherState(float deltaTime, const C
 	}
 }
 
-void ConstructionSystems::ProcessAutomaticConstruction(float deltaTime, const ConstructionSystemsComponentArgs& components)
+void ConstructionSystems::ProcessAutomaticConstruction(float deltaTime, const ConstructionSystemsArgs& components)
 {
 	ARGUS_TRACE(ConstructionSystems::ProcessAutomaticConstruction);
 

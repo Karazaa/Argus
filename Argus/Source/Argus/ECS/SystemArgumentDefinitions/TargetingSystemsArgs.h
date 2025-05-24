@@ -8,4 +8,7 @@
 struct TargetingSystemsArgs
 {
 	ARGUS_SYSTEM_ARGS_SHARED;
+
+	TargetingComponent* m_targetingComponent = nullptr;
+	const TransformComponent* m_transformComponent = nullptr;
 };

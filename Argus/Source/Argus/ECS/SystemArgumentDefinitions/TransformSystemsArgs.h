@@ -8,4 +8,10 @@
 struct TransformSystemsArgs
 {
 	ARGUS_SYSTEM_ARGS_SHARED;
+
+	TaskComponent* m_taskComponent = nullptr;
+	TransformComponent* m_transformComponent = nullptr;
+	VelocityComponent* m_velocityComponent = nullptr;
+	NavigationComponent* m_navigationComponent = nullptr;
+	TargetingComponent* m_targetingComponent = nullptr;
 };

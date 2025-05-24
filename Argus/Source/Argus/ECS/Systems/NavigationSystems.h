@@ -3,6 +3,7 @@
 #pragma once
 
 #include "ArgusEntity.h"
+#include "SystemArgumentDefinitions/NavigationSystemsArgs.h"
 #include <optional>
 
 class NavigationSystems
@@ -10,24 +11,12 @@ class NavigationSystems
 public:
 	static void RunSystems(UWorld* worldPointer);
 
-	struct NavigationSystemsComponentArgs
-	{
-		ArgusEntity m_entity = ArgusEntity::k_emptyEntity;
-		TaskComponent* m_taskComponent = nullptr;
-		NavigationComponent* m_navigationComponent = nullptr;
-		TargetingComponent* m_targetingComponent = nullptr;
-		TransformComponent* m_transformComponent = nullptr;
-		VelocityComponent* m_velocityComponent = nullptr;
-
-		bool AreComponentsValidCheck(const WIDECHAR* functionName) const;
-	};
-	
-	static void NavigateFromEntityToEntity(UWorld* worldPointer, ArgusEntity targetEntity, const NavigationSystemsComponentArgs& components);
-	static void NavigateFromEntityToLocation(UWorld* worldPointer, std::optional<FVector> targetLocation, const NavigationSystemsComponentArgs& components);
+	static void NavigateFromEntityToEntity(UWorld* worldPointer, ArgusEntity targetEntity, const NavigationSystemsArgs& components);
+	static void NavigateFromEntityToLocation(UWorld* worldPointer, std::optional<FVector> targetLocation, const NavigationSystemsArgs& components);
 
 private:
-	static void ProcessNavigationTaskCommands(UWorld* worldPointer, const NavigationSystemsComponentArgs& components);
-	static void RecalculateMoveToEntityPaths(UWorld* worldPointer, const NavigationSystemsComponentArgs& components);
+	static void ProcessNavigationTaskCommands(UWorld* worldPointer, const NavigationSystemsArgs& components);
+	static void RecalculateMoveToEntityPaths(UWorld* worldPointer, const NavigationSystemsArgs& components);
 	static bool IsWorldPointerValidCheck(UWorld* worldPointer, const WIDECHAR* functionName);
-	static void ChangeTasksOnNavigatingToEntity(ArgusEntity targetEntity, const NavigationSystemsComponentArgs& components);
+	static void ChangeTasksOnNavigatingToEntity(ArgusEntity targetEntity, const NavigationSystemsArgs& components);
 };

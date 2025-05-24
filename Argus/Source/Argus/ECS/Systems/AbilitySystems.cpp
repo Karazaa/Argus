@@ -26,25 +26,16 @@ void AbilitySystems::RunSystems(float deltaTime)
 		return;
 	}
 
+	AbilitySystemsArgs components;
+	components.m_reticleComponent = reticleComponent;
 	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{
-		AbilitySystemsComponentArgs components;
-		components.m_entity = ArgusEntity::RetrieveEntity(i);
-		if (!components.m_entity)
+		if (!components.PopulateArguments(ArgusEntity::RetrieveEntity(i)))
 		{
 			continue;
 		}
 
 		if ((components.m_entity.IsKillable() && !components.m_entity.IsAlive()) || components.m_entity.IsPassenger())
-		{
-			continue;
-		}
-
-		components.m_taskComponent = components.m_entity.GetComponent<TaskComponent>();
-		components.m_abilityComponent = components.m_entity.GetComponent<AbilityComponent>();
-		components.m_reticleComponent = reticleComponent;
-
-		if (!components.m_taskComponent || !components.m_abilityComponent)
 		{
 			continue;
 		}
@@ -58,19 +49,7 @@ void AbilitySystems::RunSystems(float deltaTime)
 	}
 }
 
-bool AbilitySystems::AbilitySystemsComponentArgs::AreComponentsValidCheck(const WIDECHAR* functionName) const
-{
-	if (m_entity && m_abilityComponent && m_taskComponent && m_reticleComponent)
-	{
-		return true;
-	}
-
-	ArgusLogging::LogInvalidComponentReferences(functionName, ARGUS_NAMEOF(AbilitySystemsComponentArgs));
-
-	return false;
-}
-
-void AbilitySystems::CastAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsComponentArgs& components)
+void AbilitySystems::CastAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsArgs& components)
 {
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
@@ -130,7 +109,7 @@ void AbilitySystems::CastAbility(const UAbilityRecord* abilityRecord, const Abil
 	components.m_taskComponent->m_abilityState = EAbilityState::None;
 }
 
-void AbilitySystems::PrepReticle(const UAbilityRecord* abilityRecord, const AbilitySystemsComponentArgs& components)
+void AbilitySystems::PrepReticle(const UAbilityRecord* abilityRecord, const AbilitySystemsArgs& components)
 {
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
@@ -163,7 +142,7 @@ void AbilitySystems::PrepReticle(const UAbilityRecord* abilityRecord, const Abil
 	components.m_taskComponent->m_abilityState = EAbilityState::None;
 }
 
-void AbilitySystems::ProcessAbilityTaskCommands(const AbilitySystemsComponentArgs& components)
+void AbilitySystems::ProcessAbilityTaskCommands(const AbilitySystemsArgs& components)
 {
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
@@ -224,7 +203,7 @@ void AbilitySystems::ProcessAbilityTaskCommands(const AbilitySystemsComponentArg
 	CastAbility(abilityRecord, components);
 }
 
-void AbilitySystems::CastSpawnAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsComponentArgs& components, bool needsConstruction, bool atReticle)
+void AbilitySystems::CastSpawnAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsArgs& components, bool needsConstruction, bool atReticle)
 {
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
@@ -274,17 +253,17 @@ void AbilitySystems::CastSpawnAbility(const UAbilityRecord* abilityRecord, const
 	spawningComponent->m_currentQueueSize++;
 }
 
-void AbilitySystems::CastHealAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsComponentArgs& components)
+void AbilitySystems::CastHealAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsArgs& components)
 {
 
 }
 
-void AbilitySystems::CastAttackAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsComponentArgs& components)
+void AbilitySystems::CastAttackAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsArgs& components)
 {
 
 }
 
-void AbilitySystems::CastVacateAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsComponentArgs& components)
+void AbilitySystems::CastVacateAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsArgs& components)
 {
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
@@ -323,7 +302,7 @@ void AbilitySystems::CastVacateAbility(const UAbilityRecord* abilityRecord, cons
 	carrierComponent->m_passengerEntityIds.Empty();
 }
 
-void AbilitySystems::PrepReticleForConstructAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsComponentArgs& components)
+void AbilitySystems::PrepReticleForConstructAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsArgs& components)
 {
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{

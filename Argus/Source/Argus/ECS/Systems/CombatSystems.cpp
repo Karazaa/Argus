@@ -6,27 +6,15 @@ void CombatSystems::RunSystems(float deltaTime)
 {
 	ARGUS_TRACE(CombatSystems::RunSystems);
 
+	CombatSystemsArgs components;
 	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{
-		CombatSystemsComponentArgs components;
-		components.m_entity = ArgusEntity::RetrieveEntity(i);
-		if (!components.m_entity)
+		if (!components.PopulateArguments(ArgusEntity::RetrieveEntity(i)))
 		{
 			continue;
 		}
 
 		if ((components.m_entity.IsKillable() && !components.m_entity.IsAlive()) || components.m_entity.IsPassenger())
-		{
-			continue;
-		}
-
-		components.m_combatComponent = components.m_entity.GetComponent<CombatComponent>();
-		components.m_identityComponent = components.m_entity.GetComponent<IdentityComponent>();
-		components.m_targetingComponent = components.m_entity.GetComponent<TargetingComponent>();
-		components.m_taskComponent = components.m_entity.GetComponent<TaskComponent>();
-		components.m_transformComponent = components.m_entity.GetComponent<TransformComponent>();
-		if (!components.m_entity || !components.m_combatComponent || !components.m_taskComponent || 
-			!components.m_transformComponent || !components.m_identityComponent || !components.m_targetingComponent)
 		{
 			continue;
 		}
@@ -48,19 +36,7 @@ bool CombatSystems::CanEntityAttackOtherEntity(const ArgusEntity& potentialAttac
 	return !victimIdentityComponent->IsInTeamMask(attackerIdentityComponent->m_allies);
 }
 
-bool CombatSystems::CombatSystemsComponentArgs::AreComponentsValidCheck(const WIDECHAR* functionName) const
-{
-	if (m_entity && m_identityComponent && m_targetingComponent && m_taskComponent && m_transformComponent)
-	{
-		return true;
-	}
-
-	ArgusLogging::LogInvalidComponentReferences(functionName, ARGUS_NAMEOF(CombatSystemsComponentArgs));
-
-	return false;
-}
-
-void CombatSystems::ProcessCombatTaskCommands(float deltaTime, const CombatSystemsComponentArgs& components)
+void CombatSystems::ProcessCombatTaskCommands(float deltaTime, const CombatSystemsArgs& components)
 {
 	ARGUS_TRACE(CombatSystems::ProcessCombatTaskCommands);
 
@@ -80,7 +56,7 @@ void CombatSystems::ProcessCombatTaskCommands(float deltaTime, const CombatSyste
 	}
 }
 
-void CombatSystems::ProcessAttackCommand(float deltaTime, const CombatSystemsComponentArgs& components)
+void CombatSystems::ProcessAttackCommand(float deltaTime, const CombatSystemsArgs& components)
 {
 	ARGUS_TRACE(CombatSystems::ProcessAttackCommand);
 
@@ -135,7 +111,7 @@ void CombatSystems::ProcessAttackCommand(float deltaTime, const CombatSystemsCom
 	}
 }
 
-void CombatSystems::PerformTimerAttack(const ArgusEntity& targetEntity, const CombatSystemsComponentArgs& components)
+void CombatSystems::PerformTimerAttack(const ArgusEntity& targetEntity, const CombatSystemsArgs& components)
 {
 	if (components.m_combatComponent->m_attackTimerHandle.IsTimerTicking(components.m_entity))
 	{
@@ -152,14 +128,14 @@ void CombatSystems::PerformTimerAttack(const ArgusEntity& targetEntity, const Co
 	components.m_combatComponent->m_attackTimerHandle.StartTimer(components.m_entity, components.m_combatComponent->m_intervalDurationSeconds);
 }
 
-void CombatSystems::PerformContinuousAttack(float deltaTime, const ArgusEntity& targetEntity, const CombatSystemsComponentArgs& components)
+void CombatSystems::PerformContinuousAttack(float deltaTime, const ArgusEntity& targetEntity, const CombatSystemsArgs& components)
 {
 	float amountPerTick = components.m_combatComponent->m_baseDamagePerIntervalOrPerSecond * deltaTime;
 	uint32 damage = FMath::FloorToInt32(amountPerTick);
 	ApplyDamage(damage, targetEntity, components);
 }
 
-void CombatSystems::ApplyDamage(uint32 damageAmount, const ArgusEntity& targetEntity, const CombatSystemsComponentArgs& components)
+void CombatSystems::ApplyDamage(uint32 damageAmount, const ArgusEntity& targetEntity, const CombatSystemsArgs& components)
 {
 	HealthComponent* targetHealthComponent = targetEntity.GetComponent<HealthComponent>();
 	if (!targetHealthComponent)

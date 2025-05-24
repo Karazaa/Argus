@@ -8,6 +8,7 @@
 #include "NavigationSystem.h"
 #include "Systems/CombatSystems.h"
 #include "Systems/TargetingSystems.h"
+#include "Systems/TransformSystems.h"
 #include <limits>
 
 #if !UE_BUILD_SHIPPING
@@ -18,27 +19,15 @@ void AvoidanceSystems::RunSystems(UWorld* worldPointer, float deltaTime)
 {
 	ARGUS_TRACE(AvoidanceSystems::RunSystems);
 
+	TransformSystemsArgs components;
 	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{
-		TransformSystems::TransformSystemsComponentArgs components;
-		components.m_entity = ArgusEntity::RetrieveEntity(i);
-		if (!components.m_entity)
+		if (!components.PopulateArguments(ArgusEntity::RetrieveEntity(i)))
 		{
 			continue;
 		}
 
 		if (components.m_entity.IsKillable() && !components.m_entity.IsAlive())
-		{
-			continue;
-		}
-
-		components.m_taskComponent = components.m_entity.GetComponent<TaskComponent>();
-		components.m_transformComponent = components.m_entity.GetComponent<TransformComponent>();
-		components.m_velocityComponent = components.m_entity.GetComponent<VelocityComponent>();
-		components.m_navigationComponent = components.m_entity.GetComponent<NavigationComponent>();
-		components.m_targetingComponent = components.m_entity.GetComponent<TargetingComponent>();
-		if (!components.m_entity || !components.m_taskComponent || !components.m_transformComponent ||
-			!components.m_navigationComponent || !components.m_targetingComponent || !components.m_velocityComponent)
 		{
 			continue;
 		}
@@ -59,7 +48,7 @@ void AvoidanceSystems::RunSystems(UWorld* worldPointer, float deltaTime)
 }
 
 #pragma region Optimal Reciprocal Collision Avoidance
-void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime, const TransformSystems::TransformSystemsComponentArgs& components, const AvoidanceGroupingComponent* avoidanceGroupingComponent)
+void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime, const TransformSystemsArgs& components, const AvoidanceGroupingComponent* avoidanceGroupingComponent)
 {
 	ARGUS_MEMORY_TRACE(ArgusAvoidanceSystems);
 	ARGUS_TRACE(AvoidanceSystems::ProcessORCAvoidance);
@@ -208,7 +197,7 @@ void AvoidanceSystems::DecrementIdleEntitiesInGroup(const ArgusEntity& entity)
 	}
 }
 
-TOptional<FVector> AvoidanceSystems::GetAvoidanceGroupDestinationLocation(const TransformSystems::TransformSystemsComponentArgs& components)
+TOptional<FVector> AvoidanceSystems::GetAvoidanceGroupDestinationLocation(const TransformSystemsArgs& components)
 {
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
@@ -236,7 +225,7 @@ TOptional<FVector> AvoidanceSystems::GetAvoidanceGroupDestinationLocation(const 
 	return groupDestinationLocation;
 }
 
-TOptional<FVector> AvoidanceSystems::GetAvoidanceGroupSourceLocation(const TransformSystems::TransformSystemsComponentArgs& components)
+TOptional<FVector> AvoidanceSystems::GetAvoidanceGroupSourceLocation(const TransformSystemsArgs& components)
 {
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
@@ -265,7 +254,7 @@ TOptional<FVector> AvoidanceSystems::GetAvoidanceGroupSourceLocation(const Trans
 	return output;
 }
 
-void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const CreateEntityORCALinesParams& params, const TransformSystems::TransformSystemsComponentArgs& components, TArray<ORCALine>& outORCALines)
+void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const CreateEntityORCALinesParams& params, const TransformSystemsArgs& components, TArray<ORCALine>& outORCALines)
 {
 	if (!worldPointer || !params.m_spatialPartitioningComponent)
 	{
@@ -309,7 +298,7 @@ void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const Creat
 	}
 }
 
-void AvoidanceSystems::CreateEntityORCALines(const CreateEntityORCALinesParams& params, const TransformSystems::TransformSystemsComponentArgs& components, const TArray<uint16>& foundEntityIds, TArray<ORCALine>& outORCALines, FVector2D& outDesiredVelocity)
+void AvoidanceSystems::CreateEntityORCALines(const CreateEntityORCALinesParams& params, const TransformSystemsArgs& components, const TArray<uint16>& foundEntityIds, TArray<ORCALine>& outORCALines, FVector2D& outDesiredVelocity)
 {
 	const bool calculateAverageLocationOfOtherEntities = outDesiredVelocity.IsNearlyZero() && !params.m_sourceEntityVelocity.IsNearlyZero();
 	FVector2D averageLocationOfOtherEntities = FVector2D::ZeroVector;
@@ -606,7 +595,7 @@ void AvoidanceSystems::ThreeDimensionalLinearProgram(const TArray<ORCALine>& orc
 	}
 }
 
-FVector2D AvoidanceSystems::GetVelocityTowardsEndOfNavPoint(const CreateEntityORCALinesParams& params, const TransformSystems::TransformSystemsComponentArgs& components)
+FVector2D AvoidanceSystems::GetVelocityTowardsEndOfNavPoint(const CreateEntityORCALinesParams& params, const TransformSystemsArgs& components)
 {
 	const FVector2D endedNavigationLocation = ArgusMath::ToCartesianVector2(FVector2D(components.m_navigationComponent->m_endedNavigationLocation));
 	const FVector2D towardsEndNavigationLocation = endedNavigationLocation - params.m_sourceEntityLocation;
@@ -620,7 +609,7 @@ FVector2D AvoidanceSystems::GetVelocityTowardsEndOfNavPoint(const CreateEntityOR
 	return FVector2D::ZeroVector;
 }
 
-FVector2D AvoidanceSystems::GetDesiredVelocity(const TransformSystems::TransformSystemsComponentArgs& components)
+FVector2D AvoidanceSystems::GetDesiredVelocity(const TransformSystemsArgs& components)
 {
 	// If we are not executing a move task, we would like to early out with zero velocity as our desired velocity (this may change as we define more functionality for AvoidanceGroups)
 	if (!components.m_taskComponent->IsExecutingMoveTask())
@@ -663,7 +652,7 @@ FVector2D AvoidanceSystems::GetDesiredVelocity(const TransformSystems::Transform
 	return ArgusMath::ToCartesianVector2(FVector2D(desiredDirection).GetSafeNormal() * components.m_velocityComponent->m_desiredSpeedUnitsPerSecond);
 }
 
-float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems::TransformSystemsComponentArgs& sourceEntityComponents, const ArgusEntity& foundEntity)
+float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystemsArgs& sourceEntityComponents, const ArgusEntity& foundEntity)
 {
 	ARGUS_TRACE(AvoidanceSystems::GetEffortCoefficientForEntityPair);
 
