@@ -17,7 +17,7 @@ bool CombatSystemsArgs::PopulateArguments(const ArgusEntity& entity)
 	m_taskComponent = entity.GetComponent<TaskComponent>();
 	m_transformComponent = entity.GetComponent<TransformComponent>();
 
-	if (!m_identityComponent || !m_targetingComponent || !m_taskComponent || !m_transformComponent)
+	if (!m_combatComponent || !m_identityComponent || !m_targetingComponent || !m_taskComponent || !m_transformComponent)
 	{
 		return false;
 	}
@@ -27,7 +27,7 @@ bool CombatSystemsArgs::PopulateArguments(const ArgusEntity& entity)
 
 bool CombatSystemsArgs::AreComponentsValidCheck(const WIDECHAR* functionName) const
 {
-	if (m_entity && m_identityComponent && m_targetingComponent && m_taskComponent && m_transformComponent)
+	if (m_entity && m_combatComponent && m_identityComponent && m_targetingComponent && m_taskComponent && m_transformComponent)
 	{
 		return true;
 	}

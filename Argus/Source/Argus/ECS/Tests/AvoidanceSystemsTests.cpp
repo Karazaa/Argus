@@ -31,7 +31,7 @@ bool AvoidanceSystemsProcessORCAvoidanceTest::RunTest(const FString& Parameters)
 		FString::Printf
 		(
 			TEXT("Passed in %s object has invalid component references."),
-			ARGUS_NAMEOF(TransformSystemsComponentArgs)
+			ARGUS_NAMEOF(TransformSystemsArgs)
 		)
 	);
 #pragma endregion

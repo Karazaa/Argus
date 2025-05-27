@@ -39,6 +39,7 @@ bool TargetingSystemsTargetNearestEntityMatchingTeamMaskTest::RunTest(const FStr
 	sourceIdentityComponent->AddEnemyTeam(ETeam::TeamC);
 
 	TargetingSystemsArgs components;
+	components.m_entity = sourceEntity;
 	components.m_targetingComponent = sourceTargetingComponent;
 	components.m_transformComponent = sourceTransformComponent;
 

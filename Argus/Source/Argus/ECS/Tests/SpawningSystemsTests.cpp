@@ -47,7 +47,7 @@ bool SpawningSystemsSpawnEntityTest::RunTest(const FString& Parameters)
 		FString::Printf
 		(
 			TEXT("Passed in %s object has invalid component references."),
-			ARGUS_NAMEOF(SpawningSystemsComponentArgs)
+			ARGUS_NAMEOF(SpawningSystemsArgs)
 		),
 		EAutomationExpectedErrorFlags::Contains,
 		2

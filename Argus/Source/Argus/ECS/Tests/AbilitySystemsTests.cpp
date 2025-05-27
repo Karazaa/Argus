@@ -19,13 +19,13 @@ bool AbilitySystemsCastSpawnAbilityTest::RunTest(const FString& Parameters)
 	const uint32 argusActorRecordId = 5u;
 	ArgusTesting::StartArgusTest();
 
-#pragma region Test that passing in an invalid AbilitySystemsComponentArgs errors
+#pragma region Test that passing in an invalid AbilitySystemsArgs errors
 	AddExpectedErrorPlain
 	(
 		FString::Printf
 		(
 			TEXT("Passed in %s object has invalid component references."),
-			ARGUS_NAMEOF(AbilitySystemsComponentArgs)
+			ARGUS_NAMEOF(AbilitySystemsArgs)
 		)
 	);
 #pragma endregion
