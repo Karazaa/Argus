@@ -30,4 +30,25 @@ struct AbilityComponent
 				m_ability2Id == abilityRecordId ||
 				m_ability3Id == abilityRecordId;
 	}
+
+	bool HasAnyAbility() const
+	{
+		return	m_ability0Id != 0u ||
+				m_ability1Id != 0u ||
+				m_ability2Id != 0u ||
+				m_ability3Id != 0u;
+	}
+
+	bool HasSameAbilities(const AbilityComponent* otherAbilityComponent) const
+	{
+		if (!otherAbilityComponent)
+		{
+			return false;
+		}
+
+		return	m_ability0Id == otherAbilityComponent->m_ability0Id &&
+				m_ability1Id == otherAbilityComponent->m_ability1Id &&
+				m_ability2Id == otherAbilityComponent->m_ability2Id &&
+				m_ability3Id == otherAbilityComponent->m_ability3Id;
+	}
 };

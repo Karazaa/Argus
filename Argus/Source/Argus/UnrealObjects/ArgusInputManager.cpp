@@ -1240,7 +1240,54 @@ void UArgusInputManager::ProcessSetControlGroup(uint8 controlGroupIndex)
 
 void UArgusInputManager::ProcessChangeActiveAbilityGroup()
 {
+	ArgusEntity singletonEntity = ArgusEntity::GetSingletonEntity();
+	if (!singletonEntity)
+	{
+		// TODO JAMES: Error here
+		return;
+	}
 
+	InputInterfaceComponent* inputInterfaceComponent = singletonEntity.GetComponent<InputInterfaceComponent>();
+	if (!inputInterfaceComponent)
+	{
+		// TODO JAMES: Error here
+		return;
+	}
+
+	if (inputInterfaceComponent->m_selectedArgusEntityIds.Num() == 0)
+	{
+		return;
+	}
+
+	const AbilityComponent* previousActiveAbilityGroupAbilities = nullptr;
+	if (ArgusEntity previousTemplateEntity = ArgusEntity::RetrieveEntity(inputInterfaceComponent->m_selectedArgusEntityIds[inputInterfaceComponent->m_indexOfActiveAbilityGroup]))
+	{
+		previousActiveAbilityGroupAbilities = previousTemplateEntity.GetComponent<AbilityComponent>();
+	}
+
+	for (int32 i = 1; i < inputInterfaceComponent->m_selectedArgusEntityIds.Num(); ++i)
+	{
+		int32 indexToCheck = ((inputInterfaceComponent->m_indexOfActiveAbilityGroup + i) % inputInterfaceComponent->m_selectedArgusEntityIds.Num());
+
+		ArgusEntity entityToCheck = ArgusEntity::RetrieveEntity(inputInterfaceComponent->m_selectedArgusEntityIds[indexToCheck]);
+		if (!entityToCheck)
+		{
+			continue;
+		}
+
+		const AbilityComponent* abilityComponentToCheck = entityToCheck.GetComponent<AbilityComponent>();
+		if (!abilityComponentToCheck)
+		{
+			continue;
+		}
+
+		if (previousActiveAbilityGroupAbilities && previousActiveAbilityGroupAbilities->HasSameAbilities(abilityComponentToCheck))
+		{
+			continue;
+		}
+
+		// TODO JAMES: Populate further.
+	}
 }
 
 #pragma endregion
@@ -1388,7 +1435,7 @@ void UArgusInputManager::OnSelectedArgusArgusActorsChanged()
 	inputInterfaceComponent->m_indexOfActiveAbilityGroup = -1;
 	m_activeAbilityGroupArgusActors.Reset();
 
-	uint32 abilityUnitGroupActorRecordId = 0u;
+	const AbilityComponent* templateEntityAbilities = nullptr;
 
 	for (TWeakObjectPtr<AArgusActor>& selectedActor : m_selectedArgusActors)
 	{
@@ -1410,20 +1457,13 @@ void UArgusInputManager::OnSelectedArgusArgusActorsChanged()
 			continue;
 		}
 
-		const TaskComponent* taskComponent = entity.GetComponent<TaskComponent>();
-		if (!taskComponent)
+		if (templateEntityAbilities == nullptr && abilityComponent->HasAnyAbility())
 		{
-			continue;
-		}
-
-		if (abilityUnitGroupActorRecordId == 0u)
-		{
-			abilityUnitGroupActorRecordId = taskComponent->m_spawnedFromArgusActorRecordId;
 			inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.Add(entity.GetId());
 			inputInterfaceComponent->m_indexOfActiveAbilityGroup = static_cast<uint8>(inputInterfaceComponent->m_selectedArgusEntityIds.Num() - 1);
 			m_activeAbilityGroupArgusActors.Add(selectedActor);
 		}
-		else if (abilityUnitGroupActorRecordId == taskComponent->m_spawnedFromArgusActorRecordId)
+		else if (templateEntityAbilities != nullptr && templateEntityAbilities->HasSameAbilities(abilityComponent))
 		{
 			inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.Add(entity.GetId());
 			m_activeAbilityGroupArgusActors.Add(selectedActor);
