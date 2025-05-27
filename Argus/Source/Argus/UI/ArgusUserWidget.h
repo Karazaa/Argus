@@ -25,7 +25,7 @@ public:
 	};
 
 	virtual void UpdateDisplay(const UpdateDisplayParameters& updateDisplayParams);
-	virtual void OnUpdateSelectedArgusActors(ArgusEntity& templateEntity);
+	virtual void OnUpdateSelectedArgusActors(const ArgusEntity& templateEntity) {};
 
 	void SetInputManager(UArgusInputManager* inputManager);
 

@@ -24,11 +24,6 @@ void UArgusUserWidget::UpdateDisplay(const UpdateDisplayParameters& updateDispla
 	OnUpdateSelectedArgusActors(uiTemplateEntity);
 }
 
-void UArgusUserWidget::OnUpdateSelectedArgusActors(ArgusEntity& templateEntity)
-{
-
-}
-
 void UArgusUserWidget::SetInputManager(UArgusInputManager* inputManager)
 {
 	m_inputManager = inputManager;

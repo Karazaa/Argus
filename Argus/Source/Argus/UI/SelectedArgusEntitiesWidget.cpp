@@ -10,7 +10,7 @@
 #include "MultipleSelectedEntitiesWidget.h"
 #include "SingleSelectedEntityWidget.h"
 
-void USelectedArgusEntitiesWidget::OnUpdateSelectedArgusActors(ArgusEntity& templateEntity)
+void USelectedArgusEntitiesWidget::OnUpdateSelectedArgusActors(const ArgusEntity& templateEntity)
 {
 	Super::OnUpdateSelectedArgusActors(templateEntity);
 

@@ -9,4 +9,6 @@ UCLASS()
 class USingleSelectedEntityWidget : public UArgusUserWidget
 {
 	GENERATED_BODY()
+
+	virtual void OnUpdateSelectedArgusActors(const ArgusEntity& templateEntity) override;
 };

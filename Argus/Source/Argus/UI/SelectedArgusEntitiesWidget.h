@@ -24,7 +24,7 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnUpdateSelectedArgusActorAbilities(const UAbilityRecord* ability0Record, const UAbilityRecord* ability1Record, const UAbilityRecord* ability2Record, const UAbilityRecord* ability3Record);
 
-	virtual void OnUpdateSelectedArgusActors(ArgusEntity& templateEntity) override;
+	virtual void OnUpdateSelectedArgusActors(const ArgusEntity& templateEntity) override;
 
 protected:
 	UFUNCTION(BlueprintCallable)
