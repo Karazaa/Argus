@@ -9,6 +9,7 @@
 #include "ArgusStaticDataCodeGenerator.h"
 #include "ComponentImplementationCodeGenerator.h"
 #include "ComponentObserversCodeGenerator.h"
+#include "Framework/Docking/TabManager.h"
 #include "Misc/MessageDialog.h"
 #include "ToolMenus.h"
 

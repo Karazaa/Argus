@@ -27,7 +27,9 @@
 #define ARGUS_TRACE(x)
 #endif
 
-#if LOGTRACE_ENABLED 
+#define SHOULD_ARGUS_MEMORY_TRACE 0
+
+#if LOGTRACE_ENABLED && SHOULD_ARGUS_MEMORY_TRACE
 LLM_DECLARE_TAG(ArgusActorPool);
 LLM_DECLARE_TAG(ArgusAvoidanceSystems);
 LLM_DECLARE_TAG(ArgusComponentData);

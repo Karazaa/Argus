@@ -2,6 +2,10 @@
 
 #include "ArgusECSComponentAdder.h"
 #include "ArgusComponentRegistryCodeGenerator.h"
+#include "Widgets/Docking/SDockTab.h"
+#include "Widgets/Input/SButton.h"
+#include "Widgets/Input/SCheckBox.h"
+#include "Widgets/Input/SEditableText.h"
 
 #define LOCTEXT_NAMESPACE "FArgusCodeGeneratorModule"
 

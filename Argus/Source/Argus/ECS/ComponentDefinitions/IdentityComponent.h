@@ -4,6 +4,7 @@
 
 #include "ArgusMacros.h"
 #include "CoreMinimal.h"
+#include "IdentityComponent.generated.h"
 
 class UFactionRecord;
 

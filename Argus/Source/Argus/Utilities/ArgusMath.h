@@ -39,7 +39,7 @@ namespace ArgusMath
 	public:
 		static float GetDefaultDecayConstant()
 		{
-			(k_maxDecayConstant - k_minDecayConstant) / 2.0f;
+			return (k_maxDecayConstant - k_minDecayConstant) / 2.0f;
 		}
 
 		ExponentialDecaySmoother()

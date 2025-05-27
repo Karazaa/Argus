@@ -6,6 +6,7 @@
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
 #include "ArgusMath.h"
+#include "DrawDebugHelpers.h"
 #include "NavigationData.h"
 #include "NavigationSystem.h"
 #include "NavMesh/RecastHelpers.h"

@@ -6,6 +6,7 @@
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
 #include "ArgusPlayerController.h"
+#include "Engine/World.h"
 
 void UArgusUIBlueprintLibrary::OnUserInterfaceButtonClicked(UArgusUIButtonClickedEventsEnum buttonClickedEvent, UObject* worldContextObject)
 {

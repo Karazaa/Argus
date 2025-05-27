@@ -5,6 +5,7 @@
 #include "ArgusMacros.h"
 #include "ComponentDependencies/Timer.h"
 #include "CoreMinimal.h"
+#include "ConstructionComponent.generated.h"
 
 UENUM()
 enum class EConstructionType : uint8

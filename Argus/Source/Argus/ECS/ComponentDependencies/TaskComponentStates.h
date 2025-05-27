@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "TaskComponentStates.generated.h"
 
 UENUM()
 enum class EBaseState : uint8

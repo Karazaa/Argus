@@ -2,7 +2,7 @@
 
 #include "ArgusMacros.h"
 
-#if LOGTRACE_ENABLED 
+#if LOGTRACE_ENABLED && SHOULD_ARGUS_MEMORY_TRACE
 LLM_DEFINE_TAG(ArgusActorPool);
 LLM_DEFINE_TAG(ArgusAvoidanceSystems);
 LLM_DEFINE_TAG(ArgusComponentData);

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "ArgusECSConstants.h"
+#include "ArgusMacros.h"
 #include "ArgusMath.h"
 #include "ArgusObjectPool.h"
 #include "CoreMinimal.h"

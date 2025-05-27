@@ -5,6 +5,7 @@
 #include "ComponentDependencies/Timer.h"
 #include "CoreMinimal.h"
 #include "ArgusMacros.h"
+#include "CombatComponent.generated.h"
 
 UENUM(BlueprintType)
 enum class EAttackType : uint8

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ArgusUIButtonClickedEventsEnum.generated.h"
 
 UENUM(BlueprintType)
 enum class UArgusUIButtonClickedEventsEnum : uint8
