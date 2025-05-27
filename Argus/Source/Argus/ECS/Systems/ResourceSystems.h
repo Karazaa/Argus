@@ -5,6 +5,7 @@
 #include "ArgusEntity.h"
 #include "ComponentDependencies/ResourceSet.h"
 #include "ComponentDefinitions/ResourceComponent.h"
+#include "SystemArgumentDefinitions/ResourceSystemsArgs.h"
 
 class ArgusEntity;
 class UResourceSetRecord;
@@ -16,24 +17,13 @@ class ResourceSystems
 public:
 	static void RunSystems(float deltaTime);
 
-	struct ResourceComponents
-	{
-		ArgusEntity m_entity = ArgusEntity::k_emptyEntity;
-		TaskComponent* m_taskComponent = nullptr;
-		ResourceComponent* m_resourceComponent = nullptr;
-		ResourceExtractionComponent* m_resourceExtractionComponent = nullptr;
-		TargetingComponent* m_targetingComponent = nullptr;
-
-		bool AreComponentsValidCheck(const WIDECHAR* functionName) const;
-	};
-
-	static void ProcessResourceExtractionState(const ResourceComponents& components);
-	static void ProcessResourceExtractionTiming(const ResourceComponents& components);
-	static void ProcessResourceDepositing(const ResourceComponents& components);
-	static bool ExtractResources(const ResourceComponents& components);
-	static void DepositResources(const ResourceComponents& components);
-	static void MoveToNearestDepositSink(const ResourceComponents& components);
-	static void MoveToLastExtractionSource(const ResourceComponents& components);
+	static void ProcessResourceExtractionState(const ResourceSystemsArgs& components);
+	static void ProcessResourceExtractionTiming(const ResourceSystemsArgs& components);
+	static void ProcessResourceDepositing(const ResourceSystemsArgs& components);
+	static bool ExtractResources(const ResourceSystemsArgs& components);
+	static void DepositResources(const ResourceSystemsArgs& components);
+	static void MoveToNearestDepositSink(const ResourceSystemsArgs& components);
+	static void MoveToLastExtractionSource(const ResourceSystemsArgs& components);
 
 
 	static bool CanEntityExtractResourcesFromOtherEntity(const ArgusEntity& entity, const ArgusEntity& otherEntity);

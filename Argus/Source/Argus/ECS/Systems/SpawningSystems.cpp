@@ -13,27 +13,15 @@ bool SpawningSystems::RunSystems(float deltaTime)
 
 	bool spawnedAnEntityThisFrame = false;
 
+	SpawningSystemsArgs components;
 	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{
-		SpawningSystemsComponentArgs components;
-		components.m_entity = ArgusEntity::RetrieveEntity(i);
-		if (!components.m_entity)
+		if (!components.PopulateArguments(ArgusEntity::RetrieveEntity(i)))
 		{
 			continue;
 		}
 
 		if ((components.m_entity.IsKillable() && !components.m_entity.IsAlive()) || components.m_entity.IsPassenger())
-		{
-			continue;
-		}
-
-		components.m_spawningComponent = components.m_entity.GetComponent<SpawningComponent>();
-		components.m_taskComponent = components.m_entity.GetComponent<TaskComponent>();
-		components.m_targetingComponent = components.m_entity.GetComponent<TargetingComponent>();
-		components.m_transformComponent = components.m_entity.GetComponent<TransformComponent>();
-
-		if (!components.m_entity || !components.m_taskComponent || !components.m_targetingComponent || 
-			!components.m_spawningComponent || !components.m_transformComponent)
 		{
 			continue;
 		}
@@ -49,26 +37,14 @@ bool SpawningSystems::RunSystems(float deltaTime)
 	return spawnedAnEntityThisFrame;
 }
 
-bool SpawningSystems::SpawningSystemsComponentArgs::AreComponentsValidCheck(const WIDECHAR* functionName) const
-{
-	if (m_entity && m_taskComponent && m_spawningComponent && m_targetingComponent && m_transformComponent)
-	{
-		return true;
-	}
-
-	ArgusLogging::LogInvalidComponentReferences(functionName, ARGUS_NAMEOF(SpawningSystemsComponentArgs));
-
-	return false;
-}
-
-void SpawningSystems::SpawnEntity(const SpawningSystemsComponentArgs& components, const SpawnEntityInfo& spawnInfo, const UArgusActorRecord* overrideArgusActorRecord)
+void SpawningSystems::SpawnEntity(const SpawningSystemsArgs& components, const SpawnEntityInfo& spawnInfo, const UArgusActorRecord* overrideArgusActorRecord)
 {
 	ARGUS_TRACE(SpawningSystems::SpawnEntity);
 	SpawnEntityInternal(components, spawnInfo, overrideArgusActorRecord);
 	ProcessQueuedSpawnEntity(components);
 }
 
-void SpawningSystems::SpawnEntityInternal(const SpawningSystemsComponentArgs& components, const SpawnEntityInfo& spawnInfo, const UArgusActorRecord* overrideArgusActorRecord)
+void SpawningSystems::SpawnEntityInternal(const SpawningSystemsArgs& components, const SpawnEntityInfo& spawnInfo, const UArgusActorRecord* overrideArgusActorRecord)
 {
 	ARGUS_TRACE(SpawningSystems::SpawnEntityInternal);
 
@@ -171,7 +147,7 @@ void SpawningSystems::SpawnEntityInternal(const SpawningSystemsComponentArgs& co
 	*spawnedEntityTargetingComponent = *components.m_targetingComponent;
 }
 
-void SpawningSystems::SpawnEntityFromQueue(const SpawningSystemsComponentArgs& components)
+void SpawningSystems::SpawnEntityFromQueue(const SpawningSystemsArgs& components)
 {
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
@@ -203,7 +179,7 @@ void SpawningSystems::SpawnEntityFromQueue(const SpawningSystemsComponentArgs& c
 	SpawnEntity(components, spawnInfo);
 }
 
-bool SpawningSystems::ProcessSpawningTaskCommands(float deltaTime, const SpawningSystemsComponentArgs& components)
+bool SpawningSystems::ProcessSpawningTaskCommands(float deltaTime, const SpawningSystemsArgs& components)
 {
 	ARGUS_TRACE(SpawningSystems::ProcessSpawningTaskCommands);
 
@@ -242,7 +218,7 @@ bool SpawningSystems::ProcessSpawningTaskCommands(float deltaTime, const Spawnin
 	return spawnedAnEntityThisFrame;
 }
 
-bool SpawningSystems::ProcessQueuedSpawnEntity(const SpawningSystemsComponentArgs& components)
+bool SpawningSystems::ProcessQueuedSpawnEntity(const SpawningSystemsArgs& components)
 {
 	ARGUS_TRACE(SpawningSystems::ProcessQueuedSpawnEntity);
 
@@ -284,7 +260,7 @@ bool SpawningSystems::ProcessQueuedSpawnEntity(const SpawningSystemsComponentArg
 	return spawnedAnEntityThisFrame;
 }
 
-void SpawningSystems::GetSpawnLocationAndNavigationState(const SpawningSystemsComponentArgs& components, FVector& outSpawnLocation, EMovementState& outMovementState)
+void SpawningSystems::GetSpawnLocationAndNavigationState(const SpawningSystemsArgs& components, FVector& outSpawnLocation, EMovementState& outMovementState)
 {
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{

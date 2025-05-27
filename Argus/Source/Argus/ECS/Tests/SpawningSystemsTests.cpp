@@ -39,7 +39,7 @@ bool SpawningSystemsSpawnEntityTest::RunTest(const FString& Parameters)
 	argusActorRecord->m_id = dummyRecordID;
 	argusActorRecord->m_entityTemplateOverride = entityTemplate;
 
-	SpawningSystems::SpawningSystemsComponentArgs components;
+	SpawningSystemsArgs components;
 
 #pragma region Test that invalid components report the proper error.
 	AddExpectedErrorPlain

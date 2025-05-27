@@ -6,11 +6,10 @@ void TargetingSystems::RunSystems(float deltaTime)
 {
 	ARGUS_TRACE(TargetingSystems::RunSystems);
 
+	TargetingSystemsArgs components;
 	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{
-		TargetingSystemsComponentArgs components;
-		components.m_entity = ArgusEntity::RetrieveEntity(i);
-		if (!components.m_entity)
+		if (!components.PopulateArguments(ArgusEntity::RetrieveEntity(i)))
 		{
 			continue;
 		}
@@ -20,32 +19,13 @@ void TargetingSystems::RunSystems(float deltaTime)
 			continue;
 		}
 
-		components.m_targetingComponent = components.m_entity.GetComponent<TargetingComponent>();
-		components.m_transformComponent = components.m_entity.GetComponent<TransformComponent>();
-
-		if (!components.m_targetingComponent || !components.m_transformComponent)
-		{
-			continue;
-		}
-
 		// TODO JAMES: Run individual systems per entity below.
 	}
 }
 
-bool TargetingSystems::TargetingSystemsComponentArgs::AreComponentsValidCheck() const
+void TargetingSystems::TargetNearestEntityMatchingTeamMask(uint16 sourceEntityID, uint8 TeamMask, const TargetingSystemsArgs& components)
 {
-	if (!m_targetingComponent || !m_transformComponent)
-	{
-		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Targeting Systems were run with invalid component arguments passed."), ARGUS_FUNCNAME);
-		return false;
-	}
-
-	return true;
-}
-
-void TargetingSystems::TargetNearestEntityMatchingTeamMask(uint16 sourceEntityID, uint8 TeamMask, const TargetingSystemsComponentArgs& components)
-{
-	if (!components.AreComponentsValidCheck())
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return;
 	}

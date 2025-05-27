@@ -4,30 +4,20 @@
 
 #include "ArgusEntity.h"
 #include "Misc/Optional.h"
+#include "SystemArgumentDefinitions/SpawningSystemsArgs.h"
 
 class SpawningSystems
 {
 public:
 	static bool RunSystems(float deltaTime);
 
-	struct SpawningSystemsComponentArgs
-	{
-		ArgusEntity m_entity = ArgusEntity::k_emptyEntity;
-		SpawningComponent* m_spawningComponent = nullptr;
-		TaskComponent* m_taskComponent = nullptr;
-		TargetingComponent* m_targetingComponent = nullptr;
-		TransformComponent* m_transformComponent = nullptr;
-
-		bool AreComponentsValidCheck(const WIDECHAR* functionName) const;
-	};
-
-	static void SpawnEntity(const SpawningSystemsComponentArgs& components, const SpawnEntityInfo& spawnInfo, const UArgusActorRecord* overrideArgusActorRecord = nullptr);
+	static void SpawnEntity(const SpawningSystemsArgs& components, const SpawnEntityInfo& spawnInfo, const UArgusActorRecord* overrideArgusActorRecord = nullptr);
 
 private:
-	static void SpawnEntityInternal(const SpawningSystemsComponentArgs& components, const SpawnEntityInfo& spawnInfo, const UArgusActorRecord* overrideArgusActorRecord);
-	static void SpawnEntityFromQueue(const SpawningSystemsComponentArgs& components);
-	static bool ProcessSpawningTaskCommands(float deltaTime, const SpawningSystemsComponentArgs& components);
-	static bool ProcessQueuedSpawnEntity(const SpawningSystemsComponentArgs& components);
-	static void GetSpawnLocationAndNavigationState(const SpawningSystemsComponentArgs& components, FVector& outSpawnLocation, EMovementState& outMovementState);
+	static void SpawnEntityInternal(const SpawningSystemsArgs& components, const SpawnEntityInfo& spawnInfo, const UArgusActorRecord* overrideArgusActorRecord);
+	static void SpawnEntityFromQueue(const SpawningSystemsArgs& components);
+	static bool ProcessSpawningTaskCommands(float deltaTime, const SpawningSystemsArgs& components);
+	static bool ProcessQueuedSpawnEntity(const SpawningSystemsArgs& components);
+	static void GetSpawnLocationAndNavigationState(const SpawningSystemsArgs& components, FVector& outSpawnLocation, EMovementState& outMovementState);
 	static void CommandMoveSelectedEntitiesToSpawnedEntity(const ArgusEntity& spawnedEntity, bool requireConstructionTarget = false);
 };

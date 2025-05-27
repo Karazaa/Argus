@@ -10,11 +10,10 @@ void ResourceSystems::RunSystems(float deltaTime)
 {
 	ARGUS_TRACE(ResourceSystems::RunSystems);
 
+	ResourceSystemsArgs components;
 	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{
-		ResourceComponents components;
-		components.m_entity = ArgusEntity::RetrieveEntity(i);
-		if (!components.m_entity)
+		if (!components.PopulateArguments(ArgusEntity::RetrieveEntity(i)))
 		{
 			continue;
 		}
@@ -24,32 +23,11 @@ void ResourceSystems::RunSystems(float deltaTime)
 			continue;
 		}
 
-		components.m_taskComponent = components.m_entity.GetComponent<TaskComponent>();
-		components.m_resourceComponent = components.m_entity.GetComponent<ResourceComponent>();
-		components.m_resourceExtractionComponent = components.m_entity.GetComponent<ResourceExtractionComponent>();
-		components.m_targetingComponent = components.m_entity.GetComponent<TargetingComponent>();
-		if (!components.m_taskComponent || !components.m_resourceComponent ||
-			!components.m_resourceExtractionComponent || !components.m_targetingComponent)
-		{
-			continue;
-		}
-
 		ProcessResourceExtractionState(components);
 	}
 };
 
-bool ResourceSystems::ResourceComponents::AreComponentsValidCheck(const WIDECHAR* functionName) const
-{
-	if (!m_entity || !m_taskComponent || !m_resourceComponent || !m_resourceExtractionComponent || !m_targetingComponent)
-	{
-		ArgusLogging::LogInvalidComponentReferences(functionName, ARGUS_NAMEOF(ResourceComponents));
-		return false;
-	}
-
-	return true;
-}
-
-void ResourceSystems::ProcessResourceExtractionState(const ResourceComponents& components)
+void ResourceSystems::ProcessResourceExtractionState(const ResourceSystemsArgs& components)
 {
 	ARGUS_TRACE(ResourceSystems::ProcessResourceExtractionState);
 
@@ -71,7 +49,7 @@ void ResourceSystems::ProcessResourceExtractionState(const ResourceComponents& c
 	}
 }
 
-void ResourceSystems::ProcessResourceExtractionTiming(const ResourceComponents& components)
+void ResourceSystems::ProcessResourceExtractionTiming(const ResourceSystemsArgs& components)
 {
 	ARGUS_TRACE(ResourceSystems::ProcessResourceExtractionTiming);
 
@@ -120,7 +98,7 @@ void ResourceSystems::ProcessResourceExtractionTiming(const ResourceComponents& 
 	}
 }
 
-void ResourceSystems::ProcessResourceDepositing(const ResourceComponents& components)
+void ResourceSystems::ProcessResourceDepositing(const ResourceSystemsArgs& components)
 {
 	ARGUS_TRACE(ResourceSystems::ProcessResourceDepositing);
 
@@ -144,7 +122,7 @@ void ResourceSystems::ProcessResourceDepositing(const ResourceComponents& compon
 	DepositResources(components);
 }
 
-bool ResourceSystems::ExtractResources(const ResourceComponents& components)
+bool ResourceSystems::ExtractResources(const ResourceSystemsArgs& components)
 {
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
@@ -183,7 +161,7 @@ bool ResourceSystems::ExtractResources(const ResourceComponents& components)
 	return true;
 }
 
-void ResourceSystems::DepositResources(const ResourceComponents& components)
+void ResourceSystems::DepositResources(const ResourceSystemsArgs& components)
 {
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
@@ -200,7 +178,7 @@ void ResourceSystems::DepositResources(const ResourceComponents& components)
 	MoveToLastExtractionSource(components);
 }
 
-void ResourceSystems::MoveToNearestDepositSink(const ResourceComponents& components)
+void ResourceSystems::MoveToNearestDepositSink(const ResourceSystemsArgs& components)
 {
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
@@ -247,7 +225,7 @@ void ResourceSystems::MoveToNearestDepositSink(const ResourceComponents& compone
 	components.m_targetingComponent->m_targetEntityId = targetDepositEntityId;
 }
 
-void ResourceSystems::MoveToLastExtractionSource(const ResourceComponents& components)
+void ResourceSystems::MoveToLastExtractionSource(const ResourceSystemsArgs& components)
 {
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{

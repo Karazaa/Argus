@@ -3,22 +3,14 @@
 #pragma once
 
 #include "ArgusEntity.h"
+#include "SystemArgumentDefinitions/TargetingSystemsArgs.h"
 
 class TargetingSystems
 {
 public:
 	static void RunSystems(float deltaTime);
 
-	struct TargetingSystemsComponentArgs
-	{
-		ArgusEntity m_entity = ArgusEntity::k_emptyEntity;
-		TargetingComponent* m_targetingComponent = nullptr;
-		const TransformComponent* m_transformComponent = nullptr;
-
-		bool AreComponentsValidCheck() const;
-	};
-
-	static void TargetNearestEntityMatchingTeamMask(uint16 sourceEntityID, uint8 teamMask, const TargetingSystemsComponentArgs& components);
+	static void TargetNearestEntityMatchingTeamMask(uint16 sourceEntityID, uint8 teamMask, const TargetingSystemsArgs& components);
 	static TOptional<FVector> GetCurrentTargetLocationForEntity(const ArgusEntity& entity);
 	static bool IsInMeleeRangeOfOtherEntity(const ArgusEntity& entity, const ArgusEntity& otherEntity);
 	static bool IsInRangedRangeOfOtherEntity(const ArgusEntity& entity, const ArgusEntity& otherEntity);
