@@ -1259,15 +1259,17 @@ void UArgusInputManager::ProcessChangeActiveAbilityGroup()
 		return;
 	}
 
+	const int8 previousIndexOfActiveAbilityGroup = inputInterfaceComponent->m_indexOfActiveAbilityGroup;
 	const AbilityComponent* previousActiveAbilityGroupAbilities = nullptr;
-	if (ArgusEntity previousTemplateEntity = ArgusEntity::RetrieveEntity(inputInterfaceComponent->m_selectedArgusEntityIds[inputInterfaceComponent->m_indexOfActiveAbilityGroup]))
+	if (ArgusEntity previousTemplateEntity = ArgusEntity::RetrieveEntity(inputInterfaceComponent->m_selectedArgusEntityIds[previousIndexOfActiveAbilityGroup]))
 	{
 		previousActiveAbilityGroupAbilities = previousTemplateEntity.GetComponent<AbilityComponent>();
 	}
 
-	for (int32 i = 1; i < inputInterfaceComponent->m_selectedArgusEntityIds.Num(); ++i)
+	const AbilityComponent* templateEntityAbilities = nullptr;
+	for (int8 i = 1; i < inputInterfaceComponent->m_selectedArgusEntityIds.Num(); ++i)
 	{
-		int32 indexToCheck = ((inputInterfaceComponent->m_indexOfActiveAbilityGroup + i) % inputInterfaceComponent->m_selectedArgusEntityIds.Num());
+		int8 indexToCheck = ((previousIndexOfActiveAbilityGroup + i) % inputInterfaceComponent->m_selectedArgusEntityIds.Num());
 
 		ArgusEntity entityToCheck = ArgusEntity::RetrieveEntity(inputInterfaceComponent->m_selectedArgusEntityIds[indexToCheck]);
 		if (!entityToCheck)
@@ -1286,7 +1288,20 @@ void UArgusInputManager::ProcessChangeActiveAbilityGroup()
 			continue;
 		}
 
-		// TODO JAMES: Populate further.
+		if (templateEntityAbilities == nullptr)
+		{
+			templateEntityAbilities = abilityComponentToCheck;
+			inputInterfaceComponent->m_indexOfActiveAbilityGroup = i;
+			inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.Empty();
+			inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.Add(entityToCheck.GetId());
+			inputInterfaceComponent->m_selectedActorsDisplayState = ESelectedActorsDisplayState::ChangedThisFrame;
+			continue;
+		}
+
+		if (templateEntityAbilities->HasSameAbilities(abilityComponentToCheck))
+		{
+			inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.Add(entityToCheck.GetId());
+		}
 	}
 }
 
@@ -1462,6 +1477,7 @@ void UArgusInputManager::OnSelectedArgusArgusActorsChanged()
 			inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.Add(entity.GetId());
 			inputInterfaceComponent->m_indexOfActiveAbilityGroup = static_cast<uint8>(inputInterfaceComponent->m_selectedArgusEntityIds.Num() - 1);
 			m_activeAbilityGroupArgusActors.Add(selectedActor);
+			templateEntityAbilities = abilityComponent;
 		}
 		else if (templateEntityAbilities != nullptr && templateEntityAbilities->HasSameAbilities(abilityComponent))
 		{
