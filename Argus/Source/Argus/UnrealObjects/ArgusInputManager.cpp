@@ -598,6 +598,7 @@ void UArgusInputManager::ProcessInputEvent(AArgusCameraActor* argusCamera, const
 			ProcessAbilityInputEvent(3u);
 			break;
 		case InputType::Escape:
+			InterruptReticleFromInputEvent();
 			ProcessEscapeInputEvent();
 			break;
 		case InputType::RotateCamera:
@@ -654,6 +655,7 @@ void UArgusInputManager::ProcessInputEvent(AArgusCameraActor* argusCamera, const
 			ProcessSetControlGroup(5u);
 			break;
 		case InputType::ChangeActiveAbilityGroup:
+			InterruptReticleFromInputEvent();
 			ProcessChangeActiveAbilityGroup();
 			break;
 		default:
@@ -762,7 +764,7 @@ void UArgusInputManager::ProcessMarqueeSelectInputEvent(AArgusCameraActor* argus
 	{
 		if (reticleComponent->IsReticleEnabled())
 		{
-			ProcessReticleAbilityForSelectedActors(reticleComponent);
+			ProcessReticleAbilityForSelectedEntities(reticleComponent);
 			return;
 		}
 	}
@@ -1097,25 +1099,31 @@ void UArgusInputManager::ProcessAbilityInputEvent(uint8 abilityIndex)
 		);
 	}
 
-	for (TWeakObjectPtr<AArgusActor>& selectedActor : m_activeAbilityGroupArgusActors)
-	{
-		if (!selectedActor.IsValid())
-		{
-			continue;
-		}
-
-		ProcessAbilityInputEventPerSelectedActor(selectedActor.Get(), abilityIndex);
-	}
-}
-
-void UArgusInputManager::ProcessAbilityInputEventPerSelectedActor(AArgusActor* argusActor, uint8 abilityIndex)
-{
-	if (!argusActor)
+	ArgusEntity singletonEntity = ArgusEntity::GetSingletonEntity();
+	if (!singletonEntity)
 	{
 		return;
 	}
 
-	ArgusEntity entity = argusActor->GetEntity();
+	const InputInterfaceComponent* inputInterfaceComponent = singletonEntity.GetComponent<InputInterfaceComponent>();
+	if (!inputInterfaceComponent)
+	{
+		return;
+	}
+
+	for (int32 i = 0; i < inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.Num(); ++i)
+	{
+		if (inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds[i] == ArgusECSConstants::k_maxEntities)
+		{
+			continue;
+		}
+
+		ProcessAbilityInputEventPerSelectedEntity(ArgusEntity::RetrieveEntity(inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds[i]), abilityIndex);
+	}
+}
+
+void UArgusInputManager::ProcessAbilityInputEventPerSelectedEntity(const ArgusEntity& entity, uint8 abilityIndex)
+{
 	if (!entity)
 	{
 		return;
@@ -1148,34 +1156,7 @@ void UArgusInputManager::ProcessAbilityInputEventPerSelectedActor(AArgusActor* a
 
 void UArgusInputManager::ProcessEscapeInputEvent()
 {
-	ArgusEntity singletonEntity = ArgusEntity::GetSingletonEntity();
-	if (!singletonEntity)
-	{
-		ARGUS_LOG
-		(
-			ArgusInputLog, Error, TEXT("[%s] Could not retrieve a valid %s."),
-			ARGUS_FUNCNAME,
-			ARGUS_NAMEOF(singletonEntity)
-		);
-		return;
-	}
 
-	ReticleComponent* reticleComponent = singletonEntity.GetComponent<ReticleComponent>();
-	if (!reticleComponent)
-	{
-		ARGUS_LOG
-		(
-			ArgusInputLog, Error, TEXT("[%s] Could not retrieve a valid %s."),
-			ARGUS_FUNCNAME,
-			ARGUS_NAMEOF(ReticleComponent*)
-		);
-		return;
-	}
-
-	if (reticleComponent->IsReticleEnabled())
-	{
-		reticleComponent->DisableReticle();
-	}
 ;}
 
 void UArgusInputManager::ProcessRotateCameraInputEvent(AArgusCameraActor* argusCamera, const FInputActionValue& value)
@@ -1226,11 +1207,30 @@ void UArgusInputManager::ProcessControlGroup(uint8 controlGroupIndex, AArgusCame
 	CleanUpSelectedActors();
 	OnSelectedArgusArgusActorsChanged();
 
-	if (AArgusActor* templateSelectedActor = (*m_activeAbilityGroupArgusActors.begin()).Get())
+	ArgusEntity singletonEntity = ArgusEntity::GetSingletonEntity();
+	if (!singletonEntity)
 	{
-		const ArgusEntity entityToFocusOn = templateSelectedActor->GetEntity();
-		argusCamera->FocusOnArgusEntity(entityToFocusOn);
+		return;
 	}
+
+	const InputInterfaceComponent* inputInterfaceComponent = singletonEntity.GetComponent<InputInterfaceComponent>();
+	if (!inputInterfaceComponent)
+	{
+		return;
+	}
+
+	if (inputInterfaceComponent->m_indexOfActiveAbilityGroup < 0 && inputInterfaceComponent->m_indexOfActiveAbilityGroup >= inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.Num())
+	{
+		return;
+	}
+
+	ArgusEntity templateEntity = ArgusEntity::RetrieveEntity(inputInterfaceComponent->m_indexOfActiveAbilityGroup);
+	if (!templateEntity)
+	{
+		return;
+	}
+
+	argusCamera->FocusOnArgusEntity(templateEntity);
 }
 
 void UArgusInputManager::ProcessSetControlGroup(uint8 controlGroupIndex)
@@ -1291,7 +1291,7 @@ void UArgusInputManager::ProcessChangeActiveAbilityGroup()
 		if (templateEntityAbilities == nullptr)
 		{
 			templateEntityAbilities = abilityComponentToCheck;
-			inputInterfaceComponent->m_indexOfActiveAbilityGroup = i;
+			inputInterfaceComponent->m_indexOfActiveAbilityGroup = indexToCheck;
 			inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.Empty();
 			inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.Add(entityToCheck.GetId());
 			inputInterfaceComponent->m_selectedActorsDisplayState = ESelectedActorsDisplayState::ChangedThisFrame;
@@ -1382,11 +1382,11 @@ void UArgusInputManager::AddMarqueeSelectedActorsAdditive(const TArray<AArgusAct
 {
 	ARGUS_MEMORY_TRACE(ArgusInputManager);
 
-	const uint32 selectedActorsNum = marqueeSelectedActors.Num();
-	const uint32 existingSelectedActorNum = m_selectedArgusActors.Num();
+	const int32 selectedActorsNum = marqueeSelectedActors.Num();
+	const int32 existingSelectedActorNum = m_selectedArgusActors.Num();
 	m_selectedArgusActors.Reserve(selectedActorsNum + existingSelectedActorNum);
 
-	for (uint32 i = 0u; i < selectedActorsNum; ++i)
+	for (int32 i = 0; i < selectedActorsNum; ++i)
 	{
 		if (marqueeSelectedActors[i])
 		{
@@ -1395,7 +1395,10 @@ void UArgusInputManager::AddMarqueeSelectedActorsAdditive(const TArray<AArgusAct
 		}
 	}
 
-	OnSelectedArgusArgusActorsChanged();
+	if (selectedActorsNum > 0)
+	{
+		OnSelectedArgusArgusActorsChanged();
+	}
 }
 
 bool UArgusInputManager::CleanUpSelectedActors()
@@ -1448,7 +1451,6 @@ void UArgusInputManager::OnSelectedArgusArgusActorsChanged()
 	inputInterfaceComponent->m_selectedArgusEntityIds.Reset();
 	inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.Reset();
 	inputInterfaceComponent->m_indexOfActiveAbilityGroup = -1;
-	m_activeAbilityGroupArgusActors.Reset();
 
 	const AbilityComponent* templateEntityAbilities = nullptr;
 
@@ -1476,13 +1478,11 @@ void UArgusInputManager::OnSelectedArgusArgusActorsChanged()
 		{
 			inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.Add(entity.GetId());
 			inputInterfaceComponent->m_indexOfActiveAbilityGroup = static_cast<uint8>(inputInterfaceComponent->m_selectedArgusEntityIds.Num() - 1);
-			m_activeAbilityGroupArgusActors.Add(selectedActor);
 			templateEntityAbilities = abilityComponent;
 		}
 		else if (templateEntityAbilities != nullptr && templateEntityAbilities->HasSameAbilities(abilityComponent))
 		{
 			inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.Add(entity.GetId());
-			m_activeAbilityGroupArgusActors.Add(selectedActor);
 		}
 	}
 
@@ -1577,7 +1577,7 @@ void UArgusInputManager::SetReticleState()
 	reticleComponent->m_isBlocked = anyFound;
 }
 
-void UArgusInputManager::ProcessReticleAbilityForSelectedActors(const ReticleComponent* reticleComponent)
+void UArgusInputManager::ProcessReticleAbilityForSelectedEntities(const ReticleComponent* reticleComponent)
 {
 	if (!reticleComponent)
 	{
@@ -1594,25 +1594,31 @@ void UArgusInputManager::ProcessReticleAbilityForSelectedActors(const ReticleCom
 		);
 	}
 
-	for (TWeakObjectPtr<AArgusActor>& selectedActor : m_activeAbilityGroupArgusActors)
-	{
-		if (!selectedActor.IsValid())
-		{
-			continue;
-		}
-
-		ProcessReticleAbilityPerSelectedActor(selectedActor.Get(), reticleComponent->m_abilityRecordId);
-	}
-}
-
-void UArgusInputManager::ProcessReticleAbilityPerSelectedActor(AArgusActor* argusActor, uint32 abilityRecordId)
-{
-	if (!argusActor)
+	ArgusEntity singletonEntity = ArgusEntity::GetSingletonEntity();
+	if (!singletonEntity)
 	{
 		return;
 	}
 
-	ArgusEntity entity = argusActor->GetEntity();
+	const InputInterfaceComponent* inputInterfaceComponent = singletonEntity.GetComponent<InputInterfaceComponent>();
+	if (!inputInterfaceComponent)
+	{
+		return;
+	}
+
+	for (int32 i = 0; i < inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.Num(); ++i)
+	{
+		if (inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds[i] == ArgusECSConstants::k_maxEntities)
+		{
+			continue;
+		}
+
+		ProcessReticleAbilityPerSelectedEntity(ArgusEntity::RetrieveEntity(inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds[i]), reticleComponent->m_abilityRecordId);
+	}
+}
+
+void UArgusInputManager::ProcessReticleAbilityPerSelectedEntity(const ArgusEntity& entity, uint32 abilityRecordId)
+{
 	if (!entity)
 	{
 		return;

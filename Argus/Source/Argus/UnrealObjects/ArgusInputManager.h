@@ -107,7 +107,6 @@ private:
 	TWeakObjectPtr<AArgusPlayerController> m_owningPlayerController = nullptr;
 	TSet<TWeakObjectPtr<AArgusActor>> m_selectedArgusActors;
 	TSet<TWeakObjectPtr<AArgusActor>> m_controlGroupActors[6];
-	TSet<TWeakObjectPtr<AArgusActor>> m_activeAbilityGroupArgusActors;
 	TArray<InputCache> m_inputEventsThisFrame;
 
 	void BindActions(TSoftObjectPtr<UArgusInputActionSet>& argusInputActionSet, UEnhancedInputComponent* enhancedInputComponent, UEnhancedPlayerInput* enhancedInput);
@@ -123,7 +122,7 @@ private:
 	void ProcessSetWaypointInputEventPerSelectedActor(AArgusActor* argusActor, FVector targetLocation);
 	void ProcessZoomInputEvent(AArgusCameraActor* argusCamera, const FInputActionValue& value);
 	void ProcessAbilityInputEvent(uint8 abilityIndex);
-	void ProcessAbilityInputEventPerSelectedActor(AArgusActor* argusActor, uint8 abilityIndex);
+	void ProcessAbilityInputEventPerSelectedEntity(const ArgusEntity& entity, uint8 abilityIndex);
 	void ProcessEscapeInputEvent();
 	void ProcessRotateCameraInputEvent(AArgusCameraActor* argusCamera, const FInputActionValue& value);
 	void ProcessControlGroup(uint8 controlGroupIndex, AArgusCameraActor* argusCamera);
@@ -139,8 +138,8 @@ private:
 
 	void InterruptReticleFromInputEvent();
 	void SetReticleState();
-	void ProcessReticleAbilityForSelectedActors(const ReticleComponent* reticleComponent);
-	void ProcessReticleAbilityPerSelectedActor(AArgusActor* argusActor, uint32 abilityRecordId);
+	void ProcessReticleAbilityForSelectedEntities(const ReticleComponent* reticleComponent);
+	void ProcessReticleAbilityPerSelectedEntity(const ArgusEntity& entity, uint32 abilityRecordId);
 
 	FVector m_cachedLastSelectInputWorldSpaceLocation = FVector::ZeroVector;
 	bool m_selectInputDown = false;
