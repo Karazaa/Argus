@@ -3,6 +3,7 @@
 #include "ArgusEntity.h"
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
+#include "ArgusStaticData.h"
 
 const ArgusEntity ArgusEntity::k_emptyEntity = ArgusEntity();
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusEntity::s_takenEntityIds = std::bitset<ArgusECSConstants::k_maxEntities>();
@@ -353,6 +354,28 @@ bool ArgusEntity::IsCarryingPassengers() const
 	}
 
 	return carrierComponent->m_passengerEntityIds.Num() > 0;
+}
+
+const UArgusActorRecord* ArgusEntity::GetAssociatedActorRecord() const
+{
+	if (!DoesEntityExist(m_id))
+	{
+		return nullptr;
+	}
+
+	const TaskComponent* taskComponent = GetComponent<TaskComponent>();
+	if (!taskComponent)
+	{
+		return nullptr;
+	}
+
+	const uint32 argusActorRecordId = taskComponent->m_spawnedFromArgusActorRecordId;
+	if (argusActorRecordId == 0u)
+	{
+		return nullptr;
+	}
+
+	return ArgusStaticData::GetRecord<UArgusActorRecord>(argusActorRecordId);
 }
 
 #if !UE_BUILD_SHIPPING

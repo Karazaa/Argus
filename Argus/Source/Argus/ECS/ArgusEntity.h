@@ -7,6 +7,8 @@
 #include "CoreMinimal.h"
 #include <bitset>
 
+class UArgusActorRecord;
+
 class ArgusEntity
 {
 public:
@@ -46,6 +48,8 @@ public:
 	bool			IsInRangeOfOtherEntity(const ArgusEntity& other, float range) const;
 	bool			IsPassenger() const;
 	bool			IsCarryingPassengers() const;
+
+	const UArgusActorRecord* GetAssociatedActorRecord() const;
 
 #if !UE_BUILD_SHIPPING
 	const FString	GetDebugString() const;
