@@ -23,9 +23,11 @@ protected:
 	UPROPERTY(BlueprintReadWrite, Transient)
 	TObjectPtr<UHorizontalBox> m_horizontalBox = nullptr;
 
+	UPROPERTY(Transient)
+	TArray<UImage*> m_slotImages;
+
 	void PopulateCarrierSlots(const ArgusEntity& entity);
 	void SetImageColors(const CarrierComponent* carrierComponent);
 
-	TArray<UImage*> m_slotImages;
 	int32 m_currentPassengerCount = 0;
 };
