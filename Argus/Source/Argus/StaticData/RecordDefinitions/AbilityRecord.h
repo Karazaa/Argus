@@ -33,7 +33,7 @@ public:
 	EAbilityTypes m_abilityType = EAbilityTypes::Spawn;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TSoftObjectPtr<UTexture> m_abilityIcon;
+	TSoftObjectPtr<UTexture> m_abilityIcon = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FResourceSet m_requiredResourceChangeToCast;
@@ -42,10 +42,10 @@ public:
 	uint8 m_reticleFlags = 0u;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (EditCondition = "m_abilityType == EAbilityTypes::Spawn || m_abilityType == EAbilityTypes::Construct", EditConditionHides))
-	TSoftObjectPtr<UArgusActorRecord> m_argusActorRecord;
+	TSoftObjectPtr<UArgusActorRecord> m_argusActorRecord = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TSoftObjectPtr<UMaterialInterface> m_reticleMaterial;
+	TSoftObjectPtr<UMaterialInterface> m_reticleMaterial = nullptr;
 
 	bool GetRequiresReticle() const
 	{

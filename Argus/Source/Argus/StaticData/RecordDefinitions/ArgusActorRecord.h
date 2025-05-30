@@ -16,11 +16,14 @@ class ARGUS_API UArgusActorRecord : public UArgusStaticRecord
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TSoftClassPtr<AArgusActor> m_argusActorClass;
+	TSoftClassPtr<AArgusActor> m_argusActorClass = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TSoftObjectPtr<UArgusEntityTemplate> m_entityTemplateOverride;
+	TSoftObjectPtr<UArgusEntityTemplate> m_entityTemplateOverride = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TSoftObjectPtr<UTexture> m_actorInfoIcon;
+	TSoftObjectPtr<UTexture> m_actorInfoIcon = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FText m_actorInfoName;
 };

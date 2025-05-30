@@ -17,6 +17,9 @@ public:
 	virtual void OnUpdateSelectedArgusActors(const ArgusEntity& templateEntity) override;
 
 protected:
+	UPROPERTY(EditDefaultsOnly)
+	FSlateBrush m_entityImageSlateBrush;
+
 	UPROPERTY(BlueprintReadWrite, Transient)
 	TObjectPtr<UImage> m_entityImage = nullptr;
 

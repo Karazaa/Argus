@@ -64,6 +64,7 @@ void USelectedArgusEntitiesWidget::OnUpdateSelectedArgusActors(const ArgusEntity
 		if (m_multipleSelectedEntitiesWidget)
 		{
 			m_multipleSelectedEntitiesWidget->SetVisibility(ESlateVisibility::Visible);
+			m_multipleSelectedEntitiesWidget->OnUpdateSelectedArgusActors(templateEntity);
 		}
 	}
 	else
@@ -71,6 +72,7 @@ void USelectedArgusEntitiesWidget::OnUpdateSelectedArgusActors(const ArgusEntity
 		if (m_singleSelectedEntityWidget)
 		{
 			m_singleSelectedEntityWidget->SetVisibility(ESlateVisibility::Visible);
+			m_singleSelectedEntityWidget->OnUpdateSelectedArgusActors(templateEntity);
 		}
 		if (m_multipleSelectedEntitiesWidget)
 		{
