@@ -5,6 +5,7 @@
 #include "ArgusUserWidget.h"
 #include "SingleSelectedEntityWidget.generated.h"
 
+class UArgusActorHealthBarWidget;
 class UImage;
 class UTextBlock;
 
@@ -25,4 +26,7 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, Transient)
 	TObjectPtr<UTextBlock> m_entityName = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, Transient)
+	TObjectPtr<UArgusActorHealthBarWidget> m_entityHealthBar = nullptr;
 };

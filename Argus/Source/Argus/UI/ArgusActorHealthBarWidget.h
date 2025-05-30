@@ -18,11 +18,14 @@ public:
 	virtual void RefreshDisplay(const ArgusEntity& argusEntity) override;
 
 protected:
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	FLinearColor m_fullHealthBarColor;
+	UPROPERTY(EditAnywhere)
+	bool m_showHealthBarAtFullHealth = false;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	FLinearColor m_lowHealthBarColor;
+	UPROPERTY(EditDefaultsOnly)
+	FLinearColor m_fullHealthBarColor = FLinearColor::Green;
+
+	UPROPERTY(EditDefaultsOnly)
+	FLinearColor m_lowHealthBarColor = FLinearColor::Red;
 
 	UPROPERTY(BlueprintReadWrite, Transient)
 	TObjectPtr<UProgressBar> m_progressBar = nullptr;
