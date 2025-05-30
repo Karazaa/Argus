@@ -10,6 +10,20 @@
 #include "MultipleSelectedEntitiesWidget.h"
 #include "SingleSelectedEntityWidget.h"
 
+void USelectedArgusEntitiesWidget::UpdateDisplay(const UpdateDisplayParameters& updateDisplayParams)
+{
+	Super::UpdateDisplay(updateDisplayParams);
+
+	if (m_singleSelectedEntityWidget && m_singleSelectedEntityWidget->IsVisible())
+	{
+		m_singleSelectedEntityWidget->UpdateDisplay(updateDisplayParams);
+	}
+	else if (m_multipleSelectedEntitiesWidget && m_multipleSelectedEntitiesWidget->IsVisible())
+	{
+		m_multipleSelectedEntitiesWidget->UpdateDisplay(updateDisplayParams);
+	}
+}
+
 void USelectedArgusEntitiesWidget::OnUpdateSelectedArgusActors(const ArgusEntity& templateEntity)
 {
 	Super::OnUpdateSelectedArgusActors(templateEntity);

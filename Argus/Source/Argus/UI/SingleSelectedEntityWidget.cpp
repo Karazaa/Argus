@@ -7,6 +7,29 @@
 #include "Components/TextBlock.h"
 #include "RecordDefinitions/ArgusActorRecord.h"
 
+void USingleSelectedEntityWidget::UpdateDisplay(const UpdateDisplayParameters& updateDisplayParams)
+{
+	if (!m_entityHealthBar)
+	{
+		// TODO JAMES: Error here
+		return;
+	}
+
+	const ArgusEntity singletonEntity = ArgusEntity::GetSingletonEntity();
+	if (!singletonEntity)
+	{
+		// TODO JAMES: Error here
+		return;
+	}
+
+	const InputInterfaceComponent* inputInterfaceComponent = singletonEntity.GetComponent<InputInterfaceComponent>();
+	if (!inputInterfaceComponent)
+	{
+		// TODO JAMES: Error here
+		return;
+	}
+	m_entityHealthBar->RefreshDisplay(ArgusEntity::RetrieveEntity(inputInterfaceComponent->m_selectedArgusEntityIds[0]));
+}
 
 void USingleSelectedEntityWidget::OnUpdateSelectedArgusActors(const ArgusEntity& templateEntity)
 {

@@ -4,6 +4,11 @@
 #include "ArgusEntity.h"
 #include "Components/UniformGridPanel.h"
 
+void UMultipleSelectedEntitiesWidget::UpdateDisplay(const UpdateDisplayParameters& updateDisplayParams)
+{
+
+}
+
 void UMultipleSelectedEntitiesWidget::OnUpdateSelectedArgusActors(const ArgusEntity& templateEntity)
 {
 	const UArgusActorRecord* templateArgusActorRecord = templateEntity.GetAssociatedActorRecord();

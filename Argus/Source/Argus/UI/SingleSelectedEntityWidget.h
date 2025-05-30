@@ -15,6 +15,7 @@ class USingleSelectedEntityWidget : public UArgusUserWidget
 	GENERATED_BODY()
 
 public:
+	virtual void UpdateDisplay(const UpdateDisplayParameters& updateDisplayParams) override;
 	virtual void OnUpdateSelectedArgusActors(const ArgusEntity& templateEntity) override;
 
 protected:
