@@ -202,7 +202,7 @@ void TransformSystems::OnWithinRangeOfTargetEntity(const TransformSystemsArgs& c
 	}
 
 	ArgusEntity targetEntity = ArgusEntity::RetrieveEntity(components.m_targetingComponent->m_targetEntityId);
-	if (!targetEntity)
+	if (!targetEntity || !targetEntity.IsAlive())
 	{
 		return;
 	}
