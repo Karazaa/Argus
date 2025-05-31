@@ -1498,7 +1498,7 @@ void UArgusInputManager::OnSelectedArgusArgusActorsChanged()
 	for (int32 i = 1; i < numSelected; ++i)
 	{
 		const AbilityComponent* abilityComponent = ArgusEntity::RetrieveEntity(inputInterfaceComponent->m_selectedArgusEntityIds[i]).GetComponent<AbilityComponent>();
-		if (!abilityComponent || !templateAbilityComponent->HasAnyAbility() || !templateAbilityComponent->HasSameAbilities(templateAbilityComponent))
+		if (!abilityComponent || !abilityComponent->HasAnyAbility() || !abilityComponent->HasSameAbilities(templateAbilityComponent))
 		{
 			break;
 		}

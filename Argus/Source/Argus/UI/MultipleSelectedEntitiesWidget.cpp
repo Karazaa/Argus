@@ -79,7 +79,9 @@ void UMultipleSelectedEntitiesWidget::OnUpdateSelectedArgusActors(const ArgusEnt
 		}
 
 		m_slotImages[i]->SetVisibility(ESlateVisibility::HitTestInvisible);
-		FSlateBrush slotBrush = m_entityImageSlateBrush;
+		FSlateBrush slotBrush = inputInterfaceComponent->IsEntityIdInActiveAbilityGroup(inputInterfaceComponent->m_selectedArgusEntityIds[i]) ? 
+																						m_activeAbilityGroupSlateBrush : m_entityImageSlateBrush;
+
 		slotBrush.SetResourceObject(argusActorRecord->m_actorInfoIcon.LoadSynchronous());
 		m_slotImages[i]->SetBrush(slotBrush);
 		m_gridSlots[i]->SetRow(i / m_numberOfEntitiesPerRow);

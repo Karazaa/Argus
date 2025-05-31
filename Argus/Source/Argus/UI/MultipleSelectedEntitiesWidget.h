@@ -28,6 +28,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	FSlateBrush m_entityImageSlateBrush;
 
+	UPROPERTY(EditDefaultsOnly)
+	FSlateBrush m_activeAbilityGroupSlateBrush;
+
 	UPROPERTY(Transient)
 	TArray<UImage*> m_slotImages;
 

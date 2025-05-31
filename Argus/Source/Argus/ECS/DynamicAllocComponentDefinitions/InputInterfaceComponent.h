@@ -27,4 +27,17 @@ struct InputInterfaceComponent
 
 	ARGUS_IGNORE()
 	int8 m_indexOfActiveAbilityGroup = 0;
+
+	bool IsEntityIdInActiveAbilityGroup(uint16 entityId) const
+	{
+		for (int32 i = 0; i < m_activeAbilityGroupArgusEntityIds.Num(); ++i)
+		{
+			if (m_activeAbilityGroupArgusEntityIds[i] == entityId)
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
 };
