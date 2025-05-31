@@ -1260,6 +1260,11 @@ void UArgusInputManager::ProcessChangeActiveAbilityGroup()
 	}
 
 	const int8 previousIndexOfActiveAbilityGroup = inputInterfaceComponent->m_indexOfActiveAbilityGroup;
+	if (previousIndexOfActiveAbilityGroup < 0)
+	{
+		return;
+	}
+
 	const AbilityComponent* previousActiveAbilityGroupAbilities = nullptr;
 	if (ArgusEntity previousTemplateEntity = ArgusEntity::RetrieveEntity(inputInterfaceComponent->m_selectedArgusEntityIds[previousIndexOfActiveAbilityGroup]))
 	{
@@ -1434,14 +1439,7 @@ bool UArgusInputManager::CleanUpSelectedActors()
 
 void UArgusInputManager::OnSelectedArgusArgusActorsChanged()
 {
-	ArgusEntity singletonEntity = ArgusEntity::GetSingletonEntity();
-	if (!singletonEntity)
-	{
-		ARGUS_LOG(ArgusInputLog, Error, TEXT("[%s] Could not retrieve %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(singletonEntity));
-		return;
-	}
-
-	InputInterfaceComponent* inputInterfaceComponent = singletonEntity.GetComponent<InputInterfaceComponent>();
+	InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::GetSingletonEntity().GetComponent<InputInterfaceComponent>();
 	if (!inputInterfaceComponent)
 	{
 		ARGUS_LOG(ArgusInputLog, Error, TEXT("[%s] Could not retrieve a valid %s from %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(InputInterfaceComponent), ARGUS_NAMEOF(singletonEntity));
@@ -1451,8 +1449,7 @@ void UArgusInputManager::OnSelectedArgusArgusActorsChanged()
 	inputInterfaceComponent->m_selectedArgusEntityIds.Reset();
 	inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.Reset();
 	inputInterfaceComponent->m_indexOfActiveAbilityGroup = -1;
-
-	const AbilityComponent* templateEntityAbilities = nullptr;
+	inputInterfaceComponent->m_selectedActorsDisplayState = ESelectedActorsDisplayState::ChangedThisFrame;
 
 	for (TWeakObjectPtr<AArgusActor>& selectedActor : m_selectedArgusActors)
 	{
@@ -1467,37 +1464,54 @@ void UArgusInputManager::OnSelectedArgusArgusActorsChanged()
 			continue;
 		}
 		inputInterfaceComponent->m_selectedArgusEntityIds.Add(entity.GetId());
-
-		const AbilityComponent* abilityComponent = entity.GetComponent<AbilityComponent>();
-		if (!abilityComponent)
-		{
-			continue;
-		}
-
-		if (templateEntityAbilities == nullptr && abilityComponent->HasAnyAbility())
-		{
-			inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.Add(entity.GetId());
-			inputInterfaceComponent->m_indexOfActiveAbilityGroup = static_cast<uint8>(inputInterfaceComponent->m_selectedArgusEntityIds.Num() - 1);
-			templateEntityAbilities = abilityComponent;
-		}
-		else if (templateEntityAbilities != nullptr && templateEntityAbilities->HasSameAbilities(abilityComponent))
-		{
-			inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.Add(entity.GetId());
-		}
 	}
 
-	inputInterfaceComponent->m_selectedActorsDisplayState = ESelectedActorsDisplayState::ChangedThisFrame;
-}
+	inputInterfaceComponent->m_selectedArgusEntityIds.Sort([](uint16 entityAId, uint16 entityBId)
+	{
+		const AbilityComponent* taskComponentA = ArgusEntity::RetrieveEntity(entityAId).GetComponent<AbilityComponent>();
+		const AbilityComponent* taskComponentB = ArgusEntity::RetrieveEntity(entityBId).GetComponent<AbilityComponent>();
+		if (!taskComponentA)
+		{
+			return false;
+		}
+		if (!taskComponentB)
+		{
+			return true;
+		}
 
-void UArgusInputManager::InterruptReticleFromInputEvent()
-{
-	ArgusEntity singletonEntity = ArgusEntity::GetSingletonEntity();
-	if (!singletonEntity)
+		return taskComponentA->m_abilityCasterPriority > taskComponentB->m_abilityCasterPriority;
+	});
+
+	const int32 numSelected = inputInterfaceComponent->m_selectedArgusEntityIds.Num();
+	if (numSelected == 0)
 	{
 		return;
 	}
 
-	ReticleComponent* reticleComponent = singletonEntity.GetComponent<ReticleComponent>();
+	const AbilityComponent* templateAbilityComponent = ArgusEntity::RetrieveEntity(inputInterfaceComponent->m_selectedArgusEntityIds[0]).GetComponent<AbilityComponent>();
+	if (!templateAbilityComponent || !templateAbilityComponent->HasAnyAbility())
+	{
+		return;
+	}
+
+	inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.Add(inputInterfaceComponent->m_selectedArgusEntityIds[0]);
+	for (int32 i = 1; i < numSelected; ++i)
+	{
+		const AbilityComponent* abilityComponent = ArgusEntity::RetrieveEntity(inputInterfaceComponent->m_selectedArgusEntityIds[i]).GetComponent<AbilityComponent>();
+		if (!abilityComponent || !templateAbilityComponent->HasAnyAbility() || !templateAbilityComponent->HasSameAbilities(templateAbilityComponent))
+		{
+			break;
+		}
+
+		inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.Add(inputInterfaceComponent->m_selectedArgusEntityIds[i]);
+	}
+
+	inputInterfaceComponent->m_indexOfActiveAbilityGroup = 0;
+}
+
+void UArgusInputManager::InterruptReticleFromInputEvent()
+{
+	ReticleComponent* reticleComponent = ArgusEntity::GetSingletonEntity().GetComponent<ReticleComponent>();
 	if (!reticleComponent)
 	{
 		return;

@@ -86,6 +86,10 @@ void AbilityComponent::DrawComponentDebug() const
 		{
 			ImGui::Text("None", m_ability3Id);
 		}
+		ImGui::TableNextColumn();
+		ImGui::Text("m_abilityCasterPriority");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_abilityCasterPriority);
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

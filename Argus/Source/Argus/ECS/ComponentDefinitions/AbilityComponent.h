@@ -23,6 +23,8 @@ struct AbilityComponent
 	ARGUS_STATIC_DATA(UAbilityRecord)
 	uint32 m_ability3Id = 0u;
 
+	uint8 m_abilityCasterPriority = 0u;
+
 	bool HasAbility(uint32 abilityRecordId) const
 	{
 		return	m_ability0Id == abilityRecordId ||

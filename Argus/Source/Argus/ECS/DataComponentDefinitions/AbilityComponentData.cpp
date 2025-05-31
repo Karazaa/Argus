@@ -11,6 +11,7 @@ void UAbilityComponentData::InstantiateComponentForEntity(ArgusEntity& entity) c
 	AbilityComponentRef->m_ability1Id = m_ability1Id.LoadSynchronous() ? m_ability1Id.LoadSynchronous()->m_id : 0u;
 	AbilityComponentRef->m_ability2Id = m_ability2Id.LoadSynchronous() ? m_ability2Id.LoadSynchronous()->m_id : 0u;
 	AbilityComponentRef->m_ability3Id = m_ability3Id.LoadSynchronous() ? m_ability3Id.LoadSynchronous()->m_id : 0u;
+	AbilityComponentRef->m_abilityCasterPriority = m_abilityCasterPriority;
 }
 
 bool UAbilityComponentData::MatchesType(UComponentData* other) const

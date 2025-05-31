@@ -15,19 +15,12 @@ void USingleSelectedEntityWidget::UpdateDisplay(const UpdateDisplayParameters& u
 		return;
 	}
 
-	const ArgusEntity singletonEntity = ArgusEntity::GetSingletonEntity();
-	if (!singletonEntity)
+	const InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::GetSingletonEntity().GetComponent<InputInterfaceComponent>();
+	if (!inputInterfaceComponent || !inputInterfaceComponent->m_selectedArgusEntityIds.Num())
 	{
-		// TODO JAMES: Error here
 		return;
 	}
 
-	const InputInterfaceComponent* inputInterfaceComponent = singletonEntity.GetComponent<InputInterfaceComponent>();
-	if (!inputInterfaceComponent)
-	{
-		// TODO JAMES: Error here
-		return;
-	}
 	m_entityHealthBar->RefreshDisplay(ArgusEntity::RetrieveEntity(inputInterfaceComponent->m_selectedArgusEntityIds[0]));
 }
 
