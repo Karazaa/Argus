@@ -3,7 +3,6 @@
 #pragma once
 
 #include "ArgusLogging.h"
-#include "ArgusMacros.h"
 #include "CoreMinimal.h"
 #include "ComponentDependencies/Timer.h"
 #include <vector>
@@ -17,18 +16,7 @@ struct TimerComponent
 
 	Timer* GetTimerFromHandle(const TimerHandle* timerHandle)
 	{
-		if (!timerHandle)
-		{
-			ARGUS_LOG
-			(
-				ArgusECSLog,
-				Error,
-				TEXT("[%s] Passed in %s was null."),
-				ARGUS_FUNCNAME,
-				ARGUS_NAMEOF(TimerHandle*)
-			)
-			return nullptr;
-		}
+		ARGUS_RETURN_ON_NULL_POINTER(timerHandle, ArgusECSLog);
 
 		const uint8 timerIndex = timerHandle->GetTimerIndex();
 		if (timerIndex == UINT8_MAX)

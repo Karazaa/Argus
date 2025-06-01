@@ -553,8 +553,8 @@ bool ArgusComponentTimerComponentGetTimerFromHandleTest::RunTest(const FString& 
 	(
 		FString::Printf
 		(
-			TEXT("Passed in %s was null."),
-			ARGUS_NAMEOF(TimerHandle*)
+			TEXT("The variable, %s, is null!"),
+			ARGUS_NAMEOF(timerHandle)
 		)
 	);
 #pragma endregion

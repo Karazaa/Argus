@@ -19,10 +19,7 @@ void NavigationSystems::RunSystems(UWorld* worldPointer)
 {
 	ARGUS_TRACE(NavigationSystems::RunSystems);
 
-	if (!IsWorldPointerValidCheck(worldPointer, ARGUS_FUNCNAME))
-	{
-		return;
-	}
+	ARGUS_RETURN_ON_NULL(worldPointer, ArgusECSLog);
 
 	NavigationSystemsArgs components;
 	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
@@ -49,7 +46,8 @@ void NavigationSystems::RunSystems(UWorld* worldPointer)
 
 void NavigationSystems::NavigateFromEntityToEntity(UWorld* worldPointer, ArgusEntity targetEntity, const NavigationSystemsArgs& components)
 {
-	if (!IsWorldPointerValidCheck(worldPointer, ARGUS_FUNCNAME) || !components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	ARGUS_RETURN_ON_NULL(worldPointer, ArgusECSLog);
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return;
 	}
@@ -73,7 +71,8 @@ void NavigationSystems::NavigateFromEntityToLocation(UWorld* worldPointer, std::
 {
 	ARGUS_MEMORY_TRACE(ArgusNavigationSystems);
 
-	if (!IsWorldPointerValidCheck(worldPointer, ARGUS_FUNCNAME) || !components.AreComponentsValidCheck(ARGUS_FUNCNAME) || !targetLocation.has_value())
+	ARGUS_RETURN_ON_NULL(worldPointer, ArgusECSLog);
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME) || !targetLocation.has_value())
 	{
 		return;
 	}
@@ -83,11 +82,7 @@ void NavigationSystems::NavigateFromEntityToLocation(UWorld* worldPointer, std::
 	components.m_navigationComponent->ResetPath();
 
 	UNavigationSystemV1* unrealNavigationSystem = UNavigationSystemV1::GetCurrent(worldPointer);
-	if (!unrealNavigationSystem)
-	{
-		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Could not obtain a valid reference to %s"), ARGUS_FUNCNAME, ARGUS_NAMEOF(UNavigationSystemV1));
-		return;
-	}
+	ARGUS_RETURN_ON_NULL(unrealNavigationSystem, ArgusECSLog);
 
 	FPathFindingQuery pathFindingQuery = FPathFindingQuery
 	(
@@ -143,7 +138,8 @@ void NavigationSystems::ProcessNavigationTaskCommands(UWorld* worldPointer, cons
 {
 	ARGUS_TRACE(NavigationSystems::ProcessNavigationTaskCommands);
 
-	if (!IsWorldPointerValidCheck(worldPointer, ARGUS_FUNCNAME) || !components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	ARGUS_RETURN_ON_NULL(worldPointer, ArgusECSLog);
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return;
 	}
@@ -169,7 +165,8 @@ void NavigationSystems::RecalculateMoveToEntityPaths(UWorld* worldPointer, const
 {
 	ARGUS_TRACE(NavigationSystems::RecalculateMoveToEntityPaths);
 
-	if (!IsWorldPointerValidCheck(worldPointer, ARGUS_FUNCNAME) || !components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	ARGUS_RETURN_ON_NULL(worldPointer, ArgusECSLog);
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return;
 	}
@@ -197,23 +194,6 @@ void NavigationSystems::RecalculateMoveToEntityPaths(UWorld* worldPointer, const
 	}
 
 	NavigateFromEntityToEntity(worldPointer, targetEntity, components);
-}
-
-bool NavigationSystems::IsWorldPointerValidCheck(UWorld* worldPointer, const WIDECHAR* functionName)
-{
-	if (!worldPointer)
-	{
-		ARGUS_LOG
-		(
-			ArgusECSLog, Error, TEXT("[%s] was invoked with an invalid %s, %s."),
-			functionName,
-			ARGUS_NAMEOF(UWorld*),
-			ARGUS_NAMEOF(worldPointer)
-		);
-		return false;
-	}
-
-	return true;
 }
 
 void NavigationSystems::ChangeTasksOnNavigatingToEntity(ArgusEntity targetEntity, const NavigationSystemsArgs& components)

@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "ArgusMacros.h"
 #include "CoreMinimal.h"
 #include "HAL/IConsoleManager.h"
 #include "Logging/LogVerbosity.h"
@@ -13,6 +14,31 @@ do \
 	ArgusLogging::ShowEditorNotification(FString::Printf(Format, ##__VA_ARGS__), FString{}, ELogVerbosity::Verbosity); \
 } \
 while (0);
+
+#define ARGUS_ERROR_NULL(CategoryName, VariableName) \
+ARGUS_LOG(CategoryName, Error, TEXT("[%s] The variable, %s, is null!"), ARGUS_FUNCNAME, ARGUS_NAMEOF(VariableName));
+
+#define ARGUS_RETURN_ON_NULL(VariableName, CategoryName) \
+if (!VariableName) \
+{ \
+	ARGUS_ERROR_NULL(CategoryName, VariableName); \
+	return;\
+}
+
+#define ARGUS_RETURN_ON_NULL_POINTER(VariableName, CategoryName) \
+if (!VariableName) \
+{ \
+	ARGUS_ERROR_NULL(CategoryName, VariableName); \
+	return nullptr;\
+}
+
+#define ARGUS_RETURN_ON_NULL_BOOL(VariableName, CategoryName) \
+if (!VariableName) \
+{ \
+	ARGUS_ERROR_NULL(CategoryName, VariableName); \
+	return false;\
+}
+
 
 DECLARE_LOG_CATEGORY_EXTERN(ArgusECSLog, Display, All);
 DECLARE_LOG_CATEGORY_EXTERN(ArgusInputLog, Display, All);

@@ -2,7 +2,6 @@
 
 #include "AbilitySystems.h"
 #include "ArgusLogging.h"
-#include "ArgusMacros.h"
 #include "ArgusStaticData.h"
 #include "ComponentDependencies/SpawnEntityInfo.h"
 #include "DataComponentDefinitions/TransformComponentData.h"
@@ -12,19 +11,8 @@ void AbilitySystems::RunSystems(float deltaTime)
 {
 	ARGUS_TRACE(AbilitySystems::RunSystems);
 
-	ArgusEntity singletonEntity = ArgusEntity::GetSingletonEntity();
-	if (!singletonEntity)
-	{
-		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Could not retrieve a valid %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(singletonEntity));
-		return;
-	}
-
-	ReticleComponent* reticleComponent = singletonEntity.GetComponent<ReticleComponent>();
-	if (!reticleComponent)
-	{
-		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Could not retrieve a valid %s from %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ReticleComponent), ARGUS_NAMEOF(singletonEntity));
-		return;
-	}
+	ReticleComponent* reticleComponent = ArgusEntity::GetSingletonEntity().GetComponent<ReticleComponent>();
+	ARGUS_RETURN_ON_NULL(reticleComponent, ArgusECSLog);
 
 	AbilitySystemsArgs components;
 	components.m_reticleComponent = reticleComponent;

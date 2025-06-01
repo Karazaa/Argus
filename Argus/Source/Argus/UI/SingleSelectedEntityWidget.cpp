@@ -9,11 +9,7 @@
 
 void USingleSelectedEntityWidget::UpdateDisplay(const UpdateDisplayParameters& updateDisplayParams)
 {
-	if (!m_entityHealthBar)
-	{
-		// TODO JAMES: Error here
-		return;
-	}
+	ARGUS_RETURN_ON_NULL(m_entityHealthBar, ArgusUILog);
 
 	const InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::GetSingletonEntity().GetComponent<InputInterfaceComponent>();
 	if (!inputInterfaceComponent || !inputInterfaceComponent->m_selectedArgusEntityIds.Num())
@@ -26,11 +22,9 @@ void USingleSelectedEntityWidget::UpdateDisplay(const UpdateDisplayParameters& u
 
 void USingleSelectedEntityWidget::OnUpdateSelectedArgusActors(const ArgusEntity& templateEntity)
 {
-	if (!m_entityImage || !m_entityName || !m_entityHealthBar)
-	{
-		// TODO JAMES: Error here
-		return;
-	}
+	ARGUS_RETURN_ON_NULL(m_entityImage, ArgusUILog);
+	ARGUS_RETURN_ON_NULL(m_entityName, ArgusUILog);
+	ARGUS_RETURN_ON_NULL(m_entityHealthBar, ArgusUILog);
 
 	const UArgusActorRecord* templateArgusActorRecord = templateEntity.GetAssociatedActorRecord();
 	if (!templateArgusActorRecord)

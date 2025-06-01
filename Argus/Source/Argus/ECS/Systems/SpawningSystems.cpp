@@ -2,7 +2,6 @@
 
 #include "SpawningSystems.h"
 #include "ArgusLogging.h"
-#include "ArgusMacros.h"
 #include "ArgusStaticData.h"
 #include "HAL/UnrealMemory.h"
 #include "Systems/ConstructionSystems.h"

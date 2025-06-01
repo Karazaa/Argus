@@ -9,11 +9,7 @@ void UArgusActorHealthBarWidget::SetInitialDisplay(const ArgusEntity& argusEntit
 {
 	Super::SetInitialDisplay(argusEntity);
 
-	if (!m_progressBar)
-	{
-		ARGUS_LOG(ArgusUILog, Error, TEXT("[%s] Invalid reference to %s"), ARGUS_FUNCNAME, ARGUS_NAMEOF(m_progressBar));
-		return;
-	}
+	ARGUS_RETURN_ON_NULL(m_progressBar, ArgusUILog);
 
 	if (const HealthComponent* healthComponent = argusEntity.GetComponent<HealthComponent>())
 	{
@@ -34,11 +30,7 @@ void UArgusActorHealthBarWidget::RefreshDisplay(const ArgusEntity& argusEntity)
 
 void UArgusActorHealthBarWidget::SetHealthBarPercentForEntity(const ArgusEntity& argusEntity)
 {
-	if (!m_progressBar)
-	{
-		ARGUS_LOG(ArgusUILog, Error, TEXT("[%s] Invalid reference to %s"), ARGUS_FUNCNAME, ARGUS_NAMEOF(m_progressBar));
-		return;
-	}
+	ARGUS_RETURN_ON_NULL(m_progressBar, ArgusUILog);
 
 	const HealthComponent* healthComponent = argusEntity.GetComponent<HealthComponent>();
 	if (!healthComponent)

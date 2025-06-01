@@ -2,7 +2,6 @@
 
 #include "ConstructionSystems.h"
 #include "ArgusLogging.h"
-#include "ArgusMacros.h"
 
 void ConstructionSystems::RunSystems(float deltaTime)
 {
@@ -27,18 +26,6 @@ void ConstructionSystems::RunSystems(float deltaTime)
 
 bool ConstructionSystems::CanEntityConstructOtherEntity(const ArgusEntity& potentialConstructor, const ArgusEntity& potentialConstructee)
 {
-	if (!potentialConstructor)
-	{
-		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid reference to %s, %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(potentialConstructor));
-		return false;
-	}
-
-	if (!potentialConstructee)
-	{
-		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid reference to %s, %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(potentialConstructee));
-		return false;
-	}
-
 	const ConstructionComponent* constructionComponent = potentialConstructee.GetComponent<ConstructionComponent>();
 	if (!constructionComponent)
 	{

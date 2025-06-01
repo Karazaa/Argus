@@ -16,11 +16,7 @@ void UArgusActorCastBarWidget::RefreshDisplay(const ArgusEntity& argusEntity)
 {
 	Super::RefreshDisplay(argusEntity);
 
-	if (!m_progressBar)
-	{
-		ARGUS_LOG(ArgusUILog, Error, TEXT("[%s] Invalid reference to %s"), ARGUS_FUNCNAME, ARGUS_NAMEOF(m_progressBar));
-		return;
-	}
+	ARGUS_RETURN_ON_NULL(m_progressBar, ArgusUILog);
 
 	FLinearColor fillColor = FColor::White;
 	float timeElapsedProportion = -1.0f;

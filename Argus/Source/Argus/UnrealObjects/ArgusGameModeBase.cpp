@@ -34,11 +34,7 @@ void AArgusGameModeBase::StartPlay()
 	}
 
 	UWorld* worldPointer = GetWorld();
-	if (!worldPointer)
-	{
-		ARGUS_LOG(ArgusUnrealObjectsLog, Error, TEXT("[%s] Could not retrieve a valid %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(UWorld*));
-		return;
-	}
+	ARGUS_RETURN_ON_NULL(worldPointer, ArgusUnrealObjectsLog);
 
 	ArgusSystemsManager::Initialize(worldPointer, m_initialTeamResourceSet);
 }
@@ -50,17 +46,8 @@ void AArgusGameModeBase::Tick(float deltaTime)
 	Super::Tick(deltaTime);
 
 	UWorld* worldPointer = GetWorld();
-	if (!worldPointer)
-	{
-		ARGUS_LOG(ArgusUnrealObjectsLog, Error, TEXT("[%s] Could not retrieve a valid %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(UWorld*));
-		return;
-	}
-
-	if (!m_activePlayerController)
-	{
-		ARGUS_LOG(ArgusUnrealObjectsLog, Error, TEXT("[%s] Could not retrieve a valid %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(AArgusPlayerController*));
-		return;
-	}
+	ARGUS_RETURN_ON_NULL(worldPointer, ArgusUnrealObjectsLog);
+	ARGUS_RETURN_ON_NULL(m_activePlayerController, ArgusUnrealObjectsLog);
 	
 	// Update camera and process player input
 	m_activePlayerController->ProcessArgusPlayerInput(deltaTime);

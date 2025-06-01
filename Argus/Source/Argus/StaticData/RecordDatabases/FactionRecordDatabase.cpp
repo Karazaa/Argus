@@ -3,7 +3,6 @@
 
 #include "RecordDatabases/FactionRecordDatabase.h"
 #include "ArgusLogging.h"
-#include "ArgusMacros.h"
 
 #if WITH_EDITOR
 #include "ArgusStaticData.h"

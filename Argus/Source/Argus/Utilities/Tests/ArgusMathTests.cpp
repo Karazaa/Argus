@@ -1,7 +1,6 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusLogging.h"
-#include "ArgusMacros.h"
 #include "ArgusMath.h"
 #include "ArgusTesting.h"
 #include "Misc/AutomationTest.h"

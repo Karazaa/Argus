@@ -2,7 +2,6 @@
 
 #include "ArgusSystemsManager.h"
 #include "ArgusLogging.h"
-#include "ArgusMacros.h"
 #include "Engine/World.h"
 #include "Systems/AbilitySystems.h"
 #include "Systems/AvoidanceSystems.h"
@@ -22,11 +21,7 @@
 
 void ArgusSystemsManager::Initialize(UWorld* worldPointer, const FResourceSet& initialTeamResourceSet)
 {
-	if (!worldPointer)
-	{
-		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] was invoked with an invalid %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(UWorld*));
-		return;
-	}
+	ARGUS_RETURN_ON_NULL(worldPointer, ArgusECSLog);
 
 	PopulateSingletonComponents(worldPointer);
 	PopulateTeamComponents(initialTeamResourceSet);
@@ -35,12 +30,7 @@ void ArgusSystemsManager::Initialize(UWorld* worldPointer, const FResourceSet& i
 void ArgusSystemsManager::RunSystems(UWorld* worldPointer, float deltaTime)
 {
 	ARGUS_TRACE(ArgusSystemsManager::RunSystems);
-
-	if (!worldPointer)
-	{
-		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] was invoked with an invalid %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(UWorld*));
-		return;
-	}
+	ARGUS_RETURN_ON_NULL(worldPointer, ArgusECSLog);
 
 	bool didEntityPositionChangeThisFrame = false;
 
@@ -64,11 +54,7 @@ void ArgusSystemsManager::RunSystems(UWorld* worldPointer, float deltaTime)
 
 void ArgusSystemsManager::PopulateSingletonComponents(UWorld* worldPointer)
 {
-	if (!worldPointer)
-	{
-		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] was invoked with an invalid %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(UWorld*));
-		return;
-	}
+	ARGUS_RETURN_ON_NULL(worldPointer, ArgusECSLog);
 
 	if (ArgusEntity::DoesEntityExist(ArgusECSConstants::k_singletonEntityId))
 	{
@@ -82,19 +68,18 @@ void ArgusSystemsManager::PopulateSingletonComponents(UWorld* worldPointer)
 		return;
 	}
 
-	if (SpatialPartitioningComponent* spatialPartitioningComponent = singletonEntity.AddComponent<SpatialPartitioningComponent>())
-	{
-		spatialPartitioningComponent->m_argusEntityKDTree.SeedTreeWithAverageEntityLocation();
-		spatialPartitioningComponent->m_argusEntityKDTree.InsertAllArgusEntitiesIntoKDTree();
-
-		if (worldPointer)
-		{
-			SpatialPartitioningSystems::CalculateAvoidanceObstacles(spatialPartitioningComponent, worldPointer);
-		}
-	}
-
+	SpatialPartitioningComponent* spatialPartitioningComponent = singletonEntity.AddComponent<SpatialPartitioningComponent>();
 	ReticleComponent* reticleComponent = singletonEntity.AddComponent<ReticleComponent>();
 	InputInterfaceComponent* inputInterfaceComponent = singletonEntity.AddComponent<InputInterfaceComponent>();
+
+	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
+	ARGUS_RETURN_ON_NULL(reticleComponent, ArgusECSLog);
+	ARGUS_RETURN_ON_NULL(inputInterfaceComponent, ArgusECSLog);
+
+	spatialPartitioningComponent->m_argusEntityKDTree.SeedTreeWithAverageEntityLocation();
+	spatialPartitioningComponent->m_argusEntityKDTree.InsertAllArgusEntitiesIntoKDTree();
+
+	SpatialPartitioningSystems::CalculateAvoidanceObstacles(spatialPartitioningComponent, worldPointer);
 }
 
 void ArgusSystemsManager::PopulateTeamComponents(const FResourceSet& initialTeamResourceSet)
@@ -107,13 +92,7 @@ void ArgusSystemsManager::PopulateTeamComponents(const FResourceSet& initialTeam
 			continue;
 		}
 
-		ArgusEntity teamEntity = ArgusEntity::CreateEntity(i);
-		if (!teamEntity)
-		{
-			continue;
-		}
-
-		ResourceComponent* teamResourceComponent = teamEntity.AddComponent<ResourceComponent>();
+		ResourceComponent* teamResourceComponent = ArgusEntity::CreateEntity(i).AddComponent<ResourceComponent>();
 		if (!teamResourceComponent)
 		{
 			continue;
@@ -133,11 +112,7 @@ void ArgusSystemsManager::UpdateSingletonComponents(bool didEntityPositionChange
 	}
 
 	SpatialPartitioningComponent* spatialPartitioningComponent = singletonEntity.GetComponent<SpatialPartitioningComponent>();
-	if (!spatialPartitioningComponent)
-	{
-		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] There is not %s when it should have already been made."), ARGUS_FUNCNAME, ARGUS_NAMEOF(SpatialPartitioningComponent));
-		return;
-	}
+	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
 
 	SpatialPartitioningSystems::RunSystems(singletonEntity, didEntityPositionChangeThisFrame);
 }

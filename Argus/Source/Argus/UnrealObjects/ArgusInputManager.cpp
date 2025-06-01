@@ -6,7 +6,6 @@
 #include "ArgusECSDebugger.h"
 #include "ArgusInputActionSet.h"
 #include "ArgusLogging.h"
-#include "ArgusMacros.h"
 #include "ArgusPlayerController.h"
 #include "ArgusStaticData.h"
 #include "ArgusTesting.h"
@@ -20,19 +19,8 @@
 
 bool UArgusInputManager::ShouldUpdateSelectedActorDisplay(ArgusEntity& templateSelectedEntity)
 {
-	ArgusEntity singletonEntity = ArgusEntity::GetSingletonEntity();
-	if (!singletonEntity)
-	{
-		ARGUS_LOG(ArgusInputLog, Error, TEXT("[%s] Could not retrieve %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(singletonEntity));
-		return false;
-	}
-
-	InputInterfaceComponent* inputInterfaceComponent = singletonEntity.GetComponent<InputInterfaceComponent>();
-	if (!inputInterfaceComponent)
-	{
-		ARGUS_LOG(ArgusInputLog, Error, TEXT("[%s] Could not retrieve a valid %s from %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(InputInterfaceComponent), ARGUS_NAMEOF(singletonEntity));
-		return false;
-	}
+	InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::GetSingletonEntity().GetComponent<InputInterfaceComponent>();
+	ARGUS_RETURN_ON_NULL_BOOL(inputInterfaceComponent, ArgusInputLog);
 
 	if (inputInterfaceComponent->m_selectedActorsDisplayState == ESelectedActorsDisplayState::ChangedThisFrame)
 	{
@@ -74,18 +62,9 @@ bool UArgusInputManager::ShouldUpdateSelectedActorDisplay(ArgusEntity& templateS
 
 void UArgusInputManager::SetupInputComponent(AArgusPlayerController* owningPlayerController, TSoftObjectPtr<UArgusInputActionSet>& argusInputActionSet)
 {
-	if (!owningPlayerController)
-	{
-		ARGUS_LOG
-		(
-			ArgusInputLog, Error, TEXT("[%s] %s is setting up an InputComponent without a valid owning %s"),
-			ARGUS_FUNCNAME, 
-			ARGUS_NAMEOF(UArgusInputManager), 
-			ARGUS_NAMEOF(AArgusPlayerController)
-		);
-		return;
-	}
+	ARGUS_RETURN_ON_NULL(owningPlayerController, ArgusInputLog);
 	m_owningPlayerController = owningPlayerController;
+	ARGUS_RETURN_ON_NULL(m_owningPlayerController->InputComponent, ArgusInputLog);
 
 	if (!m_owningPlayerController->InputComponent)
 	{
@@ -319,17 +298,7 @@ void UArgusInputManager::ProcessPlayerInput(AArgusCameraActor* argusCamera, cons
 	}
 	m_inputEventsThisFrame.Empty();
 
-	if (!argusCamera)
-	{
-		ARGUS_LOG
-		(
-			ArgusInputLog, Error, TEXT("[%s] Did not recieve valid reference to %s. Unable to call %s as a result."),
-			ARGUS_FUNCNAME,
-			ARGUS_NAMEOF(AArgusCameraActor),
-			ARGUS_NAMEOF(AArgusCameraActor::UpdateCamera)
-		);
-		return;
-	}
+	ARGUS_RETURN_ON_NULL(argusCamera, ArgusInputLog);
 
 	argusCamera->UpdateCamera(updateCameraParameters, deltaTime);
 }
@@ -378,35 +347,12 @@ const FVector2D UArgusInputManager::GetSelectionStartScreenSpaceLocation() const
 
 void UArgusInputManager::BindActions(TSoftObjectPtr<UArgusInputActionSet>& argusInputActionSet, UEnhancedInputComponent* enhancedInputComponent, UEnhancedPlayerInput* enhancedInput)
 {
-	if (!enhancedInputComponent)
-	{
-		ARGUS_LOG
-		(
-			ArgusInputLog, Error, TEXT("[%s] Failed to cast input component, %s, to a %s."),
-			ARGUS_FUNCNAME,
-			ARGUS_NAMEOF(m_owningPlayerController->InputComponent),
-			ARGUS_NAMEOF(UEnhancedInputComponent)
-		);
-		return;
-	}
-	if (!enhancedInput)
-	{
-		ARGUS_LOG
-		(
-			ArgusInputLog, Error, TEXT("[%s] Failed to cast player input, %s, to a %s."),
-			ARGUS_FUNCNAME,
-			ARGUS_NAMEOF(m_owningPlayerController->PlayerInput),
-			ARGUS_NAMEOF(UEnhancedPlayerInput)
-		);
-		return;
-	}
+	ARGUS_RETURN_ON_NULL(enhancedInputComponent, ArgusInputLog);
+	ARGUS_RETURN_ON_NULL(enhancedInput, ArgusInputLog);
 
 	const UArgusInputActionSet* actionSet = argusInputActionSet.LoadSynchronous();
-	if (!actionSet)
-	{
-		ARGUS_LOG(ArgusInputLog, Error, TEXT("[%s] Failed to retrieve input action set, %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(argusInputActionSet));
-		return;
-	}
+	ARGUS_RETURN_ON_NULL(actionSet, ArgusInputLog);
+
 	if (const UInputAction* selectAction = actionSet->m_selectAction.LoadSynchronous())
 	{
 		enhancedInputComponent->BindAction(selectAction, ETriggerEvent::Triggered, this, &UArgusInputManager::OnSelect);
@@ -534,19 +480,8 @@ bool UArgusInputManager::ValidateOwningPlayerController()
 
 void UArgusInputManager::PrepareToProcessInputEvents()
 {
-	ArgusEntity singletonEntity = ArgusEntity::GetSingletonEntity();
-	if (!singletonEntity)
-	{
-		ARGUS_LOG(ArgusInputLog, Error, TEXT("[%s] Could not retrieve %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(singletonEntity));
-		return;
-	}
-
-	InputInterfaceComponent* inputInterfaceComponent = singletonEntity.GetComponent<InputInterfaceComponent>();
-	if (!inputInterfaceComponent)
-	{
-		ARGUS_LOG(ArgusInputLog, Error, TEXT("[%s] Could not retrieve a valid %s from %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(InputInterfaceComponent), ARGUS_NAMEOF(singletonEntity));
-		return;
-	}
+	InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::GetSingletonEntity().GetComponent<InputInterfaceComponent>();
+	ARGUS_RETURN_ON_NULL(inputInterfaceComponent, ArgusInputLog);
 
 	inputInterfaceComponent->m_selectedActorsDisplayState = ESelectedActorsDisplayState::NotChanged;
 
@@ -1072,17 +1007,7 @@ void UArgusInputManager::ProcessZoomInputEvent(AArgusCameraActor* argusCamera, c
 		);
 	}
 
-	if (!argusCamera)
-	{
-		ARGUS_LOG
-		(
-			ArgusInputLog, Error, TEXT("[%s] Did not recieve a valid reference to %s. Cannot call %s."), 
-			ARGUS_FUNCNAME, 
-			ARGUS_NAMEOF(AArgusCameraActor),
-			ARGUS_NAMEOF(AArgusCameraActor::UpdateCameraZoom)
-		);
-		return;
-	}
+	ARGUS_RETURN_ON_NULL(argusCamera, ArgusInputLog);
 
 	argusCamera->UpdateCameraZoom(zoomValue);
 }
@@ -1099,13 +1024,7 @@ void UArgusInputManager::ProcessAbilityInputEvent(uint8 abilityIndex)
 		);
 	}
 
-	ArgusEntity singletonEntity = ArgusEntity::GetSingletonEntity();
-	if (!singletonEntity)
-	{
-		return;
-	}
-
-	const InputInterfaceComponent* inputInterfaceComponent = singletonEntity.GetComponent<InputInterfaceComponent>();
+	const InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::GetSingletonEntity().GetComponent<InputInterfaceComponent>();
 	if (!inputInterfaceComponent)
 	{
 		return;
@@ -1172,17 +1091,7 @@ void UArgusInputManager::ProcessRotateCameraInputEvent(AArgusCameraActor* argusC
 		);
 	}
 
-	if (!argusCamera)
-	{
-		ARGUS_LOG
-		(
-			ArgusInputLog, Error, TEXT("[%s] Did not recieve a valid reference to %s. Cannot call %s."),
-			ARGUS_FUNCNAME,
-			ARGUS_NAMEOF(AArgusCameraActor),
-			ARGUS_NAMEOF(AArgusCameraActor::UpdateCameraOrbit)
-		);
-		return;
-	}
+	ARGUS_RETURN_ON_NULL(argusCamera, ArgusInputLog);
 
 	argusCamera->UpdateCameraOrbit(rotationValue);
 }
@@ -1440,11 +1349,7 @@ bool UArgusInputManager::CleanUpSelectedActors()
 void UArgusInputManager::OnSelectedArgusArgusActorsChanged()
 {
 	InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::GetSingletonEntity().GetComponent<InputInterfaceComponent>();
-	if (!inputInterfaceComponent)
-	{
-		ARGUS_LOG(ArgusInputLog, Error, TEXT("[%s] Could not retrieve a valid %s from %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(InputInterfaceComponent), ARGUS_NAMEOF(singletonEntity));
-		return;
-	}
+	ARGUS_RETURN_ON_NULL(inputInterfaceComponent, ArgusInputLog);
 
 	inputInterfaceComponent->m_selectedArgusEntityIds.Reset();
 	inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.Reset();

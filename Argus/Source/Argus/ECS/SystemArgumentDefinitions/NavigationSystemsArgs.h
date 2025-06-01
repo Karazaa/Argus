@@ -3,8 +3,6 @@
 #pragma once
 
 #include "ArgusEntity.h"
-#include "ArgusLogging.h"
-#include "ArgusMacros.h"
 
 struct NavigationSystemsArgs
 {

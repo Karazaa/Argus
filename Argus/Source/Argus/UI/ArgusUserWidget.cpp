@@ -4,7 +4,6 @@
 #include "ArgusCameraActor.h"
 #include "ArgusInputManager.h"
 #include "ArgusLogging.h"
-#include "ArgusMacros.h"
 
 void UArgusUserWidget::UpdateDisplay(const UpdateDisplayParameters& updateDisplayParams)
 {

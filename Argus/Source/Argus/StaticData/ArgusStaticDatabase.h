@@ -4,7 +4,6 @@
 #pragma once
 
 #include "ArgusLogging.h"
-#include "ArgusMacros.h"
 #include "RecordDatabases/AbilityRecordDatabase.h"
 #include "RecordDatabases/ArgusActorRecordDatabase.h"
 #include "RecordDatabases/FactionRecordDatabase.h"

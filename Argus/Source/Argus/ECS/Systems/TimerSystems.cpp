@@ -3,7 +3,6 @@
 #include "TimerSystems.h"
 #include "ArgusEntity.h"
 #include "ArgusLogging.h"
-#include "ArgusMacros.h"
 
 void TimerSystems::RunSystems(float deltaTime)
 {

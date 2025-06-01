@@ -2,7 +2,6 @@
 
 #include "ResourceSystems.h"
 #include "ArgusLogging.h"
-#include "ArgusMacros.h"
 #include "ArgusStaticData.h"
 #include "Systems/TargetingSystems.h"
 

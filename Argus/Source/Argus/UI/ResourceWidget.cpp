@@ -2,7 +2,6 @@
 
 #include "ResourceWidget.h"
 #include "ArgusLogging.h"
-#include "ArgusMacros.h"
 #include "Components/TextBlock.h"
 #include "Internationalization/Text.h"
 
@@ -30,11 +29,7 @@ void UResourceWidget::ChangeResourceQuantity(int32 newQuantity)
 {
 	m_currentResourceQuantity = newQuantity;
 
-	if (!m_quantityTextBlock)
-	{
-		ARGUS_LOG(ArgusUILog, Error, TEXT("[%s] %s was unset."), ARGUS_FUNCNAME, ARGUS_NAMEOF(m_quantityTextBlock));
-		return;
-	}
+	ARGUS_RETURN_ON_NULL(m_quantityTextBlock, ArgusUILog);
 	
 	m_quantityTextBlock->SetText(FText::Format(LOCTEXT("ResourceQuantity", "{0}"), newQuantity));
 }

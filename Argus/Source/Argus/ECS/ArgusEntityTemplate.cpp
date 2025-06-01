@@ -2,7 +2,6 @@
 
 #include "ArgusEntityTemplate.h"
 #include "ArgusLogging.h"
-#include "ArgusMacros.h"
 #include "DataComponentDefinitions/ComponentData.h"
 
 ArgusEntity UArgusEntityTemplate::MakeEntity() const

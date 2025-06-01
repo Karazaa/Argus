@@ -2,7 +2,6 @@
 
 #include "ArgusGameStateBase.h"
 #include "ArgusLogging.h"
-#include "ArgusMacros.h"
 
 void AArgusGameStateBase::HandleBeginPlay()
 {

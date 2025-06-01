@@ -3,7 +3,6 @@
 #include "ArgusCameraActor.h"
 #include "ArgusEntity.h"
 #include "ArgusLogging.h"
-#include "ArgusMacros.h"
 #include "ArgusMath.h"
 #include "Camera/CameraComponent.h"
 #include "DrawDebugHelpers.h"
@@ -247,12 +246,9 @@ void AArgusCameraActor::UpdateCameraPanning(const UpdateCameraPanningParameters&
 void AArgusCameraActor::UpdateCameraZoomInternal(const TOptional<FHitResult>& hitResult, const float deltaTime)
 {
 	ARGUS_TRACE(AArgusCameraActor::UpdateCameraZoom);
+
 	UWorld* world = GetWorld();
-	if (!world)
-	{
-		ARGUS_LOG(ArgusUnrealObjectsLog, Error, TEXT("[%s] Failed to get %s reference."), ARGUS_FUNCNAME, ARGUS_NAMEOF(UWorld));
-		return;
-	}
+	ARGUS_RETURN_ON_NULL(world, ArgusUnrealObjectsLog);
 
 	float proposedZoomUpdateThisFrame = 0.0f;
 	const FVector forwardVector = GetActorForwardVector();

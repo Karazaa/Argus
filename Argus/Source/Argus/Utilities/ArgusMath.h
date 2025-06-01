@@ -3,7 +3,6 @@
 #pragma once
 
 #include "ArgusLogging.h"
-#include "ArgusMacros.h"
 #include "CoreMinimal.h"
 #include "Math/UnrealMathUtility.h"
 

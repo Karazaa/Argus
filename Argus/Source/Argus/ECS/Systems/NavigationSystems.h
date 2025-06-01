@@ -17,6 +17,5 @@ public:
 private:
 	static void ProcessNavigationTaskCommands(UWorld* worldPointer, const NavigationSystemsArgs& components);
 	static void RecalculateMoveToEntityPaths(UWorld* worldPointer, const NavigationSystemsArgs& components);
-	static bool IsWorldPointerValidCheck(UWorld* worldPointer, const WIDECHAR* functionName);
 	static void ChangeTasksOnNavigatingToEntity(ArgusEntity targetEntity, const NavigationSystemsArgs& components);
 };

@@ -3,7 +3,6 @@
 #include "ObstaclePoint.h"
 #include "ArgusECSConstants.h"
 #include "ArgusLogging.h"
-#include "ArgusMacros.h"
 #include "ArgusMath.h"
 #include "DrawDebugHelpers.h"
 

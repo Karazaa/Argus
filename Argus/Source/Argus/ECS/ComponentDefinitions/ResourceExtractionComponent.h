@@ -3,7 +3,6 @@
 #pragma once
 
 #include "ArgusLogging.h"
-#include "ArgusMacros.h"
 #include "ComponentDependencies/ResourceSet.h"
 #include "ComponentDependencies/Timer.h"
 #include "CoreMinimal.h"

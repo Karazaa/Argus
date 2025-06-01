@@ -2,7 +2,6 @@
 
 #include "ArgusEntity.h"
 #include "ArgusLogging.h"
-#include "ArgusMacros.h"
 #include "ArgusStaticData.h"
 
 const ArgusEntity ArgusEntity::k_emptyEntity = ArgusEntity();

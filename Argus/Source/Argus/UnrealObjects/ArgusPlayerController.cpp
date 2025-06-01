@@ -6,7 +6,6 @@
 #include "ArgusInputActionSet.h"
 #include "ArgusInputManager.h"
 #include "ArgusLogging.h"
-#include "ArgusMacros.h"
 #include "ArgusUserWidget.h"
 #include "Engine/GameViewportClient.h"
 #include "Engine/LocalPlayer.h"
@@ -74,11 +73,7 @@ bool AArgusPlayerController::GetMouseProjectionLocation(ECollisionChannel collis
 	FVector traceEndpoint = worldSpaceLocation + (worldSpaceDirection * AArgusCameraActor::k_cameraTraceLength);
 
 	UWorld* world = GetWorld();
-	if (!world)
-	{
-		ARGUS_LOG(ArgusUnrealObjectsLog, Error, TEXT("[%s] Failed to get %s reference."), ARGUS_FUNCNAME, ARGUS_NAMEOF(UWorld));
-		return false;
-	}
+	ARGUS_RETURN_ON_NULL_BOOL(world, ArgusUnrealObjectsLog);
 
 	outcome &= world->LineTraceSingleByChannel(outHitResult, worldSpaceLocation, traceEndpoint, collisionTraceChannel);
 	return outcome;
@@ -150,20 +145,9 @@ void AArgusPlayerController::FilterArgusActorsToPlayerTeam(TArray<AArgusActor*>&
 
 bool AArgusPlayerController::IsArgusActorOnPlayerTeam(const AArgusActor* const actor) const
 {
-	if (!actor)
-	{
-		ARGUS_LOG(ArgusUnrealObjectsLog, Error, TEXT("[%s] Passed %s is null."), ARGUS_FUNCNAME, ARGUS_NAMEOF(AArgusActor*));
-		return false;
-	}
+	ARGUS_RETURN_ON_NULL_BOOL(actor, ArgusUnrealObjectsLog);
 
-	ArgusEntity entity = actor->GetEntity();
-	if (!entity)
-	{
-		ARGUS_LOG(ArgusUnrealObjectsLog, Error, TEXT("[%s] Could not retrieve %s from %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(AArgusActor*));
-		return false;
-	}
-
-	const IdentityComponent* identityComponent = entity.GetComponent<IdentityComponent>();
+	const IdentityComponent* identityComponent = actor->GetEntity().GetComponent<IdentityComponent>();
 	if (!identityComponent)
 	{
 		return false;
@@ -202,19 +186,11 @@ void AArgusPlayerController::BeginPlay()
 	if (!m_argusCameraActor)
 	{
 		m_argusCameraActor = GetWorld()->SpawnActor<AArgusCameraActor>(m_argusCameraClass.LoadSynchronous(), m_defaultInitialCameraTransform.GetLocation(), m_defaultInitialCameraTransform.Rotator());
-		if (!m_argusCameraActor)
-		{
-			ARGUS_LOG(ArgusUnrealObjectsLog, Error, TEXT("[%s] Failed to get %s reference."), ARGUS_FUNCNAME, ARGUS_NAMEOF(AArgusCameraActor));
-			return;
-		}
+		ARGUS_RETURN_ON_NULL(m_argusCameraActor, ArgusUnrealObjectsLog);
 	}
 
 	m_reticleActor = GetWorld()->SpawnActor<AReticleActor>(m_reticleClass.LoadSynchronous(), m_defaultInitialReticleTransform.GetLocation(), m_defaultInitialReticleTransform.Rotator());
-	if (!m_reticleActor)
-	{
-		ARGUS_LOG(ArgusUnrealObjectsLog, Error, TEXT("[%s] Failed to get %s reference."), ARGUS_FUNCNAME, ARGUS_NAMEOF(AReticleActor));
-		return;
-	}
+	ARGUS_RETURN_ON_NULL(m_reticleActor, ArgusUnrealObjectsLog);
 
 	SetViewTarget(m_argusCameraActor);
 }
@@ -226,11 +202,7 @@ void AArgusPlayerController::SetupInputComponent()
 	if (!m_argusInputManager)
 	{
 		m_argusInputManager = NewObject<UArgusInputManager>();
-		if (!m_argusInputManager)
-		{
-			ARGUS_LOG(ArgusUnrealObjectsLog, Error, TEXT("[%s] Failed to initialize %s when setting up input."), ARGUS_FUNCNAME, ARGUS_NAMEOF(m_argusInputManager));
-			return;
-		}
+		ARGUS_RETURN_ON_NULL(m_argusInputManager, ArgusUnrealObjectsLog);
 		m_argusInputManager->AddToRoot();
 	}
 

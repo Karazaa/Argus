@@ -3,7 +3,6 @@
 #include "Timer.h"
 #include "ArgusEntity.h"
 #include "ArgusLogging.h"
-#include "ArgusMacros.h"
 #include "ComponentDefinitions/TimerComponent.h"
 
 void TimerHandle::StartTimer(float seconds)

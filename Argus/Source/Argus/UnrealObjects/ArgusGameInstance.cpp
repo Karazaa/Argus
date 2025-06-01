@@ -3,25 +3,12 @@
 #include "ArgusGameInstance.h"
 #include "ArgusActor.h"
 #include "ArgusLogging.h"
-#include "ArgusMacros.h"
 
 UArgusStaticDatabase* UArgusGameInstance::s_staticDatabaseLoadedReference = nullptr;
 
 UArgusStaticDatabase* UArgusGameInstance::GetStaticDatabase()
 {
-	if (!s_staticDatabaseLoadedReference)
-	{
-		ARGUS_LOG
-		(
-			ArgusStaticDataLog, Error, 
-			TEXT("[%s] No %s has been assigned to yet! Accessing database berfore %s has been called."),
-			ARGUS_FUNCNAME,
-			ARGUS_NAMEOF(s_staticDatabaseLoadedReference),
-			ARGUS_NAMEOF(UArgusGameInstance::Init)
-		);
-		return nullptr;
-	}
-
+	ARGUS_RETURN_ON_NULL_POINTER(s_staticDatabaseLoadedReference, ArgusStaticDataLog);
 	return s_staticDatabaseLoadedReference;
 }
 
