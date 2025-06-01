@@ -5,6 +5,7 @@
 #include "ArgusUserWidget.h"
 #include "MultipleSelectedEntitiesWidget.generated.h"
 
+class UEntityIconWithInfoWidget;
 class UImage;
 class UUniformGridPanel;
 class UUniformGridSlot;
@@ -23,6 +24,9 @@ protected:
 	TObjectPtr<UUniformGridPanel> m_uniformGridPanel = nullptr;
 
 	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UEntityIconWithInfoWidget> m_entityIconWidgetClass = nullptr;
+
+	UPROPERTY(EditDefaultsOnly)
 	int32 m_numberOfEntitiesPerRow = 8;
 
 	UPROPERTY(EditDefaultsOnly)
@@ -32,7 +36,7 @@ protected:
 	FSlateBrush m_activeAbilityGroupSlateBrush;
 
 	UPROPERTY(Transient)
-	TArray<UImage*> m_slotImages;
+	TArray<UEntityIconWithInfoWidget*> m_entityIcons;
 
 	UPROPERTY(Transient)
 	TArray<UUniformGridSlot*> m_gridSlots;

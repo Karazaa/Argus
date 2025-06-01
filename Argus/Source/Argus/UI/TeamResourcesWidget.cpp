@@ -17,6 +17,12 @@ void UTeamResourcesWidget::NativeConstruct()
 		return;
 	}
 
+	if (!m_resourceWidgetClass)
+	{
+		// TODO JAMES: Error here.
+		return;
+	}
+
 	uint8 numResources = static_cast<uint8>(EResourceType::Count);
 	m_resourceWidgetInstances.SetNumUninitialized(numResources);
 	for (uint8 i = 0u; i < numResources; ++i)

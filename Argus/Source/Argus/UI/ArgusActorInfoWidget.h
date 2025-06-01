@@ -19,5 +19,5 @@ public:
 
 protected:
 	UPROPERTY(BlueprintReadWrite, Transient)
-	TArray<TObjectPtr<UArgusActorInfoWidget>> m_childArgusActorWidgets;
+	TArray<UArgusActorInfoWidget*> m_childArgusActorWidgets;
 };
