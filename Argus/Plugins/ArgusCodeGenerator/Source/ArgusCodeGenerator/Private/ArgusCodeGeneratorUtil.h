@@ -75,6 +75,12 @@ public:
 		std::vector<std::string> m_staticDataRecordNames;
 		std::vector< std::vector<ParsedVariableData> > m_staticDataRecordVariableData;
 	};
+	struct ParseSystemArgDefinitionsOutput
+	{
+		std::vector<std::string> m_systemArgsIncludeStatements;
+		std::vector<std::string> m_systemArgsNames;
+		std::vector< std::vector<ParsedVariableData> > m_systemArgsVariableData;
+	};
 	struct FileWriteData
 	{
 		std::string m_filename = "";
@@ -86,6 +92,7 @@ public:
 	static bool ParseComponentSpecificTemplate(const std::string& filePath, const std::vector<std::string>& componentNames, std::vector<std::string>& outFileContents);
 	static bool ParseStaticDataRecords(ParseStaticDataRecordsOutput& output);
 	static bool ParseStaticDataDataRecordsFromFile(const std::string& filePath, ParseStaticDataRecordsOutput& output);
+	static bool ParseSystemArgDefinitions(ParseSystemArgDefinitionsOutput& output);
 
 	static bool GetRawLinesFromFile(const std::string& filePath, std::vector<std::string>& outFileContents);
 	static bool WriteOutFile(const std::string& filePath, const std::vector<std::string>& inFileContents);

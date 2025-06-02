@@ -1149,19 +1149,8 @@ void UArgusInputManager::ProcessSetControlGroup(uint8 controlGroupIndex)
 
 void UArgusInputManager::ProcessChangeActiveAbilityGroup()
 {
-	ArgusEntity singletonEntity = ArgusEntity::GetSingletonEntity();
-	if (!singletonEntity)
-	{
-		// TODO JAMES: Error here
-		return;
-	}
-
-	InputInterfaceComponent* inputInterfaceComponent = singletonEntity.GetComponent<InputInterfaceComponent>();
-	if (!inputInterfaceComponent)
-	{
-		// TODO JAMES: Error here
-		return;
-	}
+	InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::GetSingletonEntity().GetComponent<InputInterfaceComponent>();
+	ARGUS_RETURN_ON_NULL(inputInterfaceComponent, ArgusInputLog);
 
 	if (inputInterfaceComponent->m_selectedArgusEntityIds.Num() == 0)
 	{
@@ -1225,10 +1214,7 @@ void UArgusInputManager::AddSelectedActorExclusive(AArgusActor* argusActor)
 {
 	ARGUS_MEMORY_TRACE(ArgusInputManager);
 
-	if (!argusActor)
-	{
-		return;
-	}
+	ARGUS_RETURN_ON_NULL(argusActor, ArgusInputLog);
 
 	bool alreadySelected = false;
 	for (TWeakObjectPtr<AArgusActor>& selectedActor : m_selectedArgusActors)
@@ -1257,10 +1243,7 @@ void UArgusInputManager::AddSelectedActorAdditive(AArgusActor* argusActor)
 {
 	ARGUS_MEMORY_TRACE(ArgusInputManager);
 
-	if (!argusActor)
-	{
-		return;
-	}
+	ARGUS_RETURN_ON_NULL(argusActor, ArgusInputLog);
 
 	if (m_selectedArgusActors.Contains(argusActor))
 	{
@@ -1417,10 +1400,7 @@ void UArgusInputManager::OnSelectedArgusArgusActorsChanged()
 void UArgusInputManager::InterruptReticleFromInputEvent()
 {
 	ReticleComponent* reticleComponent = ArgusEntity::GetSingletonEntity().GetComponent<ReticleComponent>();
-	if (!reticleComponent)
-	{
-		return;
-	}
+	ARGUS_RETURN_ON_NULL(reticleComponent, ArgusInputLog);
 
 	if (!reticleComponent->IsReticleEnabled())
 	{
@@ -1435,16 +1415,8 @@ void UArgusInputManager::SetReticleState()
 	ARGUS_TRACE(UArgusInputManager::SetReticleState);
 
 	ArgusEntity singletonEntity = ArgusEntity::GetSingletonEntity();
-	if (!singletonEntity)
-	{
-		return;
-	}
-
 	ReticleComponent* reticleComponent = singletonEntity.GetComponent<ReticleComponent>();
-	if (!reticleComponent)
-	{
-		return;
-	}
+	ARGUS_RETURN_ON_NULL(reticleComponent, ArgusInputLog);
 
 	if (!reticleComponent->IsReticleEnabled())
 	{
@@ -1474,10 +1446,7 @@ void UArgusInputManager::SetReticleState()
 	reticleComponent->m_reticleLocation = hitResult.Location;
 
 	SpatialPartitioningComponent* spatialPartitioningComponent = singletonEntity.GetComponent<SpatialPartitioningComponent>();
-	if (!spatialPartitioningComponent)
-	{
-		return;
-	}
+	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusInputLog);
 
 	TArray<uint16> nearbyArgusEntityIds;
 	const float querySize = reticleComponent->m_radius;
@@ -1498,10 +1467,7 @@ void UArgusInputManager::SetReticleState()
 
 void UArgusInputManager::ProcessReticleAbilityForSelectedEntities(const ReticleComponent* reticleComponent)
 {
-	if (!reticleComponent)
-	{
-		return;
-	}
+	ARGUS_RETURN_ON_NULL(reticleComponent, ArgusInputLog);
 
 	if (CVarEnableVerboseArgusInputLogging.GetValueOnGameThread())
 	{
@@ -1513,17 +1479,8 @@ void UArgusInputManager::ProcessReticleAbilityForSelectedEntities(const ReticleC
 		);
 	}
 
-	ArgusEntity singletonEntity = ArgusEntity::GetSingletonEntity();
-	if (!singletonEntity)
-	{
-		return;
-	}
-
-	const InputInterfaceComponent* inputInterfaceComponent = singletonEntity.GetComponent<InputInterfaceComponent>();
-	if (!inputInterfaceComponent)
-	{
-		return;
-	}
+	const InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::GetSingletonEntity().GetComponent<InputInterfaceComponent>();
+	ARGUS_RETURN_ON_NULL(inputInterfaceComponent, ArgusInputLog);
 
 	for (int32 i = 0; i < inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.Num(); ++i)
 	{
@@ -1538,11 +1495,6 @@ void UArgusInputManager::ProcessReticleAbilityForSelectedEntities(const ReticleC
 
 void UArgusInputManager::ProcessReticleAbilityPerSelectedEntity(const ArgusEntity& entity, uint32 abilityRecordId)
 {
-	if (!entity)
-	{
-		return;
-	}
-
 	TaskComponent* taskComponent = entity.GetComponent<TaskComponent>();
 	if (!taskComponent)
 	{

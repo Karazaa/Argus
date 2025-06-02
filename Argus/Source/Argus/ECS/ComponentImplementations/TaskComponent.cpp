@@ -3,6 +3,7 @@
 
 #include "ComponentDefinitions/TaskComponent.h"
 #include "ArgusEntity.h"
+#include "ArgusLogging.h"
 
 #if !UE_BUILD_SHIPPING
 #include "ArgusStaticData.h"
@@ -77,11 +78,6 @@ void TaskComponent::Set_m_baseState(EBaseState newValue)
 	m_baseState = newValue;
 
 	ObserversComponent* observersComponent = ArgusComponentRegistry::GetComponent<ObserversComponent>(GetOwningEntityId());
-	if (!observersComponent)
-	{
-		// TODO JAMES: error here.
-		return;
-	}
-
+	ARGUS_RETURN_ON_NULL(observersComponent, ArgusECSLog);
 	observersComponent->m_TaskComponentObservers.OnChanged_m_baseState(oldValue, newValue);
 }

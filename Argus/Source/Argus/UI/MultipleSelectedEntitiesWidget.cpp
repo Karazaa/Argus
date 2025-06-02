@@ -2,6 +2,7 @@
 
 #include "MultipleSelectedEntitiesWidget.h"
 #include "ArgusEntity.h"
+#include "ArgusLogging.h"
 #include "Blueprint/WidgetTree.h"
 #include "Components/Image.h"
 #include "Components/UniformGridPanel.h"
@@ -12,11 +13,7 @@
 void UMultipleSelectedEntitiesWidget::UpdateDisplay(const UpdateDisplayParameters& updateDisplayParams)
 {
 	const InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::GetSingletonEntity().GetComponent<InputInterfaceComponent>();
-	if (!inputInterfaceComponent)
-	{
-		// TODO JAMES: Error here
-		return;
-	}
+	ARGUS_RETURN_ON_NULL(inputInterfaceComponent, ArgusUILog);
 
 	const int32 numSelected = inputInterfaceComponent->m_selectedArgusEntityIds.Num();
 	const int32 numIcons = m_entityIcons.Num();
@@ -38,11 +35,8 @@ void UMultipleSelectedEntitiesWidget::UpdateDisplay(const UpdateDisplayParameter
 
 void UMultipleSelectedEntitiesWidget::OnUpdateSelectedArgusActors(const ArgusEntity& templateEntity)
 {
-	if (!m_uniformGridPanel || !m_entityIconWidgetClass)
-	{
-		// TODO JAMES: Error here.
-		return;
-	}
+	ARGUS_RETURN_ON_NULL(m_uniformGridPanel, ArgusUILog);
+	ARGUS_RETURN_ON_NULL(m_entityIconWidgetClass, ArgusUILog);
 
 	const InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::GetSingletonEntity().GetComponent<InputInterfaceComponent>();
 	if (!inputInterfaceComponent)

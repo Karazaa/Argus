@@ -3,6 +3,7 @@
 
 #include "ComponentDefinitions/ObserversComponent.h"
 #include "ArgusEntity.h"
+#include "ArgusLogging.h"
 
 #if !UE_BUILD_SHIPPING
 #include "ArgusStaticData.h"

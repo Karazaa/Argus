@@ -3,6 +3,7 @@
 
 #include "ComponentDefinitions/PassengerComponent.h"
 #include "ArgusEntity.h"
+#include "ArgusLogging.h"
 
 #if !UE_BUILD_SHIPPING
 #include "ArgusStaticData.h"
@@ -42,11 +43,6 @@ void PassengerComponent::Set_m_carrierEntityId(uint16 newValue)
 	m_carrierEntityId = newValue;
 
 	ObserversComponent* observersComponent = ArgusComponentRegistry::GetComponent<ObserversComponent>(GetOwningEntityId());
-	if (!observersComponent)
-	{
-		// TODO JAMES: error here.
-		return;
-	}
-
+	ARGUS_RETURN_ON_NULL(observersComponent, ArgusECSLog);
 	observersComponent->m_PassengerComponentObservers.OnChanged_m_carrierEntityId(oldValue, newValue);
 }

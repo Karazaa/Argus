@@ -264,6 +264,11 @@ bool ArgusCodeGeneratorUtil::ParseStaticDataDataRecordsFromFile(const std::strin
 	return true;
 }
 
+bool ArgusCodeGeneratorUtil::ParseSystemArgDefinitions(ParseSystemArgDefinitionsOutput& output)
+{
+	return true;
+}
+
 bool ArgusCodeGeneratorUtil::GetRawLinesFromFile(const std::string& filePath, std::vector<std::string>& outFileContents)
 {
 	outFileContents.clear();
