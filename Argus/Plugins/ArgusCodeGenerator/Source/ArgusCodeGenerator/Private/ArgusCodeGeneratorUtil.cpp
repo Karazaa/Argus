@@ -73,15 +73,6 @@ FString ArgusCodeGeneratorUtil::GetStaticDataRecordDefinitionsDirectory()
 	return recordDefinitionsDirectory;
 }
 
-FString ArgusCodeGeneratorUtil::GetStaticDataRecordDefinitionsDirectory()
-{
-	FString recordDefinitionsDirectory = *GetProjectDirectory();
-	recordDefinitionsDirectory.Append(s_staticDataRecordDefinitionsDirectorySuffix);
-	FPaths::MakeStandardFilename(recordDefinitionsDirectory);
-
-	return recordDefinitionsDirectory;
-}
-
 FString ArgusCodeGeneratorUtil::GetSystemArgDefinitionsDirectory()
 {
 	FString systemArgDefinitionsDirectory = *GetProjectDirectory();
