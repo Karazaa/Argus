@@ -94,6 +94,7 @@ public:
 	static bool ParseStaticDataRecords(ParseStaticDataRecordsOutput& output);
 	static bool ParseStaticDataDataRecordsFromFile(const std::string& filePath, ParseStaticDataRecordsOutput& output);
 	static bool ParseSystemArgDefinitions(ParseSystemArgDefinitionsOutput& output);
+	static bool ParseSystemArgDefinitionFromFile(const std::string& filePath, ParseSystemArgDefinitionsOutput& output);
 
 	static bool GetRawLinesFromFile(const std::string& filePath, std::vector<std::string>& outFileContents);
 	static bool WriteOutFile(const std::string& filePath, const std::vector<std::string>& inFileContents);
@@ -156,7 +157,9 @@ private:
 	static const char* s_argusAPIDelimiter;
 	static const char* s_varDelimiter;
 
-	static bool ParseStructDeclarations(std::string lineText, const std::string& componentDataAssetIncludeStatement, ParseComponentDataOutput& output, bool isDynamicallyAllocated);
+	static bool ParseStructDeclarations(std::string& lineText);
+	static bool ParseComponentStructDeclarations(std::string lineText, const std::string& componentDataAssetIncludeStatement, ParseComponentDataOutput& output, bool isDynamicallyAllocated);
+	static bool ParseSystemArgStructDeclarations(std::string lineText, const std::string& systemArgIncludeStatement, ParseSystemArgDefinitionsOutput& output);
 	static bool ParsePropertyMacro(std::string lineText, std::vector < std::vector<ParsedVariableData> >& parsedVariableData);
 	static bool ParseVariableDeclarations(std::string lineText, bool withProperty, std::vector < std::vector<ParsedVariableData> >& parsedVariableData, bool& hasObservables);
 	static bool ParseJointPropertyAndDeclarationMacro(std::string lineText, std::vector < std::vector<ParsedVariableData> >& parsedVariableData, bool& hasObservables);

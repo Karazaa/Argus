@@ -147,7 +147,7 @@ bool ArgusCodeGeneratorUtil::ParseComponentDataFromFile(const std::string& fileP
 			continue;
 		}
 
-		if (ParseStructDeclarations(lineText, dataAssetIncludeStatement, output, isDynamicallyAllocated))
+		if (ParseComponentStructDeclarations(lineText, dataAssetIncludeStatement, output, isDynamicallyAllocated))
 		{
 			continue;
 		}
@@ -285,10 +285,51 @@ bool ArgusCodeGeneratorUtil::ParseSystemArgDefinitions(ParseSystemArgDefinitions
 	for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(finalizedSystemArgDefinitionsDirectory))
 	{
 		const std::string filePath = entry.path().string();
-		//didSucceed &= ParseStaticDataDataRecordsFromFile(filePath, output);
+		didSucceed &= ParseSystemArgDefinitionFromFile(filePath, output);
 	}
 
 	return didSucceed;
+}
+
+bool ArgusCodeGeneratorUtil::ParseSystemArgDefinitionFromFile(const std::string& filePath, ParseSystemArgDefinitionsOutput& output)
+{
+	const size_t systemArgDefinitionIndex = filePath.find(s_systemArgDefinitionsDirectoryName);
+	std::string includeStatement = "#include \"";
+	std::string systemArgPath = filePath.substr(systemArgDefinitionIndex);
+	includeStatement.append(systemArgPath);
+	includeStatement.append("\"");
+
+	std::ifstream inStream = std::ifstream(filePath);
+	const FString ueFilePath = FString(filePath.c_str());
+	if (!inStream.is_open())
+	{
+		UE_LOG(ArgusCodeGeneratorLog, Error, TEXT("[%s] Failed to read from file: %s"), ARGUS_FUNCNAME, *ueFilePath);
+		return false;
+	}
+
+	UE_LOG(ArgusCodeGeneratorLog, Display, TEXT("[%s] Reading from file: %s"), ARGUS_FUNCNAME, *ueFilePath);
+
+	std::string lineText;
+	while (std::getline(inStream, lineText))
+	{
+		if (ParseSystemArgStructDeclarations(lineText, includeStatement, output))
+		{
+			ParsedVariableData entityData;
+			entityData.m_typeName = "\tArgusEntity";
+			entityData.m_varName = "m_entity";
+			entityData.m_defaultValue = "ArgusEntity::k_emptyEntity";
+			output.m_systemArgsVariableData.back().push_back(entityData);
+			continue;
+		}
+
+		bool hasObservables = false;
+		if (ParseVariableDeclarations(lineText, false, output.m_systemArgsVariableData, hasObservables))
+		{
+			continue;
+		}
+	}
+	inStream.close();
+	return true;
 }
 
 bool ArgusCodeGeneratorUtil::GetRawLinesFromFile(const std::string& filePath, std::vector<std::string>& outFileContents)
@@ -418,7 +459,7 @@ void ArgusCodeGeneratorUtil::DoPerObservableReplacements(const ParseComponentDat
 	}
 }
 
-bool ArgusCodeGeneratorUtil::ParseStructDeclarations(std::string lineText, const std::string& componentDataAssetIncludeStatement, ParseComponentDataOutput& output, bool isDynamicallyAllocated)
+bool ArgusCodeGeneratorUtil::ParseStructDeclarations(std::string& lineText)
 {
 	const size_t structDelimiterLength = std::strlen(s_structDelimiter);
 	const size_t structDelimiterIndex = lineText.find(s_structDelimiter);
@@ -448,6 +489,16 @@ bool ArgusCodeGeneratorUtil::ParseStructDeclarations(std::string lineText, const
 	}
 
 	std::erase(lineText, ' ');
+	return true;
+}
+
+bool ArgusCodeGeneratorUtil::ParseComponentStructDeclarations(std::string lineText, const std::string& componentDataAssetIncludeStatement, ParseComponentDataOutput& output, bool isDynamicallyAllocated)
+{
+	if (!ParseStructDeclarations(lineText))
+	{
+		return false;
+	}
+
 	if (isDynamicallyAllocated)
 	{
 		output.m_dynamicAllocComponentNames.push_back(lineText);
@@ -464,6 +515,19 @@ bool ArgusCodeGeneratorUtil::ParseStructDeclarations(std::string lineText, const
 		PerComponentData data;
 		output.m_componentInfo.push_back(data);
 	}
+	return true;
+}
+
+bool ArgusCodeGeneratorUtil::ParseSystemArgStructDeclarations(std::string lineText, const std::string& systemArgIncludeStatement, ParseSystemArgDefinitionsOutput& output)
+{
+	if (!ParseStructDeclarations(lineText))
+	{
+		return false;
+	}
+
+	output.m_systemArgsNames.push_back(lineText);
+	output.m_systemArgsIncludeStatements.push_back(systemArgIncludeStatement);
+	output.m_systemArgsVariableData.push_back(std::vector<ParsedVariableData>());
 	return true;
 }
 
