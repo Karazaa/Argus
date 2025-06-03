@@ -29,6 +29,7 @@ public:
 	static FString GetComponentDefinitionsDirectory();
 	static FString GetDynamicAllocComponentDefinitionsDirectory();
 	static FString GetStaticDataRecordDefinitionsDirectory();
+	static FString GetSystemArgDefinitionsDirectory();
 
 	struct ParsedVariableData
 	{
@@ -148,6 +149,8 @@ private:
 	static const char* s_dynamicAllocComponentDefinitionDirectorySuffix;
 	static const char* s_staticDataRecordDefinitionsDirectoryName;
 	static const char* s_staticDataRecordDefinitionsDirectorySuffix;
+	static const char* s_systemArgDefinitionsDirectoryName;
+	static const char* s_systemArgDefinitionsDirectorySuffix;
 	static const char* s_templateDirectorySuffix;
 	static const char* s_structDelimiter;
 	static const char* s_argusAPIDelimiter;

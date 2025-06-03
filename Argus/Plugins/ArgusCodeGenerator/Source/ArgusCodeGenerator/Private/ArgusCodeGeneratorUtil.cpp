@@ -20,6 +20,8 @@ const char* ArgusCodeGeneratorUtil::s_dynamicAllocComponentDefinitionDirectoryNa
 const char* ArgusCodeGeneratorUtil::s_dynamicAllocComponentDefinitionDirectorySuffix = "Source/Argus/ECS/DynamicAllocComponentDefinitions";
 const char* ArgusCodeGeneratorUtil::s_staticDataRecordDefinitionsDirectoryName = "RecordDefinitions";
 const char* ArgusCodeGeneratorUtil::s_staticDataRecordDefinitionsDirectorySuffix = "Source/Argus/StaticData/RecordDefinitions";
+const char* ArgusCodeGeneratorUtil::s_systemArgDefinitionsDirectoryName = "SystemArgumentDefinitions";
+const char* ArgusCodeGeneratorUtil::s_systemArgDefinitionsDirectorySuffix = "Source/Argus/ECS/SystemArgumentDefinitions";
 const char* ArgusCodeGeneratorUtil::s_templateDirectorySuffix = "Plugins/ArgusCodeGenerator/Source/ArgusCodeGenerator/Private/Templates/";
 const char* ArgusCodeGeneratorUtil::s_structDelimiter = "struct ";
 const char* ArgusCodeGeneratorUtil::s_argusAPIDelimiter = "ARGUS_API";
@@ -69,6 +71,24 @@ FString ArgusCodeGeneratorUtil::GetStaticDataRecordDefinitionsDirectory()
 	FPaths::MakeStandardFilename(recordDefinitionsDirectory);
 
 	return recordDefinitionsDirectory;
+}
+
+FString ArgusCodeGeneratorUtil::GetStaticDataRecordDefinitionsDirectory()
+{
+	FString recordDefinitionsDirectory = *GetProjectDirectory();
+	recordDefinitionsDirectory.Append(s_staticDataRecordDefinitionsDirectorySuffix);
+	FPaths::MakeStandardFilename(recordDefinitionsDirectory);
+
+	return recordDefinitionsDirectory;
+}
+
+FString ArgusCodeGeneratorUtil::GetSystemArgDefinitionsDirectory()
+{
+	FString systemArgDefinitionsDirectory = *GetProjectDirectory();
+	systemArgDefinitionsDirectory.Append(s_systemArgDefinitionsDirectorySuffix);
+	FPaths::MakeStandardFilename(systemArgDefinitionsDirectory);
+
+	return systemArgDefinitionsDirectory;
 }
 
 bool ArgusCodeGeneratorUtil::ParseComponentData(ParseComponentDataOutput& output)
@@ -266,7 +286,18 @@ bool ArgusCodeGeneratorUtil::ParseStaticDataDataRecordsFromFile(const std::strin
 
 bool ArgusCodeGeneratorUtil::ParseSystemArgDefinitions(ParseSystemArgDefinitionsOutput& output)
 {
-	return true;
+	bool didSucceed = true;
+
+	FString systemArgDefinitionsDirectory = ArgusCodeGeneratorUtil::GetSystemArgDefinitionsDirectory();
+	const std::string finalizedSystemArgDefinitionsDirectory = std::string(TCHAR_TO_UTF8(*systemArgDefinitionsDirectory));
+
+	for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(finalizedSystemArgDefinitionsDirectory))
+	{
+		const std::string filePath = entry.path().string();
+		//didSucceed &= ParseStaticDataDataRecordsFromFile(filePath, output);
+	}
+
+	return didSucceed;
 }
 
 bool ArgusCodeGeneratorUtil::GetRawLinesFromFile(const std::string& filePath, std::vector<std::string>& outFileContents)
