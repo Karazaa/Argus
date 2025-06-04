@@ -593,6 +593,11 @@ bool ArgusCodeGeneratorUtil::ParseVariableDeclarations(std::string lineText, boo
 	std::erase(variableData.m_varName, ' ');
 	std::erase(variableData.m_defaultValue, ' ');
 
+	if (variableData.m_typeName.starts_with("\tconst"))
+	{
+		variableData.m_typeName.insert(6, 1,' ');
+	}
+
 	const int componentVariableCount = parsedVariableData.back().size();
 	if (withProperty && componentVariableCount)
 	{
