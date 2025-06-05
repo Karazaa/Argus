@@ -88,7 +88,7 @@ bool ArgusSystemArgsImplementationCodeGenerator::ParseSystemArgumentImplementati
 				std::string condition = std::vformat("!{}", std::make_format_args(parsedSystemArgs.m_systemArgsVariableData[i][0].m_varName));
 				for (int j = 1; j < parsedSystemArgs.m_systemArgsVariableData[i].size(); ++j)
 				{
-					condition.append(std::vformat("|| !{}", std::make_format_args(parsedSystemArgs.m_systemArgsVariableData[i][j].m_varName)));
+					condition.append(std::vformat(" || !{}", std::make_format_args(parsedSystemArgs.m_systemArgsVariableData[i][j].m_varName)));
 				}
 				
 				std::string perArgLineText = templateLineText;
@@ -106,7 +106,7 @@ bool ArgusSystemArgsImplementationCodeGenerator::ParseSystemArgumentImplementati
 					{
 						continue;
 					}
-					condition.append(std::vformat("|| !{}", std::make_format_args(parsedSystemArgs.m_systemArgsVariableData[i][j].m_varName)));
+					condition.append(std::vformat(" || !{}", std::make_format_args(parsedSystemArgs.m_systemArgsVariableData[i][j].m_varName)));
 				}
 
 				std::string perArgLineText = templateLineText;
