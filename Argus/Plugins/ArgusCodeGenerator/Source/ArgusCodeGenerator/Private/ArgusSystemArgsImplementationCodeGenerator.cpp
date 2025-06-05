@@ -8,6 +8,7 @@
 
 const char* ArgusSystemArgsImplementationCodeGenerator::s_systemArgTemplateDirectorySuffix = "SystemArguments/";
 const char* ArgusSystemArgsImplementationCodeGenerator::s_systemArgImplementationTemplateFileName = "SystemArgumentImplementationTemplate.txt";
+const char* ArgusSystemArgsImplementationCodeGenerator::s_systemArgImplementationDirectorySuffix = "Source/Argus/ECS/SystemArgumentImplementations/";
 
 void ArgusSystemArgsImplementationCodeGenerator::GenerateSystemArgsImplementation(const ArgusCodeGeneratorUtil::ParseSystemArgDefinitionsOutput& parsedSystemArgs)
 {
@@ -21,6 +22,17 @@ void ArgusSystemArgsImplementationCodeGenerator::GenerateSystemArgsImplementatio
 	UE_LOG(ArgusCodeGeneratorLog, Display, TEXT("[%s] Parsing from template files to generate non-ECS Static Data code."), ARGUS_FUNCNAME);
 	std::vector<ArgusCodeGeneratorUtil::FileWriteData> outParsedSystemArgImplementations = std::vector<ArgusCodeGeneratorUtil::FileWriteData>();
 	ParseSystemArgumentImplementationTemplate(parsedSystemArgs, templateFilePath, outParsedSystemArgImplementations);
+
+	FString systemArgsImplementationDirectory = ArgusCodeGeneratorUtil::GetProjectDirectory();
+	systemArgsImplementationDirectory.Append(s_systemArgImplementationDirectorySuffix);
+	FPaths::MakeStandardFilename(systemArgsImplementationDirectory);
+	const char* cStrSystemArgsImplementationDirectory = ARGUS_FSTRING_TO_CHAR(systemArgsImplementationDirectory);
+
+	// Write out cpp files.
+	for (int i = 0; i < outParsedSystemArgImplementations.size(); ++i)
+	{
+		didSucceed &= ArgusCodeGeneratorUtil::WriteOutFile(std::string(cStrSystemArgsImplementationDirectory).append(outParsedSystemArgImplementations[i].m_filename), outParsedSystemArgImplementations[i].m_lines);
+	}
 }
 
 bool ArgusSystemArgsImplementationCodeGenerator::ParseSystemArgumentImplementationTemplate(const ArgusCodeGeneratorUtil::ParseSystemArgDefinitionsOutput& parsedSystemArgs, const std::string& templateFilePath, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents)
@@ -35,7 +47,10 @@ bool ArgusSystemArgsImplementationCodeGenerator::ParseSystemArgumentImplementati
 
 	for (int i = 0; i < parsedSystemArgs.m_systemArgsNames.size(); ++i)
 	{
-		outParsedFileContents.push_back(ArgusCodeGeneratorUtil::FileWriteData());
+		ArgusCodeGeneratorUtil::FileWriteData fileWriteData;
+		fileWriteData.m_filename = parsedSystemArgs.m_systemArgsNames[i];
+		fileWriteData.m_filename.append(".cpp");
+		outParsedFileContents.push_back(fileWriteData);
 	}
 
 	std::string templateLineText;
@@ -54,6 +69,11 @@ bool ArgusSystemArgsImplementationCodeGenerator::ParseSystemArgumentImplementati
 			{
 				for (int j = 1; j < parsedSystemArgs.m_systemArgsVariableData[i].size(); ++j)
 				{
+					if (parsedSystemArgs.m_systemArgsVariableData[i][j].m_propertyMacro.find(ArgusCodeGeneratorUtil::s_propertyIgnoreDelimiter) != std::string::npos)
+					{
+						continue;
+					}
+
 					std::string line = parsedSystemArgs.m_systemArgsVariableData[i][j].m_varName;
 					std::string typeName = parsedSystemArgs.m_systemArgsVariableData[i][j].m_typeName;
 					TrimTypeName(typeName);
@@ -65,10 +85,32 @@ bool ArgusSystemArgsImplementationCodeGenerator::ParseSystemArgumentImplementati
 		{
 			for (int i = 0; i < parsedSystemArgs.m_systemArgsNames.size(); ++i)
 			{
-				for (int j = 0; j < parsedSystemArgs.m_systemArgsVariableData[i].size(); ++j)
+				std::string condition = std::vformat("!{}", std::make_format_args(parsedSystemArgs.m_systemArgsVariableData[i][0].m_varName));
+				for (int j = 1; j < parsedSystemArgs.m_systemArgsVariableData[i].size(); ++j)
 				{
-
+					condition.append(std::vformat("|| !{}", std::make_format_args(parsedSystemArgs.m_systemArgsVariableData[i][j].m_varName)));
 				}
+				
+				std::string perArgLineText = templateLineText;
+				outParsedFileContents[i].m_lines.push_back(std::regex_replace(perArgLineText, std::regex("%%%%%"), condition));
+			}
+		}
+		else if (templateLineText.find("&%%%&") != std::string::npos)
+		{
+			for (int i = 0; i < parsedSystemArgs.m_systemArgsNames.size(); ++i)
+			{
+				std::string condition = std::vformat("!{}", std::make_format_args(parsedSystemArgs.m_systemArgsVariableData[i][0].m_varName));
+				for (int j = 1; j < parsedSystemArgs.m_systemArgsVariableData[i].size(); ++j)
+				{
+					if (parsedSystemArgs.m_systemArgsVariableData[i][j].m_propertyMacro.find(ArgusCodeGeneratorUtil::s_propertyIgnoreDelimiter) != std::string::npos)
+					{
+						continue;
+					}
+					condition.append(std::vformat("|| !{}", std::make_format_args(parsedSystemArgs.m_systemArgsVariableData[i][j].m_varName)));
+				}
+
+				std::string perArgLineText = templateLineText;
+				outParsedFileContents[i].m_lines.push_back(std::regex_replace(perArgLineText, std::regex("&%%%&"), condition));
 			}
 		}
 		else if (templateLineText.find("#####") != std::string::npos)

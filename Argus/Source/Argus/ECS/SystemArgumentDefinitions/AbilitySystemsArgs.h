@@ -11,5 +11,7 @@ struct AbilitySystemsArgs
 
 	TaskComponent* m_taskComponent = nullptr;
 	const AbilityComponent* m_abilityComponent = nullptr;
+
+	ARGUS_IGNORE()
 	ReticleComponent* m_reticleComponent = nullptr;
 };

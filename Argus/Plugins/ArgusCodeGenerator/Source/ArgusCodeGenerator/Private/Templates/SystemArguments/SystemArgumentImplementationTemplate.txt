@@ -9,7 +9,7 @@ bool #####::PopulateArguments(const ArgusEntity& entity)
 	m_entity = entity;
 	$$$$$
 
-	if (%%%%%)
+	if (&%%%&)
 	{
 		return false;
 	}

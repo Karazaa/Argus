@@ -310,6 +310,7 @@ bool ArgusCodeGeneratorUtil::ParseSystemArgDefinitionFromFile(const std::string&
 	UE_LOG(ArgusCodeGeneratorLog, Display, TEXT("[%s] Reading from file: %s"), ARGUS_FUNCNAME, *ueFilePath);
 
 	std::string lineText;
+	bool didParsePropertyDeclaration = false;
 	while (std::getline(inStream, lineText))
 	{
 		if (ParseSystemArgStructDeclarations(lineText, includeStatement, output))
@@ -323,8 +324,15 @@ bool ArgusCodeGeneratorUtil::ParseSystemArgDefinitionFromFile(const std::string&
 		}
 
 		bool hasObservables = false;
-		if (ParseVariableDeclarations(lineText, false, output.m_systemArgsVariableData, hasObservables))
+		if (ParseVariableDeclarations(lineText, didParsePropertyDeclaration, output.m_systemArgsVariableData, hasObservables))
 		{
+			didParsePropertyDeclaration = false;
+			continue;
+		}
+
+		if (ParsePropertyMacro(lineText, output.m_systemArgsVariableData))
+		{
+			didParsePropertyDeclaration = true;
 			continue;
 		}
 	}

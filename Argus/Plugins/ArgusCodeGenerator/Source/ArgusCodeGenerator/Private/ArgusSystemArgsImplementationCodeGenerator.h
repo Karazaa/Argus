@@ -12,6 +12,7 @@ public:
 private:
 	static const char* s_systemArgTemplateDirectorySuffix;
 	static const char* s_systemArgImplementationTemplateFileName;
+	static const char* s_systemArgImplementationDirectorySuffix;
 
 	static bool ParseSystemArgumentImplementationTemplate(const ArgusCodeGeneratorUtil::ParseSystemArgDefinitionsOutput& parsedSystemArgs, const std::string& templateFilePath, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents);
 	static void TrimTypeName(std::string& typeName);
