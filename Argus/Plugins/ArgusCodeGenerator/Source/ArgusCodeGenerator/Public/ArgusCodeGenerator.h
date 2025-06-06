@@ -2,10 +2,10 @@
 
 #pragma once
 
-#include "ArgusECSComponentAdder.h"
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 
+class ArgusECSObjectAdder;
 class FToolBarBuilder;
 class FMenuBuilder;
 class SWindow;

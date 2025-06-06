@@ -5,7 +5,7 @@
 #include "ArgusCodeGeneratorCommands.h"
 #include "ArgusComponentRegistryCodeGenerator.h"
 #include "ArgusDataAssetComponentCodeGenerator.h"
-#include "ArgusECSComponentAdder.h"
+#include "ArgusECSObjectAdder.h"
 #include "ArgusStaticDataCodeGenerator.h"
 #include "ArgusSystemArgsImplementationCodeGenerator.h"
 #include "ComponentImplementationCodeGenerator.h"
