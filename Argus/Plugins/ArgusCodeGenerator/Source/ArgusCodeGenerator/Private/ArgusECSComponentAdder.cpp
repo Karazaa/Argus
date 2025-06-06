@@ -10,13 +10,40 @@
 
 #define LOCTEXT_NAMESPACE "FArgusCodeGeneratorModule"
 
-TSharedRef<SDockTab> ArgusECSComponentAdder::OnSpawnPluginTab(const FSpawnTabArgs& spawnTabArgs)
+TSharedRef<SDockTab> ArgusECSObjectAdder::OnSpawnPluginTab(const FSpawnTabArgs& spawnTabArgs)
 {
 	m_inputFieldText = FText::FromString(TEXT(""));
 	m_messageText = FText::FromString(TEXT(""));
 	m_isDynamicallyAllocated = false;
 
 	m_currentDropDownText = SNew(STextBlock).Text(m_nameArray[static_cast<uint8>(m_ecsType)]);
+	m_currentLabelText = SNew(STextBlock).Text(FText::FromString(TEXT("Component Name: ")));
+	m_currentHintText = SNew(SEditableText).HintText(FText::FromString(TEXT("Enter component to add name here."))).ColorAndOpacity(FColor::Green)
+						.OnTextChanged(FOnTextChanged::CreateRaw(this, &ArgusECSObjectAdder::OnTextChanged));
+
+	m_dynamicAllocBox = SNew(SHorizontalBox)
+		+ SHorizontalBox::Slot()
+		.VAlign(VAlign_Top)
+		.HAlign(HAlign_Left)
+		.FillContentWidth(1.0f)
+		.Padding(FMargin(0, 0, 2, 0))
+		[
+			SNew(SBox).VAlign(VAlign_Top).HAlign(HAlign_Right)
+				[
+					SNew(STextBlock).Text(FText::FromString(TEXT("Is Dynamically Allocated? ")))
+				]
+		]
+		+ SHorizontalBox::Slot()
+		.VAlign(VAlign_Top)
+		.HAlign(HAlign_Left)
+		.FillContentWidth(1.0f)
+		.Padding(FMargin(2, 0, 0, 0))
+		[
+			SNew(SBox).VAlign(VAlign_Top).HAlign(HAlign_Left)
+				[
+					SNew(SCheckBox).OnCheckStateChanged(FOnCheckStateChanged::CreateRaw(this, &ArgusECSObjectAdder::OnCheckBoxChecked))
+				]
+		];
 
 	return SNew(SDockTab)
 		.TabRole(ETabRole::NomadTab)
@@ -31,7 +58,7 @@ TSharedRef<SDockTab> ArgusECSComponentAdder::OnSpawnPluginTab(const FSpawnTabArg
 						.Padding(FMargin(10, 10, 10, 10))
 						[
 							SNew(SComboButton)
-								.OnGetMenuContent(FOnGetContent::CreateRaw(this, &ArgusECSComponentAdder::OnGetECSTypeContent))
+								.OnGetMenuContent(FOnGetContent::CreateRaw(this, &ArgusECSObjectAdder::OnGetECSTypeContent))
 								.ContentPadding(FMargin(2.0f, 2.0f))
 								.ButtonContent()
 								[
@@ -53,7 +80,7 @@ TSharedRef<SDockTab> ArgusECSComponentAdder::OnSpawnPluginTab(const FSpawnTabArg
 								[
 									SNew(SBox).VAlign(VAlign_Top).HAlign(HAlign_Right)
 										[
-											SNew(STextBlock).Text(FText::FromString(TEXT("Component Name: ")))
+											m_currentLabelText.ToSharedRef()
 										]
 								]
 								+ SHorizontalBox::Slot()
@@ -64,8 +91,7 @@ TSharedRef<SDockTab> ArgusECSComponentAdder::OnSpawnPluginTab(const FSpawnTabArg
 								[
 									SNew(SBox).VAlign(VAlign_Top).HAlign(HAlign_Left)
 										[
-											SNew(SEditableText).HintText(FText::FromString(TEXT("Enter component to add name here."))).ColorAndOpacity(FColor::Green)
-												.OnTextChanged(FOnTextChanged::CreateRaw(this, &ArgusECSComponentAdder::OnTextChanged))
+											m_currentHintText.ToSharedRef()
 										]
 								]
 						]
@@ -75,29 +101,7 @@ TSharedRef<SDockTab> ArgusECSComponentAdder::OnSpawnPluginTab(const FSpawnTabArg
 						.FillContentHeight(1.0f)
 						.Padding(FMargin(10, 10, 10, 10))
 						[
-							SNew(SHorizontalBox)
-								+ SHorizontalBox::Slot()
-								.VAlign(VAlign_Top)
-								.HAlign(HAlign_Left)
-								.FillContentWidth(1.0f)
-								.Padding(FMargin(0, 0, 2, 0))
-								[
-									SNew(SBox).VAlign(VAlign_Top).HAlign(HAlign_Right)
-										[
-											SNew(STextBlock).Text(FText::FromString(TEXT("Is Dynamically Allocated? ")))
-										]
-								]
-								+ SHorizontalBox::Slot()
-								.VAlign(VAlign_Top)
-								.HAlign(HAlign_Left)
-								.FillContentWidth(1.0f)
-								.Padding(FMargin(2, 0, 0, 0))
-								[
-									SNew(SBox).VAlign(VAlign_Top).HAlign(HAlign_Left)
-										[
-											SNew(SCheckBox).OnCheckStateChanged(FOnCheckStateChanged::CreateRaw(this, &ArgusECSComponentAdder::OnCheckBoxChecked))
-										]
-								]
+							m_dynamicAllocBox.ToSharedRef()
 						]
 						+ SVerticalBox::Slot()
 						.VAlign(VAlign_Top)
@@ -107,50 +111,87 @@ TSharedRef<SDockTab> ArgusECSComponentAdder::OnSpawnPluginTab(const FSpawnTabArg
 						[
 							SNew(SBox).VAlign(VAlign_Top).HAlign(HAlign_Left)
 								[
-									SNew(SButton).Text(FText::FromString(TEXT("Add Component"))).OnClicked(FOnClicked::CreateRaw(this, &ArgusECSComponentAdder::OnClicked))
+									SNew(SButton).Text(FText::FromString(TEXT("Create"))).OnClicked(FOnClicked::CreateRaw(this, &ArgusECSObjectAdder::OnClicked))
 								]
 						]
 				]
 		];
 }
 
-TSharedRef<SWidget> ArgusECSComponentAdder::OnGetECSTypeContent()
+TSharedRef<SWidget> ArgusECSObjectAdder::OnGetECSTypeContent()
 {
 	FMenuBuilder MenuBuilder(true, NULL);
 	for (uint8 i = 0u; i < 3; i++)
 	{
-		FUIAction itemAction = FUIAction(FExecuteAction::CreateRaw(this, &ArgusECSComponentAdder::OnECSTypeChange, static_cast<int32>(i)));
+		FUIAction itemAction = FUIAction(FExecuteAction::CreateRaw(this, &ArgusECSObjectAdder::OnECSTypeChange, static_cast<int32>(i)));
 		MenuBuilder.AddMenuEntry(m_nameArray[i], TAttribute<FText>(), FSlateIcon(), itemAction);
 	}
 
 	return MenuBuilder.MakeWidget();
 }
 
-void ArgusECSComponentAdder::OnECSTypeChange(int32 Index)
+void ArgusECSObjectAdder::OnECSTypeChange(int32 Index)
 {
 	const uint8 enumValue = IntCastChecked<uint8>(Index);
 	m_ecsType = static_cast<ECSType>(enumValue);
+
 	m_currentDropDownText->SetText(m_nameArray[static_cast<uint8>(m_ecsType)]);
+	switch (m_ecsType)
+	{
+		case ECSType::Component:
+			m_currentLabelText->SetText(FText::FromString(TEXT("Component Name: ")));
+			m_currentHintText->SetHintText(FText::FromString(TEXT("Enter component to add name here.")));
+			m_dynamicAllocBox->SetVisibility(EVisibility::Visible);
+			break;
+		case ECSType::System:
+			m_currentLabelText->SetText(FText::FromString(TEXT("System Name: ")));
+			m_currentHintText->SetHintText(FText::FromString(TEXT("Enter system to add name here.")));
+			m_dynamicAllocBox->SetVisibility(EVisibility::Collapsed);
+			break;
+		case ECSType::SystemArguments:
+			m_currentLabelText->SetText(FText::FromString(TEXT("System Arguments Name: ")));
+			m_currentHintText->SetHintText(FText::FromString(TEXT("Enter system arguments to add name here.")));
+			m_dynamicAllocBox->SetVisibility(EVisibility::Collapsed);
+			break;
+	}
 }
 
-void ArgusECSComponentAdder::OnTextChanged(const FText& text)
+void ArgusECSObjectAdder::OnTextChanged(const FText& text)
 {
 	m_inputFieldText = text;
 }
 
-void ArgusECSComponentAdder::OnCheckBoxChecked(ECheckBoxState checkBoxState)
+void ArgusECSObjectAdder::OnCheckBoxChecked(ECheckBoxState checkBoxState)
 {
 	m_isDynamicallyAllocated = checkBoxState == ECheckBoxState::Checked;
 }
 
-FReply ArgusECSComponentAdder::OnClicked()
+FReply ArgusECSObjectAdder::OnClicked()
 {
 	if (m_inputFieldText.IsEmpty())
 	{
-		m_messageText = FText::FromString(TEXT("No component name defined!"));
+		m_messageText = FText::FromString(TEXT("No type instance name defined!"));
 		return FReply::Handled();
 	}
 
+	switch (m_ecsType)
+	{
+		case ECSType::Component:
+			OnClicked_Component();
+			break;
+		case ECSType::System:
+			OnClicked_System();
+			break;
+		case ECSType::SystemArguments:
+			OnClicked_SystemArgument();
+			break;
+	}
+
+	return FReply::Handled();
+}
+
+FReply ArgusECSObjectAdder::OnClicked_Component()
+{
 	// Parse from source files
 	ArgusCodeGeneratorUtil::ParseComponentDataOutput parsedComponentData;
 	ArgusCodeGeneratorUtil::ParseComponentData(parsedComponentData);
@@ -185,5 +226,16 @@ FReply ArgusECSComponentAdder::OnClicked()
 
 	// Write out newly defined component
 	ArgusCodeGeneratorUtil::WriteOutFile(std::string(cStrDefinitionsDirectory).append(inputString.append(".h")), parsedLines);
+
+	return FReply::Handled();
+}
+
+FReply ArgusECSObjectAdder::OnClicked_System()
+{
+	return FReply::Handled();
+}
+
+FReply ArgusECSObjectAdder::OnClicked_SystemArgument()
+{
 	return FReply::Handled();
 }

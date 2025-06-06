@@ -45,7 +45,7 @@ TSharedRef< FSlateStyleSet > FArgusCodeGeneratorStyle::Create()
 	Style->SetContentRoot(IPluginManager::Get().FindPlugin("ArgusCodeGenerator")->GetBaseDir() / TEXT("Resources"));
 
 	Style->Set("ArgusCodeGenerator.GenerateCode", new IMAGE_BRUSH(TEXT("ArgusCodeGeneratorPluginLogo"), Icon50x50));
-	Style->Set("ArgusCodeGenerator.AddComponent", new IMAGE_BRUSH(TEXT("ArgusCodeGeneratorAddComponent"), Icon50x50));
+	Style->Set("ArgusCodeGenerator.AddECSObject", new IMAGE_BRUSH(TEXT("ArgusCodeGeneratorAddComponent"), Icon50x50));
 	return Style;
 }
 

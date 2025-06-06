@@ -7,7 +7,7 @@
 void FArgusCodeGeneratorCommands::RegisterCommands()
 {
 	UI_COMMAND(GenerateCode, "ArgusCodeGenerator", "Generate Argus C++ Classes", EUserInterfaceActionType::Button, FInputChord());
-	UI_COMMAND(AddComponent, "ArgusCodeGenerator", "Add an ECS Component", EUserInterfaceActionType::Button, FInputChord());
+	UI_COMMAND(AddECSObject, "ArgusCodeGenerator", "Add an ECS Object", EUserInterfaceActionType::Button, FInputChord());
 }
 
 #undef LOCTEXT_NAMESPACE

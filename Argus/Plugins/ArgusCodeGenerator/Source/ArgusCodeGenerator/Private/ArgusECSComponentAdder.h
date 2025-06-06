@@ -6,7 +6,10 @@
 #include "Misc/MessageDialog.h"
 #include "ToolMenus.h"
 
-class ArgusECSComponentAdder
+class STextBlock;
+class SEditableText;
+
+class ArgusECSObjectAdder
 {
 public:
 	enum class ECSType : uint8
@@ -24,7 +27,15 @@ public:
 	void OnECSTypeChange(int32 Index);
 
 private:
+	FReply OnClicked_Component();
+	FReply OnClicked_System();
+	FReply OnClicked_SystemArgument();
+
 	TSharedPtr<STextBlock> m_currentDropDownText;
+	TSharedPtr<STextBlock> m_currentLabelText;
+	TSharedPtr<SEditableText> m_currentHintText;
+	TSharedPtr<SHorizontalBox> m_dynamicAllocBox;
+
 	FText m_nameArray[3] = { FText::FromString(TEXT("Component")), FText::FromString(TEXT("System")), FText::FromString(TEXT("System Arguments")) };
 	FText m_inputFieldText;
 	FText m_messageText;

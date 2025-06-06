@@ -20,5 +20,5 @@ public:
 
 public:
 	TSharedPtr< FUICommandInfo > GenerateCode;
-	TSharedPtr< FUICommandInfo > AddComponent;
+	TSharedPtr< FUICommandInfo > AddECSObject;
 };

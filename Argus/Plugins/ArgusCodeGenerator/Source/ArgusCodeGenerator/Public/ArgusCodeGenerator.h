@@ -19,7 +19,7 @@ public:
 	virtual void ShutdownModule() override;
 	
 	void GenerateCode();
-	void AddComponent();
+	void OpenECSObjectAdder();
 
 private:
 
@@ -28,5 +28,5 @@ private:
 
 private:
 	TSharedPtr<class FUICommandList> PluginCommands;
-	TSharedPtr<ArgusECSComponentAdder> m_ecsTypeAdder;
+	TSharedPtr<ArgusECSObjectAdder> m_ecsTypeAdder;
 };

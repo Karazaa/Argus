@@ -29,7 +29,7 @@ void FArgusCodeGeneratorModule::StartupModule()
 	FArgusCodeGeneratorCommands::Register();
 	
 	PluginCommands = MakeShareable(new FUICommandList);
-	m_ecsTypeAdder = MakeShareable(new ArgusECSComponentAdder);
+	m_ecsTypeAdder = MakeShareable(new ArgusECSObjectAdder);
 
 	PluginCommands->MapAction(
 		FArgusCodeGeneratorCommands::Get().GenerateCode,
@@ -37,14 +37,14 @@ void FArgusCodeGeneratorModule::StartupModule()
 		FCanExecuteAction());
 
 	PluginCommands->MapAction(
-		FArgusCodeGeneratorCommands::Get().AddComponent,
-		FExecuteAction::CreateRaw(this, &FArgusCodeGeneratorModule::AddComponent),
+		FArgusCodeGeneratorCommands::Get().AddECSObject,
+		FExecuteAction::CreateRaw(this, &FArgusCodeGeneratorModule::OpenECSObjectAdder),
 		FCanExecuteAction());
 
 	UToolMenus::RegisterStartupCallback(FSimpleMulticastDelegate::FDelegate::CreateRaw(this, &FArgusCodeGeneratorModule::RegisterMenus));
 
 	FGlobalTabmanager::Get()->RegisterNomadTabSpawner(ArgusCodeGeneratorTabName, FOnSpawnTab::CreateRaw(this, &FArgusCodeGeneratorModule::OnSpawnPluginTab))
-		.SetDisplayName(LOCTEXT("FArgusCodeGeneratorTabTitle", "Add Components"))
+		.SetDisplayName(LOCTEXT("FArgusCodeGeneratorTabTitle", "Add ECS Objects"))
 		.SetMenuType(ETabSpawnerMenuType::Hidden);
 }
 
@@ -75,7 +75,7 @@ void FArgusCodeGeneratorModule::RegisterMenus()
 			FToolMenuSection& Section = Menu->FindOrAddSection("WindowLayout");
 			{
 				FToolMenuEntry& Entry = Section.AddEntry(FToolMenuEntry::InitMenuEntry(FArgusCodeGeneratorCommands::Get().GenerateCode));
-				FToolMenuEntry& SecondEntry = Section.AddEntry(FToolMenuEntry::InitMenuEntry(FArgusCodeGeneratorCommands::Get().AddComponent));
+				FToolMenuEntry& SecondEntry = Section.AddEntry(FToolMenuEntry::InitMenuEntry(FArgusCodeGeneratorCommands::Get().AddECSObject));
 				Entry.SetCommandList(PluginCommands);
 				SecondEntry.SetCommandList(PluginCommands);
 			}
@@ -88,7 +88,7 @@ void FArgusCodeGeneratorModule::RegisterMenus()
 			FToolMenuSection& Section = ToolbarMenu->FindOrAddSection("PluginTools");
 			{
 				FToolMenuEntry& Entry = Section.AddEntry(FToolMenuEntry::InitToolBarButton(FArgusCodeGeneratorCommands::Get().GenerateCode));
-				FToolMenuEntry& SecondEntry = Section.AddEntry(FToolMenuEntry::InitToolBarButton(FArgusCodeGeneratorCommands::Get().AddComponent));
+				FToolMenuEntry& SecondEntry = Section.AddEntry(FToolMenuEntry::InitToolBarButton(FArgusCodeGeneratorCommands::Get().AddECSObject));
 				Entry.SetCommandList(PluginCommands);
 				SecondEntry.SetCommandList(PluginCommands);
 			}
@@ -117,7 +117,7 @@ void FArgusCodeGeneratorModule::GenerateCode()
 	ArgusSystemArgsImplementationCodeGenerator::GenerateSystemArgsImplementation(parsedSystemArgDefinitions);
 }
 
-void FArgusCodeGeneratorModule::AddComponent()
+void FArgusCodeGeneratorModule::OpenECSObjectAdder()
 {
 	FGlobalTabmanager::Get()->TryInvokeTab(ArgusCodeGeneratorTabName);
 }
