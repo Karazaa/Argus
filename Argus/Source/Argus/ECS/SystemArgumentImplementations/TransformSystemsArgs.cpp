@@ -6,6 +6,11 @@
 
 bool TransformSystemsArgs::PopulateArguments(const ArgusEntity& entity)
 {
+	if (!entity)
+	{
+		return false;
+	}
+
 	m_entity = entity;
 	m_taskComponent = entity.GetComponent<TaskComponent>();
 	m_transformComponent = entity.GetComponent<TransformComponent>();

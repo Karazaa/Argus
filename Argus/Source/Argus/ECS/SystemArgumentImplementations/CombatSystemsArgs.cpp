@@ -6,6 +6,11 @@
 
 bool CombatSystemsArgs::PopulateArguments(const ArgusEntity& entity)
 {
+	if (!entity)
+	{
+		return false;
+	}
+
 	m_entity = entity;
 	m_combatComponent = entity.GetComponent<CombatComponent>();
 	m_identityComponent = entity.GetComponent<IdentityComponent>();

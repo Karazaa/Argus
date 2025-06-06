@@ -6,11 +6,16 @@
 
 bool ConstructionSystemsArgs::PopulateArguments(const ArgusEntity& entity)
 {
+	if (!entity)
+	{
+		return false;
+	}
+
 	m_entity = entity;
 	m_taskComponent = entity.GetComponent<TaskComponent>();
 	m_constructionComponent = entity.GetComponent<ConstructionComponent>();
 
-	if (!m_entity || !m_taskComponent || !m_constructionComponent)
+	if (!m_entity || !m_taskComponent)
 	{
 		return false;
 	}
@@ -20,7 +25,7 @@ bool ConstructionSystemsArgs::PopulateArguments(const ArgusEntity& entity)
 
 bool ConstructionSystemsArgs::AreComponentsValidCheck(const WIDECHAR* functionName) const
 {
-	if (!m_entity || !m_taskComponent || !m_constructionComponent)
+	if (!m_entity || !m_taskComponent)
 	{
 		ArgusLogging::LogInvalidComponentReferences(functionName, ARGUS_NAMEOF(ConstructionSystemsArgs));
 		return false;

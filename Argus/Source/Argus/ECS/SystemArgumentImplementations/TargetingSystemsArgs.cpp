@@ -6,6 +6,11 @@
 
 bool TargetingSystemsArgs::PopulateArguments(const ArgusEntity& entity)
 {
+	if (!entity)
+	{
+		return false;
+	}
+
 	m_entity = entity;
 	m_targetingComponent = entity.GetComponent<TargetingComponent>();
 	m_transformComponent = entity.GetComponent<TransformComponent>();

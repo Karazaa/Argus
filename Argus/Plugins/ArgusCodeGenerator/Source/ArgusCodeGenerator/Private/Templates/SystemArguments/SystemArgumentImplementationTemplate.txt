@@ -6,6 +6,11 @@
 
 bool #####::PopulateArguments(const ArgusEntity& entity)
 {
+	if (!entity)
+	{
+		return false;
+	}
+
 	m_entity = entity;
 	$$$$$
 

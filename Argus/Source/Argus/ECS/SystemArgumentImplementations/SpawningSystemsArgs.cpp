@@ -6,6 +6,11 @@
 
 bool SpawningSystemsArgs::PopulateArguments(const ArgusEntity& entity)
 {
+	if (!entity)
+	{
+		return false;
+	}
+
 	m_entity = entity;
 	m_spawningComponent = entity.GetComponent<SpawningComponent>();
 	m_taskComponent = entity.GetComponent<TaskComponent>();

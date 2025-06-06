@@ -21,6 +21,7 @@ public:
 	static const char* s_propertyStaticDataDelimiter;
 	static const char* s_propertyObservableDelimiter;
 	static const char* s_propertyObservableDeclarationDelimiter;
+	static const char* s_propertyGetButSkipDelimiter;
 	static const char* s_uePropertyDelimiter;
 	static const char* s_sharedFunctionDeclarationDelimiter;
 

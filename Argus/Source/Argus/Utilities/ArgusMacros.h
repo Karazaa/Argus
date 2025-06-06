@@ -47,8 +47,11 @@ LLM_DECLARE_TAG(ArgusTimerSystems);
 // Code generation macro that allows Component Data to pass through UPROPERTY values to the associated data asset.
 #define ARGUS_PROPERTY(...)
 
-// Code generation macro that prevents Component Data from generating a UPROPERTY for this field.
+// Code generation macro that prevents Component Data from generating a UPROPERTY for this field, or prevents getting/error checking around System Args.
 #define ARGUS_IGNORE()
+
+// Code generation macro that allows getting a component but skips error checking around System Args.
+#define ARGUS_GET_BUT_SKIP()
 
 // Code generation macro that allows Component Data fields to swap out a uint ID field for an object pointer to the record type.
 #define ARGUS_STATIC_DATA(x)
