@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "ArgusECSComponentAdder.h"
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 
@@ -27,5 +28,5 @@ private:
 
 private:
 	TSharedPtr<class FUICommandList> PluginCommands;
-	TSharedPtr<SWindow> m_AddComponentWindow;
+	TSharedPtr<ArgusECSComponentAdder> m_ecsTypeAdder;
 };

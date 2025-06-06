@@ -9,13 +9,26 @@
 class ArgusECSComponentAdder
 {
 public:
-	static TSharedRef<class SDockTab> OnSpawnPluginTab(const class FSpawnTabArgs& SpawnTabArgs);
-	static void OnClicked();
-	static void OnCheckBoxChecked(ECheckBoxState checkBoxState);
-	static void OnTextChanged(const FText& text);
+	enum class ECSType : uint8
+	{
+		Component,
+		System,
+		SystemArguments
+	};
+
+	TSharedRef<class SDockTab> OnSpawnPluginTab(const class FSpawnTabArgs& SpawnTabArgs);
+	FReply OnClicked();
+	void OnCheckBoxChecked(ECheckBoxState checkBoxState);
+	void OnTextChanged(const FText& text);
+	TSharedRef<SWidget> OnGetECSTypeContent();
+	void OnECSTypeChange(int32 Index);
 
 private:
-	static FText s_inputFieldText;
-	static FText s_messageText;
-	static bool s_isDynamicallyAllocated;
+	TSharedPtr<STextBlock> m_currentDropDownText;
+	FText m_nameArray[3] = { FText::FromString(TEXT("Component")), FText::FromString(TEXT("System")), FText::FromString(TEXT("System Arguments")) };
+	FText m_inputFieldText;
+	FText m_messageText;
+	bool m_isDynamicallyAllocated;
+
+	ECSType m_ecsType = ECSType::Component;
 };

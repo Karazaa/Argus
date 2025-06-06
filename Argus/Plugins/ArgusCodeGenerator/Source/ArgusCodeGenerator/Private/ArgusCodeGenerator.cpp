@@ -29,6 +29,7 @@ void FArgusCodeGeneratorModule::StartupModule()
 	FArgusCodeGeneratorCommands::Register();
 	
 	PluginCommands = MakeShareable(new FUICommandList);
+	m_ecsTypeAdder = MakeShareable(new ArgusECSComponentAdder);
 
 	PluginCommands->MapAction(
 		FArgusCodeGeneratorCommands::Get().GenerateCode,
@@ -123,7 +124,7 @@ void FArgusCodeGeneratorModule::AddComponent()
 
 TSharedRef<SDockTab> FArgusCodeGeneratorModule::OnSpawnPluginTab(const FSpawnTabArgs& spawnTabArgs)
 {
-	return ArgusECSComponentAdder::OnSpawnPluginTab(spawnTabArgs);
+	return m_ecsTypeAdder->OnSpawnPluginTab(spawnTabArgs);
 }
 
 #undef LOCTEXT_NAMESPACE
