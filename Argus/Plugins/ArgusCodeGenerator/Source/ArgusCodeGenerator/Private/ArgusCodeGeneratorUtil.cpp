@@ -14,6 +14,8 @@ const char* ArgusCodeGeneratorUtil::s_propertyObservableDelimiter = "ARGUS_OBSER
 const char* ArgusCodeGeneratorUtil::s_propertyObservableDeclarationDelimiter = "ARGUS_OBSERVABLE_DECLARATION";
 const char* ArgusCodeGeneratorUtil::s_propertyGetButSkipDelimiter = "ARGUS_GET_BUT_SKIP";
 const char* ArgusCodeGeneratorUtil::s_uePropertyDelimiter = "UPROPERTY";
+const char* ArgusCodeGeneratorUtil::s_systemsDirectoryName = "Systems";
+const char* ArgusCodeGeneratorUtil::s_systemsDirectorySuffix = "Source/Argus/ECS/Systems";
 const char* ArgusCodeGeneratorUtil::s_sharedFunctionDeclarationDelimiter = "ARGUS_COMPONENT_SHARED";
 const char* ArgusCodeGeneratorUtil::s_componentDefinitionDirectoryName = "ComponentDefinitions";
 const char* ArgusCodeGeneratorUtil::s_componentDefinitionDirectorySuffix = "Source/Argus/ECS/ComponentDefinitions";
@@ -81,6 +83,15 @@ FString ArgusCodeGeneratorUtil::GetSystemArgDefinitionsDirectory()
 	FPaths::MakeStandardFilename(systemArgDefinitionsDirectory);
 
 	return systemArgDefinitionsDirectory;
+}
+
+FString ArgusCodeGeneratorUtil::GetSystemsDirectory()
+{
+	FString systemsDirectory = *GetProjectDirectory();
+	systemsDirectory.Append(s_systemsDirectorySuffix);
+	FPaths::MakeStandardFilename(systemsDirectory);
+
+	return systemsDirectory;
 }
 
 bool ArgusCodeGeneratorUtil::ParseComponentData(ParseComponentDataOutput& output)
@@ -339,6 +350,27 @@ bool ArgusCodeGeneratorUtil::ParseSystemArgDefinitionFromFile(const std::string&
 	}
 	inStream.close();
 	return true;
+}
+
+bool ArgusCodeGeneratorUtil::ParseSystemNames(ParseSystemNamesOutput& output)
+{
+	bool didSucceed = true;
+
+	FString systemsDirectory = ArgusCodeGeneratorUtil::GetSystemsDirectory();
+	const std::string finalizedSystemsDirectory = std::string(TCHAR_TO_UTF8(*systemsDirectory));
+
+	for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(finalizedSystemsDirectory))
+	{
+		std::string fileName = entry.path().filename().string();
+		fileName = fileName.substr(0, fileName.find('.'));
+
+		if (!output.m_systemNames.contains(fileName))
+		{
+			output.m_systemNames.emplace(fileName);
+		}
+	}
+
+	return didSucceed;
 }
 
 bool ArgusCodeGeneratorUtil::GetRawLinesFromFile(const std::string& filePath, std::vector<std::string>& outFileContents)

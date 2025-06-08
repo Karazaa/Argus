@@ -233,6 +233,17 @@ FReply ArgusECSObjectAdder::OnClicked_Component()
 
 FReply ArgusECSObjectAdder::OnClicked_System()
 {
+	// Parse from source files
+	ArgusCodeGeneratorUtil::ParseSystemNamesOutput parsedSystemNames;
+	ArgusCodeGeneratorUtil::ParseSystemNames(parsedSystemNames);
+
+	std::string inputString = std::string(TCHAR_TO_UTF8(*m_inputFieldText.ToString()));
+	if (parsedSystemNames.m_systemNames.contains(inputString))
+	{
+		m_messageText = FText::FromString(TEXT("System name already exists!"));
+		return FReply::Handled();
+	}
+
 	return FReply::Handled();
 }
 

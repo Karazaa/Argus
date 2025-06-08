@@ -6,6 +6,7 @@
 #include <filesystem>
 #include <string>
 #include <vector>
+#include <unordered_set>
 
 #define ARGUS_NAMEOF(x) TEXT(#x)
 #define ARGUS_FUNCNAME TEXT(__FUNCTION__)
@@ -24,6 +25,8 @@ public:
 	static const char* s_propertyGetButSkipDelimiter;
 	static const char* s_uePropertyDelimiter;
 	static const char* s_sharedFunctionDeclarationDelimiter;
+	static const char* s_systemsDirectoryName;
+	static const char* s_systemsDirectorySuffix;
 
 	static FString GetProjectDirectory();
 	static FString GetTemplateDirectory(const char* subdirectorySuffix);
@@ -31,6 +34,7 @@ public:
 	static FString GetDynamicAllocComponentDefinitionsDirectory();
 	static FString GetStaticDataRecordDefinitionsDirectory();
 	static FString GetSystemArgDefinitionsDirectory();
+	static FString GetSystemsDirectory();
 
 	struct ParsedVariableData
 	{
@@ -83,6 +87,10 @@ public:
 		std::vector<std::string> m_systemArgsNames;
 		std::vector< std::vector<ParsedVariableData> > m_systemArgsVariableData;
 	};
+	struct ParseSystemNamesOutput
+	{
+		std::unordered_set<std::string> m_systemNames;
+	};
 	struct FileWriteData
 	{
 		std::string m_filename = "";
@@ -96,6 +104,7 @@ public:
 	static bool ParseStaticDataDataRecordsFromFile(const std::string& filePath, ParseStaticDataRecordsOutput& output);
 	static bool ParseSystemArgDefinitions(ParseSystemArgDefinitionsOutput& output);
 	static bool ParseSystemArgDefinitionFromFile(const std::string& filePath, ParseSystemArgDefinitionsOutput& output);
+	static bool ParseSystemNames(ParseSystemNamesOutput& output);
 
 	static bool GetRawLinesFromFile(const std::string& filePath, std::vector<std::string>& outFileContents);
 	static bool WriteOutFile(const std::string& filePath, const std::vector<std::string>& inFileContents);
