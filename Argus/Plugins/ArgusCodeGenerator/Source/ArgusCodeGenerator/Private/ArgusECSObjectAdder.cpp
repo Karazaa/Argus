@@ -14,9 +14,9 @@
 TSharedRef<SDockTab> ArgusECSObjectAdder::OnSpawnPluginTab(const FSpawnTabArgs& spawnTabArgs)
 {
 	m_inputFieldText = FText::FromString(TEXT(""));
-	m_messageText = FText::FromString(TEXT(""));
 	m_isDynamicallyAllocated = false;
 
+	m_currentMessageText = SNew(STextBlock).Text(FText::FromString(TEXT("")));
 	m_currentDropDownText = SNew(STextBlock).Text(m_nameArray[static_cast<uint8>(m_ecsType)]);
 	m_currentLabelText = SNew(STextBlock).Text(FText::FromString(TEXT("Component Name: ")));
 	m_currentHintText = SNew(SEditableText).HintText(FText::FromString(TEXT("Enter component to add name here."))).ColorAndOpacity(FColor::Green)
@@ -45,6 +45,8 @@ TSharedRef<SDockTab> ArgusECSObjectAdder::OnSpawnPluginTab(const FSpawnTabArgs& 
 					SNew(SCheckBox).OnCheckStateChanged(FOnCheckStateChanged::CreateRaw(this, &ArgusECSObjectAdder::OnCheckBoxChecked))
 				]
 		];
+
+	OnECSTypeChange(static_cast<int32>(m_ecsType));
 
 	return SNew(SDockTab)
 		.TabRole(ETabRole::NomadTab)
@@ -115,6 +117,14 @@ TSharedRef<SDockTab> ArgusECSObjectAdder::OnSpawnPluginTab(const FSpawnTabArgs& 
 									SNew(SButton).Text(FText::FromString(TEXT("Create"))).OnClicked(FOnClicked::CreateRaw(this, &ArgusECSObjectAdder::OnClicked))
 								]
 						]
+						+ SVerticalBox::Slot()
+						.VAlign(VAlign_Top)
+						.HAlign(HAlign_Left)
+						.FillContentHeight(1.0f)
+						.Padding(FMargin(10, 10, 10, 10))
+						[
+							m_currentMessageText.ToSharedRef()
+						]
 				]
 		];
 }
@@ -136,6 +146,7 @@ void ArgusECSObjectAdder::OnECSTypeChange(int32 Index)
 	const uint8 enumValue = IntCastChecked<uint8>(Index);
 	m_ecsType = static_cast<ECSType>(enumValue);
 
+	ClearMessage();
 	m_currentDropDownText->SetText(m_nameArray[static_cast<uint8>(m_ecsType)]);
 	switch (m_ecsType)
 	{
@@ -171,7 +182,7 @@ FReply ArgusECSObjectAdder::OnClicked()
 {
 	if (m_inputFieldText.IsEmpty())
 	{
-		m_messageText = FText::FromString(TEXT("No type instance name defined!"));
+		MessageError(FText::FromString(TEXT("No type instance name defined!")));
 		return FReply::Handled();
 	}
 
@@ -202,7 +213,7 @@ FReply ArgusECSObjectAdder::OnClicked_Component()
 	{
 		if (parsedComponentData.m_componentNames[i].compare(inputString) == 0)
 		{
-			m_messageText = FText::FromString(TEXT("Component name already exists!"));
+			MessageError(FText::FromString(TEXT("Component name already exists!")));
 			return FReply::Handled();
 		}
 	}
@@ -228,6 +239,7 @@ FReply ArgusECSObjectAdder::OnClicked_Component()
 	// Write out newly defined component
 	ArgusCodeGeneratorUtil::WriteOutFile(std::string(cStrDefinitionsDirectory).append(inputString.append(".h")), parsedLines);
 
+	MessageSuccess(FText::FromString(TEXT("Succesfully added Component!")));
 	return FReply::Handled();
 }
 
@@ -240,7 +252,7 @@ FReply ArgusECSObjectAdder::OnClicked_System()
 	std::string inputString = std::string(TCHAR_TO_UTF8(*m_inputFieldText.ToString()));
 	if (parsedSystemNames.m_systemNames.contains(inputString))
 	{
-		m_messageText = FText::FromString(TEXT("System name already exists!"));
+		MessageError(FText::FromString(TEXT("System name already exists!")));
 		return FReply::Handled();
 	}
 
@@ -274,6 +286,7 @@ FReply ArgusECSObjectAdder::OnClicked_System()
 	writeOutFileName = inputString;
 	ArgusCodeGeneratorUtil::WriteOutFile(std::string(cStrDefinitionsDirectory).append(writeOutFileName.append(".cpp")), parsedLines);
 
+	MessageSuccess(FText::FromString(TEXT("Succesfully added Systems!")));
 	return FReply::Handled();
 }
 
@@ -288,7 +301,7 @@ FReply ArgusECSObjectAdder::OnClicked_SystemArgument()
 	{
 		if (parsedSystemArgs.m_systemArgsNames[i].compare(inputString) == 0)
 		{
-			m_messageText = FText::FromString(TEXT("SystemArg name already exists!"));
+			MessageError(FText::FromString(TEXT("SystemArg name already exists!")));
 			return FReply::Handled();
 		}
 	}
@@ -314,5 +327,24 @@ FReply ArgusECSObjectAdder::OnClicked_SystemArgument()
 	// Write out newly defined system arguments
 	ArgusCodeGeneratorUtil::WriteOutFile(std::string(cStrDefinitionsDirectory).append(inputString.append(".h")), parsedLines);
 
+	MessageSuccess(FText::FromString(TEXT("Succesfully added System Arguments!")));
 	return FReply::Handled();
+}
+
+void ArgusECSObjectAdder::ClearMessage()
+{
+	m_currentMessageText->SetText(FText::FromString(TEXT("")));
+	m_currentMessageText->SetColorAndOpacity(FColor::White);
+}
+
+void ArgusECSObjectAdder::MessageError(const FText& errorMessage)
+{
+	m_currentMessageText->SetText(errorMessage);
+	m_currentMessageText->SetColorAndOpacity(FColor::Red);
+}
+
+void ArgusECSObjectAdder::MessageSuccess(const FText& successMessage)
+{
+	m_currentMessageText->SetText(successMessage);
+	m_currentMessageText->SetColorAndOpacity(FColor::Green);
 }

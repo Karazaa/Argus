@@ -31,6 +31,11 @@ private:
 	FReply OnClicked_System();
 	FReply OnClicked_SystemArgument();
 
+	void ClearMessage();
+	void MessageError(const FText& errorMessage);
+	void MessageSuccess(const FText& successMessage);
+
+	TSharedPtr<STextBlock> m_currentMessageText;
 	TSharedPtr<STextBlock> m_currentDropDownText;
 	TSharedPtr<STextBlock> m_currentLabelText;
 	TSharedPtr<SEditableText> m_currentHintText;
