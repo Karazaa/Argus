@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "ArgusEntity.h"
 #include "SystemArgumentDefinitions/NavigationSystemsArgs.h"
 #include <optional>
 

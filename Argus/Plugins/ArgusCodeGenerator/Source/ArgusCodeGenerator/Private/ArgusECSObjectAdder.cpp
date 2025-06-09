@@ -244,6 +244,34 @@ FReply ArgusECSObjectAdder::OnClicked_System()
 		return FReply::Handled();
 	}
 
+	// Construct a directory path to object adder templates
+	const char* cStrTemplateDirectory = ARGUS_FSTRING_TO_CHAR(ArgusCodeGeneratorUtil::GetTemplateDirectory(ArgusCodeGeneratorUtil::s_systemsTemplateDirectorySuffix));
+
+	// Parse per system template
+	std::vector<std::string> parsedLines = std::vector<std::string>();
+	std::vector<std::string> systemNames = std::vector<std::string>();
+	systemNames.push_back(inputString);
+
+	std::string templateFileName = "SystemsHeaderTemplate.txt";
+	ArgusCodeGeneratorUtil::ParseComponentSpecificTemplate(std::string(cStrTemplateDirectory).append(templateFileName), systemNames, parsedLines);
+
+	// Construct a directory path to systems definition location
+	FString definitionsDirectory = ArgusCodeGeneratorUtil::GetProjectDirectory();
+	std::string directorySuffix = "Source/Argus/ECS/Systems/";
+	definitionsDirectory.Append(directorySuffix.c_str());
+	FPaths::MakeStandardFilename(definitionsDirectory);
+	const char* cStrDefinitionsDirectory = ARGUS_FSTRING_TO_CHAR(definitionsDirectory);
+
+	// Write out newly defined systems
+	ArgusCodeGeneratorUtil::WriteOutFile(std::string(cStrDefinitionsDirectory).append(inputString.append(".h")), parsedLines);
+
+	parsedLines.clear();
+	templateFileName = "SystemsImplementationTemplate.txt";
+	ArgusCodeGeneratorUtil::ParseComponentSpecificTemplate(std::string(cStrTemplateDirectory).append(templateFileName), systemNames, parsedLines);
+
+	// Write out newly defined systems
+	ArgusCodeGeneratorUtil::WriteOutFile(std::string(cStrDefinitionsDirectory).append(inputString.append(".cpp")), parsedLines);
+
 	return FReply::Handled();
 }
 
@@ -263,10 +291,10 @@ FReply ArgusECSObjectAdder::OnClicked_SystemArgument()
 		}
 	}
 
-	// Construct a directory path to component adder templates
+	// Construct a directory path to object adder templates
 	const char* cStrTemplateDirectory = ARGUS_FSTRING_TO_CHAR(ArgusCodeGeneratorUtil::GetTemplateDirectory(ArgusSystemArgsImplementationCodeGenerator::s_systemArgTemplateDirectorySuffix));
 
-	// Parse per component template
+	// Parse per system arg template
 	std::vector<std::string> parsedLines = std::vector<std::string>();
 	std::vector<std::string> systemArgNames = std::vector<std::string>();
 	systemArgNames.push_back(inputString);
@@ -274,14 +302,14 @@ FReply ArgusECSObjectAdder::OnClicked_SystemArgument()
 	std::string templateFileName = "SystemArgumentsAdderTemplate.txt";
 	ArgusCodeGeneratorUtil::ParseComponentSpecificTemplate(std::string(cStrTemplateDirectory).append(templateFileName), systemArgNames, parsedLines);
 
-	// Construct a directory path to component definition location
+	// Construct a directory path to system argument definition location
 	FString definitionsDirectory = ArgusCodeGeneratorUtil::GetProjectDirectory();
 	std::string directorySuffix = "Source/Argus/ECS/SystemArgumentDefinitions/";
 	definitionsDirectory.Append(directorySuffix.c_str());
 	FPaths::MakeStandardFilename(definitionsDirectory);
 	const char* cStrDefinitionsDirectory = ARGUS_FSTRING_TO_CHAR(definitionsDirectory);
 
-	// Write out newly defined component
+	// Write out newly defined system arguments
 	ArgusCodeGeneratorUtil::WriteOutFile(std::string(cStrDefinitionsDirectory).append(inputString.append(".h")), parsedLines);
 
 	return FReply::Handled();

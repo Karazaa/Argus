@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "ArgusEntity.h"
 #include "SystemArgumentDefinitions/ConstructionSystemsArgs.h"
 
 class ConstructionSystems

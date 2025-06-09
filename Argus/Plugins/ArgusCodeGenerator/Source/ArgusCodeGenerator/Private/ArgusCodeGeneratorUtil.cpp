@@ -16,6 +16,7 @@ const char* ArgusCodeGeneratorUtil::s_propertyGetButSkipDelimiter = "ARGUS_GET_B
 const char* ArgusCodeGeneratorUtil::s_uePropertyDelimiter = "UPROPERTY";
 const char* ArgusCodeGeneratorUtil::s_systemsDirectoryName = "Systems";
 const char* ArgusCodeGeneratorUtil::s_systemsDirectorySuffix = "Source/Argus/ECS/Systems";
+const char* ArgusCodeGeneratorUtil::s_systemsTemplateDirectorySuffix = "Systems/";
 const char* ArgusCodeGeneratorUtil::s_sharedFunctionDeclarationDelimiter = "ARGUS_COMPONENT_SHARED";
 const char* ArgusCodeGeneratorUtil::s_componentDefinitionDirectoryName = "ComponentDefinitions";
 const char* ArgusCodeGeneratorUtil::s_componentDefinitionDirectorySuffix = "Source/Argus/ECS/ComponentDefinitions";

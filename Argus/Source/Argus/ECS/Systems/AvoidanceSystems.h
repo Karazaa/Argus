@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "ArgusEntity.h"
 #include "ComponentDependencies/ObstaclePoint.h"
 #include "SystemArgumentDefinitions/TransformSystemsArgs.h"
 

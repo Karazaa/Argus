@@ -2,8 +2,6 @@
 
 #pragma once
 
-#include "ArgusEntity.h"
-#include "Misc/Optional.h"
 #include "SystemArgumentDefinitions/SpawningSystemsArgs.h"
 
 class SpawningSystems

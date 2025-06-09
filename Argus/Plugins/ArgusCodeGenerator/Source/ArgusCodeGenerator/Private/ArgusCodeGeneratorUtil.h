@@ -27,6 +27,7 @@ public:
 	static const char* s_sharedFunctionDeclarationDelimiter;
 	static const char* s_systemsDirectoryName;
 	static const char* s_systemsDirectorySuffix;
+	static const char* s_systemsTemplateDirectorySuffix;
 
 	static FString GetProjectDirectory();
 	static FString GetTemplateDirectory(const char* subdirectorySuffix);

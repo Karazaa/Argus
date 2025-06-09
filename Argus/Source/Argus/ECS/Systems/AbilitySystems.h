@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "ArgusEntity.h"
 #include "SystemArgumentDefinitions/AbilitySystemsArgs.h"
 
 class UAbilityRecord;

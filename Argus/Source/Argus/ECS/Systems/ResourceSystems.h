@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "ArgusEntity.h"
 #include "ComponentDependencies/ResourceSet.h"
 #include "ComponentDefinitions/ResourceComponent.h"
 #include "SystemArgumentDefinitions/ResourceSystemsArgs.h"
