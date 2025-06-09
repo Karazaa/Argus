@@ -263,14 +263,16 @@ FReply ArgusECSObjectAdder::OnClicked_System()
 	const char* cStrDefinitionsDirectory = ARGUS_FSTRING_TO_CHAR(definitionsDirectory);
 
 	// Write out newly defined systems
-	ArgusCodeGeneratorUtil::WriteOutFile(std::string(cStrDefinitionsDirectory).append(inputString.append(".h")), parsedLines);
+	std::string writeOutFileName = inputString;
+	ArgusCodeGeneratorUtil::WriteOutFile(std::string(cStrDefinitionsDirectory).append(writeOutFileName.append(".h")), parsedLines);
 
 	parsedLines.clear();
 	templateFileName = "SystemsImplementationTemplate.txt";
 	ArgusCodeGeneratorUtil::ParseComponentSpecificTemplate(std::string(cStrTemplateDirectory).append(templateFileName), systemNames, parsedLines);
 
 	// Write out newly defined systems
-	ArgusCodeGeneratorUtil::WriteOutFile(std::string(cStrDefinitionsDirectory).append(inputString.append(".cpp")), parsedLines);
+	writeOutFileName = inputString;
+	ArgusCodeGeneratorUtil::WriteOutFile(std::string(cStrDefinitionsDirectory).append(writeOutFileName.append(".cpp")), parsedLines);
 
 	return FReply::Handled();
 }
