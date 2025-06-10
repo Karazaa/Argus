@@ -30,7 +30,7 @@ struct ObstaclePointKDTreeNode : public IArgusKDTreeNode<bool>
 	virtual float   GetValueForDimension(uint16 dimension) const override;
 };
 
-class ObstaclePointKDTree : public ArgusKDTree<ObstaclePointKDTreeNode, bool>
+class ObstaclePointKDTree : public ArgusKDTree<ObstaclePointKDTreeNode, TArray<const ObstaclePointKDTreeNode*>, bool>
 {
 public:
 	void InsertObstaclesIntoKDTree(const TArray<ObstaclePointArray>& obstacles);

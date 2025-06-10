@@ -10,7 +10,7 @@
 #include <vector>
 
 template <typename ValueComparisonType>
-class IArgusKDTreeNode : public IObjectPoolable
+struct IArgusKDTreeNode : public IObjectPoolable
 {
 	virtual FVector GetLocation() const = 0;
 	virtual void Populate(const FVector& worldSpaceLocation) = 0;
@@ -21,7 +21,7 @@ class IArgusKDTreeNode : public IObjectPoolable
 };
 
 // Type IArgusKDTreeNode is an implicit constraint for using the ArgusKDTree. Types you want to pool should inherit from IArgusKDTreeNode 
-template <class NodeType, typename ValueComparisonType>
+template <typename NodeType, typename OutputDataStructure, typename ValueComparisonType>
 class ArgusKDTree
 {
 public:
@@ -37,23 +37,23 @@ protected:
 	const NodeType* FindNodeClosestToLocationRecursive(const NodeType* iterationNode, const FVector& targetLocation, TFunction<bool(ValueComparisonType)> queryFilter, uint16 depth) const;
 	const NodeType* ChooseNodeCloserToTarget(const NodeType* node0, const NodeType* node1, const FVector& targetLocation, TFunction<bool(ValueComparisonType)> queryFilter) const;
 
-	void FindNodesWithinRangeOfLocationRecursive(TArray<const NodeType*>& outNearbyNodes, const NodeType* iterationNode, const FVector& targetLocation, const float rangeSquared, TFunction<bool(ValueComparisonType)> queryFilter, uint16 depth) const;
-	void FindNodesWithinConvexPolyRecursive(TArray<const NodeType*>& outOverlappingNodes, const NodeType* iterationNode, const TArray<FVector>& convexPolygonPoints, TFunction<bool(ValueComparisonType)> queryFilter, uint16 depth) const;
+	void FindNodesWithinRangeOfLocationRecursive(OutputDataStructure& outNearbyNodes, const NodeType* iterationNode, const FVector& targetLocation, const float rangeSquared, TFunction<bool(ValueComparisonType)> queryFilter, uint16 depth) const;
+	void FindNodesWithinConvexPolyRecursive(OutputDataStructure& outOverlappingNodes, const NodeType* iterationNode, const TArray<FVector>& convexPolygonPoints, TFunction<bool(ValueComparisonType)> queryFilter, uint16 depth) const;
 
 	NodeType* m_rootNode = nullptr;
 	ArgusObjectPool<NodeType> m_nodePool;
 };
 
-template <class NodeType, typename ValueComparisonType>
-ArgusKDTree<NodeType, ValueComparisonType>::~ArgusKDTree()
+template <typename NodeType, typename OutputDataStructure, typename ValueComparisonType>
+ArgusKDTree<NodeType, OutputDataStructure, ValueComparisonType>::~ArgusKDTree()
 {
 	ARGUS_MEMORY_TRACE(ArgusKDTree);
 	FlushAllNodes();
 	m_nodePool.ClearPool();
 }
 
-template <class NodeType, typename ValueComparisonType>
-FVector ArgusKDTree<NodeType, ValueComparisonType>::FlushAllNodes()
+template <typename NodeType, typename OutputDataStructure, typename ValueComparisonType>
+FVector ArgusKDTree<NodeType, OutputDataStructure, ValueComparisonType>::FlushAllNodes()
 {
 	ARGUS_MEMORY_TRACE(ArgusKDTree);
 	ARGUS_TRACE(ArgusKDTree::FlushAllNodes);
@@ -75,8 +75,8 @@ FVector ArgusKDTree<NodeType, ValueComparisonType>::FlushAllNodes()
 	return sumLocation;
 }
 
-template <class NodeType, typename ValueComparisonType>
-void ArgusKDTree<NodeType, ValueComparisonType>::ResetKDTreeWithAverageLocation()
+template <typename NodeType, typename OutputDataStructure, typename ValueComparisonType>
+void ArgusKDTree<NodeType, OutputDataStructure, ValueComparisonType>::ResetKDTreeWithAverageLocation()
 {
 	ARGUS_MEMORY_TRACE(ArgusKDTree);
 	ARGUS_TRACE(ArgusKDTree::ResetKDTreeWithAverageLocation);
@@ -91,8 +91,8 @@ void ArgusKDTree<NodeType, ValueComparisonType>::ResetKDTreeWithAverageLocation(
 	m_rootNode->Populate(averageLocation);
 }
 
-template <class NodeType, typename ValueComparisonType>
-void ArgusKDTree<NodeType, ValueComparisonType>::ClearNodeRecursive(NodeType* node, FVector& currentAverageLocation, uint16& priorNodeCount)
+template <typename NodeType, typename OutputDataStructure, typename ValueComparisonType>
+void ArgusKDTree<NodeType, OutputDataStructure, ValueComparisonType>::ClearNodeRecursive(NodeType* node, FVector& currentAverageLocation, uint16& priorNodeCount)
 {
 	if (!node)
 	{
@@ -118,8 +118,8 @@ void ArgusKDTree<NodeType, ValueComparisonType>::ClearNodeRecursive(NodeType* no
 	}
 }
 
-template <class NodeType, typename ValueComparisonType>
-void ArgusKDTree<NodeType, ValueComparisonType>::InsertNodeIntoKDTreeRecursive(NodeType* iterationNode, NodeType* nodeToInsert, uint16 depth)
+template <typename NodeType, typename OutputDataStructure, typename ValueComparisonType>
+void ArgusKDTree<NodeType, OutputDataStructure, ValueComparisonType>::InsertNodeIntoKDTreeRecursive(NodeType* iterationNode, NodeType* nodeToInsert, uint16 depth)
 {
 	if (!iterationNode || !nodeToInsert)
 	{
@@ -168,8 +168,8 @@ void ArgusKDTree<NodeType, ValueComparisonType>::InsertNodeIntoKDTreeRecursive(N
 	}
 }
 
-template <class NodeType, typename ValueComparisonType>
-const NodeType* ArgusKDTree<NodeType, ValueComparisonType>::FindNodeClosestToLocationRecursive(const NodeType* iterationNode, const FVector& targetLocation, TFunction<bool(ValueComparisonType)> queryFilter, uint16 depth) const
+template <typename NodeType, typename OutputDataStructure, typename ValueComparisonType>
+const NodeType* ArgusKDTree<NodeType, OutputDataStructure, ValueComparisonType>::FindNodeClosestToLocationRecursive(const NodeType* iterationNode, const FVector& targetLocation, TFunction<bool(ValueComparisonType)> queryFilter, uint16 depth) const
 {
 	if (!iterationNode)
 	{
@@ -232,8 +232,8 @@ const NodeType* ArgusKDTree<NodeType, ValueComparisonType>::FindNodeClosestToLoc
 	return potentialNearestNeighbor;
 }
 
-template <class NodeType, typename ValueComparisonType>
-const NodeType* ArgusKDTree<NodeType, ValueComparisonType>::ChooseNodeCloserToTarget(const NodeType* node0, const NodeType* node1, const FVector& targetLocation, TFunction<bool(ValueComparisonType)> queryFilter) const
+template <typename NodeType, typename OutputDataStructure, typename ValueComparisonType>
+const NodeType* ArgusKDTree<NodeType, OutputDataStructure, ValueComparisonType>::ChooseNodeCloserToTarget(const NodeType* node0, const NodeType* node1, const FVector& targetLocation, TFunction<bool(ValueComparisonType)> queryFilter) const
 {
 	if (!node0 || node0->ShouldSkipNode(queryFilter))
 	{
@@ -254,8 +254,8 @@ const NodeType* ArgusKDTree<NodeType, ValueComparisonType>::ChooseNodeCloserToTa
 	}
 }
 
-template <class NodeType, typename ValueComparisonType>
-void ArgusKDTree<NodeType, ValueComparisonType>::FindNodesWithinRangeOfLocationRecursive(TArray<const NodeType*>& outNearbyNodes, const NodeType* iterationNode, const FVector& targetLocation, const float rangeSquared, TFunction<bool(ValueComparisonType)> queryFilter, uint16 depth) const
+template <class NodeType, class OutputDataStructure, typename ValueComparisonType>
+void ArgusKDTree<NodeType, OutputDataStructure, ValueComparisonType>::FindNodesWithinRangeOfLocationRecursive(OutputDataStructure& outNearbyNodes, const NodeType* iterationNode, const FVector& targetLocation, const float rangeSquared, TFunction<bool(ValueComparisonType)> queryFilter, uint16 depth) const
 {
 	if (!iterationNode)
 	{
@@ -308,8 +308,8 @@ void ArgusKDTree<NodeType, ValueComparisonType>::FindNodesWithinRangeOfLocationR
 	}
 }
 
-template <class NodeType, typename ValueComparisonType>
-void ArgusKDTree<NodeType, ValueComparisonType>::FindNodesWithinConvexPolyRecursive(TArray<const NodeType*>& outNearbyNodes, const NodeType* iterationNode, const TArray<FVector>& convexPolygonPoints, TFunction<bool(ValueComparisonType)> queryFilter, uint16 depth) const
+template <typename NodeType, typename OutputDataStructure, typename ValueComparisonType>
+void ArgusKDTree<NodeType, OutputDataStructure, ValueComparisonType>::FindNodesWithinConvexPolyRecursive(OutputDataStructure& outNearbyNodes, const NodeType* iterationNode, const TArray<FVector>& convexPolygonPoints, TFunction<bool(ValueComparisonType)> queryFilter, uint16 depth) const
 {
 	if (!iterationNode)
 	{

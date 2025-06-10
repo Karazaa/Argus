@@ -27,7 +27,21 @@ struct ArgusEntityKDTreeNode : public IArgusKDTreeNode<uint16>
 	void Populate(const ArgusEntity& entityToRepresent);
 };
 
-class ArgusEntityKDTree : public ArgusKDTree<ArgusEntityKDTreeNode, uint16>
+class ArgusEntityKDTreeRangeOutput
+{
+public:
+	ArgusEntityKDTreeRangeOutput(float rangedRange, float meleeRange);
+	void Add(const ArgusEntityKDTreeNode* nodeToAdd);
+
+private:
+	TArray<uint16> m_entityIdsWithinSightRange;
+	TArray<uint16> m_entityIdsWithinRangedRange;
+	TArray<uint16> m_entityIdsWithinMeleeRange;
+	float m_rangedRangeThresholdSquared = 0.0f;
+	float m_meleeRangeThresholdSquared = 0.0f;
+};
+
+class ArgusEntityKDTree : public ArgusKDTree<ArgusEntityKDTreeNode, TArray<const ArgusEntityKDTreeNode*>, uint16>
 {
 public:
 	static void ErrorOnInvalidArgusEntity(const WIDECHAR* functionName);

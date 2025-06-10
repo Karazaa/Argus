@@ -76,6 +76,17 @@ float ArgusEntityKDTreeNode::GetValueForDimension(uint16 dimension) const
 	}
 }
 
+ArgusEntityKDTreeRangeOutput::ArgusEntityKDTreeRangeOutput(float rangedRange, float meleeRange)
+{
+	m_rangedRangeThresholdSquared = rangedRange * rangedRange;
+	m_meleeRangeThresholdSquared = meleeRange * meleeRange;
+}
+
+void ArgusEntityKDTreeRangeOutput::Add(const ArgusEntityKDTreeNode* nodeToAdd)
+{
+
+}
+
 void ArgusEntityKDTree::ErrorOnInvalidArgusEntity(const WIDECHAR* functionName)
 {
 	ARGUS_LOG
