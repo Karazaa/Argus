@@ -26,11 +26,19 @@ struct ObstaclePointKDTreeNode : public IArgusKDTreeNode<bool>
 	virtual void	Populate(const FVector& worldSpaceLocation) override;
 	virtual bool	ShouldSkipNode() const override;
 	virtual bool	ShouldSkipNode(TFunction<bool(bool)> queryFilter) const override;
-	virtual bool	PassesRangeCheck(const FVector& targetLocation, float rangeSquared) const override;
+	virtual bool	PassesRangeCheck(const FVector& targetLocation, float rangeSquared, float& nodeRangeSquared) const override;
 	virtual float   GetValueForDimension(uint16 dimension) const override;
 };
 
-class ObstaclePointKDTree : public ArgusKDTree<ObstaclePointKDTreeNode, TArray<const ObstaclePointKDTreeNode*>, bool>
+class ObstaclePointKDTreeRangeOutput
+{
+public:
+	void Add(const ObstaclePointKDTreeNode* nodeToAdd, float distFromTargetSquared);
+
+	TArray<ObstacleIndicies> m_inRangeObstacleIndicies;
+};
+
+class ObstaclePointKDTree : public ArgusKDTree<ObstaclePointKDTreeNode, ObstaclePointKDTreeRangeOutput, bool>
 {
 public:
 	void InsertObstaclesIntoKDTree(const TArray<ObstaclePointArray>& obstacles);

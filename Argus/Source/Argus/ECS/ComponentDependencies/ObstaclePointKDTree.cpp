@@ -28,7 +28,7 @@ bool ObstaclePointKDTreeNode::ShouldSkipNode(TFunction<bool(bool)> queryFilter) 
 	return m_indicies.m_obstacleIndex < 0 || m_indicies.m_obstaclePointIndex < 0;
 }
 
-bool ObstaclePointKDTreeNode::PassesRangeCheck(const FVector& targetLocation, float rangeSquared) const
+bool ObstaclePointKDTreeNode::PassesRangeCheck(const FVector& targetLocation, float rangeSquared, float& nodeRangeSquared) const
 {
 	if (ShouldSkipNode())
 	{
@@ -47,7 +47,8 @@ bool ObstaclePointKDTreeNode::PassesRangeCheck(const FVector& targetLocation, fl
 		return false;
 	}
 
-	if (FVector::DistSquared(GetLocation(), targetLocation) < rangeSquared)
+	nodeRangeSquared = FVector::DistSquared(GetLocation(), targetLocation);
+	if (nodeRangeSquared < rangeSquared)
 	{
 		return true;
 	}
@@ -68,9 +69,9 @@ bool ObstaclePointKDTreeNode::PassesRangeCheck(const FVector& targetLocation, fl
 	}
 
 	const float amountLeftOfLine = ArgusMath::AmountLeftOf(location2D, next.m_point, targetLocation2D);
-	const float distanceSquaredLeftLine = ArgusMath::SafeDivide(FMath::Square(amountLeftOfLine), FVector2D::DistSquared(location2D, next.m_point));
+	nodeRangeSquared = ArgusMath::SafeDivide(FMath::Square(amountLeftOfLine), FVector2D::DistSquared(location2D, next.m_point));
 
-	const bool result = (distanceSquaredLeftLine < rangeSquared);
+	const bool result = (nodeRangeSquared < rangeSquared);
 
 	return result;
 }
@@ -89,6 +90,16 @@ float ObstaclePointKDTreeNode::GetValueForDimension(uint16 dimension) const
 		default:
 			return 0.0f;
 	}
+}
+
+void ObstaclePointKDTreeRangeOutput::Add(const ObstaclePointKDTreeNode* nodeToAdd, float distFromTargetSquared)
+{
+	if (!nodeToAdd)
+	{
+		return;
+	}
+
+	m_inRangeObstacleIndicies.Add(nodeToAdd->m_indicies);
 }
 
 void ObstaclePointKDTree::InsertObstaclesIntoKDTree(const TArray<ObstaclePointArray>& obstacles)
@@ -130,17 +141,12 @@ bool ObstaclePointKDTree::FindObstacleIndiciesWithinRangeOfLocation(TArray<Obsta
 		return false;
 	}
 
-	TArray<const ObstaclePointKDTreeNode*> foundNodes;
-	FindNodesWithinRangeOfLocationRecursive(foundNodes, m_rootNode, location, FMath::Square(range), nullptr, 0u);
-	obstacleIndicies.Reserve(foundNodes.Num());
-	for (int32 i = 0; i < foundNodes.Num(); ++i)
+	ObstaclePointKDTreeRangeOutput foundObstacles;
+	FindNodesWithinRangeOfLocationRecursive(foundObstacles, m_rootNode, location, FMath::Square(range), nullptr, 0u);
+	obstacleIndicies.Reserve(foundObstacles.m_inRangeObstacleIndicies.Num());
+	for (int32 i = 0; i < foundObstacles.m_inRangeObstacleIndicies.Num(); ++i)
 	{
-		if (!foundNodes[i])
-		{
-			continue;
-		}
-
-		obstacleIndicies.Add(foundNodes[i]->m_indicies);
+		obstacleIndicies.Add(foundObstacles.m_inRangeObstacleIndicies[i]);
 	}
 
 	return obstacleIndicies.Num() > 0;

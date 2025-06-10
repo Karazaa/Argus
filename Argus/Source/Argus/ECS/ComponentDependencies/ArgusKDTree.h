@@ -16,7 +16,7 @@ struct IArgusKDTreeNode : public IObjectPoolable
 	virtual void Populate(const FVector& worldSpaceLocation) = 0;
 	virtual bool ShouldSkipNode() const = 0;
 	virtual bool ShouldSkipNode(TFunction<bool(ValueComparisonType)> queryFilter) const = 0;
-	virtual bool PassesRangeCheck(const FVector& targetLocation, float rangeSquared) const = 0;
+	virtual bool PassesRangeCheck(const FVector& targetLocation, float rangeSquared, float& nodeRangeSquared) const = 0;
 	virtual float GetValueForDimension(uint16 dimension) const = 0;
 };
 
@@ -262,9 +262,10 @@ void ArgusKDTree<NodeType, OutputDataStructure, ValueComparisonType>::FindNodesW
 		return;
 	}
 
-	if (iterationNode->PassesRangeCheck(targetLocation, rangeSquared) && !iterationNode->ShouldSkipNode(queryFilter))
+	float nodeRange = 0.0f;
+	if (iterationNode->PassesRangeCheck(targetLocation, rangeSquared, nodeRange) && !iterationNode->ShouldSkipNode(queryFilter))
 	{
-		outNearbyNodes.Add(iterationNode);
+		outNearbyNodes.Add(iterationNode, nodeRange);
 	}
 
 	if (iterationNode->forceFullSearch)
@@ -362,7 +363,7 @@ void ArgusKDTree<NodeType, OutputDataStructure, ValueComparisonType>::FindNodesW
 
 	if (isInside && !iterationNode->ShouldSkipNode(queryFilter))
 	{
-		outNearbyNodes.Add(iterationNode);
+		outNearbyNodes.Add(iterationNode, minDifferenceInDimension);
 	}
 
 	if (iterationNode->forceFullSearch || dimension == 2 || !allDifferencesSameSign)

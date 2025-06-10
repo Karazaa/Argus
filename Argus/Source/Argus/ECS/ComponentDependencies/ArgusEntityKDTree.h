@@ -21,7 +21,7 @@ struct ArgusEntityKDTreeNode : public IArgusKDTreeNode<uint16>
 	virtual void	Populate(const FVector& worldSpaceLocation) override;
 	virtual bool	ShouldSkipNode() const override;
 	virtual bool	ShouldSkipNode(TFunction<bool(uint16)> queryFilter) const override;
-	virtual bool	PassesRangeCheck(const FVector& targetLocation, float rangeSquared) const override;
+	virtual bool	PassesRangeCheck(const FVector& targetLocation, float rangeSquared, float& nodeRangeSquared) const override;
 	virtual float   GetValueForDimension(uint16 dimension) const override;
 
 	void Populate(const ArgusEntity& entityToRepresent);
@@ -31,17 +31,17 @@ class ArgusEntityKDTreeRangeOutput
 {
 public:
 	ArgusEntityKDTreeRangeOutput(float rangedRange, float meleeRange);
-	void Add(const ArgusEntityKDTreeNode* nodeToAdd);
+	void Add(const ArgusEntityKDTreeNode* nodeToAdd, float distFromTargetSquared);
 
-private:
 	TArray<uint16> m_entityIdsWithinSightRange;
+private:
 	TArray<uint16> m_entityIdsWithinRangedRange;
 	TArray<uint16> m_entityIdsWithinMeleeRange;
 	float m_rangedRangeThresholdSquared = 0.0f;
 	float m_meleeRangeThresholdSquared = 0.0f;
 };
 
-class ArgusEntityKDTree : public ArgusKDTree<ArgusEntityKDTreeNode, TArray<const ArgusEntityKDTreeNode*>, uint16>
+class ArgusEntityKDTree : public ArgusKDTree<ArgusEntityKDTreeNode, ArgusEntityKDTreeRangeOutput, uint16>
 {
 public:
 	static void ErrorOnInvalidArgusEntity(const WIDECHAR* functionName);
