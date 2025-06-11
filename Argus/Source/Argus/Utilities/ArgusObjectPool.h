@@ -5,10 +5,11 @@
 #include "ArgusLogging.h"
 #include <queue>
 
-class IObjectPoolable
-{
-	virtual void Reset() = 0;
-};
+// Example interface! We don't actually need an interface or virtual table overhead since it is used in templates, but writing it out here for convenient template API definition.
+//class IObjectPoolable
+//{
+//	virtual void Reset() = 0;
+//};
 
 // Type IObjectPoolable is an implicit constraint for using the ArgusObjectPool. Types you want to pool should inherit from IObjectPoolable 
 template <class PoolableType>

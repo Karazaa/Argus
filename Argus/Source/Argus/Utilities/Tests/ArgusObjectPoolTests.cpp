@@ -7,11 +7,11 @@
 
 #if WITH_AUTOMATION_TESTS
 
-struct TestPoolable : public IObjectPoolable
+struct TestPoolable
 {
 	float m_dummyValue = 0.0f;
 
-	virtual void Reset() override
+	void Reset()
 	{
 		m_dummyValue = 0.0f;
 	}

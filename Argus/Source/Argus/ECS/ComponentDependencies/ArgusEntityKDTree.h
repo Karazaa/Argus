@@ -6,7 +6,7 @@
 
 class ArgusEntity;
 
-struct ArgusEntityKDTreeNode : public IArgusKDTreeNode<uint16>
+struct ArgusEntityKDTreeNode
 {
 	FVector		m_worldSpaceLocation = FVector::ZeroVector;
 	ArgusEntityKDTreeNode* m_leftChild = nullptr;
@@ -16,13 +16,13 @@ struct ArgusEntityKDTreeNode : public IArgusKDTreeNode<uint16>
 
 	ArgusEntityKDTreeNode() {};
 
-	virtual void	Reset() override;
-	virtual FVector GetLocation() const override { return m_worldSpaceLocation; }
-	virtual void	Populate(const FVector& worldSpaceLocation) override;
-	virtual bool	ShouldSkipNode() const override;
-	virtual bool	ShouldSkipNode(TFunction<bool(uint16)> queryFilter) const override;
-	virtual bool	PassesRangeCheck(const FVector& targetLocation, float rangeSquared, float& nodeRangeSquared) const override;
-	virtual float   GetValueForDimension(uint16 dimension) const override;
+	void	Reset();
+	FVector GetLocation() const { return m_worldSpaceLocation; }
+	void	Populate(const FVector& worldSpaceLocation);
+	bool	ShouldSkipNode() const;
+	bool	ShouldSkipNode(TFunction<bool(const ArgusEntityKDTreeNode*)> queryFilter) const;
+	bool	PassesRangeCheck(const FVector& targetLocation, float rangeSquared, float& nodeRangeSquared) const;
+	float   GetValueForDimension(uint16 dimension) const;
 
 	void Populate(const ArgusEntity& entityToRepresent);
 };
@@ -43,6 +43,8 @@ class ArgusEntityKDTreeRangeOutput
 {
 public:
 	void Add(const ArgusEntityKDTreeNode* nodeToAdd, const ArgusEntityKDTreeQueryRangeThresholds& thresholds, float distFromTargetSquared);
+	void ConsolidateInArray(TArray<uint16>& allEntityIds);
+	bool FoundAny() const;
 
 	TArray<uint16> m_entityIdsWithinSightRange;
 private:
@@ -51,11 +53,10 @@ private:
 	TArray<uint16> m_entityIdsWithinAvoidanceRange;
 };
 
-class ArgusEntityKDTree : public ArgusKDTree<ArgusEntityKDTreeNode, ArgusEntityKDTreeRangeOutput, ArgusEntityKDTreeQueryRangeThresholds, uint16>
+class ArgusEntityKDTree : public ArgusKDTree<ArgusEntityKDTreeNode, ArgusEntityKDTreeRangeOutput, ArgusEntityKDTreeQueryRangeThresholds>
 {
 public:
 	static void ErrorOnInvalidArgusEntity(const WIDECHAR* functionName);
-	static void ErrorOnInvalidTransformComponent(const WIDECHAR* functionName);
 
 	void SeedTreeWithAverageEntityLocation();
 	void InsertAllArgusEntitiesIntoKDTree();
@@ -64,13 +65,14 @@ public:
 
 	uint16 FindArgusEntityIdClosestToLocation(const FVector& location) const;
 	uint16 FindArgusEntityIdClosestToLocation(const FVector& location, const ArgusEntity& entityToIgnore) const;
-	uint16 FindArgusEntityIdClosestToLocation(const FVector& location, const TFunction<bool(uint16)> queryFilter) const;
-	uint16 FindOtherArgusEntityIdClosestToArgusEntity(const ArgusEntity& entityToSearchAround, const TFunction<bool(uint16)> queryFilterOverride = nullptr) const;
+	uint16 FindArgusEntityIdClosestToLocation(const FVector& location, const TFunction<bool(const ArgusEntityKDTreeNode*)> queryFilter) const;
+	uint16 FindOtherArgusEntityIdClosestToArgusEntity(const ArgusEntity& entityToSearchAround, const TFunction<bool(const ArgusEntityKDTreeNode*)> queryFilterOverride = nullptr) const;
 
 	bool FindArgusEntityIdsWithinRangeOfLocation(TArray<uint16>& outNearbyArgusEntityIds, const FVector& location, const float range) const;
 	bool FindArgusEntityIdsWithinRangeOfLocation(TArray<uint16>& outNearbyArgusEntityIds, const FVector& location, const float range, const ArgusEntity& entityToIgnore) const;
-	bool FindArgusEntityIdsWithinRangeOfLocation(TArray<uint16>& outNearbyArgusEntityIds, const FVector& location, const float range, const TFunction<bool(uint16)> queryFilterOverride) const;
-	bool FindOtherArgusEntityIdsWithinRangeOfArgusEntity(TArray<uint16>& outNearbyArgusEntityIds, const ArgusEntity& entityToSearchAround, const float range, const TFunction<bool(uint16)> queryFilterOverride = nullptr) const;
+	bool FindArgusEntityIdsWithinRangeOfLocation(TArray<uint16>& outNearbyArgusEntityIds, const FVector& location, const float range, const TFunction<bool(const ArgusEntityKDTreeNode*)> queryFilterOverride) const;
+	bool FindArgusEntityIdsWithinRangeOfLocation(ArgusEntityKDTreeRangeOutput& output, const ArgusEntityKDTreeQueryRangeThresholds& thresholds, const FVector& location, const float range, const TFunction<bool(const ArgusEntityKDTreeNode*)> queryFilterOverride) const;
+	bool FindOtherArgusEntityIdsWithinRangeOfArgusEntity(TArray<uint16>& outNearbyArgusEntityIds, const ArgusEntity& entityToSearchAround, const float range, const TFunction<bool(const ArgusEntityKDTreeNode*)> queryFilterOverride = nullptr) const;
 
 	bool FindArgusEntityIdsWithinConvexPoly(TArray<uint16>& outNearbyArgusEntityIds, const TArray<FVector>& convexPolygonPoints) const;
 	bool FindArgusEntityIdsWithinConvexPoly(TArray<uint16>& outNearbyArgusEntityIds, const TArray<FVector2D>& convexPolygonPoints) const;

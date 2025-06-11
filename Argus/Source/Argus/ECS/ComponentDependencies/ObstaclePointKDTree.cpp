@@ -23,7 +23,7 @@ bool ObstaclePointKDTreeNode::ShouldSkipNode() const
 	return m_indicies.m_obstacleIndex < 0 || m_indicies.m_obstaclePointIndex < 0;
 }
 
-bool ObstaclePointKDTreeNode::ShouldSkipNode(TFunction<bool(bool)> queryFilter) const
+bool ObstaclePointKDTreeNode::ShouldSkipNode(TFunction<bool(const ObstaclePointKDTreeNode*)> queryFilter) const
 {
 	return m_indicies.m_obstacleIndex < 0 || m_indicies.m_obstaclePointIndex < 0;
 }

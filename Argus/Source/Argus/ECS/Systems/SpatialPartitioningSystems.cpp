@@ -79,14 +79,15 @@ void SpatialPartitioningSystems::CacheAdjacentEntityIds(const SpatialPartitionin
 			adjacentEntityRange += velocityComponent->m_desiredSpeedUnitsPerSecond;
 		}
 
-		const TFunction<bool(uint16)> queryFilter = [entity](uint16 entityId)
-		{
-			if (entity.GetId() == entityId)
+		const TFunction<bool(const ArgusEntityKDTreeNode*)> queryFilter = [entity](const ArgusEntityKDTreeNode* entityNode)
+	{
+			ARGUS_RETURN_ON_NULL_BOOL(entityNode, ArgusECSLog);
+			if (entityNode->m_entityId == entity.GetId())
 			{
 				return false;
 			}
 
-			ArgusEntity otherEntity = ArgusEntity::RetrieveEntity(entityId);
+			ArgusEntity otherEntity = ArgusEntity::RetrieveEntity(entityNode->m_entityId);
 			if (!otherEntity || !otherEntity.IsAlive() || otherEntity.IsPassenger())
 			{
 				return false;

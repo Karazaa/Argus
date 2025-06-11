@@ -119,10 +119,7 @@ bool ArgusUtilitiesArgusKDTreeInsertEntitiesTest::RunTest(const FString& Paramet
 	(
 		FString::Printf
 		(
-			TEXT("Retrieved %s is invalid. Its owning %s cannot be added to or retrieved from %s."),
-			ARGUS_NAMEOF(TransformComponent),
-			ARGUS_NAMEOF(ArgusEntity),
-			ARGUS_NAMEOF(ArgusEntityKDTree)
+			TEXT("The variable, transformComponent, is null!")
 		)
 	);
 #pragma endregion
@@ -311,10 +308,7 @@ bool ArgusUtilitiesArgusKDTreeFindOtherArgusEntityIdClosestArgusEntityTest::RunT
 	(
 		FString::Printf
 		(
-			TEXT("Retrieved %s is invalid. Its owning %s cannot be added to or retrieved from %s."),
-			ARGUS_NAMEOF(TransformComponent),
-			ARGUS_NAMEOF(ArgusEntity),
-			ARGUS_NAMEOF(ArgusEntityKDTree)
+			TEXT("The variable, transformComponent, is null!")
 		)
 	);
 #pragma endregion

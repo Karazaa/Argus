@@ -11,7 +11,7 @@ struct ObstacleIndicies
 	int32 m_obstaclePointIndex = -1;
 };
 
-struct ObstaclePointKDTreeNode : public IArgusKDTreeNode<bool>
+struct ObstaclePointKDTreeNode
 {
 	FVector2D m_location = FVector2D::ZeroVector;
 	ObstacleIndicies m_indicies;
@@ -21,13 +21,13 @@ struct ObstaclePointKDTreeNode : public IArgusKDTreeNode<bool>
 
 	ObstaclePointKDTreeNode() {};
 
-	virtual void	Reset() override;
-	virtual FVector GetLocation() const override { return FVector(m_location, 0.0f); }
-	virtual void	Populate(const FVector& worldSpaceLocation) override;
-	virtual bool	ShouldSkipNode() const override;
-	virtual bool	ShouldSkipNode(TFunction<bool(bool)> queryFilter) const override;
-	virtual bool	PassesRangeCheck(const FVector& targetLocation, float rangeSquared, float& nodeRangeSquared) const override;
-	virtual float   GetValueForDimension(uint16 dimension) const override;
+	void	Reset();
+	FVector GetLocation() const { return FVector(m_location, 0.0f); }
+	void	Populate(const FVector& worldSpaceLocation);
+	bool	ShouldSkipNode() const;
+	bool	ShouldSkipNode(TFunction<bool(const ObstaclePointKDTreeNode*)> queryFilter) const;
+	bool	PassesRangeCheck(const FVector& targetLocation, float rangeSquared, float& nodeRangeSquared) const;
+	float   GetValueForDimension(uint16 dimension) const;
 };
 
 struct ObstaclePointKDTreeQueryRangeThresholds
@@ -43,7 +43,7 @@ public:
 	TArray<ObstacleIndicies> m_inRangeObstacleIndicies;
 };
 
-class ObstaclePointKDTree : public ArgusKDTree<ObstaclePointKDTreeNode, ObstaclePointKDTreeRangeOutput, ObstaclePointKDTreeQueryRangeThresholds, bool>
+class ObstaclePointKDTree : public ArgusKDTree<ObstaclePointKDTreeNode, ObstaclePointKDTreeRangeOutput, ObstaclePointKDTreeQueryRangeThresholds>
 {
 public:
 	void InsertObstaclesIntoKDTree(const TArray<ObstaclePointArray>& obstacles);

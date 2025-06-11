@@ -191,16 +191,17 @@ void ResourceSystems::MoveToNearestDepositSink(const ResourceSystemsArgs& compon
 	}
 
 	const uint16 entityId = components.m_entity.GetId();
-	TFunction<bool(uint16)> queryFilter = [entityId](uint16 nodeEntityId)
+	TFunction<bool(const ArgusEntityKDTreeNode*)> queryFilter = [entityId](const ArgusEntityKDTreeNode* entityNode)
 	{
-		if (nodeEntityId == entityId)
+		ARGUS_RETURN_ON_NULL_BOOL(entityNode, ArgusECSLog);
+		if (entityNode->m_entityId == entityId)
 		{
 			return false;
 		}
 
 		const ArgusEntity entity = ArgusEntity::RetrieveEntity(entityId);
 		const IdentityComponent* identityComponent = entity.GetComponent<IdentityComponent>();
-		const ArgusEntity nodeEntity = ArgusEntity::RetrieveEntity(nodeEntityId);
+		const ArgusEntity nodeEntity = ArgusEntity::RetrieveEntity(entityNode->m_entityId);
 		const IdentityComponent* nodeIdentityComponent = nodeEntity.GetComponent<IdentityComponent>();
 		const ResourceComponent* nodeResourceComponent = nodeEntity.GetComponent<ResourceComponent>();
 		if (!identityComponent || !nodeIdentityComponent || !nodeResourceComponent)

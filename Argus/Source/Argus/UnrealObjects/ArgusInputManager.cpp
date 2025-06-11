@@ -1445,7 +1445,7 @@ void UArgusInputManager::SetReticleState()
 
 	reticleComponent->m_reticleLocation = hitResult.Location;
 
-	SpatialPartitioningComponent* spatialPartitioningComponent = singletonEntity.GetComponent<SpatialPartitioningComponent>();
+	const SpatialPartitioningComponent* spatialPartitioningComponent = singletonEntity.GetComponent<SpatialPartitioningComponent>();
 	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusInputLog);
 
 	TArray<uint16> nearbyArgusEntityIds;
