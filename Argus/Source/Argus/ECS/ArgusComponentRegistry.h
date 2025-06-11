@@ -17,6 +17,7 @@
 #include "ComponentDefinitions\HealthComponent.h"
 #include "ComponentDefinitions\IdentityComponent.h"
 #include "ComponentDefinitions\NavigationComponent.h"
+#include "ComponentDefinitions\NearbyEntitiesComponent.h"
 #include "ComponentDefinitions\ObserversComponent.h"
 #include "ComponentDefinitions\PassengerComponent.h"
 #include "ComponentDefinitions\ResourceComponent.h"
@@ -64,7 +65,7 @@ public:
 	static void DrawComponentsDebug(uint16 entityId);
 #endif //!UE_BUILD_SHIPPING
 
-	static constexpr uint32 k_numComponentTypes = 21;
+	static constexpr uint32 k_numComponentTypes = 22;
 
 	// Begin component specific template specifiers.
 	
@@ -587,6 +588,71 @@ public:
 	}
 
 	friend struct NavigationComponent;
+#pragma endregion
+#pragma region NearbyEntitiesComponent
+private:
+	static NearbyEntitiesComponent s_NearbyEntitiesComponents[ArgusECSConstants::k_maxEntities];
+	static std::bitset<ArgusECSConstants::k_maxEntities> s_isNearbyEntitiesComponentActive;
+public:
+	template<>
+	inline NearbyEntitiesComponent* GetComponent<NearbyEntitiesComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(NearbyEntitiesComponent));
+			return nullptr;
+		}
+
+		if (!s_isNearbyEntitiesComponentActive[entityId])
+		{
+			return nullptr;
+		}
+
+		return &s_NearbyEntitiesComponents[entityId];
+	}
+
+	template<>
+	inline NearbyEntitiesComponent* AddComponent<NearbyEntitiesComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(NearbyEntitiesComponent));
+			return nullptr;
+		}
+
+		if (s_isNearbyEntitiesComponentActive[entityId])
+		{
+			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(NearbyEntitiesComponent), entityId);
+			return &s_NearbyEntitiesComponents[entityId];
+		}
+
+		s_NearbyEntitiesComponents[entityId] = NearbyEntitiesComponent();
+		s_isNearbyEntitiesComponentActive.set(entityId);
+		return &s_NearbyEntitiesComponents[entityId];
+	}
+
+	template<>
+	inline NearbyEntitiesComponent* GetOrAddComponent<NearbyEntitiesComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(NearbyEntitiesComponent));
+			return nullptr;
+		}
+
+		if (s_isNearbyEntitiesComponentActive[entityId])
+		{
+			return &s_NearbyEntitiesComponents[entityId];
+		}
+		else
+		{
+			s_NearbyEntitiesComponents[entityId] = NearbyEntitiesComponent();
+			s_isNearbyEntitiesComponentActive.set(entityId);
+			return &s_NearbyEntitiesComponents[entityId];
+		}
+	}
+
+	friend struct NearbyEntitiesComponent;
 #pragma endregion
 #pragma region ObserversComponent
 private:

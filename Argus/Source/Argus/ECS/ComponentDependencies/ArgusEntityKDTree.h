@@ -9,9 +9,9 @@ class ArgusEntity;
 struct ArgusEntityKDTreeNode : public IArgusKDTreeNode<uint16>
 {
 	FVector		m_worldSpaceLocation = FVector::ZeroVector;
-	uint16		m_entityId = ArgusECSConstants::k_maxEntities;
 	ArgusEntityKDTreeNode* m_leftChild = nullptr;
 	ArgusEntityKDTreeNode* m_rightChild = nullptr;
+	uint16		m_entityId = ArgusECSConstants::k_maxEntities;
 	bool forceFullSearch = false;
 
 	ArgusEntityKDTreeNode() {};
@@ -27,21 +27,31 @@ struct ArgusEntityKDTreeNode : public IArgusKDTreeNode<uint16>
 	void Populate(const ArgusEntity& entityToRepresent);
 };
 
+struct ArgusEntityKDTreeQueryRangeThresholds
+{
+	ArgusEntityKDTreeQueryRangeThresholds(float rangedRangeThreshold, float meleeRangeThreshold, float avoidanceRangeThreshold) : 
+		m_rangedRangeThresholdSquared(rangedRangeThreshold * rangedRangeThreshold),
+		m_meleeRangeThresholdSquared(meleeRangeThreshold * meleeRangeThreshold),
+		m_avoidanceRangeThresholdSquared(avoidanceRangeThreshold * avoidanceRangeThreshold){}
+
+	float m_rangedRangeThresholdSquared = 0.0f;
+	float m_meleeRangeThresholdSquared = 0.0f;
+	float m_avoidanceRangeThresholdSquared = 0.0f;
+};
+
 class ArgusEntityKDTreeRangeOutput
 {
 public:
-	ArgusEntityKDTreeRangeOutput(float rangedRange, float meleeRange);
-	void Add(const ArgusEntityKDTreeNode* nodeToAdd, float distFromTargetSquared);
+	void Add(const ArgusEntityKDTreeNode* nodeToAdd, const ArgusEntityKDTreeQueryRangeThresholds& thresholds, float distFromTargetSquared);
 
 	TArray<uint16> m_entityIdsWithinSightRange;
 private:
 	TArray<uint16> m_entityIdsWithinRangedRange;
 	TArray<uint16> m_entityIdsWithinMeleeRange;
-	float m_rangedRangeThresholdSquared = 0.0f;
-	float m_meleeRangeThresholdSquared = 0.0f;
+	TArray<uint16> m_entityIdsWithinAvoidanceRange;
 };
 
-class ArgusEntityKDTree : public ArgusKDTree<ArgusEntityKDTreeNode, ArgusEntityKDTreeRangeOutput, uint16>
+class ArgusEntityKDTree : public ArgusKDTree<ArgusEntityKDTreeNode, ArgusEntityKDTreeRangeOutput, ArgusEntityKDTreeQueryRangeThresholds, uint16>
 {
 public:
 	static void ErrorOnInvalidArgusEntity(const WIDECHAR* functionName);

@@ -36,6 +36,10 @@ std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isIdenti
 NavigationComponent ArgusComponentRegistry::s_NavigationComponents[ArgusECSConstants::k_maxEntities];
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isNavigationComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
 #pragma endregion
+#pragma region NearbyEntitiesComponent
+NearbyEntitiesComponent ArgusComponentRegistry::s_NearbyEntitiesComponents[ArgusECSConstants::k_maxEntities];
+std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isNearbyEntitiesComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
+#pragma endregion
 #pragma region ObserversComponent
 ObserversComponent ArgusComponentRegistry::s_ObserversComponents[ArgusECSConstants::k_maxEntities];
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isObserversComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
@@ -103,6 +107,7 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 	s_isHealthComponentActive.set(entityId, false);
 	s_isIdentityComponentActive.set(entityId, false);
 	s_isNavigationComponentActive.set(entityId, false);
+	s_isNearbyEntitiesComponentActive.set(entityId, false);
 	s_isObserversComponentActive.set(entityId, false);
 	s_isPassengerComponentActive.set(entityId, false);
 	s_isResourceComponentActive.set(entityId, false);
@@ -123,6 +128,7 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 	s_HealthComponents[entityId] = HealthComponent();
 	s_IdentityComponents[entityId] = IdentityComponent();
 	s_NavigationComponents[entityId] = NavigationComponent();
+	s_NearbyEntitiesComponents[entityId] = NearbyEntitiesComponent();
 	s_ObserversComponents[entityId] = ObserversComponent();
 	s_PassengerComponents[entityId] = PassengerComponent();
 	s_ResourceComponents[entityId] = ResourceComponent();
@@ -160,6 +166,7 @@ void ArgusComponentRegistry::FlushAllComponents()
 	s_isHealthComponentActive.reset();
 	s_isIdentityComponentActive.reset();
 	s_isNavigationComponentActive.reset();
+	s_isNearbyEntitiesComponentActive.reset();
 	s_isObserversComponentActive.reset();
 	s_isPassengerComponentActive.reset();
 	s_isResourceComponentActive.reset();
@@ -182,6 +189,7 @@ void ArgusComponentRegistry::FlushAllComponents()
 		s_HealthComponents[i] = HealthComponent();
 		s_IdentityComponents[i] = IdentityComponent();
 		s_NavigationComponents[i] = NavigationComponent();
+		s_NearbyEntitiesComponents[i] = NearbyEntitiesComponent();
 		s_ObserversComponents[i] = ObserversComponent();
 		s_PassengerComponents[i] = PassengerComponent();
 		s_ResourceComponents[i] = ResourceComponent();
@@ -241,6 +249,11 @@ uint16 ArgusComponentRegistry::GetOwningEntityIdForComponentMember(void* memberA
 	{
 		NavigationComponent* pretendComponent = reinterpret_cast<NavigationComponent*>(memberAddress);
 		return pretendComponent - &s_NavigationComponents[0];
+	}
+	if (memberAddress >= &s_NearbyEntitiesComponents[0] && memberAddress <= &s_NearbyEntitiesComponents[ArgusECSConstants::k_maxEntities - 1])
+	{
+		NearbyEntitiesComponent* pretendComponent = reinterpret_cast<NearbyEntitiesComponent*>(memberAddress);
+		return pretendComponent - &s_NearbyEntitiesComponents[0];
 	}
 	if (memberAddress >= &s_ObserversComponents[0] && memberAddress <= &s_ObserversComponents[ArgusECSConstants::k_maxEntities - 1])
 	{
@@ -330,6 +343,10 @@ void ArgusComponentRegistry::DrawComponentsDebug(uint16 entityId)
 	if (const NavigationComponent* NavigationComponentPtr = GetComponent<NavigationComponent>(entityId))
 	{
 		NavigationComponentPtr->DrawComponentDebug();
+	}
+	if (const NearbyEntitiesComponent* NearbyEntitiesComponentPtr = GetComponent<NearbyEntitiesComponent>(entityId))
+	{
+		NearbyEntitiesComponentPtr->DrawComponentDebug();
 	}
 	if (const ObserversComponent* ObserversComponentPtr = GetComponent<ObserversComponent>(entityId))
 	{

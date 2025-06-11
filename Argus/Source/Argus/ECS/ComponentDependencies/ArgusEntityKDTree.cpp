@@ -77,25 +77,24 @@ float ArgusEntityKDTreeNode::GetValueForDimension(uint16 dimension) const
 	}
 }
 
-ArgusEntityKDTreeRangeOutput::ArgusEntityKDTreeRangeOutput(float rangedRange, float meleeRange)
-{
-	m_rangedRangeThresholdSquared = rangedRange * rangedRange;
-	m_meleeRangeThresholdSquared = meleeRange * meleeRange;
-}
-
-void ArgusEntityKDTreeRangeOutput::Add(const ArgusEntityKDTreeNode* nodeToAdd, float distFromTargetSquared)
+void ArgusEntityKDTreeRangeOutput::Add(const ArgusEntityKDTreeNode* nodeToAdd, const ArgusEntityKDTreeQueryRangeThresholds& thresholds, float distFromTargetSquared)
 {
 	if (!nodeToAdd)
 	{
 		return;
 	}
 
-	uint16 entityId = nodeToAdd->m_entityId;
-	if (distFromTargetSquared < m_meleeRangeThresholdSquared)
+	const uint16 entityId = nodeToAdd->m_entityId;
+	if (distFromTargetSquared < thresholds.m_avoidanceRangeThresholdSquared)
+	{
+		m_entityIdsWithinAvoidanceRange.Add(entityId);
+	}
+
+	if (distFromTargetSquared < thresholds.m_meleeRangeThresholdSquared)
 	{
 		m_entityIdsWithinMeleeRange.Add(entityId);
 	}
-	else if (distFromTargetSquared < m_rangedRangeThresholdSquared)
+	else if (distFromTargetSquared < thresholds.m_rangedRangeThresholdSquared)
 	{
 		m_entityIdsWithinRangedRange.Add(entityId);
 	}
@@ -313,8 +312,8 @@ bool ArgusEntityKDTree::FindArgusEntityIdsWithinRangeOfLocation(TArray<uint16>& 
 		return false;
 	}
 
-	ArgusEntityKDTreeRangeOutput foundEntities = ArgusEntityKDTreeRangeOutput(0.0f, 0.0f);
-	FindNodesWithinRangeOfLocationRecursive(foundEntities, m_rootNode, location, FMath::Square(range), queryFilterOverride, 0u);
+	ArgusEntityKDTreeRangeOutput foundEntities;
+	FindNodesWithinRangeOfLocationRecursive(foundEntities, ArgusEntityKDTreeQueryRangeThresholds(0.0f, 0.0f, 0.0f), m_rootNode, location, FMath::Square(range), queryFilterOverride, 0u);
 	outNearbyArgusEntityIds.Reserve(foundEntities.m_entityIdsWithinSightRange.Num());
 	for (int32 i = 0; i < foundEntities.m_entityIdsWithinSightRange.Num(); ++i)
 	{
@@ -360,8 +359,8 @@ bool ArgusEntityKDTree::FindArgusEntityIdsWithinConvexPoly(TArray<uint16>& outNe
 		return false;
 	}
 
-	ArgusEntityKDTreeRangeOutput foundEntities = ArgusEntityKDTreeRangeOutput(0.0f, 0.0f);
-	FindNodesWithinConvexPolyRecursive(foundEntities, m_rootNode, convexPolygonPoints, nullptr, 0u);
+	ArgusEntityKDTreeRangeOutput foundEntities;
+	FindNodesWithinConvexPolyRecursive(foundEntities, ArgusEntityKDTreeQueryRangeThresholds(0.0f, 0.0f, 0.0f), m_rootNode, convexPolygonPoints, nullptr, 0u);
 	outNearbyArgusEntityIds.Reserve(foundEntities.m_entityIdsWithinSightRange.Num());
 	for (int32 i = 0; i < foundEntities.m_entityIdsWithinSightRange.Num(); ++i)
 	{

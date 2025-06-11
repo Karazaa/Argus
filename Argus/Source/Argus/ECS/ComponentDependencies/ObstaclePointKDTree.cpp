@@ -92,7 +92,7 @@ float ObstaclePointKDTreeNode::GetValueForDimension(uint16 dimension) const
 	}
 }
 
-void ObstaclePointKDTreeRangeOutput::Add(const ObstaclePointKDTreeNode* nodeToAdd, float distFromTargetSquared)
+void ObstaclePointKDTreeRangeOutput::Add(const ObstaclePointKDTreeNode* nodeToAdd, const ObstaclePointKDTreeQueryRangeThresholds&, float)
 {
 	if (!nodeToAdd)
 	{
@@ -142,7 +142,7 @@ bool ObstaclePointKDTree::FindObstacleIndiciesWithinRangeOfLocation(TArray<Obsta
 	}
 
 	ObstaclePointKDTreeRangeOutput foundObstacles;
-	FindNodesWithinRangeOfLocationRecursive(foundObstacles, m_rootNode, location, FMath::Square(range), nullptr, 0u);
+	FindNodesWithinRangeOfLocationRecursive(foundObstacles, ObstaclePointKDTreeQueryRangeThresholds(), m_rootNode, location, FMath::Square(range), nullptr, 0u);
 	obstacleIndicies.Reserve(foundObstacles.m_inRangeObstacleIndicies.Num());
 	for (int32 i = 0; i < foundObstacles.m_inRangeObstacleIndicies.Num(); ++i)
 	{

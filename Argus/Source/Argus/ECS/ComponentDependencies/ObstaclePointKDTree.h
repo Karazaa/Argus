@@ -30,15 +30,20 @@ struct ObstaclePointKDTreeNode : public IArgusKDTreeNode<bool>
 	virtual float   GetValueForDimension(uint16 dimension) const override;
 };
 
+struct ObstaclePointKDTreeQueryRangeThresholds
+{
+	float m_avoidanceRangeThresholdSquared = 0.0f;
+};
+
 class ObstaclePointKDTreeRangeOutput
 {
 public:
-	void Add(const ObstaclePointKDTreeNode* nodeToAdd, float distFromTargetSquared);
+	void Add(const ObstaclePointKDTreeNode* nodeToAdd, const ObstaclePointKDTreeQueryRangeThresholds& thresholds, float distFromTargetSquared);
 
 	TArray<ObstacleIndicies> m_inRangeObstacleIndicies;
 };
 
-class ObstaclePointKDTree : public ArgusKDTree<ObstaclePointKDTreeNode, ObstaclePointKDTreeRangeOutput, bool>
+class ObstaclePointKDTree : public ArgusKDTree<ObstaclePointKDTreeNode, ObstaclePointKDTreeRangeOutput, ObstaclePointKDTreeQueryRangeThresholds, bool>
 {
 public:
 	void InsertObstaclesIntoKDTree(const TArray<ObstaclePointArray>& obstacles);
