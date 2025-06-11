@@ -377,11 +377,7 @@ bool ArgusEntityKDTree::FindArgusEntityIdsWithinConvexPoly(TArray<uint16>& outNe
 
 	ArgusEntityKDTreeRangeOutput foundEntities;
 	FindNodesWithinConvexPolyRecursive(foundEntities, ArgusEntityKDTreeQueryRangeThresholds(0.0f, 0.0f, 0.0f), m_rootNode, convexPolygonPoints, nullptr, 0u);
-	outNearbyArgusEntityIds.Reserve(foundEntities.m_entityIdsWithinSightRange.Num());
-	for (int32 i = 0; i < foundEntities.m_entityIdsWithinSightRange.Num(); ++i)
-	{
-		outNearbyArgusEntityIds.Add(foundEntities.m_entityIdsWithinSightRange[i]);
-	}
+	foundEntities.ConsolidateInArray(outNearbyArgusEntityIds);
 
 	return outNearbyArgusEntityIds.Num() > 0;
 }

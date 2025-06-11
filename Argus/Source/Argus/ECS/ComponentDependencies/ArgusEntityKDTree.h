@@ -46,8 +46,8 @@ public:
 	void ConsolidateInArray(TArray<uint16>& allEntityIds);
 	bool FoundAny() const;
 
-	TArray<uint16> m_entityIdsWithinSightRange;
 private:
+	TArray<uint16> m_entityIdsWithinSightRange;
 	TArray<uint16> m_entityIdsWithinRangedRange;
 	TArray<uint16> m_entityIdsWithinMeleeRange;
 	TArray<uint16> m_entityIdsWithinAvoidanceRange;
