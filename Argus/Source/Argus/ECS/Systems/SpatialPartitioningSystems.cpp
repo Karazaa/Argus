@@ -45,32 +45,20 @@ void SpatialPartitioningSystems::CacheAdjacentEntityIds(const SpatialPartitionin
 	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{
 		ArgusEntity entity = ArgusEntity::RetrieveEntity(i);
-
-		if (!entity)
-		{
-			continue;
-		}
-
-		AvoidanceGroupingComponent* avoidanceGroupingComponent = entity.GetComponent<AvoidanceGroupingComponent>();
-		if (!avoidanceGroupingComponent)
-		{
-			continue;
-		}
-
-		avoidanceGroupingComponent->m_adjacentEntities.Reset();
-		avoidanceGroupingComponent->m_groupId = ArgusECSConstants::k_maxEntities;
-		avoidanceGroupingComponent->m_groupAverageLocation = FVector::ZeroVector;
-		avoidanceGroupingComponent->m_numberOfIdleEntities = 0u;
-
-		if (!entity.IsMoveable())
-		{
-			continue;
-		}
-
+		NearbyEntitiesComponent* nearbyEntitiesComponent = entity.GetComponent<NearbyEntitiesComponent>();
 		const TransformComponent* transformComponent = entity.GetComponent<TransformComponent>();
-		if (!transformComponent)
+		if (!nearbyEntitiesComponent || !transformComponent)
 		{
 			continue;
+		}
+
+		nearbyEntitiesComponent->m_nearbyEntities.EmptyAll();
+
+		if (AvoidanceGroupingComponent* avoidanceGroupingComponent = entity.GetComponent<AvoidanceGroupingComponent>())
+		{
+			avoidanceGroupingComponent->m_groupId = ArgusECSConstants::k_maxEntities;
+			avoidanceGroupingComponent->m_groupAverageLocation = FVector::ZeroVector;
+			avoidanceGroupingComponent->m_numberOfIdleEntities = 0u;
 		}
 
 		float adjacentEntityRange = transformComponent->m_radius;
@@ -96,7 +84,17 @@ void SpatialPartitioningSystems::CacheAdjacentEntityIds(const SpatialPartitionin
 			return true;
 		};
 
-		spatialPartitioningComponent->m_argusEntityKDTree.FindOtherArgusEntityIdsWithinRangeOfArgusEntity(avoidanceGroupingComponent->m_adjacentEntities, entity, adjacentEntityRange, queryFilter);
+		float meleeRange = 0.0f;
+		float rangedRange = 0.0f;
+		float sightRange = adjacentEntityRange;
+		if (const TargetingComponent* targetingComponent = entity.GetComponent<TargetingComponent>())
+		{
+			meleeRange = targetingComponent->m_meleeRange;
+			rangedRange = targetingComponent->m_rangedRange;
+			sightRange = targetingComponent->m_sightRange;
+		}
+		ArgusEntityKDTreeQueryRangeThresholds queryThresholds = ArgusEntityKDTreeQueryRangeThresholds(rangedRange, meleeRange, adjacentEntityRange);
+		spatialPartitioningComponent->m_argusEntityKDTree.FindOtherArgusEntityIdsWithinRangeOfArgusEntity(nearbyEntitiesComponent->m_nearbyEntities, queryThresholds, entity, sightRange, queryFilter);
 	}
 }
 
@@ -140,13 +138,14 @@ bool SpatialPartitioningSystems::FloodFillGroupRecursive(uint16 groupId, uint16 
 		return false;
 	}
 
+	NearbyEntitiesComponent* nearbyEntitiesComponent = entity.GetComponent<NearbyEntitiesComponent>();
 	AvoidanceGroupingComponent* avoidanceGroupingComponent = entity.GetComponent<AvoidanceGroupingComponent>();
 	const TransformComponent* transformComponent = entity.GetComponent<TransformComponent>();
 	const IdentityComponent* identityComponent = entity.GetComponent<IdentityComponent>();
 	const TargetingComponent* targetingComponent = entity.GetComponent<TargetingComponent>();
 	const IdentityComponent* groupLeaderIdentityComponent = groupLeaderEntity.GetComponent<IdentityComponent>();
 	const TargetingComponent* groupLeaderTargetingComponent = groupLeaderEntity.GetComponent<TargetingComponent>();
-	if (!avoidanceGroupingComponent || !transformComponent || !identityComponent || !targetingComponent || !groupLeaderIdentityComponent || !groupLeaderTargetingComponent)
+	if (!nearbyEntitiesComponent || !avoidanceGroupingComponent || !transformComponent || !identityComponent || !targetingComponent || !groupLeaderIdentityComponent || !groupLeaderTargetingComponent)
 	{
 		return false;
 	}
@@ -174,9 +173,9 @@ bool SpatialPartitioningSystems::FloodFillGroupRecursive(uint16 groupId, uint16 
 		numberOfStoppedEntities++;
 	}
 
-	for (int32 i = 0; i < avoidanceGroupingComponent->m_adjacentEntities.Num(); ++i)
+	for (int32 i = 0; i < nearbyEntitiesComponent->m_nearbyEntities.GetEntitiesInAvoidanceRange().Num(); ++i)
 	{
-		FloodFillGroupRecursive(groupId, avoidanceGroupingComponent->m_adjacentEntities[i], averageLocation, numberOfEntitiesInGroup, numberOfStoppedEntities);
+		FloodFillGroupRecursive(groupId, nearbyEntitiesComponent->m_nearbyEntities.GetEntitiesInAvoidanceRange()[i], averageLocation, numberOfEntitiesInGroup, numberOfStoppedEntities);
 	}
 
 	return groupId == entityId;

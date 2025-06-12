@@ -15,6 +15,7 @@ struct TargetingComponent
 
 	float m_meleeRange = 400.0f;
 	float m_rangedRange = 400.0f;
+	float m_sightRange = 1200.0f;
 
 	ARGUS_IGNORE()
 	uint16 m_targetEntityId = ArgusECSConstants::k_maxEntities;

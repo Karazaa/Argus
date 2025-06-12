@@ -17,6 +17,8 @@ public:
 	float m_meleeRange = 400.0f;
 	UPROPERTY(EditAnywhere)
 	float m_rangedRange = 400.0f;
+	UPROPERTY(EditAnywhere)
+	float m_sightRange = 1200.0f;
 	uint16 m_targetEntityId = ArgusECSConstants::k_maxEntities;
 
 	void InstantiateComponentForEntity(ArgusEntity& entity) const override;

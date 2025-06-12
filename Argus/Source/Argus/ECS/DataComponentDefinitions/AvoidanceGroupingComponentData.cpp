@@ -7,7 +7,6 @@
 void UAvoidanceGroupingComponentData::InstantiateComponentForEntity(ArgusEntity& entity) const
 {
 	AvoidanceGroupingComponent* AvoidanceGroupingComponentRef = entity.AddComponent<AvoidanceGroupingComponent>();
-	AvoidanceGroupingComponentRef->m_adjacentEntities = m_adjacentEntities;
 	AvoidanceGroupingComponentRef->m_groupAverageLocation = m_groupAverageLocation;
 	AvoidanceGroupingComponentRef->m_groupId = m_groupId;
 	AvoidanceGroupingComponentRef->m_numberOfIdleEntities = m_numberOfIdleEntities;

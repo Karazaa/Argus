@@ -37,26 +37,27 @@ void AvoidanceSystems::RunSystems(UWorld* worldPointer, float deltaTime)
 			continue;
 		}
 
-		const AvoidanceGroupingComponent* avoidanceGroupingComponent = components.m_entity.GetComponent<AvoidanceGroupingComponent>();
-		if (!avoidanceGroupingComponent)
+		const NearbyEntitiesComponent* nearbyEntitiesComponent = components.m_entity.GetComponent<NearbyEntitiesComponent>();
+		if (!nearbyEntitiesComponent)
 		{
 			continue;
 		}
 
-		ProcessORCAvoidance(worldPointer, deltaTime, components, avoidanceGroupingComponent);
+		ProcessORCAvoidance(worldPointer, deltaTime, components, nearbyEntitiesComponent);
 	}
 }
 
 #pragma region Optimal Reciprocal Collision Avoidance
-void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime, const TransformSystemsArgs& components, const AvoidanceGroupingComponent* avoidanceGroupingComponent)
+void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime, const TransformSystemsArgs& components, const NearbyEntitiesComponent* nearbyEntitiesComponent)
 {
 	ARGUS_MEMORY_TRACE(ArgusAvoidanceSystems);
 	ARGUS_TRACE(AvoidanceSystems::ProcessORCAvoidance);
 
-	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME) || !avoidanceGroupingComponent)
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return;
 	}
+	ARGUS_RETURN_ON_NULL(nearbyEntitiesComponent, ArgusECSLog);
 
 	const ArgusEntity singletonEntity = ArgusEntity::GetSingletonEntity();
 	if (!singletonEntity)
@@ -65,12 +66,8 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 		return;
 	}
 
-	const SpatialPartitioningComponent* const spatialPartitioningComponent = singletonEntity.GetComponent<SpatialPartitioningComponent>();
-	if (!spatialPartitioningComponent)
-	{
-		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Could not retrieve %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(SpatialPartitioningComponent*))
-		return;
-	}
+	const SpatialPartitioningComponent* spatialPartitioningComponent = singletonEntity.GetComponent<SpatialPartitioningComponent>();
+	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
 
 	FVector2D desiredVelocity = GetDesiredVelocity(components);
 
@@ -86,7 +83,7 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 	params.m_spatialPartitioningComponent = spatialPartitioningComponent;
 
 	// If no entities nearby, then nothing can effect our navigation, so we should just early out with a desired velocity. 
-	const TArray<uint16>& foundEntityIds = avoidanceGroupingComponent->m_adjacentEntities;
+	const TArray<uint16>& foundEntityIds = nearbyEntitiesComponent->m_nearbyEntities.GetEntitiesInAvoidanceRange();
 	if (foundEntityIds.IsEmpty())
 	{
 		// If we have no desired velocity, we should try to get a desired velocity direction towards where we last navigated too.

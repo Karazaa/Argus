@@ -12,7 +12,6 @@ class ARGUS_API UAvoidanceGroupingComponentData : public UComponentData
 	GENERATED_BODY()
 
 public:
-	TArray<uint16> m_adjacentEntities;
 	FVector m_groupAverageLocation = FVector::ZeroVector;
 	uint16 m_groupId = ArgusECSConstants::k_maxEntities;
 	uint16 m_numberOfIdleEntities = 0u;

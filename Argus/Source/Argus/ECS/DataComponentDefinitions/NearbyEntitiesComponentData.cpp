@@ -7,6 +7,7 @@
 void UNearbyEntitiesComponentData::InstantiateComponentForEntity(ArgusEntity& entity) const
 {
 	NearbyEntitiesComponent* NearbyEntitiesComponentRef = entity.AddComponent<NearbyEntitiesComponent>();
+	NearbyEntitiesComponentRef->m_nearbyEntities = m_nearbyEntities;
 }
 
 bool UNearbyEntitiesComponentData::MatchesType(UComponentData* other) const

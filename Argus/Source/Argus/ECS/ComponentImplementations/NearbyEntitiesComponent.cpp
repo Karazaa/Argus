@@ -27,6 +27,9 @@ void NearbyEntitiesComponent::DrawComponentDebug() const
 
 	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings))
 	{
+		ImGui::TableNextColumn();
+		ImGui::Text("m_nearbyEntities");
+		ImGui::TableNextColumn();
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

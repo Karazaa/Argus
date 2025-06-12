@@ -28,17 +28,6 @@ void AvoidanceGroupingComponent::DrawComponentDebug() const
 	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings))
 	{
 		ImGui::TableNextColumn();
-		ImGui::Text("m_adjacentEntities");
-		ImGui::TableNextColumn();
-		if (m_adjacentEntities.Num() == 0)
-		{
-			ImGui::Text("Array is empty");
-		}
-		else
-		{
-			ImGui::Text("Size of array = %d", m_adjacentEntities.Num());
-		}
-		ImGui::TableNextColumn();
 		ImGui::Text("m_groupAverageLocation");
 		ImGui::TableNextColumn();
 		ImGui::Text("(%.2f, %.2f, %.2f)", m_groupAverageLocation.X, m_groupAverageLocation.Y, m_groupAverageLocation.Z);

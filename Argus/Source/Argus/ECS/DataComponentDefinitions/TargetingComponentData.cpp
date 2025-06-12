@@ -10,6 +10,7 @@ void UTargetingComponentData::InstantiateComponentForEntity(ArgusEntity& entity)
 	TargetingComponentRef->m_targetLocation = m_targetLocation;
 	TargetingComponentRef->m_meleeRange = m_meleeRange;
 	TargetingComponentRef->m_rangedRange = m_rangedRange;
+	TargetingComponentRef->m_sightRange = m_sightRange;
 	TargetingComponentRef->m_targetEntityId = m_targetEntityId;
 }
 

@@ -12,6 +12,7 @@ class ARGUS_API UNearbyEntitiesComponentData : public UComponentData
 	GENERATED_BODY()
 
 public:
+	ArgusEntityKDTreeRangeOutput m_nearbyEntities;
 
 	void InstantiateComponentForEntity(ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;

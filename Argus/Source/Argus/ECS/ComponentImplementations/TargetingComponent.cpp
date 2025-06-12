@@ -47,6 +47,10 @@ void TargetingComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_rangedRange);
 		ImGui::TableNextColumn();
+		ImGui::Text("m_sightRange");
+		ImGui::TableNextColumn();
+		ImGui::Text("%.2f", m_sightRange);
+		ImGui::TableNextColumn();
 		ImGui::Text("m_targetEntityId");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_targetEntityId);
