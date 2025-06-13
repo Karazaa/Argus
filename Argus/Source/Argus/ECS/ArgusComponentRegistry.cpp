@@ -80,6 +80,9 @@ std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isTransf
 VelocityComponent ArgusComponentRegistry::s_VelocityComponents[ArgusECSConstants::k_maxEntities];
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isVelocityComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
 #pragma endregion
+#pragma region AssetLoadingComponent
+std::unordered_map<uint16, AssetLoadingComponent> ArgusComponentRegistry::s_AssetLoadingComponents;
+#pragma endregion
 #pragma region InputInterfaceComponent
 std::unordered_map<uint16, InputInterfaceComponent> ArgusComponentRegistry::s_InputInterfaceComponents;
 #pragma endregion
@@ -141,6 +144,10 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 	s_VelocityComponents[entityId] = VelocityComponent();
 
 	// Begin remove dynamically allocated components
+	if (s_AssetLoadingComponents.contains(entityId))
+	{
+		s_AssetLoadingComponents.erase(entityId);
+	}
 	if (s_InputInterfaceComponents.contains(entityId))
 	{
 		s_InputInterfaceComponents.erase(entityId);
@@ -203,6 +210,7 @@ void ArgusComponentRegistry::FlushAllComponents()
 	}
 
 	// Begin flush dynamically allocated components
+	s_AssetLoadingComponents.clear();
 	s_InputInterfaceComponents.clear();
 	s_ReticleComponents.clear();
 	s_SpatialPartitioningComponents.clear();
@@ -387,6 +395,10 @@ void ArgusComponentRegistry::DrawComponentsDebug(uint16 entityId)
 	if (const VelocityComponent* VelocityComponentPtr = GetComponent<VelocityComponent>(entityId))
 	{
 		VelocityComponentPtr->DrawComponentDebug();
+	}
+	if (const AssetLoadingComponent* AssetLoadingComponentPtr = GetComponent<AssetLoadingComponent>(entityId))
+	{
+		AssetLoadingComponentPtr->DrawComponentDebug();
 	}
 	if (const InputInterfaceComponent* InputInterfaceComponentPtr = GetComponent<InputInterfaceComponent>(entityId))
 	{

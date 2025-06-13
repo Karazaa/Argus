@@ -16,8 +16,6 @@ public:
 	TSoftObjectPtr<UResourceSetRecord> m_resourcesToExtractRecordId;
 	UPROPERTY(EditAnywhere)
 	float m_extractionLengthSeconds = 1.0f;
-	uint16 m_lastExtractionSourceEntityId = ArgusECSConstants::k_maxEntities;
-	TimerHandle m_resourceExtractionTimer;
 
 	void InstantiateComponentForEntity(ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;

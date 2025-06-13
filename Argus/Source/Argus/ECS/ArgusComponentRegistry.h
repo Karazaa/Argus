@@ -30,6 +30,7 @@
 #include "ComponentDefinitions\VelocityComponent.h"
 
 // Begin dynamically allocated component specific includes.
+#include "DynamicAllocComponentDefinitions\AssetLoadingComponent.h"
 #include "DynamicAllocComponentDefinitions\InputInterfaceComponent.h"
 #include "DynamicAllocComponentDefinitions\ReticleComponent.h"
 #include "DynamicAllocComponentDefinitions\SpatialPartitioningComponent.h"
@@ -65,7 +66,7 @@ public:
 	static void DrawComponentsDebug(uint16 entityId);
 #endif //!UE_BUILD_SHIPPING
 
-	static constexpr uint32 k_numComponentTypes = 22;
+	static constexpr uint32 k_numComponentTypes = 23;
 
 	// Begin component specific template specifiers.
 	
@@ -1307,6 +1308,62 @@ public:
 	
 	// Begin dynamically allocated component specific template specifiers.
 
+#pragma region AssetLoadingComponent
+private:
+	static std::unordered_map<uint16, AssetLoadingComponent> s_AssetLoadingComponents;
+public:
+	template<>
+	inline AssetLoadingComponent* GetComponent<AssetLoadingComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(AssetLoadingComponent));
+			return nullptr;
+		}
+
+		if (!s_AssetLoadingComponents.contains(entityId))
+		{
+			return nullptr;
+		}
+
+		return &s_AssetLoadingComponents[entityId];
+	}
+
+	template<>
+	inline AssetLoadingComponent* AddComponent<AssetLoadingComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(AssetLoadingComponent));
+			return nullptr;
+		}
+
+		if (s_AssetLoadingComponents.contains(entityId))
+		{
+			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(AssetLoadingComponent), entityId);
+			return &s_AssetLoadingComponents[entityId];
+		}
+
+		s_AssetLoadingComponents[entityId] = AssetLoadingComponent();
+		return &s_AssetLoadingComponents[entityId];
+	}
+
+	template<>
+	inline AssetLoadingComponent* GetOrAddComponent<AssetLoadingComponent>(uint16 entityId)
+	{
+		if (entityId >= ArgusECSConstants::k_maxEntities)
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(AssetLoadingComponent));
+			return nullptr;
+		}
+
+		if (!s_AssetLoadingComponents.contains(entityId))
+		{
+			s_AssetLoadingComponents[entityId] = AssetLoadingComponent();
+		}
+		return &s_AssetLoadingComponents[entityId];
+	}
+#pragma endregion
 #pragma region InputInterfaceComponent
 private:
 	static std::unordered_map<uint16, InputInterfaceComponent> s_InputInterfaceComponents;

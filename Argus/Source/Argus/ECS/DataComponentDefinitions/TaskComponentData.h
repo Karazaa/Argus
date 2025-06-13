@@ -12,14 +12,7 @@ class ARGUS_API UTaskComponentData : public UComponentData
 	GENERATED_BODY()
 
 public:
-	uint32 m_spawnedFromArgusActorRecordId = 0u;
 	EBaseState m_baseState = EBaseState::Alive;
-	EMovementState m_movementState = EMovementState::None;
-	ESpawningState m_spawningState = ESpawningState::None;
-	EAbilityState m_abilityState = EAbilityState::None;
-	EConstructionState m_constructionState = EConstructionState::None;
-	ECombatState m_combatState = ECombatState::None;
-	EResourceExtractionState m_resourceExtractionState = EResourceExtractionState::None;
 
 	void InstantiateComponentForEntity(ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;

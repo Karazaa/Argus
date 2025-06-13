@@ -12,10 +12,6 @@ class ARGUS_API UInputInterfaceComponentData : public UComponentData
 	GENERATED_BODY()
 
 public:
-	TArray<uint16> m_selectedArgusEntityIds;
-	TArray<uint16> m_activeAbilityGroupArgusEntityIds;
-	ESelectedActorsDisplayState m_selectedActorsDisplayState = ESelectedActorsDisplayState::NotChanged;
-	int8 m_indexOfActiveAbilityGroup = 0;
 
 	void InstantiateComponentForEntity(ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;

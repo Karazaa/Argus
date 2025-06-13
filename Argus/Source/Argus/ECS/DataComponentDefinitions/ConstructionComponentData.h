@@ -14,11 +14,8 @@ class ARGUS_API UConstructionComponentData : public UComponentData
 public:
 	UPROPERTY(EditAnywhere)
 	float m_requiredWorkSeconds = 0.0f;
-	float m_currentWorkSeconds = 0.0f;
-	uint32 m_constructionAbilityRecordId = 0u;
 	UPROPERTY(EditAnywhere)
 	EConstructionType m_constructionType = EConstructionType::Automatic;
-	TimerHandle m_automaticConstructionTimerHandle;
 
 	void InstantiateComponentForEntity(ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;

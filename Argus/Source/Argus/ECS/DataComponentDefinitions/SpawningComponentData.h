@@ -12,13 +12,10 @@ class ARGUS_API USpawningComponentData : public UComponentData
 	GENERATED_BODY()
 
 public:
-	ArgusQueue<SpawnEntityInfo> m_spawnQueue;
 	UPROPERTY(EditAnywhere)
 	float m_spawningRadius = 100.0f;
 	UPROPERTY(EditAnywhere)
 	uint8 m_maximumQueueSize = 10u;
-	uint8 m_currentQueueSize = 0u;
-	TimerHandle m_spawnTimerHandle;
 
 	void InstantiateComponentForEntity(ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;

@@ -18,7 +18,6 @@ public:
 	float m_intervalDurationSeconds = 1.0f;
 	UPROPERTY(EditAnywhere)
 	EAttackType m_attackType = EAttackType::Melee;
-	TimerHandle m_attackTimerHandle;
 
 	void InstantiateComponentForEntity(ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;

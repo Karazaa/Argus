@@ -108,7 +108,11 @@ bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetHeaderFileTemplateWithR
 						{
 							// TOOD JAMES: Do stuff here for observables. 
 						}
-						else if (propertyIgnoreDelimiterIndex == std::string::npos)
+						else if (propertyIgnoreDelimiterIndex != std::string::npos)
+						{
+							continue;
+						}
+						else
 						{
 							std::string overridePropertyText = std::regex_replace(parsedComponentData.m_componentVariableData[i][j].m_propertyMacro, std::regex(ArgusCodeGeneratorUtil::s_propertyDelimiter), s_upropertyPrefix);
 							outParsedFileContents[i].m_lines.push_back(overridePropertyText);
@@ -208,6 +212,11 @@ bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetCppFileTemplateWithRepl
 			{
 				for (int j = 0; j < parsedComponentData.m_componentVariableData[i].size(); ++j)
 				{
+					if (parsedComponentData.m_componentVariableData[i][j].m_propertyMacro.find(ArgusCodeGeneratorUtil::s_propertyIgnoreDelimiter) != std::string::npos)
+					{
+						continue;
+					}
+
 					std::string variableAssignment = "\t";
 					variableAssignment.append(parsedComponentData.m_componentNames[i]);
 					variableAssignment.append("Ref->");

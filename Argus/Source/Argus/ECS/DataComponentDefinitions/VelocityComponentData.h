@@ -12,8 +12,6 @@ class ARGUS_API UVelocityComponentData : public UComponentData
 	GENERATED_BODY()
 
 public:
-	FVector2D m_currentVelocity = FVector2D::ZeroVector;
-	FVector2D m_proposedAvoidanceVelocity = FVector2D::ZeroVector;
 	UPROPERTY(EditAnywhere)
 	float m_desiredSpeedUnitsPerSecond = 100.0f;
 

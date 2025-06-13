@@ -12,7 +12,6 @@ class ARGUS_API UCarrierComponentData : public UComponentData
 	GENERATED_BODY()
 
 public:
-	TArray<uint16> m_passengerEntityIds;
 	UPROPERTY(EditAnywhere)
 	uint8 m_carrierCapacity = 0u;
 

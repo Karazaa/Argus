@@ -12,9 +12,6 @@ class ARGUS_API USpatialPartitioningComponentData : public UComponentData
 	GENERATED_BODY()
 
 public:
-	ArgusEntityKDTree m_argusEntityKDTree;
-	ObstaclePointKDTree m_obstaclePointKDTree;
-	TArray<ObstaclePointArray> m_obstacles;
 
 	void InstantiateComponentForEntity(ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;

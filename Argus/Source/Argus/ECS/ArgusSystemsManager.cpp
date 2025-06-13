@@ -71,10 +71,12 @@ void ArgusSystemsManager::PopulateSingletonComponents(UWorld* worldPointer)
 	SpatialPartitioningComponent* spatialPartitioningComponent = singletonEntity.AddComponent<SpatialPartitioningComponent>();
 	ReticleComponent* reticleComponent = singletonEntity.AddComponent<ReticleComponent>();
 	InputInterfaceComponent* inputInterfaceComponent = singletonEntity.AddComponent<InputInterfaceComponent>();
+	AssetLoadingComponent* assetLoadingComponent = singletonEntity.AddComponent<AssetLoadingComponent>();
 
 	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
 	ARGUS_RETURN_ON_NULL(reticleComponent, ArgusECSLog);
 	ARGUS_RETURN_ON_NULL(inputInterfaceComponent, ArgusECSLog);
+	ARGUS_RETURN_ON_NULL(assetLoadingComponent, ArgusECSLog);
 
 	spatialPartitioningComponent->m_argusEntityKDTree.SeedTreeWithAverageEntityLocation();
 	spatialPartitioningComponent->m_argusEntityKDTree.InsertAllArgusEntitiesIntoKDTree();

@@ -12,10 +12,8 @@ class ARGUS_API UTransformComponentData : public UComponentData
 	GENERATED_BODY()
 
 public:
-	FVector m_location = FVector::ZeroVector;
 	UPROPERTY(EditAnywhere)
 float m_smoothedYawDecayConstant = 1.0f;
-	float m_targetYaw;
 	UPROPERTY(EditAnywhere)
 	float m_radius = 45.0f;
 	UPROPERTY(EditAnywhere)
