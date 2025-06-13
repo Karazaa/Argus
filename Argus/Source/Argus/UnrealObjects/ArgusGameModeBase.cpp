@@ -55,13 +55,17 @@ void AArgusGameModeBase::Tick(float deltaTime)
 	// Run all ECS systems.
 	ArgusSystemsManager::RunSystems(worldPointer, deltaTime);
 
-	// Take/Release ArgusActors based on ECS state.
-	ManageActorStateForEntities();
+	// Take/Release/Update ArgusActors based on ECS state.
+	ManageActorStateForEntities(worldPointer, deltaTime);
 }
 
-void AArgusGameModeBase::ManageActorStateForEntities()
+void AArgusGameModeBase::ManageActorStateForEntities(const UWorld* worldPointer, float deltaTime)
 {
 	ARGUS_TRACE(AArgusGameModeBase::ManageActorStateForEntities);
+
+	ARGUS_RETURN_ON_NULL(worldPointer, ArgusUnrealObjectsLog);
+	const UArgusGameInstance* gameInstance = worldPointer->GetGameInstance<UArgusGameInstance>();
+	ARGUS_RETURN_ON_NULL(gameInstance, ArgusUnrealObjectsLog);
 
 	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{
@@ -84,6 +88,11 @@ void AArgusGameModeBase::ManageActorStateForEntities()
 		else if (taskComponent->m_baseState == EBaseState::DestroyedWaitingForActorRelease)
 		{
 			DespawnActorForEntity(entity);
+		}
+
+		if (AArgusActor* argusActor = gameInstance->GetArgusActorFromArgusEntity(entity))
+		{
+			argusActor->Update(deltaTime);
 		}
 	}
 }

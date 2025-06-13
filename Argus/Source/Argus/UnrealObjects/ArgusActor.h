@@ -28,6 +28,7 @@ public:
 	void Show();
 	void Hide();
 	bool IsVisible() const;
+	void Update(float deltaTime);
 
 protected:
 	UFUNCTION(BlueprintImplementableEvent)
@@ -65,7 +66,6 @@ protected:
 
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type endPlayReason) override;
-	virtual void Tick(float deltaTime) override;
 	virtual void OnChanged_m_baseState(EBaseState oldValue, EBaseState newValue) override;
 	virtual void OnChanged_m_carrierEntityId(uint16 oldValue, uint16 newValue) override;
 

@@ -41,7 +41,7 @@ protected:
 	virtual void Tick(float deltaTime) override;
 
 private:
-	void ManageActorStateForEntities();
+	void ManageActorStateForEntities(const UWorld* worldPointer, float deltaTime);
 	void SpawnActorForEntity(ArgusEntity spawnedEntity);
 	void DespawnActorForEntity(ArgusEntity despawnedEntity);
 

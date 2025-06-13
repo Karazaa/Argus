@@ -17,8 +17,7 @@
 
 AArgusActor::AArgusActor()
 {
-	PrimaryActorTick.bCanEverTick = true;
-	PrimaryActorTick.TickGroup = ETickingGroup::TG_LastDemotable;
+	PrimaryActorTick.bCanEverTick = false;
 	SetRootComponent(CreateDefaultSubobject<USceneComponent>(FName("RootSceneComponent")));
 }
 
@@ -236,10 +235,8 @@ void AArgusActor::EndPlay(const EEndPlayReason::Type endPlayReason)
 	gameInstance->DeregisterArgusEntityActor(this);
 }
 
-void AArgusActor::Tick(float deltaTime)
+void AArgusActor::Update(float deltaTime)
 {
-	Super::Tick(deltaTime);
-
 	if (!m_entity)
 	{
 		return;
