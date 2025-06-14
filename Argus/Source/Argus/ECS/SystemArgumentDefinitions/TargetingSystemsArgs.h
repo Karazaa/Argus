@@ -9,6 +9,8 @@ struct TargetingSystemsArgs
 {
 	ARGUS_SYSTEM_ARGS_SHARED;
 
+	TaskComponent* m_taskComponent = nullptr;
 	TargetingComponent* m_targetingComponent = nullptr;
+	NearbyEntitiesComponent* m_nearbyEntitiesComponent = nullptr;
 	const TransformComponent* m_transformComponent = nullptr;
 };

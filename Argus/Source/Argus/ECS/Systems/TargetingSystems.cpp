@@ -19,59 +19,11 @@ void TargetingSystems::RunSystems(float deltaTime)
 			continue;
 		}
 
-		// TODO JAMES: Run individual systems per entity below.
-	}
-}
-
-void TargetingSystems::TargetNearestEntityMatchingTeamMask(uint16 sourceEntityID, uint8 TeamMask, const TargetingSystemsArgs& components)
-{
-	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
-	{
-		return;
-	}
-
-	const FVector fromLocation = components.m_transformComponent->m_location;
-	float minDistSquared = FLT_MAX;
-	uint16 minDistEntityId = ArgusECSConstants::k_maxEntities;
-	for (uint16 i = 0; i < ArgusECSConstants::k_maxEntities; ++i)
-	{
-		ArgusEntity potentialEntity = ArgusEntity::RetrieveEntity(i);
-		if (!potentialEntity)
+		if (components.m_entity.IsIdle())
 		{
-			continue;
-		}
-
-		if (i == sourceEntityID)
-		{
-			continue;
-		}
-
-		TransformComponent* otherTransfromComponent = potentialEntity.GetComponent<TransformComponent>();
-		if (!otherTransfromComponent)
-		{
-			continue;
-		}
-
-		IdentityComponent* otherIdentityComponent = potentialEntity.GetComponent<IdentityComponent>();
-		if (!otherIdentityComponent)
-		{
-			continue;
-		}
-
-		if (!otherIdentityComponent->IsInTeamMask(TeamMask))
-		{
-			continue;
-		}
-
-		const FVector otherLocation = otherTransfromComponent->m_location;
-		const float distSquared = FVector::DistSquared(fromLocation, otherLocation);
-		if (distSquared < minDistSquared)
-		{
-			minDistSquared = distSquared;
-			minDistEntityId = i;
+			ProcessIdleEntity(components);
 		}
 	}
-	components.m_targetingComponent->m_targetEntityId = minDistEntityId;
 }
 
 TOptional<FVector> TargetingSystems::GetCurrentTargetLocationForEntity(const ArgusEntity& entity)
@@ -137,4 +89,9 @@ bool TargetingSystems::IsInRangedRangeOfOtherEntity(const ArgusEntity& entity, c
 	}
 
 	return entity.IsInRangeOfOtherEntity(otherEntity, targetingComponent->m_meleeRange);
+}
+
+void TargetingSystems::ProcessIdleEntity(const TargetingSystemsArgs& components)
+{
+
 }
