@@ -6,9 +6,43 @@
 
 ArgusEntity UArgusEntityTemplate::MakeEntity() const
 {
-	ARGUS_MEMORY_TRACE(ArgusComponentData);
+	ArgusEntity entity = ArgusEntity::CreateEntity(static_cast<uint16>(m_entityPriority));
+	PopulateEntity(entity);
+	return entity;
+}
+
+ArgusEntity UArgusEntityTemplate::MakeEntityAsync() const
+{
+	AssetLoadingComponent* assetLoadingComponent = ArgusEntity::GetSingletonEntity().GetComponent<AssetLoadingComponent>();
+	if (!assetLoadingComponent)
+	{
+		ARGUS_ERROR_NULL(ArgusECSLog, assetLoadingComponent);
+		return ArgusEntity::k_emptyEntity;
+	}
 
 	ArgusEntity entity = ArgusEntity::CreateEntity(static_cast<uint16>(m_entityPriority));
+
+	TArray<FSoftObjectPath> pathsToLoad;
+	pathsToLoad.Reserve(m_componentData.Num());
+	for (TSoftObjectPtr<UComponentData> componentDataSoftObjectPtr : m_componentData)
+	{
+		pathsToLoad.Add(componentDataSoftObjectPtr.ToSoftObjectPath());
+	}
+
+	assetLoadingComponent->m_streamableManager.RequestAsyncLoad(pathsToLoad, FStreamableDelegate::CreateLambda
+	(
+		[this, &entity]()
+		{
+			this->PopulateEntity(entity);
+		})
+	);
+
+	return entity;
+}
+
+void UArgusEntityTemplate::PopulateEntity(ArgusEntity& entity) const
+{
+	ARGUS_MEMORY_TRACE(ArgusComponentData);
 
 	for (TSoftObjectPtr<UComponentData> componentDataSoftObjectPtr : m_componentData)
 	{
@@ -20,8 +54,6 @@ ArgusEntity UArgusEntityTemplate::MakeEntity() const
 
 		componentData->InstantiateComponentForEntity(entity);
 	}
-
-	return entity;
 }
 
 #if WITH_EDITOR

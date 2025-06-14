@@ -20,6 +20,8 @@ public:
 	TArray<TSoftObjectPtr<UComponentData>> m_componentData;
 
 	ArgusEntity MakeEntity() const;
+	ArgusEntity MakeEntityAsync() const;
+	void PopulateEntity(ArgusEntity& entity) const;
 
 	template <typename ComponentType>
 	const ComponentType* GetComponentFromTemplate() const
