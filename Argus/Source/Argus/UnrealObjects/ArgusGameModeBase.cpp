@@ -19,12 +19,6 @@ AArgusGameModeBase::AArgusGameModeBase()
 void AArgusGameModeBase::StartPlay()
 {
 	ArgusEntity::FlushAllEntities();
-
-	UWorld* worldPointer = GetWorld();
-	ARGUS_RETURN_ON_NULL(worldPointer, ArgusUnrealObjectsLog);
-
-	ArgusSystemsManager::Initialize(worldPointer, m_initialTeamResourceSet);
-
 	Super::StartPlay();
 	ARGUS_LOG(ArgusUnrealObjectsLog, Display, TEXT("[%s] Argus game mode base starting play."), ARGUS_FUNCNAME);
 
@@ -38,6 +32,11 @@ void AArgusGameModeBase::StartPlay()
 	{
 		m_activePlayerController->InitializeUIWidgets();
 	}
+
+	UWorld* worldPointer = GetWorld();
+	ARGUS_RETURN_ON_NULL(worldPointer, ArgusUnrealObjectsLog);
+
+	ArgusSystemsManager::Initialize(worldPointer, m_initialTeamResourceSet);
 }
 
 void AArgusGameModeBase::Tick(float deltaTime)
