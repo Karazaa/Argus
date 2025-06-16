@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "ArgusEntity.h"
+
 class TargetingSystems
 {
 public:
