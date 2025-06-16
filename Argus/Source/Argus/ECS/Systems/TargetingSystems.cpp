@@ -2,30 +2,6 @@
 
 #include "TargetingSystems.h"
 
-void TargetingSystems::RunSystems(float deltaTime)
-{
-	ARGUS_TRACE(TargetingSystems::RunSystems);
-
-	TargetingSystemsArgs components;
-	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
-	{
-		if (!components.PopulateArguments(ArgusEntity::RetrieveEntity(i)))
-		{
-			continue;
-		}
-
-		if ((components.m_entity.IsKillable() && !components.m_entity.IsAlive()) || components.m_entity.IsPassenger())
-		{
-			continue;
-		}
-
-		if (components.m_entity.IsIdle())
-		{
-			ProcessIdleEntity(components);
-		}
-	}
-}
-
 TOptional<FVector> TargetingSystems::GetCurrentTargetLocationForEntity(const ArgusEntity& entity)
 {
 	const TargetingComponent* targetingComponent = entity.GetComponent<TargetingComponent>();
@@ -89,9 +65,4 @@ bool TargetingSystems::IsInRangedRangeOfOtherEntity(const ArgusEntity& entity, c
 	}
 
 	return entity.IsInRangeOfOtherEntity(otherEntity, targetingComponent->m_meleeRange);
-}
-
-void TargetingSystems::ProcessIdleEntity(const TargetingSystemsArgs& components)
-{
-
 }

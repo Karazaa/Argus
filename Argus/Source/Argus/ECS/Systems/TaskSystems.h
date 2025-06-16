@@ -8,4 +8,7 @@ class TaskSystems
 {
 public:
 	static void RunSystems(float deltaTime);
+
+private:
+	static void ProcessIdleEntity(const TaskSystemsArgs& components);
 };

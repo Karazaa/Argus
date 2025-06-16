@@ -11,7 +11,7 @@
 #include "Systems/ResourceSystems.h"
 #include "Systems/SpatialPartitioningSystems.h"
 #include "Systems/SpawningSystems.h"
-#include "Systems/TargetingSystems.h"
+#include "Systems/TaskSystems.h"
 #include "Systems/TimerSystems.h"
 #include "Systems/TransformSystems.h"
 
@@ -35,7 +35,7 @@ void ArgusSystemsManager::RunSystems(UWorld* worldPointer, float deltaTime)
 	bool didEntityPositionChangeThisFrame = false;
 
 	TimerSystems::RunSystems(deltaTime);
-	TargetingSystems::RunSystems(deltaTime);
+	TaskSystems::RunSystems(deltaTime);
 	AbilitySystems::RunSystems(deltaTime);
 	CombatSystems::RunSystems(deltaTime);
 	ResourceSystems::RunSystems(deltaTime);
