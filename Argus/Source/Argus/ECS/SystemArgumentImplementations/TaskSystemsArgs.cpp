@@ -12,8 +12,11 @@ bool TaskSystemsArgs::PopulateArguments(const ArgusEntity& entity)
 	}
 
 	m_entity = entity;
+	m_taskComponent = entity.GetComponent<TaskComponent>();
+	m_targetingComponent = entity.GetComponent<TargetingComponent>();
+	m_nearbyEntitiesComponent = entity.GetComponent<NearbyEntitiesComponent>();
 
-	if (!m_entity)
+	if (!m_entity || !m_taskComponent || !m_targetingComponent || !m_nearbyEntitiesComponent)
 	{
 		return false;
 	}
@@ -23,7 +26,7 @@ bool TaskSystemsArgs::PopulateArguments(const ArgusEntity& entity)
 
 bool TaskSystemsArgs::AreComponentsValidCheck(const WIDECHAR* functionName) const
 {
-	if (!m_entity)
+	if (!m_entity || !m_taskComponent || !m_targetingComponent || !m_nearbyEntitiesComponent)
 	{
 		ArgusLogging::LogInvalidComponentReferences(functionName, ARGUS_NAMEOF(TaskSystemsArgs));
 		return false;

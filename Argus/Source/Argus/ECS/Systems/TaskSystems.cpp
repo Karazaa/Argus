@@ -4,6 +4,8 @@
 #include "ArgusEntity.h"
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
+#include "Systems/CombatSystems.h"
+#include "Systems/ConstructionSystems.h"
 
 void TaskSystems::RunSystems(float deltaTime)
 {
@@ -31,5 +33,88 @@ void TaskSystems::RunSystems(float deltaTime)
 
 void TaskSystems::ProcessIdleEntity(const TaskSystemsArgs& components)
 {
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
 
+	const TArray<uint16>& meleeRangeEntities = components.m_nearbyEntitiesComponent->m_nearbyEntities.GetEntitiesInMeleeRange();
+	const TArray<uint16>& rangedRangeEntities = components.m_nearbyEntitiesComponent->m_nearbyEntities.GetEntitiesInRangedRange();
+	const TArray<uint16>& sightRangeEntities = components.m_nearbyEntitiesComponent->m_nearbyEntities.GetEntitiesInSightRange();
+
+	for (int32 i = 0; i < meleeRangeEntities.Num(); ++i)
+	{
+		if (ProcessDispatchingForEntityPair(components, meleeRangeEntities[i]))
+		{
+			return;
+		}
+	}
+	for (int32 i = 0; i < rangedRangeEntities.Num(); ++i)
+	{
+		if (ProcessDispatchingForEntityPair(components, rangedRangeEntities[i]))
+		{
+			return;
+		}
+	}
+	for (int32 i = 0; i < sightRangeEntities.Num(); ++i)
+	{
+		if (ProcessDispatchingForEntityPair(components, sightRangeEntities[i]))
+		{
+			return;
+		}
+	}
+}
+
+bool TaskSystems::ProcessDispatchingForEntityPair(const TaskSystemsArgs& components, uint16 potentialTargetEntityId)
+{
+	ArgusEntity potentialTargetEntity = ArgusEntity::RetrieveEntity(potentialTargetEntityId);
+
+	if (DispatchToConstructionIfAble(components, potentialTargetEntity))
+	{
+		return true;
+	}
+	if (DispatchToCombatIfAble(components, potentialTargetEntity))
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool TaskSystems::DispatchToConstructionIfAble(const TaskSystemsArgs& components, const ArgusEntity& potentialTargetEntity)
+{
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return false;
+	}
+
+	if (!ConstructionSystems::CanEntityConstructOtherEntity(components.m_entity, potentialTargetEntity))
+	{
+		return false;
+	}
+
+	components.m_taskComponent->m_movementState = EMovementState::ProcessMoveToEntityCommand;
+	components.m_taskComponent->m_constructionState = EConstructionState::ConstructingOther;
+	components.m_targetingComponent->m_targetEntityId = potentialTargetEntity.GetId();
+
+	return true;
+}
+
+bool TaskSystems::DispatchToCombatIfAble(const TaskSystemsArgs& components, const ArgusEntity& potentialTargetEntity)
+{
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return false;
+	}
+
+	if (!CombatSystems::CanEntityAttackOtherEntity(components.m_entity, potentialTargetEntity))
+	{
+		return false;
+	}
+
+	components.m_taskComponent->m_movementState = EMovementState::ProcessMoveToEntityCommand;
+	components.m_taskComponent->m_combatState = ECombatState::ShouldAttack;
+	components.m_targetingComponent->m_targetEntityId = potentialTargetEntity.GetId();
+
+	return true;
 }
