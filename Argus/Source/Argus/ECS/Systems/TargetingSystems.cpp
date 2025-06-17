@@ -1,6 +1,7 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "TargetingSystems.h"
+#include "Systems/CombatSystems.h"
 
 TOptional<FVector> TargetingSystems::GetCurrentTargetLocationForEntity(const ArgusEntity& entity)
 {
@@ -65,4 +66,38 @@ bool TargetingSystems::IsInRangedRangeOfOtherEntity(const ArgusEntity& entity, c
 	}
 
 	return entity.IsInRangeOfOtherEntity(otherEntity, targetingComponent->m_meleeRange);
+}
+
+float TargetingSystems::GetRangeToUseForOtherEntity(const ArgusEntity& entity, const ArgusEntity& otherEntity)
+{
+	const TargetingComponent* targetingComponent = entity.GetComponent<TargetingComponent>();
+	if (!targetingComponent)
+	{
+		return 0.0f;
+	}
+
+	float range = targetingComponent->m_meleeRange;
+
+	if (!CombatSystems::CanEntityAttackOtherEntity(entity, otherEntity))
+	{
+		return range;
+	}
+
+	const CombatComponent* combatComponent = entity.GetComponent<CombatComponent>();
+	if (!combatComponent)
+	{
+		return range;
+	}
+
+	switch (combatComponent->m_attackType)
+	{
+	case EAttackType::Melee:
+		return targetingComponent->m_meleeRange;
+	case EAttackType::Ranged:
+		return targetingComponent->m_rangedRange;
+	default:
+		break;
+	}
+
+	return range;
 }

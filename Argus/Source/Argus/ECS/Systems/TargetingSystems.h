@@ -10,4 +10,5 @@ public:
 	static TOptional<FVector> GetCurrentTargetLocationForEntity(const ArgusEntity& entity);
 	static bool IsInMeleeRangeOfOtherEntity(const ArgusEntity& entity, const ArgusEntity& otherEntity);
 	static bool IsInRangedRangeOfOtherEntity(const ArgusEntity& entity, const ArgusEntity& otherEntity);
+	static float GetRangeToUseForOtherEntity(const ArgusEntity& entity, const ArgusEntity& otherEntity);
 };

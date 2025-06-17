@@ -8,6 +8,7 @@
 #include "Systems/AvoidanceSystems.h"
 #include "Systems/CarrierSystems.h"
 #include "Systems/CombatSystems.h"
+#include "Systems/TargetingSystems.h"
 
 bool TransformSystems::RunSystems(UWorld* worldPointer, float deltaTime)
 {
@@ -124,8 +125,7 @@ void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float delta
 	{
 		OnWithinRangeOfTargetEntity(components);
 	}
-
-	if (isAtEndOfNavigationPath || isWithinRangeOfTargetEntity)
+	else if (isAtEndOfNavigationPath)
 	{
 		OnCompleteNavigationPath(components, moverLocation);
 	}
@@ -147,6 +147,11 @@ bool TransformSystems::ProcessMovementTaskCommands(UWorld* worldPointer, float d
 			MoveAlongNavigationPath(worldPointer, deltaTime, components);
 			return true;
 
+		case EMovementState::InRangeOfTargetEntity:
+			FaceTargetEntity(components);
+			components.m_transformComponent->m_smoothedYaw.SmoothChase(components.m_transformComponent->m_targetYaw, deltaTime);
+			return false;
+
 		case EMovementState::AwaitingFinish:
 			OnCompleteNavigationPath(components, components.m_transformComponent->m_location);
 			return true;
@@ -167,6 +172,25 @@ bool TransformSystems::ProcessMovementTaskCommands(UWorld* worldPointer, float d
 		default:
 			return false;
 	}
+}
+
+void TransformSystems::FaceTargetEntity(const TransformSystemsArgs& components)
+{
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+
+	if (!components.m_targetingComponent->HasEntityTarget())
+	{
+		return;
+	}
+
+	ArgusEntity targetEntity = ArgusEntity::RetrieveEntity(components.m_targetingComponent->m_targetEntityId);
+	const TransformComponent* targetEntityTransformComponent = targetEntity.GetComponent<TransformComponent>();
+	ARGUS_RETURN_ON_NULL(targetEntityTransformComponent, ArgusECSLog);
+
+	FaceTowardsLocationXY(components.m_transformComponent, targetEntityTransformComponent->m_location - components.m_transformComponent->m_location);
 }
 
 void TransformSystems::FaceTowardsLocationXY(TransformComponent* transformComponent, FVector vectorFromTransformToTarget)
@@ -211,7 +235,12 @@ void TransformSystems::OnWithinRangeOfTargetEntity(const TransformSystemsArgs& c
 		ARGUS_RETURN_ON_NULL(targetCarrierComponent, ArgusECSLog);
 		passengerComponent->Set_m_carrierEntityId(targetEntity.GetId());
 		targetCarrierComponent->m_passengerEntityIds.Add(components.m_entity.GetId());
+		return;
 	}
+
+	components.m_navigationComponent->m_endedNavigationLocation = components.m_transformComponent->m_location;
+	components.m_taskComponent->m_movementState = EMovementState::InRangeOfTargetEntity;
+	components.m_velocityComponent->m_currentVelocity = FVector2D::ZeroVector;
 }
 
 void TransformSystems::OnCompleteNavigationPath(const TransformSystemsArgs& components, const FVector& moverLocation)
@@ -276,45 +305,18 @@ float TransformSystems::GetEndMoveRange(const TransformSystemsArgs& components)
 		return components.m_velocityComponent->m_desiredSpeedUnitsPerSecond + components.m_transformComponent->m_radius;
 	}
 
-	float range = components.m_targetingComponent->m_meleeRange;
 	if (components.m_taskComponent->m_movementState != EMovementState::MoveToEntity)
 	{
-		return range;
+		return components.m_targetingComponent->m_meleeRange;
 	}
 
 	if (!components.m_targetingComponent->HasEntityTarget())
 	{
-		return range;
+		return components.m_targetingComponent->m_meleeRange;
 	}
 
 	ArgusEntity targetEntity = ArgusEntity::RetrieveEntity(components.m_targetingComponent->m_targetEntityId);
-	if (!targetEntity)
-	{
-		return range;
-	}
-
-	if (!CombatSystems::CanEntityAttackOtherEntity(components.m_entity, targetEntity))
-	{
-		return range;
-	}
-
-	const CombatComponent* combatComponent = components.m_entity.GetComponent<CombatComponent>();
-	if (!combatComponent)
-	{
-		return range;
-	}
-
-	switch (combatComponent->m_attackType)
-	{
-		case EAttackType::Melee:
-			return components.m_targetingComponent->m_meleeRange;
-		case EAttackType::Ranged:
-			return components.m_targetingComponent->m_rangedRange;
-		default:
-			break;
-	}
-
-	return range;
+	return TargetingSystems::GetRangeToUseForOtherEntity(components.m_entity, targetEntity);
 }
 
 void TransformSystems::UpdatePassengerLocations(const TransformSystemsArgs& components)

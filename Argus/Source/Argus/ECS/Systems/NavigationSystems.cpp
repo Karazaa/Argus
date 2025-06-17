@@ -64,7 +64,6 @@ void NavigationSystems::NavigateFromEntityToEntity(UWorld* worldPointer, ArgusEn
 	}
 
 	NavigateFromEntityToLocation(worldPointer, targetEntityTransform->m_location, components);
-	ChangeTasksOnNavigatingToEntity(targetEntity, components);
 }
 
 void NavigationSystems::NavigateFromEntityToLocation(UWorld* worldPointer, std::optional<FVector> targetLocation, const NavigationSystemsArgs& components)
@@ -152,10 +151,13 @@ void NavigationSystems::ProcessNavigationTaskCommands(UWorld* worldPointer, cons
 			break;
 
 		case EMovementState::ProcessMoveToEntityCommand:
+		{
 			components.m_taskComponent->m_movementState = EMovementState::MoveToEntity;
-			NavigateFromEntityToEntity(worldPointer, ArgusEntity::RetrieveEntity(components.m_targetingComponent->m_targetEntityId), components);
+			ArgusEntity targetEntity = ArgusEntity::RetrieveEntity(components.m_targetingComponent->m_targetEntityId);
+			NavigateFromEntityToEntity(worldPointer, targetEntity, components);
+			ChangeTasksOnNavigatingToEntity(targetEntity, components);
 			break;
-
+		}
 		default:
 			break;
 	}
@@ -171,7 +173,7 @@ void NavigationSystems::RecalculateMoveToEntityPaths(UWorld* worldPointer, const
 		return;
 	}
 
-	if (components.m_taskComponent->m_movementState != EMovementState::MoveToEntity)
+	if (components.m_taskComponent->m_movementState != EMovementState::MoveToEntity && components.m_taskComponent->m_movementState != EMovementState::InRangeOfTargetEntity)
 	{
 		return;
 	}

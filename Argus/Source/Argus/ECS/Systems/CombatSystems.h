@@ -8,7 +8,6 @@ class CombatSystems
 {
 public:
 	static void RunSystems(float deltaTime);
-
 	static bool CanEntityAttackOtherEntity(const ArgusEntity& potentialAttacker, const ArgusEntity& potentialVictim);
 
 private:
@@ -18,4 +17,5 @@ private:
 	static void PerformContinuousAttack(float deltaTime, const ArgusEntity& targetEntity, const CombatSystemsArgs& components);
 	static void ApplyDamage(uint32 damageAmount, const ArgusEntity& targetEntity, const CombatSystemsArgs& components);
 	static void KillEntity(const ArgusEntity& targetEntity, HealthComponent* targetHealthComponent);
+	static void OnKilledOtherEntity(const CombatSystemsArgs& components);
 };

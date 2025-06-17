@@ -6,6 +6,7 @@
 #include "ArgusMacros.h"
 #include "Systems/CombatSystems.h"
 #include "Systems/ConstructionSystems.h"
+#include "Systems/TargetingSystems.h"
 
 void TaskSystems::RunSystems(float deltaTime)
 {
@@ -24,16 +25,19 @@ void TaskSystems::RunSystems(float deltaTime)
 			continue;
 		}
 
-		if (components.m_entity.IsIdle())
-		{
-			ProcessIdleEntity(components);
-		}
+		ProcessIdleEntity(components);
+		ProcessInRangeOfTargetEntity(components);
 	}
 }
 
 void TaskSystems::ProcessIdleEntity(const TaskSystemsArgs& components)
 {
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+
+	if (!components.m_entity.IsIdle())
 	{
 		return;
 	}
@@ -117,4 +121,25 @@ bool TaskSystems::DispatchToCombatIfAble(const TaskSystemsArgs& components, cons
 	components.m_targetingComponent->m_targetEntityId = potentialTargetEntity.GetId();
 
 	return true;
+}
+
+void TaskSystems::ProcessInRangeOfTargetEntity(const TaskSystemsArgs& components)
+{
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+
+	if (components.m_taskComponent->m_movementState != EMovementState::InRangeOfTargetEntity)
+	{
+		return;
+	}
+
+	ArgusEntity targetEntity = ArgusEntity::RetrieveEntity(components.m_targetingComponent->m_targetEntityId);
+	if (components.m_entity.IsInRangeOfOtherEntity(targetEntity, TargetingSystems::GetRangeToUseForOtherEntity(components.m_entity, targetEntity)))
+	{
+		return;
+	}
+
+	components.m_taskComponent->m_movementState = EMovementState::MoveToEntity;
 }

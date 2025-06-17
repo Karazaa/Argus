@@ -147,8 +147,7 @@ void CombatSystems::ApplyDamage(uint32 damageAmount, const ArgusEntity& targetEn
 	if (targetHealthComponent->m_currentHealth <= damageAmount)
 	{
 		KillEntity(targetEntity, targetHealthComponent);
-		components.m_targetingComponent->m_targetEntityId = ArgusECSConstants::k_maxEntities;
-		components.m_taskComponent->m_combatState = ECombatState::None;
+		OnKilledOtherEntity(components);
 	}
 	else
 	{
@@ -189,4 +188,14 @@ void CombatSystems::KillEntity(const ArgusEntity& targetEntity, HealthComponent*
 	}
 
 	targetCarrierComponent->m_passengerEntityIds.Empty();
+}
+
+void CombatSystems::OnKilledOtherEntity(const CombatSystemsArgs& components)
+{
+	components.m_targetingComponent->m_targetEntityId = ArgusECSConstants::k_maxEntities;
+	components.m_taskComponent->m_combatState = ECombatState::None;
+	if (components.m_taskComponent->m_movementState == EMovementState::InRangeOfTargetEntity)
+	{
+		components.m_taskComponent->m_movementState = EMovementState::None;
+	}
 }

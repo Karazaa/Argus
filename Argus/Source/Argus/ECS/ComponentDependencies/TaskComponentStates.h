@@ -22,6 +22,7 @@ enum class EMovementState : uint8
 	ProcessMoveToEntityCommand,
 	MoveToLocation,
 	MoveToEntity,
+	InRangeOfTargetEntity,
 	AwaitingFinish,
 	FailedToFindPath,
 };

@@ -14,4 +14,6 @@ private:
 	static bool ProcessDispatchingForEntityPair(const TaskSystemsArgs& components, uint16 potentialTargetEntityId);
 	static bool DispatchToConstructionIfAble(const TaskSystemsArgs& components, const ArgusEntity& potentialTargetEntity);
 	static bool DispatchToCombatIfAble(const TaskSystemsArgs& components, const ArgusEntity& potentialTargetEntity);
+
+	static void ProcessInRangeOfTargetEntity(const TaskSystemsArgs& components);
 };
