@@ -355,6 +355,23 @@ bool ArgusEntity::IsCarryingPassengers() const
 	return carrierComponent->m_passengerEntityIds.Num() > 0;
 }
 
+bool ArgusEntity::IsOnSameTeamAsOtherEntity(const ArgusEntity& otherEntity) const
+{
+	if (!DoesEntityExist(m_id) || !otherEntity)
+	{
+		return false;
+	}
+
+	const IdentityComponent* identityComponent = GetComponent<IdentityComponent>();
+	const IdentityComponent* otherIdentityComponent = otherEntity.GetComponent<IdentityComponent>();
+	if (!identityComponent || !otherIdentityComponent)
+	{
+		return false;
+	}
+
+	return identityComponent->m_team == otherIdentityComponent->m_team;
+}
+
 const UArgusActorRecord* ArgusEntity::GetAssociatedActorRecord() const
 {
 	if (!DoesEntityExist(m_id))

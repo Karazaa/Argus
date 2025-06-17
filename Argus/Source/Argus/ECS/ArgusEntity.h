@@ -48,6 +48,7 @@ public:
 	bool			IsInRangeOfOtherEntity(const ArgusEntity& other, float range) const;
 	bool			IsPassenger() const;
 	bool			IsCarryingPassengers() const;
+	bool			IsOnSameTeamAsOtherEntity(const ArgusEntity& other) const;
 
 	const UArgusActorRecord* GetAssociatedActorRecord() const;
 

@@ -6,6 +6,7 @@
 #include "ArgusSystemsManager.h"
 #include "NavigationSystem.h"
 #include "Systems/AvoidanceSystems.h"
+#include "Systems/CarrierSystems.h"
 #include "Systems/CombatSystems.h"
 
 bool TransformSystems::RunSystems(UWorld* worldPointer, float deltaTime)
@@ -202,35 +203,15 @@ void TransformSystems::OnWithinRangeOfTargetEntity(const TransformSystemsArgs& c
 	}
 
 	ArgusEntity targetEntity = ArgusEntity::RetrieveEntity(components.m_targetingComponent->m_targetEntityId);
-	if (!targetEntity || !targetEntity.IsAlive())
+	if (CarrierSystems::CanEntityCarryOtherEntity(targetEntity, components.m_entity))
 	{
-		return;
+		PassengerComponent* passengerComponent = components.m_entity.GetComponent<PassengerComponent>();
+		CarrierComponent* targetCarrierComponent = targetEntity.GetComponent<CarrierComponent>();
+		ARGUS_RETURN_ON_NULL(passengerComponent, ArgusECSLog);
+		ARGUS_RETURN_ON_NULL(targetCarrierComponent, ArgusECSLog);
+		passengerComponent->Set_m_carrierEntityId(targetEntity.GetId());
+		targetCarrierComponent->m_passengerEntityIds.Add(components.m_entity.GetId());
 	}
-
-	PassengerComponent* passengerComponent = components.m_entity.GetComponent<PassengerComponent>();
-	if (!passengerComponent)
-	{
-		return;
-	}
-
-	if (passengerComponent->m_carrierEntityId != ArgusECSConstants::k_maxEntities)
-	{
-		return;
-	}
-
-	CarrierComponent* targetCarrierComponent = targetEntity.GetComponent<CarrierComponent>();
-	if (!targetCarrierComponent)
-	{
-		return;
-	}
-
-	if (targetCarrierComponent->m_passengerEntityIds.Num() >= targetCarrierComponent->m_carrierCapacity)
-	{
-		return;
-	}
-
-	passengerComponent->Set_m_carrierEntityId(targetEntity.GetId());
-	targetCarrierComponent->m_passengerEntityIds.Add(components.m_entity.GetId());
 }
 
 void TransformSystems::OnCompleteNavigationPath(const TransformSystemsArgs& components, const FVector& moverLocation)
