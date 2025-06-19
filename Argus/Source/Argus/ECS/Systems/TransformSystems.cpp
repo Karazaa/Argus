@@ -235,6 +235,7 @@ void TransformSystems::OnWithinRangeOfTargetEntity(const TransformSystemsArgs& c
 		ARGUS_RETURN_ON_NULL(targetCarrierComponent, ArgusECSLog);
 		passengerComponent->Set_m_carrierEntityId(targetEntity.GetId());
 		targetCarrierComponent->m_passengerEntityIds.Add(components.m_entity.GetId());
+		components.m_targetingComponent->m_targetEntityId = ArgusECSConstants::k_maxEntities;
 		return;
 	}
 

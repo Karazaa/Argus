@@ -422,10 +422,20 @@ void AvoidanceSystems::FindORCALineAndVelocityToBoundaryPerEntity(const CreateEn
 
 		const FVector2D cutoffCenterToRelativeVelocity = relativeVelocity - (inverseDeltaTime * relativeLocation);
 		const float lengthCutoffCenterToRelativeVelocity = cutoffCenterToRelativeVelocity.Length();
-		const FVector2D normalizedCutoffCenterToRelativeVelocity = cutoffCenterToRelativeVelocity / lengthCutoffCenterToRelativeVelocity;
 
-		calculatedORCALine.m_direction = FVector2D(normalizedCutoffCenterToRelativeVelocity.Y, -normalizedCutoffCenterToRelativeVelocity.X);
-		velocityToBoundaryOfVO = ((combinedRadius * inverseDeltaTime) - lengthCutoffCenterToRelativeVelocity) * normalizedCutoffCenterToRelativeVelocity;
+		if (FMath::IsNearlyZero(lengthCutoffCenterToRelativeVelocity))
+		{
+			// In this case, we just gotta nudge the fella into a random direction by setting a random ORCA line.
+			// TODO JAMES: Not entirely sold this is the best way to do the nudge.
+			calculatedORCALine.m_direction = FVector2D(FMath::FRand(), FMath::FRand()).GetSafeNormal();
+			velocityToBoundaryOfVO = FVector2D::ZeroVector;
+		}
+		else
+		{
+			const FVector2D normalizedCutoffCenterToRelativeVelocity = ArgusMath::SafeDivide(cutoffCenterToRelativeVelocity, lengthCutoffCenterToRelativeVelocity);
+			calculatedORCALine.m_direction = FVector2D(normalizedCutoffCenterToRelativeVelocity.Y, -normalizedCutoffCenterToRelativeVelocity.X);
+			velocityToBoundaryOfVO = ((combinedRadius * inverseDeltaTime) - lengthCutoffCenterToRelativeVelocity) * normalizedCutoffCenterToRelativeVelocity;
+		}
 	}
 }
 
