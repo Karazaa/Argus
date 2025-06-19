@@ -25,11 +25,13 @@ void AbilitySystems::RunSystems(float deltaTime)
 
 		if ((components.m_entity.IsKillable() && !components.m_entity.IsAlive()) || components.m_entity.IsPassenger())
 		{
+			components.m_taskComponent->m_abilityState = EAbilityState::None;
 			continue;
 		}
 
 		if (components.m_taskComponent->m_constructionState == EConstructionState::BeingConstructed)
 		{
+			components.m_taskComponent->m_abilityState = EAbilityState::None;
 			continue;
 		}
 
