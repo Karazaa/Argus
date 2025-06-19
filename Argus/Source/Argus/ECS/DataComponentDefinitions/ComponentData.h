@@ -12,6 +12,6 @@ class UComponentData : public UDataAsset
 	GENERATED_BODY()
 
 public:
-	virtual void InstantiateComponentForEntity(ArgusEntity& entity) const {};
+	virtual void InstantiateComponentForEntity(const ArgusEntity& entity) const {};
 	virtual bool MatchesType(UComponentData* other) const { return false; }
 };

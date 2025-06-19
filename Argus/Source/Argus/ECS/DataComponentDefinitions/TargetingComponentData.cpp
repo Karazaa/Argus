@@ -5,7 +5,7 @@
 #include "ArgusLogging.h"
 #include "ArgusStaticData.h"
 
-void UTargetingComponentData::InstantiateComponentForEntity(ArgusEntity& entity) const
+void UTargetingComponentData::InstantiateComponentForEntity(const ArgusEntity& entity) const
 {
 	TargetingComponent* TargetingComponentRef = entity.AddComponent<TargetingComponent>();
 	ARGUS_RETURN_ON_NULL(TargetingComponentRef, ArgusECSLog);

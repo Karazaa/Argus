@@ -5,7 +5,7 @@
 #include "ArgusLogging.h"
 #include "ArgusStaticData.h"
 
-void UTransformComponentData::InstantiateComponentForEntity(ArgusEntity& entity) const
+void UTransformComponentData::InstantiateComponentForEntity(const ArgusEntity& entity) const
 {
 	TransformComponent* TransformComponentRef = entity.AddComponent<TransformComponent>();
 	ARGUS_RETURN_ON_NULL(TransformComponentRef, ArgusECSLog);

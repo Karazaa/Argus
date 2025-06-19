@@ -5,7 +5,7 @@
 #include "ArgusLogging.h"
 #include "ArgusStaticData.h"
 
-void UNavigationComponentData::InstantiateComponentForEntity(ArgusEntity& entity) const
+void UNavigationComponentData::InstantiateComponentForEntity(const ArgusEntity& entity) const
 {
 	NavigationComponent* NavigationComponentRef = entity.AddComponent<NavigationComponent>();
 	ARGUS_RETURN_ON_NULL(NavigationComponentRef, ArgusECSLog);

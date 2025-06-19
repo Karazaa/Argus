@@ -19,6 +19,6 @@ public:
 	UPROPERTY(EditAnywhere)
 	EResourceComponentOwnerType m_resourceComponentOwnerType = EResourceComponentOwnerType::TeamPool;
 
-	void InstantiateComponentForEntity(ArgusEntity& entity) const override;
+	void InstantiateComponentForEntity(const ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;
 };

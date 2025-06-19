@@ -7,6 +7,8 @@
 #include "CoreMinimal.h"
 #include "ConstructionComponent.generated.h"
 
+class UAbilityRecord;
+
 UENUM()
 enum class EConstructionType : uint8
 {
@@ -20,10 +22,9 @@ struct ConstructionComponent
 
 	float m_requiredWorkSeconds = 0.0f;
 
-	ARGUS_IGNORE()
 	float m_currentWorkSeconds = 0.0f;
 
-	ARGUS_IGNORE()
+	ARGUS_STATIC_DATA(UAbilityRecord)
 	uint32 m_constructionAbilityRecordId = 0u;
 
 	EConstructionType m_constructionType = EConstructionType::Automatic;

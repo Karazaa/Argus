@@ -40,7 +40,7 @@ ArgusEntity UArgusEntityTemplate::MakeEntityAsync() const
 	return entity;
 }
 
-void UArgusEntityTemplate::PopulateEntity(ArgusEntity& entity) const
+void UArgusEntityTemplate::PopulateEntity(const ArgusEntity& entity) const
 {
 	ARGUS_MEMORY_TRACE(ArgusComponentData);
 
@@ -53,6 +53,25 @@ void UArgusEntityTemplate::PopulateEntity(ArgusEntity& entity) const
 		}
 
 		componentData->InstantiateComponentForEntity(entity);
+	}
+
+	SetInitialStateFromData(entity);
+}
+
+void UArgusEntityTemplate::SetInitialStateFromData(const ArgusEntity& entity) const
+{
+	TaskComponent* taskComponent = entity.GetComponent<TaskComponent>();
+	if (!taskComponent)
+	{
+		return;
+	}
+
+	if (const ConstructionComponent* constructionComponent = entity.GetComponent<ConstructionComponent>())
+	{
+		if (constructionComponent->m_currentWorkSeconds != 0.0f)
+		{
+			taskComponent->m_constructionState = EConstructionState::BeingConstructed;
+		}
 	}
 }
 

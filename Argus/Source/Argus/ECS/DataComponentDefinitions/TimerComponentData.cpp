@@ -5,7 +5,7 @@
 #include "ArgusLogging.h"
 #include "ArgusStaticData.h"
 
-void UTimerComponentData::InstantiateComponentForEntity(ArgusEntity& entity) const
+void UTimerComponentData::InstantiateComponentForEntity(const ArgusEntity& entity) const
 {
 	TimerComponent* TimerComponentRef = entity.AddComponent<TimerComponent>();
 	ARGUS_RETURN_ON_NULL(TimerComponentRef, ArgusECSLog);

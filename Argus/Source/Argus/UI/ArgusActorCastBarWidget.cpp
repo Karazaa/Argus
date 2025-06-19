@@ -44,6 +44,7 @@ void UArgusActorCastBarWidget::RefreshDisplay(const ArgusEntity& argusEntity)
 		fillColor = m_abilityCastColor;
 	}
 
+	shouldBeVisible &= argusEntity.IsAlive();
 	const bool isVisible = GetVisibility() != ESlateVisibility::Collapsed;
 
 	if (isVisible)

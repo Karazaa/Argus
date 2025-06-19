@@ -13,6 +13,6 @@ class ARGUS_API UObserversComponentData : public UComponentData
 
 public:
 
-	void InstantiateComponentForEntity(ArgusEntity& entity) const override;
+	void InstantiateComponentForEntity(const ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;
 };

@@ -38,7 +38,18 @@ void ConstructionComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_constructionAbilityRecordId");
 		ImGui::TableNextColumn();
-		ImGui::Text("%d", m_constructionAbilityRecordId);
+		if (m_constructionAbilityRecordId != 0u)
+		{
+			if (const UAbilityRecord* record_m_constructionAbilityRecordId = ArgusStaticData::GetRecord<UAbilityRecord>(m_constructionAbilityRecordId))
+			{
+				const char* name_m_constructionAbilityRecordId = ARGUS_FSTRING_TO_CHAR(record_m_constructionAbilityRecordId->GetName());
+				ImGui::Text("%s", name_m_constructionAbilityRecordId);
+			}
+		}
+		else
+		{
+			ImGui::Text("None", m_constructionAbilityRecordId);
+		}
 		ImGui::TableNextColumn();
 		ImGui::Text("m_constructionType");
 		ImGui::TableNextColumn();

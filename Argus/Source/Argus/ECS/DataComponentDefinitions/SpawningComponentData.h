@@ -17,6 +17,6 @@ public:
 	UPROPERTY(EditAnywhere)
 	uint8 m_maximumQueueSize = 10u;
 
-	void InstantiateComponentForEntity(ArgusEntity& entity) const override;
+	void InstantiateComponentForEntity(const ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;
 };

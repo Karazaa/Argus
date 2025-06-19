@@ -5,7 +5,7 @@
 #include "ArgusLogging.h"
 #include "ArgusStaticData.h"
 
-void UVelocityComponentData::InstantiateComponentForEntity(ArgusEntity& entity) const
+void UVelocityComponentData::InstantiateComponentForEntity(const ArgusEntity& entity) const
 {
 	VelocityComponent* VelocityComponentRef = entity.AddComponent<VelocityComponent>();
 	ARGUS_RETURN_ON_NULL(VelocityComponentRef, ArgusECSLog);

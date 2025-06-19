@@ -14,6 +14,6 @@ class ARGUS_API UTaskComponentData : public UComponentData
 public:
 	EBaseState m_baseState = EBaseState::Alive;
 
-	void InstantiateComponentForEntity(ArgusEntity& entity) const override;
+	void InstantiateComponentForEntity(const ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;
 };

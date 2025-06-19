@@ -5,7 +5,7 @@
 #include "ArgusLogging.h"
 #include "ArgusStaticData.h"
 
-void UPassengerComponentData::InstantiateComponentForEntity(ArgusEntity& entity) const
+void UPassengerComponentData::InstantiateComponentForEntity(const ArgusEntity& entity) const
 {
 	PassengerComponent* PassengerComponentRef = entity.AddComponent<PassengerComponent>();
 	ARGUS_RETURN_ON_NULL(PassengerComponentRef, ArgusECSLog);

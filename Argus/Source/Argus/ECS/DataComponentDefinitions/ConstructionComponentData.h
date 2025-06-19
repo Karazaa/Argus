@@ -15,8 +15,12 @@ public:
 	UPROPERTY(EditAnywhere)
 	float m_requiredWorkSeconds = 0.0f;
 	UPROPERTY(EditAnywhere)
+	float m_currentWorkSeconds = 0.0f;
+	UPROPERTY(EditAnywhere)
+	TSoftObjectPtr<UAbilityRecord> m_constructionAbilityRecordId;
+	UPROPERTY(EditAnywhere)
 	EConstructionType m_constructionType = EConstructionType::Automatic;
 
-	void InstantiateComponentForEntity(ArgusEntity& entity) const override;
+	void InstantiateComponentForEntity(const ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;
 };

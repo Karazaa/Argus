@@ -19,6 +19,6 @@ public:
 	UPROPERTY(EditAnywhere)
 	EAttackType m_attackType = EAttackType::Melee;
 
-	void InstantiateComponentForEntity(ArgusEntity& entity) const override;
+	void InstantiateComponentForEntity(const ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;
 };

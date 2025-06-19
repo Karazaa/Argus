@@ -19,6 +19,6 @@ float m_smoothedYawDecayConstant = 1.0f;
 	UPROPERTY(EditAnywhere)
 	float m_height = 100.0f;
 
-	void InstantiateComponentForEntity(ArgusEntity& entity) const override;
+	void InstantiateComponentForEntity(const ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;
 };

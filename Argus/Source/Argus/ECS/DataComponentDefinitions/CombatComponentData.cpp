@@ -5,7 +5,7 @@
 #include "ArgusLogging.h"
 #include "ArgusStaticData.h"
 
-void UCombatComponentData::InstantiateComponentForEntity(ArgusEntity& entity) const
+void UCombatComponentData::InstantiateComponentForEntity(const ArgusEntity& entity) const
 {
 	CombatComponent* CombatComponentRef = entity.AddComponent<CombatComponent>();
 	ARGUS_RETURN_ON_NULL(CombatComponentRef, ArgusECSLog);

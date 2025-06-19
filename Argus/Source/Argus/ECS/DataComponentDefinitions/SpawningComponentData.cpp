@@ -5,7 +5,7 @@
 #include "ArgusLogging.h"
 #include "ArgusStaticData.h"
 
-void USpawningComponentData::InstantiateComponentForEntity(ArgusEntity& entity) const
+void USpawningComponentData::InstantiateComponentForEntity(const ArgusEntity& entity) const
 {
 	SpawningComponent* SpawningComponentRef = entity.AddComponent<SpawningComponent>();
 	ARGUS_RETURN_ON_NULL(SpawningComponentRef, ArgusECSLog);

@@ -5,12 +5,14 @@
 #include "ArgusLogging.h"
 #include "ArgusStaticData.h"
 
-void UConstructionComponentData::InstantiateComponentForEntity(ArgusEntity& entity) const
+void UConstructionComponentData::InstantiateComponentForEntity(const ArgusEntity& entity) const
 {
 	ConstructionComponent* ConstructionComponentRef = entity.AddComponent<ConstructionComponent>();
 	ARGUS_RETURN_ON_NULL(ConstructionComponentRef, ArgusECSLog);
 
 	ConstructionComponentRef->m_requiredWorkSeconds = m_requiredWorkSeconds;
+	ConstructionComponentRef->m_currentWorkSeconds = m_currentWorkSeconds;
+	ConstructionComponentRef->m_constructionAbilityRecordId = m_constructionAbilityRecordId.LoadSynchronous() ? m_constructionAbilityRecordId.LoadSynchronous()->m_id : 0u;
 	ConstructionComponentRef->m_constructionType = m_constructionType;
 }
 

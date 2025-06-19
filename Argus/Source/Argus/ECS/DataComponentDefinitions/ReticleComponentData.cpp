@@ -5,7 +5,7 @@
 #include "ArgusLogging.h"
 #include "ArgusStaticData.h"
 
-void UReticleComponentData::InstantiateComponentForEntity(ArgusEntity& entity) const
+void UReticleComponentData::InstantiateComponentForEntity(const ArgusEntity& entity) const
 {
 	ReticleComponent* ReticleComponentRef = entity.AddComponent<ReticleComponent>();
 	ARGUS_RETURN_ON_NULL(ReticleComponentRef, ArgusECSLog);

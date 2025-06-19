@@ -5,7 +5,7 @@
 #include "ArgusLogging.h"
 #include "ArgusStaticData.h"
 
-void UAbilityComponentData::InstantiateComponentForEntity(ArgusEntity& entity) const
+void UAbilityComponentData::InstantiateComponentForEntity(const ArgusEntity& entity) const
 {
 	AbilityComponent* AbilityComponentRef = entity.AddComponent<AbilityComponent>();
 	ARGUS_RETURN_ON_NULL(AbilityComponentRef, ArgusECSLog);
