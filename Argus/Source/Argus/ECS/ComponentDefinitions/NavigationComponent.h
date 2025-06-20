@@ -16,9 +16,6 @@ struct NavigationComponent
 	ArgusQueue<FVector> m_queuedWaypoints;
 
 	ARGUS_IGNORE()
-	FVector m_endedNavigationLocation;
-
-	ARGUS_IGNORE()
 	int32 m_lastPointIndex = 0;
 
 	void ResetPath()

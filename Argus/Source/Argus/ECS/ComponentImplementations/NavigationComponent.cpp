@@ -42,10 +42,6 @@ void NavigationComponent::DrawComponentDebug() const
 		ImGui::Text("m_queuedWaypoints");
 		ImGui::TableNextColumn();
 		ImGui::TableNextColumn();
-		ImGui::Text("m_endedNavigationLocation");
-		ImGui::TableNextColumn();
-		ImGui::Text("(%.2f, %.2f, %.2f)", m_endedNavigationLocation.X, m_endedNavigationLocation.Y, m_endedNavigationLocation.Z);
-		ImGui::TableNextColumn();
 		ImGui::Text("m_lastPointIndex");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_lastPointIndex);

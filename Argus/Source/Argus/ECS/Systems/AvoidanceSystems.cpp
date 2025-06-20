@@ -86,12 +86,6 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 	const TArray<uint16>& foundEntityIds = nearbyEntitiesComponent->m_nearbyEntities.GetEntitiesInAvoidanceRange();
 	if (foundEntityIds.IsEmpty())
 	{
-		// If we have no desired velocity, we should try to get a desired velocity direction towards where we last navigated too.
-		if (!components.m_taskComponent->IsExecutingMoveTask())
-		{
-			desiredVelocity = GetVelocityTowardsEndOfNavPoint(params, components);
-		}
-
 		components.m_velocityComponent->m_proposedAvoidanceVelocity = ArgusMath::ToUnrealVector2(desiredVelocity);
 #if !UE_BUILD_SHIPPING
 		if (worldPointer && ArgusECSDebugger::ShouldShowAvoidanceDebugForEntity(components.m_entity.GetId()))
@@ -600,20 +594,6 @@ void AvoidanceSystems::ThreeDimensionalLinearProgram(const TArray<ORCALine>& orc
 
 		distance = ArgusMath::Determinant(orcaLines[i].m_direction, orcaLines[i].m_point - resultingVelocity);
 	}
-}
-
-FVector2D AvoidanceSystems::GetVelocityTowardsEndOfNavPoint(const CreateEntityORCALinesParams& params, const TransformSystemsArgs& components)
-{
-	const FVector2D endedNavigationLocation = ArgusMath::ToCartesianVector2(FVector2D(components.m_navigationComponent->m_endedNavigationLocation));
-	const FVector2D towardsEndNavigationLocation = endedNavigationLocation - params.m_sourceEntityLocation;
-	float squareDistance = towardsEndNavigationLocation.SquaredLength();
-
-	if (squareDistance > FMath::Square(ArgusECSConstants::k_avoidanceAgentReturnToEndNavRadius))
-	{
-		return towardsEndNavigationLocation.GetSafeNormal() * components.m_velocityComponent->m_desiredSpeedUnitsPerSecond;
-	}
-
-	return FVector2D::ZeroVector;
 }
 
 FVector2D AvoidanceSystems::GetDesiredVelocity(const TransformSystemsArgs& components)

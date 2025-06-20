@@ -239,7 +239,6 @@ void TransformSystems::OnWithinRangeOfTargetEntity(const TransformSystemsArgs& c
 		return;
 	}
 
-	components.m_navigationComponent->m_endedNavigationLocation = components.m_transformComponent->m_location;
 	components.m_taskComponent->m_movementState = EMovementState::InRangeOfTargetEntity;
 	components.m_velocityComponent->m_currentVelocity = FVector2D::ZeroVector;
 }
@@ -250,8 +249,6 @@ void TransformSystems::OnCompleteNavigationPath(const TransformSystemsArgs& comp
 	{
 		return;
 	}
-
-	components.m_navigationComponent->m_endedNavigationLocation = moverLocation;
 
 	if (components.m_navigationComponent->m_queuedWaypoints.IsEmpty())
 	{

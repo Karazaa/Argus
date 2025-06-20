@@ -105,12 +105,6 @@ void AArgusActor::SetEntity(const ArgusEntity& entity)
 			SetActorLocation(transformComponent->m_location);
 			SetActorRotation(FRotationMatrix::MakeFromXZ(ArgusMath::GetDirectionFromYaw(transformComponent->GetCurrentYaw()), FVector::UpVector).ToQuat());
 		}
-
-		if (NavigationComponent* navigationComponent = m_entity.GetComponent<NavigationComponent>())
-		{
-			navigationComponent->m_endedNavigationLocation = transformComponent->m_location;
-			navigationComponent->m_endedNavigationLocation;
-		}
 	}
 
 	AArgusGameModeBase* gameMode = Cast<AArgusGameModeBase>(world->GetAuthGameMode());
