@@ -13,11 +13,10 @@ struct ObstacleIndicies
 
 struct ObstaclePointKDTreeNode
 {
-	FVector2D m_location = FVector2D::ZeroVector;
-	ObstacleIndicies m_indicies;
-	ObstaclePointKDTreeNode* m_leftChild = nullptr;
-	ObstaclePointKDTreeNode* m_rightChild = nullptr;
-	bool forceFullSearch = false;
+	FVector2D					m_location = FVector2D::ZeroVector;
+	ObstacleIndicies			m_indicies;
+	ObstaclePointKDTreeNode*	m_leftChild = nullptr;
+	ObstaclePointKDTreeNode*	m_rightChild = nullptr;
 
 	ObstaclePointKDTreeNode() {};
 
@@ -28,6 +27,7 @@ struct ObstaclePointKDTreeNode
 	bool	ShouldSkipNode(TFunction<bool(const ObstaclePointKDTreeNode*)> queryFilter) const;
 	bool	PassesRangeCheck(const FVector& targetLocation, float rangeSquared, float& nodeRangeSquared) const;
 	float   GetValueForDimension(uint16 dimension) const;
+	float	GetRadius() const { return 0.0f; }
 };
 
 struct ObstaclePointKDTreeQueryRangeThresholds

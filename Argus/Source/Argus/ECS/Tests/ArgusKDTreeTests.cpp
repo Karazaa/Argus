@@ -53,6 +53,11 @@ void PopulateKDTreeForTests(ArgusEntityKDTree& tree, CollectionOfArgusEntities& 
 		transformComponent2->m_location = ArgusKDTreeTestConstants::location2;
 		transformComponent3->m_location = ArgusKDTreeTestConstants::location3;
 		transformComponent4->m_location = ArgusKDTreeTestConstants::location4;
+		transformComponent0->m_radius = 0.0f;
+		transformComponent1->m_radius = 0.0f;
+		transformComponent2->m_radius = 0.0f;
+		transformComponent3->m_radius = 0.0f;
+		transformComponent4->m_radius = 0.0f;
 	}
 
 	if (insertIntoTree)

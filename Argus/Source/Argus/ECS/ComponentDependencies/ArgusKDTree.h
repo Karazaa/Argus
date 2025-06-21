@@ -268,13 +268,6 @@ void ArgusKDTree<NodeType, OutputDataStructure, OutputQueryThresholds>::FindNode
 		outNearbyNodes.Add(iterationNode, thresholds, nodeRange);
 	}
 
-	if (iterationNode->forceFullSearch)
-	{
-		FindNodesWithinRangeOfLocationRecursive(outNearbyNodes, thresholds, iterationNode->m_leftChild, targetLocation, rangeSquared, queryFilter, depth + 1);
-		FindNodesWithinRangeOfLocationRecursive(outNearbyNodes, thresholds, iterationNode->m_rightChild, targetLocation, rangeSquared, queryFilter, depth + 1);
-		return;
-	}
-
 	uint16 dimension = (depth) % 3u;
 	float targetLocationValue = 0.0f;
 	switch (dimension)
@@ -324,7 +317,7 @@ void ArgusKDTree<NodeType, OutputDataStructure, OutputQueryThresholds>::FindNode
 	float currentSign = 0.0f;
 	for (int32 i = 0; i < convexPolygonPoints.Num(); ++i)
 	{
-		if (isInside && ArgusMath::IsLeftOfUnreal(FVector2D(convexPolygonPoints[i]), FVector2D(convexPolygonPoints[(i + 1) % convexPolygonPoints.Num()]), FVector2D(iterationNode->GetLocation())))
+		if (isInside && ArgusMath::IsLeftOfUnreal(FVector2D(convexPolygonPoints[i]), FVector2D(convexPolygonPoints[(i + 1) % convexPolygonPoints.Num()]), FVector2D(iterationNode->GetLocation()), iterationNode->GetRadius()))
 		{
 			isInside = false;
 			break;
@@ -366,7 +359,7 @@ void ArgusKDTree<NodeType, OutputDataStructure, OutputQueryThresholds>::FindNode
 		outNearbyNodes.Add(iterationNode, thresholds, minDifferenceInDimension);
 	}
 
-	if (iterationNode->forceFullSearch || dimension == 2 || !allDifferencesSameSign)
+	if (dimension == 2 || !allDifferencesSameSign)
 	{
 		FindNodesWithinConvexPolyRecursive(outNearbyNodes, thresholds, iterationNode->m_leftChild, convexPolygonPoints, queryFilter, depth + 1);
 		FindNodesWithinConvexPolyRecursive(outNearbyNodes, thresholds, iterationNode->m_rightChild, convexPolygonPoints, queryFilter, depth + 1);

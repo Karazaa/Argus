@@ -5,6 +5,7 @@
 #include "ArgusLogging.h"
 #include "CoreMinimal.h"
 #include "Math/UnrealMathUtility.h"
+#include <algorithm>
 
 namespace ArgusMath
 {
@@ -157,14 +158,24 @@ namespace ArgusMath
 		return output;
 	}
 
-	static bool IsLeftOfCartesian(const FVector2D& lineSegmentPoint0, const FVector2D& lineSegmentPoint1, const FVector2D& evaluationPoint)
+	static bool IsLeftOfCartesian(const FVector2D& lineSegmentPoint0, const FVector2D& lineSegmentPoint1, const FVector2D& evaluationPoint, float radius = 0.0f)
 	{
-		return AmountLeftOf(lineSegmentPoint0, lineSegmentPoint1, evaluationPoint) > 0.0f;
+		if (radius == 0.0f)
+		{
+			return AmountLeftOf(lineSegmentPoint0, lineSegmentPoint1, evaluationPoint) > 0.0f;
+		}
+		
+		// Get a normal vector pointing rightwards from the evaluation line segment
+		FVector2D radiusAdjustmentDirection = lineSegmentPoint1 - lineSegmentPoint0;
+		std::swap(radiusAdjustmentDirection.X, radiusAdjustmentDirection.Y);
+		radiusAdjustmentDirection.Y *= -1.0f;
+
+		return AmountLeftOf(lineSegmentPoint0, lineSegmentPoint1, (radiusAdjustmentDirection.GetSafeNormal() * radius) + evaluationPoint) > 0.0f;
 	}
 
-	static bool IsLeftOfUnreal(const FVector2D& lineSegmentPoint0, const FVector2D& lineSegmentPoint1, const FVector2D& evaluationPoint)
+	static bool IsLeftOfUnreal(const FVector2D& lineSegmentPoint0, const FVector2D& lineSegmentPoint1, const FVector2D& evaluationPoint, float radius = 0.0f)
 	{
-		return AmountLeftOf(ToCartesianVector2(lineSegmentPoint0), ToCartesianVector2(lineSegmentPoint1), ToCartesianVector2(evaluationPoint)) > 0.0f;
+		return IsLeftOfCartesian(ToCartesianVector2(lineSegmentPoint0), ToCartesianVector2(lineSegmentPoint1), ToCartesianVector2(evaluationPoint), radius);
 	}
 
 	static FVector GetDirectionFromYaw(float yaw)

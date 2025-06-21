@@ -23,6 +23,7 @@ void ArgusEntityKDTreeNode::Populate(const ArgusEntity& entityToRepresent)
 
 	m_worldSpaceLocation = transformComponent->m_location;
 	m_entityId = entityToRepresent.GetId();
+	m_radius = transformComponent->m_radius;
 }
 
 void ArgusEntityKDTreeNode::Reset()
@@ -55,7 +56,7 @@ bool ArgusEntityKDTreeNode::ShouldSkipNode(TFunction<bool(const ArgusEntityKDTre
 
 bool ArgusEntityKDTreeNode::PassesRangeCheck(const FVector& targetLocation, float rangeSquared, float& nodeRangeSquared) const
 {
-	nodeRangeSquared = FVector::DistSquared(GetLocation(), targetLocation);
+	nodeRangeSquared = FVector::DistSquared(GetLocation(), targetLocation) - (m_radius * m_radius);
 	return nodeRangeSquared < rangeSquared;
 }
 

@@ -8,11 +8,11 @@ class ArgusEntity;
 
 struct ArgusEntityKDTreeNode
 {
-	FVector		m_worldSpaceLocation = FVector::ZeroVector;
-	ArgusEntityKDTreeNode* m_leftChild = nullptr;
-	ArgusEntityKDTreeNode* m_rightChild = nullptr;
-	uint16		m_entityId = ArgusECSConstants::k_maxEntities;
-	bool forceFullSearch = false;
+	FVector					m_worldSpaceLocation = FVector::ZeroVector;
+	ArgusEntityKDTreeNode*	m_leftChild = nullptr;
+	ArgusEntityKDTreeNode*	m_rightChild = nullptr;
+	uint16					m_entityId = ArgusECSConstants::k_maxEntities;
+	float					m_radius = 0.0f;
 
 	ArgusEntityKDTreeNode() {};
 
@@ -23,6 +23,7 @@ struct ArgusEntityKDTreeNode
 	bool	ShouldSkipNode(TFunction<bool(const ArgusEntityKDTreeNode*)> queryFilter) const;
 	bool	PassesRangeCheck(const FVector& targetLocation, float rangeSquared, float& nodeRangeSquared) const;
 	float   GetValueForDimension(uint16 dimension) const;
+	float	GetRadius() const { return m_radius; }
 
 	void Populate(const ArgusEntity& entityToRepresent);
 };
