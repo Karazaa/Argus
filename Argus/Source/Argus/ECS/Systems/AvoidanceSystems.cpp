@@ -741,6 +741,21 @@ float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems
 		return 0.0f;
 	}
 
+	const AvoidanceGroupingComponent* sourceEntityAvoidanceGroupingComponent = sourceEntityComponents.m_entity.GetComponent<AvoidanceGroupingComponent>();
+	const AvoidanceGroupingComponent* foundEntityAvoidanceGroupingComponent = foundEntity.GetComponent<AvoidanceGroupingComponent>();
+	if (sourceEntityAvoidanceGroupingComponent && foundEntityAvoidanceGroupingComponent)
+	{
+		if (sourceEntityAvoidanceGroupingComponent->m_avoidancePriority > foundEntityAvoidanceGroupingComponent->m_avoidancePriority)
+		{
+			return 0.0f;
+		}
+
+		if (sourceEntityAvoidanceGroupingComponent->m_avoidancePriority < foundEntityAvoidanceGroupingComponent->m_avoidancePriority)
+		{
+			return 1.0f;
+		}
+	}
+
 	if (sourceEntityComponents.m_taskComponent->IsExecutingMoveTask() && (!foundEntityTaskComponent->IsExecutingMoveTask()))
 	{
 		if (foundEntity.IsMoveable())

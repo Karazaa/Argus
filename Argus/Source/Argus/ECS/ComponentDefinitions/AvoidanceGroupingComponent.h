@@ -6,6 +6,16 @@
 #include "ArgusECSConstants.h"
 #include "ArgusMacros.h"
 
+UENUM()
+enum class EAvoidancePriority : uint8
+{
+	Lowest,
+	Low,
+	Medium,
+	High,
+	Highest
+};
+
 struct AvoidanceGroupingComponent
 {
 	ARGUS_COMPONENT_SHARED;
@@ -18,4 +28,6 @@ struct AvoidanceGroupingComponent
 
 	ARGUS_IGNORE()
 	uint16 m_numberOfIdleEntities = 0u;
+
+	EAvoidancePriority m_avoidancePriority = EAvoidancePriority::Lowest;
 };
