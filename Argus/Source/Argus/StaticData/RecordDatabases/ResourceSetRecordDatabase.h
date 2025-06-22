@@ -23,7 +23,7 @@ protected:
 	TArray<TObjectPtr<UResourceSetRecord>> m_UResourceSetRecordsPersistent;
 
 public:
-#if WITH_EDITOR
+#if WITH_EDITOR && !IS_PACKAGING_ARGUS
 	virtual void PreSave(FObjectPreSaveContext saveContext) override;
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent) override;
 	void AddUResourceSetRecordToDatabase(UResourceSetRecord* record);

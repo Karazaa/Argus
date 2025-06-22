@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "ArgusMacros.h"
 #include "RecordDefinitions\FactionRecord.h"
 #include "FactionRecordDatabase.generated.h"
 
@@ -23,7 +24,7 @@ protected:
 	TArray<TObjectPtr<UFactionRecord>> m_UFactionRecordsPersistent;
 
 public:
-#if WITH_EDITOR
+#if WITH_EDITOR && !IS_PACKAGING_ARGUS
 	virtual void PreSave(FObjectPreSaveContext saveContext) override;
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent) override;
 	void AddUFactionRecordToDatabase(UFactionRecord* record);

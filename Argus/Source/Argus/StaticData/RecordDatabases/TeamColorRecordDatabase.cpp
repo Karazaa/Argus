@@ -62,7 +62,7 @@ void UTeamColorRecordDatabase::ResizePersistentObjectPointerArray()
 	m_UTeamColorRecordsPersistent.SetNumZeroed(m_UTeamColorRecords.Num());
 }
 
-#if WITH_EDITOR
+#if WITH_EDITOR && !IS_PACKAGING_ARGUS
 void UTeamColorRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
 {
 	FString fullPath = FPaths::ConvertRelativePathToFull(saveContext.GetTargetFilename());

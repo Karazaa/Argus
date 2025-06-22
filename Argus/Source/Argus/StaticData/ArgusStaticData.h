@@ -5,10 +5,10 @@
 
 #include "ArgusGameInstance.h"
 
-#if WITH_EDITOR
+#if WITH_EDITOR && !IS_PACKAGING_ARGUS
 #include "Editor.h"
 #include "Subsystems/EditorAssetSubsystem.h"
-#endif
+#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
 
 class ArgusStaticData
 {
@@ -19,7 +19,7 @@ public:
 		return nullptr;
 	}
 
-#if WITH_EDITOR
+#if WITH_EDITOR && !IS_PACKAGING_ARGUS 
 	static const uint32 AddRecordToDatabase(UArgusStaticRecord* record)
 	{
 		if (!GEditor)
@@ -63,7 +63,7 @@ public:
 
 		return 0u;
 	}
-#endif //WITH_EDITOR
+#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
 
 #pragma region UAbilityRecord
 	template<>
@@ -79,7 +79,7 @@ public:
 		return staticDatabase->GetUAbilityRecord(id);
 	}
 
-#if WITH_EDITOR
+#if WITH_EDITOR && !IS_PACKAGING_ARGUS
 	static void RegisterNewUAbilityRecordDatabase(UAbilityRecordDatabase* database)
 	{
 		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
@@ -91,7 +91,7 @@ public:
 
 		staticDatabase->RegisterNewUAbilityRecordDatabase(database);
 	}
-#endif //WITH_EDITOR
+#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
 #pragma endregion
 #pragma region UArgusActorRecord
 	template<>
@@ -107,7 +107,7 @@ public:
 		return staticDatabase->GetUArgusActorRecord(id);
 	}
 
-#if WITH_EDITOR
+#if WITH_EDITOR && !IS_PACKAGING_ARGUS
 	static void RegisterNewUArgusActorRecordDatabase(UArgusActorRecordDatabase* database)
 	{
 		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
@@ -119,7 +119,7 @@ public:
 
 		staticDatabase->RegisterNewUArgusActorRecordDatabase(database);
 	}
-#endif //WITH_EDITOR
+#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
 #pragma endregion
 #pragma region UFactionRecord
 	template<>
@@ -135,7 +135,7 @@ public:
 		return staticDatabase->GetUFactionRecord(id);
 	}
 
-#if WITH_EDITOR
+#if WITH_EDITOR && !IS_PACKAGING_ARGUS
 	static void RegisterNewUFactionRecordDatabase(UFactionRecordDatabase* database)
 	{
 		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
@@ -147,7 +147,7 @@ public:
 
 		staticDatabase->RegisterNewUFactionRecordDatabase(database);
 	}
-#endif //WITH_EDITOR
+#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
 #pragma endregion
 #pragma region UPlacedArgusActorTeamInfoRecord
 	template<>
@@ -163,7 +163,7 @@ public:
 		return staticDatabase->GetUPlacedArgusActorTeamInfoRecord(id);
 	}
 
-#if WITH_EDITOR
+#if WITH_EDITOR && !IS_PACKAGING_ARGUS
 	static void RegisterNewUPlacedArgusActorTeamInfoRecordDatabase(UPlacedArgusActorTeamInfoRecordDatabase* database)
 	{
 		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
@@ -175,7 +175,7 @@ public:
 
 		staticDatabase->RegisterNewUPlacedArgusActorTeamInfoRecordDatabase(database);
 	}
-#endif //WITH_EDITOR
+#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
 #pragma endregion
 #pragma region UResourceSetRecord
 	template<>
@@ -191,7 +191,7 @@ public:
 		return staticDatabase->GetUResourceSetRecord(id);
 	}
 
-#if WITH_EDITOR
+#if WITH_EDITOR && !IS_PACKAGING_ARGUS
 	static void RegisterNewUResourceSetRecordDatabase(UResourceSetRecordDatabase* database)
 	{
 		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
@@ -203,7 +203,7 @@ public:
 
 		staticDatabase->RegisterNewUResourceSetRecordDatabase(database);
 	}
-#endif //WITH_EDITOR
+#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
 #pragma endregion
 #pragma region UTeamColorRecord
 	template<>
@@ -219,7 +219,7 @@ public:
 		return staticDatabase->GetUTeamColorRecord(id);
 	}
 
-#if WITH_EDITOR
+#if WITH_EDITOR && !IS_PACKAGING_ARGUS
 	static void RegisterNewUTeamColorRecordDatabase(UTeamColorRecordDatabase* database)
 	{
 		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
@@ -231,10 +231,10 @@ public:
 
 		staticDatabase->RegisterNewUTeamColorRecordDatabase(database);
 	}
-#endif //WITH_EDITOR
+#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
 #pragma endregion
 
-#if WITH_EDITOR
+#if WITH_EDITOR && !IS_PACKAGING_ARGUS
 private:
 	static UArgusStaticDatabase* GetParentDatabase()
 	{
@@ -251,5 +251,5 @@ private:
 
 		return Cast<UArgusStaticDatabase>(editorAssetSubsystem->LoadAsset(FString("/Game/StaticData/ArgusStaticDatabase.ArgusStaticDatabase")));
 	}
-#endif //WITH_EDITOR
+#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
 };

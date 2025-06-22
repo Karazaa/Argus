@@ -62,7 +62,7 @@ void UArgusActorRecordDatabase::ResizePersistentObjectPointerArray()
 	m_UArgusActorRecordsPersistent.SetNumZeroed(m_UArgusActorRecords.Num());
 }
 
-#if WITH_EDITOR
+#if WITH_EDITOR && !IS_PACKAGING_ARGUS
 void UArgusActorRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
 {
 	FString fullPath = FPaths::ConvertRelativePathToFull(saveContext.GetTargetFilename());
@@ -139,4 +139,4 @@ void UArgusActorRecordDatabase::AddUArgusActorRecordToDatabase(UArgusActorRecord
 
 	editorAssetSubsystem->SaveLoadedAsset(this, false);
 }
-#endif //WITH_EDITOR
+#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS

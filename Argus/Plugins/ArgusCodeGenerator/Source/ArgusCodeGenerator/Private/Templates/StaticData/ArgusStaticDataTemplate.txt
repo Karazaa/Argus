@@ -5,10 +5,10 @@
 
 #include "ArgusGameInstance.h"
 
-#if WITH_EDITOR
+#if WITH_EDITOR && !IS_PACKAGING_ARGUS
 #include "Editor.h"
 #include "Subsystems/EditorAssetSubsystem.h"
-#endif
+#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
 
 class ArgusStaticData
 {
@@ -19,7 +19,7 @@ public:
 		return nullptr;
 	}
 
-#if WITH_EDITOR
+#if WITH_EDITOR && !IS_PACKAGING_ARGUS
 	static const uint32 AddRecordToDatabase(UArgusStaticRecord* record)
 	{
 		if (!GEditor)
@@ -40,11 +40,11 @@ public:
 
 		return 0u;
 	}
-#endif //WITH_EDITOR
+#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
 
 @@@@@
 
-#if WITH_EDITOR
+#if WITH_EDITOR && !IS_PACKAGING_ARGUS
 private:
 	static UArgusStaticDatabase* GetParentDatabase()
 	{
@@ -61,5 +61,5 @@ private:
 
 		return Cast<UArgusStaticDatabase>(editorAssetSubsystem->LoadAsset(FString("/Game/StaticData/ArgusStaticDatabase.ArgusStaticDatabase")));
 	}
-#endif //WITH_EDITOR
+#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
 };

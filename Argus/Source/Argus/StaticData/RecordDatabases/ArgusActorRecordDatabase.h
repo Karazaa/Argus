@@ -23,7 +23,7 @@ protected:
 	TArray<TObjectPtr<UArgusActorRecord>> m_UArgusActorRecordsPersistent;
 
 public:
-#if WITH_EDITOR
+#if WITH_EDITOR && !IS_PACKAGING_ARGUS
 	virtual void PreSave(FObjectPreSaveContext saveContext) override;
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent) override;
 	void AddUArgusActorRecordToDatabase(UArgusActorRecord* record);

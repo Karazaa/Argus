@@ -62,7 +62,7 @@ void UPlacedArgusActorTeamInfoRecordDatabase::ResizePersistentObjectPointerArray
 	m_UPlacedArgusActorTeamInfoRecordsPersistent.SetNumZeroed(m_UPlacedArgusActorTeamInfoRecords.Num());
 }
 
-#if WITH_EDITOR
+#if WITH_EDITOR && !IS_PACKAGING_ARGUS
 void UPlacedArgusActorTeamInfoRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
 {
 	FString fullPath = FPaths::ConvertRelativePathToFull(saveContext.GetTargetFilename());

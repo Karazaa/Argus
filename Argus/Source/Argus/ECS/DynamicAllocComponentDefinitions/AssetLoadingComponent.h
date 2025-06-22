@@ -15,5 +15,5 @@ struct AssetLoadingComponent
 
 	AssetLoadingComponent() {}
 	AssetLoadingComponent(const AssetLoadingComponent&) {}
-	AssetLoadingComponent& operator=(const AssetLoadingComponent&) {}
+	AssetLoadingComponent& operator=(const AssetLoadingComponent&) { return *this; }
 };

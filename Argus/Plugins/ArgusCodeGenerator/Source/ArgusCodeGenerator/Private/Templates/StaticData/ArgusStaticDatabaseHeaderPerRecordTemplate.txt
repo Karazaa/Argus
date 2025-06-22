@@ -1,10 +1,10 @@
 #pragma region #####
 public:
 	const #####* Get#####(uint32 id);
-#if WITH_EDITOR
+#if WITH_EDITOR && !IS_PACKAGING_ARGUS
 	uint32 Add#####ToDatabase(#####* record);
 	void RegisterNew#####Database(#####Database* database);
-#endif //WITH_EDITOR
+#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
 
 protected:
 	UPROPERTY(EditAnywhere)

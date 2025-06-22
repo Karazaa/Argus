@@ -4,14 +4,14 @@
 #include "RecordDatabases/AbilityRecordDatabase.h"
 #include "ArgusLogging.h"
 
-#if WITH_EDITOR
+#if WITH_EDITOR && !IS_PACKAGING_ARGUS
 #include "ArgusStaticData.h"
 #include "Editor.h"
 #include "Misc/Paths.h"
 #include "Subsystems/EditorAssetSubsystem.h"
 #include "UObject/ObjectSaveContext.h"
 #include <filesystem>
-#endif
+#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
 
 const UAbilityRecord* UAbilityRecordDatabase::GetRecord(uint32 id)
 {
@@ -62,7 +62,7 @@ void UAbilityRecordDatabase::ResizePersistentObjectPointerArray()
 	m_UAbilityRecordsPersistent.SetNumZeroed(m_UAbilityRecords.Num());
 }
 
-#if WITH_EDITOR
+#if WITH_EDITOR && !IS_PACKAGING_ARGUS
 void UAbilityRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
 {
 	FString fullPath = FPaths::ConvertRelativePathToFull(saveContext.GetTargetFilename());
@@ -139,4 +139,4 @@ void UAbilityRecordDatabase::AddUAbilityRecordToDatabase(UAbilityRecord* record)
 
 	editorAssetSubsystem->SaveLoadedAsset(this, false);
 }
-#endif //WITH_EDITOR
+#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS

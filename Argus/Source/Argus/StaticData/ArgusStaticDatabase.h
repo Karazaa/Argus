@@ -20,10 +20,10 @@ class UArgusStaticDatabase : public UDataAsset
 #pragma region UAbilityRecord
 public:
 	const UAbilityRecord* GetUAbilityRecord(uint32 id);
-#if WITH_EDITOR
+#if WITH_EDITOR && !IS_PACKAGING_ARGUS
 	uint32 AddUAbilityRecordToDatabase(UAbilityRecord* record);
 	void RegisterNewUAbilityRecordDatabase(UAbilityRecordDatabase* database);
-#endif //WITH_EDITOR
+#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
 
 protected:
 	UPROPERTY(EditAnywhere)
@@ -36,10 +36,10 @@ protected:
 #pragma region UArgusActorRecord
 public:
 	const UArgusActorRecord* GetUArgusActorRecord(uint32 id);
-#if WITH_EDITOR
+#if WITH_EDITOR && !IS_PACKAGING_ARGUS
 	uint32 AddUArgusActorRecordToDatabase(UArgusActorRecord* record);
 	void RegisterNewUArgusActorRecordDatabase(UArgusActorRecordDatabase* database);
-#endif //WITH_EDITOR
+#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
 
 protected:
 	UPROPERTY(EditAnywhere)
@@ -52,10 +52,10 @@ protected:
 #pragma region UFactionRecord
 public:
 	const UFactionRecord* GetUFactionRecord(uint32 id);
-#if WITH_EDITOR
+#if WITH_EDITOR && !IS_PACKAGING_ARGUS
 	uint32 AddUFactionRecordToDatabase(UFactionRecord* record);
 	void RegisterNewUFactionRecordDatabase(UFactionRecordDatabase* database);
-#endif //WITH_EDITOR
+#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
 
 protected:
 	UPROPERTY(EditAnywhere)
@@ -68,10 +68,10 @@ protected:
 #pragma region UPlacedArgusActorTeamInfoRecord
 public:
 	const UPlacedArgusActorTeamInfoRecord* GetUPlacedArgusActorTeamInfoRecord(uint32 id);
-#if WITH_EDITOR
+#if WITH_EDITOR && !IS_PACKAGING_ARGUS
 	uint32 AddUPlacedArgusActorTeamInfoRecordToDatabase(UPlacedArgusActorTeamInfoRecord* record);
 	void RegisterNewUPlacedArgusActorTeamInfoRecordDatabase(UPlacedArgusActorTeamInfoRecordDatabase* database);
-#endif //WITH_EDITOR
+#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
 
 protected:
 	UPROPERTY(EditAnywhere)
@@ -84,10 +84,10 @@ protected:
 #pragma region UResourceSetRecord
 public:
 	const UResourceSetRecord* GetUResourceSetRecord(uint32 id);
-#if WITH_EDITOR
+#if WITH_EDITOR && !IS_PACKAGING_ARGUS
 	uint32 AddUResourceSetRecordToDatabase(UResourceSetRecord* record);
 	void RegisterNewUResourceSetRecordDatabase(UResourceSetRecordDatabase* database);
-#endif //WITH_EDITOR
+#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
 
 protected:
 	UPROPERTY(EditAnywhere)
@@ -100,10 +100,10 @@ protected:
 #pragma region UTeamColorRecord
 public:
 	const UTeamColorRecord* GetUTeamColorRecord(uint32 id);
-#if WITH_EDITOR
+#if WITH_EDITOR && !IS_PACKAGING_ARGUS
 	uint32 AddUTeamColorRecordToDatabase(UTeamColorRecord* record);
 	void RegisterNewUTeamColorRecordDatabase(UTeamColorRecordDatabase* database);
-#endif //WITH_EDITOR
+#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
 
 protected:
 	UPROPERTY(EditAnywhere)
@@ -114,8 +114,8 @@ protected:
 	void LazyLoadUTeamColorRecordDatabase();
 #pragma endregion
 
-#if WITH_EDITOR
+#if WITH_EDITOR && !IS_PACKAGING_ARGUS
 private:
 	void SaveDatabase();
-#endif // WITH_EDITOR
+#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
 };

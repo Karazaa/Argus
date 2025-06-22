@@ -62,7 +62,7 @@ void UResourceSetRecordDatabase::ResizePersistentObjectPointerArray()
 	m_UResourceSetRecordsPersistent.SetNumZeroed(m_UResourceSetRecords.Num());
 }
 
-#if WITH_EDITOR
+#if WITH_EDITOR && !IS_PACKAGING_ARGUS
 void UResourceSetRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
 {
 	FString fullPath = FPaths::ConvertRelativePathToFull(saveContext.GetTargetFilename());

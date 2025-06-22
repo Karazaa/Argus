@@ -62,7 +62,7 @@ void UFactionRecordDatabase::ResizePersistentObjectPointerArray()
 	m_UFactionRecordsPersistent.SetNumZeroed(m_UFactionRecords.Num());
 }
 
-#if WITH_EDITOR
+#if WITH_EDITOR && !IS_PACKAGING_ARGUS
 void UFactionRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
 {
 	FString fullPath = FPaths::ConvertRelativePathToFull(saveContext.GetTargetFilename());

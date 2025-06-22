@@ -13,7 +13,7 @@ const #####* UArgusStaticDatabase::Get#####(uint32 id)
 	return m_#####DatabasePersistent->GetRecord(id);
 }
 
-#if WITH_EDITOR
+#if WITH_EDITOR && !IS_PACKAGING_ARGUS
 uint32 UArgusStaticDatabase::Add#####ToDatabase(#####* record)
 {
 	LazyLoad#####Database();
@@ -51,7 +51,7 @@ void UArgusStaticDatabase::RegisterNew#####Database(#####Database* database)
 	m_#####Database = database;
 	SaveDatabase();
 }
-#endif //WITH_EDITOR
+#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
 
 void UArgusStaticDatabase::LazyLoad#####Database()
 {

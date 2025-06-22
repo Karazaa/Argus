@@ -10,7 +10,7 @@
 
 @@@@@
 
-#if WITH_EDITOR
+#if WITH_EDITOR && !IS_PACKAGING_ARGUS
 void UArgusStaticDatabase::SaveDatabase()
 {
 	if (!GEditor)
@@ -26,4 +26,4 @@ void UArgusStaticDatabase::SaveDatabase()
 
 	editorAssetSubsystem->SaveLoadedAsset(this, false);
 }
-#endif //WITH_EDITOR
+#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
