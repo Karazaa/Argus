@@ -53,13 +53,15 @@ void SpawningSystems::SpawnEntityInternal(const SpawningSystemsArgs& components,
 	}
 
 	const UArgusActorRecord* argusActorRecord = overrideArgusActorRecord ? overrideArgusActorRecord : ArgusStaticData::GetRecord<UArgusActorRecord>(spawnInfo.m_argusActorRecordId);
+	ARGUS_RETURN_ON_NULL(argusActorRecord, ArgusECSLog);
+	ARGUS_RETURN_ON_NULL(argusActorRecord->m_entityTemplateOverride, ArgusECSLog);
 
-	if (components.m_taskComponent->m_spawningState != ESpawningState::SpawningEntity || !argusActorRecord || !argusActorRecord->m_entityTemplateOverride)
+	if (components.m_taskComponent->m_spawningState != ESpawningState::SpawningEntity)
 	{
 		ARGUS_LOG
 		(
-			ArgusECSLog, Error, TEXT("[%s] Could not spawn %s. Spawner or %s is malformed."), 
-			ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(UArgusActorRecord)
+			ArgusECSLog, Error, TEXT("[%s] Could not spawn %s. %s is not equal to %s."), 
+			ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(m_spawningState), ARGUS_NAMEOF(ESpawningState::SpawningEntity)
 		);
 		return;
 	}
