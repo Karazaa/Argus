@@ -5,6 +5,7 @@
 #include "ArgusEntityTemplate.h"
 #include "ArgusStaticRecord.h"
 #include "Engine/Texture.h"
+#include "SoftPtrLoadStore.h"
 #include "ArgusActorRecord.generated.h"
 
 class AArgusActor;
