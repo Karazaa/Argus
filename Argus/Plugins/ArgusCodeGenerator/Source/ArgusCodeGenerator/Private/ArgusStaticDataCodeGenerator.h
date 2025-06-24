@@ -26,6 +26,8 @@ private:
 	static const char* s_recordDatabaseHeaderTemplateFileName;
 	static const char* s_recordDatabaseCppTemplateFileName;
 	static const char* s_recordDatabaseFileNameSuffix;
+	static const char* s_softPtrLoadStoreTemplateFileName;
+	static const char* s_softPtrLoadStorePerTypeTemplateFileName;
 
 	struct ParseTemplateParams
 	{
@@ -41,4 +43,5 @@ private:
 	static bool ParseArgusStaticDatabaseCppTemplate(const ArgusCodeGeneratorUtil::ParseStaticDataRecordsOutput& parsedStaticDataRecords, const ParseTemplateParams& templateParams, const std::vector<std::string>& headerFilePaths, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents);
 	static bool ParsePerRecordTemplate(const ArgusCodeGeneratorUtil::ParseStaticDataRecordsOutput& parsedStaticDataRecords, const ParseTemplateParams& templateParams, ArgusCodeGeneratorUtil::FileWriteData& outParsedFileContents);
 	static bool ParsePerRecordEditorTemplate(const ArgusCodeGeneratorUtil::ParseStaticDataRecordsOutput& parsedStaticDataRecords, const ParseTemplateParams& templateParams, ArgusCodeGeneratorUtil::FileWriteData& outParsedFileContents);
+	static bool ParseSoftPtrLoadStoreTemplate(const ParseTemplateParams& templateParams, ArgusCodeGeneratorUtil::FileWriteData& outParsedFileContents);
 };
