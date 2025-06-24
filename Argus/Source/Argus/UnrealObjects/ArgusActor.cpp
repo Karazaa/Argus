@@ -175,7 +175,7 @@ void AArgusActor::BeginPlay()
 		return;
 	}
 
-	const UArgusEntityTemplate* loadedEntityTemplate = loadedArgusActorRecord->m_entityTemplateOverride.LoadSynchronous();
+	const UArgusEntityTemplate* loadedEntityTemplate = loadedArgusActorRecord->m_entityTemplate.LoadAndStorePtr();
 	if (!loadedEntityTemplate)
 	{
 		return;

@@ -5,28 +5,36 @@
 #include "CoreMinimal.h"
 #include "SoftPtrLoadStore.generated.h"
 
+class UArgusEntityTemplate;
+
 USTRUCT(BlueprintType)
-struct FSoftPtrLoadStore
+struct FSoftPtrLoadStore_UArgusEntityTemplate
 {
 	GENERATED_BODY()
 
 public:
-	template<class T>
-	T* LoadAndStorePtr()
+	UArgusEntityTemplate* LoadAndStorePtr() const
 	{
 		if (m_hardPtr)
 		{
-			return Cast<T>(m_hardPtr.Get());
+			return m_hardPtr.Get();
 		}
 
 		m_hardPtr = m_softPtr.LoadSynchronous();
-		return Cast<T>(m_hardPtr.Get());
+		return m_hardPtr.Get();
 	}
+
+	void SetHardPtr(UArgusEntityTemplate* pointer)
+	{
+		m_hardPtr = pointer;
+	};
+
+	operator bool() const { return m_hardPtr || !m_softPtr.IsNull(); }
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TSoftObjectPtr<UObject> m_softPtr = nullptr;
+	TSoftObjectPtr<UArgusEntityTemplate> m_softPtr = nullptr;
 
 	UPROPERTY(Transient)
-	TObjectPtr<UObject> m_hardPtr = nullptr;
+	mutable TObjectPtr<UArgusEntityTemplate> m_hardPtr = nullptr;
 };

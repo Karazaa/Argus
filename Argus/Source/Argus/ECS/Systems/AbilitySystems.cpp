@@ -311,7 +311,7 @@ void AbilitySystems::PrepReticleForConstructAbility(const UAbilityRecord* abilit
 		return;
 	}
 
-	const UArgusEntityTemplate* argusEntityTemplate = argusActorRecord->m_entityTemplateOverride.LoadSynchronous();
+	const UArgusEntityTemplate* argusEntityTemplate = argusActorRecord->m_entityTemplate.LoadAndStorePtr();
 	if (!argusEntityTemplate)
 	{
 		return;

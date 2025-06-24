@@ -37,7 +37,7 @@ bool SpawningSystemsSpawnEntityTest::RunTest(const FString& Parameters)
 	entityTemplate->m_componentData.Add(transformComponentData);
 
 	argusActorRecord->m_id = dummyRecordID;
-	argusActorRecord->m_entityTemplateOverride = entityTemplate;
+	argusActorRecord->m_entityTemplate.SetHardPtr(entityTemplate);
 
 	SpawningSystemsArgs components;
 

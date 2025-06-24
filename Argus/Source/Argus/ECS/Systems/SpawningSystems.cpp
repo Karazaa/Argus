@@ -54,7 +54,8 @@ void SpawningSystems::SpawnEntityInternal(const SpawningSystemsArgs& components,
 
 	const UArgusActorRecord* argusActorRecord = overrideArgusActorRecord ? overrideArgusActorRecord : ArgusStaticData::GetRecord<UArgusActorRecord>(spawnInfo.m_argusActorRecordId);
 	ARGUS_RETURN_ON_NULL(argusActorRecord, ArgusECSLog);
-	ARGUS_RETURN_ON_NULL(argusActorRecord->m_entityTemplateOverride, ArgusECSLog);
+	const UArgusEntityTemplate* argusEntityTemplate = argusActorRecord->m_entityTemplate.LoadAndStorePtr();
+	ARGUS_RETURN_ON_NULL(argusEntityTemplate, ArgusECSLog);
 
 	if (components.m_taskComponent->m_spawningState != ESpawningState::SpawningEntity)
 	{
@@ -68,7 +69,7 @@ void SpawningSystems::SpawnEntityInternal(const SpawningSystemsArgs& components,
 
 	components.m_taskComponent->m_spawningState = ESpawningState::None;
 
-	ArgusEntity spawnedEntity = argusActorRecord->m_entityTemplateOverride->MakeEntity();
+	ArgusEntity spawnedEntity = argusEntityTemplate->MakeEntity();
 	TaskComponent* spawnedEntityTaskComponent = spawnedEntity.GetOrAddComponent<TaskComponent>();
 	if (!spawnedEntityTaskComponent)
 	{
