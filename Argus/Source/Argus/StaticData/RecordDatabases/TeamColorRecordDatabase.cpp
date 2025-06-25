@@ -4,14 +4,14 @@
 #include "RecordDatabases/TeamColorRecordDatabase.h"
 #include "ArgusLogging.h"
 
-#if WITH_EDITOR
+#if WITH_EDITOR && !IS_PACKAGING_ARGUS
 #include "ArgusStaticData.h"
 #include "Editor.h"
 #include "Misc/Paths.h"
 #include "Subsystems/EditorAssetSubsystem.h"
 #include "UObject/ObjectSaveContext.h"
 #include <filesystem>
-#endif
+#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
 
 const UTeamColorRecord* UTeamColorRecordDatabase::GetRecord(uint32 id)
 {
@@ -139,4 +139,4 @@ void UTeamColorRecordDatabase::AddUTeamColorRecordToDatabase(UTeamColorRecord* r
 
 	editorAssetSubsystem->SaveLoadedAsset(this, false);
 }
-#endif //WITH_EDITOR
+#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS

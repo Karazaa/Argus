@@ -19,7 +19,7 @@ public:
 		return nullptr;
 	}
 
-#if WITH_EDITOR && !IS_PACKAGING_ARGUS 
+#if WITH_EDITOR && !IS_PACKAGING_ARGUS
 	static const uint32 AddRecordToDatabase(UArgusStaticRecord* record)
 	{
 		if (!GEditor)

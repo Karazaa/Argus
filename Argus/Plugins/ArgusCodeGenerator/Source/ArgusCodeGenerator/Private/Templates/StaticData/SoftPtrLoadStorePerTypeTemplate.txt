@@ -1,3 +1,5 @@
+
+#pragma region #####
 class #####;
 
 USTRUCT(BlueprintType)
@@ -31,3 +33,4 @@ protected:
 	UPROPERTY(Transient)
 	mutable TObjectPtr<#####> m_hardPtr = nullptr;
 };
+#pragma endregion

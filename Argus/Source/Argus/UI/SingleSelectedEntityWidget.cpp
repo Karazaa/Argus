@@ -32,13 +32,7 @@ void USingleSelectedEntityWidget::OnUpdateSelectedArgusActors(const ArgusEntity&
 		return;
 	}
 
-	UTexture* texture = nullptr;
-	if (!templateArgusActorRecord->m_actorInfoIcon.IsNull())
-	{
-		texture = templateArgusActorRecord->m_actorInfoIcon.LoadSynchronous();
-	}
-
-	m_entityImageSlateBrush.SetResourceObject(texture);
+	m_entityImageSlateBrush.SetResourceObject(templateArgusActorRecord->m_actorInfoIcon.LoadAndStorePtr());
 	m_entityImage->SetBrush(m_entityImageSlateBrush);
 	m_entityName->SetText(templateArgusActorRecord->m_actorInfoName);
 	m_entityHealthBar->SetInitialDisplay(templateEntity);

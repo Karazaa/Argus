@@ -12,6 +12,7 @@ public:
 private:
 	static const char* s_staticDataTemplateDirectorySuffix;
 	static const char* s_staticDataDirectorySuffix;
+	static const char* s_utilitiesDirectorySuffix;
 	static const char* s_argusStaticDataTemplateFileName;
 	static const char* s_argusStaticDataPerRecordTemplateFileName;
 	static const char* s_argusStaticDataPerRecordEditorTemplateFileName;
@@ -28,6 +29,10 @@ private:
 	static const char* s_recordDatabaseFileNameSuffix;
 	static const char* s_softPtrLoadStoreTemplateFileName;
 	static const char* s_softPtrLoadStorePerTypeTemplateFileName;
+	static const char* s_softPtrLoadStoreFileName;
+
+	static constexpr int k_numSoftPtrLoadStoreTypes = 2;
+	static const char* s_softPtrLoadStoreTypeNames[k_numSoftPtrLoadStoreTypes];
 
 	struct ParseTemplateParams
 	{
@@ -44,4 +49,5 @@ private:
 	static bool ParsePerRecordTemplate(const ArgusCodeGeneratorUtil::ParseStaticDataRecordsOutput& parsedStaticDataRecords, const ParseTemplateParams& templateParams, ArgusCodeGeneratorUtil::FileWriteData& outParsedFileContents);
 	static bool ParsePerRecordEditorTemplate(const ArgusCodeGeneratorUtil::ParseStaticDataRecordsOutput& parsedStaticDataRecords, const ParseTemplateParams& templateParams, ArgusCodeGeneratorUtil::FileWriteData& outParsedFileContents);
 	static bool ParseSoftPtrLoadStoreTemplate(const ParseTemplateParams& templateParams, ArgusCodeGeneratorUtil::FileWriteData& outParsedFileContents);
+	static bool ParseSoftPtrLoadStorePerTypeTemplate(const ParseTemplateParams& templateParams, ArgusCodeGeneratorUtil::FileWriteData& outParsedFileContents);
 };

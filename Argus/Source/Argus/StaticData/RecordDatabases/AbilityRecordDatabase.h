@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "ArgusMacros.h"
 #include "RecordDefinitions\AbilityRecord.h"
 #include "AbilityRecordDatabase.generated.h"
 
@@ -23,9 +24,9 @@ protected:
 	TArray<TObjectPtr<UAbilityRecord>> m_UAbilityRecordsPersistent;
 
 public:
-#if WITH_EDITOR && !IS_PACKAGING_ARGUS 
+#if WITH_EDITOR && !IS_PACKAGING_ARGUS
 	virtual void PreSave(FObjectPreSaveContext saveContext) override;
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent) override;
 	void AddUAbilityRecordToDatabase(UAbilityRecord* record);
-#endif //WITH_EDITOR
+#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
 };

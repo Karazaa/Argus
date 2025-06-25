@@ -23,7 +23,7 @@ public:
 	FSoftPtrLoadStore_UArgusEntityTemplate m_entityTemplate;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TSoftObjectPtr<UTexture> m_actorInfoIcon = nullptr;
+	FSoftPtrLoadStore_UTexture m_actorInfoIcon;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FText m_actorInfoName;

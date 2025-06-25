@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "ArgusMacros.h"
 #include "RecordDefinitions\ArgusActorRecord.h"
 #include "ArgusActorRecordDatabase.generated.h"
 
@@ -27,5 +28,5 @@ public:
 	virtual void PreSave(FObjectPreSaveContext saveContext) override;
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent) override;
 	void AddUArgusActorRecordToDatabase(UArgusActorRecord* record);
-#endif //WITH_EDITOR
+#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
 };

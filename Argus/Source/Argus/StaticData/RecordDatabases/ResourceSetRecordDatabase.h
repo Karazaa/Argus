@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "ArgusMacros.h"
 #include "RecordDefinitions\ResourceSetRecord.h"
 #include "ResourceSetRecordDatabase.generated.h"
 
@@ -27,5 +28,5 @@ public:
 	virtual void PreSave(FObjectPreSaveContext saveContext) override;
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent) override;
 	void AddUResourceSetRecordToDatabase(UResourceSetRecord* record);
-#endif //WITH_EDITOR
+#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
 };

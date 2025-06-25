@@ -86,7 +86,7 @@ void UMultipleSelectedEntitiesWidget::OnUpdateSelectedArgusActors(const ArgusEnt
 
 		const ArgusEntity entity = ArgusEntity::RetrieveEntity(inputInterfaceComponent->m_selectedArgusEntityIds[i]);
 		const UArgusActorRecord* argusActorRecord = entity.GetAssociatedActorRecord();
-		if (!argusActorRecord || argusActorRecord->m_actorInfoIcon.IsNull())
+		if (!argusActorRecord)
 		{
 			continue;
 		}
@@ -95,7 +95,7 @@ void UMultipleSelectedEntitiesWidget::OnUpdateSelectedArgusActors(const ArgusEnt
 		FSlateBrush slotBrush = inputInterfaceComponent->IsEntityIdInActiveAbilityGroup(inputInterfaceComponent->m_selectedArgusEntityIds[i]) ? 
 																						m_activeAbilityGroupSlateBrush : m_entityImageSlateBrush;
 
-		slotBrush.SetResourceObject(argusActorRecord->m_actorInfoIcon.LoadSynchronous());
+		slotBrush.SetResourceObject(argusActorRecord->m_actorInfoIcon.LoadAndStorePtr());
 		m_entityIcons[i]->Populate(entity, slotBrush);
 		m_gridSlots[i]->SetHorizontalAlignment(EHorizontalAlignment::HAlign_Center);
 		m_gridSlots[i]->SetVerticalAlignment(EVerticalAlignment::VAlign_Center);
