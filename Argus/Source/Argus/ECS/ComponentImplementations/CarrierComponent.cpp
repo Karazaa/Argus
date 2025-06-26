@@ -37,6 +37,10 @@ void CarrierComponent::DrawComponentDebug() const
 		else
 		{
 			ImGui::Text("Size of array = %d", m_passengerEntityIds.Num());
+			for (int32 i = 0; i < m_passengerEntityIds.Num(); ++i)
+			{
+				ImGui::Text("%d", m_passengerEntityIds[i]);
+			}
 		}
 		ImGui::TableNextColumn();
 		ImGui::Text("m_carrierCapacity");

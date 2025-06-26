@@ -37,6 +37,10 @@ void NavigationComponent::DrawComponentDebug() const
 		else
 		{
 			ImGui::Text("Size of array = %d", m_navigationPoints.Num());
+			for (int32 i = 0; i < m_navigationPoints.Num(); ++i)
+			{
+				ImGui::Text("(%.2f, %.2f, %.2f)", m_navigationPoints[i].X, m_navigationPoints[i].Y, m_navigationPoints[i].Z);
+			}
 		}
 		ImGui::TableNextColumn();
 		ImGui::Text("m_queuedWaypoints");

@@ -186,7 +186,7 @@ bool ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 			}
 			else if (isArray)
 			{
-				FormatImGuiArrayField(parsedVariableData[i].m_varName, outParsedVariableContents);
+				FormatImGuiArrayField(parsedVariableData[i].m_varName, outParsedVariableContents, isFloat, isInteger, isVector, isVector2);
 			}
 			else
 			{
@@ -199,7 +199,7 @@ bool ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 		{
 			if (isArray)
 			{
-				FormatImGuiArrayField(parsedVariableData[i].m_varName, outParsedVariableContents);
+				FormatImGuiArrayField(parsedVariableData[i].m_varName, outParsedVariableContents, isFloat, isInteger, isVector, isVector2);
 			}
 			else
 			{
@@ -239,7 +239,7 @@ bool ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 			}
 			else if (isArray)
 			{
-				FormatImGuiArrayField(parsedVariableData[i].m_varName, outParsedVariableContents);
+				FormatImGuiArrayField(parsedVariableData[i].m_varName, outParsedVariableContents, isFloat, isInteger, isVector, isVector2);
 			}
 			else if (isQueue)
 			{
@@ -277,7 +277,7 @@ bool ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 			}
 			else if (isArray)
 			{
-				FormatImGuiArrayField(parsedVariableData[i].m_varName, outParsedVariableContents);
+				FormatImGuiArrayField(parsedVariableData[i].m_varName, outParsedVariableContents, isFloat, isInteger, isVector, isVector2);
 			}
 			else if (isQueue)
 			{
@@ -326,7 +326,7 @@ bool ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 	return true;
 }
 
-void ComponentImplementationGenerator::FormatImGuiArrayField(const std::string& variableName, std::vector<std::string>& outParsedVariableContents)
+void ComponentImplementationGenerator::FormatImGuiArrayField(const std::string& variableName, std::vector<std::string>& outParsedVariableContents, const bool isFloat, const bool isInt, const bool isFVector, const bool isFVector2D)
 {
 	outParsedVariableContents.push_back(std::vformat("\t\tif ({}.Num() == 0)", std::make_format_args(variableName)));
 	outParsedVariableContents.push_back("\t\t{");
@@ -335,6 +335,28 @@ void ComponentImplementationGenerator::FormatImGuiArrayField(const std::string& 
 	outParsedVariableContents.push_back("\t\telse");
 	outParsedVariableContents.push_back("\t\t{");
 	outParsedVariableContents.push_back(std::vformat("\t\t\tImGui::Text(\"Size of array = %d\", {}.Num());", std::make_format_args(variableName)));
+	outParsedVariableContents.push_back(std::vformat("\t\t\tfor (int32 i = 0; i < {}.Num(); ++i)", std::make_format_args(variableName)));
+	outParsedVariableContents.push_back("\t\t\t{");
+	std::string value = "\t\t";
+	std::string subVariableName = std::vformat("{}[i]", std::make_format_args(variableName));
+	if (isFloat)
+	{
+		FormatImGuiFloatField(subVariableName, value);
+	}
+	else if (isInt)
+	{
+		FormatImGuiIntField(subVariableName, value);
+	}
+	else if (isFVector)
+	{
+		FormatImGuiFVectorField(subVariableName, value);
+	}
+	else if (isFVector2D)
+	{
+		FormatImGuiFVector2DField(subVariableName, value);
+	}
+	outParsedVariableContents.push_back(value);
+	outParsedVariableContents.push_back("\t\t\t}");
 	outParsedVariableContents.push_back("\t\t}");
 }
 
