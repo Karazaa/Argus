@@ -28,8 +28,65 @@ void NearbyEntitiesComponent::DrawComponentDebug() const
 	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings))
 	{
 		ImGui::TableNextColumn();
-		ImGui::Text("m_nearbyEntities");
+		ImGui::Text("m_nearbyEntities.GetEntitiesInAvoidanceRange()");
 		ImGui::TableNextColumn();
+		if (m_nearbyEntities.GetEntitiesInAvoidanceRange().Num() == 0)
+		{
+			ImGui::Text("Array is empty");
+		}
+		else
+		{
+			ImGui::Text("Size of array = %d", m_nearbyEntities.GetEntitiesInAvoidanceRange().Num());
+			for (int32 i = 0; i < m_nearbyEntities.GetEntitiesInAvoidanceRange().Num(); ++i)
+			{
+				ImGui::Text("%d", m_nearbyEntities.GetEntitiesInAvoidanceRange()[i]);
+			}
+		}
+		ImGui::TableNextColumn();
+		ImGui::Text("m_nearbyEntities.GetEntitiesInSightRange()");
+		ImGui::TableNextColumn();
+		if (m_nearbyEntities.GetEntitiesInSightRange().Num() == 0)
+		{
+			ImGui::Text("Array is empty");
+		}
+		else
+		{
+			ImGui::Text("Size of array = %d", m_nearbyEntities.GetEntitiesInSightRange().Num());
+			for (int32 i = 0; i < m_nearbyEntities.GetEntitiesInSightRange().Num(); ++i)
+			{
+				ImGui::Text("%d", m_nearbyEntities.GetEntitiesInSightRange()[i]);
+			}
+		}
+		ImGui::TableNextColumn();
+		ImGui::Text("m_nearbyEntities.GetEntitiesInRangedRange()");
+		ImGui::TableNextColumn();
+		if (m_nearbyEntities.GetEntitiesInRangedRange().Num() == 0)
+		{
+			ImGui::Text("Array is empty");
+		}
+		else
+		{
+			ImGui::Text("Size of array = %d", m_nearbyEntities.GetEntitiesInRangedRange().Num());
+			for (int32 i = 0; i < m_nearbyEntities.GetEntitiesInRangedRange().Num(); ++i)
+			{
+				ImGui::Text("%d", m_nearbyEntities.GetEntitiesInRangedRange()[i]);
+			}
+		}
+		ImGui::TableNextColumn();
+		ImGui::Text("m_nearbyEntities.GetEntitiesInMeleeRange()");
+		ImGui::TableNextColumn();
+		if (m_nearbyEntities.GetEntitiesInMeleeRange().Num() == 0)
+		{
+			ImGui::Text("Array is empty");
+		}
+		else
+		{
+			ImGui::Text("Size of array = %d", m_nearbyEntities.GetEntitiesInMeleeRange().Num());
+			for (int32 i = 0; i < m_nearbyEntities.GetEntitiesInMeleeRange().Num(); ++i)
+			{
+				ImGui::Text("%d", m_nearbyEntities.GetEntitiesInMeleeRange()[i]);
+			}
+		}
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

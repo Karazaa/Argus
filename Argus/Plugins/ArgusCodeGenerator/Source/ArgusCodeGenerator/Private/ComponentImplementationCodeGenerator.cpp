@@ -153,15 +153,19 @@ bool ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 		const bool isTimer = parsedVariableData[i].m_typeName.find("TimerHandle") != std::string::npos;
 		const bool isResourceSet = parsedVariableData[i].m_typeName.find("FResourceSet") != std::string::npos;
 		const bool isStaticData = parsedVariableData[i].m_propertyMacro.find(ArgusCodeGeneratorUtil::s_propertyStaticDataDelimiter) != std::string::npos;
+		const bool isKDTreeOutput = parsedVariableData[i].m_typeName.find("ArgusEntityKDTreeRangeOutput") != std::string::npos;
 		
 		std::string cleanTypeName = parsedVariableData[i].m_typeName.substr(1, parsedVariableData[i].m_typeName.length() - 1);
 
 		// BRUH REALLY? Yes. Until I find a better way to differentiate enum types... here we are.
 		const bool isEnum = cleanTypeName.at(0) == 'E';
 
-		outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
-		outParsedVariableContents.push_back(std::vformat("\t\tImGui::Text(\"{}\");", std::make_format_args(parsedVariableData[i].m_varName)));
-		outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
+		if (!isKDTreeOutput)
+		{
+			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
+			outParsedVariableContents.push_back(std::vformat("\t\tImGui::Text(\"{}\");", std::make_format_args(parsedVariableData[i].m_varName)));
+			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
+		}
 
 		if (isInteger)
 		{
@@ -281,7 +285,7 @@ bool ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 			}
 			else if (isQueue)
 			{
-
+				FormatImGuiQueueField(parsedVariableData[i].m_varName, outParsedVariableContents, isFloat, isInteger, isVector, isVector2);
 			}
 			else
 			{
@@ -322,6 +326,32 @@ bool ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 			outParsedVariableContents.push_back(std::vformat("\t\t\tImGui::Text(\"%d \", {}.m_resourceQuantities[i]);", std::make_format_args(parsedVariableData[i].m_varName)));
 			outParsedVariableContents.push_back("\t\t}");
 		}
+		else if (isKDTreeOutput)
+		{
+			std::string avoidanceRangeName = std::vformat("{}.GetEntitiesInAvoidanceRange()", std::make_format_args(parsedVariableData[i].m_varName));
+			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
+			outParsedVariableContents.push_back(std::vformat("\t\tImGui::Text(\"{}\");", std::make_format_args(avoidanceRangeName)));
+			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
+			FormatImGuiArrayField(avoidanceRangeName, outParsedVariableContents, false, true, false, false);
+
+			std::string sightRangeName = std::vformat("{}.GetEntitiesInSightRange()", std::make_format_args(parsedVariableData[i].m_varName));
+			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
+			outParsedVariableContents.push_back(std::vformat("\t\tImGui::Text(\"{}\");", std::make_format_args(sightRangeName)));
+			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
+			FormatImGuiArrayField(sightRangeName, outParsedVariableContents, false, true, false, false);
+
+			std::string rangedRangeName = std::vformat("{}.GetEntitiesInRangedRange()", std::make_format_args(parsedVariableData[i].m_varName));
+			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
+			outParsedVariableContents.push_back(std::vformat("\t\tImGui::Text(\"{}\");", std::make_format_args(rangedRangeName)));
+			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
+			FormatImGuiArrayField(rangedRangeName, outParsedVariableContents, false, true, false, false);
+
+			std::string meleeRangeName = std::vformat("{}.GetEntitiesInMeleeRange()", std::make_format_args(parsedVariableData[i].m_varName));
+			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
+			outParsedVariableContents.push_back(std::vformat("\t\tImGui::Text(\"{}\");", std::make_format_args(meleeRangeName)));
+			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
+			FormatImGuiArrayField(meleeRangeName, outParsedVariableContents, false, true, false, false);
+		}
 	}
 	return true;
 }
@@ -357,6 +387,18 @@ void ComponentImplementationGenerator::FormatImGuiArrayField(const std::string& 
 	}
 	outParsedVariableContents.push_back(value);
 	outParsedVariableContents.push_back("\t\t\t}");
+	outParsedVariableContents.push_back("\t\t}");
+}
+
+void ComponentImplementationGenerator::FormatImGuiQueueField(const std::string& variableName, std::vector<std::string>& outParsedVariableContents, const bool isFloat, const bool isInt, const bool isFVector, const bool isFVector2D)
+{
+	outParsedVariableContents.push_back(std::vformat("\t\tif ({}.IsEmpty())", std::make_format_args(variableName)));
+	outParsedVariableContents.push_back("\t\t{");
+	outParsedVariableContents.push_back("\t\t\tImGui::Text(\"Queue is empty\");");
+	outParsedVariableContents.push_back("\t\t}");
+	outParsedVariableContents.push_back("\t\telse");
+	outParsedVariableContents.push_back("\t\t{");
+	outParsedVariableContents.push_back("\t\t\tImGui::Text(\"Cannot traverse queue yet :(\");");
 	outParsedVariableContents.push_back("\t\t}");
 }
 

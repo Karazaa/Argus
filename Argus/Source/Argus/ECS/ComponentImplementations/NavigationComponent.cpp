@@ -45,6 +45,14 @@ void NavigationComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_queuedWaypoints");
 		ImGui::TableNextColumn();
+		if (m_queuedWaypoints.IsEmpty())
+		{
+			ImGui::Text("Queue is empty");
+		}
+		else
+		{
+			ImGui::Text("Cannot traverse queue yet :(");
+		}
 		ImGui::TableNextColumn();
 		ImGui::Text("m_lastPointIndex");
 		ImGui::TableNextColumn();
