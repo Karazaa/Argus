@@ -20,6 +20,7 @@ class UArgusStaticDatabase : public UDataAsset
 #pragma region UAbilityRecord
 public:
 	const UAbilityRecord* GetUAbilityRecord(uint32 id);
+	const bool PreLoadUAbilityRecord(uint32 id);
 #if WITH_EDITOR && !IS_PACKAGING_ARGUS
 	uint32 AddUAbilityRecordToDatabase(UAbilityRecord* record);
 	void RegisterNewUAbilityRecordDatabase(UAbilityRecordDatabase* database);

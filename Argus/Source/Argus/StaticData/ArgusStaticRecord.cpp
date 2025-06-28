@@ -10,7 +10,7 @@
 #include "UObject/ObjectSaveContext.h"
 #include <filesystem>
 
-void UArgusStaticRecord::PreSave(FObjectPreSaveContext saveContext)a
+void UArgusStaticRecord::PreSave(FObjectPreSaveContext saveContext)
 {
 	FString fullPath = FPaths::ConvertRelativePathToFull(saveContext.GetTargetFilename());
 	if (!std::filesystem::exists(TCHAR_TO_UTF8(*fullPath)))

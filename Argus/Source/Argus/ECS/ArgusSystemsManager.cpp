@@ -27,6 +27,13 @@ void ArgusSystemsManager::Initialize(UWorld* worldPointer, const FResourceSet& i
 	PopulateTeamComponents(initialTeamResourceSet);
 }
 
+void ArgusSystemsManager::OnStartPlay(UWorld* worldPointer)
+{
+	ARGUS_RETURN_ON_NULL(worldPointer, ArgusECSLog);
+
+	SetInitialSingletonState(worldPointer);
+}
+
 void ArgusSystemsManager::RunSystems(UWorld* worldPointer, float deltaTime)
 {
 	ARGUS_TRACE(ArgusSystemsManager::RunSystems);
@@ -56,11 +63,6 @@ void ArgusSystemsManager::PopulateSingletonComponents(UWorld* worldPointer)
 {
 	ARGUS_RETURN_ON_NULL(worldPointer, ArgusECSLog);
 
-	if (ArgusEntity::DoesEntityExist(ArgusECSConstants::k_singletonEntityId))
-	{
-		return;
-	}
-
 	ArgusEntity singletonEntity = ArgusEntity::CreateEntity(ArgusECSConstants::k_singletonEntityId);
 	if (!singletonEntity)
 	{
@@ -77,10 +79,22 @@ void ArgusSystemsManager::PopulateSingletonComponents(UWorld* worldPointer)
 	ARGUS_RETURN_ON_NULL(reticleComponent, ArgusECSLog);
 	ARGUS_RETURN_ON_NULL(inputInterfaceComponent, ArgusECSLog);
 	ARGUS_RETURN_ON_NULL(assetLoadingComponent, ArgusECSLog);
+}
+
+void ArgusSystemsManager::SetInitialSingletonState(UWorld* worldPointer)
+{
+	ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId);
+	if (!singletonEntity)
+	{
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] There is no singleton %s when it should have already been made."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity));
+		return;
+	}
+
+	SpatialPartitioningComponent* spatialPartitioningComponent = singletonEntity.GetComponent<SpatialPartitioningComponent>();
+	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
 
 	spatialPartitioningComponent->m_argusEntityKDTree.SeedTreeWithAverageEntityLocation();
 	spatialPartitioningComponent->m_argusEntityKDTree.InsertAllArgusEntitiesIntoKDTree();
-
 	SpatialPartitioningSystems::CalculateAvoidanceObstacles(spatialPartitioningComponent, worldPointer);
 }
 

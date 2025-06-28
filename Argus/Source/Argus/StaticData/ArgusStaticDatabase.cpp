@@ -23,6 +23,20 @@ const UAbilityRecord* UArgusStaticDatabase::GetUAbilityRecord(uint32 id)
 	return m_UAbilityRecordDatabasePersistent->GetRecord(id);
 }
 
+const bool UArgusStaticDatabase::PreLoadUAbilityRecord(uint32 id)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUAbilityRecordDatabase();
+
+	if (!m_UAbilityRecordDatabasePersistent)
+	{
+		return false;
+	}
+
+	return m_UAbilityRecordDatabasePersistent->PreLoadRecord(id);
+}
+
 #if WITH_EDITOR && !IS_PACKAGING_ARGUS
 uint32 UArgusStaticDatabase::AddUAbilityRecordToDatabase(UAbilityRecord* record)
 {
@@ -74,7 +88,7 @@ void UArgusStaticDatabase::LazyLoadUAbilityRecordDatabase()
 			return;
 		}
 
-		m_UAbilityRecordDatabasePersistent->ResizePersistentObjectPointerArray();
+		m_UAbilityRecordDatabasePersistent->ResizePersistentObjectPointerArrayToFitRecord(0u);
 	}
 
 	if (!m_UAbilityRecordDatabasePersistent)

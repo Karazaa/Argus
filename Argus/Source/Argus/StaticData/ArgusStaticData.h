@@ -19,6 +19,12 @@ public:
 		return nullptr;
 	}
 
+	template<typename ArgusStaticRecord>
+	static const bool PreLoadRecord(uint32 id)
+	{
+		return false;
+	}
+
 #if WITH_EDITOR && !IS_PACKAGING_ARGUS
 	static const uint32 AddRecordToDatabase(UArgusStaticRecord* record)
 	{
@@ -77,6 +83,19 @@ public:
 		}
 
 		return staticDatabase->GetUAbilityRecord(id);
+	}
+
+	template<>
+	inline const bool PreLoadRecord<UAbilityRecord>(uint32 id)
+	{
+		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
+
+		if (!staticDatabase)
+		{
+			return false;
+		}
+
+		return staticDatabase->PreLoadUAbilityRecord(id);
 	}
 
 #if WITH_EDITOR && !IS_PACKAGING_ARGUS

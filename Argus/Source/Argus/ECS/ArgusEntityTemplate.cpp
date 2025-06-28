@@ -2,6 +2,7 @@
 
 #include "ArgusEntityTemplate.h"
 #include "ArgusLogging.h"
+#include "ArgusStaticData.h"
 #include "DataComponentDefinitions/ComponentData.h"
 
 ArgusEntity UArgusEntityTemplate::MakeEntity() const
@@ -71,6 +72,26 @@ void UArgusEntityTemplate::SetInitialStateFromData(const ArgusEntity& entity) co
 		if (constructionComponent->m_currentWorkSeconds != 0.0f)
 		{
 			taskComponent->m_constructionState = EConstructionState::BeingConstructed;
+		}
+	}
+
+	if (const AbilityComponent* abilityComponent = entity.GetComponent<AbilityComponent>())
+	{
+		if (abilityComponent->m_ability0Id > 0u)
+		{
+			ArgusStaticData::PreLoadRecord<UAbilityRecord>(abilityComponent->m_ability0Id);
+		}
+		if (abilityComponent->m_ability1Id > 0u)
+		{
+			ArgusStaticData::PreLoadRecord<UAbilityRecord>(abilityComponent->m_ability1Id);
+		}
+		if (abilityComponent->m_ability2Id > 0u)
+		{
+			ArgusStaticData::PreLoadRecord<UAbilityRecord>(abilityComponent->m_ability2Id);
+		}
+		if (abilityComponent->m_ability3Id > 0u)
+		{
+			ArgusStaticData::PreLoadRecord<UAbilityRecord>(abilityComponent->m_ability3Id);
 		}
 	}
 }
