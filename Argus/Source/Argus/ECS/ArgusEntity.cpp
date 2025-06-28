@@ -320,7 +320,8 @@ bool ArgusEntity::IsInRangeOfOtherEntity(const ArgusEntity& other, float range) 
 		return false;
 	}
 
-	return FVector::DistSquared(transformComponent->m_location, otherTransformComponent->m_location) <= FMath::Square(range);
+	float combinedRadius = transformComponent->m_radius + otherTransformComponent->m_radius;
+	return (FVector::DistSquared(transformComponent->m_location, otherTransformComponent->m_location) - FMath::Square(combinedRadius)) <= FMath::Square(range);
 }
 
 bool ArgusEntity::IsPassenger() const

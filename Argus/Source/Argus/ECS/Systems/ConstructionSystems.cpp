@@ -2,6 +2,7 @@
 
 #include "ConstructionSystems.h"
 #include "ArgusLogging.h"
+#include "Systems/TargetingSystems.h"
 
 void ConstructionSystems::RunSystems(float deltaTime)
 {
@@ -40,6 +41,13 @@ bool ConstructionSystems::CanEntityConstructOtherEntity(const ArgusEntity& poten
 
 	const TaskComponent* taskComponent = potentialConstructee.GetComponent<TaskComponent>();
 	if (!taskComponent)
+	{
+		return false;
+	}
+
+	const TransformComponent* constructorTransformComponent = potentialConstructor.GetComponent<TransformComponent>();
+	const TransformComponent* constructeeTransformComponent = potentialConstructee.GetComponent<TransformComponent>();
+	if (!constructeeTransformComponent || !constructeeTransformComponent)
 	{
 		return false;
 	}
@@ -125,16 +133,7 @@ void ConstructionSystems::ProcessConstructingOtherState(float deltaTime, const C
 		return;
 	}
 
-	const TransformComponent* constructorTransformComponent = components.m_entity.GetComponent<TransformComponent>();
-	const TransformComponent* constructeeTransformComponent = constructee.GetComponent<TransformComponent>();
-	if (!constructeeTransformComponent || !constructeeTransformComponent)
-	{
-		components.m_taskComponent->m_constructionState = EConstructionState::None;
-		return;
-	}
-
-	if (FVector::DistSquared(constructorTransformComponent->m_location, constructeeTransformComponent->m_location) > 
-		FMath::Square(targetingComponent->m_meleeRange))
+	if (!TargetingSystems::IsInMeleeRangeOfOtherEntity(components.m_entity, constructee))
 	{
 		return;
 	}

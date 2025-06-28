@@ -65,7 +65,7 @@ bool TargetingSystems::IsInRangedRangeOfOtherEntity(const ArgusEntity& entity, c
 		return false;
 	}
 
-	return entity.IsInRangeOfOtherEntity(otherEntity, targetingComponent->m_meleeRange);
+	return entity.IsInRangeOfOtherEntity(otherEntity, targetingComponent->m_rangedRange);
 }
 
 float TargetingSystems::GetRangeToUseForOtherEntity(const ArgusEntity& entity, const ArgusEntity& otherEntity)

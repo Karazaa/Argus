@@ -1,6 +1,7 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "CombatSystems.h"
+#include "Systems/TargetingSystems.h"
 
 void CombatSystems::RunSystems(float deltaTime)
 {
@@ -83,18 +84,18 @@ void CombatSystems::ProcessAttackCommand(float deltaTime, const CombatSystemsArg
 		return;
 	}
 
-	float neededRange = 0.0f;
+	bool inRange = false;
 	switch (components.m_combatComponent->m_attackType)
 	{
 		case EAttackType::Melee:
-			neededRange = components.m_targetingComponent->m_meleeRange;
+			inRange = TargetingSystems::IsInMeleeRangeOfOtherEntity(components.m_entity, targetEntity);
 			break;
 		case EAttackType::Ranged:
-			neededRange = components.m_targetingComponent->m_rangedRange;
+			inRange = TargetingSystems::IsInRangedRangeOfOtherEntity(components.m_entity, targetEntity);
 			break;
 	}
 
-	if (FVector::DistSquared(components.m_transformComponent->m_location, targetTransformComponent->m_location) > FMath::Square(neededRange))
+	if (!inRange)
 	{
 		components.m_taskComponent->m_combatState = ECombatState::ShouldAttack;
 		return;

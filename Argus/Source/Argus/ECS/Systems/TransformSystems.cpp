@@ -313,8 +313,14 @@ float TransformSystems::GetEndMoveRange(const TransformSystemsArgs& components)
 		return components.m_targetingComponent->m_meleeRange;
 	}
 
+	float combinedRadius = components.m_transformComponent->m_radius;
 	ArgusEntity targetEntity = ArgusEntity::RetrieveEntity(components.m_targetingComponent->m_targetEntityId);
-	return TargetingSystems::GetRangeToUseForOtherEntity(components.m_entity, targetEntity);
+	if (const TransformComponent* targetTransformComponent = targetEntity.GetComponent<TransformComponent>())
+	{
+		combinedRadius += targetTransformComponent->m_radius;
+	}
+	const float rangeWithoutCombinedRadius = TargetingSystems::GetRangeToUseForOtherEntity(components.m_entity, targetEntity);
+	return rangeWithoutCombinedRadius + combinedRadius;
 }
 
 void TransformSystems::UpdatePassengerLocations(const TransformSystemsArgs& components)
