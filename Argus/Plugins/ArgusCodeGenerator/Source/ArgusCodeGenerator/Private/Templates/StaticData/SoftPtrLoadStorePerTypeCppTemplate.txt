@@ -2,6 +2,8 @@
 #pragma region #####
 	#####* FSoftPtrLoadStore_#####::LoadAndStorePtr() const
 	{
+		ARGUS_TRACE(FSoftPtrLoadStore_#####::LoadAndStorePtr);
+
 		if (m_hardPtr)
 		{
 			return m_hardPtr.Get();
@@ -18,6 +20,8 @@
 
 	bool FSoftPtrLoadStore_#####::AsyncPreLoadAndStorePtr() const
 	{
+		ARGUS_TRACE(FSoftPtrLoadStore_#####::AsyncPreLoadAndStorePtr);
+
 		if (m_hardPtr || m_softPtr.IsNull())
 		{
 			return true;

@@ -5,6 +5,7 @@
 
 #include "SoftPtrLoadStore.h"
 #include "ArgusEntity.h"
+#include "ArgusLogging.h"
 #include "ArgusEntityTemplate.h"
 #include "Engine/Texture.h"
 #include "Materials/MaterialInterface.h"
@@ -12,6 +13,8 @@
 #pragma region UArgusEntityTemplate
 	UArgusEntityTemplate* FSoftPtrLoadStore_UArgusEntityTemplate::LoadAndStorePtr() const
 	{
+		ARGUS_TRACE(FSoftPtrLoadStore_UArgusEntityTemplate::LoadAndStorePtr);
+
 		if (m_hardPtr)
 		{
 			return m_hardPtr.Get();
@@ -28,6 +31,8 @@
 
 	bool FSoftPtrLoadStore_UArgusEntityTemplate::AsyncPreLoadAndStorePtr() const
 	{
+		ARGUS_TRACE(FSoftPtrLoadStore_UArgusEntityTemplate::AsyncPreLoadAndStorePtr);
+
 		if (m_hardPtr || m_softPtr.IsNull())
 		{
 			return true;
@@ -56,6 +61,8 @@
 #pragma region UTexture
 	UTexture* FSoftPtrLoadStore_UTexture::LoadAndStorePtr() const
 	{
+		ARGUS_TRACE(FSoftPtrLoadStore_UTexture::LoadAndStorePtr);
+
 		if (m_hardPtr)
 		{
 			return m_hardPtr.Get();
@@ -72,6 +79,8 @@
 
 	bool FSoftPtrLoadStore_UTexture::AsyncPreLoadAndStorePtr() const
 	{
+		ARGUS_TRACE(FSoftPtrLoadStore_UTexture::AsyncPreLoadAndStorePtr);
+
 		if (m_hardPtr || m_softPtr.IsNull())
 		{
 			return true;
@@ -100,6 +109,8 @@
 #pragma region UMaterialInterface
 	UMaterialInterface* FSoftPtrLoadStore_UMaterialInterface::LoadAndStorePtr() const
 	{
+		ARGUS_TRACE(FSoftPtrLoadStore_UMaterialInterface::LoadAndStorePtr);
+
 		if (m_hardPtr)
 		{
 			return m_hardPtr.Get();
@@ -116,6 +127,8 @@
 
 	bool FSoftPtrLoadStore_UMaterialInterface::AsyncPreLoadAndStorePtr() const
 	{
+		ARGUS_TRACE(FSoftPtrLoadStore_UMaterialInterface::AsyncPreLoadAndStorePtr);
+
 		if (m_hardPtr || m_softPtr.IsNull())
 		{
 			return true;
