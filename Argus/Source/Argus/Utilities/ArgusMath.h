@@ -178,6 +178,17 @@ namespace ArgusMath
 		return IsLeftOfCartesian(ToCartesianVector2(lineSegmentPoint0), ToCartesianVector2(lineSegmentPoint1), ToCartesianVector2(evaluationPoint), radius);
 	}
 
+	static float GetNormalizedZeroToTwoPi(float angle)
+	{
+		float modulo = FMath::Fmod(angle, UE_TWO_PI);
+		if (modulo < 0.0f)
+		{
+			modulo += UE_TWO_PI;
+		}
+
+		return modulo;
+	}
+
 	static FVector GetDirectionFromYaw(float yaw)
 	{
 		return FVector(FMath::Cos(yaw), -FMath::Sin(yaw), 0.0f);
@@ -202,5 +213,10 @@ namespace ArgusMath
 		}
 
 		return UE_PI - arcsine;
+	}
+
+	static float GetUEYawDegreesFromYaw(float yaw)
+	{
+		return 360.0f - FMath::RadiansToDegrees(GetNormalizedZeroToTwoPi(yaw));
 	}
 }

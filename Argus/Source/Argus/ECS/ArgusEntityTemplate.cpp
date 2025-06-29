@@ -94,6 +94,16 @@ void UArgusEntityTemplate::SetInitialStateFromData(const ArgusEntity& entity) co
 			ArgusStaticData::AsyncPreLoadRecord<UAbilityRecord>(abilityComponent->m_ability3Id);
 		}
 	}
+
+	if (const ResourceComponent* resourceComponent = entity.GetComponent<ResourceComponent>())
+	{
+		ArgusStaticData::AsyncPreLoadRecord<UResourceSetRecord>(resourceComponent->m_resourceCapacityRecordId);
+	}
+
+	if (const ResourceExtractionComponent* resourceExtractionComponent = entity.GetComponent<ResourceExtractionComponent>())
+	{
+		ArgusStaticData::AsyncPreLoadRecord<UResourceSetRecord>(resourceExtractionComponent->m_resourcesToExtractRecordId);
+	}
 }
 
 #if WITH_EDITOR

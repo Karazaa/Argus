@@ -102,8 +102,7 @@ void AArgusActor::SetEntity(const ArgusEntity& entity)
 		}
 		else
 		{
-			SetActorLocation(transformComponent->m_location);
-			SetActorRotation(FRotationMatrix::MakeFromXZ(ArgusMath::GetDirectionFromYaw(transformComponent->GetCurrentYaw()), FVector::UpVector).ToQuat());
+			SetActorLocationAndRotation(transformComponent->m_location, FRotator(0.0f, ArgusMath::GetUEYawDegreesFromYaw(transformComponent->GetCurrentYaw()), 0.0f));
 		}
 	}
 
@@ -231,6 +230,8 @@ void AArgusActor::EndPlay(const EEndPlayReason::Type endPlayReason)
 
 void AArgusActor::Update(float deltaTime)
 {
+	ARGUS_TRACE(AArgusActor::Update);
+
 	if (!m_entity)
 	{
 		return;
@@ -238,8 +239,7 @@ void AArgusActor::Update(float deltaTime)
 
 	if (const TransformComponent* transformComponent = m_entity.GetComponent<TransformComponent>())
 	{
-		SetActorLocation(transformComponent->m_location);
-		SetActorRotation(FRotationMatrix::MakeFromXZ(ArgusMath::GetDirectionFromYaw(transformComponent->GetCurrentYaw()), FVector::UpVector).ToQuat());
+		SetActorLocationAndRotation(transformComponent->m_location, FRotator(0.0f, ArgusMath::GetUEYawDegreesFromYaw(transformComponent->GetCurrentYaw()), 0.0f));
 
 #if !UE_BUILD_SHIPPING
 		if (ArgusECSDebugger::IsEntityBeingDebugged(m_entity.GetId()))

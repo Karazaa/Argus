@@ -23,6 +23,8 @@ void UArgusActorInfoWidget::SetInitialDisplay(const ArgusEntity& argusEntity)
 
 void UArgusActorInfoWidget::RefreshDisplay(const ArgusEntity& argusEntity)
 {
+	ARGUS_TRACE(UArgusActorInfoWidget::RefreshDisplay);
+
 	if (!argusEntity)
 	{
 		return;
