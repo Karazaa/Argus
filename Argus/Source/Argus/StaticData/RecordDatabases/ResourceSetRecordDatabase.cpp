@@ -47,9 +47,9 @@ const UResourceSetRecord* UResourceSetRecordDatabase::GetRecord(uint32 id)
 	return m_UResourceSetRecordsPersistent[id];
 }
 
-const bool UResourceSetRecordDatabase::PreLoadRecord(uint32 id)
+const bool UResourceSetRecordDatabase::AsyncPreLoadRecord(uint32 id)
 {
-	ARGUS_TRACE(UResourceSetRecordDatabase::PreLoadRecord);
+	ARGUS_TRACE(UResourceSetRecordDatabase::AsyncPreLoadRecord);
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	if (static_cast<uint32>(m_UResourceSetRecordsPersistent.Num()) <= id)

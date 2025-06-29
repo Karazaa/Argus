@@ -23,7 +23,7 @@ const UAbilityRecord* UArgusStaticDatabase::GetUAbilityRecord(uint32 id)
 	return m_UAbilityRecordDatabasePersistent->GetRecord(id);
 }
 
-const bool UArgusStaticDatabase::PreLoadUAbilityRecord(uint32 id)
+const bool UArgusStaticDatabase::AsyncPreLoadUAbilityRecord(uint32 id)
 {
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
@@ -34,7 +34,7 @@ const bool UArgusStaticDatabase::PreLoadUAbilityRecord(uint32 id)
 		return false;
 	}
 
-	return m_UAbilityRecordDatabasePersistent->PreLoadRecord(id);
+	return m_UAbilityRecordDatabasePersistent->AsyncPreLoadRecord(id);
 }
 
 #if WITH_EDITOR && !IS_PACKAGING_ARGUS
@@ -120,7 +120,7 @@ const UArgusActorRecord* UArgusStaticDatabase::GetUArgusActorRecord(uint32 id)
 	return m_UArgusActorRecordDatabasePersistent->GetRecord(id);
 }
 
-const bool UArgusStaticDatabase::PreLoadUArgusActorRecord(uint32 id)
+const bool UArgusStaticDatabase::AsyncPreLoadUArgusActorRecord(uint32 id)
 {
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
@@ -131,7 +131,7 @@ const bool UArgusStaticDatabase::PreLoadUArgusActorRecord(uint32 id)
 		return false;
 	}
 
-	return m_UArgusActorRecordDatabasePersistent->PreLoadRecord(id);
+	return m_UArgusActorRecordDatabasePersistent->AsyncPreLoadRecord(id);
 }
 
 #if WITH_EDITOR && !IS_PACKAGING_ARGUS
@@ -217,7 +217,7 @@ const UFactionRecord* UArgusStaticDatabase::GetUFactionRecord(uint32 id)
 	return m_UFactionRecordDatabasePersistent->GetRecord(id);
 }
 
-const bool UArgusStaticDatabase::PreLoadUFactionRecord(uint32 id)
+const bool UArgusStaticDatabase::AsyncPreLoadUFactionRecord(uint32 id)
 {
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
@@ -228,7 +228,7 @@ const bool UArgusStaticDatabase::PreLoadUFactionRecord(uint32 id)
 		return false;
 	}
 
-	return m_UFactionRecordDatabasePersistent->PreLoadRecord(id);
+	return m_UFactionRecordDatabasePersistent->AsyncPreLoadRecord(id);
 }
 
 #if WITH_EDITOR && !IS_PACKAGING_ARGUS
@@ -314,7 +314,7 @@ const UPlacedArgusActorTeamInfoRecord* UArgusStaticDatabase::GetUPlacedArgusActo
 	return m_UPlacedArgusActorTeamInfoRecordDatabasePersistent->GetRecord(id);
 }
 
-const bool UArgusStaticDatabase::PreLoadUPlacedArgusActorTeamInfoRecord(uint32 id)
+const bool UArgusStaticDatabase::AsyncPreLoadUPlacedArgusActorTeamInfoRecord(uint32 id)
 {
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
@@ -325,7 +325,7 @@ const bool UArgusStaticDatabase::PreLoadUPlacedArgusActorTeamInfoRecord(uint32 i
 		return false;
 	}
 
-	return m_UPlacedArgusActorTeamInfoRecordDatabasePersistent->PreLoadRecord(id);
+	return m_UPlacedArgusActorTeamInfoRecordDatabasePersistent->AsyncPreLoadRecord(id);
 }
 
 #if WITH_EDITOR && !IS_PACKAGING_ARGUS
@@ -411,7 +411,7 @@ const UResourceSetRecord* UArgusStaticDatabase::GetUResourceSetRecord(uint32 id)
 	return m_UResourceSetRecordDatabasePersistent->GetRecord(id);
 }
 
-const bool UArgusStaticDatabase::PreLoadUResourceSetRecord(uint32 id)
+const bool UArgusStaticDatabase::AsyncPreLoadUResourceSetRecord(uint32 id)
 {
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
@@ -422,7 +422,7 @@ const bool UArgusStaticDatabase::PreLoadUResourceSetRecord(uint32 id)
 		return false;
 	}
 
-	return m_UResourceSetRecordDatabasePersistent->PreLoadRecord(id);
+	return m_UResourceSetRecordDatabasePersistent->AsyncPreLoadRecord(id);
 }
 
 #if WITH_EDITOR && !IS_PACKAGING_ARGUS
@@ -508,7 +508,7 @@ const UTeamColorRecord* UArgusStaticDatabase::GetUTeamColorRecord(uint32 id)
 	return m_UTeamColorRecordDatabasePersistent->GetRecord(id);
 }
 
-const bool UArgusStaticDatabase::PreLoadUTeamColorRecord(uint32 id)
+const bool UArgusStaticDatabase::AsyncPreLoadUTeamColorRecord(uint32 id)
 {
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
@@ -519,7 +519,7 @@ const bool UArgusStaticDatabase::PreLoadUTeamColorRecord(uint32 id)
 		return false;
 	}
 
-	return m_UTeamColorRecordDatabasePersistent->PreLoadRecord(id);
+	return m_UTeamColorRecordDatabasePersistent->AsyncPreLoadRecord(id);
 }
 
 #if WITH_EDITOR && !IS_PACKAGING_ARGUS

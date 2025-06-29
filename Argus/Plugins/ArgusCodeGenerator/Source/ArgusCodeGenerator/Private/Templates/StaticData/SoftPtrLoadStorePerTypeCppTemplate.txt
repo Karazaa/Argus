@@ -1,0 +1,39 @@
+
+#pragma region #####
+	#####* FSoftPtrLoadStore_#####::LoadAndStorePtr() const
+	{
+		if (m_hardPtr)
+		{
+			return m_hardPtr.Get();
+		}
+
+		m_hardPtr = m_softPtr.LoadSynchronous();
+		return m_hardPtr.Get();
+	}
+
+	bool FSoftPtrLoadStore_#####::AsyncPreLoadAndStorePtr() const
+	{
+		if (m_hardPtr)
+		{
+			return true;
+		}
+
+		AssetLoadingComponent* assetLoadingComponent = ArgusEntity::GetSingletonEntity().GetComponent<AssetLoadingComponent>();
+		ARGUS_RETURN_ON_NULL_BOOL(assetLoadingComponent, ArgusStaticDataLog);
+
+		assetLoadingComponent->m_streamableManager.RequestAsyncLoad(m_softPtr.ToSoftObjectPath(), FStreamableDelegate::CreateLambda
+		(
+			[this]()
+			{
+				m_hardPtr = m_softPtr.Get();
+			})
+		);
+
+		return true;
+	}
+
+	void FSoftPtrLoadStore_#####::SetHardPtr(#####* pointer)
+	{
+		m_hardPtr = pointer;
+	};
+#pragma endregion

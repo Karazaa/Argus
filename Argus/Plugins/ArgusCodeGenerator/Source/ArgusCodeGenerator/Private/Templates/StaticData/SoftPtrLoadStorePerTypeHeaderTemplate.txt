@@ -8,22 +8,9 @@ struct FSoftPtrLoadStore_#####
 	GENERATED_BODY()
 
 public:
-	#####* LoadAndStorePtr() const
-	{
-		if (m_hardPtr)
-		{
-			return m_hardPtr.Get();
-		}
-
-		m_hardPtr = m_softPtr.LoadSynchronous();
-		return m_hardPtr.Get();
-	}
-
-	void SetHardPtr(#####* pointer)
-	{
-		m_hardPtr = pointer;
-	};
-
+	#####* LoadAndStorePtr() const;
+	bool AsyncPreLoadAndStorePtr() const;
+	void SetHardPtr(#####* pointer);
 	operator bool() const { return m_hardPtr || !m_softPtr.IsNull(); }
 
 protected:

@@ -47,9 +47,9 @@ const UPlacedArgusActorTeamInfoRecord* UPlacedArgusActorTeamInfoRecordDatabase::
 	return m_UPlacedArgusActorTeamInfoRecordsPersistent[id];
 }
 
-const bool UPlacedArgusActorTeamInfoRecordDatabase::PreLoadRecord(uint32 id)
+const bool UPlacedArgusActorTeamInfoRecordDatabase::AsyncPreLoadRecord(uint32 id)
 {
-	ARGUS_TRACE(UPlacedArgusActorTeamInfoRecordDatabase::PreLoadRecord);
+	ARGUS_TRACE(UPlacedArgusActorTeamInfoRecordDatabase::AsyncPreLoadRecord);
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	if (static_cast<uint32>(m_UPlacedArgusActorTeamInfoRecordsPersistent.Num()) <= id)

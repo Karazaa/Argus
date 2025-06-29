@@ -14,7 +14,7 @@ class UResourceSetRecordDatabase : public UDataAsset
 
 public:
 	const UResourceSetRecord* GetRecord(uint32 id);
-	const bool PreLoadRecord(uint32 id);
+	const bool AsyncPreLoadRecord(uint32 id);
 	bool ResizePersistentObjectPointerArrayToFitRecord(uint32 id);
 
 protected:

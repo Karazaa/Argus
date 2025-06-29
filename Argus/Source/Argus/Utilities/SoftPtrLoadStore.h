@@ -15,22 +15,9 @@ struct FSoftPtrLoadStore_UArgusEntityTemplate
 	GENERATED_BODY()
 
 public:
-	UArgusEntityTemplate* LoadAndStorePtr() const
-	{
-		if (m_hardPtr)
-		{
-			return m_hardPtr.Get();
-		}
-
-		m_hardPtr = m_softPtr.LoadSynchronous();
-		return m_hardPtr.Get();
-	}
-
-	void SetHardPtr(UArgusEntityTemplate* pointer)
-	{
-		m_hardPtr = pointer;
-	};
-
+	UArgusEntityTemplate* LoadAndStorePtr() const;
+	bool AsyncPreLoadAndStorePtr() const;
+	void SetHardPtr(UArgusEntityTemplate* pointer);
 	operator bool() const { return m_hardPtr || !m_softPtr.IsNull(); }
 
 protected:
@@ -51,22 +38,9 @@ struct FSoftPtrLoadStore_UTexture
 	GENERATED_BODY()
 
 public:
-	UTexture* LoadAndStorePtr() const
-	{
-		if (m_hardPtr)
-		{
-			return m_hardPtr.Get();
-		}
-
-		m_hardPtr = m_softPtr.LoadSynchronous();
-		return m_hardPtr.Get();
-	}
-
-	void SetHardPtr(UTexture* pointer)
-	{
-		m_hardPtr = pointer;
-	};
-
+	UTexture* LoadAndStorePtr() const;
+	bool AsyncPreLoadAndStorePtr() const;
+	void SetHardPtr(UTexture* pointer);
 	operator bool() const { return m_hardPtr || !m_softPtr.IsNull(); }
 
 protected:

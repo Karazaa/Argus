@@ -25,10 +25,22 @@ const char* ArgusStaticDataCodeGenerator::s_recordDatabaseDirectorySuffix = "Rec
 const char* ArgusStaticDataCodeGenerator::s_recordDatabaseHeaderTemplateFileName = "RecordDatabaseHeaderTemplate.txt";
 const char* ArgusStaticDataCodeGenerator::s_recordDatabaseCppTemplateFileName = "RecordDatabaseCppTemplate.txt";
 const char* ArgusStaticDataCodeGenerator::s_recordDatabaseFileNameSuffix = "Database";
-const char* ArgusStaticDataCodeGenerator::s_softPtrLoadStoreTemplateFileName = "SoftPtrLoadStoreTemplate.txt";
-const char* ArgusStaticDataCodeGenerator::s_softPtrLoadStorePerTypeTemplateFileName = "SoftPtrLoadStorePerTypeTemplate.txt";
-const char* ArgusStaticDataCodeGenerator::s_softPtrLoadStoreFileName = "SoftPtrLoadStore.h";
-const char* ArgusStaticDataCodeGenerator::s_softPtrLoadStoreTypeNames[ArgusStaticDataCodeGenerator::k_numSoftPtrLoadStoreTypes] = {"UArgusEntityTemplate", "UTexture"};
+const char* ArgusStaticDataCodeGenerator::s_softPtrLoadStoreHeaderTemplateFileName = "SoftPtrLoadStoreHeaderTemplate.txt";
+const char* ArgusStaticDataCodeGenerator::s_softPtrLoadStorePerTypeHeaderTemplateFileName = "SoftPtrLoadStorePerTypeHeaderTemplate.txt";
+const char* ArgusStaticDataCodeGenerator::s_softPtrLoadStoreHeaderFileName = "SoftPtrLoadStore.h";
+const char* ArgusStaticDataCodeGenerator::s_softPtrLoadStoreCppTemplateFileName = "SoftPtrLoadStoreCppTemplate.txt";
+const char* ArgusStaticDataCodeGenerator::s_softPtrLoadStorePerTypeCppTemplateFileName = "SoftPtrLoadStorePerTypeCppTemplate.txt";
+const char* ArgusStaticDataCodeGenerator::s_softPtrLoadStoreCppFileName = "SoftPtrLoadStore.cpp";
+const char* ArgusStaticDataCodeGenerator::s_softPtrLoadStoreTypeNames[ArgusStaticDataCodeGenerator::k_numSoftPtrLoadStoreTypes] = 
+{
+	"UArgusEntityTemplate", 
+	"UTexture"
+};
+const char* ArgusStaticDataCodeGenerator::s_softPtrLoadStoreIncludes[ArgusStaticDataCodeGenerator::k_numSoftPtrLoadStoreTypes] = 
+{ 
+	"#include \"ArgusEntityTemplate.h\"", 
+	"#include \"Engine/Texture.h\"" 
+};
 
 void ArgusStaticDataCodeGenerator::GenerateStaticDataCode(const ArgusCodeGeneratorUtil::ParseStaticDataRecordsOutput& parsedStaticDataRecords)
 {
@@ -57,9 +69,13 @@ void ArgusStaticDataCodeGenerator::GenerateStaticDataCode(const ArgusCodeGenerat
 	parseArgusStaticDatabaseCppTemplateParams.templateFilePath = std::string(cStrTemplateDirectory).append(s_argusStaticDatabaseCppTemplateFileName);
 	parseArgusStaticDatabaseCppTemplateParams.perRecordTemplateFilePath = std::string(cStrTemplateDirectory).append(s_argusStaticDatabaseCppPerRecordTemplateFileName);
 
-	ParseTemplateParams parseSoftPtrLoadStoreTemplateParams;
-	parseSoftPtrLoadStoreTemplateParams.templateFilePath = std::string(cStrTemplateDirectory).append(s_softPtrLoadStoreTemplateFileName);
-	parseSoftPtrLoadStoreTemplateParams.perRecordTemplateFilePath = std::string(cStrTemplateDirectory).append(s_softPtrLoadStorePerTypeTemplateFileName);
+	ParseTemplateParams parseSoftPtrLoadStoreHeaderTemplateParams;
+	parseSoftPtrLoadStoreHeaderTemplateParams.templateFilePath = std::string(cStrTemplateDirectory).append(s_softPtrLoadStoreHeaderTemplateFileName);
+	parseSoftPtrLoadStoreHeaderTemplateParams.perRecordTemplateFilePath = std::string(cStrTemplateDirectory).append(s_softPtrLoadStorePerTypeHeaderTemplateFileName);
+
+	ParseTemplateParams parseSoftPtrLoadStoreCppTemplateParams;
+	parseSoftPtrLoadStoreCppTemplateParams.templateFilePath = std::string(cStrTemplateDirectory).append(s_softPtrLoadStoreCppTemplateFileName);
+	parseSoftPtrLoadStoreCppTemplateParams.perRecordTemplateFilePath = std::string(cStrTemplateDirectory).append(s_softPtrLoadStorePerTypeCppTemplateFileName);
 
 	UE_LOG(ArgusCodeGeneratorLog, Display, TEXT("[%s] Parsing from template files to generate non-ECS Static Data code."), ARGUS_FUNCNAME)
 
@@ -71,9 +87,13 @@ void ArgusStaticDataCodeGenerator::GenerateStaticDataCode(const ArgusCodeGenerat
 	didSucceed &= ParseArgusStaticDatabaseHeaderTemplate(parsedStaticDataRecords, parseArgusStaticDatabaseHeaderTemplateParams, headerFilePaths, outParsedArgusStaticDataContents);
 	didSucceed &= ParseArgusStaticDatabaseCppTemplate(parsedStaticDataRecords, parseArgusStaticDatabaseCppTemplateParams, headerFilePaths, outParsedArgusStaticDataContents);
 
-	ArgusCodeGeneratorUtil::FileWriteData softPtrLoadStoreFileData;
-	softPtrLoadStoreFileData.m_filename = s_softPtrLoadStoreFileName;
-	didSucceed &= ParseSoftPtrLoadStoreTemplate(parseSoftPtrLoadStoreTemplateParams, softPtrLoadStoreFileData);
+	ArgusCodeGeneratorUtil::FileWriteData softPtrLoadStoreHeaderFileData;
+	softPtrLoadStoreHeaderFileData.m_filename = s_softPtrLoadStoreHeaderFileName;
+	didSucceed &= ParseSoftPtrLoadStoreTemplate(parseSoftPtrLoadStoreHeaderTemplateParams, softPtrLoadStoreHeaderFileData);
+
+	ArgusCodeGeneratorUtil::FileWriteData softPtrLoadStoreCppFileData;
+	softPtrLoadStoreCppFileData.m_filename = s_softPtrLoadStoreCppFileName;
+	didSucceed &= ParseSoftPtrLoadStoreTemplate(parseSoftPtrLoadStoreCppTemplateParams, softPtrLoadStoreCppFileData);
 
 	FString staticDataDirectory = ArgusCodeGeneratorUtil::GetProjectDirectory();
 	FString utilitiesDirectory = staticDataDirectory;
@@ -89,7 +109,8 @@ void ArgusStaticDataCodeGenerator::GenerateStaticDataCode(const ArgusCodeGenerat
 	{
 		didSucceed &= ArgusCodeGeneratorUtil::WriteOutFile(std::string(cStrStaticDataDirectory).append(outParsedArgusStaticDataContents[i].m_filename), outParsedArgusStaticDataContents[i].m_lines);
 	}
-	didSucceed &= ArgusCodeGeneratorUtil::WriteOutFile(std::string(cStrUtilitiesDirectory).append(softPtrLoadStoreFileData.m_filename), softPtrLoadStoreFileData.m_lines);
+	didSucceed &= ArgusCodeGeneratorUtil::WriteOutFile(std::string(cStrUtilitiesDirectory).append(softPtrLoadStoreHeaderFileData.m_filename), softPtrLoadStoreHeaderFileData.m_lines);
+	didSucceed &= ArgusCodeGeneratorUtil::WriteOutFile(std::string(cStrUtilitiesDirectory).append(softPtrLoadStoreCppFileData.m_filename), softPtrLoadStoreCppFileData.m_lines);
 }
 
 bool ArgusStaticDataCodeGenerator::ParseArgusStaticDataTemplate(const ArgusCodeGeneratorUtil::ParseStaticDataRecordsOutput& parsedStaticDataRecords, const ParseTemplateParams& templateParams, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents)
@@ -405,7 +426,14 @@ bool ArgusStaticDataCodeGenerator::ParseSoftPtrLoadStoreTemplate(const ParseTemp
 	std::string templateLineText;
 	while (std::getline(inTemplateStream, templateLineText))
 	{
-		if (templateLineText.find("@@@@@") != std::string::npos)
+		if (templateLineText.find("$$$$$") != std::string::npos)
+		{
+			for (int i = 0; i < k_numSoftPtrLoadStoreTypes; ++i)
+			{
+				outParsedFileContents.m_lines.push_back(s_softPtrLoadStoreIncludes[i]);
+			}
+		}
+		else if (templateLineText.find("@@@@@") != std::string::npos)
 		{
 			if (!ParseSoftPtrLoadStorePerTypeTemplate(templateParams, outParsedFileContents))
 			{

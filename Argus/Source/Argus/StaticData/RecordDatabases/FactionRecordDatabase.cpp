@@ -47,9 +47,9 @@ const UFactionRecord* UFactionRecordDatabase::GetRecord(uint32 id)
 	return m_UFactionRecordsPersistent[id];
 }
 
-const bool UFactionRecordDatabase::PreLoadRecord(uint32 id)
+const bool UFactionRecordDatabase::AsyncPreLoadRecord(uint32 id)
 {
-	ARGUS_TRACE(UFactionRecordDatabase::PreLoadRecord);
+	ARGUS_TRACE(UFactionRecordDatabase::AsyncPreLoadRecord);
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	if (static_cast<uint32>(m_UFactionRecordsPersistent.Num()) <= id)

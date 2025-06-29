@@ -47,9 +47,9 @@ const UTeamColorRecord* UTeamColorRecordDatabase::GetRecord(uint32 id)
 	return m_UTeamColorRecordsPersistent[id];
 }
 
-const bool UTeamColorRecordDatabase::PreLoadRecord(uint32 id)
+const bool UTeamColorRecordDatabase::AsyncPreLoadRecord(uint32 id)
 {
-	ARGUS_TRACE(UTeamColorRecordDatabase::PreLoadRecord);
+	ARGUS_TRACE(UTeamColorRecordDatabase::AsyncPreLoadRecord);
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	if (static_cast<uint32>(m_UTeamColorRecordsPersistent.Num()) <= id)

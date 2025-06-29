@@ -79,19 +79,19 @@ void UArgusEntityTemplate::SetInitialStateFromData(const ArgusEntity& entity) co
 	{
 		if (abilityComponent->m_ability0Id > 0u)
 		{
-			ArgusStaticData::PreLoadRecord<UAbilityRecord>(abilityComponent->m_ability0Id);
+			ArgusStaticData::AsyncPreLoadRecord<UAbilityRecord>(abilityComponent->m_ability0Id);
 		}
 		if (abilityComponent->m_ability1Id > 0u)
 		{
-			ArgusStaticData::PreLoadRecord<UAbilityRecord>(abilityComponent->m_ability1Id);
+			ArgusStaticData::AsyncPreLoadRecord<UAbilityRecord>(abilityComponent->m_ability1Id);
 		}
 		if (abilityComponent->m_ability2Id > 0u)
 		{
-			ArgusStaticData::PreLoadRecord<UAbilityRecord>(abilityComponent->m_ability2Id);
+			ArgusStaticData::AsyncPreLoadRecord<UAbilityRecord>(abilityComponent->m_ability2Id);
 		}
 		if (abilityComponent->m_ability3Id > 0u)
 		{
-			ArgusStaticData::PreLoadRecord<UAbilityRecord>(abilityComponent->m_ability3Id);
+			ArgusStaticData::AsyncPreLoadRecord<UAbilityRecord>(abilityComponent->m_ability3Id);
 		}
 	}
 }

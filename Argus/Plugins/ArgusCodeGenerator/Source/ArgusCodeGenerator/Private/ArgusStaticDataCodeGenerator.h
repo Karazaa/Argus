@@ -27,12 +27,16 @@ private:
 	static const char* s_recordDatabaseHeaderTemplateFileName;
 	static const char* s_recordDatabaseCppTemplateFileName;
 	static const char* s_recordDatabaseFileNameSuffix;
-	static const char* s_softPtrLoadStoreTemplateFileName;
-	static const char* s_softPtrLoadStorePerTypeTemplateFileName;
-	static const char* s_softPtrLoadStoreFileName;
+	static const char* s_softPtrLoadStoreHeaderTemplateFileName;
+	static const char* s_softPtrLoadStorePerTypeHeaderTemplateFileName;
+	static const char* s_softPtrLoadStoreHeaderFileName;
+	static const char* s_softPtrLoadStoreCppTemplateFileName;
+	static const char* s_softPtrLoadStorePerTypeCppTemplateFileName;
+	static const char* s_softPtrLoadStoreCppFileName;
 
 	static constexpr int k_numSoftPtrLoadStoreTypes = 2;
 	static const char* s_softPtrLoadStoreTypeNames[k_numSoftPtrLoadStoreTypes];
+	static const char* s_softPtrLoadStoreIncludes[k_numSoftPtrLoadStoreTypes];
 
 	struct ParseTemplateParams
 	{

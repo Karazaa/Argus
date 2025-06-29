@@ -47,9 +47,9 @@ const UAbilityRecord* UAbilityRecordDatabase::GetRecord(uint32 id)
 	return m_UAbilityRecordsPersistent[id];
 }
 
-const bool UAbilityRecordDatabase::PreLoadRecord(uint32 id)
+const bool UAbilityRecordDatabase::AsyncPreLoadRecord(uint32 id)
 {
-	ARGUS_TRACE(UAbilityRecordDatabase::PreLoadRecord);
+	ARGUS_TRACE(UAbilityRecordDatabase::AsyncPreLoadRecord);
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	if (static_cast<uint32>(m_UAbilityRecordsPersistent.Num()) <= id)

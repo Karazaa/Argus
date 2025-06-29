@@ -13,7 +13,7 @@ const #####* UArgusStaticDatabase::Get#####(uint32 id)
 	return m_#####DatabasePersistent->GetRecord(id);
 }
 
-const bool UArgusStaticDatabase::PreLoad#####(uint32 id)
+const bool UArgusStaticDatabase::AsyncPreLoad#####(uint32 id)
 {
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
@@ -24,7 +24,7 @@ const bool UArgusStaticDatabase::PreLoad#####(uint32 id)
 		return false;
 	}
 
-	return m_#####DatabasePersistent->PreLoadRecord(id);
+	return m_#####DatabasePersistent->AsyncPreLoadRecord(id);
 }
 
 #if WITH_EDITOR && !IS_PACKAGING_ARGUS

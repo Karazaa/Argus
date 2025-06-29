@@ -47,9 +47,9 @@ const #####* #####Database::GetRecord(uint32 id)
 	return m_#####sPersistent[id];
 }
 
-const bool #####Database::PreLoadRecord(uint32 id)
+const bool #####Database::AsyncPreLoadRecord(uint32 id)
 {
-	ARGUS_TRACE(#####Database::PreLoadRecord);
+	ARGUS_TRACE(#####Database::AsyncPreLoadRecord);
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	if (static_cast<uint32>(m_#####sPersistent.Num()) <= id)
