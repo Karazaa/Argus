@@ -77,7 +77,11 @@ const bool UArgusActorRecordDatabase::AsyncPreLoadRecord(uint32 id)
 				return;
 			}
 
-			m_UArgusActorRecordsPersistent[id] = m_UArgusActorRecords[id].Get();
+			m_UArgusActorRecordsPersistent[id] = m_UArgusActorRecords[id].Get();\
+			if (m_UArgusActorRecordsPersistent[id])
+			{
+				m_UArgusActorRecordsPersistent[id]->OnAsyncLoaded();
+			}
 		})
 	);
 

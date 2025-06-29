@@ -77,7 +77,11 @@ const bool #####Database::AsyncPreLoadRecord(uint32 id)
 				return;
 			}
 
-			m_#####sPersistent[id] = m_#####s[id].Get();
+			m_#####sPersistent[id] = m_#####s[id].Get();\
+			if (m_#####sPersistent[id])
+			{
+				m_#####sPersistent[id]->OnAsyncLoaded();
+			}
 		})
 	);
 

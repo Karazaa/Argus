@@ -108,15 +108,9 @@ void USelectedArgusEntitiesWidget::UpdateAbilityButtonDisplay(UButton* button, c
 	}
 	button->SetVisibility(ESlateVisibility::Visible);
 
-	UTexture* texture = nullptr;
-	if (!abilityRecord->m_abilityIcon.IsNull())
-	{
-		texture = abilityRecord->m_abilityIcon.LoadSynchronous();
-	}
-
-	m_abilityButtonNormalSlateBrush.SetResourceObject(texture);
-	m_abilityButtonHoveredSlateBrush.SetResourceObject(texture);
-	m_abilityButtonPressedSlateBrush.SetResourceObject(texture);
+	m_abilityButtonNormalSlateBrush.SetResourceObject(abilityRecord->m_abilityIcon.LoadAndStorePtr());
+	m_abilityButtonHoveredSlateBrush.SetResourceObject(abilityRecord->m_abilityIcon.LoadAndStorePtr());
+	m_abilityButtonPressedSlateBrush.SetResourceObject(abilityRecord->m_abilityIcon.LoadAndStorePtr());
 	m_abilityButtonStyle.SetNormal(m_abilityButtonNormalSlateBrush);
 	m_abilityButtonStyle.SetHovered(m_abilityButtonHoveredSlateBrush);
 	m_abilityButtonStyle.SetPressed(m_abilityButtonPressedSlateBrush);

@@ -77,7 +77,11 @@ const bool UResourceSetRecordDatabase::AsyncPreLoadRecord(uint32 id)
 				return;
 			}
 
-			m_UResourceSetRecordsPersistent[id] = m_UResourceSetRecords[id].Get();
+			m_UResourceSetRecordsPersistent[id] = m_UResourceSetRecords[id].Get();\
+			if (m_UResourceSetRecordsPersistent[id])
+			{
+				m_UResourceSetRecordsPersistent[id]->OnAsyncLoaded();
+			}
 		})
 	);
 

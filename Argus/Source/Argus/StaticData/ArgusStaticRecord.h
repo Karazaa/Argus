@@ -16,6 +16,8 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	uint32 m_id;
 
+	virtual void OnAsyncLoaded() const {}
+
 #if WITH_EDITOR && !IS_PACKAGING_ARGUS
 	virtual void PreSave(FObjectPreSaveContext SaveContext) override;
 #endif //WITH_EDITOR && !IS_PACKAGING_ARGUS

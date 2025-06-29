@@ -34,12 +34,14 @@ const char* ArgusStaticDataCodeGenerator::s_softPtrLoadStoreCppFileName = "SoftP
 const char* ArgusStaticDataCodeGenerator::s_softPtrLoadStoreTypeNames[ArgusStaticDataCodeGenerator::k_numSoftPtrLoadStoreTypes] = 
 {
 	"UArgusEntityTemplate", 
-	"UTexture"
+	"UTexture",
+	"UMaterialInterface"
 };
 const char* ArgusStaticDataCodeGenerator::s_softPtrLoadStoreIncludes[ArgusStaticDataCodeGenerator::k_numSoftPtrLoadStoreTypes] = 
 { 
 	"#include \"ArgusEntityTemplate.h\"", 
-	"#include \"Engine/Texture.h\"" 
+	"#include \"Engine/Texture.h\"",
+	"#include \"Materials/MaterialInterface.h\""
 };
 
 void ArgusStaticDataCodeGenerator::GenerateStaticDataCode(const ArgusCodeGeneratorUtil::ParseStaticDataRecordsOutput& parsedStaticDataRecords)

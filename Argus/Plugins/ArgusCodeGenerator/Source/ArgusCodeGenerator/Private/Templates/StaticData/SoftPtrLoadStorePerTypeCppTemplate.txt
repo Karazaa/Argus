@@ -7,13 +7,18 @@
 			return m_hardPtr.Get();
 		}
 
+		if (m_softPtr.IsNull())
+		{
+			return nullptr;
+		}
+
 		m_hardPtr = m_softPtr.LoadSynchronous();
 		return m_hardPtr.Get();
 	}
 
 	bool FSoftPtrLoadStore_#####::AsyncPreLoadAndStorePtr() const
 	{
-		if (m_hardPtr)
+		if (m_hardPtr || m_softPtr.IsNull())
 		{
 			return true;
 		}

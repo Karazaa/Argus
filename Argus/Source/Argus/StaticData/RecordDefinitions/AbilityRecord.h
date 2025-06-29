@@ -6,6 +6,7 @@
 #include "Materials/MaterialInterface.h"
 #include "RecordDefinitions/ArgusActorRecord.h"
 #include "RecordDependencies/AbilityTypes.h"
+#include "SoftPtrLoadStore.h"
 #include "AbilityRecord.generated.h"
 
 class UMaterial;
@@ -33,7 +34,7 @@ public:
 	EAbilityTypes m_abilityType = EAbilityTypes::Spawn;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TSoftObjectPtr<UTexture> m_abilityIcon = nullptr;
+	FSoftPtrLoadStore_UTexture m_abilityIcon;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FResourceSet m_requiredResourceChangeToCast;
@@ -45,7 +46,7 @@ public:
 	TSoftObjectPtr<UArgusActorRecord> m_argusActorRecord = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TSoftObjectPtr<UMaterialInterface> m_reticleMaterial = nullptr;
+	FSoftPtrLoadStore_UMaterialInterface m_reticleMaterial;
 
 	bool GetRequiresReticle() const
 	{
@@ -60,5 +61,11 @@ public:
 	bool GetDisableReticleAfterCast() const
 	{
 		return static_cast<bool>(m_reticleFlags & static_cast<uint8>(EReticleFlags::DisableReticleAfterCast));
+	}
+
+	virtual void OnAsyncLoaded() const override 
+	{
+		m_abilityIcon.AsyncPreLoadAndStorePtr();
+		m_reticleMaterial.AsyncPreLoadAndStorePtr();
 	}
 };

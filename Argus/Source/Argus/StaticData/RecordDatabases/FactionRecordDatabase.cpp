@@ -77,7 +77,11 @@ const bool UFactionRecordDatabase::AsyncPreLoadRecord(uint32 id)
 				return;
 			}
 
-			m_UFactionRecordsPersistent[id] = m_UFactionRecords[id].Get();
+			m_UFactionRecordsPersistent[id] = m_UFactionRecords[id].Get();\
+			if (m_UFactionRecordsPersistent[id])
+			{
+				m_UFactionRecordsPersistent[id]->OnAsyncLoaded();
+			}
 		})
 	);
 

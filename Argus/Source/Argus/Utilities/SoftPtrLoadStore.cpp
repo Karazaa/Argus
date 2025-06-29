@@ -7,6 +7,7 @@
 #include "ArgusEntity.h"
 #include "ArgusEntityTemplate.h"
 #include "Engine/Texture.h"
+#include "Materials/MaterialInterface.h"
 
 #pragma region UArgusEntityTemplate
 	UArgusEntityTemplate* FSoftPtrLoadStore_UArgusEntityTemplate::LoadAndStorePtr() const
@@ -16,13 +17,18 @@
 			return m_hardPtr.Get();
 		}
 
+		if (m_softPtr.IsNull())
+		{
+			return nullptr;
+		}
+
 		m_hardPtr = m_softPtr.LoadSynchronous();
 		return m_hardPtr.Get();
 	}
 
 	bool FSoftPtrLoadStore_UArgusEntityTemplate::AsyncPreLoadAndStorePtr() const
 	{
-		if (m_hardPtr)
+		if (m_hardPtr || m_softPtr.IsNull())
 		{
 			return true;
 		}
@@ -55,13 +61,18 @@
 			return m_hardPtr.Get();
 		}
 
+		if (m_softPtr.IsNull())
+		{
+			return nullptr;
+		}
+
 		m_hardPtr = m_softPtr.LoadSynchronous();
 		return m_hardPtr.Get();
 	}
 
 	bool FSoftPtrLoadStore_UTexture::AsyncPreLoadAndStorePtr() const
 	{
-		if (m_hardPtr)
+		if (m_hardPtr || m_softPtr.IsNull())
 		{
 			return true;
 		}
@@ -81,6 +92,50 @@
 	}
 
 	void FSoftPtrLoadStore_UTexture::SetHardPtr(UTexture* pointer)
+	{
+		m_hardPtr = pointer;
+	};
+#pragma endregion
+
+#pragma region UMaterialInterface
+	UMaterialInterface* FSoftPtrLoadStore_UMaterialInterface::LoadAndStorePtr() const
+	{
+		if (m_hardPtr)
+		{
+			return m_hardPtr.Get();
+		}
+
+		if (m_softPtr.IsNull())
+		{
+			return nullptr;
+		}
+
+		m_hardPtr = m_softPtr.LoadSynchronous();
+		return m_hardPtr.Get();
+	}
+
+	bool FSoftPtrLoadStore_UMaterialInterface::AsyncPreLoadAndStorePtr() const
+	{
+		if (m_hardPtr || m_softPtr.IsNull())
+		{
+			return true;
+		}
+
+		AssetLoadingComponent* assetLoadingComponent = ArgusEntity::GetSingletonEntity().GetComponent<AssetLoadingComponent>();
+		ARGUS_RETURN_ON_NULL_BOOL(assetLoadingComponent, ArgusStaticDataLog);
+
+		assetLoadingComponent->m_streamableManager.RequestAsyncLoad(m_softPtr.ToSoftObjectPath(), FStreamableDelegate::CreateLambda
+		(
+			[this]()
+			{
+				m_hardPtr = m_softPtr.Get();
+			})
+		);
+
+		return true;
+	}
+
+	void FSoftPtrLoadStore_UMaterialInterface::SetHardPtr(UMaterialInterface* pointer)
 	{
 		m_hardPtr = pointer;
 	};

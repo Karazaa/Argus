@@ -51,3 +51,26 @@ protected:
 	mutable TObjectPtr<UTexture> m_hardPtr = nullptr;
 };
 #pragma endregion
+
+#pragma region UMaterialInterface
+class UMaterialInterface;
+
+USTRUCT(BlueprintType)
+struct FSoftPtrLoadStore_UMaterialInterface
+{
+	GENERATED_BODY()
+
+public:
+	UMaterialInterface* LoadAndStorePtr() const;
+	bool AsyncPreLoadAndStorePtr() const;
+	void SetHardPtr(UMaterialInterface* pointer);
+	operator bool() const { return m_hardPtr || !m_softPtr.IsNull(); }
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TSoftObjectPtr<UMaterialInterface> m_softPtr = nullptr;
+
+	UPROPERTY(Transient)
+	mutable TObjectPtr<UMaterialInterface> m_hardPtr = nullptr;
+};
+#pragma endregion

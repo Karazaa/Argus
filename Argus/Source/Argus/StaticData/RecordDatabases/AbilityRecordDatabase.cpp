@@ -77,7 +77,11 @@ const bool UAbilityRecordDatabase::AsyncPreLoadRecord(uint32 id)
 				return;
 			}
 
-			m_UAbilityRecordsPersistent[id] = m_UAbilityRecords[id].Get();
+			m_UAbilityRecordsPersistent[id] = m_UAbilityRecords[id].Get();\
+			if (m_UAbilityRecordsPersistent[id])
+			{
+				m_UAbilityRecordsPersistent[id]->OnAsyncLoaded();
+			}
 		})
 	);
 

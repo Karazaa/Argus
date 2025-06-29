@@ -77,7 +77,11 @@ const bool UPlacedArgusActorTeamInfoRecordDatabase::AsyncPreLoadRecord(uint32 id
 				return;
 			}
 
-			m_UPlacedArgusActorTeamInfoRecordsPersistent[id] = m_UPlacedArgusActorTeamInfoRecords[id].Get();
+			m_UPlacedArgusActorTeamInfoRecordsPersistent[id] = m_UPlacedArgusActorTeamInfoRecords[id].Get();\
+			if (m_UPlacedArgusActorTeamInfoRecordsPersistent[id])
+			{
+				m_UPlacedArgusActorTeamInfoRecordsPersistent[id]->OnAsyncLoaded();
+			}
 		})
 	);
 

@@ -34,7 +34,7 @@ private:
 	static const char* s_softPtrLoadStorePerTypeCppTemplateFileName;
 	static const char* s_softPtrLoadStoreCppFileName;
 
-	static constexpr int k_numSoftPtrLoadStoreTypes = 2;
+	static constexpr int k_numSoftPtrLoadStoreTypes = 3;
 	static const char* s_softPtrLoadStoreTypeNames[k_numSoftPtrLoadStoreTypes];
 	static const char* s_softPtrLoadStoreIncludes[k_numSoftPtrLoadStoreTypes];
 

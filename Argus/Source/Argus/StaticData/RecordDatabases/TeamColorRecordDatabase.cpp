@@ -77,7 +77,11 @@ const bool UTeamColorRecordDatabase::AsyncPreLoadRecord(uint32 id)
 				return;
 			}
 
-			m_UTeamColorRecordsPersistent[id] = m_UTeamColorRecords[id].Get();
+			m_UTeamColorRecordsPersistent[id] = m_UTeamColorRecords[id].Get();\
+			if (m_UTeamColorRecordsPersistent[id])
+			{
+				m_UTeamColorRecordsPersistent[id]->OnAsyncLoaded();
+			}
 		})
 	);
 
