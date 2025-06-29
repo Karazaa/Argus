@@ -11,8 +11,8 @@ struct ArgusEntityKDTreeNode
 	FVector					m_worldSpaceLocation = FVector::ZeroVector;
 	ArgusEntityKDTreeNode*	m_leftChild = nullptr;
 	ArgusEntityKDTreeNode*	m_rightChild = nullptr;
-	uint16					m_entityId = ArgusECSConstants::k_maxEntities;
 	float					m_radius = 0.0f;
+	uint16					m_entityId = ArgusECSConstants::k_maxEntities;
 
 	ArgusEntityKDTreeNode() {};
 

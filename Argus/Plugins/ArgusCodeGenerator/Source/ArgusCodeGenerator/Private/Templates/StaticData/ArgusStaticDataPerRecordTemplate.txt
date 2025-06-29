@@ -1,27 +1,26 @@
+
 #pragma region #####
 	template<>
 	inline const #####* GetRecord(uint32 id)
 	{
 		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
-
-		if (!staticDatabase)
-		{
-			return nullptr;
-		}
-
+		ARGUS_RETURN_ON_NULL_POINTER(staticDatabase, ArgusStaticDataLog);
 		return staticDatabase->Get#####(id);
+	}
+
+	template<>
+	inline const bool PreLoadRecord<#####>(uint32 id)
+	{
+		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
+		ARGUS_RETURN_ON_NULL_BOOL(staticDatabase, ArgusStaticDataLog);
+		return staticDatabase->PreLoad#####(id);
 	}
 
 #if WITH_EDITOR && !IS_PACKAGING_ARGUS
 	static void RegisterNew#####Database(#####Database* database)
 	{
 		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
-
-		if (!staticDatabase)
-		{
-			return;
-		}
-
+		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
 		staticDatabase->RegisterNew#####Database(database);
 	}
 #endif //WITH_EDITOR && !IS_PACKAGING_ARGUS

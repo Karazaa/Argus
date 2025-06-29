@@ -14,7 +14,8 @@ class UFactionRecordDatabase : public UDataAsset
 
 public:
 	const UFactionRecord* GetRecord(uint32 id);
-	void ResizePersistentObjectPointerArray();
+	const bool PreLoadRecord(uint32 id);
+	bool ResizePersistentObjectPointerArrayToFitRecord(uint32 id);
 
 protected:
 	UPROPERTY(EditAnywhere)

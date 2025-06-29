@@ -4,6 +4,7 @@
 #pragma once
 
 #include "ArgusGameInstance.h"
+#include "ArgusLogging.h"
 
 #if WITH_EDITOR && !IS_PACKAGING_ARGUS
 #include "Editor.h"
@@ -76,12 +77,7 @@ public:
 	inline const UAbilityRecord* GetRecord(uint32 id)
 	{
 		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
-
-		if (!staticDatabase)
-		{
-			return nullptr;
-		}
-
+		ARGUS_RETURN_ON_NULL_POINTER(staticDatabase, ArgusStaticDataLog);
 		return staticDatabase->GetUAbilityRecord(id);
 	}
 
@@ -89,12 +85,7 @@ public:
 	inline const bool PreLoadRecord<UAbilityRecord>(uint32 id)
 	{
 		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
-
-		if (!staticDatabase)
-		{
-			return false;
-		}
-
+		ARGUS_RETURN_ON_NULL_BOOL(staticDatabase, ArgusStaticDataLog);
 		return staticDatabase->PreLoadUAbilityRecord(id);
 	}
 
@@ -102,152 +93,142 @@ public:
 	static void RegisterNewUAbilityRecordDatabase(UAbilityRecordDatabase* database)
 	{
 		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
-
-		if (!staticDatabase)
-		{
-			return;
-		}
-
+		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
 		staticDatabase->RegisterNewUAbilityRecordDatabase(database);
 	}
 #endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
 #pragma endregion
+
 #pragma region UArgusActorRecord
 	template<>
 	inline const UArgusActorRecord* GetRecord(uint32 id)
 	{
 		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
-
-		if (!staticDatabase)
-		{
-			return nullptr;
-		}
-
+		ARGUS_RETURN_ON_NULL_POINTER(staticDatabase, ArgusStaticDataLog);
 		return staticDatabase->GetUArgusActorRecord(id);
+	}
+
+	template<>
+	inline const bool PreLoadRecord<UArgusActorRecord>(uint32 id)
+	{
+		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
+		ARGUS_RETURN_ON_NULL_BOOL(staticDatabase, ArgusStaticDataLog);
+		return staticDatabase->PreLoadUArgusActorRecord(id);
 	}
 
 #if WITH_EDITOR && !IS_PACKAGING_ARGUS
 	static void RegisterNewUArgusActorRecordDatabase(UArgusActorRecordDatabase* database)
 	{
 		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
-
-		if (!staticDatabase)
-		{
-			return;
-		}
-
+		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
 		staticDatabase->RegisterNewUArgusActorRecordDatabase(database);
 	}
 #endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
 #pragma endregion
+
 #pragma region UFactionRecord
 	template<>
 	inline const UFactionRecord* GetRecord(uint32 id)
 	{
 		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
-
-		if (!staticDatabase)
-		{
-			return nullptr;
-		}
-
+		ARGUS_RETURN_ON_NULL_POINTER(staticDatabase, ArgusStaticDataLog);
 		return staticDatabase->GetUFactionRecord(id);
+	}
+
+	template<>
+	inline const bool PreLoadRecord<UFactionRecord>(uint32 id)
+	{
+		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
+		ARGUS_RETURN_ON_NULL_BOOL(staticDatabase, ArgusStaticDataLog);
+		return staticDatabase->PreLoadUFactionRecord(id);
 	}
 
 #if WITH_EDITOR && !IS_PACKAGING_ARGUS
 	static void RegisterNewUFactionRecordDatabase(UFactionRecordDatabase* database)
 	{
 		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
-
-		if (!staticDatabase)
-		{
-			return;
-		}
-
+		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
 		staticDatabase->RegisterNewUFactionRecordDatabase(database);
 	}
 #endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
 #pragma endregion
+
 #pragma region UPlacedArgusActorTeamInfoRecord
 	template<>
 	inline const UPlacedArgusActorTeamInfoRecord* GetRecord(uint32 id)
 	{
 		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
-
-		if (!staticDatabase)
-		{
-			return nullptr;
-		}
-
+		ARGUS_RETURN_ON_NULL_POINTER(staticDatabase, ArgusStaticDataLog);
 		return staticDatabase->GetUPlacedArgusActorTeamInfoRecord(id);
+	}
+
+	template<>
+	inline const bool PreLoadRecord<UPlacedArgusActorTeamInfoRecord>(uint32 id)
+	{
+		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
+		ARGUS_RETURN_ON_NULL_BOOL(staticDatabase, ArgusStaticDataLog);
+		return staticDatabase->PreLoadUPlacedArgusActorTeamInfoRecord(id);
 	}
 
 #if WITH_EDITOR && !IS_PACKAGING_ARGUS
 	static void RegisterNewUPlacedArgusActorTeamInfoRecordDatabase(UPlacedArgusActorTeamInfoRecordDatabase* database)
 	{
 		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
-
-		if (!staticDatabase)
-		{
-			return;
-		}
-
+		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
 		staticDatabase->RegisterNewUPlacedArgusActorTeamInfoRecordDatabase(database);
 	}
 #endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
 #pragma endregion
+
 #pragma region UResourceSetRecord
 	template<>
 	inline const UResourceSetRecord* GetRecord(uint32 id)
 	{
 		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
-
-		if (!staticDatabase)
-		{
-			return nullptr;
-		}
-
+		ARGUS_RETURN_ON_NULL_POINTER(staticDatabase, ArgusStaticDataLog);
 		return staticDatabase->GetUResourceSetRecord(id);
+	}
+
+	template<>
+	inline const bool PreLoadRecord<UResourceSetRecord>(uint32 id)
+	{
+		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
+		ARGUS_RETURN_ON_NULL_BOOL(staticDatabase, ArgusStaticDataLog);
+		return staticDatabase->PreLoadUResourceSetRecord(id);
 	}
 
 #if WITH_EDITOR && !IS_PACKAGING_ARGUS
 	static void RegisterNewUResourceSetRecordDatabase(UResourceSetRecordDatabase* database)
 	{
 		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
-
-		if (!staticDatabase)
-		{
-			return;
-		}
-
+		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
 		staticDatabase->RegisterNewUResourceSetRecordDatabase(database);
 	}
 #endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
 #pragma endregion
+
 #pragma region UTeamColorRecord
 	template<>
 	inline const UTeamColorRecord* GetRecord(uint32 id)
 	{
 		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
-
-		if (!staticDatabase)
-		{
-			return nullptr;
-		}
-
+		ARGUS_RETURN_ON_NULL_POINTER(staticDatabase, ArgusStaticDataLog);
 		return staticDatabase->GetUTeamColorRecord(id);
+	}
+
+	template<>
+	inline const bool PreLoadRecord<UTeamColorRecord>(uint32 id)
+	{
+		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
+		ARGUS_RETURN_ON_NULL_BOOL(staticDatabase, ArgusStaticDataLog);
+		return staticDatabase->PreLoadUTeamColorRecord(id);
 	}
 
 #if WITH_EDITOR && !IS_PACKAGING_ARGUS
 	static void RegisterNewUTeamColorRecordDatabase(UTeamColorRecordDatabase* database)
 	{
 		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
-
-		if (!staticDatabase)
-		{
-			return;
-		}
-
+		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
 		staticDatabase->RegisterNewUTeamColorRecordDatabase(database);
 	}
 #endif //WITH_EDITOR && !IS_PACKAGING_ARGUS

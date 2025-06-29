@@ -120,6 +120,20 @@ const UArgusActorRecord* UArgusStaticDatabase::GetUArgusActorRecord(uint32 id)
 	return m_UArgusActorRecordDatabasePersistent->GetRecord(id);
 }
 
+const bool UArgusStaticDatabase::PreLoadUArgusActorRecord(uint32 id)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUArgusActorRecordDatabase();
+
+	if (!m_UArgusActorRecordDatabasePersistent)
+	{
+		return false;
+	}
+
+	return m_UArgusActorRecordDatabasePersistent->PreLoadRecord(id);
+}
+
 #if WITH_EDITOR && !IS_PACKAGING_ARGUS
 uint32 UArgusStaticDatabase::AddUArgusActorRecordToDatabase(UArgusActorRecord* record)
 {
@@ -171,7 +185,7 @@ void UArgusStaticDatabase::LazyLoadUArgusActorRecordDatabase()
 			return;
 		}
 
-		m_UArgusActorRecordDatabasePersistent->ResizePersistentObjectPointerArray();
+		m_UArgusActorRecordDatabasePersistent->ResizePersistentObjectPointerArrayToFitRecord(0u);
 	}
 
 	if (!m_UArgusActorRecordDatabasePersistent)
@@ -201,6 +215,20 @@ const UFactionRecord* UArgusStaticDatabase::GetUFactionRecord(uint32 id)
 	}
 
 	return m_UFactionRecordDatabasePersistent->GetRecord(id);
+}
+
+const bool UArgusStaticDatabase::PreLoadUFactionRecord(uint32 id)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUFactionRecordDatabase();
+
+	if (!m_UFactionRecordDatabasePersistent)
+	{
+		return false;
+	}
+
+	return m_UFactionRecordDatabasePersistent->PreLoadRecord(id);
 }
 
 #if WITH_EDITOR && !IS_PACKAGING_ARGUS
@@ -254,7 +282,7 @@ void UArgusStaticDatabase::LazyLoadUFactionRecordDatabase()
 			return;
 		}
 
-		m_UFactionRecordDatabasePersistent->ResizePersistentObjectPointerArray();
+		m_UFactionRecordDatabasePersistent->ResizePersistentObjectPointerArrayToFitRecord(0u);
 	}
 
 	if (!m_UFactionRecordDatabasePersistent)
@@ -284,6 +312,20 @@ const UPlacedArgusActorTeamInfoRecord* UArgusStaticDatabase::GetUPlacedArgusActo
 	}
 
 	return m_UPlacedArgusActorTeamInfoRecordDatabasePersistent->GetRecord(id);
+}
+
+const bool UArgusStaticDatabase::PreLoadUPlacedArgusActorTeamInfoRecord(uint32 id)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUPlacedArgusActorTeamInfoRecordDatabase();
+
+	if (!m_UPlacedArgusActorTeamInfoRecordDatabasePersistent)
+	{
+		return false;
+	}
+
+	return m_UPlacedArgusActorTeamInfoRecordDatabasePersistent->PreLoadRecord(id);
 }
 
 #if WITH_EDITOR && !IS_PACKAGING_ARGUS
@@ -337,7 +379,7 @@ void UArgusStaticDatabase::LazyLoadUPlacedArgusActorTeamInfoRecordDatabase()
 			return;
 		}
 
-		m_UPlacedArgusActorTeamInfoRecordDatabasePersistent->ResizePersistentObjectPointerArray();
+		m_UPlacedArgusActorTeamInfoRecordDatabasePersistent->ResizePersistentObjectPointerArrayToFitRecord(0u);
 	}
 
 	if (!m_UPlacedArgusActorTeamInfoRecordDatabasePersistent)
@@ -367,6 +409,20 @@ const UResourceSetRecord* UArgusStaticDatabase::GetUResourceSetRecord(uint32 id)
 	}
 
 	return m_UResourceSetRecordDatabasePersistent->GetRecord(id);
+}
+
+const bool UArgusStaticDatabase::PreLoadUResourceSetRecord(uint32 id)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUResourceSetRecordDatabase();
+
+	if (!m_UResourceSetRecordDatabasePersistent)
+	{
+		return false;
+	}
+
+	return m_UResourceSetRecordDatabasePersistent->PreLoadRecord(id);
 }
 
 #if WITH_EDITOR && !IS_PACKAGING_ARGUS
@@ -420,7 +476,7 @@ void UArgusStaticDatabase::LazyLoadUResourceSetRecordDatabase()
 			return;
 		}
 
-		m_UResourceSetRecordDatabasePersistent->ResizePersistentObjectPointerArray();
+		m_UResourceSetRecordDatabasePersistent->ResizePersistentObjectPointerArrayToFitRecord(0u);
 	}
 
 	if (!m_UResourceSetRecordDatabasePersistent)
@@ -450,6 +506,20 @@ const UTeamColorRecord* UArgusStaticDatabase::GetUTeamColorRecord(uint32 id)
 	}
 
 	return m_UTeamColorRecordDatabasePersistent->GetRecord(id);
+}
+
+const bool UArgusStaticDatabase::PreLoadUTeamColorRecord(uint32 id)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUTeamColorRecordDatabase();
+
+	if (!m_UTeamColorRecordDatabasePersistent)
+	{
+		return false;
+	}
+
+	return m_UTeamColorRecordDatabasePersistent->PreLoadRecord(id);
 }
 
 #if WITH_EDITOR && !IS_PACKAGING_ARGUS
@@ -503,7 +573,7 @@ void UArgusStaticDatabase::LazyLoadUTeamColorRecordDatabase()
 			return;
 		}
 
-		m_UTeamColorRecordDatabasePersistent->ResizePersistentObjectPointerArray();
+		m_UTeamColorRecordDatabasePersistent->ResizePersistentObjectPointerArrayToFitRecord(0u);
 	}
 
 	if (!m_UTeamColorRecordDatabasePersistent)

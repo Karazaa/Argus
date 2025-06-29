@@ -4,6 +4,7 @@
 #pragma once
 
 #include "ArgusGameInstance.h"
+#include "ArgusLogging.h"
 
 #if WITH_EDITOR && !IS_PACKAGING_ARGUS
 #include "Editor.h"
@@ -17,6 +18,12 @@ public:
 	static const ArgusStaticRecord* GetRecord(uint32 id)
 	{
 		return nullptr;
+	}
+
+	template<typename ArgusStaticRecord>
+	static const bool PreLoadRecord(uint32 id)
+	{
+		return false;
 	}
 
 #if WITH_EDITOR && !IS_PACKAGING_ARGUS
@@ -41,7 +48,6 @@ public:
 		return 0u;
 	}
 #endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
-
 @@@@@
 
 #if WITH_EDITOR && !IS_PACKAGING_ARGUS

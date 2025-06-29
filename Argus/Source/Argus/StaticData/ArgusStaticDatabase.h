@@ -37,6 +37,7 @@ protected:
 #pragma region UArgusActorRecord
 public:
 	const UArgusActorRecord* GetUArgusActorRecord(uint32 id);
+	const bool PreLoadUArgusActorRecord(uint32 id);
 #if WITH_EDITOR && !IS_PACKAGING_ARGUS
 	uint32 AddUArgusActorRecordToDatabase(UArgusActorRecord* record);
 	void RegisterNewUArgusActorRecordDatabase(UArgusActorRecordDatabase* database);
@@ -53,6 +54,7 @@ protected:
 #pragma region UFactionRecord
 public:
 	const UFactionRecord* GetUFactionRecord(uint32 id);
+	const bool PreLoadUFactionRecord(uint32 id);
 #if WITH_EDITOR && !IS_PACKAGING_ARGUS
 	uint32 AddUFactionRecordToDatabase(UFactionRecord* record);
 	void RegisterNewUFactionRecordDatabase(UFactionRecordDatabase* database);
@@ -69,6 +71,7 @@ protected:
 #pragma region UPlacedArgusActorTeamInfoRecord
 public:
 	const UPlacedArgusActorTeamInfoRecord* GetUPlacedArgusActorTeamInfoRecord(uint32 id);
+	const bool PreLoadUPlacedArgusActorTeamInfoRecord(uint32 id);
 #if WITH_EDITOR && !IS_PACKAGING_ARGUS
 	uint32 AddUPlacedArgusActorTeamInfoRecordToDatabase(UPlacedArgusActorTeamInfoRecord* record);
 	void RegisterNewUPlacedArgusActorTeamInfoRecordDatabase(UPlacedArgusActorTeamInfoRecordDatabase* database);
@@ -85,6 +88,7 @@ protected:
 #pragma region UResourceSetRecord
 public:
 	const UResourceSetRecord* GetUResourceSetRecord(uint32 id);
+	const bool PreLoadUResourceSetRecord(uint32 id);
 #if WITH_EDITOR && !IS_PACKAGING_ARGUS
 	uint32 AddUResourceSetRecordToDatabase(UResourceSetRecord* record);
 	void RegisterNewUResourceSetRecordDatabase(UResourceSetRecordDatabase* database);
@@ -101,6 +105,7 @@ protected:
 #pragma region UTeamColorRecord
 public:
 	const UTeamColorRecord* GetUTeamColorRecord(uint32 id);
+	const bool PreLoadUTeamColorRecord(uint32 id);
 #if WITH_EDITOR && !IS_PACKAGING_ARGUS
 	uint32 AddUTeamColorRecordToDatabase(UTeamColorRecord* record);
 	void RegisterNewUTeamColorRecordDatabase(UTeamColorRecordDatabase* database);

@@ -14,7 +14,8 @@ class UArgusActorRecordDatabase : public UDataAsset
 
 public:
 	const UArgusActorRecord* GetRecord(uint32 id);
-	void ResizePersistentObjectPointerArray();
+	const bool PreLoadRecord(uint32 id);
+	bool ResizePersistentObjectPointerArrayToFitRecord(uint32 id);
 
 protected:
 	UPROPERTY(EditAnywhere)
