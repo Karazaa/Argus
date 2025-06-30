@@ -136,7 +136,7 @@ private:
 	bool CleanUpSelectedActors();
 	void OnSelectedArgusArgusActorsChanged();
 
-	void InterruptReticleFromInputEvent();
+	void InterruptReticle();
 	void SetReticleState();
 	void ProcessReticleAbilityForSelectedEntities(const ReticleComponent* reticleComponent);
 	void ProcessReticleAbilityPerSelectedEntity(const ArgusEntity& entity, uint32 abilityRecordId);

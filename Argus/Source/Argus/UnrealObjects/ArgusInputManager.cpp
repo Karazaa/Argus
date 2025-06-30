@@ -510,11 +510,11 @@ void UArgusInputManager::ProcessInputEvent(AArgusCameraActor* argusCamera, const
 			ProcessMarqueeSelectInputEvent(argusCamera, true);
 			break;
 		case InputType::MoveTo:
-			InterruptReticleFromInputEvent();
+			InterruptReticle();
 			ProcessMoveToInputEvent();
 			break;
 		case InputType::SetWaypoint:
-			InterruptReticleFromInputEvent();
+			InterruptReticle();
 			ProcessSetWaypointInputEvent();
 			break;
 		case InputType::Zoom:
@@ -533,7 +533,7 @@ void UArgusInputManager::ProcessInputEvent(AArgusCameraActor* argusCamera, const
 			ProcessAbilityInputEvent(3u);
 			break;
 		case InputType::Escape:
-			InterruptReticleFromInputEvent();
+			InterruptReticle();
 			ProcessEscapeInputEvent();
 			break;
 		case InputType::RotateCamera:
@@ -590,7 +590,7 @@ void UArgusInputManager::ProcessInputEvent(AArgusCameraActor* argusCamera, const
 			ProcessSetControlGroup(5u);
 			break;
 		case InputType::ChangeActiveAbilityGroup:
-			InterruptReticleFromInputEvent();
+			InterruptReticle();
 			ProcessChangeActiveAbilityGroup();
 			break;
 		default:
@@ -1373,12 +1373,14 @@ void UArgusInputManager::OnSelectedArgusArgusActorsChanged()
 	const int32 numSelected = inputInterfaceComponent->m_selectedArgusEntityIds.Num();
 	if (numSelected == 0)
 	{
+		InterruptReticle();
 		return;
 	}
 
 	const AbilityComponent* templateAbilityComponent = ArgusEntity::RetrieveEntity(inputInterfaceComponent->m_selectedArgusEntityIds[0]).GetComponent<AbilityComponent>();
 	if (!templateAbilityComponent || !templateAbilityComponent->HasAnyAbility())
 	{
+		InterruptReticle();
 		return;
 	}
 
@@ -1395,9 +1397,17 @@ void UArgusInputManager::OnSelectedArgusArgusActorsChanged()
 	}
 
 	inputInterfaceComponent->m_indexOfActiveAbilityGroup = 0;
+
+	if (ReticleComponent* reticleComponent = ArgusEntity::GetSingletonEntity().GetComponent<ReticleComponent>())
+	{
+		if (!templateAbilityComponent->HasAbility(reticleComponent->m_abilityRecordId) && reticleComponent->IsReticleEnabled())
+		{
+			reticleComponent->DisableReticle();
+		}
+	}
 }
 
-void UArgusInputManager::InterruptReticleFromInputEvent()
+void UArgusInputManager::InterruptReticle()
 {
 	ReticleComponent* reticleComponent = ArgusEntity::GetSingletonEntity().GetComponent<ReticleComponent>();
 	ARGUS_RETURN_ON_NULL(reticleComponent, ArgusInputLog);
