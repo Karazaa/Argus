@@ -42,8 +42,9 @@ public:
 	UPROPERTY(EditAnywhere, meta = (Bitmask, BitmaskEnum = EReticleFlags))
 	uint8 m_reticleFlags = 0u;
 
+	// TODO JAMES: We need some way of record picking this. Right now it is just a plain int property in editor.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (EditCondition = "m_abilityType == EAbilityTypes::Spawn || m_abilityType == EAbilityTypes::Construct", EditConditionHides))
-	TSoftObjectPtr<UArgusActorRecord> m_argusActorRecord = nullptr;
+	int32 m_argusActorRecordId = 0u;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FSoftPtrLoadStore_UMaterialInterface m_reticleMaterial;
@@ -63,9 +64,5 @@ public:
 		return static_cast<bool>(m_reticleFlags & static_cast<uint8>(EReticleFlags::DisableReticleAfterCast));
 	}
 
-	virtual void OnAsyncLoaded() const override 
-	{
-		m_abilityIcon.AsyncPreLoadAndStorePtr();
-		m_reticleMaterial.AsyncPreLoadAndStorePtr();
-	}
+	virtual void OnAsyncLoaded() const override;
 };

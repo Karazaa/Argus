@@ -118,7 +118,7 @@ bool AbilitySystemsCastSpawnAbilityTest::RunTest(const FString& Parameters)
 	}
 	argusActorRecord->m_id = argusActorRecordId;
 	abilityRecord->m_timeToCastSeconds = 0.0f;
-	abilityRecord->m_argusActorRecord = argusActorRecord;
+	abilityRecord->m_argusActorRecordId = argusActorRecordId;
 
 	AbilitySystems::CastAbility(abilityRecord, components);
 	SpawnEntityInfo info;

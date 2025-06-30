@@ -213,13 +213,6 @@ void AbilitySystems::CastSpawnAbility(const UAbilityRecord* abilityRecord, const
 		return;
 	}
 
-	UArgusActorRecord* argusActorRecord = abilityRecord->m_argusActorRecord.LoadSynchronous();
-	if (!argusActorRecord)
-	{
-		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Could not retrieve %s from %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(UArgusActorRecord*), ARGUS_NAMEOF(UAbilityRecord*));
-		return;
-	}
-
 	if (spawningComponent->m_currentQueueSize >= spawningComponent->m_maximumQueueSize)
 	{
 		return;
@@ -231,7 +224,7 @@ void AbilitySystems::CastSpawnAbility(const UAbilityRecord* abilityRecord, const
 	}
 
 	SpawnEntityInfo spawnInfo;
-	spawnInfo.m_argusActorRecordId = argusActorRecord->m_id;
+	spawnInfo.m_argusActorRecordId = abilityRecord->m_argusActorRecordId;
 	spawnInfo.m_spawningAbilityRecordId = abilityRecord->m_id;
 	spawnInfo.m_timeToCastSeconds = abilityRecord->m_timeToCastSeconds;
 	spawnInfo.m_needsConstruction = needsConstruction;
@@ -305,7 +298,7 @@ void AbilitySystems::PrepReticleForConstructAbility(const UAbilityRecord* abilit
 		return;
 	}
 
-	const UArgusActorRecord* argusActorRecord = abilityRecord->m_argusActorRecord.LoadSynchronous();
+	const UArgusActorRecord* argusActorRecord = ArgusStaticData::GetRecord<UArgusActorRecord>(abilityRecord->m_argusActorRecordId);
 	if (!argusActorRecord)
 	{
 		return;
