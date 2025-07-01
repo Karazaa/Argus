@@ -6,10 +6,12 @@
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "RecordDefinitions/ArgusActorRecord.h"
+#include "SpawnQueueWidget.h"
 
 void USingleSelectedEntityWidget::UpdateDisplay(const UpdateDisplayParameters& updateDisplayParams)
 {
 	ARGUS_RETURN_ON_NULL(m_entityHealthBar, ArgusUILog);
+	ARGUS_RETURN_ON_NULL(m_spawnQueue, ArgusUILog);
 
 	const InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::GetSingletonEntity().GetComponent<InputInterfaceComponent>();
 	if (!inputInterfaceComponent || !inputInterfaceComponent->m_selectedArgusEntityIds.Num())
@@ -17,7 +19,9 @@ void USingleSelectedEntityWidget::UpdateDisplay(const UpdateDisplayParameters& u
 		return;
 	}
 
-	m_entityHealthBar->RefreshDisplay(ArgusEntity::RetrieveEntity(inputInterfaceComponent->m_selectedArgusEntityIds[0]));
+	ArgusEntity selectedEntity = ArgusEntity::RetrieveEntity(inputInterfaceComponent->m_selectedArgusEntityIds[0]);
+	m_entityHealthBar->RefreshDisplay(selectedEntity);
+	m_spawnQueue->RefreshDisplay(selectedEntity);
 }
 
 void USingleSelectedEntityWidget::OnUpdateSelectedArgusActors(const ArgusEntity& templateEntity)

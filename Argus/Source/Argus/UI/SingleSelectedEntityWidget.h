@@ -7,6 +7,7 @@
 
 class UArgusActorHealthBarWidget;
 class UImage;
+class USpawnQueueWidget;
 class UTextBlock;
 
 UCLASS()
@@ -30,4 +31,7 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, Transient)
 	TObjectPtr<UArgusActorHealthBarWidget> m_entityHealthBar = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, Transient)
+	TObjectPtr<USpawnQueueWidget> m_spawnQueue = nullptr;
 };
