@@ -5,9 +5,9 @@
 #include "ArgusUserWidget.h"
 #include "SingleSelectedEntityWidget.generated.h"
 
+class UAbilityQueueWidget;
 class UArgusActorHealthBarWidget;
 class UImage;
-class USpawnQueueWidget;
 class UTextBlock;
 
 UCLASS()
@@ -33,5 +33,5 @@ protected:
 	TObjectPtr<UArgusActorHealthBarWidget> m_entityHealthBar = nullptr;
 
 	UPROPERTY(BlueprintReadWrite, Transient)
-	TObjectPtr<USpawnQueueWidget> m_spawnQueue = nullptr;
+	TObjectPtr<UAbilityQueueWidget> m_spawnQueue = nullptr;
 };

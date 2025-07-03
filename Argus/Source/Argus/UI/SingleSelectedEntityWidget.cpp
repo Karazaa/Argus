@@ -6,7 +6,7 @@
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "RecordDefinitions/ArgusActorRecord.h"
-#include "SpawnQueueWidget.h"
+#include "AbilityQueueWidget.h"
 
 void USingleSelectedEntityWidget::UpdateDisplay(const UpdateDisplayParameters& updateDisplayParams)
 {
