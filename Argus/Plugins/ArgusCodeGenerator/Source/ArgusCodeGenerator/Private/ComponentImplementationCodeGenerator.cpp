@@ -144,7 +144,7 @@ bool ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 								signedInteger32Token != std::string::npos;
 
 		const bool isFloat = parsedVariableData[i].m_typeName.find("float") != std::string::npos;
-		const bool isSmoother = parsedVariableData[i].m_typeName.find("ExponentialDecaySmoother") != std::string::npos;
+		const bool isSmoothed = parsedVariableData[i].m_typeName.find("ExponentialDecaySmoother") != std::string::npos;
 		const bool isOptional = parsedVariableData[i].m_typeName.find("TOptional") != std::string::npos;
 		const bool isArray = parsedVariableData[i].m_typeName.find("TArray") != std::string::npos;
 		const bool isQueue = parsedVariableData[i].m_typeName.find("ArgusQueue") != std::string::npos;
@@ -168,208 +168,117 @@ bool ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 			outParsedVariableContents.push_back(std::vformat("\t\tImGui::Text(\"{}\");", std::make_format_args(parsedVariableData[i].m_varName)));
 			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
 		}
-
-		if (isInteger)
-		{
-			if (isStaticData)
-			{
-				const size_t lineSize = parsedVariableData[i].m_propertyMacro.length();
-				const size_t startIndex = parsedVariableData[i].m_propertyMacro.find('(') + 1;
-				std::string recordType = parsedVariableData[i].m_propertyMacro.substr(startIndex, (lineSize - 1) - startIndex);
-				outParsedVariableContents.push_back(std::vformat("\t\tif ({} != 0u)", std::make_format_args(parsedVariableData[i].m_varName)));
-				outParsedVariableContents.push_back("\t\t{");
-				outParsedVariableContents.push_back(std::vformat("\t\t\tif (const {}* record_{} = ArgusStaticData::GetRecord<{}>({}))", 
-					std::make_format_args(recordType, parsedVariableData[i].m_varName, recordType, parsedVariableData[i].m_varName)));
-				outParsedVariableContents.push_back("\t\t\t{");
-				outParsedVariableContents.push_back(std::vformat("\t\t\t\tconst char* name_{} = ARGUS_FSTRING_TO_CHAR(record_{}->GetName());", std::make_format_args(parsedVariableData[i].m_varName, parsedVariableData[i].m_varName)));
-				outParsedVariableContents.push_back(std::vformat("\t\t\t\tImGui::Text(\"%s\", name_{});", std::make_format_args(parsedVariableData[i].m_varName)));
-				outParsedVariableContents.push_back("\t\t\t}");
-				outParsedVariableContents.push_back("\t\t}");
-				outParsedVariableContents.push_back("\t\telse");
-				outParsedVariableContents.push_back("\t\t{");
-				outParsedVariableContents.push_back(std::vformat("\t\t\tImGui::Text(\"None\", {});", std::make_format_args(parsedVariableData[i].m_varName)));
-				outParsedVariableContents.push_back("\t\t}");
-			}
-			else if (isArray)
-			{
-				FormatImGuiArrayField(parsedVariableData[i].m_varName, outParsedVariableContents, isFloat, isInteger, isVector, isVector2);
-			}
-			else
-			{
-				std::string value = "";
-				FormatImGuiIntField(parsedVariableData[i].m_varName, value);
-				outParsedVariableContents.push_back(value);
-			}
-		}
-		else if (isFloat)
-		{
-			if (isArray)
-			{
-				FormatImGuiArrayField(parsedVariableData[i].m_varName, outParsedVariableContents, isFloat, isInteger, isVector, isVector2);
-			}
-			else
-			{
-				std::string variableName = parsedVariableData[i].m_varName;
-				if (isSmoother)
-				{
-					variableName.append(".GetValue()");
-				}
-				std::string value = "";
-				FormatImGuiFloatField(variableName, value);
-				outParsedVariableContents.push_back(value);
-			}
-		}
-		else if (isEnum)
-		{
-			std::string newVariableName = "valueName_";
-			newVariableName.append(parsedVariableData[i].m_varName);
-			outParsedVariableContents.push_back(std::vformat("\t\tconst char* {} = ARGUS_FSTRING_TO_CHAR(StaticEnum<{}>()->GetNameStringByValue(static_cast<uint8>({})))", std::make_format_args(newVariableName, cleanTypeName, parsedVariableData[i].m_varName)));
-			outParsedVariableContents.push_back(std::vformat("\t\tImGui::Text({});", std::make_format_args(newVariableName)));
-		}
-		else if (isVector2)
-		{
-			if (isOptional)
-			{
-				outParsedVariableContents.push_back(std::vformat("\t\tif ({}.IsSet())", std::make_format_args(parsedVariableData[i].m_varName)));
-				outParsedVariableContents.push_back("\t\t{");
-				std::string variableName = parsedVariableData[i].m_varName;
-				variableName.append(".GetValue()");
-				std::string value = "\t";
-				FormatImGuiFVector2DField(variableName, value);
-				outParsedVariableContents.push_back(value);
-				outParsedVariableContents.push_back("\t\t}");
-				outParsedVariableContents.push_back("\t\telse");
-				outParsedVariableContents.push_back("\t\t{");
-				outParsedVariableContents.push_back("\t\t\tImGui::Text(\"Optional not set\");");
-				outParsedVariableContents.push_back("\t\t}");
-			}
-			else if (isArray)
-			{
-				FormatImGuiArrayField(parsedVariableData[i].m_varName, outParsedVariableContents, isFloat, isInteger, isVector, isVector2);
-			}
-			else if (isQueue)
-			{
-
-			}
-			else
-			{
-				std::string variableName = parsedVariableData[i].m_varName;
-				if (isSmoother)
-				{
-					variableName.append(".GetValue()");
-				}
-				std::string value = "";
-				FormatImGuiFVector2DField(variableName, value);
-				outParsedVariableContents.push_back(value);
-			}
-
-		}
-		else if (isVector)
-		{
-			if (isOptional)
-			{
-				outParsedVariableContents.push_back(std::vformat("\t\tif ({}.IsSet())", std::make_format_args(parsedVariableData[i].m_varName)));
-				outParsedVariableContents.push_back("\t\t{");
-				std::string variableName = parsedVariableData[i].m_varName;
-				variableName.append(".GetValue()");
-				std::string value = "\t";
-				FormatImGuiFVectorField(variableName, value);
-				outParsedVariableContents.push_back(value);
-				outParsedVariableContents.push_back("\t\t}");
-				outParsedVariableContents.push_back("\t\telse");
-				outParsedVariableContents.push_back("\t\t{");
-				outParsedVariableContents.push_back("\t\t\tImGui::Text(\"Optional not set\");");
-				outParsedVariableContents.push_back("\t\t}");
-			}
-			else if (isArray)
-			{
-				FormatImGuiArrayField(parsedVariableData[i].m_varName, outParsedVariableContents, isFloat, isInteger, isVector, isVector2);
-			}
-			else if (isDeque)
-			{
-				FormatImGuiDequeField(parsedVariableData[i].m_varName, outParsedVariableContents, isFloat, isInteger, isVector, isVector2);
-			}
-			else if (isQueue)
-			{
-				FormatImGuiQueueField(parsedVariableData[i].m_varName, outParsedVariableContents, isFloat, isInteger, isVector, isVector2);
-			}
-			else
-			{
-				std::string variableName = parsedVariableData[i].m_varName;
-				if (isSmoother)
-				{
-					variableName.append(".GetValue()");
-				}
-				std::string value = "";
-				FormatImGuiFVectorField(variableName, value);
-				outParsedVariableContents.push_back(value);
-			}
-		}
-		else if (isTimer)
-		{
-			outParsedVariableContents.push_back("\t\tconst ArgusEntity owningEntity = ArgusEntity::RetrieveEntity(GetOwningEntityId());");
-			outParsedVariableContents.push_back(std::vformat("\t\tif ({}.IsTimerTicking(owningEntity))", std::make_format_args(parsedVariableData[i].m_varName)));
-			outParsedVariableContents.push_back("\t\t{");
-			outParsedVariableContents.push_back(std::vformat("\t\t\tImGui::Text(\"%.2f\", {}.GetTimeRemaining(owningEntity));", std::make_format_args(parsedVariableData[i].m_varName)));
-			outParsedVariableContents.push_back("\t\t\tImGui::SameLine();");
-			outParsedVariableContents.push_back(std::vformat("\t\t\tImGui::ProgressBar({}.GetTimeElapsedProportion(owningEntity));", std::make_format_args(parsedVariableData[i].m_varName)));
-			outParsedVariableContents.push_back("\t\t}");
-			outParsedVariableContents.push_back(std::vformat("\t\telse if ({}.IsTimerComplete(owningEntity))", std::make_format_args(parsedVariableData[i].m_varName)));
-			outParsedVariableContents.push_back("\t\t{");
-			outParsedVariableContents.push_back("\t\t\tImGui::Text(\"Timer complete\");");
-			outParsedVariableContents.push_back("\t\t}");
-			outParsedVariableContents.push_back("\t\telse");
-			outParsedVariableContents.push_back("\t\t{");
-			outParsedVariableContents.push_back("\t\t\tImGui::Text(\"Not set\");");
-			outParsedVariableContents.push_back("\t\t}");
-		}
-		else if (isResourceSet)
-		{
-			outParsedVariableContents.push_back(std::vformat("\t\tconst uint8 {}_numResources = static_cast<uint8>(EResourceType::Count);", std::make_format_args(parsedVariableData[i].m_varName)));
-			outParsedVariableContents.push_back(std::vformat("\t\tfor (int32 i = 0; i < {}_numResources; ++i)", std::make_format_args(parsedVariableData[i].m_varName)));
-			outParsedVariableContents.push_back("\t\t{");
-			outParsedVariableContents.push_back("\t\t\tImGui::SameLine();");
-			outParsedVariableContents.push_back(std::vformat("\t\t\tImGui::Text(\"%d \", {}.m_resourceQuantities[i]);", std::make_format_args(parsedVariableData[i].m_varName)));
-			outParsedVariableContents.push_back("\t\t}");
-		}
-		else if (isKDTreeOutput)
+		else
 		{
 			std::string avoidanceRangeName = std::vformat("{}.GetEntitiesInAvoidanceRange()", std::make_format_args(parsedVariableData[i].m_varName));
 			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
 			outParsedVariableContents.push_back(std::vformat("\t\tImGui::Text(\"{}\");", std::make_format_args(avoidanceRangeName)));
 			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
-			FormatImGuiArrayField(avoidanceRangeName, outParsedVariableContents, false, true, false, false);
+			FormatImGuiArrayField(avoidanceRangeName, "", false, outParsedVariableContents, FormatImGuiIntField);
 
 			std::string sightRangeName = std::vformat("{}.GetEntitiesInSightRange()", std::make_format_args(parsedVariableData[i].m_varName));
 			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
 			outParsedVariableContents.push_back(std::vformat("\t\tImGui::Text(\"{}\");", std::make_format_args(sightRangeName)));
 			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
-			FormatImGuiArrayField(sightRangeName, outParsedVariableContents, false, true, false, false);
+			FormatImGuiArrayField(sightRangeName, "", false, outParsedVariableContents, FormatImGuiIntField);
 
 			std::string rangedRangeName = std::vformat("{}.GetEntitiesInRangedRange()", std::make_format_args(parsedVariableData[i].m_varName));
 			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
 			outParsedVariableContents.push_back(std::vformat("\t\tImGui::Text(\"{}\");", std::make_format_args(rangedRangeName)));
 			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
-			FormatImGuiArrayField(rangedRangeName, outParsedVariableContents, false, true, false, false);
+			FormatImGuiArrayField(rangedRangeName, "", false, outParsedVariableContents, FormatImGuiIntField);
 
 			std::string meleeRangeName = std::vformat("{}.GetEntitiesInMeleeRange()", std::make_format_args(parsedVariableData[i].m_varName));
 			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
 			outParsedVariableContents.push_back(std::vformat("\t\tImGui::Text(\"{}\");", std::make_format_args(meleeRangeName)));
 			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
-			FormatImGuiArrayField(meleeRangeName, outParsedVariableContents, false, true, false, false);
+			FormatImGuiArrayField(meleeRangeName, "", false, outParsedVariableContents, FormatImGuiIntField);
+
+			return true;
 		}
-		else if (isSpawnEntityInfo)
+
+		std::string extraData = "";
+		TFunction<void(const std::string&, const std::string&, const std::string&, std::vector<std::string>&)> atomicFieldFormattingFunction;
+		if (isOptional)
 		{
-			if (isDeque)
+			atomicFieldFormattingFunction = FormatImGuiOptionalField;
+			if (isFloat)
 			{
-				FormatImGuiDequeField(parsedVariableData[i].m_varName, outParsedVariableContents, isFloat, isInteger, isVector, isVector2);
+				extraData = "float";
 			}
+			else if (isVector)
+			{
+				extraData = "FVector";
+			}
+			else if (isVector2)
+			{
+				extraData = "FVector2D";
+			}
+		}
+		else if (isInteger)
+		{
+			if (isStaticData)
+			{
+				extraData = parsedVariableData[i].m_propertyMacro;
+				atomicFieldFormattingFunction = FormatImGuiRecordField;
+			}
+			else
+			{
+				atomicFieldFormattingFunction = FormatImGuiIntField;
+			}
+		}
+		else if (isFloat)
+		{
+			atomicFieldFormattingFunction = FormatImGuiFloatField;
+		}
+		else if (isVector2)
+		{
+			atomicFieldFormattingFunction = FormatImGuiFVector2DField;
+		}
+		else if (isVector)
+		{
+			atomicFieldFormattingFunction = FormatImGuiFVectorField;
+		}
+		else if (isEnum)
+		{
+			extraData = cleanTypeName;
+			atomicFieldFormattingFunction = FormatImGuiEnumField;
+		}
+		else if (isTimer)
+		{
+			atomicFieldFormattingFunction = FormatImGuiTimerField;
+		}
+		else if (isResourceSet)
+		{
+			atomicFieldFormattingFunction = FormatImGuiResourceSetField;
+		}
+
+		if (isQueue)
+		{
+			FormatImGuiQueueField(parsedVariableData[i].m_varName, outParsedVariableContents);
+		}
+		else if (isArray)
+		{
+			FormatImGuiArrayField(parsedVariableData[i].m_varName, extraData, isSmoothed, outParsedVariableContents, atomicFieldFormattingFunction);
+		}
+		else if (isDeque)
+		{
+			FormatImGuiDequeField(parsedVariableData[i].m_varName, extraData, isSmoothed, outParsedVariableContents, atomicFieldFormattingFunction);
+		}
+		else if (atomicFieldFormattingFunction)
+		{
+			std::string variableName = parsedVariableData[i].m_varName;
+			if (isSmoothed)
+			{
+				variableName.append(".GetValue()");
+			}
+			atomicFieldFormattingFunction(variableName, extraData, "", outParsedVariableContents);
 		}
 	}
 	return true;
 }
 
-void ComponentImplementationGenerator::FormatImGuiArrayField(const std::string& variableName, std::vector<std::string>& outParsedVariableContents, const bool isFloat, const bool isInt, const bool isFVector, const bool isFVector2D)
+void ComponentImplementationGenerator::FormatImGuiArrayField(const std::string& variableName, const std::string& extraData, bool isSmoothed, std::vector<std::string>& outParsedVariableContents, TFunction<void(const std::string&, const std::string&, const std::string&, std::vector<std::string>&)> elementFormattingFunction)
 {
 	outParsedVariableContents.push_back(std::vformat("\t\tif ({}.Num() == 0)", std::make_format_args(variableName)));
 	outParsedVariableContents.push_back("\t\t{");
@@ -380,30 +289,17 @@ void ComponentImplementationGenerator::FormatImGuiArrayField(const std::string& 
 	outParsedVariableContents.push_back(std::vformat("\t\t\tImGui::Text(\"Size of array = %d\", {}.Num());", std::make_format_args(variableName)));
 	outParsedVariableContents.push_back(std::vformat("\t\t\tfor (int32 i = 0; i < {}.Num(); ++i)", std::make_format_args(variableName)));
 	outParsedVariableContents.push_back("\t\t\t{");
-	std::string value = "\t\t";
 	std::string subVariableName = std::vformat("{}[i]", std::make_format_args(variableName));
-	if (isFloat)
+	std::string prefix = "\t\t";
+	if (elementFormattingFunction)
 	{
-		FormatImGuiFloatField(subVariableName, value);
+		elementFormattingFunction(subVariableName, extraData, prefix, outParsedVariableContents);
 	}
-	else if (isInt)
-	{
-		FormatImGuiIntField(subVariableName, value);
-	}
-	else if (isFVector)
-	{
-		FormatImGuiFVectorField(subVariableName, value);
-	}
-	else if (isFVector2D)
-	{
-		FormatImGuiFVector2DField(subVariableName, value);
-	}
-	outParsedVariableContents.push_back(value);
 	outParsedVariableContents.push_back("\t\t\t}");
 	outParsedVariableContents.push_back("\t\t}");
 }
 
-void ComponentImplementationGenerator::FormatImGuiQueueField(const std::string& variableName, std::vector<std::string>& outParsedVariableContents, const bool isFloat, const bool isInt, const bool isFVector, const bool isFVector2D)
+void ComponentImplementationGenerator::FormatImGuiQueueField(const std::string& variableName, std::vector<std::string>& outParsedVariableContents)
 {
 	outParsedVariableContents.push_back(std::vformat("\t\tif ({}.IsEmpty())", std::make_format_args(variableName)));
 	outParsedVariableContents.push_back("\t\t{");
@@ -415,7 +311,7 @@ void ComponentImplementationGenerator::FormatImGuiQueueField(const std::string& 
 	outParsedVariableContents.push_back("\t\t}");
 }
 
-void ComponentImplementationGenerator::FormatImGuiDequeField(const std::string& variableName, std::vector<std::string>& outParsedVariableContents, const bool isFloat, const bool isInt, const bool isFVector, const bool isFVector2D)
+void ComponentImplementationGenerator::FormatImGuiDequeField(const std::string& variableName, const std::string& extraData, bool isSmoothed, std::vector<std::string>& outParsedVariableContents, TFunction<void(const std::string&, const std::string&, const std::string&, std::vector<std::string>&)> elementFormattingFunction)
 {
 	outParsedVariableContents.push_back(std::vformat("\t\tif ({}.IsEmpty())", std::make_format_args(variableName)));
 	outParsedVariableContents.push_back("\t\t{");
@@ -425,40 +321,47 @@ void ComponentImplementationGenerator::FormatImGuiDequeField(const std::string& 
 	outParsedVariableContents.push_back("\t\t{");
 	outParsedVariableContents.push_back(std::vformat("\t\t\tfor (auto element : {})", std::make_format_args(variableName)));
 	outParsedVariableContents.push_back("\t\t\t{");
-	std::string value = "\t\t";
 	std::string subVariableName = "element";
-	if (isFloat)
+	std::string prefix = "\t\t";
+	if (elementFormattingFunction)
 	{
-		FormatImGuiFloatField(subVariableName, value);
+		elementFormattingFunction(subVariableName, extraData, prefix, outParsedVariableContents);
 	}
-	else if (isInt)
-	{
-		FormatImGuiIntField(subVariableName, value);
-	}
-	else if (isFVector)
-	{
-		FormatImGuiFVectorField(subVariableName, value);
-	}
-	else if (isFVector2D)
-	{
-		FormatImGuiFVector2DField(subVariableName, value);
-	}
-	outParsedVariableContents.push_back(value);
 	outParsedVariableContents.push_back("\t\t\t}");
 	outParsedVariableContents.push_back("\t\t}");
 }
 
-void ComponentImplementationGenerator::FormatImGuiFloatField(const std::string& variableName, std::string& outFormattedString)
+void ComponentImplementationGenerator::FormatImGuiFloatField(const std::string& variableName, const std::string& extraData, const std::string& prefix, std::vector<std::string>& outParsedVariableContents)
 {
-	outFormattedString.append(std::vformat("\t\tImGui::Text(\"%.2f\", {});", std::make_format_args(variableName)));
+	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::Text(\"%.2f\", {});", std::make_format_args(prefix, variableName)));
 }
 
-void ComponentImplementationGenerator::FormatImGuiIntField(const std::string& variableName, std::string& outFormattedString)
+void ComponentImplementationGenerator::FormatImGuiIntField(const std::string& variableName, const std::string& extraData, const std::string& prefix, std::vector<std::string>& outParsedVariableContents)
 {
-	outFormattedString.append(std::vformat("\t\tImGui::Text(\"%d\", {});", std::make_format_args(variableName)));
+	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::Text(\"%d\", {});", std::make_format_args(prefix, variableName)));
 }
 
-void ComponentImplementationGenerator::FormatImGuiFVectorField(const std::string& variableName, std::string& outFormattedString)
+void ComponentImplementationGenerator::FormatImGuiRecordField(const std::string& variableName, const std::string& extraData, const std::string& prefix, std::vector<std::string>& outParsedVariableContents)
+{
+	const size_t lineSize = extraData.length();
+	const size_t startIndex = extraData.find('(') + 1;
+	std::string recordType = extraData.substr(startIndex, (lineSize - 1) - startIndex);
+	outParsedVariableContents.push_back(std::vformat("{}\t\tif ({} != 0u)", std::make_format_args(prefix, variableName)));
+	outParsedVariableContents.push_back(std::string(prefix).append("\t\t{"));
+	outParsedVariableContents.push_back(std::vformat("{}\t\t\tif (const {}* record_{} = ArgusStaticData::GetRecord<{}>({}))",
+		std::make_format_args(prefix, recordType, variableName, recordType, variableName)));
+	outParsedVariableContents.push_back(std::string(prefix).append("\t\t\t{"));
+	outParsedVariableContents.push_back(std::vformat("{}\t\t\t\tconst char* name_{} = ARGUS_FSTRING_TO_CHAR(record_{}->GetName());", std::make_format_args(prefix, variableName, variableName)));
+	outParsedVariableContents.push_back(std::vformat("{}\t\t\t\tImGui::Text(\"%s\", name_{});", std::make_format_args(prefix, variableName)));
+	outParsedVariableContents.push_back(std::string(prefix).append("\t\t\t}"));
+	outParsedVariableContents.push_back(std::string(prefix).append("\t\t}"));
+	outParsedVariableContents.push_back(std::string(prefix).append("\t\telse"));
+	outParsedVariableContents.push_back(std::string(prefix).append("\t\t{"));
+	outParsedVariableContents.push_back(std::vformat("{}\t\t\tImGui::Text(\"None\", {});", std::make_format_args(prefix, variableName)));
+	outParsedVariableContents.push_back(std::string(prefix).append("\t\t}"));
+}
+
+void ComponentImplementationGenerator::FormatImGuiFVectorField(const std::string& variableName, const std::string& extraData, const std::string& prefix, std::vector<std::string>& outParsedVariableContents)
 {
 	std::string xValue = variableName;
 	std::string yValue = variableName;
@@ -467,15 +370,81 @@ void ComponentImplementationGenerator::FormatImGuiFVectorField(const std::string
 	yValue.append(".Y");
 	zValue.append(".Z");
 
-	outFormattedString.append(std::vformat("\t\tImGui::Text(\"(%.2f, %.2f, %.2f)\", {}, {}, {});", std::make_format_args(xValue, yValue, zValue)));
+	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::Text(\"(%.2f, %.2f, %.2f)\", {}, {}, {});", std::make_format_args(prefix, xValue, yValue, zValue)));
 }
 
-void ComponentImplementationGenerator::FormatImGuiFVector2DField(const std::string& variableName, std::string& outFormattedString)
+void ComponentImplementationGenerator::FormatImGuiFVector2DField(const std::string& variableName, const std::string& extraData, const std::string& prefix, std::vector<std::string>& outParsedVariableContents)
 {
 	std::string xValue = variableName;
 	std::string yValue = variableName;
 	xValue.append(".X");
 	yValue.append(".Y");
 
-	outFormattedString.append(std::vformat("\t\tImGui::Text(\"(%.2f, %.2f)\", {}, {});", std::make_format_args(xValue, yValue)));
+	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::Text(\"(%.2f, %.2f)\", {}, {});", std::make_format_args(prefix, xValue, yValue)));
+}
+
+void ComponentImplementationGenerator::FormatImGuiEnumField(const std::string& variableName, const std::string& extraData, const std::string& prefix, std::vector<std::string>& outParsedVariableContents)
+{
+	std::string newVariableName = "valueName_";
+	newVariableName.append(variableName);
+	outParsedVariableContents.push_back(std::vformat("{}\t\tconst char* {} = ARGUS_FSTRING_TO_CHAR(StaticEnum<{}>()->GetNameStringByValue(static_cast<uint8>({})))", std::make_format_args(prefix, newVariableName, extraData, variableName)));
+	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::Text({});", std::make_format_args(prefix, newVariableName)));
+}
+
+void ComponentImplementationGenerator::FormatImGuiTimerField(const std::string& variableName, const std::string& extraData, const std::string& prefix, std::vector<std::string>& outParsedVariableContents)
+{
+	outParsedVariableContents.push_back(std::string(prefix).append("\t\tconst ArgusEntity owningEntity = ArgusEntity::RetrieveEntity(GetOwningEntityId());"));
+	outParsedVariableContents.push_back(std::vformat("{}\t\tif ({}.IsTimerTicking(owningEntity))", std::make_format_args(prefix, variableName)));
+	outParsedVariableContents.push_back(std::string(prefix).append("\t\t{"));
+	outParsedVariableContents.push_back(std::vformat("{}\t\t\tImGui::Text(\"%.2f\", {}.GetTimeRemaining(owningEntity));", std::make_format_args(prefix, variableName)));
+	outParsedVariableContents.push_back(std::string(prefix).append("\t\t\tImGui::SameLine();"));
+	outParsedVariableContents.push_back(std::vformat("{}\t\t\tImGui::ProgressBar({}.GetTimeElapsedProportion(owningEntity));", std::make_format_args(prefix, variableName)));
+	outParsedVariableContents.push_back(std::string(prefix).append("\t\t}"));
+	outParsedVariableContents.push_back(std::vformat("{}\t\telse if ({}.IsTimerComplete(owningEntity))", std::make_format_args(prefix, variableName)));
+	outParsedVariableContents.push_back(std::string(prefix).append("\t\t{"));
+	outParsedVariableContents.push_back(std::string(prefix).append("\t\t\tImGui::Text(\"Timer complete\");"));
+	outParsedVariableContents.push_back(std::string(prefix).append("\t\t}"));
+	outParsedVariableContents.push_back(std::string(prefix).append("\t\telse"));
+	outParsedVariableContents.push_back(std::string(prefix).append("\t\t{"));
+	outParsedVariableContents.push_back(std::string(prefix).append("\t\t\tImGui::Text(\"Not set\");"));
+	outParsedVariableContents.push_back(std::string(prefix).append("\t\t}"));
+}
+
+void ComponentImplementationGenerator::FormatImGuiResourceSetField(const std::string& variableName, const std::string& extraData, const std::string& prefix, std::vector<std::string>& outParsedVariableContents)
+{
+	outParsedVariableContents.push_back(std::vformat("{}\t\tconst uint8 {}_numResources = static_cast<uint8>(EResourceType::Count);", std::make_format_args(prefix, variableName)));
+	outParsedVariableContents.push_back(std::vformat("{}\t\tfor (int32 i = 0; i < {}_numResources; ++i)", std::make_format_args(prefix, variableName)));
+	outParsedVariableContents.push_back(std::string(prefix).append("\t\t{"));
+	outParsedVariableContents.push_back(std::string(prefix).append("\t\t\tImGui::SameLine();"));
+	outParsedVariableContents.push_back(std::vformat("{}\t\t\tImGui::Text(\"%d \", {}.m_resourceQuantities[i]);", std::make_format_args(prefix, variableName)));
+	outParsedVariableContents.push_back(std::string(prefix).append("\t\t}"));
+}
+
+void ComponentImplementationGenerator::FormatImGuiOptionalField(const std::string& variableName, const std::string& extraData, const std::string& prefix, std::vector<std::string>& outParsedVariableContents)
+{
+	outParsedVariableContents.push_back(std::vformat("{}\t\tif ({}.IsSet())", std::make_format_args(prefix, variableName)));
+	outParsedVariableContents.push_back(std::string(prefix).append("\t\t{"));
+	std::string modifiedVariableName = variableName;
+	modifiedVariableName.append(".GetValue()");
+	std::string modifiedPrefix = prefix;
+	modifiedPrefix.append("\t");
+
+	if (extraData.find("float") != std::string::npos)
+	{
+		FormatImGuiFloatField(modifiedVariableName, "", modifiedPrefix, outParsedVariableContents);
+	}
+	else if (extraData.find("FVector") != std::string::npos)
+	{
+		FormatImGuiFVectorField(modifiedVariableName, "", modifiedPrefix, outParsedVariableContents);
+	}
+	else if (extraData.find("FVector2D") != std::string::npos)
+	{
+		FormatImGuiFVector2DField(modifiedVariableName, "", modifiedPrefix, outParsedVariableContents);
+	}
+
+	outParsedVariableContents.push_back(std::string(prefix).append("\t\t}"));
+	outParsedVariableContents.push_back(std::string(prefix).append("\t\telse"));
+	outParsedVariableContents.push_back(std::string(prefix).append("\t\t{"));
+	outParsedVariableContents.push_back(std::string(prefix).append("\t\t\tImGui::Text(\"Optional not set\");"));
+	outParsedVariableContents.push_back(std::string(prefix).append("\t\t}"));
 }

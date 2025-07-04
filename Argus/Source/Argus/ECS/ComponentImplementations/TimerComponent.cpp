@@ -30,6 +30,17 @@ void TimerComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_timers");
 		ImGui::TableNextColumn();
+		if (m_timers.Num() == 0)
+		{
+			ImGui::Text("Array is empty");
+		}
+		else
+		{
+			ImGui::Text("Size of array = %d", m_timers.Num());
+			for (int32 i = 0; i < m_timers.Num(); ++i)
+			{
+			}
+		}
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

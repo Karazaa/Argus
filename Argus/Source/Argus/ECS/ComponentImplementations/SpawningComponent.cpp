@@ -38,7 +38,6 @@ void SpawningComponent::DrawComponentDebug() const
 		{
 			for (auto element : m_spawnQueue)
 			{
-		
 			}
 		}
 		ImGui::TableNextColumn();
