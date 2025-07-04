@@ -148,12 +148,14 @@ bool ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 		const bool isOptional = parsedVariableData[i].m_typeName.find("TOptional") != std::string::npos;
 		const bool isArray = parsedVariableData[i].m_typeName.find("TArray") != std::string::npos;
 		const bool isQueue = parsedVariableData[i].m_typeName.find("ArgusQueue") != std::string::npos;
+		const bool isDeque = parsedVariableData[i].m_typeName.find("ArgusDeque") != std::string::npos;
 		const bool isVector2 = parsedVariableData[i].m_typeName.find("FVector2D") != std::string::npos;
 		const bool isVector = parsedVariableData[i].m_typeName.find("FVector") != std::string::npos;
 		const bool isTimer = parsedVariableData[i].m_typeName.find("TimerHandle") != std::string::npos;
 		const bool isResourceSet = parsedVariableData[i].m_typeName.find("FResourceSet") != std::string::npos;
 		const bool isStaticData = parsedVariableData[i].m_propertyMacro.find(ArgusCodeGeneratorUtil::s_propertyStaticDataDelimiter) != std::string::npos;
 		const bool isKDTreeOutput = parsedVariableData[i].m_typeName.find("ArgusEntityKDTreeRangeOutput") != std::string::npos;
+		const bool isSpawnEntityInfo = parsedVariableData[i].m_typeName.find("SpawnEntityInfo") != std::string::npos; 
 		
 		std::string cleanTypeName = parsedVariableData[i].m_typeName.substr(1, parsedVariableData[i].m_typeName.length() - 1);
 
@@ -283,6 +285,10 @@ bool ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 			{
 				FormatImGuiArrayField(parsedVariableData[i].m_varName, outParsedVariableContents, isFloat, isInteger, isVector, isVector2);
 			}
+			else if (isDeque)
+			{
+				FormatImGuiDequeField(parsedVariableData[i].m_varName, outParsedVariableContents, isFloat, isInteger, isVector, isVector2);
+			}
 			else if (isQueue)
 			{
 				FormatImGuiQueueField(parsedVariableData[i].m_varName, outParsedVariableContents, isFloat, isInteger, isVector, isVector2);
@@ -352,6 +358,13 @@ bool ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
 			FormatImGuiArrayField(meleeRangeName, outParsedVariableContents, false, true, false, false);
 		}
+		else if (isSpawnEntityInfo)
+		{
+			if (isDeque)
+			{
+				FormatImGuiDequeField(parsedVariableData[i].m_varName, outParsedVariableContents, isFloat, isInteger, isVector, isVector2);
+			}
+		}
 	}
 	return true;
 }
@@ -399,6 +412,39 @@ void ComponentImplementationGenerator::FormatImGuiQueueField(const std::string& 
 	outParsedVariableContents.push_back("\t\telse");
 	outParsedVariableContents.push_back("\t\t{");
 	outParsedVariableContents.push_back("\t\t\tImGui::Text(\"Cannot traverse queue yet :(\");");
+	outParsedVariableContents.push_back("\t\t}");
+}
+
+void ComponentImplementationGenerator::FormatImGuiDequeField(const std::string& variableName, std::vector<std::string>& outParsedVariableContents, const bool isFloat, const bool isInt, const bool isFVector, const bool isFVector2D)
+{
+	outParsedVariableContents.push_back(std::vformat("\t\tif ({}.IsEmpty())", std::make_format_args(variableName)));
+	outParsedVariableContents.push_back("\t\t{");
+	outParsedVariableContents.push_back("\t\t\tImGui::Text(\"Deque is empty\");");
+	outParsedVariableContents.push_back("\t\t}");
+	outParsedVariableContents.push_back("\t\telse");
+	outParsedVariableContents.push_back("\t\t{");
+	outParsedVariableContents.push_back(std::vformat("\t\t\tfor (auto element : {})", std::make_format_args(variableName)));
+	outParsedVariableContents.push_back("\t\t\t{");
+	std::string value = "\t\t";
+	std::string subVariableName = "element";
+	if (isFloat)
+	{
+		FormatImGuiFloatField(subVariableName, value);
+	}
+	else if (isInt)
+	{
+		FormatImGuiIntField(subVariableName, value);
+	}
+	else if (isFVector)
+	{
+		FormatImGuiFVectorField(subVariableName, value);
+	}
+	else if (isFVector2D)
+	{
+		FormatImGuiFVector2DField(subVariableName, value);
+	}
+	outParsedVariableContents.push_back(value);
+	outParsedVariableContents.push_back("\t\t\t}");
 	outParsedVariableContents.push_back("\t\t}");
 }
 

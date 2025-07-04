@@ -30,6 +30,17 @@ void SpawningComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_spawnQueue");
 		ImGui::TableNextColumn();
+		if (m_spawnQueue.IsEmpty())
+		{
+			ImGui::Text("Deque is empty");
+		}
+		else
+		{
+			for (auto element : m_spawnQueue)
+			{
+		
+			}
+		}
 		ImGui::TableNextColumn();
 		ImGui::Text("m_spawningRadius");
 		ImGui::TableNextColumn();

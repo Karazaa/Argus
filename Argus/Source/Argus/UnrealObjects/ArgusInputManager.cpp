@@ -987,7 +987,7 @@ void UArgusInputManager::ProcessSetWaypointInputEventPerSelectedActor(AArgusActo
 		case EMovementState::ProcessMoveToLocationCommand:
 		case EMovementState::MoveToLocation:
 			taskComponent->m_movementState = EMovementState::ProcessMoveToLocationCommand;
-			navigationComponent->m_queuedWaypoints.Enqueue(targetLocation);
+			navigationComponent->m_queuedWaypoints.PushLast(targetLocation);
 			break;
 		default:
 			break;

@@ -508,15 +508,15 @@ bool ArgusComponentNavigationComponentResetQueuedWaypointsTest::RunTest(const FS
 		return false;
 	}
 
-	navigationComponent->m_queuedWaypoints.Enqueue(point0);
-	navigationComponent->m_queuedWaypoints.Enqueue(point1);
-	navigationComponent->m_queuedWaypoints.Enqueue(point2);
+	navigationComponent->m_queuedWaypoints.PushLast(point0);
+	navigationComponent->m_queuedWaypoints.PushLast(point1);
+	navigationComponent->m_queuedWaypoints.PushLast(point2);
 
 #pragma region Test first element of queued waypoints
 	TestEqual
 	(
 		FString::Printf(TEXT("[%s] Testing that the first queued waypoint is {%f, %f, %f}"), ARGUS_FUNCNAME, point0.X, point0.Y, point0.Z),
-		*navigationComponent->m_queuedWaypoints.Peek(),
+		navigationComponent->m_queuedWaypoints.First(),
 		point0
 	);
 #pragma endregion

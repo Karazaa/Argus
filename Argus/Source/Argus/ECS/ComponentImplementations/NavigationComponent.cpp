@@ -47,11 +47,14 @@ void NavigationComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		if (m_queuedWaypoints.IsEmpty())
 		{
-			ImGui::Text("Queue is empty");
+			ImGui::Text("Deque is empty");
 		}
 		else
 		{
-			ImGui::Text("Cannot traverse queue yet :(");
+			for (auto element : m_queuedWaypoints)
+			{
+				ImGui::Text("(%.2f, %.2f, %.2f)", element.X, element.Y, element.Z);
+			}
 		}
 		ImGui::TableNextColumn();
 		ImGui::Text("m_lastPointIndex");

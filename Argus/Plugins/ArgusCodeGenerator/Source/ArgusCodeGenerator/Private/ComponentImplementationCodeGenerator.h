@@ -21,6 +21,7 @@ private:
 	static bool GeneratePerVariableImGuiText(const std::vector<ArgusCodeGeneratorUtil::ParsedVariableData>& parsedVariableData, std::vector<std::string>& outParsedVariableContents);
 	static void FormatImGuiArrayField(const std::string& variableName, std::vector<std::string>& outParsedVariableContents, const bool isFloat, const bool isInt, const bool isFVector, const bool isFVector2D);
 	static void FormatImGuiQueueField(const std::string& variableName, std::vector<std::string>& outParsedVariableContents, const bool isFloat, const bool isInt, const bool isFVector, const bool isFVector2D);
+	static void FormatImGuiDequeField(const std::string& variableName, std::vector<std::string>& outParsedVariableContents, const bool isFloat, const bool isInt, const bool isFVector, const bool isFVector2D);
 	static void FormatImGuiFloatField(const std::string& variableName, std::string& outFormattedString);
 	static void FormatImGuiIntField(const std::string& variableName, std::string& outFormattedString);
 	static void FormatImGuiFVectorField(const std::string& variableName, std::string& outFormattedString);

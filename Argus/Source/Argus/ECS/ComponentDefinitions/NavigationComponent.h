@@ -3,7 +3,7 @@
 #pragma once
 
 #include "ArgusMacros.h"
-#include "ComponentDependencies/ArgusQueue.h"
+#include "ComponentDependencies/ArgusDeque.h"
 
 struct NavigationComponent
 {
@@ -13,7 +13,7 @@ struct NavigationComponent
 	TArray<FVector> m_navigationPoints;
 
 	ARGUS_IGNORE()
-	ArgusQueue<FVector> m_queuedWaypoints;
+	ArgusDeque<FVector> m_queuedWaypoints;
 
 	ARGUS_IGNORE()
 	int32 m_lastPointIndex = 0;

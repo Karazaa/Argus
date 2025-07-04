@@ -3,7 +3,7 @@
 #pragma once
 
 #include "ArgusMacros.h"
-#include "ComponentDependencies/ArgusQueue.h"
+#include "ComponentDependencies/ArgusDeque.h"
 #include "ComponentDependencies/SpawnEntityInfo.h"
 #include "ComponentDependencies/Timer.h"
 #include "CoreMinimal.h"
@@ -15,7 +15,7 @@ struct SpawningComponent
 	ARGUS_COMPONENT_SHARED
 
 	ARGUS_IGNORE()
-	ArgusQueue<SpawnEntityInfo> m_spawnQueue;
+	ArgusDeque<SpawnEntityInfo> m_spawnQueue;
 
 	float m_spawningRadius = 100.0f;
 

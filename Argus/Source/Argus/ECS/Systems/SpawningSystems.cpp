@@ -167,7 +167,7 @@ void SpawningSystems::SpawnEntityFromQueue(const SpawningSystemsArgs& components
 	}
 
 	SpawnEntityInfo spawnInfo;
-	if (!components.m_spawningComponent->m_spawnQueue.Dequeue(spawnInfo))
+	if (!components.m_spawningComponent->m_spawnQueue.TryPopFirst(spawnInfo))
 	{
 		ARGUS_LOG
 		(
@@ -235,16 +235,7 @@ bool SpawningSystems::ProcessQueuedSpawnEntity(const SpawningSystemsArgs& compon
 		return false;
 	}
 
-	SpawnEntityInfo spawnInfo;
-	if (!components.m_spawningComponent->m_spawnQueue.Peek(spawnInfo))
-	{
-		ARGUS_LOG
-		(
-			ArgusECSLog, Error, TEXT("[%s] Could not peek a %s from the spawner's %s."),
-			ARGUS_FUNCNAME, ARGUS_NAMEOF(SpawnEntityInfo), ARGUS_NAMEOF(SpawningComponent)
-		);
-		return false;
-	}
+	SpawnEntityInfo spawnInfo = components.m_spawningComponent->m_spawnQueue.First();
 
 	bool spawnedAnEntityThisFrame = false;
 	if (spawnInfo.m_timeToCastSeconds > 0.0f)

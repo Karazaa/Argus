@@ -232,7 +232,7 @@ void AbilitySystems::CastSpawnAbility(const UAbilityRecord* abilityRecord, const
 	{
 		spawnInfo.m_spawnLocationOverride = components.m_reticleComponent->m_reticleLocation;
 	}
-	spawningComponent->m_spawnQueue.Enqueue(spawnInfo);
+	spawningComponent->m_spawnQueue.PushLast(spawnInfo);
 	spawningComponent->m_currentQueueSize++;
 }
 

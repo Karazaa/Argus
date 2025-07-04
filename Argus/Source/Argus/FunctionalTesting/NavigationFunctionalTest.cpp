@@ -229,8 +229,8 @@ void ANavigationFunctionalTest::StartNavigationThroughWaypointsTestStep()
 	if (taskComponent && targetingComponent && navigationComponent)
 	{
 		targetingComponent->m_targetLocation = m_waypoint0;
-		navigationComponent->m_queuedWaypoints.Enqueue(m_waypoint1);
-		navigationComponent->m_queuedWaypoints.Enqueue(m_waypoint2);
+		navigationComponent->m_queuedWaypoints.PushLast(m_waypoint1);
+		navigationComponent->m_queuedWaypoints.PushLast(m_waypoint2);
 		taskComponent->m_movementState = EMovementState::ProcessMoveToLocationCommand;
 	}
 	else
