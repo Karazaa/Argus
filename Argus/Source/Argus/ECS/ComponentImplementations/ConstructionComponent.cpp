@@ -48,7 +48,7 @@ void ConstructionComponent::DrawComponentDebug() const
 		}
 		else
 		{
-			ImGui::Text("None", m_constructionAbilityRecordId);
+			ImGui::Text("None");
 		}
 		ImGui::TableNextColumn();
 		ImGui::Text("m_constructionType");

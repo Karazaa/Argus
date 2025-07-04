@@ -252,6 +252,10 @@ bool ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 		{
 			atomicFieldFormattingFunction = FormatImGuiResourceSetField;
 		}
+		else if (isSpawnEntityInfo)
+		{
+			atomicFieldFormattingFunction = FormatImGuiSpawnEntityInfoField;
+		}
 
 		if (isQueue)
 		{
@@ -346,18 +350,26 @@ void ComponentImplementationGenerator::FormatImGuiRecordField(const std::string&
 	const size_t lineSize = extraData.length();
 	const size_t startIndex = extraData.find('(') + 1;
 	std::string recordType = extraData.substr(startIndex, (lineSize - 1) - startIndex);
+
+	std::string sanitizedVariableName = variableName;
+	size_t delimiter = sanitizedVariableName.find('.');
+	if (delimiter != std::string::npos)
+	{
+		sanitizedVariableName = sanitizedVariableName.substr((delimiter + 1), sanitizedVariableName.length() - (delimiter + 1));
+	}
+
 	outParsedVariableContents.push_back(std::vformat("{}\t\tif ({} != 0u)", std::make_format_args(prefix, variableName)));
 	outParsedVariableContents.push_back(std::string(prefix).append("\t\t{"));
 	outParsedVariableContents.push_back(std::vformat("{}\t\t\tif (const {}* record_{} = ArgusStaticData::GetRecord<{}>({}))",
-		std::make_format_args(prefix, recordType, variableName, recordType, variableName)));
+		std::make_format_args(prefix, recordType, sanitizedVariableName, recordType, variableName)));
 	outParsedVariableContents.push_back(std::string(prefix).append("\t\t\t{"));
-	outParsedVariableContents.push_back(std::vformat("{}\t\t\t\tconst char* name_{} = ARGUS_FSTRING_TO_CHAR(record_{}->GetName());", std::make_format_args(prefix, variableName, variableName)));
-	outParsedVariableContents.push_back(std::vformat("{}\t\t\t\tImGui::Text(\"%s\", name_{});", std::make_format_args(prefix, variableName)));
+	outParsedVariableContents.push_back(std::vformat("{}\t\t\t\tconst char* name_{} = ARGUS_FSTRING_TO_CHAR(record_{}->GetName());", std::make_format_args(prefix, sanitizedVariableName, sanitizedVariableName)));
+	outParsedVariableContents.push_back(std::vformat("{}\t\t\t\tImGui::Text(\"%s\", name_{});", std::make_format_args(prefix, sanitizedVariableName)));
 	outParsedVariableContents.push_back(std::string(prefix).append("\t\t\t}"));
 	outParsedVariableContents.push_back(std::string(prefix).append("\t\t}"));
 	outParsedVariableContents.push_back(std::string(prefix).append("\t\telse"));
 	outParsedVariableContents.push_back(std::string(prefix).append("\t\t{"));
-	outParsedVariableContents.push_back(std::vformat("{}\t\t\tImGui::Text(\"None\", {});", std::make_format_args(prefix, variableName)));
+	outParsedVariableContents.push_back(std::vformat("{}\t\t\tImGui::Text(\"None\");", std::make_format_args(prefix)));
 	outParsedVariableContents.push_back(std::string(prefix).append("\t\t}"));
 }
 
@@ -447,4 +459,11 @@ void ComponentImplementationGenerator::FormatImGuiOptionalField(const std::strin
 	outParsedVariableContents.push_back(std::string(prefix).append("\t\t{"));
 	outParsedVariableContents.push_back(std::string(prefix).append("\t\t\tImGui::Text(\"Optional not set\");"));
 	outParsedVariableContents.push_back(std::string(prefix).append("\t\t}"));
+}
+
+void ComponentImplementationGenerator::FormatImGuiSpawnEntityInfoField(const std::string& variableName, const std::string& extraData, const std::string& prefix, std::vector<std::string>& outParsedVariableContents)
+{
+	std::string modifiedVariableName = variableName;
+	modifiedVariableName.append(".m_argusActorRecordId");
+	FormatImGuiRecordField(modifiedVariableName, "ARGUS_STATIC_DATA(UArgusActorRecord)", prefix, outParsedVariableContents);
 }

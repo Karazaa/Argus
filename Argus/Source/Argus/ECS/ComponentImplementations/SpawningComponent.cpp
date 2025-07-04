@@ -38,6 +38,18 @@ void SpawningComponent::DrawComponentDebug() const
 		{
 			for (auto element : m_spawnQueue)
 			{
+				if (element.m_argusActorRecordId != 0u)
+				{
+					if (const UArgusActorRecord* record_m_argusActorRecordId = ArgusStaticData::GetRecord<UArgusActorRecord>(element.m_argusActorRecordId))
+					{
+						const char* name_m_argusActorRecordId = ARGUS_FSTRING_TO_CHAR(record_m_argusActorRecordId->GetName());
+						ImGui::Text("%s", name_m_argusActorRecordId);
+					}
+				}
+				else
+				{
+					ImGui::Text("None");
+				}
 			}
 		}
 		ImGui::TableNextColumn();

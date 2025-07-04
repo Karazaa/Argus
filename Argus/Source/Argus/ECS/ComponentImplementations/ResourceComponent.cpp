@@ -49,7 +49,7 @@ void ResourceComponent::DrawComponentDebug() const
 		}
 		else
 		{
-			ImGui::Text("None", m_resourceCapacityRecordId);
+			ImGui::Text("None");
 		}
 		ImGui::TableNextColumn();
 		ImGui::Text("m_resourceComponentOwnerType");

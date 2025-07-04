@@ -40,7 +40,7 @@ void IdentityComponent::DrawComponentDebug() const
 		}
 		else
 		{
-			ImGui::Text("None", m_factionId);
+			ImGui::Text("None");
 		}
 		ImGui::TableNextColumn();
 		ImGui::Text("m_team");

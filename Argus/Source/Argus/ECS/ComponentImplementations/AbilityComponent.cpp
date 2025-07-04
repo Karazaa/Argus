@@ -40,7 +40,7 @@ void AbilityComponent::DrawComponentDebug() const
 		}
 		else
 		{
-			ImGui::Text("None", m_ability0Id);
+			ImGui::Text("None");
 		}
 		ImGui::TableNextColumn();
 		ImGui::Text("m_ability1Id");
@@ -55,7 +55,7 @@ void AbilityComponent::DrawComponentDebug() const
 		}
 		else
 		{
-			ImGui::Text("None", m_ability1Id);
+			ImGui::Text("None");
 		}
 		ImGui::TableNextColumn();
 		ImGui::Text("m_ability2Id");
@@ -70,7 +70,7 @@ void AbilityComponent::DrawComponentDebug() const
 		}
 		else
 		{
-			ImGui::Text("None", m_ability2Id);
+			ImGui::Text("None");
 		}
 		ImGui::TableNextColumn();
 		ImGui::Text("m_ability3Id");
@@ -85,7 +85,7 @@ void AbilityComponent::DrawComponentDebug() const
 		}
 		else
 		{
-			ImGui::Text("None", m_ability3Id);
+			ImGui::Text("None");
 		}
 		ImGui::TableNextColumn();
 		ImGui::Text("m_abilityCasterPriority");

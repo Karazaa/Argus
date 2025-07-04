@@ -40,7 +40,7 @@ void ResourceExtractionComponent::DrawComponentDebug() const
 		}
 		else
 		{
-			ImGui::Text("None", m_resourcesToExtractRecordId);
+			ImGui::Text("None");
 		}
 		ImGui::TableNextColumn();
 		ImGui::Text("m_extractionLengthSeconds");
