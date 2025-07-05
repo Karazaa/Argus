@@ -32,10 +32,10 @@ protected:
 	UPROPERTY(BlueprintReadWrite, Transient)
 	TObjectPtr<UUniformGridPanel> m_uniformGridPanel = nullptr;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditAnywhere)
 	int32 m_numberOfAbilitiesPerRow = 8;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditAnywhere)
 	FSlateBrush m_abilityImageSlateBrush;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

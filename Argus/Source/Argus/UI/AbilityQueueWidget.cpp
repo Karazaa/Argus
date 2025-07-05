@@ -36,8 +36,12 @@ void UAbilityQueueWidget::RefreshDisplayFromSpawnQueue(const ArgusEntity& select
 	}
 
 	TArray<uint32> spawnQueueAbilityRecordIds;
+	spawnQueueAbilityRecordIds.Reserve(spawningComponent->m_currentQueueSize);
 
-	// TODO JAMES: I NEED AN ITERABLE QUEUE GOD FUCKING DAMNIT WHY.
+	for (SpawnEntityInfo info : spawningComponent->m_spawnQueue)
+	{
+		spawnQueueAbilityRecordIds.Add(info.m_spawningAbilityRecordId);
+	}
 
 	if (spawnQueueAbilityRecordIds.Num() != m_abilityIcons.Num())
 	{
@@ -104,8 +108,8 @@ void UAbilityQueueWidget::SetAbilityIcons(const TArray<uint32>& abilityRecordIds
 		FSlateBrush slotBrush = m_abilityImageSlateBrush;
 		slotBrush.SetResourceObject(abilityRecord->m_abilityIcon.LoadAndStorePtr());
 		m_abilityIcons[i]->SetBrush(slotBrush);
-		m_gridSlots[i]->SetHorizontalAlignment(EHorizontalAlignment::HAlign_Center);
-		m_gridSlots[i]->SetVerticalAlignment(EVerticalAlignment::VAlign_Center);
+		m_gridSlots[i]->SetHorizontalAlignment(EHorizontalAlignment::HAlign_Left);
+		m_gridSlots[i]->SetVerticalAlignment(EVerticalAlignment::VAlign_Top);
 		m_gridSlots[i]->SetRow(i / m_numberOfAbilitiesPerRow);
 		m_gridSlots[i]->SetColumn(i % m_numberOfAbilitiesPerRow);
 	}
