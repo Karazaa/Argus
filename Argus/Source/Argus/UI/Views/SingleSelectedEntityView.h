@@ -20,7 +20,7 @@ public:
 	virtual void OnUpdateSelectedArgusActors(const ArgusEntity& templateEntity) override;
 
 protected:
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditAnywhere)
 	FSlateBrush m_entityImageSlateBrush;
 
 	UPROPERTY(BlueprintReadWrite, Transient)
