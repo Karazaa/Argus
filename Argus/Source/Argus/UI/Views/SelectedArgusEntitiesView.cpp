@@ -9,6 +9,18 @@
 #include "Views/MultipleSelectedEntitiesView.h"
 #include "Views/SingleSelectedEntityView.h"
 
+void USelectedArgusEntitiesView::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+	ARGUS_RETURN_ON_NULL(m_abilityButton0, ArgusUILog);
+	ARGUS_RETURN_ON_NULL(m_abilityButton1, ArgusUILog);
+	ARGUS_RETURN_ON_NULL(m_abilityButton2, ArgusUILog);
+	ARGUS_RETURN_ON_NULL(m_abilityButton3, ArgusUILog);
+
+	// TODO JAMES: Create delegates and bind to OnClicked();
+}
+
 void USelectedArgusEntitiesView::UpdateDisplay(const UpdateDisplayParameters& updateDisplayParams)
 {
 	Super::UpdateDisplay(updateDisplayParams);
@@ -49,11 +61,11 @@ void USelectedArgusEntitiesView::OnUpdateSelectedArgusActors(const ArgusEntity& 
 		const UAbilityRecord* ability2Record = abilityComponent->m_ability2Id == 0 ? nullptr : ArgusStaticData::GetRecord<UAbilityRecord>(abilityComponent->m_ability2Id);
 		const UAbilityRecord* ability3Record = abilityComponent->m_ability3Id == 0 ? nullptr : ArgusStaticData::GetRecord<UAbilityRecord>(abilityComponent->m_ability3Id);
 
-		OnUpdateSelectedArgusActorAbilities(ability0Record, ability1Record, ability2Record, ability3Record);
+		UpdateAllAbilityButtonsDisplay(ability0Record, ability1Record, ability2Record, ability3Record);
 	}
 	else
 	{
-		OnUpdateSelectedArgusActorAbilities(nullptr, nullptr, nullptr, nullptr);
+		UpdateAllAbilityButtonsDisplay(nullptr, nullptr, nullptr, nullptr);
 	}
 
 	ArgusEntity singletonEntity = ArgusEntity::GetSingletonEntity();
@@ -94,29 +106,6 @@ void USelectedArgusEntitiesView::OnUpdateSelectedArgusActors(const ArgusEntity& 
 	}
 }
 
-void USelectedArgusEntitiesView::UpdateAbilityButtonDisplay(UButton* button, const UAbilityRecord* abilityRecord)
-{
-	if (!button)
-	{
-		return;
-	}
-
-	if (!abilityRecord)
-	{
-		button->SetVisibility(ESlateVisibility::Hidden);
-		return;
-	}
-	button->SetVisibility(ESlateVisibility::Visible);
-
-	m_abilityButtonNormalSlateBrush.SetResourceObject(abilityRecord->m_abilityIcon.LoadAndStorePtr());
-	m_abilityButtonHoveredSlateBrush.SetResourceObject(abilityRecord->m_abilityIcon.LoadAndStorePtr());
-	m_abilityButtonPressedSlateBrush.SetResourceObject(abilityRecord->m_abilityIcon.LoadAndStorePtr());
-	m_abilityButtonStyle.SetNormal(m_abilityButtonNormalSlateBrush);
-	m_abilityButtonStyle.SetHovered(m_abilityButtonHoveredSlateBrush);
-	m_abilityButtonStyle.SetPressed(m_abilityButtonPressedSlateBrush);
-	button->SetStyle(m_abilityButtonStyle);
-}
-
 void USelectedArgusEntitiesView::OnUserInterfaceButtonClicked(UArgusUIButtonClickedEventsEnum buttonClickedEvent)
 {
 	if (!m_inputManager.IsValid())
@@ -144,9 +133,37 @@ void USelectedArgusEntitiesView::NativeOnMouseLeave(const FPointerEvent& InMouse
 	}
 }
 
+void USelectedArgusEntitiesView::UpdateAllAbilityButtonsDisplay(const UAbilityRecord* ability0Record, const UAbilityRecord* ability1Record, const UAbilityRecord* ability2Record, const UAbilityRecord* ability3Record)
+{
+	UpdateAbilityButtonDisplay(m_abilityButton0, ability0Record);
+	UpdateAbilityButtonDisplay(m_abilityButton1, ability1Record);
+	UpdateAbilityButtonDisplay(m_abilityButton2, ability2Record);
+	UpdateAbilityButtonDisplay(m_abilityButton3, ability3Record);
+}
+
+void USelectedArgusEntitiesView::UpdateAbilityButtonDisplay(UButton* button, const UAbilityRecord* abilityRecord)
+{
+	ARGUS_RETURN_ON_NULL(button, ArgusUILog);
+
+	if (!abilityRecord)
+	{
+		button->SetVisibility(ESlateVisibility::Hidden);
+		return;
+	}
+	button->SetVisibility(ESlateVisibility::Visible);
+
+	m_abilityButtonNormalSlateBrush.SetResourceObject(abilityRecord->m_abilityIcon.LoadAndStorePtr());
+	m_abilityButtonHoveredSlateBrush.SetResourceObject(abilityRecord->m_abilityIcon.LoadAndStorePtr());
+	m_abilityButtonPressedSlateBrush.SetResourceObject(abilityRecord->m_abilityIcon.LoadAndStorePtr());
+	m_abilityButtonStyle.SetNormal(m_abilityButtonNormalSlateBrush);
+	m_abilityButtonStyle.SetHovered(m_abilityButtonHoveredSlateBrush);
+	m_abilityButtonStyle.SetPressed(m_abilityButtonPressedSlateBrush);
+	button->SetStyle(m_abilityButtonStyle);
+}
+
 void USelectedArgusEntitiesView::HideAllElements()
 {
-	OnUpdateSelectedArgusActorAbilities(nullptr, nullptr, nullptr, nullptr);
+	UpdateAllAbilityButtonsDisplay(nullptr, nullptr, nullptr, nullptr);
 
 	if (m_singleSelectedEntityWidget)
 	{

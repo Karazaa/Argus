@@ -21,16 +21,11 @@ class USelectedArgusEntitiesView : public UArgusUserWidget
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintImplementableEvent)
-	void OnUpdateSelectedArgusActorAbilities(const UAbilityRecord* ability0Record, const UAbilityRecord* ability1Record, const UAbilityRecord* ability2Record, const UAbilityRecord* ability3Record);
-
+	virtual void NativeConstruct() override;
 	virtual void UpdateDisplay(const UpdateDisplayParameters& updateDisplayParams) override;
 	virtual void OnUpdateSelectedArgusActors(const ArgusEntity& templateEntity) override;
 
 protected:
-	UFUNCTION(BlueprintCallable)
-	void UpdateAbilityButtonDisplay(UButton* button, const UAbilityRecord* abilityRecord);
-
 	UFUNCTION(BlueprintCallable)
 	void OnUserInterfaceButtonClicked(UArgusUIButtonClickedEventsEnum buttonClickedEvent);
 
@@ -52,10 +47,24 @@ protected:
 	UPROPERTY(BlueprintReadWrite, Transient)
 	TObjectPtr<UMultipleSelectedEntitiesView> m_multipleSelectedEntitiesWidget = nullptr;
 
-	FButtonStyle m_abilityButtonStyle;
+	UPROPERTY(BlueprintReadWrite, Transient)
+	TObjectPtr<UButton> m_abilityButton0 = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, Transient)
+	TObjectPtr<UButton> m_abilityButton1 = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, Transient)
+	TObjectPtr<UButton> m_abilityButton2 = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, Transient)
+	TObjectPtr<UButton> m_abilityButton3 = nullptr;
 
 	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
 
+	void UpdateAllAbilityButtonsDisplay(const UAbilityRecord* ability0Record, const UAbilityRecord* ability1Record, const UAbilityRecord* ability2Record, const UAbilityRecord* ability3Record);
+	void UpdateAbilityButtonDisplay(UButton* button, const UAbilityRecord* abilityRecord);
 	void HideAllElements();
+
+	FButtonStyle m_abilityButtonStyle;
 };
