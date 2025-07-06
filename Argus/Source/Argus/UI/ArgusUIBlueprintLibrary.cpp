@@ -7,21 +7,21 @@
 #include "ArgusPlayerController.h"
 #include "Engine/World.h"
 
-void UArgusUIBlueprintLibrary::OnUserInterfaceButtonClicked(UArgusUIButtonClickedEventsEnum buttonClickedEvent, UObject* worldContextObject)
+UArgusInputManager* UArgusUIBlueprintLibrary::GetArgusInputManager(UObject* worldContextObject)
 {
-	ARGUS_RETURN_ON_NULL(worldContextObject, ArgusInputLog);
+	ARGUS_RETURN_ON_NULL_POINTER(worldContextObject, ArgusInputLog);
 
 	const UWorld* worldPointer = worldContextObject->GetWorld();
-	ARGUS_RETURN_ON_NULL(worldPointer, ArgusInputLog);
+	ARGUS_RETURN_ON_NULL_POINTER(worldPointer, ArgusInputLog);
 
 	const AArgusGameModeBase* gameModePointer = worldPointer->GetAuthGameMode<AArgusGameModeBase>();
-	ARGUS_RETURN_ON_NULL(gameModePointer, ArgusInputLog);
+	ARGUS_RETURN_ON_NULL_POINTER(gameModePointer, ArgusInputLog);
 
 	const AArgusPlayerController* activePlayerController = gameModePointer->GetActivePlayerController();
-	ARGUS_RETURN_ON_NULL(activePlayerController, ArgusInputLog);
+	ARGUS_RETURN_ON_NULL_POINTER(activePlayerController, ArgusInputLog);
 
 	UArgusInputManager* inputManager = activePlayerController->GetInputManager();
-	ARGUS_RETURN_ON_NULL(inputManager, ArgusInputLog);
+	ARGUS_RETURN_ON_NULL_POINTER(inputManager, ArgusInputLog);
 
-	inputManager->OnUserInterfaceButtonClicked(buttonClickedEvent);
+	return inputManager;
 }

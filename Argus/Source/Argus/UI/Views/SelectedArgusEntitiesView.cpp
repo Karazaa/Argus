@@ -17,8 +17,14 @@ void USelectedArgusEntitiesView::NativeConstruct()
 	ARGUS_RETURN_ON_NULL(m_abilityButton1, ArgusUILog);
 	ARGUS_RETURN_ON_NULL(m_abilityButton2, ArgusUILog);
 	ARGUS_RETURN_ON_NULL(m_abilityButton3, ArgusUILog);
-
-	// TODO JAMES: Create delegates and bind to OnClicked();
+	ARGUS_RETURN_ON_NULL(m_singleSelectedEntityWidget, ArgusUILog);
+	ARGUS_RETURN_ON_NULL(m_multipleSelectedEntitiesWidget, ArgusUILog);
+	m_abilityButton0->OnClicked.AddDynamic(this, &USelectedArgusEntitiesView::OnClickedAbilityButton0);
+	m_abilityButton1->OnClicked.AddDynamic(this, &USelectedArgusEntitiesView::OnClickedAbilityButton1);
+	m_abilityButton2->OnClicked.AddDynamic(this, &USelectedArgusEntitiesView::OnClickedAbilityButton2);
+	m_abilityButton3->OnClicked.AddDynamic(this, &USelectedArgusEntitiesView::OnClickedAbilityButton3);
+	m_singleSelectedEntityWidget->SetVisibility(ESlateVisibility::Collapsed);
+	m_multipleSelectedEntitiesWidget->SetVisibility(ESlateVisibility::Collapsed);
 }
 
 void USelectedArgusEntitiesView::UpdateDisplay(const UpdateDisplayParameters& updateDisplayParams)
@@ -106,17 +112,6 @@ void USelectedArgusEntitiesView::OnUpdateSelectedArgusActors(const ArgusEntity& 
 	}
 }
 
-void USelectedArgusEntitiesView::OnUserInterfaceButtonClicked(UArgusUIButtonClickedEventsEnum buttonClickedEvent)
-{
-	if (!m_inputManager.IsValid())
-	{
-		ARGUS_LOG(ArgusUILog, Error, TEXT("[%s] Invalid reference to %s"), ARGUS_FUNCNAME, ARGUS_NAMEOF(m_inputManager));
-		return;
-	}
-
-	m_inputManager->OnUserInterfaceButtonClicked(buttonClickedEvent);
-}
-
 void USelectedArgusEntitiesView::NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
 	if (m_shouldBlockCameraPanning)
@@ -174,4 +169,48 @@ void USelectedArgusEntitiesView::HideAllElements()
 	{
 		m_multipleSelectedEntitiesWidget->SetVisibility(ESlateVisibility::Collapsed);
 	}
+}
+
+void USelectedArgusEntitiesView::OnClickedAbilityButton0()
+{
+	if (!m_inputManager.IsValid())
+	{
+		ARGUS_LOG(ArgusUILog, Error, TEXT("[%s] Invalid reference to %s"), ARGUS_FUNCNAME, ARGUS_NAMEOF(m_inputManager));
+		return;
+	}
+
+	m_inputManager->OnUserInterfaceButtonClicked(UArgusInputManager::InputType::Ability0);
+}
+
+void USelectedArgusEntitiesView::OnClickedAbilityButton1()
+{
+	if (!m_inputManager.IsValid())
+	{
+		ARGUS_LOG(ArgusUILog, Error, TEXT("[%s] Invalid reference to %s"), ARGUS_FUNCNAME, ARGUS_NAMEOF(m_inputManager));
+		return;
+	}
+
+	m_inputManager->OnUserInterfaceButtonClicked(UArgusInputManager::InputType::Ability1);
+}
+
+void USelectedArgusEntitiesView::OnClickedAbilityButton2()
+{
+	if (!m_inputManager.IsValid())
+	{
+		ARGUS_LOG(ArgusUILog, Error, TEXT("[%s] Invalid reference to %s"), ARGUS_FUNCNAME, ARGUS_NAMEOF(m_inputManager));
+		return;
+	}
+
+	m_inputManager->OnUserInterfaceButtonClicked(UArgusInputManager::InputType::Ability2);
+}
+
+void USelectedArgusEntitiesView::OnClickedAbilityButton3()
+{
+	if (!m_inputManager.IsValid())
+	{
+		ARGUS_LOG(ArgusUILog, Error, TEXT("[%s] Invalid reference to %s"), ARGUS_FUNCNAME, ARGUS_NAMEOF(m_inputManager));
+		return;
+	}
+
+	m_inputManager->OnUserInterfaceButtonClicked(UArgusInputManager::InputType::Ability3);
 }

@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "ArgusUIButtonClickedEventsEnum.h"
 #include "Blueprint/UserWidget.h"
 #include "ComponentDefinitions/IdentityComponent.h"
 #include "ArgusUserWidget.generated.h"

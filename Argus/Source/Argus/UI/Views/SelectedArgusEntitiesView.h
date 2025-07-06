@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "ArgusUIButtonClickedEventsEnum.h"
 #include "ArgusUserWidget.h"
 #include "Styling/SlateBrush.h"
 #include "Styling/SlateTypes.h"
@@ -26,8 +25,17 @@ public:
 	virtual void OnUpdateSelectedArgusActors(const ArgusEntity& templateEntity) override;
 
 protected:
-	UFUNCTION(BlueprintCallable)
-	void OnUserInterfaceButtonClicked(UArgusUIButtonClickedEventsEnum buttonClickedEvent);
+	UFUNCTION()
+	void OnClickedAbilityButton0();
+
+	UFUNCTION()
+	void OnClickedAbilityButton1();
+
+	UFUNCTION()
+	void OnClickedAbilityButton2();
+
+	UFUNCTION()
+	void OnClickedAbilityButton3();
 
 	UPROPERTY(EditDefaultsOnly)
 	bool m_shouldBlockCameraPanning = true;

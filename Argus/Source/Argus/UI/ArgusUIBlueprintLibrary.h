@@ -2,9 +2,10 @@
 
 #pragma once
 
-#include "ArgusUIButtonClickedEventsEnum.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "ArgusUIBlueprintLibrary.generated.h"
+
+class UArgusInputManager;
 
 UCLASS()
 class UArgusUIBlueprintLibrary : public UBlueprintFunctionLibrary
@@ -12,6 +13,9 @@ class UArgusUIBlueprintLibrary : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintCallable)
-	static void OnUserInterfaceButtonClicked(UArgusUIButtonClickedEventsEnum buttonClickedEvent, UObject* worldContextObject);
+	// Could put some utility functions here. Used to have a need, but don't have much of one right now.
+	// This will likely get used/expanded on at some point.
+
+private:
+	static UArgusInputManager* GetArgusInputManager(UObject* worldContextObject);
 };

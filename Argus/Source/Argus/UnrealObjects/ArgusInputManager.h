@@ -4,7 +4,6 @@
 
 #include "ArgusActor.h"
 #include "ArgusCameraActor.h"
-#include "ArgusUIButtonClickedEventsEnum.h"
 #include "CoreMinimal.h"
 #include "InputActionValue.h"
 #include "UObject/SoftObjectPtr.h"
@@ -23,46 +22,6 @@ class UArgusInputManager : public UObject
 	GENERATED_BODY()
 
 public:
-	static bool ShouldUpdateSelectedActorDisplay(ArgusEntity& templateSelectedEntity);
-
-	void SetupInputComponent(AArgusPlayerController* owningPlayerController, TSoftObjectPtr<UArgusInputActionSet>& argusInputActionSet);
-	void OnSelect(const FInputActionValue& value);
-	void OnSelectAdditive(const FInputActionValue& value);
-	void OnMarqueeSelect(const FInputActionValue& value);
-	void OnMarqueeSelectAdditive(const FInputActionValue& value);
-	void OnMoveTo(const FInputActionValue& value);
-	void OnSetWaypoint(const FInputActionValue& value);
-	void OnZoom(const FInputActionValue& value);
-	void OnAbility0(const FInputActionValue& value);
-	void OnAbility1(const FInputActionValue& value);
-	void OnAbility2(const FInputActionValue& value);
-	void OnAbility3(const FInputActionValue& value);
-	void OnEscape(const FInputActionValue& value);
-	void OnRotateCamera(const FInputActionValue& value);
-	void OnStartPanningLockout(const FInputActionValue& value);
-	void OnStopPanningLockout(const FInputActionValue& value);
-	void OnUserInterfaceButtonClicked(UArgusUIButtonClickedEventsEnum buttonClickedEvent);
-	void OnControlGroup0(const FInputActionValue& value);
-	void OnControlGroup1(const FInputActionValue& value);
-	void OnControlGroup2(const FInputActionValue& value);
-	void OnControlGroup3(const FInputActionValue& value);
-	void OnControlGroup4(const FInputActionValue& value);
-	void OnControlGroup5(const FInputActionValue& value);
-	void OnSetControlGroup0(const FInputActionValue& value);
-	void OnSetControlGroup1(const FInputActionValue& value);
-	void OnSetControlGroup2(const FInputActionValue& value);
-	void OnSetControlGroup3(const FInputActionValue& value);
-	void OnSetControlGroup4(const FInputActionValue& value);
-	void OnSetControlGroup5(const FInputActionValue& value);
-	void OnChangeActiveAbilityGroup(const FInputActionValue& value);
-
-	void ProcessPlayerInput(AArgusCameraActor* argusCamera, const AArgusCameraActor::UpdateCameraPanningParameters& updateCameraPanningParameters, float deltaTime);
-	bool ShouldDrawMarqueeBox() const;
-
-	const FVector& GetSelectionStartWorldSpaceLocation() const;
-	const FVector2D GetSelectionStartScreenSpaceLocation() const;
-
-private:
 	enum class InputType : uint8
 	{
 		None,
@@ -95,7 +54,46 @@ private:
 		SetControlGroup5,
 		ChangeActiveAbilityGroup,
 	};
+	static bool ShouldUpdateSelectedActorDisplay(ArgusEntity& templateSelectedEntity);
 
+	void SetupInputComponent(AArgusPlayerController* owningPlayerController, TSoftObjectPtr<UArgusInputActionSet>& argusInputActionSet);
+	void OnSelect(const FInputActionValue& value);
+	void OnSelectAdditive(const FInputActionValue& value);
+	void OnMarqueeSelect(const FInputActionValue& value);
+	void OnMarqueeSelectAdditive(const FInputActionValue& value);
+	void OnMoveTo(const FInputActionValue& value);
+	void OnSetWaypoint(const FInputActionValue& value);
+	void OnZoom(const FInputActionValue& value);
+	void OnAbility0(const FInputActionValue& value);
+	void OnAbility1(const FInputActionValue& value);
+	void OnAbility2(const FInputActionValue& value);
+	void OnAbility3(const FInputActionValue& value);
+	void OnEscape(const FInputActionValue& value);
+	void OnRotateCamera(const FInputActionValue& value);
+	void OnStartPanningLockout(const FInputActionValue& value);
+	void OnStopPanningLockout(const FInputActionValue& value);
+	void OnUserInterfaceButtonClicked(InputType inputEvent);
+	void OnControlGroup0(const FInputActionValue& value);
+	void OnControlGroup1(const FInputActionValue& value);
+	void OnControlGroup2(const FInputActionValue& value);
+	void OnControlGroup3(const FInputActionValue& value);
+	void OnControlGroup4(const FInputActionValue& value);
+	void OnControlGroup5(const FInputActionValue& value);
+	void OnSetControlGroup0(const FInputActionValue& value);
+	void OnSetControlGroup1(const FInputActionValue& value);
+	void OnSetControlGroup2(const FInputActionValue& value);
+	void OnSetControlGroup3(const FInputActionValue& value);
+	void OnSetControlGroup4(const FInputActionValue& value);
+	void OnSetControlGroup5(const FInputActionValue& value);
+	void OnChangeActiveAbilityGroup(const FInputActionValue& value);
+
+	void ProcessPlayerInput(AArgusCameraActor* argusCamera, const AArgusCameraActor::UpdateCameraPanningParameters& updateCameraPanningParameters, float deltaTime);
+	bool ShouldDrawMarqueeBox() const;
+
+	const FVector& GetSelectionStartWorldSpaceLocation() const;
+	const FVector2D GetSelectionStartScreenSpaceLocation() const;
+
+private:
 	struct InputCache
 	{
 		const InputType m_type;
