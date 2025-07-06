@@ -33,10 +33,10 @@ protected:
 	TObjectPtr<UUniformGridPanel> m_uniformGridPanel = nullptr;
 
 	UPROPERTY(EditAnywhere)
-	int32 m_numberOfAbilitiesPerRow = 8;
+	FSlateBrush m_abilityImageSlateBrush;
 
 	UPROPERTY(EditAnywhere)
-	FSlateBrush m_abilityImageSlateBrush;
+	FSlateBrush m_secondRowAbilityImageSlateBrush;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TArray<UImage*> m_abilityIcons;

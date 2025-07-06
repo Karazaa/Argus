@@ -109,8 +109,8 @@ void UAbilityQueueWidget::SetAbilityIcons(const TArray<uint32>& abilityRecordIds
 		slotBrush.SetResourceObject(abilityRecord->m_abilityIcon.LoadAndStorePtr());
 		m_abilityIcons[i]->SetBrush(slotBrush);
 		m_gridSlots[i]->SetHorizontalAlignment(EHorizontalAlignment::HAlign_Left);
-		m_gridSlots[i]->SetVerticalAlignment(EVerticalAlignment::VAlign_Top);
-		m_gridSlots[i]->SetRow(i / m_numberOfAbilitiesPerRow);
-		m_gridSlots[i]->SetColumn(i % m_numberOfAbilitiesPerRow);
+		m_gridSlots[i]->SetVerticalAlignment(EVerticalAlignment::VAlign_Center);
+		m_gridSlots[i]->SetRow(0);
+		m_gridSlots[i]->SetColumn(i);
 	}
 }
