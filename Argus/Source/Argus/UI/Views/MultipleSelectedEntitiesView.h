@@ -23,16 +23,16 @@ protected:
 	UPROPERTY(BlueprintReadWrite, Transient)
 	TObjectPtr<UUniformGridPanel> m_uniformGridPanel = nullptr;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditAnywhere)
 	TSubclassOf<UEntityIconWithInfoWidget> m_entityIconWidgetClass = nullptr;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditAnywhere)
 	int32 m_numberOfEntitiesPerRow = 8;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditAnywhere)
 	FSlateBrush m_entityImageSlateBrush;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditAnywhere)
 	FSlateBrush m_activeAbilityGroupSlateBrush;
 
 	UPROPERTY(Transient)

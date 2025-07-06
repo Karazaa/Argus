@@ -47,4 +47,6 @@ protected:
 	void RefreshDisplayFromSpawnQueue(const ArgusEntity& selectedEntity);
 	void RefreshDisplayFromAbilityQueue(const ArgusEntity& selectedEntity);
 	void SetAbilityIcons(const TArray<uint32>& abilityRecordIds);
+
+	int32 m_lastUpdateAbilityCount = 0;
 };

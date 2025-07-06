@@ -43,7 +43,7 @@ void UAbilityQueueWidget::RefreshDisplayFromSpawnQueue(const ArgusEntity& select
 		spawnQueueAbilityRecordIds.Add(info.m_spawningAbilityRecordId);
 	}
 
-	if (spawnQueueAbilityRecordIds.Num() != m_abilityIcons.Num())
+	if (spawnQueueAbilityRecordIds.Num() != m_lastUpdateAbilityCount)
 	{
 		SetAbilityIcons(spawnQueueAbilityRecordIds);
 	}
@@ -61,10 +61,11 @@ void UAbilityQueueWidget::SetAbilityIcons(const TArray<uint32>& abilityRecordIds
 	const int32 currentNumberOfIcons = m_abilityIcons.Num();
 	const int32 numberOfAbilitiesInQueue = abilityRecordIds.Num();
 
-	if (numberOfAbilitiesInQueue == currentNumberOfIcons)
+	if (numberOfAbilitiesInQueue == m_lastUpdateAbilityCount)
 	{
 		return;
 	}
+	m_lastUpdateAbilityCount = numberOfAbilitiesInQueue;
 
 	if (currentNumberOfIcons > numberOfAbilitiesInQueue)
 	{
