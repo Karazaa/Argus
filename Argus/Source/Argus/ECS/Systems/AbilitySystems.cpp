@@ -52,7 +52,7 @@ void AbilitySystems::CastAbility(const UAbilityRecord* abilityRecord, const Abil
 		return;
 	}
 
-	if (!ResourceSystems::ApplyTeamResourceChangeIfAffordable(components.m_entity, abilityRecord->m_requiredResourceChangeToCast))
+	if (!ResourceSystems::CanEntityAffordTeamResourceChange(components.m_entity, abilityRecord->m_requiredResourceChangeToCast))
 	{
 		components.m_taskComponent->m_abilityState = EAbilityState::None;
 		return;
@@ -70,30 +70,39 @@ void AbilitySystems::CastAbility(const UAbilityRecord* abilityRecord, const Abil
 		components.m_reticleComponent->m_wasAbilityCast = true;
 	}
 
+	bool successfulyCast = false;
 	switch (abilityRecord->m_abilityType)
 	{
 		case EAbilityTypes::Spawn:
-			CastSpawnAbility(abilityRecord, components, false, abilityRecord->GetRequiresReticle());
+			successfulyCast = CastSpawnAbility(abilityRecord, components, false, abilityRecord->GetRequiresReticle());
 			break;
 
 		case EAbilityTypes::Heal:
-			CastHealAbility(abilityRecord, components);
+			successfulyCast = CastHealAbility(abilityRecord, components);
 			break;
 
 		case EAbilityTypes::Attack:
-			CastAttackAbility(abilityRecord, components);
+			successfulyCast = CastAttackAbility(abilityRecord, components);
 			break;
 
 		case EAbilityTypes::Construct:
-			CastSpawnAbility(abilityRecord, components, true, abilityRecord->GetRequiresReticle());
+			successfulyCast = CastSpawnAbility(abilityRecord, components, true, abilityRecord->GetRequiresReticle());
 			break;
 
 		case EAbilityTypes::Vacate:
-			CastVacateAbility(abilityRecord, components);
+			successfulyCast = CastVacateAbility(abilityRecord, components);
 			break;
 
 		default:
 			return;
+	}
+
+	if (successfulyCast)
+	{
+		if (!ResourceSystems::ApplyTeamResourceChangeIfAffordable(components.m_entity, abilityRecord->m_requiredResourceChangeToCast))
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Successfully casted ability id %d, but could not afford it!") ARGUS_FUNCNAME, abilityRecord->m_id);
+		}
 	}
 
 	components.m_taskComponent->m_abilityState = EAbilityState::None;
@@ -193,29 +202,25 @@ void AbilitySystems::ProcessAbilityTaskCommands(const AbilitySystemsArgs& compon
 	CastAbility(abilityRecord, components);
 }
 
-void AbilitySystems::CastSpawnAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsArgs& components, bool needsConstruction, bool atReticle)
+bool AbilitySystems::CastSpawnAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsArgs& components, bool needsConstruction, bool atReticle)
 {
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
-		return;
+		return false;
 	}
 
 	if (!abilityRecord)
 	{
 		LogAbilityRecordError(ARGUS_FUNCNAME);
-		return;
+		return false;
 	}
 
 	SpawningComponent* spawningComponent = components.m_entity.GetComponent<SpawningComponent>();
-	if (!spawningComponent)
-	{
-		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Attempting to cast a spawn ability without having a %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(SpawningComponent));
-		return;
-	}
+	ARGUS_RETURN_ON_NULL_BOOL(spawningComponent, ArgusECSLog);
 
 	if (spawningComponent->m_currentQueueSize >= spawningComponent->m_maximumQueueSize)
 	{
-		return;
+		return false;
 	}
 
 	if (components.m_taskComponent->m_spawningState == ESpawningState::None)
@@ -234,36 +239,35 @@ void AbilitySystems::CastSpawnAbility(const UAbilityRecord* abilityRecord, const
 	}
 	spawningComponent->m_spawnQueue.PushLast(spawnInfo);
 	spawningComponent->m_currentQueueSize++;
+
+	return true;
 }
 
-void AbilitySystems::CastHealAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsArgs& components)
+bool AbilitySystems::CastHealAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsArgs& components)
 {
-
+	return true;
 }
 
-void AbilitySystems::CastAttackAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsArgs& components)
+bool AbilitySystems::CastAttackAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsArgs& components)
 {
-
+	return true;
 }
 
-void AbilitySystems::CastVacateAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsArgs& components)
+bool AbilitySystems::CastVacateAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsArgs& components)
 {
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
-		return;
+		return false;
 	}
 
 	if (!abilityRecord)
 	{
 		LogAbilityRecordError(ARGUS_FUNCNAME);
-		return;
+		return false;
 	}
 
 	CarrierComponent* carrierComponent = components.m_entity.GetComponent<CarrierComponent>();
-	if (!carrierComponent)
-	{
-		return;
-	}
+	ARGUS_RETURN_ON_NULL_BOOL(carrierComponent, ArgusECSLog);
 
 	for (int32 i = 0; i < carrierComponent->m_passengerEntityIds.Num(); ++i)
 	{
@@ -283,6 +287,7 @@ void AbilitySystems::CastVacateAbility(const UAbilityRecord* abilityRecord, cons
 	}
 
 	carrierComponent->m_passengerEntityIds.Empty();
+	return true;
 }
 
 void AbilitySystems::PrepReticleForConstructAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsArgs& components)

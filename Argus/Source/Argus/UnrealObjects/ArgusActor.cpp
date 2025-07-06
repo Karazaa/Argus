@@ -1,7 +1,6 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusActor.h"
-#include "ArgusActorInfoWidget.h"
 #include "ArgusCameraActor.h"
 #include "ArgusGameInstance.h"
 #include "ArgusGameModeBase.h"
@@ -10,6 +9,7 @@
 #include "Components/WidgetComponent.h"
 #include "DrawDebugHelpers.h"
 #include "Engine/World.h"
+#include "Views/ArgusActorInfoView.h"
 
 #if !UE_BUILD_SHIPPING
 #include "ArgusECSDebugger.h"
@@ -284,7 +284,7 @@ void AArgusActor::InitializeWidgets()
 	}
 
 	widgetComponent->SetWidgetClass(widgetClass);
-	m_argusActorInfoWidget = Cast<UArgusActorInfoWidget>(widgetComponent->GetWidget());
+	m_argusActorInfoWidget = Cast<UArgusActorInfoView>(widgetComponent->GetWidget());
 
 	if (m_argusActorInfoWidget.IsValid())
 	{

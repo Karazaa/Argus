@@ -7,7 +7,7 @@
 #include "GameFramework/Actor.h"
 #include "ArgusActor.generated.h"
 
-class UArgusActorInfoWidget;
+class UArgusActorInfoView;
 class UArgusActorRecord;
 class UFactionRecord;
 class UPlacedArgusActorTeamInfoRecord;
@@ -50,7 +50,7 @@ protected:
 	void OnArgusEntityPassengerStateChanged(bool isPassenger);
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	TSoftClassPtr<UArgusActorInfoWidget> m_argusActorInfoWidgetClass = nullptr;
+	TSoftClassPtr<UArgusActorInfoView> m_argusActorInfoWidgetClass = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	TSoftObjectPtr<UArgusActorRecord> m_argusActorRecord = nullptr;
@@ -75,5 +75,5 @@ protected:
 private:
 	ArgusEntity m_entity = ArgusEntity::k_emptyEntity;
 	bool m_isSelected = false;
-	TWeakObjectPtr<UArgusActorInfoWidget> m_argusActorInfoWidget = nullptr;
+	TWeakObjectPtr<UArgusActorInfoView> m_argusActorInfoWidget = nullptr;
 };
