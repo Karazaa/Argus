@@ -2,10 +2,11 @@
 
 #pragma once
 
+#if !UE_BUILD_SHIPPING
 #include "ArgusECSConstants.h"
 #include "CoreMinimal.h"
+#include <string>
 
-#if !UE_BUILD_SHIPPING
 class ArgusECSDebugger
 {
 public:
@@ -21,12 +22,14 @@ private:
 	static bool s_entityDebugToggles[ArgusECSConstants::k_maxEntities];
 	static bool s_entityShowAvoidanceDebug[ArgusECSConstants::k_maxEntities];
 	static bool s_entityShowNavigationDebug[ArgusECSConstants::k_maxEntities];
+	static TArray<std::string> s_resourceToAddStrings;
 
 	static void DrawEntityScrollRegion();
 	static void DrawEntityScrollRegionMenuItems();
 	static void DrawCurrentlySelectedEntities();
 	static void DrawEntityDockSpace();
 	static void DrawWindowForEntity(uint16 entityId);
+	static void DrawResourceRegion();
 
 	static void ClearAllEntityDebugWindows();
 };

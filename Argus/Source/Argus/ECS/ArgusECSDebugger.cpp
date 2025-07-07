@@ -2,7 +2,10 @@
 
 #include "ArgusECSDebugger.h"
 #include "ArgusEntity.h"
+#include "ArgusMacros.h"
+#include "ComponentDependencies/ResourceSet.h"
 #include "imgui.h"
+#include "Systems/ResourceSystems.h"
 
 #if !UE_BUILD_SHIPPING
 
@@ -12,6 +15,7 @@ bool ArgusECSDebugger::s_ignoreTeamRequirementsForSelectingEntities = false;
 bool ArgusECSDebugger::s_entityDebugToggles[ArgusECSConstants::k_maxEntities];
 bool ArgusECSDebugger::s_entityShowAvoidanceDebug[ArgusECSConstants::k_maxEntities];
 bool ArgusECSDebugger::s_entityShowNavigationDebug[ArgusECSConstants::k_maxEntities];
+TArray<std::string> ArgusECSDebugger::s_resourceToAddStrings = TArray<std::string>();
 
 void ArgusECSDebugger::DrawECSDebugger()
 {
@@ -26,7 +30,7 @@ void ArgusECSDebugger::DrawECSDebugger()
 		return;
 	}
 
-	// ImGui::ShowDemoWindow();
+	//ImGui::ShowDemoWindow();
 
 	ImGui::SetNextWindowSize(ImVec2(260, 260), ImGuiCond_FirstUseEver);
 	if (!ImGui::Begin("ECS"))
@@ -58,6 +62,8 @@ bool ArgusECSDebugger::ShouldShowNavigationDebugForEntity(uint16 entityId)
 
 void ArgusECSDebugger::DrawEntityScrollRegion()
 {
+	DrawResourceRegion();
+
 	ImGui::Checkbox("Only debug selected entities", &s_onlyDebugSelectedEntities);
 	ImGui::SameLine();
 	ImGui::Checkbox("Ignore team requirements for selection", &s_ignoreTeamRequirementsForSelectingEntities);
@@ -182,6 +188,44 @@ void ArgusECSDebugger::DrawWindowForEntity(uint16 entityId)
 	ArgusComponentRegistry::DrawComponentsDebug(entityId);
 
 	ImGui::End();
+}
+
+void ArgusECSDebugger::DrawResourceRegion()
+{
+	if (!ImGui::CollapsingHeader("Team Resources"))
+	{
+		return;
+	}
+
+	const uint8 numResources = static_cast<uint8>(EResourceType::Count);
+	const uint8 numDebugStrings = static_cast<uint8>(s_resourceToAddStrings.Num());
+	if (numDebugStrings != numResources)
+	{
+		s_resourceToAddStrings.SetNumZeroed(numResources);
+		for (uint8 i = 0u; i < numResources; ++i)
+		{
+			s_resourceToAddStrings[i] = std::string("0");
+			s_resourceToAddStrings.Reserve(32);
+		}
+	}
+
+	for (uint8 i = 0u; i < numResources; ++i)
+	{
+		const char* resourceName = ARGUS_FSTRING_TO_CHAR(StaticEnum<EResourceType>()->GetNameStringByValue(i));
+		char* buffer = s_resourceToAddStrings[i].data();
+		ImGui::InputText(resourceName, buffer, IM_ARRAYSIZE(buffer));
+	}
+
+	if (ImGui::Button("Add Resources"))
+	{
+		FResourceSet resourcesToAdd;
+		for (uint8 i = 0u; i < numResources; ++i)
+		{
+			resourcesToAdd.m_resourceQuantities[i] = std::atoi(s_resourceToAddStrings[i].c_str()); 
+		}
+
+		// ResourceSystems::ApplyTeamResourceChangeIfAffordable();
+	}
 }
 
 void ArgusECSDebugger::ClearAllEntityDebugWindows()
