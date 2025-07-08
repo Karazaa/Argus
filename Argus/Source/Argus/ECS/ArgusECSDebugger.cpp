@@ -224,6 +224,7 @@ void ArgusECSDebugger::DrawResourceRegion()
 			resourcesToAdd.m_resourceQuantities[i] = std::atoi(s_resourceToAddStrings[i].c_str()); 
 		}
 
+		// TODO JAMES: Should probably add an imgui widget to select which team.
 		ResourceSystems::ApplyTeamResourceChangeIfAffordable(ETeam::TeamA, resourcesToAdd);
 	}
 }
