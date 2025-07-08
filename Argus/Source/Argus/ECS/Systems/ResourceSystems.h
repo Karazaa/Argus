@@ -2,8 +2,9 @@
 
 #pragma once
 
-#include "ComponentDependencies/ResourceSet.h"
+#include "ComponentDefinitions/IdentityComponent.h"
 #include "ComponentDefinitions/ResourceComponent.h"
+#include "ComponentDependencies/ResourceSet.h"
 #include "SystemArgumentDefinitions/ResourceSystemsArgs.h"
 
 class ArgusEntity;
@@ -29,8 +30,10 @@ public:
 	static bool CanEntityDepositResourcesToOtherEntity(const ArgusEntity& entity, const ArgusEntity& otherEntity);
 	static bool CanEntityAffordTeamResourceChange(const ArgusEntity& entity, const FResourceSet& resourceChange);
 	static bool ApplyTeamResourceChangeIfAffordable(const ArgusEntity& entity, const FResourceSet& resourceChange);
-	
+	static bool ApplyTeamResourceChangeIfAffordable(ETeam team, const FResourceSet& resourceChange);
+
 	static ResourceComponent* GetTeamResourceComponentForEntity(const ArgusEntity& entity);
+	static ResourceComponent* GetTeamResourceComponentForTeam(ETeam team);
 
 private:
 	static void TransferResourcesBetweenComponents(ResourceComponent* sourceComponent, ResourceComponent* targetComponent, const FResourceSet& amount, const UResourceSetRecord* resourceCapacityRecord = nullptr);

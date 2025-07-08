@@ -355,6 +355,23 @@ bool ResourceSystems::ApplyTeamResourceChangeIfAffordable(const ArgusEntity& ent
 	return true;
 }
 
+bool ResourceSystems::ApplyTeamResourceChangeIfAffordable(ETeam team, const FResourceSet& resourceChange)
+{
+	ResourceComponent* teamResourceComponent = GetTeamResourceComponentForTeam(team);
+	if (!teamResourceComponent)
+	{
+		return false;
+	}
+
+	if (!teamResourceComponent->m_currentResources.CanAffordResourceChange(resourceChange))
+	{
+		return false;
+	}
+
+	teamResourceComponent->m_currentResources.ApplyResourceChange(resourceChange);
+	return true;
+}
+
 ResourceComponent* ResourceSystems::GetTeamResourceComponentForEntity(const ArgusEntity& entity)
 {
 	if (!entity)
@@ -369,7 +386,12 @@ ResourceComponent* ResourceSystems::GetTeamResourceComponentForEntity(const Argu
 		return nullptr;
 	}
 
-	ArgusEntity teamEntity = ArgusEntity::GetTeamEntity(identityComponent->m_team);
+	return GetTeamResourceComponentForTeam(identityComponent->m_team);
+}
+
+ResourceComponent* ResourceSystems::GetTeamResourceComponentForTeam(ETeam team)
+{
+	ArgusEntity teamEntity = ArgusEntity::GetTeamEntity(team);
 	if (!teamEntity)
 	{
 		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Could not retrieve a valid %s from %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(ArgusEntity::GetTeamEntity));

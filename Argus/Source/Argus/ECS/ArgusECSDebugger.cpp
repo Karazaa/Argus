@@ -224,7 +224,7 @@ void ArgusECSDebugger::DrawResourceRegion()
 			resourcesToAdd.m_resourceQuantities[i] = std::atoi(s_resourceToAddStrings[i].c_str()); 
 		}
 
-		// ResourceSystems::ApplyTeamResourceChangeIfAffordable();
+		ResourceSystems::ApplyTeamResourceChangeIfAffordable(ETeam::TeamA, resourcesToAdd);
 	}
 }
 
