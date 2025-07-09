@@ -15,6 +15,7 @@ bool ArgusECSDebugger::s_ignoreTeamRequirementsForSelectingEntities = false;
 bool ArgusECSDebugger::s_entityDebugToggles[ArgusECSConstants::k_maxEntities];
 bool ArgusECSDebugger::s_entityShowAvoidanceDebug[ArgusECSConstants::k_maxEntities];
 bool ArgusECSDebugger::s_entityShowNavigationDebug[ArgusECSConstants::k_maxEntities];
+int  ArgusECSDebugger::s_teamToApplyResourcesTo = 0;
 TArray<std::string> ArgusECSDebugger::s_resourceToAddStrings = TArray<std::string>();
 
 void ArgusECSDebugger::DrawECSDebugger()
@@ -30,7 +31,7 @@ void ArgusECSDebugger::DrawECSDebugger()
 		return;
 	}
 
-	//ImGui::ShowDemoWindow();
+	// ImGui::ShowDemoWindow();
 
 	ImGui::SetNextWindowSize(ImVec2(260, 260), ImGuiCond_FirstUseEver);
 	if (!ImGui::Begin("ECS"))
@@ -216,6 +217,17 @@ void ArgusECSDebugger::DrawResourceRegion()
 		ImGui::InputText(resourceName, buffer, IM_ARRAYSIZE(buffer));
 	}
 
+	std::string teamNames[8] = {};
+	const char* teamNamesCStr[8] = {};
+	for (uint8 i = 0; i < 8; ++i)
+	{
+		const uint8 value = 1u << i;
+		teamNames[i] = ARGUS_FSTRING_TO_CHAR(StaticEnum<ETeam>()->GetNameStringByValue(value));
+		teamNamesCStr[i] = teamNames[i].c_str();
+	}
+
+	ImGui::Combo("Team", &s_teamToApplyResourcesTo, teamNamesCStr, IM_ARRAYSIZE(teamNamesCStr));
+	ImGui::SameLine();
 	if (ImGui::Button("Add Resources"))
 	{
 		FResourceSet resourcesToAdd;
@@ -224,8 +236,8 @@ void ArgusECSDebugger::DrawResourceRegion()
 			resourcesToAdd.m_resourceQuantities[i] = std::atoi(s_resourceToAddStrings[i].c_str()); 
 		}
 
-		// TODO JAMES: Should probably add an imgui widget to select which team.
-		ResourceSystems::ApplyTeamResourceChangeIfAffordable(ETeam::TeamA, resourcesToAdd);
+		const ETeam teamValue = static_cast<ETeam>(1u << s_teamToApplyResourcesTo);
+		ResourceSystems::ApplyTeamResourceChangeIfAffordable(teamValue, resourcesToAdd);
 	}
 }
 

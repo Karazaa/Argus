@@ -12,14 +12,14 @@ UENUM(meta = (Bitflags, UseEnumValuesAsMaskValuesInEditor = "true"))
 enum class ETeam : uint8
 {
 	None = 0,
-	TeamA = 1 << 0,
-	TeamB = 1 << 1,
-	TeamC = 1 << 2,
-	TeamD = 1 << 3,
-	TeamE = 1 << 4,
-	TeamF = 1 << 5,
-	TeamG = 1 << 6,
-	TeamH = 1 << 7
+	TeamA = 1u << 0,
+	TeamB = 1u << 1,
+	TeamC = 1u << 2,
+	TeamD = 1u << 3,
+	TeamE = 1u << 4,
+	TeamF = 1u << 5,
+	TeamG = 1u << 6,
+	TeamH = 1u << 7
 };
 ENUM_CLASS_FLAGS(ETeam);
 

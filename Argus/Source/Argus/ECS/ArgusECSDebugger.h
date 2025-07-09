@@ -22,6 +22,7 @@ private:
 	static bool s_entityDebugToggles[ArgusECSConstants::k_maxEntities];
 	static bool s_entityShowAvoidanceDebug[ArgusECSConstants::k_maxEntities];
 	static bool s_entityShowNavigationDebug[ArgusECSConstants::k_maxEntities];
+	static int	s_teamToApplyResourcesTo;
 	static TArray<std::string> s_resourceToAddStrings;
 
 	static void DrawEntityScrollRegion();
