@@ -25,17 +25,22 @@ void USelectedArgusEntitiesView::NativeConstruct()
 	m_abilityButton3->OnClicked.AddDynamic(this, &USelectedArgusEntitiesView::OnClickedAbilityButton3);
 	m_singleSelectedEntityWidget->SetVisibility(ESlateVisibility::Collapsed);
 	m_multipleSelectedEntitiesWidget->SetVisibility(ESlateVisibility::Collapsed);
+	m_singleSelectedEntityWidget->SetInputManager(m_inputManager.Get());
+	m_multipleSelectedEntitiesWidget->SetInputManager(m_inputManager.Get());
 }
 
 void USelectedArgusEntitiesView::UpdateDisplay(const UpdateDisplayParameters& updateDisplayParams)
 {
 	Super::UpdateDisplay(updateDisplayParams);
 
-	if (m_singleSelectedEntityWidget && m_singleSelectedEntityWidget->IsVisible())
+	ARGUS_RETURN_ON_NULL(m_singleSelectedEntityWidget, ArgusUILog);
+	ARGUS_RETURN_ON_NULL(m_multipleSelectedEntitiesWidget, ArgusUILog);
+
+	if (m_singleSelectedEntityWidget->IsVisible())
 	{
 		m_singleSelectedEntityWidget->UpdateDisplay(updateDisplayParams);
 	}
-	else if (m_multipleSelectedEntitiesWidget && m_multipleSelectedEntitiesWidget->IsVisible())
+	else if (m_multipleSelectedEntitiesWidget->IsVisible())
 	{
 		m_multipleSelectedEntitiesWidget->UpdateDisplay(updateDisplayParams);
 	}
@@ -44,6 +49,9 @@ void USelectedArgusEntitiesView::UpdateDisplay(const UpdateDisplayParameters& up
 void USelectedArgusEntitiesView::OnUpdateSelectedArgusActors(const ArgusEntity& templateEntity)
 {
 	Super::OnUpdateSelectedArgusActors(templateEntity);
+
+	ARGUS_RETURN_ON_NULL(m_singleSelectedEntityWidget, ArgusUILog);
+	ARGUS_RETURN_ON_NULL(m_multipleSelectedEntitiesWidget, ArgusUILog);
 
 	if (!templateEntity)
 	{
@@ -80,7 +88,7 @@ void USelectedArgusEntitiesView::OnUpdateSelectedArgusActors(const ArgusEntity& 
 		return;
 	}
 
-	InputInterfaceComponent* inputInterfaceComponent = singletonEntity.GetComponent<InputInterfaceComponent>();
+	const InputInterfaceComponent* inputInterfaceComponent = singletonEntity.GetComponent<InputInterfaceComponent>();
 	if (!inputInterfaceComponent)
 	{
 		return;
@@ -88,27 +96,15 @@ void USelectedArgusEntitiesView::OnUpdateSelectedArgusActors(const ArgusEntity& 
 
 	if (inputInterfaceComponent->m_selectedArgusEntityIds.Num() > 1)
 	{
-		if (m_singleSelectedEntityWidget)
-		{
-			m_singleSelectedEntityWidget->SetVisibility(ESlateVisibility::Collapsed);
-		}
-		if (m_multipleSelectedEntitiesWidget)
-		{
-			m_multipleSelectedEntitiesWidget->SetVisibility(ESlateVisibility::Visible);
-			m_multipleSelectedEntitiesWidget->OnUpdateSelectedArgusActors(templateEntity);
-		}
+		m_singleSelectedEntityWidget->SetVisibility(ESlateVisibility::Collapsed);
+		m_multipleSelectedEntitiesWidget->SetVisibility(ESlateVisibility::Visible);
+		m_multipleSelectedEntitiesWidget->OnUpdateSelectedArgusActors(templateEntity);
 	}
 	else
 	{
-		if (m_singleSelectedEntityWidget)
-		{
-			m_singleSelectedEntityWidget->SetVisibility(ESlateVisibility::Visible);
-			m_singleSelectedEntityWidget->OnUpdateSelectedArgusActors(templateEntity);
-		}
-		if (m_multipleSelectedEntitiesWidget)
-		{
-			m_multipleSelectedEntitiesWidget->SetVisibility(ESlateVisibility::Collapsed);
-		}
+		m_singleSelectedEntityWidget->SetVisibility(ESlateVisibility::Visible);
+		m_singleSelectedEntityWidget->OnUpdateSelectedArgusActors(templateEntity);
+		m_multipleSelectedEntitiesWidget->SetVisibility(ESlateVisibility::Collapsed);
 	}
 }
 

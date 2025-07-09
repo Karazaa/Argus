@@ -179,6 +179,14 @@ void UArgusInputManager::OnUserInterfaceButtonClicked(InputType inputEvent)
 	m_inputEventsThisFrame.Emplace(InputCache(inputEvent, FInputActionValue()));
 }
 
+void UArgusInputManager::OnUserInterfaceEntityClicked(const ArgusEntity& clickedEntity)
+{
+	if (!clickedEntity)
+	{
+		return;
+	}
+}
+
 void UArgusInputManager::OnControlGroup0(const FInputActionValue& value)
 {
 	ARGUS_MEMORY_TRACE(ArgusInputManager);

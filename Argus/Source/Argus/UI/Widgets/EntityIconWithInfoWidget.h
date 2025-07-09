@@ -2,10 +2,11 @@
 
 #pragma once
 
+#include "ArgusEntity.h"
 #include "Views/ArgusActorInfoView.h"
 #include "EntityIconWithInfoWidget.generated.h"
 
-class ArgusEntity;
+class UArgusInputManager;
 class UImage;
 struct FSlateBrush;
 
@@ -15,9 +16,13 @@ class UEntityIconWithInfoWidget : public UArgusActorInfoView
 	GENERATED_BODY()
 
 public:
-	void Populate(const ArgusEntity& entity, const FSlateBrush& brush);
+	void Populate(const ArgusEntity& entity, const FSlateBrush& brush, UArgusInputManager* inputManager);
+	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TObjectPtr<UImage> m_entityIcon = nullptr;
+
+	TWeakObjectPtr<UArgusInputManager> m_inputManager = nullptr;
+	ArgusEntity m_trackedEntity = ArgusEntity::k_emptyEntity;
 };

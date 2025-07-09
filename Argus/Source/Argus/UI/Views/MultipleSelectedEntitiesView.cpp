@@ -91,12 +91,12 @@ void UMultipleSelectedEntitiesView::OnUpdateSelectedArgusActors(const ArgusEntit
 			continue;
 		}
 
-		m_entityIcons[i]->SetVisibility(ESlateVisibility::HitTestInvisible);
+		m_entityIcons[i]->SetVisibility(ESlateVisibility::Visible);
 		FSlateBrush slotBrush = inputInterfaceComponent->IsEntityIdInActiveAbilityGroup(inputInterfaceComponent->m_selectedArgusEntityIds[i]) ? 
 																						m_activeAbilityGroupSlateBrush : m_entityImageSlateBrush;
 
 		slotBrush.SetResourceObject(argusActorRecord->m_actorInfoIcon.LoadAndStorePtr());
-		m_entityIcons[i]->Populate(entity, slotBrush);
+		m_entityIcons[i]->Populate(entity, slotBrush, m_inputManager.Get());
 		m_gridSlots[i]->SetHorizontalAlignment(EHorizontalAlignment::HAlign_Center);
 		m_gridSlots[i]->SetVerticalAlignment(EVerticalAlignment::VAlign_Center);
 		m_gridSlots[i]->SetRow(i / m_numberOfEntitiesPerRow);

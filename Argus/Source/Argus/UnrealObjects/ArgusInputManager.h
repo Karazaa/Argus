@@ -73,6 +73,7 @@ public:
 	void OnStartPanningLockout(const FInputActionValue& value);
 	void OnStopPanningLockout(const FInputActionValue& value);
 	void OnUserInterfaceButtonClicked(InputType inputEvent);
+	void OnUserInterfaceEntityClicked(const ArgusEntity& clickedEntity);
 	void OnControlGroup0(const FInputActionValue& value);
 	void OnControlGroup1(const FInputActionValue& value);
 	void OnControlGroup2(const FInputActionValue& value);
