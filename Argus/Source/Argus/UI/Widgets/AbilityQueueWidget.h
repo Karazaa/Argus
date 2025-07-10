@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "ArgusUserWidget.h"
+#include "ArgusUIElement.h"
 #include "AbilityQueueWidget.generated.h"
 
 class ArgusEntity;

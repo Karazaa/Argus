@@ -1,6 +1,6 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
-#include "ArgusUserWidget.h"
+#include "ArgusUIElement.h"
 #include "ArgusCameraActor.h"
 #include "ArgusInputManager.h"
 #include "ArgusLogging.h"

@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "ArgusUserWidget.h"
+#include "ArgusUIElement.h"
 #include "Styling/SlateBrush.h"
 #include "Styling/SlateTypes.h"
 #include "SelectedArgusEntitiesView.generated.h"

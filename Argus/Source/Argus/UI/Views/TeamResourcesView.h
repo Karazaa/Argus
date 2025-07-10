@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "ArgusUserWidget.h"
+#include "ArgusUIElement.h"
 #include "Layout/Margin.h"
 #include "Widgets/ResourceWidget.h"
 #include "TeamResourcesView.generated.h"

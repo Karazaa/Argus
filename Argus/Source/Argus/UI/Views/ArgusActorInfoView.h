@@ -2,20 +2,19 @@
 
 #pragma once
 
-#include "ArgusActorWidgetInterface.h"
 #include "Blueprint/UserWidget.h"
 #include "ArgusActorInfoView.generated.h"
 
 class ArgusEntity;
 
 UCLASS()
-class UArgusActorInfoView : public UUserWidget, public IArgusActorWidgetInterface
+class UArgusActorInfoView : public UUserWidget
 {
 	GENERATED_BODY()
 
 public:
-	virtual void SetInitialDisplay(const ArgusEntity& argusEntity) override;
-	virtual void RefreshDisplay(const ArgusEntity& argusEntity) override;
+	virtual void SetInitialDisplay(const ArgusEntity& argusEntity);
+	virtual void RefreshDisplay(const ArgusEntity& argusEntity);
 
 protected:
 	UPROPERTY(BlueprintReadWrite, Transient)

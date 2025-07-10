@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "ArgusUserWidget.h"
+#include "ArgusUIElement.h"
 #include "MultipleSelectedEntitiesView.generated.h"
 
 class UEntityIconWithInfoWidget;

@@ -6,7 +6,7 @@
 #include "ArgusInputActionSet.h"
 #include "ArgusInputManager.h"
 #include "ArgusLogging.h"
-#include "ArgusUserWidget.h"
+#include "ArgusUIElement.h"
 #include "Engine/GameViewportClient.h"
 #include "Engine/LocalPlayer.h"
 #include "Engine/World.h"

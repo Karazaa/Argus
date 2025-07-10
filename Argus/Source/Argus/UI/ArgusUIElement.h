@@ -4,7 +4,7 @@
 
 #include "Blueprint/UserWidget.h"
 #include "ComponentDefinitions/IdentityComponent.h"
-#include "ArgusUserWidget.generated.h"
+#include "ArgusUIElement.generated.h"
 
 class ArgusEntity;
 class UArgusInputManager;
