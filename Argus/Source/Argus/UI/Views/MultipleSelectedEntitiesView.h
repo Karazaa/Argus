@@ -11,7 +11,7 @@ class UUniformGridPanel;
 class UUniformGridSlot;
 
 UCLASS()
-class UMultipleSelectedEntitiesView : public UArgusUserWidget
+class UMultipleSelectedEntitiesView : public UArgusUIElement
 {
 	GENERATED_BODY()
 

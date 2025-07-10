@@ -176,21 +176,21 @@ bool AArgusPlayerController::IsArgusActorOnPlayerTeam(const AArgusActor* const a
 
 void AArgusPlayerController::InitializeUIWidgets()
 {
-	m_baseCanvasUserWidget = CreateWidget<UArgusUserWidget>(this, m_baseCanvasUserWidgetClass, ARGUS_NAMEOF(m_baseCanvasUserWidgetClass));
+	m_baseCanvasUserWidget = CreateWidget<UArgusUIElement>(this, m_baseCanvasUserWidgetClass, ARGUS_NAMEOF(m_baseCanvasUserWidgetClass));
 	if (m_baseCanvasUserWidget)
 	{
 		m_baseCanvasUserWidget->SetInputManager(m_argusInputManager);
 		m_baseCanvasUserWidget->AddToViewport();
 	}
 
-	m_selectedArgusEntityUserWidget = CreateWidget<UArgusUserWidget>(this, m_selectedArgusEntityUserWidgetClass, ARGUS_NAMEOF(m_selectedArgusEntityUserWidgetClass));
+	m_selectedArgusEntityUserWidget = CreateWidget<UArgusUIElement>(this, m_selectedArgusEntityUserWidgetClass, ARGUS_NAMEOF(m_selectedArgusEntityUserWidgetClass));
 	if (m_selectedArgusEntityUserWidget)
 	{
 		m_selectedArgusEntityUserWidget->SetInputManager(m_argusInputManager);
 		m_selectedArgusEntityUserWidget->AddToViewport();
 	}
 
-	m_teamResourcesUserWidget = CreateWidget<UArgusUserWidget>(this, m_teamResourcesUserWidgetClass, ARGUS_NAMEOF(m_teamResourcesUserWidgetClass));
+	m_teamResourcesUserWidget = CreateWidget<UArgusUIElement>(this, m_teamResourcesUserWidgetClass, ARGUS_NAMEOF(m_teamResourcesUserWidgetClass));
 	if (m_teamResourcesUserWidget)
 	{
 		m_teamResourcesUserWidget->SetInputManager(m_argusInputManager);
@@ -237,7 +237,7 @@ void AArgusPlayerController::SetupInputComponent()
 
 void AArgusPlayerController::UpdateUIWidgetDisplay(const FVector2D& mouseScreenSpaceLocation)
 {
-	UArgusUserWidget::UpdateDisplayParameters uiParams = UArgusUserWidget::UpdateDisplayParameters(mouseScreenSpaceLocation, m_playerTeam);
+	UArgusUIElement::UpdateDisplayParameters uiParams = UArgusUIElement::UpdateDisplayParameters(mouseScreenSpaceLocation, m_playerTeam);
 
 	if (m_baseCanvasUserWidget)
 	{

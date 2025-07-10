@@ -10,7 +10,7 @@ class UArgusInputManager;
 class UCanvasPanel;
 
 UCLASS()
-class UMarqueeCanvasWidget : public UArgusUserWidget
+class UMarqueeCanvas : public UArgusUIElement
 {
 	GENERATED_BODY()
 

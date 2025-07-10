@@ -5,7 +5,7 @@
 #include "ArgusInputManager.h"
 #include "ArgusLogging.h"
 
-void UArgusUserWidget::UpdateDisplay(const UpdateDisplayParameters& updateDisplayParams)
+void UArgusUIElement::UpdateDisplay(const UpdateDisplayParameters& updateDisplayParams)
 {
 	ArgusEntity uiTemplateEntity = ArgusEntity::k_emptyEntity;
 
@@ -23,7 +23,7 @@ void UArgusUserWidget::UpdateDisplay(const UpdateDisplayParameters& updateDispla
 	OnUpdateSelectedArgusActors(uiTemplateEntity);
 }
 
-void UArgusUserWidget::SetInputManager(UArgusInputManager* inputManager)
+void UArgusUIElement::SetInputManager(UArgusInputManager* inputManager)
 {
 	m_inputManager = inputManager;
 }

@@ -7,7 +7,7 @@
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/CanvasPanel.h"
 
-void UMarqueeCanvasWidget::UpdateDisplay(const UpdateDisplayParameters& updateDisplayParams)
+void UMarqueeCanvas::UpdateDisplay(const UpdateDisplayParameters& updateDisplayParams)
 {
 	Super::UpdateDisplay(updateDisplayParams);
 
@@ -34,14 +34,14 @@ void UMarqueeCanvasWidget::UpdateDisplay(const UpdateDisplayParameters& updateDi
 	m_marqueeBoxPoints[3].Y = m_marqueeBoxPoints[2].Y;
 }
 
-void UMarqueeCanvasWidget::NativeOnInitialized()
+void UMarqueeCanvas::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 
 	m_marqueeBoxPoints.SetNumZeroed(5);
 }
 
-int32 UMarqueeCanvasWidget::NativePaint(const FPaintArgs& args, const FGeometry& allottedGeometry, const FSlateRect& myCullingRect, FSlateWindowElementList& outDrawElements, int32 layerId, const FWidgetStyle& inWidgetStyle, bool parentEnabled) const
+int32 UMarqueeCanvas::NativePaint(const FPaintArgs& args, const FGeometry& allottedGeometry, const FSlateRect& myCullingRect, FSlateWindowElementList& outDrawElements, int32 layerId, const FWidgetStyle& inWidgetStyle, bool parentEnabled) const
 {
 	int32 newLayerId = Super::NativePaint(args, allottedGeometry, myCullingRect, outDrawElements, layerId, inWidgetStyle, parentEnabled);
 

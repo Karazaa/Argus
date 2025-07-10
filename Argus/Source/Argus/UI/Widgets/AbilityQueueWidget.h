@@ -18,7 +18,7 @@ enum class EAbilityQueueDataSource : uint8
 };
 
 UCLASS()
-class UAbilityQueueWidget : public UArgusUserWidget
+class UAbilityQueueWidget : public UArgusUIElement
 {
 	GENERATED_BODY()
 

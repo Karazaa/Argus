@@ -11,7 +11,7 @@ class UImage;
 class UTextBlock;
 
 UCLASS()
-class USingleSelectedEntityView : public UArgusUserWidget
+class USingleSelectedEntityView : public UArgusUIElement
 {
 	GENERATED_BODY()
 

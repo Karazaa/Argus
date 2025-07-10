@@ -10,7 +10,7 @@
 class UHorizontalBox;
 
 UCLASS()
-class UTeamResourcesView : public UArgusUserWidget
+class UTeamResourcesView : public UArgusUIElement
 {
 	GENERATED_BODY()
 

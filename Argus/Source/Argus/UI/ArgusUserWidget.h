@@ -10,7 +10,7 @@ class ArgusEntity;
 class UArgusInputManager;
 
 UCLASS()
-class UArgusUserWidget : public UUserWidget
+class UArgusUIElement : public UUserWidget
 {
 	GENERATED_BODY()
 

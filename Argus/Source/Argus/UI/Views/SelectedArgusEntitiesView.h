@@ -15,7 +15,7 @@ class UMultipleSelectedEntitiesView;
 class USingleSelectedEntityView;
 
 UCLASS()
-class USelectedArgusEntitiesView : public UArgusUserWidget
+class USelectedArgusEntitiesView : public UArgusUIElement
 {
 	GENERATED_BODY()
 

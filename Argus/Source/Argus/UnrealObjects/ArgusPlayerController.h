@@ -16,7 +16,7 @@ class ArgusEntity;
 class AReticleActor;
 class UArgusInputActionSet;
 class UArgusInputManager;
-class UArgusUserWidget;
+class UArgusUIElement;
 
 UCLASS()
 class AArgusPlayerController : public APlayerController
@@ -52,13 +52,13 @@ protected:
 	TSoftObjectPtr<UArgusInputActionSet> m_argusInputActionSet = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "UI")
-	TSubclassOf<UArgusUserWidget> m_baseCanvasUserWidgetClass = nullptr;
+	TSubclassOf<UArgusUIElement> m_baseCanvasUserWidgetClass = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "UI")
-	TSubclassOf<UArgusUserWidget> m_selectedArgusEntityUserWidgetClass = nullptr;
+	TSubclassOf<UArgusUIElement> m_selectedArgusEntityUserWidgetClass = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "UI")
-	TSubclassOf<UArgusUserWidget> m_teamResourcesUserWidgetClass = nullptr;
+	TSubclassOf<UArgusUIElement> m_teamResourcesUserWidgetClass = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Camera")
 	TSoftClassPtr<AArgusCameraActor> m_argusCameraClass = nullptr;
@@ -82,13 +82,13 @@ protected:
 	TObjectPtr<UArgusInputManager> m_argusInputManager = nullptr;
 
 	UPROPERTY(Transient)
-	TObjectPtr<UArgusUserWidget> m_baseCanvasUserWidget;
+	TObjectPtr<UArgusUIElement> m_baseCanvasUserWidget;
 
 	UPROPERTY(Transient)
-	TObjectPtr<UArgusUserWidget> m_selectedArgusEntityUserWidget;
+	TObjectPtr<UArgusUIElement> m_selectedArgusEntityUserWidget;
 
 	UPROPERTY(Transient)
-	TObjectPtr<UArgusUserWidget> m_teamResourcesUserWidget;
+	TObjectPtr<UArgusUIElement> m_teamResourcesUserWidget;
 
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
