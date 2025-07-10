@@ -79,21 +79,39 @@ bool AArgusPlayerController::GetMouseProjectionLocation(ECollisionChannel collis
 	return outcome;
 }
 
+AArgusActor* AArgusPlayerController::GetArgusActorForArgusEntityId(uint16 entityId) const 
+{
+	if (entityId >= ArgusECSConstants::k_maxEntities)
+	{
+		ARGUS_LOG(ArgusUnrealObjectsLog, Error, TEXT("[%s] passed in %s is greater than or equal to %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(entityId), ARGUS_NAMEOF(ArgusECSConstants::k_maxEntities))
+		return nullptr;
+	}
+
+	return GetArgusActorForArgusEntity(ArgusEntity::RetrieveEntity(entityId));
+}
+
+AArgusActor* AArgusPlayerController::GetArgusActorForArgusEntity(const ArgusEntity& entity) const
+{
+	ARGUS_RETURN_ON_NULL_POINTER(entity, ArgusUnrealObjectsLog);
+
+	const UWorld* world = GetWorld();
+	ARGUS_RETURN_ON_NULL_POINTER(world, ArgusUnrealObjectsLog);
+
+	const UArgusGameInstance* gameInstance = world->GetGameInstance<UArgusGameInstance>();
+	ARGUS_RETURN_ON_NULL_POINTER(gameInstance, ArgusUnrealObjectsLog);
+
+	return gameInstance->GetArgusActorFromArgusEntity(entity);
+}
+
 bool AArgusPlayerController::GetArgusActorsFromArgusEntityIds(const TArray<uint16>& inArgusEntityIds, TArray<AArgusActor*>& outArgusActors) const
 {
 	outArgusActors.SetNumZeroed(inArgusEntityIds.Num());
 
 	const UWorld* world = GetWorld();
-	if (!world)
-	{
-		return false;
-	}
+	ARGUS_RETURN_ON_NULL_BOOL(world, ArgusUnrealObjectsLog);
 
 	const UArgusGameInstance* gameInstance = world->GetGameInstance<UArgusGameInstance>();
-	if (!gameInstance)
-	{
-		return false;
-	}
+	ARGUS_RETURN_ON_NULL_BOOL(gameInstance, ArgusUnrealObjectsLog);
 
 	for (int i = 0; i < inArgusEntityIds.Num(); ++i)
 	{

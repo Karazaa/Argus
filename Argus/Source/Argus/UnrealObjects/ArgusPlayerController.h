@@ -29,6 +29,8 @@ public:
 	AArgusCameraActor::UpdateCameraPanningParameters GetScreenSpaceInputValues() const;
 
 	bool GetMouseProjectionLocation(ECollisionChannel collisionTraceChannel, FHitResult& outHitResult) const;
+	AArgusActor* GetArgusActorForArgusEntityId(uint16 entityId) const;
+	AArgusActor* GetArgusActorForArgusEntity(const ArgusEntity& entity) const;
 	bool GetArgusActorsFromArgusEntityIds(const TArray<uint16>& inArgusEntityIds, TArray<AArgusActor*>& outArgusActors) const;
 	bool GetArgusActorsFromArgusEntities(const TArray<ArgusEntity>& inArgusEntities, TArray<AArgusActor*>& outArgusActors) const;
 

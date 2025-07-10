@@ -181,10 +181,7 @@ void UArgusInputManager::OnUserInterfaceButtonClicked(InputType inputEvent)
 
 void UArgusInputManager::OnUserInterfaceEntityClicked(const ArgusEntity& clickedEntity)
 {
-	if (!clickedEntity)
-	{
-		return;
-	}
+	m_inputEventsThisFrame.Emplace(InputCache(InputType::UserInterfaceEntityClicked, clickedEntity));
 }
 
 void UArgusInputManager::OnControlGroup0(const FInputActionValue& value)
@@ -584,6 +581,9 @@ void UArgusInputManager::ProcessInputEvent(AArgusCameraActor* argusCamera, const
 		case InputType::ChangeActiveAbilityGroup:
 			InterruptReticle();
 			ProcessChangeActiveAbilityGroup();
+			break;
+		case InputType::UserInterfaceEntityClicked:
+			ProcessUserInterfaceEntityClicked(inputType.m_entity);
 			break;
 		default:
 			break;
@@ -1198,6 +1198,17 @@ void UArgusInputManager::ProcessChangeActiveAbilityGroup()
 			inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.Add(entityToCheck.GetId());
 		}
 	}
+}
+
+void UArgusInputManager::ProcessUserInterfaceEntityClicked(const ArgusEntity& entity)
+{
+	ARGUS_RETURN_ON_NULL(entity, ArgusInputLog);
+	if (!ValidateOwningPlayerController())
+	{
+		return;
+	}
+
+	AddSelectedActorExclusive(m_owningPlayerController->GetArgusActorForArgusEntity(entity));
 }
 
 #pragma endregion

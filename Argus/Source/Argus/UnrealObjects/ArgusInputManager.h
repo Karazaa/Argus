@@ -53,6 +53,7 @@ public:
 		SetControlGroup4,
 		SetControlGroup5,
 		ChangeActiveAbilityGroup,
+		UserInterfaceEntityClicked,
 	};
 	static bool ShouldUpdateSelectedActorDisplay(ArgusEntity& templateSelectedEntity);
 
@@ -98,9 +99,11 @@ private:
 	struct InputCache
 	{
 		const InputType m_type;
+		const ArgusEntity m_entity;
 		const FInputActionValue m_value;
 
-		InputCache(const InputType type, const FInputActionValue value) : m_type(type), m_value(value) { }
+		InputCache(const InputType type, const FInputActionValue value) : m_type(type), m_value(value), m_entity(ArgusEntity::k_emptyEntity) { }
+		InputCache(const InputType type, const ArgusEntity& entity) : m_type(type), m_value(FInputActionValue()), m_entity(entity) {}
 	};
 
 	TWeakObjectPtr<AArgusPlayerController> m_owningPlayerController = nullptr;
@@ -127,6 +130,7 @@ private:
 	void ProcessControlGroup(uint8 controlGroupIndex, AArgusCameraActor* argusCamera);
 	void ProcessSetControlGroup(uint8 controlGroupIndex);
 	void ProcessChangeActiveAbilityGroup();
+	void ProcessUserInterfaceEntityClicked(const ArgusEntity& entity);
 
 	void AddSelectedActorExclusive(AArgusActor* argusActor);
 	void AddSelectedActorAdditive(AArgusActor* argusActor);
