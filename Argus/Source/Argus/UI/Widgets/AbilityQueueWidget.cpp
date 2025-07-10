@@ -8,20 +8,20 @@
 #include "Components/UniformGridPanel.h"
 #include "Components/UniformGridSlot.h"
 
-void UAbilityQueueWidget::RefreshDisplay(const ArgusEntity& selectedEntity)
+void UIconQueueWidget::RefreshDisplay(const ArgusEntity& selectedEntity)
 {
-	switch (m_abilityQueueDataSource)
+	switch (m_iconQueueDataSource)
 	{
-		case EAbilityQueueDataSource::SpawnQueue:
+		case EIconQueueDataSource::SpawnQueue:
 			RefreshDisplayFromSpawnQueue(selectedEntity);
 			break;
-		case EAbilityQueueDataSource::AbilityQueue:
+		case EIconQueueDataSource::AbilityQueue:
 			RefreshDisplayFromAbilityQueue(selectedEntity);
 			break;
 	}
 }
 
-void UAbilityQueueWidget::RefreshDisplayFromSpawnQueue(const ArgusEntity& selectedEntity)
+void UIconQueueWidget::RefreshDisplayFromSpawnQueue(const ArgusEntity& selectedEntity)
 {
 	const SpawningComponent* spawningComponent = selectedEntity.GetComponent<SpawningComponent>();
 	if (!spawningComponent)
@@ -45,21 +45,26 @@ void UAbilityQueueWidget::RefreshDisplayFromSpawnQueue(const ArgusEntity& select
 
 	if (spawnQueueAbilityRecordIds.Num() != m_lastUpdateAbilityCount)
 	{
-		SetAbilityIcons(spawnQueueAbilityRecordIds);
+		SetIconStates(spawnQueueAbilityRecordIds);
 	}
 }
 
-void UAbilityQueueWidget::RefreshDisplayFromAbilityQueue(const ArgusEntity& selectedEntity)
+void UIconQueueWidget::RefreshDisplayFromAbilityQueue(const ArgusEntity& selectedEntity)
 {
 
 }
 
-void UAbilityQueueWidget::SetAbilityIcons(const TArray<uint32>& abilityRecordIds)
+void UIconQueueWidget::RefreshDisplayFromCarrierPassengers(const ArgusEntity& selectedEntity)
+{
+
+}
+
+void UIconQueueWidget::SetIconStates(const TArray<uint32>& recordIds)
 {
 	ARGUS_RETURN_ON_NULL(m_uniformGridPanel, ArgusUILog);
 
-	const int32 currentNumberOfIcons = m_abilityIcons.Num();
-	const int32 numberOfAbilitiesInQueue = abilityRecordIds.Num();
+	const int32 currentNumberOfIcons = m_icons.Num();
+	const int32 numberOfAbilitiesInQueue = recordIds.Num();
 
 	if (numberOfAbilitiesInQueue == m_lastUpdateAbilityCount)
 	{
@@ -71,44 +76,44 @@ void UAbilityQueueWidget::SetAbilityIcons(const TArray<uint32>& abilityRecordIds
 	{
 		for (int32 i = numberOfAbilitiesInQueue; i < currentNumberOfIcons; ++i)
 		{
-			if (!m_abilityIcons[i])
+			if (!m_icons[i])
 			{
 				continue;
 			}
 
-			m_abilityIcons[i]->SetVisibility(ESlateVisibility::Collapsed);
+			m_icons[i]->SetVisibility(ESlateVisibility::Collapsed);
 			m_gridSlots[i]->SetRow(0);
 			m_gridSlots[i]->SetColumn(0);
 		}
 	}
 	else if (numberOfAbilitiesInQueue > currentNumberOfIcons)
 	{
-		m_abilityIcons.Reserve(numberOfAbilitiesInQueue);
+		m_icons.Reserve(numberOfAbilitiesInQueue);
 		m_gridSlots.Reserve(numberOfAbilitiesInQueue);
 		for (int32 i = 0; i < numberOfAbilitiesInQueue - currentNumberOfIcons; ++i)
 		{
-			m_abilityIcons.Add(WidgetTree->ConstructWidget<UImage>());
-			m_gridSlots.Add(m_uniformGridPanel->AddChildToUniformGrid(m_abilityIcons[m_abilityIcons.Num() - 1]));
+			m_icons.Add(WidgetTree->ConstructWidget<UImage>());
+			m_gridSlots.Add(m_uniformGridPanel->AddChildToUniformGrid(m_icons[m_icons.Num() - 1]));
 		}
 	}
 
 	for (int32 i = 0; i < numberOfAbilitiesInQueue; ++i)
 	{
-		if (!m_abilityIcons[i])
+		if (!m_icons[i])
 		{
 			continue;
 		}
 
-		const UAbilityRecord* abilityRecord = ArgusStaticData::GetRecord<UAbilityRecord>(abilityRecordIds[i]);
+		const UAbilityRecord* abilityRecord = ArgusStaticData::GetRecord<UAbilityRecord>(recordIds[i]);
 		if (!abilityRecord)
 		{
 			continue;
 		}
 
-		m_abilityIcons[i]->SetVisibility(ESlateVisibility::HitTestInvisible);
-		FSlateBrush slotBrush = m_abilityImageSlateBrush;
+		m_icons[i]->SetVisibility(ESlateVisibility::HitTestInvisible);
+		FSlateBrush slotBrush = m_iconImageSlateBrush;
 		slotBrush.SetResourceObject(abilityRecord->m_abilityIcon.LoadAndStorePtr());
-		m_abilityIcons[i]->SetBrush(slotBrush);
+		m_icons[i]->SetBrush(slotBrush);
 		m_gridSlots[i]->SetHorizontalAlignment(EHorizontalAlignment::HAlign_Left);
 		m_gridSlots[i]->SetVerticalAlignment(EVerticalAlignment::VAlign_Center);
 		m_gridSlots[i]->SetRow(0);

@@ -5,7 +5,7 @@
 #include "ArgusUIElement.h"
 #include "SingleSelectedEntityView.generated.h"
 
-class UAbilityQueueWidget;
+class UIconQueueWidget;
 class UArgusActorHealthBarWidget;
 class UImage;
 class UTextBlock;
@@ -33,5 +33,5 @@ protected:
 	TObjectPtr<UArgusActorHealthBarWidget> m_entityHealthBar = nullptr;
 
 	UPROPERTY(BlueprintReadWrite, Transient)
-	TObjectPtr<UAbilityQueueWidget> m_spawnQueue = nullptr;
+	TObjectPtr<UIconQueueWidget> m_spawnQueue = nullptr;
 };

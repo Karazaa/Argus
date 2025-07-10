@@ -102,8 +102,8 @@ private:
 		const ArgusEntity m_entity;
 		const FInputActionValue m_value;
 
-		InputCache(const InputType type, const FInputActionValue value) : m_type(type), m_value(value), m_entity(ArgusEntity::k_emptyEntity) { }
-		InputCache(const InputType type, const ArgusEntity& entity) : m_type(type), m_value(FInputActionValue()), m_entity(entity) {}
+		InputCache(const InputType type, const FInputActionValue value) : m_type(type), m_entity(ArgusEntity::k_emptyEntity), m_value(value) {}
+		InputCache(const InputType type, const ArgusEntity& entity) : m_type(type), m_entity(entity), m_value(FInputActionValue()) {}
 	};
 
 	TWeakObjectPtr<AArgusPlayerController> m_owningPlayerController = nullptr;

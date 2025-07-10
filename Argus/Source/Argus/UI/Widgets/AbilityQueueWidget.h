@@ -11,14 +11,15 @@ class UUniformGridPanel;
 class UUniformGridSlot;
 
 UENUM(BlueprintType)
-enum class EAbilityQueueDataSource : uint8 
+enum class EIconQueueDataSource : uint8 
 {
 	SpawnQueue,
-	AbilityQueue
+	AbilityQueue,
+	CarrierPassengers
 };
 
 UCLASS()
-class UAbilityQueueWidget : public UArgusUIElement
+class UIconQueueWidget : public UArgusUIElement
 {
 	GENERATED_BODY()
 
@@ -27,26 +28,27 @@ public:
 
 protected:
 	UPROPERTY(EditAnywhere)
-	EAbilityQueueDataSource m_abilityQueueDataSource = EAbilityQueueDataSource::SpawnQueue;
+	EIconQueueDataSource m_iconQueueDataSource = EIconQueueDataSource::SpawnQueue;
 
 	UPROPERTY(BlueprintReadWrite, Transient)
 	TObjectPtr<UUniformGridPanel> m_uniformGridPanel = nullptr;
 
 	UPROPERTY(EditAnywhere)
-	FSlateBrush m_abilityImageSlateBrush;
+	FSlateBrush m_iconImageSlateBrush;
 
 	UPROPERTY(EditAnywhere)
-	FSlateBrush m_secondRowAbilityImageSlateBrush;
+	FSlateBrush m_secondRowIconImageSlateBrush;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	TArray<UImage*> m_abilityIcons;
+	UPROPERTY(Transient)
+	TArray<UImage*> m_icons;
 
 	UPROPERTY(Transient)
 	TArray<UUniformGridSlot*> m_gridSlots;
 
 	void RefreshDisplayFromSpawnQueue(const ArgusEntity& selectedEntity);
 	void RefreshDisplayFromAbilityQueue(const ArgusEntity& selectedEntity);
-	void SetAbilityIcons(const TArray<uint32>& abilityRecordIds);
+	void RefreshDisplayFromCarrierPassengers(const ArgusEntity& selectedEntity);
+	void SetIconStates(const TArray<uint32>& recordIds);
 
 	int32 m_lastUpdateAbilityCount = 0;
 };
