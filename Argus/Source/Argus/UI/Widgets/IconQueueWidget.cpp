@@ -1,6 +1,6 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
-#include "Widgets/AbilityQueueWidget.h"
+#include "Widgets/IconQueueWidget.h"
 #include "ArgusEntity.h"
 #include "ArgusStaticData.h"
 #include "Blueprint/WidgetTree.h"

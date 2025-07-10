@@ -3,7 +3,7 @@
 #pragma once
 
 #include "ArgusUIElement.h"
-#include "AbilityQueueWidget.generated.h"
+#include "IconQueueWidget.generated.h"
 
 class ArgusEntity;
 class UImage;

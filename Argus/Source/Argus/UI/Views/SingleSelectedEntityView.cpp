@@ -5,8 +5,8 @@
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "RecordDefinitions/ArgusActorRecord.h"
-#include "Widgets/AbilityQueueWidget.h"
 #include "Widgets/ArgusActorHealthBarWidget.h"
+#include "Widgets/IconQueueWidget.h"
 
 void USingleSelectedEntityView::UpdateDisplay(const UpdateDisplayParameters& updateDisplayParams)
 {
