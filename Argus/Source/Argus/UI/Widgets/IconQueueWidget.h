@@ -7,6 +7,7 @@
 
 class ArgusEntity;
 class UImage;
+class UTexture;
 class UUniformGridPanel;
 class UUniformGridSlot;
 
@@ -36,9 +37,6 @@ protected:
 	UPROPERTY(EditAnywhere)
 	FSlateBrush m_iconImageSlateBrush;
 
-	UPROPERTY(EditAnywhere)
-	FSlateBrush m_secondRowIconImageSlateBrush;
-
 	UPROPERTY(Transient)
 	TArray<UImage*> m_icons;
 
@@ -49,6 +47,7 @@ protected:
 	void RefreshDisplayFromAbilityQueue(const ArgusEntity& selectedEntity);
 	void RefreshDisplayFromCarrierPassengers(const ArgusEntity& selectedEntity);
 	void SetIconStates(const TArray<uint32>& recordIds);
+	UTexture* GetIconTextureForRecord(uint32 recordId);
 
-	int32 m_lastUpdateAbilityCount = 0;
+	int32 m_lastUpdateVisibleIconCount = 0;
 };

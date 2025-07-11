@@ -18,6 +18,11 @@ void UIconQueueWidget::RefreshDisplay(const ArgusEntity& selectedEntity)
 		case EIconQueueDataSource::AbilityQueue:
 			RefreshDisplayFromAbilityQueue(selectedEntity);
 			break;
+		case EIconQueueDataSource::CarrierPassengers:
+			RefreshDisplayFromCarrierPassengers(selectedEntity);
+			break;
+		default:
+			break;
 	}
 }
 
@@ -43,7 +48,7 @@ void UIconQueueWidget::RefreshDisplayFromSpawnQueue(const ArgusEntity& selectedE
 		spawnQueueAbilityRecordIds.Add(info.m_spawningAbilityRecordId);
 	}
 
-	if (spawnQueueAbilityRecordIds.Num() != m_lastUpdateAbilityCount)
+	if (spawnQueueAbilityRecordIds.Num() != m_lastUpdateVisibleIconCount)
 	{
 		SetIconStates(spawnQueueAbilityRecordIds);
 	}
@@ -56,7 +61,34 @@ void UIconQueueWidget::RefreshDisplayFromAbilityQueue(const ArgusEntity& selecte
 
 void UIconQueueWidget::RefreshDisplayFromCarrierPassengers(const ArgusEntity& selectedEntity)
 {
+	const CarrierComponent* carrierComponent = selectedEntity.GetComponent<CarrierComponent>();
+	if (!carrierComponent)
+	{
+		SetVisibility(ESlateVisibility::Collapsed);
+		return;
+	}
 
+	if (!IsVisible())
+	{
+		SetVisibility(ESlateVisibility::HitTestInvisible);
+	}
+
+	const int32 numPassengers = carrierComponent->m_passengerEntityIds.Num();
+	TArray<uint32> passengerArgusActorRecordIds;
+	passengerArgusActorRecordIds.Reserve(numPassengers);
+
+	for (int32 i = 0; i < numPassengers; ++i)
+	{
+		ArgusEntity passengerEntity = ArgusEntity::RetrieveEntity(carrierComponent->m_passengerEntityIds[i]);
+		const TaskComponent* taskComponent = passengerEntity.GetComponent<TaskComponent>();
+		ARGUS_RETURN_ON_NULL(taskComponent, ArgusUILog);
+		passengerArgusActorRecordIds.Add(taskComponent->m_spawnedFromArgusActorRecordId);
+	}
+
+	if (passengerArgusActorRecordIds.Num() != m_lastUpdateVisibleIconCount)
+	{
+		SetIconStates(passengerArgusActorRecordIds);
+	}
 }
 
 void UIconQueueWidget::SetIconStates(const TArray<uint32>& recordIds)
@@ -64,17 +96,17 @@ void UIconQueueWidget::SetIconStates(const TArray<uint32>& recordIds)
 	ARGUS_RETURN_ON_NULL(m_uniformGridPanel, ArgusUILog);
 
 	const int32 currentNumberOfIcons = m_icons.Num();
-	const int32 numberOfAbilitiesInQueue = recordIds.Num();
+	const int32 numberOfRecordsInQueque = recordIds.Num();
 
-	if (numberOfAbilitiesInQueue == m_lastUpdateAbilityCount)
+	if (numberOfRecordsInQueque == m_lastUpdateVisibleIconCount)
 	{
 		return;
 	}
-	m_lastUpdateAbilityCount = numberOfAbilitiesInQueue;
+	m_lastUpdateVisibleIconCount = numberOfRecordsInQueque;
 
-	if (currentNumberOfIcons > numberOfAbilitiesInQueue)
+	if (currentNumberOfIcons > numberOfRecordsInQueque)
 	{
-		for (int32 i = numberOfAbilitiesInQueue; i < currentNumberOfIcons; ++i)
+		for (int32 i = numberOfRecordsInQueque; i < currentNumberOfIcons; ++i)
 		{
 			if (!m_icons[i])
 			{
@@ -86,37 +118,55 @@ void UIconQueueWidget::SetIconStates(const TArray<uint32>& recordIds)
 			m_gridSlots[i]->SetColumn(0);
 		}
 	}
-	else if (numberOfAbilitiesInQueue > currentNumberOfIcons)
+	else if (numberOfRecordsInQueque > currentNumberOfIcons)
 	{
-		m_icons.Reserve(numberOfAbilitiesInQueue);
-		m_gridSlots.Reserve(numberOfAbilitiesInQueue);
-		for (int32 i = 0; i < numberOfAbilitiesInQueue - currentNumberOfIcons; ++i)
+		m_icons.Reserve(numberOfRecordsInQueque);
+		m_gridSlots.Reserve(numberOfRecordsInQueque);
+		for (int32 i = 0; i < numberOfRecordsInQueque - currentNumberOfIcons; ++i)
 		{
 			m_icons.Add(WidgetTree->ConstructWidget<UImage>());
 			m_gridSlots.Add(m_uniformGridPanel->AddChildToUniformGrid(m_icons[m_icons.Num() - 1]));
 		}
 	}
 
-	for (int32 i = 0; i < numberOfAbilitiesInQueue; ++i)
+	for (int32 i = 0; i < numberOfRecordsInQueque; ++i)
 	{
 		if (!m_icons[i])
 		{
 			continue;
 		}
 
-		const UAbilityRecord* abilityRecord = ArgusStaticData::GetRecord<UAbilityRecord>(recordIds[i]);
-		if (!abilityRecord)
-		{
-			continue;
-		}
-
 		m_icons[i]->SetVisibility(ESlateVisibility::HitTestInvisible);
 		FSlateBrush slotBrush = m_iconImageSlateBrush;
-		slotBrush.SetResourceObject(abilityRecord->m_abilityIcon.LoadAndStorePtr());
+		slotBrush.SetResourceObject(GetIconTextureForRecord(recordIds[i]));
 		m_icons[i]->SetBrush(slotBrush);
 		m_gridSlots[i]->SetHorizontalAlignment(EHorizontalAlignment::HAlign_Left);
 		m_gridSlots[i]->SetVerticalAlignment(EVerticalAlignment::VAlign_Center);
 		m_gridSlots[i]->SetRow(0);
 		m_gridSlots[i]->SetColumn(i);
 	}
+}
+
+UTexture* UIconQueueWidget::GetIconTextureForRecord(uint32 recordId)
+{
+	switch (m_iconQueueDataSource)
+	{
+		case EIconQueueDataSource::AbilityQueue:
+		case EIconQueueDataSource::SpawnQueue:
+			if (const UAbilityRecord* abilityRecord = ArgusStaticData::GetRecord<UAbilityRecord>(recordId))
+			{
+				return abilityRecord->m_abilityIcon.LoadAndStorePtr();
+			}
+			break;
+		case EIconQueueDataSource::CarrierPassengers:
+			if (const UArgusActorRecord* actorRecord = ArgusStaticData::GetRecord<UArgusActorRecord>(recordId))
+			{
+				return actorRecord->m_actorInfoIcon.LoadAndStorePtr();
+			}
+			break;
+		default:
+			break;
+	}
+
+	return nullptr;
 }
