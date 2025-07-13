@@ -7,6 +7,7 @@
 
 class UIconQueueWidget;
 class UArgusActorHealthBarWidget;
+class UArgusActorCastBarWidget;
 class UImage;
 class UTextBlock;
 
@@ -31,6 +32,9 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, Transient)
 	TObjectPtr<UArgusActorHealthBarWidget> m_entityHealthBar = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, Transient)
+	TObjectPtr<UArgusActorCastBarWidget> m_entityCastBar = nullptr;
 
 	UPROPERTY(BlueprintReadWrite, Transient)
 	TObjectPtr<UIconQueueWidget> m_iconQueue = nullptr;

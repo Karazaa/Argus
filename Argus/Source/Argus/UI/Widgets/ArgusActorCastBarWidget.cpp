@@ -40,7 +40,7 @@ void UArgusActorCastBarWidget::RefreshDisplay(const ArgusEntity& argusEntity)
 	if (spawningComponent && !shouldBeVisible)
 	{
 		timeElapsedProportion = spawningComponent->m_spawnTimerHandle.GetTimeElapsedProportion(argusEntity);
-		shouldBeVisible = timeElapsedProportion > 0.0f;
+		shouldBeVisible = spawningComponent->m_spawnQueue.Num() > 0 || timeElapsedProportion > 0.0f;
 		fillColor = m_abilityCastColor;
 	}
 
