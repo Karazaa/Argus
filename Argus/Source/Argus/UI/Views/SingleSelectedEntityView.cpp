@@ -11,7 +11,7 @@
 void USingleSelectedEntityView::UpdateDisplay(const UpdateDisplayParameters& updateDisplayParams)
 {
 	ARGUS_RETURN_ON_NULL(m_entityHealthBar, ArgusUILog);
-	ARGUS_RETURN_ON_NULL(m_spawnQueue, ArgusUILog);
+	ARGUS_RETURN_ON_NULL(m_iconQueue, ArgusUILog);
 
 	const InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::GetSingletonEntity().GetComponent<InputInterfaceComponent>();
 	if (!inputInterfaceComponent || !inputInterfaceComponent->m_selectedArgusEntityIds.Num())
@@ -21,7 +21,7 @@ void USingleSelectedEntityView::UpdateDisplay(const UpdateDisplayParameters& upd
 
 	ArgusEntity selectedEntity = ArgusEntity::RetrieveEntity(inputInterfaceComponent->m_selectedArgusEntityIds[0]);
 	m_entityHealthBar->RefreshDisplay(selectedEntity);
-	m_spawnQueue->RefreshDisplay(selectedEntity);
+	m_iconQueue->RefreshDisplay(selectedEntity);
 }
 
 void USingleSelectedEntityView::OnUpdateSelectedArgusActors(const ArgusEntity& templateEntity)
@@ -29,6 +29,7 @@ void USingleSelectedEntityView::OnUpdateSelectedArgusActors(const ArgusEntity& t
 	ARGUS_RETURN_ON_NULL(m_entityImage, ArgusUILog);
 	ARGUS_RETURN_ON_NULL(m_entityName, ArgusUILog);
 	ARGUS_RETURN_ON_NULL(m_entityHealthBar, ArgusUILog);
+	ARGUS_RETURN_ON_NULL(m_iconQueue, ArgusUILog);
 
 	const UArgusActorRecord* templateArgusActorRecord = templateEntity.GetAssociatedActorRecord();
 	if (!templateArgusActorRecord)
@@ -40,4 +41,15 @@ void USingleSelectedEntityView::OnUpdateSelectedArgusActors(const ArgusEntity& t
 	m_entityImage->SetBrush(m_entityImageSlateBrush);
 	m_entityName->SetText(templateArgusActorRecord->m_actorInfoName);
 	m_entityHealthBar->SetInitialDisplay(templateEntity);
+
+	EIconQueueDataSource dataSource = EIconQueueDataSource::AbilityQueue;
+	if (CarrierComponent* carrierComponent = templateEntity.GetComponent<CarrierComponent>())
+	{
+		dataSource = EIconQueueDataSource::CarrierPassengers;
+	}
+	else if (SpawningComponent* spawningComponent = templateEntity.GetComponent<SpawningComponent>())
+	{
+		dataSource = EIconQueueDataSource::SpawnQueue;
+	}
+	m_iconQueue->SetIconQueueDataSource(dataSource, templateEntity);
 }

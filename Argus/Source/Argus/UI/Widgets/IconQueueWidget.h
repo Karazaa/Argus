@@ -16,7 +16,8 @@ enum class EIconQueueDataSource : uint8
 {
 	SpawnQueue,
 	AbilityQueue,
-	CarrierPassengers
+	CarrierPassengers,
+	Count UMETA(Hidden)
 };
 
 UCLASS()
@@ -26,16 +27,14 @@ class UIconQueueWidget : public UArgusUIElement
 
 public:
 	void RefreshDisplay(const ArgusEntity& selectedEntity);
+	void SetIconQueueDataSource(EIconQueueDataSource dataSource, const ArgusEntity& selectedEntity);
 
 protected:
-	UPROPERTY(EditAnywhere)
-	EIconQueueDataSource m_iconQueueDataSource = EIconQueueDataSource::SpawnQueue;
-
 	UPROPERTY(BlueprintReadWrite, Transient)
 	TObjectPtr<UUniformGridPanel> m_uniformGridPanel = nullptr;
 
 	UPROPERTY(EditAnywhere)
-	FSlateBrush m_iconImageSlateBrush;
+	FSlateBrush m_iconImageSlateBrushes[static_cast<uint8>(EIconQueueDataSource::Count)];
 
 	UPROPERTY(Transient)
 	TArray<UImage*> m_icons;
@@ -49,5 +48,6 @@ protected:
 	void SetIconStates(const TArray<uint32>& recordIds);
 	UTexture* GetIconTextureForRecord(uint32 recordId);
 
+	EIconQueueDataSource m_iconQueueDataSource = EIconQueueDataSource::SpawnQueue;
 	int32 m_lastUpdateVisibleIconCount = 0;
 };

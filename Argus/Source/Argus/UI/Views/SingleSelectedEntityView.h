@@ -33,5 +33,5 @@ protected:
 	TObjectPtr<UArgusActorHealthBarWidget> m_entityHealthBar = nullptr;
 
 	UPROPERTY(BlueprintReadWrite, Transient)
-	TObjectPtr<UIconQueueWidget> m_spawnQueue = nullptr;
+	TObjectPtr<UIconQueueWidget> m_iconQueue = nullptr;
 };

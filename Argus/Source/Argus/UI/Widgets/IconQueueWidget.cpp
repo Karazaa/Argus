@@ -26,6 +26,17 @@ void UIconQueueWidget::RefreshDisplay(const ArgusEntity& selectedEntity)
 	}
 }
 
+void UIconQueueWidget::SetIconQueueDataSource(EIconQueueDataSource dataSource, const ArgusEntity& selectedEntity)
+{
+	if (dataSource == m_iconQueueDataSource)
+	{
+		return;
+	}
+
+	m_iconQueueDataSource = dataSource;
+	RefreshDisplay(selectedEntity);
+}
+
 void UIconQueueWidget::RefreshDisplayFromSpawnQueue(const ArgusEntity& selectedEntity)
 {
 	const SpawningComponent* spawningComponent = selectedEntity.GetComponent<SpawningComponent>();
@@ -137,7 +148,7 @@ void UIconQueueWidget::SetIconStates(const TArray<uint32>& recordIds)
 		}
 
 		m_icons[i]->SetVisibility(ESlateVisibility::HitTestInvisible);
-		FSlateBrush slotBrush = m_iconImageSlateBrush;
+		FSlateBrush slotBrush = m_iconImageSlateBrushes[static_cast<uint8>(m_iconQueueDataSource)];
 		slotBrush.SetResourceObject(GetIconTextureForRecord(recordIds[i]));
 		m_icons[i]->SetBrush(slotBrush);
 		m_gridSlots[i]->SetHorizontalAlignment(EHorizontalAlignment::HAlign_Left);
