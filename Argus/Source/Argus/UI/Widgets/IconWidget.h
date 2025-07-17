@@ -5,17 +5,24 @@
 #include "ArgusUIElement.h"
 #include "IconWidget.generated.h"
 
+class UImage;
+
 UCLASS()
 class UIconWidget : public UArgusUIElement
 {
 	GENERATED_BODY()
 
 public:
-	// Populate function
+	void Populate(const TFunction<void(uint16)>& onClickedCallback, uint16 identifier);
+	void SetBrush(const FSlateBrush& brush);
+	virtual FReply NativeOnMouseButtonDown(const FGeometry& inGeometry, const FPointerEvent& nMouseEvent) override;
 
 protected:
-	TFunction<void(int32)> m_onClickedListener = nullptr;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TObjectPtr<UImage> m_icon = nullptr;
+
+	TFunction<void(uint16)> m_onClickedCallback = nullptr;
 
 private:
-	int32 m_index = 0;
+	uint16 m_identifier = 0u;
 };

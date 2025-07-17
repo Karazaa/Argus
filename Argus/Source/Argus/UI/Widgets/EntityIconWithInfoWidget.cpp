@@ -8,7 +8,6 @@
 void UEntityIconWithInfoWidget::Populate(const ArgusEntity& entity, const FSlateBrush& brush, UArgusInputManager* inputManager)
 {
 	ARGUS_RETURN_ON_NULL(m_entityIcon, ArgusUILog);
-	ARGUS_RETURN_ON_NULL(inputManager, ArgusUILog);
 
 	m_entityIcon->SetBrush(brush);
 	SetInitialDisplay(entity);
@@ -17,14 +16,12 @@ void UEntityIconWithInfoWidget::Populate(const ArgusEntity& entity, const FSlate
 	m_inputManager = inputManager;
 }
 
-FReply UEntityIconWithInfoWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+FReply UEntityIconWithInfoWidget::NativeOnMouseButtonDown(const FGeometry& inGeometry, const FPointerEvent& inMouseEvent)
 {
-	if (!m_inputManager.IsValid())
+	if (m_inputManager.IsValid())
 	{
-		return FReply::Handled();
+		m_inputManager->OnUserInterfaceEntityClicked(m_trackedEntity);
 	}
 
-	m_inputManager->OnUserInterfaceEntityClicked(m_trackedEntity);
-
-	return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
+	return Super::NativeOnMouseButtonDown(inGeometry, inMouseEvent);
 }

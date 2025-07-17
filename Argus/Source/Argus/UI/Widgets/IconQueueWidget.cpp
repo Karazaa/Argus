@@ -3,10 +3,10 @@
 #include "Widgets/IconQueueWidget.h"
 #include "ArgusEntity.h"
 #include "ArgusStaticData.h"
-#include "Blueprint/WidgetTree.h"
 #include "Components/Image.h"
 #include "Components/UniformGridPanel.h"
 #include "Components/UniformGridSlot.h"
+#include "Widgets/IconWidget.h"
 
 void UIconQueueWidget::RefreshDisplay(const ArgusEntity& selectedEntity)
 {
@@ -48,7 +48,7 @@ void UIconQueueWidget::RefreshDisplayFromSpawnQueue(const ArgusEntity& selectedE
 
 	if (!IsVisible())
 	{
-		SetVisibility(ESlateVisibility::HitTestInvisible);
+		SetVisibility(ESlateVisibility::Visible);
 	}
 
 	TArray<uint32> spawnQueueAbilityRecordIds;
@@ -81,7 +81,7 @@ void UIconQueueWidget::RefreshDisplayFromCarrierPassengers(const ArgusEntity& se
 
 	if (!IsVisible())
 	{
-		SetVisibility(ESlateVisibility::HitTestInvisible);
+		SetVisibility(ESlateVisibility::Visible);
 	}
 
 	const int32 numPassengers = carrierComponent->m_passengerEntityIds.Num();
@@ -105,6 +105,7 @@ void UIconQueueWidget::RefreshDisplayFromCarrierPassengers(const ArgusEntity& se
 void UIconQueueWidget::SetIconStates(const TArray<uint32>& recordIds)
 {
 	ARGUS_RETURN_ON_NULL(m_uniformGridPanel, ArgusUILog);
+	ARGUS_RETURN_ON_NULL(m_iconWidgetClass, ArgusUILog);
 
 	const int32 currentNumberOfIcons = m_icons.Num();
 	const int32 numberOfRecordsInQueque = recordIds.Num();
@@ -135,8 +136,12 @@ void UIconQueueWidget::SetIconStates(const TArray<uint32>& recordIds)
 		m_gridSlots.Reserve(numberOfRecordsInQueque);
 		for (int32 i = 0; i < numberOfRecordsInQueque - currentNumberOfIcons; ++i)
 		{
-			m_icons.Add(WidgetTree->ConstructWidget<UImage>());
-			m_gridSlots.Add(m_uniformGridPanel->AddChildToUniformGrid(m_icons[m_icons.Num() - 1]));
+			m_icons.Add(CreateWidget<UIconWidget>(GetOwningPlayer(), m_iconWidgetClass));
+			const int32 index = m_icons.Num() - 1;
+			UIconWidget* icon = m_icons[index];
+			ARGUS_RETURN_ON_NULL(icon, ArgusUILog);
+			icon->Populate(nullptr, static_cast<uint16>(index));
+			m_gridSlots.Add(m_uniformGridPanel->AddChildToUniformGrid(icon));
 		}
 	}
 
@@ -147,7 +152,7 @@ void UIconQueueWidget::SetIconStates(const TArray<uint32>& recordIds)
 			continue;
 		}
 
-		m_icons[i]->SetVisibility(ESlateVisibility::HitTestInvisible);
+		m_icons[i]->SetVisibility(ESlateVisibility::Visible);
 		FSlateBrush slotBrush = m_iconImageSlateBrushes[static_cast<uint8>(m_iconQueueDataSource)];
 		slotBrush.SetResourceObject(GetIconTextureForRecord(recordIds[i]));
 		m_icons[i]->SetBrush(slotBrush);

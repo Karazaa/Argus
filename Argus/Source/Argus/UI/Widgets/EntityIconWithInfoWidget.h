@@ -17,7 +17,7 @@ class UEntityIconWithInfoWidget : public UArgusActorInfoView
 
 public:
 	void Populate(const ArgusEntity& entity, const FSlateBrush& brush, UArgusInputManager* inputManager);
-	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	virtual FReply NativeOnMouseButtonDown(const FGeometry& inGeometry, const FPointerEvent& inMouseEvent) override;
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

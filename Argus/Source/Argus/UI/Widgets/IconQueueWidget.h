@@ -6,6 +6,7 @@
 #include "IconQueueWidget.generated.h"
 
 class ArgusEntity;
+class UIconWidget;
 class UImage;
 class UTexture;
 class UUniformGridPanel;
@@ -36,8 +37,11 @@ protected:
 	UPROPERTY(EditAnywhere)
 	FSlateBrush m_iconImageSlateBrushes[static_cast<uint8>(EIconQueueDataSource::Count)];
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UIconWidget> m_iconWidgetClass = nullptr;
+
 	UPROPERTY(Transient)
-	TArray<UImage*> m_icons;
+	TArray<UIconWidget*> m_icons;
 
 	UPROPERTY(Transient)
 	TArray<UUniformGridSlot*> m_gridSlots;
