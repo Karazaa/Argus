@@ -621,22 +621,25 @@ FVector2D AvoidanceSystems::GetDesiredVelocity(const TransformSystemsArgs& compo
 	const int32 futureIndex = components.m_navigationComponent->m_lastPointIndex + 1;
 	const int32 numNavigationPoints = components.m_navigationComponent->m_navigationPoints.Num();
 	FVector desiredDirection = FVector::ZeroVector;
-	if (numNavigationPoints != 0u && futureIndex < numNavigationPoints)
-	{
-		TOptional<FVector> sourceLocation = GetAvoidanceGroupSourceLocation(components);
-		if (!sourceLocation.IsSet())
-		{
-			sourceLocation = components.m_transformComponent->m_location;
-		}
-		desiredDirection = (components.m_navigationComponent->m_navigationPoints[futureIndex] - sourceLocation.GetValue());
-	}
-	else
+
+	if (numNavigationPoints == 0u || futureIndex >= numNavigationPoints)
 	{
 		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Attempting to process ORCA, but the source %s's %s is in an invalid state."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(NavigationComponent));
-		desiredDirection = ArgusMath::GetDirectionFromYaw(components.m_transformComponent->GetCurrentYaw());
+		return FVector2D::ZeroVector;
 	}
 
-	return ArgusMath::ToCartesianVector2(FVector2D(desiredDirection).GetSafeNormal() * components.m_velocityComponent->m_desiredSpeedUnitsPerSecond);
+	TOptional<FVector> sourceLocation = GetAvoidanceGroupSourceLocation(components);
+	if (!sourceLocation.IsSet())
+	{
+		sourceLocation = components.m_transformComponent->m_location;
+	}
+	desiredDirection = (components.m_navigationComponent->m_navigationPoints[futureIndex] - sourceLocation.GetValue());
+	FVector2D desiredDirection2D = FVector2D(desiredDirection);
+	const FVector2D towardsAvoidanceGroupSourceLocation = FVector2D(sourceLocation.GetValue() - components.m_transformComponent->m_location);
+	desiredDirection2D += towardsAvoidanceGroupSourceLocation;
+	desiredDirection2D.Normalize();
+
+	return ArgusMath::ToCartesianVector2(desiredDirection2D * components.m_velocityComponent->m_desiredSpeedUnitsPerSecond);
 }
 
 float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystemsArgs& sourceEntityComponents, const ArgusEntity& foundEntity)
