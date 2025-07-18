@@ -2,6 +2,7 @@
 
 #include "Widgets/IconQueueWidget.h"
 #include "ArgusEntity.h"
+#include "ArgusInputManager.h"
 #include "ArgusStaticData.h"
 #include "Components/Image.h"
 #include "Components/UniformGridPanel.h"
@@ -10,16 +11,17 @@
 
 void UIconQueueWidget::RefreshDisplay(const ArgusEntity& selectedEntity)
 {
+	m_trackedEntity = selectedEntity;
 	switch (m_iconQueueDataSource)
 	{
 		case EIconQueueDataSource::SpawnQueue:
-			RefreshDisplayFromSpawnQueue(selectedEntity);
+			RefreshDisplayFromSpawnQueue();
 			break;
 		case EIconQueueDataSource::AbilityQueue:
-			RefreshDisplayFromAbilityQueue(selectedEntity);
+			RefreshDisplayFromAbilityQueue();
 			break;
 		case EIconQueueDataSource::CarrierPassengers:
-			RefreshDisplayFromCarrierPassengers(selectedEntity);
+			RefreshDisplayFromCarrierPassengers();
 			break;
 		default:
 			break;
@@ -37,9 +39,36 @@ void UIconQueueWidget::SetIconQueueDataSource(EIconQueueDataSource dataSource, c
 	RefreshDisplay(selectedEntity);
 }
 
-void UIconQueueWidget::RefreshDisplayFromSpawnQueue(const ArgusEntity& selectedEntity)
+void UIconQueueWidget::OnIconClicked(uint16 identifier)
 {
-	const SpawningComponent* spawningComponent = selectedEntity.GetComponent<SpawningComponent>();
+	if (!m_inputManager.IsValid())
+	{
+		return;
+	}
+
+	switch (m_iconQueueDataSource)
+	{
+		case EIconQueueDataSource::SpawnQueue:
+			break;
+		case EIconQueueDataSource::AbilityQueue:
+			break;
+		case EIconQueueDataSource::CarrierPassengers:
+			if (const CarrierComponent* carrierComponent = m_trackedEntity.GetComponent<CarrierComponent>())
+			{
+				if (identifier < carrierComponent->m_passengerEntityIds.Num())
+				{
+					m_inputManager->OnUserInterfaceEntityClicked(ArgusEntity::RetrieveEntity(carrierComponent->m_passengerEntityIds[identifier]));
+				}
+			}
+			break;
+		default:
+			break;
+	}
+}
+
+void UIconQueueWidget::RefreshDisplayFromSpawnQueue()
+{
+	const SpawningComponent* spawningComponent = m_trackedEntity.GetComponent<SpawningComponent>();
 	if (!spawningComponent)
 	{
 		SetVisibility(ESlateVisibility::Collapsed);
@@ -65,14 +94,14 @@ void UIconQueueWidget::RefreshDisplayFromSpawnQueue(const ArgusEntity& selectedE
 	}
 }
 
-void UIconQueueWidget::RefreshDisplayFromAbilityQueue(const ArgusEntity& selectedEntity)
+void UIconQueueWidget::RefreshDisplayFromAbilityQueue()
 {
 
 }
 
-void UIconQueueWidget::RefreshDisplayFromCarrierPassengers(const ArgusEntity& selectedEntity)
+void UIconQueueWidget::RefreshDisplayFromCarrierPassengers()
 {
-	const CarrierComponent* carrierComponent = selectedEntity.GetComponent<CarrierComponent>();
+	const CarrierComponent* carrierComponent = m_trackedEntity.GetComponent<CarrierComponent>();
 	if (!carrierComponent)
 	{
 		SetVisibility(ESlateVisibility::Collapsed);
@@ -140,7 +169,7 @@ void UIconQueueWidget::SetIconStates(const TArray<uint32>& recordIds)
 			const int32 index = m_icons.Num() - 1;
 			UIconWidget* icon = m_icons[index];
 			ARGUS_RETURN_ON_NULL(icon, ArgusUILog);
-			icon->Populate(nullptr, static_cast<uint16>(index));
+			icon->Populate([this](uint16 identifier) { this->OnIconClicked(identifier); }, static_cast<uint16>(index));
 			m_gridSlots.Add(m_uniformGridPanel->AddChildToUniformGrid(icon));
 		}
 	}

@@ -2,10 +2,10 @@
 
 #pragma once
 
+#include "ArgusEntity.h"
 #include "ArgusUIElement.h"
 #include "IconQueueWidget.generated.h"
 
-class ArgusEntity;
 class UIconWidget;
 class UImage;
 class UTexture;
@@ -29,6 +29,7 @@ class UIconQueueWidget : public UArgusUIElement
 public:
 	void RefreshDisplay(const ArgusEntity& selectedEntity);
 	void SetIconQueueDataSource(EIconQueueDataSource dataSource, const ArgusEntity& selectedEntity);
+	void OnIconClicked(uint16 identifier);
 
 protected:
 	UPROPERTY(BlueprintReadWrite, Transient)
@@ -46,12 +47,13 @@ protected:
 	UPROPERTY(Transient)
 	TArray<UUniformGridSlot*> m_gridSlots;
 
-	void RefreshDisplayFromSpawnQueue(const ArgusEntity& selectedEntity);
-	void RefreshDisplayFromAbilityQueue(const ArgusEntity& selectedEntity);
-	void RefreshDisplayFromCarrierPassengers(const ArgusEntity& selectedEntity);
+	void RefreshDisplayFromSpawnQueue();
+	void RefreshDisplayFromAbilityQueue();
+	void RefreshDisplayFromCarrierPassengers();
 	void SetIconStates(const TArray<uint32>& recordIds);
 	UTexture* GetIconTextureForRecord(uint32 recordId);
 
 	EIconQueueDataSource m_iconQueueDataSource = EIconQueueDataSource::SpawnQueue;
 	int32 m_lastUpdateVisibleIconCount = 0;
+	ArgusEntity m_trackedEntity = ArgusEntity::k_emptyEntity;
 };

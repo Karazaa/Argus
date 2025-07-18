@@ -57,4 +57,5 @@ void USingleSelectedEntityView::OnUpdateSelectedArgusActors(const ArgusEntity& t
 		dataSource = EIconQueueDataSource::SpawnQueue;
 	}
 	m_iconQueue->SetIconQueueDataSource(dataSource, templateEntity);
+	m_iconQueue->SetInputManager(m_inputManager.Get());
 }
