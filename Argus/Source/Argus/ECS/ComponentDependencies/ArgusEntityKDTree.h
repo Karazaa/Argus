@@ -30,14 +30,16 @@ struct ArgusEntityKDTreeNode
 
 struct ArgusEntityKDTreeQueryRangeThresholds
 {
-	ArgusEntityKDTreeQueryRangeThresholds(float rangedRangeThreshold, float meleeRangeThreshold, float avoidanceRangeThreshold) : 
+	ArgusEntityKDTreeQueryRangeThresholds(float rangedRangeThreshold, float meleeRangeThreshold, float avoidanceRangeThreshold, float flockingRangeThreshold) : 
 		m_rangedRangeThresholdSquared(rangedRangeThreshold * rangedRangeThreshold),
 		m_meleeRangeThresholdSquared(meleeRangeThreshold * meleeRangeThreshold),
-		m_avoidanceRangeThresholdSquared(avoidanceRangeThreshold * avoidanceRangeThreshold){}
+		m_avoidanceRangeThresholdSquared(avoidanceRangeThreshold * avoidanceRangeThreshold),
+		m_flockingRangeThresholdSquared(flockingRangeThreshold * flockingRangeThreshold){}
 
 	float m_rangedRangeThresholdSquared = 0.0f;
 	float m_meleeRangeThresholdSquared = 0.0f;
 	float m_avoidanceRangeThresholdSquared = 0.0f;
+	float m_flockingRangeThresholdSquared = 0.0f;
 };
 
 class ArgusEntityKDTreeRangeOutput
@@ -47,16 +49,18 @@ public:
 	void ConsolidateInArray(TArray<uint16>& allEntityIds);
 	void EmptyAll();
 	bool FoundAny() const;
-	const TArray<uint16>& GetEntitiesInSightRange() const { return m_entityIdsWithinSightRange; }
-	const TArray<uint16>& GetEntitiesInRangedRange() const { return m_entityIdsWithinRangedRange; }
-	const TArray<uint16>& GetEntitiesInMeleeRange() const { return m_entityIdsWithinMeleeRange; }
-	const TArray<uint16>& GetEntitiesInAvoidanceRange() const { return m_entityIdsWithinAvoidanceRange; }
+	const TArray<uint16>& GetEntityIdsInSightRange() const { return m_entityIdsWithinSightRange; }
+	const TArray<uint16>& GetEntityIdsInRangedRange() const { return m_entityIdsWithinRangedRange; }
+	const TArray<uint16>& GetEntityIdsInMeleeRange() const { return m_entityIdsWithinMeleeRange; }
+	const TArray<uint16>& GetEntityIdsInAvoidanceRange() const { return m_entityIdsWithinAvoidanceRange; }
+	const TArray<uint16>& GetEntityIdsInFlockingRange() const { return m_entityIdsWithinAvoidanceRange; }
 
 private:
 	TArray<uint16> m_entityIdsWithinSightRange;
 	TArray<uint16> m_entityIdsWithinRangedRange;
 	TArray<uint16> m_entityIdsWithinMeleeRange;
 	TArray<uint16> m_entityIdsWithinAvoidanceRange;
+	TArray<uint16> m_entityIdsWithinFlockingRange;
 };
 
 class ArgusEntityKDTree : public ArgusKDTree<ArgusEntityKDTreeNode, ArgusEntityKDTreeRangeOutput, ArgusEntityKDTreeQueryRangeThresholds>

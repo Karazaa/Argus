@@ -16,6 +16,13 @@ enum class EAvoidancePriority : uint8
 	Highest
 };
 
+UENUM()
+enum class EFlockingState : uint8
+{
+	Stable,
+	Shrinking
+};
+
 struct AvoidanceGroupingComponent
 {
 	ARGUS_COMPONENT_SHARED;
@@ -30,4 +37,7 @@ struct AvoidanceGroupingComponent
 	uint16 m_numberOfIdleEntities = 0u;
 
 	EAvoidancePriority m_avoidancePriority = EAvoidancePriority::Lowest;
+
+	ARGUS_IGNORE()
+	EFlockingState m_flockingState = EFlockingState::Stable;
 };

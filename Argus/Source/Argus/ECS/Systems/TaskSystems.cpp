@@ -42,9 +42,9 @@ void TaskSystems::ProcessIdleEntity(const TaskSystemsArgs& components)
 		return;
 	}
 
-	const TArray<uint16>& meleeRangeEntities = components.m_nearbyEntitiesComponent->m_nearbyEntities.GetEntitiesInMeleeRange();
-	const TArray<uint16>& rangedRangeEntities = components.m_nearbyEntitiesComponent->m_nearbyEntities.GetEntitiesInRangedRange();
-	const TArray<uint16>& sightRangeEntities = components.m_nearbyEntitiesComponent->m_nearbyEntities.GetEntitiesInSightRange();
+	const TArray<uint16>& meleeRangeEntities = components.m_nearbyEntitiesComponent->m_nearbyEntities.GetEntityIdsInMeleeRange();
+	const TArray<uint16>& rangedRangeEntities = components.m_nearbyEntitiesComponent->m_nearbyEntities.GetEntityIdsInRangedRange();
+	const TArray<uint16>& sightRangeEntities = components.m_nearbyEntitiesComponent->m_nearbyEntities.GetEntityIdsInSightRange();
 
 	for (int32 i = 0; i < meleeRangeEntities.Num(); ++i)
 	{
