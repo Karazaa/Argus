@@ -16,6 +16,7 @@ public:
 	static void					DecrementIdleEntitiesInGroup(const ArgusEntity& entity);
 	static TOptional<FVector>	GetAvoidanceGroupDestinationLocation(const TransformSystemsArgs& components);
 	static TOptional<FVector>	GetAvoidanceGroupSourceLocation(const TransformSystemsArgs& components);
+	static FVector2D			GetFlockingVelocity(const TransformSystemsArgs& components);
 
 private:
 	struct ORCALine

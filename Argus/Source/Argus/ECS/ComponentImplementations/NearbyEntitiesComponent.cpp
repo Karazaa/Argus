@@ -30,61 +30,61 @@ void NearbyEntitiesComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_nearbyEntities.GetEntitiesInAvoidanceRange()");
 		ImGui::TableNextColumn();
-		if (m_nearbyEntities.GetEntitiesInAvoidanceRange().Num() == 0)
+		if (m_nearbyEntities.GetEntityIdsInAvoidanceRange().Num() == 0)
 		{
 			ImGui::Text("Array is empty");
 		}
 		else
 		{
-			ImGui::Text("Size of array = %d", m_nearbyEntities.GetEntitiesInAvoidanceRange().Num());
-			for (int32 i = 0; i < m_nearbyEntities.GetEntitiesInAvoidanceRange().Num(); ++i)
+			ImGui::Text("Size of array = %d", m_nearbyEntities.GetEntityIdsInAvoidanceRange().Num());
+			for (int32 i = 0; i < m_nearbyEntities.GetEntityIdsInAvoidanceRange().Num(); ++i)
 			{
-				ImGui::Text("%d", m_nearbyEntities.GetEntitiesInAvoidanceRange()[i]);
+				ImGui::Text("%d", m_nearbyEntities.GetEntityIdsInAvoidanceRange()[i]);
 			}
 		}
 		ImGui::TableNextColumn();
 		ImGui::Text("m_nearbyEntities.GetEntitiesInSightRange()");
 		ImGui::TableNextColumn();
-		if (m_nearbyEntities.GetEntitiesInSightRange().Num() == 0)
+		if (m_nearbyEntities.GetEntityIdsInSightRange().Num() == 0)
 		{
 			ImGui::Text("Array is empty");
 		}
 		else
 		{
-			ImGui::Text("Size of array = %d", m_nearbyEntities.GetEntitiesInSightRange().Num());
-			for (int32 i = 0; i < m_nearbyEntities.GetEntitiesInSightRange().Num(); ++i)
+			ImGui::Text("Size of array = %d", m_nearbyEntities.GetEntityIdsInSightRange().Num());
+			for (int32 i = 0; i < m_nearbyEntities.GetEntityIdsInSightRange().Num(); ++i)
 			{
-				ImGui::Text("%d", m_nearbyEntities.GetEntitiesInSightRange()[i]);
+				ImGui::Text("%d", m_nearbyEntities.GetEntityIdsInSightRange()[i]);
 			}
 		}
 		ImGui::TableNextColumn();
 		ImGui::Text("m_nearbyEntities.GetEntitiesInRangedRange()");
 		ImGui::TableNextColumn();
-		if (m_nearbyEntities.GetEntitiesInRangedRange().Num() == 0)
+		if (m_nearbyEntities.GetEntityIdsInRangedRange().Num() == 0)
 		{
 			ImGui::Text("Array is empty");
 		}
 		else
 		{
-			ImGui::Text("Size of array = %d", m_nearbyEntities.GetEntitiesInRangedRange().Num());
-			for (int32 i = 0; i < m_nearbyEntities.GetEntitiesInRangedRange().Num(); ++i)
+			ImGui::Text("Size of array = %d", m_nearbyEntities.GetEntityIdsInRangedRange().Num());
+			for (int32 i = 0; i < m_nearbyEntities.GetEntityIdsInRangedRange().Num(); ++i)
 			{
-				ImGui::Text("%d", m_nearbyEntities.GetEntitiesInRangedRange()[i]);
+				ImGui::Text("%d", m_nearbyEntities.GetEntityIdsInRangedRange()[i]);
 			}
 		}
 		ImGui::TableNextColumn();
 		ImGui::Text("m_nearbyEntities.GetEntitiesInMeleeRange()");
 		ImGui::TableNextColumn();
-		if (m_nearbyEntities.GetEntitiesInMeleeRange().Num() == 0)
+		if (m_nearbyEntities.GetEntityIdsInMeleeRange().Num() == 0)
 		{
 			ImGui::Text("Array is empty");
 		}
 		else
 		{
-			ImGui::Text("Size of array = %d", m_nearbyEntities.GetEntitiesInMeleeRange().Num());
-			for (int32 i = 0; i < m_nearbyEntities.GetEntitiesInMeleeRange().Num(); ++i)
+			ImGui::Text("Size of array = %d", m_nearbyEntities.GetEntityIdsInMeleeRange().Num());
+			for (int32 i = 0; i < m_nearbyEntities.GetEntityIdsInMeleeRange().Num(); ++i)
 			{
-				ImGui::Text("%d", m_nearbyEntities.GetEntitiesInMeleeRange()[i]);
+				ImGui::Text("%d", m_nearbyEntities.GetEntityIdsInMeleeRange()[i]);
 			}
 		}
 		ImGui::EndTable();

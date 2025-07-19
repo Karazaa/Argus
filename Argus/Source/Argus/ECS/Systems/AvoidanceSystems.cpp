@@ -83,7 +83,7 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 	params.m_spatialPartitioningComponent = spatialPartitioningComponent;
 
 	// If no entities nearby, then nothing can effect our navigation, so we should just early out with a desired velocity. 
-	const TArray<uint16>& foundEntityIds = nearbyEntitiesComponent->m_nearbyEntities.GetEntitiesInAvoidanceRange();
+	const TArray<uint16>& foundEntityIds = nearbyEntitiesComponent->m_nearbyEntities.GetEntityIdsInAvoidanceRange();
 	if (foundEntityIds.IsEmpty())
 	{
 		components.m_velocityComponent->m_proposedAvoidanceVelocity = ArgusMath::ToUnrealVector2(desiredVelocity);
@@ -243,6 +243,35 @@ TOptional<FVector> AvoidanceSystems::GetAvoidanceGroupSourceLocation(const Trans
 
 	TOptional<FVector> output = TOptional<FVector>(groupLeaderAvoidanceGroupingComponent->m_groupAverageLocation);
 	return output;
+}
+
+FVector2D AvoidanceSystems::GetFlockingVelocity(const TransformSystemsArgs& components)
+{
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return FVector2D::ZeroVector;
+	}
+
+	const AvoidanceGroupingComponent* entityAvoidanceGroupComponent = components.m_entity.GetComponent<AvoidanceGroupingComponent>();
+	if (!entityAvoidanceGroupComponent)
+	{
+		return FVector2D::ZeroVector;
+	}
+
+	if (entityAvoidanceGroupComponent->m_flockingState == EFlockingState::Stable || 
+		entityAvoidanceGroupComponent->m_groupId == ArgusECSConstants::k_maxEntities || 
+		entityAvoidanceGroupComponent->m_groupId == components.m_entity.GetId())
+	{
+		return FVector2D::ZeroVector;
+	}
+
+	const AvoidanceGroupingComponent* groupLeaderAvoidanceGroupingComponent = ArgusEntity::RetrieveEntity(entityAvoidanceGroupComponent->m_groupId).GetComponent<AvoidanceGroupingComponent>();
+	if (!groupLeaderAvoidanceGroupingComponent)
+	{
+		return FVector2D::ZeroVector;
+	}
+
+	return FVector2D(groupLeaderAvoidanceGroupingComponent->m_groupAverageLocation - components.m_transformComponent->m_location);
 }
 
 void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const CreateEntityORCALinesParams& params, const TransformSystemsArgs& components, TArray<ORCALine>& outORCALines)
@@ -598,10 +627,12 @@ void AvoidanceSystems::ThreeDimensionalLinearProgram(const TArray<ORCALine>& orc
 
 FVector2D AvoidanceSystems::GetDesiredVelocity(const TransformSystemsArgs& components)
 {
+	const FVector2D flockingVelocity = GetFlockingVelocity(components);
+
 	// If we are not executing a move task, we would like to early out with zero velocity as our desired velocity (this may change as we define more functionality for AvoidanceGroups)
 	if (!components.m_taskComponent->IsExecutingMoveTask())
 	{
-		return FVector2D::ZeroVector;
+		return flockingVelocity.IsNearlyZero() ? FVector2D::ZeroVector : flockingVelocity.GetSafeNormal();
 	}
 
 	// If our group leader is stopped, we should come to a stop as well.
@@ -613,7 +644,7 @@ FVector2D AvoidanceSystems::GetDesiredVelocity(const TransformSystemsArgs& compo
 		{
 			components.m_taskComponent->m_movementState = EMovementState::AwaitingFinish;
 			components.m_velocityComponent->m_currentVelocity = FVector2D::ZeroVector;
-			return FVector2D::ZeroVector;
+			return flockingVelocity.IsNearlyZero() ? FVector2D::ZeroVector : flockingVelocity.GetSafeNormal();
 		}
 	}
 
@@ -634,9 +665,7 @@ FVector2D AvoidanceSystems::GetDesiredVelocity(const TransformSystemsArgs& compo
 		sourceLocation = components.m_transformComponent->m_location;
 	}
 	desiredDirection = (components.m_navigationComponent->m_navigationPoints[futureIndex] - sourceLocation.GetValue());
-	FVector2D desiredDirection2D = FVector2D(desiredDirection);
-	const FVector2D towardsAvoidanceGroupSourceLocation = FVector2D(sourceLocation.GetValue() - components.m_transformComponent->m_location);
-	desiredDirection2D += towardsAvoidanceGroupSourceLocation;
+	FVector2D desiredDirection2D = FVector2D(desiredDirection) + flockingVelocity;
 	desiredDirection2D.Normalize();
 
 	return ArgusMath::ToCartesianVector2(desiredDirection2D * components.m_velocityComponent->m_desiredSpeedUnitsPerSecond);
