@@ -170,25 +170,31 @@ bool ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 		}
 		else
 		{
-			std::string avoidanceRangeName = std::vformat("{}.GetEntitiesInAvoidanceRange()", std::make_format_args(parsedVariableData[i].m_varName));
+			std::string avoidanceRangeName = std::vformat("{}.GetEntityIdsInAvoidanceRange()", std::make_format_args(parsedVariableData[i].m_varName));
 			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
 			outParsedVariableContents.push_back(std::vformat("\t\tImGui::Text(\"{}\");", std::make_format_args(avoidanceRangeName)));
 			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
 			FormatImGuiArrayField(avoidanceRangeName, "", false, outParsedVariableContents, FormatImGuiIntField);
 
-			std::string sightRangeName = std::vformat("{}.GetEntitiesInSightRange()", std::make_format_args(parsedVariableData[i].m_varName));
+			std::string flockingRangeName = std::vformat("{}.GetEntityIdsInFlockingRange()", std::make_format_args(parsedVariableData[i].m_varName));
+			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
+			outParsedVariableContents.push_back(std::vformat("\t\tImGui::Text(\"{}\");", std::make_format_args(flockingRangeName)));
+			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
+			FormatImGuiArrayField(flockingRangeName, "", false, outParsedVariableContents, FormatImGuiIntField);
+
+			std::string sightRangeName = std::vformat("{}.GetEntityIdsInSightRange()", std::make_format_args(parsedVariableData[i].m_varName));
 			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
 			outParsedVariableContents.push_back(std::vformat("\t\tImGui::Text(\"{}\");", std::make_format_args(sightRangeName)));
 			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
 			FormatImGuiArrayField(sightRangeName, "", false, outParsedVariableContents, FormatImGuiIntField);
 
-			std::string rangedRangeName = std::vformat("{}.GetEntitiesInRangedRange()", std::make_format_args(parsedVariableData[i].m_varName));
+			std::string rangedRangeName = std::vformat("{}.GetEntityIdsInRangedRange()", std::make_format_args(parsedVariableData[i].m_varName));
 			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
 			outParsedVariableContents.push_back(std::vformat("\t\tImGui::Text(\"{}\");", std::make_format_args(rangedRangeName)));
 			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
 			FormatImGuiArrayField(rangedRangeName, "", false, outParsedVariableContents, FormatImGuiIntField);
 
-			std::string meleeRangeName = std::vformat("{}.GetEntitiesInMeleeRange()", std::make_format_args(parsedVariableData[i].m_varName));
+			std::string meleeRangeName = std::vformat("{}.GetEntityIdsInMeleeRange()", std::make_format_args(parsedVariableData[i].m_varName));
 			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
 			outParsedVariableContents.push_back(std::vformat("\t\tImGui::Text(\"{}\");", std::make_format_args(meleeRangeName)));
 			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");

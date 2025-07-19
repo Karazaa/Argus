@@ -28,7 +28,7 @@ void NearbyEntitiesComponent::DrawComponentDebug() const
 	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings))
 	{
 		ImGui::TableNextColumn();
-		ImGui::Text("m_nearbyEntities.GetEntitiesInAvoidanceRange()");
+		ImGui::Text("m_nearbyEntities.GetEntityIdsInAvoidanceRange()");
 		ImGui::TableNextColumn();
 		if (m_nearbyEntities.GetEntityIdsInAvoidanceRange().Num() == 0)
 		{
@@ -43,7 +43,22 @@ void NearbyEntitiesComponent::DrawComponentDebug() const
 			}
 		}
 		ImGui::TableNextColumn();
-		ImGui::Text("m_nearbyEntities.GetEntitiesInSightRange()");
+		ImGui::Text("m_nearbyEntities.GetEntityIdsInFlockingRange()");
+		ImGui::TableNextColumn();
+		if (m_nearbyEntities.GetEntityIdsInFlockingRange().Num() == 0)
+		{
+			ImGui::Text("Array is empty");
+		}
+		else
+		{
+			ImGui::Text("Size of array = %d", m_nearbyEntities.GetEntityIdsInFlockingRange().Num());
+			for (int32 i = 0; i < m_nearbyEntities.GetEntityIdsInFlockingRange().Num(); ++i)
+			{
+				ImGui::Text("%d", m_nearbyEntities.GetEntityIdsInFlockingRange()[i]);
+			}
+		}
+		ImGui::TableNextColumn();
+		ImGui::Text("m_nearbyEntities.GetEntityIdsInSightRange()");
 		ImGui::TableNextColumn();
 		if (m_nearbyEntities.GetEntityIdsInSightRange().Num() == 0)
 		{
@@ -58,7 +73,7 @@ void NearbyEntitiesComponent::DrawComponentDebug() const
 			}
 		}
 		ImGui::TableNextColumn();
-		ImGui::Text("m_nearbyEntities.GetEntitiesInRangedRange()");
+		ImGui::Text("m_nearbyEntities.GetEntityIdsInRangedRange()");
 		ImGui::TableNextColumn();
 		if (m_nearbyEntities.GetEntityIdsInRangedRange().Num() == 0)
 		{
@@ -73,7 +88,7 @@ void NearbyEntitiesComponent::DrawComponentDebug() const
 			}
 		}
 		ImGui::TableNextColumn();
-		ImGui::Text("m_nearbyEntities.GetEntitiesInMeleeRange()");
+		ImGui::Text("m_nearbyEntities.GetEntityIdsInMeleeRange()");
 		ImGui::TableNextColumn();
 		if (m_nearbyEntities.GetEntityIdsInMeleeRange().Num() == 0)
 		{
