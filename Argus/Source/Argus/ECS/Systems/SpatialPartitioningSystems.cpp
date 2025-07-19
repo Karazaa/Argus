@@ -93,7 +93,7 @@ void SpatialPartitioningSystems::CacheAdjacentEntityIds(const SpatialPartitionin
 		float meleeRange = 0.0f;
 		float rangedRange = 0.0f;
 		float sightRange = adjacentEntityRange;
-		const float flockingRange = transformComponent->m_radius + ArgusECSConstants::k_flockingRangeExtension;
+		const float flockingRange = (transformComponent->m_radius * 2.0f) + ArgusECSConstants::k_flockingRangeExtension;
 		if (const TargetingComponent* targetingComponent = entity.GetComponent<TargetingComponent>())
 		{
 			meleeRange = targetingComponent->m_meleeRange;

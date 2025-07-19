@@ -134,6 +134,7 @@ void ArgusEntityKDTreeRangeOutput::EmptyAll()
 	m_entityIdsWithinMeleeRange.Empty();
 	m_entityIdsWithinRangedRange.Empty();
 	m_entityIdsWithinSightRange.Empty();
+	m_entityIdsWithinFlockingRange.Empty();
 }
 
 bool ArgusEntityKDTreeRangeOutput::FoundAny() const
