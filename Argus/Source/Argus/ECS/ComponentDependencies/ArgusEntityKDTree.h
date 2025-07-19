@@ -53,7 +53,7 @@ public:
 	const TArray<uint16>& GetEntityIdsInRangedRange() const { return m_entityIdsWithinRangedRange; }
 	const TArray<uint16>& GetEntityIdsInMeleeRange() const { return m_entityIdsWithinMeleeRange; }
 	const TArray<uint16>& GetEntityIdsInAvoidanceRange() const { return m_entityIdsWithinAvoidanceRange; }
-	const TArray<uint16>& GetEntityIdsInFlockingRange() const { return m_entityIdsWithinAvoidanceRange; }
+	const TArray<uint16>& GetEntityIdsInFlockingRange() const { return m_entityIdsWithinFlockingRange; }
 
 private:
 	TArray<uint16> m_entityIdsWithinSightRange;

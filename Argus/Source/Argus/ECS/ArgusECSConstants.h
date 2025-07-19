@@ -18,7 +18,7 @@ namespace ArgusECSConstants
 	static constexpr float k_avoidanceAgentReturnToEndNavRadius = 10.0f;
 	static constexpr float k_avoidanceEpsilonValue = 0.00001f;
 	static constexpr float k_moveAlongPathWaypointTolerance = 0.001f;
-	static constexpr float k_flockingRangeExtension = 10.0f;
+	static constexpr float k_flockingRangeExtension = 2.0f;
 
 	static constexpr int32 k_maxDetourWalls = 1028;
 	static constexpr int32 k_maxDetourPolys = 1028;
