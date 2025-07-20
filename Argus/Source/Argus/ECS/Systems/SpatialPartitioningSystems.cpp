@@ -137,6 +137,24 @@ void SpatialPartitioningSystems::CalculateAdjacentEntityGroups()
 
 		for (int32 j = 0; j < entitiesInGroup.Num(); ++j)
 		{
+			const TaskComponent* taskComponent = entitiesInGroup[j].GetComponent<TaskComponent>();
+			if (!taskComponent)
+			{
+				continue;
+			}
+
+			if (!taskComponent->IsExecutingMoveTask())
+			{
+				AvoidanceGroupingComponent* memberGroupComponent = entitiesInGroup[j].GetComponent<AvoidanceGroupingComponent>();
+				if (!memberGroupComponent)
+				{
+					continue;
+				}
+
+				memberGroupComponent->m_flockingState = EFlockingState::Stable;
+				continue;
+			}
+
 			const TransformComponent* transformComponent = entitiesInGroup[j].GetComponent<TransformComponent>();
 			if (!transformComponent)
 			{
@@ -146,7 +164,10 @@ void SpatialPartitioningSystems::CalculateAdjacentEntityGroups()
 			const float squaredFlockingRadius = FMath::Square(transformComponent->m_radius + ArgusECSConstants::k_flockingRangeExtension);
 			if (FVector::DistSquared2D(avoidanceGroupingComponent->m_groupAverageLocation, transformComponent->m_location) <= squaredFlockingRadius)
 			{
-				FloodFillStableFlockingRecursive(i, entitiesInGroup[j]);
+				int32 flockingLayers = (entitiesInGroup.Num() / 7);
+				const float withinRadiusSquared = FMath::Square(transformComponent->m_radius * (FMath::Max(flockingLayers, 1) * 3.0f));
+				FloodFillStableFlockingRecursive(i, entitiesInGroup[j], avoidanceGroupingComponent->m_groupAverageLocation, withinRadiusSquared);
+				continue;
 			}
 		}
 	}
@@ -205,13 +226,25 @@ bool SpatialPartitioningSystems::FloodFillGroupRecursive(uint16 groupId, uint16 
 	return groupId == entityId;
 }
 
-void SpatialPartitioningSystems::FloodFillStableFlockingRecursive(uint16 groupId, const ArgusEntity& stableEntity)
+void SpatialPartitioningSystems::FloodFillStableFlockingRecursive(uint16 groupId, const ArgusEntity& stableEntity, const FVector& averageLocation, float withinRadiusSquared)
 {
+	const TransformComponent* transformComponent = stableEntity.GetComponent<TransformComponent>();
+	if (!transformComponent)
+	{
+		return;
+	}
+
 	AvoidanceGroupingComponent* avoidanceGroupingComponent = stableEntity.GetComponent<AvoidanceGroupingComponent>();
 	if (!avoidanceGroupingComponent || avoidanceGroupingComponent->m_flockingState == EFlockingState::Stable)
 	{
 		return;
 	}
+
+	if (FVector::DistSquared2D(transformComponent->m_location, averageLocation) > withinRadiusSquared)
+	{
+		return;
+	}
+
 	avoidanceGroupingComponent->m_flockingState = EFlockingState::Stable;
 
 	const NearbyEntitiesComponent* nearbyEntitiesComponent = stableEntity.GetComponent<NearbyEntitiesComponent>();
@@ -230,7 +263,7 @@ void SpatialPartitioningSystems::FloodFillStableFlockingRecursive(uint16 groupId
 			continue;
 		}
 		
-		FloodFillStableFlockingRecursive(groupId, flockmate);
+		FloodFillStableFlockingRecursive(groupId, flockmate, averageLocation, withinRadiusSquared);
 	}
 }
 
