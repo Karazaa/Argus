@@ -78,7 +78,7 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 	params.m_sourceEntityVelocity = desiredVelocity.IsNearlyZero() ? ArgusMath::ToCartesianVector2(desiredVelocity) : ArgusMath::ToCartesianVector2(components.m_velocityComponent->m_currentVelocity);
 	params.m_deltaTime = deltaTime;
 	params.m_entityRadius = components.m_transformComponent->m_radius;
-	params.m_inverseEntityPredictionTime = 1.0f / ArgusECSConstants::k_avoidanceEntityDetectionPredictionTime;
+	params.m_defaultInverseEntityPredictionTime = 1.0f / ArgusECSConstants::k_avoidanceEntityDetectionPredictionTime;
 	params.m_inverseObstaclePredictionTime = 1.0f / ArgusECSConstants::k_avoidanceObstacleDetectionPredictionTime;
 	params.m_spatialPartitioningComponent = spatialPartitioningComponent;
 
@@ -352,7 +352,7 @@ void AvoidanceSystems::CreateEntityORCALines(const CreateEntityORCALinesParams& 
 
 		CreateEntityORCALinesParamsPerEntity perEntityParams;
 		perEntityParams.m_foundEntityLocation = ArgusMath::ToCartesianVector2(FVector2D(foundTransformComponent->m_location));
-
+		perEntityParams.m_inverseEntityPredictionTime = params.m_defaultInverseEntityPredictionTime;
 		if (const VelocityComponent* foundVelocityComponent = foundEntity.GetComponent<VelocityComponent>())
 		{
 			perEntityParams.m_foundEntityVelocity = ArgusMath::ToCartesianVector2(foundVelocityComponent->m_currentVelocity);
@@ -407,7 +407,7 @@ void AvoidanceSystems::FindORCALineAndVelocityToBoundaryPerEntity(const CreateEn
 		const bool invertDirection = params.m_sourceEntityVelocity.Dot(perEntityParams.m_foundEntityVelocity) > 0.0f && params.m_sourceEntityVelocity.Dot(relativeLocation) > 0.0f;
 
 		// No collision yet.
-		const FVector2D cutoffCenterToRelativeVelocity = relativeVelocity - (params.m_inverseEntityPredictionTime * relativeLocation);
+		const FVector2D cutoffCenterToRelativeVelocity = relativeVelocity - (perEntityParams.m_inverseEntityPredictionTime * relativeLocation);
 		const float cutoffCenterToRelativeVelocityLengthSqared = cutoffCenterToRelativeVelocity.SquaredLength();
 		const float dotProduct = cutoffCenterToRelativeVelocity.Dot(relativeLocation);
 
@@ -420,7 +420,7 @@ void AvoidanceSystems::FindORCALineAndVelocityToBoundaryPerEntity(const CreateEn
 			{
 				calculatedORCALine.m_direction *= -1.0f;
 			}
-			velocityToBoundaryOfVO = ((combinedRadius * params.m_inverseEntityPredictionTime) - cutoffCenterToRelativeVelocityLength) * unitCutoffCenterToRelativeVelocity;
+			velocityToBoundaryOfVO = ((combinedRadius * perEntityParams.m_inverseEntityPredictionTime) - cutoffCenterToRelativeVelocityLength) * unitCutoffCenterToRelativeVelocity;
 		}
 		else
 		{
@@ -676,8 +676,7 @@ float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems
 {
 	ARGUS_TRACE(AvoidanceSystems::GetEffortCoefficientForEntityPair);
 
-	if (!sourceEntityComponents.m_entity || !sourceEntityComponents.m_taskComponent || !sourceEntityComponents.m_transformComponent ||
-		!sourceEntityComponents.m_navigationComponent || !sourceEntityComponents.m_targetingComponent)
+	if (!sourceEntityComponents.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return 0.0f;
 	}
@@ -789,6 +788,7 @@ float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems
 		}
 	}
 
+	const bool inSameAvoidanceGroup = sourceEntityAvoidanceGroupingComponent->m_groupId == foundEntityAvoidanceGroupingComponent->m_groupId;
 	if (sourceEntityComponents.m_taskComponent->IsExecutingMoveTask() && (!foundEntityTaskComponent->IsExecutingMoveTask()))
 	{
 		if (foundEntity.IsMoveable())
@@ -805,12 +805,56 @@ float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems
 	{
 		if (sourceEntityComponents.m_entity.IsMoveable())
 		{
-			return AreInSameAvoidanceGroup(sourceEntityComponents.m_entity, foundEntity) ? 0.0f : 1.0f;
+			return inSameAvoidanceGroup ? 0.0f : 1.0f;
 		}
 		else
 		{
 			return 0.0f;
 		}
+	}
+
+	if (inSameAvoidanceGroup)
+	{
+		return GetEffortCoefficientForAvoidanceGroupPair(sourceEntityComponents, foundEntity, sourceEntityAvoidanceGroupingComponent, foundEntityAvoidanceGroupingComponent);
+	}
+
+	return 0.5f;
+}
+
+float AvoidanceSystems::GetEffortCoefficientForAvoidanceGroupPair(const TransformSystemsArgs& sourceEntityComponents, const ArgusEntity& foundEntity, const AvoidanceGroupingComponent* sourceGroupComponent, const AvoidanceGroupingComponent* foundGroupComponent)
+{
+	if (!sourceEntityComponents.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return 0.0f;
+	}
+
+	if (!sourceGroupComponent)
+	{
+		ARGUS_ERROR_NULL(ArgusECSLog, sourceGroupComponent);
+		return 1.0f;
+	}
+	if (!foundGroupComponent)
+	{
+		ARGUS_ERROR_NULL(ArgusECSLog, foundGroupComponent);
+		return 0.0f;
+	}
+
+	if (sourceGroupComponent->m_groupId != foundGroupComponent->m_groupId || sourceGroupComponent->m_groupId == ArgusECSConstants::k_maxEntities)
+	{
+		return 0.5f;
+	}
+
+	const TransformComponent* foundTransformComponent = foundEntity.GetComponent<TransformComponent>();
+	if (!foundTransformComponent)
+	{
+		ARGUS_ERROR_NULL(ArgusECSLog, foundTransformComponent);
+		return 0.0f;
+	}
+
+	const float squaredDistance = FVector::DistSquared2D(sourceEntityComponents.m_transformComponent->m_location, foundTransformComponent->m_location);
+	if (squaredDistance > FMath::Square((sourceEntityComponents.m_transformComponent->m_radius * 2.0f) + ArgusECSConstants::k_flockingRangeExtension))
+	{
+		return 0.0f;
 	}
 
 	return 0.5f;

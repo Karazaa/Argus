@@ -31,7 +31,7 @@ private:
 		FVector2D m_sourceEntityLocation = FVector2D::ZeroVector;
 		FVector2D m_sourceEntityVelocity = FVector2D::ZeroVector;
 		float m_deltaTime = 0.0f;
-		float m_inverseEntityPredictionTime = 0.0f;
+		float m_defaultInverseEntityPredictionTime = 0.0f;
 		float m_inverseObstaclePredictionTime = 0.0f;
 		float m_entityRadius = 45.0f;
 		const SpatialPartitioningComponent* m_spatialPartitioningComponent = nullptr;
@@ -41,6 +41,7 @@ private:
 		FVector2D m_foundEntityLocation = FVector2D::ZeroVector;
 		FVector2D m_foundEntityVelocity = FVector2D::ZeroVector;
 		float m_entityRadius = 45.0f;
+		float m_inverseEntityPredictionTime = 0.0f;
 	};
 
 	static void			CreateObstacleORCALines(UWorld* worldPointer, const CreateEntityORCALinesParams& params, const TransformSystemsArgs& components, TArray<ORCALine>& outORCALines);
@@ -52,6 +53,7 @@ private:
 	static FVector2D	GetDesiredVelocity(const TransformSystemsArgs& components);
 
 	static float		GetEffortCoefficientForEntityPair(const TransformSystemsArgs& sourceEntityComponents, const ArgusEntity& foundEntity);
+	static float		GetEffortCoefficientForAvoidanceGroupPair(const TransformSystemsArgs& sourceEntityComponents, const ArgusEntity& foundEntity, const AvoidanceGroupingComponent* sourceGroupComponent, const AvoidanceGroupingComponent* foundGroupComponent);
 	static float		FindAreaOfObstacleCartesian(const TArray<ObstaclePoint>& obstaclePoints);
 	
 	static void			CalculateORCALineForObstacleSegment(const CreateEntityORCALinesParams& params, ObstaclePoint obstaclePoint0, ObstaclePoint obstaclePoint1, const FVector2D& previousObstaclePointDir, TArray<ORCALine>& outORCALines);
