@@ -10,15 +10,19 @@ namespace ArgusECSConstants
 	static constexpr uint16	k_maxEntities = 15000u;
 	static constexpr uint16	k_singletonEntityId = k_maxEntities - 1u;
 
-	static constexpr float k_avoidanceEntityDetectionPredictionTime = 2.0f;
-	static constexpr float k_avoidanceObstacleDetectionPredictionTime = 2.0f;
+	static constexpr float k_avoidanceEntityDetectionPredictionTime = 2.5f;
+	static constexpr float k_avoidanceObstacleDetectionPredictionTime = 2.5f;
 	static constexpr float k_avoidanceObstacleSplitDistance = 150.0f;
 	static constexpr float k_avoidanceObstacleQueryRadiusMultiplier = 1.5f;
 	static constexpr float k_avoidanceAgentAdditionalBufferRadius = 25.0f;
 	static constexpr float k_avoidanceAgentReturnToEndNavRadius = 10.0f;
 	static constexpr float k_avoidanceEpsilonValue = 0.00001f;
 	static constexpr float k_moveAlongPathWaypointTolerance = 0.001f;
+	
 	static constexpr float k_flockingRangeExtension = 2.0f;
+	static constexpr int32 k_flockingEntitiesPerLayer = 7;
+	static constexpr float k_flockingRadiusMultiplierPerLayer = 3.0f;
+	static constexpr float k_flockingVelocityInfluence = 0.3f;
 
 	static constexpr int32 k_maxDetourWalls = 1028;
 	static constexpr int32 k_maxDetourPolys = 1028;
@@ -26,8 +30,10 @@ namespace ArgusECSConstants
 
 	static constexpr int32 k_initialResourcesQuantity = 1000;
 
+#if !UE_BUILD_SHIPPING
 	static constexpr float k_debugDrawLineWidth = 3.0f;
 	static constexpr float k_debugDrawHeightAdjustment = 5.0f;
+#endif //!UE_BUILD_SHIPPING
 }
 
 // Unreal complains like a dumbass if UENUM is in a namespace. Big dumb.

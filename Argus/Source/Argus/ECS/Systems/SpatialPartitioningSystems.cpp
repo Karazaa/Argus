@@ -164,8 +164,8 @@ void SpatialPartitioningSystems::CalculateAdjacentEntityGroups()
 			const float squaredFlockingRadius = FMath::Square(transformComponent->m_radius + ArgusECSConstants::k_flockingRangeExtension);
 			if (FVector::DistSquared2D(avoidanceGroupingComponent->m_groupAverageLocation, transformComponent->m_location) <= squaredFlockingRadius)
 			{
-				int32 flockingLayers = (entitiesInGroup.Num() / 7);
-				const float withinRadiusSquared = FMath::Square(transformComponent->m_radius * (FMath::Max(flockingLayers, 1) * 3.0f));
+				int32 flockingLayers = (entitiesInGroup.Num() / ArgusECSConstants::k_flockingEntitiesPerLayer);
+				const float withinRadiusSquared = FMath::Square(transformComponent->m_radius * (FMath::Max(flockingLayers, 1) * ArgusECSConstants::k_flockingRadiusMultiplierPerLayer));
 				FloodFillStableFlockingRecursive(i, entitiesInGroup[j], avoidanceGroupingComponent->m_groupAverageLocation, withinRadiusSquared);
 				continue;
 			}
