@@ -259,10 +259,14 @@ FVector2D AvoidanceSystems::GetFlockingVelocity(const TransformSystemsArgs& comp
 	}
 
 	if (entityAvoidanceGroupComponent->m_flockingState == EFlockingState::Stable || 
-		entityAvoidanceGroupComponent->m_groupId == ArgusECSConstants::k_maxEntities || 
-		entityAvoidanceGroupComponent->m_groupId == components.m_entity.GetId())
+		entityAvoidanceGroupComponent->m_groupId == ArgusECSConstants::k_maxEntities)
 	{
 		return FVector2D::ZeroVector;
+	}
+
+	if (entityAvoidanceGroupComponent->m_groupId == components.m_entity.GetId())
+	{
+		return FVector2D(entityAvoidanceGroupComponent->m_groupAverageLocation - components.m_transformComponent->m_location);
 	}
 
 	const AvoidanceGroupingComponent* groupLeaderAvoidanceGroupingComponent = ArgusEntity::RetrieveEntity(entityAvoidanceGroupComponent->m_groupId).GetComponent<AvoidanceGroupingComponent>();
@@ -403,9 +407,6 @@ void AvoidanceSystems::FindORCALineAndVelocityToBoundaryPerEntity(const CreateEn
 
 	if (relativeLocationDistanceSquared > combinedRadiusSquared)
 	{
-		// This appears to work... for reasons... I just observed that the ORCA direction appeared inverted for the trailing entity in a set moving in roughly the same direction.
-		const bool invertDirection = params.m_sourceEntityVelocity.Dot(perEntityParams.m_foundEntityVelocity) > 0.0f && params.m_sourceEntityVelocity.Dot(relativeLocation) > 0.0f;
-
 		// No collision yet.
 		const FVector2D cutoffCenterToRelativeVelocity = relativeVelocity - (perEntityParams.m_inverseEntityPredictionTime * relativeLocation);
 		const float cutoffCenterToRelativeVelocityLengthSqared = cutoffCenterToRelativeVelocity.SquaredLength();
@@ -416,10 +417,6 @@ void AvoidanceSystems::FindORCALineAndVelocityToBoundaryPerEntity(const CreateEn
 			const float cutoffCenterToRelativeVelocityLength = FMath::Sqrt(cutoffCenterToRelativeVelocityLengthSqared);
 			const FVector2D unitCutoffCenterToRelativeVelocity = cutoffCenterToRelativeVelocity / cutoffCenterToRelativeVelocityLength;
 			calculatedORCALine.m_direction = FVector2D(unitCutoffCenterToRelativeVelocity.Y, -unitCutoffCenterToRelativeVelocity.X);
-			if (invertDirection)
-			{
-				calculatedORCALine.m_direction *= -1.0f;
-			}
 			velocityToBoundaryOfVO = ((combinedRadius * perEntityParams.m_inverseEntityPredictionTime) - cutoffCenterToRelativeVelocityLength) * unitCutoffCenterToRelativeVelocity;
 		}
 		else
@@ -666,7 +663,8 @@ FVector2D AvoidanceSystems::GetDesiredVelocity(const TransformSystemsArgs& compo
 		sourceLocation = components.m_transformComponent->m_location;
 	}
 	desiredDirection = (components.m_navigationComponent->m_navigationPoints[futureIndex] - sourceLocation.GetValue());
-	FVector2D desiredDirection2D = FVector2D(desiredDirection) + flockingVelocity;
+
+	FVector2D desiredDirection2D = (FVector2D(desiredDirection).GetSafeNormal() * (1.0f - ArgusECSConstants::k_flockingVelocityInfluence)) + (flockingVelocity.GetSafeNormal() * ArgusECSConstants::k_flockingVelocityInfluence);
 	desiredDirection2D.Normalize();
 
 	return ArgusMath::ToCartesianVector2(desiredDirection2D * components.m_velocityComponent->m_desiredSpeedUnitsPerSecond);
