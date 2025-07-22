@@ -680,19 +680,9 @@ float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems
 	}
 
 	const TaskComponent* foundEntityTaskComponent = foundEntity.GetComponent<TaskComponent>();
-	if (!foundEntityTaskComponent)
-	{
-		return 1.0f;
-	}
-
 	const IdentityComponent* foundEntityIdentityComponent = foundEntity.GetComponent<IdentityComponent>();
-	if (!foundEntityIdentityComponent)
-	{
-		return 1.0f;
-	}
-
 	const IdentityComponent* sourceEntityIdentityComponent = sourceEntityComponents.m_entity.GetComponent<IdentityComponent>();
-	if (!sourceEntityIdentityComponent)
+	if (!foundEntityTaskComponent || !foundEntityIdentityComponent || !sourceEntityIdentityComponent)
 	{
 		return 1.0f;
 	}
@@ -702,41 +692,24 @@ float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems
 		return sourceEntityComponents.m_taskComponent->IsExecutingMoveTask() ? 1.0f : 0.0f;
 	}
 
+	float effortCoefficient = 0.5f;
+
 	const AvoidanceGroupingComponent* sourceEntityAvoidanceGroupingComponent = sourceEntityComponents.m_entity.GetComponent<AvoidanceGroupingComponent>();
 	const AvoidanceGroupingComponent* foundEntityAvoidanceGroupingComponent = foundEntity.GetComponent<AvoidanceGroupingComponent>();
-
-	float effortCoefficient = 0.5f;
+	bool inSameAvoidanceGroup = false;
+	if (sourceEntityAvoidanceGroupingComponent && foundEntityAvoidanceGroupingComponent)
+	{
+		inSameAvoidanceGroup = sourceEntityAvoidanceGroupingComponent->m_groupId == foundEntityAvoidanceGroupingComponent->m_groupId;
+	}
+	
+	// TODO JAMES: Add a ShouldReturnResourceExtractionEffortCoefficient.
 	if (ShouldReturnCombatEffortCoefficient(sourceEntityComponents, foundEntityTaskComponent, effortCoefficient) ||
 		ShouldReturnConstructionEffortCoefficient(sourceEntityComponents, foundEntityTaskComponent, effortCoefficient) ||
 		ShouldReturnCarrierEffortCoefficient(sourceEntityComponents, foundEntity, foundEntityTaskComponent, effortCoefficient) || 
-		ShouldReturnAvoidancePriorityEffortCoefficient(sourceEntityAvoidanceGroupingComponent, foundEntityAvoidanceGroupingComponent, effortCoefficient))
+		ShouldReturnAvoidancePriorityEffortCoefficient(sourceEntityAvoidanceGroupingComponent, foundEntityAvoidanceGroupingComponent, effortCoefficient) ||
+		ShouldReturnMovementTaskEffortCoefficient(sourceEntityComponents, foundEntity, foundEntityTaskComponent, inSameAvoidanceGroup, effortCoefficient))
 	{
 		return effortCoefficient;
-	}
-
-	const bool inSameAvoidanceGroup = sourceEntityAvoidanceGroupingComponent->m_groupId == foundEntityAvoidanceGroupingComponent->m_groupId;
-	if (sourceEntityComponents.m_taskComponent->IsExecutingMoveTask() && (!foundEntityTaskComponent->IsExecutingMoveTask()))
-	{
-		if (foundEntity.IsMoveable())
-		{
-			return 0.0f;
-		}
-		else
-		{
-			return 1.0f;
-		}
-	}
-
-	if (!sourceEntityComponents.m_taskComponent->IsExecutingMoveTask() && foundEntityTaskComponent->IsExecutingMoveTask())
-	{
-		if (sourceEntityComponents.m_entity.IsMoveable())
-		{
-			return inSameAvoidanceGroup ? 0.0f : 1.0f;
-		}
-		else
-		{
-			return 0.0f;
-		}
 	}
 
 	if (inSameAvoidanceGroup)
@@ -881,6 +854,39 @@ bool AvoidanceSystems::ShouldReturnAvoidancePriorityEffortCoefficient(const Avoi
 		if (sourceEntityAvoidanceGroupingComponent->m_avoidancePriority < foundEntityAvoidanceGroupingComponent->m_avoidancePriority)
 		{
 			coefficient = 1.0f;
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool AvoidanceSystems::ShouldReturnMovementTaskEffortCoefficient(const TransformSystemsArgs& sourceEntityComponents, const ArgusEntity& foundEntity, const TaskComponent* foundEntityTaskComponent, bool inSameAvoidanceGroup, float& coefficient)
+{
+	if (sourceEntityComponents.m_taskComponent->IsExecutingMoveTask() && (!foundEntityTaskComponent->IsExecutingMoveTask()))
+	{
+		if (foundEntity.IsMoveable())
+		{
+			coefficient = 0.0f;
+			return true;
+		}
+		else
+		{
+			coefficient = 1.0f;
+			return true;
+		}
+	}
+
+	if (!sourceEntityComponents.m_taskComponent->IsExecutingMoveTask() && foundEntityTaskComponent->IsExecutingMoveTask())
+	{
+		if (sourceEntityComponents.m_entity.IsMoveable())
+		{
+			coefficient = inSameAvoidanceGroup ? 0.0f : 1.0f;
+			return true;
+		}
+		else
+		{
+			coefficient = 0.0f;
 			return true;
 		}
 	}

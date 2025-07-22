@@ -199,9 +199,14 @@ void ResourceSystems::MoveToNearestDepositSink(const ResourceSystemsArgs& compon
 			return false;
 		}
 
+		const ArgusEntity nodeEntity = ArgusEntity::RetrieveEntity(entityNode->m_entityId);
+		if (!nodeEntity.IsAlive())
+		{
+			return false;
+		}
+
 		const ArgusEntity entity = ArgusEntity::RetrieveEntity(entityId);
 		const IdentityComponent* identityComponent = entity.GetComponent<IdentityComponent>();
-		const ArgusEntity nodeEntity = ArgusEntity::RetrieveEntity(entityNode->m_entityId);
 		const IdentityComponent* nodeIdentityComponent = nodeEntity.GetComponent<IdentityComponent>();
 		const ResourceComponent* nodeResourceComponent = nodeEntity.GetComponent<ResourceComponent>();
 		if (!identityComponent || !nodeIdentityComponent || !nodeResourceComponent)
@@ -292,6 +297,11 @@ bool ResourceSystems::CanEntityExtractResourcesFromOtherEntity(const ArgusEntity
 bool ResourceSystems::CanEntityDepositResourcesToOtherEntity(const ArgusEntity& entity, const ArgusEntity& otherEntity)
 {
 	if (!entity || !otherEntity)
+	{
+		return false;
+	}
+
+	if (!entity.IsAlive() || !otherEntity.IsAlive())
 	{
 		return false;
 	}

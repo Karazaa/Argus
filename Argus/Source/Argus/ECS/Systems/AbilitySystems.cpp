@@ -284,6 +284,8 @@ bool AbilitySystems::CastVacateAbility(const UAbilityRecord* abilityRecord, cons
 		}
 
 		passengerComponent->Set_m_carrierEntityId(ArgusECSConstants::k_maxEntities);
+
+		// TODO JAMES: Set passenger target location and navigate to there. Should probably be behind the carrier current location by a bit.
 	}
 
 	carrierComponent->m_passengerEntityIds.Empty();
