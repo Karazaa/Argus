@@ -98,7 +98,7 @@ bool TaskSystems::DispatchToConstructionIfAble(const TaskSystemsArgs& components
 	}
 
 	components.m_taskComponent->m_movementState = EMovementState::ProcessMoveToEntityCommand;
-	components.m_taskComponent->m_constructionState = EConstructionState::ConstructingOther;
+	components.m_taskComponent->m_constructionState = EConstructionState::DispatchedToConstructOther;
 	components.m_targetingComponent->m_targetEntityId = potentialTargetEntity.GetId();
 
 	return true;
@@ -117,7 +117,7 @@ bool TaskSystems::DispatchToCombatIfAble(const TaskSystemsArgs& components, cons
 	}
 
 	components.m_taskComponent->m_movementState = EMovementState::ProcessMoveToEntityCommand;
-	components.m_taskComponent->m_combatState = ECombatState::ShouldAttack;
+	components.m_taskComponent->m_combatState = ECombatState::DispatchedToAttack;
 	components.m_targetingComponent->m_targetEntityId = potentialTargetEntity.GetId();
 
 	return true;

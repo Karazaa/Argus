@@ -135,7 +135,7 @@ bool ConstructionSystemsBeingConstructedManualTest::RunTest(const FString& Param
 	constructedTransformComponent->m_location = constructedLocation;
 
 	constructingAbilityComponent->m_ability0Id = abilityRecordId;
-	constructingTaskComponent->m_constructionState = EConstructionState::ConstructingOther;
+	constructingTaskComponent->m_constructionState = EConstructionState::DispatchedToConstructOther;
 	constructingTargetingComponent->m_targetEntityId = entityToConstruct.GetId();
 	constructingTargetingComponent->m_meleeRange = constructionRange;
 	constructingTransformComponent->m_location = initialConstructingLocation;

@@ -207,7 +207,7 @@ void NavigationSystems::ChangeTasksOnNavigatingToEntity(ArgusEntity targetEntity
 
 	if (CombatSystems::CanEntityAttackOtherEntity(components.m_entity, targetEntity))
 	{
-		components.m_taskComponent->m_combatState = ECombatState::ShouldAttack;
+		components.m_taskComponent->m_combatState = ECombatState::DispatchedToAttack;
 	}
 	else
 	{
@@ -216,7 +216,7 @@ void NavigationSystems::ChangeTasksOnNavigatingToEntity(ArgusEntity targetEntity
 
 	if (ConstructionSystems::CanEntityConstructOtherEntity(components.m_entity, targetEntity))
 	{
-		components.m_taskComponent->m_constructionState = EConstructionState::ConstructingOther;
+		components.m_taskComponent->m_constructionState = EConstructionState::DispatchedToConstructOther;
 	}
 	else
 	{

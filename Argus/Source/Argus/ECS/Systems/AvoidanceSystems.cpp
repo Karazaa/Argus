@@ -679,24 +679,6 @@ float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems
 		return 0.0f;
 	}
 
-	if (sourceEntityComponents.m_taskComponent->m_combatState == ECombatState::Attacking)
-	{
-		return 0.0f;
-	}
-
-	if (sourceEntityComponents.m_taskComponent->m_constructionState == EConstructionState::ConstructingOther && sourceEntityComponents.m_targetingComponent->HasEntityTarget())
-	{
-		if (const TransformComponent* targetedEntityTransformComponent = ArgusEntity::RetrieveEntity(sourceEntityComponents.m_targetingComponent->m_targetEntityId).GetComponent<TransformComponent>())
-		{
-			const float squaredDistance = FVector::DistSquared(targetedEntityTransformComponent->m_location, sourceEntityComponents.m_transformComponent->m_location);
-
-			if (squaredDistance < FMath::Square(sourceEntityComponents.m_targetingComponent->m_meleeRange))
-			{
-				return 0.0f;
-			}
-		}
-	}
-
 	const TaskComponent* foundEntityTaskComponent = foundEntity.GetComponent<TaskComponent>();
 	if (!foundEntityTaskComponent)
 	{
@@ -720,70 +702,16 @@ float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems
 		return sourceEntityComponents.m_taskComponent->IsExecutingMoveTask() ? 1.0f : 0.0f;
 	}
 
-	if (foundEntityTaskComponent->m_combatState == ECombatState::Attacking)
-	{
-		return 1.0f;
-	}
-
-	const TargetingComponent* foundEntityTargetingComponent = foundEntity.GetComponent<TargetingComponent>();
-	if (foundEntityTaskComponent->m_constructionState == EConstructionState::ConstructingOther)
-	{
-		const TransformComponent* foundEntityTransformComponent = foundEntity.GetComponent<TransformComponent>();
-		const TransformComponent* foundEntityTargetTransformComponent = nullptr;
-
-		if (foundEntityTransformComponent && foundEntityTargetingComponent && foundEntityTargetingComponent->HasEntityTarget())
-		{
-			foundEntityTargetTransformComponent = ArgusEntity::RetrieveEntity(foundEntityTargetingComponent->m_targetEntityId).GetComponent<TransformComponent>();
-		}
-
-		if (foundEntityTargetTransformComponent)
-		{
-			const float squaredDistance = FVector::DistSquared(foundEntityTargetTransformComponent->m_location, foundEntityTransformComponent->m_location);
-
-			if (squaredDistance < FMath::Square(foundEntityTargetingComponent->m_meleeRange))
-			{
-				return 1.0f;
-			}
-		}
-	}
-
-	const TargetingComponent* sourceEntityTargetingComponent = sourceEntityComponents.m_entity.GetComponent<TargetingComponent>();
-	const PassengerComponent* sourceEntityPassengerComponent = sourceEntityComponents.m_entity.GetComponent<PassengerComponent>();
-	const CarrierComponent* sourceEntityCarrierComponent = sourceEntityComponents.m_entity.GetComponent<CarrierComponent>();
-	const PassengerComponent* foundEntityPassengerComponent = foundEntity.GetComponent<PassengerComponent>();
-	const CarrierComponent* foundEntityCarrierComponent = foundEntity.GetComponent<CarrierComponent>();
-	if (sourceEntityTargetingComponent &&
-		sourceEntityPassengerComponent &&
-		foundEntityCarrierComponent &&
-		sourceEntityTargetingComponent->HasEntityTarget() &&
-		sourceEntityTargetingComponent->m_targetEntityId == foundEntity.GetId() &&
-		sourceEntityComponents.m_taskComponent->m_movementState == EMovementState::MoveToEntity)
-	{
-		return 0.0f;
-	}
-	else if (foundEntityTargetingComponent &&
-		sourceEntityCarrierComponent &&
-		foundEntityPassengerComponent &&
-		foundEntityTargetingComponent->HasEntityTarget() &&
-		foundEntityTargetingComponent->m_targetEntityId == sourceEntityComponents.m_entity.GetId() &&
-		foundEntityTaskComponent->m_movementState == EMovementState::MoveToEntity)
-	{
-		return 0.0f;
-	}
-
 	const AvoidanceGroupingComponent* sourceEntityAvoidanceGroupingComponent = sourceEntityComponents.m_entity.GetComponent<AvoidanceGroupingComponent>();
 	const AvoidanceGroupingComponent* foundEntityAvoidanceGroupingComponent = foundEntity.GetComponent<AvoidanceGroupingComponent>();
-	if (sourceEntityAvoidanceGroupingComponent && foundEntityAvoidanceGroupingComponent)
-	{
-		if (sourceEntityAvoidanceGroupingComponent->m_avoidancePriority > foundEntityAvoidanceGroupingComponent->m_avoidancePriority)
-		{
-			return 0.0f;
-		}
 
-		if (sourceEntityAvoidanceGroupingComponent->m_avoidancePriority < foundEntityAvoidanceGroupingComponent->m_avoidancePriority)
-		{
-			return 1.0f;
-		}
+	float effortCoefficient = 0.5f;
+	if (ShouldReturnCombatEffortCoefficient(sourceEntityComponents, foundEntityTaskComponent, effortCoefficient) ||
+		ShouldReturnConstructionEffortCoefficient(sourceEntityComponents, foundEntityTaskComponent, effortCoefficient) ||
+		ShouldReturnCarrierEffortCoefficient(sourceEntityComponents, foundEntity, foundEntityTaskComponent, effortCoefficient) || 
+		ShouldReturnAvoidancePriorityEffortCoefficient(sourceEntityAvoidanceGroupingComponent, foundEntityAvoidanceGroupingComponent, effortCoefficient))
+	{
+		return effortCoefficient;
 	}
 
 	const bool inSameAvoidanceGroup = sourceEntityAvoidanceGroupingComponent->m_groupId == foundEntityAvoidanceGroupingComponent->m_groupId;
@@ -856,6 +784,108 @@ float AvoidanceSystems::GetEffortCoefficientForAvoidanceGroupPair(const Transfor
 	}
 
 	return 0.5f;
+}
+
+bool AvoidanceSystems::ShouldReturnCombatEffortCoefficient(const TransformSystemsArgs& sourceEntityComponents, const TaskComponent* foundEntityTaskComponent, float& coefficient)
+{
+	ARGUS_RETURN_ON_NULL_BOOL(foundEntityTaskComponent, ArgusECSLog);
+	if (!sourceEntityComponents.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return false;
+	}
+
+	if (sourceEntityComponents.m_taskComponent->m_combatState == ECombatState::Attacking && foundEntityTaskComponent->m_combatState != ECombatState::Attacking)
+	{
+		coefficient = 0.0f;
+		return true;
+	}
+	if (sourceEntityComponents.m_taskComponent->m_combatState != ECombatState::Attacking && foundEntityTaskComponent->m_combatState == ECombatState::Attacking)
+	{
+		coefficient = 1.0f;
+		return true;
+	}
+
+	return false;
+}
+
+bool AvoidanceSystems::ShouldReturnConstructionEffortCoefficient(const TransformSystemsArgs& sourceEntityComponents, const TaskComponent* foundEntityTaskComponent, float& coefficient)
+{
+	ARGUS_RETURN_ON_NULL_BOOL(foundEntityTaskComponent, ArgusECSLog);
+	if (!sourceEntityComponents.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return false;
+	}
+
+	if (sourceEntityComponents.m_taskComponent->m_constructionState == EConstructionState::ConstructingOther && foundEntityTaskComponent->m_constructionState != EConstructionState::ConstructingOther)
+	{
+		coefficient = 0.0f;
+		return true;
+	}
+	if (sourceEntityComponents.m_taskComponent->m_constructionState != EConstructionState::ConstructingOther && foundEntityTaskComponent->m_constructionState == EConstructionState::ConstructingOther)
+	{
+		coefficient = 1.0f;
+		return true;
+	}
+
+	return false;
+}
+
+bool AvoidanceSystems::ShouldReturnCarrierEffortCoefficient(const TransformSystemsArgs& sourceEntityComponents, const ArgusEntity& foundEntity, const TaskComponent* foundEntityTaskComponent, float& coefficient)
+{
+	ARGUS_RETURN_ON_NULL_BOOL(foundEntityTaskComponent, ArgusECSLog);
+	if (!sourceEntityComponents.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return false;
+	}
+
+	const TargetingComponent* sourceEntityTargetingComponent = sourceEntityComponents.m_entity.GetComponent<TargetingComponent>();
+	const TargetingComponent* foundEntityTargetingComponent = foundEntity.GetComponent<TargetingComponent>();
+	const PassengerComponent* sourceEntityPassengerComponent = sourceEntityComponents.m_entity.GetComponent<PassengerComponent>();
+	const CarrierComponent* sourceEntityCarrierComponent = sourceEntityComponents.m_entity.GetComponent<CarrierComponent>();
+	const PassengerComponent* foundEntityPassengerComponent = foundEntity.GetComponent<PassengerComponent>();
+	const CarrierComponent* foundEntityCarrierComponent = foundEntity.GetComponent<CarrierComponent>();
+	if (sourceEntityTargetingComponent &&
+		sourceEntityPassengerComponent &&
+		foundEntityCarrierComponent &&
+		sourceEntityTargetingComponent->HasEntityTarget() &&
+		sourceEntityTargetingComponent->m_targetEntityId == foundEntity.GetId() &&
+		sourceEntityComponents.m_taskComponent->m_movementState == EMovementState::MoveToEntity)
+	{
+		coefficient = 0.0f;
+		return true;
+	}
+	else if (foundEntityTargetingComponent &&
+		sourceEntityCarrierComponent &&
+		foundEntityPassengerComponent &&
+		foundEntityTargetingComponent->HasEntityTarget() &&
+		foundEntityTargetingComponent->m_targetEntityId == sourceEntityComponents.m_entity.GetId() &&
+		foundEntityTaskComponent->m_movementState == EMovementState::MoveToEntity)
+	{
+		coefficient = 0.0f;
+		return true;
+	}
+
+	return false;
+}
+
+bool AvoidanceSystems::ShouldReturnAvoidancePriorityEffortCoefficient(const AvoidanceGroupingComponent* sourceEntityAvoidanceGroupingComponent, const AvoidanceGroupingComponent* foundEntityAvoidanceGroupingComponent, float& coefficient)
+{
+	if (sourceEntityAvoidanceGroupingComponent && foundEntityAvoidanceGroupingComponent)
+	{
+		if (sourceEntityAvoidanceGroupingComponent->m_avoidancePriority > foundEntityAvoidanceGroupingComponent->m_avoidancePriority)
+		{
+			coefficient = 0.0f;
+			return true;
+		}
+
+		if (sourceEntityAvoidanceGroupingComponent->m_avoidancePriority < foundEntityAvoidanceGroupingComponent->m_avoidancePriority)
+		{
+			coefficient = 1.0f;
+			return true;
+		}
+	}
+
+	return false;
 }
 
 float AvoidanceSystems::FindAreaOfObstacleCartesian(const TArray<ObstaclePoint>& obstaclePoints)

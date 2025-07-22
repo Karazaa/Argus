@@ -50,7 +50,7 @@ void CombatSystems::ProcessCombatTaskCommands(float deltaTime, const CombatSyste
 	{
 		case ECombatState::None:
 			break;
-		case ECombatState::ShouldAttack:
+		case ECombatState::DispatchedToAttack:
 		case ECombatState::Attacking:
 			ProcessAttackCommand(deltaTime, components);
 			break;
@@ -97,7 +97,7 @@ void CombatSystems::ProcessAttackCommand(float deltaTime, const CombatSystemsArg
 
 	if (!inRange)
 	{
-		components.m_taskComponent->m_combatState = ECombatState::ShouldAttack;
+		components.m_taskComponent->m_combatState = ECombatState::DispatchedToAttack;
 		return;
 	}
 

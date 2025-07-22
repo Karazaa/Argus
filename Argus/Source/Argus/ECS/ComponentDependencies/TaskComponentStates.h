@@ -51,6 +51,7 @@ UENUM()
 enum class EConstructionState : uint8
 {
 	None,
+	DispatchedToConstructOther,
 	ConstructingOther,
 	BeingConstructed,
 	ConstructionFinished
@@ -60,7 +61,7 @@ UENUM()
 enum class ECombatState : uint8
 {
 	None,
-	ShouldAttack,
+	DispatchedToAttack,
 	Attacking
 };
 

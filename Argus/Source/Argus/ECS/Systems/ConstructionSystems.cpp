@@ -65,6 +65,7 @@ void ConstructionSystems::ProcessConstructionTaskCommands(float deltaTime, const
 				ProcessBeingConstructedState(deltaTime, components);
 			}
 			break;
+		case EConstructionState::DispatchedToConstructOther:
 		case EConstructionState::ConstructingOther:
 			ProcessConstructingOtherState(deltaTime, components);
 			break;
@@ -115,7 +116,6 @@ void ConstructionSystems::ProcessConstructingOtherState(float deltaTime, const C
 	const TargetingComponent* targetingComponent = components.m_entity.GetComponent<TargetingComponent>();
 	if (!targetingComponent)
 	{
-		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TargetingComponent*));
 		components.m_taskComponent->m_constructionState = EConstructionState::None;
 		return;
 	}
@@ -135,8 +135,10 @@ void ConstructionSystems::ProcessConstructingOtherState(float deltaTime, const C
 
 	if (!TargetingSystems::IsInMeleeRangeOfOtherEntity(components.m_entity, constructee))
 	{
+		components.m_taskComponent->m_constructionState = EConstructionState::DispatchedToConstructOther;
 		return;
 	}
+	components.m_taskComponent->m_constructionState = EConstructionState::ConstructingOther;
 
 	ConstructionComponent* constructeeConstructionComponent = constructee.GetComponent<ConstructionComponent>();
 	if (!constructeeConstructionComponent)
