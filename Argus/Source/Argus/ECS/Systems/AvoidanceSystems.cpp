@@ -692,8 +692,6 @@ float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems
 		return sourceEntityComponents.m_taskComponent->IsExecutingMoveTask() ? 1.0f : 0.0f;
 	}
 
-	float effortCoefficient = 0.5f;
-
 	const AvoidanceGroupingComponent* sourceEntityAvoidanceGroupingComponent = sourceEntityComponents.m_entity.GetComponent<AvoidanceGroupingComponent>();
 	const AvoidanceGroupingComponent* foundEntityAvoidanceGroupingComponent = foundEntity.GetComponent<AvoidanceGroupingComponent>();
 	bool inSameAvoidanceGroup = false;
@@ -702,6 +700,7 @@ float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems
 		inSameAvoidanceGroup = sourceEntityAvoidanceGroupingComponent->m_groupId == foundEntityAvoidanceGroupingComponent->m_groupId;
 	}
 	
+	float effortCoefficient = 0.5f;
 	if (ShouldReturnCombatEffortCoefficient(sourceEntityComponents, foundEntityTaskComponent, effortCoefficient) ||
 		ShouldReturnConstructionEffortCoefficient(sourceEntityComponents, foundEntityTaskComponent, effortCoefficient) ||
 		ShouldReturnResourceExtractionEffortCoefficient(sourceEntityComponents, foundEntityTaskComponent, effortCoefficient) ||
@@ -827,7 +826,8 @@ bool AvoidanceSystems::ShouldReturnCarrierEffortCoefficient(const TransformSyste
 		coefficient = 0.0f;
 		return true;
 	}
-	else if (foundEntityTargetingComponent &&
+
+	if (foundEntityTargetingComponent &&
 		sourceEntityCarrierComponent &&
 		foundEntityPassengerComponent &&
 		foundEntityTargetingComponent->HasEntityTarget() &&
@@ -873,14 +873,12 @@ bool AvoidanceSystems::ShouldReturnMovementTaskEffortCoefficient(const Transform
 	{
 		if (foundEntity.IsMoveable())
 		{
-			coefficient = 0.0f;
+			coefficient = inSameAvoidanceGroup ? 1.0f : 0.0f;
 			return true;
 		}
-		else
-		{
-			coefficient = 1.0f;
-			return true;
-		}
+
+		coefficient = 1.0f;
+		return true;
 	}
 
 	if (!sourceEntityComponents.m_taskComponent->IsExecutingMoveTask() && foundEntityTaskComponent->IsExecutingMoveTask())
@@ -890,11 +888,9 @@ bool AvoidanceSystems::ShouldReturnMovementTaskEffortCoefficient(const Transform
 			coefficient = inSameAvoidanceGroup ? 0.0f : 1.0f;
 			return true;
 		}
-		else
-		{
-			coefficient = 0.0f;
-			return true;
-		}
+
+		coefficient = 0.0f;
+		return true;
 	}
 
 	return false;
