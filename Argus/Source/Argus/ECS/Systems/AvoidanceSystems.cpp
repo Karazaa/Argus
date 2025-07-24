@@ -702,9 +702,9 @@ float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems
 		inSameAvoidanceGroup = sourceEntityAvoidanceGroupingComponent->m_groupId == foundEntityAvoidanceGroupingComponent->m_groupId;
 	}
 	
-	// TODO JAMES: Add a ShouldReturnResourceExtractionEffortCoefficient.
 	if (ShouldReturnCombatEffortCoefficient(sourceEntityComponents, foundEntityTaskComponent, effortCoefficient) ||
 		ShouldReturnConstructionEffortCoefficient(sourceEntityComponents, foundEntityTaskComponent, effortCoefficient) ||
+		ShouldReturnResourceExtractionEffortCoefficient(sourceEntityComponents, foundEntityTaskComponent, effortCoefficient) ||
 		ShouldReturnCarrierEffortCoefficient(sourceEntityComponents, foundEntity, foundEntityTaskComponent, effortCoefficient) || 
 		ShouldReturnAvoidancePriorityEffortCoefficient(sourceEntityAvoidanceGroupingComponent, foundEntityAvoidanceGroupingComponent, effortCoefficient) ||
 		ShouldReturnMovementTaskEffortCoefficient(sourceEntityComponents, foundEntity, foundEntityTaskComponent, inSameAvoidanceGroup, effortCoefficient))
@@ -863,6 +863,12 @@ bool AvoidanceSystems::ShouldReturnAvoidancePriorityEffortCoefficient(const Avoi
 
 bool AvoidanceSystems::ShouldReturnMovementTaskEffortCoefficient(const TransformSystemsArgs& sourceEntityComponents, const ArgusEntity& foundEntity, const TaskComponent* foundEntityTaskComponent, bool inSameAvoidanceGroup, float& coefficient)
 {
+	ARGUS_RETURN_ON_NULL_BOOL(foundEntityTaskComponent, ArgusECSLog);
+	if (!sourceEntityComponents.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return false;
+	}
+
 	if (sourceEntityComponents.m_taskComponent->IsExecutingMoveTask() && (!foundEntityTaskComponent->IsExecutingMoveTask()))
 	{
 		if (foundEntity.IsMoveable())
@@ -889,6 +895,28 @@ bool AvoidanceSystems::ShouldReturnMovementTaskEffortCoefficient(const Transform
 			coefficient = 0.0f;
 			return true;
 		}
+	}
+
+	return false;
+}
+
+bool AvoidanceSystems::ShouldReturnResourceExtractionEffortCoefficient(const TransformSystemsArgs& sourceEntityComponents, const TaskComponent* foundEntityTaskComponent, float& coefficient)
+{
+	ARGUS_RETURN_ON_NULL_BOOL(foundEntityTaskComponent, ArgusECSLog);
+	if (!sourceEntityComponents.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return false;
+	}
+
+	if (sourceEntityComponents.m_taskComponent->m_resourceExtractionState == EResourceExtractionState::Extracting && foundEntityTaskComponent->m_resourceExtractionState != EResourceExtractionState::Extracting)
+	{
+		coefficient = 0.0f;
+		return true;
+	}
+	if (sourceEntityComponents.m_taskComponent->m_resourceExtractionState != EResourceExtractionState::Extracting && foundEntityTaskComponent->m_resourceExtractionState == EResourceExtractionState::Extracting)
+	{
+		coefficient = 1.0f;
+		return true;
 	}
 
 	return false;

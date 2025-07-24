@@ -39,9 +39,11 @@ void ResourceSystems::ProcessResourceExtractionState(const ResourceSystemsArgs& 
 	{
 		case EResourceExtractionState::None:
 			break;
+		case EResourceExtractionState::DispatchedToExtract:
 		case EResourceExtractionState::Extracting:
 			ProcessResourceExtractionTiming(components);
 			break;
+		case EResourceExtractionState::DispatchedToDeposit:
 		case EResourceExtractionState::Depositing:
 			ProcessResourceDepositing(components);
 			break;
@@ -57,26 +59,33 @@ void ResourceSystems::ProcessResourceExtractionTiming(const ResourceSystemsArgs&
 		return;
 	}
 
-	if (components.m_resourceExtractionComponent->m_resourceExtractionTimer.IsTimerTicking(components.m_entity))
-	{
-		return;
-	}
-
 	if (!components.m_targetingComponent->HasEntityTarget())
 	{
 		components.m_taskComponent->m_resourceExtractionState = EResourceExtractionState::None;
 		return;
 	}
 
+	const ArgusEntity targetEntity = ArgusEntity::RetrieveEntity(components.m_targetingComponent->m_targetEntityId);
+	if (!TargetingSystems::IsInMeleeRangeOfOtherEntity(components.m_entity, targetEntity))
+	{
+		components.m_taskComponent->m_resourceExtractionState = EResourceExtractionState::DispatchedToExtract;
+		return;
+	}
+	components.m_taskComponent->m_resourceExtractionState = EResourceExtractionState::Extracting;
+
+	if (!CanEntityExtractResourcesFromOtherEntity(components.m_entity, targetEntity))
+	{
+		return;
+	}
+
+	if (components.m_resourceExtractionComponent->m_resourceExtractionTimer.IsTimerTicking(components.m_entity))
+	{
+		return;
+	}
+
 	if (components.m_resourceExtractionComponent->m_lastExtractionSourceEntityId == ArgusECSConstants::k_maxEntities)
 	{
 		components.m_resourceExtractionComponent->m_lastExtractionSourceEntityId = components.m_targetingComponent->m_targetEntityId;
-	}
-
-	const ArgusEntity targetEntity = ArgusEntity::RetrieveEntity(components.m_targetingComponent->m_targetEntityId);
-	if (!TargetingSystems::IsInMeleeRangeOfOtherEntity(components.m_entity, targetEntity) || !CanEntityExtractResourcesFromOtherEntity(components.m_entity, targetEntity))
-	{
-		return;
 	}
 
 	if (components.m_resourceExtractionComponent->m_resourceExtractionTimer.IsTimerComplete(components.m_entity))
@@ -113,7 +122,14 @@ void ResourceSystems::ProcessResourceDepositing(const ResourceSystemsArgs& compo
 	}
 
 	const ArgusEntity targetEntity = ArgusEntity::RetrieveEntity(components.m_targetingComponent->m_targetEntityId);
-	if (!TargetingSystems::IsInMeleeRangeOfOtherEntity(components.m_entity, targetEntity) || !CanEntityDepositResourcesToOtherEntity(components.m_entity, targetEntity))
+	if (!TargetingSystems::IsInMeleeRangeOfOtherEntity(components.m_entity, targetEntity))
+	{
+		components.m_taskComponent->m_resourceExtractionState = EResourceExtractionState::DispatchedToDeposit;
+		return;
+	}
+	components.m_taskComponent->m_resourceExtractionState = EResourceExtractionState::Depositing;
+
+	if (!CanEntityDepositResourcesToOtherEntity(components.m_entity, targetEntity))
 	{
 		return;
 	}
@@ -250,7 +266,7 @@ void ResourceSystems::MoveToLastExtractionSource(const ResourceSystemsArgs& comp
 		return;
 	}
 
-	components.m_taskComponent->m_resourceExtractionState = EResourceExtractionState::Extracting;
+	components.m_taskComponent->m_resourceExtractionState = EResourceExtractionState::DispatchedToExtract;
 	components.m_taskComponent->m_movementState = EMovementState::ProcessMoveToEntityCommand;
 	components.m_targetingComponent->m_targetEntityId = components.m_resourceExtractionComponent->m_lastExtractionSourceEntityId;
 }
