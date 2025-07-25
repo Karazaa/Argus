@@ -266,6 +266,9 @@ bool AbilitySystems::CastVacateAbility(const UAbilityRecord* abilityRecord, cons
 		return false;
 	}
 
+	const TransformComponent* transformComponent = components.m_entity.GetComponent<TransformComponent>();
+	ARGUS_RETURN_ON_NULL_BOOL(transformComponent, ArgusECSLog);
+
 	CarrierComponent* carrierComponent = components.m_entity.GetComponent<CarrierComponent>();
 	ARGUS_RETURN_ON_NULL_BOOL(carrierComponent, ArgusECSLog);
 
@@ -285,7 +288,33 @@ bool AbilitySystems::CastVacateAbility(const UAbilityRecord* abilityRecord, cons
 
 		passengerComponent->Set_m_carrierEntityId(ArgusECSConstants::k_maxEntities);
 
-		// TODO JAMES: Set passenger target location and navigate to there. Should probably be behind the carrier current location by a bit.
+		TaskComponent* passengerTaskComponent = passengerEntity.GetComponent<TaskComponent>(); 
+		TargetingComponent* passengerTargetingComponent = passengerEntity.GetComponent<TargetingComponent>();
+		TransformComponent* passengerTransformComponent = passengerEntity.GetComponent<TransformComponent>();
+		if (!passengerTaskComponent)
+		{
+			continue;
+		}
+		passengerTaskComponent->m_movementState = EMovementState::None;
+
+		if (!passengerTargetingComponent)
+		{
+			continue;
+		}
+		passengerTargetingComponent->m_targetEntityId = ArgusECSConstants::k_maxEntities;
+		passengerTargetingComponent->m_targetLocation.Reset();
+
+		if (!passengerTransformComponent)
+		{
+			continue;
+		}
+
+		float yawAdjustment = (UE_HALF_PI / 4.0f) * static_cast<float>(i);
+		if (i % 2)
+		{
+			yawAdjustment *= -1.0f;
+		}
+		passengerTransformComponent->m_location = transformComponent->m_location + ((-ArgusMath::GetDirectionFromYaw(transformComponent->GetCurrentYaw() + yawAdjustment)) * transformComponent->m_radius);
 	}
 
 	carrierComponent->m_passengerEntityIds.Empty();
