@@ -60,6 +60,11 @@ const bool UAbilityRecordDatabase::AsyncPreLoadRecord(uint32 id)
 		}
 	}
 
+	if (id == 0u)
+	{
+		return false;
+	}
+
 	if (m_UAbilityRecordsPersistent[id])
 	{
 		return true;

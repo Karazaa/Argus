@@ -60,6 +60,11 @@ const bool UResourceSetRecordDatabase::AsyncPreLoadRecord(uint32 id)
 		}
 	}
 
+	if (id == 0u)
+	{
+		return false;
+	}
+
 	if (m_UResourceSetRecordsPersistent[id])
 	{
 		return true;

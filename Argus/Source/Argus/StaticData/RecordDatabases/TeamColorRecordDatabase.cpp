@@ -60,6 +60,11 @@ const bool UTeamColorRecordDatabase::AsyncPreLoadRecord(uint32 id)
 		}
 	}
 
+	if (id == 0u)
+	{
+		return false;
+	}
+
 	if (m_UTeamColorRecordsPersistent[id])
 	{
 		return true;

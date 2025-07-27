@@ -60,6 +60,11 @@ const bool #####Database::AsyncPreLoadRecord(uint32 id)
 		}
 	}
 
+	if (id == 0u)
+	{
+		return false;
+	}
+
 	if (m_#####sPersistent[id])
 	{
 		return true;

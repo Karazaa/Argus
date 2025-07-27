@@ -60,6 +60,11 @@ const bool UPlacedArgusActorTeamInfoRecordDatabase::AsyncPreLoadRecord(uint32 id
 		}
 	}
 
+	if (id == 0u)
+	{
+		return false;
+	}
+
 	if (m_UPlacedArgusActorTeamInfoRecordsPersistent[id])
 	{
 		return true;

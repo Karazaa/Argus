@@ -60,6 +60,11 @@ const bool UFactionRecordDatabase::AsyncPreLoadRecord(uint32 id)
 		}
 	}
 
+	if (id == 0u)
+	{
+		return false;
+	}
+
 	if (m_UFactionRecordsPersistent[id])
 	{
 		return true;
