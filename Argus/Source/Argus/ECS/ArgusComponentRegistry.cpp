@@ -95,7 +95,7 @@ std::unordered_map<uint16, SpatialPartitioningComponent> ArgusComponentRegistry:
 
 void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 {
-	if (entityId >= ArgusECSConstants::k_maxEntities)
+	if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 	{
 		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d."), ARGUS_FUNCNAME, entityId);
 		return;

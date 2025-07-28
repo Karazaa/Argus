@@ -19,21 +19,21 @@ while (0);
 ARGUS_LOG(CategoryName, Error, TEXT("[%s] The variable, %s, is null!"), ARGUS_FUNCNAME, ARGUS_NAMEOF(VariableName));
 
 #define ARGUS_RETURN_ON_NULL(VariableName, CategoryName) \
-if (!VariableName) \
+if (UNLIKELY(!VariableName)) \
 { \
 	ARGUS_ERROR_NULL(CategoryName, VariableName); \
 	return;\
 }
 
 #define ARGUS_RETURN_ON_NULL_POINTER(VariableName, CategoryName) \
-if (!VariableName) \
+if (UNLIKELY(!VariableName)) \
 { \
 	ARGUS_ERROR_NULL(CategoryName, VariableName); \
 	return nullptr;\
 }
 
 #define ARGUS_RETURN_ON_NULL_BOOL(VariableName, CategoryName) \
-if (!VariableName) \
+if (UNLIKELY(!VariableName)) \
 { \
 	ARGUS_ERROR_NULL(CategoryName, VariableName); \
 	return false;\

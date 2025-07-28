@@ -78,7 +78,7 @@ public:
 	template<>
 	inline AbilityComponent* GetComponent<AbilityComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(AbilityComponent));
 			return nullptr;
@@ -95,13 +95,13 @@ public:
 	template<>
 	inline AbilityComponent* AddComponent<AbilityComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(AbilityComponent));
 			return nullptr;
 		}
 
-		if (s_isAbilityComponentActive[entityId])
+		if (UNLIKELY(s_isAbilityComponentActive[entityId]))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(AbilityComponent), entityId);
 			return &s_AbilityComponents[entityId];
@@ -115,7 +115,7 @@ public:
 	template<>
 	inline AbilityComponent* GetOrAddComponent<AbilityComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(AbilityComponent));
 			return nullptr;
@@ -143,7 +143,7 @@ public:
 	template<>
 	inline AvoidanceGroupingComponent* GetComponent<AvoidanceGroupingComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(AvoidanceGroupingComponent));
 			return nullptr;
@@ -160,13 +160,13 @@ public:
 	template<>
 	inline AvoidanceGroupingComponent* AddComponent<AvoidanceGroupingComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(AvoidanceGroupingComponent));
 			return nullptr;
 		}
 
-		if (s_isAvoidanceGroupingComponentActive[entityId])
+		if (UNLIKELY(s_isAvoidanceGroupingComponentActive[entityId]))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(AvoidanceGroupingComponent), entityId);
 			return &s_AvoidanceGroupingComponents[entityId];
@@ -180,7 +180,7 @@ public:
 	template<>
 	inline AvoidanceGroupingComponent* GetOrAddComponent<AvoidanceGroupingComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(AvoidanceGroupingComponent));
 			return nullptr;
@@ -208,7 +208,7 @@ public:
 	template<>
 	inline CarrierComponent* GetComponent<CarrierComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(CarrierComponent));
 			return nullptr;
@@ -225,13 +225,13 @@ public:
 	template<>
 	inline CarrierComponent* AddComponent<CarrierComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(CarrierComponent));
 			return nullptr;
 		}
 
-		if (s_isCarrierComponentActive[entityId])
+		if (UNLIKELY(s_isCarrierComponentActive[entityId]))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(CarrierComponent), entityId);
 			return &s_CarrierComponents[entityId];
@@ -245,7 +245,7 @@ public:
 	template<>
 	inline CarrierComponent* GetOrAddComponent<CarrierComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(CarrierComponent));
 			return nullptr;
@@ -273,7 +273,7 @@ public:
 	template<>
 	inline CombatComponent* GetComponent<CombatComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(CombatComponent));
 			return nullptr;
@@ -290,13 +290,13 @@ public:
 	template<>
 	inline CombatComponent* AddComponent<CombatComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(CombatComponent));
 			return nullptr;
 		}
 
-		if (s_isCombatComponentActive[entityId])
+		if (UNLIKELY(s_isCombatComponentActive[entityId]))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(CombatComponent), entityId);
 			return &s_CombatComponents[entityId];
@@ -310,7 +310,7 @@ public:
 	template<>
 	inline CombatComponent* GetOrAddComponent<CombatComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(CombatComponent));
 			return nullptr;
@@ -338,7 +338,7 @@ public:
 	template<>
 	inline ConstructionComponent* GetComponent<ConstructionComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(ConstructionComponent));
 			return nullptr;
@@ -355,13 +355,13 @@ public:
 	template<>
 	inline ConstructionComponent* AddComponent<ConstructionComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(ConstructionComponent));
 			return nullptr;
 		}
 
-		if (s_isConstructionComponentActive[entityId])
+		if (UNLIKELY(s_isConstructionComponentActive[entityId]))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ConstructionComponent), entityId);
 			return &s_ConstructionComponents[entityId];
@@ -375,7 +375,7 @@ public:
 	template<>
 	inline ConstructionComponent* GetOrAddComponent<ConstructionComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(ConstructionComponent));
 			return nullptr;
@@ -403,7 +403,7 @@ public:
 	template<>
 	inline HealthComponent* GetComponent<HealthComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(HealthComponent));
 			return nullptr;
@@ -420,13 +420,13 @@ public:
 	template<>
 	inline HealthComponent* AddComponent<HealthComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(HealthComponent));
 			return nullptr;
 		}
 
-		if (s_isHealthComponentActive[entityId])
+		if (UNLIKELY(s_isHealthComponentActive[entityId]))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(HealthComponent), entityId);
 			return &s_HealthComponents[entityId];
@@ -440,7 +440,7 @@ public:
 	template<>
 	inline HealthComponent* GetOrAddComponent<HealthComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(HealthComponent));
 			return nullptr;
@@ -468,7 +468,7 @@ public:
 	template<>
 	inline IdentityComponent* GetComponent<IdentityComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(IdentityComponent));
 			return nullptr;
@@ -485,13 +485,13 @@ public:
 	template<>
 	inline IdentityComponent* AddComponent<IdentityComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(IdentityComponent));
 			return nullptr;
 		}
 
-		if (s_isIdentityComponentActive[entityId])
+		if (UNLIKELY(s_isIdentityComponentActive[entityId]))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(IdentityComponent), entityId);
 			return &s_IdentityComponents[entityId];
@@ -505,7 +505,7 @@ public:
 	template<>
 	inline IdentityComponent* GetOrAddComponent<IdentityComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(IdentityComponent));
 			return nullptr;
@@ -533,7 +533,7 @@ public:
 	template<>
 	inline NavigationComponent* GetComponent<NavigationComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(NavigationComponent));
 			return nullptr;
@@ -550,13 +550,13 @@ public:
 	template<>
 	inline NavigationComponent* AddComponent<NavigationComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(NavigationComponent));
 			return nullptr;
 		}
 
-		if (s_isNavigationComponentActive[entityId])
+		if (UNLIKELY(s_isNavigationComponentActive[entityId]))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(NavigationComponent), entityId);
 			return &s_NavigationComponents[entityId];
@@ -570,7 +570,7 @@ public:
 	template<>
 	inline NavigationComponent* GetOrAddComponent<NavigationComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(NavigationComponent));
 			return nullptr;
@@ -598,7 +598,7 @@ public:
 	template<>
 	inline NearbyEntitiesComponent* GetComponent<NearbyEntitiesComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(NearbyEntitiesComponent));
 			return nullptr;
@@ -615,13 +615,13 @@ public:
 	template<>
 	inline NearbyEntitiesComponent* AddComponent<NearbyEntitiesComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(NearbyEntitiesComponent));
 			return nullptr;
 		}
 
-		if (s_isNearbyEntitiesComponentActive[entityId])
+		if (UNLIKELY(s_isNearbyEntitiesComponentActive[entityId]))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(NearbyEntitiesComponent), entityId);
 			return &s_NearbyEntitiesComponents[entityId];
@@ -635,7 +635,7 @@ public:
 	template<>
 	inline NearbyEntitiesComponent* GetOrAddComponent<NearbyEntitiesComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(NearbyEntitiesComponent));
 			return nullptr;
@@ -663,7 +663,7 @@ public:
 	template<>
 	inline ObserversComponent* GetComponent<ObserversComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(ObserversComponent));
 			return nullptr;
@@ -680,13 +680,13 @@ public:
 	template<>
 	inline ObserversComponent* AddComponent<ObserversComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(ObserversComponent));
 			return nullptr;
 		}
 
-		if (s_isObserversComponentActive[entityId])
+		if (UNLIKELY(s_isObserversComponentActive[entityId]))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ObserversComponent), entityId);
 			return &s_ObserversComponents[entityId];
@@ -700,7 +700,7 @@ public:
 	template<>
 	inline ObserversComponent* GetOrAddComponent<ObserversComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(ObserversComponent));
 			return nullptr;
@@ -728,7 +728,7 @@ public:
 	template<>
 	inline PassengerComponent* GetComponent<PassengerComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(PassengerComponent));
 			return nullptr;
@@ -745,13 +745,13 @@ public:
 	template<>
 	inline PassengerComponent* AddComponent<PassengerComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(PassengerComponent));
 			return nullptr;
 		}
 
-		if (s_isPassengerComponentActive[entityId])
+		if (UNLIKELY(s_isPassengerComponentActive[entityId]))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(PassengerComponent), entityId);
 			return &s_PassengerComponents[entityId];
@@ -765,7 +765,7 @@ public:
 	template<>
 	inline PassengerComponent* GetOrAddComponent<PassengerComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(PassengerComponent));
 			return nullptr;
@@ -793,7 +793,7 @@ public:
 	template<>
 	inline ResourceComponent* GetComponent<ResourceComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(ResourceComponent));
 			return nullptr;
@@ -810,13 +810,13 @@ public:
 	template<>
 	inline ResourceComponent* AddComponent<ResourceComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(ResourceComponent));
 			return nullptr;
 		}
 
-		if (s_isResourceComponentActive[entityId])
+		if (UNLIKELY(s_isResourceComponentActive[entityId]))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ResourceComponent), entityId);
 			return &s_ResourceComponents[entityId];
@@ -830,7 +830,7 @@ public:
 	template<>
 	inline ResourceComponent* GetOrAddComponent<ResourceComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(ResourceComponent));
 			return nullptr;
@@ -858,7 +858,7 @@ public:
 	template<>
 	inline ResourceExtractionComponent* GetComponent<ResourceExtractionComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(ResourceExtractionComponent));
 			return nullptr;
@@ -875,13 +875,13 @@ public:
 	template<>
 	inline ResourceExtractionComponent* AddComponent<ResourceExtractionComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(ResourceExtractionComponent));
 			return nullptr;
 		}
 
-		if (s_isResourceExtractionComponentActive[entityId])
+		if (UNLIKELY(s_isResourceExtractionComponentActive[entityId]))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ResourceExtractionComponent), entityId);
 			return &s_ResourceExtractionComponents[entityId];
@@ -895,7 +895,7 @@ public:
 	template<>
 	inline ResourceExtractionComponent* GetOrAddComponent<ResourceExtractionComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(ResourceExtractionComponent));
 			return nullptr;
@@ -923,7 +923,7 @@ public:
 	template<>
 	inline SpawningComponent* GetComponent<SpawningComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(SpawningComponent));
 			return nullptr;
@@ -940,13 +940,13 @@ public:
 	template<>
 	inline SpawningComponent* AddComponent<SpawningComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(SpawningComponent));
 			return nullptr;
 		}
 
-		if (s_isSpawningComponentActive[entityId])
+		if (UNLIKELY(s_isSpawningComponentActive[entityId]))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(SpawningComponent), entityId);
 			return &s_SpawningComponents[entityId];
@@ -960,7 +960,7 @@ public:
 	template<>
 	inline SpawningComponent* GetOrAddComponent<SpawningComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(SpawningComponent));
 			return nullptr;
@@ -988,7 +988,7 @@ public:
 	template<>
 	inline TargetingComponent* GetComponent<TargetingComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(TargetingComponent));
 			return nullptr;
@@ -1005,13 +1005,13 @@ public:
 	template<>
 	inline TargetingComponent* AddComponent<TargetingComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(TargetingComponent));
 			return nullptr;
 		}
 
-		if (s_isTargetingComponentActive[entityId])
+		if (UNLIKELY(s_isTargetingComponentActive[entityId]))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TargetingComponent), entityId);
 			return &s_TargetingComponents[entityId];
@@ -1025,7 +1025,7 @@ public:
 	template<>
 	inline TargetingComponent* GetOrAddComponent<TargetingComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(TargetingComponent));
 			return nullptr;
@@ -1053,7 +1053,7 @@ public:
 	template<>
 	inline TaskComponent* GetComponent<TaskComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(TaskComponent));
 			return nullptr;
@@ -1070,13 +1070,13 @@ public:
 	template<>
 	inline TaskComponent* AddComponent<TaskComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(TaskComponent));
 			return nullptr;
 		}
 
-		if (s_isTaskComponentActive[entityId])
+		if (UNLIKELY(s_isTaskComponentActive[entityId]))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TaskComponent), entityId);
 			return &s_TaskComponents[entityId];
@@ -1090,7 +1090,7 @@ public:
 	template<>
 	inline TaskComponent* GetOrAddComponent<TaskComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(TaskComponent));
 			return nullptr;
@@ -1118,7 +1118,7 @@ public:
 	template<>
 	inline TimerComponent* GetComponent<TimerComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(TimerComponent));
 			return nullptr;
@@ -1135,13 +1135,13 @@ public:
 	template<>
 	inline TimerComponent* AddComponent<TimerComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(TimerComponent));
 			return nullptr;
 		}
 
-		if (s_isTimerComponentActive[entityId])
+		if (UNLIKELY(s_isTimerComponentActive[entityId]))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TimerComponent), entityId);
 			return &s_TimerComponents[entityId];
@@ -1155,7 +1155,7 @@ public:
 	template<>
 	inline TimerComponent* GetOrAddComponent<TimerComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(TimerComponent));
 			return nullptr;
@@ -1183,7 +1183,7 @@ public:
 	template<>
 	inline TransformComponent* GetComponent<TransformComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(TransformComponent));
 			return nullptr;
@@ -1200,13 +1200,13 @@ public:
 	template<>
 	inline TransformComponent* AddComponent<TransformComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(TransformComponent));
 			return nullptr;
 		}
 
-		if (s_isTransformComponentActive[entityId])
+		if (UNLIKELY(s_isTransformComponentActive[entityId]))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), entityId);
 			return &s_TransformComponents[entityId];
@@ -1220,7 +1220,7 @@ public:
 	template<>
 	inline TransformComponent* GetOrAddComponent<TransformComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(TransformComponent));
 			return nullptr;
@@ -1248,7 +1248,7 @@ public:
 	template<>
 	inline VelocityComponent* GetComponent<VelocityComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(VelocityComponent));
 			return nullptr;
@@ -1265,13 +1265,13 @@ public:
 	template<>
 	inline VelocityComponent* AddComponent<VelocityComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(VelocityComponent));
 			return nullptr;
 		}
 
-		if (s_isVelocityComponentActive[entityId])
+		if (UNLIKELY(s_isVelocityComponentActive[entityId]))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(VelocityComponent), entityId);
 			return &s_VelocityComponents[entityId];
@@ -1285,7 +1285,7 @@ public:
 	template<>
 	inline VelocityComponent* GetOrAddComponent<VelocityComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(VelocityComponent));
 			return nullptr;
@@ -1315,7 +1315,7 @@ public:
 	template<>
 	inline AssetLoadingComponent* GetComponent<AssetLoadingComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(AssetLoadingComponent));
 			return nullptr;
@@ -1332,13 +1332,13 @@ public:
 	template<>
 	inline AssetLoadingComponent* AddComponent<AssetLoadingComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(AssetLoadingComponent));
 			return nullptr;
 		}
 
-		if (s_AssetLoadingComponents.contains(entityId))
+		if (UNLIKELY(s_AssetLoadingComponents.contains(entityId)))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(AssetLoadingComponent), entityId);
 			return &s_AssetLoadingComponents[entityId];
@@ -1351,7 +1351,7 @@ public:
 	template<>
 	inline AssetLoadingComponent* GetOrAddComponent<AssetLoadingComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(AssetLoadingComponent));
 			return nullptr;
@@ -1371,7 +1371,7 @@ public:
 	template<>
 	inline InputInterfaceComponent* GetComponent<InputInterfaceComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(InputInterfaceComponent));
 			return nullptr;
@@ -1388,13 +1388,13 @@ public:
 	template<>
 	inline InputInterfaceComponent* AddComponent<InputInterfaceComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(InputInterfaceComponent));
 			return nullptr;
 		}
 
-		if (s_InputInterfaceComponents.contains(entityId))
+		if (UNLIKELY(s_InputInterfaceComponents.contains(entityId)))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(InputInterfaceComponent), entityId);
 			return &s_InputInterfaceComponents[entityId];
@@ -1407,7 +1407,7 @@ public:
 	template<>
 	inline InputInterfaceComponent* GetOrAddComponent<InputInterfaceComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(InputInterfaceComponent));
 			return nullptr;
@@ -1427,7 +1427,7 @@ public:
 	template<>
 	inline ReticleComponent* GetComponent<ReticleComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(ReticleComponent));
 			return nullptr;
@@ -1444,13 +1444,13 @@ public:
 	template<>
 	inline ReticleComponent* AddComponent<ReticleComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(ReticleComponent));
 			return nullptr;
 		}
 
-		if (s_ReticleComponents.contains(entityId))
+		if (UNLIKELY(s_ReticleComponents.contains(entityId)))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ReticleComponent), entityId);
 			return &s_ReticleComponents[entityId];
@@ -1463,7 +1463,7 @@ public:
 	template<>
 	inline ReticleComponent* GetOrAddComponent<ReticleComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(ReticleComponent));
 			return nullptr;
@@ -1483,7 +1483,7 @@ public:
 	template<>
 	inline SpatialPartitioningComponent* GetComponent<SpatialPartitioningComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(SpatialPartitioningComponent));
 			return nullptr;
@@ -1500,13 +1500,13 @@ public:
 	template<>
 	inline SpatialPartitioningComponent* AddComponent<SpatialPartitioningComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(SpatialPartitioningComponent));
 			return nullptr;
 		}
 
-		if (s_SpatialPartitioningComponents.contains(entityId))
+		if (UNLIKELY(s_SpatialPartitioningComponents.contains(entityId)))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(SpatialPartitioningComponent), entityId);
 			return &s_SpatialPartitioningComponents[entityId];
@@ -1519,7 +1519,7 @@ public:
 	template<>
 	inline SpatialPartitioningComponent* GetOrAddComponent<SpatialPartitioningComponent>(uint16 entityId)
 	{
-		if (entityId >= ArgusECSConstants::k_maxEntities)
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(SpatialPartitioningComponent));
 			return nullptr;
