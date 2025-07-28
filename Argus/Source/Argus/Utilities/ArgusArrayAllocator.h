@@ -39,12 +39,22 @@ public:
 		{
 			if (Data)
 			{
-#if UE_ENABLE_ARRAY_SLACK_TRACKING
-				FArraySlackTrackingHeader::Free(Data);
-#else
+				// TODO JAMES: Add slack tracking debug info.
 				BaseMallocType::Free(Data);
-#endif
 			}
+		}
+
+		/*
+		 * Moves the state of another allocator into this one.  The allocator can be different.
+		 *
+		 * Assumes that the allocator is currently empty, i.e. memory may be allocated but any existing elements have already been destructed (if necessary).
+		 * @param Other - The allocator to move the state from.  This allocator should be left in a valid empty state.
+		 */
+		template <typename OtherAllocator>
+		FORCEINLINE void MoveToEmptyFromOtherAllocator(typename OtherAllocator::ForAnyElementType& other)
+		{
+			// TODO JAMES: Error here. This should never get called since SupportsMoveFromOtherAllocator is false in the allocator traits for ArgusArrayAllocator. Because we are allocating from an arena,
+			// we can't support swapping allocator types and the data they manage.
 		}
 
 		/*
@@ -53,22 +63,85 @@ public:
 		 * Assumes that the allocator is currently empty, i.e. memory may be allocated but any existing elements have already been destructed (if necessary).
 		 * @param Other - The allocator to move the state from.  This allocator should be left in a valid empty state.
 		 */
-		void MoveToEmpty(ForElementType& Other);
+		FORCEINLINE void MoveToEmpty(ForAnyElementType& other)
+		{
+			checkSlow((void*)this != (void*)&other);
 
-		/*
-		 * Moves the state of another allocator into this one.  The allocator can be different, and the type must be specified.
-		 * This function should only be called if TAllocatorTraits<AllocatorType>::SupportsMoveFromOtherAllocator is true.
-		 *
-		 * Assumes that the allocator is currently empty, i.e. memory may be allocated but any existing elements have already been destructed (if necessary).
-		 * @param Other - The allocator to move the state from.  This allocator should be left in a valid empty state.
-		 */
-		template <typename OtherAllocatorType>
-		void MoveToEmptyFromOtherAllocator(typename OtherAllocatorType::template ForElementType<ElementType>& Other);
+			if (Data)
+			{
+				// TODO JAMES: Add slack tracking debug info. Free needs arena equivalent.
+				BaseMallocType::Free(Data);
+			}
+
+			Data = Other.Data;
+			Other.Data = nullptr;
+		}
 
 		/* Accesses the container's current data. */
 		FORCEINLINE FScriptContainerElement* GetAllocation() const
 		{
 			return Data;
+		}
+
+		/*
+		 * Resizes the container's allocation.
+		 * @param currentNum - The number of elements that are currently constructed at the front of the allocation.
+		 * @param newMax - The number of elements to allocate space for.
+		 * @param numBytesPerElement - The number of bytes/element.
+		 */
+		void ResizeAllocation(SizeType currentNum, SizeType newMax, SIZE_T numBytesPerElement)
+		{
+			// Avoid calling FMemory::Realloc( nullptr, 0 ) as ANSI C mandates returning a valid pointer which is not what we want.
+			if (Data || newMax)
+			{
+				static_assert(sizeof(SizeType) <= sizeof(SIZE_T), "SIZE_T is expected to handle all possible sizes");
+
+				// Check for under/overflow
+				bool bInvalidResize = newMax < 0 || numBytesPerElement < 1 || numBytesPerElement >(SIZE_T)MAX_int32;
+				if constexpr (sizeof(SizeType) == sizeof(SIZE_T))
+				{
+					bInvalidResize = bInvalidResize || (SIZE_T)(USizeType)newMax > (SIZE_T)TNumericLimits<SizeType>::Max() / numBytesPerElement;
+				}
+				if (UNLIKELY(bInvalidResize))
+				{
+					UE::Core::Private::OnInvalidSizedHeapAllocatorNum(IndexSize, newMax, numBytesPerElement);
+				}
+
+				// TODO JAMES: Slack tracking and Realloc needs arena equivalent.
+				Data = (FScriptContainerElement*)BaseMallocType::Realloc(Data, newMax * numBytesPerElement);
+			}
+		}
+
+		/*
+		 * Resizes the container's allocation.
+		 * @param currentNum - The number of elements that are currently constructed at the front of the allocation.
+		 * @param newMax - The number of elements to allocate space for.
+		 * @param NumBytesPerElement - The number of bytes/element.
+		 * @param alignmentOfElement - The alignment of the element type.
+		 *
+		 * @note  This overload only exists if TAllocatorTraits<Allocator>::SupportsElementAlignment == true.
+		 */
+		void ResizeAllocation(SizeType currentNum, SizeType NewMax, SIZE_T numBytesPerElement, uint32 alignmentOfElement)
+		{
+			// Avoid calling FMemory::Realloc( nullptr, 0 ) as ANSI C mandates returning a valid pointer which is not what we want.
+			if (Data || newMax)
+			{
+				static_assert(sizeof(SizeType) <= sizeof(SIZE_T), "SIZE_T is expected to handle all possible sizes");
+
+				// Check for under/overflow
+				bool bInvalidResize = newMax < 0 || numBytesPerElement < 1 || numBytesPerElement >(SIZE_T)MAX_int32;
+				if constexpr (sizeof(SizeType) == sizeof(SIZE_T))
+				{
+					bInvalidResize = bInvalidResize || ((SIZE_T)(USizeType)newMax > (SIZE_T)TNumericLimits<SizeType>::Max() / numBytesPerElement);
+				}
+				if (UNLIKELY(bInvalidResize))
+				{
+					UE::Core::Private::OnInvalidSizedHeapAllocatorNum(IndexSize, newMax, numBytesPerElement);
+				}
+
+				// TODO JAMES: Slack tracking and Realloc needs arena equivalent.
+				Data = (FScriptContainerElement*)BaseMallocType::Realloc(Data, newMax * numBytesPerElement, alignmentOfElement);
+			}
 		}
 
 	private:
@@ -94,4 +167,13 @@ public:
 			return (ElementType*)ForAnyElementType::GetAllocation();
 		}
 	};
+};
+
+template <uint32 NumPreAllocatedElements, int IndexSize>
+struct TAllocatorTraits<ArgusArrayAllocator<NumPreAllocatedElements, IndexSize>> : TAllocatorTraitsBase<ArgusArrayAllocator<NumPreAllocatedElements, IndexSize>>
+{
+	enum { IsZeroConstruct = true };
+	enum { SupportsElementAlignment = true };
+	enum { SupportsSlackTracking = false };
+	enum { SupportsMoveFromOtherAllocator = false };
 };
