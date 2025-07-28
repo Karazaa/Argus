@@ -24,7 +24,7 @@ To get the Epic Games Launcher, [visit this site](https://www.unrealengine.com/e
 
 To build Unreal Engine from source, you will need to [join the Epic Games Organization on GitHub](https://github.com/EpicGames) in order to [clone their Unreal Engine repository](https://github.com/EpicGames/UnrealEngine). After cloning the proper version number of the engine and running Setup.bat, you will need to call GenerateProjectFiles.bat with the following flags.
 
-**-projectfiles -project="<path to Argus.uproject file>" -game -engine -dotnet**
+**-projectfiles -project="{path to Argus.uproject file}" -game -engine -dotnet**
 
 
 
