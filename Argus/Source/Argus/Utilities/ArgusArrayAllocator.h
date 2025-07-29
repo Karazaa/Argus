@@ -6,18 +6,21 @@
 
 /*
  * The purpose of this class is to be the allocator used with TArrays throughout Argus. This allocator will behave similarly to TInlineAllocator in that it will have a predicted initial capacity reserved in
- * the ArgusArenaAllocator defined at compile time. If we exceed this capacity, we will allocate more continguous memory in the ArgusArenaAllocator and importantly, LOG OUT THE DETAILS OF THE ALLOCATION.
+ * the ArgusArenaAllocator defined at compile time. If we exceed this capacity, we will allocate more contiguous memory in the ArgusArenaAllocator and importantly, LOG OUT THE DETAILS OF THE ALLOCATION.
  * We want to do this so we can begin to hone in on what kind of allocation needs we are going to have for dynamic arrays and minimize the quantity of resizes while also not pre-allocating unused chunks of memory.
  * 
  * Please refer to FContainerAllocatorInterface on line 272 of ContainerAllocationPolicies.h which serves as an example interface (not to be used) of functions to implement in order to have calls from inside templates function.
  */
 
 template <uint32 NumPreAllocatedElements, int IndexSize>
-class ArgusArrayAllocator
+class SizedArgusArrayAllocator
 {
 public:
 	/* The integral type to be used for element counts and indices used by the allocator and container - must be signed */
 	using SizeType = typename TBitsToSizeType<IndexSize>::Type;
+private:
+	using USizeType = std::make_unsigned_t<SizeType>;
+public:
 
 	/* Determines whether the user of the allocator may use the ForAnyElementType inner class. */
 	enum { NeedsElementType = true };
@@ -27,8 +30,8 @@ public:
 
 	class ForAnyElementType
 	{
-		template <int, typename>
-		friend class ArgusArrayAllocator;
+		template <uint32 NumPreAllocatedElements, int IndexSize>
+		friend class SizedArgusArrayAllocator;
 
 	public:
 		/* Default constructor. */
@@ -40,7 +43,7 @@ public:
 			if (Data)
 			{
 				// TODO JAMES: Add slack tracking debug info.
-				BaseMallocType::Free(Data);
+				FMemory::Free(Data);
 			}
 		}
 
@@ -70,11 +73,11 @@ public:
 			if (Data)
 			{
 				// TODO JAMES: Add slack tracking debug info. Free needs arena equivalent.
-				BaseMallocType::Free(Data);
+				FMemory::Free(Data);
 			}
 
-			Data = Other.Data;
-			Other.Data = nullptr;
+			Data = other.Data;
+			other.Data = nullptr;
 		}
 
 		/* Accesses the container's current data. */
@@ -108,7 +111,7 @@ public:
 				}
 
 				// TODO JAMES: Slack tracking and Realloc needs arena equivalent.
-				Data = (FScriptContainerElement*)BaseMallocType::Realloc(Data, newMax * numBytesPerElement);
+				Data = (FScriptContainerElement*)FMemory::Realloc(Data, newMax * numBytesPerElement);
 			}
 		}
 
@@ -116,12 +119,12 @@ public:
 		 * Resizes the container's allocation.
 		 * @param currentNum - The number of elements that are currently constructed at the front of the allocation.
 		 * @param newMax - The number of elements to allocate space for.
-		 * @param NumBytesPerElement - The number of bytes/element.
+		 * @param numBytesPerElement - The number of bytes/element.
 		 * @param alignmentOfElement - The alignment of the element type.
 		 *
 		 * @note  This overload only exists if TAllocatorTraits<Allocator>::SupportsElementAlignment == true.
 		 */
-		void ResizeAllocation(SizeType currentNum, SizeType NewMax, SIZE_T numBytesPerElement, uint32 alignmentOfElement)
+		void ResizeAllocation(SizeType currentNum, SizeType newMax, SIZE_T numBytesPerElement, uint32 alignmentOfElement)
 		{
 			// Avoid calling FMemory::Realloc( nullptr, 0 ) as ANSI C mandates returning a valid pointer which is not what we want.
 			if (Data || newMax)
@@ -140,8 +143,53 @@ public:
 				}
 
 				// TODO JAMES: Slack tracking and Realloc needs arena equivalent.
-				Data = (FScriptContainerElement*)BaseMallocType::Realloc(Data, newMax * numBytesPerElement, alignmentOfElement);
+				Data = (FScriptContainerElement*)FMemory::Realloc(Data, newMax * numBytesPerElement, alignmentOfElement);
 			}
+		}
+
+		FORCEINLINE SizeType CalculateSlackReserve(SizeType newMax, SIZE_T numBytesPerElement) const
+		{
+			return DefaultCalculateSlackReserve(newMax, numBytesPerElement, true);
+		}
+
+		FORCEINLINE SizeType CalculateSlackReserve(SizeType newMax, SIZE_T numBytesPerElement, uint32 alignmentOfElement) const
+		{
+			return DefaultCalculateSlackReserve(newMax, numBytesPerElement, true, (uint32)alignmentOfElement);
+		}
+
+		FORCEINLINE SizeType CalculateSlackShrink(SizeType newMax, SizeType currentMax, SIZE_T numBytesPerElement) const
+		{
+			return DefaultCalculateSlackShrink(newMax, currentMax, numBytesPerElement, true);
+		}
+
+		FORCEINLINE SizeType CalculateSlackShrink(SizeType newMax, SizeType currentMax, SIZE_T numBytesPerElement, uint32 alignmentOfElement) const
+		{
+			return DefaultCalculateSlackShrink(newMax, currentMax, numBytesPerElement, true, (uint32)alignmentOfElement);
+		}
+
+		FORCEINLINE SizeType CalculateSlackGrow(SizeType newMax, SizeType currentMax, SIZE_T numBytesPerElement) const
+		{
+			return DefaultCalculateSlackGrow(newMax, currentMax, numBytesPerElement, true);
+		}
+
+		FORCEINLINE SizeType CalculateSlackGrow(SizeType newMax, SizeType currentMax, SIZE_T numBytesPerElement, uint32 alignmentOfElement) const
+		{
+			return DefaultCalculateSlackGrow(newMax, currentMax, numBytesPerElement, true, (uint32)alignmentOfElement);
+		}
+
+		SIZE_T GetAllocatedSize(SizeType currentMax, SIZE_T numBytesPerElement) const
+		{
+			return currentMax * numBytesPerElement;
+		}
+
+		bool HasAllocation() const
+		{
+			return !!Data;
+		}
+
+		SizeType GetInitialCapacity() const
+		{
+			return NumPreAllocatedElements;
 		}
 
 	private:
@@ -169,8 +217,11 @@ public:
 	};
 };
 
+template <uint32 NumInlineElements>
+using ArgusArrayAllocator = SizedArgusArrayAllocator<NumInlineElements, 32>;
+
 template <uint32 NumPreAllocatedElements, int IndexSize>
-struct TAllocatorTraits<ArgusArrayAllocator<NumPreAllocatedElements, IndexSize>> : TAllocatorTraitsBase<ArgusArrayAllocator<NumPreAllocatedElements, IndexSize>>
+struct TAllocatorTraits< SizedArgusArrayAllocator<NumPreAllocatedElements, IndexSize> > : TAllocatorTraitsBase< SizedArgusArrayAllocator<NumPreAllocatedElements, IndexSize> >
 {
 	enum { IsZeroConstruct = true };
 	enum { SupportsElementAlignment = true };

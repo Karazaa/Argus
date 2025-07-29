@@ -46,6 +46,10 @@ void CarrierComponent::DrawComponentDebug() const
 		ImGui::Text("m_carrierCapacity");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_carrierCapacity);
+		ImGui::TableNextColumn();
+		ImGui::Text("ARRAY MAX");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_passengerEntityIds.Max());
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING
