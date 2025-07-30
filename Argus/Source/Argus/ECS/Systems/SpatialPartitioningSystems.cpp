@@ -57,7 +57,7 @@ void SpatialPartitioningSystems::CacheAdjacentEntityIds(const SpatialPartitionin
 			continue;
 		}
 
-		nearbyEntitiesComponent->m_nearbyEntities.EmptyAll();
+		nearbyEntitiesComponent->m_nearbyEntities.ResetAll();
 
 		if (AvoidanceGroupingComponent* avoidanceGroupingComponent = entity.GetComponent<AvoidanceGroupingComponent>())
 		{
@@ -253,7 +253,7 @@ void SpatialPartitioningSystems::FloodFillStableFlockingRecursive(uint16 groupId
 		return;
 	}
 
-	const TArray<uint16> entityIdsInFlockingRange = nearbyEntitiesComponent->m_nearbyEntities.GetEntityIdsInFlockingRange();
+	auto entityIdsInFlockingRange = nearbyEntitiesComponent->m_nearbyEntities.GetEntityIdsInFlockingRange();
 	for (int32 i = 0; i < entityIdsInFlockingRange.Num(); ++i)
 	{
 		ArgusEntity flockmate = ArgusEntity::RetrieveEntity(entityIdsInFlockingRange[i]);

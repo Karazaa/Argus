@@ -83,7 +83,7 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 	params.m_spatialPartitioningComponent = spatialPartitioningComponent;
 
 	// If no entities nearby, then nothing can effect our navigation, so we should just early out with a desired velocity. 
-	const TArray<uint16>& foundEntityIds = nearbyEntitiesComponent->m_nearbyEntities.GetEntityIdsInAvoidanceRange();
+	auto foundEntityIds = nearbyEntitiesComponent->m_nearbyEntities.GetEntityIdsInAvoidanceRange();
 	if (foundEntityIds.IsEmpty())
 	{
 		components.m_velocityComponent->m_proposedAvoidanceVelocity = ArgusMath::ToUnrealVector2(desiredVelocity);
@@ -107,7 +107,7 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 #endif //!UE_BUILD_SHIPPING
 	const int32 numStaticObstacles = calculatedORCALines.Num();
 	
-	CreateEntityORCALines(params, components, foundEntityIds, calculatedORCALines, desiredVelocity);
+	CreateEntityORCALines(params, components, nearbyEntitiesComponent, calculatedORCALines, desiredVelocity);
 
 	int32 failureLine = -1;
 	FVector2D resultingVelocity = FVector2D::ZeroVector;
@@ -323,12 +323,19 @@ void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const Creat
 	}
 }
 
-void AvoidanceSystems::CreateEntityORCALines(const CreateEntityORCALinesParams& params, const TransformSystemsArgs& components, const TArray<uint16>& foundEntityIds, TArray<ORCALine>& outORCALines, FVector2D& outDesiredVelocity)
+void AvoidanceSystems::CreateEntityORCALines(const CreateEntityORCALinesParams& params, const TransformSystemsArgs& components, const NearbyEntitiesComponent* nearbyEntitiesComponent, TArray<ORCALine>& outORCALines, FVector2D& outDesiredVelocity)
 {
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+	ARGUS_RETURN_ON_NULL(nearbyEntitiesComponent, ArgusECSLog);
+
 	const bool calculateAverageLocationOfOtherEntities = outDesiredVelocity.IsNearlyZero() && !params.m_sourceEntityVelocity.IsNearlyZero();
 	FVector2D averageLocationOfOtherEntities = FVector2D::ZeroVector;
 	float numberOfEntitiesInAverage = 0.0f;
 
+	auto foundEntityIds = nearbyEntitiesComponent->m_nearbyEntities.GetEntityIdsInAvoidanceRange();
 	for (int32 i = 0; i < foundEntityIds.Num(); ++i)
 	{
 		ArgusEntity foundEntity = ArgusEntity::RetrieveEntity(foundEntityIds[i]);

@@ -128,13 +128,13 @@ void ArgusEntityKDTreeRangeOutput::ConsolidateInArray(TArray<uint16>& allEntitie
 	}
 }
 
-void ArgusEntityKDTreeRangeOutput::EmptyAll()
+void ArgusEntityKDTreeRangeOutput::ResetAll()
 {
-	m_entityIdsWithinAvoidanceRange.Empty();
-	m_entityIdsWithinMeleeRange.Empty();
-	m_entityIdsWithinRangedRange.Empty();
-	m_entityIdsWithinSightRange.Empty();
-	m_entityIdsWithinFlockingRange.Empty();
+	m_entityIdsWithinAvoidanceRange.Reset();
+	m_entityIdsWithinMeleeRange.Reset();
+	m_entityIdsWithinRangedRange.Reset();
+	m_entityIdsWithinSightRange.Reset();
+	m_entityIdsWithinFlockingRange.Reset();
 }
 
 bool ArgusEntityKDTreeRangeOutput::FoundAny() const

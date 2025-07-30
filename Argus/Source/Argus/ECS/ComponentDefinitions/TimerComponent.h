@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "ArgusArrayAllocator.h"
 #include "ArgusLogging.h"
 #include "CoreMinimal.h"
 #include "ComponentDependencies/Timer.h"
@@ -12,7 +13,7 @@ struct TimerComponent
 	ARGUS_COMPONENT_SHARED;
 
 	ARGUS_IGNORE()
-	TArray<Timer> m_timers;
+	TArray<Timer, ArgusArrayAllocator<2> > m_timers;
 
 	Timer* GetTimerFromHandle(const TimerHandle* timerHandle)
 	{

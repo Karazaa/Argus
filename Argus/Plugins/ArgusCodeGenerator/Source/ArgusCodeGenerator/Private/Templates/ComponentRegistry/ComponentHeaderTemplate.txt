@@ -43,7 +43,7 @@ public:
 	template<>
 	inline #####* GetOrAddComponent<#####>(uint16 entityId)
 	{
-		if (UNLIELY(entityId >= ArgusECSConstants::k_maxEntities))
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(#####));
 			return nullptr;

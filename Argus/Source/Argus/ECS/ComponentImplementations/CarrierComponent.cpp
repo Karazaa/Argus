@@ -30,6 +30,7 @@ void CarrierComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_passengerEntityIds");
 		ImGui::TableNextColumn();
+		ImGui::Text("Array max is currently = %d", m_passengerEntityIds.Max());
 		if (m_passengerEntityIds.Num() == 0)
 		{
 			ImGui::Text("Array is empty");
@@ -46,10 +47,6 @@ void CarrierComponent::DrawComponentDebug() const
 		ImGui::Text("m_carrierCapacity");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_carrierCapacity);
-		ImGui::TableNextColumn();
-		ImGui::Text("ARRAY MAX");
-		ImGui::TableNextColumn();
-		ImGui::Text("%d", m_passengerEntityIds.Max());
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

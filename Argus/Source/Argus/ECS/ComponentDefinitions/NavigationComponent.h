@@ -10,22 +10,22 @@ struct NavigationComponent
 	ARGUS_COMPONENT_SHARED;
 
 	ARGUS_IGNORE()
-	TArray<FVector> m_navigationPoints;
+	TArray<FVector, ArgusArrayAllocator<15> > m_navigationPoints;
 
 	ARGUS_IGNORE()
-	ArgusDeque<FVector> m_queuedWaypoints;
+	ArgusDeque<FVector, 5> m_queuedWaypoints;
 
 	ARGUS_IGNORE()
 	int32 m_lastPointIndex = 0;
 
 	void ResetPath()
 	{
-		m_navigationPoints.Empty();
+		m_navigationPoints.Reset();
 		m_lastPointIndex = 0u;
 	}
 
 	void ResetQueuedWaypoints()
 	{
-		m_queuedWaypoints.Empty();
+		m_queuedWaypoints.Reset();
 	}
 };

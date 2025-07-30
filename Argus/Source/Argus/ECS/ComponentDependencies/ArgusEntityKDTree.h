@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "ArgusArrayAllocator.h"
 #include "ArgusKDTree.h"
 
 class ArgusEntity;
@@ -47,20 +48,20 @@ class ArgusEntityKDTreeRangeOutput
 public:
 	void Add(const ArgusEntityKDTreeNode* nodeToAdd, const ArgusEntityKDTreeQueryRangeThresholds& thresholds, float distFromTargetSquared);
 	void ConsolidateInArray(TArray<uint16>& allEntityIds);
-	void EmptyAll();
+	void ResetAll();
 	bool FoundAny() const;
-	const TArray<uint16>& GetEntityIdsInSightRange() const { return m_entityIdsWithinSightRange; }
-	const TArray<uint16>& GetEntityIdsInRangedRange() const { return m_entityIdsWithinRangedRange; }
-	const TArray<uint16>& GetEntityIdsInMeleeRange() const { return m_entityIdsWithinMeleeRange; }
-	const TArray<uint16>& GetEntityIdsInAvoidanceRange() const { return m_entityIdsWithinAvoidanceRange; }
-	const TArray<uint16>& GetEntityIdsInFlockingRange() const { return m_entityIdsWithinFlockingRange; }
+	const TArray<uint16, ArgusArrayAllocator<20> >& GetEntityIdsInSightRange() const { return m_entityIdsWithinSightRange; }
+	const TArray<uint16, ArgusArrayAllocator<20> >& GetEntityIdsInRangedRange() const { return m_entityIdsWithinRangedRange; }
+	const TArray<uint16, ArgusArrayAllocator<10> >& GetEntityIdsInMeleeRange() const { return m_entityIdsWithinMeleeRange; }
+	const TArray<uint16, ArgusArrayAllocator<10> >& GetEntityIdsInAvoidanceRange() const { return m_entityIdsWithinAvoidanceRange; }
+	const TArray<uint16, ArgusArrayAllocator<10> >& GetEntityIdsInFlockingRange() const { return m_entityIdsWithinFlockingRange; }
 
 private:
-	TArray<uint16> m_entityIdsWithinSightRange;
-	TArray<uint16> m_entityIdsWithinRangedRange;
-	TArray<uint16> m_entityIdsWithinMeleeRange;
-	TArray<uint16> m_entityIdsWithinAvoidanceRange;
-	TArray<uint16> m_entityIdsWithinFlockingRange;
+	TArray<uint16, ArgusArrayAllocator<20> > m_entityIdsWithinSightRange;
+	TArray<uint16, ArgusArrayAllocator<20> > m_entityIdsWithinRangedRange;
+	TArray<uint16, ArgusArrayAllocator<10> > m_entityIdsWithinMeleeRange;
+	TArray<uint16, ArgusArrayAllocator<10> > m_entityIdsWithinAvoidanceRange;
+	TArray<uint16, ArgusArrayAllocator<10> > m_entityIdsWithinFlockingRange;
 };
 
 class ArgusEntityKDTree : public ArgusKDTree<ArgusEntityKDTreeNode, ArgusEntityKDTreeRangeOutput, ArgusEntityKDTreeQueryRangeThresholds>

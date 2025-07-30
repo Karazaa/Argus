@@ -30,6 +30,7 @@ void TimerComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_timers");
 		ImGui::TableNextColumn();
+		ImGui::Text("Array max is currently = %d", m_timers.Max());
 		if (m_timers.Num() == 0)
 		{
 			ImGui::Text("Array is empty");

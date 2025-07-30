@@ -290,6 +290,7 @@ bool ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 
 void ComponentImplementationGenerator::FormatImGuiArrayField(const std::string& variableName, const std::string& extraData, bool isSmoothed, std::vector<std::string>& outParsedVariableContents, TFunction<void(const std::string&, const std::string&, const std::string&, std::vector<std::string>&)> elementFormattingFunction)
 {
+	outParsedVariableContents.push_back(std::vformat("\t\tImGui::Text(\"Array max is currently = %d\", {}.Max());", std::make_format_args(variableName)));
 	outParsedVariableContents.push_back(std::vformat("\t\tif ({}.Num() == 0)", std::make_format_args(variableName)));
 	outParsedVariableContents.push_back("\t\t{");
 	outParsedVariableContents.push_back("\t\t\tImGui::Text(\"Array is empty\");");

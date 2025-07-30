@@ -208,6 +208,7 @@ public:
 		/* Default constructor. */
 		ForElementType()
 		{
+			ForAnyElementType::ResizeAllocation(0, NumPreAllocatedElements, sizeof(ElementType), alignof(ElementType));
 		}
 
 		FORCEINLINE ElementType* GetAllocation() const

@@ -45,7 +45,7 @@ private:
 	};
 
 	static void			CreateObstacleORCALines(UWorld* worldPointer, const CreateEntityORCALinesParams& params, const TransformSystemsArgs& components, TArray<ORCALine>& outORCALines);
-	static void			CreateEntityORCALines(const CreateEntityORCALinesParams& params, const TransformSystemsArgs& components, const TArray<uint16>& foundEntityIds, TArray<ORCALine>& outORCALines, FVector2D& outDesiredVelocity);
+	static void			CreateEntityORCALines(const CreateEntityORCALinesParams& params, const TransformSystemsArgs& components, const NearbyEntitiesComponent* nearbyEntitiesComponent, TArray<ORCALine>& outORCALines, FVector2D& outDesiredVelocity);
 	static void			FindORCALineAndVelocityToBoundaryPerEntity(const CreateEntityORCALinesParams& params, const CreateEntityORCALinesParamsPerEntity& perEntityParams, FVector2D& velocityToBoundaryOfVO, ORCALine& orcaLine);
 	static bool			OneDimensionalLinearProgram(const TArray<ORCALine>& orcaLines, const float radius, const FVector2D& preferredVelocity, bool shouldOptimizeDirection, const int32 lineIndex, FVector2D& resultingVelocity);
 	static bool			TwoDimensionalLinearProgram(const TArray<ORCALine>& orcaLines, const float radius, const FVector2D& preferredVelocity, bool shouldOptimizeDirection, FVector2D& resultingVelocity, int32& failureLine);

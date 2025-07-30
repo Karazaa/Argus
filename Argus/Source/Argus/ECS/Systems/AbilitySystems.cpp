@@ -317,7 +317,7 @@ bool AbilitySystems::CastVacateAbility(const UAbilityRecord* abilityRecord, cons
 		passengerTransformComponent->m_location = transformComponent->m_location + ((-ArgusMath::GetDirectionFromYaw(transformComponent->GetCurrentYaw() + yawAdjustment)) * transformComponent->m_radius);
 	}
 
-	carrierComponent->m_passengerEntityIds.Empty();
+	carrierComponent->m_passengerEntityIds.Reset();
 	return true;
 }
 
