@@ -6,7 +6,7 @@
 
 bool CombatSystemsArgs::PopulateArguments(const ArgusEntity& entity)
 {
-	if (!entity)
+	if (UNLIKELY(!entity))
 	{
 		return false;
 	}
@@ -28,7 +28,7 @@ bool CombatSystemsArgs::PopulateArguments(const ArgusEntity& entity)
 
 bool CombatSystemsArgs::AreComponentsValidCheck(const WIDECHAR* functionName) const
 {
-	if (!m_entity || !m_combatComponent || !m_identityComponent || !m_targetingComponent || !m_taskComponent || !m_transformComponent)
+	if (UNLIKELY(!m_entity || !m_combatComponent || !m_identityComponent || !m_targetingComponent || !m_taskComponent || !m_transformComponent))
 	{
 		ArgusLogging::LogInvalidComponentReferences(functionName, ARGUS_NAMEOF(CombatSystemsArgs));
 		return false;

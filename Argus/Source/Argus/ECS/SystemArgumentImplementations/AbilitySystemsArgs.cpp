@@ -6,7 +6,7 @@
 
 bool AbilitySystemsArgs::PopulateArguments(const ArgusEntity& entity)
 {
-	if (!entity)
+	if (UNLIKELY(!entity))
 	{
 		return false;
 	}
@@ -25,7 +25,7 @@ bool AbilitySystemsArgs::PopulateArguments(const ArgusEntity& entity)
 
 bool AbilitySystemsArgs::AreComponentsValidCheck(const WIDECHAR* functionName) const
 {
-	if (!m_entity || !m_taskComponent || !m_abilityComponent || !m_reticleComponent)
+	if (UNLIKELY(!m_entity || !m_taskComponent || !m_abilityComponent || !m_reticleComponent))
 	{
 		ArgusLogging::LogInvalidComponentReferences(functionName, ARGUS_NAMEOF(AbilitySystemsArgs));
 		return false;

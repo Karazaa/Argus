@@ -6,7 +6,7 @@
 
 bool SpawningSystemsArgs::PopulateArguments(const ArgusEntity& entity)
 {
-	if (!entity)
+	if (UNLIKELY(!entity))
 	{
 		return false;
 	}
@@ -27,7 +27,7 @@ bool SpawningSystemsArgs::PopulateArguments(const ArgusEntity& entity)
 
 bool SpawningSystemsArgs::AreComponentsValidCheck(const WIDECHAR* functionName) const
 {
-	if (!m_entity || !m_spawningComponent || !m_taskComponent || !m_targetingComponent || !m_transformComponent)
+	if (UNLIKELY(!m_entity || !m_spawningComponent || !m_taskComponent || !m_targetingComponent || !m_transformComponent))
 	{
 		ArgusLogging::LogInvalidComponentReferences(functionName, ARGUS_NAMEOF(SpawningSystemsArgs));
 		return false;

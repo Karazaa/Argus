@@ -6,7 +6,7 @@
 
 bool ResourceSystemsArgs::PopulateArguments(const ArgusEntity& entity)
 {
-	if (!entity)
+	if (UNLIKELY(!entity))
 	{
 		return false;
 	}
@@ -27,7 +27,7 @@ bool ResourceSystemsArgs::PopulateArguments(const ArgusEntity& entity)
 
 bool ResourceSystemsArgs::AreComponentsValidCheck(const WIDECHAR* functionName) const
 {
-	if (!m_entity || !m_taskComponent || !m_resourceComponent || !m_resourceExtractionComponent || !m_targetingComponent)
+	if (UNLIKELY(!m_entity || !m_taskComponent || !m_resourceComponent || !m_resourceExtractionComponent || !m_targetingComponent))
 	{
 		ArgusLogging::LogInvalidComponentReferences(functionName, ARGUS_NAMEOF(ResourceSystemsArgs));
 		return false;

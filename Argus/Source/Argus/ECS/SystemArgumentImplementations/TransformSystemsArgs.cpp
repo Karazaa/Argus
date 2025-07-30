@@ -6,7 +6,7 @@
 
 bool TransformSystemsArgs::PopulateArguments(const ArgusEntity& entity)
 {
-	if (!entity)
+	if (UNLIKELY(!entity))
 	{
 		return false;
 	}
@@ -28,7 +28,7 @@ bool TransformSystemsArgs::PopulateArguments(const ArgusEntity& entity)
 
 bool TransformSystemsArgs::AreComponentsValidCheck(const WIDECHAR* functionName) const
 {
-	if (!m_entity || !m_taskComponent || !m_transformComponent || !m_velocityComponent || !m_navigationComponent || !m_targetingComponent)
+	if (UNLIKELY(!m_entity || !m_taskComponent || !m_transformComponent || !m_velocityComponent || !m_navigationComponent || !m_targetingComponent))
 	{
 		ArgusLogging::LogInvalidComponentReferences(functionName, ARGUS_NAMEOF(TransformSystemsArgs));
 		return false;

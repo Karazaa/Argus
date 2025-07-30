@@ -6,7 +6,7 @@
 
 bool #####::PopulateArguments(const ArgusEntity& entity)
 {
-	if (!entity)
+	if (UNLIKELY(!entity))
 	{
 		return false;
 	}
@@ -24,7 +24,7 @@ bool #####::PopulateArguments(const ArgusEntity& entity)
 
 bool #####::AreComponentsValidCheck(const WIDECHAR* functionName) const
 {
-	if (%%%%%)
+	if (UNLIKELY(%%%%%))
 	{
 		ArgusLogging::LogInvalidComponentReferences(functionName, ARGUS_NAMEOF(#####));
 		return false;

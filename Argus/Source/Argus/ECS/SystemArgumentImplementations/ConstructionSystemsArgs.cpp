@@ -6,7 +6,7 @@
 
 bool ConstructionSystemsArgs::PopulateArguments(const ArgusEntity& entity)
 {
-	if (!entity)
+	if (UNLIKELY(!entity))
 	{
 		return false;
 	}
@@ -25,7 +25,7 @@ bool ConstructionSystemsArgs::PopulateArguments(const ArgusEntity& entity)
 
 bool ConstructionSystemsArgs::AreComponentsValidCheck(const WIDECHAR* functionName) const
 {
-	if (!m_entity || !m_taskComponent)
+	if (UNLIKELY(!m_entity || !m_taskComponent))
 	{
 		ArgusLogging::LogInvalidComponentReferences(functionName, ARGUS_NAMEOF(ConstructionSystemsArgs));
 		return false;
