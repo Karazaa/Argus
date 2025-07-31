@@ -7,3 +7,13 @@
  * Arena allocator to be used for all of the dynamic allocations in the gameplay logic of Argus. I can't control what the engine does with its allocations¯\_(ツ)_/¯
  *
  */
+
+class ArgusArenaAllocator
+{
+public:
+	ArgusArenaAllocator() {}
+
+private:
+	static void* m_sRawDataRoot;
+	static void* m_sRawDataHead;
+};
