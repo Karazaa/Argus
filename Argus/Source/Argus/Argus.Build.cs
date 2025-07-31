@@ -18,7 +18,7 @@ public class Argus : ModuleRules
             PrivateDependencyModuleNames.AddRange(new string[] { "UnrealEd" });
         }
 
-        PrivateIncludePaths.AddRange(new string[] { "Argus/ECS/", "Argus/Utilities/", "Argus/UnrealObjects/", "Argus/FunctionalTesting/", "Argus/StaticData/", "Argus/UI"});
+        PrivateIncludePaths.AddRange(new string[] { "Argus/ECS/", "Argus/Utilities/", "Argus/UnrealObjects/", "Argus/FunctionalTesting/", "Argus/StaticData/", "Argus/UI/", "Argus/Memory/"});
 
         // Uncomment if you are using online features
         // PrivateDependencyModuleNames.Add("OnlineSubsystem");
