@@ -6,7 +6,7 @@
 #include "Containers/Deque.h"
 
 template<typename DataType, uint32 NumPreAllocatedElements>
-class ArgusDeque : public TDeque<DataType, ArgusArrayAllocator<NumPreAllocatedElements> >
+class ArgusDeque : public TDeque<DataType, ArgusContainerAllocator<NumPreAllocatedElements> >
 {
 public:
 	ArgusDeque& operator=(const ArgusDeque& other);

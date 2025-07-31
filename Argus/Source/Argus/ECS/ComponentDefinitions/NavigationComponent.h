@@ -10,7 +10,7 @@ struct NavigationComponent
 	ARGUS_COMPONENT_SHARED;
 
 	ARGUS_IGNORE()
-	TArray<FVector, ArgusArrayAllocator<15> > m_navigationPoints;
+	TArray<FVector, ArgusContainerAllocator<15> > m_navigationPoints;
 
 	ARGUS_IGNORE()
 	ArgusDeque<FVector, 5> m_queuedWaypoints;

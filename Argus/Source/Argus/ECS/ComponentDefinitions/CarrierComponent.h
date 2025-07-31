@@ -11,7 +11,7 @@ struct CarrierComponent
 	ARGUS_COMPONENT_SHARED;
 
 	ARGUS_IGNORE()
-	TArray<uint16, ArgusArrayAllocator<4> > m_passengerEntityIds;
+	TArray<uint16, ArgusContainerAllocator<4> > m_passengerEntityIds;
 
 	uint8 m_carrierCapacity = 0u;
 };

@@ -13,7 +13,7 @@
  */
 
 template <uint32 NumPreAllocatedElements, int IndexSize>
-class SizedArgusArrayAllocator
+class SizedArgusContainerAllocator
 {
 public:
 	/* The integral type to be used for element counts and indices used by the allocator and container - must be signed */
@@ -31,7 +31,7 @@ public:
 	class ForAnyElementType
 	{
 		template <uint32 NumPreAllocatedElements, int IndexSize>
-		friend class SizedArgusArrayAllocator;
+		friend class SizedArgusContainerAllocator;
 
 	public:
 		/* Default constructor. */
@@ -219,10 +219,10 @@ public:
 };
 
 template <uint32 NumInlineElements>
-using ArgusArrayAllocator = SizedArgusArrayAllocator<NumInlineElements, 32>;
+using ArgusContainerAllocator = SizedArgusContainerAllocator<NumInlineElements, 32>;
 
 template <uint32 NumPreAllocatedElements, int IndexSize>
-struct TAllocatorTraits< SizedArgusArrayAllocator<NumPreAllocatedElements, IndexSize> > : TAllocatorTraitsBase< SizedArgusArrayAllocator<NumPreAllocatedElements, IndexSize> >
+struct TAllocatorTraits< SizedArgusContainerAllocator<NumPreAllocatedElements, IndexSize> > : TAllocatorTraitsBase< SizedArgusContainerAllocator<NumPreAllocatedElements, IndexSize> >
 {
 	enum { IsZeroConstruct = true };
 	enum { SupportsElementAlignment = true };
