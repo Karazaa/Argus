@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "ArgusArrayAllocator.h"
+#include "ArgusContainerAllocator.h"
 #include "Containers/Deque.h"
 
 template<typename DataType, uint32 NumPreAllocatedElements>

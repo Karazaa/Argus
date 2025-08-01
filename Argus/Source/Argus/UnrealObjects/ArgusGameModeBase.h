@@ -24,6 +24,7 @@ public:
 	FColor GetTeamColor(ETeam team);
 
 	AArgusGameModeBase();
+	~AArgusGameModeBase();
 	virtual void StartPlay() override;
 
 	AArgusPlayerController* GetActivePlayerController() const { return m_activePlayerController.Get(); }

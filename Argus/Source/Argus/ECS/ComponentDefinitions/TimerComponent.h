@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "ArgusArrayAllocator.h"
+#include "ArgusContainerAllocator.h"
 #include "ArgusLogging.h"
 #include "CoreMinimal.h"
 #include "ComponentDependencies/Timer.h"
