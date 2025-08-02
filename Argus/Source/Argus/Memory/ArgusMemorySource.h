@@ -38,6 +38,8 @@ public:
 	template<typename T>
 	static void Deallocate(T* data);
 
+	static void CopyMemory(void* destination, void* source, SIZE_T amount);
+
 	static SIZE_T GetOccupiedAmount() { return s_occupiedAmount; }
 	static SIZE_T GetTotalLossAmount() { return s_totalLossAmount; }
 	static SIZE_T GetAvailableSpace() { return s_capacity - s_occupiedAmount; }

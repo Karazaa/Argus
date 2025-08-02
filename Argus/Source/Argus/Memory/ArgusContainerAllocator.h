@@ -216,6 +216,11 @@ public:
 		{
 			return (ElementType*)ForAnyElementType::GetAllocation();
 		}
+
+		SizeType GetInitialCapacity() const
+		{
+			return NumPreAllocatedElements;
+		}
 	};
 };
 

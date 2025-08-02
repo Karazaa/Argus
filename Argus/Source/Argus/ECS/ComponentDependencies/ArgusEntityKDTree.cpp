@@ -316,6 +316,7 @@ bool ArgusEntityKDTree::FindArgusEntityIdsWithinRangeOfLocation(TArray<uint16>& 
 
 bool ArgusEntityKDTree::FindArgusEntityIdsWithinRangeOfLocation(TArray<uint16>& outNearbyArgusEntityIds, const FVector& location, const float range, const ArgusEntity& entityToIgnore)
 {
+	m_queryScratchData.ResetAll();
 	FindArgusEntityIdsWithinRangeOfLocation(m_queryScratchData, ArgusEntityKDTreeQueryRangeThresholds(0.0f, 0.0f, range, 0.0f), location, range, entityToIgnore);
 	m_queryScratchData.ConsolidateInArray(outNearbyArgusEntityIds);
 
@@ -343,6 +344,7 @@ bool ArgusEntityKDTree::FindArgusEntityIdsWithinRangeOfLocation(ArgusEntityKDTre
 
 bool ArgusEntityKDTree::FindArgusEntityIdsWithinRangeOfLocation(TArray<uint16>& outNearbyArgusEntityIds, const FVector& location, const float range, const TFunction<bool(const ArgusEntityKDTreeNode*)> queryFilterOverride)
 {
+	m_queryScratchData.ResetAll();
 	FindArgusEntityIdsWithinRangeOfLocation(m_queryScratchData, ArgusEntityKDTreeQueryRangeThresholds(0.0f, 0.0f, range, 0.0f), location, range, queryFilterOverride);
 	m_queryScratchData.ConsolidateInArray(outNearbyArgusEntityIds);
 
@@ -366,6 +368,7 @@ bool ArgusEntityKDTree::FindArgusEntityIdsWithinRangeOfLocation(ArgusEntityKDTre
 
 bool ArgusEntityKDTree::FindOtherArgusEntityIdsWithinRangeOfArgusEntity(TArray<uint16>& outNearbyArgusEntityIds, const ArgusEntity& entityToSearchAround, const float range, const TFunction<bool(const ArgusEntityKDTreeNode*)> queryFilterOverride)
 {
+	m_queryScratchData.ResetAll();
 	FindOtherArgusEntityIdsWithinRangeOfArgusEntity(m_queryScratchData, ArgusEntityKDTreeQueryRangeThresholds(0.0f, 0.0f, range, 0.0f), entityToSearchAround, range, queryFilterOverride);
 	m_queryScratchData.ConsolidateInArray(outNearbyArgusEntityIds);
 
@@ -404,6 +407,7 @@ bool ArgusEntityKDTree::FindArgusEntityIdsWithinConvexPoly(TArray<uint16>& outNe
 		return false;
 	}
 
+	m_queryScratchData.ResetAll();
 	FindNodesWithinConvexPolyRecursive(m_queryScratchData, ArgusEntityKDTreeQueryRangeThresholds(0.0f, 0.0f, 0.0f, 0.0f), m_rootNode, convexPolygonPoints, nullptr, 0u);
 	m_queryScratchData.ConsolidateInArray(outNearbyArgusEntityIds);
 

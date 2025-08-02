@@ -56,14 +56,14 @@ void* ArgusMemorySource::Allocate(SIZE_T allocationSize, uint32 alignment)
 		Initialize();
 	}
 
-	SIZE_T headOfNewData = alignment == 0u ? s_occupiedAmount : Align(s_occupiedAmount, alignment);
-	if (headOfNewData + allocationSize > GetAvailableSpace())
+	const SIZE_T headOfNewData = alignment == 0u ? s_occupiedAmount : Align(s_occupiedAmount, alignment);
+	if (UNLIKELY(headOfNewData + allocationSize > GetAvailableSpace()))
 	{
 		ARGUS_LOG(ArgusMemoryLog, Error, TEXT("[%s] Memory source ran out of space!"), ARGUS_FUNCNAME);
 		return nullptr;
 	}
 
-	SIZE_T paddingAmount = headOfNewData - s_occupiedAmount;
+	const SIZE_T paddingAmount = headOfNewData - s_occupiedAmount;
 	s_occupiedAmount += paddingAmount + allocationSize;
 	s_totalLossAmount += paddingAmount;
 
@@ -77,8 +77,16 @@ void* ArgusMemorySource::Reallocate(void* oldData, SIZE_T bytesPerElement, SIZE_
 		// TODO JAMES: Might be worth logging something about # of frees.
 		s_totalLossAmount += bytesPerElement * oldNumElements;
 	}
-	
-	return Allocate(bytesPerElement * newNumElements, alignment);
+
+	void* newData = Allocate(bytesPerElement * newNumElements, alignment);
+
+	if (oldNumElements != 0 && newData)
+	{
+		const SIZE_T memoryCopyAmount = FGenericPlatformMath::Min(oldNumElements, newNumElements);
+		CopyMemory(newData, oldData, memoryCopyAmount * bytesPerElement);
+	}
+
+	return newData;
 }
 
 void ArgusMemorySource::Deallocate(void* data)
@@ -91,4 +99,9 @@ void ArgusMemorySource::Deallocate(void* data, SIZE_T allocationSize)
 {
 	// TODO JAMES: Might be worth logging something about # of frees.
 	s_totalLossAmount += allocationSize;
+}
+
+void ArgusMemorySource::CopyMemory(void* destination, void* source, SIZE_T amount)
+{
+	FMemory::Memcpy(destination, source, amount);
 }

@@ -15,6 +15,6 @@ public:
 template<typename DataType, uint32 NumPreAllocatedElements>
 ArgusDeque<DataType, NumPreAllocatedElements>& ArgusDeque<DataType, NumPreAllocatedElements>::operator=(const ArgusDeque& other)
 {
-	this->Empty();
+	this->Reset();
 	return *this;
 }
