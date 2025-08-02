@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "ArgusContainerAllocator.h"
 #include "CoreMinimal.h"
 #include "ComponentDependencies/TaskComponentStates.h"
 
@@ -14,7 +15,7 @@ public:
 class HealthComponentObservers
 {
 private:
-	TArray<IHealthComponentObserver*> m_HealthComponentObservers;
+	TArray<IHealthComponentObserver*, ArgusContainerAllocator<2> > m_HealthComponentObservers;
 
 public:
 	void AddObserver(IHealthComponentObserver* observer)

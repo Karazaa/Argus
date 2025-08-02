@@ -188,7 +188,7 @@ void CombatSystems::KillEntity(const ArgusEntity& targetEntity, HealthComponent*
 		CombatSystems::KillEntity(passengerEntity, passengerHealthComponent);
 	}
 
-	targetCarrierComponent->m_passengerEntityIds.Empty();
+	targetCarrierComponent->m_passengerEntityIds.Reset();
 }
 
 void CombatSystems::OnKilledOtherEntity(const CombatSystemsArgs& components)

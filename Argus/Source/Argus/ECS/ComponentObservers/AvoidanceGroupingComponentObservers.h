@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "ArgusContainerAllocator.h"
 #include "CoreMinimal.h"
 #include "ComponentDependencies/TaskComponentStates.h"
 
@@ -14,7 +15,7 @@ public:
 class AvoidanceGroupingComponentObservers
 {
 private:
-	TArray<IAvoidanceGroupingComponentObserver*> m_AvoidanceGroupingComponentObservers;
+	TArray<IAvoidanceGroupingComponentObserver*, ArgusContainerAllocator<2> > m_AvoidanceGroupingComponentObservers;
 
 public:
 	void AddObserver(IAvoidanceGroupingComponentObserver* observer)

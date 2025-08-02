@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "ArgusContainerAllocator.h"
 #include "CoreMinimal.h"
 #include "ComponentDependencies/TaskComponentStates.h"
 
@@ -14,7 +15,7 @@ public:
 class TargetingComponentObservers
 {
 private:
-	TArray<ITargetingComponentObserver*> m_TargetingComponentObservers;
+	TArray<ITargetingComponentObserver*, ArgusContainerAllocator<2> > m_TargetingComponentObservers;
 
 public:
 	void AddObserver(ITargetingComponentObserver* observer)

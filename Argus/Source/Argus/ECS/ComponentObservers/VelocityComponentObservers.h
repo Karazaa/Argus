@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "ArgusContainerAllocator.h"
 #include "CoreMinimal.h"
 #include "ComponentDependencies/TaskComponentStates.h"
 
@@ -14,7 +15,7 @@ public:
 class VelocityComponentObservers
 {
 private:
-	TArray<IVelocityComponentObserver*> m_VelocityComponentObservers;
+	TArray<IVelocityComponentObserver*, ArgusContainerAllocator<2> > m_VelocityComponentObservers;
 
 public:
 	void AddObserver(IVelocityComponentObserver* observer)
