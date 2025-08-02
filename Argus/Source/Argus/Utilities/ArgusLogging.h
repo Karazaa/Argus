@@ -42,6 +42,7 @@ if (UNLIKELY(!VariableName)) \
 
 DECLARE_LOG_CATEGORY_EXTERN(ArgusECSLog, Display, All);
 DECLARE_LOG_CATEGORY_EXTERN(ArgusInputLog, Display, All);
+DECLARE_LOG_CATEGORY_EXTERN(ArgusMemoryLog, Display, All);
 DECLARE_LOG_CATEGORY_EXTERN(ArgusStaticDataLog, Display, All);
 DECLARE_LOG_CATEGORY_EXTERN(ArgusTestingLog, Display, All);
 DECLARE_LOG_CATEGORY_EXTERN(ArgusUILog, Display, All);

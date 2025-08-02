@@ -674,7 +674,7 @@ void UArgusInputManager::ProcessMarqueeSelectInputEvent(AArgusCameraActor* argus
 		return;
 	}
 
-	const SpatialPartitioningComponent* spatialPartitioningComponent = singletonEntity.GetComponent<SpatialPartitioningComponent>();
+	SpatialPartitioningComponent* spatialPartitioningComponent = singletonEntity.GetComponent<SpatialPartitioningComponent>();
 	if (!spatialPartitioningComponent)
 	{
 		return;
@@ -1458,7 +1458,7 @@ void UArgusInputManager::SetReticleState()
 
 	reticleComponent->m_reticleLocation = hitResult.Location;
 
-	const SpatialPartitioningComponent* spatialPartitioningComponent = singletonEntity.GetComponent<SpatialPartitioningComponent>();
+	SpatialPartitioningComponent* spatialPartitioningComponent = singletonEntity.GetComponent<SpatialPartitioningComponent>();
 	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusInputLog);
 
 	TArray<uint16> nearbyArgusEntityIds;

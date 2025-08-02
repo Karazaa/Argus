@@ -42,27 +42,23 @@ void TaskSystems::ProcessIdleEntity(const TaskSystemsArgs& components)
 		return;
 	}
 
-	auto meleeRangeEntities = components.m_nearbyEntitiesComponent->m_nearbyEntities.GetEntityIdsInMeleeRange();
-	auto rangedRangeEntities = components.m_nearbyEntitiesComponent->m_nearbyEntities.GetEntityIdsInRangedRange();
-	auto sightRangeEntities = components.m_nearbyEntitiesComponent->m_nearbyEntities.GetEntityIdsInSightRange();
-
-	for (int32 i = 0; i < meleeRangeEntities.Num(); ++i)
+	for (int32 i = 0; i < components.m_nearbyEntitiesComponent->m_nearbyEntities.GetEntityIdsInMeleeRange().Num(); ++i)
 	{
-		if (ProcessDispatchingForEntityPair(components, meleeRangeEntities[i]))
+		if (ProcessDispatchingForEntityPair(components, components.m_nearbyEntitiesComponent->m_nearbyEntities.GetEntityIdsInMeleeRange()[i]))
 		{
 			return;
 		}
 	}
-	for (int32 i = 0; i < rangedRangeEntities.Num(); ++i)
+	for (int32 i = 0; i < components.m_nearbyEntitiesComponent->m_nearbyEntities.GetEntityIdsInRangedRange().Num(); ++i)
 	{
-		if (ProcessDispatchingForEntityPair(components, rangedRangeEntities[i]))
+		if (ProcessDispatchingForEntityPair(components, components.m_nearbyEntitiesComponent->m_nearbyEntities.GetEntityIdsInRangedRange()[i]))
 		{
 			return;
 		}
 	}
-	for (int32 i = 0; i < sightRangeEntities.Num(); ++i)
+	for (int32 i = 0; i < components.m_nearbyEntitiesComponent->m_nearbyEntities.GetEntityIdsInSightRange().Num(); ++i)
 	{
-		if (ProcessDispatchingForEntityPair(components, sightRangeEntities[i]))
+		if (ProcessDispatchingForEntityPair(components, components.m_nearbyEntitiesComponent->m_nearbyEntities.GetEntityIdsInSightRange()[i]))
 		{
 			return;
 		}

@@ -83,8 +83,7 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 	params.m_spatialPartitioningComponent = spatialPartitioningComponent;
 
 	// If no entities nearby, then nothing can effect our navigation, so we should just early out with a desired velocity. 
-	auto foundEntityIds = nearbyEntitiesComponent->m_nearbyEntities.GetEntityIdsInAvoidanceRange();
-	if (foundEntityIds.IsEmpty())
+	if (nearbyEntitiesComponent->m_nearbyEntities.GetEntityIdsInAvoidanceRange().IsEmpty())
 	{
 		components.m_velocityComponent->m_proposedAvoidanceVelocity = ArgusMath::ToUnrealVector2(desiredVelocity);
 #if !UE_BUILD_SHIPPING
@@ -335,10 +334,9 @@ void AvoidanceSystems::CreateEntityORCALines(const CreateEntityORCALinesParams& 
 	FVector2D averageLocationOfOtherEntities = FVector2D::ZeroVector;
 	float numberOfEntitiesInAverage = 0.0f;
 
-	auto foundEntityIds = nearbyEntitiesComponent->m_nearbyEntities.GetEntityIdsInAvoidanceRange();
-	for (int32 i = 0; i < foundEntityIds.Num(); ++i)
+	for (int32 i = 0; i < nearbyEntitiesComponent->m_nearbyEntities.GetEntityIdsInAvoidanceRange().Num(); ++i)
 	{
-		ArgusEntity foundEntity = ArgusEntity::RetrieveEntity(foundEntityIds[i]);
+		ArgusEntity foundEntity = ArgusEntity::RetrieveEntity(nearbyEntitiesComponent->m_nearbyEntities.GetEntityIdsInAvoidanceRange()[i]);
 		if (!foundEntity)
 		{
 			continue;

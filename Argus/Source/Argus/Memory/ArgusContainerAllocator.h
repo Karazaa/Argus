@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "ArgusMemorySource.h"
 #include "Containers/ContainerAllocationPolicies.h"
 
 /*
@@ -43,7 +44,7 @@ public:
 			if (Data)
 			{
 				// TODO JAMES: Add slack tracking debug info.
-				FMemory::Free(Data);
+				ArgusMemorySource::Deallocate(Data);
 			}
 		}
 
@@ -72,8 +73,8 @@ public:
 
 			if (Data)
 			{
-				// TODO JAMES: Add slack tracking debug info. Free needs arena equivalent.
-				FMemory::Free(Data);
+				// TODO JAMES: Add slack tracking debug info.
+				ArgusMemorySource::Deallocate(Data);
 			}
 
 			Data = other.Data;
@@ -111,7 +112,7 @@ public:
 				}
 
 				// TODO JAMES: Slack tracking and Realloc needs arena equivalent.
-				Data = (FScriptContainerElement*)FMemory::Realloc(Data, newMax * numBytesPerElement);
+				Data = (FScriptContainerElement*)ArgusMemorySource::Reallocate(Data, numBytesPerElement, currentNum, newMax, DEFAULT_ALIGNMENT);
 			}
 		}
 
@@ -143,7 +144,7 @@ public:
 				}
 
 				// TODO JAMES: Slack tracking and Realloc needs arena equivalent.
-				Data = (FScriptContainerElement*)FMemory::Realloc(Data, newMax * numBytesPerElement, alignmentOfElement);
+				Data = (FScriptContainerElement*)ArgusMemorySource::Reallocate(Data, numBytesPerElement, currentNum, newMax, alignmentOfElement);
 			}
 		}
 

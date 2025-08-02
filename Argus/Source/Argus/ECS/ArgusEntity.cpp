@@ -2,6 +2,7 @@
 
 #include "ArgusEntity.h"
 #include "ArgusLogging.h"
+#include "ArgusMemorySource.h"
 #include "ArgusStaticData.h"
 
 const ArgusEntity ArgusEntity::k_emptyEntity = ArgusEntity();
@@ -12,6 +13,7 @@ uint16 ArgusEntity::s_highestTakenEntityId = 0u;
 
 void ArgusEntity::FlushAllEntities()
 {
+	ArgusMemorySource::ResetMemorySource();
 	ArgusComponentRegistry::FlushAllComponents();
 	s_takenEntityIds.reset();
 	s_lowestTakenEntityId = ArgusECSConstants::k_maxEntities;

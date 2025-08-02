@@ -3,14 +3,12 @@
 #include "ArgusGameModeBase.h"
 #include "ArgusEntity.h"
 #include "ArgusGameStateBase.h"
-#include "ArgusMemorySource.h"
 #include "ArgusPlayerController.h"
 #include "ArgusStaticData.h"
 #include "EngineUtils.h"
 
 AArgusGameModeBase::AArgusGameModeBase()
 {
-	ArgusMemorySource::Initialize();
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
 
@@ -20,7 +18,6 @@ AArgusGameModeBase::AArgusGameModeBase()
 
 AArgusGameModeBase::~AArgusGameModeBase()
 {
-	ArgusMemorySource::TearDown();
 }
 
 void AArgusGameModeBase::StartPlay()

@@ -253,10 +253,9 @@ void SpatialPartitioningSystems::FloodFillStableFlockingRecursive(uint16 groupId
 		return;
 	}
 
-	auto entityIdsInFlockingRange = nearbyEntitiesComponent->m_nearbyEntities.GetEntityIdsInFlockingRange();
-	for (int32 i = 0; i < entityIdsInFlockingRange.Num(); ++i)
+	for (int32 i = 0; i < nearbyEntitiesComponent->m_nearbyEntities.GetEntityIdsInFlockingRange().Num(); ++i)
 	{
-		ArgusEntity flockmate = ArgusEntity::RetrieveEntity(entityIdsInFlockingRange[i]);
+		ArgusEntity flockmate = ArgusEntity::RetrieveEntity(nearbyEntitiesComponent->m_nearbyEntities.GetEntityIdsInFlockingRange()[i]);
 		AvoidanceGroupingComponent* flockmateGroupingComponent = flockmate.GetComponent<AvoidanceGroupingComponent>();
 		if (!flockmateGroupingComponent || flockmateGroupingComponent->m_groupId != groupId)
 		{
