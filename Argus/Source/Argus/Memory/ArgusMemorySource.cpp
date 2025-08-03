@@ -7,6 +7,7 @@ char* ArgusMemorySource::s_rawDataRoot = nullptr;
 SIZE_T ArgusMemorySource::s_capacity = 0;
 SIZE_T ArgusMemorySource::s_occupiedAmount = 0;
 SIZE_T ArgusMemorySource::s_totalLossAmount = 0;
+bool ArgusMemorySource::s_runtimeLossTrackingEnabled = false;
 
 void ArgusMemorySource::Initialize(SIZE_T memorySourceSize, uint32 alignment)
 {
@@ -24,6 +25,7 @@ void ArgusMemorySource::Initialize(SIZE_T memorySourceSize, uint32 alignment)
 
 void ArgusMemorySource::ResetMemorySource()
 {
+	s_runtimeLossTrackingEnabled = false;
 	if (s_rawDataRoot)
 	{
 		s_occupiedAmount = 0;
@@ -72,7 +74,7 @@ void* ArgusMemorySource::Allocate(SIZE_T allocationSize, uint32 alignment)
 
 void* ArgusMemorySource::Reallocate(void* oldData, SIZE_T bytesPerElement, SIZE_T oldNumElements, SIZE_T newNumElements, uint32 alignment)
 {
-	if (oldData)
+	if (s_runtimeLossTrackingEnabled && oldData)
 	{
 		// TODO JAMES: Might be worth logging something about # of frees.
 		s_totalLossAmount += bytesPerElement * oldNumElements;
@@ -98,7 +100,10 @@ void ArgusMemorySource::Deallocate(void* data)
 void ArgusMemorySource::Deallocate(void* data, SIZE_T allocationSize)
 {
 	// TODO JAMES: Might be worth logging something about # of frees.
-	s_totalLossAmount += allocationSize;
+	if (s_runtimeLossTrackingEnabled)
+	{
+		s_totalLossAmount += allocationSize;
+	}
 }
 
 void ArgusMemorySource::CopyMemory(void* destination, void* source, SIZE_T amount)

@@ -17,6 +17,7 @@
 
 #if !UE_BUILD_SHIPPING
 #include "ArgusECSDebugger.h"
+#include "ArgusMemoryDebugger.h"
 #endif //!UE_BUILD_SHIPPING
 
 void ArgusSystemsManager::Initialize(UWorld* worldPointer, const FResourceSet& initialTeamResourceSet)
@@ -56,6 +57,7 @@ void ArgusSystemsManager::RunSystems(UWorld* worldPointer, float deltaTime)
 
 #if !UE_BUILD_SHIPPING
 	ArgusECSDebugger::DrawECSDebugger();
+	ArgusMemoryDebugger::DrawMemoryDebugger();
 #endif //!UE_BUILD_SHIPPING
 }
 

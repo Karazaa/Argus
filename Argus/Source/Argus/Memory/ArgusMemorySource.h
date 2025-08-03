@@ -12,17 +12,20 @@
 
 class ArgusMemorySource
 {
-	static constexpr SIZE_T k_10MB = 1048576;
-	static constexpr SIZE_T k_100MB = 104857600;
-
 	static char* s_rawDataRoot;
 	static SIZE_T s_capacity;
 	static SIZE_T s_occupiedAmount;
 	static SIZE_T s_totalLossAmount;
+	static bool s_runtimeLossTrackingEnabled;
 
 public:
+	static constexpr SIZE_T k_1MB = 1048576;
+	static constexpr SIZE_T k_10MB = 10485760;
+	static constexpr SIZE_T k_100MB = 104857600;
+
 	static void Initialize(SIZE_T memorySourceSize = k_100MB, uint32 alignment = DEFAULT_ALIGNMENT);
 	static void ResetMemorySource();
+	static void EnableRuntimeLossTracking() { s_runtimeLossTrackingEnabled = true; };
 	static void TearDown();
 
 	static void* Allocate(SIZE_T allocationSize, uint32 alignment = DEFAULT_ALIGNMENT);
@@ -40,6 +43,7 @@ public:
 
 	static void CopyMemory(void* destination, void* source, SIZE_T amount);
 
+	static SIZE_T GetCapacity() { return s_capacity; }
 	static SIZE_T GetOccupiedAmount() { return s_occupiedAmount; }
 	static SIZE_T GetTotalLossAmount() { return s_totalLossAmount; }
 	static SIZE_T GetAvailableSpace() { return s_capacity - s_occupiedAmount; }

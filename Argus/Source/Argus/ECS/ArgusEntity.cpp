@@ -18,6 +18,7 @@ void ArgusEntity::FlushAllEntities()
 	s_takenEntityIds.reset();
 	s_lowestTakenEntityId = ArgusECSConstants::k_maxEntities;
 	s_highestTakenEntityId = 0u;
+	ArgusMemorySource::EnableRuntimeLossTracking();
 }
 
 bool ArgusEntity::DoesEntityExist(uint16 id)
