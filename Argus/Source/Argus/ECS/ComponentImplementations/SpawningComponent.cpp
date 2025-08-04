@@ -17,6 +17,14 @@ uint16 SpawningComponent::GetOwningEntityId() const
 	return this - &ArgusComponentRegistry::s_SpawningComponents[0];
 }
 
+void SpawningComponent::Reset()
+{
+	m_spawnQueue.Reset();
+	m_spawningRadius = 100.0f;
+	m_maximumQueueSize = 10u;
+	m_currentQueueSize = 0u;
+}
+
 void SpawningComponent::DrawComponentDebug() const
 {
 #if !UE_BUILD_SHIPPING

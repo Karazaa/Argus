@@ -17,6 +17,13 @@ uint16 NavigationComponent::GetOwningEntityId() const
 	return this - &ArgusComponentRegistry::s_NavigationComponents[0];
 }
 
+void NavigationComponent::Reset()
+{
+	m_navigationPoints.Reset();
+	m_queuedWaypoints.Reset();
+	m_lastPointIndex = 0;
+}
+
 void NavigationComponent::DrawComponentDebug() const
 {
 #if !UE_BUILD_SHIPPING

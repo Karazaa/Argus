@@ -17,6 +17,18 @@ uint16 TaskComponent::GetOwningEntityId() const
 	return this - &ArgusComponentRegistry::s_TaskComponents[0];
 }
 
+void TaskComponent::Reset()
+{
+	m_spawnedFromArgusActorRecordId = 0u;
+	m_baseState = EBaseState::Alive;
+	m_movementState = EMovementState::None;
+	m_spawningState = ESpawningState::None;
+	m_abilityState = EAbilityState::None;
+	m_constructionState = EConstructionState::None;
+	m_combatState = ECombatState::None;
+	m_resourceExtractionState = EResourceExtractionState::None;
+}
+
 void TaskComponent::DrawComponentDebug() const
 {
 #if !UE_BUILD_SHIPPING

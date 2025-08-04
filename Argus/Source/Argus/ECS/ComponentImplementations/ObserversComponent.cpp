@@ -17,6 +17,10 @@ uint16 ObserversComponent::GetOwningEntityId() const
 	return this - &ArgusComponentRegistry::s_ObserversComponents[0];
 }
 
+void ObserversComponent::Reset()
+{
+}
+
 void ObserversComponent::DrawComponentDebug() const
 {
 #if !UE_BUILD_SHIPPING

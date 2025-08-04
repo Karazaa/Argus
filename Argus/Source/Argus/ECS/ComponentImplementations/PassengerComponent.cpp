@@ -17,6 +17,11 @@ uint16 PassengerComponent::GetOwningEntityId() const
 	return this - &ArgusComponentRegistry::s_PassengerComponents[0];
 }
 
+void PassengerComponent::Reset()
+{
+	m_carrierEntityId = ArgusECSConstants::k_maxEntities;
+}
+
 void PassengerComponent::DrawComponentDebug() const
 {
 #if !UE_BUILD_SHIPPING

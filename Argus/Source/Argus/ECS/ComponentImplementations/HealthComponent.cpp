@@ -17,6 +17,12 @@ uint16 HealthComponent::GetOwningEntityId() const
 	return this - &ArgusComponentRegistry::s_HealthComponents[0];
 }
 
+void HealthComponent::Reset()
+{
+	m_currentHealth = 1000u;
+	m_maximumHealth = 1000u;
+}
+
 void HealthComponent::DrawComponentDebug() const
 {
 #if !UE_BUILD_SHIPPING

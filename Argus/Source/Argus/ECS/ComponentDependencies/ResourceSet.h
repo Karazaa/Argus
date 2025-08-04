@@ -21,7 +21,15 @@ struct FResourceSet
 	GENERATED_BODY()
 
 	UPROPERTY(EditDefaultsOnly)
-	int32 m_resourceQuantities[(uint8)EResourceType::Count] = { 0, 0, 0 };
+	int32 m_resourceQuantities[static_cast<uint8>(EResourceType::Count)] = { 0, 0, 0 };
+
+	void Reset()
+	{
+		for (int32 i = 0; i < static_cast<int32>(EResourceType::Count); ++i)
+		{
+			m_resourceQuantities[i] = 0;
+		}
+	}
 
 	FResourceSet operator-() const
 	{

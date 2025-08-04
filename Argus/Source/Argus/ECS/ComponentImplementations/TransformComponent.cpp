@@ -17,6 +17,13 @@ uint16 TransformComponent::GetOwningEntityId() const
 	return this - &ArgusComponentRegistry::s_TransformComponents[0];
 }
 
+void TransformComponent::Reset()
+{
+	m_location = FVector::ZeroVector;
+	m_radius = 45.0f;
+	m_height = 100.0f;
+}
+
 void TransformComponent::DrawComponentDebug() const
 {
 #if !UE_BUILD_SHIPPING

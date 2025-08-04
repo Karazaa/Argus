@@ -17,6 +17,12 @@ uint16 CarrierComponent::GetOwningEntityId() const
 	return this - &ArgusComponentRegistry::s_CarrierComponents[0];
 }
 
+void CarrierComponent::Reset()
+{
+	m_passengerEntityIds.Reset();
+	m_carrierCapacity = 0u;
+}
+
 void CarrierComponent::DrawComponentDebug() const
 {
 #if !UE_BUILD_SHIPPING

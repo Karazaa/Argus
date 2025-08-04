@@ -17,6 +17,11 @@ uint16 NearbyEntitiesComponent::GetOwningEntityId() const
 	return this - &ArgusComponentRegistry::s_NearbyEntitiesComponents[0];
 }
 
+void NearbyEntitiesComponent::Reset()
+{
+	m_nearbyEntities.ResetAll();
+}
+
 void NearbyEntitiesComponent::DrawComponentDebug() const
 {
 #if !UE_BUILD_SHIPPING

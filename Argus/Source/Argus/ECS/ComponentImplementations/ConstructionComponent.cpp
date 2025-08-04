@@ -17,6 +17,14 @@ uint16 ConstructionComponent::GetOwningEntityId() const
 	return this - &ArgusComponentRegistry::s_ConstructionComponents[0];
 }
 
+void ConstructionComponent::Reset()
+{
+	m_requiredWorkSeconds = 0.0f;
+	m_currentWorkSeconds = 0.0f;
+	m_constructionAbilityRecordId = 0u;
+	m_constructionType = EConstructionType::Automatic;
+}
+
 void ConstructionComponent::DrawComponentDebug() const
 {
 #if !UE_BUILD_SHIPPING

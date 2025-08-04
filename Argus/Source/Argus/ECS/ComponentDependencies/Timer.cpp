@@ -90,6 +90,7 @@ void TimerHandle::CancelTimer(const ArgusEntity& entityWithTimer)
 	Timer* timer = GetTimerForEntity(entityWithTimer, ARGUS_FUNCNAME);
 	if (!timer)
 	{
+		m_timerIndex = UINT8_MAX;
 		return;
 	}
 

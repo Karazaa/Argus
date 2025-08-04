@@ -17,6 +17,13 @@ uint16 ResourceExtractionComponent::GetOwningEntityId() const
 	return this - &ArgusComponentRegistry::s_ResourceExtractionComponents[0];
 }
 
+void ResourceExtractionComponent::Reset()
+{
+	m_resourcesToExtractRecordId = 0u;
+	m_extractionLengthSeconds = 1.0f;
+	m_lastExtractionSourceEntityId = ArgusECSConstants::k_maxEntities;
+}
+
 void ResourceExtractionComponent::DrawComponentDebug() const
 {
 #if !UE_BUILD_SHIPPING

@@ -101,6 +101,10 @@ bool ComponentImplementationGenerator::ParseComponentImplementationCppFileTempla
 						outParsedFileContents[i].m_lines.push_back("\t\tImGui::EndTable();");
 						outParsedFileContents[i].m_lines.push_back("\t}");
 					}
+					else if (rawLines[j].find("%%%%%") != std::string::npos)
+					{
+						GeneratePerVariableResetText(parsedComponentData.m_componentVariableData[i], outParsedFileContents[i].m_lines);
+					}
 					else
 					{
 						outParsedFileContents[i].m_lines.push_back(std::regex_replace(rawLines[j], std::regex("#####"), parsedComponentData.m_componentNames[i]));
@@ -126,7 +130,43 @@ bool ComponentImplementationGenerator::ParseComponentImplementationCppFileTempla
 	return true;
 }
 
-bool ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::vector<ArgusCodeGeneratorUtil::ParsedVariableData>& parsedVariableData, std::vector<std::string>& outParsedVariableContents)
+void ComponentImplementationGenerator::GeneratePerVariableResetText(const std::vector<ArgusCodeGeneratorUtil::ParsedVariableData>& parsedVariableData, std::vector<std::string>& outParsedVariableContents)
+{
+	for (int i = 0; i < parsedVariableData.size(); ++i)
+	{
+		if (!parsedVariableData[i].m_defaultValue.empty())
+		{
+			outParsedVariableContents.push_back(std::vformat("\t{} = {};", std::make_format_args(parsedVariableData[i].m_varName, parsedVariableData[i].m_defaultValue)));
+			continue;
+		}
+
+		const bool isArray = parsedVariableData[i].m_typeName.find("TArray") != std::string::npos;
+		const bool isDeque = parsedVariableData[i].m_typeName.find("ArgusDeque") != std::string::npos;
+		const bool isResourceSet = parsedVariableData[i].m_typeName.find("FResourceSet") != std::string::npos;
+		const bool isTimer = parsedVariableData[i].m_typeName.find("TimerHandle") != std::string::npos;
+		if (isArray || isDeque || isResourceSet || isTimer)
+		{
+			outParsedVariableContents.push_back(std::vformat("\t{}.Reset();", std::make_format_args(parsedVariableData[i].m_varName)));
+			continue;
+		}
+
+		const bool isKDTreeOutput = parsedVariableData[i].m_typeName.find("ArgusEntityKDTreeRangeOutput") != std::string::npos;
+		if (isKDTreeOutput)
+		{
+			outParsedVariableContents.push_back(std::vformat("\t{}.ResetAll();", std::make_format_args(parsedVariableData[i].m_varName)));
+			continue;
+		}
+
+		const bool isSmoothed = parsedVariableData[i].m_typeName.find("ExponentialDecaySmoother") != std::string::npos;
+		if (isSmoothed)
+		{
+			outParsedVariableContents.push_back(std::vformat("\t{}.ResetZero();", std::make_format_args(parsedVariableData[i].m_varName)));
+			continue;
+		}
+	}
+}
+
+void ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::vector<ArgusCodeGeneratorUtil::ParsedVariableData>& parsedVariableData, std::vector<std::string>& outParsedVariableContents)
 {
 	for (int i = 0; i < parsedVariableData.size(); ++i)
 	{
@@ -200,7 +240,7 @@ bool ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
 			FormatImGuiArrayField(meleeRangeName, "", false, outParsedVariableContents, FormatImGuiIntField);
 
-			return true;
+			return;
 		}
 
 		std::string extraData = "";
@@ -285,7 +325,7 @@ bool ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 			atomicFieldFormattingFunction(variableName, extraData, "", outParsedVariableContents);
 		}
 	}
-	return true;
+	return;
 }
 
 void ComponentImplementationGenerator::FormatImGuiArrayField(const std::string& variableName, const std::string& extraData, bool isSmoothed, std::vector<std::string>& outParsedVariableContents, TFunction<void(const std::string&, const std::string&, const std::string&, std::vector<std::string>&)> elementFormattingFunction)

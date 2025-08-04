@@ -17,6 +17,15 @@ uint16 AvoidanceGroupingComponent::GetOwningEntityId() const
 	return this - &ArgusComponentRegistry::s_AvoidanceGroupingComponents[0];
 }
 
+void AvoidanceGroupingComponent::Reset()
+{
+	m_groupAverageLocation = FVector::ZeroVector;
+	m_groupId = ArgusECSConstants::k_maxEntities;
+	m_numberOfIdleEntities = 0u;
+	m_avoidancePriority = EAvoidancePriority::Lowest;
+	m_flockingState = EFlockingState::Stable;
+}
+
 void AvoidanceGroupingComponent::DrawComponentDebug() const
 {
 #if !UE_BUILD_SHIPPING

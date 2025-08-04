@@ -8,6 +8,7 @@
 #define ARGUS_FUNCNAME TEXT(__FUNCTION__)
 
 #define ARGUS_COMPONENT_SHARED	uint16 GetOwningEntityId() const; \
+								void Reset(); \
 								void DrawComponentDebug() const;
 #define ARGUS_DYNAMIC_COMPONENT_SHARED void DrawComponentDebug() const {}
 

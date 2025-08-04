@@ -17,6 +17,12 @@ uint16 ResourceComponent::GetOwningEntityId() const
 	return this - &ArgusComponentRegistry::s_ResourceComponents[0];
 }
 
+void ResourceComponent::Reset()
+{
+	m_resourceCapacityRecordId = 0u;
+	m_resourceComponentOwnerType = EResourceComponentOwnerType::TeamPool;
+}
+
 void ResourceComponent::DrawComponentDebug() const
 {
 #if !UE_BUILD_SHIPPING

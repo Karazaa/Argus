@@ -39,6 +39,8 @@ public:
 
 	uint8 GetTimerIndex() const { return m_timerIndex; }
 
+	void Reset() { m_timerIndex = UINT8_MAX; }
+
 private:
 	TimerComponent* GetTimerComponentForEntity(const ArgusEntity& entityWithTimer, const WIDECHAR* functionName) const;
 	Timer* GetTimerForEntity(const ArgusEntity& entityWithTimer, const WIDECHAR* functionName) const;

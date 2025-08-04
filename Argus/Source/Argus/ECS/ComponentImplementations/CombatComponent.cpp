@@ -17,6 +17,13 @@ uint16 CombatComponent::GetOwningEntityId() const
 	return this - &ArgusComponentRegistry::s_CombatComponents[0];
 }
 
+void CombatComponent::Reset()
+{
+	m_baseDamagePerIntervalOrPerSecond = 100u;
+	m_intervalDurationSeconds = 1.0f;
+	m_attackType = EAttackType::Melee;
+}
+
 void CombatComponent::DrawComponentDebug() const
 {
 #if !UE_BUILD_SHIPPING

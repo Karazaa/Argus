@@ -17,6 +17,11 @@ uint16 TimerComponent::GetOwningEntityId() const
 	return this - &ArgusComponentRegistry::s_TimerComponents[0];
 }
 
+void TimerComponent::Reset()
+{
+	m_timers.Reset();
+}
+
 void TimerComponent::DrawComponentDebug() const
 {
 #if !UE_BUILD_SHIPPING

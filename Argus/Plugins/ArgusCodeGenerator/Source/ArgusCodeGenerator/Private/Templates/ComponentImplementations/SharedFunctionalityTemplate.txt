@@ -3,6 +3,11 @@ uint16 #####::GetOwningEntityId() const
 	return this - &ArgusComponentRegistry::s_#####s[0];
 }
 
+void #####::Reset()
+{
+	%%%%%
+}
+
 void #####::DrawComponentDebug() const
 {
 #if !UE_BUILD_SHIPPING

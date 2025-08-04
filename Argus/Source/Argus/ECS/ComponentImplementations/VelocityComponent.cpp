@@ -17,6 +17,13 @@ uint16 VelocityComponent::GetOwningEntityId() const
 	return this - &ArgusComponentRegistry::s_VelocityComponents[0];
 }
 
+void VelocityComponent::Reset()
+{
+	m_currentVelocity = FVector2D::ZeroVector;
+	m_proposedAvoidanceVelocity = FVector2D::ZeroVector;
+	m_desiredSpeedUnitsPerSecond = 100.0f;
+}
+
 void VelocityComponent::DrawComponentDebug() const
 {
 #if !UE_BUILD_SHIPPING

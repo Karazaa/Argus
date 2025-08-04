@@ -17,6 +17,14 @@ uint16 IdentityComponent::GetOwningEntityId() const
 	return this - &ArgusComponentRegistry::s_IdentityComponents[0];
 }
 
+void IdentityComponent::Reset()
+{
+	m_factionId = 0u;
+	m_team = ETeam::None;
+	m_allies = 0u;
+	m_enemies = 0u;
+}
+
 void IdentityComponent::DrawComponentDebug() const
 {
 #if !UE_BUILD_SHIPPING

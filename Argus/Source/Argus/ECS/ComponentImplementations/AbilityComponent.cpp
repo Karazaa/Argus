@@ -17,6 +17,15 @@ uint16 AbilityComponent::GetOwningEntityId() const
 	return this - &ArgusComponentRegistry::s_AbilityComponents[0];
 }
 
+void AbilityComponent::Reset()
+{
+	m_ability0Id = 0u;
+	m_ability1Id = 0u;
+	m_ability2Id = 0u;
+	m_ability3Id = 0u;
+	m_abilityCasterPriority = 0u;
+}
+
 void AbilityComponent::DrawComponentDebug() const
 {
 #if !UE_BUILD_SHIPPING

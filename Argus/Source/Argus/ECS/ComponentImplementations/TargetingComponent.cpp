@@ -17,6 +17,15 @@ uint16 TargetingComponent::GetOwningEntityId() const
 	return this - &ArgusComponentRegistry::s_TargetingComponents[0];
 }
 
+void TargetingComponent::Reset()
+{
+	m_targetLocation = TOptional<FVector>();
+	m_meleeRange = 400.0f;
+	m_rangedRange = 400.0f;
+	m_sightRange = 1200.0f;
+	m_targetEntityId = ArgusECSConstants::k_maxEntities;
+}
+
 void TargetingComponent::DrawComponentDebug() const
 {
 #if !UE_BUILD_SHIPPING
