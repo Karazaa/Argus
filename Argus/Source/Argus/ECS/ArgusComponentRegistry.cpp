@@ -123,25 +123,25 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 	s_isVelocityComponentActive.set(entityId, false);
 
 	// Begin set component values
-	s_AbilityComponents[entityId] = AbilityComponent();
-	s_AvoidanceGroupingComponents[entityId] = AvoidanceGroupingComponent();
-	s_CarrierComponents[entityId] = CarrierComponent();
-	s_CombatComponents[entityId] = CombatComponent();
-	s_ConstructionComponents[entityId] = ConstructionComponent();
-	s_HealthComponents[entityId] = HealthComponent();
-	s_IdentityComponents[entityId] = IdentityComponent();
-	s_NavigationComponents[entityId] = NavigationComponent();
-	s_NearbyEntitiesComponents[entityId] = NearbyEntitiesComponent();
-	s_ObserversComponents[entityId] = ObserversComponent();
-	s_PassengerComponents[entityId] = PassengerComponent();
-	s_ResourceComponents[entityId] = ResourceComponent();
-	s_ResourceExtractionComponents[entityId] = ResourceExtractionComponent();
-	s_SpawningComponents[entityId] = SpawningComponent();
-	s_TargetingComponents[entityId] = TargetingComponent();
-	s_TaskComponents[entityId] = TaskComponent();
-	s_TimerComponents[entityId] = TimerComponent();
-	s_TransformComponents[entityId] = TransformComponent();
-	s_VelocityComponents[entityId] = VelocityComponent();
+	s_AbilityComponents[entityId].Reset();
+	s_AvoidanceGroupingComponents[entityId].Reset();
+	s_CarrierComponents[entityId].Reset();
+	s_CombatComponents[entityId].Reset();
+	s_ConstructionComponents[entityId].Reset();
+	s_HealthComponents[entityId].Reset();
+	s_IdentityComponents[entityId].Reset();
+	s_NavigationComponents[entityId].Reset();
+	s_NearbyEntitiesComponents[entityId].Reset();
+	s_ObserversComponents[entityId].Reset();
+	s_PassengerComponents[entityId].Reset();
+	s_ResourceComponents[entityId].Reset();
+	s_ResourceExtractionComponents[entityId].Reset();
+	s_SpawningComponents[entityId].Reset();
+	s_TargetingComponents[entityId].Reset();
+	s_TaskComponents[entityId].Reset();
+	s_TimerComponents[entityId].Reset();
+	s_TransformComponents[entityId].Reset();
+	s_VelocityComponents[entityId].Reset();
 
 	// Begin remove dynamically allocated components
 	if (s_AssetLoadingComponents.contains(entityId))
@@ -188,25 +188,25 @@ void ArgusComponentRegistry::FlushAllComponents()
 	// Begin flush component values
 	for (uint16 i = 0u; i < ArgusECSConstants::k_maxEntities; ++i)
 	{
-		s_AbilityComponents[i] = AbilityComponent();
-		s_AvoidanceGroupingComponents[i] = AvoidanceGroupingComponent();
-		s_CarrierComponents[i] = CarrierComponent();
-		s_CombatComponents[i] = CombatComponent();
-		s_ConstructionComponents[i] = ConstructionComponent();
-		s_HealthComponents[i] = HealthComponent();
-		s_IdentityComponents[i] = IdentityComponent();
-		s_NavigationComponents[i] = NavigationComponent();
-		s_NearbyEntitiesComponents[i] = NearbyEntitiesComponent();
-		s_ObserversComponents[i] = ObserversComponent();
-		s_PassengerComponents[i] = PassengerComponent();
-		s_ResourceComponents[i] = ResourceComponent();
-		s_ResourceExtractionComponents[i] = ResourceExtractionComponent();
-		s_SpawningComponents[i] = SpawningComponent();
-		s_TargetingComponents[i] = TargetingComponent();
-		s_TaskComponents[i] = TaskComponent();
-		s_TimerComponents[i] = TimerComponent();
-		s_TransformComponents[i] = TransformComponent();
-		s_VelocityComponents[i] = VelocityComponent();
+		s_AbilityComponents[i].Reset();
+		s_AvoidanceGroupingComponents[i].Reset();
+		s_CarrierComponents[i].Reset();
+		s_CombatComponents[i].Reset();
+		s_ConstructionComponents[i].Reset();
+		s_HealthComponents[i].Reset();
+		s_IdentityComponents[i].Reset();
+		s_NavigationComponents[i].Reset();
+		s_NearbyEntitiesComponents[i].Reset();
+		s_ObserversComponents[i].Reset();
+		s_PassengerComponents[i].Reset();
+		s_ResourceComponents[i].Reset();
+		s_ResourceExtractionComponents[i].Reset();
+		s_SpawningComponents[i].Reset();
+		s_TargetingComponents[i].Reset();
+		s_TaskComponents[i].Reset();
+		s_TimerComponents[i].Reset();
+		s_TransformComponents[i].Reset();
+		s_VelocityComponents[i].Reset();
 	}
 
 	// Begin flush dynamically allocated components

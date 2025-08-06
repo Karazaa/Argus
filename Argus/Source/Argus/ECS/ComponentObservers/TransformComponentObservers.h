@@ -44,6 +44,11 @@ public:
 		);
 	}
 
+	void Reset()
+	{
+		m_TransformComponentObservers.Reset();
+	}
+
 private:
 
 	friend struct TransformComponent;

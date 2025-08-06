@@ -44,6 +44,11 @@ public:
 		);
 	}
 
+	void Reset()
+	{
+		m_TargetingComponentObservers.Reset();
+	}
+
 private:
 
 	friend struct TargetingComponent;

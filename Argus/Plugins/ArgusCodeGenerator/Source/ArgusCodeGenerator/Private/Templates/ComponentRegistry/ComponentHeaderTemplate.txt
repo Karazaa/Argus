@@ -35,7 +35,7 @@ public:
 			return &s_#####s[entityId];
 		}
 
-		s_#####s[entityId] = #####();
+		s_#####s[entityId].Reset();
 		s_is#####Active.set(entityId);
 		return &s_#####s[entityId];
 	}
@@ -55,7 +55,7 @@ public:
 		}
 		else
 		{
-			s_#####s[entityId] = #####();
+			s_#####s[entityId].Reset();
 			s_is#####Active.set(entityId);
 			return &s_#####s[entityId];
 		}

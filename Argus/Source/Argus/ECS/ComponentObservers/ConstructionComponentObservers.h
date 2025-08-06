@@ -44,6 +44,11 @@ public:
 		);
 	}
 
+	void Reset()
+	{
+		m_ConstructionComponentObservers.Reset();
+	}
+
 private:
 
 	friend struct ConstructionComponent;

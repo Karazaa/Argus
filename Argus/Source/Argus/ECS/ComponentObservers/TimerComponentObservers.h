@@ -44,6 +44,11 @@ public:
 		);
 	}
 
+	void Reset()
+	{
+		m_TimerComponentObservers.Reset();
+	}
+
 private:
 
 	friend struct TimerComponent;

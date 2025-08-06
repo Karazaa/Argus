@@ -23,6 +23,7 @@ void ConstructionComponent::Reset()
 	m_currentWorkSeconds = 0.0f;
 	m_constructionAbilityRecordId = 0u;
 	m_constructionType = EConstructionType::Automatic;
+	m_automaticConstructionTimerHandle.Reset();
 }
 
 void ConstructionComponent::DrawComponentDebug() const

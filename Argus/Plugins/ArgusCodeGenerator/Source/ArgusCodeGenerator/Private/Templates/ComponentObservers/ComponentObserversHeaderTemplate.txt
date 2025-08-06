@@ -45,6 +45,11 @@ public:
 		);
 	}
 
+	void Reset()
+	{
+		m_#####Observers.Reset();
+	}
+
 private:
 	%%%%%
 

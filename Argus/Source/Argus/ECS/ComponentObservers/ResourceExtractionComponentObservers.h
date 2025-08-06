@@ -44,6 +44,11 @@ public:
 		);
 	}
 
+	void Reset()
+	{
+		m_ResourceExtractionComponentObservers.Reset();
+	}
+
 private:
 
 	friend struct ResourceExtractionComponent;

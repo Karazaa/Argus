@@ -44,6 +44,11 @@ public:
 		);
 	}
 
+	void Reset()
+	{
+		m_VelocityComponentObservers.Reset();
+	}
+
 private:
 
 	friend struct VelocityComponent;

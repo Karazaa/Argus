@@ -19,6 +19,7 @@ uint16 ResourceComponent::GetOwningEntityId() const
 
 void ResourceComponent::Reset()
 {
+	m_currentResources.Reset();
 	m_resourceCapacityRecordId = 0u;
 	m_resourceComponentOwnerType = EResourceComponentOwnerType::TeamPool;
 }

@@ -22,6 +22,7 @@ void CombatComponent::Reset()
 	m_baseDamagePerIntervalOrPerSecond = 100u;
 	m_intervalDurationSeconds = 1.0f;
 	m_attackType = EAttackType::Melee;
+	m_attackTimerHandle.Reset();
 }
 
 void CombatComponent::DrawComponentDebug() const

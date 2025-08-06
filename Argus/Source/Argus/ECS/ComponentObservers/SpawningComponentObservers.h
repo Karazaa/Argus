@@ -44,6 +44,11 @@ public:
 		);
 	}
 
+	void Reset()
+	{
+		m_SpawningComponentObservers.Reset();
+	}
+
 private:
 
 	friend struct SpawningComponent;

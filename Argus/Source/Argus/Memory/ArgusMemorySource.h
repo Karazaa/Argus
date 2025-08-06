@@ -16,7 +16,6 @@ class ArgusMemorySource
 	static SIZE_T s_capacity;
 	static SIZE_T s_occupiedAmount;
 	static SIZE_T s_totalLossAmount;
-	static bool s_runtimeLossTrackingEnabled;
 
 public:
 	static constexpr SIZE_T k_1MB = 1048576;
@@ -25,7 +24,6 @@ public:
 
 	static void Initialize(SIZE_T memorySourceSize = k_100MB, uint32 alignment = DEFAULT_ALIGNMENT);
 	static void ResetMemorySource();
-	static void EnableRuntimeLossTracking() { s_runtimeLossTrackingEnabled = true; };
 	static void TearDown();
 
 	static void* Allocate(SIZE_T allocationSize, uint32 alignment = DEFAULT_ALIGNMENT);

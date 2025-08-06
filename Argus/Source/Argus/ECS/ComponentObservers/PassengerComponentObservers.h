@@ -45,6 +45,11 @@ public:
 		);
 	}
 
+	void Reset()
+	{
+		m_PassengerComponentObservers.Reset();
+	}
+
 private:
 	void OnChanged_m_carrierEntityId(uint16 oldValue, uint16 newValue)
 	{

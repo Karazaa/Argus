@@ -44,6 +44,11 @@ public:
 		);
 	}
 
+	void Reset()
+	{
+		m_NearbyEntitiesComponentObservers.Reset();
+	}
+
 private:
 
 	friend struct NearbyEntitiesComponent;

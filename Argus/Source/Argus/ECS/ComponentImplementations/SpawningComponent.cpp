@@ -23,6 +23,7 @@ void SpawningComponent::Reset()
 	m_spawningRadius = 100.0f;
 	m_maximumQueueSize = 10u;
 	m_currentQueueSize = 0u;
+	m_spawnTimerHandle.Reset();
 }
 
 void SpawningComponent::DrawComponentDebug() const

@@ -13,12 +13,10 @@ uint16 ArgusEntity::s_highestTakenEntityId = 0u;
 
 void ArgusEntity::FlushAllEntities()
 {
-	ArgusMemorySource::ResetMemorySource();
 	ArgusComponentRegistry::FlushAllComponents();
 	s_takenEntityIds.reset();
 	s_lowestTakenEntityId = ArgusECSConstants::k_maxEntities;
 	s_highestTakenEntityId = 0u;
-	ArgusMemorySource::EnableRuntimeLossTracking();
 }
 
 bool ArgusEntity::DoesEntityExist(uint16 id)

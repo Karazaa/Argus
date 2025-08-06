@@ -44,6 +44,11 @@ public:
 		);
 	}
 
+	void Reset()
+	{
+		m_AvoidanceGroupingComponentObservers.Reset();
+	}
+
 private:
 
 	friend struct AvoidanceGroupingComponent;

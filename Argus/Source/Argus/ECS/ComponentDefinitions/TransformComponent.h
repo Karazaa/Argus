@@ -16,7 +16,7 @@ struct TransformComponent
 	ArgusMath::ExponentialDecaySmoother<float> m_smoothedYaw;
 
 	ARGUS_IGNORE()
-	float m_targetYaw;
+	float m_targetYaw = 0.0f;
 
 	float m_radius = 45.0f;
 	float m_height = 100.0f;

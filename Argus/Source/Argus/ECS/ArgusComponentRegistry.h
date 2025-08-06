@@ -107,7 +107,7 @@ public:
 			return &s_AbilityComponents[entityId];
 		}
 
-		s_AbilityComponents[entityId] = AbilityComponent();
+		s_AbilityComponents[entityId].Reset();
 		s_isAbilityComponentActive.set(entityId);
 		return &s_AbilityComponents[entityId];
 	}
@@ -127,7 +127,7 @@ public:
 		}
 		else
 		{
-			s_AbilityComponents[entityId] = AbilityComponent();
+			s_AbilityComponents[entityId].Reset();
 			s_isAbilityComponentActive.set(entityId);
 			return &s_AbilityComponents[entityId];
 		}
@@ -172,7 +172,7 @@ public:
 			return &s_AvoidanceGroupingComponents[entityId];
 		}
 
-		s_AvoidanceGroupingComponents[entityId] = AvoidanceGroupingComponent();
+		s_AvoidanceGroupingComponents[entityId].Reset();
 		s_isAvoidanceGroupingComponentActive.set(entityId);
 		return &s_AvoidanceGroupingComponents[entityId];
 	}
@@ -192,7 +192,7 @@ public:
 		}
 		else
 		{
-			s_AvoidanceGroupingComponents[entityId] = AvoidanceGroupingComponent();
+			s_AvoidanceGroupingComponents[entityId].Reset();
 			s_isAvoidanceGroupingComponentActive.set(entityId);
 			return &s_AvoidanceGroupingComponents[entityId];
 		}
@@ -237,7 +237,7 @@ public:
 			return &s_CarrierComponents[entityId];
 		}
 
-		s_CarrierComponents[entityId] = CarrierComponent();
+		s_CarrierComponents[entityId].Reset();
 		s_isCarrierComponentActive.set(entityId);
 		return &s_CarrierComponents[entityId];
 	}
@@ -257,7 +257,7 @@ public:
 		}
 		else
 		{
-			s_CarrierComponents[entityId] = CarrierComponent();
+			s_CarrierComponents[entityId].Reset();
 			s_isCarrierComponentActive.set(entityId);
 			return &s_CarrierComponents[entityId];
 		}
@@ -302,7 +302,7 @@ public:
 			return &s_CombatComponents[entityId];
 		}
 
-		s_CombatComponents[entityId] = CombatComponent();
+		s_CombatComponents[entityId].Reset();
 		s_isCombatComponentActive.set(entityId);
 		return &s_CombatComponents[entityId];
 	}
@@ -322,7 +322,7 @@ public:
 		}
 		else
 		{
-			s_CombatComponents[entityId] = CombatComponent();
+			s_CombatComponents[entityId].Reset();
 			s_isCombatComponentActive.set(entityId);
 			return &s_CombatComponents[entityId];
 		}
@@ -367,7 +367,7 @@ public:
 			return &s_ConstructionComponents[entityId];
 		}
 
-		s_ConstructionComponents[entityId] = ConstructionComponent();
+		s_ConstructionComponents[entityId].Reset();
 		s_isConstructionComponentActive.set(entityId);
 		return &s_ConstructionComponents[entityId];
 	}
@@ -387,7 +387,7 @@ public:
 		}
 		else
 		{
-			s_ConstructionComponents[entityId] = ConstructionComponent();
+			s_ConstructionComponents[entityId].Reset();
 			s_isConstructionComponentActive.set(entityId);
 			return &s_ConstructionComponents[entityId];
 		}
@@ -432,7 +432,7 @@ public:
 			return &s_HealthComponents[entityId];
 		}
 
-		s_HealthComponents[entityId] = HealthComponent();
+		s_HealthComponents[entityId].Reset();
 		s_isHealthComponentActive.set(entityId);
 		return &s_HealthComponents[entityId];
 	}
@@ -452,7 +452,7 @@ public:
 		}
 		else
 		{
-			s_HealthComponents[entityId] = HealthComponent();
+			s_HealthComponents[entityId].Reset();
 			s_isHealthComponentActive.set(entityId);
 			return &s_HealthComponents[entityId];
 		}
@@ -497,7 +497,7 @@ public:
 			return &s_IdentityComponents[entityId];
 		}
 
-		s_IdentityComponents[entityId] = IdentityComponent();
+		s_IdentityComponents[entityId].Reset();
 		s_isIdentityComponentActive.set(entityId);
 		return &s_IdentityComponents[entityId];
 	}
@@ -517,7 +517,7 @@ public:
 		}
 		else
 		{
-			s_IdentityComponents[entityId] = IdentityComponent();
+			s_IdentityComponents[entityId].Reset();
 			s_isIdentityComponentActive.set(entityId);
 			return &s_IdentityComponents[entityId];
 		}
@@ -562,7 +562,7 @@ public:
 			return &s_NavigationComponents[entityId];
 		}
 
-		s_NavigationComponents[entityId] = NavigationComponent();
+		s_NavigationComponents[entityId].Reset();
 		s_isNavigationComponentActive.set(entityId);
 		return &s_NavigationComponents[entityId];
 	}
@@ -582,7 +582,7 @@ public:
 		}
 		else
 		{
-			s_NavigationComponents[entityId] = NavigationComponent();
+			s_NavigationComponents[entityId].Reset();
 			s_isNavigationComponentActive.set(entityId);
 			return &s_NavigationComponents[entityId];
 		}
@@ -627,7 +627,7 @@ public:
 			return &s_NearbyEntitiesComponents[entityId];
 		}
 
-		s_NearbyEntitiesComponents[entityId] = NearbyEntitiesComponent();
+		s_NearbyEntitiesComponents[entityId].Reset();
 		s_isNearbyEntitiesComponentActive.set(entityId);
 		return &s_NearbyEntitiesComponents[entityId];
 	}
@@ -647,7 +647,7 @@ public:
 		}
 		else
 		{
-			s_NearbyEntitiesComponents[entityId] = NearbyEntitiesComponent();
+			s_NearbyEntitiesComponents[entityId].Reset();
 			s_isNearbyEntitiesComponentActive.set(entityId);
 			return &s_NearbyEntitiesComponents[entityId];
 		}
@@ -692,7 +692,7 @@ public:
 			return &s_ObserversComponents[entityId];
 		}
 
-		s_ObserversComponents[entityId] = ObserversComponent();
+		s_ObserversComponents[entityId].Reset();
 		s_isObserversComponentActive.set(entityId);
 		return &s_ObserversComponents[entityId];
 	}
@@ -712,7 +712,7 @@ public:
 		}
 		else
 		{
-			s_ObserversComponents[entityId] = ObserversComponent();
+			s_ObserversComponents[entityId].Reset();
 			s_isObserversComponentActive.set(entityId);
 			return &s_ObserversComponents[entityId];
 		}
@@ -757,7 +757,7 @@ public:
 			return &s_PassengerComponents[entityId];
 		}
 
-		s_PassengerComponents[entityId] = PassengerComponent();
+		s_PassengerComponents[entityId].Reset();
 		s_isPassengerComponentActive.set(entityId);
 		return &s_PassengerComponents[entityId];
 	}
@@ -777,7 +777,7 @@ public:
 		}
 		else
 		{
-			s_PassengerComponents[entityId] = PassengerComponent();
+			s_PassengerComponents[entityId].Reset();
 			s_isPassengerComponentActive.set(entityId);
 			return &s_PassengerComponents[entityId];
 		}
@@ -822,7 +822,7 @@ public:
 			return &s_ResourceComponents[entityId];
 		}
 
-		s_ResourceComponents[entityId] = ResourceComponent();
+		s_ResourceComponents[entityId].Reset();
 		s_isResourceComponentActive.set(entityId);
 		return &s_ResourceComponents[entityId];
 	}
@@ -842,7 +842,7 @@ public:
 		}
 		else
 		{
-			s_ResourceComponents[entityId] = ResourceComponent();
+			s_ResourceComponents[entityId].Reset();
 			s_isResourceComponentActive.set(entityId);
 			return &s_ResourceComponents[entityId];
 		}
@@ -887,7 +887,7 @@ public:
 			return &s_ResourceExtractionComponents[entityId];
 		}
 
-		s_ResourceExtractionComponents[entityId] = ResourceExtractionComponent();
+		s_ResourceExtractionComponents[entityId].Reset();
 		s_isResourceExtractionComponentActive.set(entityId);
 		return &s_ResourceExtractionComponents[entityId];
 	}
@@ -907,7 +907,7 @@ public:
 		}
 		else
 		{
-			s_ResourceExtractionComponents[entityId] = ResourceExtractionComponent();
+			s_ResourceExtractionComponents[entityId].Reset();
 			s_isResourceExtractionComponentActive.set(entityId);
 			return &s_ResourceExtractionComponents[entityId];
 		}
@@ -952,7 +952,7 @@ public:
 			return &s_SpawningComponents[entityId];
 		}
 
-		s_SpawningComponents[entityId] = SpawningComponent();
+		s_SpawningComponents[entityId].Reset();
 		s_isSpawningComponentActive.set(entityId);
 		return &s_SpawningComponents[entityId];
 	}
@@ -972,7 +972,7 @@ public:
 		}
 		else
 		{
-			s_SpawningComponents[entityId] = SpawningComponent();
+			s_SpawningComponents[entityId].Reset();
 			s_isSpawningComponentActive.set(entityId);
 			return &s_SpawningComponents[entityId];
 		}
@@ -1017,7 +1017,7 @@ public:
 			return &s_TargetingComponents[entityId];
 		}
 
-		s_TargetingComponents[entityId] = TargetingComponent();
+		s_TargetingComponents[entityId].Reset();
 		s_isTargetingComponentActive.set(entityId);
 		return &s_TargetingComponents[entityId];
 	}
@@ -1037,7 +1037,7 @@ public:
 		}
 		else
 		{
-			s_TargetingComponents[entityId] = TargetingComponent();
+			s_TargetingComponents[entityId].Reset();
 			s_isTargetingComponentActive.set(entityId);
 			return &s_TargetingComponents[entityId];
 		}
@@ -1082,7 +1082,7 @@ public:
 			return &s_TaskComponents[entityId];
 		}
 
-		s_TaskComponents[entityId] = TaskComponent();
+		s_TaskComponents[entityId].Reset();
 		s_isTaskComponentActive.set(entityId);
 		return &s_TaskComponents[entityId];
 	}
@@ -1102,7 +1102,7 @@ public:
 		}
 		else
 		{
-			s_TaskComponents[entityId] = TaskComponent();
+			s_TaskComponents[entityId].Reset();
 			s_isTaskComponentActive.set(entityId);
 			return &s_TaskComponents[entityId];
 		}
@@ -1147,7 +1147,7 @@ public:
 			return &s_TimerComponents[entityId];
 		}
 
-		s_TimerComponents[entityId] = TimerComponent();
+		s_TimerComponents[entityId].Reset();
 		s_isTimerComponentActive.set(entityId);
 		return &s_TimerComponents[entityId];
 	}
@@ -1167,7 +1167,7 @@ public:
 		}
 		else
 		{
-			s_TimerComponents[entityId] = TimerComponent();
+			s_TimerComponents[entityId].Reset();
 			s_isTimerComponentActive.set(entityId);
 			return &s_TimerComponents[entityId];
 		}
@@ -1212,7 +1212,7 @@ public:
 			return &s_TransformComponents[entityId];
 		}
 
-		s_TransformComponents[entityId] = TransformComponent();
+		s_TransformComponents[entityId].Reset();
 		s_isTransformComponentActive.set(entityId);
 		return &s_TransformComponents[entityId];
 	}
@@ -1232,7 +1232,7 @@ public:
 		}
 		else
 		{
-			s_TransformComponents[entityId] = TransformComponent();
+			s_TransformComponents[entityId].Reset();
 			s_isTransformComponentActive.set(entityId);
 			return &s_TransformComponents[entityId];
 		}
@@ -1277,7 +1277,7 @@ public:
 			return &s_VelocityComponents[entityId];
 		}
 
-		s_VelocityComponents[entityId] = VelocityComponent();
+		s_VelocityComponents[entityId].Reset();
 		s_isVelocityComponentActive.set(entityId);
 		return &s_VelocityComponents[entityId];
 	}
@@ -1297,7 +1297,7 @@ public:
 		}
 		else
 		{
-			s_VelocityComponents[entityId] = VelocityComponent();
+			s_VelocityComponents[entityId].Reset();
 			s_isVelocityComponentActive.set(entityId);
 			return &s_VelocityComponents[entityId];
 		}

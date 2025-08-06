@@ -44,6 +44,11 @@ public:
 		);
 	}
 
+	void Reset()
+	{
+		m_IdentityComponentObservers.Reset();
+	}
+
 private:
 
 	friend struct IdentityComponent;

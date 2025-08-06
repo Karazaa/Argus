@@ -44,6 +44,11 @@ public:
 		);
 	}
 
+	void Reset()
+	{
+		m_HealthComponentObservers.Reset();
+	}
+
 private:
 
 	friend struct HealthComponent;

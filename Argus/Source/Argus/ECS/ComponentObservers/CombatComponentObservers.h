@@ -44,6 +44,11 @@ public:
 		);
 	}
 
+	void Reset()
+	{
+		m_CombatComponentObservers.Reset();
+	}
+
 private:
 
 	friend struct CombatComponent;

@@ -20,6 +20,8 @@ uint16 TransformComponent::GetOwningEntityId() const
 void TransformComponent::Reset()
 {
 	m_location = FVector::ZeroVector;
+	m_smoothedYaw.ResetZero();
+	m_targetYaw = 0.0f;
 	m_radius = 45.0f;
 	m_height = 100.0f;
 }

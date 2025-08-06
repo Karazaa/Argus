@@ -22,6 +22,7 @@ void ResourceExtractionComponent::Reset()
 	m_resourcesToExtractRecordId = 0u;
 	m_extractionLengthSeconds = 1.0f;
 	m_lastExtractionSourceEntityId = ArgusECSConstants::k_maxEntities;
+	m_resourceExtractionTimer.Reset();
 }
 
 void ResourceExtractionComponent::DrawComponentDebug() const

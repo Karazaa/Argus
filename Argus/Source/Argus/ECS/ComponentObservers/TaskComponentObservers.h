@@ -45,6 +45,11 @@ public:
 		);
 	}
 
+	void Reset()
+	{
+		m_TaskComponentObservers.Reset();
+	}
+
 private:
 	void OnChanged_m_baseState(EBaseState oldValue, EBaseState newValue)
 	{

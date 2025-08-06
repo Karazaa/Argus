@@ -44,6 +44,11 @@ public:
 		);
 	}
 
+	void Reset()
+	{
+		m_CarrierComponentObservers.Reset();
+	}
+
 private:
 
 	friend struct CarrierComponent;

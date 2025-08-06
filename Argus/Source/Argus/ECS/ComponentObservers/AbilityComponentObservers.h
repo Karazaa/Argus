@@ -44,6 +44,11 @@ public:
 		);
 	}
 
+	void Reset()
+	{
+		m_AbilityComponentObservers.Reset();
+	}
+
 private:
 
 	friend struct AbilityComponent;

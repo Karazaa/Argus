@@ -44,6 +44,11 @@ public:
 		);
 	}
 
+	void Reset()
+	{
+		m_ObserversComponentObservers.Reset();
+	}
+
 private:
 
 	friend struct ObserversComponent;

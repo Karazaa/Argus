@@ -19,6 +19,8 @@ uint16 ObserversComponent::GetOwningEntityId() const
 
 void ObserversComponent::Reset()
 {
+	m_PassengerComponentObservers.Reset();
+	m_TaskComponentObservers.Reset();
 }
 
 void ObserversComponent::DrawComponentDebug() const

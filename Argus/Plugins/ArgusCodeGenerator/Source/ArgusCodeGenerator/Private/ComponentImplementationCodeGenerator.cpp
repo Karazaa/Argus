@@ -144,7 +144,8 @@ void ComponentImplementationGenerator::GeneratePerVariableResetText(const std::v
 		const bool isDeque = parsedVariableData[i].m_typeName.find("ArgusDeque") != std::string::npos;
 		const bool isResourceSet = parsedVariableData[i].m_typeName.find("FResourceSet") != std::string::npos;
 		const bool isTimer = parsedVariableData[i].m_typeName.find("TimerHandle") != std::string::npos;
-		if (isArray || isDeque || isResourceSet || isTimer)
+		const bool areObservers = parsedVariableData[i].m_typeName.find("Observers") != std::string::npos;
+		if (isArray || isDeque || isResourceSet || isTimer || areObservers)
 		{
 			outParsedVariableContents.push_back(std::vformat("\t{}.Reset();", std::make_format_args(parsedVariableData[i].m_varName)));
 			continue;

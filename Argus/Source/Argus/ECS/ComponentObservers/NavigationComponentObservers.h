@@ -44,6 +44,11 @@ public:
 		);
 	}
 
+	void Reset()
+	{
+		m_NavigationComponentObservers.Reset();
+	}
+
 private:
 
 	friend struct NavigationComponent;
