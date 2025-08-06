@@ -1,1 +1,2 @@
-		s_#####s[i].Reset();
+	// TODO JAMES: Need conditional to determine if we need to do <new (a) A()> or the reset.
+	s_#####s[i].Reset();

@@ -32,7 +32,7 @@ public:
 
 	static void* Reallocate(void* oldData, SIZE_T bytesPerElement, SIZE_T oldNumElements, SIZE_T newNumElements, uint32 alignment = DEFAULT_ALIGNMENT);
 	template<typename T>
-	static T* Reallocate(T* oldData, SIZE_T oldNumElements, SIZE_T newNumElements, uint32 alignment = DEFAULT_ALIGNMENT);
+	static T* Reallocate(T* oldData, SIZE_T oldNumElements, SIZE_T newNumElements);
 
 	static void Deallocate(void* data);
 	static void Deallocate(void* data, SIZE_T allocationSize);
@@ -60,9 +60,9 @@ T* ArgusMemorySource::Allocate()
 }
 
 template <typename T>
-T* ArgusMemorySource::Reallocate(T* oldData, SIZE_T oldNumElements, SIZE_T newNumElements, uint32 alignment)
+T* ArgusMemorySource::Reallocate(T* oldData, SIZE_T oldNumElements, SIZE_T newNumElements)
 {
-	return static_cast<T*>(Reallocate(oldData, sizeof(T), oldNumElements, newNumElements, alignment));
+	return static_cast<T*>(Reallocate(oldData, sizeof(T), oldNumElements, newNumElements, alignof(T)));
 }
 
 template <typename T>

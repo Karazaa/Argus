@@ -1,4 +1,5 @@
 #pragma region #####
+#####* ArgusComponentRegistry::s_p#####s = nullptr;
 ##### ArgusComponentRegistry::s_#####s[ArgusECSConstants::k_maxEntities];
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_is#####Active = std::bitset<ArgusECSConstants::k_maxEntities>();
 #pragma endregion

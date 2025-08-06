@@ -1,11 +1,17 @@
 #pragma region #####
 private:
+	static #####* s_p#####s;
 	static ##### s_#####s[ArgusECSConstants::k_maxEntities];
 	static std::bitset<ArgusECSConstants::k_maxEntities> s_is#####Active;
 public:
 	template<>
 	inline #####* GetComponent<#####>(uint16 entityId)
 	{
+		if (UNLIKELY(!s_p#####s))
+		{
+			return nullptr;
+		}
+
 		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(#####));
@@ -23,6 +29,11 @@ public:
 	template<>
 	inline #####* AddComponent<#####>(uint16 entityId)
 	{
+		if (UNLIKELY(!s_p#####s))
+		{
+			return nullptr;
+		}
+
 		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(#####));
@@ -43,6 +54,11 @@ public:
 	template<>
 	inline #####* GetOrAddComponent<#####>(uint16 entityId)
 	{
+		if (UNLIKELY(!s_p#####s))
+		{
+			return nullptr;
+		}
+
 		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(#####));

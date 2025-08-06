@@ -1,1 +1,5 @@
+	if (!s_p#####s)
+	{
+		s_p#####s = ArgusMemorySource::Reallocate<#####>(s_p#####s, 0, ArgusECSConstants::k_maxEntities);
+	}
 	s_is#####Active.reset();
