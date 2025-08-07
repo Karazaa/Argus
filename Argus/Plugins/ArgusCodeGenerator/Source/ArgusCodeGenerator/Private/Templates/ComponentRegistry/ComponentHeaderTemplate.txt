@@ -1,13 +1,12 @@
 #pragma region #####
 private:
-	static #####* s_p#####s;
-	static ##### s_#####s[ArgusECSConstants::k_maxEntities];
+	static #####* s_#####s;
 	static std::bitset<ArgusECSConstants::k_maxEntities> s_is#####Active;
 public:
 	template<>
 	inline #####* GetComponent<#####>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_p#####s))
+		if (UNLIKELY(!s_#####s))
 		{
 			return nullptr;
 		}
@@ -29,7 +28,7 @@ public:
 	template<>
 	inline #####* AddComponent<#####>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_p#####s))
+		if (UNLIKELY(!s_#####s))
 		{
 			return nullptr;
 		}
@@ -54,7 +53,7 @@ public:
 	template<>
 	inline #####* GetOrAddComponent<#####>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_p#####s))
+		if (UNLIKELY(!s_#####s))
 		{
 			return nullptr;
 		}

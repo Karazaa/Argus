@@ -1,5 +1,7 @@
-	if (!s_p#####s)
+	bool didAllocate#####s = false;
+	if (!s_#####s)
 	{
-		s_p#####s = ArgusMemorySource::Reallocate<#####>(s_p#####s, 0, ArgusECSConstants::k_maxEntities);
+		didAllocate#####s = true;
+		s_#####s = ArgusMemorySource::Reallocate<#####>(s_#####s, 0, ArgusECSConstants::k_maxEntities);
 	}
 	s_is#####Active.reset();

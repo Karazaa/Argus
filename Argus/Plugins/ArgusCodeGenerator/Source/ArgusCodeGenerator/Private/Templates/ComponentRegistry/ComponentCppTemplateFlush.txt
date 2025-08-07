@@ -1,2 +1,8 @@
-	// TODO JAMES: Need conditional to determine if we need to do <new (a) A()> or the reset.
-	s_#####s[i].Reset();
+		if (didAllocate#####s)
+		{
+			new (&s_#####s[i]) #####();
+		}
+		else
+		{
+			s_#####s[i].Reset();
+		}

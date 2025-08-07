@@ -6,98 +6,79 @@
 
 // Begin component specific definitions
 #pragma region AbilityComponent
-AbilityComponent* ArgusComponentRegistry::s_pAbilityComponents = nullptr;
-AbilityComponent ArgusComponentRegistry::s_AbilityComponents[ArgusECSConstants::k_maxEntities];
+AbilityComponent* ArgusComponentRegistry::s_AbilityComponents = nullptr;
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isAbilityComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
 #pragma endregion
 #pragma region AvoidanceGroupingComponent
-AvoidanceGroupingComponent* ArgusComponentRegistry::s_pAvoidanceGroupingComponents = nullptr;
-AvoidanceGroupingComponent ArgusComponentRegistry::s_AvoidanceGroupingComponents[ArgusECSConstants::k_maxEntities];
+AvoidanceGroupingComponent* ArgusComponentRegistry::s_AvoidanceGroupingComponents = nullptr;
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isAvoidanceGroupingComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
 #pragma endregion
 #pragma region CarrierComponent
-CarrierComponent* ArgusComponentRegistry::s_pCarrierComponents = nullptr;
-CarrierComponent ArgusComponentRegistry::s_CarrierComponents[ArgusECSConstants::k_maxEntities];
+CarrierComponent* ArgusComponentRegistry::s_CarrierComponents = nullptr;
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isCarrierComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
 #pragma endregion
 #pragma region CombatComponent
-CombatComponent* ArgusComponentRegistry::s_pCombatComponents = nullptr;
-CombatComponent ArgusComponentRegistry::s_CombatComponents[ArgusECSConstants::k_maxEntities];
+CombatComponent* ArgusComponentRegistry::s_CombatComponents = nullptr;
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isCombatComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
 #pragma endregion
 #pragma region ConstructionComponent
-ConstructionComponent* ArgusComponentRegistry::s_pConstructionComponents = nullptr;
-ConstructionComponent ArgusComponentRegistry::s_ConstructionComponents[ArgusECSConstants::k_maxEntities];
+ConstructionComponent* ArgusComponentRegistry::s_ConstructionComponents = nullptr;
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isConstructionComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
 #pragma endregion
 #pragma region HealthComponent
-HealthComponent* ArgusComponentRegistry::s_pHealthComponents = nullptr;
-HealthComponent ArgusComponentRegistry::s_HealthComponents[ArgusECSConstants::k_maxEntities];
+HealthComponent* ArgusComponentRegistry::s_HealthComponents = nullptr;
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isHealthComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
 #pragma endregion
 #pragma region IdentityComponent
-IdentityComponent* ArgusComponentRegistry::s_pIdentityComponents = nullptr;
-IdentityComponent ArgusComponentRegistry::s_IdentityComponents[ArgusECSConstants::k_maxEntities];
+IdentityComponent* ArgusComponentRegistry::s_IdentityComponents = nullptr;
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isIdentityComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
 #pragma endregion
 #pragma region NavigationComponent
-NavigationComponent* ArgusComponentRegistry::s_pNavigationComponents = nullptr;
-NavigationComponent ArgusComponentRegistry::s_NavigationComponents[ArgusECSConstants::k_maxEntities];
+NavigationComponent* ArgusComponentRegistry::s_NavigationComponents = nullptr;
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isNavigationComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
 #pragma endregion
 #pragma region NearbyEntitiesComponent
-NearbyEntitiesComponent* ArgusComponentRegistry::s_pNearbyEntitiesComponents = nullptr;
-NearbyEntitiesComponent ArgusComponentRegistry::s_NearbyEntitiesComponents[ArgusECSConstants::k_maxEntities];
+NearbyEntitiesComponent* ArgusComponentRegistry::s_NearbyEntitiesComponents = nullptr;
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isNearbyEntitiesComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
 #pragma endregion
 #pragma region ObserversComponent
-ObserversComponent* ArgusComponentRegistry::s_pObserversComponents = nullptr;
-ObserversComponent ArgusComponentRegistry::s_ObserversComponents[ArgusECSConstants::k_maxEntities];
+ObserversComponent* ArgusComponentRegistry::s_ObserversComponents = nullptr;
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isObserversComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
 #pragma endregion
 #pragma region PassengerComponent
-PassengerComponent* ArgusComponentRegistry::s_pPassengerComponents = nullptr;
-PassengerComponent ArgusComponentRegistry::s_PassengerComponents[ArgusECSConstants::k_maxEntities];
+PassengerComponent* ArgusComponentRegistry::s_PassengerComponents = nullptr;
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isPassengerComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
 #pragma endregion
 #pragma region ResourceComponent
-ResourceComponent* ArgusComponentRegistry::s_pResourceComponents = nullptr;
-ResourceComponent ArgusComponentRegistry::s_ResourceComponents[ArgusECSConstants::k_maxEntities];
+ResourceComponent* ArgusComponentRegistry::s_ResourceComponents = nullptr;
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isResourceComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
 #pragma endregion
 #pragma region ResourceExtractionComponent
-ResourceExtractionComponent* ArgusComponentRegistry::s_pResourceExtractionComponents = nullptr;
-ResourceExtractionComponent ArgusComponentRegistry::s_ResourceExtractionComponents[ArgusECSConstants::k_maxEntities];
+ResourceExtractionComponent* ArgusComponentRegistry::s_ResourceExtractionComponents = nullptr;
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isResourceExtractionComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
 #pragma endregion
 #pragma region SpawningComponent
-SpawningComponent* ArgusComponentRegistry::s_pSpawningComponents = nullptr;
-SpawningComponent ArgusComponentRegistry::s_SpawningComponents[ArgusECSConstants::k_maxEntities];
+SpawningComponent* ArgusComponentRegistry::s_SpawningComponents = nullptr;
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isSpawningComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
 #pragma endregion
 #pragma region TargetingComponent
-TargetingComponent* ArgusComponentRegistry::s_pTargetingComponents = nullptr;
-TargetingComponent ArgusComponentRegistry::s_TargetingComponents[ArgusECSConstants::k_maxEntities];
+TargetingComponent* ArgusComponentRegistry::s_TargetingComponents = nullptr;
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isTargetingComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
 #pragma endregion
 #pragma region TaskComponent
-TaskComponent* ArgusComponentRegistry::s_pTaskComponents = nullptr;
-TaskComponent ArgusComponentRegistry::s_TaskComponents[ArgusECSConstants::k_maxEntities];
+TaskComponent* ArgusComponentRegistry::s_TaskComponents = nullptr;
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isTaskComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
 #pragma endregion
 #pragma region TimerComponent
-TimerComponent* ArgusComponentRegistry::s_pTimerComponents = nullptr;
-TimerComponent ArgusComponentRegistry::s_TimerComponents[ArgusECSConstants::k_maxEntities];
+TimerComponent* ArgusComponentRegistry::s_TimerComponents = nullptr;
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isTimerComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
 #pragma endregion
 #pragma region TransformComponent
-TransformComponent* ArgusComponentRegistry::s_pTransformComponents = nullptr;
-TransformComponent ArgusComponentRegistry::s_TransformComponents[ArgusECSConstants::k_maxEntities];
+TransformComponent* ArgusComponentRegistry::s_TransformComponents = nullptr;
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isTransformComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
 #pragma endregion
 #pragma region VelocityComponent
-VelocityComponent* ArgusComponentRegistry::s_pVelocityComponents = nullptr;
-VelocityComponent ArgusComponentRegistry::s_VelocityComponents[ArgusECSConstants::k_maxEntities];
+VelocityComponent* ArgusComponentRegistry::s_VelocityComponents = nullptr;
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isVelocityComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
 #pragma endregion
 #pragma region AssetLoadingComponent
@@ -184,125 +165,296 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 
 void ArgusComponentRegistry::FlushAllComponents()
 {
-	// Begin flush active component bitsets
-	if (!s_pAbilityComponents)
+	// Begin flush active component bitsets. Allocate component arrays if necessary.
+	bool didAllocateAbilityComponents = false;
+	if (!s_AbilityComponents)
 	{
-		s_pAbilityComponents = ArgusMemorySource::Reallocate<AbilityComponent>(s_pAbilityComponents, 0, ArgusECSConstants::k_maxEntities);
+		didAllocateAbilityComponents = true;
+		s_AbilityComponents = ArgusMemorySource::Reallocate<AbilityComponent>(s_AbilityComponents, 0, ArgusECSConstants::k_maxEntities);
 	}
 	s_isAbilityComponentActive.reset();
-	if (!s_pAvoidanceGroupingComponents)
+	bool didAllocateAvoidanceGroupingComponents = false;
+	if (!s_AvoidanceGroupingComponents)
 	{
-		s_pAvoidanceGroupingComponents = ArgusMemorySource::Reallocate<AvoidanceGroupingComponent>(s_pAvoidanceGroupingComponents, 0, ArgusECSConstants::k_maxEntities);
+		didAllocateAvoidanceGroupingComponents = true;
+		s_AvoidanceGroupingComponents = ArgusMemorySource::Reallocate<AvoidanceGroupingComponent>(s_AvoidanceGroupingComponents, 0, ArgusECSConstants::k_maxEntities);
 	}
 	s_isAvoidanceGroupingComponentActive.reset();
-	if (!s_pCarrierComponents)
+	bool didAllocateCarrierComponents = false;
+	if (!s_CarrierComponents)
 	{
-		s_pCarrierComponents = ArgusMemorySource::Reallocate<CarrierComponent>(s_pCarrierComponents, 0, ArgusECSConstants::k_maxEntities);
+		didAllocateCarrierComponents = true;
+		s_CarrierComponents = ArgusMemorySource::Reallocate<CarrierComponent>(s_CarrierComponents, 0, ArgusECSConstants::k_maxEntities);
 	}
 	s_isCarrierComponentActive.reset();
-	if (!s_pCombatComponents)
+	bool didAllocateCombatComponents = false;
+	if (!s_CombatComponents)
 	{
-		s_pCombatComponents = ArgusMemorySource::Reallocate<CombatComponent>(s_pCombatComponents, 0, ArgusECSConstants::k_maxEntities);
+		didAllocateCombatComponents = true;
+		s_CombatComponents = ArgusMemorySource::Reallocate<CombatComponent>(s_CombatComponents, 0, ArgusECSConstants::k_maxEntities);
 	}
 	s_isCombatComponentActive.reset();
-	if (!s_pConstructionComponents)
+	bool didAllocateConstructionComponents = false;
+	if (!s_ConstructionComponents)
 	{
-		s_pConstructionComponents = ArgusMemorySource::Reallocate<ConstructionComponent>(s_pConstructionComponents, 0, ArgusECSConstants::k_maxEntities);
+		didAllocateConstructionComponents = true;
+		s_ConstructionComponents = ArgusMemorySource::Reallocate<ConstructionComponent>(s_ConstructionComponents, 0, ArgusECSConstants::k_maxEntities);
 	}
 	s_isConstructionComponentActive.reset();
-	if (!s_pHealthComponents)
+	bool didAllocateHealthComponents = false;
+	if (!s_HealthComponents)
 	{
-		s_pHealthComponents = ArgusMemorySource::Reallocate<HealthComponent>(s_pHealthComponents, 0, ArgusECSConstants::k_maxEntities);
+		didAllocateHealthComponents = true;
+		s_HealthComponents = ArgusMemorySource::Reallocate<HealthComponent>(s_HealthComponents, 0, ArgusECSConstants::k_maxEntities);
 	}
 	s_isHealthComponentActive.reset();
-	if (!s_pIdentityComponents)
+	bool didAllocateIdentityComponents = false;
+	if (!s_IdentityComponents)
 	{
-		s_pIdentityComponents = ArgusMemorySource::Reallocate<IdentityComponent>(s_pIdentityComponents, 0, ArgusECSConstants::k_maxEntities);
+		didAllocateIdentityComponents = true;
+		s_IdentityComponents = ArgusMemorySource::Reallocate<IdentityComponent>(s_IdentityComponents, 0, ArgusECSConstants::k_maxEntities);
 	}
 	s_isIdentityComponentActive.reset();
-	if (!s_pNavigationComponents)
+	bool didAllocateNavigationComponents = false;
+	if (!s_NavigationComponents)
 	{
-		s_pNavigationComponents = ArgusMemorySource::Reallocate<NavigationComponent>(s_pNavigationComponents, 0, ArgusECSConstants::k_maxEntities);
+		didAllocateNavigationComponents = true;
+		s_NavigationComponents = ArgusMemorySource::Reallocate<NavigationComponent>(s_NavigationComponents, 0, ArgusECSConstants::k_maxEntities);
 	}
 	s_isNavigationComponentActive.reset();
-	if (!s_pNearbyEntitiesComponents)
+	bool didAllocateNearbyEntitiesComponents = false;
+	if (!s_NearbyEntitiesComponents)
 	{
-		s_pNearbyEntitiesComponents = ArgusMemorySource::Reallocate<NearbyEntitiesComponent>(s_pNearbyEntitiesComponents, 0, ArgusECSConstants::k_maxEntities);
+		didAllocateNearbyEntitiesComponents = true;
+		s_NearbyEntitiesComponents = ArgusMemorySource::Reallocate<NearbyEntitiesComponent>(s_NearbyEntitiesComponents, 0, ArgusECSConstants::k_maxEntities);
 	}
 	s_isNearbyEntitiesComponentActive.reset();
-	if (!s_pObserversComponents)
+	bool didAllocateObserversComponents = false;
+	if (!s_ObserversComponents)
 	{
-		s_pObserversComponents = ArgusMemorySource::Reallocate<ObserversComponent>(s_pObserversComponents, 0, ArgusECSConstants::k_maxEntities);
+		didAllocateObserversComponents = true;
+		s_ObserversComponents = ArgusMemorySource::Reallocate<ObserversComponent>(s_ObserversComponents, 0, ArgusECSConstants::k_maxEntities);
 	}
 	s_isObserversComponentActive.reset();
-	if (!s_pPassengerComponents)
+	bool didAllocatePassengerComponents = false;
+	if (!s_PassengerComponents)
 	{
-		s_pPassengerComponents = ArgusMemorySource::Reallocate<PassengerComponent>(s_pPassengerComponents, 0, ArgusECSConstants::k_maxEntities);
+		didAllocatePassengerComponents = true;
+		s_PassengerComponents = ArgusMemorySource::Reallocate<PassengerComponent>(s_PassengerComponents, 0, ArgusECSConstants::k_maxEntities);
 	}
 	s_isPassengerComponentActive.reset();
-	if (!s_pResourceComponents)
+	bool didAllocateResourceComponents = false;
+	if (!s_ResourceComponents)
 	{
-		s_pResourceComponents = ArgusMemorySource::Reallocate<ResourceComponent>(s_pResourceComponents, 0, ArgusECSConstants::k_maxEntities);
+		didAllocateResourceComponents = true;
+		s_ResourceComponents = ArgusMemorySource::Reallocate<ResourceComponent>(s_ResourceComponents, 0, ArgusECSConstants::k_maxEntities);
 	}
 	s_isResourceComponentActive.reset();
-	if (!s_pResourceExtractionComponents)
+	bool didAllocateResourceExtractionComponents = false;
+	if (!s_ResourceExtractionComponents)
 	{
-		s_pResourceExtractionComponents = ArgusMemorySource::Reallocate<ResourceExtractionComponent>(s_pResourceExtractionComponents, 0, ArgusECSConstants::k_maxEntities);
+		didAllocateResourceExtractionComponents = true;
+		s_ResourceExtractionComponents = ArgusMemorySource::Reallocate<ResourceExtractionComponent>(s_ResourceExtractionComponents, 0, ArgusECSConstants::k_maxEntities);
 	}
 	s_isResourceExtractionComponentActive.reset();
-	if (!s_pSpawningComponents)
+	bool didAllocateSpawningComponents = false;
+	if (!s_SpawningComponents)
 	{
-		s_pSpawningComponents = ArgusMemorySource::Reallocate<SpawningComponent>(s_pSpawningComponents, 0, ArgusECSConstants::k_maxEntities);
+		didAllocateSpawningComponents = true;
+		s_SpawningComponents = ArgusMemorySource::Reallocate<SpawningComponent>(s_SpawningComponents, 0, ArgusECSConstants::k_maxEntities);
 	}
 	s_isSpawningComponentActive.reset();
-	if (!s_pTargetingComponents)
+	bool didAllocateTargetingComponents = false;
+	if (!s_TargetingComponents)
 	{
-		s_pTargetingComponents = ArgusMemorySource::Reallocate<TargetingComponent>(s_pTargetingComponents, 0, ArgusECSConstants::k_maxEntities);
+		didAllocateTargetingComponents = true;
+		s_TargetingComponents = ArgusMemorySource::Reallocate<TargetingComponent>(s_TargetingComponents, 0, ArgusECSConstants::k_maxEntities);
 	}
 	s_isTargetingComponentActive.reset();
-	if (!s_pTaskComponents)
+	bool didAllocateTaskComponents = false;
+	if (!s_TaskComponents)
 	{
-		s_pTaskComponents = ArgusMemorySource::Reallocate<TaskComponent>(s_pTaskComponents, 0, ArgusECSConstants::k_maxEntities);
+		didAllocateTaskComponents = true;
+		s_TaskComponents = ArgusMemorySource::Reallocate<TaskComponent>(s_TaskComponents, 0, ArgusECSConstants::k_maxEntities);
 	}
 	s_isTaskComponentActive.reset();
-	if (!s_pTimerComponents)
+	bool didAllocateTimerComponents = false;
+	if (!s_TimerComponents)
 	{
-		s_pTimerComponents = ArgusMemorySource::Reallocate<TimerComponent>(s_pTimerComponents, 0, ArgusECSConstants::k_maxEntities);
+		didAllocateTimerComponents = true;
+		s_TimerComponents = ArgusMemorySource::Reallocate<TimerComponent>(s_TimerComponents, 0, ArgusECSConstants::k_maxEntities);
 	}
 	s_isTimerComponentActive.reset();
-	if (!s_pTransformComponents)
+	bool didAllocateTransformComponents = false;
+	if (!s_TransformComponents)
 	{
-		s_pTransformComponents = ArgusMemorySource::Reallocate<TransformComponent>(s_pTransformComponents, 0, ArgusECSConstants::k_maxEntities);
+		didAllocateTransformComponents = true;
+		s_TransformComponents = ArgusMemorySource::Reallocate<TransformComponent>(s_TransformComponents, 0, ArgusECSConstants::k_maxEntities);
 	}
 	s_isTransformComponentActive.reset();
-	if (!s_pVelocityComponents)
+	bool didAllocateVelocityComponents = false;
+	if (!s_VelocityComponents)
 	{
-		s_pVelocityComponents = ArgusMemorySource::Reallocate<VelocityComponent>(s_pVelocityComponents, 0, ArgusECSConstants::k_maxEntities);
+		didAllocateVelocityComponents = true;
+		s_VelocityComponents = ArgusMemorySource::Reallocate<VelocityComponent>(s_VelocityComponents, 0, ArgusECSConstants::k_maxEntities);
 	}
 	s_isVelocityComponentActive.reset();
 
-	// Begin flush component values
+	// Begin flush component values or construct components.
 	for (uint16 i = 0u; i < ArgusECSConstants::k_maxEntities; ++i)
 	{
-		s_AbilityComponents[i].Reset();
-		s_AvoidanceGroupingComponents[i].Reset();
-		s_CarrierComponents[i].Reset();
-		s_CombatComponents[i].Reset();
-		s_ConstructionComponents[i].Reset();
-		s_HealthComponents[i].Reset();
-		s_IdentityComponents[i].Reset();
-		s_NavigationComponents[i].Reset();
-		s_NearbyEntitiesComponents[i].Reset();
-		s_ObserversComponents[i].Reset();
-		s_PassengerComponents[i].Reset();
-		s_ResourceComponents[i].Reset();
-		s_ResourceExtractionComponents[i].Reset();
-		s_SpawningComponents[i].Reset();
-		s_TargetingComponents[i].Reset();
-		s_TaskComponents[i].Reset();
-		s_TimerComponents[i].Reset();
-		s_TransformComponents[i].Reset();
-		s_VelocityComponents[i].Reset();
+		if (didAllocateAbilityComponents)
+		{
+			new (&s_AbilityComponents[i]) AbilityComponent();
+		}
+		else
+		{
+			s_AbilityComponents[i].Reset();
+		}
+		if (didAllocateAvoidanceGroupingComponents)
+		{
+			new (&s_AvoidanceGroupingComponents[i]) AvoidanceGroupingComponent();
+		}
+		else
+		{
+			s_AvoidanceGroupingComponents[i].Reset();
+		}
+		if (didAllocateCarrierComponents)
+		{
+			new (&s_CarrierComponents[i]) CarrierComponent();
+		}
+		else
+		{
+			s_CarrierComponents[i].Reset();
+		}
+		if (didAllocateCombatComponents)
+		{
+			new (&s_CombatComponents[i]) CombatComponent();
+		}
+		else
+		{
+			s_CombatComponents[i].Reset();
+		}
+		if (didAllocateConstructionComponents)
+		{
+			new (&s_ConstructionComponents[i]) ConstructionComponent();
+		}
+		else
+		{
+			s_ConstructionComponents[i].Reset();
+		}
+		if (didAllocateHealthComponents)
+		{
+			new (&s_HealthComponents[i]) HealthComponent();
+		}
+		else
+		{
+			s_HealthComponents[i].Reset();
+		}
+		if (didAllocateIdentityComponents)
+		{
+			new (&s_IdentityComponents[i]) IdentityComponent();
+		}
+		else
+		{
+			s_IdentityComponents[i].Reset();
+		}
+		if (didAllocateNavigationComponents)
+		{
+			new (&s_NavigationComponents[i]) NavigationComponent();
+		}
+		else
+		{
+			s_NavigationComponents[i].Reset();
+		}
+		if (didAllocateNearbyEntitiesComponents)
+		{
+			new (&s_NearbyEntitiesComponents[i]) NearbyEntitiesComponent();
+		}
+		else
+		{
+			s_NearbyEntitiesComponents[i].Reset();
+		}
+		if (didAllocateObserversComponents)
+		{
+			new (&s_ObserversComponents[i]) ObserversComponent();
+		}
+		else
+		{
+			s_ObserversComponents[i].Reset();
+		}
+		if (didAllocatePassengerComponents)
+		{
+			new (&s_PassengerComponents[i]) PassengerComponent();
+		}
+		else
+		{
+			s_PassengerComponents[i].Reset();
+		}
+		if (didAllocateResourceComponents)
+		{
+			new (&s_ResourceComponents[i]) ResourceComponent();
+		}
+		else
+		{
+			s_ResourceComponents[i].Reset();
+		}
+		if (didAllocateResourceExtractionComponents)
+		{
+			new (&s_ResourceExtractionComponents[i]) ResourceExtractionComponent();
+		}
+		else
+		{
+			s_ResourceExtractionComponents[i].Reset();
+		}
+		if (didAllocateSpawningComponents)
+		{
+			new (&s_SpawningComponents[i]) SpawningComponent();
+		}
+		else
+		{
+			s_SpawningComponents[i].Reset();
+		}
+		if (didAllocateTargetingComponents)
+		{
+			new (&s_TargetingComponents[i]) TargetingComponent();
+		}
+		else
+		{
+			s_TargetingComponents[i].Reset();
+		}
+		if (didAllocateTaskComponents)
+		{
+			new (&s_TaskComponents[i]) TaskComponent();
+		}
+		else
+		{
+			s_TaskComponents[i].Reset();
+		}
+		if (didAllocateTimerComponents)
+		{
+			new (&s_TimerComponents[i]) TimerComponent();
+		}
+		else
+		{
+			s_TimerComponents[i].Reset();
+		}
+		if (didAllocateTransformComponents)
+		{
+			new (&s_TransformComponents[i]) TransformComponent();
+		}
+		else
+		{
+			s_TransformComponents[i].Reset();
+		}
+		if (didAllocateVelocityComponents)
+		{
+			new (&s_VelocityComponents[i]) VelocityComponent();
+		}
+		else
+		{
+			s_VelocityComponents[i].Reset();
+		}
 	}
 
 	// Begin flush dynamically allocated components

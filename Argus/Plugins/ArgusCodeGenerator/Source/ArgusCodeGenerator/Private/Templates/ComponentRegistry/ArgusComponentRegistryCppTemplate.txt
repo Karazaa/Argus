@@ -28,10 +28,10 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 
 void ArgusComponentRegistry::FlushAllComponents()
 {
-	// Begin flush active component bitsets
+	// Begin flush active component bitsets. Allocate component arrays if necessary.
 	#####
 
-	// Begin flush component values
+	// Begin flush component values or construct components.
 	for (uint16 i = 0u; i < ArgusECSConstants::k_maxEntities; ++i)
 	{
 		$$$$$

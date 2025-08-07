@@ -72,14 +72,13 @@ public:
 	
 #pragma region AbilityComponent
 private:
-	static AbilityComponent* s_pAbilityComponents;
-	static AbilityComponent s_AbilityComponents[ArgusECSConstants::k_maxEntities];
+	static AbilityComponent* s_AbilityComponents;
 	static std::bitset<ArgusECSConstants::k_maxEntities> s_isAbilityComponentActive;
 public:
 	template<>
 	inline AbilityComponent* GetComponent<AbilityComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pAbilityComponents))
+		if (UNLIKELY(!s_AbilityComponents))
 		{
 			return nullptr;
 		}
@@ -101,7 +100,7 @@ public:
 	template<>
 	inline AbilityComponent* AddComponent<AbilityComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pAbilityComponents))
+		if (UNLIKELY(!s_AbilityComponents))
 		{
 			return nullptr;
 		}
@@ -126,7 +125,7 @@ public:
 	template<>
 	inline AbilityComponent* GetOrAddComponent<AbilityComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pAbilityComponents))
+		if (UNLIKELY(!s_AbilityComponents))
 		{
 			return nullptr;
 		}
@@ -153,14 +152,13 @@ public:
 #pragma endregion
 #pragma region AvoidanceGroupingComponent
 private:
-	static AvoidanceGroupingComponent* s_pAvoidanceGroupingComponents;
-	static AvoidanceGroupingComponent s_AvoidanceGroupingComponents[ArgusECSConstants::k_maxEntities];
+	static AvoidanceGroupingComponent* s_AvoidanceGroupingComponents;
 	static std::bitset<ArgusECSConstants::k_maxEntities> s_isAvoidanceGroupingComponentActive;
 public:
 	template<>
 	inline AvoidanceGroupingComponent* GetComponent<AvoidanceGroupingComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pAvoidanceGroupingComponents))
+		if (UNLIKELY(!s_AvoidanceGroupingComponents))
 		{
 			return nullptr;
 		}
@@ -182,7 +180,7 @@ public:
 	template<>
 	inline AvoidanceGroupingComponent* AddComponent<AvoidanceGroupingComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pAvoidanceGroupingComponents))
+		if (UNLIKELY(!s_AvoidanceGroupingComponents))
 		{
 			return nullptr;
 		}
@@ -207,7 +205,7 @@ public:
 	template<>
 	inline AvoidanceGroupingComponent* GetOrAddComponent<AvoidanceGroupingComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pAvoidanceGroupingComponents))
+		if (UNLIKELY(!s_AvoidanceGroupingComponents))
 		{
 			return nullptr;
 		}
@@ -234,14 +232,13 @@ public:
 #pragma endregion
 #pragma region CarrierComponent
 private:
-	static CarrierComponent* s_pCarrierComponents;
-	static CarrierComponent s_CarrierComponents[ArgusECSConstants::k_maxEntities];
+	static CarrierComponent* s_CarrierComponents;
 	static std::bitset<ArgusECSConstants::k_maxEntities> s_isCarrierComponentActive;
 public:
 	template<>
 	inline CarrierComponent* GetComponent<CarrierComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pCarrierComponents))
+		if (UNLIKELY(!s_CarrierComponents))
 		{
 			return nullptr;
 		}
@@ -263,7 +260,7 @@ public:
 	template<>
 	inline CarrierComponent* AddComponent<CarrierComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pCarrierComponents))
+		if (UNLIKELY(!s_CarrierComponents))
 		{
 			return nullptr;
 		}
@@ -288,7 +285,7 @@ public:
 	template<>
 	inline CarrierComponent* GetOrAddComponent<CarrierComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pCarrierComponents))
+		if (UNLIKELY(!s_CarrierComponents))
 		{
 			return nullptr;
 		}
@@ -315,14 +312,13 @@ public:
 #pragma endregion
 #pragma region CombatComponent
 private:
-	static CombatComponent* s_pCombatComponents;
-	static CombatComponent s_CombatComponents[ArgusECSConstants::k_maxEntities];
+	static CombatComponent* s_CombatComponents;
 	static std::bitset<ArgusECSConstants::k_maxEntities> s_isCombatComponentActive;
 public:
 	template<>
 	inline CombatComponent* GetComponent<CombatComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pCombatComponents))
+		if (UNLIKELY(!s_CombatComponents))
 		{
 			return nullptr;
 		}
@@ -344,7 +340,7 @@ public:
 	template<>
 	inline CombatComponent* AddComponent<CombatComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pCombatComponents))
+		if (UNLIKELY(!s_CombatComponents))
 		{
 			return nullptr;
 		}
@@ -369,7 +365,7 @@ public:
 	template<>
 	inline CombatComponent* GetOrAddComponent<CombatComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pCombatComponents))
+		if (UNLIKELY(!s_CombatComponents))
 		{
 			return nullptr;
 		}
@@ -396,14 +392,13 @@ public:
 #pragma endregion
 #pragma region ConstructionComponent
 private:
-	static ConstructionComponent* s_pConstructionComponents;
-	static ConstructionComponent s_ConstructionComponents[ArgusECSConstants::k_maxEntities];
+	static ConstructionComponent* s_ConstructionComponents;
 	static std::bitset<ArgusECSConstants::k_maxEntities> s_isConstructionComponentActive;
 public:
 	template<>
 	inline ConstructionComponent* GetComponent<ConstructionComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pConstructionComponents))
+		if (UNLIKELY(!s_ConstructionComponents))
 		{
 			return nullptr;
 		}
@@ -425,7 +420,7 @@ public:
 	template<>
 	inline ConstructionComponent* AddComponent<ConstructionComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pConstructionComponents))
+		if (UNLIKELY(!s_ConstructionComponents))
 		{
 			return nullptr;
 		}
@@ -450,7 +445,7 @@ public:
 	template<>
 	inline ConstructionComponent* GetOrAddComponent<ConstructionComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pConstructionComponents))
+		if (UNLIKELY(!s_ConstructionComponents))
 		{
 			return nullptr;
 		}
@@ -477,14 +472,13 @@ public:
 #pragma endregion
 #pragma region HealthComponent
 private:
-	static HealthComponent* s_pHealthComponents;
-	static HealthComponent s_HealthComponents[ArgusECSConstants::k_maxEntities];
+	static HealthComponent* s_HealthComponents;
 	static std::bitset<ArgusECSConstants::k_maxEntities> s_isHealthComponentActive;
 public:
 	template<>
 	inline HealthComponent* GetComponent<HealthComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pHealthComponents))
+		if (UNLIKELY(!s_HealthComponents))
 		{
 			return nullptr;
 		}
@@ -506,7 +500,7 @@ public:
 	template<>
 	inline HealthComponent* AddComponent<HealthComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pHealthComponents))
+		if (UNLIKELY(!s_HealthComponents))
 		{
 			return nullptr;
 		}
@@ -531,7 +525,7 @@ public:
 	template<>
 	inline HealthComponent* GetOrAddComponent<HealthComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pHealthComponents))
+		if (UNLIKELY(!s_HealthComponents))
 		{
 			return nullptr;
 		}
@@ -558,14 +552,13 @@ public:
 #pragma endregion
 #pragma region IdentityComponent
 private:
-	static IdentityComponent* s_pIdentityComponents;
-	static IdentityComponent s_IdentityComponents[ArgusECSConstants::k_maxEntities];
+	static IdentityComponent* s_IdentityComponents;
 	static std::bitset<ArgusECSConstants::k_maxEntities> s_isIdentityComponentActive;
 public:
 	template<>
 	inline IdentityComponent* GetComponent<IdentityComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pIdentityComponents))
+		if (UNLIKELY(!s_IdentityComponents))
 		{
 			return nullptr;
 		}
@@ -587,7 +580,7 @@ public:
 	template<>
 	inline IdentityComponent* AddComponent<IdentityComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pIdentityComponents))
+		if (UNLIKELY(!s_IdentityComponents))
 		{
 			return nullptr;
 		}
@@ -612,7 +605,7 @@ public:
 	template<>
 	inline IdentityComponent* GetOrAddComponent<IdentityComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pIdentityComponents))
+		if (UNLIKELY(!s_IdentityComponents))
 		{
 			return nullptr;
 		}
@@ -639,14 +632,13 @@ public:
 #pragma endregion
 #pragma region NavigationComponent
 private:
-	static NavigationComponent* s_pNavigationComponents;
-	static NavigationComponent s_NavigationComponents[ArgusECSConstants::k_maxEntities];
+	static NavigationComponent* s_NavigationComponents;
 	static std::bitset<ArgusECSConstants::k_maxEntities> s_isNavigationComponentActive;
 public:
 	template<>
 	inline NavigationComponent* GetComponent<NavigationComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pNavigationComponents))
+		if (UNLIKELY(!s_NavigationComponents))
 		{
 			return nullptr;
 		}
@@ -668,7 +660,7 @@ public:
 	template<>
 	inline NavigationComponent* AddComponent<NavigationComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pNavigationComponents))
+		if (UNLIKELY(!s_NavigationComponents))
 		{
 			return nullptr;
 		}
@@ -693,7 +685,7 @@ public:
 	template<>
 	inline NavigationComponent* GetOrAddComponent<NavigationComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pNavigationComponents))
+		if (UNLIKELY(!s_NavigationComponents))
 		{
 			return nullptr;
 		}
@@ -720,14 +712,13 @@ public:
 #pragma endregion
 #pragma region NearbyEntitiesComponent
 private:
-	static NearbyEntitiesComponent* s_pNearbyEntitiesComponents;
-	static NearbyEntitiesComponent s_NearbyEntitiesComponents[ArgusECSConstants::k_maxEntities];
+	static NearbyEntitiesComponent* s_NearbyEntitiesComponents;
 	static std::bitset<ArgusECSConstants::k_maxEntities> s_isNearbyEntitiesComponentActive;
 public:
 	template<>
 	inline NearbyEntitiesComponent* GetComponent<NearbyEntitiesComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pNearbyEntitiesComponents))
+		if (UNLIKELY(!s_NearbyEntitiesComponents))
 		{
 			return nullptr;
 		}
@@ -749,7 +740,7 @@ public:
 	template<>
 	inline NearbyEntitiesComponent* AddComponent<NearbyEntitiesComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pNearbyEntitiesComponents))
+		if (UNLIKELY(!s_NearbyEntitiesComponents))
 		{
 			return nullptr;
 		}
@@ -774,7 +765,7 @@ public:
 	template<>
 	inline NearbyEntitiesComponent* GetOrAddComponent<NearbyEntitiesComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pNearbyEntitiesComponents))
+		if (UNLIKELY(!s_NearbyEntitiesComponents))
 		{
 			return nullptr;
 		}
@@ -801,14 +792,13 @@ public:
 #pragma endregion
 #pragma region ObserversComponent
 private:
-	static ObserversComponent* s_pObserversComponents;
-	static ObserversComponent s_ObserversComponents[ArgusECSConstants::k_maxEntities];
+	static ObserversComponent* s_ObserversComponents;
 	static std::bitset<ArgusECSConstants::k_maxEntities> s_isObserversComponentActive;
 public:
 	template<>
 	inline ObserversComponent* GetComponent<ObserversComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pObserversComponents))
+		if (UNLIKELY(!s_ObserversComponents))
 		{
 			return nullptr;
 		}
@@ -830,7 +820,7 @@ public:
 	template<>
 	inline ObserversComponent* AddComponent<ObserversComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pObserversComponents))
+		if (UNLIKELY(!s_ObserversComponents))
 		{
 			return nullptr;
 		}
@@ -855,7 +845,7 @@ public:
 	template<>
 	inline ObserversComponent* GetOrAddComponent<ObserversComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pObserversComponents))
+		if (UNLIKELY(!s_ObserversComponents))
 		{
 			return nullptr;
 		}
@@ -882,14 +872,13 @@ public:
 #pragma endregion
 #pragma region PassengerComponent
 private:
-	static PassengerComponent* s_pPassengerComponents;
-	static PassengerComponent s_PassengerComponents[ArgusECSConstants::k_maxEntities];
+	static PassengerComponent* s_PassengerComponents;
 	static std::bitset<ArgusECSConstants::k_maxEntities> s_isPassengerComponentActive;
 public:
 	template<>
 	inline PassengerComponent* GetComponent<PassengerComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pPassengerComponents))
+		if (UNLIKELY(!s_PassengerComponents))
 		{
 			return nullptr;
 		}
@@ -911,7 +900,7 @@ public:
 	template<>
 	inline PassengerComponent* AddComponent<PassengerComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pPassengerComponents))
+		if (UNLIKELY(!s_PassengerComponents))
 		{
 			return nullptr;
 		}
@@ -936,7 +925,7 @@ public:
 	template<>
 	inline PassengerComponent* GetOrAddComponent<PassengerComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pPassengerComponents))
+		if (UNLIKELY(!s_PassengerComponents))
 		{
 			return nullptr;
 		}
@@ -963,14 +952,13 @@ public:
 #pragma endregion
 #pragma region ResourceComponent
 private:
-	static ResourceComponent* s_pResourceComponents;
-	static ResourceComponent s_ResourceComponents[ArgusECSConstants::k_maxEntities];
+	static ResourceComponent* s_ResourceComponents;
 	static std::bitset<ArgusECSConstants::k_maxEntities> s_isResourceComponentActive;
 public:
 	template<>
 	inline ResourceComponent* GetComponent<ResourceComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pResourceComponents))
+		if (UNLIKELY(!s_ResourceComponents))
 		{
 			return nullptr;
 		}
@@ -992,7 +980,7 @@ public:
 	template<>
 	inline ResourceComponent* AddComponent<ResourceComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pResourceComponents))
+		if (UNLIKELY(!s_ResourceComponents))
 		{
 			return nullptr;
 		}
@@ -1017,7 +1005,7 @@ public:
 	template<>
 	inline ResourceComponent* GetOrAddComponent<ResourceComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pResourceComponents))
+		if (UNLIKELY(!s_ResourceComponents))
 		{
 			return nullptr;
 		}
@@ -1044,14 +1032,13 @@ public:
 #pragma endregion
 #pragma region ResourceExtractionComponent
 private:
-	static ResourceExtractionComponent* s_pResourceExtractionComponents;
-	static ResourceExtractionComponent s_ResourceExtractionComponents[ArgusECSConstants::k_maxEntities];
+	static ResourceExtractionComponent* s_ResourceExtractionComponents;
 	static std::bitset<ArgusECSConstants::k_maxEntities> s_isResourceExtractionComponentActive;
 public:
 	template<>
 	inline ResourceExtractionComponent* GetComponent<ResourceExtractionComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pResourceExtractionComponents))
+		if (UNLIKELY(!s_ResourceExtractionComponents))
 		{
 			return nullptr;
 		}
@@ -1073,7 +1060,7 @@ public:
 	template<>
 	inline ResourceExtractionComponent* AddComponent<ResourceExtractionComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pResourceExtractionComponents))
+		if (UNLIKELY(!s_ResourceExtractionComponents))
 		{
 			return nullptr;
 		}
@@ -1098,7 +1085,7 @@ public:
 	template<>
 	inline ResourceExtractionComponent* GetOrAddComponent<ResourceExtractionComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pResourceExtractionComponents))
+		if (UNLIKELY(!s_ResourceExtractionComponents))
 		{
 			return nullptr;
 		}
@@ -1125,14 +1112,13 @@ public:
 #pragma endregion
 #pragma region SpawningComponent
 private:
-	static SpawningComponent* s_pSpawningComponents;
-	static SpawningComponent s_SpawningComponents[ArgusECSConstants::k_maxEntities];
+	static SpawningComponent* s_SpawningComponents;
 	static std::bitset<ArgusECSConstants::k_maxEntities> s_isSpawningComponentActive;
 public:
 	template<>
 	inline SpawningComponent* GetComponent<SpawningComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pSpawningComponents))
+		if (UNLIKELY(!s_SpawningComponents))
 		{
 			return nullptr;
 		}
@@ -1154,7 +1140,7 @@ public:
 	template<>
 	inline SpawningComponent* AddComponent<SpawningComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pSpawningComponents))
+		if (UNLIKELY(!s_SpawningComponents))
 		{
 			return nullptr;
 		}
@@ -1179,7 +1165,7 @@ public:
 	template<>
 	inline SpawningComponent* GetOrAddComponent<SpawningComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pSpawningComponents))
+		if (UNLIKELY(!s_SpawningComponents))
 		{
 			return nullptr;
 		}
@@ -1206,14 +1192,13 @@ public:
 #pragma endregion
 #pragma region TargetingComponent
 private:
-	static TargetingComponent* s_pTargetingComponents;
-	static TargetingComponent s_TargetingComponents[ArgusECSConstants::k_maxEntities];
+	static TargetingComponent* s_TargetingComponents;
 	static std::bitset<ArgusECSConstants::k_maxEntities> s_isTargetingComponentActive;
 public:
 	template<>
 	inline TargetingComponent* GetComponent<TargetingComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pTargetingComponents))
+		if (UNLIKELY(!s_TargetingComponents))
 		{
 			return nullptr;
 		}
@@ -1235,7 +1220,7 @@ public:
 	template<>
 	inline TargetingComponent* AddComponent<TargetingComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pTargetingComponents))
+		if (UNLIKELY(!s_TargetingComponents))
 		{
 			return nullptr;
 		}
@@ -1260,7 +1245,7 @@ public:
 	template<>
 	inline TargetingComponent* GetOrAddComponent<TargetingComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pTargetingComponents))
+		if (UNLIKELY(!s_TargetingComponents))
 		{
 			return nullptr;
 		}
@@ -1287,14 +1272,13 @@ public:
 #pragma endregion
 #pragma region TaskComponent
 private:
-	static TaskComponent* s_pTaskComponents;
-	static TaskComponent s_TaskComponents[ArgusECSConstants::k_maxEntities];
+	static TaskComponent* s_TaskComponents;
 	static std::bitset<ArgusECSConstants::k_maxEntities> s_isTaskComponentActive;
 public:
 	template<>
 	inline TaskComponent* GetComponent<TaskComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pTaskComponents))
+		if (UNLIKELY(!s_TaskComponents))
 		{
 			return nullptr;
 		}
@@ -1316,7 +1300,7 @@ public:
 	template<>
 	inline TaskComponent* AddComponent<TaskComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pTaskComponents))
+		if (UNLIKELY(!s_TaskComponents))
 		{
 			return nullptr;
 		}
@@ -1341,7 +1325,7 @@ public:
 	template<>
 	inline TaskComponent* GetOrAddComponent<TaskComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pTaskComponents))
+		if (UNLIKELY(!s_TaskComponents))
 		{
 			return nullptr;
 		}
@@ -1368,14 +1352,13 @@ public:
 #pragma endregion
 #pragma region TimerComponent
 private:
-	static TimerComponent* s_pTimerComponents;
-	static TimerComponent s_TimerComponents[ArgusECSConstants::k_maxEntities];
+	static TimerComponent* s_TimerComponents;
 	static std::bitset<ArgusECSConstants::k_maxEntities> s_isTimerComponentActive;
 public:
 	template<>
 	inline TimerComponent* GetComponent<TimerComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pTimerComponents))
+		if (UNLIKELY(!s_TimerComponents))
 		{
 			return nullptr;
 		}
@@ -1397,7 +1380,7 @@ public:
 	template<>
 	inline TimerComponent* AddComponent<TimerComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pTimerComponents))
+		if (UNLIKELY(!s_TimerComponents))
 		{
 			return nullptr;
 		}
@@ -1422,7 +1405,7 @@ public:
 	template<>
 	inline TimerComponent* GetOrAddComponent<TimerComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pTimerComponents))
+		if (UNLIKELY(!s_TimerComponents))
 		{
 			return nullptr;
 		}
@@ -1449,14 +1432,13 @@ public:
 #pragma endregion
 #pragma region TransformComponent
 private:
-	static TransformComponent* s_pTransformComponents;
-	static TransformComponent s_TransformComponents[ArgusECSConstants::k_maxEntities];
+	static TransformComponent* s_TransformComponents;
 	static std::bitset<ArgusECSConstants::k_maxEntities> s_isTransformComponentActive;
 public:
 	template<>
 	inline TransformComponent* GetComponent<TransformComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pTransformComponents))
+		if (UNLIKELY(!s_TransformComponents))
 		{
 			return nullptr;
 		}
@@ -1478,7 +1460,7 @@ public:
 	template<>
 	inline TransformComponent* AddComponent<TransformComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pTransformComponents))
+		if (UNLIKELY(!s_TransformComponents))
 		{
 			return nullptr;
 		}
@@ -1503,7 +1485,7 @@ public:
 	template<>
 	inline TransformComponent* GetOrAddComponent<TransformComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pTransformComponents))
+		if (UNLIKELY(!s_TransformComponents))
 		{
 			return nullptr;
 		}
@@ -1530,14 +1512,13 @@ public:
 #pragma endregion
 #pragma region VelocityComponent
 private:
-	static VelocityComponent* s_pVelocityComponents;
-	static VelocityComponent s_VelocityComponents[ArgusECSConstants::k_maxEntities];
+	static VelocityComponent* s_VelocityComponents;
 	static std::bitset<ArgusECSConstants::k_maxEntities> s_isVelocityComponentActive;
 public:
 	template<>
 	inline VelocityComponent* GetComponent<VelocityComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pVelocityComponents))
+		if (UNLIKELY(!s_VelocityComponents))
 		{
 			return nullptr;
 		}
@@ -1559,7 +1540,7 @@ public:
 	template<>
 	inline VelocityComponent* AddComponent<VelocityComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pVelocityComponents))
+		if (UNLIKELY(!s_VelocityComponents))
 		{
 			return nullptr;
 		}
@@ -1584,7 +1565,7 @@ public:
 	template<>
 	inline VelocityComponent* GetOrAddComponent<VelocityComponent>(uint16 entityId)
 	{
-		if (UNLIKELY(!s_pVelocityComponents))
+		if (UNLIKELY(!s_VelocityComponents))
 		{
 			return nullptr;
 		}
