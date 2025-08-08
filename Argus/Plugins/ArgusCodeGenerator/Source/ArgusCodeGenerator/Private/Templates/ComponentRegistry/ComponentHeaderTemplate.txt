@@ -1,7 +1,7 @@
 #pragma region #####
 private:
 	static #####* s_#####s;
-	static std::bitset<ArgusECSConstants::k_maxEntities> s_is#####Active;
+	static TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > s_is#####Active;
 public:
 	template<>
 	inline #####* GetComponent<#####>(uint16 entityId)
@@ -14,6 +14,11 @@ public:
 		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(#####));
+			return nullptr;
+		}
+
+		if (UNLIKELY(s_is#####Active.Num() == 0))
+		{
 			return nullptr;
 		}
 
@@ -39,14 +44,19 @@ public:
 			return nullptr;
 		}
 
+		if (UNLIKELY(s_is#####Active.Num() == 0))
+		{
+			s_is#####Active.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
 		if (UNLIKELY(s_is#####Active[entityId]))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(#####), entityId);
 			return &s_#####s[entityId];
 		}
 
+		s_is#####Active[entityId] = true;
 		s_#####s[entityId].Reset();
-		s_is#####Active.set(entityId);
 		return &s_#####s[entityId];
 	}
 
@@ -64,14 +74,19 @@ public:
 			return nullptr;
 		}
 
+		if (UNLIKELY(s_is#####Active.Num() == 0))
+		{
+			s_is#####Active.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
 		if (s_is#####Active[entityId])
 		{
 			return &s_#####s[entityId];
 		}
 		else
 		{
+			s_is#####Active[entityId] = true;
 			s_#####s[entityId].Reset();
-			s_is#####Active.set(entityId);
 			return &s_#####s[entityId];
 		}
 	}

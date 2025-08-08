@@ -1,1 +1,1 @@
-	s_is#####Active.set(entityId, false);
+	s_is#####Active.Reset();

@@ -5,8 +5,9 @@
 
 #include "ArgusECSConstants.h"
 #include "ArgusLogging.h"
+#include "ArgusMemorySource.h"
+#include "Containers/BitArray.h"
 #include "Containers/Map.h"
-#include <bitset>
 
 // Begin component specific includes.
 #include "ComponentDefinitions\AbilityComponent.h"
@@ -73,7 +74,7 @@ public:
 #pragma region AbilityComponent
 private:
 	static AbilityComponent* s_AbilityComponents;
-	static std::bitset<ArgusECSConstants::k_maxEntities> s_isAbilityComponentActive;
+	static TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > s_isAbilityComponentActive;
 public:
 	template<>
 	inline AbilityComponent* GetComponent<AbilityComponent>(uint16 entityId)
@@ -86,6 +87,11 @@ public:
 		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(AbilityComponent));
+			return nullptr;
+		}
+
+		if (UNLIKELY(s_isAbilityComponentActive.Num() == 0))
+		{
 			return nullptr;
 		}
 
@@ -111,14 +117,19 @@ public:
 			return nullptr;
 		}
 
+		if (UNLIKELY(s_isAbilityComponentActive.Num() == 0))
+		{
+			s_isAbilityComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
 		if (UNLIKELY(s_isAbilityComponentActive[entityId]))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(AbilityComponent), entityId);
 			return &s_AbilityComponents[entityId];
 		}
 
+		s_isAbilityComponentActive[entityId] = true;
 		s_AbilityComponents[entityId].Reset();
-		s_isAbilityComponentActive.set(entityId);
 		return &s_AbilityComponents[entityId];
 	}
 
@@ -136,14 +147,19 @@ public:
 			return nullptr;
 		}
 
+		if (UNLIKELY(s_isAbilityComponentActive.Num() == 0))
+		{
+			s_isAbilityComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
 		if (s_isAbilityComponentActive[entityId])
 		{
 			return &s_AbilityComponents[entityId];
 		}
 		else
 		{
+			s_isAbilityComponentActive[entityId] = true;
 			s_AbilityComponents[entityId].Reset();
-			s_isAbilityComponentActive.set(entityId);
 			return &s_AbilityComponents[entityId];
 		}
 	}
@@ -153,7 +169,7 @@ public:
 #pragma region AvoidanceGroupingComponent
 private:
 	static AvoidanceGroupingComponent* s_AvoidanceGroupingComponents;
-	static std::bitset<ArgusECSConstants::k_maxEntities> s_isAvoidanceGroupingComponentActive;
+	static TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > s_isAvoidanceGroupingComponentActive;
 public:
 	template<>
 	inline AvoidanceGroupingComponent* GetComponent<AvoidanceGroupingComponent>(uint16 entityId)
@@ -166,6 +182,11 @@ public:
 		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(AvoidanceGroupingComponent));
+			return nullptr;
+		}
+
+		if (UNLIKELY(s_isAvoidanceGroupingComponentActive.Num() == 0))
+		{
 			return nullptr;
 		}
 
@@ -191,14 +212,19 @@ public:
 			return nullptr;
 		}
 
+		if (UNLIKELY(s_isAvoidanceGroupingComponentActive.Num() == 0))
+		{
+			s_isAvoidanceGroupingComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
 		if (UNLIKELY(s_isAvoidanceGroupingComponentActive[entityId]))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(AvoidanceGroupingComponent), entityId);
 			return &s_AvoidanceGroupingComponents[entityId];
 		}
 
+		s_isAvoidanceGroupingComponentActive[entityId] = true;
 		s_AvoidanceGroupingComponents[entityId].Reset();
-		s_isAvoidanceGroupingComponentActive.set(entityId);
 		return &s_AvoidanceGroupingComponents[entityId];
 	}
 
@@ -216,14 +242,19 @@ public:
 			return nullptr;
 		}
 
+		if (UNLIKELY(s_isAvoidanceGroupingComponentActive.Num() == 0))
+		{
+			s_isAvoidanceGroupingComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
 		if (s_isAvoidanceGroupingComponentActive[entityId])
 		{
 			return &s_AvoidanceGroupingComponents[entityId];
 		}
 		else
 		{
+			s_isAvoidanceGroupingComponentActive[entityId] = true;
 			s_AvoidanceGroupingComponents[entityId].Reset();
-			s_isAvoidanceGroupingComponentActive.set(entityId);
 			return &s_AvoidanceGroupingComponents[entityId];
 		}
 	}
@@ -233,7 +264,7 @@ public:
 #pragma region CarrierComponent
 private:
 	static CarrierComponent* s_CarrierComponents;
-	static std::bitset<ArgusECSConstants::k_maxEntities> s_isCarrierComponentActive;
+	static TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > s_isCarrierComponentActive;
 public:
 	template<>
 	inline CarrierComponent* GetComponent<CarrierComponent>(uint16 entityId)
@@ -246,6 +277,11 @@ public:
 		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(CarrierComponent));
+			return nullptr;
+		}
+
+		if (UNLIKELY(s_isCarrierComponentActive.Num() == 0))
+		{
 			return nullptr;
 		}
 
@@ -271,14 +307,19 @@ public:
 			return nullptr;
 		}
 
+		if (UNLIKELY(s_isCarrierComponentActive.Num() == 0))
+		{
+			s_isCarrierComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
 		if (UNLIKELY(s_isCarrierComponentActive[entityId]))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(CarrierComponent), entityId);
 			return &s_CarrierComponents[entityId];
 		}
 
+		s_isCarrierComponentActive[entityId] = true;
 		s_CarrierComponents[entityId].Reset();
-		s_isCarrierComponentActive.set(entityId);
 		return &s_CarrierComponents[entityId];
 	}
 
@@ -296,14 +337,19 @@ public:
 			return nullptr;
 		}
 
+		if (UNLIKELY(s_isCarrierComponentActive.Num() == 0))
+		{
+			s_isCarrierComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
 		if (s_isCarrierComponentActive[entityId])
 		{
 			return &s_CarrierComponents[entityId];
 		}
 		else
 		{
+			s_isCarrierComponentActive[entityId] = true;
 			s_CarrierComponents[entityId].Reset();
-			s_isCarrierComponentActive.set(entityId);
 			return &s_CarrierComponents[entityId];
 		}
 	}
@@ -313,7 +359,7 @@ public:
 #pragma region CombatComponent
 private:
 	static CombatComponent* s_CombatComponents;
-	static std::bitset<ArgusECSConstants::k_maxEntities> s_isCombatComponentActive;
+	static TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > s_isCombatComponentActive;
 public:
 	template<>
 	inline CombatComponent* GetComponent<CombatComponent>(uint16 entityId)
@@ -326,6 +372,11 @@ public:
 		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(CombatComponent));
+			return nullptr;
+		}
+
+		if (UNLIKELY(s_isCombatComponentActive.Num() == 0))
+		{
 			return nullptr;
 		}
 
@@ -351,14 +402,19 @@ public:
 			return nullptr;
 		}
 
+		if (UNLIKELY(s_isCombatComponentActive.Num() == 0))
+		{
+			s_isCombatComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
 		if (UNLIKELY(s_isCombatComponentActive[entityId]))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(CombatComponent), entityId);
 			return &s_CombatComponents[entityId];
 		}
 
+		s_isCombatComponentActive[entityId] = true;
 		s_CombatComponents[entityId].Reset();
-		s_isCombatComponentActive.set(entityId);
 		return &s_CombatComponents[entityId];
 	}
 
@@ -376,14 +432,19 @@ public:
 			return nullptr;
 		}
 
+		if (UNLIKELY(s_isCombatComponentActive.Num() == 0))
+		{
+			s_isCombatComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
 		if (s_isCombatComponentActive[entityId])
 		{
 			return &s_CombatComponents[entityId];
 		}
 		else
 		{
+			s_isCombatComponentActive[entityId] = true;
 			s_CombatComponents[entityId].Reset();
-			s_isCombatComponentActive.set(entityId);
 			return &s_CombatComponents[entityId];
 		}
 	}
@@ -393,7 +454,7 @@ public:
 #pragma region ConstructionComponent
 private:
 	static ConstructionComponent* s_ConstructionComponents;
-	static std::bitset<ArgusECSConstants::k_maxEntities> s_isConstructionComponentActive;
+	static TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > s_isConstructionComponentActive;
 public:
 	template<>
 	inline ConstructionComponent* GetComponent<ConstructionComponent>(uint16 entityId)
@@ -406,6 +467,11 @@ public:
 		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(ConstructionComponent));
+			return nullptr;
+		}
+
+		if (UNLIKELY(s_isConstructionComponentActive.Num() == 0))
+		{
 			return nullptr;
 		}
 
@@ -431,14 +497,19 @@ public:
 			return nullptr;
 		}
 
+		if (UNLIKELY(s_isConstructionComponentActive.Num() == 0))
+		{
+			s_isConstructionComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
 		if (UNLIKELY(s_isConstructionComponentActive[entityId]))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ConstructionComponent), entityId);
 			return &s_ConstructionComponents[entityId];
 		}
 
+		s_isConstructionComponentActive[entityId] = true;
 		s_ConstructionComponents[entityId].Reset();
-		s_isConstructionComponentActive.set(entityId);
 		return &s_ConstructionComponents[entityId];
 	}
 
@@ -456,14 +527,19 @@ public:
 			return nullptr;
 		}
 
+		if (UNLIKELY(s_isConstructionComponentActive.Num() == 0))
+		{
+			s_isConstructionComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
 		if (s_isConstructionComponentActive[entityId])
 		{
 			return &s_ConstructionComponents[entityId];
 		}
 		else
 		{
+			s_isConstructionComponentActive[entityId] = true;
 			s_ConstructionComponents[entityId].Reset();
-			s_isConstructionComponentActive.set(entityId);
 			return &s_ConstructionComponents[entityId];
 		}
 	}
@@ -473,7 +549,7 @@ public:
 #pragma region HealthComponent
 private:
 	static HealthComponent* s_HealthComponents;
-	static std::bitset<ArgusECSConstants::k_maxEntities> s_isHealthComponentActive;
+	static TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > s_isHealthComponentActive;
 public:
 	template<>
 	inline HealthComponent* GetComponent<HealthComponent>(uint16 entityId)
@@ -486,6 +562,11 @@ public:
 		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(HealthComponent));
+			return nullptr;
+		}
+
+		if (UNLIKELY(s_isHealthComponentActive.Num() == 0))
+		{
 			return nullptr;
 		}
 
@@ -511,14 +592,19 @@ public:
 			return nullptr;
 		}
 
+		if (UNLIKELY(s_isHealthComponentActive.Num() == 0))
+		{
+			s_isHealthComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
 		if (UNLIKELY(s_isHealthComponentActive[entityId]))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(HealthComponent), entityId);
 			return &s_HealthComponents[entityId];
 		}
 
+		s_isHealthComponentActive[entityId] = true;
 		s_HealthComponents[entityId].Reset();
-		s_isHealthComponentActive.set(entityId);
 		return &s_HealthComponents[entityId];
 	}
 
@@ -536,14 +622,19 @@ public:
 			return nullptr;
 		}
 
+		if (UNLIKELY(s_isHealthComponentActive.Num() == 0))
+		{
+			s_isHealthComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
 		if (s_isHealthComponentActive[entityId])
 		{
 			return &s_HealthComponents[entityId];
 		}
 		else
 		{
+			s_isHealthComponentActive[entityId] = true;
 			s_HealthComponents[entityId].Reset();
-			s_isHealthComponentActive.set(entityId);
 			return &s_HealthComponents[entityId];
 		}
 	}
@@ -553,7 +644,7 @@ public:
 #pragma region IdentityComponent
 private:
 	static IdentityComponent* s_IdentityComponents;
-	static std::bitset<ArgusECSConstants::k_maxEntities> s_isIdentityComponentActive;
+	static TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > s_isIdentityComponentActive;
 public:
 	template<>
 	inline IdentityComponent* GetComponent<IdentityComponent>(uint16 entityId)
@@ -566,6 +657,11 @@ public:
 		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(IdentityComponent));
+			return nullptr;
+		}
+
+		if (UNLIKELY(s_isIdentityComponentActive.Num() == 0))
+		{
 			return nullptr;
 		}
 
@@ -591,14 +687,19 @@ public:
 			return nullptr;
 		}
 
+		if (UNLIKELY(s_isIdentityComponentActive.Num() == 0))
+		{
+			s_isIdentityComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
 		if (UNLIKELY(s_isIdentityComponentActive[entityId]))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(IdentityComponent), entityId);
 			return &s_IdentityComponents[entityId];
 		}
 
+		s_isIdentityComponentActive[entityId] = true;
 		s_IdentityComponents[entityId].Reset();
-		s_isIdentityComponentActive.set(entityId);
 		return &s_IdentityComponents[entityId];
 	}
 
@@ -616,14 +717,19 @@ public:
 			return nullptr;
 		}
 
+		if (UNLIKELY(s_isIdentityComponentActive.Num() == 0))
+		{
+			s_isIdentityComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
 		if (s_isIdentityComponentActive[entityId])
 		{
 			return &s_IdentityComponents[entityId];
 		}
 		else
 		{
+			s_isIdentityComponentActive[entityId] = true;
 			s_IdentityComponents[entityId].Reset();
-			s_isIdentityComponentActive.set(entityId);
 			return &s_IdentityComponents[entityId];
 		}
 	}
@@ -633,7 +739,7 @@ public:
 #pragma region NavigationComponent
 private:
 	static NavigationComponent* s_NavigationComponents;
-	static std::bitset<ArgusECSConstants::k_maxEntities> s_isNavigationComponentActive;
+	static TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > s_isNavigationComponentActive;
 public:
 	template<>
 	inline NavigationComponent* GetComponent<NavigationComponent>(uint16 entityId)
@@ -646,6 +752,11 @@ public:
 		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(NavigationComponent));
+			return nullptr;
+		}
+
+		if (UNLIKELY(s_isNavigationComponentActive.Num() == 0))
+		{
 			return nullptr;
 		}
 
@@ -671,14 +782,19 @@ public:
 			return nullptr;
 		}
 
+		if (UNLIKELY(s_isNavigationComponentActive.Num() == 0))
+		{
+			s_isNavigationComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
 		if (UNLIKELY(s_isNavigationComponentActive[entityId]))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(NavigationComponent), entityId);
 			return &s_NavigationComponents[entityId];
 		}
 
+		s_isNavigationComponentActive[entityId] = true;
 		s_NavigationComponents[entityId].Reset();
-		s_isNavigationComponentActive.set(entityId);
 		return &s_NavigationComponents[entityId];
 	}
 
@@ -696,14 +812,19 @@ public:
 			return nullptr;
 		}
 
+		if (UNLIKELY(s_isNavigationComponentActive.Num() == 0))
+		{
+			s_isNavigationComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
 		if (s_isNavigationComponentActive[entityId])
 		{
 			return &s_NavigationComponents[entityId];
 		}
 		else
 		{
+			s_isNavigationComponentActive[entityId] = true;
 			s_NavigationComponents[entityId].Reset();
-			s_isNavigationComponentActive.set(entityId);
 			return &s_NavigationComponents[entityId];
 		}
 	}
@@ -713,7 +834,7 @@ public:
 #pragma region NearbyEntitiesComponent
 private:
 	static NearbyEntitiesComponent* s_NearbyEntitiesComponents;
-	static std::bitset<ArgusECSConstants::k_maxEntities> s_isNearbyEntitiesComponentActive;
+	static TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > s_isNearbyEntitiesComponentActive;
 public:
 	template<>
 	inline NearbyEntitiesComponent* GetComponent<NearbyEntitiesComponent>(uint16 entityId)
@@ -726,6 +847,11 @@ public:
 		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(NearbyEntitiesComponent));
+			return nullptr;
+		}
+
+		if (UNLIKELY(s_isNearbyEntitiesComponentActive.Num() == 0))
+		{
 			return nullptr;
 		}
 
@@ -751,14 +877,19 @@ public:
 			return nullptr;
 		}
 
+		if (UNLIKELY(s_isNearbyEntitiesComponentActive.Num() == 0))
+		{
+			s_isNearbyEntitiesComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
 		if (UNLIKELY(s_isNearbyEntitiesComponentActive[entityId]))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(NearbyEntitiesComponent), entityId);
 			return &s_NearbyEntitiesComponents[entityId];
 		}
 
+		s_isNearbyEntitiesComponentActive[entityId] = true;
 		s_NearbyEntitiesComponents[entityId].Reset();
-		s_isNearbyEntitiesComponentActive.set(entityId);
 		return &s_NearbyEntitiesComponents[entityId];
 	}
 
@@ -776,14 +907,19 @@ public:
 			return nullptr;
 		}
 
+		if (UNLIKELY(s_isNearbyEntitiesComponentActive.Num() == 0))
+		{
+			s_isNearbyEntitiesComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
 		if (s_isNearbyEntitiesComponentActive[entityId])
 		{
 			return &s_NearbyEntitiesComponents[entityId];
 		}
 		else
 		{
+			s_isNearbyEntitiesComponentActive[entityId] = true;
 			s_NearbyEntitiesComponents[entityId].Reset();
-			s_isNearbyEntitiesComponentActive.set(entityId);
 			return &s_NearbyEntitiesComponents[entityId];
 		}
 	}
@@ -793,7 +929,7 @@ public:
 #pragma region ObserversComponent
 private:
 	static ObserversComponent* s_ObserversComponents;
-	static std::bitset<ArgusECSConstants::k_maxEntities> s_isObserversComponentActive;
+	static TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > s_isObserversComponentActive;
 public:
 	template<>
 	inline ObserversComponent* GetComponent<ObserversComponent>(uint16 entityId)
@@ -806,6 +942,11 @@ public:
 		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(ObserversComponent));
+			return nullptr;
+		}
+
+		if (UNLIKELY(s_isObserversComponentActive.Num() == 0))
+		{
 			return nullptr;
 		}
 
@@ -831,14 +972,19 @@ public:
 			return nullptr;
 		}
 
+		if (UNLIKELY(s_isObserversComponentActive.Num() == 0))
+		{
+			s_isObserversComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
 		if (UNLIKELY(s_isObserversComponentActive[entityId]))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ObserversComponent), entityId);
 			return &s_ObserversComponents[entityId];
 		}
 
+		s_isObserversComponentActive[entityId] = true;
 		s_ObserversComponents[entityId].Reset();
-		s_isObserversComponentActive.set(entityId);
 		return &s_ObserversComponents[entityId];
 	}
 
@@ -856,14 +1002,19 @@ public:
 			return nullptr;
 		}
 
+		if (UNLIKELY(s_isObserversComponentActive.Num() == 0))
+		{
+			s_isObserversComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
 		if (s_isObserversComponentActive[entityId])
 		{
 			return &s_ObserversComponents[entityId];
 		}
 		else
 		{
+			s_isObserversComponentActive[entityId] = true;
 			s_ObserversComponents[entityId].Reset();
-			s_isObserversComponentActive.set(entityId);
 			return &s_ObserversComponents[entityId];
 		}
 	}
@@ -873,7 +1024,7 @@ public:
 #pragma region PassengerComponent
 private:
 	static PassengerComponent* s_PassengerComponents;
-	static std::bitset<ArgusECSConstants::k_maxEntities> s_isPassengerComponentActive;
+	static TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > s_isPassengerComponentActive;
 public:
 	template<>
 	inline PassengerComponent* GetComponent<PassengerComponent>(uint16 entityId)
@@ -886,6 +1037,11 @@ public:
 		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(PassengerComponent));
+			return nullptr;
+		}
+
+		if (UNLIKELY(s_isPassengerComponentActive.Num() == 0))
+		{
 			return nullptr;
 		}
 
@@ -911,14 +1067,19 @@ public:
 			return nullptr;
 		}
 
+		if (UNLIKELY(s_isPassengerComponentActive.Num() == 0))
+		{
+			s_isPassengerComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
 		if (UNLIKELY(s_isPassengerComponentActive[entityId]))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(PassengerComponent), entityId);
 			return &s_PassengerComponents[entityId];
 		}
 
+		s_isPassengerComponentActive[entityId] = true;
 		s_PassengerComponents[entityId].Reset();
-		s_isPassengerComponentActive.set(entityId);
 		return &s_PassengerComponents[entityId];
 	}
 
@@ -936,14 +1097,19 @@ public:
 			return nullptr;
 		}
 
+		if (UNLIKELY(s_isPassengerComponentActive.Num() == 0))
+		{
+			s_isPassengerComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
 		if (s_isPassengerComponentActive[entityId])
 		{
 			return &s_PassengerComponents[entityId];
 		}
 		else
 		{
+			s_isPassengerComponentActive[entityId] = true;
 			s_PassengerComponents[entityId].Reset();
-			s_isPassengerComponentActive.set(entityId);
 			return &s_PassengerComponents[entityId];
 		}
 	}
@@ -953,7 +1119,7 @@ public:
 #pragma region ResourceComponent
 private:
 	static ResourceComponent* s_ResourceComponents;
-	static std::bitset<ArgusECSConstants::k_maxEntities> s_isResourceComponentActive;
+	static TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > s_isResourceComponentActive;
 public:
 	template<>
 	inline ResourceComponent* GetComponent<ResourceComponent>(uint16 entityId)
@@ -966,6 +1132,11 @@ public:
 		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(ResourceComponent));
+			return nullptr;
+		}
+
+		if (UNLIKELY(s_isResourceComponentActive.Num() == 0))
+		{
 			return nullptr;
 		}
 
@@ -991,14 +1162,19 @@ public:
 			return nullptr;
 		}
 
+		if (UNLIKELY(s_isResourceComponentActive.Num() == 0))
+		{
+			s_isResourceComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
 		if (UNLIKELY(s_isResourceComponentActive[entityId]))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ResourceComponent), entityId);
 			return &s_ResourceComponents[entityId];
 		}
 
+		s_isResourceComponentActive[entityId] = true;
 		s_ResourceComponents[entityId].Reset();
-		s_isResourceComponentActive.set(entityId);
 		return &s_ResourceComponents[entityId];
 	}
 
@@ -1016,14 +1192,19 @@ public:
 			return nullptr;
 		}
 
+		if (UNLIKELY(s_isResourceComponentActive.Num() == 0))
+		{
+			s_isResourceComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
 		if (s_isResourceComponentActive[entityId])
 		{
 			return &s_ResourceComponents[entityId];
 		}
 		else
 		{
+			s_isResourceComponentActive[entityId] = true;
 			s_ResourceComponents[entityId].Reset();
-			s_isResourceComponentActive.set(entityId);
 			return &s_ResourceComponents[entityId];
 		}
 	}
@@ -1033,7 +1214,7 @@ public:
 #pragma region ResourceExtractionComponent
 private:
 	static ResourceExtractionComponent* s_ResourceExtractionComponents;
-	static std::bitset<ArgusECSConstants::k_maxEntities> s_isResourceExtractionComponentActive;
+	static TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > s_isResourceExtractionComponentActive;
 public:
 	template<>
 	inline ResourceExtractionComponent* GetComponent<ResourceExtractionComponent>(uint16 entityId)
@@ -1046,6 +1227,11 @@ public:
 		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(ResourceExtractionComponent));
+			return nullptr;
+		}
+
+		if (UNLIKELY(s_isResourceExtractionComponentActive.Num() == 0))
+		{
 			return nullptr;
 		}
 
@@ -1071,14 +1257,19 @@ public:
 			return nullptr;
 		}
 
+		if (UNLIKELY(s_isResourceExtractionComponentActive.Num() == 0))
+		{
+			s_isResourceExtractionComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
 		if (UNLIKELY(s_isResourceExtractionComponentActive[entityId]))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ResourceExtractionComponent), entityId);
 			return &s_ResourceExtractionComponents[entityId];
 		}
 
+		s_isResourceExtractionComponentActive[entityId] = true;
 		s_ResourceExtractionComponents[entityId].Reset();
-		s_isResourceExtractionComponentActive.set(entityId);
 		return &s_ResourceExtractionComponents[entityId];
 	}
 
@@ -1096,14 +1287,19 @@ public:
 			return nullptr;
 		}
 
+		if (UNLIKELY(s_isResourceExtractionComponentActive.Num() == 0))
+		{
+			s_isResourceExtractionComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
 		if (s_isResourceExtractionComponentActive[entityId])
 		{
 			return &s_ResourceExtractionComponents[entityId];
 		}
 		else
 		{
+			s_isResourceExtractionComponentActive[entityId] = true;
 			s_ResourceExtractionComponents[entityId].Reset();
-			s_isResourceExtractionComponentActive.set(entityId);
 			return &s_ResourceExtractionComponents[entityId];
 		}
 	}
@@ -1113,7 +1309,7 @@ public:
 #pragma region SpawningComponent
 private:
 	static SpawningComponent* s_SpawningComponents;
-	static std::bitset<ArgusECSConstants::k_maxEntities> s_isSpawningComponentActive;
+	static TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > s_isSpawningComponentActive;
 public:
 	template<>
 	inline SpawningComponent* GetComponent<SpawningComponent>(uint16 entityId)
@@ -1126,6 +1322,11 @@ public:
 		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(SpawningComponent));
+			return nullptr;
+		}
+
+		if (UNLIKELY(s_isSpawningComponentActive.Num() == 0))
+		{
 			return nullptr;
 		}
 
@@ -1151,14 +1352,19 @@ public:
 			return nullptr;
 		}
 
+		if (UNLIKELY(s_isSpawningComponentActive.Num() == 0))
+		{
+			s_isSpawningComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
 		if (UNLIKELY(s_isSpawningComponentActive[entityId]))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(SpawningComponent), entityId);
 			return &s_SpawningComponents[entityId];
 		}
 
+		s_isSpawningComponentActive[entityId] = true;
 		s_SpawningComponents[entityId].Reset();
-		s_isSpawningComponentActive.set(entityId);
 		return &s_SpawningComponents[entityId];
 	}
 
@@ -1176,14 +1382,19 @@ public:
 			return nullptr;
 		}
 
+		if (UNLIKELY(s_isSpawningComponentActive.Num() == 0))
+		{
+			s_isSpawningComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
 		if (s_isSpawningComponentActive[entityId])
 		{
 			return &s_SpawningComponents[entityId];
 		}
 		else
 		{
+			s_isSpawningComponentActive[entityId] = true;
 			s_SpawningComponents[entityId].Reset();
-			s_isSpawningComponentActive.set(entityId);
 			return &s_SpawningComponents[entityId];
 		}
 	}
@@ -1193,7 +1404,7 @@ public:
 #pragma region TargetingComponent
 private:
 	static TargetingComponent* s_TargetingComponents;
-	static std::bitset<ArgusECSConstants::k_maxEntities> s_isTargetingComponentActive;
+	static TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > s_isTargetingComponentActive;
 public:
 	template<>
 	inline TargetingComponent* GetComponent<TargetingComponent>(uint16 entityId)
@@ -1206,6 +1417,11 @@ public:
 		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(TargetingComponent));
+			return nullptr;
+		}
+
+		if (UNLIKELY(s_isTargetingComponentActive.Num() == 0))
+		{
 			return nullptr;
 		}
 
@@ -1231,14 +1447,19 @@ public:
 			return nullptr;
 		}
 
+		if (UNLIKELY(s_isTargetingComponentActive.Num() == 0))
+		{
+			s_isTargetingComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
 		if (UNLIKELY(s_isTargetingComponentActive[entityId]))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TargetingComponent), entityId);
 			return &s_TargetingComponents[entityId];
 		}
 
+		s_isTargetingComponentActive[entityId] = true;
 		s_TargetingComponents[entityId].Reset();
-		s_isTargetingComponentActive.set(entityId);
 		return &s_TargetingComponents[entityId];
 	}
 
@@ -1256,14 +1477,19 @@ public:
 			return nullptr;
 		}
 
+		if (UNLIKELY(s_isTargetingComponentActive.Num() == 0))
+		{
+			s_isTargetingComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
 		if (s_isTargetingComponentActive[entityId])
 		{
 			return &s_TargetingComponents[entityId];
 		}
 		else
 		{
+			s_isTargetingComponentActive[entityId] = true;
 			s_TargetingComponents[entityId].Reset();
-			s_isTargetingComponentActive.set(entityId);
 			return &s_TargetingComponents[entityId];
 		}
 	}
@@ -1273,7 +1499,7 @@ public:
 #pragma region TaskComponent
 private:
 	static TaskComponent* s_TaskComponents;
-	static std::bitset<ArgusECSConstants::k_maxEntities> s_isTaskComponentActive;
+	static TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > s_isTaskComponentActive;
 public:
 	template<>
 	inline TaskComponent* GetComponent<TaskComponent>(uint16 entityId)
@@ -1286,6 +1512,11 @@ public:
 		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(TaskComponent));
+			return nullptr;
+		}
+
+		if (UNLIKELY(s_isTaskComponentActive.Num() == 0))
+		{
 			return nullptr;
 		}
 
@@ -1311,14 +1542,19 @@ public:
 			return nullptr;
 		}
 
+		if (UNLIKELY(s_isTaskComponentActive.Num() == 0))
+		{
+			s_isTaskComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
 		if (UNLIKELY(s_isTaskComponentActive[entityId]))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TaskComponent), entityId);
 			return &s_TaskComponents[entityId];
 		}
 
+		s_isTaskComponentActive[entityId] = true;
 		s_TaskComponents[entityId].Reset();
-		s_isTaskComponentActive.set(entityId);
 		return &s_TaskComponents[entityId];
 	}
 
@@ -1336,14 +1572,19 @@ public:
 			return nullptr;
 		}
 
+		if (UNLIKELY(s_isTaskComponentActive.Num() == 0))
+		{
+			s_isTaskComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
 		if (s_isTaskComponentActive[entityId])
 		{
 			return &s_TaskComponents[entityId];
 		}
 		else
 		{
+			s_isTaskComponentActive[entityId] = true;
 			s_TaskComponents[entityId].Reset();
-			s_isTaskComponentActive.set(entityId);
 			return &s_TaskComponents[entityId];
 		}
 	}
@@ -1353,7 +1594,7 @@ public:
 #pragma region TimerComponent
 private:
 	static TimerComponent* s_TimerComponents;
-	static std::bitset<ArgusECSConstants::k_maxEntities> s_isTimerComponentActive;
+	static TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > s_isTimerComponentActive;
 public:
 	template<>
 	inline TimerComponent* GetComponent<TimerComponent>(uint16 entityId)
@@ -1366,6 +1607,11 @@ public:
 		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(TimerComponent));
+			return nullptr;
+		}
+
+		if (UNLIKELY(s_isTimerComponentActive.Num() == 0))
+		{
 			return nullptr;
 		}
 
@@ -1391,14 +1637,19 @@ public:
 			return nullptr;
 		}
 
+		if (UNLIKELY(s_isTimerComponentActive.Num() == 0))
+		{
+			s_isTimerComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
 		if (UNLIKELY(s_isTimerComponentActive[entityId]))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TimerComponent), entityId);
 			return &s_TimerComponents[entityId];
 		}
 
+		s_isTimerComponentActive[entityId] = true;
 		s_TimerComponents[entityId].Reset();
-		s_isTimerComponentActive.set(entityId);
 		return &s_TimerComponents[entityId];
 	}
 
@@ -1416,14 +1667,19 @@ public:
 			return nullptr;
 		}
 
+		if (UNLIKELY(s_isTimerComponentActive.Num() == 0))
+		{
+			s_isTimerComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
 		if (s_isTimerComponentActive[entityId])
 		{
 			return &s_TimerComponents[entityId];
 		}
 		else
 		{
+			s_isTimerComponentActive[entityId] = true;
 			s_TimerComponents[entityId].Reset();
-			s_isTimerComponentActive.set(entityId);
 			return &s_TimerComponents[entityId];
 		}
 	}
@@ -1433,7 +1689,7 @@ public:
 #pragma region TransformComponent
 private:
 	static TransformComponent* s_TransformComponents;
-	static std::bitset<ArgusECSConstants::k_maxEntities> s_isTransformComponentActive;
+	static TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > s_isTransformComponentActive;
 public:
 	template<>
 	inline TransformComponent* GetComponent<TransformComponent>(uint16 entityId)
@@ -1446,6 +1702,11 @@ public:
 		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(TransformComponent));
+			return nullptr;
+		}
+
+		if (UNLIKELY(s_isTransformComponentActive.Num() == 0))
+		{
 			return nullptr;
 		}
 
@@ -1471,14 +1732,19 @@ public:
 			return nullptr;
 		}
 
+		if (UNLIKELY(s_isTransformComponentActive.Num() == 0))
+		{
+			s_isTransformComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
 		if (UNLIKELY(s_isTransformComponentActive[entityId]))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), entityId);
 			return &s_TransformComponents[entityId];
 		}
 
+		s_isTransformComponentActive[entityId] = true;
 		s_TransformComponents[entityId].Reset();
-		s_isTransformComponentActive.set(entityId);
 		return &s_TransformComponents[entityId];
 	}
 
@@ -1496,14 +1762,19 @@ public:
 			return nullptr;
 		}
 
+		if (UNLIKELY(s_isTransformComponentActive.Num() == 0))
+		{
+			s_isTransformComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
 		if (s_isTransformComponentActive[entityId])
 		{
 			return &s_TransformComponents[entityId];
 		}
 		else
 		{
+			s_isTransformComponentActive[entityId] = true;
 			s_TransformComponents[entityId].Reset();
-			s_isTransformComponentActive.set(entityId);
 			return &s_TransformComponents[entityId];
 		}
 	}
@@ -1513,7 +1784,7 @@ public:
 #pragma region VelocityComponent
 private:
 	static VelocityComponent* s_VelocityComponents;
-	static std::bitset<ArgusECSConstants::k_maxEntities> s_isVelocityComponentActive;
+	static TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > s_isVelocityComponentActive;
 public:
 	template<>
 	inline VelocityComponent* GetComponent<VelocityComponent>(uint16 entityId)
@@ -1526,6 +1797,11 @@ public:
 		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(VelocityComponent));
+			return nullptr;
+		}
+
+		if (UNLIKELY(s_isVelocityComponentActive.Num() == 0))
+		{
 			return nullptr;
 		}
 
@@ -1551,14 +1827,19 @@ public:
 			return nullptr;
 		}
 
+		if (UNLIKELY(s_isVelocityComponentActive.Num() == 0))
+		{
+			s_isVelocityComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
 		if (UNLIKELY(s_isVelocityComponentActive[entityId]))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(VelocityComponent), entityId);
 			return &s_VelocityComponents[entityId];
 		}
 
+		s_isVelocityComponentActive[entityId] = true;
 		s_VelocityComponents[entityId].Reset();
-		s_isVelocityComponentActive.set(entityId);
 		return &s_VelocityComponents[entityId];
 	}
 
@@ -1576,14 +1857,19 @@ public:
 			return nullptr;
 		}
 
+		if (UNLIKELY(s_isVelocityComponentActive.Num() == 0))
+		{
+			s_isVelocityComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
 		if (s_isVelocityComponentActive[entityId])
 		{
 			return &s_VelocityComponents[entityId];
 		}
 		else
 		{
+			s_isVelocityComponentActive[entityId] = true;
 			s_VelocityComponents[entityId].Reset();
-			s_isVelocityComponentActive.set(entityId);
 			return &s_VelocityComponents[entityId];
 		}
 	}

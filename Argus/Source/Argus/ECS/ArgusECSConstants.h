@@ -8,6 +8,9 @@
 namespace ArgusECSConstants
 {
 	static constexpr uint16	k_maxEntities = 15000u;
+
+	// This represents k_maxEntities / 32 rounded up. This is needed to define the number of int32 bit banks needed to represent whether or not a component is present on the entity.
+	static constexpr uint16	k_numBitBuckets = 469u;
 	static constexpr uint16	k_singletonEntityId = k_maxEntities - 1u;
 
 	static constexpr float k_avoidanceEntityDetectionPredictionTime = 2.5f;
