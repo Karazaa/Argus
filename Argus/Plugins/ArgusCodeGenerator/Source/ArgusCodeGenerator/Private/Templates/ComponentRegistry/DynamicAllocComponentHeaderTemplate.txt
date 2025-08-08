@@ -1,6 +1,6 @@
 #pragma region #####
 private:
-	static std::unordered_map<uint16, #####> s_#####s;
+	static TMap<uint16, #####> s_#####s;
 public:
 	template<>
 	inline #####* GetComponent<#####>(uint16 entityId)
@@ -11,7 +11,7 @@ public:
 			return nullptr;
 		}
 
-		if (!s_#####s.contains(entityId))
+		if (!s_#####s.Contains(entityId))
 		{
 			return nullptr;
 		}
@@ -28,14 +28,13 @@ public:
 			return nullptr;
 		}
 
-		if (UNLIKELY(s_#####s.contains(entityId)))
+		if (UNLIKELY(s_#####s.Contains(entityId)))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(#####), entityId);
 			return &s_#####s[entityId];
 		}
 
-		s_#####s[entityId] = #####();
-		return &s_#####s[entityId];
+		return &(s_#####s.Emplace(entityId, #####()));
 	}
 
 	template<>
@@ -47,10 +46,11 @@ public:
 			return nullptr;
 		}
 
-		if (!s_#####s.contains(entityId))
+		if (!s_#####s.Contains(entityId))
 		{
-			s_#####s[entityId] = #####();
+			return &(s_#####s.Emplace(entityId, #####()));
 		}
+
 		return &s_#####s[entityId];
 	}
 #pragma endregion

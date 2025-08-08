@@ -5,8 +5,8 @@
 
 #include "ArgusECSConstants.h"
 #include "ArgusLogging.h"
+#include "Containers/Map.h"
 #include <bitset>
-#include <unordered_map>
 
 // Begin component specific includes.
 #include "ComponentDefinitions\AbilityComponent.h"
@@ -1595,7 +1595,7 @@ public:
 
 #pragma region AssetLoadingComponent
 private:
-	static std::unordered_map<uint16, AssetLoadingComponent> s_AssetLoadingComponents;
+	static TMap<uint16, AssetLoadingComponent> s_AssetLoadingComponents;
 public:
 	template<>
 	inline AssetLoadingComponent* GetComponent<AssetLoadingComponent>(uint16 entityId)
@@ -1606,7 +1606,7 @@ public:
 			return nullptr;
 		}
 
-		if (!s_AssetLoadingComponents.contains(entityId))
+		if (!s_AssetLoadingComponents.Contains(entityId))
 		{
 			return nullptr;
 		}
@@ -1623,14 +1623,13 @@ public:
 			return nullptr;
 		}
 
-		if (UNLIKELY(s_AssetLoadingComponents.contains(entityId)))
+		if (UNLIKELY(s_AssetLoadingComponents.Contains(entityId)))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(AssetLoadingComponent), entityId);
 			return &s_AssetLoadingComponents[entityId];
 		}
 
-		s_AssetLoadingComponents[entityId] = AssetLoadingComponent();
-		return &s_AssetLoadingComponents[entityId];
+		return &(s_AssetLoadingComponents.Emplace(entityId, AssetLoadingComponent()));
 	}
 
 	template<>
@@ -1642,16 +1641,17 @@ public:
 			return nullptr;
 		}
 
-		if (!s_AssetLoadingComponents.contains(entityId))
+		if (!s_AssetLoadingComponents.Contains(entityId))
 		{
-			s_AssetLoadingComponents[entityId] = AssetLoadingComponent();
+			return &(s_AssetLoadingComponents.Emplace(entityId, AssetLoadingComponent()));
 		}
+
 		return &s_AssetLoadingComponents[entityId];
 	}
 #pragma endregion
 #pragma region InputInterfaceComponent
 private:
-	static std::unordered_map<uint16, InputInterfaceComponent> s_InputInterfaceComponents;
+	static TMap<uint16, InputInterfaceComponent> s_InputInterfaceComponents;
 public:
 	template<>
 	inline InputInterfaceComponent* GetComponent<InputInterfaceComponent>(uint16 entityId)
@@ -1662,7 +1662,7 @@ public:
 			return nullptr;
 		}
 
-		if (!s_InputInterfaceComponents.contains(entityId))
+		if (!s_InputInterfaceComponents.Contains(entityId))
 		{
 			return nullptr;
 		}
@@ -1679,14 +1679,13 @@ public:
 			return nullptr;
 		}
 
-		if (UNLIKELY(s_InputInterfaceComponents.contains(entityId)))
+		if (UNLIKELY(s_InputInterfaceComponents.Contains(entityId)))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(InputInterfaceComponent), entityId);
 			return &s_InputInterfaceComponents[entityId];
 		}
 
-		s_InputInterfaceComponents[entityId] = InputInterfaceComponent();
-		return &s_InputInterfaceComponents[entityId];
+		return &(s_InputInterfaceComponents.Emplace(entityId, InputInterfaceComponent()));
 	}
 
 	template<>
@@ -1698,16 +1697,17 @@ public:
 			return nullptr;
 		}
 
-		if (!s_InputInterfaceComponents.contains(entityId))
+		if (!s_InputInterfaceComponents.Contains(entityId))
 		{
-			s_InputInterfaceComponents[entityId] = InputInterfaceComponent();
+			return &(s_InputInterfaceComponents.Emplace(entityId, InputInterfaceComponent()));
 		}
+
 		return &s_InputInterfaceComponents[entityId];
 	}
 #pragma endregion
 #pragma region ReticleComponent
 private:
-	static std::unordered_map<uint16, ReticleComponent> s_ReticleComponents;
+	static TMap<uint16, ReticleComponent> s_ReticleComponents;
 public:
 	template<>
 	inline ReticleComponent* GetComponent<ReticleComponent>(uint16 entityId)
@@ -1718,7 +1718,7 @@ public:
 			return nullptr;
 		}
 
-		if (!s_ReticleComponents.contains(entityId))
+		if (!s_ReticleComponents.Contains(entityId))
 		{
 			return nullptr;
 		}
@@ -1735,14 +1735,13 @@ public:
 			return nullptr;
 		}
 
-		if (UNLIKELY(s_ReticleComponents.contains(entityId)))
+		if (UNLIKELY(s_ReticleComponents.Contains(entityId)))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ReticleComponent), entityId);
 			return &s_ReticleComponents[entityId];
 		}
 
-		s_ReticleComponents[entityId] = ReticleComponent();
-		return &s_ReticleComponents[entityId];
+		return &(s_ReticleComponents.Emplace(entityId, ReticleComponent()));
 	}
 
 	template<>
@@ -1754,16 +1753,17 @@ public:
 			return nullptr;
 		}
 
-		if (!s_ReticleComponents.contains(entityId))
+		if (!s_ReticleComponents.Contains(entityId))
 		{
-			s_ReticleComponents[entityId] = ReticleComponent();
+			return &(s_ReticleComponents.Emplace(entityId, ReticleComponent()));
 		}
+
 		return &s_ReticleComponents[entityId];
 	}
 #pragma endregion
 #pragma region SpatialPartitioningComponent
 private:
-	static std::unordered_map<uint16, SpatialPartitioningComponent> s_SpatialPartitioningComponents;
+	static TMap<uint16, SpatialPartitioningComponent> s_SpatialPartitioningComponents;
 public:
 	template<>
 	inline SpatialPartitioningComponent* GetComponent<SpatialPartitioningComponent>(uint16 entityId)
@@ -1774,7 +1774,7 @@ public:
 			return nullptr;
 		}
 
-		if (!s_SpatialPartitioningComponents.contains(entityId))
+		if (!s_SpatialPartitioningComponents.Contains(entityId))
 		{
 			return nullptr;
 		}
@@ -1791,14 +1791,13 @@ public:
 			return nullptr;
 		}
 
-		if (UNLIKELY(s_SpatialPartitioningComponents.contains(entityId)))
+		if (UNLIKELY(s_SpatialPartitioningComponents.Contains(entityId)))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(SpatialPartitioningComponent), entityId);
 			return &s_SpatialPartitioningComponents[entityId];
 		}
 
-		s_SpatialPartitioningComponents[entityId] = SpatialPartitioningComponent();
-		return &s_SpatialPartitioningComponents[entityId];
+		return &(s_SpatialPartitioningComponents.Emplace(entityId, SpatialPartitioningComponent()));
 	}
 
 	template<>
@@ -1810,10 +1809,11 @@ public:
 			return nullptr;
 		}
 
-		if (!s_SpatialPartitioningComponents.contains(entityId))
+		if (!s_SpatialPartitioningComponents.Contains(entityId))
 		{
-			s_SpatialPartitioningComponents[entityId] = SpatialPartitioningComponent();
+			return &(s_SpatialPartitioningComponents.Emplace(entityId, SpatialPartitioningComponent()));
 		}
+
 		return &s_SpatialPartitioningComponents[entityId];
 	}
 #pragma endregion

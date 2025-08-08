@@ -1,4 +1,4 @@
-	if (s_#####s.contains(entityId))
+	if (s_#####s.Contains(entityId))
 	{
-		s_#####s.erase(entityId);
+		s_#####s.Remove(entityId);
 	}

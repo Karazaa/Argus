@@ -82,16 +82,16 @@ VelocityComponent* ArgusComponentRegistry::s_VelocityComponents = nullptr;
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusComponentRegistry::s_isVelocityComponentActive = std::bitset<ArgusECSConstants::k_maxEntities>();
 #pragma endregion
 #pragma region AssetLoadingComponent
-std::unordered_map<uint16, AssetLoadingComponent> ArgusComponentRegistry::s_AssetLoadingComponents;
+TMap<uint16, AssetLoadingComponent> ArgusComponentRegistry::s_AssetLoadingComponents;
 #pragma endregion
 #pragma region InputInterfaceComponent
-std::unordered_map<uint16, InputInterfaceComponent> ArgusComponentRegistry::s_InputInterfaceComponents;
+TMap<uint16, InputInterfaceComponent> ArgusComponentRegistry::s_InputInterfaceComponents;
 #pragma endregion
 #pragma region ReticleComponent
-std::unordered_map<uint16, ReticleComponent> ArgusComponentRegistry::s_ReticleComponents;
+TMap<uint16, ReticleComponent> ArgusComponentRegistry::s_ReticleComponents;
 #pragma endregion
 #pragma region SpatialPartitioningComponent
-std::unordered_map<uint16, SpatialPartitioningComponent> ArgusComponentRegistry::s_SpatialPartitioningComponents;
+TMap<uint16, SpatialPartitioningComponent> ArgusComponentRegistry::s_SpatialPartitioningComponents;
 #pragma endregion
 
 void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
@@ -145,21 +145,21 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 	s_VelocityComponents[entityId].Reset();
 
 	// Begin remove dynamically allocated components
-	if (s_AssetLoadingComponents.contains(entityId))
+	if (s_AssetLoadingComponents.Contains(entityId))
 	{
-		s_AssetLoadingComponents.erase(entityId);
+		s_AssetLoadingComponents.Remove(entityId);
 	}
-	if (s_InputInterfaceComponents.contains(entityId))
+	if (s_InputInterfaceComponents.Contains(entityId))
 	{
-		s_InputInterfaceComponents.erase(entityId);
+		s_InputInterfaceComponents.Remove(entityId);
 	}
-	if (s_ReticleComponents.contains(entityId))
+	if (s_ReticleComponents.Contains(entityId))
 	{
-		s_ReticleComponents.erase(entityId);
+		s_ReticleComponents.Remove(entityId);
 	}
-	if (s_SpatialPartitioningComponents.contains(entityId))
+	if (s_SpatialPartitioningComponents.Contains(entityId))
 	{
-		s_SpatialPartitioningComponents.erase(entityId);
+		s_SpatialPartitioningComponents.Remove(entityId);
 	}
 }
 
@@ -458,10 +458,10 @@ void ArgusComponentRegistry::FlushAllComponents()
 	}
 
 	// Begin flush dynamically allocated components
-	s_AssetLoadingComponents.clear();
-	s_InputInterfaceComponents.clear();
-	s_ReticleComponents.clear();
-	s_SpatialPartitioningComponents.clear();
+	s_AssetLoadingComponents.Reset();
+	s_InputInterfaceComponents.Reset();
+	s_ReticleComponents.Reset();
+	s_SpatialPartitioningComponents.Reset();
 }
 
 uint16 ArgusComponentRegistry::GetOwningEntityIdForComponentMember(void* memberAddress)

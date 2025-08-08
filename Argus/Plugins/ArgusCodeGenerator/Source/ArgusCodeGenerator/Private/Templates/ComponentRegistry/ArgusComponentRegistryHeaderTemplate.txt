@@ -5,8 +5,8 @@
 
 #include "ArgusECSConstants.h"
 #include "ArgusLogging.h"
+#include "Containers/Map.h"
 #include <bitset>
-#include <unordered_map>
 
 // Begin component specific includes.
 @@@@@
