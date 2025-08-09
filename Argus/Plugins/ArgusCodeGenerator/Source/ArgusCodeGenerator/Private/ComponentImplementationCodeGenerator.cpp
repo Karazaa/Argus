@@ -8,7 +8,9 @@
 #include <regex>
 
 const char* ComponentImplementationGenerator::s_componentImplementationsDirectorySuffix = "Source/Argus/ECS/ComponentImplementations/";
+const char* ComponentImplementationGenerator::s_dynamicAllocComponentImplementationsDirectorySuffix = "Source/Argus/ECS/DynamicAllocComponentImplementations/";
 const char* ComponentImplementationGenerator::s_componentImplementationCppTemplateFilename = "ComponentImplementationCppTemplate.txt";
+const char* ComponentImplementationGenerator::s_dynamicAllocComponentImplementationCppTemplateFilename = "DynamicAllocComponentImplementationCppTemplate.txt";
 const char* ComponentImplementationGenerator::s_perObservableTemplateFilename = "PerObservableTemplate.txt";
 const char* ComponentImplementationGenerator::s_sharedFunctionalityTemplateFilename = "SharedFunctionalityTemplate.txt";
 const char* ComponentImplementationGenerator::s_componentCppSuffix = ".cpp";
@@ -21,25 +23,46 @@ void ComponentImplementationGenerator::GenerateComponentImplementationCode(const
 
 	UE_LOG(ArgusCodeGeneratorLog, Display, TEXT("[%s] Parsing from template files to generate component implementation code."), ARGUS_FUNCNAME)
 
-	// Parse Implementation file
+	// Parse Implementation template files
 	std::vector<ArgusCodeGeneratorUtil::FileWriteData> outParsedImplementationCppFileContents = std::vector<ArgusCodeGeneratorUtil::FileWriteData>();
 	didSucceed &= ParseComponentImplementationCppFileTemplateWithReplacements(parsedComponentData, outParsedImplementationCppFileContents);
 
-	// Construct a directory path to registry location and to tests location. 
+	std::vector<ArgusCodeGeneratorUtil::FileWriteData> outParsedDynamicAllocImplementationCppFileContents = std::vector<ArgusCodeGeneratorUtil::FileWriteData>();
+	didSucceed &= ParseDynamicAllocComponentImplementationCppFileTemplateWithReplacements(parsedComponentData, outParsedDynamicAllocImplementationCppFileContents);
+
+	// Construct a directory path to static and dynamic alloc component implementation directories. 
 	FString componentImplementationDirectory = ArgusCodeGeneratorUtil::GetProjectDirectory();
 	componentImplementationDirectory.Append(s_componentImplementationsDirectorySuffix);
 	FPaths::MakeStandardFilename(componentImplementationDirectory);
 	const char* cStrComponentImplementationDirectory = ARGUS_FSTRING_TO_CHAR(componentImplementationDirectory);
 
-	// Write out header and cpp files.
+	FString dynamicAllocComponentImplementationDirectory = ArgusCodeGeneratorUtil::GetProjectDirectory();
+	dynamicAllocComponentImplementationDirectory.Append(s_dynamicAllocComponentImplementationsDirectorySuffix);
+	FPaths::MakeStandardFilename(dynamicAllocComponentImplementationDirectory);
+	const char* cStrDynamicAllocComponentImplementationDirectory = ARGUS_FSTRING_TO_CHAR(dynamicAllocComponentImplementationDirectory);
+
+	// Write out static and dynamic alloc component cpp files.
 	for (int i = 0; i < outParsedImplementationCppFileContents.size(); ++i)
 	{
-		didSucceed &= ArgusCodeGeneratorUtil::WriteOutFile(std::string(cStrComponentImplementationDirectory).append(outParsedImplementationCppFileContents[i].m_filename), outParsedImplementationCppFileContents[i].m_lines);
+		didSucceed &= ArgusCodeGeneratorUtil::WriteOutFile
+		(
+			std::string(cStrComponentImplementationDirectory).append(outParsedImplementationCppFileContents[i].m_filename), 
+			outParsedImplementationCppFileContents[i].m_lines
+		);
+	}
+	for (int i = 0; i < outParsedDynamicAllocImplementationCppFileContents.size(); ++i)
+	{
+		didSucceed &= ArgusCodeGeneratorUtil::WriteOutFile
+		(
+			std::string(cStrDynamicAllocComponentImplementationDirectory).append(outParsedDynamicAllocImplementationCppFileContents[i].m_filename), 
+			outParsedDynamicAllocImplementationCppFileContents[i].m_lines
+		);
 	}
 
 	if (didSucceed)
 	{
-		ArgusCodeGeneratorUtil::DeleteObsoleteComponentDependentFiles(parsedComponentData, cStrComponentImplementationDirectory);
+		ArgusCodeGeneratorUtil::DeleteObsoleteComponentDependentFiles(parsedComponentData.m_componentNames, cStrComponentImplementationDirectory);
+		ArgusCodeGeneratorUtil::DeleteObsoleteComponentDependentFiles(parsedComponentData.m_dynamicAllocComponentNames, cStrDynamicAllocComponentImplementationDirectory);
 		UE_LOG(ArgusCodeGeneratorLog, Display, TEXT("[%s] Successfully wrote out Argus ECS component implementation code."), ARGUS_FUNCNAME)
 	}
 }
@@ -121,6 +144,61 @@ bool ComponentImplementationGenerator::ParseComponentImplementationCppFileTempla
 		else
 		{
 			for (int i = 0; i < parsedComponentData.m_componentNames.size(); ++i)
+			{
+				outParsedFileContents[i].m_lines.push_back(lineText);
+			}
+		}
+	}
+
+	return true;
+}
+
+bool ComponentImplementationGenerator::ParseDynamicAllocComponentImplementationCppFileTemplateWithReplacements(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents)
+{
+	const char* cStrTemplateDirectory = ARGUS_FSTRING_TO_CHAR(ArgusCodeGeneratorUtil::GetTemplateDirectory(s_componentImplementationsTemplateDirectorySuffix));
+	std::string componentImplementationCppTemplateFilename = std::string(cStrTemplateDirectory).append(s_dynamicAllocComponentImplementationCppTemplateFilename);
+
+	std::ifstream inImplementationStream = std::ifstream(componentImplementationCppTemplateFilename);
+	const FString ueImplementationFilePath = FString(componentImplementationCppTemplateFilename.c_str());
+	if (!inImplementationStream.is_open())
+	{
+		UE_LOG(ArgusCodeGeneratorLog, Error, TEXT("[%s] Failed to read from template file: %s"), ARGUS_FUNCNAME, *ueImplementationFilePath);
+		return false;
+	}
+
+	for (int i = 0; i < parsedComponentData.m_dynamicAllocComponentNames.size(); ++i)
+	{
+		ArgusCodeGeneratorUtil::FileWriteData writeData;
+		writeData.m_filename = parsedComponentData.m_dynamicAllocComponentNames[i];
+		writeData.m_filename.append(s_componentCppSuffix);
+		outParsedFileContents.push_back(writeData);
+	}
+
+	std::string lineText;
+	while (std::getline(inImplementationStream, lineText))
+	{
+		if (lineText.find("#####") != std::string::npos)
+		{
+			for (int i = 0; i < parsedComponentData.m_dynamicAllocComponentNames.size(); ++i)
+			{
+				std::string perComponentLineText = lineText;
+				outParsedFileContents[i].m_lines.push_back(std::regex_replace(perComponentLineText, std::regex("#####"), parsedComponentData.m_dynamicAllocComponentNames[i]));
+			}
+		}
+		else if (lineText.find("$$$$$") != std::string::npos)
+		{
+			for (int i = 0; i < parsedComponentData.m_dynamicAllocComponentNames.size(); ++i)
+			{
+				outParsedFileContents[i].m_lines.push_back("\tif (ImGui::BeginTable(\"ComponentValues\", 2, ImGuiTableFlags_NoSavedSettings))");
+				outParsedFileContents[i].m_lines.push_back("\t{");
+				GeneratePerVariableImGuiText(parsedComponentData.m_dynamicAllocComponentVariableData[i], outParsedFileContents[i].m_lines);
+				outParsedFileContents[i].m_lines.push_back("\t\tImGui::EndTable();");
+				outParsedFileContents[i].m_lines.push_back("\t}");
+			}
+		}
+		else
+		{
+			for (int i = 0; i < parsedComponentData.m_dynamicAllocComponentNames.size(); ++i)
 			{
 				outParsedFileContents[i].m_lines.push_back(lineText);
 			}

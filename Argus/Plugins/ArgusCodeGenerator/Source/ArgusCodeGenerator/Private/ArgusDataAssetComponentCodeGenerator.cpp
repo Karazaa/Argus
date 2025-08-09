@@ -58,7 +58,7 @@ void ArgusDataAssetComponentCodeGenerator::GenerateDataAssetComponentsCode(const
 
 	if (didSucceed)
 	{
-		ArgusCodeGeneratorUtil::DeleteObsoleteComponentDependentFiles(combinedComponentData, cStrComponentDataDirectory, "/ComponentData.h");
+		ArgusCodeGeneratorUtil::DeleteObsoleteComponentDependentFiles(combinedComponentData.m_componentNames, cStrComponentDataDirectory, "/ComponentData.h");
 		UE_LOG(ArgusCodeGeneratorLog, Display, TEXT("[%s] Successfully wrote out Argus ECS static data asset code."), ARGUS_FUNCNAME)
 	}
 }

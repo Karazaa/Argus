@@ -113,46 +113,7 @@ public:
 	static void CombineStaticAndDynamicComponentData(const ParseComponentDataOutput& input, CombinedComponentDataOutput& output);
 	static void DoPerObservableReplacements(const ParseComponentDataOutput& input, const std::vector<std::string>& rawFileContents, std::vector<FileWriteData>& outParsedFileContents);
 	
-	template<typename TOutput>
-	static void DeleteObsoleteComponentDependentFiles(const TOutput& parsedComponentData, const char* componentDependentFilesDirectory, const char* excludedFile = nullptr)
-	{
-		const std::string finalizedComponentDataDefinitionsDirectory = std::string(componentDependentFilesDirectory);
-		std::vector<std::string> filesToDelete = std::vector<std::string>();
-
-		for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(finalizedComponentDataDefinitionsDirectory))
-		{
-			const std::string filePath = entry.path().string();
-			bool foundValidComponentName = false;
-			for (int i = 0; i < parsedComponentData.m_componentNames.size(); ++i)
-			{
-				const size_t componentNameIndex = filePath.find(parsedComponentData.m_componentNames[i]);
-				size_t componentDataIndex = std::string::npos;
-				if (excludedFile)
-				{
-					componentDataIndex = filePath.find(excludedFile);
-				}
-
-				if (componentNameIndex != std::string::npos || componentDataIndex != std::string::npos)
-				{
-					foundValidComponentName = true;
-					break;
-				}
-			}
-
-			if (foundValidComponentName)
-			{
-				continue;
-			}
-
-			filesToDelete.push_back(filePath);
-		}
-
-		for (int i = 0; i < filesToDelete.size(); ++i)
-		{
-			std::remove(filesToDelete[i].c_str());
-		}
-	}
-
+	static void DeleteObsoleteComponentDependentFiles(const std::vector<std::string>& componentNames, const char* componentDependentFilesDirectory, const char* excludedFile = nullptr);
 
 private:
 	static const char* s_componentDefinitionDirectoryName;

@@ -501,6 +501,45 @@ void ArgusCodeGeneratorUtil::DoPerObservableReplacements(const ParseComponentDat
 	}
 }
 
+void ArgusCodeGeneratorUtil::DeleteObsoleteComponentDependentFiles(const std::vector<std::string>& componentNames, const char* componentDependentFilesDirectory, const char* excludedFile)
+{
+	const std::string finalizedComponentDataDefinitionsDirectory = std::string(componentDependentFilesDirectory);
+	std::vector<std::string> filesToDelete = std::vector<std::string>();
+
+	for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(finalizedComponentDataDefinitionsDirectory))
+	{
+		const std::string filePath = entry.path().string();
+		bool foundValidComponentName = false;
+		for (int i = 0; i < componentNames.size(); ++i)
+		{
+			const size_t componentNameIndex = filePath.find(componentNames[i]);
+			size_t componentDataIndex = std::string::npos;
+			if (excludedFile)
+			{
+				componentDataIndex = filePath.find(excludedFile);
+			}
+
+			if (componentNameIndex != std::string::npos || componentDataIndex != std::string::npos)
+			{
+				foundValidComponentName = true;
+				break;
+			}
+		}
+
+		if (foundValidComponentName)
+		{
+			continue;
+		}
+
+		filesToDelete.push_back(filePath);
+	}
+
+	for (int i = 0; i < filesToDelete.size(); ++i)
+	{
+		std::remove(filesToDelete[i].c_str());
+	}
+}
+
 bool ArgusCodeGeneratorUtil::ParseStructDeclarations(std::string& lineText)
 {
 	const size_t structDelimiterLength = std::strlen(s_structDelimiter);

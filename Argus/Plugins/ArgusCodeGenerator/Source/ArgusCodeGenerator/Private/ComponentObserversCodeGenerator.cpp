@@ -38,7 +38,7 @@ void ComponentObserversGenerator::GenerateComponentObserversCode(const ArgusCode
 
 	if (didSucceed)
 	{
-		ArgusCodeGeneratorUtil::DeleteObsoleteComponentDependentFiles(parsedComponentData, cStrComponentObserversDirectory);
+		ArgusCodeGeneratorUtil::DeleteObsoleteComponentDependentFiles(parsedComponentData.m_componentNames, cStrComponentObserversDirectory);
 		UE_LOG(ArgusCodeGeneratorLog, Display, TEXT("[%s] Successfully wrote out Argus ECS component observers code."), ARGUS_FUNCNAME)
 	}
 }
