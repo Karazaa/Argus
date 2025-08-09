@@ -275,7 +275,8 @@ void ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 		const bool isStaticData = parsedVariableData[i].m_propertyMacro.find(ArgusCodeGeneratorUtil::s_propertyStaticDataDelimiter) != std::string::npos;
 		const bool isKDTreeOutput = parsedVariableData[i].m_typeName.find("ArgusEntityKDTreeRangeOutput") != std::string::npos;
 		const bool isSpawnEntityInfo = parsedVariableData[i].m_typeName.find("SpawnEntityInfo") != std::string::npos; 
-		
+		const bool isBool = parsedVariableData[i].m_typeName.find("bool") != std::string::npos;
+
 		std::string cleanTypeName = parsedVariableData[i].m_typeName.substr(1, parsedVariableData[i].m_typeName.length() - 1);
 
 		// BRUH REALLY? Yes. Until I find a better way to differentiate enum types... here we are.
@@ -351,6 +352,10 @@ void ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 			{
 				atomicFieldFormattingFunction = FormatImGuiIntField;
 			}
+		}
+		else if (isBool)
+		{
+			atomicFieldFormattingFunction = FormatImGuiBoolField;
 		}
 		else if (isFloat)
 		{
@@ -469,6 +474,11 @@ void ComponentImplementationGenerator::FormatImGuiFloatField(const std::string& 
 void ComponentImplementationGenerator::FormatImGuiIntField(const std::string& variableName, const std::string& extraData, const std::string& prefix, std::vector<std::string>& outParsedVariableContents)
 {
 	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::Text(\"%d\", {});", std::make_format_args(prefix, variableName)));
+}
+
+void ComponentImplementationGenerator::FormatImGuiBoolField(const std::string& variableName, const std::string& extraData, const std::string& prefix, std::vector<std::string>& outParsedVariableContents)
+{
+	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::Text({} ? \"true\" : \"false\");", std::make_format_args(prefix, variableName)));
 }
 
 void ComponentImplementationGenerator::FormatImGuiRecordField(const std::string& variableName, const std::string& extraData, const std::string& prefix, std::vector<std::string>& outParsedVariableContents)

@@ -37,9 +37,11 @@ void ReticleComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_isBlocked");
 		ImGui::TableNextColumn();
+		ImGui::Text(m_isBlocked ? "true" : "false");
 		ImGui::TableNextColumn();
 		ImGui::Text("m_wasAbilityCast");
 		ImGui::TableNextColumn();
+		ImGui::Text(m_wasAbilityCast ? "true" : "false");
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

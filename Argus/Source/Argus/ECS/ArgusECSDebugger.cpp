@@ -86,7 +86,7 @@ void ArgusECSDebugger::DrawEntityScrollRegion()
 		for (uint16 i = 0u; i < ArgusECSConstants::k_maxEntities; ++i)
 		{
 			ArgusEntity entity = ArgusEntity::RetrieveEntity(i);
-			if (!entity || ArgusEntity::IsReservedEntityId(i))
+			if (!entity)
 			{
 				s_entityDebugToggles[i] = false;
 				continue;
