@@ -12,6 +12,15 @@
 #endif //!UE_BUILD_SHIPPING
 
 // Component shared functionality
+void ReticleComponent::Reset()
+{
+	m_reticleLocation = FVector::ZeroVector;
+	m_abilityRecordId = 0u;
+	m_radius = 100.0f;
+	m_isBlocked = false;
+	m_wasAbilityCast = false;
+}
+
 void ReticleComponent::DrawComponentDebug() const
 {
 #if !UE_BUILD_SHIPPING

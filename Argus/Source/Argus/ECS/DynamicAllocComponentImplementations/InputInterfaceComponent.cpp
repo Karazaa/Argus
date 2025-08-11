@@ -12,6 +12,14 @@
 #endif //!UE_BUILD_SHIPPING
 
 // Component shared functionality
+void InputInterfaceComponent::Reset()
+{
+	m_selectedArgusEntityIds.Reset();
+	m_activeAbilityGroupArgusEntityIds.Reset();
+	m_selectedActorsDisplayState = ESelectedActorsDisplayState::NotChanged;
+	m_indexOfActiveAbilityGroup = 0;
+}
+
 void InputInterfaceComponent::DrawComponentDebug() const
 {
 #if !UE_BUILD_SHIPPING

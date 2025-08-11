@@ -10,7 +10,8 @@
 #define ARGUS_COMPONENT_SHARED	uint16 GetOwningEntityId() const; \
 								void Reset(); \
 								void DrawComponentDebug() const;
-#define ARGUS_DYNAMIC_COMPONENT_SHARED void DrawComponentDebug() const;
+#define ARGUS_DYNAMIC_COMPONENT_SHARED	void Reset(); \
+										void DrawComponentDebug() const;
 
 #define ARGUS_SYSTEM_ARGS_SHARED bool PopulateArguments(const ArgusEntity& entity); \
 								 bool AreComponentsValidCheck(const WIDECHAR* functionName) const; \

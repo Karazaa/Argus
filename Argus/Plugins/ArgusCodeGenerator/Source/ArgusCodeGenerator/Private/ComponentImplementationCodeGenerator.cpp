@@ -185,6 +185,13 @@ bool ComponentImplementationGenerator::ParseDynamicAllocComponentImplementationC
 				outParsedFileContents[i].m_lines.push_back(std::regex_replace(perComponentLineText, std::regex("#####"), parsedComponentData.m_dynamicAllocComponentNames[i]));
 			}
 		}
+		else if (lineText.find("%%%%%") != std::string::npos)
+		{
+			for (int i = 0; i < parsedComponentData.m_dynamicAllocComponentNames.size(); ++i)
+			{
+				GeneratePerVariableResetText(parsedComponentData.m_dynamicAllocComponentVariableData[i], outParsedFileContents[i].m_lines);
+			}
+		}
 		else if (lineText.find("$$$$$") != std::string::npos)
 		{
 			for (int i = 0; i < parsedComponentData.m_dynamicAllocComponentNames.size(); ++i)
@@ -233,6 +240,14 @@ void ComponentImplementationGenerator::GeneratePerVariableResetText(const std::v
 		if (isKDTreeOutput)
 		{
 			outParsedVariableContents.push_back(std::vformat("\t{}.ResetAll();", std::make_format_args(parsedVariableData[i].m_varName)));
+			continue;
+		}
+
+		const bool isEntityKDTree = parsedVariableData[i].m_typeName.find("ArgusEntityKDTree") != std::string::npos;
+		const bool isObstacleKDTree = parsedVariableData[i].m_typeName.find("ObstaclePointKDTree") != std::string::npos;
+		if (isEntityKDTree || isObstacleKDTree)
+		{
+			outParsedVariableContents.push_back(std::vformat("\t{}.FlushAllNodes();", std::make_format_args(parsedVariableData[i].m_varName)));
 			continue;
 		}
 

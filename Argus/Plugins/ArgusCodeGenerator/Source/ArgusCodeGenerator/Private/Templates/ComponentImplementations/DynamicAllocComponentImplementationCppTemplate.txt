@@ -12,6 +12,11 @@
 #endif //!UE_BUILD_SHIPPING
 
 // Component shared functionality
+void #####::Reset()
+{
+	%%%%%
+}
+
 void #####::DrawComponentDebug() const
 {
 #if !UE_BUILD_SHIPPING

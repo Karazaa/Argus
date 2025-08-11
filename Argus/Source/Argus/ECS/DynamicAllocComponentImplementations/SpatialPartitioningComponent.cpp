@@ -12,6 +12,13 @@
 #endif //!UE_BUILD_SHIPPING
 
 // Component shared functionality
+void SpatialPartitioningComponent::Reset()
+{
+	m_argusEntityKDTree.FlushAllNodes();
+	m_obstaclePointKDTree.FlushAllNodes();
+	m_obstacles.Reset();
+}
+
 void SpatialPartitioningComponent::DrawComponentDebug() const
 {
 #if !UE_BUILD_SHIPPING
