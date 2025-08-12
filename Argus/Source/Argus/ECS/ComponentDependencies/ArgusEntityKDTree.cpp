@@ -179,7 +179,7 @@ void ArgusEntityKDTree::SeedTreeWithAverageEntityLocation()
 		numIncludedEntities += 1.0f;
 	}
 
-	averageLocation /= numIncludedEntities;
+	averageLocation = ArgusMath::SafeDivide(averageLocation, numIncludedEntities);
 
 	if (m_rootNode)
 	{

@@ -72,10 +72,10 @@ void ArgusSystemsManager::PopulateSingletonComponents(UWorld* worldPointer)
 		return;
 	}
 
-	SpatialPartitioningComponent* spatialPartitioningComponent = singletonEntity.AddComponent<SpatialPartitioningComponent>();
-	ReticleComponent* reticleComponent = singletonEntity.AddComponent<ReticleComponent>();
-	InputInterfaceComponent* inputInterfaceComponent = singletonEntity.AddComponent<InputInterfaceComponent>();
-	AssetLoadingComponent* assetLoadingComponent = singletonEntity.AddComponent<AssetLoadingComponent>();
+	SpatialPartitioningComponent* spatialPartitioningComponent = singletonEntity.GetOrAddComponent<SpatialPartitioningComponent>();
+	ReticleComponent* reticleComponent = singletonEntity.GetOrAddComponent<ReticleComponent>();
+	InputInterfaceComponent* inputInterfaceComponent = singletonEntity.GetOrAddComponent<InputInterfaceComponent>();
+	AssetLoadingComponent* assetLoadingComponent = singletonEntity.GetOrAddComponent<AssetLoadingComponent>();
 
 	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
 	ARGUS_RETURN_ON_NULL(reticleComponent, ArgusECSLog);
@@ -110,7 +110,7 @@ void ArgusSystemsManager::PopulateTeamComponents(const FResourceSet& initialTeam
 			continue;
 		}
 
-		ResourceComponent* teamResourceComponent = ArgusEntity::CreateEntity(i).AddComponent<ResourceComponent>();
+		ResourceComponent* teamResourceComponent = ArgusEntity::CreateEntity(i).GetOrAddComponent<ResourceComponent>();
 		if (!teamResourceComponent)
 		{
 			continue;

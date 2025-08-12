@@ -1,1 +1,11 @@
-	s_#####s.Reset();
+	s_#####s.RemoveAll([](const uint16& entityId, #####& component)
+		{
+			if (ArgusEntity::IsReservedEntityId(entityId))
+			{
+				component.Reset();
+				return false;
+			}
+
+			return true;
+		}
+	);
