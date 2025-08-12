@@ -64,7 +64,8 @@ private:
 	TArray<uint16, ArgusContainerAllocator<10> > m_entityIdsWithinFlockingRange;
 };
 
-class ArgusEntityKDTree : public ArgusKDTree<ArgusEntityKDTreeNode, ArgusEntityKDTreeRangeOutput, ArgusEntityKDTreeQueryRangeThresholds>
+class ArgusEntityKDTree : public ArgusKDTree<	ArgusEntityKDTreeNode, ArgusEntityKDTreeRangeOutput, 
+												ArgusEntityKDTreeQueryRangeThresholds, ArgusECSConstants::k_maxEntities>
 {
 public:
 	static void ErrorOnInvalidArgusEntity(const WIDECHAR* functionName);

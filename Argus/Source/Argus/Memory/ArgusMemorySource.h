@@ -29,6 +29,8 @@ public:
 	static void* Allocate(SIZE_T allocationSize, uint32 alignment = DEFAULT_ALIGNMENT);
 	template<typename T>
 	static T* Allocate();
+	template<typename T>
+	static T* AllocateRange(SIZE_T numElements);
 
 	static void* Reallocate(void* oldData, SIZE_T bytesPerElement, SIZE_T oldNumElements, SIZE_T newNumElements, uint32 alignment = DEFAULT_ALIGNMENT);
 	template<typename T>
@@ -57,6 +59,12 @@ T* ArgusMemorySource::Allocate()
 	}
 
 	return new (allocatedMemory) T();
+}
+
+template <typename T>
+T* ArgusMemorySource::AllocateRange(SIZE_T numElements)
+{
+	return Reallocate<T>(nullptr, 0, numElements);
 }
 
 template <typename T>

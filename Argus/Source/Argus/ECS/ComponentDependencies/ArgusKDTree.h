@@ -21,7 +21,7 @@
 //};
 
 // Type IArgusKDTreeNode is an implicit constraint for using the ArgusKDTree. Types you want to pool should inherit from IArgusKDTreeNode 
-template <typename NodeType, typename OutputDataStructure, typename OutputQueryThresholds>
+template <typename NodeType, typename OutputDataStructure, typename OutputQueryThresholds, uint32 NumPreAllocatedNodes>
 class ArgusKDTree
 {
 public:
@@ -41,19 +41,19 @@ protected:
 	void FindNodesWithinConvexPolyRecursive(OutputDataStructure& outOverlappingNodes, const OutputQueryThresholds& thresholds, const NodeType* iterationNode, const TArray<FVector>& convexPolygonPoints, TFunction<bool(const NodeType*)> queryFilter, uint16 depth) const;
 
 	NodeType* m_rootNode = nullptr;
-	ArgusObjectPool<NodeType> m_nodePool;
+	ArgusObjectPool<NodeType, NumPreAllocatedNodes> m_nodePool;
 };
 
-template <typename NodeType, typename OutputDataStructure, typename OutputQueryThresholds>
-ArgusKDTree<NodeType, OutputDataStructure, OutputQueryThresholds>::~ArgusKDTree()
+template <typename NodeType, typename OutputDataStructure, typename OutputQueryThresholds, uint32 NumPreAllocatedNodes>
+ArgusKDTree<NodeType, OutputDataStructure, OutputQueryThresholds, NumPreAllocatedNodes>::~ArgusKDTree()
 {
 	ARGUS_MEMORY_TRACE(ArgusKDTree);
 	FlushAllNodes();
 	m_nodePool.ClearPool();
 }
 
-template <typename NodeType, typename OutputDataStructure, typename OutputQueryThresholds>
-FVector ArgusKDTree<NodeType, OutputDataStructure, OutputQueryThresholds>::FlushAllNodes()
+template <typename NodeType, typename OutputDataStructure, typename OutputQueryThresholds, uint32 NumPreAllocatedNodes>
+FVector ArgusKDTree<NodeType, OutputDataStructure, OutputQueryThresholds, NumPreAllocatedNodes>::FlushAllNodes()
 {
 	ARGUS_MEMORY_TRACE(ArgusKDTree);
 	ARGUS_TRACE(ArgusKDTree::FlushAllNodes);
@@ -75,8 +75,8 @@ FVector ArgusKDTree<NodeType, OutputDataStructure, OutputQueryThresholds>::Flush
 	return sumLocation;
 }
 
-template <typename NodeType, typename OutputDataStructure, typename OutputQueryThresholds>
-void ArgusKDTree<NodeType, OutputDataStructure, OutputQueryThresholds>::ResetKDTreeWithAverageLocation()
+template <typename NodeType, typename OutputDataStructure, typename OutputQueryThresholds, uint32 NumPreAllocatedNodes>
+void ArgusKDTree<NodeType, OutputDataStructure, OutputQueryThresholds, NumPreAllocatedNodes>::ResetKDTreeWithAverageLocation()
 {
 	ARGUS_MEMORY_TRACE(ArgusKDTree);
 	ARGUS_TRACE(ArgusKDTree::ResetKDTreeWithAverageLocation);
@@ -91,8 +91,8 @@ void ArgusKDTree<NodeType, OutputDataStructure, OutputQueryThresholds>::ResetKDT
 	m_rootNode->Populate(averageLocation);
 }
 
-template <typename NodeType, typename OutputDataStructure, typename OutputQueryThresholds>
-void ArgusKDTree<NodeType, OutputDataStructure, OutputQueryThresholds>::ClearNodeRecursive(NodeType* node, FVector& currentAverageLocation, uint16& priorNodeCount)
+template <typename NodeType, typename OutputDataStructure, typename OutputQueryThresholds, uint32 NumPreAllocatedNodes>
+void ArgusKDTree<NodeType, OutputDataStructure, OutputQueryThresholds, NumPreAllocatedNodes>::ClearNodeRecursive(NodeType* node, FVector& currentAverageLocation, uint16& priorNodeCount)
 {
 	if (!node)
 	{
@@ -118,8 +118,8 @@ void ArgusKDTree<NodeType, OutputDataStructure, OutputQueryThresholds>::ClearNod
 	}
 }
 
-template <typename NodeType, typename OutputDataStructure, typename OutputQueryThresholds>
-void ArgusKDTree<NodeType, OutputDataStructure, OutputQueryThresholds>::InsertNodeIntoKDTreeRecursive(NodeType* iterationNode, NodeType* nodeToInsert, uint16 depth)
+template <typename NodeType, typename OutputDataStructure, typename OutputQueryThresholds, uint32 NumPreAllocatedNodes>
+void ArgusKDTree<NodeType, OutputDataStructure, OutputQueryThresholds, NumPreAllocatedNodes>::InsertNodeIntoKDTreeRecursive(NodeType* iterationNode, NodeType* nodeToInsert, uint16 depth)
 {
 	if (!iterationNode || !nodeToInsert)
 	{
@@ -168,8 +168,8 @@ void ArgusKDTree<NodeType, OutputDataStructure, OutputQueryThresholds>::InsertNo
 	}
 }
 
-template <typename NodeType, typename OutputDataStructure, typename OutputQueryThresholds>
-const NodeType* ArgusKDTree<NodeType, OutputDataStructure, OutputQueryThresholds>::FindNodeClosestToLocationRecursive(const NodeType* iterationNode, const FVector& targetLocation, TFunction<bool(const NodeType*)> queryFilter, uint16 depth) const
+template <typename NodeType, typename OutputDataStructure, typename OutputQueryThresholds, uint32 NumPreAllocatedNodes>
+const NodeType* ArgusKDTree<NodeType, OutputDataStructure, OutputQueryThresholds, NumPreAllocatedNodes>::FindNodeClosestToLocationRecursive(const NodeType* iterationNode, const FVector& targetLocation, TFunction<bool(const NodeType*)> queryFilter, uint16 depth) const
 {
 	if (!iterationNode)
 	{
@@ -232,8 +232,8 @@ const NodeType* ArgusKDTree<NodeType, OutputDataStructure, OutputQueryThresholds
 	return potentialNearestNeighbor;
 }
 
-template <typename NodeType, typename OutputDataStructure, typename OutputQueryThresholds>
-const NodeType* ArgusKDTree<NodeType, OutputDataStructure, OutputQueryThresholds>::ChooseNodeCloserToTarget(const NodeType* node0, const NodeType* node1, const FVector& targetLocation, TFunction<bool(const NodeType*)> queryFilter) const
+template <typename NodeType, typename OutputDataStructure, typename OutputQueryThresholds, uint32 NumPreAllocatedNodes>
+const NodeType* ArgusKDTree<NodeType, OutputDataStructure, OutputQueryThresholds, NumPreAllocatedNodes>::ChooseNodeCloserToTarget(const NodeType* node0, const NodeType* node1, const FVector& targetLocation, TFunction<bool(const NodeType*)> queryFilter) const
 {
 	if (!node0 || node0->ShouldSkipNode(queryFilter))
 	{
@@ -254,8 +254,8 @@ const NodeType* ArgusKDTree<NodeType, OutputDataStructure, OutputQueryThresholds
 	}
 }
 
-template <typename NodeType, typename OutputDataStructure, typename OutputQueryThresholds>
-void ArgusKDTree<NodeType, OutputDataStructure, OutputQueryThresholds>::FindNodesWithinRangeOfLocationRecursive(OutputDataStructure& outNearbyNodes, const OutputQueryThresholds& thresholds, const NodeType* iterationNode, const FVector& targetLocation, const float rangeSquared, TFunction<bool(const NodeType*)> queryFilter, uint16 depth) const
+template <typename NodeType, typename OutputDataStructure, typename OutputQueryThresholds, uint32 NumPreAllocatedNodes>
+void ArgusKDTree<NodeType, OutputDataStructure, OutputQueryThresholds, NumPreAllocatedNodes>::FindNodesWithinRangeOfLocationRecursive(OutputDataStructure& outNearbyNodes, const OutputQueryThresholds& thresholds, const NodeType* iterationNode, const FVector& targetLocation, const float rangeSquared, TFunction<bool(const NodeType*)> queryFilter, uint16 depth) const
 {
 	if (!iterationNode)
 	{
@@ -302,8 +302,8 @@ void ArgusKDTree<NodeType, OutputDataStructure, OutputQueryThresholds>::FindNode
 	}
 }
 
-template <typename NodeType, typename OutputDataStructure, typename OutputQueryThresholds>
-void ArgusKDTree<NodeType, OutputDataStructure, OutputQueryThresholds>::FindNodesWithinConvexPolyRecursive(OutputDataStructure& outNearbyNodes, const OutputQueryThresholds& thresholds, const NodeType* iterationNode, const TArray<FVector>& convexPolygonPoints, TFunction<bool(const NodeType*)> queryFilter, uint16 depth) const
+template <typename NodeType, typename OutputDataStructure, typename OutputQueryThresholds, uint32 NumPreAllocatedNodes>
+void ArgusKDTree<NodeType, OutputDataStructure, OutputQueryThresholds, NumPreAllocatedNodes>::FindNodesWithinConvexPolyRecursive(OutputDataStructure& outNearbyNodes, const OutputQueryThresholds& thresholds, const NodeType* iterationNode, const TArray<FVector>& convexPolygonPoints, TFunction<bool(const NodeType*)> queryFilter, uint16 depth) const
 {
 	if (!iterationNode)
 	{

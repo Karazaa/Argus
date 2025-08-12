@@ -43,7 +43,8 @@ public:
 	TArray<ObstacleIndicies> m_inRangeObstacleIndicies;
 };
 
-class ObstaclePointKDTree : public ArgusKDTree<ObstaclePointKDTreeNode, ObstaclePointKDTreeRangeOutput, ObstaclePointKDTreeQueryRangeThresholds>
+class ObstaclePointKDTree : public ArgusKDTree<	ObstaclePointKDTreeNode, ObstaclePointKDTreeRangeOutput, 
+												ObstaclePointKDTreeQueryRangeThresholds, ArgusECSConstants::k_avoidanceObstaclePreAllocatedAmount>
 {
 public:
 	void InsertObstaclesIntoKDTree(const TArray<ObstaclePointArray>& obstacles);

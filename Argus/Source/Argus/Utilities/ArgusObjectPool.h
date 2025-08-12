@@ -2,8 +2,9 @@
 
 #pragma once
 
+#include "ArgusContainerAllocator.h"
 #include "ArgusLogging.h"
-#include <queue>
+#include "ComponentDependencies/ArgusDeque.h"
 
 // Example interface! We don't actually need an interface or virtual table overhead since it is used in templates, but writing it out here for convenient template API definition.
 //class IObjectPoolable
@@ -12,7 +13,7 @@
 //};
 
 // Type IObjectPoolable is an implicit constraint for using the ArgusObjectPool. Types you want to pool should inherit from IObjectPoolable 
-template <class PoolableType>
+template <class PoolableType, uint32 NumPreAllocatedElements>
 class ArgusObjectPool
 {
 public:
@@ -21,34 +22,48 @@ public:
 	PoolableType* Take();
 	void Release(PoolableType*& objectPointer);
 	void ClearPool();
-	std::size_t GetNumAvailableObjects();
+	int32 GetNumAvailableObjects();
 
 private:
-	std::queue<PoolableType*> m_availableObjects;
-
+	PoolableType* m_allocatedObjects = nullptr;
+	ArgusDeque<PoolableType*, NumPreAllocatedElements> m_availableObjectsPointers;
+	int32 m_allocatedIndex = 0;
 };
 
-template <class PoolableType>
-ArgusObjectPool<PoolableType>::~ArgusObjectPool()
+template <class PoolableType, uint32 NumPreAllocatedElements>
+ArgusObjectPool<PoolableType, NumPreAllocatedElements>::~ArgusObjectPool()
 {
 	ClearPool();
 }
 
-template <class PoolableType>
-PoolableType* ArgusObjectPool<PoolableType>::Take()
+template <class PoolableType, uint32 NumPreAllocatedElements>
+PoolableType* ArgusObjectPool<PoolableType, NumPreAllocatedElements>::Take()
 {
-	if (m_availableObjects.size() > 0)
+	if (m_availableObjectsPointers.Num() > 0)
 	{
-		PoolableType* objectPointer = m_availableObjects.front();
-		m_availableObjects.pop();
+		PoolableType* objectPointer = m_availableObjectsPointers.First();
+		m_availableObjectsPointers.PopFirst();
 		return objectPointer;
 	}
 
-	return new PoolableType();
+	if (UNLIKELY(!m_allocatedObjects))
+	{
+		m_allocatedObjects = ArgusMemorySource::AllocateRange<PoolableType>(NumPreAllocatedElements);
+	}
+
+	if (UNLIKELY(m_allocatedIndex >= NumPreAllocatedElements))
+	{
+		// TODO JAMES: Logwarn?
+		return new (ArgusMemorySource::Allocate<PoolableType>()) PoolableType();
+	}
+
+	PoolableType* output = new (&m_allocatedObjects[m_allocatedIndex]) PoolableType();
+	m_allocatedIndex++;
+	return output;
 }
 
-template <class PoolableType>
-void ArgusObjectPool<PoolableType>::Release(PoolableType*& objectPointer)
+template <class PoolableType, uint32 NumPreAllocatedElements>
+void ArgusObjectPool<PoolableType, NumPreAllocatedElements>::Release(PoolableType*& objectPointer)
 {
 	if (!objectPointer)
 	{
@@ -57,23 +72,19 @@ void ArgusObjectPool<PoolableType>::Release(PoolableType*& objectPointer)
 	}
 
 	objectPointer->Reset();
-	m_availableObjects.push(objectPointer);
+	m_availableObjectsPointers.PushFirst(objectPointer);
 	objectPointer = nullptr;
 }
 
-template <class PoolableType>
-void ArgusObjectPool<PoolableType>::ClearPool()
+template <class PoolableType, uint32 NumPreAllocatedElements>
+void ArgusObjectPool<PoolableType, NumPreAllocatedElements>::ClearPool()
 {
-	while (m_availableObjects.size() > 0)
-	{
-		PoolableType* objectPointer = m_availableObjects.front();
-		m_availableObjects.pop();
-		delete objectPointer;
-	}
+	m_availableObjectsPointers.Reset();
+	m_allocatedIndex = 0;
 }
 
-template <class PoolableType>
-std::size_t ArgusObjectPool<PoolableType>::GetNumAvailableObjects()
+template <class PoolableType, uint32 NumPreAllocatedElements>
+int32 ArgusObjectPool<PoolableType, NumPreAllocatedElements>::GetNumAvailableObjects()
 {
-	return m_availableObjects.size();
+	return m_availableObjectsPointers.Num();
 }
