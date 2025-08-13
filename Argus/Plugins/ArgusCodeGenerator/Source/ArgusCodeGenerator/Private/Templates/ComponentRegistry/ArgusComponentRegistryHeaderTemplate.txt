@@ -5,7 +5,7 @@
 
 #include "ArgusECSConstants.h"
 #include "ArgusLogging.h"
-#include "ArgusMemorySource.h"
+#include "ArgusSetAllocator.h"
 #include "Containers/BitArray.h"
 #include "Containers/Map.h"
 
