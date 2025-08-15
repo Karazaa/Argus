@@ -34,7 +34,7 @@ public:
 			return &s_#####s[entityId];
 		}
 
-		return &(s_#####s.Emplace(entityId, #####()));
+		return &(s_#####s.Add(entityId));
 	}
 
 	template<>
@@ -48,7 +48,7 @@ public:
 
 		if (!s_#####s.Contains(entityId))
 		{
-			return &(s_#####s.Emplace(entityId, #####()));
+			return &(s_#####s.Add(entityId));
 		}
 
 		return &s_#####s[entityId];

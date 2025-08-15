@@ -41,7 +41,7 @@ protected:
 	void FindNodesWithinConvexPolyRecursive(OutputDataStructure& outOverlappingNodes, const OutputQueryThresholds& thresholds, const NodeType* iterationNode, const TArray<FVector>& convexPolygonPoints, TFunction<bool(const NodeType*)> queryFilter, uint16 depth) const;
 
 	NodeType* m_rootNode = nullptr;
-	ArgusObjectPool<NodeType, NumPreAllocatedNodes> m_nodePool;
+	ArgusObjectPool<NodeType, ArgusContainerAllocator<NumPreAllocatedNodes> > m_nodePool;
 };
 
 template <typename NodeType, typename OutputDataStructure, typename OutputQueryThresholds, uint32 NumPreAllocatedNodes>

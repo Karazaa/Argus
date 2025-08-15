@@ -1915,7 +1915,7 @@ public:
 			return &s_AssetLoadingComponents[entityId];
 		}
 
-		return &(s_AssetLoadingComponents.Emplace(entityId, AssetLoadingComponent()));
+		return &(s_AssetLoadingComponents.Add(entityId));
 	}
 
 	template<>
@@ -1929,7 +1929,7 @@ public:
 
 		if (!s_AssetLoadingComponents.Contains(entityId))
 		{
-			return &(s_AssetLoadingComponents.Emplace(entityId, AssetLoadingComponent()));
+			return &(s_AssetLoadingComponents.Add(entityId));
 		}
 
 		return &s_AssetLoadingComponents[entityId];
@@ -1971,7 +1971,7 @@ public:
 			return &s_InputInterfaceComponents[entityId];
 		}
 
-		return &(s_InputInterfaceComponents.Emplace(entityId, InputInterfaceComponent()));
+		return &(s_InputInterfaceComponents.Add(entityId));
 	}
 
 	template<>
@@ -1985,7 +1985,7 @@ public:
 
 		if (!s_InputInterfaceComponents.Contains(entityId))
 		{
-			return &(s_InputInterfaceComponents.Emplace(entityId, InputInterfaceComponent()));
+			return &(s_InputInterfaceComponents.Add(entityId));
 		}
 
 		return &s_InputInterfaceComponents[entityId];
@@ -2027,7 +2027,7 @@ public:
 			return &s_ReticleComponents[entityId];
 		}
 
-		return &(s_ReticleComponents.Emplace(entityId, ReticleComponent()));
+		return &(s_ReticleComponents.Add(entityId));
 	}
 
 	template<>
@@ -2041,7 +2041,7 @@ public:
 
 		if (!s_ReticleComponents.Contains(entityId))
 		{
-			return &(s_ReticleComponents.Emplace(entityId, ReticleComponent()));
+			return &(s_ReticleComponents.Add(entityId));
 		}
 
 		return &s_ReticleComponents[entityId];
@@ -2083,7 +2083,7 @@ public:
 			return &s_SpatialPartitioningComponents[entityId];
 		}
 
-		return &(s_SpatialPartitioningComponents.Emplace(entityId, SpatialPartitioningComponent()));
+		return &(s_SpatialPartitioningComponents.Add(entityId));
 	}
 
 	template<>
@@ -2097,7 +2097,7 @@ public:
 
 		if (!s_SpatialPartitioningComponents.Contains(entityId))
 		{
-			return &(s_SpatialPartitioningComponents.Emplace(entityId, SpatialPartitioningComponent()));
+			return &(s_SpatialPartitioningComponents.Add(entityId));
 		}
 
 		return &s_SpatialPartitioningComponents[entityId];

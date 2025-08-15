@@ -21,7 +21,7 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusObjectPoolTakeTest, "Argus.U
 bool ArgusUtilitiesArgusObjectPoolTakeTest::RunTest(const FString& Parameters)
 {
 	ArgusTesting::StartArgusTest();
-	ArgusObjectPool<TestPoolable, 3u> objectPool;
+	ArgusObjectPool<TestPoolable, FDefaultAllocator> objectPool;
 	int numAvailableObjects = objectPool.GetNumAvailableObjects();
 
 #pragma region Test that there are no available objects in the object pool initially.
@@ -80,7 +80,7 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusObjectPoolReleaseTest, "Argu
 bool ArgusUtilitiesArgusObjectPoolReleaseTest::RunTest(const FString& Parameters)
 {
 	ArgusTesting::StartArgusTest();
-	ArgusObjectPool<TestPoolable, 3u> objectPool;
+	ArgusObjectPool<TestPoolable, FDefaultAllocator> objectPool;
 
 #pragma region Test that releasing a nullpointer reports the proper error.
 	AddExpectedErrorPlain
@@ -213,7 +213,7 @@ bool ArgusUtilitiesArgusObjectPoolClearPoolTest::RunTest(const FString& Paramete
 	ArgusTesting::StartArgusTest();
 
 	constexpr int numObjectToTest = 100;
-	ArgusObjectPool<TestPoolable, numObjectToTest> objectPool;
+	ArgusObjectPool<TestPoolable, FDefaultAllocator> objectPool;
 	
 
 	TestPoolable* testPoolables[numObjectToTest];

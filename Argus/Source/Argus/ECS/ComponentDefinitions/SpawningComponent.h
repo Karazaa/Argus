@@ -15,7 +15,7 @@ struct SpawningComponent
 	ARGUS_COMPONENT_SHARED
 
 	ARGUS_IGNORE()
-	ArgusDeque<SpawnEntityInfo, 10> m_spawnQueue;
+	ArgusDeque<SpawnEntityInfo, ArgusContainerAllocator<10> > m_spawnQueue;
 
 	float m_spawningRadius = 100.0f;
 

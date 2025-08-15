@@ -7,7 +7,7 @@
 
 void USpatialPartitioningComponentData::InstantiateComponentForEntity(const ArgusEntity& entity) const
 {
-	SpatialPartitioningComponent* SpatialPartitioningComponentRef = entity.GetOrAddComponent<SpatialPartitioningComponent>();
+	SpatialPartitioningComponent* SpatialPartitioningComponentRef = entity.AddComponent<SpatialPartitioningComponent>();
 	ARGUS_RETURN_ON_NULL(SpatialPartitioningComponentRef, ArgusECSLog);
 
 }

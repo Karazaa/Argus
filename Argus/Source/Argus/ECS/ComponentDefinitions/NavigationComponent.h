@@ -13,7 +13,7 @@ struct NavigationComponent
 	TArray<FVector, ArgusContainerAllocator<15> > m_navigationPoints;
 
 	ARGUS_IGNORE()
-	ArgusDeque<FVector, 5> m_queuedWaypoints;
+	ArgusDeque<FVector, ArgusContainerAllocator<5> > m_queuedWaypoints;
 
 	ARGUS_IGNORE()
 	int32 m_lastPointIndex = 0;

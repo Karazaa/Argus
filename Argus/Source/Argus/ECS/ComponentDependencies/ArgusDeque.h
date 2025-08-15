@@ -5,15 +5,15 @@
 #include "ArgusContainerAllocator.h"
 #include "Containers/Deque.h"
 
-template<typename DataType, uint32 NumPreAllocatedElements>
-class ArgusDeque : public TDeque<DataType, ArgusContainerAllocator<NumPreAllocatedElements> >
+template<typename DataType, typename Allocator>
+class ArgusDeque : public TDeque<DataType, Allocator >
 {
 public:
 	ArgusDeque& operator=(const ArgusDeque& other);
 };
 
-template<typename DataType, uint32 NumPreAllocatedElements>
-ArgusDeque<DataType, NumPreAllocatedElements>& ArgusDeque<DataType, NumPreAllocatedElements>::operator=(const ArgusDeque& other)
+template<typename DataType, typename Allocator>
+ArgusDeque<DataType, Allocator>& ArgusDeque<DataType, Allocator>::operator=(const ArgusDeque& other)
 {
 	this->Reset();
 	return *this;
