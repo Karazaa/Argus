@@ -53,8 +53,8 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentSpatialPartitioningComponentPersi
 bool ArgusComponentSpatialPartitioningComponentPersistenceTest::RunTest(const FString& Parameters)
 {
 	ArgusTesting::StartArgusTest();
-	ArgusEntity entity = ArgusEntity::CreateEntity();
-	SpatialPartitioningComponent* spatialPartitioningComponent = entity.AddComponent<SpatialPartitioningComponent>();
+	ArgusEntity entity = ArgusEntity::CreateEntity(ArgusECSConstants::k_singletonEntityId);
+	SpatialPartitioningComponent* spatialPartitioningComponent = entity.GetOrAddComponent<SpatialPartitioningComponent>();
 	entity.AddComponent<TransformComponent>();
 
 	if (!spatialPartitioningComponent)

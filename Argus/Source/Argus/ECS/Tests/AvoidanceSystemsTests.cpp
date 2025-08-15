@@ -75,7 +75,7 @@ bool AvoidanceSystemsProcessORCAvoidanceTest::RunTest(const FString& Parameters)
 
 	AvoidanceSystems::ProcessORCAvoidance(dummyPointer, deltaTime, components, nearbyEntitiesComponent);
 
-	SpatialPartitioningComponent* spatialPartitioningComponent = singletonEntity.AddComponent<SpatialPartitioningComponent>();
+	SpatialPartitioningComponent* spatialPartitioningComponent = singletonEntity.GetOrAddComponent<SpatialPartitioningComponent>();
 
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME) || !spatialPartitioningComponent || !identityComponent)
 	{

@@ -25,7 +25,7 @@
 //
 //	ArgusTesting::StartArgusTest();
 //	ArgusEntity singletonEntity = ArgusEntity::CreateEntity(ArgusECSConstants::k_singletonEntityId);
-//	singletonEntity.AddComponent<SpatialPartitioningComponent>();
+//	singletonEntity.GetOrAddComponent<SpatialPartitioningComponent>();
 //
 //	ArgusEntity entity = ArgusEntity::CreateEntity();
 //	UWorld* dummyWorldPointer = nullptr;

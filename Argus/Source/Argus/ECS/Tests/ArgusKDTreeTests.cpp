@@ -74,9 +74,14 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusKDTreeInsertEntitiesTest, "A
 bool ArgusUtilitiesArgusKDTreeInsertEntitiesTest::RunTest(const FString& Parameters)
 {
 	ArgusTesting::StartArgusTest();
-	ArgusEntityKDTree tree;
+	SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::CreateEntity(ArgusECSConstants::k_singletonEntityId).GetOrAddComponent<SpatialPartitioningComponent>();
+	if (!spatialPartitioningComponent)
+	{
+		ArgusTesting::EndArgusTest();
+		return false;
+	}
 	CollectionOfArgusEntities entities;
-	PopulateKDTreeForTests(tree, entities, true);
+	PopulateKDTreeForTests(spatialPartitioningComponent->m_argusEntityKDTree, entities, true);
 
 #pragma region Test that inserted entities are present in the KD tree.
 	TestTrue
@@ -90,11 +95,11 @@ bool ArgusUtilitiesArgusKDTreeInsertEntitiesTest::RunTest(const FString& Paramet
 			ARGUS_NAMEOF(ArgusEntity), 
 			ARGUS_NAMEOF(ArgusEntityKDTree::DoesArgusEntityExistInKDTree)
 		),
-		tree.DoesArgusEntityExistInKDTree(entities.entity0) && 
-		tree.DoesArgusEntityExistInKDTree(entities.entity1) && 
-		tree.DoesArgusEntityExistInKDTree(entities.entity2) && 
-		tree.DoesArgusEntityExistInKDTree(entities.entity3) && 
-		tree.DoesArgusEntityExistInKDTree(entities.entity4)
+		spatialPartitioningComponent->m_argusEntityKDTree.DoesArgusEntityExistInKDTree(entities.entity0) &&
+		spatialPartitioningComponent->m_argusEntityKDTree.DoesArgusEntityExistInKDTree(entities.entity1) &&
+		spatialPartitioningComponent->m_argusEntityKDTree.DoesArgusEntityExistInKDTree(entities.entity2) &&
+		spatialPartitioningComponent->m_argusEntityKDTree.DoesArgusEntityExistInKDTree(entities.entity3) &&
+		spatialPartitioningComponent->m_argusEntityKDTree.DoesArgusEntityExistInKDTree(entities.entity4)
 	);
 #pragma endregion
 
@@ -114,8 +119,8 @@ bool ArgusUtilitiesArgusKDTreeInsertEntitiesTest::RunTest(const FString& Paramet
 	);
 #pragma endregion
 
-	tree.DoesArgusEntityExistInKDTree(entity5);
-	tree.InsertArgusEntityIntoKDTree(entity5);
+	spatialPartitioningComponent->m_argusEntityKDTree.DoesArgusEntityExistInKDTree(entity5);
+	spatialPartitioningComponent->m_argusEntityKDTree.InsertArgusEntityIntoKDTree(entity5);
 	entity5 = ArgusEntity::CreateEntity(105u);
 	TransformComponent* entity5TransformComponent = nullptr;
 
@@ -129,7 +134,7 @@ bool ArgusUtilitiesArgusKDTreeInsertEntitiesTest::RunTest(const FString& Paramet
 	);
 #pragma endregion
 
-	tree.InsertArgusEntityIntoKDTree(entity5);
+	spatialPartitioningComponent->m_argusEntityKDTree.InsertArgusEntityIntoKDTree(entity5);
 
 	ArgusTesting::EndArgusTest();
 	return true;
@@ -141,11 +146,16 @@ bool ArgusUtilitiesArgusKDTreeFlushAllNodesTest::RunTest(const FString& Paramete
 	const FVector expectedAverageLocation = FVector(54.0f, 54.0f, 2.0f);
 
 	ArgusTesting::StartArgusTest();
-	ArgusEntityKDTree tree;
+	SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::CreateEntity(ArgusECSConstants::k_singletonEntityId).GetOrAddComponent<SpatialPartitioningComponent>();
+	if (!spatialPartitioningComponent)
+	{
+		ArgusTesting::EndArgusTest();
+		return false;
+	}
 	CollectionOfArgusEntities entities;
-	PopulateKDTreeForTests(tree, entities, true);
+	PopulateKDTreeForTests(spatialPartitioningComponent->m_argusEntityKDTree, entities, true);
 
-	FVector averageLocation = tree.FlushAllNodes();
+	FVector averageLocation = spatialPartitioningComponent->m_argusEntityKDTree.FlushAllNodes();
 
 #pragma region Test that inserted entities are not present in the KD tree after being flushed.
 	TestFalse
@@ -159,11 +169,11 @@ bool ArgusUtilitiesArgusKDTreeFlushAllNodesTest::RunTest(const FString& Paramete
 			ARGUS_NAMEOF(ArgusEntity), 
 			ARGUS_NAMEOF(ArgusEntityKDTree::FlushAllNodes)
 		),
-		tree.DoesArgusEntityExistInKDTree(entities.entity0) || 
-		tree.DoesArgusEntityExistInKDTree(entities.entity1) || 
-		tree.DoesArgusEntityExistInKDTree(entities.entity2) || 
-		tree.DoesArgusEntityExistInKDTree(entities.entity3) || 
-		tree.DoesArgusEntityExistInKDTree(entities.entity4)
+		spatialPartitioningComponent->m_argusEntityKDTree.DoesArgusEntityExistInKDTree(entities.entity0) ||
+		spatialPartitioningComponent->m_argusEntityKDTree.DoesArgusEntityExistInKDTree(entities.entity1) ||
+		spatialPartitioningComponent->m_argusEntityKDTree.DoesArgusEntityExistInKDTree(entities.entity2) ||
+		spatialPartitioningComponent->m_argusEntityKDTree.DoesArgusEntityExistInKDTree(entities.entity3) ||
+		spatialPartitioningComponent->m_argusEntityKDTree.DoesArgusEntityExistInKDTree(entities.entity4)
 	);
 #pragma endregion
 
@@ -191,11 +201,16 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusKDTreeRebuildKDTreeForAllArg
 bool ArgusUtilitiesArgusKDTreeRebuildKDTreeForAllArgusEntitiesTest::RunTest(const FString& Parameters)
 {
 	ArgusTesting::StartArgusTest();
-	ArgusEntityKDTree tree;
+	SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::CreateEntity(ArgusECSConstants::k_singletonEntityId).GetOrAddComponent<SpatialPartitioningComponent>();
+	if (!spatialPartitioningComponent)
+	{
+		ArgusTesting::EndArgusTest();
+		return false;
+	}
 	CollectionOfArgusEntities entities;
-	PopulateKDTreeForTests(tree, entities, false);
+	PopulateKDTreeForTests(spatialPartitioningComponent->m_argusEntityKDTree, entities, false);
 
-	tree.InsertAllArgusEntitiesIntoKDTree();
+	spatialPartitioningComponent->m_argusEntityKDTree.InsertAllArgusEntitiesIntoKDTree();
 
 #pragma region Test that entities are present in the KD tree after full rebuild of tree.
 	TestTrue
@@ -210,11 +225,11 @@ bool ArgusUtilitiesArgusKDTreeRebuildKDTreeForAllArgusEntitiesTest::RunTest(cons
 			ARGUS_NAMEOF(ArgusEntity), 
 			ARGUS_NAMEOF(ArgusEntityKDTree)
 		),
-		tree.DoesArgusEntityExistInKDTree(entities.entity0) && 
-		tree.DoesArgusEntityExistInKDTree(entities.entity1) && 
-		tree.DoesArgusEntityExistInKDTree(entities.entity2) && 
-		tree.DoesArgusEntityExistInKDTree(entities.entity3) && 
-		tree.DoesArgusEntityExistInKDTree(entities.entity4)
+		spatialPartitioningComponent->m_argusEntityKDTree.DoesArgusEntityExistInKDTree(entities.entity0) &&
+		spatialPartitioningComponent->m_argusEntityKDTree.DoesArgusEntityExistInKDTree(entities.entity1) &&
+		spatialPartitioningComponent->m_argusEntityKDTree.DoesArgusEntityExistInKDTree(entities.entity2) &&
+		spatialPartitioningComponent->m_argusEntityKDTree.DoesArgusEntityExistInKDTree(entities.entity3) &&
+		spatialPartitioningComponent->m_argusEntityKDTree.DoesArgusEntityExistInKDTree(entities.entity4)
 	);
 #pragma endregion
 
@@ -226,11 +241,16 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusKDTreeFindOtherArgusEntityId
 bool ArgusUtilitiesArgusKDTreeFindOtherArgusEntityIdClosestArgusEntityTest::RunTest(const FString& Parameters)
 {
 	ArgusTesting::StartArgusTest();
-	ArgusEntityKDTree tree;
+	SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::CreateEntity(ArgusECSConstants::k_singletonEntityId).GetOrAddComponent<SpatialPartitioningComponent>();
+	if (!spatialPartitioningComponent)
+	{
+		ArgusTesting::EndArgusTest();
+		return false;
+	}
 	CollectionOfArgusEntities entities;
-	PopulateKDTreeForTests(tree, entities, true);
+	PopulateKDTreeForTests(spatialPartitioningComponent->m_argusEntityKDTree, entities, true);
 
-	uint16 nearestEntityIdToCenter = tree.FindOtherArgusEntityIdClosestToArgusEntity(entities.entity0);
+	uint16 nearestEntityIdToCenter = spatialPartitioningComponent->m_argusEntityKDTree.FindOtherArgusEntityIdClosestToArgusEntity(entities.entity0);
 
 #pragma region Test that we can find the nearest entity to the center entity
 	TestEqual
@@ -250,7 +270,7 @@ bool ArgusUtilitiesArgusKDTreeFindOtherArgusEntityIdClosestArgusEntityTest::RunT
 	);
 #pragma endregion
 
-	uint16 nearestEntityIdToLeftCenter = tree.FindOtherArgusEntityIdClosestToArgusEntity(entities.entity1);
+	uint16 nearestEntityIdToLeftCenter = spatialPartitioningComponent->m_argusEntityKDTree.FindOtherArgusEntityIdClosestToArgusEntity(entities.entity1);
 
 #pragma region Test that we can find the nearest entity to the center-left entity
 	TestEqual
@@ -270,7 +290,7 @@ bool ArgusUtilitiesArgusKDTreeFindOtherArgusEntityIdClosestArgusEntityTest::RunT
 	);
 #pragma endregion
 
-	uint16 nearestEntityIdToRightCenter = tree.FindOtherArgusEntityIdClosestToArgusEntity(entities.entity2);
+	uint16 nearestEntityIdToRightCenter = spatialPartitioningComponent->m_argusEntityKDTree.FindOtherArgusEntityIdClosestToArgusEntity(entities.entity2);
 
 #pragma region Test that we can find the nearest entity to the center-right entity
 	TestEqual
@@ -304,7 +324,7 @@ bool ArgusUtilitiesArgusKDTreeFindOtherArgusEntityIdClosestArgusEntityTest::RunT
 	);
 #pragma endregion
 
-	tree.FindOtherArgusEntityIdClosestToArgusEntity(errorEntity);
+	spatialPartitioningComponent->m_argusEntityKDTree.FindOtherArgusEntityIdClosestToArgusEntity(errorEntity);
 	errorEntity = ArgusEntity::CreateEntity(105u);
 	TransformComponent* errorEntityTransformComponent = nullptr;
 
@@ -318,7 +338,7 @@ bool ArgusUtilitiesArgusKDTreeFindOtherArgusEntityIdClosestArgusEntityTest::RunT
 	);
 #pragma endregion
 
-	tree.FindOtherArgusEntityIdClosestToArgusEntity(errorEntity);
+	spatialPartitioningComponent->m_argusEntityKDTree.FindOtherArgusEntityIdClosestToArgusEntity(errorEntity);
 
 	ArgusTesting::EndArgusTest();
 	return true;
@@ -328,11 +348,16 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusKDTreeFindArgusEntityIdClose
 bool ArgusUtilitiesArgusKDTreeFindArgusEntityIdClosestToLocationTest::RunTest(const FString& Parameters)
 {
 	ArgusTesting::StartArgusTest();
-	ArgusEntityKDTree tree;
+	SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::CreateEntity(ArgusECSConstants::k_singletonEntityId).GetOrAddComponent<SpatialPartitioningComponent>();
+	if (!spatialPartitioningComponent)
+	{
+		ArgusTesting::EndArgusTest();
+		return false;
+	}
 	CollectionOfArgusEntities entities;
-	PopulateKDTreeForTests(tree, entities, true);
+	PopulateKDTreeForTests(spatialPartitioningComponent->m_argusEntityKDTree, entities, true);
 
-	uint16 nearestEntityIdToCenter = tree.FindArgusEntityIdClosestToLocation(ArgusKDTreeTestConstants::location0);
+	uint16 nearestEntityIdToCenter = spatialPartitioningComponent->m_argusEntityKDTree.FindArgusEntityIdClosestToLocation(ArgusKDTreeTestConstants::location0);
 
 #pragma region Test that we can find the nearest entity to the center entity
 	TestEqual
@@ -352,7 +377,7 @@ bool ArgusUtilitiesArgusKDTreeFindArgusEntityIdClosestToLocationTest::RunTest(co
 	);
 #pragma endregion
 
-	uint16 nearestEntityIdToZPoint = tree.FindArgusEntityIdClosestToLocation(ArgusKDTreeTestConstants::location5);
+	uint16 nearestEntityIdToZPoint = spatialPartitioningComponent->m_argusEntityKDTree.FindArgusEntityIdClosestToLocation(ArgusKDTreeTestConstants::location5);
 
 #pragma region Test that we can find the nearest entity to a non-entity z location
 	TestEqual
@@ -380,12 +405,17 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusKDTreeFindArgusEntityIdsWith
 bool ArgusUtilitiesArgusKDTreeFindArgusEntityIdsWithinRangeOfLocationTest::RunTest(const FString& Parameters)
 {
 	ArgusTesting::StartArgusTest();
-	ArgusEntityKDTree tree;
+	SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::CreateEntity(ArgusECSConstants::k_singletonEntityId).GetOrAddComponent<SpatialPartitioningComponent>();
+	if (!spatialPartitioningComponent)
+	{
+		ArgusTesting::EndArgusTest();
+		return false;
+	}
 	CollectionOfArgusEntities entities;
-	PopulateKDTreeForTests(tree, entities, true);
+	PopulateKDTreeForTests(spatialPartitioningComponent->m_argusEntityKDTree, entities, true);
 
 	TArray<uint16> argusEntityIds;
-	tree.FindArgusEntityIdsWithinRangeOfLocation(argusEntityIds, ArgusKDTreeTestConstants::location6, 1.0f);
+	spatialPartitioningComponent->m_argusEntityKDTree.FindArgusEntityIdsWithinRangeOfLocation(argusEntityIds, ArgusKDTreeTestConstants::location6, 1.0f);
 
 #pragma region Test that we cannot find any entities within a small range of a far away location
 	TestEqual
@@ -405,7 +435,7 @@ bool ArgusUtilitiesArgusKDTreeFindArgusEntityIdsWithinRangeOfLocationTest::RunTe
 #pragma endregion
 
 	argusEntityIds.Empty();
-	tree.FindArgusEntityIdsWithinRangeOfLocation(argusEntityIds, ArgusKDTreeTestConstants::location0, 1.0f);
+	spatialPartitioningComponent->m_argusEntityKDTree.FindArgusEntityIdsWithinRangeOfLocation(argusEntityIds, ArgusKDTreeTestConstants::location0, 1.0f);
 
 #pragma region Test that we can find exactly one entity near the center
 	TestEqual
@@ -448,7 +478,7 @@ bool ArgusUtilitiesArgusKDTreeFindArgusEntityIdsWithinRangeOfLocationTest::RunTe
 #pragma endregion
 
 	argusEntityIds.Empty();
-	tree.FindArgusEntityIdsWithinRangeOfLocation(argusEntityIds, ArgusKDTreeTestConstants::location0, 200.0f);
+	spatialPartitioningComponent->m_argusEntityKDTree.FindArgusEntityIdsWithinRangeOfLocation(argusEntityIds, ArgusKDTreeTestConstants::location0, 200.0f);
 
 #pragma region Test that we can find all entities within a large range
 	TestEqual
@@ -468,7 +498,7 @@ bool ArgusUtilitiesArgusKDTreeFindArgusEntityIdsWithinRangeOfLocationTest::RunTe
 #pragma endregion
 
 	argusEntityIds.Empty();
-	tree.FindArgusEntityIdsWithinRangeOfLocation(argusEntityIds, ArgusKDTreeTestConstants::location7, 20.0f);
+	spatialPartitioningComponent->m_argusEntityKDTree.FindArgusEntityIdsWithinRangeOfLocation(argusEntityIds, ArgusKDTreeTestConstants::location7, 20.0f);
 
 #pragma region Test that we can find exactly two entities near a left point
 	TestEqual
