@@ -1,3 +1,9 @@
+	for (auto& pair : s_#####s)
+	{
+		pair.Value.Reset();
+	}
+
+	/* TODO JAMES: Base map doesn't support remove all. I have been jebaited
 	s_#####s.RemoveAll([](const uint16& entityId, #####& component)
 		{
 			if (ArgusEntity::IsReservedEntityId(entityId))
@@ -8,4 +14,4 @@
 
 			return true;
 		}
-	);
+	);*/

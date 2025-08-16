@@ -459,6 +459,12 @@ void ArgusComponentRegistry::FlushAllComponents()
 	}
 
 	// Begin flush dynamically allocated components
+	for (auto& pair : s_AssetLoadingComponents)
+	{
+		pair.Value.Reset();
+	}
+
+	/* TODO JAMES: Base map doesn't support remove all. I have been jebaited
 	s_AssetLoadingComponents.RemoveAll([](const uint16& entityId, AssetLoadingComponent& component)
 		{
 			if (ArgusEntity::IsReservedEntityId(entityId))
@@ -469,7 +475,13 @@ void ArgusComponentRegistry::FlushAllComponents()
 
 			return true;
 		}
-	);
+	);*/
+	for (auto& pair : s_InputInterfaceComponents)
+	{
+		pair.Value.Reset();
+	}
+
+	/* TODO JAMES: Base map doesn't support remove all. I have been jebaited
 	s_InputInterfaceComponents.RemoveAll([](const uint16& entityId, InputInterfaceComponent& component)
 		{
 			if (ArgusEntity::IsReservedEntityId(entityId))
@@ -480,7 +492,13 @@ void ArgusComponentRegistry::FlushAllComponents()
 
 			return true;
 		}
-	);
+	);*/
+	for (auto& pair : s_ReticleComponents)
+	{
+		pair.Value.Reset();
+	}
+
+	/* TODO JAMES: Base map doesn't support remove all. I have been jebaited
 	s_ReticleComponents.RemoveAll([](const uint16& entityId, ReticleComponent& component)
 		{
 			if (ArgusEntity::IsReservedEntityId(entityId))
@@ -491,7 +509,13 @@ void ArgusComponentRegistry::FlushAllComponents()
 
 			return true;
 		}
-	);
+	);*/
+	for (auto& pair : s_SpatialPartitioningComponents)
+	{
+		pair.Value.Reset();
+	}
+
+	/* TODO JAMES: Base map doesn't support remove all. I have been jebaited
 	s_SpatialPartitioningComponents.RemoveAll([](const uint16& entityId, SpatialPartitioningComponent& component)
 		{
 			if (ArgusEntity::IsReservedEntityId(entityId))
@@ -502,7 +526,7 @@ void ArgusComponentRegistry::FlushAllComponents()
 
 			return true;
 		}
-	);
+	);*/
 }
 
 uint16 ArgusComponentRegistry::GetOwningEntityIdForComponentMember(void* memberAddress)
