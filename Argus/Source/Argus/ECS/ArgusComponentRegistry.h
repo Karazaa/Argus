@@ -1881,7 +1881,7 @@ public:
 
 #pragma region AssetLoadingComponent
 private:
-	static TMap<uint16, AssetLoadingComponent, ArgusSetAllocator<1> > s_AssetLoadingComponents;
+	static TMap<uint16, AssetLoadingComponent*, ArgusSetAllocator<1> > s_AssetLoadingComponents;
 public:
 	template<>
 	inline AssetLoadingComponent* GetComponent<AssetLoadingComponent>(uint16 entityId)
@@ -1897,7 +1897,7 @@ public:
 			return nullptr;
 		}
 
-		return &s_AssetLoadingComponents[entityId];
+		return s_AssetLoadingComponents[entityId];
 	}
 
 	template<>
@@ -1912,10 +1912,12 @@ public:
 		if (UNLIKELY(s_AssetLoadingComponents.Contains(entityId)))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(AssetLoadingComponent), entityId);
-			return &s_AssetLoadingComponents[entityId];
+			return s_AssetLoadingComponents[entityId];
 		}
 
-		return &(s_AssetLoadingComponents.Add(entityId));
+		AssetLoadingComponent* output = new (ArgusMemorySource::Allocate<AssetLoadingComponent>()) AssetLoadingComponent();
+		s_AssetLoadingComponents.Emplace(entityId, output);
+		return output;
 	}
 
 	template<>
@@ -1929,15 +1931,17 @@ public:
 
 		if (!s_AssetLoadingComponents.Contains(entityId))
 		{
-			return &(s_AssetLoadingComponents.Add(entityId));
+			AssetLoadingComponent* output = new (ArgusMemorySource::Allocate<AssetLoadingComponent>()) AssetLoadingComponent();
+			s_AssetLoadingComponents.Emplace(entityId, output);
+			return output;
 		}
 
-		return &s_AssetLoadingComponents[entityId];
+		return s_AssetLoadingComponents[entityId];
 	}
 #pragma endregion
 #pragma region InputInterfaceComponent
 private:
-	static TMap<uint16, InputInterfaceComponent, ArgusSetAllocator<1> > s_InputInterfaceComponents;
+	static TMap<uint16, InputInterfaceComponent*, ArgusSetAllocator<1> > s_InputInterfaceComponents;
 public:
 	template<>
 	inline InputInterfaceComponent* GetComponent<InputInterfaceComponent>(uint16 entityId)
@@ -1953,7 +1957,7 @@ public:
 			return nullptr;
 		}
 
-		return &s_InputInterfaceComponents[entityId];
+		return s_InputInterfaceComponents[entityId];
 	}
 
 	template<>
@@ -1968,10 +1972,12 @@ public:
 		if (UNLIKELY(s_InputInterfaceComponents.Contains(entityId)))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(InputInterfaceComponent), entityId);
-			return &s_InputInterfaceComponents[entityId];
+			return s_InputInterfaceComponents[entityId];
 		}
 
-		return &(s_InputInterfaceComponents.Add(entityId));
+		InputInterfaceComponent* output = new (ArgusMemorySource::Allocate<InputInterfaceComponent>()) InputInterfaceComponent();
+		s_InputInterfaceComponents.Emplace(entityId, output);
+		return output;
 	}
 
 	template<>
@@ -1985,15 +1991,17 @@ public:
 
 		if (!s_InputInterfaceComponents.Contains(entityId))
 		{
-			return &(s_InputInterfaceComponents.Add(entityId));
+			InputInterfaceComponent* output = new (ArgusMemorySource::Allocate<InputInterfaceComponent>()) InputInterfaceComponent();
+			s_InputInterfaceComponents.Emplace(entityId, output);
+			return output;
 		}
 
-		return &s_InputInterfaceComponents[entityId];
+		return s_InputInterfaceComponents[entityId];
 	}
 #pragma endregion
 #pragma region ReticleComponent
 private:
-	static TMap<uint16, ReticleComponent, ArgusSetAllocator<1> > s_ReticleComponents;
+	static TMap<uint16, ReticleComponent*, ArgusSetAllocator<1> > s_ReticleComponents;
 public:
 	template<>
 	inline ReticleComponent* GetComponent<ReticleComponent>(uint16 entityId)
@@ -2009,7 +2017,7 @@ public:
 			return nullptr;
 		}
 
-		return &s_ReticleComponents[entityId];
+		return s_ReticleComponents[entityId];
 	}
 
 	template<>
@@ -2024,10 +2032,12 @@ public:
 		if (UNLIKELY(s_ReticleComponents.Contains(entityId)))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ReticleComponent), entityId);
-			return &s_ReticleComponents[entityId];
+			return s_ReticleComponents[entityId];
 		}
 
-		return &(s_ReticleComponents.Add(entityId));
+		ReticleComponent* output = new (ArgusMemorySource::Allocate<ReticleComponent>()) ReticleComponent();
+		s_ReticleComponents.Emplace(entityId, output);
+		return output;
 	}
 
 	template<>
@@ -2041,15 +2051,17 @@ public:
 
 		if (!s_ReticleComponents.Contains(entityId))
 		{
-			return &(s_ReticleComponents.Add(entityId));
+			ReticleComponent* output = new (ArgusMemorySource::Allocate<ReticleComponent>()) ReticleComponent();
+			s_ReticleComponents.Emplace(entityId, output);
+			return output;
 		}
 
-		return &s_ReticleComponents[entityId];
+		return s_ReticleComponents[entityId];
 	}
 #pragma endregion
 #pragma region SpatialPartitioningComponent
 private:
-	static TMap<uint16, SpatialPartitioningComponent, ArgusSetAllocator<1> > s_SpatialPartitioningComponents;
+	static TMap<uint16, SpatialPartitioningComponent*, ArgusSetAllocator<1> > s_SpatialPartitioningComponents;
 public:
 	template<>
 	inline SpatialPartitioningComponent* GetComponent<SpatialPartitioningComponent>(uint16 entityId)
@@ -2065,7 +2077,7 @@ public:
 			return nullptr;
 		}
 
-		return &s_SpatialPartitioningComponents[entityId];
+		return s_SpatialPartitioningComponents[entityId];
 	}
 
 	template<>
@@ -2080,10 +2092,12 @@ public:
 		if (UNLIKELY(s_SpatialPartitioningComponents.Contains(entityId)))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(SpatialPartitioningComponent), entityId);
-			return &s_SpatialPartitioningComponents[entityId];
+			return s_SpatialPartitioningComponents[entityId];
 		}
 
-		return &(s_SpatialPartitioningComponents.Add(entityId));
+		SpatialPartitioningComponent* output = new (ArgusMemorySource::Allocate<SpatialPartitioningComponent>()) SpatialPartitioningComponent();
+		s_SpatialPartitioningComponents.Emplace(entityId, output);
+		return output;
 	}
 
 	template<>
@@ -2097,10 +2111,12 @@ public:
 
 		if (!s_SpatialPartitioningComponents.Contains(entityId))
 		{
-			return &(s_SpatialPartitioningComponents.Add(entityId));
+			SpatialPartitioningComponent* output = new (ArgusMemorySource::Allocate<SpatialPartitioningComponent>()) SpatialPartitioningComponent();
+			s_SpatialPartitioningComponents.Emplace(entityId, output);
+			return output;
 		}
 
-		return &s_SpatialPartitioningComponents[entityId];
+		return s_SpatialPartitioningComponents[entityId];
 	}
 #pragma endregion
 };

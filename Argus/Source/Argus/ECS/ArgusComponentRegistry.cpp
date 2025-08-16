@@ -83,16 +83,16 @@ VelocityComponent* ArgusComponentRegistry::s_VelocityComponents = nullptr;
 TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > ArgusComponentRegistry::s_isVelocityComponentActive;
 #pragma endregion
 #pragma region AssetLoadingComponent
-TMap<uint16, AssetLoadingComponent, ArgusSetAllocator<1> > ArgusComponentRegistry::s_AssetLoadingComponents;
+TMap<uint16, AssetLoadingComponent*, ArgusSetAllocator<1> > ArgusComponentRegistry::s_AssetLoadingComponents;
 #pragma endregion
 #pragma region InputInterfaceComponent
-TMap<uint16, InputInterfaceComponent, ArgusSetAllocator<1> > ArgusComponentRegistry::s_InputInterfaceComponents;
+TMap<uint16, InputInterfaceComponent*, ArgusSetAllocator<1> > ArgusComponentRegistry::s_InputInterfaceComponents;
 #pragma endregion
 #pragma region ReticleComponent
-TMap<uint16, ReticleComponent, ArgusSetAllocator<1> > ArgusComponentRegistry::s_ReticleComponents;
+TMap<uint16, ReticleComponent*, ArgusSetAllocator<1> > ArgusComponentRegistry::s_ReticleComponents;
 #pragma endregion
 #pragma region SpatialPartitioningComponent
-TMap<uint16, SpatialPartitioningComponent, ArgusSetAllocator<1> > ArgusComponentRegistry::s_SpatialPartitioningComponents;
+TMap<uint16, SpatialPartitioningComponent*, ArgusSetAllocator<1> > ArgusComponentRegistry::s_SpatialPartitioningComponents;
 #pragma endregion
 
 void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
@@ -461,7 +461,12 @@ void ArgusComponentRegistry::FlushAllComponents()
 	// Begin flush dynamically allocated components
 	for (auto& pair : s_AssetLoadingComponents)
 	{
-		pair.Value.Reset();
+		if (UNLIKELY(!pair.Value))
+		{
+			continue;
+		}
+		
+		pair.Value->Reset();
 	}
 
 	/* TODO JAMES: Base map doesn't support remove all. I have been jebaited
@@ -476,9 +481,15 @@ void ArgusComponentRegistry::FlushAllComponents()
 			return true;
 		}
 	);*/
+ 
 	for (auto& pair : s_InputInterfaceComponents)
 	{
-		pair.Value.Reset();
+		if (UNLIKELY(!pair.Value))
+		{
+			continue;
+		}
+		
+		pair.Value->Reset();
 	}
 
 	/* TODO JAMES: Base map doesn't support remove all. I have been jebaited
@@ -493,9 +504,15 @@ void ArgusComponentRegistry::FlushAllComponents()
 			return true;
 		}
 	);*/
+ 
 	for (auto& pair : s_ReticleComponents)
 	{
-		pair.Value.Reset();
+		if (UNLIKELY(!pair.Value))
+		{
+			continue;
+		}
+		
+		pair.Value->Reset();
 	}
 
 	/* TODO JAMES: Base map doesn't support remove all. I have been jebaited
@@ -510,9 +527,15 @@ void ArgusComponentRegistry::FlushAllComponents()
 			return true;
 		}
 	);*/
+ 
 	for (auto& pair : s_SpatialPartitioningComponents)
 	{
-		pair.Value.Reset();
+		if (UNLIKELY(!pair.Value))
+		{
+			continue;
+		}
+		
+		pair.Value->Reset();
 	}
 
 	/* TODO JAMES: Base map doesn't support remove all. I have been jebaited
@@ -527,6 +550,7 @@ void ArgusComponentRegistry::FlushAllComponents()
 			return true;
 		}
 	);*/
+ 
 }
 
 uint16 ArgusComponentRegistry::GetOwningEntityIdForComponentMember(void* memberAddress)

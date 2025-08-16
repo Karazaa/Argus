@@ -1,6 +1,11 @@
 	for (auto& pair : s_#####s)
 	{
-		pair.Value.Reset();
+		if (UNLIKELY(!pair.Value))
+		{
+			continue;
+		}
+		
+		pair.Value->Reset();
 	}
 
 	/* TODO JAMES: Base map doesn't support remove all. I have been jebaited
@@ -15,3 +20,4 @@
 			return true;
 		}
 	);*/
+ 

@@ -1,3 +1,3 @@
 #pragma region #####
-TMap<uint16, #####, ArgusSetAllocator<1> > ArgusComponentRegistry::s_#####s;
+TMap<uint16, #####*, ArgusSetAllocator<1> > ArgusComponentRegistry::s_#####s;
 #pragma endregion

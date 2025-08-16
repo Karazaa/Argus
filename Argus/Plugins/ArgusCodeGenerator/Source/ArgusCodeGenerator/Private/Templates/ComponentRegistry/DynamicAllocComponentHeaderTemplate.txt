@@ -1,6 +1,6 @@
 #pragma region #####
 private:
-	static TMap<uint16, #####, ArgusSetAllocator<1> > s_#####s;
+	static TMap<uint16, #####*, ArgusSetAllocator<1> > s_#####s;
 public:
 	template<>
 	inline #####* GetComponent<#####>(uint16 entityId)
@@ -16,7 +16,7 @@ public:
 			return nullptr;
 		}
 
-		return &s_#####s[entityId];
+		return s_#####s[entityId];
 	}
 
 	template<>
@@ -31,10 +31,12 @@ public:
 		if (UNLIKELY(s_#####s.Contains(entityId)))
 		{
 			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(#####), entityId);
-			return &s_#####s[entityId];
+			return s_#####s[entityId];
 		}
 
-		return &(s_#####s.Add(entityId));
+		#####* output = new (ArgusMemorySource::Allocate<#####>()) #####();
+		s_#####s.Emplace(entityId, output);
+		return output;
 	}
 
 	template<>
@@ -48,9 +50,11 @@ public:
 
 		if (!s_#####s.Contains(entityId))
 		{
-			return &(s_#####s.Add(entityId));
+			#####* output = new (ArgusMemorySource::Allocate<#####>()) #####();
+			s_#####s.Emplace(entityId, output);
+			return output;
 		}
 
-		return &s_#####s[entityId];
+		return s_#####s[entityId];
 	}
 #pragma endregion
