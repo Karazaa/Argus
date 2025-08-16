@@ -83,16 +83,16 @@ VelocityComponent* ArgusComponentRegistry::s_VelocityComponents = nullptr;
 TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > ArgusComponentRegistry::s_isVelocityComponentActive;
 #pragma endregion
 #pragma region AssetLoadingComponent
-TMap<uint16, AssetLoadingComponent*, ArgusSetAllocator<1> > ArgusComponentRegistry::s_AssetLoadingComponents;
+ArgusMap<uint16, AssetLoadingComponent*, ArgusSetAllocator<1> > ArgusComponentRegistry::s_AssetLoadingComponents;
 #pragma endregion
 #pragma region InputInterfaceComponent
-TMap<uint16, InputInterfaceComponent*, ArgusSetAllocator<1> > ArgusComponentRegistry::s_InputInterfaceComponents;
+ArgusMap<uint16, InputInterfaceComponent*, ArgusSetAllocator<1> > ArgusComponentRegistry::s_InputInterfaceComponents;
 #pragma endregion
 #pragma region ReticleComponent
-TMap<uint16, ReticleComponent*, ArgusSetAllocator<1> > ArgusComponentRegistry::s_ReticleComponents;
+ArgusMap<uint16, ReticleComponent*, ArgusSetAllocator<1> > ArgusComponentRegistry::s_ReticleComponents;
 #pragma endregion
 #pragma region SpatialPartitioningComponent
-TMap<uint16, SpatialPartitioningComponent*, ArgusSetAllocator<1> > ArgusComponentRegistry::s_SpatialPartitioningComponents;
+ArgusMap<uint16, SpatialPartitioningComponent*, ArgusSetAllocator<1> > ArgusComponentRegistry::s_SpatialPartitioningComponents;
 #pragma endregion
 
 void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)

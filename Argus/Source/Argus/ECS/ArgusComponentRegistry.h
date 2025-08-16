@@ -5,6 +5,7 @@
 
 #include "ArgusECSConstants.h"
 #include "ArgusLogging.h"
+#include "ArgusMap.h"
 #include "ArgusSetAllocator.h"
 #include "Containers/BitArray.h"
 #include "Containers/Map.h"
@@ -1881,7 +1882,7 @@ public:
 
 #pragma region AssetLoadingComponent
 private:
-	static TMap<uint16, AssetLoadingComponent*, ArgusSetAllocator<1> > s_AssetLoadingComponents;
+	static ArgusMap<uint16, AssetLoadingComponent*, ArgusSetAllocator<1> > s_AssetLoadingComponents;
 public:
 	template<>
 	inline AssetLoadingComponent* GetComponent<AssetLoadingComponent>(uint16 entityId)
@@ -1941,7 +1942,7 @@ public:
 #pragma endregion
 #pragma region InputInterfaceComponent
 private:
-	static TMap<uint16, InputInterfaceComponent*, ArgusSetAllocator<1> > s_InputInterfaceComponents;
+	static ArgusMap<uint16, InputInterfaceComponent*, ArgusSetAllocator<1> > s_InputInterfaceComponents;
 public:
 	template<>
 	inline InputInterfaceComponent* GetComponent<InputInterfaceComponent>(uint16 entityId)
@@ -2001,7 +2002,7 @@ public:
 #pragma endregion
 #pragma region ReticleComponent
 private:
-	static TMap<uint16, ReticleComponent*, ArgusSetAllocator<1> > s_ReticleComponents;
+	static ArgusMap<uint16, ReticleComponent*, ArgusSetAllocator<1> > s_ReticleComponents;
 public:
 	template<>
 	inline ReticleComponent* GetComponent<ReticleComponent>(uint16 entityId)
@@ -2061,7 +2062,7 @@ public:
 #pragma endregion
 #pragma region SpatialPartitioningComponent
 private:
-	static TMap<uint16, SpatialPartitioningComponent*, ArgusSetAllocator<1> > s_SpatialPartitioningComponents;
+	static ArgusMap<uint16, SpatialPartitioningComponent*, ArgusSetAllocator<1> > s_SpatialPartitioningComponents;
 public:
 	template<>
 	inline SpatialPartitioningComponent* GetComponent<SpatialPartitioningComponent>(uint16 entityId)

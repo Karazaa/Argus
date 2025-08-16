@@ -1,6 +1,6 @@
 #pragma region #####
 private:
-	static TMap<uint16, #####*, ArgusSetAllocator<1> > s_#####s;
+	static ArgusMap<uint16, #####*, ArgusSetAllocator<1> > s_#####s;
 public:
 	template<>
 	inline #####* GetComponent<#####>(uint16 entityId)
