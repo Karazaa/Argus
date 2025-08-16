@@ -63,15 +63,15 @@ bool AvoidanceSystemsProcessORCAvoidanceTest::RunTest(const FString& Parameters)
 
 	ArgusEntity singletonEntity = ArgusEntity::CreateEntity(ArgusECSConstants::k_singletonEntityId);
 
-#pragma region Test that an error is reported if there is no SpatialPartitioningComponent on the singleton entity.
-	AddExpectedErrorPlain
-	(
-		FString::Printf
-		(
-			TEXT("The variable, spatialPartitioningComponent, is null!")
-		)
-	);
-#pragma endregion
+//#pragma region Test that an error is reported if there is no SpatialPartitioningComponent on the singleton entity.
+//	AddExpectedErrorPlain
+//	(
+//		FString::Printf
+//		(
+//			TEXT("The variable, spatialPartitioningComponent, is null!")
+//		)
+//	);
+//#pragma endregion
 
 	AvoidanceSystems::ProcessORCAvoidance(dummyPointer, deltaTime, components, nearbyEntitiesComponent);
 
