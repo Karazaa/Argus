@@ -6,7 +6,9 @@
 char* ArgusMemorySource::s_rawDataRoot = nullptr;
 SIZE_T ArgusMemorySource::s_capacity = 0;
 SIZE_T ArgusMemorySource::s_occupiedAmount = 0;
-SIZE_T ArgusMemorySource::s_totalLossAmount = 0;
+SIZE_T ArgusMemorySource::s_alignmentLossAmount = 0;
+SIZE_T ArgusMemorySource::s_reallocationLossAmount = 0;
+SIZE_T ArgusMemorySource::s_deallocationLossAmount = 0;
 
 void ArgusMemorySource::Initialize(SIZE_T memorySourceSize, uint32 alignment)
 {
@@ -19,7 +21,9 @@ void ArgusMemorySource::Initialize(SIZE_T memorySourceSize, uint32 alignment)
 	s_rawDataRoot = static_cast<char*>(FMemory::Malloc(memorySourceSize, alignment));
 	s_capacity = memorySourceSize;
 	s_occupiedAmount = 0;
-	s_totalLossAmount = 0;
+	s_alignmentLossAmount = 0;
+	s_reallocationLossAmount = 0;
+	s_deallocationLossAmount = 0;
 }
 
 void ArgusMemorySource::ResetMemorySource()
@@ -27,7 +31,9 @@ void ArgusMemorySource::ResetMemorySource()
 	if (s_rawDataRoot)
 	{
 		s_occupiedAmount = 0;
-		s_totalLossAmount = 0;
+		s_alignmentLossAmount = 0;
+		s_reallocationLossAmount = 0;
+		s_deallocationLossAmount = 0;
 	}
 	else
 	{
@@ -47,6 +53,9 @@ void ArgusMemorySource::TearDown()
 	s_rawDataRoot = nullptr;
 	s_capacity = 0;
 	s_occupiedAmount = 0;
+	s_alignmentLossAmount = 0;
+	s_reallocationLossAmount = 0;
+	s_deallocationLossAmount = 0;
 }
 
 void* ArgusMemorySource::Allocate(SIZE_T allocationSize, uint32 alignment)
@@ -56,7 +65,12 @@ void* ArgusMemorySource::Allocate(SIZE_T allocationSize, uint32 alignment)
 		Initialize();
 	}
 
-	const SIZE_T headOfNewData = alignment == 0u ? s_occupiedAmount : Align(s_occupiedAmount, alignment);
+	SIZE_T headOfNewData = s_occupiedAmount;
+	if (alignment != 0u && !IsAligned(s_occupiedAmount, alignment))
+	{
+		headOfNewData = Align(s_occupiedAmount, alignment);
+	}
+	
 	if (UNLIKELY(headOfNewData + allocationSize > GetAvailableSpace()))
 	{
 		ARGUS_LOG(ArgusMemoryLog, Error, TEXT("[%s] Memory source ran out of space!"), ARGUS_FUNCNAME);
@@ -65,7 +79,7 @@ void* ArgusMemorySource::Allocate(SIZE_T allocationSize, uint32 alignment)
 
 	const SIZE_T paddingAmount = headOfNewData - s_occupiedAmount;
 	s_occupiedAmount += paddingAmount + allocationSize;
-	s_totalLossAmount += paddingAmount;
+	s_alignmentLossAmount += paddingAmount;
 
 	return &s_rawDataRoot[headOfNewData];
 }
@@ -75,7 +89,7 @@ void* ArgusMemorySource::Reallocate(void* oldData, SIZE_T bytesPerElement, SIZE_
 	if (oldData)
 	{
 		// TODO JAMES: Might be worth logging something about # of frees.
-		s_totalLossAmount += bytesPerElement * oldNumElements;
+		s_reallocationLossAmount += (bytesPerElement * oldNumElements);
 	}
 
 	void* newData = Allocate(bytesPerElement * newNumElements, alignment);
@@ -98,7 +112,7 @@ void ArgusMemorySource::Deallocate(void* data)
 void ArgusMemorySource::Deallocate(void* data, SIZE_T allocationSize)
 {
 	// TODO JAMES: Might be worth logging something about # of frees.
-	s_totalLossAmount += allocationSize;
+	s_deallocationLossAmount += allocationSize;
 }
 
 void ArgusMemorySource::CopyMemory(void* destination, void* source, SIZE_T amount)

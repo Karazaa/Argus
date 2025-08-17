@@ -15,7 +15,9 @@ class ArgusMemorySource
 	static char* s_rawDataRoot;
 	static SIZE_T s_capacity;
 	static SIZE_T s_occupiedAmount;
-	static SIZE_T s_totalLossAmount;
+	static SIZE_T s_alignmentLossAmount;
+	static SIZE_T s_reallocationLossAmount;
+	static SIZE_T s_deallocationLossAmount;
 
 public:
 	static constexpr SIZE_T k_1MB = 1048576;
@@ -45,7 +47,10 @@ public:
 
 	static SIZE_T GetCapacity() { return s_capacity; }
 	static SIZE_T GetOccupiedAmount() { return s_occupiedAmount; }
-	static SIZE_T GetTotalLossAmount() { return s_totalLossAmount; }
+	static SIZE_T GetAlignmentLossAmount() { return s_alignmentLossAmount; }
+	static SIZE_T GetReallocationLossAmount() { return s_reallocationLossAmount; }
+	static SIZE_T GetDeallocationLossAmount() { return s_deallocationLossAmount; }
+	static SIZE_T GetTotalLossAmount() { return GetAlignmentLossAmount() + GetReallocationLossAmount() + GetDeallocationLossAmount(); }
 	static SIZE_T GetAvailableSpace() { return s_capacity - s_occupiedAmount; }
 };
 

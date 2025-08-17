@@ -33,7 +33,10 @@ void ArgusMemoryDebugger::DrawMemoryDebugger()
 	const float denominator = static_cast<float>(ArgusMemorySource::k_1MB);
 	ImGui::Text("Amount currently occupied including loss = %.3f MB", ArgusMath::SafeDivide(static_cast<float>(ArgusMemorySource::GetOccupiedAmount()), denominator));
 	ImGui::Text("Amount currently occupied excluding loss = %.3f MB", ArgusMath::SafeDivide(static_cast<float>(ArgusMemorySource::GetOccupiedAmount() - ArgusMemorySource::GetTotalLossAmount()), denominator));
-	ImGui::Text("Loss amount due to padding and reallocation = %.3f MB", ArgusMath::SafeDivide(static_cast<float>(ArgusMemorySource::GetTotalLossAmount()), denominator));
+	ImGui::Text("Loss due to alignment = %.3f MB", ArgusMath::SafeDivide(static_cast<float>(ArgusMemorySource::GetAlignmentLossAmount()), denominator));
+	ImGui::Text("Loss due to reallocation = %.3f MB", ArgusMath::SafeDivide(static_cast<float>(ArgusMemorySource::GetReallocationLossAmount()), denominator));
+	ImGui::Text("Loss due to deallocation = %.3f MB", ArgusMath::SafeDivide(static_cast<float>(ArgusMemorySource::GetDeallocationLossAmount()), denominator));
+	ImGui::Text("Total memory loss = %.3f MB", ArgusMath::SafeDivide(static_cast<float>(ArgusMemorySource::GetTotalLossAmount()), denominator));
 	ImGui::Text("Remaining space available = %.3f MB", ArgusMath::SafeDivide(static_cast<float>(ArgusMemorySource::GetAvailableSpace()), denominator));
 	ImGui::Text("Total space allocated from OS =  %.3f MB", ArgusMath::SafeDivide(static_cast<float>(ArgusMemorySource::GetCapacity()), denominator));
 
