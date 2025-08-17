@@ -459,97 +459,53 @@ void ArgusComponentRegistry::FlushAllComponents()
 	}
 
 	// Begin flush dynamically allocated components
-	for (auto& pair : s_AssetLoadingComponents)
-	{
-		if (UNLIKELY(!pair.Value))
+	s_AssetLoadingComponents.RemoveAll([](const uint16& entityId, AssetLoadingComponent*& component)
 		{
-			continue;
-		}
-		
-		pair.Value->Reset();
-	}
-
-	/* TODO JAMES: Base map doesn't support remove all. I have been jebaited
-	s_AssetLoadingComponents.RemoveAll([](const uint16& entityId, AssetLoadingComponent& component)
-		{
-			if (ArgusEntity::IsReservedEntityId(entityId))
+			if (ArgusEntity::IsReservedEntityId(entityId) && component)
 			{
-				component.Reset();
+				component->Reset();
 				return false;
 			}
 
 			return true;
 		}
-	);*/
+	);
  
-	for (auto& pair : s_InputInterfaceComponents)
-	{
-		if (UNLIKELY(!pair.Value))
+	s_InputInterfaceComponents.RemoveAll([](const uint16& entityId, InputInterfaceComponent*& component)
 		{
-			continue;
-		}
-		
-		pair.Value->Reset();
-	}
-
-	/* TODO JAMES: Base map doesn't support remove all. I have been jebaited
-	s_InputInterfaceComponents.RemoveAll([](const uint16& entityId, InputInterfaceComponent& component)
-		{
-			if (ArgusEntity::IsReservedEntityId(entityId))
+			if (ArgusEntity::IsReservedEntityId(entityId) && component)
 			{
-				component.Reset();
+				component->Reset();
 				return false;
 			}
 
 			return true;
 		}
-	);*/
+	);
  
-	for (auto& pair : s_ReticleComponents)
-	{
-		if (UNLIKELY(!pair.Value))
+	s_ReticleComponents.RemoveAll([](const uint16& entityId, ReticleComponent*& component)
 		{
-			continue;
-		}
-		
-		pair.Value->Reset();
-	}
-
-	/* TODO JAMES: Base map doesn't support remove all. I have been jebaited
-	s_ReticleComponents.RemoveAll([](const uint16& entityId, ReticleComponent& component)
-		{
-			if (ArgusEntity::IsReservedEntityId(entityId))
+			if (ArgusEntity::IsReservedEntityId(entityId) && component)
 			{
-				component.Reset();
+				component->Reset();
 				return false;
 			}
 
 			return true;
 		}
-	);*/
+	);
  
-	for (auto& pair : s_SpatialPartitioningComponents)
-	{
-		if (UNLIKELY(!pair.Value))
+	s_SpatialPartitioningComponents.RemoveAll([](const uint16& entityId, SpatialPartitioningComponent*& component)
 		{
-			continue;
-		}
-		
-		pair.Value->Reset();
-	}
-
-	/* TODO JAMES: Base map doesn't support remove all. I have been jebaited
-	s_SpatialPartitioningComponents.RemoveAll([](const uint16& entityId, SpatialPartitioningComponent& component)
-		{
-			if (ArgusEntity::IsReservedEntityId(entityId))
+			if (ArgusEntity::IsReservedEntityId(entityId) && component)
 			{
-				component.Reset();
+				component->Reset();
 				return false;
 			}
 
 			return true;
 		}
-	);*/
+	);
  
 }
 

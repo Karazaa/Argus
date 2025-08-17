@@ -1,23 +1,12 @@
-	for (auto& pair : s_#####s)
-	{
-		if (UNLIKELY(!pair.Value))
+	s_#####s.RemoveAll([](const uint16& entityId, #####*& component)
 		{
-			continue;
-		}
-		
-		pair.Value->Reset();
-	}
-
-	/* TODO JAMES: Base map doesn't support remove all. I have been jebaited
-	s_#####s.RemoveAll([](const uint16& entityId, #####& component)
-		{
-			if (ArgusEntity::IsReservedEntityId(entityId))
+			if (ArgusEntity::IsReservedEntityId(entityId) && component)
 			{
-				component.Reset();
+				component->Reset();
 				return false;
 			}
 
 			return true;
 		}
-	);*/
+	);
  
