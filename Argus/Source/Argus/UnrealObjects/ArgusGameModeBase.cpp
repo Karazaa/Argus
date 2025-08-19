@@ -71,6 +71,7 @@ void AArgusGameModeBase::ManageActorStateForEntities(const UWorld* worldPointer,
 	ARGUS_RETURN_ON_NULL(worldPointer, ArgusUnrealObjectsLog);
 	const UArgusGameInstance* gameInstance = worldPointer->GetGameInstance<UArgusGameInstance>();
 	ARGUS_RETURN_ON_NULL(gameInstance, ArgusUnrealObjectsLog);
+	ARGUS_RETURN_ON_NULL(m_activePlayerController, ArgusUnrealObjectsLog);
 
 	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{
@@ -97,7 +98,7 @@ void AArgusGameModeBase::ManageActorStateForEntities(const UWorld* worldPointer,
 
 		if (AArgusActor* argusActor = gameInstance->GetArgusActorFromArgusEntity(entity))
 		{
-			argusActor->Update(deltaTime);
+			argusActor->Update(deltaTime, m_activePlayerController->GetPlayerTeam());
 		}
 	}
 }

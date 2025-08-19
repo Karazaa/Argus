@@ -146,11 +146,21 @@ void AArgusActor::SetSelectionState(bool isSelected)
 
 void AArgusActor::Show()
 {
+	if (IsVisible())
+	{
+		return;
+	}
+
 	RootComponent->SetVisibility(true, true);
 }
 
 void AArgusActor::Hide()
 {
+	if (!IsVisible())
+	{
+		return;
+	}
+
 	RootComponent->SetVisibility(false, true);
 }
 
@@ -228,7 +238,7 @@ void AArgusActor::EndPlay(const EEndPlayReason::Type endPlayReason)
 	gameInstance->DeregisterArgusEntityActor(this);
 }
 
-void AArgusActor::Update(float deltaTime)
+void AArgusActor::Update(float deltaTime, ETeam activePlayerControllerTeam)
 {
 	ARGUS_TRACE(AArgusActor::Update);
 
@@ -239,6 +249,7 @@ void AArgusActor::Update(float deltaTime)
 
 	if (const TransformComponent* transformComponent = m_entity.GetComponent<TransformComponent>())
 	{
+		ARGUS_TRACE(AArgusActor::SetActorLocationAndRotation);
 		SetActorLocationAndRotation(transformComponent->m_location, FRotator(0.0f, ArgusMath::GetUEYawDegreesFromYaw(transformComponent->GetCurrentYaw()), 0.0f));
 
 #if !UE_BUILD_SHIPPING
@@ -251,8 +262,22 @@ void AArgusActor::Update(float deltaTime)
 
 	if (m_argusActorInfoWidget.IsValid())
 	{
+		ARGUS_TRACE(AArgusActor::UpdateUIWidgetComponentLocation);
 		UpdateUIWidgetComponentLocation();
 		m_argusActorInfoWidget->RefreshDisplay(m_entity);
+	}
+
+	if (const IdentityComponent* identityComponent = m_entity.GetComponent<IdentityComponent>())
+	{
+		ARGUS_TRACE(AArgusActor::SeenBy);
+		if (identityComponent->IsSeenBy(activePlayerControllerTeam))
+		{
+			Show();
+		}
+		else
+		{
+			Hide();
+		}
 	}
 }
 

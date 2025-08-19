@@ -28,7 +28,7 @@ public:
 	void Show();
 	void Hide();
 	bool IsVisible() const;
-	void Update(float deltaTime);
+	void Update(float deltaTime, ETeam activePlayerControllerTeam);
 
 protected:
 	UFUNCTION(BlueprintImplementableEvent)

@@ -91,7 +91,7 @@ void SpatialPartitioningSystems::CacheAdjacentEntityIds(const SpatialPartitionin
 			}
 
 			ArgusEntity otherEntity = ArgusEntity::RetrieveEntity(entityNode->m_entityId);
-			if (!otherEntity || !otherEntity.IsAlive() || otherEntity.IsPassenger())
+			if (!otherEntity || otherEntity.IsPassenger())
 			{
 				return false;
 			}

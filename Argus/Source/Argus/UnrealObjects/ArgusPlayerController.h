@@ -33,6 +33,7 @@ public:
 	AArgusActor* GetArgusActorForArgusEntity(const ArgusEntity& entity) const;
 	bool GetArgusActorsFromArgusEntityIds(const TArray<uint16>& inArgusEntityIds, TArray<AArgusActor*>& outArgusActors) const;
 	bool GetArgusActorsFromArgusEntities(const TArray<ArgusEntity>& inArgusEntities, TArray<AArgusActor*>& outArgusActors) const;
+	ETeam GetPlayerTeam() const { return m_playerTeam; }
 
 	void FilterArgusActorsToPlayerTeam(TArray<AArgusActor*>& argusActors) const;
 	bool IsArgusActorOnPlayerTeam(const AArgusActor* const actor) const;
