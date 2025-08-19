@@ -82,9 +82,9 @@ void ArgusEntityKDTreeRangeOutput::Add(const ArgusEntityKDTreeNode* nodeToAdd, c
 		return;
 	}
 
-	ArgusEntity nodeToAddEntity = ArgusEntity::RetrieveEntity(nodeToAdd->m_entityId);
 	if (thresholds.m_seenByEntityId != ArgusECSConstants::k_maxEntities)
 	{
+		ArgusEntity nodeToAddEntity = ArgusEntity::RetrieveEntity(nodeToAdd->m_entityId);
 		ArgusEntity seenByEntity = ArgusEntity::RetrieveEntity(thresholds.m_seenByEntityId);
 		const IdentityComponent* queryIdentityComponent = seenByEntity.GetComponent<IdentityComponent>();
 		IdentityComponent* nodeToAddIdentityComponent = nodeToAddEntity.GetComponent<IdentityComponent>();
@@ -92,11 +92,11 @@ void ArgusEntityKDTreeRangeOutput::Add(const ArgusEntityKDTreeNode* nodeToAdd, c
 		{
 			nodeToAddIdentityComponent->AddSeenBy(queryIdentityComponent->m_team);
 		}
-	}
 
-	if (!nodeToAddEntity.IsAlive())
-	{
-		return;
+		if (!nodeToAddEntity.IsAlive())
+		{
+			return;
+		}
 	}
 
 	const uint16 entityId = nodeToAdd->m_entityId;
