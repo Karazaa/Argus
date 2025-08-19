@@ -39,6 +39,9 @@ struct IdentityComponent
 	ARGUS_IGNORE()
 	uint8 m_enemies = 0u;
 
+	ARGUS_IGNORE()
+	uint8 m_seenBy = 0u;
+
 	void AddEnemyTeam(ETeam enemyTeam)
 	{
 		if (enemyTeam == m_team)
@@ -46,18 +49,43 @@ struct IdentityComponent
 			return;
 		}
 
-		m_allies &= ~((uint8)enemyTeam);
-		m_enemies |= ((uint8)enemyTeam);
+		m_allies &= ~(static_cast<uint8>(enemyTeam));
+		m_enemies |= (static_cast<uint8>(enemyTeam));
 	}
 
 	void AddAllyTeam(ETeam allyTeam)
 	{
-		m_enemies &= ~((uint8)allyTeam);
-		m_allies |= ((uint8)allyTeam);
+		m_enemies &= ~(static_cast<uint8>(allyTeam));
+		m_allies |= (static_cast<uint8>(allyTeam));
 	}
 
 	bool IsInTeamMask(uint8 teamMask) const
 	{
-		return teamMask & ((uint8)m_team);
+		return teamMask & (static_cast<uint8>(m_team));
+	}
+
+	void AddSeenBy(ETeam seeingTeam)
+	{
+		m_seenBy |= (static_cast<uint8>(seeingTeam));
+	}
+
+	void ClearSeenBy()
+	{
+		m_seenBy = static_cast<uint8>(m_team);
+	}
+
+	bool IsSeenBy(ETeam team) const
+	{
+		return m_seenBy & (static_cast<uint8>(team));
+	}
+
+	bool IsSeenByAllies() const 
+	{
+		return m_seenBy & m_allies;
+	}
+
+	bool IsSeenByEnemies() const
+	{
+		return m_seenBy & m_enemies;
 	}
 };

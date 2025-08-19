@@ -31,16 +31,18 @@ struct ArgusEntityKDTreeNode
 
 struct ArgusEntityKDTreeQueryRangeThresholds
 {
-	ArgusEntityKDTreeQueryRangeThresholds(float rangedRangeThreshold, float meleeRangeThreshold, float avoidanceRangeThreshold, float flockingRangeThreshold) : 
+	ArgusEntityKDTreeQueryRangeThresholds(float rangedRangeThreshold, float meleeRangeThreshold, float avoidanceRangeThreshold, float flockingRangeThreshold, uint16 seenByEntityId) :
 		m_rangedRangeThresholdSquared(rangedRangeThreshold * rangedRangeThreshold),
 		m_meleeRangeThresholdSquared(meleeRangeThreshold * meleeRangeThreshold),
 		m_avoidanceRangeThresholdSquared(avoidanceRangeThreshold * avoidanceRangeThreshold),
-		m_flockingRangeThresholdSquared(flockingRangeThreshold * flockingRangeThreshold){}
+		m_flockingRangeThresholdSquared(flockingRangeThreshold * flockingRangeThreshold),
+		m_seenByEntityId(seenByEntityId){}
 
 	float m_rangedRangeThresholdSquared = 0.0f;
 	float m_meleeRangeThresholdSquared = 0.0f;
 	float m_avoidanceRangeThresholdSquared = 0.0f;
 	float m_flockingRangeThresholdSquared = 0.0f;
+	uint16 m_seenByEntityId = ArgusECSConstants::k_maxEntities;
 };
 
 class ArgusEntityKDTreeRangeOutput

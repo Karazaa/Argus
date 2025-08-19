@@ -17,6 +17,7 @@ public:
 	static float FindAreaOfObstacleCartesian(const ObstaclePointArray& obstaclePoints);
 
 private:
+	static void ClearSeenByStatus();
 	static void CacheAdjacentEntityIds(const SpatialPartitioningComponent* spatialPartitioningComponent);
 	static void CalculateAdjacentEntityGroups();
 	static bool FloodFillGroupRecursive(uint16 groupId, uint16 argusEntityId, FVector& currentPositionSum, float& numberOfEntitiesInGroup, uint16& numberOfStoppedEntities, TArray<ArgusEntity>& entitiesInGroup);

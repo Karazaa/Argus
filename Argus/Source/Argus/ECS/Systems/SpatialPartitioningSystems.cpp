@@ -34,8 +34,22 @@ void SpatialPartitioningSystems::RunSystems(const ArgusEntity& spatialPartitioni
 		spatialPartitioningComponent->m_argusEntityKDTree.RebuildKDTreeForAllArgusEntities();
 	}
 
+	ClearSeenByStatus();
 	CacheAdjacentEntityIds(spatialPartitioningComponent);
 	CalculateAdjacentEntityGroups();
+}
+
+void SpatialPartitioningSystems::ClearSeenByStatus()
+{
+	ARGUS_TRACE(SpatialPartitioningSystems::ClearSeenByStatus);
+	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
+	{
+		ArgusEntity entity = ArgusEntity::RetrieveEntity(i);
+		if (IdentityComponent* identityComponent = entity.GetComponent<IdentityComponent>())
+		{
+			identityComponent->ClearSeenBy();
+		}
+	}
 }
 
 void SpatialPartitioningSystems::CacheAdjacentEntityIds(const SpatialPartitioningComponent* spatialPartitioningComponent)
@@ -45,11 +59,6 @@ void SpatialPartitioningSystems::CacheAdjacentEntityIds(const SpatialPartitionin
 	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{
 		ArgusEntity entity = ArgusEntity::RetrieveEntity(i);
-		if (!entity)
-		{
-			continue;
-		}
-
 		NearbyEntitiesComponent* nearbyEntitiesComponent = entity.GetComponent<NearbyEntitiesComponent>();
 		const TransformComponent* transformComponent = entity.GetComponent<TransformComponent>();
 		if (!nearbyEntitiesComponent || !transformComponent)
@@ -74,7 +83,7 @@ void SpatialPartitioningSystems::CacheAdjacentEntityIds(const SpatialPartitionin
 		}
 
 		const TFunction<bool(const ArgusEntityKDTreeNode*)> queryFilter = [entity](const ArgusEntityKDTreeNode* entityNode)
-	{
+		{
 			ARGUS_RETURN_ON_NULL_BOOL(entityNode, ArgusECSLog);
 			if (entityNode->m_entityId == entity.GetId())
 			{
@@ -100,7 +109,7 @@ void SpatialPartitioningSystems::CacheAdjacentEntityIds(const SpatialPartitionin
 			rangedRange = targetingComponent->m_rangedRange;
 			sightRange = targetingComponent->m_sightRange;
 		}
-		ArgusEntityKDTreeQueryRangeThresholds queryThresholds = ArgusEntityKDTreeQueryRangeThresholds(rangedRange, meleeRange, adjacentEntityRange, flockingRange);
+		ArgusEntityKDTreeQueryRangeThresholds queryThresholds = ArgusEntityKDTreeQueryRangeThresholds(rangedRange, meleeRange, adjacentEntityRange, flockingRange, i);
 		spatialPartitioningComponent->m_argusEntityKDTree.FindOtherArgusEntityIdsWithinRangeOfArgusEntity(nearbyEntitiesComponent->m_nearbyEntities, queryThresholds, entity, sightRange, queryFilter);
 	}
 }
