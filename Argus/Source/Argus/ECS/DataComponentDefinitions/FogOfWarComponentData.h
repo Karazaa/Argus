@@ -12,6 +12,10 @@ class ARGUS_API UFogOfWarComponentData : public UComponentData
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(Transient)
+	TObjectPtr<UTexture2D> m_fogOfWarTexture = nullptr;
+	UPROPERTY(Transient)
+	TObjectPtr<UTexture2D> m_previousFogOfwarTexture = nullptr;
 
 	void InstantiateComponentForEntity(const ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;

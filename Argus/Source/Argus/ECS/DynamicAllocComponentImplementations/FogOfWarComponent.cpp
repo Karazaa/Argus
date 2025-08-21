@@ -14,6 +14,8 @@
 // Component shared functionality
 void FogOfWarComponent::Reset()
 {
+	m_fogOfWarTexture = nullptr;
+	m_previousFogOfwarTexture = nullptr;
 }
 
 void FogOfWarComponent::DrawComponentDebug() const
@@ -26,6 +28,12 @@ void FogOfWarComponent::DrawComponentDebug() const
 
 	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings))
 	{
+		ImGui::TableNextColumn();
+		ImGui::Text("m_fogOfWarTexture");
+		ImGui::TableNextColumn();
+		ImGui::TableNextColumn();
+		ImGui::Text("m_previousFogOfwarTexture");
+		ImGui::TableNextColumn();
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

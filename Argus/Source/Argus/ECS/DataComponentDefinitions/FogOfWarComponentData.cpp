@@ -10,6 +10,8 @@ void UFogOfWarComponentData::InstantiateComponentForEntity(const ArgusEntity& en
 	FogOfWarComponent* FogOfWarComponentRef = entity.AddComponent<FogOfWarComponent>();
 	ARGUS_RETURN_ON_NULL(FogOfWarComponentRef, ArgusECSLog);
 
+	FogOfWarComponentRef->m_fogOfWarTexture = m_fogOfWarTexture;
+	FogOfWarComponentRef->m_previousFogOfwarTexture = m_previousFogOfwarTexture;
 }
 
 bool UFogOfWarComponentData::MatchesType(UComponentData* other) const
