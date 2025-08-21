@@ -85,6 +85,9 @@ TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > ArgusCom
 #pragma region AssetLoadingComponent
 ArgusMap<uint16, AssetLoadingComponent*, ArgusSetAllocator<1> > ArgusComponentRegistry::s_AssetLoadingComponents;
 #pragma endregion
+#pragma region FogOfWarComponent
+ArgusMap<uint16, FogOfWarComponent*, ArgusSetAllocator<1> > ArgusComponentRegistry::s_FogOfWarComponents;
+#pragma endregion
 #pragma region InputInterfaceComponent
 ArgusMap<uint16, InputInterfaceComponent*, ArgusSetAllocator<1> > ArgusComponentRegistry::s_InputInterfaceComponents;
 #pragma endregion
@@ -149,6 +152,10 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 	if (s_AssetLoadingComponents.Contains(entityId))
 	{
 		s_AssetLoadingComponents.Remove(entityId);
+	}
+	if (s_FogOfWarComponents.Contains(entityId))
+	{
+		s_FogOfWarComponents.Remove(entityId);
 	}
 	if (s_InputInterfaceComponents.Contains(entityId))
 	{
@@ -471,6 +478,18 @@ void ArgusComponentRegistry::FlushAllComponents()
 		}
 	);
  
+	s_FogOfWarComponents.RemoveAll([](const uint16& entityId, FogOfWarComponent*& component)
+		{
+			if (ArgusEntity::IsReservedEntityId(entityId) && component)
+			{
+				component->Reset();
+				return false;
+			}
+
+			return true;
+		}
+	);
+ 
 	s_InputInterfaceComponents.RemoveAll([](const uint16& entityId, InputInterfaceComponent*& component)
 		{
 			if (ArgusEntity::IsReservedEntityId(entityId) && component)
@@ -692,6 +711,10 @@ void ArgusComponentRegistry::DrawComponentsDebug(uint16 entityId)
 	if (const AssetLoadingComponent* AssetLoadingComponentPtr = GetComponent<AssetLoadingComponent>(entityId))
 	{
 		AssetLoadingComponentPtr->DrawComponentDebug();
+	}
+	if (const FogOfWarComponent* FogOfWarComponentPtr = GetComponent<FogOfWarComponent>(entityId))
+	{
+		FogOfWarComponentPtr->DrawComponentDebug();
 	}
 	if (const InputInterfaceComponent* InputInterfaceComponentPtr = GetComponent<InputInterfaceComponent>(entityId))
 	{

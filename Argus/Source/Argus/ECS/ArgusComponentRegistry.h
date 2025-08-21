@@ -33,6 +33,7 @@
 
 // Begin dynamically allocated component specific includes.
 #include "DynamicAllocComponentDefinitions\AssetLoadingComponent.h"
+#include "DynamicAllocComponentDefinitions\FogOfWarComponent.h"
 #include "DynamicAllocComponentDefinitions\InputInterfaceComponent.h"
 #include "DynamicAllocComponentDefinitions\ReticleComponent.h"
 #include "DynamicAllocComponentDefinitions\SpatialPartitioningComponent.h"
@@ -68,7 +69,7 @@ public:
 	static void DrawComponentsDebug(uint16 entityId);
 #endif //!UE_BUILD_SHIPPING
 
-	static constexpr uint32 k_numComponentTypes = 23;
+	static constexpr uint32 k_numComponentTypes = 24;
 
 	// Begin component specific template specifiers.
 	
@@ -1938,6 +1939,66 @@ public:
 		}
 
 		return s_AssetLoadingComponents[entityId];
+	}
+#pragma endregion
+#pragma region FogOfWarComponent
+private:
+	static ArgusMap<uint16, FogOfWarComponent*, ArgusSetAllocator<1> > s_FogOfWarComponents;
+public:
+	template<>
+	inline FogOfWarComponent* GetComponent<FogOfWarComponent>(uint16 entityId)
+	{
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(FogOfWarComponent));
+			return nullptr;
+		}
+
+		if (!s_FogOfWarComponents.Contains(entityId))
+		{
+			return nullptr;
+		}
+
+		return s_FogOfWarComponents[entityId];
+	}
+
+	template<>
+	inline FogOfWarComponent* AddComponent<FogOfWarComponent>(uint16 entityId)
+	{
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(FogOfWarComponent));
+			return nullptr;
+		}
+
+		if (UNLIKELY(s_FogOfWarComponents.Contains(entityId)))
+		{
+			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(FogOfWarComponent), entityId);
+			return s_FogOfWarComponents[entityId];
+		}
+
+		FogOfWarComponent* output = new (ArgusMemorySource::Allocate<FogOfWarComponent>()) FogOfWarComponent();
+		s_FogOfWarComponents.Emplace(entityId, output);
+		return output;
+	}
+
+	template<>
+	inline FogOfWarComponent* GetOrAddComponent<FogOfWarComponent>(uint16 entityId)
+	{
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(FogOfWarComponent));
+			return nullptr;
+		}
+
+		if (!s_FogOfWarComponents.Contains(entityId))
+		{
+			FogOfWarComponent* output = new (ArgusMemorySource::Allocate<FogOfWarComponent>()) FogOfWarComponent();
+			s_FogOfWarComponents.Emplace(entityId, output);
+			return output;
+		}
+
+		return s_FogOfWarComponents[entityId];
 	}
 #pragma endregion
 #pragma region InputInterfaceComponent
