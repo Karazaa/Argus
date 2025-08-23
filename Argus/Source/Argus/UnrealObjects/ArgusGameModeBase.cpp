@@ -25,7 +25,7 @@ void AArgusGameModeBase::StartPlay()
 	ArgusEntity::FlushAllEntities();
 	UWorld* worldPointer = GetWorld();
 	ARGUS_RETURN_ON_NULL(worldPointer, ArgusUnrealObjectsLog);
-	ArgusSystemsManager::Initialize(worldPointer, m_initialTeamResourceSet);
+	ArgusSystemsManager::Initialize(worldPointer, m_initialTeamResourceSet, m_singletonTemplate.Get());
 
 	Super::StartPlay();
 	ARGUS_LOG(ArgusUnrealObjectsLog, Display, TEXT("[%s] Argus game mode base starting play."), ARGUS_FUNCNAME);

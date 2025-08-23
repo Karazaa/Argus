@@ -25,7 +25,7 @@ void ArgusSystemsManager::Initialize(UWorld* worldPointer, const FResourceSet& i
 {
 	ARGUS_RETURN_ON_NULL(worldPointer, ArgusECSLog);
 
-	PopulateSingletonComponents(worldPointer);
+	PopulateSingletonComponents(worldPointer, singletonTemplate);
 	PopulateTeamComponents(initialTeamResourceSet);
 }
 
