@@ -5,17 +5,18 @@
 #include "ComponentDependencies/ResourceSet.h"
 #include "CoreMinimal.h"
 
+class UArgusEntityTemplate;
 class UWorld;
 
 class ArgusSystemsManager
 {
 public:
-	static void Initialize(UWorld* worldPointer, const FResourceSet& initialTeamResourceSet);
+	static void Initialize(UWorld* worldPointer, const FResourceSet& initialTeamResourceSet, const UArgusEntityTemplate* singletonTemplate);
 	static void OnStartPlay(UWorld* worldPointer);
 	static void RunSystems(UWorld* worldPointer, float deltaTime);
 
 private:
-	static void PopulateSingletonComponents(UWorld* worldPointer);
+	static void PopulateSingletonComponents(UWorld* worldPointer, const UArgusEntityTemplate* singletonTemplate);
 	static void SetInitialSingletonState(UWorld* worldPointer);
 	static void PopulateTeamComponents(const FResourceSet& initialTeamResourceSet);
 	static void UpdateSingletonComponents(bool didEntityPositionChangeThisFrame);

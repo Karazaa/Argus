@@ -12,6 +12,7 @@
 #include "ArgusGameModeBase.generated.h"
 
 class AArgusPlayerController;
+class UArgusEntityTemplate;
 class UUserWidget;
 
 UCLASS()
@@ -30,6 +31,9 @@ public:
 	AArgusPlayerController* GetActivePlayerController() const { return m_activePlayerController.Get(); }
 
 protected:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Singleton")
+	TSoftObjectPtr<UArgusEntityTemplate> m_singletonTemplate = nullptr;
+
 	UPROPERTY(EditDefaultsOnly)
 	FResourceSet m_initialTeamResourceSet;
 

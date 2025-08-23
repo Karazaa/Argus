@@ -1,6 +1,7 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusSystemsManager.h"
+#include "ArgusEntityTemplate.h"
 #include "ArgusLogging.h"
 #include "Engine/World.h"
 #include "Systems/AbilitySystems.h"
@@ -20,7 +21,7 @@
 #include "ArgusMemoryDebugger.h"
 #endif //!UE_BUILD_SHIPPING
 
-void ArgusSystemsManager::Initialize(UWorld* worldPointer, const FResourceSet& initialTeamResourceSet)
+void ArgusSystemsManager::Initialize(UWorld* worldPointer, const FResourceSet& initialTeamResourceSet, const UArgusEntityTemplate* singletonTemplate)
 {
 	ARGUS_RETURN_ON_NULL(worldPointer, ArgusECSLog);
 
@@ -61,7 +62,7 @@ void ArgusSystemsManager::RunSystems(UWorld* worldPointer, float deltaTime)
 #endif //!UE_BUILD_SHIPPING
 }
 
-void ArgusSystemsManager::PopulateSingletonComponents(UWorld* worldPointer)
+void ArgusSystemsManager::PopulateSingletonComponents(UWorld* worldPointer, const UArgusEntityTemplate* singletonTemplate)
 {
 	ARGUS_RETURN_ON_NULL(worldPointer, ArgusECSLog);
 
