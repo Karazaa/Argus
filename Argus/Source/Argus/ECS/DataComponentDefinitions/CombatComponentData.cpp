@@ -7,7 +7,7 @@
 
 void UCombatComponentData::InstantiateComponentForEntity(const ArgusEntity& entity) const
 {
-	CombatComponent* CombatComponentRef = entity.AddComponent<CombatComponent>();
+	CombatComponent* CombatComponentRef = entity.GetOrAddComponent<CombatComponent>();
 	ARGUS_RETURN_ON_NULL(CombatComponentRef, ArgusECSLog);
 
 	CombatComponentRef->m_baseDamagePerIntervalOrPerSecond = m_baseDamagePerIntervalOrPerSecond;

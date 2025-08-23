@@ -7,7 +7,7 @@
 
 void UResourceComponentData::InstantiateComponentForEntity(const ArgusEntity& entity) const
 {
-	ResourceComponent* ResourceComponentRef = entity.AddComponent<ResourceComponent>();
+	ResourceComponent* ResourceComponentRef = entity.GetOrAddComponent<ResourceComponent>();
 	ARGUS_RETURN_ON_NULL(ResourceComponentRef, ArgusECSLog);
 
 	ResourceComponentRef->m_currentResources = m_currentResources;

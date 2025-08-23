@@ -7,7 +7,7 @@
 
 void UHealthComponentData::InstantiateComponentForEntity(const ArgusEntity& entity) const
 {
-	HealthComponent* HealthComponentRef = entity.AddComponent<HealthComponent>();
+	HealthComponent* HealthComponentRef = entity.GetOrAddComponent<HealthComponent>();
 	ARGUS_RETURN_ON_NULL(HealthComponentRef, ArgusECSLog);
 
 	HealthComponentRef->m_currentHealth = m_currentHealth;

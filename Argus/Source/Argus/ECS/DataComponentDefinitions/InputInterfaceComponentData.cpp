@@ -7,7 +7,7 @@
 
 void UInputInterfaceComponentData::InstantiateComponentForEntity(const ArgusEntity& entity) const
 {
-	InputInterfaceComponent* InputInterfaceComponentRef = entity.AddComponent<InputInterfaceComponent>();
+	InputInterfaceComponent* InputInterfaceComponentRef = entity.GetOrAddComponent<InputInterfaceComponent>();
 	ARGUS_RETURN_ON_NULL(InputInterfaceComponentRef, ArgusECSLog);
 
 }

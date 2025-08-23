@@ -66,7 +66,16 @@ void ArgusSystemsManager::PopulateSingletonComponents(UWorld* worldPointer, cons
 {
 	ARGUS_RETURN_ON_NULL(worldPointer, ArgusECSLog);
 
-	ArgusEntity singletonEntity = ArgusEntity::CreateEntity(ArgusECSConstants::k_singletonEntityId);
+	ArgusEntity singletonEntity = ArgusEntity::k_emptyEntity;
+	if (singletonTemplate)
+	{
+		singletonEntity = singletonTemplate->MakeEntity(ArgusECSConstants::k_singletonEntityId);
+	}
+	else
+	{
+		singletonEntity = ArgusEntity::CreateEntity(ArgusECSConstants::k_singletonEntityId);
+	}
+
 	if (!singletonEntity)
 	{
 		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] There is no singleton %s when it should have already been made."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity));

@@ -7,7 +7,7 @@
 
 void UConstructionComponentData::InstantiateComponentForEntity(const ArgusEntity& entity) const
 {
-	ConstructionComponent* ConstructionComponentRef = entity.AddComponent<ConstructionComponent>();
+	ConstructionComponent* ConstructionComponentRef = entity.GetOrAddComponent<ConstructionComponent>();
 	ARGUS_RETURN_ON_NULL(ConstructionComponentRef, ArgusECSLog);
 
 	ConstructionComponentRef->m_requiredWorkSeconds = m_requiredWorkSeconds;

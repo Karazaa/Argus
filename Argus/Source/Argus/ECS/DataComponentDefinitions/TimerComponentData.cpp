@@ -7,7 +7,7 @@
 
 void UTimerComponentData::InstantiateComponentForEntity(const ArgusEntity& entity) const
 {
-	TimerComponent* TimerComponentRef = entity.AddComponent<TimerComponent>();
+	TimerComponent* TimerComponentRef = entity.GetOrAddComponent<TimerComponent>();
 	ARGUS_RETURN_ON_NULL(TimerComponentRef, ArgusECSLog);
 
 }

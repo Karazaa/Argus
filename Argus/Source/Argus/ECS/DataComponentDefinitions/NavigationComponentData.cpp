@@ -7,7 +7,7 @@
 
 void UNavigationComponentData::InstantiateComponentForEntity(const ArgusEntity& entity) const
 {
-	NavigationComponent* NavigationComponentRef = entity.AddComponent<NavigationComponent>();
+	NavigationComponent* NavigationComponentRef = entity.GetOrAddComponent<NavigationComponent>();
 	ARGUS_RETURN_ON_NULL(NavigationComponentRef, ArgusECSLog);
 
 }

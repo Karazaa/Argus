@@ -20,6 +20,7 @@ public:
 	TArray<TSoftObjectPtr<UComponentData>> m_componentData;
 
 	ArgusEntity MakeEntity() const;
+	ArgusEntity MakeEntity(uint16 entityId) const;
 	ArgusEntity MakeEntityAsync() const;
 	void PopulateEntity(const ArgusEntity& entity) const;
 	void SetInitialStateFromData(const ArgusEntity& entity) const;

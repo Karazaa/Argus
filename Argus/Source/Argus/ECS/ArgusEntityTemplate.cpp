@@ -12,6 +12,13 @@ ArgusEntity UArgusEntityTemplate::MakeEntity() const
 	return entity;
 }
 
+ArgusEntity UArgusEntityTemplate::MakeEntity(uint16 entityId) const
+{
+	ArgusEntity entity = ArgusEntity::CreateEntity(entityId);
+	PopulateEntity(entity);
+	return entity;
+}
+
 ArgusEntity UArgusEntityTemplate::MakeEntityAsync() const
 {
 	AssetLoadingComponent* assetLoadingComponent = ArgusEntity::GetSingletonEntity().GetComponent<AssetLoadingComponent>();

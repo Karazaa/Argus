@@ -7,7 +7,7 @@
 
 void UCarrierComponentData::InstantiateComponentForEntity(const ArgusEntity& entity) const
 {
-	CarrierComponent* CarrierComponentRef = entity.AddComponent<CarrierComponent>();
+	CarrierComponent* CarrierComponentRef = entity.GetOrAddComponent<CarrierComponent>();
 	ARGUS_RETURN_ON_NULL(CarrierComponentRef, ArgusECSLog);
 
 	CarrierComponentRef->m_carrierCapacity = m_carrierCapacity;

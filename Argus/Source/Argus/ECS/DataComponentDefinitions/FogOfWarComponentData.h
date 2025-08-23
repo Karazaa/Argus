@@ -12,6 +12,8 @@ class ARGUS_API UFogOfWarComponentData : public UComponentData
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(EditAnywhere)
+	uint16 m_textureSize = 1024u;
 	UPROPERTY(Transient)
 	TObjectPtr<UTexture2D> m_fogOfWarTexture = nullptr;
 	UPROPERTY(Transient)

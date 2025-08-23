@@ -7,7 +7,7 @@
 
 void UVelocityComponentData::InstantiateComponentForEntity(const ArgusEntity& entity) const
 {
-	VelocityComponent* VelocityComponentRef = entity.AddComponent<VelocityComponent>();
+	VelocityComponent* VelocityComponentRef = entity.GetOrAddComponent<VelocityComponent>();
 	ARGUS_RETURN_ON_NULL(VelocityComponentRef, ArgusECSLog);
 
 	VelocityComponentRef->m_desiredSpeedUnitsPerSecond = m_desiredSpeedUnitsPerSecond;

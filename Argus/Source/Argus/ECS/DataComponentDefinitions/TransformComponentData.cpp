@@ -7,7 +7,7 @@
 
 void UTransformComponentData::InstantiateComponentForEntity(const ArgusEntity& entity) const
 {
-	TransformComponent* TransformComponentRef = entity.AddComponent<TransformComponent>();
+	TransformComponent* TransformComponentRef = entity.GetOrAddComponent<TransformComponent>();
 	ARGUS_RETURN_ON_NULL(TransformComponentRef, ArgusECSLog);
 
 	TransformComponentRef->m_smoothedYaw = ArgusMath::ExponentialDecaySmoother<float>(m_smoothedYawDecayConstant);

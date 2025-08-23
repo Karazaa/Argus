@@ -7,7 +7,7 @@
 
 void UObserversComponentData::InstantiateComponentForEntity(const ArgusEntity& entity) const
 {
-	ObserversComponent* ObserversComponentRef = entity.AddComponent<ObserversComponent>();
+	ObserversComponent* ObserversComponentRef = entity.GetOrAddComponent<ObserversComponent>();
 	ARGUS_RETURN_ON_NULL(ObserversComponentRef, ArgusECSLog);
 
 }

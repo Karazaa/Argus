@@ -7,7 +7,7 @@
 
 void UResourceExtractionComponentData::InstantiateComponentForEntity(const ArgusEntity& entity) const
 {
-	ResourceExtractionComponent* ResourceExtractionComponentRef = entity.AddComponent<ResourceExtractionComponent>();
+	ResourceExtractionComponent* ResourceExtractionComponentRef = entity.GetOrAddComponent<ResourceExtractionComponent>();
 	ARGUS_RETURN_ON_NULL(ResourceExtractionComponentRef, ArgusECSLog);
 
 	ResourceExtractionComponentRef->m_resourcesToExtractRecordId = m_resourcesToExtractRecordId.LoadSynchronous() ? m_resourcesToExtractRecordId.LoadSynchronous()->m_id : 0u;

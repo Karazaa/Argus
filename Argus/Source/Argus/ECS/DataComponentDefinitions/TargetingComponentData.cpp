@@ -7,7 +7,7 @@
 
 void UTargetingComponentData::InstantiateComponentForEntity(const ArgusEntity& entity) const
 {
-	TargetingComponent* TargetingComponentRef = entity.AddComponent<TargetingComponent>();
+	TargetingComponent* TargetingComponentRef = entity.GetOrAddComponent<TargetingComponent>();
 	ARGUS_RETURN_ON_NULL(TargetingComponentRef, ArgusECSLog);
 
 	TargetingComponentRef->m_meleeRange = m_meleeRange;

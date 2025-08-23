@@ -7,7 +7,7 @@
 
 void UAbilityComponentData::InstantiateComponentForEntity(const ArgusEntity& entity) const
 {
-	AbilityComponent* AbilityComponentRef = entity.AddComponent<AbilityComponent>();
+	AbilityComponent* AbilityComponentRef = entity.GetOrAddComponent<AbilityComponent>();
 	ARGUS_RETURN_ON_NULL(AbilityComponentRef, ArgusECSLog);
 
 	AbilityComponentRef->m_ability0Id = m_ability0Id.LoadSynchronous() ? m_ability0Id.LoadSynchronous()->m_id : 0u;

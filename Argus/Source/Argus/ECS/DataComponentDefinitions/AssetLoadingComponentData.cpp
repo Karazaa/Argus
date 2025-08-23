@@ -7,7 +7,7 @@
 
 void UAssetLoadingComponentData::InstantiateComponentForEntity(const ArgusEntity& entity) const
 {
-	AssetLoadingComponent* AssetLoadingComponentRef = entity.AddComponent<AssetLoadingComponent>();
+	AssetLoadingComponent* AssetLoadingComponentRef = entity.GetOrAddComponent<AssetLoadingComponent>();
 	ARGUS_RETURN_ON_NULL(AssetLoadingComponentRef, ArgusECSLog);
 
 }

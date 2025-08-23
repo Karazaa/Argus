@@ -7,7 +7,7 @@
 
 void USpawningComponentData::InstantiateComponentForEntity(const ArgusEntity& entity) const
 {
-	SpawningComponent* SpawningComponentRef = entity.AddComponent<SpawningComponent>();
+	SpawningComponent* SpawningComponentRef = entity.GetOrAddComponent<SpawningComponent>();
 	ARGUS_RETURN_ON_NULL(SpawningComponentRef, ArgusECSLog);
 
 	SpawningComponentRef->m_spawningRadius = m_spawningRadius;

@@ -7,7 +7,7 @@
 
 void UReticleComponentData::InstantiateComponentForEntity(const ArgusEntity& entity) const
 {
-	ReticleComponent* ReticleComponentRef = entity.AddComponent<ReticleComponent>();
+	ReticleComponent* ReticleComponentRef = entity.GetOrAddComponent<ReticleComponent>();
 	ARGUS_RETURN_ON_NULL(ReticleComponentRef, ArgusECSLog);
 
 }

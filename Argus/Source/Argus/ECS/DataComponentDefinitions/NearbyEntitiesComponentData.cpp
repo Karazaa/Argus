@@ -7,7 +7,7 @@
 
 void UNearbyEntitiesComponentData::InstantiateComponentForEntity(const ArgusEntity& entity) const
 {
-	NearbyEntitiesComponent* NearbyEntitiesComponentRef = entity.AddComponent<NearbyEntitiesComponent>();
+	NearbyEntitiesComponent* NearbyEntitiesComponentRef = entity.GetOrAddComponent<NearbyEntitiesComponent>();
 	ARGUS_RETURN_ON_NULL(NearbyEntitiesComponentRef, ArgusECSLog);
 
 }

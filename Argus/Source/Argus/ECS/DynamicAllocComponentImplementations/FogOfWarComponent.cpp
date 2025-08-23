@@ -14,6 +14,7 @@
 // Component shared functionality
 void FogOfWarComponent::Reset()
 {
+	m_textureSize = 1024u;
 	m_fogOfWarTexture = nullptr;
 	m_previousFogOfwarTexture = nullptr;
 }
@@ -28,6 +29,10 @@ void FogOfWarComponent::DrawComponentDebug() const
 
 	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings))
 	{
+		ImGui::TableNextColumn();
+		ImGui::Text("m_textureSize");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_textureSize);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_fogOfWarTexture");
 		ImGui::TableNextColumn();

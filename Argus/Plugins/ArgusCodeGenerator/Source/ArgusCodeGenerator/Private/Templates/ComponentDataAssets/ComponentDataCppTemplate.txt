@@ -7,7 +7,7 @@
 
 void U#####Data::InstantiateComponentForEntity(const ArgusEntity& entity) const
 {
-	#####* #####Ref = entity.AddComponent<#####>();
+	#####* #####Ref = entity.GetOrAddComponent<#####>();
 	ARGUS_RETURN_ON_NULL(#####Ref, ArgusECSLog);
 
 	@@@@@
