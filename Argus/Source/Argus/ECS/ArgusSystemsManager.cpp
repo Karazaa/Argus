@@ -54,10 +54,7 @@ void ArgusSystemsManager::RunSystems(UWorld* worldPointer, float deltaTime)
 	AvoidanceSystems::RunSystems(worldPointer, deltaTime);
 	didEntityPositionChangeThisFrame |= TransformSystems::RunSystems(worldPointer, deltaTime);
 	didEntityPositionChangeThisFrame |= SpawningSystems::RunSystems(deltaTime);
-	if (didEntityPositionChangeThisFrame)
-	{
-		FogOfWarSystems::RunSystems(deltaTime);
-	}
+	FogOfWarSystems::RunSystems(deltaTime);
 
 	UpdateSingletonComponents(didEntityPositionChangeThisFrame);
 
@@ -113,6 +110,8 @@ void ArgusSystemsManager::SetInitialSingletonState(UWorld* worldPointer)
 	spatialPartitioningComponent->m_argusEntityKDTree.SeedTreeWithAverageEntityLocation();
 	spatialPartitioningComponent->m_argusEntityKDTree.InsertAllArgusEntitiesIntoKDTree();
 	SpatialPartitioningSystems::CalculateAvoidanceObstacles(spatialPartitioningComponent, worldPointer);
+
+	FogOfWarSystems::InitializeSystems();
 }
 
 void ArgusSystemsManager::PopulateTeamComponents(const FResourceSet& initialTeamResourceSet)

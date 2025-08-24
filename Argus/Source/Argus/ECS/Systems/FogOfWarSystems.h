@@ -5,5 +5,9 @@
 class FogOfWarSystems
 {
 public:
+	static void InitializeSystems();
 	static void RunSystems(float deltaTime);
+
+private:
+	static void UpdateTexture();
 };
