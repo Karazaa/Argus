@@ -6,6 +6,7 @@
 #include "ArgusUIBlueprintLibrary.generated.h"
 
 class UArgusInputManager;
+class UMaterialInstanceDynamic;
 
 UCLASS()
 class UArgusUIBlueprintLibrary : public UBlueprintFunctionLibrary
@@ -15,6 +16,8 @@ class UArgusUIBlueprintLibrary : public UBlueprintFunctionLibrary
 public:
 	// Could put some utility functions here. Used to have a need, but don't have much of one right now.
 	// This will likely get used/expanded on at some point.
+	UFUNCTION(BlueprintCallable)
+	static void SetFogOfWarDynamicMaterialInstance(UMaterialInstanceDynamic* dynamicMaterialInstance);
 
 private:
 	static UArgusInputManager* GetArgusInputManager(UObject* worldContextObject);

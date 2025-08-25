@@ -15,7 +15,8 @@
 void FogOfWarComponent::Reset()
 {
 	m_fogOfWarTexture = nullptr;
-	m_textureData = nullptr;
+	m_dynamicMaterialInstance = nullptr;
+	m_textureData.Reset();
 	m_textureSize = 1024u;
 }
 
@@ -33,6 +34,9 @@ void FogOfWarComponent::DrawComponentDebug() const
 		ImGui::Text("m_fogOfWarTexture");
 		ImGui::TableNextColumn();
 		ImGui::TableNextColumn();
+		ImGui::Text("m_dynamicMaterialInstance");
+		ImGui::TableNextColumn();
+		ImGui::TableNextColumn();
 		ImGui::Text("m_textureRegion");
 		ImGui::TableNextColumn();
 		ImGui::TableNextColumn();
@@ -41,7 +45,19 @@ void FogOfWarComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_textureData");
 		ImGui::TableNextColumn();
-		ImGui::Text("%d", m_textureData);
+		ImGui::Text("Array max is currently = %d", m_textureData.Max());
+		if (m_textureData.Num() == 0)
+		{
+			ImGui::Text("Array is empty");
+		}
+		else
+		{
+			ImGui::Text("Size of array = %d", m_textureData.Num());
+			for (int32 i = 0; i < m_textureData.Num(); ++i)
+			{
+				ImGui::Text("%d", m_textureData[i]);
+			}
+		}
 		ImGui::TableNextColumn();
 		ImGui::Text("m_textureSize");
 		ImGui::TableNextColumn();

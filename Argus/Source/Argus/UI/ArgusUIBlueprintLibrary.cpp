@@ -1,11 +1,22 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusUIBlueprintLibrary.h"
+#include "ArgusEntity.h"
 #include "ArgusGameModeBase.h"
 #include "ArgusInputManager.h"
 #include "ArgusLogging.h"
 #include "ArgusPlayerController.h"
 #include "Engine/World.h"
+
+void UArgusUIBlueprintLibrary::SetFogOfWarDynamicMaterialInstance(UMaterialInstanceDynamic* dynamicMaterialInstance)
+{
+	ARGUS_RETURN_ON_NULL(dynamicMaterialInstance, ArgusUnrealObjectsLog);
+
+	FogOfWarComponent* fogOfWarComponent = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId).GetComponent<FogOfWarComponent>();
+	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusUnrealObjectsLog);
+
+	fogOfWarComponent->m_dynamicMaterialInstance = dynamicMaterialInstance;
+}
 
 UArgusInputManager* UArgusUIBlueprintLibrary::GetArgusInputManager(UObject* worldContextObject)
 {

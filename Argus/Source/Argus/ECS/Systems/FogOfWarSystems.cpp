@@ -25,8 +25,16 @@ void FogOfWarSystems::InitializeSystems()
 	fogOfWarComponent->m_textureRegion = FUpdateTextureRegion2D(0, 0, 0, 0, fogOfWarComponent->m_textureSize, fogOfWarComponent->m_textureSize);
 
 	// TODO JAMES: Just hackily using FMemory for now. There will be additional complexity in making this properly resettable with the ArgusMemorySource
-	fogOfWarComponent->m_textureData = new uint8[FMath::Square(fogOfWarComponent->m_textureSize) * 4u];
+	const uint32 totalPixels = static_cast<uint32>(fogOfWarComponent->m_textureSize) * static_cast<uint32>(fogOfWarComponent->m_textureSize);
+	fogOfWarComponent->m_textureData.SetNumZeroed(totalPixels * 4u);
 	
+	for (uint32 i = 0; i < totalPixels; ++i)
+	{
+		fogOfWarComponent->m_textureData[(i * 4)] = 255; // B
+		fogOfWarComponent->m_textureData[(i * 4) + 1] = 0; // G
+		fogOfWarComponent->m_textureData[(i * 4) + 2] = 0; // R
+		fogOfWarComponent->m_textureData[(i * 4) + 3] = 100; // A
+;	}
 }
 
 void FogOfWarSystems::RunSystems(float deltaTime)
@@ -39,6 +47,10 @@ void FogOfWarSystems::RunSystems(float deltaTime)
 	// TODO JAMES: Do stuff lmao
 
 	UpdateTexture();
+	if (fogOfWarComponent->m_dynamicMaterialInstance)
+	{
+		fogOfWarComponent->m_dynamicMaterialInstance->SetTextureParameterValue("DynamicTexture", fogOfWarComponent->m_fogOfWarTexture);
+	}
 }
 
 void FogOfWarSystems::UpdateTexture()
@@ -48,7 +60,6 @@ void FogOfWarSystems::UpdateTexture()
 	FogOfWarComponent* fogOfWarComponent = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId).GetComponent<FogOfWarComponent>();
 	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
 	ARGUS_RETURN_ON_NULL(fogOfWarComponent->m_fogOfWarTexture, ArgusECSLog);
-	ARGUS_RETURN_ON_NULL(fogOfWarComponent->m_textureData, ArgusECSLog);
 
 	fogOfWarComponent->m_textureRegionsUpdateData = TextureRegionsUpdateData();
 
@@ -61,7 +72,12 @@ void FogOfWarSystems::UpdateTexture()
 	fogOfWarComponent->m_textureRegionsUpdateData.m_regions = &fogOfWarComponent->m_textureRegion;
 	fogOfWarComponent->m_textureRegionsUpdateData.m_srcPitch = 4 * fogOfWarComponent->m_textureSize;
 	fogOfWarComponent->m_textureRegionsUpdateData.m_srcBpp = 4;
-	fogOfWarComponent->m_textureRegionsUpdateData.m_srcData = fogOfWarComponent->m_textureData;
+	fogOfWarComponent->m_textureRegionsUpdateData.m_srcData = fogOfWarComponent->m_textureData.GetData();
+
+	if (!fogOfWarComponent->m_textureRegionsUpdateData.m_srcData)
+	{
+		return;
+	}
 
 	ENQUEUE_RENDER_COMMAND(UpdateTextureRegionsData)(
 		[fogOfWarComponent](FRHICommandListImmediate& RHICmdList)

@@ -11,6 +11,7 @@ void UFogOfWarComponentData::InstantiateComponentForEntity(const ArgusEntity& en
 	ARGUS_RETURN_ON_NULL(FogOfWarComponentRef, ArgusECSLog);
 
 	FogOfWarComponentRef->m_fogOfWarTexture = m_fogOfWarTexture;
+	FogOfWarComponentRef->m_dynamicMaterialInstance = m_dynamicMaterialInstance;
 	FogOfWarComponentRef->m_textureSize = m_textureSize;
 }
 
