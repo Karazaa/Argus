@@ -59,6 +59,15 @@ void FogOfWarComponent::DrawComponentDebug() const
 			}
 		}
 		ImGui::TableNextColumn();
+		ImGui::Text("m_hiddenColor");
+		ImGui::TableNextColumn();
+		ImGui::TableNextColumn();
+		ImGui::Text("m_revealedOnceColor");
+		ImGui::TableNextColumn();
+		ImGui::TableNextColumn();
+		ImGui::Text("m_activelyRevealedColor");
+		ImGui::TableNextColumn();
+		ImGui::TableNextColumn();
 		ImGui::Text("m_textureSize");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_textureSize);

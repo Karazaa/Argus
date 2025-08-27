@@ -30,11 +30,11 @@ void FogOfWarSystems::InitializeSystems()
 	
 	for (uint32 i = 0; i < totalPixels; ++i)
 	{
-		fogOfWarComponent->m_textureData[(i * 4)] = 255; // B
-		fogOfWarComponent->m_textureData[(i * 4) + 1] = 0; // G
-		fogOfWarComponent->m_textureData[(i * 4) + 2] = 0; // R
-		fogOfWarComponent->m_textureData[(i * 4) + 3] = 100; // A
-;	}
+		fogOfWarComponent->m_textureData[(i * 4)] = fogOfWarComponent->m_hiddenColor.B;		// B
+		fogOfWarComponent->m_textureData[(i * 4) + 1] = fogOfWarComponent->m_hiddenColor.G; // G
+		fogOfWarComponent->m_textureData[(i * 4) + 2] = fogOfWarComponent->m_hiddenColor.R; // R
+		fogOfWarComponent->m_textureData[(i * 4) + 3] = fogOfWarComponent->m_hiddenColor.A; // A
+	}
 }
 
 void FogOfWarSystems::RunSystems(float deltaTime)
@@ -45,6 +45,9 @@ void FogOfWarSystems::RunSystems(float deltaTime)
 	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
 
 	// TODO JAMES: Do stuff lmao
+	// General Algorithm
+	// 1) Iterate over all pixels and convert any that were activelyRevealed to be revealedOnce
+	// 2) Iterate over all entities and carve out a circle of pixels (activelyRevealed) based on sight radius for entities that are on the local player team (or allies).
 
 	UpdateTexture();
 	if (fogOfWarComponent->m_dynamicMaterialInstance)

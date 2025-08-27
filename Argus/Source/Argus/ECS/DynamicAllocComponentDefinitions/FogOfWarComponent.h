@@ -29,6 +29,8 @@ struct FogOfWarComponent
 	ARGUS_IGNORE()
 	TArray<uint8> m_textureData;
 
+	FColor m_hiddenColor;
+	FColor m_revealedOnceColor;
+	FColor m_activelyRevealedColor;
 	uint16 m_textureSize = 1024u;
-
 };
