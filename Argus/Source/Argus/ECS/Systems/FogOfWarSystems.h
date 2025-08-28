@@ -2,6 +2,9 @@
 
 #pragma once
 
+class ArgusEntity;
+class FogOfWarComponent;
+
 class FogOfWarSystems
 {
 public:
@@ -9,5 +12,8 @@ public:
 	static void RunSystems(float deltaTime);
 
 private:
+	static void ClearRevealedPixels(FogOfWarComponent* fogOfWarComponent);
+	static void SetRevealedPixels(FogOfWarComponent* fogOfWarComponent);
+	static void RevealPixelsForEntity(FogOfWarComponent* fogOfWarComponent, const ArgusEntity& entity);
 	static void UpdateTexture();
 };

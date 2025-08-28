@@ -44,16 +44,51 @@ void FogOfWarSystems::RunSystems(float deltaTime)
 	FogOfWarComponent* fogOfWarComponent = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId).GetComponent<FogOfWarComponent>();
 	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
 
-	// TODO JAMES: Do stuff lmao
-	// General Algorithm
-	// 1) Iterate over all pixels and convert any that were activelyRevealed to be revealedOnce
-	// 2) Iterate over all entities and carve out a circle of pixels (activelyRevealed) based on sight radius for entities that are on the local player team (or allies).
+	// Iterate over all pixels and convert any that were activelyRevealed to be revealedOnce
+	ClearRevealedPixels(fogOfWarComponent);
 
+	// Iterate over all entities and carve out a circle of pixels (activelyRevealed) based on sight radius for entities that are on the local player team (or allies).
+	SetRevealedPixels(fogOfWarComponent);
+
+	// Update the fog of war texture via render command
 	UpdateTexture();
+
+	// Set the dynamic material instance texture param to the fog of war texture.
 	if (fogOfWarComponent->m_dynamicMaterialInstance)
 	{
 		fogOfWarComponent->m_dynamicMaterialInstance->SetTextureParameterValue("DynamicTexture", fogOfWarComponent->m_fogOfWarTexture);
 	}
+}
+
+void FogOfWarSystems::ClearRevealedPixels(FogOfWarComponent* fogOfWarComponent)
+{
+	ARGUS_TRACE(FogOfWarSystems::ClearRevealedPixels);
+	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
+}
+
+void FogOfWarSystems::SetRevealedPixels(FogOfWarComponent* fogOfWarComponent)
+{
+	ARGUS_TRACE(FogOfWarSystems::SetRevealedPixels);
+	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
+
+	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
+	{
+		// TODO JAMES: No hardcode pls
+		const ArgusEntity entity = ArgusEntity::RetrieveEntity(i);
+		if (!entity.IsOnTeam(ETeam::TeamA))
+		{
+			continue;
+		}
+
+		RevealPixelsForEntity(fogOfWarComponent, entity);
+	}
+}
+
+void FogOfWarSystems::RevealPixelsForEntity(FogOfWarComponent* fogOfWarComponent, const ArgusEntity& entity)
+{
+	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
+
+	// TODO JAMES: Get entity location. Convert that to pixels somehow, get circle of pixels around entity and set their color to revealed.
 }
 
 void FogOfWarSystems::UpdateTexture()
