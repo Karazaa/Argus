@@ -3,7 +3,8 @@
 #pragma once
 
 class ArgusEntity;
-class FogOfWarComponent;
+
+struct FogOfWarComponent;
 
 class FogOfWarSystems
 {
@@ -16,4 +17,6 @@ private:
 	static void SetRevealedPixels(FogOfWarComponent* fogOfWarComponent);
 	static void RevealPixelsForEntity(FogOfWarComponent* fogOfWarComponent, const ArgusEntity& entity);
 	static void UpdateTexture();
+
+	static bool DoesPixelEqualColor(FogOfWarComponent* fogOfWarComponent, uint32 pixelNumber, FColor color);
 };

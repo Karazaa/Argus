@@ -25,7 +25,7 @@ void FogOfWarSystems::InitializeSystems()
 	fogOfWarComponent->m_textureRegion = FUpdateTextureRegion2D(0, 0, 0, 0, fogOfWarComponent->m_textureSize, fogOfWarComponent->m_textureSize);
 
 	// TODO JAMES: Just hackily using FMemory for now. There will be additional complexity in making this properly resettable with the ArgusMemorySource
-	const uint32 totalPixels = static_cast<uint32>(fogOfWarComponent->m_textureSize) * static_cast<uint32>(fogOfWarComponent->m_textureSize);
+	const uint32 totalPixels = fogOfWarComponent->GetTotalPixels();
 	fogOfWarComponent->m_textureData.SetNumZeroed(totalPixels * 4u);
 	
 	for (uint32 i = 0; i < totalPixels; ++i)
@@ -64,6 +64,20 @@ void FogOfWarSystems::ClearRevealedPixels(FogOfWarComponent* fogOfWarComponent)
 {
 	ARGUS_TRACE(FogOfWarSystems::ClearRevealedPixels);
 	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
+
+	const uint32 totalPixels = fogOfWarComponent->GetTotalPixels();
+	for (uint32 i = 0; i < totalPixels; ++i)
+	{
+		if (!DoesPixelEqualColor(fogOfWarComponent, i, fogOfWarComponent->m_activelyRevealedColor))
+		{
+			continue;
+		}
+
+		fogOfWarComponent->m_textureData[(i * 4)] = fogOfWarComponent->m_revealedOnceColor.B;		// B
+		fogOfWarComponent->m_textureData[(i * 4) + 1] = fogOfWarComponent->m_revealedOnceColor.G;	// G
+		fogOfWarComponent->m_textureData[(i * 4) + 2] = fogOfWarComponent->m_revealedOnceColor.R;	// R
+		fogOfWarComponent->m_textureData[(i * 4) + 3] = fogOfWarComponent->m_revealedOnceColor.A;	// A
+	}
 }
 
 void FogOfWarSystems::SetRevealedPixels(FogOfWarComponent* fogOfWarComponent)
@@ -137,4 +151,20 @@ void FogOfWarSystems::UpdateTexture()
 				}
 			}
 		});
+}
+
+bool FogOfWarSystems::DoesPixelEqualColor(FogOfWarComponent* fogOfWarComponent, uint32 pixelNumber, FColor color)
+{
+	ARGUS_RETURN_ON_NULL_BOOL(fogOfWarComponent, ArgusECSLog);
+
+	const uint32 totalPixels = fogOfWarComponent->GetTotalPixels();
+	if (pixelNumber > (static_cast<uint32>(fogOfWarComponent->m_textureData.Num()) / 4u))
+	{
+		return false;
+	}
+
+	return	fogOfWarComponent->m_textureData[(pixelNumber * 4)] == color.B &&		// B
+			fogOfWarComponent->m_textureData[(pixelNumber * 4) + 1] == color.G &&	// G
+			fogOfWarComponent->m_textureData[(pixelNumber * 4) + 2] == color.R &&	// R
+			fogOfWarComponent->m_textureData[(pixelNumber * 4) + 3] == color.A;		// A
 }

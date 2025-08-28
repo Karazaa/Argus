@@ -33,4 +33,9 @@ struct FogOfWarComponent
 	FColor m_revealedOnceColor;
 	FColor m_activelyRevealedColor;
 	uint16 m_textureSize = 1024u;
+
+	uint32 GetTotalPixels()
+	{
+		return static_cast<uint32>(m_textureSize) * static_cast<uint32>(m_textureSize);
+	}
 };
