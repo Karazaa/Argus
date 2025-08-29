@@ -6,6 +6,7 @@
 #include "ArgusMacros.h"
 #include "RHICommandList.h"
 #include "Rendering/Texture2DResource.h"
+#include "SystemArgumentDefinitions/FogOfWarSystemsArgs.h"
 
 void FogOfWarSystems::InitializeSystems()
 {
@@ -45,7 +46,7 @@ void FogOfWarSystems::RunSystems(float deltaTime)
 	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
 
 	// Iterate over all pixels and convert any that were activelyRevealed to be revealedOnce
-	ClearRevealedPixels(fogOfWarComponent);
+	// ClearRevealedPixels(fogOfWarComponent);
 
 	// Iterate over all entities and carve out a circle of pixels (activelyRevealed) based on sight radius for entities that are on the local player team (or allies).
 	SetRevealedPixels(fogOfWarComponent);
@@ -87,22 +88,48 @@ void FogOfWarSystems::SetRevealedPixels(FogOfWarComponent* fogOfWarComponent)
 
 	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{
-		// TODO JAMES: No hardcode pls
 		const ArgusEntity entity = ArgusEntity::RetrieveEntity(i);
+		FogOfWarSystemsArgs components;
+		if (!components.PopulateArguments(entity))
+		{
+			continue;
+		}
+
+		// TODO JAMES: No hardcode pls
 		if (!entity.IsOnTeam(ETeam::TeamA))
 		{
 			continue;
 		}
 
-		RevealPixelsForEntity(fogOfWarComponent, entity);
+		RevealPixelsForEntity(fogOfWarComponent, components);
 	}
 }
 
-void FogOfWarSystems::RevealPixelsForEntity(FogOfWarComponent* fogOfWarComponent, const ArgusEntity& entity)
+void FogOfWarSystems::RevealPixelsForEntity(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components)
 {
 	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
 
-	// TODO JAMES: Get entity location. Convert that to pixels somehow, get circle of pixels around entity and set their color to revealed.
+	const uint32 maxPixel = fogOfWarComponent->GetTotalPixels() - 1;
+	const uint32 centerPixel = GetPixelNumberFromWorldSpaceLocation(fogOfWarComponent, components.m_transformComponent->m_location);
+	const uint32 radius = GetPixelRadiusFromWorldSpaceRadius(fogOfWarComponent, components.m_targetingComponent->m_sightRange);
+
+	const uint32 differenceToBounds = (radius * static_cast<uint32>(fogOfWarComponent->m_textureSize)) + radius;
+	uint32 topLeftIndex = 0u;
+	uint32 bottomRightIndex = maxPixel;
+	if (differenceToBounds < centerPixel)
+	{
+		topLeftIndex = centerPixel - differenceToBounds;
+	}
+	if ((differenceToBounds + centerPixel) < maxPixel)
+	{
+		bottomRightIndex = centerPixel + differenceToBounds;
+	}
+
+	// TODO JAMES: Iterate between top left index and bottom right index (skipping forward at row extents properly) and set the pixel values to actively revealed.
 }
 
 void FogOfWarSystems::UpdateTexture()
@@ -167,4 +194,32 @@ bool FogOfWarSystems::DoesPixelEqualColor(FogOfWarComponent* fogOfWarComponent, 
 			fogOfWarComponent->m_textureData[(pixelNumber * 4) + 1] == color.G &&	// G
 			fogOfWarComponent->m_textureData[(pixelNumber * 4) + 2] == color.R &&	// R
 			fogOfWarComponent->m_textureData[(pixelNumber * 4) + 3] == color.A;		// A
+}
+
+uint32 FogOfWarSystems::GetPixelNumberFromWorldSpaceLocation(FogOfWarComponent* fogOfWarComponent, const FVector& worldSpaceLocation)
+{
+	ARGUS_RETURN_ON_NULL_UINT32(fogOfWarComponent, ArgusECSLog);
+	SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId).GetComponent<SpatialPartitioningComponent>();
+	ARGUS_RETURN_ON_NULL_UINT32(spatialPartitioningComponent, ArgusECSLog);
+
+	const float textureSize = static_cast<float>(fogOfWarComponent->m_textureSize);
+	const float worldspaceWidth = spatialPartitioningComponent->m_validSpaceExtent * 2.0f;
+
+	float xValue = ArgusMath::SafeDivide(worldSpaceLocation.Y + spatialPartitioningComponent->m_validSpaceExtent, worldspaceWidth) * textureSize;
+	float yValue = ArgusMath::SafeDivide((-worldSpaceLocation.X) + spatialPartitioningComponent->m_validSpaceExtent, worldspaceWidth) * textureSize;
+
+	uint32 xValue32 = static_cast<uint32>(FMath::FloorToInt32(xValue));
+	uint32 yValue32 = static_cast<uint32>(FMath::FloorToInt32(yValue));
+
+	return (yValue32 * static_cast<uint32>(fogOfWarComponent->m_textureSize)) + xValue32;
+}
+
+uint32 FogOfWarSystems::GetPixelRadiusFromWorldSpaceRadius(FogOfWarComponent* fogOfWarComponent, float radius)
+{
+	ARGUS_RETURN_ON_NULL_UINT32(fogOfWarComponent, ArgusECSLog);
+	SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId).GetComponent<SpatialPartitioningComponent>();
+	ARGUS_RETURN_ON_NULL_UINT32(spatialPartitioningComponent, ArgusECSLog);
+
+	const float portion = ArgusMath::SafeDivide(radius, (2.0f * spatialPartitioningComponent->m_validSpaceExtent));
+	return FMath::FloorToInt32(static_cast<float>(fogOfWarComponent->m_textureSize) * portion);
 }

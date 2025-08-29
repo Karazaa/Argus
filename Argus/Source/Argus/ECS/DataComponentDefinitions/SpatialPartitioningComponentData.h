@@ -12,6 +12,8 @@ class ARGUS_API USpatialPartitioningComponentData : public UComponentData
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(EditAnywhere)
+	float m_validSpaceExtent = 3000.0f;
 
 	void InstantiateComponentForEntity(const ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;

@@ -54,9 +54,9 @@ void ArgusSystemsManager::RunSystems(UWorld* worldPointer, float deltaTime)
 	AvoidanceSystems::RunSystems(worldPointer, deltaTime);
 	didEntityPositionChangeThisFrame |= TransformSystems::RunSystems(worldPointer, deltaTime);
 	didEntityPositionChangeThisFrame |= SpawningSystems::RunSystems(deltaTime);
-	FogOfWarSystems::RunSystems(deltaTime);
 
 	UpdateSingletonComponents(didEntityPositionChangeThisFrame);
+	FogOfWarSystems::RunSystems(deltaTime);
 
 #if !UE_BUILD_SHIPPING
 	ArgusECSDebugger::DrawECSDebugger();
@@ -84,15 +84,17 @@ void ArgusSystemsManager::PopulateSingletonComponents(UWorld* worldPointer, cons
 		return;
 	}
 
-	SpatialPartitioningComponent* spatialPartitioningComponent = singletonEntity.GetOrAddComponent<SpatialPartitioningComponent>();
-	ReticleComponent* reticleComponent = singletonEntity.GetOrAddComponent<ReticleComponent>();
-	InputInterfaceComponent* inputInterfaceComponent = singletonEntity.GetOrAddComponent<InputInterfaceComponent>();
 	AssetLoadingComponent* assetLoadingComponent = singletonEntity.GetOrAddComponent<AssetLoadingComponent>();
+	FogOfWarComponent* fogOfWarComponent = singletonEntity.GetOrAddComponent<FogOfWarComponent>();
+	InputInterfaceComponent* inputInterfaceComponent = singletonEntity.GetOrAddComponent<InputInterfaceComponent>();
+	ReticleComponent* reticleComponent = singletonEntity.GetOrAddComponent<ReticleComponent>();
+	SpatialPartitioningComponent* spatialPartitioningComponent = singletonEntity.GetOrAddComponent<SpatialPartitioningComponent>();
 
-	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
-	ARGUS_RETURN_ON_NULL(reticleComponent, ArgusECSLog);
-	ARGUS_RETURN_ON_NULL(inputInterfaceComponent, ArgusECSLog);
 	ARGUS_RETURN_ON_NULL(assetLoadingComponent, ArgusECSLog);
+	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
+	ARGUS_RETURN_ON_NULL(inputInterfaceComponent, ArgusECSLog);
+	ARGUS_RETURN_ON_NULL(reticleComponent, ArgusECSLog);
+	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
 }
 
 void ArgusSystemsManager::SetInitialSingletonState(UWorld* worldPointer)

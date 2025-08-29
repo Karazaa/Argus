@@ -314,7 +314,7 @@ void SpatialPartitioningSystems::CalculateAvoidanceObstacles(SpatialPartitioning
 	spatialPartitioningComponent->m_obstaclePointKDTree.ResetKDTreeWithAverageLocation();
 
 	TArray<FVector> navWalls;
-	GetNavMeshWalls(navMesh, originLocation, navWalls);
+	GetNavMeshWalls(spatialPartitioningComponent, navMesh, originLocation, navWalls);
 
 	ConvertWallsIntoObstacles(navWalls, spatialPartitioningComponent->m_obstacles);
 
@@ -341,39 +341,25 @@ float SpatialPartitioningSystems::FindAreaOfObstacleCartesian(const ObstaclePoin
 	return area;
 }
 
-bool SpatialPartitioningSystems::GetNavMeshWalls(const ARecastNavMesh* navMesh, const FNavLocation& originLocation, TArray<FVector>& outNavWalls)
+bool SpatialPartitioningSystems::GetNavMeshWalls(const SpatialPartitioningComponent* spatialPartitioningComponent, const ARecastNavMesh* navMesh, const FNavLocation& originLocation, TArray<FVector>& outNavWalls)
 {
 	ARGUS_TRACE(SpatialPartitioningSystems::GetNavMeshWalls);
 
-	if (!navMesh)
-	{
-		return false;
-	}
+	ARGUS_RETURN_ON_NULL_BOOL(spatialPartitioningComponent, ArgusECSLog);
+	ARGUS_RETURN_ON_NULL_BOOL(navMesh, ArgusECSLog);
 
 	const FNavigationQueryFilter* filter = navMesh->GetDefaultQueryFilter().Get();
-	if (!filter)
-	{
-		return false;
-	}
+	ARGUS_RETURN_ON_NULL_BOOL(filter, ArgusECSLog);
 
 	const dtNavMesh* detourMesh = navMesh->GetRecastMesh();
-	if (!detourMesh)
-	{
-		return false;
-	}
+	ARGUS_RETURN_ON_NULL_BOOL(detourMesh, ArgusECSLog);
 
 	const uint32 maxSearchNodes = filter->GetMaxSearchNodes();
 	const FRecastQueryFilter* recastQueryFilter = static_cast<const FRecastQueryFilter*>(filter->GetImplementation());
-	if (!recastQueryFilter)
-	{
-		return false;
-	}
+	ARGUS_RETURN_ON_NULL_BOOL(recastQueryFilter, ArgusECSLog);
 
 	const dtQueryFilter* queryFilter = recastQueryFilter->GetAsDetourQueryFilter();
-	if (!queryFilter)
-	{
-		return false;
-	}
+	ARGUS_RETURN_ON_NULL_BOOL(queryFilter, ArgusECSLog);
 
 	int32 numWalls = 0;
 	FVector::FReal wallSegments[ArgusECSConstants::k_maxDetourWalls * 3 * 2] = { 0 };
@@ -385,14 +371,14 @@ bool SpatialPartitioningSystems::GetNavMeshWalls(const ARecastNavMesh* navMesh, 
 	const int verts = 4;
 	TArray<FVector> queryShapePoints;
 	queryShapePoints.SetNumZeroed(verts);
-	queryShapePoints[0].X -= ArgusECSConstants::k_detourQuerySize;
-	queryShapePoints[1].X += ArgusECSConstants::k_detourQuerySize;
-	queryShapePoints[2].X += ArgusECSConstants::k_detourQuerySize;
-	queryShapePoints[3].X -= ArgusECSConstants::k_detourQuerySize;
-	queryShapePoints[0].Y += ArgusECSConstants::k_detourQuerySize;
-	queryShapePoints[1].Y += ArgusECSConstants::k_detourQuerySize;
-	queryShapePoints[2].Y -= ArgusECSConstants::k_detourQuerySize;
-	queryShapePoints[3].Y -= ArgusECSConstants::k_detourQuerySize;
+	queryShapePoints[0].X -= spatialPartitioningComponent->m_validSpaceExtent;
+	queryShapePoints[1].X += spatialPartitioningComponent->m_validSpaceExtent;
+	queryShapePoints[2].X += spatialPartitioningComponent->m_validSpaceExtent;
+	queryShapePoints[3].X -= spatialPartitioningComponent->m_validSpaceExtent;
+	queryShapePoints[0].Y += spatialPartitioningComponent->m_validSpaceExtent;
+	queryShapePoints[1].Y += spatialPartitioningComponent->m_validSpaceExtent;
+	queryShapePoints[2].Y -= spatialPartitioningComponent->m_validSpaceExtent;
+	queryShapePoints[3].Y -= spatialPartitioningComponent->m_validSpaceExtent;
 
 	FVector::FReal rcConvexPolygon[verts * 3] = { 0 };
 
@@ -419,10 +405,10 @@ bool SpatialPartitioningSystems::GetNavMeshWalls(const ARecastNavMesh* navMesh, 
 			FVector vertex0 = Recast2UnrealPoint(&wallSegments[Idx * 6]);
 			FVector vertex1 = Recast2UnrealPoint(&wallSegments[Idx * 6 + 3]);
 
-			bool excluded = ((vertex0.X < -ArgusECSConstants::k_detourQuerySize || vertex0.X > ArgusECSConstants::k_detourQuerySize) || 
-							(vertex0.Y < -ArgusECSConstants::k_detourQuerySize || vertex0.Y > ArgusECSConstants::k_detourQuerySize)) &&
-							((vertex1.X < -ArgusECSConstants::k_detourQuerySize || vertex1.X > ArgusECSConstants::k_detourQuerySize) || 
-							(vertex1.Y < -ArgusECSConstants::k_detourQuerySize || vertex1.Y > ArgusECSConstants::k_detourQuerySize));
+			bool excluded = ((vertex0.X < -spatialPartitioningComponent->m_validSpaceExtent || vertex0.X > spatialPartitioningComponent->m_validSpaceExtent) ||
+							(vertex0.Y < -spatialPartitioningComponent->m_validSpaceExtent || vertex0.Y > spatialPartitioningComponent->m_validSpaceExtent)) &&
+							((vertex1.X < -spatialPartitioningComponent->m_validSpaceExtent || vertex1.X > spatialPartitioningComponent->m_validSpaceExtent) ||
+							(vertex1.Y < -spatialPartitioningComponent->m_validSpaceExtent || vertex1.Y > spatialPartitioningComponent->m_validSpaceExtent));
 			if (!excluded)
 			{
 				outNavWalls.Add(vertex0);

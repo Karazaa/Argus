@@ -39,6 +39,14 @@ if (UNLIKELY(!VariableName)) \
 	return false;\
 }
 
+#define ARGUS_RETURN_ON_NULL_UINT32(VariableName, CategoryName) \
+if (UNLIKELY(!VariableName)) \
+{ \
+	ARGUS_ERROR_NULL(CategoryName, VariableName); \
+	return 0u;\
+}
+
+
 
 DECLARE_LOG_CATEGORY_EXTERN(ArgusECSLog, Display, All);
 DECLARE_LOG_CATEGORY_EXTERN(ArgusInputLog, Display, All);

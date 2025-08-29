@@ -19,4 +19,6 @@ struct SpatialPartitioningComponent
 
 	ARGUS_IGNORE()
 	TArray<ObstaclePointArray> m_obstacles;
+
+	float m_validSpaceExtent = 3000.0f;
 };

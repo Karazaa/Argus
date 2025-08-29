@@ -10,6 +10,7 @@ void USpatialPartitioningComponentData::InstantiateComponentForEntity(const Argu
 	SpatialPartitioningComponent* SpatialPartitioningComponentRef = entity.GetOrAddComponent<SpatialPartitioningComponent>();
 	ARGUS_RETURN_ON_NULL(SpatialPartitioningComponentRef, ArgusECSLog);
 
+	SpatialPartitioningComponentRef->m_validSpaceExtent = m_validSpaceExtent;
 }
 
 bool USpatialPartitioningComponentData::MatchesType(UComponentData* other) const

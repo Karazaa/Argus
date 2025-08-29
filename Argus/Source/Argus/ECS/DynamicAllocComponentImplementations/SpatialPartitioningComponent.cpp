@@ -17,6 +17,7 @@ void SpatialPartitioningComponent::Reset()
 	m_argusEntityKDTree.FlushAllNodes();
 	m_obstaclePointKDTree.FlushAllNodes();
 	m_obstacles.Reset();
+	m_validSpaceExtent = 3000.0f;
 }
 
 void SpatialPartitioningComponent::DrawComponentDebug() const
@@ -50,6 +51,10 @@ void SpatialPartitioningComponent::DrawComponentDebug() const
 			{
 			}
 		}
+		ImGui::TableNextColumn();
+		ImGui::Text("m_validSpaceExtent");
+		ImGui::TableNextColumn();
+		ImGui::Text("%.2f", m_validSpaceExtent);
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING
