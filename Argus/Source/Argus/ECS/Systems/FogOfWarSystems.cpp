@@ -26,15 +26,12 @@ void FogOfWarSystems::InitializeSystems()
 	fogOfWarComponent->m_textureRegion = FUpdateTextureRegion2D(0, 0, 0, 0, fogOfWarComponent->m_textureSize, fogOfWarComponent->m_textureSize);
 
 	// TODO JAMES: Just hackily using FMemory for now. There will be additional complexity in making this properly resettable with the ArgusMemorySource
-	const uint32 totalPixels = fogOfWarComponent->GetTotalPixels();
-	fogOfWarComponent->m_textureData.SetNumZeroed(totalPixels * 4u);
+	const uint32 totalIndicies = fogOfWarComponent->GetTotalPixels() * 4u;
+	fogOfWarComponent->m_textureData.SetNumZeroed(totalIndicies * 4u);
 	
-	for (uint32 i = 0; i < totalPixels; ++i)
+	for (uint32 i = 3; i < totalIndicies; i += 4)
 	{
-		fogOfWarComponent->m_textureData[(i * 4)] = fogOfWarComponent->m_hiddenColor.B;		// B
-		fogOfWarComponent->m_textureData[(i * 4) + 1] = fogOfWarComponent->m_hiddenColor.G; // G
-		fogOfWarComponent->m_textureData[(i * 4) + 2] = fogOfWarComponent->m_hiddenColor.R; // R
-		fogOfWarComponent->m_textureData[(i * 4) + 3] = fogOfWarComponent->m_hiddenColor.A; // A
+		fogOfWarComponent->m_textureData[i] = 255u;	// A
 	}
 }
 
@@ -69,15 +66,15 @@ void FogOfWarSystems::ClearRevealedPixels(FogOfWarComponent* fogOfWarComponent)
 	const uint32 totalPixels = fogOfWarComponent->GetTotalPixels();
 	for (uint32 i = 0; i < totalPixels; ++i)
 	{
-		if (!DoesPixelEqualColor(fogOfWarComponent, i, fogOfWarComponent->m_activelyRevealedColor))
-		{
-			continue;
-		}
+		//if (!DoesPixelEqualColor(fogOfWarComponent, i, fogOfWarComponent->m_activelyRevealedColor))
+		//{
+		//	continue;
+		//}
 
-		fogOfWarComponent->m_textureData[(i * 4)] = fogOfWarComponent->m_revealedOnceColor.B;		// B
-		fogOfWarComponent->m_textureData[(i * 4) + 1] = fogOfWarComponent->m_revealedOnceColor.G;	// G
-		fogOfWarComponent->m_textureData[(i * 4) + 2] = fogOfWarComponent->m_revealedOnceColor.R;	// R
-		fogOfWarComponent->m_textureData[(i * 4) + 3] = fogOfWarComponent->m_revealedOnceColor.A;	// A
+		//fogOfWarComponent->m_textureData[(i * 4)] = fogOfWarComponent->m_revealedOnceColor.B;		// B
+		//fogOfWarComponent->m_textureData[(i * 4) + 1] = fogOfWarComponent->m_revealedOnceColor.G;	// G
+		//fogOfWarComponent->m_textureData[(i * 4) + 2] = fogOfWarComponent->m_revealedOnceColor.R;	// R
+		//fogOfWarComponent->m_textureData[(i * 4) + 3] = fogOfWarComponent->m_revealedOnceColor.A;	// A
 	}
 }
 
@@ -107,8 +104,15 @@ void FogOfWarSystems::SetRevealedPixels(FogOfWarComponent* fogOfWarComponent)
 
 void FogOfWarSystems::RevealPixelsForEntity(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components)
 {
+	ARGUS_TRACE(FogOfWarSystems::RevealPixelsForEntity);
 	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+
+	const uint32 textureSize = static_cast<uint32>(fogOfWarComponent->m_textureSize);
+	if (textureSize == 0u)
 	{
 		return;
 	}
@@ -116,20 +120,44 @@ void FogOfWarSystems::RevealPixelsForEntity(FogOfWarComponent* fogOfWarComponent
 	const uint32 maxPixel = fogOfWarComponent->GetTotalPixels() - 1;
 	const uint32 centerPixel = GetPixelNumberFromWorldSpaceLocation(fogOfWarComponent, components.m_transformComponent->m_location);
 	const uint32 radius = GetPixelRadiusFromWorldSpaceRadius(fogOfWarComponent, components.m_targetingComponent->m_sightRange);
+	const uint32 centerPixelRowNumber = centerPixel / textureSize;
 
-	const uint32 differenceToBounds = (radius * static_cast<uint32>(fogOfWarComponent->m_textureSize)) + radius;
-	uint32 topLeftIndex = 0u;
-	uint32 bottomRightIndex = maxPixel;
-	if (differenceToBounds < centerPixel)
+	uint32 leftOffset = radius;
+	// The radius overlaps the left edge of the texture.
+	if (((centerPixel - leftOffset) / textureSize) != centerPixelRowNumber)
 	{
-		topLeftIndex = centerPixel - differenceToBounds;
-	}
-	if ((differenceToBounds + centerPixel) < maxPixel)
-	{
-		bottomRightIndex = centerPixel + differenceToBounds;
+		leftOffset = centerPixel % textureSize;
 	}
 
-	// TODO JAMES: Iterate between top left index and bottom right index (skipping forward at row extents properly) and set the pixel values to actively revealed.
+	uint32 rightOffset = radius;
+	// The radius overlaps the right edge of the texture.
+	if (((centerPixel + rightOffset) / textureSize) != centerPixelRowNumber)
+	{
+		rightOffset = textureSize - (centerPixel % textureSize);
+	}
+
+	uint32 topOffset = radius;
+	// The radius overlaps the top edge of the texture.
+	if (topOffset > centerPixelRowNumber)
+	{
+		topOffset = centerPixelRowNumber;
+	}
+
+	uint32 bottomOffset = radius;
+	// The radius overlaps the bottom edge of the texture.
+	if ((bottomOffset + centerPixelRowNumber) > textureSize)
+	{
+		bottomOffset = ((maxPixel - (textureSize - (centerPixel % textureSize))) / textureSize) - centerPixelRowNumber;
+	}
+
+	const uint32 topLeftIndex = (centerPixel - (topOffset * textureSize)) - leftOffset;
+	for (uint32 rowNumber = 0u; rowNumber <= (topOffset + bottomOffset); ++rowNumber)
+	{
+		uint32 pixelStart = topLeftIndex + (rowNumber * textureSize);
+		uint8* firstAddress = &fogOfWarComponent->m_textureData[(pixelStart * 4u)];
+		uint32 rowLength = (leftOffset + rightOffset) * 4u;
+		memset(firstAddress, 0, rowLength);
+	}
 }
 
 void FogOfWarSystems::UpdateTexture()

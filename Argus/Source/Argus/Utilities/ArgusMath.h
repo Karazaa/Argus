@@ -219,4 +219,15 @@ namespace ArgusMath
 	{
 		return 360.0f - FMath::RadiansToDegrees(GetNormalizedZeroToTwoPi(yaw));
 	}
+
+	static int FColorAsBGRA(const FColor& color)
+	{
+		int output = 0;
+		output |= (color.B << 24);
+		output |= (color.G << 16);
+		output |= (color.R << 8);
+		output |= (color.A);
+
+		return output;
+	}
 }

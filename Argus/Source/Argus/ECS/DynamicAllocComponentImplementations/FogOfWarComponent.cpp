@@ -17,6 +17,7 @@ void FogOfWarComponent::Reset()
 	m_fogOfWarTexture = nullptr;
 	m_dynamicMaterialInstance = nullptr;
 	m_textureData.Reset();
+	m_revealedOnceAlpha = 100u;
 	m_textureSize = 1024u;
 }
 
@@ -59,14 +60,9 @@ void FogOfWarComponent::DrawComponentDebug() const
 			}
 		}
 		ImGui::TableNextColumn();
-		ImGui::Text("m_hiddenColor");
+		ImGui::Text("m_revealedOnceAlpha");
 		ImGui::TableNextColumn();
-		ImGui::TableNextColumn();
-		ImGui::Text("m_revealedOnceColor");
-		ImGui::TableNextColumn();
-		ImGui::TableNextColumn();
-		ImGui::Text("m_activelyRevealedColor");
-		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_revealedOnceAlpha);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_textureSize");
 		ImGui::TableNextColumn();

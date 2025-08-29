@@ -17,11 +17,7 @@ public:
 	UPROPERTY(Transient)
 	TObjectPtr<UMaterialInstanceDynamic> m_dynamicMaterialInstance = nullptr;
 	UPROPERTY(EditAnywhere)
-	FColor m_hiddenColor;
-	UPROPERTY(EditAnywhere)
-	FColor m_revealedOnceColor;
-	UPROPERTY(EditAnywhere)
-	FColor m_activelyRevealedColor;
+	uint8 m_revealedOnceAlpha = 100u;
 	UPROPERTY(EditAnywhere)
 	uint16 m_textureSize = 1024u;
 
