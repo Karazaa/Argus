@@ -14,9 +14,8 @@ public:
 	static void RunSystems(float deltaTime);
 
 private:
-	static void ClearRevealedPixels(FogOfWarComponent* fogOfWarComponent);
-	static void SetRevealedPixels(FogOfWarComponent* fogOfWarComponent);
-	static void RevealPixelsForEntity(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components);
+	static void SetRevealedStatePerEntity(FogOfWarComponent* fogOfWarComponent);
+	static void RevealPixelAlphaForEntity(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, bool activelyRevealed);
 	static void UpdateTexture();
 
 	static bool DoesPixelEqualColor(FogOfWarComponent* fogOfWarComponent, uint32 pixelNumber, FColor color);
