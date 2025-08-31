@@ -16,6 +16,7 @@ public:
 private:
 	static void SetRevealedStatePerEntity(FogOfWarComponent* fogOfWarComponent);
 	static void RevealPixelAlphaForEntity(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, bool activelyRevealed);
+	static void SetAlphaForPixelRange(FogOfWarComponent* fogOfWarComponent, uint32 fromPixelInclusive, uint32 toPixelInclusive, bool activelyRevealed);
 	static void UpdateTexture();
 
 	static bool DoesPixelEqualColor(FogOfWarComponent* fogOfWarComponent, uint32 pixelNumber, FColor color);

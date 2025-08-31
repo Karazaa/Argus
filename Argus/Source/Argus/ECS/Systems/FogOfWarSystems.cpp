@@ -61,6 +61,7 @@ void FogOfWarSystems::SetRevealedStatePerEntity(FogOfWarComponent* fogOfWarCompo
 	ARGUS_TRACE(FogOfWarSystems::SetRevealedPixels);
 	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
 
+	// Set actively revealed pixels to revealed once.
 	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{
 		const ArgusEntity entity = ArgusEntity::RetrieveEntity(i);
@@ -77,7 +78,8 @@ void FogOfWarSystems::SetRevealedStatePerEntity(FogOfWarComponent* fogOfWarCompo
 		}
 
 		const uint32 centerPixel = GetPixelNumberFromWorldSpaceLocation(fogOfWarComponent, components.m_transformComponent->m_location);
-		if (((centerPixel != components.m_transformComponent->m_fogOfWarPixel) || !entity.IsAlive()) && components.m_transformComponent->m_fogOfWarPixel != MAX_uint32)
+		const bool newCenterPixel = centerPixel != components.m_transformComponent->m_fogOfWarPixel;
+		if ((newCenterPixel || !entity.IsAlive()) && components.m_transformComponent->m_fogOfWarPixel != MAX_uint32)
 		{
 			RevealPixelAlphaForEntity(fogOfWarComponent, components, false);
 		}
@@ -88,7 +90,24 @@ void FogOfWarSystems::SetRevealedStatePerEntity(FogOfWarComponent* fogOfWarCompo
 			continue;
 		}
 		components.m_transformComponent->m_fogOfWarPixel = centerPixel;
-		
+		RevealPixelAlphaForEntity(fogOfWarComponent, components, true);
+	}
+
+	// Calculate new actively revealed pixels.
+	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
+	{
+		const ArgusEntity entity = ArgusEntity::RetrieveEntity(i);
+		FogOfWarSystemsArgs components;
+		if (!components.PopulateArguments(entity))
+		{
+			continue;
+		}
+
+		// TODO JAMES: No hardcode pls
+		if (!entity.IsAlive() || !entity.IsOnTeam(ETeam::TeamA))
+		{
+			continue;
+		}
 		RevealPixelAlphaForEntity(fogOfWarComponent, components, true);
 	}
 }
@@ -140,27 +159,30 @@ void FogOfWarSystems::RevealPixelAlphaForEntity(FogOfWarComponent* fogOfWarCompo
 		bottomOffset = ((maxPixel - (textureSize - (components.m_transformComponent->m_fogOfWarPixel % textureSize))) / textureSize) - centerPixelRowNumber;
 	}
 
-
 	const uint32 topLeftIndex = (components.m_transformComponent->m_fogOfWarPixel - (topOffset * textureSize)) - leftOffset;
+	for (uint32 rowNumber = 0u; rowNumber <= (topOffset + bottomOffset); ++rowNumber)
+	{
+		const uint32 startPixl = topLeftIndex + (rowNumber * textureSize);
+		SetAlphaForPixelRange(fogOfWarComponent, startPixl, startPixl + leftOffset + rightOffset, activelyRevealed);
+	}
+}
+
+void FogOfWarSystems::SetAlphaForPixelRange(FogOfWarComponent* fogOfWarComponent, uint32 fromPixelInclusive, uint32 toPixelInclusive, bool activelyRevealed)
+{
+	ARGUS_TRACE(FogOfWarSystems::SetAlphaForPixelRange);
+	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
+
 	if (activelyRevealed)
 	{
-		for (uint32 rowNumber = 0u; rowNumber <= (topOffset + bottomOffset); ++rowNumber)
-		{
-			uint32 pixelStart = topLeftIndex + (rowNumber * textureSize);
-			uint8* firstAddress = &fogOfWarComponent->m_textureData[(pixelStart * 4u)];
-			uint32 rowLength = (leftOffset + rightOffset) * 4u;
-			memset(firstAddress, 0, rowLength);
-		}
+		uint8* firstAddress = &fogOfWarComponent->m_textureData[(fromPixelInclusive * 4u)];
+		uint32 rowLength = (toPixelInclusive - fromPixelInclusive) * 4u;
+		memset(firstAddress, 0, rowLength);
 	}
 	else
 	{
-		for (uint32 rowNumber = 0u; rowNumber <= (topOffset + bottomOffset); ++rowNumber)
+		for (uint32 i = fromPixelInclusive; i <= toPixelInclusive; ++i)
 		{
-			uint32 pixelStart = topLeftIndex + (rowNumber * textureSize);
-			for (uint32 columnNumber = 0u; columnNumber <= (leftOffset + rightOffset); ++columnNumber)
-			{
-				fogOfWarComponent->m_textureData[((pixelStart + columnNumber) * 4u) + 3] = fogOfWarComponent->m_revealedOnceAlpha;
-			}
+			fogOfWarComponent->m_textureData[(i * 4u) + 3] = fogOfWarComponent->m_revealedOnceAlpha;
 		}
 	}
 }
