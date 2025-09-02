@@ -15,7 +15,7 @@ void FogOfWarSystems::InitializeSystems()
 	FogOfWarComponent* fogOfWarComponent = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId).GetComponent<FogOfWarComponent>();
 	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
 
-	fogOfWarComponent->m_fogOfWarTexture = UTexture2D::CreateTransient(fogOfWarComponent->m_textureSize, fogOfWarComponent->m_textureSize);
+	fogOfWarComponent->m_fogOfWarTexture = UTexture2D::CreateTransient(fogOfWarComponent->m_textureSize, fogOfWarComponent->m_textureSize, PF_A8);
 	ARGUS_RETURN_ON_NULL(fogOfWarComponent->m_fogOfWarTexture, ArgusECSLog);
 
 	fogOfWarComponent->m_fogOfWarTexture->CompressionSettings = TextureCompressionSettings::TC_VectorDisplacementmap;
@@ -26,13 +26,8 @@ void FogOfWarSystems::InitializeSystems()
 	fogOfWarComponent->m_textureRegion = FUpdateTextureRegion2D(0, 0, 0, 0, fogOfWarComponent->m_textureSize, fogOfWarComponent->m_textureSize);
 
 	// TODO JAMES: Just hackily using FMemory for now. There will be additional complexity in making this properly resettable with the ArgusMemorySource
-	const uint32 totalIndicies = fogOfWarComponent->GetTotalPixels() * 4u;
-	fogOfWarComponent->m_textureData.SetNumZeroed(totalIndicies * 4u);
-	
-	for (uint32 i = 3; i < totalIndicies; i += 4)
-	{
-		fogOfWarComponent->m_textureData[i] = 255u;	// A
-	}
+	fogOfWarComponent->m_textureData.SetNumZeroed(fogOfWarComponent->GetTotalPixels());
+	memset(fogOfWarComponent->m_textureData.GetData(), 255, fogOfWarComponent->GetTotalPixels());
 }
 
 void FogOfWarSystems::RunSystems(float deltaTime)
@@ -90,7 +85,6 @@ void FogOfWarSystems::SetRevealedStatePerEntity(FogOfWarComponent* fogOfWarCompo
 			continue;
 		}
 		components.m_transformComponent->m_fogOfWarPixel = centerPixel;
-		RevealPixelAlphaForEntity(fogOfWarComponent, components, true);
 	}
 
 	// Calculate new actively revealed pixels.
@@ -108,6 +102,8 @@ void FogOfWarSystems::SetRevealedStatePerEntity(FogOfWarComponent* fogOfWarCompo
 		{
 			continue;
 		}
+
+		// TODO JAMES: We only want to update this if the unit's center pixel changed. 
 		RevealPixelAlphaForEntity(fogOfWarComponent, components, true);
 	}
 }
@@ -160,8 +156,8 @@ void FogOfWarSystems::RevealPixelAlphaForEntity(FogOfWarComponent* fogOfWarCompo
 		fogOfWarOffsets.bottomOffset = ((maxPixel - (textureSize - (components.m_transformComponent->m_fogOfWarPixel % textureSize))) / textureSize) - centerPixelRowNumber;
 	}
 
-	// Jesko's method for circle rasterization.
-	int32 circled = -static_cast<int32>(radius);
+	// Method of Horn for circle rasterization.
+	int32 circleD = -static_cast<int32>(radius);
 	fogOfWarOffsets.circleX = radius;
 	fogOfWarOffsets.circleY = 0u;
 	while (fogOfWarOffsets.circleX >= fogOfWarOffsets.circleY)
@@ -169,12 +165,12 @@ void FogOfWarSystems::RevealPixelAlphaForEntity(FogOfWarComponent* fogOfWarCompo
 		// Set Alpha for pixel range for all symmetrical pixels.
 		SetAlphaForCircleOctant(fogOfWarComponent, components, fogOfWarOffsets, activelyRevealed);
 
-		circled = circled + (2 * fogOfWarOffsets.circleX * fogOfWarOffsets.circleY) + 1u;
+		circleD = circleD + (2 * fogOfWarOffsets.circleX * fogOfWarOffsets.circleY) + 1u;
 		fogOfWarOffsets.circleY++;
 
-		if (circled > 0)
+		if (circleD > 0)
 		{
-			circled = circled - (2 * fogOfWarOffsets.circleX * fogOfWarOffsets.circleX) + 2;
+			circleD = circleD - (2 * fogOfWarOffsets.circleX * fogOfWarOffsets.circleX) + 2;
 			fogOfWarOffsets.circleX--;
 		}
 	}
@@ -186,23 +182,19 @@ void FogOfWarSystems::SetAlphaForPixelRange(FogOfWarComponent* fogOfWarComponent
 	ARGUS_TRACE(FogOfWarSystems::SetAlphaForPixelRange);
 	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
 
-	if (activelyRevealed)
-	{
-		uint8* firstAddress = &fogOfWarComponent->m_textureData[(fromPixelInclusive * 4u)];
-		uint32 rowLength = (toPixelInclusive - fromPixelInclusive) * 4u;
-		memset(firstAddress, 0, rowLength);
-	}
-	else
-	{
-		for (uint32 i = fromPixelInclusive; i <= toPixelInclusive; ++i)
-		{
-			fogOfWarComponent->m_textureData[(i * 4u) + 3] = fogOfWarComponent->m_revealedOnceAlpha;
-		}
-	}
+	uint8* firstAddress = &fogOfWarComponent->m_textureData[fromPixelInclusive];
+	uint32 rowLength = (toPixelInclusive - fromPixelInclusive);
+	memset(firstAddress, activelyRevealed ? 0 : fogOfWarComponent->m_revealedOnceAlpha, rowLength);
 }
 
 void FogOfWarSystems::SetAlphaForCircleOctant(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, const FogOfWarOffsets& fogOfWarOffsets, bool activelyRevealed)
 {
+	ARGUS_TRACE(FogOfWarSystems::SetAlphaForCircleOctant);
+	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
 
 	const uint32 topY = fogOfWarOffsets.circleX <= fogOfWarOffsets.topOffset ? fogOfWarOffsets.circleX : fogOfWarOffsets.topOffset;
 	const uint32 topStartX = fogOfWarOffsets.circleY <= fogOfWarOffsets.leftOffset ? fogOfWarOffsets.circleY : fogOfWarOffsets.leftOffset;
@@ -249,8 +241,8 @@ void FogOfWarSystems::UpdateTexture()
 	fogOfWarComponent->m_textureRegionsUpdateData.m_mipIndex = 0;
 	fogOfWarComponent->m_textureRegionsUpdateData.m_numRegions = 1;
 	fogOfWarComponent->m_textureRegionsUpdateData.m_regions = &fogOfWarComponent->m_textureRegion;
-	fogOfWarComponent->m_textureRegionsUpdateData.m_srcPitch = 4 * fogOfWarComponent->m_textureSize;
-	fogOfWarComponent->m_textureRegionsUpdateData.m_srcBpp = 4;
+	fogOfWarComponent->m_textureRegionsUpdateData.m_srcPitch = fogOfWarComponent->m_textureSize;
+	fogOfWarComponent->m_textureRegionsUpdateData.m_srcBpp = 1;
 	fogOfWarComponent->m_textureRegionsUpdateData.m_srcData = fogOfWarComponent->m_textureData.GetData();
 
 	if (!fogOfWarComponent->m_textureRegionsUpdateData.m_srcData)
@@ -278,22 +270,6 @@ void FogOfWarSystems::UpdateTexture()
 				}
 			}
 		});
-}
-
-bool FogOfWarSystems::DoesPixelEqualColor(FogOfWarComponent* fogOfWarComponent, uint32 pixelNumber, FColor color)
-{
-	ARGUS_RETURN_ON_NULL_BOOL(fogOfWarComponent, ArgusECSLog);
-
-	const uint32 totalPixels = fogOfWarComponent->GetTotalPixels();
-	if (pixelNumber > (static_cast<uint32>(fogOfWarComponent->m_textureData.Num()) / 4u))
-	{
-		return false;
-	}
-
-	return	fogOfWarComponent->m_textureData[(pixelNumber * 4)] == color.B &&		// B
-			fogOfWarComponent->m_textureData[(pixelNumber * 4) + 1] == color.G &&	// G
-			fogOfWarComponent->m_textureData[(pixelNumber * 4) + 2] == color.R &&	// R
-			fogOfWarComponent->m_textureData[(pixelNumber * 4) + 3] == color.A;		// A
 }
 
 uint32 FogOfWarSystems::GetPixelNumberFromWorldSpaceLocation(FogOfWarComponent* fogOfWarComponent, const FVector& worldSpaceLocation)
