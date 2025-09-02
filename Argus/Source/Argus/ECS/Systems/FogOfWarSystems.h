@@ -14,9 +14,20 @@ public:
 	static void RunSystems(float deltaTime);
 
 private:
+	struct FogOfWarOffsets
+	{
+		uint32 leftOffset = 0u;
+		uint32 rightOffset = 0u;
+		uint32 topOffset = 0u;
+		uint32 bottomOffset = 0u;
+		uint32 circleX = 0u;
+		uint32 circleY = 0u;
+	};
+
 	static void SetRevealedStatePerEntity(FogOfWarComponent* fogOfWarComponent);
 	static void RevealPixelAlphaForEntity(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, bool activelyRevealed);
 	static void SetAlphaForPixelRange(FogOfWarComponent* fogOfWarComponent, uint32 fromPixelInclusive, uint32 toPixelInclusive, bool activelyRevealed);
+	static void SetAlphaForCircleOctant(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, const FogOfWarOffsets& fogOfWarOffsets, bool activelyRevealed);
 	static void UpdateTexture();
 
 	static bool DoesPixelEqualColor(FogOfWarComponent* fogOfWarComponent, uint32 pixelNumber, FColor color);

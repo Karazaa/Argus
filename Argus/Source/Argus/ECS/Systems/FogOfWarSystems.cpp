@@ -131,41 +131,55 @@ void FogOfWarSystems::RevealPixelAlphaForEntity(FogOfWarComponent* fogOfWarCompo
 	const uint32 radius = GetPixelRadiusFromWorldSpaceRadius(fogOfWarComponent, components.m_targetingComponent->m_sightRange);
 	const uint32 centerPixelRowNumber = components.m_transformComponent->m_fogOfWarPixel / textureSize;
 
-	uint32 leftOffset = radius;
+	FogOfWarOffsets fogOfWarOffsets;
+	fogOfWarOffsets.leftOffset = radius;
 	// The radius overlaps the left edge of the texture.
-	if (((components.m_transformComponent->m_fogOfWarPixel - leftOffset) / textureSize) != centerPixelRowNumber)
+	if (((components.m_transformComponent->m_fogOfWarPixel - fogOfWarOffsets.leftOffset) / textureSize) != centerPixelRowNumber)
 	{
-		leftOffset = components.m_transformComponent->m_fogOfWarPixel % textureSize;
+		fogOfWarOffsets.leftOffset = components.m_transformComponent->m_fogOfWarPixel % textureSize;
 	}
 
-	uint32 rightOffset = radius;
+	fogOfWarOffsets.rightOffset = radius;
 	// The radius overlaps the right edge of the texture.
-	if (((components.m_transformComponent->m_fogOfWarPixel + rightOffset) / textureSize) != centerPixelRowNumber)
+	if (((components.m_transformComponent->m_fogOfWarPixel + fogOfWarOffsets.rightOffset) / textureSize) != centerPixelRowNumber)
 	{
-		rightOffset = textureSize - (components.m_transformComponent->m_fogOfWarPixel % textureSize);
+		fogOfWarOffsets.rightOffset = textureSize - (components.m_transformComponent->m_fogOfWarPixel % textureSize);
 	}
 
-	uint32 topOffset = radius;
+	fogOfWarOffsets.topOffset = radius;
 	// The radius overlaps the top edge of the texture.
-	if (topOffset > centerPixelRowNumber)
+	if (fogOfWarOffsets.topOffset > centerPixelRowNumber)
 	{
-		topOffset = centerPixelRowNumber;
+		fogOfWarOffsets.topOffset = centerPixelRowNumber;
 	}
 
-	uint32 bottomOffset = radius;
+	fogOfWarOffsets.bottomOffset = radius;
 	// The radius overlaps the bottom edge of the texture.
-	if ((bottomOffset + centerPixelRowNumber) > textureSize)
+	if ((fogOfWarOffsets.bottomOffset + centerPixelRowNumber) > textureSize)
 	{
-		bottomOffset = ((maxPixel - (textureSize - (components.m_transformComponent->m_fogOfWarPixel % textureSize))) / textureSize) - centerPixelRowNumber;
+		fogOfWarOffsets.bottomOffset = ((maxPixel - (textureSize - (components.m_transformComponent->m_fogOfWarPixel % textureSize))) / textureSize) - centerPixelRowNumber;
 	}
 
-	const uint32 topLeftIndex = (components.m_transformComponent->m_fogOfWarPixel - (topOffset * textureSize)) - leftOffset;
-	for (uint32 rowNumber = 0u; rowNumber <= (topOffset + bottomOffset); ++rowNumber)
+	// Jesko's method for circle rasterization.
+	int32 circled = -static_cast<int32>(radius);
+	fogOfWarOffsets.circleX = radius;
+	fogOfWarOffsets.circleY = 0u;
+	while (fogOfWarOffsets.circleX >= fogOfWarOffsets.circleY)
 	{
-		const uint32 startPixl = topLeftIndex + (rowNumber * textureSize);
-		SetAlphaForPixelRange(fogOfWarComponent, startPixl, startPixl + leftOffset + rightOffset, activelyRevealed);
+		// Set Alpha for pixel range for all symmetrical pixels.
+		SetAlphaForCircleOctant(fogOfWarComponent, components, fogOfWarOffsets, activelyRevealed);
+
+		circled = circled + (2 * fogOfWarOffsets.circleX * fogOfWarOffsets.circleY) + 1u;
+		fogOfWarOffsets.circleY++;
+
+		if (circled > 0)
+		{
+			circled = circled - (2 * fogOfWarOffsets.circleX * fogOfWarOffsets.circleX) + 2;
+			fogOfWarOffsets.circleX--;
+		}
 	}
 }
+
 
 void FogOfWarSystems::SetAlphaForPixelRange(FogOfWarComponent* fogOfWarComponent, uint32 fromPixelInclusive, uint32 toPixelInclusive, bool activelyRevealed)
 {
@@ -185,6 +199,37 @@ void FogOfWarSystems::SetAlphaForPixelRange(FogOfWarComponent* fogOfWarComponent
 			fogOfWarComponent->m_textureData[(i * 4u) + 3] = fogOfWarComponent->m_revealedOnceAlpha;
 		}
 	}
+}
+
+void FogOfWarSystems::SetAlphaForCircleOctant(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, const FogOfWarOffsets& fogOfWarOffsets, bool activelyRevealed)
+{
+
+	const uint32 topY = fogOfWarOffsets.circleX <= fogOfWarOffsets.topOffset ? fogOfWarOffsets.circleX : fogOfWarOffsets.topOffset;
+	const uint32 topStartX = fogOfWarOffsets.circleY <= fogOfWarOffsets.leftOffset ? fogOfWarOffsets.circleY : fogOfWarOffsets.leftOffset;
+	const uint32 topEndX = fogOfWarOffsets.circleY <= fogOfWarOffsets.rightOffset ? fogOfWarOffsets.circleY : fogOfWarOffsets.rightOffset;
+
+	const uint32 bottomY = fogOfWarOffsets.circleX <= fogOfWarOffsets.bottomOffset ? fogOfWarOffsets.circleX : fogOfWarOffsets.bottomOffset;
+	const uint32 bottomStartX = fogOfWarOffsets.circleY <= fogOfWarOffsets.leftOffset ? fogOfWarOffsets.circleY : fogOfWarOffsets.leftOffset;
+	const uint32 bottomEndX = fogOfWarOffsets.circleY <= fogOfWarOffsets.rightOffset ? fogOfWarOffsets.circleY : fogOfWarOffsets.rightOffset;
+
+	const uint32 midUpY = fogOfWarOffsets.circleY <= fogOfWarOffsets.topOffset ? fogOfWarOffsets.circleY : fogOfWarOffsets.topOffset;
+	const uint32 midUpStartX = fogOfWarOffsets.circleX <= fogOfWarOffsets.leftOffset ? fogOfWarOffsets.circleX : fogOfWarOffsets.leftOffset;
+	const uint32 midUpEndX = fogOfWarOffsets.circleX <= fogOfWarOffsets.rightOffset ? fogOfWarOffsets.circleX : fogOfWarOffsets.rightOffset;
+
+	const uint32 midDownY = fogOfWarOffsets.circleY <= fogOfWarOffsets.bottomOffset ? fogOfWarOffsets.circleY : fogOfWarOffsets.bottomOffset;
+	const uint32 midDownStartX = fogOfWarOffsets.circleX <= fogOfWarOffsets.leftOffset ? fogOfWarOffsets.circleX : fogOfWarOffsets.leftOffset;
+	const uint32 midDownEndX = fogOfWarOffsets.circleX <= fogOfWarOffsets.rightOffset ? fogOfWarOffsets.circleX : fogOfWarOffsets.rightOffset;
+
+	const uint32 textureSize = static_cast<uint32>(fogOfWarComponent->m_textureSize);
+	const uint32 centerColumnTopIndex = components.m_transformComponent->m_fogOfWarPixel - (topY * textureSize);
+	const uint32 centerColumnMidUpIndex = components.m_transformComponent->m_fogOfWarPixel - (midUpY * textureSize);
+	const uint32 centerColumnMidDownIndex = components.m_transformComponent->m_fogOfWarPixel + (midDownY * textureSize);
+	const uint32 centerColumnBottomIndex = components.m_transformComponent->m_fogOfWarPixel + (bottomY * textureSize);
+
+	SetAlphaForPixelRange(fogOfWarComponent, centerColumnTopIndex - topStartX, centerColumnTopIndex + topEndX, activelyRevealed);
+	SetAlphaForPixelRange(fogOfWarComponent, centerColumnMidUpIndex - midUpStartX, centerColumnMidUpIndex + midUpEndX, activelyRevealed);
+	SetAlphaForPixelRange(fogOfWarComponent, centerColumnMidDownIndex - midDownStartX, centerColumnMidDownIndex + midDownEndX, activelyRevealed);
+	SetAlphaForPixelRange(fogOfWarComponent, centerColumnBottomIndex - bottomStartX, centerColumnBottomIndex + bottomEndX, activelyRevealed);
 }
 
 void FogOfWarSystems::UpdateTexture()
