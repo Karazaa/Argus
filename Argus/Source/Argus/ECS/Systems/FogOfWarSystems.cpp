@@ -56,6 +56,9 @@ void FogOfWarSystems::SetRevealedStatePerEntity(FogOfWarComponent* fogOfWarCompo
 	ARGUS_TRACE(FogOfWarSystems::SetRevealedPixels);
 	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
 
+	InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId).GetComponent<InputInterfaceComponent>();
+	ARGUS_RETURN_ON_NULL(inputInterfaceComponent, ArgusECSLog);
+
 	// Set actively revealed pixels to revealed once.
 	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{
@@ -66,8 +69,7 @@ void FogOfWarSystems::SetRevealedStatePerEntity(FogOfWarComponent* fogOfWarCompo
 			continue;
 		}
 
-		// TODO JAMES: No hardcode pls
-		if (!entity.IsOnTeam(ETeam::TeamA))
+		if (!entity.IsOnTeam(inputInterfaceComponent->m_activePlayerTeam))
 		{
 			continue;
 		}
@@ -97,13 +99,11 @@ void FogOfWarSystems::SetRevealedStatePerEntity(FogOfWarComponent* fogOfWarCompo
 			continue;
 		}
 
-		// TODO JAMES: No hardcode pls
-		if (!entity.IsAlive() || !entity.IsOnTeam(ETeam::TeamA))
+		if (!entity.IsAlive() || !entity.IsOnTeam(inputInterfaceComponent->m_activePlayerTeam))
 		{
 			continue;
 		}
 
-		// TODO JAMES: We only want to update this if the unit's center pixel changed. 
 		RevealPixelAlphaForEntity(fogOfWarComponent, components, true);
 	}
 }

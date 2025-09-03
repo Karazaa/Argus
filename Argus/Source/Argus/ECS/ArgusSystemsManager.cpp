@@ -30,11 +30,11 @@ void ArgusSystemsManager::Initialize(UWorld* worldPointer, const FResourceSet& i
 	PopulateTeamComponents(initialTeamResourceSet);
 }
 
-void ArgusSystemsManager::OnStartPlay(UWorld* worldPointer)
+void ArgusSystemsManager::OnStartPlay(UWorld* worldPointer, ETeam activePlayerTeam)
 {
 	ARGUS_RETURN_ON_NULL(worldPointer, ArgusECSLog);
 
-	SetInitialSingletonState(worldPointer);
+	SetInitialSingletonState(worldPointer, activePlayerTeam);
 }
 
 void ArgusSystemsManager::RunSystems(UWorld* worldPointer, float deltaTime)
@@ -97,7 +97,7 @@ void ArgusSystemsManager::PopulateSingletonComponents(UWorld* worldPointer, cons
 	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
 }
 
-void ArgusSystemsManager::SetInitialSingletonState(UWorld* worldPointer)
+void ArgusSystemsManager::SetInitialSingletonState(UWorld* worldPointer, ETeam activePlayerTeam)
 {
 	ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId);
 	if (!singletonEntity)
@@ -113,6 +113,10 @@ void ArgusSystemsManager::SetInitialSingletonState(UWorld* worldPointer)
 	spatialPartitioningComponent->m_argusEntityKDTree.InsertAllArgusEntitiesIntoKDTree();
 	SpatialPartitioningSystems::CalculateAvoidanceObstacles(spatialPartitioningComponent, worldPointer);
 
+	InputInterfaceComponent* inputInterfaceComponent = singletonEntity.GetComponent<InputInterfaceComponent>();
+	ARGUS_RETURN_ON_NULL(inputInterfaceComponent, ArgusECSLog);
+
+	inputInterfaceComponent->m_activePlayerTeam = activePlayerTeam;
 	FogOfWarSystems::InitializeSystems();
 }
 

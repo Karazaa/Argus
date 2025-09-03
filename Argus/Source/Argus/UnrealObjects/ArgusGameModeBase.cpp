@@ -41,7 +41,7 @@ void AArgusGameModeBase::StartPlay()
 		m_activePlayerController->InitializeUIWidgets();
 	}
 
-	ArgusSystemsManager::OnStartPlay(worldPointer);
+	ArgusSystemsManager::OnStartPlay(worldPointer, m_activePlayerController->GetPlayerTeam());
 }
 
 void AArgusGameModeBase::Tick(float deltaTime)

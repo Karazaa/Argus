@@ -3,6 +3,7 @@
 #pragma once
 
 #include "ArgusMacros.h"
+#include "ComponentDefinitions/IdentityComponent.h"
 #include "CoreMinimal.h"
 
 UENUM()
@@ -27,6 +28,9 @@ struct InputInterfaceComponent
 
 	ARGUS_IGNORE()
 	int8 m_indexOfActiveAbilityGroup = 0;
+
+	ARGUS_IGNORE()
+	ETeam m_activePlayerTeam = ETeam::TeamA;
 
 	bool IsEntityIdInActiveAbilityGroup(uint16 entityId) const
 	{

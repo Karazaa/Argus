@@ -3,6 +3,7 @@
 #pragma once
 
 #include "ComponentDependencies/ResourceSet.h"
+#include "ComponentDefinitions/IdentityComponent.h"
 #include "CoreMinimal.h"
 
 class UArgusEntityTemplate;
@@ -12,12 +13,12 @@ class ArgusSystemsManager
 {
 public:
 	static void Initialize(UWorld* worldPointer, const FResourceSet& initialTeamResourceSet, const UArgusEntityTemplate* singletonTemplate);
-	static void OnStartPlay(UWorld* worldPointer);
+	static void OnStartPlay(UWorld* worldPointer, ETeam activePlayerTeam);
 	static void RunSystems(UWorld* worldPointer, float deltaTime);
 
 private:
 	static void PopulateSingletonComponents(UWorld* worldPointer, const UArgusEntityTemplate* singletonTemplate);
-	static void SetInitialSingletonState(UWorld* worldPointer);
+	static void SetInitialSingletonState(UWorld* worldPointer, ETeam activePlayerTeam);
 	static void PopulateTeamComponents(const FResourceSet& initialTeamResourceSet);
 	static void UpdateSingletonComponents(bool didEntityPositionChangeThisFrame);
 };
