@@ -151,9 +151,9 @@ void FogOfWarSystems::RevealPixelAlphaForEntity(FogOfWarComponent* fogOfWarCompo
 
 	fogOfWarOffsets.bottomOffset = radius;
 	// The radius overlaps the bottom edge of the texture.
-	if ((fogOfWarOffsets.bottomOffset + centerPixelRowNumber) > textureSize)
+	if ((fogOfWarOffsets.bottomOffset + centerPixelRowNumber) >= textureSize)
 	{
-		fogOfWarOffsets.bottomOffset = ((maxPixel - (textureSize - (components.m_transformComponent->m_fogOfWarPixel % textureSize))) / textureSize) - centerPixelRowNumber;
+		fogOfWarOffsets.bottomOffset = ((maxPixel - (textureSize - (components.m_transformComponent->m_fogOfWarPixel % textureSize))) / textureSize) - (centerPixelRowNumber);
 	}
 
 	// Method of Horn for circle rasterization.
