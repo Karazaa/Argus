@@ -25,7 +25,6 @@ void FogOfWarSystems::InitializeSystems()
 	fogOfWarComponent->m_fogOfWarTexture->UpdateResource();
 	fogOfWarComponent->m_textureRegion = FUpdateTextureRegion2D(0, 0, 0, 0, fogOfWarComponent->m_textureSize, fogOfWarComponent->m_textureSize);
 
-	// TODO JAMES: Just hackily using FMemory for now. There will be additional complexity in making this properly resettable with the ArgusMemorySource
 	fogOfWarComponent->m_textureData.SetNumZeroed(fogOfWarComponent->GetTotalPixels());
 	memset(fogOfWarComponent->m_textureData.GetData(), 255, fogOfWarComponent->GetTotalPixels());
 }

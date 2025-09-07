@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "ArgusContainerAllocator.h"
 #include "ArgusMacros.h"
 #include "ComponentDependencies/TextureRegionsUpdateData.h"
 #include "CoreMinimal.h"
@@ -25,9 +26,8 @@ struct FogOfWarComponent
 	ARGUS_IGNORE()
 	TextureRegionsUpdateData m_textureRegionsUpdateData;
 
-	// TODO JAMES: need to sort out dynamic allocation (with the resetting paradigm that comes from dynamic alloc components) 
 	ARGUS_IGNORE()
-	TArray<uint8> m_textureData;
+	TArray<uint8, ArgusContainerAllocator<0> > m_textureData;
 
 	uint8 m_revealedOnceAlpha = 100u;
 	uint16 m_textureSize = 1024u;

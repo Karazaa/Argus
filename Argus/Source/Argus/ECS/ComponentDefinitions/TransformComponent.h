@@ -20,6 +20,8 @@ struct TransformComponent
 
 	float m_radius = 45.0f;
 	float m_height = 100.0f;
+
+	ARGUS_IGNORE()
 	uint32 m_fogOfWarPixel = MAX_uint32;
 
 	float GetCurrentYaw() const

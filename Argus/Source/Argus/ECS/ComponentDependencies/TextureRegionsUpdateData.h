@@ -5,7 +5,7 @@
 struct TextureRegionsUpdateData
 {
 	FTexture2DResource* m_texture2DResource;
-	FRHITexture2D* m_textureRHI;
+	FRHITexture* m_textureRHI;
 	int32 m_mipIndex;
 	uint32 m_numRegions;
 	FUpdateTextureRegion2D* m_regions;

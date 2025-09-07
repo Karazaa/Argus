@@ -18,6 +18,7 @@ void InputInterfaceComponent::Reset()
 	m_activeAbilityGroupArgusEntityIds.Reset();
 	m_selectedActorsDisplayState = ESelectedActorsDisplayState::NotChanged;
 	m_indexOfActiveAbilityGroup = 0;
+	m_activePlayerTeam = ETeam::TeamA;
 }
 
 void InputInterfaceComponent::DrawComponentDebug() const
@@ -71,6 +72,11 @@ void InputInterfaceComponent::DrawComponentDebug() const
 		ImGui::Text("m_indexOfActiveAbilityGroup");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_indexOfActiveAbilityGroup);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_activePlayerTeam");
+		ImGui::TableNextColumn();
+		const char* valueName_m_activePlayerTeam = ARGUS_FSTRING_TO_CHAR(StaticEnum<ETeam>()->GetNameStringByValue(static_cast<uint8>(m_activePlayerTeam)))
+		ImGui::Text(valueName_m_activePlayerTeam);
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING
