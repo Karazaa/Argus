@@ -11,7 +11,8 @@ class FogOfWarSystems
 {
 public:
 	static void InitializeSystems();
-	static void RunSystems(float deltaTime);
+	static void RunSystems();
+	static void RunThreadSystems();
 
 private:
 	struct FogOfWarOffsets
@@ -29,6 +30,7 @@ private:
 	static void SetAlphaForPixelRange(FogOfWarComponent* fogOfWarComponent, uint32 fromPixelInclusive, uint32 toPixelInclusive, bool activelyRevealed);
 	static void SetAlphaForCircleOctant(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, const FogOfWarOffsets& fogOfWarOffsets, bool activelyRevealed);
 	static void UpdateTexture();
+	static void UpdateDynamicMaterialInstance();
 
 	static uint32 GetPixelNumberFromWorldSpaceLocation(FogOfWarComponent* fogOfWarComponent, const FVector& worldSpaceLocation);
 	static uint32 GetPixelRadiusFromWorldSpaceRadius(FogOfWarComponent* fogOfWarComponent, float radius);

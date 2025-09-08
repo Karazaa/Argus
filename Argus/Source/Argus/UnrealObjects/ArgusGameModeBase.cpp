@@ -18,6 +18,7 @@ AArgusGameModeBase::AArgusGameModeBase()
 
 AArgusGameModeBase::~AArgusGameModeBase()
 {
+	m_argusSystemsThread.Stop();
 }
 
 void AArgusGameModeBase::StartPlay()
@@ -42,6 +43,8 @@ void AArgusGameModeBase::StartPlay()
 	}
 
 	ArgusSystemsManager::OnStartPlay(worldPointer, m_activePlayerController->GetPlayerTeam());
+	m_argusSystemsThread.Init();
+	m_argusSystemsThread.StartThread();
 }
 
 void AArgusGameModeBase::Tick(float deltaTime)
@@ -58,6 +61,7 @@ void AArgusGameModeBase::Tick(float deltaTime)
 	m_activePlayerController->ProcessArgusPlayerInput(deltaTime);
 
 	// Run all ECS systems.
+	m_argusSystemsThread.TickThread();
 	ArgusSystemsManager::RunSystems(worldPointer, deltaTime);
 
 	// Take/Release/Update ArgusActors based on ECS state.

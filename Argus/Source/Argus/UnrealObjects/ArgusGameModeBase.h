@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "ArgusActorPool.h"
 #include "ArgusSystemsManager.h"
+#include "ArgusSystemsThread.h"
 #include "ComponentDefinitions/IdentityComponent.h"
 #include "ComponentDependencies/ResourceSet.h"
 #include "GameFramework/GameModeBase.h"
@@ -51,4 +52,5 @@ private:
 	void DespawnActorForEntity(ArgusEntity despawnedEntity);
 
 	ArgusActorPool m_argusActorPool = ArgusActorPool();
+	ArgusSystemsThread m_argusSystemsThread = ArgusSystemsThread();
 };

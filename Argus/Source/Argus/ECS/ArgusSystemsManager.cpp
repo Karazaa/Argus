@@ -56,7 +56,7 @@ void ArgusSystemsManager::RunSystems(UWorld* worldPointer, float deltaTime)
 	didEntityPositionChangeThisFrame |= SpawningSystems::RunSystems(deltaTime);
 
 	UpdateSingletonComponents(didEntityPositionChangeThisFrame);
-	FogOfWarSystems::RunSystems(deltaTime);
+	FogOfWarSystems::RunSystems();
 
 #if !UE_BUILD_SHIPPING
 	ArgusECSDebugger::DrawECSDebugger();
@@ -117,7 +117,6 @@ void ArgusSystemsManager::SetInitialSingletonState(UWorld* worldPointer, ETeam a
 	ARGUS_RETURN_ON_NULL(inputInterfaceComponent, ArgusECSLog);
 
 	inputInterfaceComponent->m_activePlayerTeam = activePlayerTeam;
-	FogOfWarSystems::InitializeSystems();
 }
 
 void ArgusSystemsManager::PopulateTeamComponents(const FResourceSet& initialTeamResourceSet)

@@ -29,7 +29,7 @@ void FogOfWarSystems::InitializeSystems()
 	memset(fogOfWarComponent->m_textureData.GetData(), 255, fogOfWarComponent->GetTotalPixels());
 }
 
-void FogOfWarSystems::RunSystems(float deltaTime)
+void FogOfWarSystems::RunThreadSystems()
 {
 	ARGUS_TRACE(FogOfWarSystems::RunSystems);
 
@@ -38,16 +38,14 @@ void FogOfWarSystems::RunSystems(float deltaTime)
 
 	// Iterate over all entities and carve out a circle of pixels (activelyRevealed) based on sight radius for entities that are on the local player team (or allies).
 	SetRevealedStatePerEntity(fogOfWarComponent);
+}
 
-	// Update the fog of war texture via render command
+void FogOfWarSystems::RunSystems()
+{
+	ARGUS_TRACE(FogOfWarSystems::RunSystems);
+
 	UpdateTexture();
-
-	// Set the dynamic material instance texture param to the fog of war texture.
-	if (fogOfWarComponent->m_dynamicMaterialInstance)
-	{
-		ARGUS_TRACE(FogOfWarSystems::SetTextureParameterValue);
-		fogOfWarComponent->m_dynamicMaterialInstance->SetTextureParameterValue("DynamicTexture", fogOfWarComponent->m_fogOfWarTexture);
-	}
+	UpdateDynamicMaterialInstance();
 }
 
 void FogOfWarSystems::SetRevealedStatePerEntity(FogOfWarComponent* fogOfWarComponent)
@@ -233,9 +231,13 @@ void FogOfWarSystems::UpdateTexture()
 
 	fogOfWarComponent->m_textureRegionsUpdateData = TextureRegionsUpdateData();
 
-	fogOfWarComponent->m_textureRegionsUpdateData.m_texture2DResource = reinterpret_cast<FTexture2DResource*>(fogOfWarComponent->m_fogOfWarTexture->GetResource());
-	ARGUS_RETURN_ON_NULL(fogOfWarComponent->m_textureRegionsUpdateData.m_texture2DResource, ArgusECSLog);
+	FTextureResource* textureResource = fogOfWarComponent->m_fogOfWarTexture->GetResource();
+	if (!textureResource)
+	{
+		return;
+	}
 
+	fogOfWarComponent->m_textureRegionsUpdateData.m_texture2DResource = reinterpret_cast<FTexture2DResource*>(textureResource);
 	fogOfWarComponent->m_textureRegionsUpdateData.m_textureRHI = fogOfWarComponent->m_textureRegionsUpdateData.m_texture2DResource->GetTexture2DRHI();
 	fogOfWarComponent->m_textureRegionsUpdateData.m_mipIndex = 0;
 	fogOfWarComponent->m_textureRegionsUpdateData.m_numRegions = 1;
@@ -269,6 +271,20 @@ void FogOfWarSystems::UpdateTexture()
 				}
 			}
 		});
+}
+
+void FogOfWarSystems::UpdateDynamicMaterialInstance()
+{
+	ARGUS_TRACE(FogOfWarSystems::UpdateDynamicMaterialInstance);
+
+	FogOfWarComponent* fogOfWarComponent = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId).GetComponent<FogOfWarComponent>();
+	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
+
+	// Set the dynamic material instance texture param to the fog of war texture.
+	if (fogOfWarComponent->m_dynamicMaterialInstance && fogOfWarComponent->m_fogOfWarTexture)
+	{
+		fogOfWarComponent->m_dynamicMaterialInstance->SetTextureParameterValue("DynamicTexture", fogOfWarComponent->m_fogOfWarTexture);
+	}
 }
 
 uint32 FogOfWarSystems::GetPixelNumberFromWorldSpaceLocation(FogOfWarComponent* fogOfWarComponent, const FVector& worldSpaceLocation)
