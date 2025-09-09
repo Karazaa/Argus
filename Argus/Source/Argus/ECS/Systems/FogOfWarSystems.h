@@ -6,6 +6,7 @@ class ArgusEntity;
 
 struct FogOfWarComponent;
 struct FogOfWarSystemsArgs;
+struct InputInterfaceComponent;
 
 class FogOfWarSystems
 {
@@ -34,4 +35,5 @@ private:
 
 	static uint32 GetPixelNumberFromWorldSpaceLocation(FogOfWarComponent* fogOfWarComponent, const FVector& worldSpaceLocation);
 	static uint32 GetPixelRadiusFromWorldSpaceRadius(FogOfWarComponent* fogOfWarComponent, float radius);
+	static bool DoesEntityNeedToUpdateActivelyRevealed(const FogOfWarSystemsArgs& components, const InputInterfaceComponent* inputInterfaceComponent);
 };

@@ -96,7 +96,7 @@ void FogOfWarSystems::SetRevealedStatePerEntity(FogOfWarComponent* fogOfWarCompo
 			continue;
 		}
 
-		if (!entity.IsAlive() || !entity.IsOnTeam(inputInterfaceComponent->m_activePlayerTeam))
+		if (!DoesEntityNeedToUpdateActivelyRevealed(components, inputInterfaceComponent))
 		{
 			continue;
 		}
@@ -314,4 +314,73 @@ uint32 FogOfWarSystems::GetPixelRadiusFromWorldSpaceRadius(FogOfWarComponent* fo
 
 	const float portion = ArgusMath::SafeDivide(radius, (2.0f * spatialPartitioningComponent->m_validSpaceExtent));
 	return FMath::FloorToInt32(static_cast<float>(fogOfWarComponent->m_textureSize) * portion);
+}
+
+bool FogOfWarSystems::DoesEntityNeedToUpdateActivelyRevealed(const FogOfWarSystemsArgs& components, const InputInterfaceComponent* inputInterfaceComponent)
+{
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return false;
+	}
+	ARGUS_RETURN_ON_NULL_BOOL(inputInterfaceComponent, ArgusECSLog);
+
+	if (!components.m_entity.IsAlive() || !components.m_entity.IsOnTeam(inputInterfaceComponent->m_activePlayerTeam) || components.m_entity.IsPassenger())
+	{
+		return false;
+	}
+
+	if (const VelocityComponent* velocityComponent = components.m_entity.GetComponent<VelocityComponent>())
+	{
+		if (!velocityComponent->m_currentVelocity.IsNearlyZero() || !velocityComponent->m_proposedAvoidanceVelocity.IsNearlyZero())
+		{
+			return true;
+		}
+	}
+
+	const SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::GetSingletonEntity().GetComponent<SpatialPartitioningComponent>();
+	ARGUS_RETURN_ON_NULL_BOOL(spatialPartitioningComponent, ArgusECSLog);
+
+	const TFunction<bool(const ArgusEntityKDTreeNode*)> queryFilter = [&components, inputInterfaceComponent](const ArgusEntityKDTreeNode* entityNode)
+	{
+		ARGUS_RETURN_ON_NULL_BOOL(entityNode, ArgusECSLog);
+		ARGUS_RETURN_ON_NULL_BOOL(inputInterfaceComponent, ArgusECSLog);
+		if (entityNode->m_entityId == components.m_entity.GetId())
+		{
+			return false;
+		}
+
+		ArgusEntity otherEntity = ArgusEntity::RetrieveEntity(entityNode->m_entityId);
+		if (!otherEntity || !otherEntity.IsAlive() || !otherEntity.IsOnTeam(inputInterfaceComponent->m_activePlayerTeam) || otherEntity.IsPassenger())
+		{
+			return false;
+		}
+
+		if (const VelocityComponent* velocityComponent = otherEntity.GetComponent<VelocityComponent>())
+		{
+			if (!velocityComponent->m_currentVelocity.IsNearlyZero() || !velocityComponent->m_proposedAvoidanceVelocity.IsNearlyZero())
+			{
+				return true;
+			}
+		}
+
+		return false;
+	};
+
+	uint16 nearestMovingTeammateId = spatialPartitioningComponent->m_argusEntityKDTree.FindOtherArgusEntityIdClosestToArgusEntity(components.m_entity, queryFilter);
+	if (nearestMovingTeammateId == ArgusECSConstants::k_maxEntities)
+	{
+		return false;
+	}
+
+	FogOfWarSystemsArgs otherComponents;
+	if (!otherComponents.PopulateArguments(ArgusEntity::RetrieveEntity(nearestMovingTeammateId)))
+	{
+		return false;
+	}
+
+	const float distSquared = FVector::DistSquared(components.m_transformComponent->m_location, otherComponents.m_transformComponent->m_location);
+	const float radiusSquared = FMath::Square(components.m_targetingComponent->m_sightRange + otherComponents.m_targetingComponent->m_sightRange);
+
+	// TODO JAMES: We need a way to handle the case where an overlapping entity dies.
+	return distSquared < radiusSquared;
 }
