@@ -254,6 +254,7 @@ void FogOfWarSystems::UpdateTexture()
 	ENQUEUE_RENDER_COMMAND(UpdateTextureRegionsData)(
 		[fogOfWarComponent](FRHICommandListImmediate& RHICmdList)
 		{
+			ARGUS_TRACE(FogOfWarSystems::ExecuteTextureUpdate);
 			for (uint32 regionIndex = 0; regionIndex < fogOfWarComponent->m_textureRegionsUpdateData.m_numRegions; ++regionIndex)
 			{
 				int32 currentFirstMip = fogOfWarComponent->m_fogOfWarTexture->FirstResourceMemMip;

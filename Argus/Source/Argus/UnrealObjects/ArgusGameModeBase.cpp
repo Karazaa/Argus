@@ -57,15 +57,25 @@ void AArgusGameModeBase::Tick(float deltaTime)
 	ARGUS_RETURN_ON_NULL(worldPointer, ArgusUnrealObjectsLog);
 	ARGUS_RETURN_ON_NULL(m_activePlayerController, ArgusUnrealObjectsLog);
 	
+	// Tick the systems thread. Logic here should be relatively resilient to mid execution ECS changes
+	m_argusSystemsThread.TickThread();
+
 	// Update camera and process player input
 	m_activePlayerController->ProcessArgusPlayerInput(deltaTime);
 
 	// Run all ECS systems.
-	m_argusSystemsThread.TickThread();
 	ArgusSystemsManager::RunSystems(worldPointer, deltaTime);
 
 	// Take/Release/Update ArgusActors based on ECS state.
 	ManageActorStateForEntities(worldPointer, deltaTime);
+
+	// Now wait on m_argusSystemsThread to finish its tick if necessary to execute worker thread dependent systems.
+	FPlatformProcess::ConditionalSleep([this]() -> bool
+	{
+		return !m_argusSystemsThread.IsTicking();
+	});
+
+	ArgusSystemsManager::RunPostThreadSystems();
 }
 
 void AArgusGameModeBase::ManageActorStateForEntities(const UWorld* worldPointer, float deltaTime)

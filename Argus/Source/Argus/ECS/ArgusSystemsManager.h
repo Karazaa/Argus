@@ -6,6 +6,7 @@
 #include "ComponentDefinitions/IdentityComponent.h"
 #include "CoreMinimal.h"
 
+class ArgusSystemsThread;
 class UArgusEntityTemplate;
 class UWorld;
 
@@ -15,6 +16,7 @@ public:
 	static void Initialize(UWorld* worldPointer, const FResourceSet& initialTeamResourceSet, const UArgusEntityTemplate* singletonTemplate);
 	static void OnStartPlay(UWorld* worldPointer, ETeam activePlayerTeam);
 	static void RunSystems(UWorld* worldPointer, float deltaTime);
+	static void RunPostThreadSystems();
 
 private:
 	static void PopulateSingletonComponents(UWorld* worldPointer, const UArgusEntityTemplate* singletonTemplate);

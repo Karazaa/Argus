@@ -10,9 +10,7 @@ ArgusSystemsThread::ArgusSystemsThread()
 
 void ArgusSystemsThread::StartThread()
 {
-    FogOfWarSystems::InitializeSystems();
-
-    m_isStarted = true;
+	m_isStarted = true;
 }
 
 uint32 ArgusSystemsThread::Run()
@@ -27,6 +25,7 @@ uint32 ArgusSystemsThread::Run()
         FogOfWarSystems::RunThreadSystems();
 
         m_tickCondition = false;
+        m_onTickComplete.ExecuteIfBound();
         FPlatformProcess::ConditionalSleep([this]() -> bool
         {
             return m_tickCondition;
