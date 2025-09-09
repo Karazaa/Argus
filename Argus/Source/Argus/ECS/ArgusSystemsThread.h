@@ -17,8 +17,10 @@ public:
     virtual void Exit() override {}
     virtual void Stop() override { m_isShutdown = true; }
     void TickThread() { m_tickCondition = true; }
-    bool IsTicking() const { return m_tickCondition; }
     void StartThread();
+
+	bool IsTicking() const { return m_tickCondition; }
+	bool IsShutdown() const { return m_isShutdown; }
 
 private:
 	FRunnableThread* m_thread;

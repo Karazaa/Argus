@@ -72,7 +72,7 @@ void AArgusGameModeBase::Tick(float deltaTime)
 	// Now wait on m_argusSystemsThread to finish its tick if necessary to execute worker thread dependent systems.
 	FPlatformProcess::ConditionalSleep([this]() -> bool
 	{
-		return !m_argusSystemsThread.IsTicking();
+		return !m_argusSystemsThread.IsTicking() || m_argusSystemsThread.IsShutdown();
 	});
 
 	ArgusSystemsManager::RunPostThreadSystems();
