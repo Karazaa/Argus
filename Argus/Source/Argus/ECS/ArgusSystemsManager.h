@@ -6,7 +6,6 @@
 #include "ComponentDefinitions/IdentityComponent.h"
 #include "CoreMinimal.h"
 
-class ArgusSystemsThread;
 class UArgusEntityTemplate;
 class UWorld;
 

@@ -11,11 +11,11 @@ class ArgusSystemsThread : public FRunnable
 {
 public:
     ArgusSystemsThread();
+    ~ArgusSystemsThread();
 
     virtual bool Init() override { return true; };
     virtual uint32 Run() override;
-    virtual void Exit() override {}
-    virtual void Stop() override { m_isShutdown = true; }
+    virtual void Stop() override;
     void TickThread() { m_tickCondition = true; }
     void StartThread();
 
