@@ -145,55 +145,65 @@ void FogOfWarSystems::RevealPixelAlphaForEntity(FogOfWarComponent* fogOfWarCompo
 	const uint32 radius = GetPixelRadiusFromWorldSpaceRadius(fogOfWarComponent, components.m_targetingComponent->m_sightRange);
 	const uint32 centerPixelRowNumber = components.m_fogOfWarLocationComponent->m_fogOfWarPixel / textureSize;
 
-	FogOfWarOffsets fogOfWarOffsets;
-	fogOfWarOffsets.leftOffset = radius;
+	FogOfWarOffsets offsets;
+	offsets.leftOffset = radius;
 	// The radius overlaps the left edge of the texture.
-	if (((components.m_fogOfWarLocationComponent->m_fogOfWarPixel - fogOfWarOffsets.leftOffset) / textureSize) != centerPixelRowNumber)
+	if (((components.m_fogOfWarLocationComponent->m_fogOfWarPixel - offsets.leftOffset) / textureSize) != centerPixelRowNumber)
 	{
-		fogOfWarOffsets.leftOffset = components.m_fogOfWarLocationComponent->m_fogOfWarPixel % textureSize;
+		offsets.leftOffset = components.m_fogOfWarLocationComponent->m_fogOfWarPixel % textureSize;
 	}
 
-	fogOfWarOffsets.rightOffset = radius;
+	offsets.rightOffset = radius;
 	// The radius overlaps the right edge of the texture.
-	if (((components.m_fogOfWarLocationComponent->m_fogOfWarPixel + fogOfWarOffsets.rightOffset) / textureSize) != centerPixelRowNumber)
+	if (((components.m_fogOfWarLocationComponent->m_fogOfWarPixel + offsets.rightOffset) / textureSize) != centerPixelRowNumber)
 	{
-		fogOfWarOffsets.rightOffset = textureSize - (components.m_fogOfWarLocationComponent->m_fogOfWarPixel % textureSize);
+		offsets.rightOffset = textureSize - (components.m_fogOfWarLocationComponent->m_fogOfWarPixel % textureSize);
 	}
 
-	fogOfWarOffsets.topOffset = radius;
+	offsets.topOffset = radius;
 	// The radius overlaps the top edge of the texture.
-	if (fogOfWarOffsets.topOffset > centerPixelRowNumber)
+	if (offsets.topOffset > centerPixelRowNumber)
 	{
-		fogOfWarOffsets.topOffset = centerPixelRowNumber;
+		offsets.topOffset = centerPixelRowNumber;
 	}
 
-	fogOfWarOffsets.bottomOffset = radius;
+	offsets.bottomOffset = radius;
 	// The radius overlaps the bottom edge of the texture.
-	if ((fogOfWarOffsets.bottomOffset + centerPixelRowNumber) >= textureSize)
+	if ((offsets.bottomOffset + centerPixelRowNumber) >= textureSize)
 	{
-		fogOfWarOffsets.bottomOffset = ((maxPixel - (textureSize - (components.m_fogOfWarLocationComponent->m_fogOfWarPixel % textureSize))) / textureSize) - (centerPixelRowNumber);
+		offsets.bottomOffset = ((maxPixel - (textureSize - (components.m_fogOfWarLocationComponent->m_fogOfWarPixel % textureSize))) / textureSize) - (centerPixelRowNumber);
 	}
 
-	// Method of Horn for circle rasterization.
-	int32 circleD = -static_cast<int32>(radius);
-	fogOfWarOffsets.circleX = radius;
-	fogOfWarOffsets.circleY = 0u;
-	while (fogOfWarOffsets.circleX >= fogOfWarOffsets.circleY)
+	RasterizeCircleOfRadius(radius, offsets, [fogOfWarComponent, &components, activelyRevealed](const FogOfWarOffsets& offsets)
 	{
 		// Set Alpha for pixel range for all symmetrical pixels.
-		SetAlphaForCircleOctant(fogOfWarComponent, components, fogOfWarOffsets, activelyRevealed);
+		SetAlphaForCircleOctant(fogOfWarComponent, components, offsets, activelyRevealed);
+	});
+}
 
-		circleD = circleD + (2 * fogOfWarOffsets.circleX * fogOfWarOffsets.circleY) + 1u;
-		fogOfWarOffsets.circleY++;
+void FogOfWarSystems::RasterizeCircleOfRadius(uint32 radius, FogOfWarOffsets& offsets, TFunction<void(const FogOfWarOffsets& offsets)> perOctantPixelFunction)
+{
+	// Method of Horn for circle rasterization.
+	int32 circleD = -static_cast<int32>(radius);
+	offsets.circleX = radius;
+	offsets.circleY = 0u;
+	while (offsets.circleX >= offsets.circleY)
+	{
+		if (perOctantPixelFunction)
+		{
+			perOctantPixelFunction(offsets);
+		}
+
+		circleD = circleD + (2 * offsets.circleX * offsets.circleY) + 1u;
+		offsets.circleY++;
 
 		if (circleD > 0)
 		{
-			circleD = circleD - (2 * fogOfWarOffsets.circleX * fogOfWarOffsets.circleX) + 2;
-			fogOfWarOffsets.circleX--;
+			circleD = circleD - (2 * offsets.circleX * offsets.circleX) + 2;
+			offsets.circleX--;
 		}
 	}
 }
-
 
 void FogOfWarSystems::SetAlphaForPixelRange(FogOfWarComponent* fogOfWarComponent, uint32 fromPixelInclusive, uint32 toPixelInclusive, bool activelyRevealed)
 {
@@ -205,7 +215,7 @@ void FogOfWarSystems::SetAlphaForPixelRange(FogOfWarComponent* fogOfWarComponent
 	memset(firstAddress, activelyRevealed ? 0 : fogOfWarComponent->m_revealedOnceAlpha, rowLength);
 }
 
-void FogOfWarSystems::SetAlphaForCircleOctant(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, const FogOfWarOffsets& fogOfWarOffsets, bool activelyRevealed)
+void FogOfWarSystems::SetAlphaForCircleOctant(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, const FogOfWarOffsets& offsets, bool activelyRevealed)
 {
 	ARGUS_TRACE(FogOfWarSystems::SetAlphaForCircleOctant);
 	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
@@ -214,21 +224,21 @@ void FogOfWarSystems::SetAlphaForCircleOctant(FogOfWarComponent* fogOfWarCompone
 		return;
 	}
 
-	const uint32 topY = fogOfWarOffsets.circleX <= fogOfWarOffsets.topOffset ? fogOfWarOffsets.circleX : fogOfWarOffsets.topOffset;
-	const uint32 topStartX = fogOfWarOffsets.circleY <= fogOfWarOffsets.leftOffset ? fogOfWarOffsets.circleY : fogOfWarOffsets.leftOffset;
-	const uint32 topEndX = fogOfWarOffsets.circleY <= fogOfWarOffsets.rightOffset ? fogOfWarOffsets.circleY : fogOfWarOffsets.rightOffset;
+	const uint32 topY = offsets.circleX <= offsets.topOffset ? offsets.circleX : offsets.topOffset;
+	const uint32 topStartX = offsets.circleY <= offsets.leftOffset ? offsets.circleY : offsets.leftOffset;
+	const uint32 topEndX = offsets.circleY <= offsets.rightOffset ? offsets.circleY : offsets.rightOffset;
 
-	const uint32 bottomY = fogOfWarOffsets.circleX <= fogOfWarOffsets.bottomOffset ? fogOfWarOffsets.circleX : fogOfWarOffsets.bottomOffset;
-	const uint32 bottomStartX = fogOfWarOffsets.circleY <= fogOfWarOffsets.leftOffset ? fogOfWarOffsets.circleY : fogOfWarOffsets.leftOffset;
-	const uint32 bottomEndX = fogOfWarOffsets.circleY <= fogOfWarOffsets.rightOffset ? fogOfWarOffsets.circleY : fogOfWarOffsets.rightOffset;
+	const uint32 bottomY = offsets.circleX <= offsets.bottomOffset ? offsets.circleX : offsets.bottomOffset;
+	const uint32 bottomStartX = offsets.circleY <= offsets.leftOffset ? offsets.circleY : offsets.leftOffset;
+	const uint32 bottomEndX = offsets.circleY <= offsets.rightOffset ? offsets.circleY : offsets.rightOffset;
 
-	const uint32 midUpY = fogOfWarOffsets.circleY <= fogOfWarOffsets.topOffset ? fogOfWarOffsets.circleY : fogOfWarOffsets.topOffset;
-	const uint32 midUpStartX = fogOfWarOffsets.circleX <= fogOfWarOffsets.leftOffset ? fogOfWarOffsets.circleX : fogOfWarOffsets.leftOffset;
-	const uint32 midUpEndX = fogOfWarOffsets.circleX <= fogOfWarOffsets.rightOffset ? fogOfWarOffsets.circleX : fogOfWarOffsets.rightOffset;
+	const uint32 midUpY = offsets.circleY <= offsets.topOffset ? offsets.circleY : offsets.topOffset;
+	const uint32 midUpStartX = offsets.circleX <= offsets.leftOffset ? offsets.circleX : offsets.leftOffset;
+	const uint32 midUpEndX = offsets.circleX <= offsets.rightOffset ? offsets.circleX : offsets.rightOffset;
 
-	const uint32 midDownY = fogOfWarOffsets.circleY <= fogOfWarOffsets.bottomOffset ? fogOfWarOffsets.circleY : fogOfWarOffsets.bottomOffset;
-	const uint32 midDownStartX = fogOfWarOffsets.circleX <= fogOfWarOffsets.leftOffset ? fogOfWarOffsets.circleX : fogOfWarOffsets.leftOffset;
-	const uint32 midDownEndX = fogOfWarOffsets.circleX <= fogOfWarOffsets.rightOffset ? fogOfWarOffsets.circleX : fogOfWarOffsets.rightOffset;
+	const uint32 midDownY = offsets.circleY <= offsets.bottomOffset ? offsets.circleY : offsets.bottomOffset;
+	const uint32 midDownStartX = offsets.circleX <= offsets.leftOffset ? offsets.circleX : offsets.leftOffset;
+	const uint32 midDownEndX = offsets.circleX <= offsets.rightOffset ? offsets.circleX : offsets.rightOffset;
 
 	const uint32 textureSize = static_cast<uint32>(fogOfWarComponent->m_textureSize);
 	const uint32 centerColumnTopIndex = components.m_fogOfWarLocationComponent->m_fogOfWarPixel - (topY * textureSize);
