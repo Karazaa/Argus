@@ -9,6 +9,7 @@ struct FogOfWarSystemsArgs
 {
 	ARGUS_SYSTEM_ARGS_SHARED;
 
+	FogOfWarLocationComponent* m_fogOfWarLocationComponent = nullptr;
 	TargetingComponent* m_targetingComponent = nullptr;
 	TransformComponent* m_transformComponent = nullptr;
 };

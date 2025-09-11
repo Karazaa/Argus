@@ -56,6 +56,24 @@ void FogOfWarSystems::SetRevealedStatePerEntity(FogOfWarComponent* fogOfWarCompo
 	InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId).GetComponent<InputInterfaceComponent>();
 	ARGUS_RETURN_ON_NULL(inputInterfaceComponent, ArgusECSLog);
 
+	// Clear dead entity pixels.
+	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
+	{
+		const ArgusEntity entity = ArgusEntity::RetrieveEntity(i);
+		if (entity.IsAlive())
+		{
+			continue;
+		}
+
+		FogOfWarLocationComponent* fogOfWarLocationComponent = entity.GetComponent<FogOfWarLocationComponent>();
+		if (!fogOfWarLocationComponent)
+		{
+			continue;
+		}
+
+		fogOfWarLocationComponent->m_clearedThisFrame = fogOfWarLocationComponent->m_fogOfWarPixel == MAX_uint32 ? false : true;
+	}
+
 	// Set actively revealed pixels to revealed once.
 	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{
@@ -72,18 +90,21 @@ void FogOfWarSystems::SetRevealedStatePerEntity(FogOfWarComponent* fogOfWarCompo
 		}
 
 		const uint32 centerPixel = GetPixelNumberFromWorldSpaceLocation(fogOfWarComponent, components.m_transformComponent->m_location);
-		const bool newCenterPixel = centerPixel != components.m_transformComponent->m_fogOfWarPixel;
-		if ((newCenterPixel || !entity.IsAlive()) && components.m_transformComponent->m_fogOfWarPixel != MAX_uint32)
+		const bool newCenterPixel = centerPixel != components.m_fogOfWarLocationComponent->m_fogOfWarPixel;
+		if (newCenterPixel && entity.IsAlive() && components.m_fogOfWarLocationComponent->m_fogOfWarPixel != MAX_uint32)
 		{
 			RevealPixelAlphaForEntity(fogOfWarComponent, components, false);
 		}
-
-		if (!entity.IsAlive())
+		else if (components.m_fogOfWarLocationComponent->m_clearedThisFrame)
 		{
-			components.m_transformComponent->m_fogOfWarPixel = MAX_uint32;
-			continue;
+			RevealPixelAlphaForEntity(fogOfWarComponent, components, false);
+			components.m_fogOfWarLocationComponent->m_fogOfWarPixel = MAX_uint32;
 		}
-		components.m_transformComponent->m_fogOfWarPixel = centerPixel;
+
+		if (entity.IsAlive())
+		{
+			components.m_fogOfWarLocationComponent->m_fogOfWarPixel = centerPixel;
+		}
 	}
 
 	// Calculate new actively revealed pixels.
@@ -122,21 +143,21 @@ void FogOfWarSystems::RevealPixelAlphaForEntity(FogOfWarComponent* fogOfWarCompo
 
 	const uint32 maxPixel = fogOfWarComponent->GetTotalPixels() - 1;
 	const uint32 radius = GetPixelRadiusFromWorldSpaceRadius(fogOfWarComponent, components.m_targetingComponent->m_sightRange);
-	const uint32 centerPixelRowNumber = components.m_transformComponent->m_fogOfWarPixel / textureSize;
+	const uint32 centerPixelRowNumber = components.m_fogOfWarLocationComponent->m_fogOfWarPixel / textureSize;
 
 	FogOfWarOffsets fogOfWarOffsets;
 	fogOfWarOffsets.leftOffset = radius;
 	// The radius overlaps the left edge of the texture.
-	if (((components.m_transformComponent->m_fogOfWarPixel - fogOfWarOffsets.leftOffset) / textureSize) != centerPixelRowNumber)
+	if (((components.m_fogOfWarLocationComponent->m_fogOfWarPixel - fogOfWarOffsets.leftOffset) / textureSize) != centerPixelRowNumber)
 	{
-		fogOfWarOffsets.leftOffset = components.m_transformComponent->m_fogOfWarPixel % textureSize;
+		fogOfWarOffsets.leftOffset = components.m_fogOfWarLocationComponent->m_fogOfWarPixel % textureSize;
 	}
 
 	fogOfWarOffsets.rightOffset = radius;
 	// The radius overlaps the right edge of the texture.
-	if (((components.m_transformComponent->m_fogOfWarPixel + fogOfWarOffsets.rightOffset) / textureSize) != centerPixelRowNumber)
+	if (((components.m_fogOfWarLocationComponent->m_fogOfWarPixel + fogOfWarOffsets.rightOffset) / textureSize) != centerPixelRowNumber)
 	{
-		fogOfWarOffsets.rightOffset = textureSize - (components.m_transformComponent->m_fogOfWarPixel % textureSize);
+		fogOfWarOffsets.rightOffset = textureSize - (components.m_fogOfWarLocationComponent->m_fogOfWarPixel % textureSize);
 	}
 
 	fogOfWarOffsets.topOffset = radius;
@@ -150,7 +171,7 @@ void FogOfWarSystems::RevealPixelAlphaForEntity(FogOfWarComponent* fogOfWarCompo
 	// The radius overlaps the bottom edge of the texture.
 	if ((fogOfWarOffsets.bottomOffset + centerPixelRowNumber) >= textureSize)
 	{
-		fogOfWarOffsets.bottomOffset = ((maxPixel - (textureSize - (components.m_transformComponent->m_fogOfWarPixel % textureSize))) / textureSize) - (centerPixelRowNumber);
+		fogOfWarOffsets.bottomOffset = ((maxPixel - (textureSize - (components.m_fogOfWarLocationComponent->m_fogOfWarPixel % textureSize))) / textureSize) - (centerPixelRowNumber);
 	}
 
 	// Method of Horn for circle rasterization.
@@ -210,10 +231,10 @@ void FogOfWarSystems::SetAlphaForCircleOctant(FogOfWarComponent* fogOfWarCompone
 	const uint32 midDownEndX = fogOfWarOffsets.circleX <= fogOfWarOffsets.rightOffset ? fogOfWarOffsets.circleX : fogOfWarOffsets.rightOffset;
 
 	const uint32 textureSize = static_cast<uint32>(fogOfWarComponent->m_textureSize);
-	const uint32 centerColumnTopIndex = components.m_transformComponent->m_fogOfWarPixel - (topY * textureSize);
-	const uint32 centerColumnMidUpIndex = components.m_transformComponent->m_fogOfWarPixel - (midUpY * textureSize);
-	const uint32 centerColumnMidDownIndex = components.m_transformComponent->m_fogOfWarPixel + (midDownY * textureSize);
-	const uint32 centerColumnBottomIndex = components.m_transformComponent->m_fogOfWarPixel + (bottomY * textureSize);
+	const uint32 centerColumnTopIndex = components.m_fogOfWarLocationComponent->m_fogOfWarPixel - (topY * textureSize);
+	const uint32 centerColumnMidUpIndex = components.m_fogOfWarLocationComponent->m_fogOfWarPixel - (midUpY * textureSize);
+	const uint32 centerColumnMidDownIndex = components.m_fogOfWarLocationComponent->m_fogOfWarPixel + (midDownY * textureSize);
+	const uint32 centerColumnBottomIndex = components.m_fogOfWarLocationComponent->m_fogOfWarPixel + (bottomY * textureSize);
 
 	SetAlphaForPixelRange(fogOfWarComponent, centerColumnTopIndex - topStartX, centerColumnTopIndex + topEndX, activelyRevealed);
 	SetAlphaForPixelRange(fogOfWarComponent, centerColumnMidUpIndex - midUpStartX, centerColumnMidUpIndex + midUpEndX, activelyRevealed);
@@ -350,8 +371,22 @@ bool FogOfWarSystems::DoesEntityNeedToUpdateActivelyRevealed(const FogOfWarSyste
 		}
 
 		ArgusEntity otherEntity = ArgusEntity::RetrieveEntity(entityNode->m_entityId);
-		if (!otherEntity || !otherEntity.IsAlive() || !otherEntity.IsOnTeam(inputInterfaceComponent->m_activePlayerTeam) || otherEntity.IsPassenger())
+		if (!otherEntity || !otherEntity.IsOnTeam(inputInterfaceComponent->m_activePlayerTeam) || otherEntity.IsPassenger())
 		{
+			return false;
+		}
+
+		// If the other entity is dead, but was registered dead to FogOfWar this frame, that means that the revealed once state might be clipping actively revealed areas.
+		if (!otherEntity.IsAlive())
+		{
+			if (const FogOfWarLocationComponent* otherFogOfWarLocationComponent = otherEntity.GetComponent<FogOfWarLocationComponent>())
+			{
+				if (otherFogOfWarLocationComponent->m_clearedThisFrame)
+				{
+					return true;
+				}
+			}
+
 			return false;
 		}
 

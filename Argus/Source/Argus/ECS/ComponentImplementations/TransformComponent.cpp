@@ -24,7 +24,6 @@ void TransformComponent::Reset()
 	m_targetYaw = 0.0f;
 	m_radius = 45.0f;
 	m_height = 100.0f;
-	m_fogOfWarPixel = MAX_uint32;
 }
 
 void TransformComponent::DrawComponentDebug() const
@@ -57,10 +56,6 @@ void TransformComponent::DrawComponentDebug() const
 		ImGui::Text("m_height");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_height);
-		ImGui::TableNextColumn();
-		ImGui::Text("m_fogOfWarPixel");
-		ImGui::TableNextColumn();
-		ImGui::Text("%d", m_fogOfWarPixel);
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

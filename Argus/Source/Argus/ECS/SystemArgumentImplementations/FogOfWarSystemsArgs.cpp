@@ -12,10 +12,11 @@ bool FogOfWarSystemsArgs::PopulateArguments(const ArgusEntity& entity)
 	}
 
 	m_entity = entity;
+	m_fogOfWarLocationComponent = entity.GetComponent<FogOfWarLocationComponent>();
 	m_targetingComponent = entity.GetComponent<TargetingComponent>();
 	m_transformComponent = entity.GetComponent<TransformComponent>();
 
-	if (!m_entity || !m_targetingComponent || !m_transformComponent)
+	if (!m_entity || !m_fogOfWarLocationComponent || !m_targetingComponent || !m_transformComponent)
 	{
 		return false;
 	}
@@ -25,7 +26,7 @@ bool FogOfWarSystemsArgs::PopulateArguments(const ArgusEntity& entity)
 
 bool FogOfWarSystemsArgs::AreComponentsValidCheck(const WIDECHAR* functionName) const
 {
-	if (UNLIKELY(!m_entity || !m_targetingComponent || !m_transformComponent))
+	if (UNLIKELY(!m_entity || !m_fogOfWarLocationComponent || !m_targetingComponent || !m_transformComponent))
 	{
 		ArgusLogging::LogInvalidComponentReferences(functionName, ARGUS_NAMEOF(FogOfWarSystemsArgs));
 		return false;

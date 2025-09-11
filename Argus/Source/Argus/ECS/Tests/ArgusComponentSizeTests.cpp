@@ -39,6 +39,11 @@ bool ArgusComponentComponentSizeTest::RunTest(const FString& Parameters)
 	netSize += ConstructionComponentSize;
 	ARGUS_LOG(ArgusTestingLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(ConstructionComponent), ConstructionComponentSize);
 #pragma endregion
+#pragma region FogOfWarLocationComponent
+	const size_t FogOfWarLocationComponentSize = sizeof(FogOfWarLocationComponent);
+	netSize += FogOfWarLocationComponentSize;
+	ARGUS_LOG(ArgusTestingLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(FogOfWarLocationComponent), FogOfWarLocationComponentSize);
+#pragma endregion
 #pragma region HealthComponent
 	const size_t HealthComponentSize = sizeof(HealthComponent);
 	netSize += HealthComponentSize;
