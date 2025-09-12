@@ -29,6 +29,9 @@ struct FogOfWarComponent
 	ARGUS_IGNORE()
 	TArray<uint8, ArgusContainerAllocator<0> > m_textureData;
 
+	ARGUS_IGNORE()
+	TArray<uint8, ArgusContainerAllocator<0> > m_blurredTextureData;
+
 	uint8 m_revealedOnceAlpha = 100u;
 	uint16 m_textureSize = 1024u;
 

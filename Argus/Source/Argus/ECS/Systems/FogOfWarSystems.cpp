@@ -26,7 +26,9 @@ void FogOfWarSystems::InitializeSystems()
 	fogOfWarComponent->m_textureRegion = FUpdateTextureRegion2D(0, 0, 0, 0, fogOfWarComponent->m_textureSize, fogOfWarComponent->m_textureSize);
 
 	fogOfWarComponent->m_textureData.SetNumZeroed(fogOfWarComponent->GetTotalPixels());
+	fogOfWarComponent->m_blurredTextureData.SetNumZeroed(fogOfWarComponent->GetTotalPixels());
 	memset(fogOfWarComponent->m_textureData.GetData(), 255, fogOfWarComponent->GetTotalPixels());
+	memset(fogOfWarComponent->m_blurredTextureData.GetData(), 255, fogOfWarComponent->GetTotalPixels());
 }
 
 void FogOfWarSystems::RunThreadSystems()
@@ -89,15 +91,18 @@ void FogOfWarSystems::SetRevealedStatePerEntity(FogOfWarComponent* fogOfWarCompo
 			continue;
 		}
 
+		FogOfWarOffsets offsets;
+		PopulateOffsetsForEntity(fogOfWarComponent, components, offsets);
+
 		const uint32 centerPixel = GetPixelNumberFromWorldSpaceLocation(fogOfWarComponent, components.m_transformComponent->m_location);
 		const bool newCenterPixel = centerPixel != components.m_fogOfWarLocationComponent->m_fogOfWarPixel;
 		if (newCenterPixel && entity.IsAlive() && components.m_fogOfWarLocationComponent->m_fogOfWarPixel != MAX_uint32)
 		{
-			RevealPixelAlphaForEntity(fogOfWarComponent, components, false);
+			RevealPixelAlphaForEntity(fogOfWarComponent, components, offsets, false);
 		}
 		else if (components.m_fogOfWarLocationComponent->m_clearedThisFrame)
 		{
-			RevealPixelAlphaForEntity(fogOfWarComponent, components, false);
+			RevealPixelAlphaForEntity(fogOfWarComponent, components, offsets, false);
 			components.m_fogOfWarLocationComponent->m_fogOfWarPixel = MAX_uint32;
 		}
 
@@ -122,13 +127,35 @@ void FogOfWarSystems::SetRevealedStatePerEntity(FogOfWarComponent* fogOfWarCompo
 			continue;
 		}
 
-		RevealPixelAlphaForEntity(fogOfWarComponent, components, true);
+		FogOfWarOffsets offsets;
+		PopulateOffsetsForEntity(fogOfWarComponent, components, offsets);
+		RevealPixelAlphaForEntity(fogOfWarComponent, components, offsets, true);
+	}
+
+	// Do Gaussian Blur per entity.
+	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
+	{
+		const ArgusEntity entity = ArgusEntity::RetrieveEntity(i);
+		FogOfWarSystemsArgs components;
+		if (!components.PopulateArguments(entity))
+		{
+			continue;
+		}
+
+		if (!entity.IsOnTeam(inputInterfaceComponent->m_activePlayerTeam))
+		{
+			continue;
+		}
+
+		FogOfWarOffsets offsets;
+		PopulateOffsetsForEntity(fogOfWarComponent, components, offsets);
+		BlurBoundariesForEntity(fogOfWarComponent, components, offsets);
 	}
 }
 
-void FogOfWarSystems::RevealPixelAlphaForEntity(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, bool activelyRevealed)
+void FogOfWarSystems::PopulateOffsetsForEntity(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, FogOfWarOffsets& outOffsets)
 {
-	ARGUS_TRACE(FogOfWarSystems::RevealPixelsForEntity);
+	ARGUS_TRACE(FogOfWarSystems::PopulateOffsetsForEntity);
 	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
@@ -145,39 +172,69 @@ void FogOfWarSystems::RevealPixelAlphaForEntity(FogOfWarComponent* fogOfWarCompo
 	const uint32 radius = GetPixelRadiusFromWorldSpaceRadius(fogOfWarComponent, components.m_targetingComponent->m_sightRange);
 	const uint32 centerPixelRowNumber = components.m_fogOfWarLocationComponent->m_fogOfWarPixel / textureSize;
 
-	FogOfWarOffsets offsets;
-	offsets.leftOffset = radius;
+	outOffsets.leftOffset = radius;
 	// The radius overlaps the left edge of the texture.
-	if (((components.m_fogOfWarLocationComponent->m_fogOfWarPixel - offsets.leftOffset) / textureSize) != centerPixelRowNumber)
+	if (((components.m_fogOfWarLocationComponent->m_fogOfWarPixel - outOffsets.leftOffset) / textureSize) != centerPixelRowNumber)
 	{
-		offsets.leftOffset = components.m_fogOfWarLocationComponent->m_fogOfWarPixel % textureSize;
+		outOffsets.leftOffset = components.m_fogOfWarLocationComponent->m_fogOfWarPixel % textureSize;
 	}
 
-	offsets.rightOffset = radius;
+	outOffsets.rightOffset = radius;
 	// The radius overlaps the right edge of the texture.
-	if (((components.m_fogOfWarLocationComponent->m_fogOfWarPixel + offsets.rightOffset) / textureSize) != centerPixelRowNumber)
+	if (((components.m_fogOfWarLocationComponent->m_fogOfWarPixel + outOffsets.rightOffset) / textureSize) != centerPixelRowNumber)
 	{
-		offsets.rightOffset = textureSize - (components.m_fogOfWarLocationComponent->m_fogOfWarPixel % textureSize);
+		outOffsets.rightOffset = textureSize - (components.m_fogOfWarLocationComponent->m_fogOfWarPixel % textureSize);
 	}
 
-	offsets.topOffset = radius;
+	outOffsets.topOffset = radius;
 	// The radius overlaps the top edge of the texture.
-	if (offsets.topOffset > centerPixelRowNumber)
+	if (outOffsets.topOffset > centerPixelRowNumber)
 	{
-		offsets.topOffset = centerPixelRowNumber;
+		outOffsets.topOffset = centerPixelRowNumber;
 	}
 
-	offsets.bottomOffset = radius;
+	outOffsets.bottomOffset = radius;
 	// The radius overlaps the bottom edge of the texture.
-	if ((offsets.bottomOffset + centerPixelRowNumber) >= textureSize)
+	if ((outOffsets.bottomOffset + centerPixelRowNumber) >= textureSize)
 	{
-		offsets.bottomOffset = ((maxPixel - (textureSize - (components.m_fogOfWarLocationComponent->m_fogOfWarPixel % textureSize))) / textureSize) - (centerPixelRowNumber);
+		outOffsets.bottomOffset = ((maxPixel - (textureSize - (components.m_fogOfWarLocationComponent->m_fogOfWarPixel % textureSize))) / textureSize) - (centerPixelRowNumber);
+	}
+}
+
+void FogOfWarSystems::RevealPixelAlphaForEntity(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, FogOfWarOffsets& offsets, bool activelyRevealed)
+{
+	ARGUS_TRACE(FogOfWarSystems::RevealPixelAlphaForEntity);
+	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
 	}
 
+	const uint32 radius = GetPixelRadiusFromWorldSpaceRadius(fogOfWarComponent, components.m_targetingComponent->m_sightRange);
 	RasterizeCircleOfRadius(radius, offsets, [fogOfWarComponent, &components, activelyRevealed](const FogOfWarOffsets& offsets)
 	{
 		// Set Alpha for pixel range for all symmetrical pixels.
 		SetAlphaForCircleOctant(fogOfWarComponent, components, offsets, activelyRevealed);
+	});
+}
+
+void FogOfWarSystems::BlurBoundariesForEntity(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, FogOfWarOffsets& offsets)
+{
+	ARGUS_TRACE(FogOfWarSystems::BlurBoundariesForEntity);
+	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+
+	const uint32 radius = GetPixelRadiusFromWorldSpaceRadius(fogOfWarComponent, components.m_targetingComponent->m_sightRange);
+	RasterizeCircleOfRadius(radius, offsets, [fogOfWarComponent, &components](const FogOfWarOffsets& offsets)
+	{
+		// Gaussian Blur pass 1.
+	});
+	RasterizeCircleOfRadius(radius - 1, offsets, [fogOfWarComponent, &components](const FogOfWarOffsets& offsets)
+	{
+		// Gaussian Blur pass 2.
 	});
 }
 
@@ -349,6 +406,8 @@ uint32 FogOfWarSystems::GetPixelRadiusFromWorldSpaceRadius(FogOfWarComponent* fo
 
 bool FogOfWarSystems::DoesEntityNeedToUpdateActivelyRevealed(const FogOfWarSystemsArgs& components, const InputInterfaceComponent* inputInterfaceComponent)
 {
+	ARGUS_TRACE(FogOfWarSystems::DoesEntityNeedToUpdateActivelyRevealed);
+
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return false;
