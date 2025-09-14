@@ -337,19 +337,14 @@ void FogOfWarSystems::BlurBoundariesForCircleOctant(FogOfWarComponent* fogOfWarC
 	CircleOctantExpansion octantExpansion;
 	PopulateOctantExpansionForEntity(fogOfWarComponent, components, offsets, octantExpansion);
 
-	const bool isTopRightInBounds = IsPixelInFogOfWarBounds(static_cast<int32>(offsets.m_circleY), static_cast<int32>(offsets.m_circleX), fogOfWarComponent, components);
-	const bool isTopLeftInBounds = IsPixelInFogOfWarBounds(-static_cast<int32>(offsets.m_circleY), static_cast<int32>(offsets.m_circleX), fogOfWarComponent, components);
-	const bool isMidUpRightInBounds = IsPixelInFogOfWarBounds(static_cast<int32>(offsets.m_circleX), static_cast<int32>(offsets.m_circleY), fogOfWarComponent, components);
-	const bool isMidUpLeftInBounds = IsPixelInFogOfWarBounds(-static_cast<int32>(offsets.m_circleX), static_cast<int32>(offsets.m_circleY), fogOfWarComponent, components);
-	const bool isMidDownRightInBounds = IsPixelInFogOfWarBounds(static_cast<int32>(offsets.m_circleX), -static_cast<int32>(offsets.m_circleY), fogOfWarComponent, components);
-	const bool isMidDownLeftInBounds = IsPixelInFogOfWarBounds(-static_cast<int32>(offsets.m_circleX), -static_cast<int32>(offsets.m_circleY), fogOfWarComponent, components);
-	const bool isBottomRightInBounds = IsPixelInFogOfWarBounds(static_cast<int32>(offsets.m_circleY), -static_cast<int32>(offsets.m_circleX), fogOfWarComponent, components);
-	const bool isBottomLeftInBounds = IsPixelInFogOfWarBounds(-static_cast<int32>(offsets.m_circleY), -static_cast<int32>(offsets.m_circleX), fogOfWarComponent, components);
-
-	if (!isTopRightInBounds || !isTopLeftInBounds || !isMidUpRightInBounds || !isMidUpLeftInBounds || !isMidDownRightInBounds || !isMidDownLeftInBounds || !isBottomRightInBounds || !isBottomLeftInBounds)
-	{
-		ARGUS_LOG(ArgusECSLog, Display, TEXT("OVERLAPPING EDGE"));
-	}
+	BlurAroundPixel(static_cast<int32>(offsets.m_circleY), static_cast<int32>(offsets.m_circleX), fogOfWarComponent, components);
+	BlurAroundPixel(-static_cast<int32>(offsets.m_circleY), static_cast<int32>(offsets.m_circleX), fogOfWarComponent, components);
+	BlurAroundPixel(static_cast<int32>(offsets.m_circleX), static_cast<int32>(offsets.m_circleY), fogOfWarComponent, components);
+	BlurAroundPixel(-static_cast<int32>(offsets.m_circleX), static_cast<int32>(offsets.m_circleY), fogOfWarComponent, components);
+	BlurAroundPixel(static_cast<int32>(offsets.m_circleX), -static_cast<int32>(offsets.m_circleY), fogOfWarComponent, components);
+	BlurAroundPixel(-static_cast<int32>(offsets.m_circleX), -static_cast<int32>(offsets.m_circleY), fogOfWarComponent, components);
+	BlurAroundPixel(static_cast<int32>(offsets.m_circleY), -static_cast<int32>(offsets.m_circleX), fogOfWarComponent, components);
+	BlurAroundPixel(-static_cast<int32>(offsets.m_circleY), -static_cast<int32>(offsets.m_circleX), fogOfWarComponent, components);
 }
 
 void FogOfWarSystems::UpdateTexture()
@@ -537,7 +532,7 @@ void FogOfWarSystems::UpdateDoesEntityNeedToUpdateActivelyRevealed(const FogOfWa
 
 bool FogOfWarSystems::IsPixelInFogOfWarBounds(int32 relativeX, int32 relativeY, FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components)
 {
-	ARGUS_TRACE(FogOfWarSystems::PopulateOffsetsForEntity);
+	ARGUS_TRACE(FogOfWarSystems::IsPixelInFogOfWarBounds);
 	ARGUS_RETURN_ON_NULL_BOOL(fogOfWarComponent, ArgusECSLog);
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
@@ -572,4 +567,31 @@ bool FogOfWarSystems::IsPixelInFogOfWarBounds(int32 relativeX, int32 relativeY, 
 	}
 
 	return true;
+}
+
+// TODO JAMES: At current texture sizes, even without the actual summing and setting of alpha, this is really brutal performance. Like 4ms a frame performance.
+void FogOfWarSystems::BlurAroundPixel(int32 relativeX, int32 relativeY, FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components)
+{
+	ARGUS_TRACE(FogOfWarSystems::BlurAroundPixel);
+	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+
+	if (!IsPixelInFogOfWarBounds(relativeX, relativeY, fogOfWarComponent, components))
+	{
+		return;
+	}
+
+	for (int32 i = 0; i < 3; ++i)
+	{
+		for (int32 j = 0; j < 3; ++j)
+		{
+			if (!IsPixelInFogOfWarBounds(relativeX + (j - 1), relativeY + (1 - i), fogOfWarComponent, components))
+			{
+				continue;
+			}
+		}
+	}
 }
