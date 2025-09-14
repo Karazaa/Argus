@@ -336,6 +336,20 @@ void FogOfWarSystems::BlurBoundariesForCircleOctant(FogOfWarComponent* fogOfWarC
 
 	CircleOctantExpansion octantExpansion;
 	PopulateOctantExpansionForEntity(fogOfWarComponent, components, offsets, octantExpansion);
+
+	const bool isTopRightInBounds = IsPixelInFogOfWarBounds(static_cast<int32>(offsets.m_circleY), static_cast<int32>(offsets.m_circleX), fogOfWarComponent, components);
+	const bool isTopLeftInBounds = IsPixelInFogOfWarBounds(-static_cast<int32>(offsets.m_circleY), static_cast<int32>(offsets.m_circleX), fogOfWarComponent, components);
+	const bool isMidUpRightInBounds = IsPixelInFogOfWarBounds(static_cast<int32>(offsets.m_circleX), static_cast<int32>(offsets.m_circleY), fogOfWarComponent, components);
+	const bool isMidUpLeftInBounds = IsPixelInFogOfWarBounds(-static_cast<int32>(offsets.m_circleX), static_cast<int32>(offsets.m_circleY), fogOfWarComponent, components);
+	const bool isMidDownRightInBounds = IsPixelInFogOfWarBounds(static_cast<int32>(offsets.m_circleX), -static_cast<int32>(offsets.m_circleY), fogOfWarComponent, components);
+	const bool isMidDownLeftInBounds = IsPixelInFogOfWarBounds(-static_cast<int32>(offsets.m_circleX), -static_cast<int32>(offsets.m_circleY), fogOfWarComponent, components);
+	const bool isBottomRightInBounds = IsPixelInFogOfWarBounds(static_cast<int32>(offsets.m_circleY), -static_cast<int32>(offsets.m_circleX), fogOfWarComponent, components);
+	const bool isBottomLeftInBounds = IsPixelInFogOfWarBounds(-static_cast<int32>(offsets.m_circleY), -static_cast<int32>(offsets.m_circleX), fogOfWarComponent, components);
+
+	if (!isTopRightInBounds || !isTopLeftInBounds || !isMidUpRightInBounds || !isMidUpLeftInBounds || !isMidDownRightInBounds || !isMidDownLeftInBounds || !isBottomRightInBounds || !isBottomLeftInBounds)
+	{
+		ARGUS_LOG(ArgusECSLog, Display, TEXT("OVERLAPPING EDGE"));
+	}
 }
 
 void FogOfWarSystems::UpdateTexture()
@@ -519,4 +533,43 @@ void FogOfWarSystems::UpdateDoesEntityNeedToUpdateActivelyRevealed(const FogOfWa
 	const float radiusSquared = FMath::Square(components.m_targetingComponent->m_sightRange + otherComponents.m_targetingComponent->m_sightRange);
 
 	components.m_fogOfWarLocationComponent->m_needsActivelyRevealedThisFrame = distSquared < radiusSquared;
+}
+
+bool FogOfWarSystems::IsPixelInFogOfWarBounds(int32 relativeX, int32 relativeY, FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components)
+{
+	ARGUS_TRACE(FogOfWarSystems::PopulateOffsetsForEntity);
+	ARGUS_RETURN_ON_NULL_BOOL(fogOfWarComponent, ArgusECSLog);
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return false;
+	}
+
+	const int32 textureSize = static_cast<int32>(fogOfWarComponent->m_textureSize);
+	if (textureSize == 0u)
+	{
+		return false;
+	}
+
+	const int32 maxPixel = fogOfWarComponent->GetTotalPixels() - 1;
+	const int32 centerPixelRowNumber = components.m_fogOfWarLocationComponent->m_fogOfWarPixel / textureSize;
+
+	// The radius overlaps the right edge of the texture.
+	if (((components.m_fogOfWarLocationComponent->m_fogOfWarPixel + relativeX) / textureSize) != centerPixelRowNumber)
+	{
+		return false;
+	}
+
+	// The radius overlaps the top edge of the texture.
+	if (relativeY > centerPixelRowNumber)
+	{
+		return false;
+	}
+
+	// The radius overlaps the bottom edge of the texture.
+	if (relativeY < 0 && (centerPixelRowNumber - relativeY) >= textureSize)
+	{
+		return false;
+	}
+
+	return true;
 }
