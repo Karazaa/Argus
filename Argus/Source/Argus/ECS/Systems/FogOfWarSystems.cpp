@@ -8,6 +8,13 @@
 #include "Rendering/Texture2DResource.h"
 #include "SystemArgumentDefinitions/FogOfWarSystemsArgs.h"
 
+const float FogOfWarSystems::k_gaussianFilter[9] =
+{
+	0.01f, 0.08f, 0.01f,
+	0.08f, 0.64f, 0.08f,
+	0.01f, 0.08f, 0.01f
+};
+
 void FogOfWarSystems::InitializeSystems()
 {
 	ARGUS_TRACE(FogOfWarSystems::InitializeSystems);
@@ -266,6 +273,9 @@ void FogOfWarSystems::BlurBoundariesForEntity(FogOfWarComponent* fogOfWarCompone
 		// Gaussian Blur pass 1.
 		BlurBoundariesForCircleOctant(fogOfWarComponent, components, offsets);
 	});
+
+	// TODO JAMES: We likely need to do a memset of the first pass bluring into the base for our second blur pass.
+
 	RasterizeCircleOfRadius(radius - 1, offsets, [fogOfWarComponent, &components](const FogOfWarOffsets& offsets)
 	{
 		// Gaussian Blur pass 2.
@@ -303,8 +313,10 @@ void FogOfWarSystems::SetAlphaForPixelRange(FogOfWarComponent* fogOfWarComponent
 	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
 
 	uint8* firstAddress = &fogOfWarComponent->m_textureData[fromPixelInclusive];
+	uint8* secondAddress = &fogOfWarComponent->m_blurredTextureData[fromPixelInclusive];
 	uint32 rowLength = (toPixelInclusive - fromPixelInclusive);
 	memset(firstAddress, activelyRevealed ? 0 : fogOfWarComponent->m_revealedOnceAlpha, rowLength);
+	memset(secondAddress, activelyRevealed ? 0 : fogOfWarComponent->m_revealedOnceAlpha, rowLength);
 }
 
 void FogOfWarSystems::SetAlphaForCircleOctant(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, const FogOfWarOffsets& offsets, bool activelyRevealed)
@@ -370,7 +382,7 @@ void FogOfWarSystems::UpdateTexture()
 	fogOfWarComponent->m_textureRegionsUpdateData.m_regions = &fogOfWarComponent->m_textureRegion;
 	fogOfWarComponent->m_textureRegionsUpdateData.m_srcPitch = fogOfWarComponent->m_textureSize;
 	fogOfWarComponent->m_textureRegionsUpdateData.m_srcBpp = 1;
-	fogOfWarComponent->m_textureRegionsUpdateData.m_srcData = fogOfWarComponent->m_textureData.GetData();
+	fogOfWarComponent->m_textureRegionsUpdateData.m_srcData = fogOfWarComponent->m_blurredTextureData.GetData();
 
 	if (!fogOfWarComponent->m_textureRegionsUpdateData.m_srcData)
 	{
@@ -584,14 +596,25 @@ void FogOfWarSystems::BlurAroundPixel(int32 relativeX, int32 relativeY, FogOfWar
 		return;
 	}
 
+	float sum = 0.0f;
 	for (int32 i = 0; i < 3; ++i)
 	{
 		for (int32 j = 0; j < 3; ++j)
 		{
-			if (!IsPixelInFogOfWarBounds(relativeX + (j - 1), relativeY + (1 - i), fogOfWarComponent, components))
+			const int32 shiftedX = relativeX + (j - 1);
+			const int32 shiftedY = relativeY + (1 - i);
+			if (!IsPixelInFogOfWarBounds(shiftedX, relativeY, fogOfWarComponent, components))
 			{
 				continue;
 			}
+			const int32 yOffset = shiftedY * static_cast<int32>(fogOfWarComponent->m_textureSize);
+			const int32 yLocation = components.m_fogOfWarLocationComponent->m_fogOfWarPixel - yOffset;
+			const uint8 pixelValue = fogOfWarComponent->m_textureData[yLocation + shiftedX];
+			sum += (static_cast<float>(pixelValue) * k_gaussianFilter[(i * 3) + j]);
 		}
 	}
+
+	const int32 yOffset = relativeY * static_cast<int32>(fogOfWarComponent->m_textureSize);
+	const int32 yLocation = components.m_fogOfWarLocationComponent->m_fogOfWarPixel - yOffset;
+	fogOfWarComponent->m_blurredTextureData[yLocation + relativeX] = static_cast<uint8>(FMath::FloorToInt(sum));
 }
