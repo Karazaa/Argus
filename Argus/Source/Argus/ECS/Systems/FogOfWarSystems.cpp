@@ -36,6 +36,7 @@ void FogOfWarSystems::InitializeSystems()
 	fogOfWarComponent->m_blurredTextureData.SetNumZeroed(fogOfWarComponent->GetTotalPixels());
 	memset(fogOfWarComponent->m_textureData.GetData(), 255, fogOfWarComponent->GetTotalPixels());
 	memset(fogOfWarComponent->m_blurredTextureData.GetData(), 255, fogOfWarComponent->GetTotalPixels());
+	InitializeGaussianFilter(fogOfWarComponent);
 }
 
 void FogOfWarSystems::RunThreadSystems()
@@ -55,6 +56,38 @@ void FogOfWarSystems::RunSystems()
 
 	UpdateTexture();
 	UpdateDynamicMaterialInstance();
+}
+
+void FogOfWarSystems::InitializeGaussianFilter(FogOfWarComponent* fogOfWarComponent)
+{
+	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
+
+	const uint8 filterSize = fogOfWarComponent->m_gaussianFilterDimension * fogOfWarComponent->m_gaussianFilterDimension;
+	fogOfWarComponent->m_gaussianFilter.SetNumZeroed(filterSize);
+
+	const float radius = static_cast<float>(fogOfWarComponent->m_gaussianFilterDimension / 2);
+	const float radiusSquaredReciprocal = 1.0f / (2.0f * FMath::Square(radius));
+	const float squareRootPiReciprocal = 1.0f / (FMath::Sqrt(UE_TWO_PI) * radius);
+
+	float shiftedRadius = -radius;
+	float sum = 0.0f;
+	for (uint8 i = 0; i < fogOfWarComponent->m_gaussianFilterDimension; ++i)
+	{
+		const float squareShiftedRadius = FMath::Square(shiftedRadius);
+		fogOfWarComponent->m_gaussianFilter[i] = squareRootPiReciprocal * FMath::Exp(-squareShiftedRadius * radiusSquaredReciprocal);
+		sum += fogOfWarComponent->m_gaussianFilter[i];
+		shiftedRadius += 1.0f;
+	}
+
+	if (FMath::IsNearlyZero(sum))
+	{
+		return;
+	}
+
+	for (uint8 i = 0; i < fogOfWarComponent->m_gaussianFilterDimension; ++i)
+	{
+		fogOfWarComponent->m_gaussianFilter[i] /= sum;
+	}
 }
 
 void FogOfWarSystems::SetRevealedStatePerEntity(FogOfWarComponent* fogOfWarComponent)

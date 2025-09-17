@@ -51,6 +51,7 @@ private:
 		uint32 m_centerColumnBottomIndex = 0u;
 	};
 
+	static void InitializeGaussianFilter(FogOfWarComponent* fogOfWarComponent);
 	static void SetRevealedStatePerEntity(FogOfWarComponent* fogOfWarComponent);
 	static void PopulateOffsetsForEntity(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, FogOfWarOffsets& outOffsets);
 	static void PopulateOctantExpansionForEntity(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, const FogOfWarOffsets& offsets, CircleOctantExpansion& outCircleOctantExpansion);

@@ -32,6 +32,10 @@ struct FogOfWarComponent
 	ARGUS_IGNORE()
 	TArray<uint8, ArgusContainerAllocator<0> > m_blurredTextureData;
 
+	ARGUS_IGNORE()
+	TArray<float, ArgusContainerAllocator<0> > m_gaussianFilter;
+
+	uint8 m_gaussianFilterDimension = 5u;
 	uint8 m_revealedOnceAlpha = 100u;
 	uint16 m_textureSize = 1024u;
 
