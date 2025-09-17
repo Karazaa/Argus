@@ -314,7 +314,7 @@ void FogOfWarSystems::SetAlphaForPixelRange(FogOfWarComponent* fogOfWarComponent
 
 	uint8* firstAddress = &fogOfWarComponent->m_textureData[fromPixelInclusive];
 	uint8* secondAddress = &fogOfWarComponent->m_blurredTextureData[fromPixelInclusive];
-	uint32 rowLength = (toPixelInclusive - fromPixelInclusive);
+	uint32 rowLength = (toPixelInclusive - fromPixelInclusive) + 1;
 	memset(firstAddress, activelyRevealed ? 0 : fogOfWarComponent->m_revealedOnceAlpha, rowLength);
 	memset(secondAddress, activelyRevealed ? 0 : fogOfWarComponent->m_revealedOnceAlpha, rowLength);
 }
@@ -603,7 +603,7 @@ void FogOfWarSystems::BlurAroundPixel(int32 relativeX, int32 relativeY, FogOfWar
 		{
 			const int32 shiftedX = relativeX + (j - 1);
 			const int32 shiftedY = relativeY + (1 - i);
-			if (!IsPixelInFogOfWarBounds(shiftedX, relativeY, fogOfWarComponent, components))
+			if (!IsPixelInFogOfWarBounds(shiftedX, shiftedY, fogOfWarComponent, components))
 			{
 				continue;
 			}
