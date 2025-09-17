@@ -43,4 +43,13 @@ struct FogOfWarComponent
 	{
 		return static_cast<uint32>(m_textureSize) * static_cast<uint32>(m_textureSize);
 	}
+
+	void CopyBlurredDataIntoTextureData()
+	{
+		ARGUS_TRACE(FogOfWarComponent::CopyBlurredDataIntoTextureData);
+
+		uint8* textureAddress = &m_textureData[0];
+		uint8* blurredAddress = &m_blurredTextureData[0];
+		memcpy(textureAddress, blurredAddress, m_textureData.Num());
+	}
 };

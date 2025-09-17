@@ -307,8 +307,6 @@ void FogOfWarSystems::BlurBoundariesForEntity(FogOfWarComponent* fogOfWarCompone
 		BlurBoundariesForCircleOctant(fogOfWarComponent, components, offsets);
 	});
 
-	// TODO JAMES: We likely need to do a memset of the first pass bluring into the base for our second blur pass.
-
 	RasterizeCircleOfRadius(radius - 1, offsets, [fogOfWarComponent, &components](const FogOfWarOffsets& offsets)
 	{
 		// Gaussian Blur pass 2.
@@ -624,10 +622,11 @@ void FogOfWarSystems::BlurAroundPixel(int32 relativeX, int32 relativeY, FogOfWar
 		return;
 	}
 
-	if (!IsPixelInFogOfWarBounds(relativeX, relativeY, fogOfWarComponent, components))
-	{
-		return;
-	}
+	// TODO JAMES: Our in bounds checks are far and away the most expensive component of this function. Maybe we handle bounds checking differently?
+	//if (!IsPixelInFogOfWarBounds(relativeX, relativeY, fogOfWarComponent, components))
+	//{
+	//	return;
+	//}
 
 	float sum = 0.0f;
 	for (int32 i = 0; i < 3; ++i)
@@ -636,10 +635,11 @@ void FogOfWarSystems::BlurAroundPixel(int32 relativeX, int32 relativeY, FogOfWar
 		{
 			const int32 shiftedX = relativeX + (j - 1);
 			const int32 shiftedY = relativeY + (1 - i);
-			if (!IsPixelInFogOfWarBounds(shiftedX, shiftedY, fogOfWarComponent, components))
-			{
-				continue;
-			}
+			// TODO JAMES: Our in bounds checks are far and away the most expensive component of this function. Maybe we handle bounds checking differently?
+			//if (!IsPixelInFogOfWarBounds(shiftedX, shiftedY, fogOfWarComponent, components))
+			//{
+			//	continue;
+			//}
 			const int32 yOffset = shiftedY * static_cast<int32>(fogOfWarComponent->m_textureSize);
 			const int32 yLocation = components.m_fogOfWarLocationComponent->m_fogOfWarPixel - yOffset;
 			const uint8 pixelValue = fogOfWarComponent->m_textureData[yLocation + shiftedX];
