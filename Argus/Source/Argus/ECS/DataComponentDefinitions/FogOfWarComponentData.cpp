@@ -12,7 +12,9 @@ void UFogOfWarComponentData::InstantiateComponentForEntity(const ArgusEntity& en
 
 	FogOfWarComponentRef->m_fogOfWarTexture = m_fogOfWarTexture;
 	FogOfWarComponentRef->m_dynamicMaterialInstance = m_dynamicMaterialInstance;
+	FogOfWarComponentRef->m_gaussianDimension = m_gaussianDimension;
 	FogOfWarComponentRef->m_revealedOnceAlpha = m_revealedOnceAlpha;
+	FogOfWarComponentRef->m_blurPassCount = m_blurPassCount;
 	FogOfWarComponentRef->m_textureSize = m_textureSize;
 }
 

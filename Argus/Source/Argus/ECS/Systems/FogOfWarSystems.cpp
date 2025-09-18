@@ -62,20 +62,22 @@ void FogOfWarSystems::InitializeGaussianFilter(FogOfWarComponent* fogOfWarCompon
 {
 	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
 
-	const uint8 filterSize = fogOfWarComponent->m_gaussianFilterDimension * fogOfWarComponent->m_gaussianFilterDimension;
+	const uint8 filterSize = fogOfWarComponent->m_gaussianDimension * fogOfWarComponent->m_gaussianDimension;
 	fogOfWarComponent->m_gaussianFilter.SetNumZeroed(filterSize);
+	TArray<float> oneDimensionalFilter;
+	oneDimensionalFilter.SetNumZeroed(fogOfWarComponent->m_gaussianDimension);
 
-	const float radius = static_cast<float>(fogOfWarComponent->m_gaussianFilterDimension / 2);
+	const float radius = static_cast<float>(fogOfWarComponent->m_gaussianDimension / 2);
 	const float radiusSquaredReciprocal = 1.0f / (2.0f * FMath::Square(radius));
 	const float squareRootPiReciprocal = 1.0f / (FMath::Sqrt(UE_TWO_PI) * radius);
 
 	float shiftedRadius = -radius;
 	float sum = 0.0f;
-	for (uint8 i = 0; i < fogOfWarComponent->m_gaussianFilterDimension; ++i)
+	for (uint8 i = 0; i < fogOfWarComponent->m_gaussianDimension; ++i)
 	{
 		const float squareShiftedRadius = FMath::Square(shiftedRadius);
-		fogOfWarComponent->m_gaussianFilter[i] = squareRootPiReciprocal * FMath::Exp(-squareShiftedRadius * radiusSquaredReciprocal);
-		sum += fogOfWarComponent->m_gaussianFilter[i];
+		oneDimensionalFilter[i] = squareRootPiReciprocal * FMath::Exp(-squareShiftedRadius * radiusSquaredReciprocal);
+		sum += oneDimensionalFilter[i];
 		shiftedRadius += 1.0f;
 	}
 
@@ -84,9 +86,19 @@ void FogOfWarSystems::InitializeGaussianFilter(FogOfWarComponent* fogOfWarCompon
 		return;
 	}
 
-	for (uint8 i = 0; i < fogOfWarComponent->m_gaussianFilterDimension; ++i)
+	for (uint8 i = 0; i < fogOfWarComponent->m_gaussianDimension; ++i)
 	{
-		fogOfWarComponent->m_gaussianFilter[i] /= sum;
+		oneDimensionalFilter[i] /= sum;
+	}
+
+	sum = 0.0f;
+	for (uint8 i = 0; i < fogOfWarComponent->m_gaussianDimension; ++i)
+	{
+		for (uint8 j = 0; j < fogOfWarComponent->m_gaussianDimension; ++j)
+		{
+			fogOfWarComponent->m_gaussianFilter[i + (j * fogOfWarComponent->m_gaussianDimension)] = oneDimensionalFilter[i] * oneDimensionalFilter[j];
+			sum += fogOfWarComponent->m_gaussianFilter[i + (j * fogOfWarComponent->m_gaussianDimension)];
+		}
 	}
 }
 
@@ -301,17 +313,13 @@ void FogOfWarSystems::BlurBoundariesForEntity(FogOfWarComponent* fogOfWarCompone
 	}
 
 	const uint32 radius = GetPixelRadiusFromWorldSpaceRadius(fogOfWarComponent, components.m_targetingComponent->m_sightRange);
-	RasterizeCircleOfRadius(radius, offsets, [fogOfWarComponent, &components](const FogOfWarOffsets& offsets)
+	for (uint8 i = 0; i < fogOfWarComponent->m_blurPassCount; ++i)
 	{
-		// Gaussian Blur pass 1.
-		BlurBoundariesForCircleOctant(fogOfWarComponent, components, offsets);
-	});
-
-	RasterizeCircleOfRadius(radius - 1, offsets, [fogOfWarComponent, &components](const FogOfWarOffsets& offsets)
-	{
-		// Gaussian Blur pass 2.
-		BlurBoundariesForCircleOctant(fogOfWarComponent, components, offsets);
-	});
+		RasterizeCircleOfRadius(radius - i, offsets, [fogOfWarComponent, &components](const FogOfWarOffsets& offsets)
+		{
+			BlurBoundariesForCircleOctant(fogOfWarComponent, components, offsets);
+		});
+	}
 }
 
 void FogOfWarSystems::RasterizeCircleOfRadius(uint32 radius, FogOfWarOffsets& offsets, TFunction<void(const FogOfWarOffsets& offsets)> perOctantPixelFunction)
@@ -629,12 +637,13 @@ void FogOfWarSystems::BlurAroundPixel(int32 relativeX, int32 relativeY, FogOfWar
 	//}
 
 	float sum = 0.0f;
-	for (int32 i = 0; i < 3; ++i)
+	for (int32 i = 0; i < fogOfWarComponent->m_gaussianDimension; ++i)
 	{
-		for (int32 j = 0; j < 3; ++j)
+		for (int32 j = 0; j < fogOfWarComponent->m_gaussianDimension; ++j)
 		{
-			const int32 shiftedX = relativeX + (j - 1);
-			const int32 shiftedY = relativeY + (1 - i);
+			const uint8 radius = fogOfWarComponent->m_gaussianDimension / 2;
+			const int32 shiftedX = relativeX + (j - radius);
+			const int32 shiftedY = relativeY + (radius - i);
 			// TODO JAMES: Our in bounds checks are far and away the most expensive component of this function. Maybe we handle bounds checking differently?
 			//if (!IsPixelInFogOfWarBounds(shiftedX, shiftedY, fogOfWarComponent, components))
 			//{
@@ -643,7 +652,7 @@ void FogOfWarSystems::BlurAroundPixel(int32 relativeX, int32 relativeY, FogOfWar
 			const int32 yOffset = shiftedY * static_cast<int32>(fogOfWarComponent->m_textureSize);
 			const int32 yLocation = components.m_fogOfWarLocationComponent->m_fogOfWarPixel - yOffset;
 			const uint8 pixelValue = fogOfWarComponent->m_textureData[yLocation + shiftedX];
-			sum += (static_cast<float>(pixelValue) * k_gaussianFilter[(i * 3) + j]);
+			sum += (static_cast<float>(pixelValue) * k_gaussianFilter[(i * fogOfWarComponent->m_gaussianDimension) + j]);
 		}
 	}
 

@@ -19,7 +19,9 @@ void FogOfWarComponent::Reset()
 	m_textureData.Reset();
 	m_blurredTextureData.Reset();
 	m_gaussianFilter.Reset();
+	m_gaussianDimension = 5u;
 	m_revealedOnceAlpha = 100u;
+	m_blurPassCount = 3u;
 	m_textureSize = 1024u;
 }
 
@@ -94,9 +96,17 @@ void FogOfWarComponent::DrawComponentDebug() const
 			}
 		}
 		ImGui::TableNextColumn();
+		ImGui::Text("m_gaussianDimension");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_gaussianDimension);
+		ImGui::TableNextColumn();
 		ImGui::Text("m_revealedOnceAlpha");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_revealedOnceAlpha);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_blurPassCount");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_blurPassCount);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_textureSize");
 		ImGui::TableNextColumn();
