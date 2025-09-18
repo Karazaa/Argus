@@ -22,6 +22,7 @@ void FogOfWarComponent::Reset()
 	m_gaussianDimension = 5u;
 	m_revealedOnceAlpha = 100u;
 	m_blurPassCount = 3u;
+	m_useBlurring = true;
 	m_textureSize = 1024u;
 }
 
@@ -107,6 +108,10 @@ void FogOfWarComponent::DrawComponentDebug() const
 		ImGui::Text("m_blurPassCount");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_blurPassCount);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_useBlurring");
+		ImGui::TableNextColumn();
+		ImGui::Text(m_useBlurring ? "true" : "false");
 		ImGui::TableNextColumn();
 		ImGui::Text("m_textureSize");
 		ImGui::TableNextColumn();

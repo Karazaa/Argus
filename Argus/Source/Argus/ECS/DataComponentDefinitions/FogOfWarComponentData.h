@@ -23,6 +23,8 @@ public:
 	UPROPERTY(EditAnywhere)
 	uint8 m_blurPassCount = 3u;
 	UPROPERTY(EditAnywhere)
+	bool m_useBlurring = true;
+	UPROPERTY(EditAnywhere)
 	uint16 m_textureSize = 1024u;
 
 	void InstantiateComponentForEntity(const ArgusEntity& entity) const override;

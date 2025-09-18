@@ -185,6 +185,11 @@ void FogOfWarSystems::SetRevealedStatePerEntity(FogOfWarComponent* fogOfWarCompo
 		RevealPixelAlphaForEntity(fogOfWarComponent, components, offsets, true);
 	}
 
+	if (!fogOfWarComponent->m_useBlurring)
+	{
+		return;
+	}
+
 	// Do Gaussian Blur per entity.
 	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{
