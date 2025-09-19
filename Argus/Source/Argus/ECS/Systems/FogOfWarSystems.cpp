@@ -318,13 +318,18 @@ void FogOfWarSystems::BlurBoundariesForEntity(FogOfWarComponent* fogOfWarCompone
 	}
 
 	const uint32 radius = GetPixelRadiusFromWorldSpaceRadius(fogOfWarComponent, components.m_targetingComponent->m_sightRange);
-	for (uint8 i = 0; i < fogOfWarComponent->m_blurPassCount; ++i)
+	//for (uint8 i = 0; i < fogOfWarComponent->m_blurPassCount; ++i)
+	//{
+	//	RasterizeCircleOfRadius(radius - i, offsets, [fogOfWarComponent, &components](const FogOfWarOffsets& offsets)
+	//	{
+	//		BlurBoundariesForCircleOctant(fogOfWarComponent, components, offsets);
+	//	});
+	//}
+
+	RasterizeCircleOfRadius(radius - 2, offsets, [fogOfWarComponent, &components](const FogOfWarOffsets& offsets)
 	{
-		RasterizeCircleOfRadius(radius - i, offsets, [fogOfWarComponent, &components](const FogOfWarOffsets& offsets)
-		{
-			BlurBoundariesForCircleOctant(fogOfWarComponent, components, offsets);
-		});
-	}
+		SetRingAlphaForCircleOctant(255u, fogOfWarComponent, components, offsets);
+	});
 }
 
 void FogOfWarSystems::RasterizeCircleOfRadius(uint32 radius, FogOfWarOffsets& offsets, TFunction<void(const FogOfWarOffsets& offsets)> perOctantPixelFunction)
