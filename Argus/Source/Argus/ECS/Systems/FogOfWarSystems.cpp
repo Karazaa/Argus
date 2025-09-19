@@ -403,6 +403,28 @@ void FogOfWarSystems::BlurBoundariesForCircleOctant(FogOfWarComponent* fogOfWarC
 	BlurAroundPixel(-static_cast<int32>(offsets.m_circleY), -static_cast<int32>(offsets.m_circleX), fogOfWarComponent, components);
 }
 
+void FogOfWarSystems::SetRingAlphaForCircleOctant(uint8 alphaValue, FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, const FogOfWarOffsets& offsets)
+{
+	ARGUS_TRACE(FogOfWarSystems::BlurBoundariesForCircleOctant);
+	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+
+	CircleOctantExpansion octantExpansion;
+	PopulateOctantExpansionForEntity(fogOfWarComponent, components, offsets, octantExpansion);
+
+	SetPixelAlpha(static_cast<int32>(offsets.m_circleY), static_cast<int32>(offsets.m_circleX), alphaValue, fogOfWarComponent, components);
+	SetPixelAlpha(-static_cast<int32>(offsets.m_circleY), static_cast<int32>(offsets.m_circleX), alphaValue, fogOfWarComponent, components);
+	SetPixelAlpha(static_cast<int32>(offsets.m_circleX), static_cast<int32>(offsets.m_circleY), alphaValue, fogOfWarComponent, components);
+	SetPixelAlpha(-static_cast<int32>(offsets.m_circleX), static_cast<int32>(offsets.m_circleY), alphaValue, fogOfWarComponent, components);
+	SetPixelAlpha(static_cast<int32>(offsets.m_circleX), -static_cast<int32>(offsets.m_circleY), alphaValue, fogOfWarComponent, components);
+	SetPixelAlpha(-static_cast<int32>(offsets.m_circleX), -static_cast<int32>(offsets.m_circleY), alphaValue, fogOfWarComponent, components);
+	SetPixelAlpha(static_cast<int32>(offsets.m_circleY), -static_cast<int32>(offsets.m_circleX), alphaValue, fogOfWarComponent, components);
+	SetPixelAlpha(-static_cast<int32>(offsets.m_circleY), -static_cast<int32>(offsets.m_circleX), alphaValue, fogOfWarComponent, components);
+}
+
 void FogOfWarSystems::UpdateTexture()
 {
 	ARGUS_TRACE(FogOfWarSystems::UpdateTexture);
@@ -664,4 +686,18 @@ void FogOfWarSystems::BlurAroundPixel(int32 relativeX, int32 relativeY, FogOfWar
 	const int32 yOffset = relativeY * static_cast<int32>(fogOfWarComponent->m_textureSize);
 	const int32 yLocation = components.m_fogOfWarLocationComponent->m_fogOfWarPixel - yOffset;
 	fogOfWarComponent->m_blurredTextureData[yLocation + relativeX] = static_cast<uint8>(FMath::FloorToInt(sum));
+}
+
+void FogOfWarSystems::SetPixelAlpha(int32 relativeX, int32 relativeY, uint8 alphaValue, FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components)
+{
+	ARGUS_TRACE(FogOfWarSystems::SetPixelAlpha);
+	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+
+	const int32 yOffset = relativeY * static_cast<int32>(fogOfWarComponent->m_textureSize);
+	const int32 yLocation = components.m_fogOfWarLocationComponent->m_fogOfWarPixel - yOffset;
+	fogOfWarComponent->m_blurredTextureData[yLocation + relativeX] = alphaValue;
 }

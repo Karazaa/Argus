@@ -61,6 +61,7 @@ private:
 	static void SetAlphaForPixelRange(FogOfWarComponent* fogOfWarComponent, uint32 fromPixelInclusive, uint32 toPixelInclusive, bool activelyRevealed);
 	static void SetAlphaForCircleOctant(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, const FogOfWarOffsets& offsets, bool activelyRevealed);
 	static void BlurBoundariesForCircleOctant(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, const FogOfWarOffsets& offsets);
+	static void SetRingAlphaForCircleOctant(uint8 alphaValue, FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, const FogOfWarOffsets& offsets);
 	static void UpdateTexture();
 	static void UpdateDynamicMaterialInstance();
 
@@ -69,6 +70,7 @@ private:
 	static void UpdateDoesEntityNeedToUpdateActivelyRevealed(const FogOfWarSystemsArgs& components, const InputInterfaceComponent* inputInterfaceComponent);
 	static bool IsPixelInFogOfWarBounds(int32 relativeX, int32 relativeY, FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components);
 	static void BlurAroundPixel(int32 relativeX, int32 relativeY, FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components);
+	static void SetPixelAlpha(int32 relativeX, int32 relativeY, uint8 alphaValue, FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components);
 
 	static const float k_gaussianFilter[9];
 };
