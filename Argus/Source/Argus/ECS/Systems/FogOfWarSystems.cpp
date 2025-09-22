@@ -320,20 +320,27 @@ void FogOfWarSystems::BlurBoundariesForEntity(FogOfWarComponent* fogOfWarCompone
 	const uint32 radius = GetPixelRadiusFromWorldSpaceRadius(fogOfWarComponent, components.m_targetingComponent->m_sightRange);
 	const uint32 innerRadius = radius - fogOfWarComponent->m_blurPassCount;
 	TArray<int32> innerOctantXValues;
-	innerOctantXValues.Reserve(innerRadius / 2);
-	RasterizeCircleOfRadius(innerRadius, offsets, [fogOfWarComponent, &components, &innerOctantXValues](const FogOfWarOffsets& offsets)
+	innerOctantXValues.Reserve(innerRadius);
+	RasterizeCircleOfRadius(innerRadius, offsets, [fogOfWarComponent, &components, &innerOctantXValues](FogOfWarOffsets& offsets)
 	{
 		innerOctantXValues.Add(offsets.m_circleX);
-		SetRingAlphaForCircleOctant(255u, fogOfWarComponent, components, offsets);
 	});
 
-	RasterizeCircleOfRadius(innerRadius, offsets, [fogOfWarComponent, &components, &innerOctantXValues](const FogOfWarOffsets& offsets)
+	RasterizeCircleOfRadius(radius, offsets, [fogOfWarComponent, &components, &innerOctantXValues](FogOfWarOffsets& offsets)
 	{
-		// TODO JAMES: Blur between offset x and inner octant x values mirrored across circle.
+		if (static_cast<int32>(offsets.m_circleY) < innerOctantXValues.Num())
+		{
+			offsets.m_innerCircleX = innerOctantXValues[offsets.m_circleY];
+		}
+		else
+		{
+			offsets.m_innerCircleX = offsets.m_circleY - 1;
+		}
+		BlurBoundariesForCircleOctant(fogOfWarComponent, components, offsets);
 	});
 }
 
-void FogOfWarSystems::RasterizeCircleOfRadius(uint32 radius, FogOfWarOffsets& offsets, TFunction<void(const FogOfWarOffsets& offsets)> perOctantPixelFunction)
+void FogOfWarSystems::RasterizeCircleOfRadius(uint32 radius, FogOfWarOffsets& offsets, TFunction<void(FogOfWarOffsets& offsets)> perOctantPixelFunction)
 {
 	// Method of Horn for circle rasterization.
 	int32 circleD = -static_cast<int32>(radius);
@@ -399,14 +406,19 @@ void FogOfWarSystems::BlurBoundariesForCircleOctant(FogOfWarComponent* fogOfWarC
 	CircleOctantExpansion octantExpansion;
 	PopulateOctantExpansionForEntity(fogOfWarComponent, components, offsets, octantExpansion);
 
-	BlurAroundPixel(static_cast<int32>(offsets.m_circleY), static_cast<int32>(offsets.m_circleX), fogOfWarComponent, components);
-	BlurAroundPixel(-static_cast<int32>(offsets.m_circleY), static_cast<int32>(offsets.m_circleX), fogOfWarComponent, components);
-	BlurAroundPixel(static_cast<int32>(offsets.m_circleX), static_cast<int32>(offsets.m_circleY), fogOfWarComponent, components);
-	BlurAroundPixel(-static_cast<int32>(offsets.m_circleX), static_cast<int32>(offsets.m_circleY), fogOfWarComponent, components);
-	BlurAroundPixel(static_cast<int32>(offsets.m_circleX), -static_cast<int32>(offsets.m_circleY), fogOfWarComponent, components);
-	BlurAroundPixel(-static_cast<int32>(offsets.m_circleX), -static_cast<int32>(offsets.m_circleY), fogOfWarComponent, components);
-	BlurAroundPixel(static_cast<int32>(offsets.m_circleY), -static_cast<int32>(offsets.m_circleX), fogOfWarComponent, components);
-	BlurAroundPixel(-static_cast<int32>(offsets.m_circleY), -static_cast<int32>(offsets.m_circleX), fogOfWarComponent, components);
+	int32 blurDistance = offsets.m_circleX - offsets.m_innerCircleX;
+	for (int32 i = 0; i < blurDistance; ++i)
+	{
+		const int32 shiftedX = offsets.m_circleX - i;
+		BlurAroundPixel(static_cast<int32>(offsets.m_circleY), static_cast<int32>(shiftedX), fogOfWarComponent, components);
+		BlurAroundPixel(-static_cast<int32>(offsets.m_circleY), static_cast<int32>(shiftedX), fogOfWarComponent, components);
+		BlurAroundPixel(static_cast<int32>(shiftedX), static_cast<int32>(offsets.m_circleY), fogOfWarComponent, components);
+		BlurAroundPixel(-static_cast<int32>(shiftedX), static_cast<int32>(offsets.m_circleY), fogOfWarComponent, components);
+		BlurAroundPixel(static_cast<int32>(shiftedX), -static_cast<int32>(offsets.m_circleY), fogOfWarComponent, components);
+		BlurAroundPixel(-static_cast<int32>(shiftedX), -static_cast<int32>(offsets.m_circleY), fogOfWarComponent, components);
+		BlurAroundPixel(static_cast<int32>(offsets.m_circleY), -static_cast<int32>(shiftedX), fogOfWarComponent, components);
+		BlurAroundPixel(-static_cast<int32>(offsets.m_circleY), -static_cast<int32>(shiftedX), fogOfWarComponent, components);
+	}
 }
 
 void FogOfWarSystems::SetRingAlphaForCircleOctant(uint8 alphaValue, FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, const FogOfWarOffsets& offsets)
@@ -421,14 +433,19 @@ void FogOfWarSystems::SetRingAlphaForCircleOctant(uint8 alphaValue, FogOfWarComp
 	CircleOctantExpansion octantExpansion;
 	PopulateOctantExpansionForEntity(fogOfWarComponent, components, offsets, octantExpansion);
 
-	SetPixelAlpha(static_cast<int32>(offsets.m_circleY), static_cast<int32>(offsets.m_circleX), alphaValue, fogOfWarComponent, components);
-	SetPixelAlpha(-static_cast<int32>(offsets.m_circleY), static_cast<int32>(offsets.m_circleX), alphaValue, fogOfWarComponent, components);
-	SetPixelAlpha(static_cast<int32>(offsets.m_circleX), static_cast<int32>(offsets.m_circleY), alphaValue, fogOfWarComponent, components);
-	SetPixelAlpha(-static_cast<int32>(offsets.m_circleX), static_cast<int32>(offsets.m_circleY), alphaValue, fogOfWarComponent, components);
-	SetPixelAlpha(static_cast<int32>(offsets.m_circleX), -static_cast<int32>(offsets.m_circleY), alphaValue, fogOfWarComponent, components);
-	SetPixelAlpha(-static_cast<int32>(offsets.m_circleX), -static_cast<int32>(offsets.m_circleY), alphaValue, fogOfWarComponent, components);
-	SetPixelAlpha(static_cast<int32>(offsets.m_circleY), -static_cast<int32>(offsets.m_circleX), alphaValue, fogOfWarComponent, components);
-	SetPixelAlpha(-static_cast<int32>(offsets.m_circleY), -static_cast<int32>(offsets.m_circleX), alphaValue, fogOfWarComponent, components);
+	int32 blurDistance = offsets.m_circleX - offsets.m_innerCircleX;
+	for (int32 i = 0; i < blurDistance; ++i)
+	{
+		const int32 shiftedX = offsets.m_circleX - i;
+		SetPixelAlpha(static_cast<int32>(offsets.m_circleY), static_cast<int32>(shiftedX), alphaValue, fogOfWarComponent, components);
+		SetPixelAlpha(-static_cast<int32>(offsets.m_circleY), static_cast<int32>(shiftedX), alphaValue, fogOfWarComponent, components);
+		SetPixelAlpha(static_cast<int32>(shiftedX), static_cast<int32>(offsets.m_circleY), alphaValue, fogOfWarComponent, components);
+		SetPixelAlpha(-static_cast<int32>(shiftedX), static_cast<int32>(offsets.m_circleY), alphaValue, fogOfWarComponent, components);
+		SetPixelAlpha(static_cast<int32>(shiftedX), -static_cast<int32>(offsets.m_circleY), alphaValue, fogOfWarComponent, components);
+		SetPixelAlpha(-static_cast<int32>(shiftedX), -static_cast<int32>(offsets.m_circleY), alphaValue, fogOfWarComponent, components);
+		SetPixelAlpha(static_cast<int32>(offsets.m_circleY), -static_cast<int32>(shiftedX), alphaValue, fogOfWarComponent, components);
+		SetPixelAlpha(-static_cast<int32>(offsets.m_circleY), -static_cast<int32>(shiftedX), alphaValue, fogOfWarComponent, components);
+	}
 }
 
 void FogOfWarSystems::UpdateTexture()
