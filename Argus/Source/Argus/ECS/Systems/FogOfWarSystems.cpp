@@ -8,13 +8,6 @@
 #include "Rendering/Texture2DResource.h"
 #include "SystemArgumentDefinitions/FogOfWarSystemsArgs.h"
 
-const float FogOfWarSystems::k_gaussianFilter[9] =
-{
-	0.01f, 0.08f, 0.01f,
-	0.08f, 0.64f, 0.08f,
-	0.01f, 0.08f, 0.01f
-};
-
 void FogOfWarSystems::InitializeSystems()
 {
 	ARGUS_TRACE(FogOfWarSystems::InitializeSystems);
@@ -336,6 +329,7 @@ void FogOfWarSystems::BlurBoundariesForEntity(FogOfWarComponent* fogOfWarCompone
 		{
 			offsets.m_innerCircleX = offsets.m_circleY - 1;
 		}
+
 		BlurBoundariesForCircleOctant(fogOfWarComponent, components, offsets);
 	});
 }
@@ -670,7 +664,6 @@ bool FogOfWarSystems::IsPixelInFogOfWarBounds(int32 relativeX, int32 relativeY, 
 	return true;
 }
 
-// TODO JAMES: At current texture sizes, even without the actual summing and setting of alpha, this is really brutal performance. Like 4ms a frame performance.
 void FogOfWarSystems::BlurAroundPixel(int32 relativeX, int32 relativeY, FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components)
 {
 	ARGUS_TRACE(FogOfWarSystems::BlurAroundPixel);
@@ -686,6 +679,7 @@ void FogOfWarSystems::BlurAroundPixel(int32 relativeX, int32 relativeY, FogOfWar
 	//	return;
 	//}
 
+	// TODO JAMES: We can probably SIMD this.
 	float sum = 0.0f;
 	for (int32 i = 0; i < fogOfWarComponent->m_gaussianDimension; ++i)
 	{
@@ -702,7 +696,7 @@ void FogOfWarSystems::BlurAroundPixel(int32 relativeX, int32 relativeY, FogOfWar
 			const int32 yOffset = shiftedY * static_cast<int32>(fogOfWarComponent->m_textureSize);
 			const int32 yLocation = components.m_fogOfWarLocationComponent->m_fogOfWarPixel - yOffset;
 			const uint8 pixelValue = fogOfWarComponent->m_textureData[yLocation + shiftedX];
-			sum += (static_cast<float>(pixelValue) * k_gaussianFilter[(i * fogOfWarComponent->m_gaussianDimension) + j]);
+			sum += (static_cast<float>(pixelValue) * fogOfWarComponent->m_gaussianFilter[(i * fogOfWarComponent->m_gaussianDimension) + j]);
 		}
 	}
 
