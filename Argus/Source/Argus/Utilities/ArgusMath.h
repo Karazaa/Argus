@@ -81,7 +81,19 @@ namespace ArgusMath
 
 		void SmoothChase(const T& targetValue, float deltaTime)
 		{
-			m_currentValue = targetValue + ((m_currentValue - targetValue) * FMath::Exp(-m_decayConstant * deltaTime));
+			SmoothChase(m_currentValue, targetValue, m_decayConstant, deltaTime);
+		}
+
+		static void SmoothChase(T& value, const T& targetValue, float decayConstant, float deltaTime)
+		{
+			decayConstant = FMath::Clamp(decayConstant, k_minDecayConstant, k_maxDecayConstant);
+			value = targetValue + ((value - targetValue) * FMath::Exp(-decayConstant * deltaTime));
+		}
+
+		static float FloatSmoothChase(float value, float targetValue, float decayConstant, float deltaTime)
+		{
+			decayConstant = FMath::Clamp(decayConstant, k_minDecayConstant, k_maxDecayConstant);
+			return targetValue + ((value - targetValue) * FMath::Exp(-decayConstant * deltaTime));
 		}
 
 	private:

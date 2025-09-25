@@ -26,13 +26,19 @@ void FogOfWarSystems::InitializeSystems()
 	fogOfWarComponent->m_textureRegion = FUpdateTextureRegion2D(0, 0, 0, 0, fogOfWarComponent->m_textureSize, fogOfWarComponent->m_textureSize);
 
 	fogOfWarComponent->m_textureData.SetNumZeroed(fogOfWarComponent->GetTotalPixels());
-	fogOfWarComponent->m_blurredTextureData.SetNumZeroed(fogOfWarComponent->GetTotalPixels());
+	fogOfWarComponent->m_smoothedTextureData.SetNumZeroed(fogOfWarComponent->GetTotalPixels());
 	memset(fogOfWarComponent->m_textureData.GetData(), 255, fogOfWarComponent->GetTotalPixels());
-	memset(fogOfWarComponent->m_blurredTextureData.GetData(), 255, fogOfWarComponent->GetTotalPixels());
-	InitializeGaussianFilter(fogOfWarComponent);
+	memset(fogOfWarComponent->m_smoothedTextureData.GetData(), 255, fogOfWarComponent->GetTotalPixels());
+
+	if (fogOfWarComponent->m_useBlurring)
+	{
+		fogOfWarComponent->m_blurredTextureData.SetNumZeroed(fogOfWarComponent->GetTotalPixels());
+		memset(fogOfWarComponent->m_blurredTextureData.GetData(), 255, fogOfWarComponent->GetTotalPixels());
+		InitializeGaussianFilter(fogOfWarComponent);
+	}
 }
 
-void FogOfWarSystems::RunThreadSystems()
+void FogOfWarSystems::RunThreadSystems(float deltaTime)
 {
 	ARGUS_TRACE(FogOfWarSystems::RunSystems);
 
@@ -41,6 +47,15 @@ void FogOfWarSystems::RunThreadSystems()
 
 	// Iterate over all entities and carve out a circle of pixels (activelyRevealed) based on sight radius for entities that are on the local player team (or allies).
 	SetRevealedStatePerEntity(fogOfWarComponent);
+
+	// Iterate over all entities and apply gaussian filter.
+	if (fogOfWarComponent->m_useBlurring)
+	{
+		ApplyGaussianBlur(fogOfWarComponent);
+	}
+
+	// Take our result target state and use exponential decay smoothing to get a final state.
+	ApplyExponentialDecaySmoothing(fogOfWarComponent, deltaTime);
 }
 
 void FogOfWarSystems::RunSystems()
@@ -177,11 +192,12 @@ void FogOfWarSystems::SetRevealedStatePerEntity(FogOfWarComponent* fogOfWarCompo
 		PopulateOffsetsForEntity(fogOfWarComponent, components, offsets);
 		RevealPixelAlphaForEntity(fogOfWarComponent, components, offsets, true);
 	}
+}
 
-	if (!fogOfWarComponent->m_useBlurring)
-	{
-		return;
-	}
+void FogOfWarSystems::ApplyGaussianBlur(FogOfWarComponent* fogOfWarComponent)
+{
+	ARGUS_TRACE(FogOfWarSystems::ApplyGaussianBlur);
+	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
 
 	// Do Gaussian Blur per entity.
 	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
@@ -201,6 +217,22 @@ void FogOfWarSystems::SetRevealedStatePerEntity(FogOfWarComponent* fogOfWarCompo
 		FogOfWarOffsets offsets;
 		PopulateOffsetsForEntity(fogOfWarComponent, components, offsets);
 		BlurBoundariesForEntity(fogOfWarComponent, components, offsets);
+	}
+}
+
+void FogOfWarSystems::ApplyExponentialDecaySmoothing(FogOfWarComponent* fogOfWarComponent, float deltaTime)
+{
+	ARGUS_TRACE(FogOfWarSystems::ApplyExponentialDecaySmoothing);
+	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
+	if (FMath::IsNearlyZero(deltaTime))
+	{
+		return;
+	}
+
+	// TODO JAMES: Iterate over the pixels of either texture data or blurred texture data and use them to set the value of the smoothed texture data.
+	for (int32 i = 0; i < fogOfWarComponent->m_blurredTextureData.Num(); ++i)
+	{
+		fogOfWarComponent->m_smoothedTextureData[i] = FMath::FloorToInt(ArgusMath::ExponentialDecaySmoother<float>::FloatSmoothChase(fogOfWarComponent->m_smoothedTextureData[i], fogOfWarComponent->m_blurredTextureData[i], fogOfWarComponent->m_smoothingDecayConstant, deltaTime));
 	}
 }
 
@@ -364,10 +396,14 @@ void FogOfWarSystems::SetAlphaForPixelRange(FogOfWarComponent* fogOfWarComponent
 	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
 
 	uint8* firstAddress = &fogOfWarComponent->m_textureData[fromPixelInclusive];
-	uint8* secondAddress = &fogOfWarComponent->m_blurredTextureData[fromPixelInclusive];
 	uint32 rowLength = (toPixelInclusive - fromPixelInclusive) + 1;
 	memset(firstAddress, activelyRevealed ? 0 : fogOfWarComponent->m_revealedOnceAlpha, rowLength);
-	memset(secondAddress, activelyRevealed ? 0 : fogOfWarComponent->m_revealedOnceAlpha, rowLength);
+
+	if (fogOfWarComponent->m_useBlurring)
+	{
+		uint8* secondAddress = &fogOfWarComponent->m_blurredTextureData[fromPixelInclusive];
+		memset(secondAddress, activelyRevealed ? 0 : fogOfWarComponent->m_revealedOnceAlpha, rowLength);
+	}
 }
 
 void FogOfWarSystems::SetAlphaForCircleOctant(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, const FogOfWarOffsets& offsets, bool activelyRevealed)
@@ -465,7 +501,7 @@ void FogOfWarSystems::UpdateTexture()
 	fogOfWarComponent->m_textureRegionsUpdateData.m_regions = &fogOfWarComponent->m_textureRegion;
 	fogOfWarComponent->m_textureRegionsUpdateData.m_srcPitch = fogOfWarComponent->m_textureSize;
 	fogOfWarComponent->m_textureRegionsUpdateData.m_srcBpp = 1;
-	fogOfWarComponent->m_textureRegionsUpdateData.m_srcData = fogOfWarComponent->m_blurredTextureData.GetData();
+	fogOfWarComponent->m_textureRegionsUpdateData.m_srcData = fogOfWarComponent->m_smoothedTextureData.GetData();
 
 	if (!fogOfWarComponent->m_textureRegionsUpdateData.m_srcData)
 	{

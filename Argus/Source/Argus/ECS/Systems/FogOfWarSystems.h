@@ -13,7 +13,7 @@ class FogOfWarSystems
 public:
 	static void InitializeSystems();
 	static void RunSystems();
-	static void RunThreadSystems();
+	static void RunThreadSystems(float deltaTime);
 
 private:
 	struct FogOfWarOffsets
@@ -54,6 +54,8 @@ private:
 
 	static void InitializeGaussianFilter(FogOfWarComponent* fogOfWarComponent);
 	static void SetRevealedStatePerEntity(FogOfWarComponent* fogOfWarComponent);
+	static void ApplyGaussianBlur(FogOfWarComponent* fogOfWarComponent);
+	static void ApplyExponentialDecaySmoothing(FogOfWarComponent* fogOfWarComponent, float deltaTime);
 	static void PopulateOffsetsForEntity(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, FogOfWarOffsets& outOffsets);
 	static void PopulateOctantExpansionForEntity(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, const FogOfWarOffsets& offsets, CircleOctantExpansion& outCircleOctantExpansion);
 	static void RevealPixelAlphaForEntity(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, FogOfWarOffsets& offsets, bool activelyRevealed);

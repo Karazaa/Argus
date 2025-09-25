@@ -16,7 +16,7 @@ public:
     virtual bool Init() override { return true; };
     virtual uint32 Run() override;
     virtual void Stop() override;
-    void TickThread() { m_tickCondition = true; }
+    void TickThread(float deltaTime) { m_deltaTime = deltaTime;  m_tickCondition = true; }
     void StartThread();
 
 	bool IsTicking() const { return m_tickCondition; }
@@ -26,6 +26,7 @@ private:
 	FRunnableThread* m_thread;
     bool m_isShutdown = false;
     bool m_isStarted = false;
+    float m_deltaTime = 0.01f;
     std::atomic<bool> m_tickCondition = std::atomic<bool>(false);
     OnTickComplete m_onTickComplete;
 };

@@ -58,7 +58,7 @@ void AArgusGameModeBase::Tick(float deltaTime)
 	ARGUS_RETURN_ON_NULL(m_activePlayerController, ArgusUnrealObjectsLog);
 	
 	// Tick the systems thread. Logic here should be relatively resilient to mid execution ECS changes
-	m_argusSystemsThread.TickThread();
+	m_argusSystemsThread.TickThread(deltaTime);
 
 	// Update camera and process player input
 	m_activePlayerController->ProcessArgusPlayerInput(deltaTime);

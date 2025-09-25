@@ -25,6 +25,8 @@ public:
 	UPROPERTY(EditAnywhere)
 	bool m_useBlurring = true;
 	UPROPERTY(EditAnywhere)
+	float m_smoothingDecayConstant = 5.0f;
+	UPROPERTY(EditAnywhere)
 	uint16 m_textureSize = 1024u;
 
 	void InstantiateComponentForEntity(const ArgusEntity& entity) const override;

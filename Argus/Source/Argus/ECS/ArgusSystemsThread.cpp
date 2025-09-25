@@ -1,6 +1,7 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusSystemsThread.h"
+#include "GameTime.h"
 #include "Systems/FogOfWarSystems.h"
 
 ArgusSystemsThread::ArgusSystemsThread()
@@ -33,9 +34,10 @@ uint32 ArgusSystemsThread::Run()
         return m_isStarted;
     });
 
+    
     while (!m_isShutdown)
     {
-        FogOfWarSystems::RunThreadSystems();
+        FogOfWarSystems::RunThreadSystems(m_deltaTime);
 
         m_tickCondition = false;
         m_onTickComplete.ExecuteIfBound();

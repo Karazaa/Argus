@@ -18,11 +18,13 @@ void FogOfWarComponent::Reset()
 	m_dynamicMaterialInstance = nullptr;
 	m_textureData.Reset();
 	m_blurredTextureData.Reset();
+	m_smoothedTextureData.Reset();
 	m_gaussianFilter.Reset();
 	m_gaussianDimension = 5u;
 	m_revealedOnceAlpha = 100u;
 	m_blurPassCount = 3u;
 	m_useBlurring = true;
+	m_smoothingDecayConstant = 5.0f;
 	m_textureSize = 1024u;
 }
 
@@ -81,6 +83,22 @@ void FogOfWarComponent::DrawComponentDebug() const
 			}
 		}
 		ImGui::TableNextColumn();
+		ImGui::Text("m_smoothedTextureData");
+		ImGui::TableNextColumn();
+		ImGui::Text("Array max is currently = %d", m_smoothedTextureData.Max());
+		if (m_smoothedTextureData.Num() == 0)
+		{
+			ImGui::Text("Array is empty");
+		}
+		else
+		{
+			ImGui::Text("Size of array = %d", m_smoothedTextureData.Num());
+			for (int32 i = 0; i < m_smoothedTextureData.Num(); ++i)
+			{
+				ImGui::Text("%d", m_smoothedTextureData[i]);
+			}
+		}
+		ImGui::TableNextColumn();
 		ImGui::Text("m_gaussianFilter");
 		ImGui::TableNextColumn();
 		ImGui::Text("Array max is currently = %d", m_gaussianFilter.Max());
@@ -112,6 +130,10 @@ void FogOfWarComponent::DrawComponentDebug() const
 		ImGui::Text("m_useBlurring");
 		ImGui::TableNextColumn();
 		ImGui::Text(m_useBlurring ? "true" : "false");
+		ImGui::TableNextColumn();
+		ImGui::Text("m_smoothingDecayConstant");
+		ImGui::TableNextColumn();
+		ImGui::Text("%.2f", m_smoothingDecayConstant);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_textureSize");
 		ImGui::TableNextColumn();
