@@ -8,6 +8,8 @@
 #include "Rendering/Texture2DResource.h"
 #include "SystemArgumentDefinitions/FogOfWarSystemsArgs.h"
 
+#include <immintrin.h>
+
 void FogOfWarSystems::InitializeSystems()
 {
 	ARGUS_TRACE(FogOfWarSystems::InitializeSystems);
@@ -229,10 +231,26 @@ void FogOfWarSystems::ApplyExponentialDecaySmoothing(FogOfWarComponent* fogOfWar
 		return;
 	}
 
-	// TODO JAMES: Iterate over the pixels of either texture data or blurred texture data and use them to set the value of the smoothed texture data.
-	for (int32 i = 0; i < fogOfWarComponent->m_blurredTextureData.Num(); ++i)
+	// TODO JAMES: This doesn't work great yet. We need to load 8 bit ints into 32 bit ints and then actually do floating point math. The CeilToInt just destroys too much precision.
+	const float exponentialDecayFactor = FMath::Exp(-fogOfWarComponent->m_smoothingDecayConstant * deltaTime);
+	const uint8 decayDivisor = FMath::CeilToInt(ArgusMath::SafeDivide(1.0f, exponentialDecayFactor));
+	for (int32 i = 0; i < fogOfWarComponent->m_blurredTextureData.Num(); i += 32)
 	{
-		fogOfWarComponent->m_smoothedTextureData[i] = FMath::FloorToInt(ArgusMath::ExponentialDecaySmoother<float>::FloatSmoothChase(fogOfWarComponent->m_smoothedTextureData[i], fogOfWarComponent->m_blurredTextureData[i], fogOfWarComponent->m_smoothingDecayConstant, deltaTime));
+		if (memcmp(&fogOfWarComponent->m_blurredTextureData[i], &fogOfWarComponent->m_smoothedTextureData[i], 32) == 0)
+		{
+			continue;
+		}
+
+		uint8* rawSmoothedValues = &fogOfWarComponent->m_smoothedTextureData[i];
+		uint8* rawTargetValues = &fogOfWarComponent->m_blurredTextureData[i];
+		__m256i* smoothedValuesPointer = (__m256i*)rawSmoothedValues;
+		__m256i targetValues = _mm256_loadu_si256((__m256i*)rawTargetValues);
+		__m256i currentValues = _mm256_loadu_si256(smoothedValuesPointer);
+		__m256i difference = _mm256_sub_epi8(currentValues, targetValues);
+		__m256i scalar = _mm256_set1_epi8(decayDivisor);
+		__m256i quotient = _mm256_div_epi8(difference, scalar);
+		__m256i sum = _mm256_add_epi8(targetValues, quotient);
+		_mm256_storeu_si256(smoothedValuesPointer, sum);
 	}
 }
 
