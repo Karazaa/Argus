@@ -244,20 +244,26 @@ void FogOfWarSystems::ApplyExponentialDecaySmoothing(FogOfWarComponent* fogOfWar
 			continue;
 		}
 
-		uint8* rawSmoothedValues = &fogOfWarComponent->m_smoothedTextureData[i];
-		uint8* rawTargetValues = &fogOfWarComponent->m_blurredTextureData[i];
-		__m128i smoothedInt8s = _mm_loadl_epi64((const __m128i*)rawSmoothedValues);
-		__m128i targetInt8s = _mm_loadl_epi64((const __m128i*)rawTargetValues);
-		__m256 smoothed32s = _mm256_cvtepi32_ps(_mm256_cvtepu8_epi32(smoothedInt8s));
-		__m256 target32s = _mm256_cvtepi32_ps(_mm256_cvtepu8_epi32(targetInt8s));
-		__m256 exponentialDecayCoefficient = _mm256_set1_ps(exponentialDecayFactor);
-		__m256i resultInt32s = _mm256_cvttps_epi32(_mm256_add_ps(target32s, _mm256_mul_ps(_mm256_sub_ps(smoothed32s, target32s), exponentialDecayCoefficient)));
-		
-		// TODO JAMES: This is obviously not the best way to do this, but doing it for now since going from 32bit __m256i back down to 8bit __m256i is actually a big pain in the ass.
-		_mm256_store_si256((__m256i*) int32s.GetData(), resultInt32s);
-		for (int32 j = 0; j < iterationSize; ++j)
 		{
-			fogOfWarComponent->m_smoothedTextureData[i + j] = static_cast<uint8>(int32s[j]);
+			ARGUS_TRACE(FogOfWarSystems::SIMDMath);
+			uint8* rawSmoothedValues = &fogOfWarComponent->m_smoothedTextureData[i];
+			uint8* rawTargetValues = &fogOfWarComponent->m_blurredTextureData[i];
+			__m128i smoothedInt8s = _mm_loadl_epi64((const __m128i*)rawSmoothedValues);
+			__m128i targetInt8s = _mm_loadl_epi64((const __m128i*)rawTargetValues);
+			__m256 smoothed32s = _mm256_cvtepi32_ps(_mm256_cvtepu8_epi32(smoothedInt8s));
+			__m256 target32s = _mm256_cvtepi32_ps(_mm256_cvtepu8_epi32(targetInt8s));
+			__m256 exponentialDecayCoefficient = _mm256_set1_ps(exponentialDecayFactor);
+			__m256i resultInt32s = _mm256_cvtps_epi32(_mm256_add_ps(target32s, _mm256_mul_ps(_mm256_sub_ps(smoothed32s, target32s), exponentialDecayCoefficient)));
+			{
+				ARGUS_TRACE(FogOfWarSystems::JankReload);
+
+				// TODO JAMES: This is obviously not the best way to do this, but doing it for now since going from 32bit __m256i back down to 8bit __m256i is actually a big pain in the ass.
+				_mm256_store_si256((__m256i*) int32s.GetData(), resultInt32s);
+				for (int32 j = 0; j < iterationSize; ++j)
+				{
+					fogOfWarComponent->m_smoothedTextureData[i + j] = static_cast<uint8>(int32s[j]);
+				}
+			}
 		}
 	}
 }
