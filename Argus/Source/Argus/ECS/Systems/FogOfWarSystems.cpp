@@ -231,26 +231,34 @@ void FogOfWarSystems::ApplyExponentialDecaySmoothing(FogOfWarComponent* fogOfWar
 		return;
 	}
 
-	// TODO JAMES: This doesn't work great yet. We need to load 8 bit ints into 32 bit ints and then actually do floating point math. The CeilToInt just destroys too much precision.
+	static constexpr int32 iterationSize = 8;
 	const float exponentialDecayFactor = FMath::Exp(-fogOfWarComponent->m_smoothingDecayConstant * deltaTime);
-	const uint8 decayDivisor = FMath::CeilToInt(ArgusMath::SafeDivide(1.0f, exponentialDecayFactor));
-	for (int32 i = 0; i < fogOfWarComponent->m_blurredTextureData.Num(); i += 32)
+	TArray<int32> int32s;
+	int32s.SetNumZeroed(iterationSize);
+
+	// value = targetValue + ((value - targetValue) * FMath::Exp(-decayConstant * deltaTime));
+	for (int32 i = 0; i < fogOfWarComponent->m_blurredTextureData.Num(); i += iterationSize)
 	{
-		if (memcmp(&fogOfWarComponent->m_blurredTextureData[i], &fogOfWarComponent->m_smoothedTextureData[i], 32) == 0)
+		if (memcmp(&fogOfWarComponent->m_blurredTextureData[i], &fogOfWarComponent->m_smoothedTextureData[i], iterationSize) == 0)
 		{
 			continue;
 		}
 
 		uint8* rawSmoothedValues = &fogOfWarComponent->m_smoothedTextureData[i];
 		uint8* rawTargetValues = &fogOfWarComponent->m_blurredTextureData[i];
-		__m256i* smoothedValuesPointer = (__m256i*)rawSmoothedValues;
-		__m256i targetValues = _mm256_loadu_si256((__m256i*)rawTargetValues);
-		__m256i currentValues = _mm256_loadu_si256(smoothedValuesPointer);
-		__m256i difference = _mm256_sub_epi8(currentValues, targetValues);
-		__m256i scalar = _mm256_set1_epi8(decayDivisor);
-		__m256i quotient = _mm256_div_epi8(difference, scalar);
-		__m256i sum = _mm256_add_epi8(targetValues, quotient);
-		_mm256_storeu_si256(smoothedValuesPointer, sum);
+		__m128i smoothedInt8s = _mm_loadl_epi64((const __m128i*)rawSmoothedValues);
+		__m128i targetInt8s = _mm_loadl_epi64((const __m128i*)rawTargetValues);
+		__m256 smoothed32s = _mm256_cvtepi32_ps(_mm256_cvtepu8_epi32(smoothedInt8s));
+		__m256 target32s = _mm256_cvtepi32_ps(_mm256_cvtepu8_epi32(targetInt8s));
+		__m256 exponentialDecayCoefficient = _mm256_set1_ps(exponentialDecayFactor);
+		__m256i resultInt32s = _mm256_cvttps_epi32(_mm256_add_ps(target32s, _mm256_mul_ps(_mm256_sub_ps(smoothed32s, target32s), exponentialDecayCoefficient)));
+		
+		// TODO JAMES: This is obviously not the best way to do this, but doing it for now since going from 32bit __m256i back down to 8bit __m256i is actually a big pain in the ass.
+		_mm256_store_si256((__m256i*) int32s.GetData(), resultInt32s);
+		for (int32 j = 0; j < iterationSize; ++j)
+		{
+			fogOfWarComponent->m_smoothedTextureData[i + j] = static_cast<uint8>(int32s[j]);
+		}
 	}
 }
 
