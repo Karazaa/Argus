@@ -233,8 +233,6 @@ void FogOfWarSystems::ApplyExponentialDecaySmoothing(FogOfWarComponent* fogOfWar
 
 	static constexpr int32 iterationSize = 8;
 	const float exponentialDecayFactor = FMath::Exp(-fogOfWarComponent->m_smoothingDecayConstant * deltaTime);
-	TArray<int32> int32s;
-	int32s.SetNumZeroed(iterationSize);
 
 	// value = targetValue + ((value - targetValue) * FMath::Exp(-decayConstant * deltaTime));
 	for (int32 i = 0; i < fogOfWarComponent->m_blurredTextureData.Num(); i += iterationSize)
@@ -246,23 +244,18 @@ void FogOfWarSystems::ApplyExponentialDecaySmoothing(FogOfWarComponent* fogOfWar
 
 		{
 			ARGUS_TRACE(FogOfWarSystems::SIMDMath);
-			uint8* rawSmoothedValues = &fogOfWarComponent->m_smoothedTextureData[i];
-			uint8* rawTargetValues = &fogOfWarComponent->m_blurredTextureData[i];
-			__m128i smoothedInt8s = _mm_loadl_epi64((const __m128i*)rawSmoothedValues);
-			__m128i targetInt8s = _mm_loadl_epi64((const __m128i*)rawTargetValues);
+			__m128i smoothedInt8s = _mm_loadl_epi64((const __m128i*) &fogOfWarComponent->m_smoothedTextureData[i]);
+			__m128i targetInt8s = _mm_loadl_epi64((const __m128i*) &fogOfWarComponent->m_blurredTextureData[i]);
 			__m256 smoothed32s = _mm256_cvtepi32_ps(_mm256_cvtepu8_epi32(smoothedInt8s));
 			__m256 target32s = _mm256_cvtepi32_ps(_mm256_cvtepu8_epi32(targetInt8s));
 			__m256 exponentialDecayCoefficient = _mm256_set1_ps(exponentialDecayFactor);
 			__m256i resultInt32s = _mm256_cvtps_epi32(_mm256_add_ps(target32s, _mm256_mul_ps(_mm256_sub_ps(smoothed32s, target32s), exponentialDecayCoefficient)));
+
 			{
 				ARGUS_TRACE(FogOfWarSystems::JankReload);
 
-				// TODO JAMES: This is obviously not the best way to do this, but doing it for now since going from 32bit __m256i back down to 8bit __m256i is actually a big pain in the ass.
-				_mm256_store_si256((__m256i*) int32s.GetData(), resultInt32s);
-				for (int32 j = 0; j < iterationSize; ++j)
-				{
-					fogOfWarComponent->m_smoothedTextureData[i + j] = static_cast<uint8>(int32s[j]);
-				}
+				__m256i packedInt8 = _mm256_permute4x64_epi64(_mm256_packs_epi32(resultInt32s, _mm256_setzero_si256()), 0xD8);
+				_mm_storel_epi64((__m128i*) &fogOfWarComponent->m_smoothedTextureData[i], _mm_packus_epi16(_mm256_castsi256_si128(packedInt8), _mm256_extracti128_si256(packedInt8, 1)));
 			}
 		}
 	}
