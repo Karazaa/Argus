@@ -27,15 +27,13 @@ void FogOfWarSystems::InitializeSystems()
 	fogOfWarComponent->m_fogOfWarTexture->UpdateResource();
 	fogOfWarComponent->m_textureRegion = FUpdateTextureRegion2D(0, 0, 0, 0, fogOfWarComponent->m_textureSize, fogOfWarComponent->m_textureSize);
 
-	fogOfWarComponent->m_textureData.SetNumZeroed(fogOfWarComponent->GetTotalPixels());
-	fogOfWarComponent->m_smoothedTextureData.SetNumZeroed(fogOfWarComponent->GetTotalPixels());
-	memset(fogOfWarComponent->m_textureData.GetData(), 255, fogOfWarComponent->GetTotalPixels());
-	memset(fogOfWarComponent->m_smoothedTextureData.GetData(), 255, fogOfWarComponent->GetTotalPixels());
+	fogOfWarComponent->m_textureData.Init(255u, fogOfWarComponent->GetTotalPixels());
+	fogOfWarComponent->m_smoothedTextureData.Init(255u, fogOfWarComponent->GetTotalPixels());
+	fogOfWarComponent->m_intermediarySmoothingData.Init(255.0f, fogOfWarComponent->GetTotalPixels());
 
 	if (fogOfWarComponent->m_useBlurring)
 	{
-		fogOfWarComponent->m_blurredTextureData.SetNumZeroed(fogOfWarComponent->GetTotalPixels());
-		memset(fogOfWarComponent->m_blurredTextureData.GetData(), 255, fogOfWarComponent->GetTotalPixels());
+		fogOfWarComponent->m_blurredTextureData.Init(255u, fogOfWarComponent->GetTotalPixels());
 		InitializeGaussianFilter(fogOfWarComponent);
 	}
 }
@@ -231,31 +229,42 @@ void FogOfWarSystems::ApplyExponentialDecaySmoothing(FogOfWarComponent* fogOfWar
 		return;
 	}
 
-	static constexpr int32 iterationSize = 8;
-	const float exponentialDecayFactor = FMath::Exp(-fogOfWarComponent->m_smoothingDecayConstant * deltaTime);
+	static constexpr int32 topIterationSize = 128;
+	static constexpr int32 midIterationSize = 32;
+	static constexpr int32 smallIterationSize = 8;
+	const __m256 exponentialDecayCoefficient = _mm256_set1_ps(FMath::Exp(-fogOfWarComponent->m_smoothingDecayConstant * deltaTime));
 
 	// value = targetValue + ((value - targetValue) * FMath::Exp(-decayConstant * deltaTime));
-	for (int32 i = 0; i < fogOfWarComponent->m_blurredTextureData.Num(); i += iterationSize)
+	for (int32 i = 0; i < fogOfWarComponent->m_blurredTextureData.Num(); i += topIterationSize)
 	{
-		if (memcmp(&fogOfWarComponent->m_blurredTextureData[i], &fogOfWarComponent->m_smoothedTextureData[i], iterationSize) == 0)
+		if (memcmp(&fogOfWarComponent->m_blurredTextureData[i], &fogOfWarComponent->m_smoothedTextureData[i], topIterationSize) == 0)
 		{
 			continue;
 		}
 
+		for (int32 j = i; j < i + topIterationSize; j += midIterationSize)
 		{
-			ARGUS_TRACE(FogOfWarSystems::SIMDMath);
-			__m128i smoothedInt8s = _mm_loadl_epi64((const __m128i*) &fogOfWarComponent->m_smoothedTextureData[i]);
-			__m128i targetInt8s = _mm_loadl_epi64((const __m128i*) &fogOfWarComponent->m_blurredTextureData[i]);
-			__m256 smoothed32s = _mm256_cvtepi32_ps(_mm256_cvtepu8_epi32(smoothedInt8s));
-			__m256 target32s = _mm256_cvtepi32_ps(_mm256_cvtepu8_epi32(targetInt8s));
-			__m256 exponentialDecayCoefficient = _mm256_set1_ps(exponentialDecayFactor);
-			__m256i resultInt32s = _mm256_cvtps_epi32(_mm256_add_ps(target32s, _mm256_mul_ps(_mm256_sub_ps(smoothed32s, target32s), exponentialDecayCoefficient)));
-
+			if (memcmp(&fogOfWarComponent->m_blurredTextureData[j], &fogOfWarComponent->m_smoothedTextureData[j], midIterationSize) == 0)
 			{
-				ARGUS_TRACE(FogOfWarSystems::JankReload);
+				continue;
+			}
 
-				__m256i packedInt8 = _mm256_permute4x64_epi64(_mm256_packs_epi32(resultInt32s, _mm256_setzero_si256()), 0xD8);
-				_mm_storel_epi64((__m128i*) &fogOfWarComponent->m_smoothedTextureData[i], _mm_packus_epi16(_mm256_castsi256_si128(packedInt8), _mm256_extracti128_si256(packedInt8, 1)));
+			for (int32 k = j; k < j + midIterationSize; k += smallIterationSize)
+			{
+				if (memcmp(&fogOfWarComponent->m_blurredTextureData[k], &fogOfWarComponent->m_smoothedTextureData[k], smallIterationSize) == 0)
+				{
+					continue;
+				}
+
+				// Load values and do exponential decay smoothing.
+				const __m256 target32s = _mm256_cvtepi32_ps(_mm256_cvtepu8_epi32(_mm_loadl_epi64(reinterpret_cast<const __m128i*>(&fogOfWarComponent->m_blurredTextureData[k]))));
+				const __m256 smoothed32s = _mm256_load_ps(&fogOfWarComponent->m_intermediarySmoothingData[k]);
+				const __m256 resultFloats = _mm256_add_ps(target32s, _mm256_mul_ps(_mm256_sub_ps(smoothed32s, target32s), exponentialDecayCoefficient));
+
+				// Store values back into intermediary smoothing array and final smoothed array.
+				_mm256_store_ps(&fogOfWarComponent->m_intermediarySmoothingData[k], resultFloats);
+				const __m256i packedInt8 = _mm256_permute4x64_epi64(_mm256_packs_epi32(_mm256_cvtps_epi32(resultFloats), _mm256_setzero_si256()), 0xD8);
+				_mm_storel_epi64(reinterpret_cast<__m128i*>(&fogOfWarComponent->m_smoothedTextureData[k]), _mm_packus_epi16(_mm256_castsi256_si128(packedInt8), _mm256_extracti128_si256(packedInt8, 1)));
 			}
 		}
 	}

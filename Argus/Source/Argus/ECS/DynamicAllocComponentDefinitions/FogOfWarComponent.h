@@ -36,6 +36,9 @@ struct FogOfWarComponent
 	TArray<uint8, ArgusContainerAllocator<0> > m_smoothedTextureData;
 
 	ARGUS_IGNORE()
+	TArray<float, ArgusContainerAllocator<0> > m_intermediarySmoothingData;
+
+	ARGUS_IGNORE()
 	TArray<float, ArgusContainerAllocator<0> > m_gaussianFilter;
 
 	uint8 m_gaussianDimension = 5u;
