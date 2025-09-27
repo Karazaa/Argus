@@ -70,8 +70,9 @@ void FogOfWarSystems::InitializeGaussianFilter(FogOfWarComponent* fogOfWarCompon
 {
 	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
 
-	const uint8 filterSize = fogOfWarComponent->m_gaussianDimension * fogOfWarComponent->m_gaussianDimension;
-	fogOfWarComponent->m_gaussianFilter.SetNumZeroed(filterSize);
+	// Max filter size is 8 by 8 due to SIMD
+	fogOfWarComponent->m_gaussianFilter.SetNumZeroed(64);
+
 	TArray<float> oneDimensionalFilter;
 	oneDimensionalFilter.SetNumZeroed(fogOfWarComponent->m_gaussianDimension);
 
@@ -99,13 +100,12 @@ void FogOfWarSystems::InitializeGaussianFilter(FogOfWarComponent* fogOfWarCompon
 		oneDimensionalFilter[i] /= sum;
 	}
 
-	sum = 0.0f;
 	for (uint8 i = 0; i < fogOfWarComponent->m_gaussianDimension; ++i)
 	{
 		for (uint8 j = 0; j < fogOfWarComponent->m_gaussianDimension; ++j)
 		{
-			fogOfWarComponent->m_gaussianFilter[i + (j * fogOfWarComponent->m_gaussianDimension)] = oneDimensionalFilter[i] * oneDimensionalFilter[j];
-			sum += fogOfWarComponent->m_gaussianFilter[i + (j * fogOfWarComponent->m_gaussianDimension)];
+			uint8 index = i + (j * fogOfWarComponent->m_gaussianDimension);
+			fogOfWarComponent->m_gaussianFilter[index] = oneDimensionalFilter[i] * oneDimensionalFilter[j];
 		}
 	}
 }
@@ -738,7 +738,7 @@ void FogOfWarSystems::BlurAroundPixel(int32 relativeX, int32 relativeY, FogOfWar
 {
 	ARGUS_TRACE(FogOfWarSystems::BlurAroundPixel);
 	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
-	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	if (UNLIKELY(!components.AreComponentsValidCheck(ARGUS_FUNCNAME)))
 	{
 		return;
 	}
@@ -749,13 +749,25 @@ void FogOfWarSystems::BlurAroundPixel(int32 relativeX, int32 relativeY, FogOfWar
 	//	return;
 	//}
 
-	// TODO JAMES: We can probably SIMD this.
+	const uint8 radius = fogOfWarComponent->m_gaussianDimension / 2;
+
+	// __m256 horizontalSum = _mm256_set1_ps(0.0f);
 	float sum = 0.0f;
 	for (int32 i = 0; i < fogOfWarComponent->m_gaussianDimension; ++i)
 	{
+		// Ok, so I tried SIMD here and it was essentially just less performant than my naive approach :(
+		// We may just need to do this on the GPU to be more performant.
+		// Leaving my attempt here for posterity.
+
+		//const int32 initialRelX = relativeX - radius;
+		//const int32 yOffset = (relativeY + (radius - i)) * static_cast<int32>(fogOfWarComponent->m_textureSize);
+		//const int32 yLocation = components.m_fogOfWarLocationComponent->m_fogOfWarPixel - yOffset;
+		//__m256 textureFloats = _mm256_cvtepi32_ps(_mm256_cvtepu8_epi32(_mm_loadl_epi64(reinterpret_cast<const __m128i*>(&fogOfWarComponent->m_textureData[yLocation + initialRelX]))));
+		// __m256 filterFloats = _mm256_load_ps(&fogOfWarComponent->m_gaussianFilter[i * 8]);
+		// horizontalSum = _mm256_add_ps(horizontalSum, _mm256_mul_ps(textureFloats, filterFloats));
+
 		for (int32 j = 0; j < fogOfWarComponent->m_gaussianDimension; ++j)
 		{
-			const uint8 radius = fogOfWarComponent->m_gaussianDimension / 2;
 			const int32 shiftedX = relativeX + (j - radius);
 			const int32 shiftedY = relativeY + (radius - i);
 			// TODO JAMES: Our in bounds checks are far and away the most expensive component of this function. Maybe we handle bounds checking differently?
