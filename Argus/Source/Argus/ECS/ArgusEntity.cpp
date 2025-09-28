@@ -389,6 +389,37 @@ bool ArgusEntity::IsOnSameTeamAsOtherEntity(const ArgusEntity& otherEntity) cons
 	return IsOnTeam(otherIdentityComponent->m_team);
 }
 
+
+FVector ArgusEntity::GetCurrentTargetLocation() const
+{
+	const TargetingComponent* targetingComponent = GetComponent<TargetingComponent>();
+	if (!targetingComponent)
+	{
+		// TODO JAMES: Error here
+		return FVector::ZeroVector;
+	}
+
+	if (!targetingComponent->HasAnyTarget())
+	{
+		// TODO JAMES: Error here
+		return FVector::ZeroVector;
+	}
+
+	if (targetingComponent->HasLocationTarget())
+	{
+		return targetingComponent->m_targetLocation.GetValue();
+	}
+
+	TransformComponent* targetEntityTransformComponent = RetrieveEntity(targetingComponent->m_targetEntityId).GetComponent<TransformComponent>();
+	if (!targetEntityTransformComponent)
+	{
+		// TODO JAMES: Error here
+		return FVector::ZeroVector;
+	}
+
+	return targetEntityTransformComponent->m_location;
+}
+
 const UArgusActorRecord* ArgusEntity::GetAssociatedActorRecord() const
 {
 	if (!DoesEntityExist(m_id))

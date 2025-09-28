@@ -50,6 +50,7 @@ public:
 	bool			IsCarryingPassengers() const;
 	bool			IsOnTeam(ETeam team) const;
 	bool			IsOnSameTeamAsOtherEntity(const ArgusEntity& other) const;
+	FVector			GetCurrentTargetLocation() const;
 
 	const UArgusActorRecord* GetAssociatedActorRecord() const;
 

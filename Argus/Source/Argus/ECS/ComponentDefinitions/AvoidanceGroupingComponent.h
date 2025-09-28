@@ -34,6 +34,9 @@ struct AvoidanceGroupingComponent
 	uint16 m_groupId = ArgusECSConstants::k_maxEntities;
 
 	ARGUS_IGNORE()
+	uint16 m_flockingGroupId = ArgusECSConstants::k_maxEntities;
+
+	ARGUS_IGNORE()
 	uint16 m_numberOfIdleEntities = 0u;
 
 	EAvoidancePriority m_avoidancePriority = EAvoidancePriority::Lowest;

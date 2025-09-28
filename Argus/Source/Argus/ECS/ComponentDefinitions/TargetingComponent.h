@@ -30,6 +30,11 @@ struct TargetingComponent
 		return m_targetEntityId < ArgusECSConstants::k_maxEntities;
 	}
 
+	bool HasAnyTarget() const 
+	{
+		return HasLocationTarget() || HasEntityTarget();
+	}
+
 	bool HasSameTarget(const TargetingComponent* other) const
 	{
 		if (!other)

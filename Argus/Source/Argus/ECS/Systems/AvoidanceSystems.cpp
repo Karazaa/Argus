@@ -263,18 +263,23 @@ FVector2D AvoidanceSystems::GetFlockingVelocity(const TransformSystemsArgs& comp
 		return FVector2D::ZeroVector;
 	}
 
-	if (entityAvoidanceGroupComponent->m_groupId == components.m_entity.GetId())
+	if (components.m_taskComponent->IsExecutingMoveTask())
 	{
-		return FVector2D(entityAvoidanceGroupComponent->m_groupAverageLocation - components.m_transformComponent->m_location);
+		if (entityAvoidanceGroupComponent->m_groupId == components.m_entity.GetId())
+		{
+			return FVector2D(entityAvoidanceGroupComponent->m_groupAverageLocation - components.m_transformComponent->m_location);
+		}
+
+		const AvoidanceGroupingComponent* groupLeaderAvoidanceGroupingComponent = ArgusEntity::RetrieveEntity(entityAvoidanceGroupComponent->m_groupId).GetComponent<AvoidanceGroupingComponent>();
+		if (!groupLeaderAvoidanceGroupingComponent)
+		{
+			return FVector2D::ZeroVector;
+		}
+
+		return FVector2D(groupLeaderAvoidanceGroupingComponent->m_groupAverageLocation - components.m_transformComponent->m_location);
 	}
 
-	const AvoidanceGroupingComponent* groupLeaderAvoidanceGroupingComponent = ArgusEntity::RetrieveEntity(entityAvoidanceGroupComponent->m_groupId).GetComponent<AvoidanceGroupingComponent>();
-	if (!groupLeaderAvoidanceGroupingComponent)
-	{
-		return FVector2D::ZeroVector;
-	}
-
-	return FVector2D(groupLeaderAvoidanceGroupingComponent->m_groupAverageLocation - components.m_transformComponent->m_location);
+	return FVector2D(components.m_entity.GetCurrentTargetLocation() - components.m_transformComponent->m_location);
 }
 
 void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const CreateEntityORCALinesParams& params, const TransformSystemsArgs& components, TArray<ORCALine>& outORCALines)
@@ -635,7 +640,7 @@ FVector2D AvoidanceSystems::GetDesiredVelocity(const TransformSystemsArgs& compo
 	// If we are not executing a move task, we would like to early out with zero velocity as our desired velocity (this may change as we define more functionality for AvoidanceGroups)
 	if (!components.m_taskComponent->IsExecutingMoveTask())
 	{
-		return flockingVelocity.IsNearlyZero() ? FVector2D::ZeroVector : flockingVelocity.GetSafeNormal();
+		return flockingVelocity.IsNearlyZero() ? FVector2D::ZeroVector : ArgusMath::ToCartesianVector2(flockingVelocity.GetSafeNormal() * components.m_velocityComponent->m_desiredSpeedUnitsPerSecond);
 	}
 
 	// If our group leader is stopped, we should come to a stop as well.
@@ -710,6 +715,7 @@ float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems
 		ShouldReturnConstructionEffortCoefficient(sourceEntityComponents, foundEntityTaskComponent, effortCoefficient) ||
 		ShouldReturnResourceExtractionEffortCoefficient(sourceEntityComponents, foundEntityTaskComponent, effortCoefficient) ||
 		ShouldReturnCarrierEffortCoefficient(sourceEntityComponents, foundEntity, foundEntityTaskComponent, effortCoefficient) || 
+		ShouldReturnStaticFlockingEffortCoefficient(sourceEntityComponents, foundEntity, sourceEntityAvoidanceGroupingComponent, foundEntityAvoidanceGroupingComponent, effortCoefficient) ||
 		ShouldReturnAvoidancePriorityEffortCoefficient(sourceEntityAvoidanceGroupingComponent, foundEntityAvoidanceGroupingComponent, effortCoefficient) ||
 		ShouldReturnMovementTaskEffortCoefficient(sourceEntityComponents, foundEntity, foundEntityTaskComponent, inSameAvoidanceGroup, effortCoefficient))
 	{
@@ -921,6 +927,53 @@ bool AvoidanceSystems::ShouldReturnResourceExtractionEffortCoefficient(const Tra
 	}
 
 	return false;
+}
+
+bool AvoidanceSystems::ShouldReturnStaticFlockingEffortCoefficient(const TransformSystemsArgs& sourceEntityComponents, const ArgusEntity& foundEntity, const AvoidanceGroupingComponent* sourceGroupComponent, const AvoidanceGroupingComponent* foundGroupComponent, float& coefficient)
+{
+	if (!sourceGroupComponent || !foundGroupComponent)
+	{
+		return false;
+	}
+
+	if (!sourceEntityComponents.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return false;
+	}
+
+	if (!sourceEntityComponents.m_entity.IsOnSameTeamAsOtherEntity(foundEntity))
+	{
+		return false;
+	}
+
+	TaskComponent* foundTaskComponent = foundEntity.GetComponent<TaskComponent>();
+	TargetingComponent* foundTargetingComponent = foundEntity.GetComponent<TargetingComponent>();
+	TransformComponent* foundTransformComponent = foundEntity.GetComponent<TransformComponent>();
+	if (!foundTaskComponent || !foundTargetingComponent || !foundTransformComponent)
+	{
+		return false;
+	}
+
+	if (sourceEntityComponents.m_taskComponent->IsExecutingMoveTask() || foundTaskComponent->IsExecutingMoveTask())
+	{
+		return false;
+	}
+
+	if (sourceGroupComponent->m_flockingState == EFlockingState::Stable || foundGroupComponent->m_flockingState == EFlockingState::Stable)
+	{
+		return false;
+	}
+
+	if (!sourceEntityComponents.m_targetingComponent->HasSameTarget(foundTargetingComponent))
+	{
+		return false;
+	}
+
+	const float sourceDistSquared = FVector::DistSquared2D(sourceEntityComponents.m_transformComponent->m_location, sourceEntityComponents.m_entity.GetCurrentTargetLocation());
+	const float targetDistSquared = FVector::DistSquared2D(foundTransformComponent->m_location, foundEntity.GetCurrentTargetLocation());
+	coefficient = sourceDistSquared > targetDistSquared ? 1.0f : 0.0f;
+	
+	return true;
 }
 
 float AvoidanceSystems::FindAreaOfObstacleCartesian(const TArray<ObstaclePoint>& obstaclePoints)
