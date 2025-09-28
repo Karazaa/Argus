@@ -232,32 +232,33 @@ void FogOfWarSystems::ApplyExponentialDecaySmoothing(FogOfWarComponent* fogOfWar
 	static constexpr int32 topIterationSize = 128;
 	static constexpr int32 midIterationSize = 32;
 	static constexpr int32 smallIterationSize = 8;
+	const uint8* sourceArray = fogOfWarComponent->m_useBlurring ? fogOfWarComponent->m_blurredTextureData.GetData() : fogOfWarComponent->m_textureData.GetData();
 	const __m256 exponentialDecayCoefficient = _mm256_set1_ps(FMath::Exp(-fogOfWarComponent->m_smoothingDecayConstant * deltaTime));
 
 	// value = targetValue + ((value - targetValue) * FMath::Exp(-decayConstant * deltaTime));
-	for (int32 i = 0; i < fogOfWarComponent->m_blurredTextureData.Num(); i += topIterationSize)
+	for (int32 i = 0; i < static_cast<int32>(fogOfWarComponent->GetTotalPixels()); i += topIterationSize)
 	{
-		if (memcmp(&fogOfWarComponent->m_blurredTextureData[i], &fogOfWarComponent->m_smoothedTextureData[i], topIterationSize) == 0)
+		if (memcmp(&sourceArray[i], &fogOfWarComponent->m_smoothedTextureData[i], topIterationSize) == 0)
 		{
 			continue;
 		}
 
 		for (int32 j = i; j < i + topIterationSize; j += midIterationSize)
 		{
-			if (memcmp(&fogOfWarComponent->m_blurredTextureData[j], &fogOfWarComponent->m_smoothedTextureData[j], midIterationSize) == 0)
+			if (memcmp(&sourceArray[j], &fogOfWarComponent->m_smoothedTextureData[j], midIterationSize) == 0)
 			{
 				continue;
 			}
 
 			for (int32 k = j; k < j + midIterationSize; k += smallIterationSize)
 			{
-				if (memcmp(&fogOfWarComponent->m_blurredTextureData[k], &fogOfWarComponent->m_smoothedTextureData[k], smallIterationSize) == 0)
+				if (memcmp(&sourceArray[k], &fogOfWarComponent->m_smoothedTextureData[k], smallIterationSize) == 0)
 				{
 					continue;
 				}
 
 				// Load values and do exponential decay smoothing.
-				const __m256 target32s = _mm256_cvtepi32_ps(_mm256_cvtepu8_epi32(_mm_loadl_epi64(reinterpret_cast<const __m128i*>(&fogOfWarComponent->m_blurredTextureData[k]))));
+				const __m256 target32s = _mm256_cvtepi32_ps(_mm256_cvtepu8_epi32(_mm_loadl_epi64(reinterpret_cast<const __m128i*>(&sourceArray[k]))));
 				const __m256 smoothed32s = _mm256_load_ps(&fogOfWarComponent->m_intermediarySmoothingData[k]);
 				const __m256 resultFloats = _mm256_add_ps(target32s, _mm256_mul_ps(_mm256_sub_ps(smoothed32s, target32s), exponentialDecayCoefficient));
 
