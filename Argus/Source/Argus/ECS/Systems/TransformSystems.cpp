@@ -160,6 +160,11 @@ bool TransformSystems::ProcessMovementTaskCommands(UWorld* worldPointer, float d
 			components.m_velocityComponent->m_currentVelocity = components.m_velocityComponent->m_proposedAvoidanceVelocity;
 			if (!components.m_velocityComponent->m_currentVelocity.IsNearlyZero())
 			{
+				if (EndFlockingIfNecessary(deltaTime, components))
+				{
+					return false;
+				}
+
 				const FVector velocity = FVector(components.m_velocityComponent->m_currentVelocity, 0.0f);
 				const FVector velocityScaled = velocity * deltaTime;
 				FaceTowardsLocationXY(components.m_transformComponent, velocity);
@@ -255,7 +260,7 @@ void TransformSystems::OnCompleteNavigationPath(const TransformSystemsArgs& comp
 		components.m_taskComponent->m_movementState = EMovementState::None;
 		components.m_navigationComponent->ResetPath();
 		components.m_velocityComponent->m_currentVelocity = FVector2D::ZeroVector;
-		UpdateFlockingStateOnNavEnd(components);
+		EndFlockingIfNecessary(0.0f, components);
 	}
 	else
 	{
@@ -263,27 +268,6 @@ void TransformSystems::OnCompleteNavigationPath(const TransformSystemsArgs& comp
 		components.m_navigationComponent->ResetPath();
 		components.m_targetingComponent->m_targetLocation = components.m_navigationComponent->m_queuedWaypoints.First();
 		components.m_navigationComponent->m_queuedWaypoints.PopFirst();
-	}
-}
-
-void TransformSystems::UpdateFlockingStateOnNavEnd(const TransformSystemsArgs& components)
-{
-	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
-	{
-		return;
-	}
-
-	AvoidanceGroupingComponent* groupingComponent = components.m_entity.GetComponent<AvoidanceGroupingComponent>();
-	if (!groupingComponent)
-	{
-		return;
-	}
-
-	const FVector targetLocation = components.m_entity.GetCurrentTargetLocation();
-	const FVector currentLocation = components.m_transformComponent->m_location;
-	if (FVector::DistSquared2D(currentLocation, targetLocation) < FMath::Square(components.m_transformComponent->m_radius))
-	{
-		groupingComponent->m_flockingState = EFlockingState::Stable;
 	}
 }
 
@@ -376,4 +360,62 @@ void TransformSystems::UpdatePassengerLocations(const TransformSystemsArgs& comp
 		passengerTransformComponent->m_targetYaw = components.m_transformComponent->m_targetYaw;
 		passengerTransformComponent->m_smoothedYaw.Reset(components.m_transformComponent->m_smoothedYaw.GetValue());
 	}
+}
+
+bool TransformSystems::EndFlockingIfNecessary(float deltaTime, const TransformSystemsArgs& components)
+{
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return false;
+	}
+
+	AvoidanceGroupingComponent* groupingComponent = components.m_entity.GetComponent<AvoidanceGroupingComponent>();
+	if (!groupingComponent)
+	{
+		return false;
+	}
+
+	const FVector targetLocation = components.m_entity.GetCurrentTargetLocation();
+	const FVector currentLocation = components.m_transformComponent->m_location;
+	const float distanceToTargetSquared = FVector::DistSquared2D(currentLocation, targetLocation);
+	if (distanceToTargetSquared < FMath::Square(components.m_transformComponent->m_radius))
+	{
+		groupingComponent->m_flockingState = EFlockingState::Stable;
+		return true;
+	}
+
+	if (distanceToTargetSquared < groupingComponent->m_minDistanceFromFlockingPoint)
+	{
+		groupingComponent->m_minDistanceFromFlockingPoint = distanceToTargetSquared;
+		groupingComponent->m_timeAtMinFlockingDistance = 0.0f;
+	}
+	else
+	{
+		groupingComponent->m_timeAtMinFlockingDistance += deltaTime;
+	}
+
+	if (groupingComponent->m_timeAtMinFlockingDistance > 0.5f)
+	{
+		groupingComponent->m_flockingState = EFlockingState::Stable;
+		return true;
+	}
+
+	return false;
+}
+
+void TransformSystems::ResetFlockingTrackers(const TransformSystemsArgs& components)
+{
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+
+	AvoidanceGroupingComponent* groupingComponent = components.m_entity.GetComponent<AvoidanceGroupingComponent>();
+	if (!groupingComponent)
+	{
+		return;
+	}
+
+	groupingComponent->m_minDistanceFromFlockingPoint = FLT_MAX;
+	groupingComponent->m_timeAtMinFlockingDistance = 0.0f;
 }

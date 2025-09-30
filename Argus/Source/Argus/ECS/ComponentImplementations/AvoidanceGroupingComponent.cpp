@@ -24,6 +24,8 @@ void AvoidanceGroupingComponent::Reset()
 	m_numberOfIdleEntities = 0u;
 	m_avoidancePriority = EAvoidancePriority::Lowest;
 	m_flockingState = EFlockingState::Stable;
+	m_minDistanceFromFlockingPoint = FLT_MAX;
+	m_timeAtMinFlockingDistance = 0.0f;
 }
 
 void AvoidanceGroupingComponent::DrawComponentDebug() const
@@ -58,6 +60,14 @@ void AvoidanceGroupingComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		const char* valueName_m_flockingState = ARGUS_FSTRING_TO_CHAR(StaticEnum<EFlockingState>()->GetNameStringByValue(static_cast<uint8>(m_flockingState)))
 		ImGui::Text(valueName_m_flockingState);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_minDistanceFromFlockingPoint");
+		ImGui::TableNextColumn();
+		ImGui::Text("%.2f", m_minDistanceFromFlockingPoint);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_timeAtMinFlockingDistance");
+		ImGui::TableNextColumn();
+		ImGui::Text("%.2f", m_timeAtMinFlockingDistance);
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

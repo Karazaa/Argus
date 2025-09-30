@@ -969,10 +969,21 @@ bool AvoidanceSystems::ShouldReturnStaticFlockingEffortCoefficient(const Transfo
 		return false;
 	}
 
+	if (sourceGroupComponent->m_flockingState == EFlockingState::Stable)
+	{
+		coefficient = 0.0f;
+		return true;
+	}
+
+	if (foundGroupComponent->m_flockingState == EFlockingState::Stable)
+	{
+		coefficient = 1.0f;
+		return true;
+	}
+
 	const float sourceDistSquared = FVector::DistSquared2D(sourceEntityComponents.m_transformComponent->m_location, sourceEntityComponents.m_entity.GetCurrentTargetLocation());
 	const float targetDistSquared = FVector::DistSquared2D(foundTransformComponent->m_location, foundEntity.GetCurrentTargetLocation());
 	coefficient = sourceDistSquared > targetDistSquared ? 1.0f : 0.0f;
-	
 	return true;
 }
 

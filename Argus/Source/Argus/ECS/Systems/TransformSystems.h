@@ -26,5 +26,6 @@ private:
 	static FVector ProjectLocationOntoNavigationData(UWorld* worldPointer, TransformComponent* transformComponent, const FVector& location);
 	static float GetEndMoveRange(const TransformSystemsArgs& components);
 	static void UpdatePassengerLocations(const TransformSystemsArgs& components);
-	static void UpdateFlockingStateOnNavEnd(const TransformSystemsArgs& components);
+	static bool EndFlockingIfNecessary(float deltaTime, const TransformSystemsArgs& components);
+	static void ResetFlockingTrackers(const TransformSystemsArgs& components);
 };

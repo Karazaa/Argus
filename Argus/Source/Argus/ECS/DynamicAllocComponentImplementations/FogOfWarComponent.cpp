@@ -19,6 +19,7 @@ void FogOfWarComponent::Reset()
 	m_textureData.Reset();
 	m_blurredTextureData.Reset();
 	m_smoothedTextureData.Reset();
+	m_intermediarySmoothingData.Reset();
 	m_gaussianFilter.Reset();
 	m_gaussianDimension = 5u;
 	m_revealedOnceAlpha = 100u;
@@ -96,6 +97,22 @@ void FogOfWarComponent::DrawComponentDebug() const
 			for (int32 i = 0; i < m_smoothedTextureData.Num(); ++i)
 			{
 				ImGui::Text("%d", m_smoothedTextureData[i]);
+			}
+		}
+		ImGui::TableNextColumn();
+		ImGui::Text("m_intermediarySmoothingData");
+		ImGui::TableNextColumn();
+		ImGui::Text("Array max is currently = %d", m_intermediarySmoothingData.Max());
+		if (m_intermediarySmoothingData.Num() == 0)
+		{
+			ImGui::Text("Array is empty");
+		}
+		else
+		{
+			ImGui::Text("Size of array = %d", m_intermediarySmoothingData.Num());
+			for (int32 i = 0; i < m_intermediarySmoothingData.Num(); ++i)
+			{
+				ImGui::Text("%.2f", m_intermediarySmoothingData[i]);
 			}
 		}
 		ImGui::TableNextColumn();
