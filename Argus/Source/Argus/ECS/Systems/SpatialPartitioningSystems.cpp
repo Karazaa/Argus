@@ -73,7 +73,6 @@ void SpatialPartitioningSystems::CacheAdjacentEntityIds(const SpatialPartitionin
 			avoidanceGroupingComponent->m_groupId = ArgusECSConstants::k_maxEntities;
 			avoidanceGroupingComponent->m_groupAverageLocation = FVector::ZeroVector;
 			avoidanceGroupingComponent->m_numberOfIdleEntities = 0u;
-			avoidanceGroupingComponent->m_flockingState = EFlockingState::Shrinking;
 		}
 
 		float adjacentEntityRange = transformComponent->m_radius;

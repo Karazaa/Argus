@@ -255,6 +255,7 @@ void TransformSystems::OnCompleteNavigationPath(const TransformSystemsArgs& comp
 		components.m_taskComponent->m_movementState = EMovementState::None;
 		components.m_navigationComponent->ResetPath();
 		components.m_velocityComponent->m_currentVelocity = FVector2D::ZeroVector;
+		UpdateFlockingStateOnNavEnd(components);
 	}
 	else
 	{
@@ -262,6 +263,27 @@ void TransformSystems::OnCompleteNavigationPath(const TransformSystemsArgs& comp
 		components.m_navigationComponent->ResetPath();
 		components.m_targetingComponent->m_targetLocation = components.m_navigationComponent->m_queuedWaypoints.First();
 		components.m_navigationComponent->m_queuedWaypoints.PopFirst();
+	}
+}
+
+void TransformSystems::UpdateFlockingStateOnNavEnd(const TransformSystemsArgs& components)
+{
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+
+	AvoidanceGroupingComponent* groupingComponent = components.m_entity.GetComponent<AvoidanceGroupingComponent>();
+	if (!groupingComponent)
+	{
+		return;
+	}
+
+	const FVector targetLocation = components.m_entity.GetCurrentTargetLocation();
+	const FVector currentLocation = components.m_transformComponent->m_location;
+	if (FVector::DistSquared2D(currentLocation, targetLocation) < FMath::Square(components.m_transformComponent->m_radius))
+	{
+		groupingComponent->m_flockingState = EFlockingState::Stable;
 	}
 }
 

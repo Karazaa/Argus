@@ -959,12 +959,12 @@ bool AvoidanceSystems::ShouldReturnStaticFlockingEffortCoefficient(const Transfo
 		return false;
 	}
 
-	if (sourceGroupComponent->m_flockingState == EFlockingState::Stable || foundGroupComponent->m_flockingState == EFlockingState::Stable)
+	if (!sourceEntityComponents.m_targetingComponent->HasSameTarget(foundTargetingComponent))
 	{
 		return false;
 	}
 
-	if (!sourceEntityComponents.m_targetingComponent->HasSameTarget(foundTargetingComponent))
+	if (sourceGroupComponent->m_flockingState == EFlockingState::Stable && foundGroupComponent->m_flockingState == EFlockingState::Stable)
 	{
 		return false;
 	}
