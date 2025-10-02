@@ -43,6 +43,32 @@ bool TransformSystems::RunSystems(UWorld* worldPointer, float deltaTime)
 		}
 	}
 
+	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
+	{
+		if (!components.PopulateArguments(ArgusEntity::RetrieveEntity(i)))
+		{
+			continue;
+		}
+
+		if (components.m_taskComponent->IsExecutingMoveTask())
+		{
+			continue;
+		}
+
+		AvoidanceGroupingComponent* groupingComponent = components.m_entity.GetComponent<AvoidanceGroupingComponent>();
+		if (!groupingComponent)
+		{
+			continue;
+		}
+
+		if (groupingComponent->m_flockingState != EFlockingState::Shrinking)
+		{
+			continue;
+		}
+
+		EndFlockingIfNecessary(deltaTime, components);
+	}
+
 	return didMovementUpdateThisFrame;
 }
 
@@ -160,11 +186,6 @@ bool TransformSystems::ProcessMovementTaskCommands(UWorld* worldPointer, float d
 			components.m_velocityComponent->m_currentVelocity = components.m_velocityComponent->m_proposedAvoidanceVelocity;
 			if (!components.m_velocityComponent->m_currentVelocity.IsNearlyZero())
 			{
-				if (EndFlockingIfNecessary(deltaTime, components))
-				{
-					return false;
-				}
-
 				const FVector velocity = FVector(components.m_velocityComponent->m_currentVelocity, 0.0f);
 				const FVector velocityScaled = velocity * deltaTime;
 				FaceTowardsLocationXY(components.m_transformComponent, velocity);
@@ -260,7 +281,7 @@ void TransformSystems::OnCompleteNavigationPath(const TransformSystemsArgs& comp
 		components.m_taskComponent->m_movementState = EMovementState::None;
 		components.m_navigationComponent->ResetPath();
 		components.m_velocityComponent->m_currentVelocity = FVector2D::ZeroVector;
-		EndFlockingIfNecessary(0.0f, components);
+		ChooseFlockingRootEntityIfGroupLeader(components);
 	}
 	else
 	{
@@ -362,17 +383,41 @@ void TransformSystems::UpdatePassengerLocations(const TransformSystemsArgs& comp
 	}
 }
 
-bool TransformSystems::EndFlockingIfNecessary(float deltaTime, const TransformSystemsArgs& components)
+void TransformSystems::ChooseFlockingRootEntityIfGroupLeader(const TransformSystemsArgs& components)
 {
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
-		return false;
+		return;
 	}
 
 	AvoidanceGroupingComponent* groupingComponent = components.m_entity.GetComponent<AvoidanceGroupingComponent>();
 	if (!groupingComponent)
 	{
-		return false;
+		return;
+	}
+
+	if (groupingComponent->m_groupId != components.m_entity.GetId())
+	{
+		groupingComponent->m_flockingRootId = ArgusECSConstants::k_maxEntities;
+		return;
+	}
+
+	// TODO James: Query for nearest entity ID to target location. Set that as the flocking group id
+}
+
+void TransformSystems::EndFlockingIfNecessary(float deltaTime, const TransformSystemsArgs& components)
+{
+	ARGUS_TRACE(TransformSystems::EndFlockingIfNecessary);
+
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+
+	AvoidanceGroupingComponent* groupingComponent = components.m_entity.GetComponent<AvoidanceGroupingComponent>();
+	if (!groupingComponent)
+	{
+		return;
 	}
 
 	const FVector targetLocation = components.m_entity.GetCurrentTargetLocation();
@@ -381,7 +426,7 @@ bool TransformSystems::EndFlockingIfNecessary(float deltaTime, const TransformSy
 	if (distanceToTargetSquared < FMath::Square(components.m_transformComponent->m_radius))
 	{
 		groupingComponent->m_flockingState = EFlockingState::Stable;
-		return true;
+		return;
 	}
 
 	if (distanceToTargetSquared < groupingComponent->m_minDistanceFromFlockingPoint)
@@ -397,10 +442,8 @@ bool TransformSystems::EndFlockingIfNecessary(float deltaTime, const TransformSy
 	if (groupingComponent->m_timeAtMinFlockingDistance > 0.5f)
 	{
 		groupingComponent->m_flockingState = EFlockingState::Stable;
-		return true;
+		return;
 	}
-
-	return false;
 }
 
 void TransformSystems::ResetFlockingTrackers(const TransformSystemsArgs& components)

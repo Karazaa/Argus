@@ -652,7 +652,7 @@ FVector2D AvoidanceSystems::GetDesiredVelocity(const TransformSystemsArgs& compo
 		{
 			components.m_taskComponent->m_movementState = EMovementState::AwaitingFinish;
 			components.m_velocityComponent->m_currentVelocity = FVector2D::ZeroVector;
-			return flockingVelocity.IsNearlyZero() ? FVector2D::ZeroVector : flockingVelocity.GetSafeNormal();
+			return flockingVelocity.IsNearlyZero() ? FVector2D::ZeroVector : ArgusMath::ToCartesianVector2(flockingVelocity.GetSafeNormal() * components.m_velocityComponent->m_desiredSpeedUnitsPerSecond);
 		}
 	}
 

@@ -42,6 +42,9 @@ struct AvoidanceGroupingComponent
 	EFlockingState m_flockingState = EFlockingState::Stable;
 
 	ARGUS_IGNORE()
+	uint16 m_flockingRootId = ArgusECSConstants::k_maxEntities;
+
+	ARGUS_IGNORE()
 	float m_minDistanceFromFlockingPoint = FLT_MAX;
 
 	ARGUS_IGNORE()
