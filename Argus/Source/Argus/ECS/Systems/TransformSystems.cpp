@@ -402,7 +402,52 @@ void TransformSystems::ChooseFlockingRootEntityIfGroupLeader(const TransformSyst
 		return;
 	}
 
-	// TODO James: Query for nearest entity ID to target location. Set that as the flocking group id
+	if (!components.m_targetingComponent->HasLocationTarget())
+	{
+		groupingComponent->m_flockingRootId = ArgusECSConstants::k_maxEntities;
+		return;
+	}
+
+	SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::GetSingletonEntity().GetComponent<SpatialPartitioningComponent>();
+	if (!spatialPartitioningComponent)
+	{
+		return;
+	}
+
+	const TFunction<bool(const ArgusEntityKDTreeNode*)> queryFilter = [components](const ArgusEntityKDTreeNode* entityNode)
+	{
+		ARGUS_RETURN_ON_NULL_BOOL(entityNode, ArgusECSLog);
+		if (!components.AreComponentsValidCheck(ARGUS_NAMEOF(TransformSystems::ChooseFlockingRootEntityIfGroupLeader)))
+		{
+			return false;
+		}
+
+		if (entityNode->m_entityId == components.m_entity.GetId())
+		{
+			return true;
+		}
+
+		ArgusEntity otherEntity = ArgusEntity::RetrieveEntity(entityNode->m_entityId);
+		if (!otherEntity || otherEntity.IsPassenger())
+		{
+			return false;
+		}
+
+		if (!components.m_entity.IsOnSameTeamAsOtherEntity(otherEntity))
+		{
+			return false;
+		}
+
+		TargetingComponent* otherEntityTargetingComponent = otherEntity.GetComponent<TargetingComponent>();
+		if (!otherEntityTargetingComponent)
+		{
+			return false;
+		}
+
+		return components.m_targetingComponent->HasSameTarget(otherEntityTargetingComponent);
+	};
+	
+	groupingComponent->m_flockingRootId = spatialPartitioningComponent->m_argusEntityKDTree.FindArgusEntityIdClosestToLocation(components.m_targetingComponent->m_targetLocation.GetValue(), queryFilter);
 }
 
 void TransformSystems::EndFlockingIfNecessary(float deltaTime, const TransformSystemsArgs& components)

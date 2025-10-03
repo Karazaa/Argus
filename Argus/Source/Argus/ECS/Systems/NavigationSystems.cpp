@@ -148,10 +148,7 @@ void NavigationSystems::ProcessNavigationTaskCommands(UWorld* worldPointer, cons
 		case EMovementState::ProcessMoveToLocationCommand:
 			components.m_taskComponent->m_movementState = EMovementState::MoveToLocation;
 			NavigateFromEntityToLocation(worldPointer, components.m_targetingComponent->m_targetLocation.GetValue(), components);
-			if (AvoidanceGroupingComponent* avoidanceGroupingComponent = components.m_entity.GetComponent<AvoidanceGroupingComponent>())
-			{
-				avoidanceGroupingComponent->m_flockingState = EFlockingState::Shrinking;
-			}
+			ChangeFlockingStateOnNavigatingToLocation(components);
 			break;
 
 		case EMovementState::ProcessMoveToEntityCommand:
@@ -239,4 +236,16 @@ void NavigationSystems::ChangeTasksOnNavigatingToEntity(ArgusEntity targetEntity
 	{
 		components.m_taskComponent->m_resourceExtractionState = EResourceExtractionState::None;
 	}
+}
+
+void NavigationSystems::ChangeFlockingStateOnNavigatingToLocation(const NavigationSystemsArgs& components)
+{
+	AvoidanceGroupingComponent* avoidanceGroupingComponent = components.m_entity.GetComponent<AvoidanceGroupingComponent>();
+	if (!avoidanceGroupingComponent)
+	{
+		return;
+	}
+
+	avoidanceGroupingComponent->m_flockingState = EFlockingState::Shrinking;
+	avoidanceGroupingComponent->m_flockingRootId = ArgusECSConstants::k_maxEntities;
 }
