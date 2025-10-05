@@ -25,6 +25,8 @@ void AvoidanceGroupingComponent::Reset()
 	m_avoidancePriority = EAvoidancePriority::Lowest;
 	m_flockingState = EFlockingState::Stable;
 	m_flockingRootId = ArgusECSConstants::k_maxEntities;
+	m_numEntitiesInStableRange = 0u;
+	m_flockingStableRange = 100.0f;
 	m_minDistanceFromFlockingPoint = FLT_MAX;
 	m_timeAtMinFlockingDistance = 0.0f;
 }
@@ -65,6 +67,14 @@ void AvoidanceGroupingComponent::DrawComponentDebug() const
 		ImGui::Text("m_flockingRootId");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_flockingRootId);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_numEntitiesInStableRange");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_numEntitiesInStableRange);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_flockingStableRange");
+		ImGui::TableNextColumn();
+		ImGui::Text("%.2f", m_flockingStableRange);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_minDistanceFromFlockingPoint");
 		ImGui::TableNextColumn();

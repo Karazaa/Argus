@@ -8,6 +8,7 @@
 #include "Systems/AvoidanceSystems.h"
 #include "Systems/CarrierSystems.h"
 #include "Systems/CombatSystems.h"
+#include "Systems/FlockingSystems.h"
 #include "Systems/TargetingSystems.h"
 
 bool TransformSystems::RunSystems(UWorld* worldPointer, float deltaTime)
@@ -41,32 +42,6 @@ bool TransformSystems::RunSystems(UWorld* worldPointer, float deltaTime)
 		{
 			UpdatePassengerLocations(components);
 		}
-	}
-
-	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
-	{
-		if (!components.PopulateArguments(ArgusEntity::RetrieveEntity(i)))
-		{
-			continue;
-		}
-
-		if (components.m_taskComponent->IsExecutingMoveTask())
-		{
-			continue;
-		}
-
-		AvoidanceGroupingComponent* groupingComponent = components.m_entity.GetComponent<AvoidanceGroupingComponent>();
-		if (!groupingComponent)
-		{
-			continue;
-		}
-
-		if (groupingComponent->m_flockingState != EFlockingState::Shrinking)
-		{
-			continue;
-		}
-
-		EndFlockingIfNecessary(deltaTime, components);
 	}
 
 	return didMovementUpdateThisFrame;
@@ -281,7 +256,7 @@ void TransformSystems::OnCompleteNavigationPath(const TransformSystemsArgs& comp
 		components.m_taskComponent->m_movementState = EMovementState::None;
 		components.m_navigationComponent->ResetPath();
 		components.m_velocityComponent->m_currentVelocity = FVector2D::ZeroVector;
-		ChooseFlockingRootEntityIfGroupLeader(components);
+		FlockingSystems::ChooseFlockingRootEntityIfGroupLeader(components);
 	}
 	else
 	{
@@ -381,129 +356,4 @@ void TransformSystems::UpdatePassengerLocations(const TransformSystemsArgs& comp
 		passengerTransformComponent->m_targetYaw = components.m_transformComponent->m_targetYaw;
 		passengerTransformComponent->m_smoothedYaw.Reset(components.m_transformComponent->m_smoothedYaw.GetValue());
 	}
-}
-
-void TransformSystems::ChooseFlockingRootEntityIfGroupLeader(const TransformSystemsArgs& components)
-{
-	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
-	{
-		return;
-	}
-
-	AvoidanceGroupingComponent* groupingComponent = components.m_entity.GetComponent<AvoidanceGroupingComponent>();
-	if (!groupingComponent)
-	{
-		return;
-	}
-
-	if (groupingComponent->m_groupId != components.m_entity.GetId())
-	{
-		groupingComponent->m_flockingRootId = ArgusECSConstants::k_maxEntities;
-		return;
-	}
-
-	if (!components.m_targetingComponent->HasLocationTarget())
-	{
-		groupingComponent->m_flockingRootId = ArgusECSConstants::k_maxEntities;
-		return;
-	}
-
-	SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::GetSingletonEntity().GetComponent<SpatialPartitioningComponent>();
-	if (!spatialPartitioningComponent)
-	{
-		return;
-	}
-
-	const TFunction<bool(const ArgusEntityKDTreeNode*)> queryFilter = [components](const ArgusEntityKDTreeNode* entityNode)
-	{
-		ARGUS_RETURN_ON_NULL_BOOL(entityNode, ArgusECSLog);
-		if (!components.AreComponentsValidCheck(ARGUS_NAMEOF(TransformSystems::ChooseFlockingRootEntityIfGroupLeader)))
-		{
-			return false;
-		}
-
-		if (entityNode->m_entityId == components.m_entity.GetId())
-		{
-			return true;
-		}
-
-		ArgusEntity otherEntity = ArgusEntity::RetrieveEntity(entityNode->m_entityId);
-		if (!otherEntity || otherEntity.IsPassenger())
-		{
-			return false;
-		}
-
-		if (!components.m_entity.IsOnSameTeamAsOtherEntity(otherEntity))
-		{
-			return false;
-		}
-
-		TargetingComponent* otherEntityTargetingComponent = otherEntity.GetComponent<TargetingComponent>();
-		if (!otherEntityTargetingComponent)
-		{
-			return false;
-		}
-
-		return components.m_targetingComponent->HasSameTarget(otherEntityTargetingComponent);
-	};
-	
-	groupingComponent->m_flockingRootId = spatialPartitioningComponent->m_argusEntityKDTree.FindArgusEntityIdClosestToLocation(components.m_targetingComponent->m_targetLocation.GetValue(), queryFilter);
-}
-
-void TransformSystems::EndFlockingIfNecessary(float deltaTime, const TransformSystemsArgs& components)
-{
-	ARGUS_TRACE(TransformSystems::EndFlockingIfNecessary);
-
-	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
-	{
-		return;
-	}
-
-	AvoidanceGroupingComponent* groupingComponent = components.m_entity.GetComponent<AvoidanceGroupingComponent>();
-	if (!groupingComponent)
-	{
-		return;
-	}
-
-	const FVector targetLocation = components.m_entity.GetCurrentTargetLocation();
-	const FVector currentLocation = components.m_transformComponent->m_location;
-	const float distanceToTargetSquared = FVector::DistSquared2D(currentLocation, targetLocation);
-	if (distanceToTargetSquared < FMath::Square(components.m_transformComponent->m_radius))
-	{
-		groupingComponent->m_flockingState = EFlockingState::Stable;
-		return;
-	}
-
-	if (distanceToTargetSquared < groupingComponent->m_minDistanceFromFlockingPoint)
-	{
-		groupingComponent->m_minDistanceFromFlockingPoint = distanceToTargetSquared;
-		groupingComponent->m_timeAtMinFlockingDistance = 0.0f;
-	}
-	else
-	{
-		groupingComponent->m_timeAtMinFlockingDistance += deltaTime;
-	}
-
-	if (groupingComponent->m_timeAtMinFlockingDistance > 0.5f)
-	{
-		groupingComponent->m_flockingState = EFlockingState::Stable;
-		return;
-	}
-}
-
-void TransformSystems::ResetFlockingTrackers(const TransformSystemsArgs& components)
-{
-	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
-	{
-		return;
-	}
-
-	AvoidanceGroupingComponent* groupingComponent = components.m_entity.GetComponent<AvoidanceGroupingComponent>();
-	if (!groupingComponent)
-	{
-		return;
-	}
-
-	groupingComponent->m_minDistanceFromFlockingPoint = FLT_MAX;
-	groupingComponent->m_timeAtMinFlockingDistance = 0.0f;
 }

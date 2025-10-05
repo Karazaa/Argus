@@ -26,6 +26,10 @@ TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > ArgusCom
 ConstructionComponent* ArgusComponentRegistry::s_ConstructionComponents = nullptr;
 TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > ArgusComponentRegistry::s_isConstructionComponentActive;
 #pragma endregion
+#pragma region FlockingComponent
+FlockingComponent* ArgusComponentRegistry::s_FlockingComponents = nullptr;
+TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > ArgusComponentRegistry::s_isFlockingComponentActive;
+#pragma endregion
 #pragma region FogOfWarLocationComponent
 FogOfWarLocationComponent* ArgusComponentRegistry::s_FogOfWarLocationComponents = nullptr;
 TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > ArgusComponentRegistry::s_isFogOfWarLocationComponentActive;
@@ -116,6 +120,7 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 	s_isCarrierComponentActive.Reset();
 	s_isCombatComponentActive.Reset();
 	s_isConstructionComponentActive.Reset();
+	s_isFlockingComponentActive.Reset();
 	s_isFogOfWarLocationComponentActive.Reset();
 	s_isHealthComponentActive.Reset();
 	s_isIdentityComponentActive.Reset();
@@ -138,6 +143,7 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 	s_CarrierComponents[entityId].Reset();
 	s_CombatComponents[entityId].Reset();
 	s_ConstructionComponents[entityId].Reset();
+	s_FlockingComponents[entityId].Reset();
 	s_FogOfWarLocationComponents[entityId].Reset();
 	s_HealthComponents[entityId].Reset();
 	s_IdentityComponents[entityId].Reset();
@@ -215,6 +221,13 @@ void ArgusComponentRegistry::FlushAllComponents()
 		s_ConstructionComponents = ArgusMemorySource::Reallocate<ConstructionComponent>(s_ConstructionComponents, 0, ArgusECSConstants::k_maxEntities);
 	}
 	s_isConstructionComponentActive.Reset();
+	bool didAllocateFlockingComponents = false;
+	if (!s_FlockingComponents)
+	{
+		didAllocateFlockingComponents = true;
+		s_FlockingComponents = ArgusMemorySource::Reallocate<FlockingComponent>(s_FlockingComponents, 0, ArgusECSConstants::k_maxEntities);
+	}
+	s_isFlockingComponentActive.Reset();
 	bool didAllocateFogOfWarLocationComponents = false;
 	if (!s_FogOfWarLocationComponents)
 	{
@@ -363,6 +376,14 @@ void ArgusComponentRegistry::FlushAllComponents()
 		else
 		{
 			s_ConstructionComponents[i].Reset();
+		}
+		if (didAllocateFlockingComponents)
+		{
+			new (&s_FlockingComponents[i]) FlockingComponent();
+		}
+		else
+		{
+			s_FlockingComponents[i].Reset();
 		}
 		if (didAllocateFogOfWarLocationComponents)
 		{
@@ -576,6 +597,11 @@ uint16 ArgusComponentRegistry::GetOwningEntityIdForComponentMember(void* memberA
 		ConstructionComponent* pretendComponent = reinterpret_cast<ConstructionComponent*>(memberAddress);
 		return pretendComponent - &s_ConstructionComponents[0];
 	}
+	if (memberAddress >= &s_FlockingComponents[0] && memberAddress <= &s_FlockingComponents[ArgusECSConstants::k_maxEntities - 1])
+	{
+		FlockingComponent* pretendComponent = reinterpret_cast<FlockingComponent*>(memberAddress);
+		return pretendComponent - &s_FlockingComponents[0];
+	}
 	if (memberAddress >= &s_FogOfWarLocationComponents[0] && memberAddress <= &s_FogOfWarLocationComponents[ArgusECSConstants::k_maxEntities - 1])
 	{
 		FogOfWarLocationComponent* pretendComponent = reinterpret_cast<FogOfWarLocationComponent*>(memberAddress);
@@ -677,6 +703,10 @@ void ArgusComponentRegistry::DrawComponentsDebug(uint16 entityId)
 	if (const ConstructionComponent* ConstructionComponentPtr = GetComponent<ConstructionComponent>(entityId))
 	{
 		ConstructionComponentPtr->DrawComponentDebug();
+	}
+	if (const FlockingComponent* FlockingComponentPtr = GetComponent<FlockingComponent>(entityId))
+	{
+		FlockingComponentPtr->DrawComponentDebug();
 	}
 	if (const FogOfWarLocationComponent* FogOfWarLocationComponentPtr = GetComponent<FogOfWarLocationComponent>(entityId))
 	{

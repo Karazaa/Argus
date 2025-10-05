@@ -44,6 +44,14 @@ struct AvoidanceGroupingComponent
 	ARGUS_IGNORE()
 	uint16 m_flockingRootId = ArgusECSConstants::k_maxEntities;
 
+// RADIUS RELATED
+	ARGUS_IGNORE()
+	uint16 m_numEntitiesInStableRange = 0u;
+
+	ARGUS_IGNORE()
+	float m_flockingStableRange = 100.0f;
+
+// TIMING RELATED
 	ARGUS_IGNORE()
 	float m_minDistanceFromFlockingPoint = FLT_MAX;
 
