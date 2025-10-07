@@ -18,7 +18,7 @@ void FlockingSystems::RunSystems(float deltaTime)
 		}
 
 		// If executing move task or not shrinking, continue.
-		if (components.m_taskComponent->IsExecutingMoveTask() || components.m_avoidanceGroupingComponent->m_flockingState != EFlockingState::Shrinking)
+		if (components.m_taskComponent->IsExecutingMoveTask() || components.m_flockingComponent->m_flockingState != EFlockingState::Shrinking)
 		{
 			continue;
 		}
@@ -35,6 +35,7 @@ void FlockingSystems::ChooseFlockingRootEntityIfGroupLeader(const TransformSyste
 	}
 
 	AvoidanceGroupingComponent* groupingComponent = components.m_entity.GetComponent<AvoidanceGroupingComponent>();
+	FlockingComponent* flockingComponent = components.m_entity.GetComponent<FlockingComponent>();
 	if (!groupingComponent)
 	{
 		return;
@@ -42,13 +43,13 @@ void FlockingSystems::ChooseFlockingRootEntityIfGroupLeader(const TransformSyste
 
 	if (groupingComponent->m_groupId != components.m_entity.GetId())
 	{
-		groupingComponent->m_flockingRootId = ArgusECSConstants::k_maxEntities;
+		flockingComponent->m_flockingRootId = ArgusECSConstants::k_maxEntities;
 		return;
 	}
 
 	if (!components.m_targetingComponent->HasLocationTarget())
 	{
-		groupingComponent->m_flockingRootId = ArgusECSConstants::k_maxEntities;
+		flockingComponent->m_flockingRootId = ArgusECSConstants::k_maxEntities;
 		return;
 	}
 
@@ -91,7 +92,7 @@ void FlockingSystems::ChooseFlockingRootEntityIfGroupLeader(const TransformSyste
 			return components.m_targetingComponent->HasSameTarget(otherEntityTargetingComponent);
 		};
 
-	groupingComponent->m_flockingRootId = spatialPartitioningComponent->m_argusEntityKDTree.FindArgusEntityIdClosestToLocation(components.m_targetingComponent->m_targetLocation.GetValue(), queryFilter);
+	flockingComponent->m_flockingRootId = spatialPartitioningComponent->m_argusEntityKDTree.FindArgusEntityIdClosestToLocation(components.m_targetingComponent->m_targetLocation.GetValue(), queryFilter);
 }
 
 void FlockingSystems::EndFlockingIfNecessary(float deltaTime, const FlockingSystemsArgs& components)
@@ -108,23 +109,23 @@ void FlockingSystems::EndFlockingIfNecessary(float deltaTime, const FlockingSyst
 	const float distanceToTargetSquared = FVector::DistSquared2D(currentLocation, targetLocation);
 	if (distanceToTargetSquared < FMath::Square(components.m_transformComponent->m_radius))
 	{
-		components.m_avoidanceGroupingComponent->m_flockingState = EFlockingState::Stable;
+		components.m_flockingComponent->m_flockingState = EFlockingState::Stable;
 		return;
 	}
 
-	if (distanceToTargetSquared < components.m_avoidanceGroupingComponent->m_minDistanceFromFlockingPoint)
+	if (distanceToTargetSquared < components.m_flockingComponent->m_minDistanceFromFlockingPoint)
 	{
-		components.m_avoidanceGroupingComponent->m_minDistanceFromFlockingPoint = distanceToTargetSquared;
-		components.m_avoidanceGroupingComponent->m_timeAtMinFlockingDistance = 0.0f;
+		components.m_flockingComponent->m_minDistanceFromFlockingPoint = distanceToTargetSquared;
+		components.m_flockingComponent->m_timeAtMinFlockingDistance = 0.0f;
 	}
 	else
 	{
-		components.m_avoidanceGroupingComponent->m_timeAtMinFlockingDistance += deltaTime;
+		components.m_flockingComponent->m_timeAtMinFlockingDistance += deltaTime;
 	}
 
-	if (components.m_avoidanceGroupingComponent->m_timeAtMinFlockingDistance > 0.5f)
+	if (components.m_flockingComponent->m_timeAtMinFlockingDistance > 0.5f)
 	{
-		components.m_avoidanceGroupingComponent->m_flockingState = EFlockingState::Stable;
+		components.m_flockingComponent->m_flockingState = EFlockingState::Stable;
 		return;
 	}
 }

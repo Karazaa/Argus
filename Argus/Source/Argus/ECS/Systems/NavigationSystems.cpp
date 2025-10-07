@@ -240,14 +240,14 @@ void NavigationSystems::ChangeTasksOnNavigatingToEntity(ArgusEntity targetEntity
 
 void NavigationSystems::ChangeFlockingStateOnNavigatingToLocation(const NavigationSystemsArgs& components)
 {
-	AvoidanceGroupingComponent* avoidanceGroupingComponent = components.m_entity.GetComponent<AvoidanceGroupingComponent>();
-	if (!avoidanceGroupingComponent)
+	FlockingComponent* flockingComponent = components.m_entity.GetComponent<FlockingComponent>();
+	if (!flockingComponent)
 	{
 		return;
 	}
 
-	avoidanceGroupingComponent->m_flockingState = EFlockingState::Shrinking;
-	avoidanceGroupingComponent->m_flockingRootId = ArgusECSConstants::k_maxEntities;
-	avoidanceGroupingComponent->m_minDistanceFromFlockingPoint = FLT_MAX;
-	avoidanceGroupingComponent->m_timeAtMinFlockingDistance = 0.0f;
+	flockingComponent->m_flockingState = EFlockingState::Shrinking;
+	flockingComponent->m_flockingRootId = ArgusECSConstants::k_maxEntities;
+	flockingComponent->m_minDistanceFromFlockingPoint = FLT_MAX;
+	flockingComponent->m_timeAtMinFlockingDistance = 0.0f;
 }

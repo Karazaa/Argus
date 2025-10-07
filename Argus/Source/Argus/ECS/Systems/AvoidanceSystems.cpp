@@ -252,12 +252,13 @@ FVector2D AvoidanceSystems::GetFlockingVelocity(const TransformSystemsArgs& comp
 	}
 
 	const AvoidanceGroupingComponent* entityAvoidanceGroupComponent = components.m_entity.GetComponent<AvoidanceGroupingComponent>();
-	if (!entityAvoidanceGroupComponent)
+	const FlockingComponent* entityFlockingComponent = components.m_entity.GetComponent<FlockingComponent>();
+	if (!entityAvoidanceGroupComponent || !entityFlockingComponent)
 	{
 		return FVector2D::ZeroVector;
 	}
 
-	if (entityAvoidanceGroupComponent->m_flockingState == EFlockingState::Stable || 
+	if (entityFlockingComponent->m_flockingState == EFlockingState::Stable ||
 		entityAvoidanceGroupComponent->m_groupId == ArgusECSConstants::k_maxEntities)
 	{
 		return FVector2D::ZeroVector;
@@ -715,7 +716,7 @@ float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems
 		ShouldReturnConstructionEffortCoefficient(sourceEntityComponents, foundEntityTaskComponent, effortCoefficient) ||
 		ShouldReturnResourceExtractionEffortCoefficient(sourceEntityComponents, foundEntityTaskComponent, effortCoefficient) ||
 		ShouldReturnCarrierEffortCoefficient(sourceEntityComponents, foundEntity, foundEntityTaskComponent, effortCoefficient) || 
-		ShouldReturnStaticFlockingEffortCoefficient(sourceEntityComponents, foundEntity, sourceEntityAvoidanceGroupingComponent, foundEntityAvoidanceGroupingComponent, effortCoefficient) ||
+		ShouldReturnStaticFlockingEffortCoefficient(sourceEntityComponents, foundEntity, effortCoefficient) ||
 		ShouldReturnAvoidancePriorityEffortCoefficient(sourceEntityAvoidanceGroupingComponent, foundEntityAvoidanceGroupingComponent, effortCoefficient) ||
 		ShouldReturnMovementTaskEffortCoefficient(sourceEntityComponents, foundEntity, foundEntityTaskComponent, inSameAvoidanceGroup, effortCoefficient))
 	{
@@ -929,14 +930,16 @@ bool AvoidanceSystems::ShouldReturnResourceExtractionEffortCoefficient(const Tra
 	return false;
 }
 
-bool AvoidanceSystems::ShouldReturnStaticFlockingEffortCoefficient(const TransformSystemsArgs& sourceEntityComponents, const ArgusEntity& foundEntity, const AvoidanceGroupingComponent* sourceGroupComponent, const AvoidanceGroupingComponent* foundGroupComponent, float& coefficient)
+bool AvoidanceSystems::ShouldReturnStaticFlockingEffortCoefficient(const TransformSystemsArgs& sourceEntityComponents, const ArgusEntity& foundEntity, float& coefficient)
 {
-	if (!sourceGroupComponent || !foundGroupComponent)
+	if (!sourceEntityComponents.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return false;
 	}
 
-	if (!sourceEntityComponents.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	const FlockingComponent* sourceEntityFlockingComponent = sourceEntityComponents.m_entity.GetComponent<FlockingComponent>();
+	const FlockingComponent* foundEntityFlockingComponent = foundEntity.GetComponent<FlockingComponent>();
+	if (!sourceEntityFlockingComponent || !foundEntityFlockingComponent)
 	{
 		return false;
 	}
@@ -964,18 +967,18 @@ bool AvoidanceSystems::ShouldReturnStaticFlockingEffortCoefficient(const Transfo
 		return false;
 	}
 
-	if (sourceGroupComponent->m_flockingState == EFlockingState::Stable && foundGroupComponent->m_flockingState == EFlockingState::Stable)
+	if (sourceEntityFlockingComponent->m_flockingState == EFlockingState::Stable && foundEntityFlockingComponent->m_flockingState == EFlockingState::Stable)
 	{
 		return false;
 	}
 
-	if (sourceGroupComponent->m_flockingState == EFlockingState::Stable)
+	if (sourceEntityFlockingComponent->m_flockingState == EFlockingState::Stable)
 	{
 		coefficient = 0.0f;
 		return true;
 	}
 
-	if (foundGroupComponent->m_flockingState == EFlockingState::Stable)
+	if (foundEntityFlockingComponent->m_flockingState == EFlockingState::Stable)
 	{
 		coefficient = 1.0f;
 		return true;

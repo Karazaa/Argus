@@ -230,8 +230,8 @@ void SpatialPartitioningSystems::FloodFillStableFlockingRecursive(uint16 groupId
 		return;
 	}
 
-	AvoidanceGroupingComponent* avoidanceGroupingComponent = stableEntity.GetComponent<AvoidanceGroupingComponent>();
-	if (!avoidanceGroupingComponent || avoidanceGroupingComponent->m_flockingState == EFlockingState::Stable)
+	FlockingComponent* flockingComponent = stableEntity.GetComponent<FlockingComponent>();
+	if (!flockingComponent || flockingComponent->m_flockingState == EFlockingState::Stable)
 	{
 		return;
 	}
@@ -241,7 +241,7 @@ void SpatialPartitioningSystems::FloodFillStableFlockingRecursive(uint16 groupId
 		return;
 	}
 
-	avoidanceGroupingComponent->m_flockingState = EFlockingState::Stable;
+	flockingComponent->m_flockingState = EFlockingState::Stable;
 
 	const NearbyEntitiesComponent* nearbyEntitiesComponent = stableEntity.GetComponent<NearbyEntitiesComponent>();
 	if (!nearbyEntitiesComponent)
