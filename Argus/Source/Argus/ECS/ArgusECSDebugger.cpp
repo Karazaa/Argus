@@ -15,6 +15,7 @@ bool ArgusECSDebugger::s_ignoreTeamRequirementsForSelectingEntities = false;
 bool ArgusECSDebugger::s_entityDebugToggles[ArgusECSConstants::k_maxEntities];
 bool ArgusECSDebugger::s_entityShowAvoidanceDebug[ArgusECSConstants::k_maxEntities];
 bool ArgusECSDebugger::s_entityShowNavigationDebug[ArgusECSConstants::k_maxEntities];
+bool ArgusECSDebugger::s_entityShowFlockingDebug[ArgusECSConstants::k_maxEntities];
 int  ArgusECSDebugger::s_teamToApplyResourcesTo = 0;
 TArray<std::string> ArgusECSDebugger::s_resourceToAddStrings = TArray<std::string>();
 
@@ -59,6 +60,11 @@ bool ArgusECSDebugger::ShouldShowAvoidanceDebugForEntity(uint16 entityId)
 bool ArgusECSDebugger::ShouldShowNavigationDebugForEntity(uint16 entityId)
 {
 	return s_entityShowNavigationDebug[entityId];
+}
+
+bool ArgusECSDebugger::ShouldShowFlockingDebugForEntity(uint16 entityId)
+{
+	return s_entityShowFlockingDebug[entityId];
 }
 
 void ArgusECSDebugger::DrawEntityScrollRegion()
@@ -159,6 +165,7 @@ void ArgusECSDebugger::DrawEntityDockSpace()
 		{
 			s_entityShowAvoidanceDebug[i] = false;
 			s_entityShowNavigationDebug[i] = false;
+			s_entityShowFlockingDebug[i] = false;
 			continue;
 		}
 
@@ -184,6 +191,8 @@ void ArgusECSDebugger::DrawWindowForEntity(uint16 entityId)
 	ImGui::Checkbox("Show Avoidance debug", &s_entityShowAvoidanceDebug[entityId]);
 	ImGui::SameLine();
 	ImGui::Checkbox("Show Navigation debug", &s_entityShowNavigationDebug[entityId]);
+	ImGui::SameLine();
+	ImGui::Checkbox("Show Flocking debug", &s_entityShowFlockingDebug[entityId]);
 
 	ImGui::SeparatorText("Components");
 	ArgusComponentRegistry::DrawComponentsDebug(entityId);

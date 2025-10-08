@@ -4,6 +4,7 @@
 #include "ArgusEntity.h"
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
+#include "Systems/AvoidanceSystems.h"
 
 void FlockingSystems::RunSystems(float deltaTime)
 {
@@ -95,10 +96,31 @@ void FlockingSystems::ChooseFlockingRootEntityIfGroupLeader(const TransformSyste
 	flockingComponent->m_flockingRootId = spatialPartitioningComponent->m_argusEntityKDTree.FindArgusEntityIdClosestToLocation(components.m_targetingComponent->m_targetLocation.GetValue(), queryFilter);
 }
 
+ArgusEntity FlockingSystems::GetFlockingRootEntity(const ArgusEntity& entity)
+{
+	if (!entity)
+	{
+		return ArgusEntity::k_emptyEntity;
+	}
+
+	ArgusEntity groupLeader = AvoidanceSystems::GetAvoidanceGroupLeader(entity);
+	if (!groupLeader)
+	{
+		return ArgusEntity::k_emptyEntity;
+	}
+
+	const FlockingComponent* flockingComponent = groupLeader.GetComponent<FlockingComponent>();
+	if (!flockingComponent)
+	{
+		return ArgusEntity::k_emptyEntity;
+	}
+
+	return ArgusEntity::RetrieveEntity(flockingComponent->m_flockingRootId);
+}
+
 void FlockingSystems::EndFlockingIfNecessary(float deltaTime, const FlockingSystemsArgs& components)
 {
 	ARGUS_TRACE(FlockingSystems::EndFlockingIfNecessary);
-
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return;
@@ -113,6 +135,9 @@ void FlockingSystems::EndFlockingIfNecessary(float deltaTime, const FlockingSyst
 		return;
 	}
 
+	PackFlockingRoot(components);
+
+	// Timing based flocking
 	if (distanceToTargetSquared < components.m_flockingComponent->m_minDistanceFromFlockingPoint)
 	{
 		components.m_flockingComponent->m_minDistanceFromFlockingPoint = distanceToTargetSquared;
@@ -128,4 +153,28 @@ void FlockingSystems::EndFlockingIfNecessary(float deltaTime, const FlockingSyst
 		components.m_flockingComponent->m_flockingState = EFlockingState::Stable;
 		return;
 	}
+}
+
+void FlockingSystems::PackFlockingRoot(const FlockingSystemsArgs& components)
+{
+	ARGUS_TRACE(FlockingSystems::PackFlockingRoot);
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+
+	ArgusEntity flockingRootEntity = GetFlockingRootEntity(components.m_entity);
+	if (!flockingRootEntity)
+	{
+		return;
+	}
+
+	FlockingComponent* flockingRootFlockingComponent = flockingRootEntity.GetComponent<FlockingComponent>();
+	const TransformComponent* flockingRootTransformComponent = flockingRootEntity.GetComponent<TransformComponent>();
+	ARGUS_RETURN_ON_NULL(flockingRootFlockingComponent, ArgusECSLog);
+	ARGUS_RETURN_ON_NULL(flockingRootTransformComponent, ArgusECSLog);
+
+	const float distanceToRootSquared = FVector::DistSquared2D(flockingRootTransformComponent->m_location, components.m_transformComponent->m_location);
+
+	// TODO JAMES: Determine if the distance to root squared is within existing packing radius. If it is, stop shrinking entity and increase packing radius of flocking root entity if needed.
 }

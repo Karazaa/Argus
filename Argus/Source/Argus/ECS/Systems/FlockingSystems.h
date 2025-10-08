@@ -10,5 +10,9 @@ class FlockingSystems
 public:
 	static void RunSystems(float deltaTime);
 	static void ChooseFlockingRootEntityIfGroupLeader(const TransformSystemsArgs& components);
+	static ArgusEntity GetFlockingRootEntity(const ArgusEntity& entity);
+
+private:
 	static void EndFlockingIfNecessary(float deltaTime, const FlockingSystemsArgs& components);
+	static void PackFlockingRoot(const FlockingSystemsArgs& components);
 };

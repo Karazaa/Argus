@@ -4,6 +4,11 @@
 #include "ArgusLogging.h"
 #include "ArgusMemorySource.h"
 #include "ArgusStaticData.h"
+#include "Systems/FlockingSystems.h"
+
+#if !UE_BUILD_SHIPPING
+#include "ArgusECSDebugger.h"
+#endif //!UE_BUILD_SHIPPING
 
 const ArgusEntity ArgusEntity::k_emptyEntity = ArgusEntity();
 std::bitset<ArgusECSConstants::k_maxEntities> ArgusEntity::s_takenEntityIds = std::bitset<ArgusECSConstants::k_maxEntities>();
@@ -445,6 +450,14 @@ const UArgusActorRecord* ArgusEntity::GetAssociatedActorRecord() const
 #if !UE_BUILD_SHIPPING
 const FString ArgusEntity::GetDebugString() const
 {
-	return FString::Printf(TEXT("(%s: %d)"), ARGUS_NAMEOF(m_id), m_id);
+	if (ArgusECSDebugger::ShouldShowFlockingDebugForEntity(m_id))
+	{
+		ArgusEntity flockingRoot = FlockingSystems::GetFlockingRootEntity(*this);
+		return FString::Printf(TEXT("(%s: %d) \n (%s: %d)"), ARGUS_NAMEOF(m_id), m_id, ARGUS_NAMEOF(flockingRoot), flockingRoot.GetId());
+	}
+	else
+	{
+		return FString::Printf(TEXT("(%s: %d)"), ARGUS_NAMEOF(m_id), m_id);
+	}
 }
 #endif //!UE_BUILD_SHIPPING
