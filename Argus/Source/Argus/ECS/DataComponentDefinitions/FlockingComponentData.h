@@ -12,6 +12,10 @@ class ARGUS_API UFlockingComponentData : public UComponentData
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(EditAnywhere)
+	float m_maxShrinkingDurationTimeoutSeconds = 3.0f;
+	UPROPERTY(EditAnywhere)
+	float m_flockingRootRadiusIncrement = 55.0f;
 
 	void InstantiateComponentForEntity(const ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;

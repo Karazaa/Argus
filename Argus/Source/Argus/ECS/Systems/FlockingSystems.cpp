@@ -94,6 +94,18 @@ void FlockingSystems::ChooseFlockingRootEntityIfGroupLeader(const TransformSyste
 		};
 
 	flockingComponent->m_flockingRootId = spatialPartitioningComponent->m_argusEntityKDTree.FindArgusEntityIdClosestToLocation(components.m_targetingComponent->m_targetLocation.GetValue(), queryFilter);
+	if (flockingComponent->m_flockingRootId == ArgusECSConstants::k_maxEntities)
+	{
+		return;
+	}
+
+	ArgusEntity flockingRootEntity = ArgusEntity::RetrieveEntity(flockingComponent->m_flockingRootId);
+	FlockingComponent* flockingRootFlockingComponent = flockingRootEntity.GetComponent<FlockingComponent>();
+	ARGUS_RETURN_ON_NULL(flockingRootFlockingComponent, ArgusECSLog);
+
+	flockingRootFlockingComponent->m_concentricFlockingTier = 1u;
+	flockingRootFlockingComponent->m_numEntitiesInStableRange = 1u;
+	flockingRootFlockingComponent->m_flockingState = EFlockingState::Stable;
 }
 
 ArgusEntity FlockingSystems::GetFlockingRootEntity(const ArgusEntity& entity)
@@ -118,6 +130,7 @@ ArgusEntity FlockingSystems::GetFlockingRootEntity(const ArgusEntity& entity)
 	return ArgusEntity::RetrieveEntity(flockingComponent->m_flockingRootId);
 }
 
+// Hex grid packing with a fallback timeout on shrinking duration.
 void FlockingSystems::EndFlockingIfNecessary(float deltaTime, const FlockingSystemsArgs& components)
 {
 	ARGUS_TRACE(FlockingSystems::EndFlockingIfNecessary);
@@ -126,18 +139,16 @@ void FlockingSystems::EndFlockingIfNecessary(float deltaTime, const FlockingSyst
 		return;
 	}
 
-	const FVector targetLocation = components.m_entity.GetCurrentTargetLocation();
-	const FVector currentLocation = components.m_transformComponent->m_location;
-	const float distanceToTargetSquared = FVector::DistSquared2D(currentLocation, targetLocation);
-	if (distanceToTargetSquared < FMath::Square(components.m_transformComponent->m_radius))
+	if (PackFlockingRoot(components))
 	{
-		components.m_flockingComponent->m_flockingState = EFlockingState::Stable;
 		return;
 	}
 
-	PackFlockingRoot(components);
-
 	// Timing based flocking
+	const FVector targetLocation = components.m_entity.GetCurrentTargetLocation();
+	const FVector currentLocation = components.m_transformComponent->m_location;
+	const float distanceToTargetSquared = FVector::DistSquared2D(currentLocation, targetLocation);
+
 	if (distanceToTargetSquared < components.m_flockingComponent->m_minDistanceFromFlockingPoint)
 	{
 		components.m_flockingComponent->m_minDistanceFromFlockingPoint = distanceToTargetSquared;
@@ -148,33 +159,79 @@ void FlockingSystems::EndFlockingIfNecessary(float deltaTime, const FlockingSyst
 		components.m_flockingComponent->m_timeAtMinFlockingDistance += deltaTime;
 	}
 
-	if (components.m_flockingComponent->m_timeAtMinFlockingDistance > 0.5f)
+	if (components.m_flockingComponent->m_timeAtMinFlockingDistance > components.m_flockingComponent->m_maxShrinkingDurationTimeoutSeconds)
 	{
 		components.m_flockingComponent->m_flockingState = EFlockingState::Stable;
 		return;
 	}
 }
 
-void FlockingSystems::PackFlockingRoot(const FlockingSystemsArgs& components)
+// Hex grid based packing.
+bool FlockingSystems::PackFlockingRoot(const FlockingSystemsArgs& components)
 {
 	ARGUS_TRACE(FlockingSystems::PackFlockingRoot);
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
-		return;
+		return false;
 	}
 
 	ArgusEntity flockingRootEntity = GetFlockingRootEntity(components.m_entity);
 	if (!flockingRootEntity)
 	{
-		return;
+		return false;
 	}
 
 	FlockingComponent* flockingRootFlockingComponent = flockingRootEntity.GetComponent<FlockingComponent>();
 	const TransformComponent* flockingRootTransformComponent = flockingRootEntity.GetComponent<TransformComponent>();
-	ARGUS_RETURN_ON_NULL(flockingRootFlockingComponent, ArgusECSLog);
-	ARGUS_RETURN_ON_NULL(flockingRootTransformComponent, ArgusECSLog);
+	ARGUS_RETURN_ON_NULL_BOOL(flockingRootFlockingComponent, ArgusECSLog);
+	ARGUS_RETURN_ON_NULL_BOOL(flockingRootTransformComponent, ArgusECSLog);
 
 	const float distanceToRootSquared = FVector::DistSquared2D(flockingRootTransformComponent->m_location, components.m_transformComponent->m_location);
+	const float flockingRootRadiusSquared = FMath::Square(GetCurrentFlockingRootRadius(flockingRootFlockingComponent));
 
-	// TODO JAMES: Determine if the distance to root squared is within existing packing radius. If it is, stop shrinking entity and increase packing radius of flocking root entity if needed.
+	if (distanceToRootSquared > flockingRootRadiusSquared)
+	{
+		return false;
+	}
+
+	const uint16 currentMaxCount = GetCurrentFlockingRootMaxCount(flockingRootFlockingComponent);
+	components.m_flockingComponent->m_flockingState = EFlockingState::Stable;
+	flockingRootFlockingComponent->m_numEntitiesInStableRange++;
+
+	if (flockingRootFlockingComponent->m_numEntitiesInStableRange >= currentMaxCount)
+	{
+		flockingRootFlockingComponent->m_concentricFlockingTier++;
+	}
+
+	return true;
+}
+
+float FlockingSystems::GetCurrentFlockingRootRadius(const FlockingComponent* flockingRootFlockingComponent)
+{
+	ARGUS_RETURN_ON_NULL_FLOAT(flockingRootFlockingComponent, ArgusECSLog, 0.0f);
+
+	if (flockingRootFlockingComponent->m_concentricFlockingTier == 0u)
+	{
+		return flockingRootFlockingComponent->m_flockingRootRadiusIncrement;
+	}
+
+	return flockingRootFlockingComponent->m_concentricFlockingTier * 2.0f * flockingRootFlockingComponent->m_flockingRootRadiusIncrement;
+}
+
+uint16 FlockingSystems::GetCurrentFlockingRootMaxCount(const FlockingComponent* flockingRootFlockingComponent)
+{
+	ARGUS_RETURN_ON_NULL_UINT16(flockingRootFlockingComponent, ArgusECSLog, 1u);
+
+	if (flockingRootFlockingComponent->m_concentricFlockingTier == 0u)
+	{
+		return 1u;
+	}
+
+	uint16 output = 1u;
+	for (uint16 i = 0u; i < flockingRootFlockingComponent->m_concentricFlockingTier; ++i)
+	{
+		output += ((i + 1u) * 6u);
+	}
+
+	return output;
 }

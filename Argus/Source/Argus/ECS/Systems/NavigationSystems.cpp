@@ -246,8 +246,6 @@ void NavigationSystems::ChangeFlockingStateOnNavigatingToLocation(const Navigati
 		return;
 	}
 
+	flockingComponent->Reset();
 	flockingComponent->m_flockingState = EFlockingState::Shrinking;
-	flockingComponent->m_flockingRootId = ArgusECSConstants::k_maxEntities;
-	flockingComponent->m_minDistanceFromFlockingPoint = FLT_MAX;
-	flockingComponent->m_timeAtMinFlockingDistance = 0.0f;
 }

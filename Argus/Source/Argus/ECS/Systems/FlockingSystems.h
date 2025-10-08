@@ -14,5 +14,7 @@ public:
 
 private:
 	static void EndFlockingIfNecessary(float deltaTime, const FlockingSystemsArgs& components);
-	static void PackFlockingRoot(const FlockingSystemsArgs& components);
+	static bool PackFlockingRoot(const FlockingSystemsArgs& components);
+	static float GetCurrentFlockingRootRadius(const FlockingComponent* flockingRootFlockingComponent);
+	static uint16 GetCurrentFlockingRootMaxCount(const FlockingComponent* flockingRootFlockingComponent);
 };

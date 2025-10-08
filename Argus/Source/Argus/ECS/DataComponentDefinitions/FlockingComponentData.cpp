@@ -10,6 +10,8 @@ void UFlockingComponentData::InstantiateComponentForEntity(const ArgusEntity& en
 	FlockingComponent* FlockingComponentRef = entity.GetOrAddComponent<FlockingComponent>();
 	ARGUS_RETURN_ON_NULL(FlockingComponentRef, ArgusECSLog);
 
+	FlockingComponentRef->m_maxShrinkingDurationTimeoutSeconds = m_maxShrinkingDurationTimeoutSeconds;
+	FlockingComponentRef->m_flockingRootRadiusIncrement = m_flockingRootRadiusIncrement;
 }
 
 bool UFlockingComponentData::MatchesType(UComponentData* other) const

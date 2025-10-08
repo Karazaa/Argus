@@ -19,12 +19,14 @@ uint16 FlockingComponent::GetOwningEntityId() const
 
 void FlockingComponent::Reset()
 {
-	m_flockingState = EFlockingState::Stable;
-	m_flockingRootId = ArgusECSConstants::k_maxEntities;
-	m_numEntitiesInStableRange = 0u;
-	m_flockingStableRange = 100.0f;
 	m_minDistanceFromFlockingPoint = FLT_MAX;
 	m_timeAtMinFlockingDistance = 0.0f;
+	m_maxShrinkingDurationTimeoutSeconds = 3.0f;
+	m_flockingRootRadiusIncrement = 55.0f;
+	m_flockingRootId = ArgusECSConstants::k_maxEntities;
+	m_concentricFlockingTier = 0u;
+	m_numEntitiesInStableRange = 0u;
+	m_flockingState = EFlockingState::Stable;
 }
 
 void FlockingComponent::DrawComponentDebug() const
@@ -38,23 +40,6 @@ void FlockingComponent::DrawComponentDebug() const
 	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings))
 	{
 		ImGui::TableNextColumn();
-		ImGui::Text("m_flockingState");
-		ImGui::TableNextColumn();
-		const char* valueName_m_flockingState = ARGUS_FSTRING_TO_CHAR(StaticEnum<EFlockingState>()->GetNameStringByValue(static_cast<uint8>(m_flockingState)))
-		ImGui::Text(valueName_m_flockingState);
-		ImGui::TableNextColumn();
-		ImGui::Text("m_flockingRootId");
-		ImGui::TableNextColumn();
-		ImGui::Text("%d", m_flockingRootId);
-		ImGui::TableNextColumn();
-		ImGui::Text("m_numEntitiesInStableRange");
-		ImGui::TableNextColumn();
-		ImGui::Text("%d", m_numEntitiesInStableRange);
-		ImGui::TableNextColumn();
-		ImGui::Text("m_flockingStableRange");
-		ImGui::TableNextColumn();
-		ImGui::Text("%.2f", m_flockingStableRange);
-		ImGui::TableNextColumn();
 		ImGui::Text("m_minDistanceFromFlockingPoint");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_minDistanceFromFlockingPoint);
@@ -62,6 +47,31 @@ void FlockingComponent::DrawComponentDebug() const
 		ImGui::Text("m_timeAtMinFlockingDistance");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_timeAtMinFlockingDistance);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_maxShrinkingDurationTimeoutSeconds");
+		ImGui::TableNextColumn();
+		ImGui::Text("%.2f", m_maxShrinkingDurationTimeoutSeconds);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_flockingRootRadiusIncrement");
+		ImGui::TableNextColumn();
+		ImGui::Text("%.2f", m_flockingRootRadiusIncrement);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_flockingRootId");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_flockingRootId);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_concentricFlockingTier");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_concentricFlockingTier);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_numEntitiesInStableRange");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_numEntitiesInStableRange);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_flockingState");
+		ImGui::TableNextColumn();
+		const char* valueName_m_flockingState = ARGUS_FSTRING_TO_CHAR(StaticEnum<EFlockingState>()->GetNameStringByValue(static_cast<uint8>(m_flockingState)))
+		ImGui::Text(valueName_m_flockingState);
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING
