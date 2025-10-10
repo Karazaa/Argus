@@ -13,6 +13,7 @@ void UTransformComponentData::InstantiateComponentForEntity(const ArgusEntity& e
 	TransformComponentRef->m_smoothedYaw = ArgusMath::ExponentialDecaySmoother<float>(m_smoothedYawDecayConstant);
 	TransformComponentRef->m_radius = m_radius;
 	TransformComponentRef->m_height = m_height;
+	TransformComponentRef->m_flightCapability = m_flightCapability;
 }
 
 bool UTransformComponentData::MatchesType(UComponentData* other) const

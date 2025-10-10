@@ -22,6 +22,7 @@ void VelocityComponent::Reset()
 	m_currentVelocity = FVector2D::ZeroVector;
 	m_proposedAvoidanceVelocity = FVector2D::ZeroVector;
 	m_desiredSpeedUnitsPerSecond = 100.0f;
+	m_desiredFlightSpeedUnitsPerSecond = 100.0f;
 }
 
 void VelocityComponent::DrawComponentDebug() const
@@ -46,6 +47,10 @@ void VelocityComponent::DrawComponentDebug() const
 		ImGui::Text("m_desiredSpeedUnitsPerSecond");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_desiredSpeedUnitsPerSecond);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_desiredFlightSpeedUnitsPerSecond");
+		ImGui::TableNextColumn();
+		ImGui::Text("%.2f", m_desiredFlightSpeedUnitsPerSecond);
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

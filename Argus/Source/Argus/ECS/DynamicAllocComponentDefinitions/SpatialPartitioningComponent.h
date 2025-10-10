@@ -15,10 +15,14 @@ struct SpatialPartitioningComponent
 	ArgusEntityKDTree m_argusEntityKDTree;
 
 	ARGUS_IGNORE()
+	ArgusEntityKDTree m_flyingArgusEntityKDTree;
+
+	ARGUS_IGNORE()
 	ObstaclePointKDTree m_obstaclePointKDTree;
 
 	ARGUS_IGNORE()
 	TArray<ObstaclePointArray> m_obstacles;
 
 	float m_validSpaceExtent = 3000.0f;
+	float m_flyingPlaneHeight = 300.0f;
 };

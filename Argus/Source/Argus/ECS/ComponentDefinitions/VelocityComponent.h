@@ -16,4 +16,5 @@ struct VelocityComponent
 	FVector2D m_proposedAvoidanceVelocity = FVector2D::ZeroVector;
 
 	float m_desiredSpeedUnitsPerSecond = 100.0f;
+	float m_desiredFlightSpeedUnitsPerSecond = 100.0f;
 };

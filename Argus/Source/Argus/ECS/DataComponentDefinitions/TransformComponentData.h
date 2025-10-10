@@ -18,6 +18,8 @@ float m_smoothedYawDecayConstant = 1.0f;
 	float m_radius = 45.0f;
 	UPROPERTY(EditAnywhere)
 	float m_height = 100.0f;
+	UPROPERTY(EditAnywhere)
+	EFlightCapability m_flightCapability;
 
 	void InstantiateComponentForEntity(const ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;

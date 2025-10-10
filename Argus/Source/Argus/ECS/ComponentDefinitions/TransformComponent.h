@@ -6,6 +6,14 @@
 #include "ArgusMath.h"
 #include "CoreMinimal.h"
 
+UENUM()
+enum class EFlightCapability : uint8
+{
+	OnlyGrounded,
+	OnlyFlying,
+	BothGroundedAndFlying
+};
+
 struct TransformComponent
 {
 	ARGUS_COMPONENT_SHARED;
@@ -20,6 +28,7 @@ struct TransformComponent
 
 	float m_radius = 45.0f;
 	float m_height = 100.0f;
+	EFlightCapability m_flightCapability;
 
 	float GetCurrentYaw() const
 	{

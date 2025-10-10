@@ -15,9 +15,11 @@
 void SpatialPartitioningComponent::Reset()
 {
 	m_argusEntityKDTree.FlushAllNodes();
+	m_flyingArgusEntityKDTree.FlushAllNodes();
 	m_obstaclePointKDTree.FlushAllNodes();
 	m_obstacles.Reset();
 	m_validSpaceExtent = 3000.0f;
+	m_flyingPlaneHeight = 300.0f;
 }
 
 void SpatialPartitioningComponent::DrawComponentDebug() const
@@ -32,6 +34,9 @@ void SpatialPartitioningComponent::DrawComponentDebug() const
 	{
 		ImGui::TableNextColumn();
 		ImGui::Text("m_argusEntityKDTree");
+		ImGui::TableNextColumn();
+		ImGui::TableNextColumn();
+		ImGui::Text("m_flyingArgusEntityKDTree");
 		ImGui::TableNextColumn();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_obstaclePointKDTree");
@@ -55,6 +60,10 @@ void SpatialPartitioningComponent::DrawComponentDebug() const
 		ImGui::Text("m_validSpaceExtent");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_validSpaceExtent);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_flyingPlaneHeight");
+		ImGui::TableNextColumn();
+		ImGui::Text("%.2f", m_flyingPlaneHeight);
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

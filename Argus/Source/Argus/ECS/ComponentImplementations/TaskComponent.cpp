@@ -27,6 +27,7 @@ void TaskComponent::Reset()
 	m_constructionState = EConstructionState::None;
 	m_combatState = ECombatState::None;
 	m_resourceExtractionState = EResourceExtractionState::None;
+	m_flightState = EFlightState::Grounded;
 }
 
 void TaskComponent::DrawComponentDebug() const
@@ -78,6 +79,11 @@ void TaskComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		const char* valueName_m_resourceExtractionState = ARGUS_FSTRING_TO_CHAR(StaticEnum<EResourceExtractionState>()->GetNameStringByValue(static_cast<uint8>(m_resourceExtractionState)))
 		ImGui::Text(valueName_m_resourceExtractionState);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_flightState");
+		ImGui::TableNextColumn();
+		const char* valueName_m_flightState = ARGUS_FSTRING_TO_CHAR(StaticEnum<EFlightState>()->GetNameStringByValue(static_cast<uint8>(m_flightState)))
+		ImGui::Text(valueName_m_flightState);
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

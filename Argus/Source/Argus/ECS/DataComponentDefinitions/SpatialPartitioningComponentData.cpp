@@ -11,6 +11,7 @@ void USpatialPartitioningComponentData::InstantiateComponentForEntity(const Argu
 	ARGUS_RETURN_ON_NULL(SpatialPartitioningComponentRef, ArgusECSLog);
 
 	SpatialPartitioningComponentRef->m_validSpaceExtent = m_validSpaceExtent;
+	SpatialPartitioningComponentRef->m_flyingPlaneHeight = m_flyingPlaneHeight;
 }
 
 bool USpatialPartitioningComponentData::MatchesType(UComponentData* other) const

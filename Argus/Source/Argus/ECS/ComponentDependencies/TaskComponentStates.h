@@ -74,3 +74,12 @@ enum class EResourceExtractionState : uint8
 	DispatchedToDeposit,
 	Depositing
 };
+
+UENUM()
+enum class EFlightState : uint8
+{
+	Grounded,
+	TakingOff,
+	Flying,
+	Landing
+};

@@ -14,6 +14,8 @@ class ARGUS_API USpatialPartitioningComponentData : public UComponentData
 public:
 	UPROPERTY(EditAnywhere)
 	float m_validSpaceExtent = 3000.0f;
+	UPROPERTY(EditAnywhere)
+	float m_flyingPlaneHeight = 300.0f;
 
 	void InstantiateComponentForEntity(const ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;
