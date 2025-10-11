@@ -54,6 +54,8 @@ public:
 		SetControlGroup5,
 		ChangeActiveAbilityGroup,
 		UserInterfaceEntityClicked,
+		CameraPanningX,
+		CameraPanningY
 	};
 	static bool ShouldUpdateSelectedActorDisplay(ArgusEntity& templateSelectedEntity);
 
@@ -88,6 +90,8 @@ public:
 	void OnSetControlGroup4(const FInputActionValue& value);
 	void OnSetControlGroup5(const FInputActionValue& value);
 	void OnChangeActiveAbilityGroup(const FInputActionValue& value);
+	void OnCameraPanningX(const FInputActionValue& value);
+	void OnCameraPanningY(const FInputActionValue& value);
 
 	void ProcessPlayerInput(AArgusCameraActor* argusCamera, const AArgusCameraActor::UpdateCameraPanningParameters& updateCameraPanningParameters, float deltaTime);
 	bool ShouldDrawMarqueeBox() const;
@@ -131,6 +135,8 @@ private:
 	void ProcessSetControlGroup(uint8 controlGroupIndex);
 	void ProcessChangeActiveAbilityGroup();
 	void ProcessUserInterfaceEntityClicked(const ArgusEntity& entity);
+	void ProcessCameraPanningX(AArgusCameraActor* argusCamera, const FInputActionValue& value);
+	void ProcessCameraPanningY(AArgusCameraActor* argusCamera, const FInputActionValue& value);
 
 	void AddSelectedActorExclusive(AArgusActor* argusActor);
 	void AddSelectedActorAdditive(AArgusActor* argusActor);

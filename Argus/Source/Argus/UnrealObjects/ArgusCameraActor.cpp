@@ -9,6 +9,7 @@
 #include "Engine/HitResult.h"
 #include "Engine/World.h"
 #include "Misc/Optional.h"
+#include <Kismet/GameplayStatics.h>
 
 uint8 AArgusCameraActor::s_numWidgetPanningBlockers = 0u;
 FVector AArgusCameraActor::s_moveUpDir = FVector::UpVector;
@@ -93,6 +94,24 @@ void AArgusCameraActor::UpdateCameraOrbit(const float inputOrbitValue)
 void AArgusCameraActor::UpdateCameraZoom(const float inputZoomValue)
 {
 	m_zoomInputThisFrame += inputZoomValue;
+}
+
+void AArgusCameraActor::UpdateCameraPanningX(const float inputValue)
+{
+	const float worldDelta = UGameplayStatics::GetWorldDeltaSeconds(this);
+	const float scaledDesiredVerticalVelocity = FMath::Lerp(m_minimumDesiredVerticalVelocity, m_maximumDesiredVerticalVelocity, m_zoomLevelInterpolant);
+	const float desiredVerticalVelocity = scaledDesiredVerticalVelocity * m_panningVelocityScale * inputValue;
+	m_currentVerticalVelocity.SmoothChase(desiredVerticalVelocity, worldDelta);
+	m_cameraLocationWithoutZoom += s_moveUpDir * m_currentVerticalVelocity.GetValue();
+}
+
+void AArgusCameraActor::UpdateCameraPanningY(const float inputValue)
+{
+	const float worldDelta = UGameplayStatics::GetWorldDeltaSeconds(this);
+	const float scaledDesiredVelocity = FMath::Lerp(m_minimumDesiredHorizontalVelocity, m_maximumDesiredHorizontalVelocity, m_zoomLevelInterpolant);
+	const float desiredVelocity = scaledDesiredVelocity * m_panningVelocityScale * inputValue;
+	m_currentHorizontalVelocity.SmoothChase(desiredVelocity, worldDelta);
+	m_cameraLocationWithoutZoom += s_moveRightDir * m_currentHorizontalVelocity.GetValue();
 }
 
 void AArgusCameraActor::BeginPlay()

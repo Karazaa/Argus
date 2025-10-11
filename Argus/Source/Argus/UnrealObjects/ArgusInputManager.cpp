@@ -262,6 +262,18 @@ void UArgusInputManager::OnChangeActiveAbilityGroup(const FInputActionValue& val
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::ChangeActiveAbilityGroup, value));
 }
 
+void UArgusInputManager::OnCameraPanningX(const FInputActionValue& value)
+{
+	ARGUS_MEMORY_TRACE(ArgusInputManager);
+	m_inputEventsThisFrame.Emplace(InputCache(InputType::CameraPanningX, value));
+}
+
+void UArgusInputManager::OnCameraPanningY(const FInputActionValue& value)
+{
+	ARGUS_MEMORY_TRACE(ArgusInputManager);
+	m_inputEventsThisFrame.Emplace(InputCache(InputType::CameraPanningY, value));
+}
+
 #pragma endregion
 
 void UArgusInputManager::ProcessPlayerInput(AArgusCameraActor* argusCamera, const AArgusCameraActor::UpdateCameraPanningParameters& updateCameraParameters, float deltaTime)
@@ -454,6 +466,14 @@ void UArgusInputManager::BindActions(TSoftObjectPtr<UArgusInputActionSet>& argus
 	{
 		enhancedInputComponent->BindAction(changeActiveAbilityGroupAction, ETriggerEvent::Triggered, this, &UArgusInputManager::OnChangeActiveAbilityGroup);
 	}
+	if (const UInputAction* cameraPanningX = actionSet->m_cameraPanningX.LoadSynchronous())
+	{
+		enhancedInputComponent->BindAction(cameraPanningX, ETriggerEvent::Triggered, this, &UArgusInputManager::OnCameraPanningX);
+	}
+	if (const UInputAction* cameraPanningY = actionSet->m_cameraPanningY.LoadSynchronous())
+	{
+		enhancedInputComponent->BindAction(cameraPanningY, ETriggerEvent::Triggered, this, &UArgusInputManager::OnCameraPanningY);
+	}
 }
 
 bool UArgusInputManager::ValidateOwningPlayerController()
@@ -584,6 +604,12 @@ void UArgusInputManager::ProcessInputEvent(AArgusCameraActor* argusCamera, const
 			break;
 		case InputType::UserInterfaceEntityClicked:
 			ProcessUserInterfaceEntityClicked(inputType.m_entity);
+			break;
+		case InputType::CameraPanningX:
+			ProcessCameraPanningX(argusCamera, inputType.m_value);
+			break;
+		case InputType::CameraPanningY:
+			ProcessCameraPanningY(argusCamera, inputType.m_value);
 			break;
 		default:
 			break;
@@ -1209,6 +1235,40 @@ void UArgusInputManager::ProcessUserInterfaceEntityClicked(const ArgusEntity& en
 	}
 
 	AddSelectedActorExclusive(m_owningPlayerController->GetArgusActorForArgusEntity(entity));
+}
+
+void UArgusInputManager::ProcessCameraPanningX(AArgusCameraActor* argusCamera, const FInputActionValue& value)
+{
+	const float translateValue = value.Get<float>();
+	if (CVarEnableVerboseArgusInputLogging.GetValueOnGameThread())
+	{
+		ARGUS_LOG
+		(
+			ArgusInputLog, Display, TEXT("[%s] X axis camera panning with a value of %f occurred."),
+			ARGUS_FUNCNAME,
+			translateValue
+		);
+	}
+
+	ARGUS_RETURN_ON_NULL(argusCamera, ArgusInputLog);
+	argusCamera->UpdateCameraPanningX(translateValue);
+}
+
+void UArgusInputManager::ProcessCameraPanningY(AArgusCameraActor* argusCamera, const FInputActionValue& value)
+{
+	const float translateValue = value.Get<float>();
+	if (CVarEnableVerboseArgusInputLogging.GetValueOnGameThread())
+	{
+		ARGUS_LOG
+		(
+			ArgusInputLog, Display, TEXT("[%s] Y axis camera panning with a value of %f occurred."),
+			ARGUS_FUNCNAME,
+			translateValue
+		);
+	}
+
+	ARGUS_RETURN_ON_NULL(argusCamera, ArgusInputLog);
+	argusCamera->UpdateCameraPanningY(translateValue);
 }
 
 #pragma endregion
