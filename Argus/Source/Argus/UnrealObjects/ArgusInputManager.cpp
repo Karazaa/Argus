@@ -847,9 +847,11 @@ void UArgusInputManager::ProcessMoveToInputEvent()
 
 	EMovementState inputMovementState = EMovementState::ProcessMoveToLocationCommand;
 	ArgusEntity targetEntity = ArgusEntity::k_emptyEntity;
+	AArgusActor* targetActor = nullptr;
 	if (AArgusActor* argusActor = Cast<AArgusActor>(hitResult.GetActor()))
 	{
-		targetEntity = argusActor->GetEntity();
+		targetActor = argusActor;
+		targetEntity = targetActor->GetEntity();
 		if (targetEntity && targetEntity.GetComponent<TransformComponent>())
 		{
 			inputMovementState = EMovementState::ProcessMoveToEntityCommand;
@@ -863,7 +865,8 @@ void UArgusInputManager::ProcessMoveToInputEvent()
 			continue;
 		}
 		ProcessMoveToInputEventPerSelectedActor(selectedActor.Get(), inputMovementState, targetEntity, targetLocation);
-		m_owningPlayerController->ArgusActorMoveToLocation(selectedActor.Get(), inputMovementState, m_owningPlayerController->GetArgusActorForArgusEntity(targetEntity), targetLocation);
+				
+		m_owningPlayerController->ArgusActorMoveToLocation(selectedActor.Get(), inputMovementState, targetActor, targetLocation);
 	}
 }
 
