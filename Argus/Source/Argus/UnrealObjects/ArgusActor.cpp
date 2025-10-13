@@ -273,9 +273,14 @@ void AArgusActor::Update(float deltaTime, ETeam activePlayerControllerTeam)
 		if (identityComponent->IsSeenBy(activePlayerControllerTeam))
 		{
 			Show();
+			if(const TaskComponent* taskComponent = m_entity.GetComponent<TaskComponent>())
+			{
+				OnArgusEntityCombatStateChanged(taskComponent->m_combatState);
+			}
 		}
 		else
 		{
+			OnArgusEntityCombatStateChanged(ECombatState::None);
 			Hide();
 		}
 	}

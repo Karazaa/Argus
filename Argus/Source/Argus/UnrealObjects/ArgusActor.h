@@ -49,6 +49,12 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnArgusEntityPassengerStateChanged(bool isPassenger);
 
+	/**
+	* Used to show animations or effects when the entity starts or stops attacking. N.B. This does not indicate whether the entity is currently in the process of attacking, just that we can start or stop visible attacking.
+	*/
+	UFUNCTION(BlueprintImplementableEvent)
+	void  OnArgusEntityCombatStateChanged(ECombatState state);
+
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	TSoftClassPtr<UArgusActorInfoView> m_argusActorInfoWidgetClass = nullptr;
 

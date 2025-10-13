@@ -862,8 +862,8 @@ void UArgusInputManager::ProcessMoveToInputEvent()
 		{
 			continue;
 		}
-
 		ProcessMoveToInputEventPerSelectedActor(selectedActor.Get(), inputMovementState, targetEntity, targetLocation);
+		m_owningPlayerController->ArgusActorMoveToLocation(selectedActor.Get(), inputMovementState, m_owningPlayerController->GetArgusActorForArgusEntity(targetEntity), targetLocation);
 	}
 }
 
