@@ -66,6 +66,7 @@ void FogOfWarSystems::RunSystems()
 	UpdateDynamicMaterialInstance();
 }
 
+// TODO JAMES: Initialize weights in HLSL akin to this: https://forums.unrealengine.com/t/gaussian-blur-post-processing-material/14683
 void FogOfWarSystems::InitializeGaussianFilter(FogOfWarComponent* fogOfWarComponent)
 {
 	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
