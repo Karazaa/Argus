@@ -15,6 +15,7 @@
 void FogOfWarComponent::Reset()
 {
 	m_fogOfWarTexture = nullptr;
+	m_gaussianWeightsTexture = nullptr;
 	m_dynamicMaterialInstance = nullptr;
 	m_textureData.Reset();
 	m_blurredTextureData.Reset();
@@ -24,7 +25,7 @@ void FogOfWarComponent::Reset()
 	m_gaussianDimension = 5u;
 	m_revealedOnceAlpha = 100u;
 	m_blurPassCount = 3u;
-	m_useBlurring = true;
+	m_useCPUBlurring = true;
 	m_smoothingDecayConstant = 5.0f;
 	m_textureSize = 1024u;
 }
@@ -41,6 +42,9 @@ void FogOfWarComponent::DrawComponentDebug() const
 	{
 		ImGui::TableNextColumn();
 		ImGui::Text("m_fogOfWarTexture");
+		ImGui::TableNextColumn();
+		ImGui::TableNextColumn();
+		ImGui::Text("m_gaussianWeightsTexture");
 		ImGui::TableNextColumn();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_dynamicMaterialInstance");
@@ -146,7 +150,7 @@ void FogOfWarComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_useBlurring");
 		ImGui::TableNextColumn();
-		ImGui::Text(m_useBlurring ? "true" : "false");
+		ImGui::Text(m_useCPUBlurring ? "true" : "false");
 		ImGui::TableNextColumn();
 		ImGui::Text("m_smoothingDecayConstant");
 		ImGui::TableNextColumn();
