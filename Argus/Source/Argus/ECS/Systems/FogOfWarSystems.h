@@ -66,6 +66,7 @@ private:
 	static void BlurBoundariesForCircleOctant(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, const FogOfWarOffsets& offsets);
 	static void SetRingAlphaForCircleOctant(uint8 alphaValue, FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, const FogOfWarOffsets& offsets);
 	static void UpdateTexture();
+	static void UpdateGaussianWeightsTexture();
 	static void UpdateDynamicMaterialInstance();
 
 	static uint32 GetPixelNumberFromWorldSpaceLocation(FogOfWarComponent* fogOfWarComponent, const FVector& worldSpaceLocation);

@@ -11,11 +11,12 @@ void UFogOfWarComponentData::InstantiateComponentForEntity(const ArgusEntity& en
 	ARGUS_RETURN_ON_NULL(FogOfWarComponentRef, ArgusECSLog);
 
 	FogOfWarComponentRef->m_fogOfWarTexture = m_fogOfWarTexture;
+	FogOfWarComponentRef->m_gaussianWeightsTexture = m_gaussianWeightsTexture;
 	FogOfWarComponentRef->m_dynamicMaterialInstance = m_dynamicMaterialInstance;
 	FogOfWarComponentRef->m_gaussianDimension = m_gaussianDimension;
 	FogOfWarComponentRef->m_revealedOnceAlpha = m_revealedOnceAlpha;
 	FogOfWarComponentRef->m_blurPassCount = m_blurPassCount;
-	FogOfWarComponentRef->m_useBlurring = m_useBlurring;
+	FogOfWarComponentRef->m_useCPUBlurring = m_useCPUBlurring;
 	FogOfWarComponentRef->m_smoothingDecayConstant = m_smoothingDecayConstant;
 	FogOfWarComponentRef->m_textureSize = m_textureSize;
 }

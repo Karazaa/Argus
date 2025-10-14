@@ -15,6 +15,8 @@ public:
 	UPROPERTY(Transient)
 	TObjectPtr<UTexture2D> m_fogOfWarTexture = nullptr;
 	UPROPERTY(Transient)
+	TObjectPtr<UTexture2D> m_gaussianWeightsTexture = nullptr;
+	UPROPERTY(Transient)
 	TObjectPtr<UMaterialInstanceDynamic> m_dynamicMaterialInstance = nullptr;
 	UPROPERTY(EditAnywhere)
 	uint8 m_gaussianDimension = 5u;
@@ -23,7 +25,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	uint8 m_blurPassCount = 3u;
 	UPROPERTY(EditAnywhere)
-	bool m_useBlurring = true;
+	bool m_useCPUBlurring = true;
 	UPROPERTY(EditAnywhere)
 	float m_smoothingDecayConstant = 5.0f;
 	UPROPERTY(EditAnywhere)
