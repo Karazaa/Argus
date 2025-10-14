@@ -42,6 +42,17 @@ public:
 
 	UArgusInputManager* GetInputManager() const { return m_argusInputManager; }
 
+	/**
+	* Function to show a move to location effect for an ArgusActor. N.B. the effect would be called for each selected actor, so if you're moving 5 selected actors, this would be called 5 times.
+	*
+	* @Param argusActor The actor that is moving
+	* @Param inputMovementState The movement state that the actor is moving in e.g. moving to a location, moving towards an enemy etc.
+	* @Param targetActor The actor that is the target of the move (if applicable, nullptr if not)
+	* @Param targetLocation The location that is the target of the move
+	*/
+	UFUNCTION(BlueprintImplementableEvent, Category = "Argus|PlayerController")
+	void ArgusActorMoveToLocation(AArgusActor* argusActor, EMovementState inputMovementState, AArgusActor* targetActor, FVector targetLocation);
+	
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	ETeam m_playerTeam = ETeam::TeamA;

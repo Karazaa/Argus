@@ -34,6 +34,8 @@ public:
 	void UpdateCamera(const UpdateCameraPanningParameters& cameraParameters, const float deltaTime);
 	void UpdateCameraOrbit(const float inputOrbitValue);
 	void UpdateCameraZoom(const float inputZoomValue);
+	void UpdateCameraPanningX(const float inputValue);
+	void UpdateCameraPanningY(const float inputValue);
 
 	const FVector GetZoomTargetTranslation() { return m_currentZoomTranslationAmount.GetValue() * GetActorForwardVector(); }
 	const FVector& GetCameraLocationWithoutZoom() { return m_cameraLocationWithoutZoom; }
@@ -116,6 +118,7 @@ private:
 	float m_zoomInputThisFrame = 0.0f;
 	float m_zoomLevelInterpolant = 0.5f;
 	float m_targetZoomTranslationAmount = 0.0f;
+	float m_panningVelocityScale = 0.1f; // camera panning can be too sensitive, so adding a scaling modifier
 	TRange<float> m_zoomRange;
 	TRange<float> m_zeroToOne;
 
