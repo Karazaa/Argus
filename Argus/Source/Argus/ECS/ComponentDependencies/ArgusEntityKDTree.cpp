@@ -172,7 +172,7 @@ void ArgusEntityKDTree::ErrorOnInvalidArgusEntity(const WIDECHAR* functionName)
 	);
 }
 
-void ArgusEntityKDTree::SeedTreeWithAverageEntityLocation()
+void ArgusEntityKDTree::SeedTreeWithAverageEntityLocation(bool onlyFlying)
 {
 	FlushAllNodes();
 
@@ -192,8 +192,18 @@ void ArgusEntityKDTree::SeedTreeWithAverageEntityLocation()
 			continue;
 		}
 
+		if (onlyFlying && !retrievedEntity.IsFlying())
+		{
+			continue;
+		}
+
 		averageLocation += transformComponent->m_location;
 		numIncludedEntities += 1.0f;
+	}
+
+	if (numIncludedEntities == 0.0f)
+	{
+		return;
 	}
 
 	averageLocation = ArgusMath::SafeDivide(averageLocation, numIncludedEntities);
@@ -206,7 +216,7 @@ void ArgusEntityKDTree::SeedTreeWithAverageEntityLocation()
 	m_rootNode->Populate(averageLocation);
 }
 
-void ArgusEntityKDTree::InsertAllArgusEntitiesIntoKDTree()
+void ArgusEntityKDTree::InsertAllArgusEntitiesIntoKDTree(bool onlyFlying)
 {
 	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{
@@ -218,6 +228,11 @@ void ArgusEntityKDTree::InsertAllArgusEntitiesIntoKDTree()
 
 		const TransformComponent* transformComponent = retrievedEntity.GetComponent<TransformComponent>();
 		if (!transformComponent)
+		{
+			continue;
+		}
+
+		if (onlyFlying && !retrievedEntity.IsFlying())
 		{
 			continue;
 		}

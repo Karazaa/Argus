@@ -134,7 +134,14 @@ void SpawningSystems::SpawnEntityInternal(const SpawningSystemsArgs& components,
 	{
 		if (SpatialPartitioningComponent* spatialPartitioningComponent = singletonEntity.GetComponent<SpatialPartitioningComponent>())
 		{
-			spatialPartitioningComponent->m_argusEntityKDTree.InsertArgusEntityIntoKDTree(spawnedEntity);
+			if (spawnedEntityTaskComponent->m_flightState == EFlightState::Flying)
+			{
+				spatialPartitioningComponent->m_flyingArgusEntityKDTree.InsertArgusEntityIntoKDTree(spawnedEntity);
+			}
+			else
+			{
+				spatialPartitioningComponent->m_argusEntityKDTree.InsertArgusEntityIntoKDTree(spawnedEntity);
+			}
 		}
 	}
 

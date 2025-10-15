@@ -11,6 +11,7 @@ void UTaskComponentData::InstantiateComponentForEntity(const ArgusEntity& entity
 	ARGUS_RETURN_ON_NULL(TaskComponentRef, ArgusECSLog);
 
 	TaskComponentRef->m_baseState = m_baseState;
+	TaskComponentRef->m_flightState = m_flightState;
 }
 
 bool UTaskComponentData::MatchesType(UComponentData* other) const

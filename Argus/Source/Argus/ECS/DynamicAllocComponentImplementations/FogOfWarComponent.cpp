@@ -148,7 +148,7 @@ void FogOfWarComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_blurPassCount);
 		ImGui::TableNextColumn();
-		ImGui::Text("m_useBlurring");
+		ImGui::Text("m_useCPUBlurring");
 		ImGui::TableNextColumn();
 		ImGui::Text(m_useCPUBlurring ? "true" : "false");
 		ImGui::TableNextColumn();

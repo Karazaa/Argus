@@ -747,6 +747,10 @@ void UArgusInputManager::ProcessMarqueeSelectInputEvent(AArgusCameraActor* argus
 	TArray<uint16> entityIdsWithinBounds;
 	spatialPartitioningComponent->m_argusEntityKDTree.FindArgusEntityIdsWithinConvexPoly(entityIdsWithinBounds, convexPolygon);
 
+	// TODO JAMES: Do something with the flying entity ids within bounds.
+	TArray<uint16> flyingEntityIdsWithinBounds;
+	spatialPartitioningComponent->m_flyingArgusEntityKDTree.FindArgusEntityIdsWithinConvexPoly(entityIdsWithinBounds, convexPolygon);
+
 	TArray<AArgusActor*> actorsWithinBounds;
 	if (!m_owningPlayerController->GetArgusActorsFromArgusEntityIds(entityIdsWithinBounds, actorsWithinBounds))
 	{
