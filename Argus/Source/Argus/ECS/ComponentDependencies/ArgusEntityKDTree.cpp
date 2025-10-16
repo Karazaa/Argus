@@ -172,7 +172,7 @@ void ArgusEntityKDTree::ErrorOnInvalidArgusEntity(const WIDECHAR* functionName)
 	);
 }
 
-void ArgusEntityKDTree::SeedTreeWithAverageEntityLocation(bool onlyFlying)
+void ArgusEntityKDTree::SeedTreeWithAverageEntityLocation(bool forFlyingEntities)
 {
 	FlushAllNodes();
 
@@ -192,7 +192,7 @@ void ArgusEntityKDTree::SeedTreeWithAverageEntityLocation(bool onlyFlying)
 			continue;
 		}
 
-		if (onlyFlying && !retrievedEntity.IsFlying())
+		if (forFlyingEntities != retrievedEntity.IsFlying())
 		{
 			continue;
 		}
@@ -216,7 +216,7 @@ void ArgusEntityKDTree::SeedTreeWithAverageEntityLocation(bool onlyFlying)
 	m_rootNode->Populate(averageLocation);
 }
 
-void ArgusEntityKDTree::InsertAllArgusEntitiesIntoKDTree(bool onlyFlying)
+void ArgusEntityKDTree::InsertAllArgusEntitiesIntoKDTree(bool forFlyingEntities)
 {
 	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{
@@ -232,7 +232,7 @@ void ArgusEntityKDTree::InsertAllArgusEntitiesIntoKDTree(bool onlyFlying)
 			continue;
 		}
 
-		if (onlyFlying && !retrievedEntity.IsFlying())
+		if (forFlyingEntities != retrievedEntity.IsFlying())
 		{
 			continue;
 		}

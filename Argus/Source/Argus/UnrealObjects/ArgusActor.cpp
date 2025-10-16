@@ -99,6 +99,7 @@ void AArgusActor::SetEntity(const ArgusEntity& entity)
 			const float desiredYaw = ArgusMath::GetYawFromDirection(GetActorForwardVector());
 			transformComponent->m_targetYaw = desiredYaw;
 			transformComponent->m_smoothedYaw.Reset(desiredYaw);
+			FixupTransformForFlying();
 		}
 		else
 		{
@@ -330,4 +331,26 @@ void AArgusActor::UpdateUIWidgetComponentLocation()
 	FVector offsetLocation = AArgusCameraActor::GetPanUpVector() * m_uiWidgetOffsetDistance;
 	offsetLocation.Z = zValue;
 	widgetComponent->SetWorldLocation(offsetLocation + GetActorLocation());
+}
+
+void AArgusActor::FixupTransformForFlying()
+{
+	const TaskComponent* taskComponent = m_entity.GetComponent<TaskComponent>();
+	if (!taskComponent)
+	{
+		return;
+	}
+
+	if (taskComponent->m_flightState != EFlightState::Flying && taskComponent->m_flightState != EFlightState::Landing)
+	{
+		return;
+	}
+
+	const SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::GetSingletonEntity().GetComponent<SpatialPartitioningComponent>();
+	TransformComponent* transformComponent = m_entity.GetComponent<TransformComponent>();
+	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
+	ARGUS_RETURN_ON_NULL(transformComponent, ArgusECSLog);
+
+	transformComponent->m_location.Z = spatialPartitioningComponent->m_flyingPlaneHeight;
+	SetActorLocationAndRotation(transformComponent->m_location, FRotator(0.0f, ArgusMath::GetUEYawDegreesFromYaw(transformComponent->GetCurrentYaw()), 0.0f));
 }

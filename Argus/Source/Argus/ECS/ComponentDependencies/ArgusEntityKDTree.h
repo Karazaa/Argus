@@ -72,8 +72,8 @@ class ArgusEntityKDTree : public ArgusKDTree<	ArgusEntityKDTreeNode, ArgusEntity
 public:
 	static void ErrorOnInvalidArgusEntity(const WIDECHAR* functionName);
 
-	void SeedTreeWithAverageEntityLocation(bool onlyFlying);
-	void InsertAllArgusEntitiesIntoKDTree(bool onlyFlying);
+	void SeedTreeWithAverageEntityLocation(bool forFlyingEntities);
+	void InsertAllArgusEntitiesIntoKDTree(bool forFlyingEntities);
 	void RebuildKDTreeForAllArgusEntities();
 	void InsertArgusEntityIntoKDTree(const ArgusEntity& entityToRepresent);
 

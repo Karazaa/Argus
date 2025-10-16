@@ -68,7 +68,6 @@ void UArgusEntityTemplate::PopulateEntity(const ArgusEntity& entity) const
 
 void UArgusEntityTemplate::SetInitialStateFromData(const ArgusEntity& entity) const
 {
-	SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::GetSingletonEntity().GetComponent<SpatialPartitioningComponent>();
 	TaskComponent* taskComponent = entity.GetComponent<TaskComponent>();
 	if (!taskComponent)
 	{
@@ -111,14 +110,6 @@ void UArgusEntityTemplate::SetInitialStateFromData(const ArgusEntity& entity) co
 	if (const ResourceExtractionComponent* resourceExtractionComponent = entity.GetComponent<ResourceExtractionComponent>())
 	{
 		ArgusStaticData::AsyncPreLoadRecord<UResourceSetRecord>(resourceExtractionComponent->m_resourcesToExtractRecordId);
-	}
-
-	if (spatialPartitioningComponent && taskComponent->m_flightState == EFlightState::Flying || taskComponent->m_flightState == EFlightState::Landing)
-	{
-		if (TransformComponent* transformComponent = entity.GetComponent<TransformComponent>())
-		{
-			transformComponent->m_location.Z = spatialPartitioningComponent->m_flyingPlaneHeight;
-		}
 	}
 }
 
