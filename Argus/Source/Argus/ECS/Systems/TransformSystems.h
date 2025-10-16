@@ -26,4 +26,5 @@ private:
 	static FVector ProjectLocationOntoNavigationData(UWorld* worldPointer, TransformComponent* transformComponent, const FVector& location);
 	static float GetEndMoveRange(const TransformSystemsArgs& components);
 	static void UpdatePassengerLocations(const TransformSystemsArgs& components);
+	static void ShowTraceForFlyingEntity(UWorld* worldPointer, const TransformSystemsArgs& components);
 };

@@ -18,4 +18,6 @@ private:
 	static void RecalculateMoveToEntityPaths(UWorld* worldPointer, const NavigationSystemsArgs& components);
 	static void ChangeTasksOnNavigatingToEntity(ArgusEntity targetEntity, const NavigationSystemsArgs& components);
 	static void ChangeFlockingStateOnNavigatingToLocation(const NavigationSystemsArgs& components);
+	static void GeneratePathPointsForGroundedEntity(UWorld* worldPointer, std::optional<FVector> targetLocation, const NavigationSystemsArgs& components);
+	static void GeneratePathPointsForFlyingEntity(UWorld* worldPointer, std::optional<FVector> targetLocation, const NavigationSystemsArgs& components);
 };

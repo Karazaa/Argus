@@ -61,39 +61,47 @@ void FlockingSystems::ChooseFlockingRootEntityIfGroupLeader(const TransformSyste
 	}
 
 	const TFunction<bool(const ArgusEntityKDTreeNode*)> queryFilter = [components](const ArgusEntityKDTreeNode* entityNode)
+	{
+		ARGUS_RETURN_ON_NULL_BOOL(entityNode, ArgusECSLog);
+		if (!components.AreComponentsValidCheck(ARGUS_NAMEOF(TransformSystems::ChooseFlockingRootEntityIfGroupLeader)))
 		{
-			ARGUS_RETURN_ON_NULL_BOOL(entityNode, ArgusECSLog);
-			if (!components.AreComponentsValidCheck(ARGUS_NAMEOF(TransformSystems::ChooseFlockingRootEntityIfGroupLeader)))
-			{
-				return false;
-			}
+			return false;
+		}
 
-			if (entityNode->m_entityId == components.m_entity.GetId())
-			{
-				return true;
-			}
+		if (entityNode->m_entityId == components.m_entity.GetId())
+		{
+			return true;
+		}
 
-			ArgusEntity otherEntity = ArgusEntity::RetrieveEntity(entityNode->m_entityId);
-			if (!otherEntity || otherEntity.IsPassenger())
-			{
-				return false;
-			}
+		ArgusEntity otherEntity = ArgusEntity::RetrieveEntity(entityNode->m_entityId);
+		if (!otherEntity || otherEntity.IsPassenger())
+		{
+			return false;
+		}
 
-			if (!components.m_entity.IsOnSameTeamAsOtherEntity(otherEntity))
-			{
-				return false;
-			}
+		if (!components.m_entity.IsOnSameTeamAsOtherEntity(otherEntity))
+		{
+			return false;
+		}
 
-			TargetingComponent* otherEntityTargetingComponent = otherEntity.GetComponent<TargetingComponent>();
-			if (!otherEntityTargetingComponent)
-			{
-				return false;
-			}
+		TargetingComponent* otherEntityTargetingComponent = otherEntity.GetComponent<TargetingComponent>();
+		if (!otherEntityTargetingComponent)
+		{
+			return false;
+		}
 
-			return components.m_targetingComponent->HasSameTarget(otherEntityTargetingComponent);
-		};
+		return components.m_targetingComponent->HasSameTarget(otherEntityTargetingComponent);
+	};
 
-	flockingComponent->m_flockingRootId = spatialPartitioningComponent->m_argusEntityKDTree.FindArgusEntityIdClosestToLocation(components.m_targetingComponent->m_targetLocation.GetValue(), queryFilter);
+	if (components.m_taskComponent->m_flightState == EFlightState::Grounded)
+	{
+		flockingComponent->m_flockingRootId = spatialPartitioningComponent->m_argusEntityKDTree.FindArgusEntityIdClosestToLocation(components.m_targetingComponent->m_targetLocation.GetValue(), queryFilter);
+	}
+	else
+	{
+		flockingComponent->m_flockingRootId = spatialPartitioningComponent->m_flyingArgusEntityKDTree.FindArgusEntityIdClosestToLocation(components.m_targetingComponent->m_targetLocation.GetValue(), queryFilter);
+	}
+	
 	if (flockingComponent->m_flockingRootId == ArgusECSConstants::k_maxEntities)
 	{
 		return;
