@@ -751,6 +751,12 @@ void UArgusInputManager::ProcessMarqueeSelectInputEvent(AArgusCameraActor* argus
 	TArray<uint16> flyingEntityIdsWithinBounds;
 	spatialPartitioningComponent->m_flyingArgusEntityKDTree.FindArgusEntityIdsWithinConvexPoly(flyingEntityIdsWithinBounds, convexPolygon);
 
+	entityIdsWithinBounds.Reserve(entityIdsWithinBounds.Num() + flyingEntityIdsWithinBounds.Num());
+	for (int32 i = 0; i < flyingEntityIdsWithinBounds.Num(); ++i)
+	{
+		entityIdsWithinBounds.Add(flyingEntityIdsWithinBounds[i]);
+	}
+
 	TArray<AArgusActor*> actorsWithinBounds;
 	if (!m_owningPlayerController->GetArgusActorsFromArgusEntityIds(entityIdsWithinBounds, actorsWithinBounds))
 	{

@@ -88,6 +88,12 @@ void NavigationSystems::NavigateFromEntityToLocation(UWorld* worldPointer, std::
 		GeneratePathPointsForFlyingEntity(worldPointer, targetLocation, components);
 	}
 
+	if (components.m_navigationComponent->m_navigationPoints.Num() < 2)
+	{
+		components.m_velocityComponent->m_currentVelocity = FVector2D::ZeroVector;
+		return;
+	}
+
 	// Need to set initial velocity when starting pathing so that avoidance systems can properly consider desired velocity when starting movement.
 	FVector moverLocation = components.m_transformComponent->m_location;
 	const FVector firstLocation = components.m_navigationComponent->m_navigationPoints[1];
