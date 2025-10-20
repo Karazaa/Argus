@@ -32,6 +32,7 @@ void SpatialPartitioningSystems::RunSystems(const ArgusEntity& spatialPartitioni
 	if (didEntityPositionChangeThisFrame)
 	{
 		spatialPartitioningComponent->m_argusEntityKDTree.RebuildKDTreeForAllArgusEntities();
+		spatialPartitioningComponent->m_flyingArgusEntityKDTree.RebuildKDTreeForAllArgusEntities();
 	}
 
 	ClearSeenByStatus();

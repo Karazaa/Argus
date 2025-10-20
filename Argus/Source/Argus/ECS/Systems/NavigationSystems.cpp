@@ -77,54 +77,21 @@ void NavigationSystems::NavigateFromEntityToLocation(UWorld* worldPointer, std::
 	}
 
 	components.m_taskComponent->m_constructionState = EConstructionState::None;
-
 	components.m_navigationComponent->ResetPath();
 
-	UNavigationSystemV1* unrealNavigationSystem = UNavigationSystemV1::GetCurrent(worldPointer);
-	ARGUS_RETURN_ON_NULL(unrealNavigationSystem, ArgusECSLog);
-
-	FPathFindingQuery pathFindingQuery = FPathFindingQuery
-	(
-		nullptr, 
-		*(unrealNavigationSystem->MainNavData), 
-		components.m_transformComponent->m_location, 
-		targetLocation.value()
-	);
-	pathFindingQuery.SetNavAgentProperties(FNavAgentProperties(components.m_transformComponent->m_radius, components.m_transformComponent->m_height));
-	FPathFindingResult pathFindingResult = unrealNavigationSystem->FindPathSync(pathFindingQuery);
-
-	if (!pathFindingResult.IsSuccessful() || !pathFindingResult.Path)
+	if (components.m_taskComponent->m_flightState == EFlightState::Grounded)
 	{
-		components.m_taskComponent->m_movementState = EMovementState::FailedToFindPath;
-		return;
+		GeneratePathPointsForGroundedEntity(worldPointer, targetLocation, components);
 	}
-	
-	TArray<FNavPathPoint>& pathPoints = pathFindingResult.Path->GetPathPoints();
-	const int numPathPoints = pathPoints.Num();
-
-	if (numPathPoints <= 1u)
+	else
 	{
-		components.m_taskComponent->m_movementState = EMovementState::None;
-		return;
+		GeneratePathPointsForFlyingEntity(worldPointer, targetLocation, components);
 	}
 
-	components.m_navigationComponent->m_navigationPoints.Reserve(numPathPoints);
-	for (int i = 0; i < numPathPoints; ++i)
+	if (components.m_navigationComponent->m_navigationPoints.Num() < 2)
 	{
-		components.m_navigationComponent->m_navigationPoints.Add(pathPoints[i].Location);
-
-#if !UE_BUILD_SHIPPING
-		if (!ArgusECSDebugger::ShouldShowNavigationDebugForEntity(components.m_entity.GetId()))
-		{
-			continue;
-		}
-
-		DrawDebugSphere(worldPointer, components.m_navigationComponent->m_navigationPoints[i], 20.0f, 20, FColor::Magenta, false, 3.0f, 0, 5.0f);
-		if ((i + 1) < numPathPoints)
-		{
-			DrawDebugLine(worldPointer, components.m_navigationComponent->m_navigationPoints[i], pathPoints[i + 1].Location, FColor::Magenta, false, 3.0f, 0, 5.0f);
-		}
-#endif //!UE_BUILD_SHIPPING
+		components.m_velocityComponent->m_currentVelocity = FVector2D::ZeroVector;
+		return;
 	}
 
 	// Need to set initial velocity when starting pathing so that avoidance systems can properly consider desired velocity when starting movement.
@@ -248,4 +215,87 @@ void NavigationSystems::ChangeFlockingStateOnNavigatingToLocation(const Navigati
 
 	flockingComponent->Reset();
 	flockingComponent->m_flockingState = EFlockingState::Shrinking;
+}
+
+void NavigationSystems::GeneratePathPointsForGroundedEntity(UWorld* worldPointer, std::optional<FVector> targetLocation, const NavigationSystemsArgs& components)
+{
+	ARGUS_RETURN_ON_NULL(worldPointer, ArgusECSLog);
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME) || !targetLocation.has_value())
+	{
+		return;
+	}
+
+	UNavigationSystemV1* unrealNavigationSystem = UNavigationSystemV1::GetCurrent(worldPointer);
+	ARGUS_RETURN_ON_NULL(unrealNavigationSystem, ArgusECSLog);
+
+	FPathFindingQuery pathFindingQuery = FPathFindingQuery
+	(
+		nullptr,
+		*(unrealNavigationSystem->MainNavData),
+		components.m_transformComponent->m_location,
+		targetLocation.value()
+	);
+	pathFindingQuery.SetNavAgentProperties(FNavAgentProperties(components.m_transformComponent->m_radius, components.m_transformComponent->m_height));
+	FPathFindingResult pathFindingResult = unrealNavigationSystem->FindPathSync(pathFindingQuery);
+
+	if (!pathFindingResult.IsSuccessful() || !pathFindingResult.Path)
+	{
+		components.m_taskComponent->m_movementState = EMovementState::FailedToFindPath;
+		return;
+	}
+
+	TArray<FNavPathPoint>& pathPoints = pathFindingResult.Path->GetPathPoints();
+	const int numPathPoints = pathPoints.Num();
+
+	if (numPathPoints <= 1u)
+	{
+		components.m_taskComponent->m_movementState = EMovementState::None;
+		return;
+	}
+
+	components.m_navigationComponent->m_navigationPoints.Reserve(numPathPoints);
+	for (int i = 0; i < numPathPoints; ++i)
+	{
+		components.m_navigationComponent->m_navigationPoints.Add(pathPoints[i].Location);
+
+#if !UE_BUILD_SHIPPING
+		if (!ArgusECSDebugger::ShouldShowNavigationDebugForEntity(components.m_entity.GetId()))
+		{
+			continue;
+		}
+
+		DrawDebugSphere(worldPointer, components.m_navigationComponent->m_navigationPoints[i], 20.0f, 20, FColor::Magenta, false, 3.0f, 0, 5.0f);
+		if ((i + 1) < numPathPoints)
+		{
+			DrawDebugLine(worldPointer, components.m_navigationComponent->m_navigationPoints[i], pathPoints[i + 1].Location, FColor::Magenta, false, 3.0f, 0, 5.0f);
+		}
+#endif //!UE_BUILD_SHIPPING
+	}
+}
+
+void NavigationSystems::GeneratePathPointsForFlyingEntity(UWorld* worldPointer, std::optional<FVector> targetLocation, const NavigationSystemsArgs& components)
+{
+	ARGUS_RETURN_ON_NULL(worldPointer, ArgusECSLog);
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME) || !targetLocation.has_value())
+	{
+		return;
+	}
+
+	components.m_navigationComponent->m_navigationPoints.Reserve(2);
+	components.m_navigationComponent->m_navigationPoints.Add(components.m_transformComponent->m_location);
+
+	FVector raisedTarget = targetLocation.value();
+	raisedTarget.Z = components.m_transformComponent->m_location.Z;
+	components.m_navigationComponent->m_navigationPoints.Add(raisedTarget);
+
+#if !UE_BUILD_SHIPPING
+	if (!ArgusECSDebugger::ShouldShowNavigationDebugForEntity(components.m_entity.GetId()))
+	{
+		return;
+	}
+
+	DrawDebugSphere(worldPointer, components.m_navigationComponent->m_navigationPoints[0], 20.0f, 20, FColor::Magenta, false, 3.0f, 0, 5.0f);
+	DrawDebugLine(worldPointer, components.m_navigationComponent->m_navigationPoints[0], components.m_navigationComponent->m_navigationPoints[1], FColor::Magenta, false, 3.0f, 0, 5.0f);
+	DrawDebugSphere(worldPointer, components.m_navigationComponent->m_navigationPoints[1], 20.0f, 20, FColor::Magenta, false, 3.0f, 0, 5.0f);
+#endif //!UE_BUILD_SHIPPING
 }

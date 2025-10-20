@@ -394,6 +394,27 @@ bool ArgusEntity::IsOnSameTeamAsOtherEntity(const ArgusEntity& otherEntity) cons
 	return IsOnTeam(otherIdentityComponent->m_team);
 }
 
+bool ArgusEntity::IsFlying() const
+{
+	const TaskComponent* taskComponent = GetComponent<TaskComponent>();
+	if (!taskComponent)
+	{
+		return false;
+	}
+
+	return taskComponent->m_flightState == EFlightState::Flying;
+}
+
+bool ArgusEntity::CanFly() const
+{
+	const TransformComponent* transformComponent = GetComponent<TransformComponent>();
+	if (!transformComponent)
+	{
+		return false;
+	}
+
+	return transformComponent->m_flightCapability != EFlightCapability::OnlyGrounded;
+}
 
 FVector ArgusEntity::GetCurrentTargetLocation() const
 {

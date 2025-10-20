@@ -34,7 +34,6 @@ struct TaskComponent
 	ARGUS_IGNORE()
 	EResourceExtractionState m_resourceExtractionState = EResourceExtractionState::None;
 
-	ARGUS_IGNORE()
 	EFlightState m_flightState = EFlightState::Grounded;
 
 	bool IsExecutingMoveTask() const

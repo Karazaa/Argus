@@ -56,7 +56,7 @@ bool ArgusEntityKDTreeNode::ShouldSkipNode(TFunction<bool(const ArgusEntityKDTre
 
 bool ArgusEntityKDTreeNode::PassesRangeCheck(const FVector& targetLocation, float rangeSquared, float& nodeRangeSquared) const
 {
-	nodeRangeSquared = FVector::DistSquared(GetLocation(), targetLocation) - (m_radius * m_radius);
+	nodeRangeSquared = FVector::DistSquared2D(GetLocation(), targetLocation) - (m_radius * m_radius);
 	return nodeRangeSquared < rangeSquared;
 }
 
@@ -172,7 +172,7 @@ void ArgusEntityKDTree::ErrorOnInvalidArgusEntity(const WIDECHAR* functionName)
 	);
 }
 
-void ArgusEntityKDTree::SeedTreeWithAverageEntityLocation()
+void ArgusEntityKDTree::SeedTreeWithAverageEntityLocation(bool forFlyingEntities)
 {
 	FlushAllNodes();
 
@@ -192,8 +192,18 @@ void ArgusEntityKDTree::SeedTreeWithAverageEntityLocation()
 			continue;
 		}
 
+		if (forFlyingEntities != retrievedEntity.IsFlying())
+		{
+			continue;
+		}
+
 		averageLocation += transformComponent->m_location;
 		numIncludedEntities += 1.0f;
+	}
+
+	if (numIncludedEntities == 0.0f)
+	{
+		return;
 	}
 
 	averageLocation = ArgusMath::SafeDivide(averageLocation, numIncludedEntities);
@@ -206,7 +216,7 @@ void ArgusEntityKDTree::SeedTreeWithAverageEntityLocation()
 	m_rootNode->Populate(averageLocation);
 }
 
-void ArgusEntityKDTree::InsertAllArgusEntitiesIntoKDTree()
+void ArgusEntityKDTree::InsertAllArgusEntitiesIntoKDTree(bool forFlyingEntities)
 {
 	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{
@@ -218,6 +228,11 @@ void ArgusEntityKDTree::InsertAllArgusEntitiesIntoKDTree()
 
 		const TransformComponent* transformComponent = retrievedEntity.GetComponent<TransformComponent>();
 		if (!transformComponent)
+		{
+			continue;
+		}
+
+		if (forFlyingEntities != retrievedEntity.IsFlying())
 		{
 			continue;
 		}

@@ -171,11 +171,17 @@ void FogOfWarSystems::SetRevealedStatePerEntity(FogOfWarComponent* fogOfWarCompo
 		if (newCenterPixel && entity.IsAlive() && components.m_fogOfWarLocationComponent->m_fogOfWarPixel != MAX_uint32)
 		{
 			RevealPixelAlphaForEntity(fogOfWarComponent, components, offsets, false);
+			components.m_fogOfWarLocationComponent->m_updatedPixelThisFrame = true;
 		}
 		else if (components.m_fogOfWarLocationComponent->m_clearedThisFrame)
 		{
 			RevealPixelAlphaForEntity(fogOfWarComponent, components, offsets, false);
 			components.m_fogOfWarLocationComponent->m_fogOfWarPixel = MAX_uint32;
+			components.m_fogOfWarLocationComponent->m_updatedPixelThisFrame = false;
+		}
+		else
+		{
+			components.m_fogOfWarLocationComponent->m_updatedPixelThisFrame = false;
 		}
 
 		if (entity.IsAlive())
@@ -194,10 +200,13 @@ void FogOfWarSystems::SetRevealedStatePerEntity(FogOfWarComponent* fogOfWarCompo
 			continue;
 		}
 
-		UpdateDoesEntityNeedToUpdateActivelyRevealed(components, inputInterfaceComponent);
-		if (!components.m_fogOfWarLocationComponent->m_needsActivelyRevealedThisFrame)
+		if (!components.m_fogOfWarLocationComponent->m_updatedPixelThisFrame)
 		{
-			continue;
+			UpdateDoesEntityNeedToUpdateActivelyRevealed(components, inputInterfaceComponent);
+			if (!components.m_fogOfWarLocationComponent->m_needsActivelyRevealedThisFrame)
+			{
+				continue;
+			}
 		}
 
 		FogOfWarOffsets offsets;
@@ -670,15 +679,6 @@ void FogOfWarSystems::UpdateDoesEntityNeedToUpdateActivelyRevealed(const FogOfWa
 		return;
 	}
 
-	if (const VelocityComponent* velocityComponent = components.m_entity.GetComponent<VelocityComponent>())
-	{
-		if (!velocityComponent->m_currentVelocity.IsNearlyZero() || !velocityComponent->m_proposedAvoidanceVelocity.IsNearlyZero())
-		{
-			components.m_fogOfWarLocationComponent->m_needsActivelyRevealedThisFrame = true;
-			return;
-		}
-	}
-
 	const SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::GetSingletonEntity().GetComponent<SpatialPartitioningComponent>();
 	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
 
@@ -722,24 +722,42 @@ void FogOfWarSystems::UpdateDoesEntityNeedToUpdateActivelyRevealed(const FogOfWa
 		return false;
 	};
 
-	uint16 nearestMovingTeammateId = spatialPartitioningComponent->m_argusEntityKDTree.FindOtherArgusEntityIdClosestToArgusEntity(components.m_entity, queryFilter);
-	if (nearestMovingTeammateId == ArgusECSConstants::k_maxEntities)
+	uint16 nearestMovingGroundedTeammateId = spatialPartitioningComponent->m_argusEntityKDTree.FindOtherArgusEntityIdClosestToArgusEntity(components.m_entity, queryFilter);
+	uint16 nearestMovingFlyingTeammateId = spatialPartitioningComponent->m_flyingArgusEntityKDTree.FindOtherArgusEntityIdClosestToArgusEntity(components.m_entity, queryFilter);
+	if (nearestMovingGroundedTeammateId == ArgusECSConstants::k_maxEntities && nearestMovingFlyingTeammateId == ArgusECSConstants::k_maxEntities)
 	{
 		components.m_fogOfWarLocationComponent->m_needsActivelyRevealedThisFrame = false;
 		return;
 	}
 
-	FogOfWarSystemsArgs otherComponents;
-	if (!otherComponents.PopulateArguments(ArgusEntity::RetrieveEntity(nearestMovingTeammateId)))
+	FogOfWarSystemsArgs groundedEntityComponents;
+	FogOfWarSystemsArgs flyingEntityComponents;
+
+	const bool validGroundedEntity = groundedEntityComponents.PopulateArguments(ArgusEntity::RetrieveEntity(nearestMovingGroundedTeammateId));
+	const bool validFlyingEntity = flyingEntityComponents.PopulateArguments(ArgusEntity::RetrieveEntity(nearestMovingFlyingTeammateId));
+	if (!validGroundedEntity && !validFlyingEntity)
 	{
 		components.m_fogOfWarLocationComponent->m_needsActivelyRevealedThisFrame = false;
 		return;
 	}
 
-	const float distSquared = FVector::DistSquared(components.m_transformComponent->m_location, otherComponents.m_transformComponent->m_location);
-	const float radiusSquared = FMath::Square(components.m_targetingComponent->m_sightRange + otherComponents.m_targetingComponent->m_sightRange);
+	bool withinGroundedRange = false;
+	bool withinFlyingRange = false;
+	if (validGroundedEntity)
+	{
+		const float groundedDistSquared = FVector::DistSquared2D(components.m_transformComponent->m_location, groundedEntityComponents.m_transformComponent->m_location);
+		const float groundedRadiusSquared = FMath::Square(components.m_targetingComponent->m_sightRange + groundedEntityComponents.m_targetingComponent->m_sightRange);
+		withinGroundedRange = groundedDistSquared < groundedRadiusSquared;
+	}
 
-	components.m_fogOfWarLocationComponent->m_needsActivelyRevealedThisFrame = distSquared < radiusSquared;
+	if (validFlyingEntity)
+	{
+		const float flyingDistSquared = FVector::DistSquared2D(components.m_transformComponent->m_location, flyingEntityComponents.m_transformComponent->m_location);
+		const float flyingRadiusSquared = FMath::Square(components.m_targetingComponent->m_sightRange + flyingEntityComponents.m_targetingComponent->m_sightRange);
+		withinFlyingRange = flyingDistSquared < flyingRadiusSquared;
+	}
+
+	components.m_fogOfWarLocationComponent->m_needsActivelyRevealedThisFrame = (withinGroundedRange || withinFlyingRange);
 }
 
 bool FogOfWarSystems::IsPixelInFogOfWarBounds(int32 relativeX, int32 relativeY, FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components)

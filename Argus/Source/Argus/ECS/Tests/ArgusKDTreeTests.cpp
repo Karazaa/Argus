@@ -210,7 +210,7 @@ bool ArgusUtilitiesArgusKDTreeRebuildKDTreeForAllArgusEntitiesTest::RunTest(cons
 	CollectionOfArgusEntities entities;
 	PopulateKDTreeForTests(spatialPartitioningComponent->m_argusEntityKDTree, entities, false);
 
-	spatialPartitioningComponent->m_argusEntityKDTree.InsertAllArgusEntitiesIntoKDTree();
+	spatialPartitioningComponent->m_argusEntityKDTree.InsertAllArgusEntitiesIntoKDTree(false);
 
 #pragma region Test that entities are present in the KD tree after full rebuild of tree.
 	TestTrue

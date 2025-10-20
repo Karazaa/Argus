@@ -77,6 +77,7 @@ protected:
 
 	void InitializeWidgets();
 	void UpdateUIWidgetComponentLocation();
+	void FixupTransformForFlying();
 
 private:
 	ArgusEntity m_entity = ArgusEntity::k_emptyEntity;

@@ -42,6 +42,11 @@ bool TransformSystems::RunSystems(UWorld* worldPointer, float deltaTime)
 		{
 			UpdatePassengerLocations(components);
 		}
+
+		if (components.m_entity.IsSelected() && components.m_taskComponent->m_flightState != EFlightState::Grounded)
+		{
+			ShowTraceForFlyingEntity(worldPointer, components);
+		}
 	}
 
 	return didMovementUpdateThisFrame;
@@ -118,7 +123,10 @@ void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float delta
 		FaceTowardsLocationXY(components.m_transformComponent, FVector(components.m_velocityComponent->m_currentVelocity, 0.0f));
 	}
 
-	moverLocation = ProjectLocationOntoNavigationData(worldPointer, components.m_transformComponent, moverLocation);
+	if (components.m_taskComponent->m_flightState == EFlightState::Grounded)
+	{
+		moverLocation = ProjectLocationOntoNavigationData(worldPointer, components.m_transformComponent, moverLocation);
+	}
 	components.m_transformComponent->m_location = moverLocation;
 	components.m_transformComponent->m_smoothedYaw.SmoothChase(components.m_transformComponent->m_targetYaw, deltaTime);
 	
@@ -356,4 +364,17 @@ void TransformSystems::UpdatePassengerLocations(const TransformSystemsArgs& comp
 		passengerTransformComponent->m_targetYaw = components.m_transformComponent->m_targetYaw;
 		passengerTransformComponent->m_smoothedYaw.Reset(components.m_transformComponent->m_smoothedYaw.GetValue());
 	}
+}
+
+void TransformSystems::ShowTraceForFlyingEntity(UWorld* worldPointer, const TransformSystemsArgs& components)
+{
+	ARGUS_RETURN_ON_NULL(worldPointer, ArgusECSLog);
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+
+	FVector locationWithoutHeight = components.m_transformComponent->m_location;
+	locationWithoutHeight.Z = 0.0f;
+	DrawDebugLine(worldPointer, components.m_transformComponent->m_location, locationWithoutHeight, FColor::Green);
 }
