@@ -82,8 +82,9 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 	params.m_inverseObstaclePredictionTime = 1.0f / ArgusECSConstants::k_avoidanceObstacleDetectionPredictionTime;
 	params.m_spatialPartitioningComponent = spatialPartitioningComponent;
 
-	// If no entities nearby, then nothing can effect our navigation, so we should just early out with a desired velocity. 
-	if (nearbyEntitiesComponent->m_nearbyEntities.GetEntityIdsInAvoidanceRange().IsEmpty())
+	// If no entities nearby, then nothing can effect our navigation, so we should just early out with a desired velocity.
+	// TODO JAMES: Temporarily disabling avoidance for flyers until nearby entities are sorted.
+	if (nearbyEntitiesComponent->m_nearbyEntities.GetEntityIdsInAvoidanceRange().IsEmpty() || components.m_taskComponent->m_flightState != EFlightState::Grounded)
 	{
 		components.m_velocityComponent->m_proposedAvoidanceVelocity = ArgusMath::ToUnrealVector2(desiredVelocity);
 #if !UE_BUILD_SHIPPING

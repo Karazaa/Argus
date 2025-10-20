@@ -17,4 +17,7 @@ struct FogOfWarLocationComponent
 
 	ARGUS_IGNORE()
 	bool m_needsActivelyRevealedThisFrame = false;
+
+	ARGUS_IGNORE()
+	bool m_updatedPixelThisFrame = false;
 };

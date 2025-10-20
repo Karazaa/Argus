@@ -171,11 +171,17 @@ void FogOfWarSystems::SetRevealedStatePerEntity(FogOfWarComponent* fogOfWarCompo
 		if (newCenterPixel && entity.IsAlive() && components.m_fogOfWarLocationComponent->m_fogOfWarPixel != MAX_uint32)
 		{
 			RevealPixelAlphaForEntity(fogOfWarComponent, components, offsets, false);
+			components.m_fogOfWarLocationComponent->m_updatedPixelThisFrame = true;
 		}
 		else if (components.m_fogOfWarLocationComponent->m_clearedThisFrame)
 		{
 			RevealPixelAlphaForEntity(fogOfWarComponent, components, offsets, false);
 			components.m_fogOfWarLocationComponent->m_fogOfWarPixel = MAX_uint32;
+			components.m_fogOfWarLocationComponent->m_updatedPixelThisFrame = false;
+		}
+		else
+		{
+			components.m_fogOfWarLocationComponent->m_updatedPixelThisFrame = false;
 		}
 
 		if (entity.IsAlive())
@@ -194,10 +200,13 @@ void FogOfWarSystems::SetRevealedStatePerEntity(FogOfWarComponent* fogOfWarCompo
 			continue;
 		}
 
-		UpdateDoesEntityNeedToUpdateActivelyRevealed(components, inputInterfaceComponent);
-		if (!components.m_fogOfWarLocationComponent->m_needsActivelyRevealedThisFrame)
+		if (!components.m_fogOfWarLocationComponent->m_updatedPixelThisFrame)
 		{
-			continue;
+			UpdateDoesEntityNeedToUpdateActivelyRevealed(components, inputInterfaceComponent);
+			if (!components.m_fogOfWarLocationComponent->m_needsActivelyRevealedThisFrame)
+			{
+				continue;
+			}
 		}
 
 		FogOfWarOffsets offsets;
@@ -668,15 +677,6 @@ void FogOfWarSystems::UpdateDoesEntityNeedToUpdateActivelyRevealed(const FogOfWa
 	{
 		components.m_fogOfWarLocationComponent->m_needsActivelyRevealedThisFrame = false;
 		return;
-	}
-
-	if (const VelocityComponent* velocityComponent = components.m_entity.GetComponent<VelocityComponent>())
-	{
-		if (!velocityComponent->m_currentVelocity.IsNearlyZero() || !velocityComponent->m_proposedAvoidanceVelocity.IsNearlyZero())
-		{
-			components.m_fogOfWarLocationComponent->m_needsActivelyRevealedThisFrame = true;
-			return;
-		}
 	}
 
 	const SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::GetSingletonEntity().GetComponent<SpatialPartitioningComponent>();

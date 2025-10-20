@@ -5,6 +5,7 @@
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
 #include "Systems/AvoidanceSystems.h"
+#include "Systems/TargetingSystems.h"
 
 void FlockingSystems::RunSystems(float deltaTime)
 {
@@ -48,7 +49,8 @@ void FlockingSystems::ChooseFlockingRootEntityIfGroupLeader(const TransformSyste
 		return;
 	}
 
-	if (!components.m_targetingComponent->HasLocationTarget())
+	TOptional<FVector> targetLocation = TargetingSystems::GetCurrentTargetLocationForEntity(components.m_entity);
+	if (!targetLocation.IsSet())
 	{
 		flockingComponent->m_flockingRootId = ArgusECSConstants::k_maxEntities;
 		return;
@@ -95,11 +97,11 @@ void FlockingSystems::ChooseFlockingRootEntityIfGroupLeader(const TransformSyste
 
 	if (components.m_taskComponent->m_flightState == EFlightState::Grounded)
 	{
-		flockingComponent->m_flockingRootId = spatialPartitioningComponent->m_argusEntityKDTree.FindArgusEntityIdClosestToLocation(components.m_targetingComponent->m_targetLocation.GetValue(), queryFilter);
+		flockingComponent->m_flockingRootId = spatialPartitioningComponent->m_argusEntityKDTree.FindArgusEntityIdClosestToLocation(targetLocation.GetValue(), queryFilter);
 	}
 	else
 	{
-		flockingComponent->m_flockingRootId = spatialPartitioningComponent->m_flyingArgusEntityKDTree.FindArgusEntityIdClosestToLocation(components.m_targetingComponent->m_targetLocation.GetValue(), queryFilter);
+		flockingComponent->m_flockingRootId = spatialPartitioningComponent->m_flyingArgusEntityKDTree.FindArgusEntityIdClosestToLocation(targetLocation.GetValue(), queryFilter);
 	}
 	
 	if (flockingComponent->m_flockingRootId == ArgusECSConstants::k_maxEntities)
