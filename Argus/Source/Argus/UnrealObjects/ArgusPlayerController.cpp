@@ -198,6 +198,26 @@ void AArgusPlayerController::InitializeUIWidgets()
 	}
 }
 
+void AArgusPlayerController::UpdateCursorPriority(EArgusCursorType newCursor)
+{
+	if (newCursor > m_argusCursor)
+	{
+		SetArgusCursor(newCursor);
+	}
+}
+
+void AArgusPlayerController::SetArgusCursor_Implementation(EArgusCursorType newCursorType)
+{
+	m_argusCursor = newCursorType;
+	uint8 cursorIndex = static_cast<uint8>(newCursorType) + 1;
+	CurrentMouseCursor = static_cast<EMouseCursor::Type>(cursorIndex);
+}
+
+EArgusCursorType AArgusPlayerController::GetArgusCursor() const
+{
+	return m_argusCursor;
+}
+
 void AArgusPlayerController::BeginPlay()
 {
 	m_argusCameraActor = Cast<AArgusCameraActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AArgusCameraActor::StaticClass()));
@@ -252,3 +272,5 @@ void AArgusPlayerController::UpdateUIWidgetDisplay(const FVector2D& mouseScreenS
 		m_teamResourcesUserWidget->UpdateDisplay(uiParams);
 	}
 }
+
+

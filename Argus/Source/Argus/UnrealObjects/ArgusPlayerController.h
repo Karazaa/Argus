@@ -18,6 +18,24 @@ class UArgusInputActionSet;
 class UArgusInputManager;
 class UArgusUIElement;
 
+UENUM()
+enum class EArgusCursorType : uint8
+{
+	Default,
+	Select,
+	Move,
+	Attack,
+	Ability0,
+	Ability1,
+	Ability2,
+	Ability3,
+	ViewPortTop,
+	ViewPortBottom,
+	ViewPortLeft,
+	ViewPortRight,
+	Invalid
+};
+
 UCLASS()
 class AArgusPlayerController : public APlayerController
 {
@@ -52,10 +70,29 @@ public:
 	*/
 	UFUNCTION(BlueprintImplementableEvent, Category = "Argus|PlayerController")
 	void ArgusActorMoveToLocation(AArgusActor* argusActor, EMovementState inputMovementState, AArgusActor* targetActor, FVector targetLocation);
+
+	/**
+	* Updates the cursor to the highest priority type between the current cursor and the new cursor.
+	* Rather than just setting it directly the logic to determine which cursor should be shown is handled here.
+	* The idea is that instead of various systems fighting over what the cursor should be, they just report what they want and if its a higher priority than the current one it gets set.
+	*/
+	void UpdateCursorPriority(EArgusCursorType newCursor);
+
+	/**
+	* Sets the cursor to display. Default implemntation sets the hardware cursor. Override in Blueprint if you're implementing a different type of cursor.
+	*/
+	UFUNCTION(BlueprintNativeEvent, Category = "Argus|PlayerController")
+	void SetArgusCursor(EArgusCursorType newCursorType);
+
+	UFUNCTION(BlueprintCallable, Category = "Argus|PlayerController")
+	EArgusCursorType GetArgusCursor() const;
 	
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	ETeam m_playerTeam = ETeam::TeamA;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Argus|PlayerController|Input")
+	EArgusCursorType m_argusCursor = EArgusCursorType::Default;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Input")
 	TSoftObjectPtr<UInputMappingContext> m_argusInputMappingContext = nullptr;

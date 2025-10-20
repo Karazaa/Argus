@@ -16,6 +16,7 @@ class   UEnhancedPlayerInput;
 struct	FInputActionValue;
 struct	ReticleComponent;
 
+
 UCLASS()
 class UArgusInputManager : public UObject
 {
