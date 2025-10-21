@@ -14,6 +14,7 @@
 #include "EnhancedPlayerInput.h"
 #include "Systems/AvoidanceSystems.h"
 #include "Systems/TransformSystems.h"
+#include "Engine/HitResult.h"
 
 #define ECC_RETICLE	ECC_GameTraceChannel1
 
@@ -290,18 +291,15 @@ void UArgusInputManager::ProcessPlayerInput(AArgusCameraActor* argusCamera, cons
 			if(AArgusActor* hitArgusActor = Cast<AArgusActor>(hitResult.GetActor()))
 			{
 				m_owningPlayerController->UpdateCursorPriority(hitArgusActor->GetEntity().IsOnTeam(m_owningPlayerController->GetPlayerTeam()) ? EArgusCursorType::Move : EArgusCursorType::Attack);
-				
 			}
 			else
 			{
-				m_owningPlayerController->SetArgusCursor(EArgusCursorType::Move);
+				m_owningPlayerController->UpdateCursorPriority(EArgusCursorType::Move);
 			}
 		}
 	}
-	else
-	{
-		
-	}
+	m_frameInputHitResult = MakeShared<FHitResult>(hitResult);
+
 #if WITH_AUTOMATION_TESTS
 	if (ArgusTesting::IsInTestingContext())
 	{
@@ -644,9 +642,9 @@ void UArgusInputManager::ProcessSelectInputEvent(bool isAdditive)
 	{
 		return;
 	}
-
-	FHitResult hitResult;
-	if (!m_owningPlayerController->GetMouseProjectionLocation(ECC_WorldStatic, hitResult))
+	
+	const FHitResult hitResult = *m_frameInputHitResult;
+	if (!hitResult.IsValidBlockingHit())
 	{
 		return;
 	}
@@ -727,8 +725,8 @@ void UArgusInputManager::ProcessMarqueeSelectInputEvent(AArgusCameraActor* argus
 		return;
 	}
 
-	FHitResult hitResult;
-	if (!m_owningPlayerController->GetMouseProjectionLocation(ECC_WorldStatic, hitResult))
+	const FHitResult hitResult = *m_frameInputHitResult;
+	if (!hitResult.IsValidBlockingHit())
 	{
 		return;
 	}
@@ -856,9 +854,9 @@ void UArgusInputManager::ProcessMoveToInputEvent()
 	{
 		return;
 	}
-
-	FHitResult hitResult;
-	if (!m_owningPlayerController->GetMouseProjectionLocation(ECC_WorldStatic, hitResult))
+	
+	const FHitResult hitResult = *m_frameInputHitResult;
+	if (!hitResult.IsValidBlockingHit())
 	{
 		return;
 	}
@@ -972,8 +970,8 @@ void UArgusInputManager::ProcessSetWaypointInputEvent()
 		return;
 	}
 
-	FHitResult hitResult;
-	if (!m_owningPlayerController->GetMouseProjectionLocation(ECC_WorldStatic, hitResult))
+	FHitResult hitResult = *m_frameInputHitResult;
+	if (!hitResult.IsValidBlockingHit())
 	{
 		return;
 	}
@@ -1545,7 +1543,7 @@ void UArgusInputManager::SetReticleState()
 		}
 	}
 
-	FHitResult hitResult;
+	FHitResult hitResult; // uses ECC_RETICLE instead of ECC_WorldStatic
 	if (!m_owningPlayerController->GetMouseProjectionLocation(ECC_RETICLE, hitResult))
 	{
 		return;

@@ -7,6 +7,7 @@
 #include "CoreMinimal.h"
 #include "InputActionValue.h"
 #include "UObject/SoftObjectPtr.h"
+#include "Engine/HitResult.h"
 #include "ArgusInputManager.generated.h"
 
 class	AArgusPlayerController;
@@ -115,6 +116,7 @@ private:
 	TSet<TWeakObjectPtr<AArgusActor>> m_selectedArgusActors;
 	TSet<TWeakObjectPtr<AArgusActor>> m_controlGroupActors[6];
 	TArray<InputCache> m_inputEventsThisFrame;
+	TSharedPtr<FHitResult> m_frameInputHitResult; // the ECC_WorldStatic hit result set for each frame
 
 	void BindActions(TSoftObjectPtr<UArgusInputActionSet>& argusInputActionSet, UEnhancedInputComponent* enhancedInputComponent, UEnhancedPlayerInput* enhancedInput);
 	bool ValidateOwningPlayerController();
