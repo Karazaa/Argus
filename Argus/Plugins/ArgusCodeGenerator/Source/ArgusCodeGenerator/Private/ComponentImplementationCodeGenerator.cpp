@@ -305,6 +305,9 @@ void ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 		}
 		else
 		{
+			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
+			outParsedVariableContents.push_back("\t\tImGui::Text(\"===============\");");
+			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
 			std::string avoidanceRangeName = std::vformat("{}.GetEntityIdsInAvoidanceRange()", std::make_format_args(parsedVariableData[i].m_varName));
 			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
 			outParsedVariableContents.push_back(std::vformat("\t\tImGui::Text(\"{}\");", std::make_format_args(avoidanceRangeName)));
@@ -334,8 +337,11 @@ void ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 			outParsedVariableContents.push_back(std::vformat("\t\tImGui::Text(\"{}\");", std::make_format_args(meleeRangeName)));
 			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
 			FormatImGuiArrayField(meleeRangeName, "", false, outParsedVariableContents, FormatImGuiIntField);
+			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
+			outParsedVariableContents.push_back("\t\tImGui::Text(\"===============\");");
+			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
 
-			return;
+			continue;
 		}
 
 		std::string extraData = "";
@@ -424,7 +430,6 @@ void ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 			atomicFieldFormattingFunction(variableName, extraData, "", outParsedVariableContents);
 		}
 	}
-	return;
 }
 
 void ComponentImplementationGenerator::FormatImGuiArrayField(const std::string& variableName, const std::string& extraData, bool isSmoothed, std::vector<std::string>& outParsedVariableContents, TFunction<void(const std::string&, const std::string&, const std::string&, std::vector<std::string>&)> elementFormattingFunction)

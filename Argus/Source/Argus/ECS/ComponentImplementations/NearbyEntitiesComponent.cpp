@@ -34,6 +34,9 @@ void NearbyEntitiesComponent::DrawComponentDebug() const
 	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings))
 	{
 		ImGui::TableNextColumn();
+		ImGui::Text("===============");
+		ImGui::TableNextColumn();
+		ImGui::TableNextColumn();
 		ImGui::Text("m_nearbyEntities.GetEntityIdsInAvoidanceRange()");
 		ImGui::TableNextColumn();
 		ImGui::Text("Array max is currently = %d", m_nearbyEntities.GetEntityIdsInAvoidanceRange().Max());
@@ -113,6 +116,95 @@ void NearbyEntitiesComponent::DrawComponentDebug() const
 				ImGui::Text("%d", m_nearbyEntities.GetEntityIdsInMeleeRange()[i]);
 			}
 		}
+		ImGui::TableNextColumn();
+		ImGui::Text("===============");
+		ImGui::TableNextColumn();
+		ImGui::TableNextColumn();
+		ImGui::Text("===============");
+		ImGui::TableNextColumn();
+		ImGui::TableNextColumn();
+		ImGui::Text("m_nearbyFlyingEntities.GetEntityIdsInAvoidanceRange()");
+		ImGui::TableNextColumn();
+		ImGui::Text("Array max is currently = %d", m_nearbyFlyingEntities.GetEntityIdsInAvoidanceRange().Max());
+		if (m_nearbyFlyingEntities.GetEntityIdsInAvoidanceRange().Num() == 0)
+		{
+			ImGui::Text("Array is empty");
+		}
+		else
+		{
+			ImGui::Text("Size of array = %d", m_nearbyFlyingEntities.GetEntityIdsInAvoidanceRange().Num());
+			for (int32 i = 0; i < m_nearbyFlyingEntities.GetEntityIdsInAvoidanceRange().Num(); ++i)
+			{
+				ImGui::Text("%d", m_nearbyFlyingEntities.GetEntityIdsInAvoidanceRange()[i]);
+			}
+		}
+		ImGui::TableNextColumn();
+		ImGui::Text("m_nearbyFlyingEntities.GetEntityIdsInFlockingRange()");
+		ImGui::TableNextColumn();
+		ImGui::Text("Array max is currently = %d", m_nearbyFlyingEntities.GetEntityIdsInFlockingRange().Max());
+		if (m_nearbyFlyingEntities.GetEntityIdsInFlockingRange().Num() == 0)
+		{
+			ImGui::Text("Array is empty");
+		}
+		else
+		{
+			ImGui::Text("Size of array = %d", m_nearbyFlyingEntities.GetEntityIdsInFlockingRange().Num());
+			for (int32 i = 0; i < m_nearbyFlyingEntities.GetEntityIdsInFlockingRange().Num(); ++i)
+			{
+				ImGui::Text("%d", m_nearbyFlyingEntities.GetEntityIdsInFlockingRange()[i]);
+			}
+		}
+		ImGui::TableNextColumn();
+		ImGui::Text("m_nearbyFlyingEntities.GetEntityIdsInSightRange()");
+		ImGui::TableNextColumn();
+		ImGui::Text("Array max is currently = %d", m_nearbyFlyingEntities.GetEntityIdsInSightRange().Max());
+		if (m_nearbyFlyingEntities.GetEntityIdsInSightRange().Num() == 0)
+		{
+			ImGui::Text("Array is empty");
+		}
+		else
+		{
+			ImGui::Text("Size of array = %d", m_nearbyFlyingEntities.GetEntityIdsInSightRange().Num());
+			for (int32 i = 0; i < m_nearbyFlyingEntities.GetEntityIdsInSightRange().Num(); ++i)
+			{
+				ImGui::Text("%d", m_nearbyFlyingEntities.GetEntityIdsInSightRange()[i]);
+			}
+		}
+		ImGui::TableNextColumn();
+		ImGui::Text("m_nearbyFlyingEntities.GetEntityIdsInRangedRange()");
+		ImGui::TableNextColumn();
+		ImGui::Text("Array max is currently = %d", m_nearbyFlyingEntities.GetEntityIdsInRangedRange().Max());
+		if (m_nearbyFlyingEntities.GetEntityIdsInRangedRange().Num() == 0)
+		{
+			ImGui::Text("Array is empty");
+		}
+		else
+		{
+			ImGui::Text("Size of array = %d", m_nearbyFlyingEntities.GetEntityIdsInRangedRange().Num());
+			for (int32 i = 0; i < m_nearbyFlyingEntities.GetEntityIdsInRangedRange().Num(); ++i)
+			{
+				ImGui::Text("%d", m_nearbyFlyingEntities.GetEntityIdsInRangedRange()[i]);
+			}
+		}
+		ImGui::TableNextColumn();
+		ImGui::Text("m_nearbyFlyingEntities.GetEntityIdsInMeleeRange()");
+		ImGui::TableNextColumn();
+		ImGui::Text("Array max is currently = %d", m_nearbyFlyingEntities.GetEntityIdsInMeleeRange().Max());
+		if (m_nearbyFlyingEntities.GetEntityIdsInMeleeRange().Num() == 0)
+		{
+			ImGui::Text("Array is empty");
+		}
+		else
+		{
+			ImGui::Text("Size of array = %d", m_nearbyFlyingEntities.GetEntityIdsInMeleeRange().Num());
+			for (int32 i = 0; i < m_nearbyFlyingEntities.GetEntityIdsInMeleeRange().Num(); ++i)
+			{
+				ImGui::Text("%d", m_nearbyFlyingEntities.GetEntityIdsInMeleeRange()[i]);
+			}
+		}
+		ImGui::TableNextColumn();
+		ImGui::Text("===============");
+		ImGui::TableNextColumn();
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING
