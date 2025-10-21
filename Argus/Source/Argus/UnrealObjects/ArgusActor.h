@@ -42,7 +42,7 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure = true)
 	TArray<FVector> GetCurrentWaypoints() const;
 	/**
-	* Used to show the current waypoints for this actor. Use in conjuction with GetCurrentWaypoints() to get the locations
+	* Used to show the current location the entity is moving towards.
 	*/
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void SetCurrentTargetVisible(bool bVisible);
@@ -54,6 +54,9 @@ public:
 	*/
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void SetCurrentWaypointsVisible(bool bVisible);
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void OnCursorHover(bool bHover);
 
 protected:
 	UFUNCTION(BlueprintImplementableEvent)

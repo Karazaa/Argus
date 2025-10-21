@@ -283,6 +283,13 @@ void UArgusInputManager::ProcessPlayerInput(AArgusCameraActor* argusCamera, cons
 	ARGUS_TRACE(UArgusInputManager::ProcessPlayerInput);
 	// start each frame with default cursor
 	m_owningPlayerController->SetArgusCursor(EArgusCursorType::Default);
+	if(m_frameInputHitResult.IsValid() && m_frameInputHitResult->GetActor())
+	{
+		if (AArgusActor* oldHitActor = Cast<AArgusActor>(m_frameInputHitResult->GetActor()))
+		{
+			oldHitActor->OnCursorHover(false);
+		}
+	}
 	FHitResult hitResult;
 	if (m_owningPlayerController->GetMouseProjectionLocation(ECC_WorldStatic, hitResult))
 	{
@@ -291,6 +298,7 @@ void UArgusInputManager::ProcessPlayerInput(AArgusCameraActor* argusCamera, cons
 			if(AArgusActor* hitArgusActor = Cast<AArgusActor>(hitResult.GetActor()))
 			{
 				m_owningPlayerController->UpdateCursorPriority(hitArgusActor->GetEntity().IsOnTeam(m_owningPlayerController->GetPlayerTeam()) ? EArgusCursorType::Move : EArgusCursorType::Attack);
+				hitArgusActor->OnCursorHover(true);
 			}
 			else
 			{
