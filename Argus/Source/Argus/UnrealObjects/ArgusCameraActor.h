@@ -35,8 +35,8 @@ public:
 	void UpdateCameraOrbit(const float inputOrbitValue);
 	void UpdateCameraZoom(const float inputZoomValue);
 
-	const FVector GetZoomTargetTranslation() { return m_currentZoomTranslationAmount.GetValue() * GetActorForwardVector(); }
-	const FVector& GetCameraLocationWithoutZoom() { return m_cameraLocationWithoutZoom; }
+	const FVector GetZoomTargetTranslation() const { return m_currentZoomTranslationAmount.GetValue() * GetActorForwardVector(); }
+	const FVector& GetCameraLocationWithoutZoom() const { return m_cameraLocationWithoutZoom; }
 
 protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Panning")

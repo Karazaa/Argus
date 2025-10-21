@@ -117,7 +117,8 @@ private:
 	void PrepareToProcessInputEvents();
 	void ProcessInputEvent(AArgusCameraActor* argusCamera, const InputCache& inputEvent);
 	void ProcessSelectInputEvent(bool isAdditive);
-	void ProcessMarqueeSelectInputEvent(AArgusCameraActor* argusCamera, bool isAdditive);
+	void ProcessMarqueeSelectInputEvent(const AArgusCameraActor* argusCamera, bool isAdditive);
+	void PopulateMarqueeSelectPolygon(const AArgusCameraActor* argusCamera, TArray<FVector2D>& convexPolygon);
 	void ProcessMoveToInputEvent();
 	void ProcessMoveToInputEventPerSelectedActor(AArgusActor* argusActor, EMovementState inputMovementState, ArgusEntity targetEntity, FVector targetLocation);
 	void ProcessSetWaypointInputEvent();
