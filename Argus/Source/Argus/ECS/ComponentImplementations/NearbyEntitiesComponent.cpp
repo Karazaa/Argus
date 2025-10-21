@@ -20,6 +20,7 @@ uint16 NearbyEntitiesComponent::GetOwningEntityId() const
 void NearbyEntitiesComponent::Reset()
 {
 	m_nearbyEntities.ResetAll();
+	m_nearbyFlyingEntities.ResetAll();
 }
 
 void NearbyEntitiesComponent::DrawComponentDebug() const
