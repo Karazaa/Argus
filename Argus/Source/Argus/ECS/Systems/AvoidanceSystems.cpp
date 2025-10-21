@@ -95,17 +95,21 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 		return;
 	}
 
-	// Iterate over the found entities and generate ORCA lines based on their current states.
+	// Generate ORCA lines for grounded entities.
 	TArray<ORCALine> calculatedORCALines;
-	CreateObstacleORCALines(worldPointer, params, components, calculatedORCALines);
-#if !UE_BUILD_SHIPPING
-	if (worldPointer && ArgusECSDebugger::ShouldShowAvoidanceDebugForEntity(components.m_entity.GetId()))
+	if (components.m_taskComponent->m_flightState == EFlightState::Grounded)
 	{
-		DrawORCADebugLines(worldPointer, params, calculatedORCALines, true, 0);
-	}
+		CreateObstacleORCALines(worldPointer, params, components, calculatedORCALines);
+#if !UE_BUILD_SHIPPING
+		if (worldPointer && ArgusECSDebugger::ShouldShowAvoidanceDebugForEntity(components.m_entity.GetId()))
+		{
+			DrawORCADebugLines(worldPointer, params, calculatedORCALines, true, 0);
+		}
 #endif //!UE_BUILD_SHIPPING
+	}
 	const int32 numStaticObstacles = calculatedORCALines.Num();
-	
+
+	// Iterate over the found entities and generate ORCA lines based on their current states.
 	CreateEntityORCALines(params, components, nearbyEntitiesComponent, calculatedORCALines, desiredVelocity);
 
 	int32 failureLine = -1;
