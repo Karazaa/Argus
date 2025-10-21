@@ -83,8 +83,7 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 	params.m_spatialPartitioningComponent = spatialPartitioningComponent;
 
 	// If no entities nearby, then nothing can effect our navigation, so we should just early out with a desired velocity.
-	// TODO JAMES: Temporarily disabling avoidance for flyers until nearby entities are sorted.
-	if (nearbyEntitiesComponent->m_nearbyEntities.GetEntityIdsInAvoidanceRange().IsEmpty() || components.m_taskComponent->m_flightState != EFlightState::Grounded)
+	if (nearbyEntitiesComponent->GetNearbyEntities(components.m_taskComponent->m_flightState != EFlightState::Grounded).GetEntityIdsInAvoidanceRange().IsEmpty())
 	{
 		components.m_velocityComponent->m_proposedAvoidanceVelocity = ArgusMath::ToUnrealVector2(desiredVelocity);
 #if !UE_BUILD_SHIPPING
@@ -340,10 +339,10 @@ void AvoidanceSystems::CreateEntityORCALines(const CreateEntityORCALinesParams& 
 	const bool calculateAverageLocationOfOtherEntities = outDesiredVelocity.IsNearlyZero() && !params.m_sourceEntityVelocity.IsNearlyZero();
 	FVector2D averageLocationOfOtherEntities = FVector2D::ZeroVector;
 	float numberOfEntitiesInAverage = 0.0f;
-
-	for (int32 i = 0; i < nearbyEntitiesComponent->m_nearbyEntities.GetEntityIdsInAvoidanceRange().Num(); ++i)
+	const bool isGrounded = components.m_taskComponent->m_flightState == EFlightState::Grounded;
+	for (int32 i = 0; i < nearbyEntitiesComponent->GetNearbyEntities(!isGrounded).GetEntityIdsInAvoidanceRange().Num(); ++i)
 	{
-		ArgusEntity foundEntity = ArgusEntity::RetrieveEntity(nearbyEntitiesComponent->m_nearbyEntities.GetEntityIdsInAvoidanceRange()[i]);
+		ArgusEntity foundEntity = ArgusEntity::RetrieveEntity(nearbyEntitiesComponent->GetNearbyEntities(!isGrounded).GetEntityIdsInAvoidanceRange()[i]);
 		if (!foundEntity)
 		{
 			continue;

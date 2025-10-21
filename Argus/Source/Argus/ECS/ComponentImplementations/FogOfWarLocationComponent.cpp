@@ -22,6 +22,7 @@ void FogOfWarLocationComponent::Reset()
 	m_fogOfWarPixel = MAX_uint32;
 	m_clearedThisFrame = false;
 	m_needsActivelyRevealedThisFrame = false;
+	m_updatedPixelThisFrame = false;
 }
 
 void FogOfWarLocationComponent::DrawComponentDebug() const
@@ -46,6 +47,10 @@ void FogOfWarLocationComponent::DrawComponentDebug() const
 		ImGui::Text("m_needsActivelyRevealedThisFrame");
 		ImGui::TableNextColumn();
 		ImGui::Text(m_needsActivelyRevealedThisFrame ? "true" : "false");
+		ImGui::TableNextColumn();
+		ImGui::Text("m_updatedPixelThisFrame");
+		ImGui::TableNextColumn();
+		ImGui::Text(m_updatedPixelThisFrame ? "true" : "false");
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING
