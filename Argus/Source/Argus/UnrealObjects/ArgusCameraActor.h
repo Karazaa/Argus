@@ -37,8 +37,8 @@ public:
 	void UpdateCameraPanningX(const float inputValue);
 	void UpdateCameraPanningY(const float inputValue);
 
-	const FVector GetZoomTargetTranslation() { return m_currentZoomTranslationAmount.GetValue() * GetActorForwardVector(); }
-	const FVector& GetCameraLocationWithoutZoom() { return m_cameraLocationWithoutZoom; }
+	const FVector GetZoomTargetTranslation() const { return m_currentZoomTranslationAmount.GetValue() * GetActorForwardVector(); }
+	const FVector& GetCameraLocationWithoutZoom() const { return m_cameraLocationWithoutZoom; }
 
 protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Panning")

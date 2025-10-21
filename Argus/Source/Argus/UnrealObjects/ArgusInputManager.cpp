@@ -706,7 +706,7 @@ void UArgusInputManager::ProcessSelectInputEvent(bool isAdditive)
 	}
 }
 
-void UArgusInputManager::ProcessMarqueeSelectInputEvent(AArgusCameraActor* argusCamera, bool isAdditive)
+void UArgusInputManager::ProcessMarqueeSelectInputEvent(const AArgusCameraActor* argusCamera, bool isAdditive)
 {
 	if (!ValidateOwningPlayerController() || !argusCamera)
 	{
@@ -741,13 +741,88 @@ void UArgusInputManager::ProcessMarqueeSelectInputEvent(AArgusCameraActor* argus
 		}
 	}
 
-	TArray<FVector2D> convexPolygon;
-	convexPolygon.SetNumZeroed(4);
+	TArray<FVector2D> groundConvexPolygon;
+	TArray<FVector2D> flyingConvexPolygon;
+	groundConvexPolygon.SetNumZeroed(4);
+	flyingConvexPolygon.SetNumZeroed(4);
+	groundConvexPolygon[0] = FVector2D(m_cachedLastSelectInputWorldSpaceLocation);
+	groundConvexPolygon[2] = FVector2D(hitResult.Location);
+
+	FVector direction0 = argusCamera->GetActorLocation() - m_cachedLastSelectInputWorldSpaceLocation;
+	FVector direction2 = argusCamera->GetActorLocation() - hitResult.Location;
+	direction0 *= ArgusMath::SafeDivide(1.0f, direction0.Z, 0.0f) * spatialPartitioningComponent->m_flyingPlaneHeight;
+	direction2 *= ArgusMath::SafeDivide(1.0f, direction2.Z, 0.0f) * spatialPartitioningComponent->m_flyingPlaneHeight;
+	flyingConvexPolygon[0] = FVector2D(m_cachedLastSelectInputWorldSpaceLocation + direction0);
+	flyingConvexPolygon[2] = FVector2D(hitResult.Location + direction2);
+
+	PopulateMarqueeSelectPolygon(argusCamera, groundConvexPolygon);
+	PopulateMarqueeSelectPolygon(argusCamera, flyingConvexPolygon);
+
+	TArray<uint16> entityIdsWithinBounds;
+	spatialPartitioningComponent->m_argusEntityKDTree.FindArgusEntityIdsWithinConvexPoly(entityIdsWithinBounds, groundConvexPolygon);
+
+	TArray<uint16> flyingEntityIdsWithinBounds;
+	spatialPartitioningComponent->m_flyingArgusEntityKDTree.FindArgusEntityIdsWithinConvexPoly(flyingEntityIdsWithinBounds, flyingConvexPolygon);
+
+	entityIdsWithinBounds.Reserve(entityIdsWithinBounds.Num() + flyingEntityIdsWithinBounds.Num());
+	for (int32 i = 0; i < flyingEntityIdsWithinBounds.Num(); ++i)
+	{
+		entityIdsWithinBounds.Add(flyingEntityIdsWithinBounds[i]);
+	}
+
+	TArray<AArgusActor*> actorsWithinBounds;
+	if (!m_owningPlayerController->GetArgusActorsFromArgusEntityIds(entityIdsWithinBounds, actorsWithinBounds))
+	{
+		return;
+	}
+
+	bool shouldIgnoreTeamRequirement = false;
+
+#if !UE_BUILD_SHIPPING
+	shouldIgnoreTeamRequirement = ArgusECSDebugger::ShouldIgnoreTeamRequirementsForSelectingEntities();
+#endif //!UE_BUILD_SHIPPING
+
+	if (!shouldIgnoreTeamRequirement)
+	{
+		m_owningPlayerController->FilterArgusActorsToPlayerTeam(actorsWithinBounds);
+	}
+	
+	const int numFoundEntities = actorsWithinBounds.Num();
+	if (CVarEnableVerboseArgusInputLogging.GetValueOnGameThread())
+	{
+		ARGUS_LOG
+		(
+			ArgusInputLog, Display, TEXT("[%s] Did a Marquee Select from {%f, %f} to {%f, %f}. Found %d entities. Is additive? %s"),
+			ARGUS_FUNCNAME,
+			groundConvexPolygon[0].X, groundConvexPolygon[0].Y,
+			groundConvexPolygon[2].X, groundConvexPolygon[2].Y,
+			numFoundEntities,
+			isAdditive ? TEXT("Yes") : TEXT("No")
+		);
+	}
+
+	if (!isAdditive && numFoundEntities > 0)
+	{
+		AddMarqueeSelectedActorsExclusive(actorsWithinBounds);
+	}
+	else
+	{
+		AddMarqueeSelectedActorsAdditive(actorsWithinBounds);
+	}
+}
+
+void UArgusInputManager::PopulateMarqueeSelectPolygon(const AArgusCameraActor* argusCamera, TArray<FVector2D>& convexPolygon)
+{
+	ARGUS_RETURN_ON_NULL(argusCamera, ArgusInputLog);
+	if (convexPolygon.Num() < 4)
+	{
+		// TODO JAMES: Error here
+		return;
+	}
+
 	const FVector2D panUpDirection = FVector2D(AArgusCameraActor::GetPanUpVector());
 	const FVector2D panRightDirection = FVector2D(AArgusCameraActor::GetPanRightVector());
 	const FVector2D cameraLocation = FVector2D(argusCamera->GetCameraLocationWithoutZoom());
-	convexPolygon[0] = FVector2D(m_cachedLastSelectInputWorldSpaceLocation);
-	convexPolygon[2] = FVector2D(hitResult.Location);
 	const FVector2D fromCameraToFirstPoint = convexPolygon[0] - cameraLocation;
 	const FVector2D fromCameraToLastPoint = convexPolygon[2] - cameraLocation;
 
@@ -787,59 +862,6 @@ void UArgusInputManager::ProcessMarqueeSelectInputEvent(AArgusCameraActor* argus
 			convexPolygon[1] = generatedVerticalPoint;
 			convexPolygon[3] = generatedHorizontalPoint;
 		}
-	}
-
-	TArray<uint16> entityIdsWithinBounds;
-	spatialPartitioningComponent->m_argusEntityKDTree.FindArgusEntityIdsWithinConvexPoly(entityIdsWithinBounds, convexPolygon);
-
-	// TODO JAMES: Do something with the flying entity ids within bounds.
-	TArray<uint16> flyingEntityIdsWithinBounds;
-	spatialPartitioningComponent->m_flyingArgusEntityKDTree.FindArgusEntityIdsWithinConvexPoly(flyingEntityIdsWithinBounds, convexPolygon);
-
-	entityIdsWithinBounds.Reserve(entityIdsWithinBounds.Num() + flyingEntityIdsWithinBounds.Num());
-	for (int32 i = 0; i < flyingEntityIdsWithinBounds.Num(); ++i)
-	{
-		entityIdsWithinBounds.Add(flyingEntityIdsWithinBounds[i]);
-	}
-
-	TArray<AArgusActor*> actorsWithinBounds;
-	if (!m_owningPlayerController->GetArgusActorsFromArgusEntityIds(entityIdsWithinBounds, actorsWithinBounds))
-	{
-		return;
-	}
-
-	bool shouldIgnoreTeamRequirement = false;
-
-#if !UE_BUILD_SHIPPING
-	shouldIgnoreTeamRequirement = ArgusECSDebugger::ShouldIgnoreTeamRequirementsForSelectingEntities();
-#endif //!UE_BUILD_SHIPPING
-
-	if (!shouldIgnoreTeamRequirement)
-	{
-		m_owningPlayerController->FilterArgusActorsToPlayerTeam(actorsWithinBounds);
-	}
-	
-	const int numFoundEntities = actorsWithinBounds.Num();
-	if (CVarEnableVerboseArgusInputLogging.GetValueOnGameThread())
-	{
-		ARGUS_LOG
-		(
-			ArgusInputLog, Display, TEXT("[%s] Did a Marquee Select from {%f, %f} to {%f, %f}. Found %d entities. Is additive? %s"),
-			ARGUS_FUNCNAME,
-			convexPolygon[0].X, convexPolygon[0].Y,
-			convexPolygon[2].X, convexPolygon[2].Y,
-			numFoundEntities,
-			isAdditive ? TEXT("Yes") : TEXT("No")
-		);
-	}
-
-	if (!isAdditive && numFoundEntities > 0)
-	{
-		AddMarqueeSelectedActorsExclusive(actorsWithinBounds);
-	}
-	else
-	{
-		AddMarqueeSelectedActorsAdditive(actorsWithinBounds);
 	}
 }
 
