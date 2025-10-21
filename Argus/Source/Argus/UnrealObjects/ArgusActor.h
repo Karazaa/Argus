@@ -30,6 +30,31 @@ public:
 	bool IsVisible() const;
 	void Update(float deltaTime, ETeam activePlayerControllerTeam);
 
+	/**
+	* Used to show animations or effects when the entity starts or stops attacking. N.B. This does not indicate whether the entity is currently in the process of attacking, just that we can start or stop visible attacking.
+	*/
+	UFUNCTION(BlueprintImplementableEvent)
+	void  OnArgusEntityCombatStateChanged(ECombatState state);
+
+	/**
+	* Returns the current waypoints in the sequence they would be visited. If there are no waypoints, an empty array is returned.
+	*/
+	UFUNCTION(BlueprintCallable, BlueprintPure = true)
+	TArray<FVector> GetCurrentWaypoints() const;
+	/**
+	* Used to show the current waypoints for this actor. Use in conjuction with GetCurrentWaypoints() to get the locations
+	*/
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void SetCurrentTargetVisible(bool bVisible);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure = true)
+	FVector GetCurrentTargetLocation() const;
+	/**
+	* Used to show the current waypoints for this actor. Use in conjuction with GetCurrentWaypoints() to get the locations
+	*/
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void SetCurrentWaypointsVisible(bool bVisible);
+
 protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnSelected();
@@ -48,12 +73,6 @@ protected:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnArgusEntityPassengerStateChanged(bool isPassenger);
-
-	/**
-	* Used to show animations or effects when the entity starts or stops attacking. N.B. This does not indicate whether the entity is currently in the process of attacking, just that we can start or stop visible attacking.
-	*/
-	UFUNCTION(BlueprintImplementableEvent)
-	void  OnArgusEntityCombatStateChanged(ECombatState state);
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	TSoftClassPtr<UArgusActorInfoView> m_argusActorInfoWidgetClass = nullptr;

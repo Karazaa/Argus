@@ -977,6 +977,7 @@ void UArgusInputManager::ProcessMoveToInputEventPerSelectedActor(AArgusActor* ar
 		
 		targetingComponent->m_targetEntityId = ArgusEntity::k_emptyEntity.GetId();
 		targetingComponent->m_targetLocation = targetLocation;
+		argusActor->SetCurrentTargetVisible(true);
 	}
 }
 
@@ -1061,6 +1062,7 @@ void UArgusInputManager::ProcessSetWaypointInputEventPerSelectedActor(AArgusActo
 		case EMovementState::MoveToLocation:
 			taskComponent->m_movementState = EMovementState::ProcessMoveToLocationCommand;
 			navigationComponent->m_queuedWaypoints.PushLast(targetLocation);
+			argusActor->SetCurrentWaypointsVisible(true);
 			break;
 		default:
 			break;

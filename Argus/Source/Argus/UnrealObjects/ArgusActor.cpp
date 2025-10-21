@@ -151,7 +151,6 @@ void AArgusActor::Show()
 	{
 		return;
 	}
-
 	RootComponent->SetVisibility(true, true);
 }
 
@@ -161,13 +160,38 @@ void AArgusActor::Hide()
 	{
 		return;
 	}
-
 	RootComponent->SetVisibility(false, true);
 }
 
 bool AArgusActor::IsVisible() const
 {
 	return RootComponent->IsVisible();
+}
+
+TArray<FVector> AArgusActor::GetCurrentWaypoints() const
+{
+	TArray<FVector> waypoints;
+	if (m_entity)
+	{
+		if (const NavigationComponent* navComponent = m_entity.GetComponent<NavigationComponent>())
+		{
+			const UWorld* world = GetWorld();
+			if (!world)
+			{
+				return waypoints;
+			}
+			for (const FVector& waypoint : navComponent->m_queuedWaypoints)
+			{
+				waypoints.Add(waypoint);
+			}
+		}
+	}
+	return waypoints;
+}
+
+FVector AArgusActor::GetCurrentTargetLocation() const
+{
+	return m_entity ? m_entity.GetCurrentTargetLocation() : FVector::ZeroVector;
 }
 
 void AArgusActor::BeginPlay()
@@ -277,6 +301,11 @@ void AArgusActor::Update(float deltaTime, ETeam activePlayerControllerTeam)
 			if(const TaskComponent* taskComponent = m_entity.GetComponent<TaskComponent>())
 			{
 				OnArgusEntityCombatStateChanged(taskComponent->m_combatState);
+				if(taskComponent->m_movementState == EMovementState::ProcessMoveToLocationCommand)
+				{
+					SetCurrentTargetVisible(m_isSelected);
+					SetCurrentWaypointsVisible(m_isSelected);
+				}
 			}
 		}
 		else
