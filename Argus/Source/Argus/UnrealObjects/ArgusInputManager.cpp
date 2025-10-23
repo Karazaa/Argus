@@ -1484,35 +1484,59 @@ void UArgusInputManager::OnSelectedArgusArgusActorsChanged()
 
 	inputInterfaceComponent->m_selectedArgusEntityIds.Sort([](uint16 entityAId, uint16 entityBId)
 	{
-		const AbilityComponent* taskComponentA = ArgusEntity::RetrieveEntity(entityAId).GetComponent<AbilityComponent>();
-		const AbilityComponent* taskComponentB = ArgusEntity::RetrieveEntity(entityBId).GetComponent<AbilityComponent>();
-		if (!taskComponentA)
+		const TaskComponent* taskComponentA = ArgusEntity::RetrieveEntity(entityAId).GetComponent<TaskComponent>();
+		const TaskComponent* taskComponentB = ArgusEntity::RetrieveEntity(entityBId).GetComponent<TaskComponent>();
+		ARGUS_RETURN_ON_NULL_BOOL(taskComponentA, ArgusInputLog);
+		ARGUS_RETURN_ON_NULL_BOOL(taskComponentB, ArgusInputLog);
+
+		const AbilityComponent* abilityComponentA = ArgusEntity::RetrieveEntity(entityAId).GetComponent<AbilityComponent>();
+		const AbilityComponent* abilityComponentB = ArgusEntity::RetrieveEntity(entityBId).GetComponent<AbilityComponent>();
+
+		const bool noAbilityA = !abilityComponentA || !abilityComponentA->HasAnyAbility();
+		const bool noAbilityB = !abilityComponentB || !abilityComponentB->HasAnyAbility();
+		if (noAbilityA || noAbilityB)
 		{
-			return false;
-		}
-		if (!taskComponentB)
-		{
-			return true;
+			if (noAbilityA && noAbilityB)
+			{
+				return taskComponentA->m_spawnedFromArgusActorRecordId < taskComponentB->m_spawnedFromArgusActorRecordId;
+			}
+
+			return noAbilityB;
 		}
 
-		return taskComponentA->m_abilityCasterPriority > taskComponentB->m_abilityCasterPriority;
+		return abilityComponentA->m_abilityCasterPriority > abilityComponentB->m_abilityCasterPriority;
 	});
 
+	InterruptReticle();
 	const int32 numSelected = inputInterfaceComponent->m_selectedArgusEntityIds.Num();
 	if (numSelected == 0)
 	{
-		InterruptReticle();
 		return;
 	}
 
-	const AbilityComponent* templateAbilityComponent = ArgusEntity::RetrieveEntity(inputInterfaceComponent->m_selectedArgusEntityIds[0]).GetComponent<AbilityComponent>();
+	inputInterfaceComponent->m_indexOfActiveAbilityGroup = 0;
+	inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.Add(inputInterfaceComponent->m_selectedArgusEntityIds[0]);
+	
+	const ArgusEntity templateEntity = ArgusEntity::RetrieveEntity(inputInterfaceComponent->m_selectedArgusEntityIds[0]);
+	const TaskComponent* templateTaskComponent = templateEntity.GetComponent<TaskComponent>();
+	ARGUS_RETURN_ON_NULL(templateTaskComponent, ArgusInputLog);
+
+	const AbilityComponent* templateAbilityComponent = templateEntity.GetComponent<AbilityComponent>();
 	if (!templateAbilityComponent || !templateAbilityComponent->HasAnyAbility())
 	{
-		InterruptReticle();
+		for (int32 i = 1; i < numSelected; ++i)
+		{
+			const TaskComponent* taskComponent = ArgusEntity::RetrieveEntity(inputInterfaceComponent->m_selectedArgusEntityIds[i]).GetComponent<TaskComponent>();
+			if (!taskComponent || taskComponent->m_spawnedFromArgusActorRecordId != templateTaskComponent->m_spawnedFromArgusActorRecordId)
+			{
+				break;
+			}
+
+			inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.Add(inputInterfaceComponent->m_selectedArgusEntityIds[i]);
+		}
 		return;
 	}
 
-	inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.Add(inputInterfaceComponent->m_selectedArgusEntityIds[0]);
 	for (int32 i = 1; i < numSelected; ++i)
 	{
 		const AbilityComponent* abilityComponent = ArgusEntity::RetrieveEntity(inputInterfaceComponent->m_selectedArgusEntityIds[i]).GetComponent<AbilityComponent>();
@@ -1522,16 +1546,6 @@ void UArgusInputManager::OnSelectedArgusArgusActorsChanged()
 		}
 
 		inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.Add(inputInterfaceComponent->m_selectedArgusEntityIds[i]);
-	}
-
-	inputInterfaceComponent->m_indexOfActiveAbilityGroup = 0;
-
-	if (ReticleComponent* reticleComponent = ArgusEntity::GetSingletonEntity().GetComponent<ReticleComponent>())
-	{
-		if (!templateAbilityComponent->HasAbility(reticleComponent->m_abilityRecordId) && reticleComponent->IsReticleEnabled())
-		{
-			reticleComponent->DisableReticle();
-		}
 	}
 }
 
