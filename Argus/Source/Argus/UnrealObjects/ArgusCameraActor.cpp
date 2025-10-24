@@ -114,6 +114,12 @@ void AArgusCameraActor::UpdateCameraPanningY(const float inputValue)
 	m_cameraLocationWithoutZoom += s_moveRightDir * m_currentHorizontalVelocity.GetValue();
 }
 
+FVector AArgusCameraActor::GetCameraMoveSpeed() const
+{
+	return FVector(m_currentVerticalVelocity.GetValue(), m_currentHorizontalVelocity.GetValue(), 0.0f); 
+	// if we decide to add in differnt cursors for zooming in and out, we can chage the hard coded zero above.
+}
+
 void AArgusCameraActor::BeginPlay()
 {
 	Super::BeginPlay();

@@ -329,6 +329,19 @@ void UArgusInputManager::ProcessPlayerInput(AArgusCameraActor* argusCamera, cons
 	ARGUS_RETURN_ON_NULL(argusCamera, ArgusInputLog);
 
 	argusCamera->UpdateCamera(updateCameraParameters, deltaTime);
+	FVector camSpeed = argusCamera->GetCameraMoveSpeed();
+	if(camSpeed.Length() * deltaTime > 5.0f)
+	{
+		if(FMath::Abs(camSpeed.X) > 10.0f)
+		{
+			m_owningPlayerController->UpdateCursorPriority(camSpeed.X > 0.f ? EArgusCursorType::ViewPortTop : EArgusCursorType::ViewPortBottom);
+		}
+		if(FMath::Abs(camSpeed.Y) > 10.0f)
+		{
+			m_owningPlayerController->UpdateCursorPriority(camSpeed.Y > 0.f ? EArgusCursorType::ViewPortRight : EArgusCursorType::ViewPortLeft);
+		}
+	}
+
 }
 
 bool UArgusInputManager::ShouldDrawMarqueeBox() const

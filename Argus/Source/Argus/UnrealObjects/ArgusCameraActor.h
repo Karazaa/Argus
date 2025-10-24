@@ -37,6 +37,9 @@ public:
 	void UpdateCameraPanningX(const float inputValue);
 	void UpdateCameraPanningY(const float inputValue);
 
+	UFUNCTION(BlueprintCallable, Category = "Argus|Camera")
+	FVector GetCameraMoveSpeed() const;
+
 	const FVector GetZoomTargetTranslation() const { return m_currentZoomTranslationAmount.GetValue() * GetActorForwardVector(); }
 	const FVector& GetCameraLocationWithoutZoom() const { return m_cameraLocationWithoutZoom; }
 
