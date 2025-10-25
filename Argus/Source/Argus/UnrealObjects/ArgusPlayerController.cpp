@@ -209,8 +209,6 @@ void AArgusPlayerController::UpdateCursorPriority(EArgusCursorType newCursor)
 void AArgusPlayerController::SetArgusCursor_Implementation(EArgusCursorType newCursorType)
 {
 	m_argusCursor = newCursorType;
-	uint8 cursorIndex = static_cast<uint8>(newCursorType) + 1;
-	CurrentMouseCursor = static_cast<EMouseCursor::Type>(cursorIndex);
 }
 
 EArgusCursorType AArgusPlayerController::GetArgusCursor() const

@@ -283,7 +283,7 @@ void UArgusInputManager::ProcessPlayerInput(AArgusCameraActor* argusCamera, cons
 	ARGUS_TRACE(UArgusInputManager::ProcessPlayerInput);
 	// start each frame with default cursor
 	m_owningPlayerController->SetArgusCursor(EArgusCursorType::Default);
-	if(m_frameInputHitResult.IsValid() && m_frameInputHitResult->GetActor())
+	if (m_frameInputHitResult.IsValid() && m_frameInputHitResult->GetActor())
 	{
 		if (AArgusActor* oldHitActor = Cast<AArgusActor>(m_frameInputHitResult->GetActor()))
 		{
@@ -295,7 +295,7 @@ void UArgusInputManager::ProcessPlayerInput(AArgusCameraActor* argusCamera, cons
 	{
 		if (!m_selectedArgusActors.IsEmpty())
 		{
-			if(AArgusActor* hitArgusActor = Cast<AArgusActor>(hitResult.GetActor()))
+			if (AArgusActor* hitArgusActor = Cast<AArgusActor>(hitResult.GetActor()))
 			{
 				m_owningPlayerController->UpdateCursorPriority(hitArgusActor->GetEntity().IsOnTeam(m_owningPlayerController->GetPlayerTeam()) ? EArgusCursorType::Move : EArgusCursorType::Attack);
 				hitArgusActor->OnCursorHover(true);
@@ -329,17 +329,22 @@ void UArgusInputManager::ProcessPlayerInput(AArgusCameraActor* argusCamera, cons
 	ARGUS_RETURN_ON_NULL(argusCamera, ArgusInputLog);
 
 	argusCamera->UpdateCamera(updateCameraParameters, deltaTime);
-	FVector camSpeed = argusCamera->GetCameraMoveSpeed();
-	if(camSpeed.Length() * deltaTime > 5.0f)
+	const FVector moveDirection = argusCamera->GetCameraMoveDirection();
+	if (moveDirection.Length() >= 1.0f)
 	{
-		if(FMath::Abs(camSpeed.X) > 10.0f)
-		{
-			m_owningPlayerController->UpdateCursorPriority(camSpeed.X > 0.f ? EArgusCursorType::ViewPortTop : EArgusCursorType::ViewPortBottom);
-		}
-		if(FMath::Abs(camSpeed.Y) > 10.0f)
-		{
-			m_owningPlayerController->UpdateCursorPriority(camSpeed.Y > 0.f ? EArgusCursorType::ViewPortRight : EArgusCursorType::ViewPortLeft);
-		}
+		SetCursorMoveDirection(moveDirection);
+	}
+}
+
+void UArgusInputManager::SetCursorMoveDirection(const FVector camDirection)
+{
+	if (FMath::Abs(camDirection.X) >= 1.0f)
+	{
+		m_owningPlayerController->UpdateCursorPriority(camDirection.X > 0.f ? EArgusCursorType::ViewPortRight : EArgusCursorType::ViewPortLeft);
+	}
+	if (FMath::Abs(camDirection.Y) >= 1.0f)
+	{
+		m_owningPlayerController->UpdateCursorPriority(camDirection.Y > 0.f ? EArgusCursorType::ViewPortTop : EArgusCursorType::ViewPortBottom);
 	}
 
 }

@@ -96,6 +96,11 @@ public:
 	void OnCameraPanningY(const FInputActionValue& value);
 
 	void ProcessPlayerInput(AArgusCameraActor* argusCamera, const AArgusCameraActor::UpdateCameraPanningParameters& updateCameraPanningParameters, float deltaTime);
+	
+	/**
+	* Set the camera move direction used for cursor edge panning.
+	*/
+	void SetCursorMoveDirection(const FVector camDirection);
 	bool ShouldDrawMarqueeBox() const;
 
 	const FVector& GetSelectionStartWorldSpaceLocation() const;

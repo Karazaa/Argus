@@ -38,7 +38,7 @@ public:
 	void UpdateCameraPanningY(const float inputValue);
 
 	UFUNCTION(BlueprintCallable, Category = "Argus|Camera")
-	FVector GetCameraMoveSpeed() const;
+	FVector GetCameraMoveDirection() const;
 
 	const FVector GetZoomTargetTranslation() const { return m_currentZoomTranslationAmount.GetValue() * GetActorForwardVector(); }
 	const FVector& GetCameraLocationWithoutZoom() const { return m_cameraLocationWithoutZoom; }
@@ -126,4 +126,12 @@ private:
 	TRange<float> m_zeroToOne;
 
 	FVector m_cameraLocationWithoutZoom = FVector::ZeroVector;
+
+	/**
+	* Used to set the cursor
+	* X = 1 if panning forward, -1 if panning backward, 0 if no vertical panning
+	* Y = 1 if panning right, -1 if panning left, 0 if no horizontal panning
+	* Z = 1 if zooming in, -1 if zooming out, 0 if no zooming
+	*/
+	FVector m_camerMoveDirectionThisFrame = FVector::ZeroVector;
 };

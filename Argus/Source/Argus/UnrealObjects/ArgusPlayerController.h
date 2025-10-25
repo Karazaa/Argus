@@ -18,7 +18,7 @@ class UArgusInputActionSet;
 class UArgusInputManager;
 class UArgusUIElement;
 
-UENUM()
+UENUM(BlueprintType)
 enum class EArgusCursorType : uint8
 {
 	Default,

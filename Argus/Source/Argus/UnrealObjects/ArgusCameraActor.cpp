@@ -114,10 +114,9 @@ void AArgusCameraActor::UpdateCameraPanningY(const float inputValue)
 	m_cameraLocationWithoutZoom += s_moveRightDir * m_currentHorizontalVelocity.GetValue();
 }
 
-FVector AArgusCameraActor::GetCameraMoveSpeed() const
+FVector AArgusCameraActor::GetCameraMoveDirection() const
 {
-	return FVector(m_currentVerticalVelocity.GetValue(), m_currentHorizontalVelocity.GetValue(), 0.0f); 
-	// if we decide to add in differnt cursors for zooming in and out, we can chage the hard coded zero above.
+	return m_camerMoveDirectionThisFrame;
 }
 
 void AArgusCameraActor::BeginPlay()
@@ -207,7 +206,7 @@ void AArgusCameraActor::UpdateCameraPanning(const UpdateCameraPanningParameters&
 	{
 		return;
 	}
-
+	m_camerMoveDirectionThisFrame = FVector();
 	const float paddingAmountX = cameraParameters.m_screenSpaceXYBounds->X * m_horizontalScreenMovePaddingProportion;
 	const float paddingAmountY = cameraParameters.m_screenSpaceXYBounds->Y * m_verticalScreenMovePaddingProportion;
 	float desiredVerticalVelocity = 0.0f;
@@ -224,9 +223,11 @@ void AArgusCameraActor::UpdateCameraPanning(const UpdateCameraPanningParameters&
 	float verticalModification = 1.0f;
 	if (!IsPanningBlocked())
 	{
+		float directionY = 0.0f;
 		// UP
 		if (cameraParameters.m_screenSpaceMouseLocation->Y < paddingAmountY)
 		{
+			directionY = 1.0f;
 			desiredVerticalVelocity = scaledDesiredVerticalVelocity;
 			const float interpolator = 1.0f - ArgusMath::SafeDivide(cameraParameters.m_screenSpaceMouseLocation->Y, paddingAmountY);
 			verticalModification = FMath::Lerp(minVerticalVelocityBondaryModifier, maxVerticalVelocityBondaryModifier, interpolator);
@@ -234,10 +235,12 @@ void AArgusCameraActor::UpdateCameraPanning(const UpdateCameraPanningParameters&
 		// DOWN
 		else if (cameraParameters.m_screenSpaceMouseLocation->Y > (cameraParameters.m_screenSpaceXYBounds->Y - paddingAmountY))
 		{
+			directionY = -1.0f;
 			desiredVerticalVelocity = -scaledDesiredVerticalVelocity;
 			const float interpolator = ArgusMath::SafeDivide(cameraParameters.m_screenSpaceMouseLocation->Y - (cameraParameters.m_screenSpaceXYBounds->Y - paddingAmountY), paddingAmountY);
 			verticalModification = FMath::Lerp(minVerticalVelocityBondaryModifier, maxVerticalVelocityBondaryModifier, interpolator);
 		}
+		m_camerMoveDirectionThisFrame.Y = directionY;
 	}
 	desiredVerticalVelocity *= verticalModification;
 	m_currentVerticalVelocity.SmoothChase(desiredVerticalVelocity, deltaTime);
@@ -246,9 +249,11 @@ void AArgusCameraActor::UpdateCameraPanning(const UpdateCameraPanningParameters&
 	float horizontalModification = 1.0f;
 	if (!IsPanningBlocked())
 	{
+		float directionX = 0.0f;
 		// LEFT
 		if (cameraParameters.m_screenSpaceMouseLocation->X < paddingAmountX)
 		{
+			directionX = -1.0f;
 			desiredHorizontalVelocity = -scaledDesiredHorizontalVelocity;
 			const float interpolator = 1.0f - ArgusMath::SafeDivide(cameraParameters.m_screenSpaceMouseLocation->X, paddingAmountX);
 			horizontalModification = FMath::Lerp(minHorizontalVelocityBondaryModifier, maxHorizontalVelocityBondaryModifier, interpolator);
@@ -256,10 +261,12 @@ void AArgusCameraActor::UpdateCameraPanning(const UpdateCameraPanningParameters&
 		// RIGHT
 		else if (cameraParameters.m_screenSpaceMouseLocation->X > (cameraParameters.m_screenSpaceXYBounds->X - paddingAmountX))
 		{
+			directionX = 1.0f;
 			desiredHorizontalVelocity = scaledDesiredHorizontalVelocity;
 			const float interpolator = ArgusMath::SafeDivide(cameraParameters.m_screenSpaceMouseLocation->X - (cameraParameters.m_screenSpaceXYBounds->X - paddingAmountX), paddingAmountX);
 			horizontalModification = FMath::Lerp(minHorizontalVelocityBondaryModifier, maxHorizontalVelocityBondaryModifier, interpolator);
 		}
+		m_camerMoveDirectionThisFrame.X = directionX;
 	}
 	desiredHorizontalVelocity *= horizontalModification;
 	m_currentHorizontalVelocity.SmoothChase(desiredHorizontalVelocity, deltaTime);
