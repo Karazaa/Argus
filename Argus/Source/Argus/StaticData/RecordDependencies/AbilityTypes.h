@@ -11,7 +11,5 @@ enum class EAbilityTypes : uint8
 	Attack,
 	Heal,
 	Construct,
-	Vacate,
-	TakeOff,
-	Land
+	Vacate
 };

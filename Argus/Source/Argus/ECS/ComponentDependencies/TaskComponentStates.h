@@ -79,9 +79,7 @@ UENUM()
 enum class EFlightState : uint8
 {
 	Grounded,
-	ProcessTakeOffCommand,
 	TakingOff,
 	Flying,
-	ProcessLandCommand,
 	Landing
 };

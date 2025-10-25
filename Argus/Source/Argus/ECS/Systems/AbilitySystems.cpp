@@ -93,14 +93,6 @@ void AbilitySystems::CastAbility(const UAbilityRecord* abilityRecord, const Abil
 			successfulyCast = CastVacateAbility(abilityRecord, components);
 			break;
 
-		case EAbilityTypes::TakeOff:
-			successfulyCast = CastFlightTransitionAbility(abilityRecord, components, false);
-			break;
-
-		case EAbilityTypes::Land:
-			successfulyCast = CastFlightTransitionAbility(abilityRecord, components, true);
-			break;
-
 		default:
 			return;
 	}
@@ -328,38 +320,6 @@ bool AbilitySystems::CastVacateAbility(const UAbilityRecord* abilityRecord, cons
 	carrierComponent->m_passengerEntityIds.Reset();
 	return true;
 }
-
-bool AbilitySystems::CastFlightTransitionAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsArgs& components, bool landing)
-{
-	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
-	{
-		return false;
-	}
-
-	if (!abilityRecord)
-	{
-		LogAbilityRecordError(ARGUS_FUNCNAME);
-		return false;
-	}
-
-	if (landing)
-	{
-		// TODO JAMES: Check landing zone?
-	}
-	
-	const TransformComponent* transformComponent = components.m_entity.GetComponent<TransformComponent>();
-	ARGUS_RETURN_ON_NULL_BOOL(transformComponent, ArgusECSLog);
-
-	if (transformComponent->m_flightCapability != EFlightCapability::BothGroundedAndFlying)
-	{
-		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Tried to cast a flight transition ability but do not have the required flight capability!"), ARGUS_FUNCNAME);
-		return false;
-	}
-
-	components.m_taskComponent->m_flightState = landing ? EFlightState::ProcessLandCommand : EFlightState::ProcessTakeOffCommand;
-	return true;
-}
-
 
 void AbilitySystems::PrepReticleForConstructAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsArgs& components)
 {
