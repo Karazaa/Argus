@@ -19,6 +19,8 @@ public:
 
 private:
 	static bool ProcessMovementTaskCommands(UWorld* worldPointer, float deltaTime, const TransformSystemsArgs& components);
+	static void ProcessTakeOffCommand(UWorld* worldPointer, float deltaTime, const TransformSystemsArgs& components);
+	static void ProcessLandCommand(UWorld* worldPointer, float deltaTime, const TransformSystemsArgs& components);
 	static void FaceTargetEntity(const TransformSystemsArgs& components);
 	static void FaceTowardsLocationXY(TransformComponent* transformComponent, FVector vectorFromTransformToTarget);
 	static void OnWithinRangeOfTargetEntity(const TransformSystemsArgs& components);

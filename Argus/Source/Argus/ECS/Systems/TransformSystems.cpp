@@ -149,6 +149,33 @@ bool TransformSystems::ProcessMovementTaskCommands(UWorld* worldPointer, float d
 		return false;
 	}
 
+	switch (components.m_taskComponent->m_flightState)
+	{
+	case EFlightState::ProcessTakeOffCommand:
+		ProcessTakeOffCommand(worldPointer, deltaTime, components);
+		return true;
+
+	case EFlightState::ProcessLandCommand:
+		ProcessLandCommand(worldPointer, deltaTime, components);
+		return true;
+
+	case EFlightState::TakingOff:
+		// TODO JAMES: Interpolate upwards
+		return true;
+
+	case EFlightState::Landing:
+		// TODO JAMES: Interpolate downwards
+		return true;
+
+	case EFlightState::Flying:
+		break;
+
+	case EFlightState::Grounded:
+		break;
+
+	default:
+		break;
+	}
 	switch (components.m_taskComponent->m_movementState)
 	{
 		case EMovementState::MoveToLocation:
@@ -180,6 +207,38 @@ bool TransformSystems::ProcessMovementTaskCommands(UWorld* worldPointer, float d
 
 		default:
 			return false;
+	}
+}
+
+void TransformSystems::ProcessTakeOffCommand(UWorld* worldPointer, float deltaTime, const TransformSystemsArgs& components)
+{
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+
+	SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::GetSingletonEntity().GetComponent<SpatialPartitioningComponent>();
+	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
+
+	// TODO JAMES: For now instantly transitioning to flight. Eventually we will want to route through the TakingOff state and interpolate upwards.
+	components.m_taskComponent->m_flightState = EFlightState::Flying;
+	components.m_transformComponent->m_location.Z = spatialPartitioningComponent->m_flyingPlaneHeight;
+
+	if (!spatialPartitioningComponent->m_flyingArgusEntityKDTree.DoesArgusEntityExistInKDTree(components.m_entity))
+	{
+		spatialPartitioningComponent->m_flyingArgusEntityKDTree.InsertArgusEntityIntoKDTree(components.m_entity);
+		if (spatialPartitioningComponent->m_argusEntityKDTree.DoesArgusEntityExistInKDTree(components.m_entity))
+		{
+			// TODO JAMES: Remove entity from grounded KD tree.
+		}
+	}
+}
+
+void TransformSystems::ProcessLandCommand(UWorld* worldPointer, float deltaTime, const TransformSystemsArgs& components)
+{
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
 	}
 }
 
