@@ -34,7 +34,7 @@ public:
 	* Used to show animations or effects when the entity starts or stops attacking. N.B. This does not indicate whether the entity is currently in the process of attacking, just that we can start or stop visible attacking.
 	*/
 	UFUNCTION(BlueprintImplementableEvent)
-	void  OnArgusEntityCombatStateChanged(ECombatState state);
+	void  ShowArgusEntityCombatState(ECombatState state);
 
 	/**
 	* Returns the current waypoints in the sequence they would be visited. If there are no waypoints, an empty array is returned.

@@ -300,7 +300,7 @@ void AArgusActor::Update(float deltaTime, ETeam activePlayerControllerTeam)
 			Show();
 			if(const TaskComponent* taskComponent = m_entity.GetComponent<TaskComponent>())
 			{
-				OnArgusEntityCombatStateChanged(taskComponent->m_combatState);
+				ShowArgusEntityCombatState(taskComponent->m_combatState);
 				if(taskComponent->m_movementState == EMovementState::ProcessMoveToLocationCommand)
 				{
 					SetCurrentTargetVisible(m_isSelected);
@@ -310,7 +310,7 @@ void AArgusActor::Update(float deltaTime, ETeam activePlayerControllerTeam)
 		}
 		else
 		{
-			OnArgusEntityCombatStateChanged(ECombatState::None);
+			ShowArgusEntityCombatState(ECombatState::None);
 			Hide();
 		}
 	}
