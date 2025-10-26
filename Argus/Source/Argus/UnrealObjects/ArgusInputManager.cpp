@@ -1079,10 +1079,9 @@ void UArgusInputManager::ProcessSetWaypointInputEventPerSelectedActor(AArgusActo
 		case EMovementState::FailedToFindPath:
 		case EMovementState::ProcessMoveToEntityCommand:
 		case EMovementState::MoveToEntity:
-			taskComponent->m_movementState = EMovementState::ProcessMoveToLocationCommand;
-			targetingComponent->m_targetEntityId = ArgusEntity::k_emptyEntity.GetId();
-			targetingComponent->m_targetLocation = targetLocation;
-			navigationComponent->ResetQueuedWaypoints();
+			// fix for following waypoints doesn't always work properly #4
+			// just do a standard move to location command if the actor isn't already following waypoints
+			ProcessMoveToInputEventPerSelectedActor(argusActor, EMovementState::ProcessMoveToLocationCommand, ArgusEntity::k_emptyEntity, targetLocation);
 			break;
 		case EMovementState::ProcessMoveToLocationCommand:
 		case EMovementState::MoveToLocation:
