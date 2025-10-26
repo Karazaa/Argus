@@ -68,7 +68,7 @@ public:
 	* @Param targetActor The actor that is the target of the move (if applicable, nullptr if not)
 	* @Param targetLocation The location that is the target of the move
 	*/
-	UFUNCTION(BlueprintImplementableEvent, Category = "Argus|PlayerController")
+	UFUNCTION(BlueprintImplementableEvent, Category = "Argus PlayerController")
 	void ArgusActorMoveToLocation(AArgusActor* argusActor, EMovementState inputMovementState, AArgusActor* targetActor, FVector targetLocation);
 
 	/**
@@ -81,17 +81,17 @@ public:
 	/**
 	* Sets the cursor to display. Default implemntation sets the hardware cursor. Override in Blueprint if you're implementing a different type of cursor.
 	*/
-	UFUNCTION(BlueprintNativeEvent, Category = "Argus|PlayerController")
+	UFUNCTION(BlueprintNativeEvent, Category = "Argus PlayerController")
 	void SetArgusCursor(EArgusCursorType newCursorType);
 
-	UFUNCTION(BlueprintCallable, Category = "Argus|PlayerController")
+	UFUNCTION(BlueprintCallable, Category = "Argus PlayerController")
 	EArgusCursorType GetArgusCursor() const;
 	
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	ETeam m_playerTeam = ETeam::TeamA;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Argus|PlayerController|Input")
+	UPROPERTY(BlueprintReadOnly, Category = "Argus PlayerController|Input")
 	EArgusCursorType m_argusCursor = EArgusCursorType::Default;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Input")
