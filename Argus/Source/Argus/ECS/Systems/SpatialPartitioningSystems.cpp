@@ -14,10 +14,11 @@
 
 static TAutoConsoleVariable<bool> CVarShowObstacleDebug(TEXT("Argus.SpatialPartitioning.ShowAvoidanceObstacleDebug"), false, TEXT(""));
 
-void SpatialPartitioningSystems::RunSystems(const ArgusEntity& spatialPartitioningEntity, bool didEntityPositionChangeThisFrame)
+void SpatialPartitioningSystems::RunSystems()
 {
 	ARGUS_TRACE(SpatialPartitioningSystems::RunSystems);
 
+	ArgusEntity spatialPartitioningEntity = ArgusEntity::GetSingletonEntity();
 	if (!spatialPartitioningEntity)
 	{
 		return;
@@ -29,11 +30,10 @@ void SpatialPartitioningSystems::RunSystems(const ArgusEntity& spatialPartitioni
 		return;
 	}
 
-	if (didEntityPositionChangeThisFrame)
-	{
-		spatialPartitioningComponent->m_argusEntityKDTree.RebuildKDTreeForAllArgusEntities();
-		spatialPartitioningComponent->m_flyingArgusEntityKDTree.RebuildKDTreeForAllArgusEntities();
-	}
+	spatialPartitioningComponent->m_argusEntityKDTree.ProcessDeferredStateChanges();
+	spatialPartitioningComponent->m_flyingArgusEntityKDTree.ProcessDeferredStateChanges();
+	spatialPartitioningComponent->m_argusEntityKDTree.RebuildKDTreeForAllArgusEntities();
+	spatialPartitioningComponent->m_flyingArgusEntityKDTree.RebuildKDTreeForAllArgusEntities();
 
 	ClearSeenByStatus();
 	CacheAdjacentEntityIds(spatialPartitioningComponent);

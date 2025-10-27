@@ -227,9 +227,8 @@ void TransformSystems::ProcessTakeOffCommand(UWorld* worldPointer, float deltaTi
 	
 	if (!spatialPartitioningComponent->m_flyingArgusEntityKDTree.DoesArgusEntityExistInKDTree(components.m_entity))
 	{
-		// TODO JAMES: Need to defer KD tree changes until after additional ECS threads conclude because they might query KD trees.
-		// spatialPartitioningComponent->m_flyingArgusEntityKDTree.InsertArgusEntityIntoKDTree(components.m_entity);
-		// spatialPartitioningComponent->m_argusEntityKDTree.RemoveArgusEntityFromKDTree(components.m_entity);
+		spatialPartitioningComponent->m_flyingArgusEntityKDTree.RequestInsertArgusEntityIntoKDTree(components.m_entity);
+		spatialPartitioningComponent->m_argusEntityKDTree.RequestRemoveArgusEntityIntoKDTree(components.m_entity);
 	}
 }
 
@@ -251,7 +250,6 @@ void TransformSystems::ProcessLandCommand(UWorld* worldPointer, float deltaTime,
 	const FVector startLocation = components.m_transformComponent->m_location;
 	FVector endLocation = startLocation;
 	endLocation.Z = ArgusECSConstants::k_lowestPossibleAltitude;
-
 	if (worldPointer->LineTraceSingleByChannel(hitResult, startLocation, endLocation, ECC_RETICLE))
 	{
 		components.m_transformComponent->m_location = ProjectLocationOntoNavigationData(worldPointer, components.m_transformComponent, hitResult.Location);
@@ -259,9 +257,8 @@ void TransformSystems::ProcessLandCommand(UWorld* worldPointer, float deltaTime,
 
 	if (!spatialPartitioningComponent->m_argusEntityKDTree.DoesArgusEntityExistInKDTree(components.m_entity))
 	{
-		// TODO JAMES: Need to defer KD tree changes until after additional ECS threads conclude because they might query KD trees.
-		// spatialPartitioningComponent->m_argusEntityKDTree.InsertArgusEntityIntoKDTree(components.m_entity);
-		// spatialPartitioningComponent->m_flyingArgusEntityKDTree.RemoveArgusEntityFromKDTree(components.m_entity);
+		spatialPartitioningComponent->m_argusEntityKDTree.RequestInsertArgusEntityIntoKDTree(components.m_entity);
+		spatialPartitioningComponent->m_flyingArgusEntityKDTree.RequestRemoveArgusEntityIntoKDTree(components.m_entity);
 	}
 }
 

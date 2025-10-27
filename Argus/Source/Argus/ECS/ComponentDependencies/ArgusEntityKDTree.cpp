@@ -285,11 +285,21 @@ bool ArgusEntityKDTree::RemoveArgusEntityFromKDTree(const ArgusEntity& entityToR
 	}
 
 	ArgusEntityKDTreeNode* foundNode = nullptr;
-	if (!SearchForEntityIdRecursive(m_rootNode, entityToRemove.GetId(), foundNode))
+	ArgusEntityKDTreeNode* parentNode = nullptr;
+	if (!SearchForEntityIdRecursive(m_rootNode, entityToRemove.GetId(), foundNode, parentNode))
 	{
 		return false;
 	}
 	ARGUS_RETURN_ON_NULL_BOOL(foundNode, ArgusECSLog);
+
+	if (parentNode->m_leftChild == foundNode)
+	{
+		parentNode->m_leftChild = nullptr;
+	}
+	else if (parentNode->m_rightChild == foundNode)
+	{
+		parentNode->m_rightChild = nullptr;
+	}
 
 	ArgusEntityKDTreeNode* leftChild = foundNode->m_leftChild;
 	ArgusEntityKDTreeNode* rightChild = foundNode->m_rightChild;
@@ -495,6 +505,31 @@ bool ArgusEntityKDTree::DoesArgusEntityExistInKDTree(const ArgusEntity& entityTo
 	return SearchForEntityIdRecursive(m_rootNode, entityToRepresent.GetId());
 }
 
+void ArgusEntityKDTree::RequestInsertArgusEntityIntoKDTree(const ArgusEntity& entityToInsert)
+{
+	m_entityIdsToInsert.Add(entityToInsert.GetId());
+}
+
+void ArgusEntityKDTree::RequestRemoveArgusEntityIntoKDTree(const ArgusEntity& entityToRemove)
+{
+	m_entityIdsToRemove.Add(entityToRemove.GetId());
+}
+
+void ArgusEntityKDTree::ProcessDeferredStateChanges()
+{
+	for (int32 i = 0; i < m_entityIdsToRemove.Num(); ++i)
+	{
+		RemoveArgusEntityFromKDTree(ArgusEntity::RetrieveEntity(m_entityIdsToRemove[i]));
+	}
+	m_entityIdsToRemove.Reset();
+
+	for (int32 i = 0; i < m_entityIdsToInsert.Num(); ++i)
+	{
+		InsertArgusEntityIntoKDTree(ArgusEntity::RetrieveEntity(m_entityIdsToInsert[i]));
+	}
+	m_entityIdsToInsert.Reset();
+}
+
 bool ArgusEntityKDTree::SearchForEntityIdRecursive(const ArgusEntityKDTreeNode* node, uint16 entityId) const
 {
 	if (!node)
@@ -520,7 +555,7 @@ bool ArgusEntityKDTree::SearchForEntityIdRecursive(const ArgusEntityKDTreeNode* 
 	return false;
 }
 
-bool ArgusEntityKDTree::SearchForEntityIdRecursive(ArgusEntityKDTreeNode* node, uint16 entityId, ArgusEntityKDTreeNode*& outputNode)
+bool ArgusEntityKDTree::SearchForEntityIdRecursive(ArgusEntityKDTreeNode* node, uint16 entityId, ArgusEntityKDTreeNode*& outputNode, ArgusEntityKDTreeNode*& ouputParentNode)
 {
 	if (!node)
 	{
@@ -533,13 +568,21 @@ bool ArgusEntityKDTree::SearchForEntityIdRecursive(ArgusEntityKDTreeNode* node, 
 		return true;
 	}
 
-	if (node->m_leftChild && SearchForEntityIdRecursive(node->m_leftChild, entityId, outputNode))
+	if (node->m_leftChild && SearchForEntityIdRecursive(node->m_leftChild, entityId, outputNode, ouputParentNode))
 	{
+		if (ouputParentNode == nullptr)
+		{
+			ouputParentNode = node;
+		}
 		return true;
 	}
 
-	if (node->m_rightChild && SearchForEntityIdRecursive(node->m_rightChild, entityId, outputNode))
+	if (node->m_rightChild && SearchForEntityIdRecursive(node->m_rightChild, entityId, outputNode, ouputParentNode))
 	{
+		if (ouputParentNode == nullptr)
+		{
+			ouputParentNode = node;
+		}
 		return true;
 	}
 

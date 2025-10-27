@@ -23,6 +23,9 @@ struct SpatialPartitioningComponent
 	ARGUS_IGNORE()
 	TArray<ObstaclePointArray> m_obstacles;
 
+	ARGUS_IGNORE()
+	TArray<uint16> m_entitiesToRemoveFromGounded;
+
 	float m_validSpaceExtent = 3000.0f;
 	float m_flyingPlaneHeight = 300.0f;
 };
