@@ -13,8 +13,11 @@ void UAbilityRecord::OnAsyncLoaded() const
 	{
 		m_reticleMaterial.AsyncPreLoadAndStorePtr();
 	}
-	if (m_argusActorRecordId > 0)
+	for (int32 i = 0; i < m_abilityEffects.Num(); ++i)
 	{
-		ArgusStaticData::AsyncPreLoadRecord<UArgusActorRecord>(m_argusActorRecordId);
+		if (m_abilityEffects[i].m_abilityType == EAbilityTypes::Spawn || m_abilityEffects[i].m_abilityType == EAbilityTypes::Construct)
+		{
+			ArgusStaticData::AsyncPreLoadRecord<UArgusActorRecord>(m_abilityEffects[i].m_argusActorRecordId);
+		}
 	}
 }
