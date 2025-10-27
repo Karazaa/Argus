@@ -227,19 +227,41 @@ void TransformSystems::ProcessTakeOffCommand(UWorld* worldPointer, float deltaTi
 	
 	if (!spatialPartitioningComponent->m_flyingArgusEntityKDTree.DoesArgusEntityExistInKDTree(components.m_entity))
 	{
-		spatialPartitioningComponent->m_flyingArgusEntityKDTree.InsertArgusEntityIntoKDTree(components.m_entity);
-		if (spatialPartitioningComponent->m_argusEntityKDTree.DoesArgusEntityExistInKDTree(components.m_entity))
-		{
-			// TODO JAMES: Remove entity from grounded KD tree.
-		}
+		// TODO JAMES: Need to defer KD tree changes until after additional ECS threads conclude because they might query KD trees.
+		// spatialPartitioningComponent->m_flyingArgusEntityKDTree.InsertArgusEntityIntoKDTree(components.m_entity);
+		// spatialPartitioningComponent->m_argusEntityKDTree.RemoveArgusEntityFromKDTree(components.m_entity);
 	}
 }
 
 void TransformSystems::ProcessLandCommand(UWorld* worldPointer, float deltaTime, const TransformSystemsArgs& components)
 {
+	ARGUS_RETURN_ON_NULL(worldPointer, ArgusECSLog);
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return;
+	}
+
+	SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::GetSingletonEntity().GetComponent<SpatialPartitioningComponent>();
+	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
+
+	// TODO JAMES: For now instantly transitioning to grounded. Eventually we will want to route through the Landing state and interpolate downwards.
+	components.m_taskComponent->m_flightState = EFlightState::Grounded;
+
+	FHitResult hitResult;
+	const FVector startLocation = components.m_transformComponent->m_location;
+	FVector endLocation = startLocation;
+	endLocation.Z = ArgusECSConstants::k_lowestPossibleAltitude;
+
+	if (worldPointer->LineTraceSingleByChannel(hitResult, startLocation, endLocation, ECC_RETICLE))
+	{
+		components.m_transformComponent->m_location = ProjectLocationOntoNavigationData(worldPointer, components.m_transformComponent, hitResult.Location);
+	}
+
+	if (!spatialPartitioningComponent->m_argusEntityKDTree.DoesArgusEntityExistInKDTree(components.m_entity))
+	{
+		// TODO JAMES: Need to defer KD tree changes until after additional ECS threads conclude because they might query KD trees.
+		// spatialPartitioningComponent->m_argusEntityKDTree.InsertArgusEntityIntoKDTree(components.m_entity);
+		// spatialPartitioningComponent->m_flyingArgusEntityKDTree.RemoveArgusEntityFromKDTree(components.m_entity);
 	}
 }
 
@@ -335,7 +357,7 @@ void TransformSystems::OnCompleteNavigationPath(const TransformSystemsArgs& comp
 	}
 }
 
-FVector TransformSystems::ProjectLocationOntoNavigationData(UWorld* worldPointer, TransformComponent* transformComponent, const FVector& location)
+FVector TransformSystems::ProjectLocationOntoNavigationData(UWorld* worldPointer, const TransformComponent* transformComponent, const FVector& location)
 {
 	if (!worldPointer)
 	{

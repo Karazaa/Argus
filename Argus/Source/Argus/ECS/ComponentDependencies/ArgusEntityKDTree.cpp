@@ -277,6 +277,28 @@ void ArgusEntityKDTree::InsertArgusEntityIntoKDTree(const ArgusEntity& entityToR
 	InsertNodeIntoKDTreeRecursive(m_rootNode, nodeToInsert, 0u);
 }
 
+bool ArgusEntityKDTree::RemoveArgusEntityFromKDTree(const ArgusEntity& entityToRemove)
+{
+	if (UNLIKELY(!entityToRemove))
+	{
+		return false;
+	}
+
+	ArgusEntityKDTreeNode* foundNode = nullptr;
+	if (!SearchForEntityIdRecursive(m_rootNode, entityToRemove.GetId(), foundNode))
+	{
+		return false;
+	}
+	ARGUS_RETURN_ON_NULL_BOOL(foundNode, ArgusECSLog);
+
+	ArgusEntityKDTreeNode* leftChild = foundNode->m_leftChild;
+	ArgusEntityKDTreeNode* rightChild = foundNode->m_rightChild;
+	m_nodePool.Release(foundNode);
+	RebuildSubTreeForArgusEntitiesRecursive(leftChild, true);
+	RebuildSubTreeForArgusEntitiesRecursive(rightChild, true);
+	return true;
+}
+
 uint16 ArgusEntityKDTree::FindArgusEntityIdClosestToLocation(const FVector& location) const
 {
 	return FindArgusEntityIdClosestToLocation(location, ArgusEntity::k_emptyEntity);
@@ -498,6 +520,32 @@ bool ArgusEntityKDTree::SearchForEntityIdRecursive(const ArgusEntityKDTreeNode* 
 	return false;
 }
 
+bool ArgusEntityKDTree::SearchForEntityIdRecursive(ArgusEntityKDTreeNode* node, uint16 entityId, ArgusEntityKDTreeNode*& outputNode)
+{
+	if (!node)
+	{
+		return false;
+	}
+
+	if (node->m_entityId == entityId)
+	{
+		outputNode = node;
+		return true;
+	}
+
+	if (node->m_leftChild && SearchForEntityIdRecursive(node->m_leftChild, entityId, outputNode))
+	{
+		return true;
+	}
+
+	if (node->m_rightChild && SearchForEntityIdRecursive(node->m_rightChild, entityId, outputNode))
+	{
+		return true;
+	}
+
+	return false;
+}
+
 void ArgusEntityKDTree::RebuildSubTreeForArgusEntitiesRecursive(ArgusEntityKDTreeNode*& node, bool forceReInsertChildren)
 {
 	if (!node)
@@ -551,8 +599,9 @@ void ArgusEntityKDTree::RebuildSubTreeForArgusEntitiesRecursive(ArgusEntityKDTre
 
 void ArgusEntityKDTree::ClearNodeWithReInsert(ArgusEntityKDTreeNode*& node)
 {
+	ARGUS_RETURN_ON_NULL(node, ArgusECSLog);
 	const ArgusEntity entity = ArgusEntity::RetrieveEntity(node->m_entityId);
-	if (!entity)
+	if (UNLIKELY(!entity))
 	{
 		return;
 	}
