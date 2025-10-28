@@ -84,21 +84,25 @@ void UArgusEntityTemplate::SetInitialStateFromData(const ArgusEntity& entity) co
 
 	if (const AbilityComponent* abilityComponent = entity.GetComponent<AbilityComponent>())
 	{
-		if (abilityComponent->m_ability0Id > 0u)
+		const uint32 ability0 = abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability0);
+		const uint32 ability1 = abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability1);
+		const uint32 ability2 = abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability2);
+		const uint32 ability3 = abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability3);
+		if (ability0 > 0u)
 		{
-			ArgusStaticData::AsyncPreLoadRecord<UAbilityRecord>(abilityComponent->m_ability0Id);
+			ArgusStaticData::AsyncPreLoadRecord<UAbilityRecord>(ability0);
 		}
-		if (abilityComponent->m_ability1Id > 0u)
+		if (ability1 > 0u)
 		{
-			ArgusStaticData::AsyncPreLoadRecord<UAbilityRecord>(abilityComponent->m_ability1Id);
+			ArgusStaticData::AsyncPreLoadRecord<UAbilityRecord>(ability1);
 		}
-		if (abilityComponent->m_ability2Id > 0u)
+		if (ability2 > 0u)
 		{
-			ArgusStaticData::AsyncPreLoadRecord<UAbilityRecord>(abilityComponent->m_ability2Id);
+			ArgusStaticData::AsyncPreLoadRecord<UAbilityRecord>(ability2);
 		}
-		if (abilityComponent->m_ability3Id > 0u)
+		if (ability3 > 0u)
 		{
-			ArgusStaticData::AsyncPreLoadRecord<UAbilityRecord>(abilityComponent->m_ability3Id);
+			ArgusStaticData::AsyncPreLoadRecord<UAbilityRecord>(ability3);
 		}
 	}
 

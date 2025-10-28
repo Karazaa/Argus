@@ -70,10 +70,10 @@ void USelectedArgusEntitiesView::OnUpdateSelectedArgusActors(const ArgusEntity& 
 
 	if (const AbilityComponent* abilityComponent = templateEntity.GetComponent<AbilityComponent>())
 	{
-		const UAbilityRecord* ability0Record = abilityComponent->m_ability0Id == 0 ? nullptr : ArgusStaticData::GetRecord<UAbilityRecord>(abilityComponent->m_ability0Id);
-		const UAbilityRecord* ability1Record = abilityComponent->m_ability1Id == 0 ? nullptr : ArgusStaticData::GetRecord<UAbilityRecord>(abilityComponent->m_ability1Id);
-		const UAbilityRecord* ability2Record = abilityComponent->m_ability2Id == 0 ? nullptr : ArgusStaticData::GetRecord<UAbilityRecord>(abilityComponent->m_ability2Id);
-		const UAbilityRecord* ability3Record = abilityComponent->m_ability3Id == 0 ? nullptr : ArgusStaticData::GetRecord<UAbilityRecord>(abilityComponent->m_ability3Id);
+		const UAbilityRecord* ability0Record = abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability0) == 0 ? nullptr : ArgusStaticData::GetRecord<UAbilityRecord>(abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability0));
+		const UAbilityRecord* ability1Record = abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability1) == 0 ? nullptr : ArgusStaticData::GetRecord<UAbilityRecord>(abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability1));
+		const UAbilityRecord* ability2Record = abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability2) == 0 ? nullptr : ArgusStaticData::GetRecord<UAbilityRecord>(abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability2));
+		const UAbilityRecord* ability3Record = abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability3) == 0 ? nullptr : ArgusStaticData::GetRecord<UAbilityRecord>(abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability3));
 
 		UpdateAllAbilityButtonsDisplay(ability0Record, ability1Record, ability2Record, ability3Record);
 	}

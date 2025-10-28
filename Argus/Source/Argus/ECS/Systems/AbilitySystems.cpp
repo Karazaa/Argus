@@ -167,19 +167,19 @@ void AbilitySystems::ProcessAbilityTaskCommands(const AbilitySystemsArgs& compon
 	switch (components.m_taskComponent->m_abilityState)
 	{
 		case EAbilityState::ProcessCastAbility0Command:
-			abilityId = components.m_abilityComponent->m_ability0Id;
+			abilityId = components.m_abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability0);
 			break;
 
 		case EAbilityState::ProcessCastAbility1Command:
-			abilityId = components.m_abilityComponent->m_ability1Id;
+			abilityId = components.m_abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability1);
 			break;
 
 		case EAbilityState::ProcessCastAbility2Command:
-			abilityId = components.m_abilityComponent->m_ability2Id;
+			abilityId = components.m_abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability2);
 			break;
 
 		case EAbilityState::ProcessCastAbility3Command:
-			abilityId = components.m_abilityComponent->m_ability3Id;
+			abilityId = components.m_abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability3);
 			break;
 
 		case EAbilityState::ProcessCastReticleAbility:

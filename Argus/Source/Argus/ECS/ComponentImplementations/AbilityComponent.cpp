@@ -23,6 +23,11 @@ void AbilityComponent::Reset()
 	m_ability1Id = 0u;
 	m_ability2Id = 0u;
 	m_ability3Id = 0u;
+	m_ability0OverrideId = 0u;
+	m_ability1OverrideId = 0u;
+	m_ability2OverrideId = 0u;
+	m_ability3OverrideId = 0u;
+	m_abilityOverrideBitmask = 0u;
 	m_abilityCasterPriority = 0u;
 }
 
@@ -96,6 +101,26 @@ void AbilityComponent::DrawComponentDebug() const
 		{
 			ImGui::Text("None");
 		}
+		ImGui::TableNextColumn();
+		ImGui::Text("m_ability0OverrideId");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_ability0OverrideId);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_ability1OverrideId");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_ability1OverrideId);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_ability2OverrideId");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_ability2OverrideId);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_ability3OverrideId");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_ability3OverrideId);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_abilityOverrideBitmask");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_abilityOverrideBitmask);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_abilityCasterPriority");
 		ImGui::TableNextColumn();
