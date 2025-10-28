@@ -236,10 +236,6 @@ void TransformSystems::ProcessTakeOffCommand(UWorld* worldPointer, float deltaTi
 		// TODO JAMES: What should be the data source for flight ability overrides?
 		abilityComponent->AddAbilityOverride(0u, EAbilityIndex::Ability0);
 		abilityComponent->AddAbilityOverride(7u, EAbilityIndex::Ability1);
-		if (InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::GetSingletonEntity().GetComponent<InputInterfaceComponent>())
-		{
-			inputInterfaceComponent->m_selectedActorsDisplayState = ESelectedActorsDisplayState::ChangedThisFrame;
-		}
 	}
 }
 
@@ -277,10 +273,6 @@ void TransformSystems::ProcessLandCommand(UWorld* worldPointer, float deltaTime,
 		// TODO JAMES: What should be the data source for flight ability overrides?
 		abilityComponent->RemoveAbilityOverride(EAbilityIndex::Ability0);
 		abilityComponent->RemoveAbilityOverride(EAbilityIndex::Ability1);
-		if (InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::GetSingletonEntity().GetComponent<InputInterfaceComponent>())
-		{
-			inputInterfaceComponent->m_selectedActorsDisplayState = ESelectedActorsDisplayState::ChangedThisFrame;
-		}
 	}
 }
 

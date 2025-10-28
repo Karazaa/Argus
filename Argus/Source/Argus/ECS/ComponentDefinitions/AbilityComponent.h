@@ -45,8 +45,7 @@ struct AbilityComponent
 	ARGUS_IGNORE()
 	uint32 m_ability3OverrideId = 0u;
 
-	ARGUS_IGNORE()
-	uint8 m_abilityOverrideBitmask = 0u;
+	ARGUS_OBSERVABLE_DECLARATION(uint8, m_abilityOverrideBitmask, 0u)
 
 	uint8 m_abilityCasterPriority = 0u;
 
@@ -118,7 +117,7 @@ struct AbilityComponent
 				break;
 		}
 
-		m_abilityOverrideBitmask |= static_cast<uint8>(abilityIndex);
+		Set_m_abilityOverrideBitmask(m_abilityOverrideBitmask | static_cast<uint8>(abilityIndex));
 	}
 
 	void RemoveAbilityOverride(EAbilityIndex abilityIndex)
@@ -145,7 +144,7 @@ struct AbilityComponent
 			break;
 		}
 
-		m_abilityOverrideBitmask &= ~(static_cast<uint8>(abilityIndex));
+		Set_m_abilityOverrideBitmask(m_abilityOverrideBitmask & ~(static_cast<uint8>(abilityIndex)));
 	}
 
 	bool HasAbility(uint32 abilityRecordId) const
