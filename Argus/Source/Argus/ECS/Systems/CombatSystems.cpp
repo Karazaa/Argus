@@ -144,6 +144,7 @@ void CombatSystems::ApplyDamage(uint32 damageAmount, const ArgusEntity& targetEn
 		return;
 	}
 
+	targetHealthComponent->m_isUnderAttack = true;
 	// The entity has taken lethal damage. "Kill" the entity.
 	if (targetHealthComponent->m_currentHealth <= damageAmount)
 	{

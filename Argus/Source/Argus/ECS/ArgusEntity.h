@@ -53,6 +53,8 @@ public:
 	bool			IsFlying() const;
 	bool			CanFly() const;
 	FVector			GetCurrentTargetLocation() const;
+	bool IsUnderAttack() const;
+	void ClearUnderAttackStatus() const;
 
 	const UArgusActorRecord* GetAssociatedActorRecord() const;
 

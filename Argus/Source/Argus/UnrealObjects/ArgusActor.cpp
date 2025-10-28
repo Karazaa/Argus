@@ -194,6 +194,33 @@ FVector AArgusActor::GetCurrentTargetLocation() const
 	return m_entity ? m_entity.GetCurrentTargetLocation() : FVector::ZeroVector;
 }
 
+AArgusActor* AArgusActor::GetCurrentTargetActor() const
+{
+	if (m_entity)
+	{
+		if (const TargetingComponent* targetComponent = m_entity.GetComponent<TargetingComponent>())
+		{
+
+			ArgusEntity targetEntity = ArgusEntity::RetrieveEntity(targetComponent->m_targetEntityId);
+			if (ArgusEntity::k_emptyEntity != targetEntity)
+			{
+				const UWorld* world = GetWorld();
+				if (!world)
+				{
+					return nullptr;
+				}
+				UArgusGameInstance* gameInstance = world->GetGameInstance<UArgusGameInstance>();
+				if (!gameInstance)
+				{
+					return nullptr;
+				}
+				return gameInstance->GetArgusActorFromArgusEntity(targetEntity);
+			}
+		}
+	}
+	return nullptr;
+}
+
 void AArgusActor::BeginPlay()
 {
 	Super::BeginPlay();
@@ -271,6 +298,15 @@ void AArgusActor::Update(float deltaTime, ETeam activePlayerControllerTeam)
 	{
 		return;
 	}
+	if (m_entity.IsUnderAttack())
+	{
+		ARGUS_TRACE(AArgusActor::IsUnderAttack);
+		// Entity has been attacked this frame, fire a blueprint event so we can do things like show damage effects
+		// , or raise an alarm so nearby units can respond.
+		ArgusEntityUnderAttack();
+		m_entity.ClearUnderAttackStatus();
+	}
+	
 
 	if (const TransformComponent* transformComponent = m_entity.GetComponent<TransformComponent>())
 	{
@@ -301,10 +337,17 @@ void AArgusActor::Update(float deltaTime, ETeam activePlayerControllerTeam)
 			if(const TaskComponent* taskComponent = m_entity.GetComponent<TaskComponent>())
 			{
 				ShowArgusEntityCombatState(taskComponent->m_combatState);
-				if(taskComponent->m_movementState == EMovementState::ProcessMoveToLocationCommand)
+				if (identityComponent->m_team == activePlayerControllerTeam)
 				{
-					SetCurrentTargetVisible(m_isSelected);
-					SetCurrentWaypointsVisible(m_isSelected);
+					if (taskComponent->m_movementState == EMovementState::ProcessMoveToLocationCommand)
+					{
+						SetCurrentTargetVisible(m_isSelected);
+						SetCurrentWaypointsVisible(m_isSelected);
+					}
+					if (taskComponent->m_movementState == EMovementState::ProcessMoveToEntityCommand)
+					{
+						
+					}
 				}
 			}
 		}

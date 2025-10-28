@@ -16,6 +16,8 @@ public:
 	uint32 m_currentHealth = 1000u;
 	UPROPERTY(EditAnywhere)
 	uint32 m_maximumHealth = 1000u;
+	UPROPERTY(EditAnywhere)
+	bool m_isUnderAttack = false;
 
 	void InstantiateComponentForEntity(const ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;

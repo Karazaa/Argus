@@ -33,9 +33,14 @@ public:
 	/**
 	* Used to show animations or effects when the entity starts or stops attacking. N.B. This does not indicate whether the entity is currently in the process of attacking, just that we can start or stop visible attacking.
 	*/
-	UFUNCTION(BlueprintImplementableEvent)
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void  ShowArgusEntityCombatState(ECombatState state);
 
+	/**
+	* Called each frame the entity has received damage. Can be used to trigger damage effects or to raise the alarm that a unit is under attack.
+	*/
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void ArgusEntityUnderAttack();
 	/**
 	* Returns the current waypoints in the sequence they would be visited. If there are no waypoints, an empty array is returned.
 	*/
@@ -49,6 +54,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure = true)
 	FVector GetCurrentTargetLocation() const;
+
+	UFUNCTION(BlueprintCallable, BlueprintPure = true)
+	AArgusActor* GetCurrentTargetActor() const;
 	/**
 	* Used to show the current waypoints for this actor. Use in conjuction with GetCurrentWaypoints() to get the locations
 	*/

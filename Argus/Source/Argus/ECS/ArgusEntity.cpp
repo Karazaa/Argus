@@ -446,6 +446,23 @@ FVector ArgusEntity::GetCurrentTargetLocation() const
 	return targetEntityTransformComponent->m_location;
 }
 
+bool ArgusEntity::IsUnderAttack() const
+{
+	if(const HealthComponent* healthComponent = GetComponent<HealthComponent>())
+	{
+		return healthComponent->m_isUnderAttack;
+	}
+	return false;
+}
+
+void ArgusEntity::ClearUnderAttackStatus() const
+{
+	if (HealthComponent* healthComponent = GetComponent<HealthComponent>())
+	{
+		healthComponent->m_isUnderAttack = false;
+	}
+}
+
 const UArgusActorRecord* ArgusEntity::GetAssociatedActorRecord() const
 {
 	if (!DoesEntityExist(m_id))

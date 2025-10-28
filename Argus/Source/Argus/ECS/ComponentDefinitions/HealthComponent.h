@@ -11,4 +11,5 @@ struct HealthComponent
 
 	uint32 m_currentHealth = 1000u;
 	uint32 m_maximumHealth = 1000u;
+	bool m_isUnderAttack = false;
 };
