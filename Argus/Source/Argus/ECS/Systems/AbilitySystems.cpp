@@ -71,38 +71,41 @@ void AbilitySystems::CastAbility(const UAbilityRecord* abilityRecord, const Abil
 	}
 
 	bool successfulyCast = false;
-	switch (abilityRecord->m_abilityType)
+	for (int32 i = 0; i < abilityRecord->m_abilityEffects.Num(); ++i)
 	{
-		case EAbilityTypes::Spawn:
-			successfulyCast = CastSpawnAbility(abilityRecord, components, false, abilityRecord->GetRequiresReticle());
-			break;
+		switch (abilityRecord->m_abilityEffects[i].m_abilityType)
+		{
+			case EAbilityTypes::Spawn:
+				successfulyCast = CastSpawnAbility(abilityRecord, abilityRecord->m_abilityEffects[i], components, false, abilityRecord->GetRequiresReticle());
+				break;
 
-		case EAbilityTypes::Heal:
-			successfulyCast = CastHealAbility(abilityRecord, components);
-			break;
+			case EAbilityTypes::Heal:
+				successfulyCast = CastHealAbility(abilityRecord, abilityRecord->m_abilityEffects[i], components);
+				break;
 
-		case EAbilityTypes::Attack:
-			successfulyCast = CastAttackAbility(abilityRecord, components);
-			break;
+			case EAbilityTypes::Attack:
+				successfulyCast = CastAttackAbility(abilityRecord, abilityRecord->m_abilityEffects[i], components);
+				break;
 
-		case EAbilityTypes::Construct:
-			successfulyCast = CastSpawnAbility(abilityRecord, components, true, abilityRecord->GetRequiresReticle());
-			break;
+			case EAbilityTypes::Construct:
+				successfulyCast = CastSpawnAbility(abilityRecord, abilityRecord->m_abilityEffects[i], components, true, abilityRecord->GetRequiresReticle());
+				break;
 
-		case EAbilityTypes::Vacate:
-			successfulyCast = CastVacateAbility(abilityRecord, components);
-			break;
+			case EAbilityTypes::Vacate:
+				successfulyCast = CastVacateAbility(abilityRecord, abilityRecord->m_abilityEffects[i], components);
+				break;
 
-		case EAbilityTypes::TakeOff:
-			successfulyCast = CastFlightTransitionAbility(abilityRecord, components, false);
-			break;
+			case EAbilityTypes::TakeOff:
+				successfulyCast = CastFlightTransitionAbility(abilityRecord, abilityRecord->m_abilityEffects[i], components, false);
+				break;
 
-		case EAbilityTypes::Land:
-			successfulyCast = CastFlightTransitionAbility(abilityRecord, components, true);
-			break;
+			case EAbilityTypes::Land:
+				successfulyCast = CastFlightTransitionAbility(abilityRecord, abilityRecord->m_abilityEffects[i], components, true);
+				break;
 
-		default:
-			return;
+			default:
+				return;
+		}
 	}
 
 	if (successfulyCast)
@@ -141,9 +144,13 @@ void AbilitySystems::PrepReticle(const UAbilityRecord* abilityRecord, const Abil
 
 	components.m_reticleComponent->m_abilityRecordId = abilityRecord->m_id;
 
-	if (abilityRecord->m_abilityType == EAbilityTypes::Construct)
+	for (int32 i = 0; i < abilityRecord->m_abilityEffects.Num(); ++i)
 	{
-		PrepReticleForConstructAbility(abilityRecord, components);
+		if (abilityRecord->m_abilityEffects[i].m_abilityType == EAbilityTypes::Construct)
+		{
+			PrepReticleForConstructAbility(abilityRecord, abilityRecord->m_abilityEffects[i], components);
+			break;
+		}
 	}
 
 	components.m_taskComponent->m_abilityState = EAbilityState::None;
@@ -210,7 +217,7 @@ void AbilitySystems::ProcessAbilityTaskCommands(const AbilitySystemsArgs& compon
 	CastAbility(abilityRecord, components);
 }
 
-bool AbilitySystems::CastSpawnAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsArgs& components, bool needsConstruction, bool atReticle)
+bool AbilitySystems::CastSpawnAbility(const UAbilityRecord* abilityRecord, const FAbilityEffect& abilityEffect, const AbilitySystemsArgs& components, bool needsConstruction, bool atReticle)
 {
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
@@ -237,7 +244,7 @@ bool AbilitySystems::CastSpawnAbility(const UAbilityRecord* abilityRecord, const
 	}
 
 	SpawnEntityInfo spawnInfo;
-	spawnInfo.m_argusActorRecordId = abilityRecord->m_argusActorRecordId;
+	spawnInfo.m_argusActorRecordId = abilityEffect.m_argusActorRecordId;
 	spawnInfo.m_spawningAbilityRecordId = abilityRecord->m_id;
 	spawnInfo.m_timeToCastSeconds = abilityRecord->m_timeToCastSeconds;
 	spawnInfo.m_needsConstruction = needsConstruction;
@@ -251,17 +258,17 @@ bool AbilitySystems::CastSpawnAbility(const UAbilityRecord* abilityRecord, const
 	return true;
 }
 
-bool AbilitySystems::CastHealAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsArgs& components)
+bool AbilitySystems::CastHealAbility(const UAbilityRecord* abilityRecord, const FAbilityEffect& abilityEffect, const AbilitySystemsArgs& components)
 {
 	return true;
 }
 
-bool AbilitySystems::CastAttackAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsArgs& components)
+bool AbilitySystems::CastAttackAbility(const UAbilityRecord* abilityRecord, const FAbilityEffect& abilityEffect, const AbilitySystemsArgs& components)
 {
 	return true;
 }
 
-bool AbilitySystems::CastVacateAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsArgs& components)
+bool AbilitySystems::CastVacateAbility(const UAbilityRecord* abilityRecord, const FAbilityEffect& abilityEffect, const AbilitySystemsArgs& components)
 {
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
@@ -329,7 +336,7 @@ bool AbilitySystems::CastVacateAbility(const UAbilityRecord* abilityRecord, cons
 	return true;
 }
 
-bool AbilitySystems::CastFlightTransitionAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsArgs& components, bool landing)
+bool AbilitySystems::CastFlightTransitionAbility(const UAbilityRecord* abilityRecord, const FAbilityEffect& abilityEffect, const AbilitySystemsArgs& components, bool landing)
 {
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
@@ -346,7 +353,7 @@ bool AbilitySystems::CastFlightTransitionAbility(const UAbilityRecord* abilityRe
 	{
 		// TODO JAMES: Check landing zone?
 	}
-
+	
 	const TransformComponent* transformComponent = components.m_entity.GetComponent<TransformComponent>();
 	ARGUS_RETURN_ON_NULL_BOOL(transformComponent, ArgusECSLog);
 
@@ -360,7 +367,8 @@ bool AbilitySystems::CastFlightTransitionAbility(const UAbilityRecord* abilityRe
 	return true;
 }
 
-void AbilitySystems::PrepReticleForConstructAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsArgs& components)
+
+void AbilitySystems::PrepReticleForConstructAbility(const UAbilityRecord* abilityRecord, const FAbilityEffect& abilityEffect, const AbilitySystemsArgs& components)
 {
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
@@ -373,7 +381,7 @@ void AbilitySystems::PrepReticleForConstructAbility(const UAbilityRecord* abilit
 		return;
 	}
 
-	const UArgusActorRecord* argusActorRecord = ArgusStaticData::GetRecord<UArgusActorRecord>(abilityRecord->m_argusActorRecordId);
+	const UArgusActorRecord* argusActorRecord = ArgusStaticData::GetRecord<UArgusActorRecord>(abilityEffect.m_argusActorRecordId);
 	if (!argusActorRecord)
 	{
 		return;

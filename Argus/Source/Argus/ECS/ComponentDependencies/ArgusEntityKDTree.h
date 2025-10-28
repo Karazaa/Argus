@@ -76,6 +76,7 @@ public:
 	void InsertAllArgusEntitiesIntoKDTree(bool forFlyingEntities);
 	void RebuildKDTreeForAllArgusEntities();
 	void InsertArgusEntityIntoKDTree(const ArgusEntity& entityToRepresent);
+	bool RemoveArgusEntityFromKDTree(const ArgusEntity& entityToRemove);
 
 	uint16 FindArgusEntityIdClosestToLocation(const FVector& location) const;
 	uint16 FindArgusEntityIdClosestToLocation(const FVector& location, const ArgusEntity& entityToIgnore) const;
@@ -95,11 +96,18 @@ public:
 
 	bool DoesArgusEntityExistInKDTree(const ArgusEntity& entityToRepresent) const;
 
+	void RequestInsertArgusEntityIntoKDTree(const ArgusEntity& entityToInsert);
+	void RequestRemoveArgusEntityIntoKDTree(const ArgusEntity& entityToRemove);
+	void ProcessDeferredStateChanges();
+
 protected:
 	bool SearchForEntityIdRecursive(const ArgusEntityKDTreeNode* node, uint16 entityId) const;
+	bool SearchForEntityIdRecursive(ArgusEntityKDTreeNode* node, uint16 entityId, ArgusEntityKDTreeNode*& ouputNode, ArgusEntityKDTreeNode*& ouputParentNode);
 	void RebuildSubTreeForArgusEntitiesRecursive(ArgusEntityKDTreeNode*& node, bool forceReInsertChildren);
 	void ClearNodeWithReInsert(ArgusEntityKDTreeNode*& node);
 
 private:
 	ArgusEntityKDTreeRangeOutput m_queryScratchData;
+	TArray<uint16> m_entityIdsToInsert;
+	TArray<uint16> m_entityIdsToRemove;
 };

@@ -16,8 +16,6 @@
 #include "Systems/TransformSystems.h"
 #include "Engine/HitResult.h"
 
-#define ECC_RETICLE	ECC_GameTraceChannel1
-
 bool UArgusInputManager::ShouldUpdateSelectedActorDisplay(ArgusEntity& templateSelectedEntity)
 {
 	InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::GetSingletonEntity().GetComponent<InputInterfaceComponent>();

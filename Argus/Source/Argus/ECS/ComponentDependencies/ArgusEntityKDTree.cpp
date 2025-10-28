@@ -277,6 +277,38 @@ void ArgusEntityKDTree::InsertArgusEntityIntoKDTree(const ArgusEntity& entityToR
 	InsertNodeIntoKDTreeRecursive(m_rootNode, nodeToInsert, 0u);
 }
 
+bool ArgusEntityKDTree::RemoveArgusEntityFromKDTree(const ArgusEntity& entityToRemove)
+{
+	if (UNLIKELY(!entityToRemove))
+	{
+		return false;
+	}
+
+	ArgusEntityKDTreeNode* foundNode = nullptr;
+	ArgusEntityKDTreeNode* parentNode = nullptr;
+	if (!SearchForEntityIdRecursive(m_rootNode, entityToRemove.GetId(), foundNode, parentNode))
+	{
+		return false;
+	}
+	ARGUS_RETURN_ON_NULL_BOOL(foundNode, ArgusECSLog);
+
+	if (parentNode->m_leftChild == foundNode)
+	{
+		parentNode->m_leftChild = nullptr;
+	}
+	else if (parentNode->m_rightChild == foundNode)
+	{
+		parentNode->m_rightChild = nullptr;
+	}
+
+	ArgusEntityKDTreeNode* leftChild = foundNode->m_leftChild;
+	ArgusEntityKDTreeNode* rightChild = foundNode->m_rightChild;
+	m_nodePool.Release(foundNode);
+	RebuildSubTreeForArgusEntitiesRecursive(leftChild, true);
+	RebuildSubTreeForArgusEntitiesRecursive(rightChild, true);
+	return true;
+}
+
 uint16 ArgusEntityKDTree::FindArgusEntityIdClosestToLocation(const FVector& location) const
 {
 	return FindArgusEntityIdClosestToLocation(location, ArgusEntity::k_emptyEntity);
@@ -473,6 +505,31 @@ bool ArgusEntityKDTree::DoesArgusEntityExistInKDTree(const ArgusEntity& entityTo
 	return SearchForEntityIdRecursive(m_rootNode, entityToRepresent.GetId());
 }
 
+void ArgusEntityKDTree::RequestInsertArgusEntityIntoKDTree(const ArgusEntity& entityToInsert)
+{
+	m_entityIdsToInsert.Add(entityToInsert.GetId());
+}
+
+void ArgusEntityKDTree::RequestRemoveArgusEntityIntoKDTree(const ArgusEntity& entityToRemove)
+{
+	m_entityIdsToRemove.Add(entityToRemove.GetId());
+}
+
+void ArgusEntityKDTree::ProcessDeferredStateChanges()
+{
+	for (int32 i = 0; i < m_entityIdsToRemove.Num(); ++i)
+	{
+		RemoveArgusEntityFromKDTree(ArgusEntity::RetrieveEntity(m_entityIdsToRemove[i]));
+	}
+	m_entityIdsToRemove.Reset();
+
+	for (int32 i = 0; i < m_entityIdsToInsert.Num(); ++i)
+	{
+		InsertArgusEntityIntoKDTree(ArgusEntity::RetrieveEntity(m_entityIdsToInsert[i]));
+	}
+	m_entityIdsToInsert.Reset();
+}
+
 bool ArgusEntityKDTree::SearchForEntityIdRecursive(const ArgusEntityKDTreeNode* node, uint16 entityId) const
 {
 	if (!node)
@@ -492,6 +549,40 @@ bool ArgusEntityKDTree::SearchForEntityIdRecursive(const ArgusEntityKDTreeNode* 
 
 	if (node->m_rightChild && SearchForEntityIdRecursive(node->m_rightChild, entityId))
 	{
+		return true;
+	}
+
+	return false;
+}
+
+bool ArgusEntityKDTree::SearchForEntityIdRecursive(ArgusEntityKDTreeNode* node, uint16 entityId, ArgusEntityKDTreeNode*& outputNode, ArgusEntityKDTreeNode*& ouputParentNode)
+{
+	if (!node)
+	{
+		return false;
+	}
+
+	if (node->m_entityId == entityId)
+	{
+		outputNode = node;
+		return true;
+	}
+
+	if (node->m_leftChild && SearchForEntityIdRecursive(node->m_leftChild, entityId, outputNode, ouputParentNode))
+	{
+		if (ouputParentNode == nullptr)
+		{
+			ouputParentNode = node;
+		}
+		return true;
+	}
+
+	if (node->m_rightChild && SearchForEntityIdRecursive(node->m_rightChild, entityId, outputNode, ouputParentNode))
+	{
+		if (ouputParentNode == nullptr)
+		{
+			ouputParentNode = node;
+		}
 		return true;
 	}
 
@@ -551,8 +642,9 @@ void ArgusEntityKDTree::RebuildSubTreeForArgusEntitiesRecursive(ArgusEntityKDTre
 
 void ArgusEntityKDTree::ClearNodeWithReInsert(ArgusEntityKDTreeNode*& node)
 {
+	ARGUS_RETURN_ON_NULL(node, ArgusECSLog);
 	const ArgusEntity entity = ArgusEntity::RetrieveEntity(node->m_entityId);
-	if (!entity)
+	if (UNLIKELY(!entity))
 	{
 		return;
 	}

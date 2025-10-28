@@ -5,7 +5,7 @@
 #include "ComponentDependencies/ResourceSet.h"
 #include "Materials/MaterialInterface.h"
 #include "RecordDefinitions/ArgusActorRecord.h"
-#include "RecordDependencies/AbilityTypes.h"
+#include "RecordDependencies/AbilityEffect.h"
 #include "SoftPtrLoadStore.h"
 #include "AbilityRecord.generated.h"
 
@@ -28,10 +28,10 @@ class ARGUS_API UAbilityRecord : public UArgusStaticRecord
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float m_timeToCastSeconds = 0.0f;
+	TArray<FAbilityEffect> m_abilityEffects;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	EAbilityTypes m_abilityType = EAbilityTypes::Spawn;
+	float m_timeToCastSeconds = 0.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FSoftPtrLoadStore_UTexture m_abilityIcon;
@@ -41,10 +41,6 @@ public:
 
 	UPROPERTY(EditAnywhere, meta = (Bitmask, BitmaskEnum = EReticleFlags))
 	uint8 m_reticleFlags = 0u;
-
-	// TODO JAMES: We need some way of record picking this. Right now it is just a plain int property in editor.
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (EditCondition = "m_abilityType == EAbilityTypes::Spawn || m_abilityType == EAbilityTypes::Construct", EditConditionHides))
-	int32 m_argusActorRecordId = 0u;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FSoftPtrLoadStore_UMaterialInterface m_reticleMaterial;

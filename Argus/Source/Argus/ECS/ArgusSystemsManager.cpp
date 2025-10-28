@@ -57,8 +57,6 @@ void ArgusSystemsManager::RunSystems(UWorld* worldPointer, float deltaTime)
 	FlockingSystems::RunSystems(deltaTime);
 	didEntityPositionChangeThisFrame |= SpawningSystems::RunSystems(deltaTime);
 
-	UpdateSingletonComponents(didEntityPositionChangeThisFrame);
-
 #if !UE_BUILD_SHIPPING
 	ArgusECSDebugger::DrawECSDebugger();
 	ArgusMemoryDebugger::DrawMemoryDebugger();
@@ -67,7 +65,9 @@ void ArgusSystemsManager::RunSystems(UWorld* worldPointer, float deltaTime)
 
 void ArgusSystemsManager::RunPostThreadSystems()
 {
+	ARGUS_TRACE(ArgusSystemsManager::RunPostThreadSystems);
 	FogOfWarSystems::RunSystems();
+	SpatialPartitioningSystems::RunSystems();
 }
 
 void ArgusSystemsManager::PopulateSingletonComponents(UWorld* worldPointer, const UArgusEntityTemplate* singletonTemplate)
@@ -146,19 +146,4 @@ void ArgusSystemsManager::PopulateTeamComponents(const FResourceSet& initialTeam
 
 		teamResourceComponent->m_currentResources.ApplyResourceChange(initialTeamResourceSet);
 	}
-}
-
-void ArgusSystemsManager::UpdateSingletonComponents(bool didEntityPositionChangeThisFrame)
-{
-	ArgusEntity singletonEntity = ArgusEntity::GetSingletonEntity();
-	if (!singletonEntity)
-	{
-		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] There is no singleton %s when it should have already been made."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity));
-		return;
-	}
-
-	SpatialPartitioningComponent* spatialPartitioningComponent = singletonEntity.GetComponent<SpatialPartitioningComponent>();
-	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
-
-	SpatialPartitioningSystems::RunSystems(singletonEntity, didEntityPositionChangeThisFrame);
 }

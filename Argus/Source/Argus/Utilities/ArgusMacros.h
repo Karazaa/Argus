@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 
+#define ECC_RETICLE	ECC_GameTraceChannel1
+
 #define ARGUS_NAMEOF(x) TEXT(#x)
 #define ARGUS_FUNCNAME TEXT(__FUNCTION__)
 

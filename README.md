@@ -14,7 +14,7 @@ Detailed documentation, examples, resources, and reasonings will be added over t
 
 # How to Run Argus
 
-Right now, Argus is based on Unreal Engine version 5.5.4. In order to run Argus you would either need to install Unreal version 5.5.4 via the Epic Games launcher or build Unreal 5.5.4 from source code. 
+Right now, Argus is based on Unreal Engine version 5.6.1. In order to run Argus you would either need to install Unreal version 5.6.1 via the Epic Games launcher or build Unreal 5.6.1 from source code. 
 
 
 

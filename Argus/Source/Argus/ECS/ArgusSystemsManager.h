@@ -21,5 +21,4 @@ private:
 	static void PopulateSingletonComponents(UWorld* worldPointer, const UArgusEntityTemplate* singletonTemplate);
 	static void SetInitialSingletonState(UWorld* worldPointer, ETeam activePlayerTeam);
 	static void PopulateTeamComponents(const FResourceSet& initialTeamResourceSet);
-	static void UpdateSingletonComponents(bool didEntityPositionChangeThisFrame);
 };
