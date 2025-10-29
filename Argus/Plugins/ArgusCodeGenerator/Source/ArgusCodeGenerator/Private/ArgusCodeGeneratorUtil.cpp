@@ -12,6 +12,7 @@ const char* ArgusCodeGeneratorUtil::s_propertyIgnoreDelimiter = "ARGUS_IGNORE";
 const char* ArgusCodeGeneratorUtil::s_propertyStaticDataDelimiter = "ARGUS_STATIC_DATA";
 const char* ArgusCodeGeneratorUtil::s_propertyObservableDelimiter = "ARGUS_OBSERVABLE";
 const char* ArgusCodeGeneratorUtil::s_propertyObservableDeclarationDelimiter = "ARGUS_OBSERVABLE_DECLARATION";
+const char* ArgusCodeGeneratorUtil::s_propertyObservablePropertyDeclarationDelimiter = "ARGUS_OBSERVABLE_DECLARATION_PROPERTY";
 const char* ArgusCodeGeneratorUtil::s_propertyGetButSkipDelimiter = "ARGUS_GET_BUT_SKIP";
 const char* ArgusCodeGeneratorUtil::s_uePropertyDelimiter = "UPROPERTY";
 const char* ArgusCodeGeneratorUtil::s_systemsDirectoryName = "Systems";
@@ -708,13 +709,19 @@ bool ArgusCodeGeneratorUtil::ParseVariableDeclarations(std::string lineText, boo
 
 bool ArgusCodeGeneratorUtil::ParseJointPropertyAndDeclarationMacro(std::string lineText, std::vector < std::vector<ParsedVariableData> >& parsedVariableData, bool& hasObservables)
 {
-	const size_t propertyObservableDeclarationDelimiter = lineText.find(s_propertyObservableDeclarationDelimiter);
+	bool isDataProperty = false;
+	size_t propertyObservableDeclarationDelimiter = lineText.find(s_propertyObservableDeclarationDelimiter);
 	if (propertyObservableDeclarationDelimiter == std::string::npos)
 	{
-		return false;
+		propertyObservableDeclarationDelimiter = lineText.find(s_propertyObservablePropertyDeclarationDelimiter);
+		if (propertyObservableDeclarationDelimiter == std::string::npos)
+		{
+			return false;
+		}
+		isDataProperty = true;
 	}
 
-	const size_t observableDeclarationDelimiterLength = std::strlen(s_propertyObservableDeclarationDelimiter);
+	const size_t observableDeclarationDelimiterLength = std::strlen(isDataProperty ? s_propertyObservablePropertyDeclarationDelimiter : s_propertyObservableDeclarationDelimiter);
 	const size_t startIndex = lineText.find('(') + 1;
 	const size_t endIndex = lineText.find(')');
 	lineText = lineText.substr(startIndex, endIndex - startIndex);
