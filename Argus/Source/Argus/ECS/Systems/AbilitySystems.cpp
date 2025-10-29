@@ -103,6 +103,14 @@ void AbilitySystems::CastAbility(const UAbilityRecord* abilityRecord, const Abil
 				successfulyCast = CastFlightTransitionAbility(abilityRecord, abilityRecord->m_abilityEffects[i], components, true);
 				break;
 
+			case EAbilityTypes::AddAbilityOverride:
+				successfulyCast = CastAbilityOverrideAbility(abilityRecord, abilityRecord->m_abilityEffects[i], components, true);
+				break;
+
+			case EAbilityTypes::RemoveAbilityOverride:
+				successfulyCast = CastAbilityOverrideAbility(abilityRecord, abilityRecord->m_abilityEffects[i], components, false);
+				break;
+
 			default:
 				return;
 		}
@@ -367,6 +375,31 @@ bool AbilitySystems::CastFlightTransitionAbility(const UAbilityRecord* abilityRe
 	return true;
 }
 
+
+bool AbilitySystems::CastAbilityOverrideAbility(const UAbilityRecord* abilityRecord, const FAbilityEffect& abilityEffect, const AbilitySystemsArgs& components, bool adding)
+{
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return false;
+	}
+
+	if (!abilityRecord)
+	{
+		LogAbilityRecordError(ARGUS_FUNCNAME);
+		return false;
+	}
+
+	if (adding)
+	{
+		components.m_abilityComponent->AddAbilityOverride(abilityEffect.m_abilityRecordId, abilityEffect.m_abilityIndex);
+	}
+	else
+	{
+		components.m_abilityComponent->RemoveAbilityOverride(abilityEffect.m_abilityIndex);
+	}
+
+	return true;
+}
 
 void AbilitySystems::PrepReticleForConstructAbility(const UAbilityRecord* abilityRecord, const FAbilityEffect& abilityEffect, const AbilitySystemsArgs& components)
 {

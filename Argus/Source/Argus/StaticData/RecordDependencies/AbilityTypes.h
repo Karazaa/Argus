@@ -13,5 +13,7 @@ enum class EAbilityTypes : uint8
 	Construct,
 	Vacate,
 	TakeOff,
-	Land
+	Land,
+	AddAbilityOverride,
+	RemoveAbilityOverride
 };

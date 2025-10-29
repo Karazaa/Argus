@@ -7,8 +7,8 @@
 
 class UAbilityRecord;
 
-UENUM()
-enum EAbilityIndex
+UENUM(BlueprintType)
+enum class EAbilityIndex : uint8
 {
 	None = 0,
 	Ability0 = 1 << 0,
