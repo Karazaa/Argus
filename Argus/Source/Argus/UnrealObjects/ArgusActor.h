@@ -20,6 +20,9 @@ class AArgusActor : public AActor, public IPassengerComponentObserver, public IT
 public:	
 	AArgusActor();
 
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	bool IsFlying() const;
+
 	virtual void Reset();
 
 	ArgusEntity GetEntity() const;

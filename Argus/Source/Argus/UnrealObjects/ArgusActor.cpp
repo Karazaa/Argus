@@ -21,6 +21,16 @@ AArgusActor::AArgusActor()
 	SetRootComponent(CreateDefaultSubobject<USceneComponent>(FName("RootSceneComponent")));
 }
 
+bool AArgusActor::IsFlying() const
+{
+	if (!m_entity)
+	{
+		return false;
+	}
+
+	return m_entity.IsFlying();
+}
+
 void AArgusActor::Reset()
 {
 	if (m_entity)
