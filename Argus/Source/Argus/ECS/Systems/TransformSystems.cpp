@@ -222,7 +222,7 @@ void TransformSystems::ProcessTakeOffCommand(UWorld* worldPointer, float deltaTi
 	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
 
 	// TODO JAMES: For now instantly transitioning to flight. Eventually we will want to route through the TakingOff state and interpolate upwards.
-	components.m_taskComponent->m_flightState = EFlightState::Flying;
+	components.m_taskComponent->Set_m_flightState(EFlightState::Flying);
 	components.m_transformComponent->m_location.Z = spatialPartitioningComponent->m_flyingPlaneHeight;
 	
 	if (!spatialPartitioningComponent->m_flyingArgusEntityKDTree.DoesArgusEntityExistInKDTree(components.m_entity))
@@ -244,7 +244,7 @@ void TransformSystems::ProcessLandCommand(UWorld* worldPointer, float deltaTime,
 	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
 
 	// TODO JAMES: For now instantly transitioning to grounded. Eventually we will want to route through the Landing state and interpolate downwards.
-	components.m_taskComponent->m_flightState = EFlightState::Grounded;
+	components.m_taskComponent->Set_m_flightState(EFlightState::Grounded);
 
 	FHitResult hitResult;
 	const FVector startLocation = components.m_transformComponent->m_location;

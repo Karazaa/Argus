@@ -12,7 +12,7 @@ const char* ArgusCodeGeneratorUtil::s_propertyIgnoreDelimiter = "ARGUS_IGNORE";
 const char* ArgusCodeGeneratorUtil::s_propertyStaticDataDelimiter = "ARGUS_STATIC_DATA";
 const char* ArgusCodeGeneratorUtil::s_propertyObservableDelimiter = "ARGUS_OBSERVABLE";
 const char* ArgusCodeGeneratorUtil::s_propertyObservableDeclarationDelimiter = "ARGUS_OBSERVABLE_DECLARATION";
-const char* ArgusCodeGeneratorUtil::s_propertyObservablePropertyDeclarationDelimiter = "ARGUS_OBSERVABLE_DECLARATION_PROPERTY";
+const char* ArgusCodeGeneratorUtil::s_propertyObservablePropertyDeclarationDelimiter = "ARGUS_OBSERVABLE_PROPERTY_DECLARATION";
 const char* ArgusCodeGeneratorUtil::s_propertyGetButSkipDelimiter = "ARGUS_GET_BUT_SKIP";
 const char* ArgusCodeGeneratorUtil::s_uePropertyDelimiter = "UPROPERTY";
 const char* ArgusCodeGeneratorUtil::s_systemsDirectoryName = "Systems";
@@ -736,7 +736,7 @@ bool ArgusCodeGeneratorUtil::ParseJointPropertyAndDeclarationMacro(std::string l
 	variableData.m_typeName.append(lineText.substr(0, firstCommaIndex));
 	variableData.m_varName = lineText.substr(firstCommaIndexPlus2, lastCommaIndex - firstCommaIndexPlus2);
 	variableData.m_defaultValue = lineText.substr(lastCommaIndexPlus2, lineText.size() - lastCommaIndexPlus2);
-	variableData.m_propertyMacro = s_propertyObservableDelimiter;
+	variableData.m_propertyMacro = isDataProperty ? s_propertyObservablePropertyDeclarationDelimiter : s_propertyObservableDeclarationDelimiter;
 	variableData.m_isObservable = true;
 	hasObservables = true;
 	parsedVariableData.back().push_back(variableData);

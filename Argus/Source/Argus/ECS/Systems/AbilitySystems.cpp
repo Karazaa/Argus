@@ -371,7 +371,7 @@ bool AbilitySystems::CastFlightTransitionAbility(const UAbilityRecord* abilityRe
 		return false;
 	}
 
-	components.m_taskComponent->m_flightState = landing ? EFlightState::ProcessLandCommand : EFlightState::ProcessTakeOffCommand;
+	components.m_taskComponent->Set_m_flightState(landing ? EFlightState::ProcessLandCommand : EFlightState::ProcessTakeOffCommand);
 	return true;
 }
 

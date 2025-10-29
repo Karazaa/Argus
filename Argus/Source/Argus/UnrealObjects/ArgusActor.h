@@ -47,6 +47,12 @@ protected:
 	void OnArgusEntityDeath();
 
 	UFUNCTION(BlueprintImplementableEvent)
+	void OnTakeOff();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnLand();
+
+	UFUNCTION(BlueprintImplementableEvent)
 	void OnArgusEntityPassengerStateChanged(bool isPassenger);
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
@@ -67,6 +73,7 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type endPlayReason) override;
 	virtual void OnChanged_m_baseState(EBaseState oldValue, EBaseState newValue) override;
+	virtual void OnChanged_m_flightState(EFlightState oldValue, EFlightState newValue) override;
 	virtual void OnChanged_m_carrierEntityId(uint16 oldValue, uint16 newValue) override;
 
 	void InitializeWidgets();

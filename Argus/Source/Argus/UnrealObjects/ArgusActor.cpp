@@ -290,6 +290,18 @@ void AArgusActor::OnChanged_m_baseState(EBaseState oldState, EBaseState newState
 	}
 }
 
+void AArgusActor::OnChanged_m_flightState(EFlightState oldValue, EFlightState newValue)
+{
+	if (oldValue != EFlightState::Flying && newValue == EFlightState::Flying)
+	{
+		OnTakeOff();
+	}
+	else if (oldValue != EFlightState::Grounded && newValue == EFlightState::Grounded)
+	{
+		OnLand();
+	}
+}
+
 void AArgusActor::OnChanged_m_carrierEntityId(uint16 oldValue, uint16 newValue)
 {
 	OnArgusEntityPassengerStateChanged(newValue != ArgusECSConstants::k_maxEntities);
