@@ -160,7 +160,7 @@ bool TransformSystems::ProcessMovementTaskCommands(UWorld* worldPointer, float d
 			return true;
 
 		case EFlightState::TakingOff:
-			// TODO JAMES: Interpolate upwards
+			TakeOff(deltaTime, components);
 			return true;
 
 		case EFlightState::Landing:
@@ -221,10 +221,9 @@ void TransformSystems::ProcessTakeOffCommand(UWorld* worldPointer, float deltaTi
 	SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::GetSingletonEntity().GetComponent<SpatialPartitioningComponent>();
 	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
 
-	// TODO JAMES: For now instantly transitioning to flight. Eventually we will want to route through the TakingOff state and interpolate upwards.
-	components.m_taskComponent->Set_m_flightState(EFlightState::Flying);
-	components.m_transformComponent->m_location.Z = spatialPartitioningComponent->m_flyingPlaneHeight;
-	
+	components.m_taskComponent->Set_m_flightState(EFlightState::TakingOff);
+	components.m_transformComponent->m_smoothedTransitionAltitude.Reset(components.m_transformComponent->m_location.Z);
+
 	if (!spatialPartitioningComponent->m_flyingArgusEntityKDTree.DoesArgusEntityExistInKDTree(components.m_entity))
 	{
 		spatialPartitioningComponent->m_flyingArgusEntityKDTree.RequestInsertArgusEntityIntoKDTree(components.m_entity);
@@ -260,6 +259,28 @@ void TransformSystems::ProcessLandCommand(UWorld* worldPointer, float deltaTime,
 		spatialPartitioningComponent->m_argusEntityKDTree.RequestInsertArgusEntityIntoKDTree(components.m_entity);
 		spatialPartitioningComponent->m_flyingArgusEntityKDTree.RequestRemoveArgusEntityIntoKDTree(components.m_entity);
 	}
+}
+
+void TransformSystems::TakeOff(float deltaTime, const TransformSystemsArgs& components)
+{
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+
+	SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::GetSingletonEntity().GetComponent<SpatialPartitioningComponent>();
+	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
+
+	components.m_transformComponent->m_smoothedTransitionAltitude.SmoothChase(spatialPartitioningComponent->m_flyingPlaneHeight, deltaTime);
+	float newAltitude = components.m_transformComponent->m_smoothedTransitionAltitude.GetValue();
+
+	if (FMath::IsNearlyEqual(newAltitude, spatialPartitioningComponent->m_flyingPlaneHeight, ArgusECSConstants::k_flightTransitionAltitudeThreshold))
+	{
+		components.m_taskComponent->Set_m_flightState(EFlightState::Flying);
+		newAltitude = spatialPartitioningComponent->m_flyingPlaneHeight;
+	}
+
+	components.m_transformComponent->m_location.Z = newAltitude;
 }
 
 void TransformSystems::FaceTargetEntity(const TransformSystemsArgs& components)

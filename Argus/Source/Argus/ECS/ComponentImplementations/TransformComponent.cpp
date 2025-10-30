@@ -21,6 +21,7 @@ void TransformComponent::Reset()
 {
 	m_location = FVector::ZeroVector;
 	m_smoothedYaw.ResetZero();
+	m_smoothedTransitionAltitude.ResetZero();
 	m_targetYaw = 0.0f;
 	m_radius = 45.0f;
 	m_height = 100.0f;
@@ -44,6 +45,10 @@ void TransformComponent::DrawComponentDebug() const
 		ImGui::Text("m_smoothedYaw");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_smoothedYaw.GetValue());
+		ImGui::TableNextColumn();
+		ImGui::Text("m_smoothedTransitionAltitude");
+		ImGui::TableNextColumn();
+		ImGui::Text("%.2f", m_smoothedTransitionAltitude.GetValue());
 		ImGui::TableNextColumn();
 		ImGui::Text("m_targetYaw");
 		ImGui::TableNextColumn();

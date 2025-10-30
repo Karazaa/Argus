@@ -15,6 +15,8 @@ public:
 	UPROPERTY(EditAnywhere)
 float m_smoothedYawDecayConstant = 1.0f;
 	UPROPERTY(EditAnywhere)
+float m_smoothedTransitionAltitudeDecayConstant = 1.0f;
+	UPROPERTY(EditAnywhere)
 	float m_radius = 45.0f;
 	UPROPERTY(EditAnywhere)
 	float m_height = 100.0f;

@@ -35,6 +35,7 @@ namespace ArgusECSConstants
 	static constexpr int32 k_initialResourcesQuantity = 1000;
 
 	static constexpr float k_lowestPossibleAltitude = -1000.0f;
+	static constexpr float k_flightTransitionAltitudeThreshold = 1.0f;
 
 #if !UE_BUILD_SHIPPING
 	static constexpr float k_debugDrawLineWidth = 3.0f;
