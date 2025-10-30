@@ -235,7 +235,7 @@ void NavigationSystems::GeneratePathPointsForGroundedEntity(UWorld* worldPointer
 		components.m_transformComponent->m_location,
 		targetLocation.value()
 	);
-	pathFindingQuery.SetNavAgentProperties(FNavAgentProperties(components.m_transformComponent->m_radius, components.m_transformComponent->m_height));
+	pathFindingQuery.SetNavAgentProperties(FNavAgentProperties(components.m_transformComponent->m_radius, ArgusECSConstants::k_navigationAgentDefaultHeight));
 	FPathFindingResult pathFindingResult = unrealNavigationSystem->FindPathSync(pathFindingQuery);
 
 	if (!pathFindingResult.IsSuccessful() || !pathFindingResult.Path)

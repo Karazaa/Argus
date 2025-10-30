@@ -13,7 +13,6 @@
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(SpawningSystemsSpawnEntityTest, "Argus.ECS.Systems.SpawningSystems.SpawnEntity", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool SpawningSystemsSpawnEntityTest::RunTest(const FString& Parameters)
 {
-	const float				dummyHeight = 500.0f;
 	const float				dummyRadius = 700.0f;
 	const float				dummySpeed = 0.1f;
 	const uint32			dummyRecordID = 1234u;
@@ -30,7 +29,6 @@ bool SpawningSystemsSpawnEntityTest::RunTest(const FString& Parameters)
 		return false;
 	}
 
-	transformComponentData->m_height = dummyHeight;
 	transformComponentData->m_radius = dummyRadius;
 
 	entityTemplate->m_entityPriority = dummyEntityPriority;
@@ -161,23 +159,6 @@ bool SpawningSystemsSpawnEntityTest::RunTest(const FString& Parameters)
 		),
 		spawnedTaskComponent->m_spawnedFromArgusActorRecordId,
 		dummyRecordID
-	);
-#pragma endregion
-
-#pragma region Test that the spawned entity has a correct value for its TransformComponents height.
-	TestEqual
-	(
-		FString::Printf
-		(
-			TEXT("[%s] Test that the %s of the spawned %s has the correct value for %s after calling %s."),
-			ARGUS_FUNCNAME,
-			ARGUS_NAMEOF(TransformComponent),
-			ARGUS_NAMEOF(ArgusEntity),
-			ARGUS_NAMEOF(m_height),
-			ARGUS_NAMEOF(SpawningSystems::SpawnEntity)
-		),
-		spawnedTransformComponent->m_height,
-		dummyHeight
 	);
 #pragma endregion
 

@@ -28,8 +28,11 @@ struct TransformComponent
 	ARGUS_IGNORE()
 	float m_targetYaw = 0.0f;
 
+	ARGUS_IGNORE()
+	float m_targetTransitionAltitude = 0.0f;
+
 	float m_radius = 45.0f;
-	float m_height = 100.0f;
+	
 	EFlightCapability m_flightCapability;
 
 	float GetCurrentYaw() const

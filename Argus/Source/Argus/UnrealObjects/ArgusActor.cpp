@@ -302,7 +302,7 @@ void AArgusActor::OnChanged_m_baseState(EBaseState oldState, EBaseState newState
 
 void AArgusActor::OnChanged_m_flightState(EFlightState oldValue, EFlightState newValue)
 {
-	if (oldValue != EFlightState::Flying && newValue == EFlightState::Flying)
+	if (oldValue != EFlightState::TakingOff && newValue == EFlightState::TakingOff)
 	{
 		OnTakeOff();
 	}
