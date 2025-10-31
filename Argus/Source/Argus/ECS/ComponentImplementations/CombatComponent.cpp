@@ -22,6 +22,7 @@ void CombatComponent::Reset()
 	m_baseDamagePerIntervalOrPerSecond = 100u;
 	m_intervalDurationSeconds = 1.0f;
 	m_attackType = EAttackType::Melee;
+	m_rangedAttackCapability = ERangedAttackCapability::GroundedAndFlying;
 	m_attackTimerHandle.Reset();
 }
 
@@ -48,6 +49,11 @@ void CombatComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		const char* valueName_m_attackType = ARGUS_FSTRING_TO_CHAR(StaticEnum<EAttackType>()->GetNameStringByValue(static_cast<uint8>(m_attackType)))
 		ImGui::Text(valueName_m_attackType);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_rangedAttackCapability");
+		ImGui::TableNextColumn();
+		const char* valueName_m_rangedAttackCapability = ARGUS_FSTRING_TO_CHAR(StaticEnum<ERangedAttackCapability>()->GetNameStringByValue(static_cast<uint8>(m_rangedAttackCapability)))
+		ImGui::Text(valueName_m_rangedAttackCapability);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_attackTimerHandle");
 		ImGui::TableNextColumn();

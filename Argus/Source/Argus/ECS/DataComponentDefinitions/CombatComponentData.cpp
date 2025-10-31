@@ -13,6 +13,7 @@ void UCombatComponentData::InstantiateComponentForEntity(const ArgusEntity& enti
 	CombatComponentRef->m_baseDamagePerIntervalOrPerSecond = m_baseDamagePerIntervalOrPerSecond;
 	CombatComponentRef->m_intervalDurationSeconds = m_intervalDurationSeconds;
 	CombatComponentRef->m_attackType = m_attackType;
+	CombatComponentRef->m_rangedAttackCapability = m_rangedAttackCapability;
 }
 
 bool UCombatComponentData::MatchesType(UComponentData* other) const
