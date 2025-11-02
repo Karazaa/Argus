@@ -65,3 +65,10 @@ AArgusActor* UArgusGameInstance::GetArgusActorFromArgusEntity(const ArgusEntity&
 
 	return m_argusEntityActorMap[entityId].Get();
 }
+
+TArray<uint16, FDefaultAllocator > UArgusGameInstance::GetAllRegisteredArgusEntityIds() const
+{
+	TArray<uint16, FDefaultAllocator > keys;
+	m_argusEntityActorMap.GetKeys(keys);
+	return keys;
+}

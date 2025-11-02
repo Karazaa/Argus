@@ -463,6 +463,19 @@ void ArgusEntity::ClearUnderAttackStatus() const
 	}
 }
 
+bool ArgusEntity::HasExtractableResources() const
+{
+	if (const ResourceComponent* resourceComponent = GetComponent<ResourceComponent>())
+	{
+		if(resourceComponent->m_resourceComponentOwnerType != EResourceComponentOwnerType::Source)
+		{
+			return false;
+		}
+		return !resourceComponent->m_currentResources.IsEmpty();
+	}
+	return false;
+}
+
 const UArgusActorRecord* ArgusEntity::GetAssociatedActorRecord() const
 {
 	if (!DoesEntityExist(m_id))

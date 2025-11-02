@@ -10,7 +10,9 @@
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
 				"Engine",
-				"FunctionalTesting"
+				"FunctionalTesting",
+				"AIModule",
+				"CoreUObject"
 			]
 		}
 	],
@@ -44,6 +46,10 @@
 		},
 		{
 			"Name": "TestFramework",
+			"Enabled": true
+		},
+		{
+			"Name": "GameplayStateTree",
 			"Enabled": true
 		}
 	],

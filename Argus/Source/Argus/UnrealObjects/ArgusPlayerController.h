@@ -8,6 +8,10 @@
 #include "Engine/HitResult.h"
 #include "GameFramework/PlayerController.h"
 #include "InputMappingContext.h"
+#include "Kismet/GameplayStatics.h"
+
+#include "ArgusController.h"
+#include "MemoryComponent.h"
 
 #include "ArgusPlayerController.generated.h"
 
@@ -17,6 +21,7 @@ class AReticleActor;
 class UArgusInputActionSet;
 class UArgusInputManager;
 class UArgusUIElement;
+//class UMemoryComponent;
 
 UENUM(BlueprintType)
 enum class EArgusCursorType : uint8
@@ -37,11 +42,12 @@ enum class EArgusCursorType : uint8
 };
 
 UCLASS()
-class AArgusPlayerController : public APlayerController
+class AArgusPlayerController : public APlayerController, public IArgusController
 {
 	GENERATED_BODY()
 
 public:
+	AArgusPlayerController();
 	void ProcessArgusPlayerInput(float deltaTime);
 
 	AArgusCameraActor::UpdateCameraPanningParameters GetScreenSpaceInputValues() const;
@@ -79,7 +85,7 @@ public:
 	void UpdateCursorPriority(EArgusCursorType newCursor);
 
 	/**
-	* Sets the cursor to display. Default implemntation sets the hardware cursor. Override in Blueprint if you're implementing a different type of cursor.
+	* Sets the cursor to display.
 	*/
 	UFUNCTION(BlueprintNativeEvent, Category = "Argus PlayerController")
 	void SetArgusCursor(EArgusCursorType newCursorType);
@@ -87,6 +93,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Argus PlayerController")
 	EArgusCursorType GetArgusCursor() const;
 	
+	ETeam GetControlledTeam() override { return m_playerTeam; }
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UMemoryComponent* m_memoryComponent;
+
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	ETeam m_playerTeam = ETeam::TeamA;

@@ -55,6 +55,7 @@ public:
 	FVector			GetCurrentTargetLocation() const;
 	bool IsUnderAttack() const;
 	void ClearUnderAttackStatus() const;
+	bool HasExtractableResources() const;
 
 	const UArgusActorRecord* GetAssociatedActorRecord() const;
 

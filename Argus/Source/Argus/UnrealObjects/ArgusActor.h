@@ -29,6 +29,7 @@ public:
 	void Hide();
 	bool IsVisible() const;
 	void Update(float deltaTime, ETeam activePlayerControllerTeam);
+	bool IsSeenBy(ETeam team) const;
 
 	/**
 	* Used to show animations or effects when the entity starts or stops attacking. N.B. This does not indicate whether the entity is currently in the process of attacking, just that we can start or stop visible attacking.

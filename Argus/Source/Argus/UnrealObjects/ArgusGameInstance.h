@@ -24,6 +24,7 @@ public:
 	void RegisterArgusEntityActor(const TWeakObjectPtr<AArgusActor> argusActor);
 	void DeregisterArgusEntityActor(const TWeakObjectPtr<AArgusActor> argusActor);
 	AArgusActor* GetArgusActorFromArgusEntity(const ArgusEntity& argusEntity) const;
+	TArray<uint16, FDefaultAllocator > GetAllRegisteredArgusEntityIds() const;
 
 protected:
 	UPROPERTY(EditAnywhere)

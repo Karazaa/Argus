@@ -330,6 +330,9 @@ void AArgusActor::Update(float deltaTime, ETeam activePlayerControllerTeam)
 
 	if (const IdentityComponent* identityComponent = m_entity.GetComponent<IdentityComponent>())
 	{
+		// When we eventually have more than one player we might need to move this over to the player controller
+		// so each player only sees what their team is allowed to see. At the moment we're setting the component visibility,
+		// which means that we're only showing or hiding the actor based on a single players' perspective.
 		ARGUS_TRACE(AArgusActor::SeenBy);
 		if (identityComponent->IsSeenBy(activePlayerControllerTeam))
 		{
@@ -359,6 +362,17 @@ void AArgusActor::Update(float deltaTime, ETeam activePlayerControllerTeam)
 	}
 }
 
+bool AArgusActor::IsSeenBy(ETeam team) const
+{
+	if (m_entity)
+	{
+		if (const IdentityComponent* identityComponent = m_entity.GetComponent<IdentityComponent>())
+		{
+			return identityComponent->IsSeenBy(team);
+		}
+	}
+	return false;
+}
 void AArgusActor::OnChanged_m_baseState(EBaseState oldState, EBaseState newState)
 {
 	if (oldState != EBaseState::Dead && newState == EBaseState::Dead)
