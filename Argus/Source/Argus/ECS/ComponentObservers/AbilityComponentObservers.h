@@ -10,6 +10,7 @@
 class IAbilityComponentObserver
 {
 public:
+	virtual void OnChanged_m_abilityOverrideBitmask(uint8 oldValue, uint8 newValue) = 0;
 };
 
 class AbilityComponentObservers
@@ -50,6 +51,13 @@ public:
 	}
 
 private:
+	void OnChanged_m_abilityOverrideBitmask(uint8 oldValue, uint8 newValue)
+	{
+		for (int32 i = 0; i < m_AbilityComponentObservers.Num(); ++i)
+		{
+			m_AbilityComponentObservers[i]->OnChanged_m_abilityOverrideBitmask(oldValue, newValue);
+		}
+	};
 
 	friend struct AbilityComponent;
 };

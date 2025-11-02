@@ -34,7 +34,7 @@ struct TaskComponent
 	ARGUS_IGNORE()
 	EResourceExtractionState m_resourceExtractionState = EResourceExtractionState::None;
 
-	EFlightState m_flightState = EFlightState::Grounded;
+	ARGUS_OBSERVABLE_PROPERTY_DECLARATION(EFlightState, m_flightState, EFlightState::Grounded)
 
 	bool IsExecutingMoveTask() const
 	{
@@ -50,6 +50,6 @@ struct TaskComponent
 		m_constructionState = EConstructionState::None;
 		m_combatState = ECombatState::None;
 		m_resourceExtractionState = EResourceExtractionState::None;
-		m_flightState = EFlightState::Grounded;
+		Set_m_flightState(EFlightState::Grounded);
 	}
 };

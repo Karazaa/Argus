@@ -9,6 +9,11 @@
 #include "Views/MultipleSelectedEntitiesView.h"
 #include "Views/SingleSelectedEntityView.h"
 
+USelectedArgusEntitiesView::~USelectedArgusEntitiesView()
+{
+	RemoveTemplateEntityObserver();
+}
+
 void USelectedArgusEntitiesView::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -68,12 +73,22 @@ void USelectedArgusEntitiesView::OnUpdateSelectedArgusActors(const ArgusEntity& 
 		}
 	}
 
+	if (m_templateEntityId != templateEntity.GetId())
+	{
+		if (ObserversComponent* observersComponent = templateEntity.GetComponent<ObserversComponent>())
+		{
+			observersComponent->m_AbilityComponentObservers.AddObserver(this);
+		}
+
+		m_templateEntityId = templateEntity.GetId();
+	}
+
 	if (const AbilityComponent* abilityComponent = templateEntity.GetComponent<AbilityComponent>())
 	{
-		const UAbilityRecord* ability0Record = abilityComponent->m_ability0Id == 0 ? nullptr : ArgusStaticData::GetRecord<UAbilityRecord>(abilityComponent->m_ability0Id);
-		const UAbilityRecord* ability1Record = abilityComponent->m_ability1Id == 0 ? nullptr : ArgusStaticData::GetRecord<UAbilityRecord>(abilityComponent->m_ability1Id);
-		const UAbilityRecord* ability2Record = abilityComponent->m_ability2Id == 0 ? nullptr : ArgusStaticData::GetRecord<UAbilityRecord>(abilityComponent->m_ability2Id);
-		const UAbilityRecord* ability3Record = abilityComponent->m_ability3Id == 0 ? nullptr : ArgusStaticData::GetRecord<UAbilityRecord>(abilityComponent->m_ability3Id);
+		const UAbilityRecord* ability0Record = abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability0) == 0 ? nullptr : ArgusStaticData::GetRecord<UAbilityRecord>(abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability0));
+		const UAbilityRecord* ability1Record = abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability1) == 0 ? nullptr : ArgusStaticData::GetRecord<UAbilityRecord>(abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability1));
+		const UAbilityRecord* ability2Record = abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability2) == 0 ? nullptr : ArgusStaticData::GetRecord<UAbilityRecord>(abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability2));
+		const UAbilityRecord* ability3Record = abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability3) == 0 ? nullptr : ArgusStaticData::GetRecord<UAbilityRecord>(abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability3));
 
 		UpdateAllAbilityButtonsDisplay(ability0Record, ability1Record, ability2Record, ability3Record);
 	}
@@ -106,6 +121,27 @@ void USelectedArgusEntitiesView::OnUpdateSelectedArgusActors(const ArgusEntity& 
 		m_singleSelectedEntityWidget->OnUpdateSelectedArgusActors(templateEntity);
 		m_multipleSelectedEntitiesWidget->SetVisibility(ESlateVisibility::Collapsed);
 	}
+}
+
+void USelectedArgusEntitiesView::OnChanged_m_abilityOverrideBitmask(uint8 oldValue, uint8 newValue)
+{
+	if (m_templateEntityId == ArgusECSConstants::k_maxEntities)
+	{
+		return;
+	}
+	
+	const AbilityComponent* abilityComponent = ArgusEntity::RetrieveEntity(m_templateEntityId).GetComponent<AbilityComponent>();
+	if (!abilityComponent)
+	{
+			return;
+	}
+
+	const UAbilityRecord* ability0Record = abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability0) == 0 ? nullptr : ArgusStaticData::GetRecord<UAbilityRecord>(abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability0));
+	const UAbilityRecord* ability1Record = abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability1) == 0 ? nullptr : ArgusStaticData::GetRecord<UAbilityRecord>(abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability1));
+	const UAbilityRecord* ability2Record = abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability2) == 0 ? nullptr : ArgusStaticData::GetRecord<UAbilityRecord>(abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability2));
+	const UAbilityRecord* ability3Record = abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability3) == 0 ? nullptr : ArgusStaticData::GetRecord<UAbilityRecord>(abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability3));
+
+	UpdateAllAbilityButtonsDisplay(ability0Record, ability1Record, ability2Record, ability3Record);
 }
 
 void USelectedArgusEntitiesView::NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
@@ -154,6 +190,7 @@ void USelectedArgusEntitiesView::UpdateAbilityButtonDisplay(UButton* button, con
 
 void USelectedArgusEntitiesView::HideAllElements()
 {
+	RemoveTemplateEntityObserver();
 	UpdateAllAbilityButtonsDisplay(nullptr, nullptr, nullptr, nullptr);
 
 	if (m_singleSelectedEntityWidget)
@@ -209,4 +246,20 @@ void USelectedArgusEntitiesView::OnClickedAbilityButton3()
 	}
 
 	m_inputManager->OnUserInterfaceButtonClicked(UArgusInputManager::InputType::Ability3);
+}
+
+void USelectedArgusEntitiesView::RemoveTemplateEntityObserver()
+{
+	if (m_templateEntityId == ArgusECSConstants::k_maxEntities)
+	{
+		return;
+	}
+
+	ObserversComponent* observersComponent = ArgusEntity::RetrieveEntity(m_templateEntityId).GetComponent<ObserversComponent>();
+	if (!observersComponent)
+	{
+		return;
+	}
+
+	observersComponent->m_AbilityComponentObservers.RemoveObserver(this);
 }

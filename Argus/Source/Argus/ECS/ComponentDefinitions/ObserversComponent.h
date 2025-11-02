@@ -4,12 +4,16 @@
 
 #include "ArgusMacros.h"
 #include "CoreMinimal.h"
+#include "ComponentObservers/AbilityComponentObservers.h"
 #include "ComponentObservers/PassengerComponentObservers.h"
 #include "ComponentObservers/TaskComponentObservers.h"
 
 struct ObserversComponent
 {
 	ARGUS_COMPONENT_SHARED;
+
+	ARGUS_IGNORE()
+	AbilityComponentObservers m_AbilityComponentObservers;
 
 	ARGUS_IGNORE()
 	PassengerComponentObservers m_PassengerComponentObservers;

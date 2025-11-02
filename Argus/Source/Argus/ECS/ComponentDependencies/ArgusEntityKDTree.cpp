@@ -203,10 +203,12 @@ void ArgusEntityKDTree::SeedTreeWithAverageEntityLocation(bool forFlyingEntities
 
 	if (numIncludedEntities == 0.0f)
 	{
-		return;
+		averageLocation = FVector::ZeroVector;
 	}
-
-	averageLocation = ArgusMath::SafeDivide(averageLocation, numIncludedEntities);
+	else
+	{
+		averageLocation = ArgusMath::SafeDivide(averageLocation, numIncludedEntities);
+	}
 
 	if (m_rootNode)
 	{

@@ -20,6 +20,7 @@ public:
 	TSoftObjectPtr<UAbilityRecord> m_ability2Id;
 	UPROPERTY(EditAnywhere)
 	TSoftObjectPtr<UAbilityRecord> m_ability3Id;
+	uint8 m_abilityOverrideBitmask = 0u;
 	UPROPERTY(EditAnywhere)
 	uint8 m_abilityCasterPriority = 0u;
 

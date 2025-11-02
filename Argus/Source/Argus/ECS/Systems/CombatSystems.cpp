@@ -28,13 +28,57 @@ bool CombatSystems::CanEntityAttackOtherEntity(const ArgusEntity& potentialAttac
 {
 	const IdentityComponent* attackerIdentityComponent = potentialAttacker.GetComponent<IdentityComponent>();
 	const IdentityComponent* victimIdentityComponent = potentialVictim.GetComponent<IdentityComponent>();
+	const CombatComponent* attackerCombatComponent = potentialAttacker.GetComponent<CombatComponent>();
+	const TaskComponent* attackerTaskComponent = potentialAttacker.GetComponent<TaskComponent>();
 
-	if (!attackerIdentityComponent || !victimIdentityComponent)
+	if (!attackerIdentityComponent || !victimIdentityComponent || !attackerCombatComponent || !attackerTaskComponent)
 	{
 		return false;
 	}
 
-	return !victimIdentityComponent->IsInTeamMask(attackerIdentityComponent->m_allies);
+	if (victimIdentityComponent->IsInTeamMask(attackerIdentityComponent->m_allies))
+	{
+		return false;
+	}
+
+	if (attackerTaskComponent->m_flightState == EFlightState::TakingOff || attackerTaskComponent->m_flightState == EFlightState::Landing)
+	{
+		return false;
+	}
+
+	if (attackerCombatComponent->m_attackType == EAttackType::Melee)
+	{
+		if (const TaskComponent* victimTaskComponent = potentialVictim.GetComponent<TaskComponent>())
+		{
+			return attackerTaskComponent->m_flightState == victimTaskComponent->m_flightState;
+		}
+		return attackerTaskComponent->m_flightState == EFlightState::Grounded;
+	}
+
+	switch (attackerCombatComponent->m_rangedAttackCapability)
+	{
+		case ERangedAttackCapability::GroundedOnly:
+			if (const TaskComponent* victimTaskComponent = potentialVictim.GetComponent<TaskComponent>())
+			{
+				return victimTaskComponent->m_flightState == EFlightState::Grounded || victimTaskComponent->m_flightState == EFlightState::Landing;
+			}
+			return true;
+
+		case ERangedAttackCapability::FlyingOnly:
+			if (const TaskComponent* victimTaskComponent = potentialVictim.GetComponent<TaskComponent>())
+			{
+				return victimTaskComponent->m_flightState == EFlightState::Flying || victimTaskComponent->m_flightState == EFlightState::TakingOff;
+			}
+			return false;
+
+		case ERangedAttackCapability::GroundedAndFlying:
+			return true;
+
+		default:
+			break;
+	}
+
+	return true;
 }
 
 void CombatSystems::ProcessCombatTaskCommands(float deltaTime, const CombatSystemsArgs& components)
@@ -124,6 +168,11 @@ void CombatSystems::PerformTimerAttack(const ArgusEntity& targetEntity, const Co
 		components.m_combatComponent->m_attackTimerHandle.FinishTimerHandling(components.m_entity);
 	}
 
+	if (!CanEntityAttackOtherEntity(components.m_entity, targetEntity))
+	{
+		StopAttackingEntity(components);
+	}
+
 	ApplyDamage(components.m_combatComponent->m_baseDamagePerIntervalOrPerSecond, targetEntity, components);
 
 	components.m_combatComponent->m_attackTimerHandle.StartTimer(components.m_entity, components.m_combatComponent->m_intervalDurationSeconds);
@@ -149,7 +198,7 @@ void CombatSystems::ApplyDamage(uint32 damageAmount, const ArgusEntity& targetEn
 	if (targetHealthComponent->m_currentHealth <= damageAmount)
 	{
 		KillEntity(targetEntity, targetHealthComponent);
-		OnKilledOtherEntity(components);
+		StopAttackingEntity(components);
 	}
 	else
 	{
@@ -192,7 +241,7 @@ void CombatSystems::KillEntity(const ArgusEntity& targetEntity, HealthComponent*
 	targetCarrierComponent->m_passengerEntityIds.Reset();
 }
 
-void CombatSystems::OnKilledOtherEntity(const CombatSystemsArgs& components)
+void CombatSystems::StopAttackingEntity(const CombatSystemsArgs& components)
 {
 	components.m_targetingComponent->m_targetEntityId = ArgusECSConstants::k_maxEntities;
 	components.m_taskComponent->m_combatState = ECombatState::None;

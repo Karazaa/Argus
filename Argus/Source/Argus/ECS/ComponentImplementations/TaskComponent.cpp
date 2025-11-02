@@ -99,3 +99,12 @@ void TaskComponent::Set_m_baseState(EBaseState newValue)
 	ARGUS_RETURN_ON_NULL(observersComponent, ArgusECSLog);
 	observersComponent->m_TaskComponentObservers.OnChanged_m_baseState(oldValue, newValue);
 }
+void TaskComponent::Set_m_flightState(EFlightState newValue)
+{
+	EFlightState oldValue = m_flightState;
+	m_flightState = newValue;
+
+	ObserversComponent* observersComponent = ArgusComponentRegistry::GetComponent<ObserversComponent>(GetOwningEntityId());
+	ARGUS_RETURN_ON_NULL(observersComponent, ArgusECSLog);
+	observersComponent->m_TaskComponentObservers.OnChanged_m_flightState(oldValue, newValue);
+}

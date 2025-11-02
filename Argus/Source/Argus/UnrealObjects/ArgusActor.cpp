@@ -21,6 +21,16 @@ AArgusActor::AArgusActor()
 	SetRootComponent(CreateDefaultSubobject<USceneComponent>(FName("RootSceneComponent")));
 }
 
+bool AArgusActor::IsFlying() const
+{
+	if (!m_entity)
+	{
+		return false;
+	}
+
+	return m_entity.IsFlying();
+}
+
 void AArgusActor::Reset()
 {
 	if (m_entity)
@@ -378,6 +388,18 @@ void AArgusActor::OnChanged_m_baseState(EBaseState oldState, EBaseState newState
 	if (oldState != EBaseState::Dead && newState == EBaseState::Dead)
 	{
 		OnArgusEntityDeath();
+	}
+}
+
+void AArgusActor::OnChanged_m_flightState(EFlightState oldValue, EFlightState newValue)
+{
+	if (oldValue != EFlightState::TakingOff && newValue == EFlightState::TakingOff)
+	{
+		OnTakeOff();
+	}
+	else if (oldValue != EFlightState::Grounded && newValue == EFlightState::Grounded)
+	{
+		OnLand();
 	}
 }
 

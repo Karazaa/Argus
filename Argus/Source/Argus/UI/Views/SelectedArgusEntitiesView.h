@@ -2,7 +2,9 @@
 
 #pragma once
 
+#include "ArgusECSConstants.h"
 #include "ArgusUIElement.h"
+#include "ComponentObservers/AbilityComponentObservers.h"
 #include "Styling/SlateBrush.h"
 #include "Styling/SlateTypes.h"
 #include "SelectedArgusEntitiesView.generated.h"
@@ -15,14 +17,16 @@ class UMultipleSelectedEntitiesView;
 class USingleSelectedEntityView;
 
 UCLASS()
-class USelectedArgusEntitiesView : public UArgusUIElement
+class USelectedArgusEntitiesView : public UArgusUIElement, public IAbilityComponentObserver
 {
 	GENERATED_BODY()
 
 public:
+	~USelectedArgusEntitiesView();
 	virtual void NativeConstruct() override;
 	virtual void UpdateDisplay(const UpdateDisplayParameters& updateDisplayParams) override;
 	virtual void OnUpdateSelectedArgusActors(const ArgusEntity& templateEntity) override;
+	virtual void OnChanged_m_abilityOverrideBitmask(uint8 oldValue, uint8 newValue) override;
 
 protected:
 	UFUNCTION()
@@ -73,6 +77,8 @@ protected:
 	void UpdateAllAbilityButtonsDisplay(const UAbilityRecord* ability0Record, const UAbilityRecord* ability1Record, const UAbilityRecord* ability2Record, const UAbilityRecord* ability3Record);
 	void UpdateAbilityButtonDisplay(UButton* button, const UAbilityRecord* abilityRecord);
 	void HideAllElements();
+	void RemoveTemplateEntityObserver();
 
 	FButtonStyle m_abilityButtonStyle;
+	uint16 m_templateEntityId = ArgusECSConstants::k_maxEntities;
 };

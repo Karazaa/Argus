@@ -151,31 +151,32 @@ bool TransformSystems::ProcessMovementTaskCommands(UWorld* worldPointer, float d
 
 	switch (components.m_taskComponent->m_flightState)
 	{
-	case EFlightState::ProcessTakeOffCommand:
-		ProcessTakeOffCommand(worldPointer, deltaTime, components);
-		return true;
+		case EFlightState::ProcessTakeOffCommand:
+			ProcessTakeOffCommand(worldPointer, deltaTime, components);
+			return true;
 
-	case EFlightState::ProcessLandCommand:
-		ProcessLandCommand(worldPointer, deltaTime, components);
-		return true;
+		case EFlightState::ProcessLandCommand:
+			ProcessLandCommand(worldPointer, deltaTime, components);
+			return true;
 
-	case EFlightState::TakingOff:
-		// TODO JAMES: Interpolate upwards
-		return true;
+		case EFlightState::TakingOff:
+			PerformTakeOff(deltaTime, components);
+			return true;
 
-	case EFlightState::Landing:
-		// TODO JAMES: Interpolate downwards
-		return true;
+		case EFlightState::Landing:
+			PerformLanding(deltaTime, components);
+			return true;
 
-	case EFlightState::Flying:
-		break;
+		case EFlightState::Flying:
+			break;
 
-	case EFlightState::Grounded:
-		break;
+		case EFlightState::Grounded:
+			break;
 
-	default:
-		break;
+		default:
+			break;
 	}
+
 	switch (components.m_taskComponent->m_movementState)
 	{
 		case EMovementState::MoveToLocation:
@@ -220,9 +221,8 @@ void TransformSystems::ProcessTakeOffCommand(UWorld* worldPointer, float deltaTi
 	SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::GetSingletonEntity().GetComponent<SpatialPartitioningComponent>();
 	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
 
-	// TODO JAMES: For now instantly transitioning to flight. Eventually we will want to route through the TakingOff state and interpolate upwards.
-	components.m_taskComponent->m_flightState = EFlightState::Flying;
-	components.m_transformComponent->m_location.Z = spatialPartitioningComponent->m_flyingPlaneHeight;
+	components.m_taskComponent->Set_m_flightState(EFlightState::TakingOff);
+	components.m_transformComponent->m_smoothedTransitionAltitude.Reset(components.m_transformComponent->m_location.Z);
 
 	if (!spatialPartitioningComponent->m_flyingArgusEntityKDTree.DoesArgusEntityExistInKDTree(components.m_entity))
 	{
@@ -242,8 +242,7 @@ void TransformSystems::ProcessLandCommand(UWorld* worldPointer, float deltaTime,
 	SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::GetSingletonEntity().GetComponent<SpatialPartitioningComponent>();
 	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
 
-	// TODO JAMES: For now instantly transitioning to grounded. Eventually we will want to route through the Landing state and interpolate downwards.
-	components.m_taskComponent->m_flightState = EFlightState::Grounded;
+	components.m_taskComponent->Set_m_flightState(EFlightState::Landing);
 
 	FHitResult hitResult;
 	const FVector startLocation = components.m_transformComponent->m_location;
@@ -251,14 +250,60 @@ void TransformSystems::ProcessLandCommand(UWorld* worldPointer, float deltaTime,
 	endLocation.Z = ArgusECSConstants::k_lowestPossibleAltitude;
 	if (worldPointer->LineTraceSingleByChannel(hitResult, startLocation, endLocation, ECC_RETICLE))
 	{
-		components.m_transformComponent->m_location = ProjectLocationOntoNavigationData(worldPointer, components.m_transformComponent, hitResult.Location);
+		components.m_transformComponent->m_targetTransitionAltitude = ProjectLocationOntoNavigationData(worldPointer, components.m_transformComponent, hitResult.Location).Z;
 	}
+	else
+	{
+		components.m_transformComponent->m_targetTransitionAltitude = components.m_transformComponent->m_location.Z;
+	}
+	components.m_transformComponent->m_smoothedTransitionAltitude.Reset(components.m_transformComponent->m_location.Z);
 
 	if (!spatialPartitioningComponent->m_argusEntityKDTree.DoesArgusEntityExistInKDTree(components.m_entity))
 	{
 		spatialPartitioningComponent->m_argusEntityKDTree.RequestInsertArgusEntityIntoKDTree(components.m_entity);
 		spatialPartitioningComponent->m_flyingArgusEntityKDTree.RequestRemoveArgusEntityIntoKDTree(components.m_entity);
 	}
+}
+
+void TransformSystems::PerformTakeOff(float deltaTime, const TransformSystemsArgs& components)
+{
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+
+	SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::GetSingletonEntity().GetComponent<SpatialPartitioningComponent>();
+	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
+
+	components.m_transformComponent->m_smoothedTransitionAltitude.SmoothChase(spatialPartitioningComponent->m_flyingPlaneHeight, deltaTime);
+	float newAltitude = components.m_transformComponent->m_smoothedTransitionAltitude.GetValue();
+
+	if (FMath::IsNearlyEqual(newAltitude, spatialPartitioningComponent->m_flyingPlaneHeight, ArgusECSConstants::k_flightTransitionAltitudeThreshold))
+	{
+		components.m_taskComponent->Set_m_flightState(EFlightState::Flying);
+		newAltitude = spatialPartitioningComponent->m_flyingPlaneHeight;
+	}
+
+	components.m_transformComponent->m_location.Z = newAltitude;
+}
+
+void TransformSystems::PerformLanding(float deltaTime, const TransformSystemsArgs& components)
+{
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+
+	components.m_transformComponent->m_smoothedTransitionAltitude.SmoothChase(components.m_transformComponent->m_targetTransitionAltitude, deltaTime);
+	float newAltitude = components.m_transformComponent->m_smoothedTransitionAltitude.GetValue();
+
+	if (FMath::IsNearlyEqual(newAltitude, components.m_transformComponent->m_targetTransitionAltitude, ArgusECSConstants::k_flightTransitionAltitudeThreshold))
+	{
+		components.m_taskComponent->Set_m_flightState(EFlightState::Grounded);
+		newAltitude = components.m_transformComponent->m_targetTransitionAltitude;
+	}
+
+	components.m_transformComponent->m_location.Z = newAltitude;
 }
 
 void TransformSystems::FaceTargetEntity(const TransformSystemsArgs& components)
@@ -373,7 +418,7 @@ FVector TransformSystems::ProjectLocationOntoNavigationData(UWorld* worldPointer
 	}
 
 	FNavLocation projectedLocation;
-	const FVector agentExtents = FVector(transformComponent->m_radius, transformComponent->m_radius, transformComponent->m_height / 2.0f);
+	const FVector agentExtents = FVector(transformComponent->m_radius, transformComponent->m_radius, ArgusECSConstants::k_navigationAgentDefaultHeight / 2.0f);
 	if (unrealNavigationSystem->ProjectPointToNavigation(location, projectedLocation, agentExtents, unrealNavigationSystem->MainNavData))
 	{
 		return projectedLocation.Location;

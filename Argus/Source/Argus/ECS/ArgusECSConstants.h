@@ -21,6 +21,7 @@ namespace ArgusECSConstants
 	static constexpr float k_avoidanceEntityDetectionPredictionTime = 2.5f;
 	static constexpr float k_avoidanceAgentAdditionalBufferRadius = 25.0f;
 	static constexpr float k_avoidanceAgentReturnToEndNavRadius = 10.0f;
+	static constexpr float k_navigationAgentDefaultHeight = 100.0f;
 	static constexpr float k_avoidanceEpsilonValue = 0.00001f;
 	static constexpr float k_moveAlongPathWaypointTolerance = 0.001f;
 	
@@ -35,6 +36,7 @@ namespace ArgusECSConstants
 	static constexpr int32 k_initialResourcesQuantity = 1000;
 
 	static constexpr float k_lowestPossibleAltitude = -1000.0f;
+	static constexpr float k_flightTransitionAltitudeThreshold = 1.0f;
 
 #if !UE_BUILD_SHIPPING
 	static constexpr float k_debugDrawLineWidth = 3.0f;

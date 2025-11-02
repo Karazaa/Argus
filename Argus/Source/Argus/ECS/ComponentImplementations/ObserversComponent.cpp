@@ -19,6 +19,7 @@ uint16 ObserversComponent::GetOwningEntityId() const
 
 void ObserversComponent::Reset()
 {
+	m_AbilityComponentObservers.Reset();
 	m_PassengerComponentObservers.Reset();
 	m_TaskComponentObservers.Reset();
 }
@@ -33,6 +34,9 @@ void ObserversComponent::DrawComponentDebug() const
 
 	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings))
 	{
+		ImGui::TableNextColumn();
+		ImGui::Text("m_AbilityComponentObservers");
+		ImGui::TableNextColumn();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_PassengerComponentObservers");
 		ImGui::TableNextColumn();

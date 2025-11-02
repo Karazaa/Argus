@@ -18,6 +18,8 @@ public:
 	float m_intervalDurationSeconds = 1.0f;
 	UPROPERTY(EditAnywhere)
 	EAttackType m_attackType = EAttackType::Melee;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (EditCondition = "m_attackType == EAttackType::Ranged", EditConditionHides));
+	ERangedAttackCapability m_rangedAttackCapability = ERangedAttackCapability::GroundedAndFlying;
 
 	void InstantiateComponentForEntity(const ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;

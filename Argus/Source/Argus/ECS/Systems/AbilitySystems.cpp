@@ -103,6 +103,14 @@ void AbilitySystems::CastAbility(const UAbilityRecord* abilityRecord, const Abil
 				successfulyCast = CastFlightTransitionAbility(abilityRecord, abilityRecord->m_abilityEffects[i], components, true);
 				break;
 
+			case EAbilityTypes::AddAbilityOverride:
+				successfulyCast = CastAbilityOverrideAbility(abilityRecord, abilityRecord->m_abilityEffects[i], components, true);
+				break;
+
+			case EAbilityTypes::RemoveAbilityOverride:
+				successfulyCast = CastAbilityOverrideAbility(abilityRecord, abilityRecord->m_abilityEffects[i], components, false);
+				break;
+
 			default:
 				return;
 		}
@@ -167,19 +175,19 @@ void AbilitySystems::ProcessAbilityTaskCommands(const AbilitySystemsArgs& compon
 	switch (components.m_taskComponent->m_abilityState)
 	{
 		case EAbilityState::ProcessCastAbility0Command:
-			abilityId = components.m_abilityComponent->m_ability0Id;
+			abilityId = components.m_abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability0);
 			break;
 
 		case EAbilityState::ProcessCastAbility1Command:
-			abilityId = components.m_abilityComponent->m_ability1Id;
+			abilityId = components.m_abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability1);
 			break;
 
 		case EAbilityState::ProcessCastAbility2Command:
-			abilityId = components.m_abilityComponent->m_ability2Id;
+			abilityId = components.m_abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability2);
 			break;
 
 		case EAbilityState::ProcessCastAbility3Command:
-			abilityId = components.m_abilityComponent->m_ability3Id;
+			abilityId = components.m_abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability3);
 			break;
 
 		case EAbilityState::ProcessCastReticleAbility:
@@ -363,10 +371,35 @@ bool AbilitySystems::CastFlightTransitionAbility(const UAbilityRecord* abilityRe
 		return false;
 	}
 
-	components.m_taskComponent->m_flightState = landing ? EFlightState::ProcessLandCommand : EFlightState::ProcessTakeOffCommand;
+	components.m_taskComponent->Set_m_flightState(landing ? EFlightState::ProcessLandCommand : EFlightState::ProcessTakeOffCommand);
 	return true;
 }
 
+
+bool AbilitySystems::CastAbilityOverrideAbility(const UAbilityRecord* abilityRecord, const FAbilityEffect& abilityEffect, const AbilitySystemsArgs& components, bool adding)
+{
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return false;
+	}
+
+	if (!abilityRecord)
+	{
+		LogAbilityRecordError(ARGUS_FUNCNAME);
+		return false;
+	}
+
+	if (adding)
+	{
+		components.m_abilityComponent->AddAbilityOverride(abilityEffect.m_abilityRecordId, abilityEffect.m_abilityIndex);
+	}
+	else
+	{
+		components.m_abilityComponent->RemoveAbilityOverride(abilityEffect.m_abilityIndex);
+	}
+
+	return true;
+}
 
 void AbilitySystems::PrepReticleForConstructAbility(const UAbilityRecord* abilityRecord, const FAbilityEffect& abilityEffect, const AbilitySystemsArgs& components)
 {
