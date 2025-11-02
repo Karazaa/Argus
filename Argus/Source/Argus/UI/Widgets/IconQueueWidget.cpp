@@ -49,6 +49,7 @@ void UIconQueueWidget::OnIconClicked(uint16 identifier)
 	switch (m_iconQueueDataSource)
 	{
 		case EIconQueueDataSource::SpawnQueue:
+			OnQueuedSpawnIconClicked(identifier);
 			break;
 		case EIconQueueDataSource::AbilityQueue:
 			break;
@@ -214,4 +215,27 @@ UTexture* UIconQueueWidget::GetIconTextureForRecord(uint32 recordId)
 	}
 
 	return nullptr;
+}
+
+void UIconQueueWidget::OnQueuedSpawnIconClicked(uint16 queueIndex)
+{
+	SpawningComponent* spawningComponent = m_trackedEntity.GetComponent<SpawningComponent>();
+	ARGUS_RETURN_ON_NULL(spawningComponent, ArgusUILog);
+
+	if (queueIndex + 1 > spawningComponent->m_spawnQueue.Num())
+	{
+		// TODO JAMES: Error here
+		return;
+	}
+
+	for (int32 i = queueIndex; i < spawningComponent->m_spawnQueue.Num() - 1; ++i)
+	{
+		spawningComponent->m_spawnQueue[i] = spawningComponent->m_spawnQueue[i + 1];
+	}
+
+	// TODO JAMES: Handle the case when popping the zero element of the queue.
+	spawningComponent->m_spawnQueue.PopLast();
+	RefreshDisplayFromSpawnQueue();
+	
+	// TODO James: Give refund on cancel spawned queue.
 }

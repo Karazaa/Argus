@@ -53,6 +53,8 @@ protected:
 	void SetIconStates(const TArray<uint32>& recordIds);
 	UTexture* GetIconTextureForRecord(uint32 recordId);
 
+	void OnQueuedSpawnIconClicked(uint16 queueIndex);
+
 	EIconQueueDataSource m_iconQueueDataSource = EIconQueueDataSource::SpawnQueue;
 	int32 m_lastUpdateVisibleIconCount = 0;
 	ArgusEntity m_trackedEntity = ArgusEntity::k_emptyEntity;
