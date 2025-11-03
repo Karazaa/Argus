@@ -30,6 +30,11 @@ bool SpawningSystems::RunSystems(float deltaTime)
 			continue;
 		}
 
+		if (components.m_spawningComponent->m_spawnQueueIndexToCancel.IsSet())
+		{
+			ProcessCancelationRequest(components);
+		}
+
 		spawnedAnEntityThisFrame |= ProcessSpawningTaskCommands(deltaTime, components);
 	}
 
@@ -185,8 +190,42 @@ void SpawningSystems::SpawnEntityFromQueue(const SpawningSystemsArgs& components
 		return;
 	}
 
-	components.m_spawningComponent->m_currentQueueSize--;
 	SpawnEntity(components, spawnInfo);
+}
+
+void SpawningSystems::ProcessCancelationRequest(const SpawningSystemsArgs& components)
+{
+	ARGUS_TRACE(SpawningSystems::ProcessCancelationRequest);
+
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+
+	const uint8 indexToCancel = components.m_spawningComponent->m_spawnQueueIndexToCancel.GetValue();
+	components.m_spawningComponent->m_spawnQueueIndexToCancel.Reset();
+
+	for (uint8 i = indexToCancel; i < components.m_spawningComponent->m_spawnQueue.Num() - 1; ++i)
+	{
+		components.m_spawningComponent->m_spawnQueue[i] = components.m_spawningComponent->m_spawnQueue[i + 1];
+	}
+
+	if (components.m_spawningComponent->m_spawnQueue[indexToCancel].m_spawningAbilityRecordId > 0u)
+	{
+		if (AbilityComponent* abilityComponent = components.m_entity.GetComponent<AbilityComponent>())
+		{
+			abilityComponent->m_abilityToRefundId = components.m_spawningComponent->m_spawnQueue[indexToCancel].m_spawningAbilityRecordId;
+		}
+	}
+
+	components.m_spawningComponent->m_spawnQueue.PopLast();
+	if (indexToCancel > 0u)
+	{
+		return;
+	}
+
+	components.m_spawningComponent->m_spawnTimerHandle.CancelTimer();
+	ProcessQueuedSpawnEntity(components);
 }
 
 bool SpawningSystems::ProcessSpawningTaskCommands(float deltaTime, const SpawningSystemsArgs& components)

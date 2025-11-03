@@ -82,7 +82,7 @@ void UIconQueueWidget::RefreshDisplayFromSpawnQueue()
 	}
 
 	TArray<uint32> spawnQueueAbilityRecordIds;
-	spawnQueueAbilityRecordIds.Reserve(spawningComponent->m_currentQueueSize);
+	spawnQueueAbilityRecordIds.Reserve(spawningComponent->m_spawnQueue.Num());
 
 	for (SpawnEntityInfo info : spawningComponent->m_spawnQueue)
 	{
@@ -224,18 +224,9 @@ void UIconQueueWidget::OnQueuedSpawnIconClicked(uint16 queueIndex)
 
 	if (queueIndex + 1 > spawningComponent->m_spawnQueue.Num())
 	{
-		// TODO JAMES: Error here
+		ARGUS_LOG(ArgusUILog, Error, TEXT("[%s] Tried to click a queued spawn icon index that is out of range!"), ARGUS_FUNCNAME);
 		return;
 	}
 
-	for (int32 i = queueIndex; i < spawningComponent->m_spawnQueue.Num() - 1; ++i)
-	{
-		spawningComponent->m_spawnQueue[i] = spawningComponent->m_spawnQueue[i + 1];
-	}
-
-	// TODO JAMES: Handle the case when popping the zero element of the queue.
-	spawningComponent->m_spawnQueue.PopLast();
-	RefreshDisplayFromSpawnQueue();
-	
-	// TODO James: Give refund on cancel spawned queue.
+	spawningComponent->m_spawnQueueIndexToCancel = queueIndex;
 }

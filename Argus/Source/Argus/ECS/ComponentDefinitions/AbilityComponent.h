@@ -45,6 +45,9 @@ struct AbilityComponent
 	ARGUS_IGNORE()
 	uint32 m_ability3OverrideId = 0u;
 
+	ARGUS_IGNORE()
+	uint32 m_abilityToRefundId = 0u;
+
 	ARGUS_OBSERVABLE_DECLARATION(uint8, m_abilityOverrideBitmask, 0u)
 
 	uint8 m_abilityCasterPriority = 0u;

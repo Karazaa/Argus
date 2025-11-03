@@ -129,7 +129,6 @@ void ASpawnEntityAndActorFunctionalTest::StartSpawnArgusEntityTestStep()
 		spawnInfo.m_argusActorRecordId = loadedRecord->m_id;
 	}
 	spawnerSpawningComponent->m_spawnQueue.PushLast(spawnInfo);
-	spawnerSpawningComponent->m_currentQueueSize++;
 	spawnerTaskComponent->m_spawningState = ESpawningState::SpawningEntity;
 }
 
