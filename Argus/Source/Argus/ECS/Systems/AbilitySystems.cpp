@@ -35,6 +35,11 @@ void AbilitySystems::RunSystems(float deltaTime)
 			continue;
 		}
 
+		if (components.m_abilityComponent->m_abilityToRefundId > 0u)
+		{
+			ProcessAbilityRefundRequests(components);
+		}
+
 		ProcessAbilityTaskCommands(components);
 	}
 }
@@ -164,8 +169,31 @@ void AbilitySystems::PrepReticle(const UAbilityRecord* abilityRecord, const Abil
 	components.m_taskComponent->m_abilityState = EAbilityState::None;
 }
 
+void AbilitySystems::ProcessAbilityRefundRequests(const AbilitySystemsArgs& components)
+{
+	ARGUS_TRACE(AbilitySystems::ProcessAbilityRefundRequests);
+
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+
+	const UAbilityRecord* abilityRecord = ArgusStaticData::GetRecord<UAbilityRecord>(components.m_abilityComponent->m_abilityToRefundId);
+	ARGUS_RETURN_ON_NULL(abilityRecord, ArgusECSLog);
+
+	const FResourceSet refund = -abilityRecord->m_requiredResourceChangeToCast;
+	if (!ResourceSystems::ApplyTeamResourceChangeIfAffordable(components.m_entity, refund))
+	{
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Successfully refunded ability id %d, but could not afford the refund???") ARGUS_FUNCNAME, abilityRecord->m_id);
+	}
+
+	components.m_abilityComponent->m_abilityToRefundId = 0u;
+}
+
 void AbilitySystems::ProcessAbilityTaskCommands(const AbilitySystemsArgs& components)
 {
+	ARGUS_TRACE(AbilitySystems::ProcessAbilityTaskCommands);
+
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return;
@@ -241,7 +269,7 @@ bool AbilitySystems::CastSpawnAbility(const UAbilityRecord* abilityRecord, const
 	SpawningComponent* spawningComponent = components.m_entity.GetComponent<SpawningComponent>();
 	ARGUS_RETURN_ON_NULL_BOOL(spawningComponent, ArgusECSLog);
 
-	if (spawningComponent->m_currentQueueSize >= spawningComponent->m_maximumQueueSize)
+	if (spawningComponent->m_spawnQueue.Num() >= spawningComponent->m_maximumQueueSize)
 	{
 		return false;
 	}
@@ -261,7 +289,6 @@ bool AbilitySystems::CastSpawnAbility(const UAbilityRecord* abilityRecord, const
 		spawnInfo.m_spawnLocationOverride = components.m_reticleComponent->m_reticleLocation;
 	}
 	spawningComponent->m_spawnQueue.PushLast(spawnInfo);
-	spawningComponent->m_currentQueueSize++;
 
 	return true;
 }

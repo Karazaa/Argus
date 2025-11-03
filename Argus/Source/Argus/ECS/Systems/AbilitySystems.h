@@ -17,6 +17,7 @@ public:
 	static void PrepReticle(const UAbilityRecord* abilityRecord, const AbilitySystemsArgs& components);
 
 private:
+	static void ProcessAbilityRefundRequests(const AbilitySystemsArgs& components);
 	static void ProcessAbilityTaskCommands(const AbilitySystemsArgs& components);
 	static bool CastSpawnAbility(const UAbilityRecord* abilityRecord, const FAbilityEffect& abilityEffect, const AbilitySystemsArgs& components, bool needsConstruction, bool atReticle);
 	static bool CastHealAbility(const UAbilityRecord* abilityRecord, const FAbilityEffect& abilityEffect, const AbilitySystemsArgs& components);

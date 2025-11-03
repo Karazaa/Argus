@@ -22,7 +22,7 @@ struct SpawningComponent
 	uint8 m_maximumQueueSize = 10u;
 
 	ARGUS_IGNORE()
-	uint8 m_currentQueueSize = 0u;
+	TOptional<uint8> m_spawnQueueIndexToCancel;
 
 	ARGUS_IGNORE()
 	TimerHandle m_spawnTimerHandle;

@@ -27,6 +27,7 @@ void AbilityComponent::Reset()
 	m_ability1OverrideId = 0u;
 	m_ability2OverrideId = 0u;
 	m_ability3OverrideId = 0u;
+	m_abilityToRefundId = 0u;
 	m_abilityOverrideBitmask = 0u;
 	m_abilityCasterPriority = 0u;
 }
@@ -117,6 +118,10 @@ void AbilityComponent::DrawComponentDebug() const
 		ImGui::Text("m_ability3OverrideId");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_ability3OverrideId);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_abilityToRefundId");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_abilityToRefundId);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_abilityOverrideBitmask");
 		ImGui::TableNextColumn();

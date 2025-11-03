@@ -49,6 +49,7 @@ void UIconQueueWidget::OnIconClicked(uint16 identifier)
 	switch (m_iconQueueDataSource)
 	{
 		case EIconQueueDataSource::SpawnQueue:
+			OnQueuedSpawnIconClicked(identifier);
 			break;
 		case EIconQueueDataSource::AbilityQueue:
 			break;
@@ -81,7 +82,7 @@ void UIconQueueWidget::RefreshDisplayFromSpawnQueue()
 	}
 
 	TArray<uint32> spawnQueueAbilityRecordIds;
-	spawnQueueAbilityRecordIds.Reserve(spawningComponent->m_currentQueueSize);
+	spawnQueueAbilityRecordIds.Reserve(spawningComponent->m_spawnQueue.Num());
 
 	for (SpawnEntityInfo info : spawningComponent->m_spawnQueue)
 	{
@@ -214,4 +215,18 @@ UTexture* UIconQueueWidget::GetIconTextureForRecord(uint32 recordId)
 	}
 
 	return nullptr;
+}
+
+void UIconQueueWidget::OnQueuedSpawnIconClicked(uint16 queueIndex)
+{
+	SpawningComponent* spawningComponent = m_trackedEntity.GetComponent<SpawningComponent>();
+	ARGUS_RETURN_ON_NULL(spawningComponent, ArgusUILog);
+
+	if (queueIndex + 1 > spawningComponent->m_spawnQueue.Num())
+	{
+		ARGUS_LOG(ArgusUILog, Error, TEXT("[%s] Tried to click a queued spawn icon index that is out of range!"), ARGUS_FUNCNAME);
+		return;
+	}
+
+	spawningComponent->m_spawnQueueIndexToCancel = queueIndex;
 }

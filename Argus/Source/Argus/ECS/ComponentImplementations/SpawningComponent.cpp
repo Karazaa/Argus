@@ -22,7 +22,6 @@ void SpawningComponent::Reset()
 	m_spawnQueue.Reset();
 	m_spawningRadius = 100.0f;
 	m_maximumQueueSize = 10u;
-	m_currentQueueSize = 0u;
 	m_spawnTimerHandle.Reset();
 }
 
@@ -70,9 +69,15 @@ void SpawningComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_maximumQueueSize);
 		ImGui::TableNextColumn();
-		ImGui::Text("m_currentQueueSize");
+		ImGui::Text("m_spawnQueueIndexToCancel");
 		ImGui::TableNextColumn();
-		ImGui::Text("%d", m_currentQueueSize);
+		if (m_spawnQueueIndexToCancel.IsSet())
+		{
+		}
+		else
+		{
+			ImGui::Text("Optional not set");
+		}
 		ImGui::TableNextColumn();
 		ImGui::Text("m_spawnTimerHandle");
 		ImGui::TableNextColumn();
