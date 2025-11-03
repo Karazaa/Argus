@@ -69,6 +69,16 @@ void SpawningComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_maximumQueueSize);
 		ImGui::TableNextColumn();
+		ImGui::Text("m_spawnQueueIndexToCancel");
+		ImGui::TableNextColumn();
+		if (m_spawnQueueIndexToCancel.IsSet())
+		{
+		}
+		else
+		{
+			ImGui::Text("Optional not set");
+		}
+		ImGui::TableNextColumn();
 		ImGui::Text("m_spawnTimerHandle");
 		ImGui::TableNextColumn();
 		const ArgusEntity owningEntity = ArgusEntity::RetrieveEntity(GetOwningEntityId());
