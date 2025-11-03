@@ -20,3 +20,8 @@ TArray<TSubclassOf<AArgusActor>> IArgusController::GetRequredEntityClasses()
 {
 	return TArray<TSubclassOf<AArgusActor>>();
 }
+
+TArray<AArgusActor*> IArgusController::GetAllTeamActors()
+{
+	return TArray<AArgusActor*>();
+}

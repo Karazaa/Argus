@@ -30,4 +30,6 @@ public:
 
 	virtual TArray<TSubclassOf<AArgusActor>> GetRequredEntityClasses();
 
+	virtual TArray<AArgusActor*> GetAllTeamActors();
+
 };

@@ -70,6 +70,22 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void OnCursorHover(bool bHover);
 
+	/**
+	* Used to set the move to location for the actor
+	* @Param the location to move to
+	* @Param if we should clear the waypoints too, if we don't then the actor will move to the location then go back to following the waypoints
+	*/
+	UFUNCTION(BlueprintNativeEvent, BLueprintCallable)
+	void SetMoveToLocation(FVector targetLocation, bool bClearWaypoints);
+
+	/**
+	* Used to set the move to actor for the actor
+	* @Param the actor to move to
+	* @Param if we should clear the waypoints too, if we don't then this actor will move to the target actor, attack or interact with it then go back to following the waypoints
+	*/
+	UFUNCTION(BlueprintNativeEvent, BLueprintCallable)
+	void SetMoveToActor(AActor* targetActor, bool bClearWaypoints);
+
 protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnSelected();

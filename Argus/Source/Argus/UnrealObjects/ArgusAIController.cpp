@@ -140,3 +140,31 @@ bool AArgusAIController::HasRequiredEntities()
 	
 	return false;
 }
+
+TArray<AArgusActor*> AArgusAIController::GetAllTeamActors()
+{
+	const UWorld* world = GetWorld();
+	if (!world)
+	{
+		return TArray<AArgusActor*>();
+	}
+
+	const UArgusGameInstance* gameInstance = world->GetGameInstance<UArgusGameInstance>();
+	if (!gameInstance)
+	{
+		return TArray<AArgusActor*>();
+	}
+
+	TArray<AArgusActor*> allActors;
+	GetArgusActorsFromArgusEntityIds(gameInstance->GetAllRegisteredArgusEntityIds(), allActors);
+	FilterArgusActorsToPlayerTeam(allActors);
+	TArray<AArgusActor*> aliveActors;
+	for(auto& actor: allActors) 
+	{
+		if (actor->GetEntity().IsAlive())
+		{
+			aliveActors.Add(actor);
+		}
+	}
+	return aliveActors;
+}

@@ -6,6 +6,8 @@
 #include "ArgusGameModeBase.h"
 #include "ArgusMath.h"
 #include "ArgusStaticData.h"
+#include "Systems/AvoidanceSystems.h"
+
 #include "Components/WidgetComponent.h"
 #include "DrawDebugHelpers.h"
 #include "Engine/World.h"
@@ -231,6 +233,87 @@ AArgusActor* AArgusActor::GetCurrentTargetActor() const
 	return nullptr;
 }
 
+inline void AArgusActor::SetMoveToLocation_Implementation(FVector targetLocation, bool bClearWaypoints)
+{
+	ArgusEntity selectedEntity = GetEntity();
+	if (!selectedEntity)
+	{
+		return;
+	}
+	EMovementState inputMovementState = EMovementState::ProcessMoveToLocationCommand;
+	TaskComponent* taskComponent = selectedEntity.GetComponent<TaskComponent>();
+	TargetingComponent* targetingComponent = selectedEntity.GetComponent<TargetingComponent>();
+	NavigationComponent* navigationComponent = selectedEntity.GetComponent<NavigationComponent>();
+
+	if (!taskComponent || !targetingComponent)
+	{
+		return;
+	}
+
+	if (bClearWaypoints && navigationComponent)
+	{
+		navigationComponent->ResetQueuedWaypoints();
+	}
+	if (navigationComponent)
+	{
+		AvoidanceSystems::DecrementIdleEntitiesInGroup(selectedEntity);
+		taskComponent->m_movementState = inputMovementState;
+	}
+	navigationComponent->ResetPath();
+	navigationComponent->Reset();
+	targetingComponent->m_targetEntityId = ArgusEntity::k_emptyEntity.GetId();
+	targetingComponent->m_targetLocation = targetLocation;
+	SetCurrentTargetVisible(true);
+}
+
+inline void AArgusActor::SetMoveToActor_Implementation(AActor* targetActor, bool bClearWaypoints)
+{
+	ArgusEntity selectedEntity = GetEntity();
+	if (!selectedEntity)
+	{
+		return;
+	}
+
+	ArgusEntity targetEntity = selectedEntity;
+	if (AArgusActor* argusTargetActor = Cast<AArgusActor>(targetActor))
+	{
+		targetEntity = argusTargetActor->GetEntity();
+	}
+	EMovementState inputMovementState = EMovementState::ProcessMoveToEntityCommand;
+	TaskComponent* taskComponent = selectedEntity.GetComponent<TaskComponent>();
+	TargetingComponent* targetingComponent = selectedEntity.GetComponent<TargetingComponent>();
+	NavigationComponent* navigationComponent = selectedEntity.GetComponent<NavigationComponent>();
+
+	if (!taskComponent || !targetingComponent)
+	{
+		return;
+	}
+
+	if (bClearWaypoints && navigationComponent)
+	{
+		navigationComponent->ResetQueuedWaypoints();
+	}
+
+	if (inputMovementState == EMovementState::ProcessMoveToEntityCommand)
+	{
+		if (targetEntity == selectedEntity)
+		{
+			taskComponent->m_movementState = EMovementState::None;
+		}
+		else
+		{
+			if (navigationComponent)
+			{
+				AvoidanceSystems::DecrementIdleEntitiesInGroup(selectedEntity);
+				taskComponent->m_movementState = inputMovementState;
+			}
+
+			targetingComponent->m_targetEntityId = targetEntity.GetId();
+			targetingComponent->m_targetLocation.Reset();
+		}
+	}
+
+}
 void AArgusActor::BeginPlay()
 {
 	Super::BeginPlay();

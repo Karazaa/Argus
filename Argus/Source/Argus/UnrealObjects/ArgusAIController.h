@@ -39,6 +39,9 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Argus AIController")
 	bool HasRequiredEntities() override;
 
+	UFUNCTION(BlueprintCallable, Category = "Argus AIController")
+	TArray<AArgusActor*> GetAllTeamActors() override;
+
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Argus AIController")
 	TSet<TSoftObjectPtr<AArgusActor>> m_hiddenActors;
