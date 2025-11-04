@@ -10,6 +10,7 @@
 #include "ComponentDependencies/ResourceSet.h"
 #include "GameFramework/GameModeBase.h"
 #include "RecordDefinitions/TeamColorRecord.h"
+#include "ArgusController.h"
 #include "ArgusGameModeBase.generated.h"
 
 class AArgusPlayerController;
@@ -43,6 +44,9 @@ protected:
 
 	UPROPERTY(Transient)
 	TObjectPtr<AArgusPlayerController> m_activePlayerController;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TMap<ETeam, AController*> m_teamController;
 
 	virtual void Tick(float deltaTime) override;
 

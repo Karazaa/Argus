@@ -4,6 +4,7 @@
 #include "ArgusEntityTemplate.h"
 #include "ArgusGameStateBase.h"
 #include "ArgusPlayerController.h"
+#include "ArgusAIController.h"
 #include "ArgusStaticData.h"
 #include "EngineUtils.h"
 
@@ -34,9 +35,14 @@ void AArgusGameModeBase::StartPlay()
 	for (AArgusPlayerController* argusPlayerController : TActorRange<AArgusPlayerController>(GetWorld()))
 	{
 		m_activePlayerController = argusPlayerController;
+		m_teamController.Add(argusPlayerController->GetPlayerTeam(), argusPlayerController);
 		break;
 	}
 
+	for (AArgusAIController* argusPlayerController : TActorRange<AArgusAIController>(GetWorld()))
+	{
+		m_teamController.Add(argusPlayerController->GetPlayerTeam(), argusPlayerController);
+	}
 	if (m_activePlayerController)
 	{
 		m_activePlayerController->InitializeUIWidgets();
