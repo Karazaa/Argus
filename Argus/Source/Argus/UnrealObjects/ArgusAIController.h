@@ -42,6 +42,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Argus AIController")
 	TArray<AArgusActor*> GetAllTeamActors() override;
 
+	UFUNCTION(BlueprintCallable, Category = "Argus AIController")
+	TArray<AArgusActor*> GetAllArgusActors() override;
+
+	UFUNCTION(BlueprintCallable, Category = "Argus AIController")
+	TArray<AArgusActor*> GetArgusActorsWithTeamRelationship(const TSet<ETeamRelationship> relationships) override;
+
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Argus AIController")
 	TSet<TSoftObjectPtr<AArgusActor>> m_hiddenActors;

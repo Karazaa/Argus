@@ -9,6 +9,15 @@
 
 class UArgusActorRecord;
 
+UENUM(BlueprintType)
+enum class ETeamRelationship : uint8 {
+	NONE = 0		UMETA(DisplayName = "NONE") // no relationship, used for actors that have no identity
+	, NEUTRAL = 1	UMETA(DisplayName = "NEUTRAL") // used for actors that are neutral to everyone.
+	, ENEMY = 1		UMETA(DisplayName = "ENEMY") // enemy team/s
+	, ALLY = 2		UMETA(DisplayName = "ALLY") // allied teams/s
+	, SAMETEAM = 3	UMETA(DisplayName = "SAME TEAM") // same team
+};
+
 class ArgusEntity
 {
 public:

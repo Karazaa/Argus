@@ -143,6 +143,13 @@ bool AArgusAIController::HasRequiredEntities()
 
 TArray<AArgusActor*> AArgusAIController::GetAllTeamActors()
 {
+	TArray<AArgusActor*> allActors = GetAllArgusActors();
+	FilterArgusActorsToPlayerTeam(allActors);
+	return allActors;
+}
+
+TArray<AArgusActor*> AArgusAIController::GetAllArgusActors()
+{
 	const UWorld* world = GetWorld();
 	if (!world)
 	{
@@ -157,14 +164,11 @@ TArray<AArgusActor*> AArgusAIController::GetAllTeamActors()
 
 	TArray<AArgusActor*> allActors;
 	GetArgusActorsFromArgusEntityIds(gameInstance->GetAllRegisteredArgusEntityIds(), allActors);
-	FilterArgusActorsToPlayerTeam(allActors);
-	TArray<AArgusActor*> aliveActors;
-	for(auto& actor: allActors) 
-	{
-		if (actor->GetEntity().IsAlive())
-		{
-			aliveActors.Add(actor);
-		}
-	}
-	return aliveActors;
+	return TArray<AArgusActor*>();
+}
+
+TArray<AArgusActor*> AArgusAIController::GetArgusActorsWithTeamRelationship(const TSet<ETeamRelationship> relationships)
+{
+
+	return TArray<AArgusActor*>();
 }

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
+#include "ArgusEntity.h"
 #include "ComponentDefinitions/IdentityComponent.h"
 #include "ArgusActor.h"
 #include "ArgusController.generated.h"
@@ -28,8 +29,11 @@ public:
 
 	virtual bool HasRequiredEntities();
 
-	virtual TArray<TSubclassOf<AArgusActor>> GetRequredEntityClasses();
+	virtual TArray<TSubclassOf<AArgusActor>> GetRequredEntityClasses();	
 
 	virtual TArray<AArgusActor*> GetAllTeamActors();
 
+	virtual TArray<AArgusActor*> GetAllArgusActors();
+
+	virtual TArray<AArgusActor*> GetArgusActorsWithTeamRelationship(const TSet<ETeamRelationship> relationships);
 };

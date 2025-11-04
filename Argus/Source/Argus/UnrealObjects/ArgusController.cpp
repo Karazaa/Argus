@@ -2,6 +2,7 @@
 
 
 #include "ArgusController.h"
+#include "Engine/World.h"
 #include "ArgusActor.h"
 
 // Add default functionality here for any IArgusController functions that are not pure virtual.
@@ -22,6 +23,16 @@ TArray<TSubclassOf<AArgusActor>> IArgusController::GetRequredEntityClasses()
 }
 
 TArray<AArgusActor*> IArgusController::GetAllTeamActors()
+{
+	return TArray<AArgusActor*>();
+}
+
+TArray<AArgusActor*> IArgusController::GetAllArgusActors()
+{
+	return TArray<AArgusActor*>();
+}
+
+TArray<AArgusActor*> IArgusController::GetArgusActorsWithTeamRelationship(const TSet<ETeamRelationship> relationships)
 {
 	return TArray<AArgusActor*>();
 }
