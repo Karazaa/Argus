@@ -380,9 +380,23 @@ void FogOfWarSystems::SetAlphaForPixelRange(FogOfWarComponent* fogOfWarComponent
 	ARGUS_TRACE(FogOfWarSystems::SetAlphaForPixelRange);
 	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
 
-	uint8* firstAddress = &fogOfWarComponent->m_textureData[fromPixelInclusive];
-	uint32 rowLength = (toPixelInclusive - fromPixelInclusive) + 1;
-	memset(firstAddress, activelyRevealed ? 0 : fogOfWarComponent->m_revealedOnceAlpha, rowLength);
+	if (activelyRevealed)
+	{
+		uint8* firstAddress = &fogOfWarComponent->m_textureData[fromPixelInclusive];
+		uint32 rowLength = (toPixelInclusive - fromPixelInclusive) + 1;
+		memset(firstAddress, 0, rowLength);
+		return;
+	}
+
+	for (uint32 i = fromPixelInclusive; i <= toPixelInclusive; ++i)
+	{
+		if (fogOfWarComponent->m_textureData[i] != 0u)
+		{
+			continue;
+		}
+
+		fogOfWarComponent->m_textureData[i] = fogOfWarComponent->m_revealedOnceAlpha;
+	}
 }
 
 void FogOfWarSystems::SetAlphaForCircleOctant(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, const FogOfWarOffsets& offsets, bool activelyRevealed)
