@@ -190,6 +190,18 @@ namespace ArgusMath
 		return IsLeftOfCartesian(ToCartesianVector2(lineSegmentPoint0), ToCartesianVector2(lineSegmentPoint1), ToCartesianVector2(evaluationPoint), radius);
 	}
 
+	static bool DoLineSegmentsIntersectCartesian(const FVector2D& lineSegmentAPoint0, const FVector2D& lineSegmentAPoint1, const FVector2D& lineSegmentBPoint0, const FVector2D& lineSegmentBPoint1)
+	{
+		const bool differA = IsLeftOfCartesian(lineSegmentAPoint0, lineSegmentAPoint1, lineSegmentBPoint0) != IsLeftOfCartesian(lineSegmentAPoint0, lineSegmentAPoint1, lineSegmentBPoint1);
+		const bool differB = IsLeftOfCartesian(lineSegmentBPoint0, lineSegmentBPoint1, lineSegmentAPoint0) != IsLeftOfCartesian(lineSegmentBPoint0, lineSegmentBPoint1, lineSegmentAPoint1);
+		return differA && differB;
+	}
+
+	static bool DoLineSegmentsIntersectUnreal(const FVector2D& lineSegmentAPoint0, const FVector2D& lineSegmentAPoint1, const FVector2D& lineSegmentBPoint0, const FVector2D& lineSegmentBPoint1)
+	{
+		return DoLineSegmentsIntersectCartesian(ToCartesianVector2(lineSegmentAPoint0), ToCartesianVector2(lineSegmentAPoint1), ToCartesianVector2(lineSegmentBPoint0), ToCartesianVector2(lineSegmentBPoint1));
+	}
+
 	static float GetNormalizedZeroToTwoPi(float angle)
 	{
 		float modulo = FMath::Fmod(angle, UE_TWO_PI);
