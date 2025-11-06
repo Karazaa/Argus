@@ -413,6 +413,18 @@ void FogOfWarSystems::SetAlphaForPixelRange(FogOfWarComponent* fogOfWarComponent
 	}
 }
 
+void FogOfWarSystems::RevealPixelRangeWithObstacles(FogOfWarComponent* fogOfWarComponent, uint32 fromPixelInclusive, uint32 toPixelInclusive, const TArray<ObstacleIndicies>& obstacleIndicies, const FVector2D& cartesianEntityLocation)
+{
+	ARGUS_TRACE(FogOfWarSystems::RevealPixelRangeWithObstacles);
+	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
+
+	for (uint32 i = fromPixelInclusive; i <= toPixelInclusive; ++i)
+	{
+		const FVector2D cartesianPixelLocation = ArgusMath::ToCartesianVector2(GetWorldSpaceLocationFromPixelNumber(fogOfWarComponent, i));
+		fogOfWarComponent->m_textureData[i] = 0u;
+	}
+}
+
 void FogOfWarSystems::SetAlphaForCircleOctant(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, const FogOfWarOffsets& offsets, const TArray<ObstacleIndicies>& obstacleIndicies, bool activelyRevealed)
 {
 	ARGUS_TRACE(FogOfWarSystems::SetAlphaForCircleOctant);
@@ -424,6 +436,18 @@ void FogOfWarSystems::SetAlphaForCircleOctant(FogOfWarComponent* fogOfWarCompone
 
 	CircleOctantExpansion octantExpansion;
 	PopulateOctantExpansionForEntity(fogOfWarComponent, components, offsets, octantExpansion);
+
+	// TODO JAMES: Unfortunately, the naive approach to obstacle detection is prohibitively expensive. I'm going
+	// to need to find a better way :/
+	//if (obstacleIndicies.Num() > 0)
+	//{
+	//	const FVector2D cartesianCenterLocation = ArgusMath::ToCartesianVector2(GetWorldSpaceLocationFromPixelNumber(fogOfWarComponent, components.m_fogOfWarLocationComponent->m_fogOfWarPixel));
+	//	RevealPixelRangeWithObstacles(fogOfWarComponent, octantExpansion.m_centerColumnTopIndex - octantExpansion.m_topStartX, octantExpansion.m_centerColumnTopIndex + octantExpansion.m_topEndX, obstacleIndicies, cartesianCenterLocation);
+	//	RevealPixelRangeWithObstacles(fogOfWarComponent, octantExpansion.m_centerColumnMidUpIndex - octantExpansion.m_midUpStartX, octantExpansion.m_centerColumnMidUpIndex + octantExpansion.m_midUpEndX, obstacleIndicies, cartesianCenterLocation);
+	//	RevealPixelRangeWithObstacles(fogOfWarComponent, octantExpansion.m_centerColumnMidDownIndex - octantExpansion.m_midDownStartX, octantExpansion.m_centerColumnMidDownIndex + octantExpansion.m_midDownEndX, obstacleIndicies, cartesianCenterLocation);
+	//	RevealPixelRangeWithObstacles(fogOfWarComponent, octantExpansion.m_centerColumnBottomIndex - octantExpansion.m_bottomStartX, octantExpansion.m_centerColumnBottomIndex + octantExpansion.m_bottomEndX, obstacleIndicies, cartesianCenterLocation);
+	//	return;
+	//}
 
 	SetAlphaForPixelRange(fogOfWarComponent, octantExpansion.m_centerColumnTopIndex - octantExpansion.m_topStartX, octantExpansion.m_centerColumnTopIndex + octantExpansion.m_topEndX, activelyRevealed);
 	SetAlphaForPixelRange(fogOfWarComponent, octantExpansion.m_centerColumnMidUpIndex - octantExpansion.m_midUpStartX, octantExpansion.m_centerColumnMidUpIndex + octantExpansion.m_midUpEndX, activelyRevealed);
@@ -548,6 +572,22 @@ uint32 FogOfWarSystems::GetPixelNumberFromWorldSpaceLocation(FogOfWarComponent* 
 	uint32 yValue32 = static_cast<uint32>(FMath::FloorToInt32(yValue));
 
 	return (yValue32 * static_cast<uint32>(fogOfWarComponent->m_textureSize)) + xValue32;
+}
+
+FVector2D FogOfWarSystems::GetWorldSpaceLocationFromPixelNumber(FogOfWarComponent* fogOfWarComponent, uint32 pixelNumber)
+{
+	ARGUS_RETURN_ON_NULL_FVECTOR2D(fogOfWarComponent, ArgusECSLog, FVector2D::ZeroVector);
+	SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId).GetComponent<SpatialPartitioningComponent>();
+	ARGUS_RETURN_ON_NULL_FVECTOR2D(spatialPartitioningComponent, ArgusECSLog, FVector2D::ZeroVector);
+
+	const float worldspaceWidth = spatialPartitioningComponent->m_validSpaceExtent * 2.0f;
+	const float textureIncrement = ArgusMath::SafeDivide(worldspaceWidth, static_cast<float>(fogOfWarComponent->m_textureSize));
+
+	const float leftOffset = static_cast<float>(pixelNumber % fogOfWarComponent->m_textureSize) * textureIncrement;
+	const float topOffset = static_cast<float>(pixelNumber / fogOfWarComponent->m_textureSize) * textureIncrement;
+
+	
+	return FVector2D(spatialPartitioningComponent->m_validSpaceExtent - topOffset, leftOffset - spatialPartitioningComponent->m_validSpaceExtent);
 }
 
 uint32 FogOfWarSystems::GetPixelRadiusFromWorldSpaceRadius(FogOfWarComponent* fogOfWarComponent, float radius)
