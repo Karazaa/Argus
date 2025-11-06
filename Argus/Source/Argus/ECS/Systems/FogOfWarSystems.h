@@ -6,6 +6,7 @@ class ArgusEntity;
 
 struct FogOfWarComponent;
 struct FogOfWarSystemsArgs;
+struct ObstacleIndicies;
 struct InputInterfaceComponent;
 
 class FogOfWarSystems
@@ -60,7 +61,7 @@ private:
 	static void RevealPixelAlphaForEntity(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, FogOfWarOffsets& offsets, bool activelyRevealed);
 	static void RasterizeCircleOfRadius(uint32 radius, FogOfWarOffsets& offsets, TFunction<void (FogOfWarOffsets& offsets)> perOctantPixelFunction);
 	static void SetAlphaForPixelRange(FogOfWarComponent* fogOfWarComponent, uint32 fromPixelInclusive, uint32 toPixelInclusive, bool activelyRevealed);
-	static void SetAlphaForCircleOctant(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, const FogOfWarOffsets& offsets, bool activelyRevealed);
+	static void SetAlphaForCircleOctant(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, const FogOfWarOffsets& offsets, const TArray<ObstacleIndicies>& obstacleIndicies, bool activelyRevealed);
 	static void UpdateTexture();
 	static void UpdateGaussianWeightsTexture();
 	static void UpdateDynamicMaterialInstance();

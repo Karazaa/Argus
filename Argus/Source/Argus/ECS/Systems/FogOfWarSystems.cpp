@@ -343,11 +343,25 @@ void FogOfWarSystems::RevealPixelAlphaForEntity(FogOfWarComponent* fogOfWarCompo
 		return;
 	}
 
+	TArray<ObstacleIndicies> obstacleIndicies;
+	if (components.m_taskComponent->m_flightState == EFlightState::Grounded && activelyRevealed)
+	{
+		SpatialPartitioningComponent* spatialParitioningComponent = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId).GetComponent<SpatialPartitioningComponent>();
+		ARGUS_RETURN_ON_NULL(spatialParitioningComponent, ArgusECSLog);
+
+		spatialParitioningComponent->m_obstaclePointKDTree.FindObstacleIndiciesWithinRangeOfLocation
+		(
+			obstacleIndicies,
+			ArgusMath::ToCartesianVector(components.m_transformComponent->m_location),
+			components.m_targetingComponent->m_sightRange
+		);
+	}
+
 	const uint32 radius = GetPixelRadiusFromWorldSpaceRadius(fogOfWarComponent, components.m_targetingComponent->m_sightRange);
-	RasterizeCircleOfRadius(radius, offsets, [fogOfWarComponent, &components, activelyRevealed](const FogOfWarOffsets& offsets)
+	RasterizeCircleOfRadius(radius, offsets, [fogOfWarComponent, &components, &obstacleIndicies, activelyRevealed](const FogOfWarOffsets& offsets)
 	{
 		// Set Alpha for pixel range for all symmetrical pixels.
-		SetAlphaForCircleOctant(fogOfWarComponent, components, offsets, activelyRevealed);
+		SetAlphaForCircleOctant(fogOfWarComponent, components, offsets, obstacleIndicies, activelyRevealed);
 	});
 }
 
@@ -399,7 +413,7 @@ void FogOfWarSystems::SetAlphaForPixelRange(FogOfWarComponent* fogOfWarComponent
 	}
 }
 
-void FogOfWarSystems::SetAlphaForCircleOctant(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, const FogOfWarOffsets& offsets, bool activelyRevealed)
+void FogOfWarSystems::SetAlphaForCircleOctant(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, const FogOfWarOffsets& offsets, const TArray<ObstacleIndicies>& obstacleIndicies, bool activelyRevealed)
 {
 	ARGUS_TRACE(FogOfWarSystems::SetAlphaForCircleOctant);
 	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
