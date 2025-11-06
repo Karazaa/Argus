@@ -3,8 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/StateTreeTaskBlueprintBase.h"
-#include <ArgusAIController.h>
+#include "Argus_STTask_Base.h"
+#include "ArgusAIController.h"
 
 #include "CheckRequiredEntities.generated.h"
 
@@ -13,18 +13,12 @@
  * 
  */
 UCLASS()
-class ARGUS_API UCheckRequiredEntities : public UStateTreeTaskBlueprintBase
+class ARGUS_API UCheckRequiredEntities : public UArgus_STTask_Base
 {
 	GENERATED_BODY()
 
 public:
 
-	UPROPERTY(BLueprintReadWrite, EditAnywhere)
-	AArgusAIController* m_aiController;
-
-	EStateTreeRunStatus EnterState(FStateTreeExecutionContext& Context,
-		const FStateTreeTransitionResult& Transition) override;
-
-	void ExitState(FStateTreeExecutionContext& Context, const FStateTreeTransitionResult& Transition) override;
+	void OnArgusStartTask() override;
 	
 };

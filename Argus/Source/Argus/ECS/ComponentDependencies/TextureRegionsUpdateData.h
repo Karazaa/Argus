@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "Rendering/Texture2DResource.h"
+
 struct TextureRegionsUpdateData
 {
 	FTexture2DResource* m_texture2DResource;

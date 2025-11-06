@@ -111,6 +111,12 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnArgusEntityPassengerStateChanged(bool isPassenger);
 
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void OnArgusEntityAbilityAtLocation(int32 abilityId, FVector location);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void OnArgusEntityAbility(int32 abilityId);
+
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	TSoftClassPtr<UArgusActorInfoView> m_argusActorInfoWidgetClass = nullptr;
 
@@ -127,6 +133,7 @@ protected:
 	float m_uiWidgetOffsetDistance = 50.0f;
 
 	virtual void BeginPlay() override;
+
 	virtual void EndPlay(const EEndPlayReason::Type endPlayReason) override;
 	virtual void OnChanged_m_baseState(EBaseState oldValue, EBaseState newValue) override;
 	virtual void OnChanged_m_flightState(EFlightState oldValue, EFlightState newValue) override;

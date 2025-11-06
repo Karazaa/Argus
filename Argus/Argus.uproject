@@ -12,7 +12,8 @@
 				"Engine",
 				"FunctionalTesting",
 				"AIModule",
-				"CoreUObject"
+				"CoreUObject",
+				"StateTreeModule"
 			]
 		}
 	],
@@ -46,6 +47,10 @@
 		},
 		{
 			"Name": "TestFramework",
+			"Enabled": true
+		},
+		{
+			"Name": "StateTree",
 			"Enabled": true
 		},
 		{

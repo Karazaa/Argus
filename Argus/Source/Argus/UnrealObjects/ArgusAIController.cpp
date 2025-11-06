@@ -8,6 +8,8 @@
 #include "ArgusEntity.h"
 #include "ArgusActor.h"
 #include "ArgusLogging.h"
+#include "ArgusGameModeBase.h"
+#include "Systems/SpawningSystems.h"
 
 void AArgusAIController::UpdateHiddenActors()
 {
@@ -164,7 +166,7 @@ TArray<AArgusActor*> AArgusAIController::GetAllArgusActors()
 
 	TArray<AArgusActor*> allActors;
 	GetArgusActorsFromArgusEntityIds(gameInstance->GetAllRegisteredArgusEntityIds(), allActors);
-	return TArray<AArgusActor*>();
+	return allActors;
 }
 
 TArray<AArgusActor*> AArgusAIController::GetArgusActorsWithTeamRelationship(const TSet<ETeamRelationship> relationships)

@@ -3,6 +3,8 @@
 #include "ArgusSystemsThread.h"
 #include "GameTime.h"
 #include "Systems/FogOfWarSystems.h"
+#include "HAL/RunnableThread.h"
+#include "HAL/PlatformProcess.h"
 
 ArgusSystemsThread::ArgusSystemsThread()
 {

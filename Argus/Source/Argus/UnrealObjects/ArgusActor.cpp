@@ -355,8 +355,9 @@ void AArgusActor::BeginPlay()
 	{
 		entityTaskComponent->m_spawnedFromArgusActorRecordId = loadedArgusActorRecord->m_id;
 	}
-	
+
 	SetEntity(m_entity);
+
 }
 
 void AArgusActor::EndPlay(const EEndPlayReason::Type endPlayReason)
@@ -549,4 +550,41 @@ void AArgusActor::FixupTransformForFlying()
 
 	transformComponent->m_location.Z = spatialPartitioningComponent->m_flyingPlaneHeight;
 	SetActorLocationAndRotation(transformComponent->m_location, FRotator(0.0f, ArgusMath::GetUEYawDegreesFromYaw(transformComponent->GetCurrentYaw()), 0.0f));
+}
+
+void AArgusActor::OnArgusEntityAbilityAtLocation_Implementation(int32 abilityId, FVector location)
+{
+	if (abilityId < 0 || abilityId > 3)
+	{
+		return;
+	}
+	TaskComponent* taskComponent = m_entity.GetComponent<TaskComponent>();
+	if (!taskComponent)
+	{
+		return;
+	}
+
+	switch (abilityId)
+	{
+	case 0u:
+		taskComponent->m_abilityState = EAbilityState::ProcessCastAbility0Command;
+		break;
+	case 1u:
+		taskComponent->m_abilityState = EAbilityState::ProcessCastAbility1Command;
+		break;
+	case 2u:
+		taskComponent->m_abilityState = EAbilityState::ProcessCastAbility2Command;
+		break;
+	case 3u:
+		taskComponent->m_abilityState = EAbilityState::ProcessCastAbility3Command;
+		break;
+	default:
+		break;
+	}
+
+
+}
+void AArgusActor::OnArgusEntityAbility_Implementation(int32 abilityId)
+{
+	OnArgusEntityAbilityAtLocation(abilityId, GetActorLocation());
 }
