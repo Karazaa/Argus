@@ -130,6 +130,8 @@ void ObstaclePointKDTree::InsertObstaclesIntoKDTree(const TArray<ObstaclePointAr
 
 bool ObstaclePointKDTree::FindObstacleIndiciesWithinRangeOfLocation(TArray<ObstacleIndicies>& obstacleIndicies, const FVector& location, const float range) const
 {
+	ARGUS_TRACE(ObstaclePointKDTree::FindObstacleIndiciesWithinRangeOfLocation);
+
 	if (!m_rootNode)
 	{
 		return false;

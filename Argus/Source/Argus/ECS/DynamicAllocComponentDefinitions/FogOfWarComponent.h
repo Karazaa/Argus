@@ -35,9 +35,6 @@ struct FogOfWarComponent
 	TArray<uint8, ArgusContainerAllocator<0> > m_textureData;
 
 	ARGUS_IGNORE()
-	TArray<uint8, ArgusContainerAllocator<0> > m_blurredTextureData;
-
-	ARGUS_IGNORE()
 	TArray<uint8, ArgusContainerAllocator<0> > m_smoothedTextureData;
 
 	ARGUS_IGNORE()
@@ -48,22 +45,11 @@ struct FogOfWarComponent
 
 	uint8 m_gaussianDimension = 5u;
 	uint8 m_revealedOnceAlpha = 100u;
-	uint8 m_blurPassCount = 3u;
-	bool m_useCPUBlurring = true;
 	float m_smoothingDecayConstant = 5.0f;
 	uint16 m_textureSize = 1024u;
 
 	uint32 GetTotalPixels()
 	{
 		return static_cast<uint32>(m_textureSize) * static_cast<uint32>(m_textureSize);
-	}
-
-	void CopyBlurredDataIntoTextureData()
-	{
-		ARGUS_TRACE(FogOfWarComponent::CopyBlurredDataIntoTextureData);
-
-		uint8* textureAddress = &m_textureData[0];
-		uint8* blurredAddress = &m_blurredTextureData[0];
-		memcpy(textureAddress, blurredAddress, m_textureData.Num());
 	}
 };

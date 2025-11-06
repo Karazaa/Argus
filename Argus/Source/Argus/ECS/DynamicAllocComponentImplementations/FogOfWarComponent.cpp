@@ -18,14 +18,11 @@ void FogOfWarComponent::Reset()
 	m_gaussianWeightsTexture = nullptr;
 	m_dynamicMaterialInstance = nullptr;
 	m_textureData.Reset();
-	m_blurredTextureData.Reset();
 	m_smoothedTextureData.Reset();
 	m_intermediarySmoothingData.Reset();
 	m_gaussianFilter.Reset();
 	m_gaussianDimension = 5u;
 	m_revealedOnceAlpha = 100u;
-	m_blurPassCount = 3u;
-	m_useCPUBlurring = true;
 	m_smoothingDecayConstant = 5.0f;
 	m_textureSize = 1024u;
 }
@@ -69,22 +66,6 @@ void FogOfWarComponent::DrawComponentDebug() const
 			for (int32 i = 0; i < m_textureData.Num(); ++i)
 			{
 				ImGui::Text("%d", m_textureData[i]);
-			}
-		}
-		ImGui::TableNextColumn();
-		ImGui::Text("m_blurredTextureData");
-		ImGui::TableNextColumn();
-		ImGui::Text("Array max is currently = %d", m_blurredTextureData.Max());
-		if (m_blurredTextureData.Num() == 0)
-		{
-			ImGui::Text("Array is empty");
-		}
-		else
-		{
-			ImGui::Text("Size of array = %d", m_blurredTextureData.Num());
-			for (int32 i = 0; i < m_blurredTextureData.Num(); ++i)
-			{
-				ImGui::Text("%d", m_blurredTextureData[i]);
 			}
 		}
 		ImGui::TableNextColumn();
@@ -143,14 +124,6 @@ void FogOfWarComponent::DrawComponentDebug() const
 		ImGui::Text("m_revealedOnceAlpha");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_revealedOnceAlpha);
-		ImGui::TableNextColumn();
-		ImGui::Text("m_blurPassCount");
-		ImGui::TableNextColumn();
-		ImGui::Text("%d", m_blurPassCount);
-		ImGui::TableNextColumn();
-		ImGui::Text("m_useCPUBlurring");
-		ImGui::TableNextColumn();
-		ImGui::Text(m_useCPUBlurring ? "true" : "false");
 		ImGui::TableNextColumn();
 		ImGui::Text("m_smoothingDecayConstant");
 		ImGui::TableNextColumn();

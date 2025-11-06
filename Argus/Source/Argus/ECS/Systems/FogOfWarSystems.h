@@ -6,6 +6,7 @@ class ArgusEntity;
 
 struct FogOfWarComponent;
 struct FogOfWarSystemsArgs;
+struct ObstacleIndicies;
 struct InputInterfaceComponent;
 
 class FogOfWarSystems
@@ -54,17 +55,13 @@ private:
 
 	static void InitializeGaussianFilter(FogOfWarComponent* fogOfWarComponent);
 	static void SetRevealedStatePerEntity(FogOfWarComponent* fogOfWarComponent);
-	static void ApplyGaussianBlur(FogOfWarComponent* fogOfWarComponent);
 	static void ApplyExponentialDecaySmoothing(FogOfWarComponent* fogOfWarComponent, float deltaTime);
 	static void PopulateOffsetsForEntity(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, FogOfWarOffsets& outOffsets);
 	static void PopulateOctantExpansionForEntity(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, const FogOfWarOffsets& offsets, CircleOctantExpansion& outCircleOctantExpansion);
 	static void RevealPixelAlphaForEntity(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, FogOfWarOffsets& offsets, bool activelyRevealed);
-	static void BlurBoundariesForEntity(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, FogOfWarOffsets& offsets);
 	static void RasterizeCircleOfRadius(uint32 radius, FogOfWarOffsets& offsets, TFunction<void (FogOfWarOffsets& offsets)> perOctantPixelFunction);
 	static void SetAlphaForPixelRange(FogOfWarComponent* fogOfWarComponent, uint32 fromPixelInclusive, uint32 toPixelInclusive, bool activelyRevealed);
-	static void SetAlphaForCircleOctant(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, const FogOfWarOffsets& offsets, bool activelyRevealed);
-	static void BlurBoundariesForCircleOctant(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, const FogOfWarOffsets& offsets);
-	static void SetRingAlphaForCircleOctant(uint8 alphaValue, FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, const FogOfWarOffsets& offsets);
+	static void SetAlphaForCircleOctant(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, const FogOfWarOffsets& offsets, const TArray<ObstacleIndicies>& obstacleIndicies, bool activelyRevealed);
 	static void UpdateTexture();
 	static void UpdateGaussianWeightsTexture();
 	static void UpdateDynamicMaterialInstance();
@@ -73,6 +70,4 @@ private:
 	static uint32 GetPixelRadiusFromWorldSpaceRadius(FogOfWarComponent* fogOfWarComponent, float radius);
 	static void UpdateDoesEntityNeedToUpdateActivelyRevealed(const FogOfWarSystemsArgs& components, const InputInterfaceComponent* inputInterfaceComponent);
 	static bool IsPixelInFogOfWarBounds(int32 relativeX, int32 relativeY, FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components);
-	static void BlurAroundPixel(int32 relativeX, int32 relativeY, FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components);
-	static void SetPixelAlpha(int32 relativeX, int32 relativeY, uint8 alphaValue, FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components);
 };

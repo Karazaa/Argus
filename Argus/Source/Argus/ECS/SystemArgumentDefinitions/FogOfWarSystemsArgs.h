@@ -11,5 +11,6 @@ struct FogOfWarSystemsArgs
 
 	FogOfWarLocationComponent* m_fogOfWarLocationComponent = nullptr;
 	TargetingComponent* m_targetingComponent = nullptr;
+	TaskComponent* m_taskComponent = nullptr;
 	TransformComponent* m_transformComponent = nullptr;
 };
