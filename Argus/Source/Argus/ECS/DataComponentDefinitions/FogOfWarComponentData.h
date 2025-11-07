@@ -26,6 +26,8 @@ public:
 	float m_smoothingDecayConstant = 5.0f;
 	UPROPERTY(EditAnywhere)
 	uint16 m_textureSize = 1024u;
+	UPROPERTY(EditAnywhere)
+	bool m_shouldUseSmoothing = true;
 
 	void InstantiateComponentForEntity(const ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;

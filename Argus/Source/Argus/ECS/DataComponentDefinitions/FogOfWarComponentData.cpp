@@ -17,6 +17,7 @@ void UFogOfWarComponentData::InstantiateComponentForEntity(const ArgusEntity& en
 	FogOfWarComponentRef->m_revealedOnceAlpha = m_revealedOnceAlpha;
 	FogOfWarComponentRef->m_smoothingDecayConstant = m_smoothingDecayConstant;
 	FogOfWarComponentRef->m_textureSize = m_textureSize;
+	FogOfWarComponentRef->m_shouldUseSmoothing = m_shouldUseSmoothing;
 }
 
 bool UFogOfWarComponentData::MatchesType(UComponentData* other) const

@@ -25,6 +25,7 @@ void FogOfWarComponent::Reset()
 	m_revealedOnceAlpha = 100u;
 	m_smoothingDecayConstant = 5.0f;
 	m_textureSize = 1024u;
+	m_shouldUseSmoothing = true;
 }
 
 void FogOfWarComponent::DrawComponentDebug() const
@@ -132,6 +133,10 @@ void FogOfWarComponent::DrawComponentDebug() const
 		ImGui::Text("m_textureSize");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_textureSize);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_shouldUseSmoothing");
+		ImGui::TableNextColumn();
+		ImGui::Text(m_shouldUseSmoothing ? "true" : "false");
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

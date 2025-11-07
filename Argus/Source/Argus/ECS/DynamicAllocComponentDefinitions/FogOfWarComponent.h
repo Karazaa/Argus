@@ -47,6 +47,7 @@ struct FogOfWarComponent
 	uint8 m_revealedOnceAlpha = 100u;
 	float m_smoothingDecayConstant = 5.0f;
 	uint16 m_textureSize = 1024u;
+	bool m_shouldUseSmoothing = true;
 
 	uint32 GetTotalPixels()
 	{

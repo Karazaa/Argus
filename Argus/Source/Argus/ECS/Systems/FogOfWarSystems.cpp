@@ -37,8 +37,11 @@ void FogOfWarSystems::InitializeSystems()
 	fogOfWarComponent->m_gaussianWeightsTexture->UpdateResource();
 
 	fogOfWarComponent->m_textureData.Init(255u, fogOfWarComponent->GetTotalPixels());
-	fogOfWarComponent->m_smoothedTextureData.Init(255u, fogOfWarComponent->GetTotalPixels());
-	fogOfWarComponent->m_intermediarySmoothingData.Init(255.0f, fogOfWarComponent->GetTotalPixels());
+	if (fogOfWarComponent->m_shouldUseSmoothing)
+	{
+		fogOfWarComponent->m_smoothedTextureData.Init(255u, fogOfWarComponent->GetTotalPixels());
+		fogOfWarComponent->m_intermediarySmoothingData.Init(255.0f, fogOfWarComponent->GetTotalPixels());
+	}
 
 	InitializeGaussianFilter(fogOfWarComponent);
 	UpdateDynamicMaterialInstance();
@@ -55,7 +58,10 @@ void FogOfWarSystems::RunThreadSystems(float deltaTime)
 	SetRevealedStatePerEntity(fogOfWarComponent);
 
 	// Take our result target state and use exponential decay smoothing to get a final state.
-	ApplyExponentialDecaySmoothing(fogOfWarComponent, deltaTime);
+	if (fogOfWarComponent->m_shouldUseSmoothing)
+	{
+		ApplyExponentialDecaySmoothing(fogOfWarComponent, deltaTime);
+	}
 }
 
 void FogOfWarSystems::RunSystems()
@@ -478,7 +484,7 @@ void FogOfWarSystems::UpdateTexture()
 	fogOfWarComponent->m_textureRegionsUpdateData.m_regions = &fogOfWarComponent->m_textureRegion;
 	fogOfWarComponent->m_textureRegionsUpdateData.m_srcPitch = fogOfWarComponent->m_textureSize;
 	fogOfWarComponent->m_textureRegionsUpdateData.m_srcBpp = 1;
-	fogOfWarComponent->m_textureRegionsUpdateData.m_srcData = fogOfWarComponent->m_smoothedTextureData.GetData();
+	fogOfWarComponent->m_textureRegionsUpdateData.m_srcData = fogOfWarComponent->m_shouldUseSmoothing ? fogOfWarComponent->m_smoothedTextureData.GetData() : fogOfWarComponent->m_textureData.GetData();;
 
 	if (!fogOfWarComponent->m_textureRegionsUpdateData.m_srcData)
 	{
