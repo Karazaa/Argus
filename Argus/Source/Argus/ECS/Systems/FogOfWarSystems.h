@@ -8,6 +8,7 @@ struct FogOfWarComponent;
 struct FogOfWarSystemsArgs;
 struct ObstacleIndicies;
 struct InputInterfaceComponent;
+struct SpatialPartitioningComponent;
 
 class FogOfWarSystems
 {
@@ -53,6 +54,21 @@ private:
 		uint32 m_centerColumnBottomIndex = 0u;
 	};
 
+	struct OctantTraces
+	{
+		FVector2D m_previousTopLeft = FVector2D::ZeroVector;
+		FVector2D m_previousTopRight = FVector2D::ZeroVector;
+
+		FVector2D m_previousBottomLeft = FVector2D::ZeroVector;
+		FVector2D m_previousBottomRight = FVector2D::ZeroVector;
+
+		FVector2D m_previousMidUpLeft = FVector2D::ZeroVector;
+		FVector2D m_previousMidUpRight = FVector2D::ZeroVector;
+
+		FVector2D m_previousMidDownLeft = FVector2D::ZeroVector;
+		FVector2D m_previousMidDownRight = FVector2D::ZeroVector;
+	};
+
 	static void InitializeGaussianFilter(FogOfWarComponent* fogOfWarComponent);
 	static void SetRevealedStatePerEntity(FogOfWarComponent* fogOfWarComponent);
 	static void ApplyExponentialDecaySmoothing(FogOfWarComponent* fogOfWarComponent, float deltaTime);
@@ -61,8 +77,8 @@ private:
 	static void RevealPixelAlphaForEntity(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, FogOfWarOffsets& offsets, bool activelyRevealed);
 	static void RasterizeCircleOfRadius(uint32 radius, FogOfWarOffsets& offsets, TFunction<void (FogOfWarOffsets& offsets)> perOctantPixelFunction);
 	static void SetAlphaForPixelRange(FogOfWarComponent* fogOfWarComponent, uint32 fromPixelInclusive, uint32 toPixelInclusive, bool activelyRevealed);
-	static void RevealPixelRangeWithObstacles(FogOfWarComponent* fogOfWarComponent, uint32 fromPixelInclusive, uint32 toPixelInclusive, const TArray<ObstacleIndicies>& obstacleIndicies, const FVector2D& cartesianEntityLocation);
-	static void SetAlphaForCircleOctant(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, const FogOfWarOffsets& offsets, const TArray<ObstacleIndicies>& obstacleIndicies, bool activelyRevealed);
+	static void RevealPixelRangeWithObstacles(FogOfWarComponent* fogOfWarComponent, const SpatialPartitioningComponent* spatialPartitioningComponent, uint32 fromPixelInclusive, uint32 toPixelInclusive, const TArray<ObstacleIndicies>& obstacleIndicies, const FVector2D& cartesianEntityLocation, FVector2D& prevFrom, FVector2D& prevTo);
+	static void SetAlphaForCircleOctant(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, const FogOfWarOffsets& offsets, const TArray<ObstacleIndicies>& obstacleIndicies, OctantTraces& octantTraces, bool activelyRevealed);
 	static void UpdateTexture();
 	static void UpdateGaussianWeightsTexture();
 	static void UpdateDynamicMaterialInstance();

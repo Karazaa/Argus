@@ -202,6 +202,24 @@ namespace ArgusMath
 		return DoLineSegmentsIntersectCartesian(ToCartesianVector2(lineSegmentAPoint0), ToCartesianVector2(lineSegmentAPoint1), ToCartesianVector2(lineSegmentBPoint0), ToCartesianVector2(lineSegmentBPoint1));
 	}
 
+	static bool GetLineSegmentIntersectionCartesian(const FVector2D& lineSegmentAPoint0, const FVector2D& lineSegmentAPoint1, const FVector2D& lineSegmentBPoint0, const FVector2D& lineSegmentBPoint1, FVector2D& outIntersectionPoint)
+	{
+		const FVector2D xDifference = FVector2D(lineSegmentAPoint0.X - lineSegmentAPoint1.X, lineSegmentBPoint0.X - lineSegmentBPoint1.X);
+		const FVector2D yDifference = FVector2D(lineSegmentAPoint0.Y - lineSegmentAPoint1.Y, lineSegmentBPoint0.Y - lineSegmentBPoint1.Y);
+		const float determinant = Determinant(xDifference, yDifference);
+
+		if (FMath::IsNearlyZero(determinant))
+		{
+			return false;
+		}
+
+		const FVector2D dValue = FVector2D(Determinant(lineSegmentAPoint0, lineSegmentAPoint1), Determinant(lineSegmentBPoint0, lineSegmentBPoint1));
+		outIntersectionPoint.X = Determinant(dValue, xDifference) / determinant;
+		outIntersectionPoint.Y = Determinant(dValue, yDifference) / determinant;
+
+		return true;
+	}
+
 	static float GetNormalizedZeroToTwoPi(float angle)
 	{
 		float modulo = FMath::Fmod(angle, UE_TWO_PI);

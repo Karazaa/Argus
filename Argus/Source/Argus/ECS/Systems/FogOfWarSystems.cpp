@@ -364,10 +364,11 @@ void FogOfWarSystems::RevealPixelAlphaForEntity(FogOfWarComponent* fogOfWarCompo
 	}
 
 	const uint32 radius = GetPixelRadiusFromWorldSpaceRadius(fogOfWarComponent, components.m_targetingComponent->m_sightRange);
-	RasterizeCircleOfRadius(radius, offsets, [fogOfWarComponent, &components, &obstacleIndicies, activelyRevealed](const FogOfWarOffsets& offsets)
+	OctantTraces octantTraces;
+	RasterizeCircleOfRadius(radius, offsets, [fogOfWarComponent, &components, &obstacleIndicies, &octantTraces, activelyRevealed](const FogOfWarOffsets& offsets)
 	{
 		// Set Alpha for pixel range for all symmetrical pixels.
-		SetAlphaForCircleOctant(fogOfWarComponent, components, offsets, obstacleIndicies, activelyRevealed);
+		SetAlphaForCircleOctant(fogOfWarComponent, components, offsets, obstacleIndicies, octantTraces, activelyRevealed);
 	});
 }
 
@@ -419,19 +420,33 @@ void FogOfWarSystems::SetAlphaForPixelRange(FogOfWarComponent* fogOfWarComponent
 	}
 }
 
-void FogOfWarSystems::RevealPixelRangeWithObstacles(FogOfWarComponent* fogOfWarComponent, uint32 fromPixelInclusive, uint32 toPixelInclusive, const TArray<ObstacleIndicies>& obstacleIndicies, const FVector2D& cartesianEntityLocation)
+void FogOfWarSystems::RevealPixelRangeWithObstacles(FogOfWarComponent* fogOfWarComponent, const SpatialPartitioningComponent* spatialPartitioningComponent, uint32 fromPixelInclusive, uint32 toPixelInclusive, const TArray<ObstacleIndicies>& obstacleIndicies, const FVector2D& cartesianEntityLocation, FVector2D& prevFrom, FVector2D& prevTo)
 {
 	ARGUS_TRACE(FogOfWarSystems::RevealPixelRangeWithObstacles);
 	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
+	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
 
-	for (uint32 i = fromPixelInclusive; i <= toPixelInclusive; ++i)
+	const FVector2D cartesianFromLocation = ArgusMath::ToCartesianVector2(GetWorldSpaceLocationFromPixelNumber(fogOfWarComponent, fromPixelInclusive));
+	const FVector2D cartesianToLocation = ArgusMath::ToCartesianVector2(GetWorldSpaceLocationFromPixelNumber(fogOfWarComponent, toPixelInclusive));
+
+	for (int32 i = 0; i < obstacleIndicies.Num(); ++i)
 	{
-		const FVector2D cartesianPixelLocation = ArgusMath::ToCartesianVector2(GetWorldSpaceLocationFromPixelNumber(fogOfWarComponent, i));
-		fogOfWarComponent->m_textureData[i] = 0u;
+		const ObstaclePoint& currentObstaclePoint = spatialPartitioningComponent->m_obstacles[obstacleIndicies[i].m_obstacleIndex][obstacleIndicies[i].m_obstaclePointIndex];
+		const ObstaclePoint& nextObstaclePoint = spatialPartitioningComponent->m_obstacles[obstacleIndicies[i].m_obstacleIndex].GetNext(obstacleIndicies[i].m_obstaclePointIndex);
+
+		FVector2D fromIntersection = FVector2D::ZeroVector;
+		FVector2D toIntersection = FVector2D::ZeroVector;
+		ArgusMath::GetLineSegmentIntersectionCartesian(cartesianEntityLocation, cartesianFromLocation, currentObstaclePoint.m_point, nextObstaclePoint.m_point, fromIntersection);
+		ArgusMath::GetLineSegmentIntersectionCartesian(cartesianEntityLocation, cartesianToLocation, currentObstaclePoint.m_point, nextObstaclePoint.m_point, toIntersection);
 	}
+
+	SetAlphaForPixelRange(fogOfWarComponent, fromPixelInclusive, toPixelInclusive, true);
+
+	prevFrom = cartesianFromLocation;
+	prevTo = cartesianToLocation;
 }
 
-void FogOfWarSystems::SetAlphaForCircleOctant(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, const FogOfWarOffsets& offsets, const TArray<ObstacleIndicies>& obstacleIndicies, bool activelyRevealed)
+void FogOfWarSystems::SetAlphaForCircleOctant(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, const FogOfWarOffsets& offsets, const TArray<ObstacleIndicies>& obstacleIndicies, OctantTraces& octantTraces, bool activelyRevealed)
 {
 	ARGUS_TRACE(FogOfWarSystems::SetAlphaForCircleOctant);
 	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
@@ -443,17 +458,23 @@ void FogOfWarSystems::SetAlphaForCircleOctant(FogOfWarComponent* fogOfWarCompone
 	CircleOctantExpansion octantExpansion;
 	PopulateOctantExpansionForEntity(fogOfWarComponent, components, offsets, octantExpansion);
 
-	// TODO JAMES: Unfortunately, the naive approach to obstacle detection is prohibitively expensive. I'm going
-	// to need to find a better way :/
-	//if (obstacleIndicies.Num() > 0)
-	//{
-	//	const FVector2D cartesianCenterLocation = ArgusMath::ToCartesianVector2(GetWorldSpaceLocationFromPixelNumber(fogOfWarComponent, components.m_fogOfWarLocationComponent->m_fogOfWarPixel));
-	//	RevealPixelRangeWithObstacles(fogOfWarComponent, octantExpansion.m_centerColumnTopIndex - octantExpansion.m_topStartX, octantExpansion.m_centerColumnTopIndex + octantExpansion.m_topEndX, obstacleIndicies, cartesianCenterLocation);
-	//	RevealPixelRangeWithObstacles(fogOfWarComponent, octantExpansion.m_centerColumnMidUpIndex - octantExpansion.m_midUpStartX, octantExpansion.m_centerColumnMidUpIndex + octantExpansion.m_midUpEndX, obstacleIndicies, cartesianCenterLocation);
-	//	RevealPixelRangeWithObstacles(fogOfWarComponent, octantExpansion.m_centerColumnMidDownIndex - octantExpansion.m_midDownStartX, octantExpansion.m_centerColumnMidDownIndex + octantExpansion.m_midDownEndX, obstacleIndicies, cartesianCenterLocation);
-	//	RevealPixelRangeWithObstacles(fogOfWarComponent, octantExpansion.m_centerColumnBottomIndex - octantExpansion.m_bottomStartX, octantExpansion.m_centerColumnBottomIndex + octantExpansion.m_bottomEndX, obstacleIndicies, cartesianCenterLocation);
-	//	return;
-	//}
+	if (obstacleIndicies.Num() > 0)
+	{
+		const SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::GetSingletonEntity().GetComponent<SpatialPartitioningComponent>();
+		const FVector2D cartesianCenterLocation = ArgusMath::ToCartesianVector2(GetWorldSpaceLocationFromPixelNumber(fogOfWarComponent, components.m_fogOfWarLocationComponent->m_fogOfWarPixel));
+		RevealPixelRangeWithObstacles(fogOfWarComponent, spatialPartitioningComponent, octantExpansion.m_centerColumnTopIndex - octantExpansion.m_topStartX, octantExpansion.m_centerColumnTopIndex + octantExpansion.m_topEndX,
+									  obstacleIndicies, cartesianCenterLocation, octantTraces.m_previousTopLeft, octantTraces.m_previousTopRight);
+
+		RevealPixelRangeWithObstacles(fogOfWarComponent, spatialPartitioningComponent, octantExpansion.m_centerColumnMidUpIndex - octantExpansion.m_midUpStartX, octantExpansion.m_centerColumnMidUpIndex + octantExpansion.m_midUpEndX,
+									  obstacleIndicies, cartesianCenterLocation, octantTraces.m_previousMidUpLeft, octantTraces.m_previousMidUpRight);
+
+		RevealPixelRangeWithObstacles(fogOfWarComponent, spatialPartitioningComponent, octantExpansion.m_centerColumnMidDownIndex - octantExpansion.m_midDownStartX, octantExpansion.m_centerColumnMidDownIndex + octantExpansion.m_midDownEndX,
+									  obstacleIndicies, cartesianCenterLocation, octantTraces.m_previousMidDownLeft, octantTraces.m_previousMidDownRight);
+
+		RevealPixelRangeWithObstacles(fogOfWarComponent, spatialPartitioningComponent, octantExpansion.m_centerColumnBottomIndex - octantExpansion.m_bottomStartX, octantExpansion.m_centerColumnBottomIndex + octantExpansion.m_bottomEndX,
+									  obstacleIndicies, cartesianCenterLocation, octantTraces.m_previousBottomLeft, octantTraces.m_previousBottomRight);
+		return;
+	}
 
 	SetAlphaForPixelRange(fogOfWarComponent, octantExpansion.m_centerColumnTopIndex - octantExpansion.m_topStartX, octantExpansion.m_centerColumnTopIndex + octantExpansion.m_topEndX, activelyRevealed);
 	SetAlphaForPixelRange(fogOfWarComponent, octantExpansion.m_centerColumnMidUpIndex - octantExpansion.m_midUpStartX, octantExpansion.m_centerColumnMidUpIndex + octantExpansion.m_midUpEndX, activelyRevealed);
