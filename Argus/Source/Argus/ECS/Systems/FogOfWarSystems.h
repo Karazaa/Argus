@@ -67,6 +67,12 @@ private:
 
 		FVector2D m_previousMidDownLeft = FVector2D::ZeroVector;
 		FVector2D m_previousMidDownRight = FVector2D::ZeroVector;
+
+		OctantTraces(FVector2D initialPosition) :	m_previousTopLeft(initialPosition), m_previousTopRight(initialPosition),
+													m_previousBottomLeft(initialPosition), m_previousBottomRight(initialPosition),
+													m_previousMidUpLeft(initialPosition), m_previousMidUpRight(initialPosition),
+													m_previousMidDownLeft(initialPosition), m_previousMidDownRight(initialPosition)
+		{}
 	};
 
 	static void InitializeGaussianFilter(FogOfWarComponent* fogOfWarComponent);
@@ -76,6 +82,7 @@ private:
 	static void PopulateOctantExpansionForEntity(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, const FogOfWarOffsets& offsets, CircleOctantExpansion& outCircleOctantExpansion);
 	static void RevealPixelAlphaForEntity(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, FogOfWarOffsets& offsets, bool activelyRevealed);
 	static void RasterizeCircleOfRadius(uint32 radius, FogOfWarOffsets& offsets, TFunction<void (FogOfWarOffsets& offsets)> perOctantPixelFunction);
+	static void RasterizeTriangleForReveal(FogOfWarComponent* fogOfWarComponent, const FVector2D& point0, const FVector2D& point1, const FVector2D& point2);
 	static void SetAlphaForPixelRange(FogOfWarComponent* fogOfWarComponent, uint32 fromPixelInclusive, uint32 toPixelInclusive, bool activelyRevealed);
 	static void RevealPixelRangeWithObstacles(FogOfWarComponent* fogOfWarComponent, const SpatialPartitioningComponent* spatialPartitioningComponent, uint32 fromPixelInclusive, uint32 toPixelInclusive, const TArray<ObstacleIndicies>& obstacleIndicies, const FVector2D& cartesianEntityLocation, FVector2D& prevFrom, FVector2D& prevTo);
 	static void SetAlphaForCircleOctant(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, const FogOfWarOffsets& offsets, const TArray<ObstacleIndicies>& obstacleIndicies, OctantTraces& octantTraces, bool activelyRevealed);
@@ -83,6 +90,7 @@ private:
 	static void UpdateGaussianWeightsTexture();
 	static void UpdateDynamicMaterialInstance();
 
+	static bool GetPixelCoordsFromWorldSpaceLocation(FogOfWarComponent* fogOfWarComponent, const FVector2D& worldSpaceLocation, TPair<uint32, uint32>& ouputPair);
 	static uint32 GetPixelNumberFromWorldSpaceLocation(FogOfWarComponent* fogOfWarComponent, const FVector& worldSpaceLocation);
 	static FVector2D GetWorldSpaceLocationFromPixelNumber(FogOfWarComponent* fogOfWarComponent, uint32 pixelNumber);
 	static uint32 GetPixelRadiusFromWorldSpaceRadius(FogOfWarComponent* fogOfWarComponent, float radius);
