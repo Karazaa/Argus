@@ -401,30 +401,98 @@ void FogOfWarSystems::RasterizeTriangleForReveal(FogOfWarComponent* fogOfWarComp
 	ARGUS_TRACE(FogOfWarSystems::RasterizeTriangleForReveal);
 	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
 
-	TArray<TPair<uint32, uint32>, TInlineAllocator<3>> points;
+	TArray<TPair<int32, int32>, TInlineAllocator<3>> points;
 	points.SetNumUninitialized(3);
 	GetPixelCoordsFromWorldSpaceLocation(fogOfWarComponent, ArgusMath::ToUnrealVector2(point0), points[0]);
 	GetPixelCoordsFromWorldSpaceLocation(fogOfWarComponent, ArgusMath::ToUnrealVector2(point1), points[1]);
 	GetPixelCoordsFromWorldSpaceLocation(fogOfWarComponent, ArgusMath::ToUnrealVector2(point2), points[2]);
 
-	points.Sort([](const TPair<uint32, uint32>& pointA, const TPair<uint32, uint32>& pointB)
+	points.Sort([](const TPair<int32, int32>& pointA, const TPair<int32, int32>& pointB)
 	{
-		return pointA.Value > pointB.Value;
+		if (pointA.Value > pointB.Value)
+		{
+			return true;
+		}
+		return pointA.Key < pointB.Key;
 	});
 
 	if (points[1].Value == points[2].Value)
 	{
-		// TODO JAMES: FillFlatBottomTriangle.
+		FillFlatBottomTriangle(points[0], points[1], points[2]);
 		return;
 	}
 
 	if (points[0].Value == points[1].Value)
 	{
-		// TODO JAMES: FillFlatTopTriangle.
+		FillFlatTopTriangle(points[0], points[1], points[2]);
 		return;
 	}
 
-	// TODO JAMES: make 4th vertex to split triangles into two.
+	if (points[2].Value == points[0].Value)
+	{
+		return;
+	}
+
+	// Add a fourth vertex to split the triangle into two triangles one with a flat bottom and the other with a flat top.
+	TPair<int32, int32> point3;
+	point3.Value = points[1].Value;
+	const float dividend = static_cast<float>(points[1].Value - points[0].Value) / static_cast<float>(points[2].Value - points[0].Value);
+	point3.Key = FMath::RoundToInt32((dividend * static_cast<float>(points[2].Key - points[0].Key)) + static_cast<float>(points[0].Key));
+
+	if (point3.Key > points[1].Value)
+	{
+		FillFlatBottomTriangle(points[0], points[1], point3);
+		FillFlatTopTriangle(points[1], point3, points[2]);
+	}
+	else
+	{
+		FillFlatBottomTriangle(points[0], point3, points[1]);
+		FillFlatTopTriangle(point3, points[1], points[2]);
+	}
+}
+
+void FogOfWarSystems::FillFlatBottomTriangle(const TPair<int32, int32>& point0, const TPair<int32, int32>& point1, const TPair<int32, int32>& point2)
+{
+	if (point0.Value == point1.Value || point0.Value == point2.Value)
+	{
+		return;
+	}
+
+	const float inverseSlopeLeft = static_cast<float>(point1.Key - point0.Key) / static_cast<float>(point1.Value - point0.Value);
+	const float inverseSlopeRight = static_cast<float>(point2.Key - point0.Key) / static_cast<float>(point2.Value - point0.Value);
+
+	float leftEdgeX = point0.Key;
+	float rightEdgeX = point0.Key;
+
+	for (int32 height = point0.Value; height >= point1.Value; --height)
+	{
+		// TODO JAMES: Reveal from leftEdgeX to rightEdgeX.
+
+		leftEdgeX -= inverseSlopeLeft;
+		rightEdgeX -= inverseSlopeRight;
+	}
+}
+
+void FogOfWarSystems::FillFlatTopTriangle(const TPair<int32, int32>& point0, const TPair<int32, int32>& point1, const TPair<int32, int32>& point2)
+{
+	if (point2.Value == point0.Value || point2.Value == point1.Value)
+	{
+		return;
+	}
+
+	const float inverseSlopeLeft = static_cast<float>(point2.Key - point0.Key) / static_cast<float>(point2.Value - point0.Value);
+	const float inverseSlopeRight = static_cast<float>(point2.Key - point1.Key) / static_cast<float>(point2.Value - point1.Value);
+
+	float leftEdgeX = point2.Key;
+	float rightEdgeX = point2.Key;
+
+	for (int32 height = point2.Value; height <= point0.Value; ++height)
+	{
+		// TODO JAMES: Reveal from leftEdgeX to rightEdgeX.
+
+		leftEdgeX += inverseSlopeLeft;
+		rightEdgeX += inverseSlopeRight;
+	}
 }
 
 void FogOfWarSystems::SetAlphaForPixelRange(FogOfWarComponent* fogOfWarComponent, uint32 fromPixelInclusive, uint32 toPixelInclusive, bool activelyRevealed)
@@ -641,7 +709,7 @@ void FogOfWarSystems::UpdateDynamicMaterialInstance()
 	}
 }
 
-bool FogOfWarSystems::GetPixelCoordsFromWorldSpaceLocation(FogOfWarComponent* fogOfWarComponent, const FVector2D& worldSpaceLocation, TPair<uint32, uint32>& ouputPair)
+bool FogOfWarSystems::GetPixelCoordsFromWorldSpaceLocation(FogOfWarComponent* fogOfWarComponent, const FVector2D& worldSpaceLocation, TPair<int32, int32>& ouputPair)
 {
 	ARGUS_RETURN_ON_NULL_BOOL(fogOfWarComponent, ArgusECSLog);
 
@@ -654,8 +722,8 @@ bool FogOfWarSystems::GetPixelCoordsFromWorldSpaceLocation(FogOfWarComponent* fo
 	float xValue = ArgusMath::SafeDivide(worldSpaceLocation.Y + spatialPartitioningComponent->m_validSpaceExtent, worldspaceWidth) * textureSize;
 	float yValue = ArgusMath::SafeDivide((-worldSpaceLocation.X) + spatialPartitioningComponent->m_validSpaceExtent, worldspaceWidth) * textureSize;
 
-	ouputPair.Key = static_cast<uint32>(FMath::FloorToInt32(xValue));
-	ouputPair.Value = static_cast<uint32>(FMath::FloorToInt32(yValue));
+	ouputPair.Key = FMath::FloorToInt32(xValue);
+	ouputPair.Value = FMath::FloorToInt32(yValue);
 
 	return true;
 }
