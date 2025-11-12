@@ -217,7 +217,7 @@ namespace ArgusMath
 		outIntersectionPoint.X = Determinant(dValue, xDifference) / determinant;
 		outIntersectionPoint.Y = Determinant(dValue, yDifference) / determinant;
 
-		return true;
+		return DoLineSegmentsIntersectCartesian(lineSegmentAPoint0, lineSegmentAPoint1, lineSegmentBPoint0, lineSegmentBPoint1);
 	}
 
 	static float GetNormalizedZeroToTwoPi(float angle)

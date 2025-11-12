@@ -611,6 +611,186 @@ bool ArgusUtilitiesArgusMathDoLineSegmentsIntersectCartesianTest::RunTest(const 
 	return true;
 }
 
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusMathGetLineSegmentIntersectionCartesianTest, "Argus.Utilities.ArgusMath.GetLineSegmentIntersectionCartesian", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+bool ArgusUtilitiesArgusMathGetLineSegmentIntersectionCartesianTest::RunTest(const FString& Parameters)
+{
+	const FVector2D expectedIntersectionPoint0 = FVector2D(0.0f, 0.5f);
+	const FVector2D point0 = FVector2D::ZeroVector;
+	const FVector2D point1 = FVector2D(0.0f, 1.0f);
+
+	ArgusTesting::StartArgusTest();
+
+	FVector2D testPoint0 = FVector2D(-1.0f, 0.5f);
+	FVector2D testPoint1 = FVector2D(1.0f, 0.5f);
+	
+	FVector2D hitResult = FVector2D::ZeroVector;
+	bool didCollide = ArgusMath::GetLineSegmentIntersectionCartesian(point0, point1, testPoint0, testPoint1, hitResult);
+
+#pragma region Test that two line segments intersect at the expected point
+	TestTrue
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Test that line segment {%f, %f} <=> {%f, %f} intersects line segment {%f, %f} <=> {%f, %f}."),
+			ARGUS_FUNCNAME,
+			testPoint0.X,
+			testPoint0.Y,
+			testPoint1.X,
+			testPoint1.Y,
+			point0.X,
+			point0.Y,
+			point1.X,
+			point1.Y
+		),
+		didCollide
+	);
+#pragma endregion
+
+#pragma region Test that the intersection point is expected
+	TestEqual
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Test that line segment {%f, %f} <=> {%f, %f} intersects line segment {%f, %f} <=> {%f, %f} at point {%f, %f}."),
+			ARGUS_FUNCNAME,
+			testPoint0.X,
+			testPoint0.Y,
+			testPoint1.X,
+			testPoint1.Y,
+			point0.X,
+			point0.Y,
+			point1.X,
+			point1.Y,
+			expectedIntersectionPoint0.X,
+			expectedIntersectionPoint0.Y
+		),
+		hitResult,
+		expectedIntersectionPoint0
+	);
+#pragma endregion
+
+	testPoint0 = FVector2D(-1.0f, 1.5f);
+	testPoint1 = FVector2D(1.0f, 1.5f);
+
+#pragma region Test that two line segments do not intersect
+	TestFalse
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Test that line segment {%f, %f} <=> {%f, %f} does not intersect line segment {%f, %f} <=> {%f, %f}."),
+			ARGUS_FUNCNAME,
+			testPoint0.X,
+			testPoint0.Y,
+			testPoint1.X,
+			testPoint1.Y,
+			point0.X,
+			point0.Y,
+			point1.X,
+			point1.Y
+		),
+		ArgusMath::GetLineSegmentIntersectionCartesian(point0, point1, testPoint0, testPoint1, hitResult)
+	);
+#pragma endregion
+
+	testPoint0 = FVector2D(-1.0f, -1.5f);
+	testPoint1 = FVector2D(1.0f, -1.5f);
+
+#pragma region Test that two line segments do not intersect
+	TestFalse
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Test that line segment {%f, %f} <=> {%f, %f} does not intersect line segment {%f, %f} <=> {%f, %f}."),
+			ARGUS_FUNCNAME,
+			testPoint0.X,
+			testPoint0.Y,
+			testPoint1.X,
+			testPoint1.Y,
+			point0.X,
+			point0.Y,
+			point1.X,
+			point1.Y
+		),
+		ArgusMath::GetLineSegmentIntersectionCartesian(point0, point1, testPoint0, testPoint1, hitResult)
+	);
+#pragma endregion
+
+	testPoint0 = FVector2D(100.0f, 100.5f);
+	testPoint1 = FVector2D(-100.0f, -99.5f);
+
+	didCollide = ArgusMath::GetLineSegmentIntersectionCartesian(point0, point1, testPoint0, testPoint1, hitResult);
+
+#pragma region Test that two line segments intersect
+	TestTrue
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Test that line segment {%f, %f} <=> {%f, %f} intersects line segment {%f, %f} <=> {%f, %f}."),
+			ARGUS_FUNCNAME,
+			testPoint0.X,
+			testPoint0.Y,
+			testPoint1.X,
+			testPoint1.Y,
+			point0.X,
+			point0.Y,
+			point1.X,
+			point1.Y
+		),
+		didCollide
+	);
+#pragma endregion
+
+#pragma region Test that the intersection point is expected
+	TestEqual
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Test that line segment {%f, %f} <=> {%f, %f} intersects line segment {%f, %f} <=> {%f, %f} at point {%f, %f}."),
+			ARGUS_FUNCNAME,
+			testPoint0.X,
+			testPoint0.Y,
+			testPoint1.X,
+			testPoint1.Y,
+			point0.X,
+			point0.Y,
+			point1.X,
+			point1.Y,
+			expectedIntersectionPoint0.X,
+			expectedIntersectionPoint0.Y
+		),
+		hitResult,
+		expectedIntersectionPoint0
+	);
+#pragma endregion
+
+
+	testPoint0 = FVector2D(-5.0f, 0.0f);
+	testPoint1 = FVector2D(-5.0f, 1.0f);
+
+#pragma region Test that two line segments do not intersect
+	TestFalse
+	(
+		FString::Printf
+		(
+			TEXT("[%s] Test that line segment {%f, %f} <=> {%f, %f} does not intersect line segment {%f, %f} <=> {%f, %f}."),
+			ARGUS_FUNCNAME,
+			testPoint0.X,
+			testPoint0.Y,
+			testPoint1.X,
+			testPoint1.Y,
+			point0.X,
+			point0.Y,
+			point1.X,
+			point1.Y
+		),
+		ArgusMath::GetLineSegmentIntersectionCartesian(point0, point1, testPoint0, testPoint1, hitResult)
+	);
+#pragma endregion
+
+	ArgusTesting::EndArgusTest();
+	return true;
+}
+
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusUtilitiesArgusMathSafeDivideTest, "Argus.Utilities.ArgusMath.SafeDivide", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusUtilitiesArgusMathSafeDivideTest::RunTest(const FString& Parameters)
 {
