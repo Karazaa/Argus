@@ -374,7 +374,7 @@ void FogOfWarSystems::RevealPixelAlphaForEntity(FogOfWarComponent* fogOfWarCompo
 	OctantTraces octantTraces = OctantTraces(ArgusMath::ToCartesianVector2(GetWorldSpaceLocationFromPixelNumber(fogOfWarComponent, components.m_fogOfWarLocationComponent->m_fogOfWarPixel)));
 	RasterizeCircleOfRadius(radius, offsets, [fogOfWarComponent, &components, &obstacleIndicies, &octantTraces, activelyRevealed](const FogOfWarOffsets& offsets)
 	{
-		if (obstacleIndicies.Num() == 0 || ((offsets.m_circleY % 10u) == 0u) || offsets.m_circleX == offsets.m_circleY)
+		if (obstacleIndicies.Num() == 0 || ((offsets.m_circleY % fogOfWarComponent->m_triangleRasterizeModulo) == 0u) || offsets.m_circleX == offsets.m_circleY)
 		{
 			// Set Alpha for pixel range for all symmetrical pixels.
 			SetAlphaForCircleOctant(fogOfWarComponent, components, offsets, obstacleIndicies, octantTraces, activelyRevealed);
@@ -552,31 +552,30 @@ void FogOfWarSystems::RevealPixelRangeWithObstacles(FogOfWarComponent* fogOfWarC
 	FVector2D currentFromIntersection = cartesianFromLocation;
 	FVector2D currentToIntersection = cartesianToLocation;
 
-	// TODO JAMES: This section appears to be incorrect. I think I want to make some unit tests for GetLineSegmentIntersectionCartesian to make sure that functions as expected.
-	//for (int32 i = 0; i < obstacleIndicies.Num(); ++i)
-	//{
-	//	const ObstaclePoint& currentObstaclePoint = spatialPartitioningComponent->m_obstacles[obstacleIndicies[i].m_obstacleIndex][obstacleIndicies[i].m_obstaclePointIndex];
-	//	const ObstaclePoint& nextObstaclePoint = spatialPartitioningComponent->m_obstacles[obstacleIndicies[i].m_obstacleIndex].GetNext(obstacleIndicies[i].m_obstaclePointIndex);
+	for (int32 i = 0; i < obstacleIndicies.Num(); ++i)
+	{
+		const ObstaclePoint& currentObstaclePoint = spatialPartitioningComponent->m_obstacles[obstacleIndicies[i].m_obstacleIndex][obstacleIndicies[i].m_obstaclePointIndex];
+		const ObstaclePoint& nextObstaclePoint = spatialPartitioningComponent->m_obstacles[obstacleIndicies[i].m_obstacleIndex].GetNext(obstacleIndicies[i].m_obstaclePointIndex);
 
-	//	FVector2D fromIntersection = cartesianFromLocation;
-	//	FVector2D toIntersection = cartesianToLocation;
+		FVector2D fromIntersection = cartesianFromLocation;
+		FVector2D toIntersection = cartesianToLocation;
 
-	//	if (ArgusMath::GetLineSegmentIntersectionCartesian(cartesianEntityLocation, cartesianFromLocation, currentObstaclePoint.m_point, nextObstaclePoint.m_point, fromIntersection))
-	//	{
-	//		if (FVector2D::DistSquared(cartesianEntityLocation, fromIntersection) < FVector2D::DistSquared(cartesianEntityLocation, currentFromIntersection))
-	//		{
-	//			currentFromIntersection = fromIntersection;
-	//		}
-	//	}
+		if (ArgusMath::GetLineSegmentIntersectionCartesian(cartesianEntityLocation, cartesianFromLocation, currentObstaclePoint.m_point, nextObstaclePoint.m_point, fromIntersection))
+		{
+			if (FVector2D::DistSquared(cartesianEntityLocation, fromIntersection) < FVector2D::DistSquared(cartesianEntityLocation, currentFromIntersection))
+			{
+				currentFromIntersection = fromIntersection;
+			}
+		}
 
-	//	if (ArgusMath::GetLineSegmentIntersectionCartesian(cartesianEntityLocation, cartesianToLocation, currentObstaclePoint.m_point, nextObstaclePoint.m_point, toIntersection))
-	//	{
-	//		if (FVector2D::DistSquared(cartesianEntityLocation, toIntersection) < FVector2D::DistSquared(cartesianEntityLocation, currentToIntersection))
-	//		{
-	//			currentToIntersection = toIntersection;
-	//		}
-	//	}
-	//}
+		if (ArgusMath::GetLineSegmentIntersectionCartesian(cartesianEntityLocation, cartesianToLocation, currentObstaclePoint.m_point, nextObstaclePoint.m_point, toIntersection))
+		{
+			if (FVector2D::DistSquared(cartesianEntityLocation, toIntersection) < FVector2D::DistSquared(cartesianEntityLocation, currentToIntersection))
+			{
+				currentToIntersection = toIntersection;
+			}
+		}
+	}
 
 	if (prevFrom != cartesianEntityLocation)
 	{

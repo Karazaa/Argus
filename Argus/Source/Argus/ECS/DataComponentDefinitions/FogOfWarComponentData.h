@@ -23,9 +23,11 @@ public:
 	UPROPERTY(EditAnywhere)
 	uint8 m_revealedOnceAlpha = 100u;
 	UPROPERTY(EditAnywhere)
-	float m_smoothingDecayConstant = 5.0f;
-	UPROPERTY(EditAnywhere)
 	uint16 m_textureSize = 1024u;
+	UPROPERTY(EditAnywhere)
+	uint8 m_triangleRasterizeModulo = 4u;
+	UPROPERTY(EditAnywhere)
+	float m_smoothingDecayConstant = 5.0f;
 	UPROPERTY(EditAnywhere)
 	bool m_shouldUseSmoothing = true;
 

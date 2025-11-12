@@ -23,8 +23,9 @@ void FogOfWarComponent::Reset()
 	m_gaussianFilter.Reset();
 	m_gaussianDimension = 5u;
 	m_revealedOnceAlpha = 100u;
-	m_smoothingDecayConstant = 5.0f;
 	m_textureSize = 1024u;
+	m_triangleRasterizeModulo = 4u;
+	m_smoothingDecayConstant = 5.0f;
 	m_shouldUseSmoothing = true;
 }
 
@@ -126,13 +127,17 @@ void FogOfWarComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_revealedOnceAlpha);
 		ImGui::TableNextColumn();
-		ImGui::Text("m_smoothingDecayConstant");
-		ImGui::TableNextColumn();
-		ImGui::Text("%.2f", m_smoothingDecayConstant);
-		ImGui::TableNextColumn();
 		ImGui::Text("m_textureSize");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_textureSize);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_triangleRasterizeModulo");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_triangleRasterizeModulo);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_smoothingDecayConstant");
+		ImGui::TableNextColumn();
+		ImGui::Text("%.2f", m_smoothingDecayConstant);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_shouldUseSmoothing");
 		ImGui::TableNextColumn();
