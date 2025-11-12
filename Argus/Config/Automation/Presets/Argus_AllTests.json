@@ -52,6 +52,7 @@
 		"Argus.Utilities.ArgusMath.ExponentialDecaySmoother.FVector",
 		"Argus.Utilities.ArgusMath.CoordinateConversion",
 		"Argus.Utilities.ArgusMath.DoLineSegmentsIntersectCartesian",
+		"Argus.Utilities.ArgusMath.GetLineSegmentIntersectionCartesian",
 		"Argus.Utilities.ArgusMath.IsLeftOfCartesian",
 		"Argus.Utilities.ArgusMath.SafeDivide",
 		"Argus.Utilities.ArgusObjectPool.ClearPool",
