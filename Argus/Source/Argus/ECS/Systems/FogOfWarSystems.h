@@ -83,8 +83,8 @@ private:
 	static void RevealPixelAlphaForEntity(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, FogOfWarOffsets& offsets, bool activelyRevealed);
 	static void RasterizeCircleOfRadius(uint32 radius, FogOfWarOffsets& offsets, TFunction<void (FogOfWarOffsets& offsets)> perOctantPixelFunction);
 	static void RasterizeTriangleForReveal(FogOfWarComponent* fogOfWarComponent, const FVector2D& point0, const FVector2D& point1, const FVector2D& point2);
-	static void FillFlatBottomTriangle(const TPair<int32, int32>& point0, const TPair<int32, int32>& point1, const TPair<int32, int32>& point2);
-	static void FillFlatTopTriangle(const TPair<int32, int32>& point0, const TPair<int32, int32>& point1, const TPair<int32, int32>& point2);
+	static void FillFlatBottomTriangle(FogOfWarComponent* fogOfWarComponent, const TPair<int32, int32>& point0, const TPair<int32, int32>& point1, const TPair<int32, int32>& point2);
+	static void FillFlatTopTriangle(FogOfWarComponent* fogOfWarComponent, const TPair<int32, int32>& point0, const TPair<int32, int32>& point1, const TPair<int32, int32>& point2);
 	static void SetAlphaForPixelRange(FogOfWarComponent* fogOfWarComponent, uint32 fromPixelInclusive, uint32 toPixelInclusive, bool activelyRevealed);
 	static void RevealPixelRangeWithObstacles(FogOfWarComponent* fogOfWarComponent, const SpatialPartitioningComponent* spatialPartitioningComponent, uint32 fromPixelInclusive, uint32 toPixelInclusive, const TArray<ObstacleIndicies>& obstacleIndicies, const FVector2D& cartesianEntityLocation, FVector2D& prevFrom, FVector2D& prevTo);
 	static void SetAlphaForCircleOctant(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, const FogOfWarOffsets& offsets, const TArray<ObstacleIndicies>& obstacleIndicies, OctantTraces& octantTraces, bool activelyRevealed);

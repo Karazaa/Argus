@@ -363,12 +363,22 @@ void FogOfWarSystems::RevealPixelAlphaForEntity(FogOfWarComponent* fogOfWarCompo
 		);
 	}
 
-	const uint32 radius = GetPixelRadiusFromWorldSpaceRadius(fogOfWarComponent, components.m_targetingComponent->m_sightRange);
+	uint32 radius = GetPixelRadiusFromWorldSpaceRadius(fogOfWarComponent, components.m_targetingComponent->m_sightRange);
+
+	// TODO JAMES: Temp hack to prevent smearing when rasterizing triangles. Remove later.
+	if (obstacleIndicies.Num() > 0)
+	{
+		radius--;
+	}
+
 	OctantTraces octantTraces = OctantTraces(ArgusMath::ToCartesianVector2(GetWorldSpaceLocationFromPixelNumber(fogOfWarComponent, components.m_fogOfWarLocationComponent->m_fogOfWarPixel)));
 	RasterizeCircleOfRadius(radius, offsets, [fogOfWarComponent, &components, &obstacleIndicies, &octantTraces, activelyRevealed](const FogOfWarOffsets& offsets)
 	{
-		// Set Alpha for pixel range for all symmetrical pixels.
-		SetAlphaForCircleOctant(fogOfWarComponent, components, offsets, obstacleIndicies, octantTraces, activelyRevealed);
+		if (obstacleIndicies.Num() == 0 || ((offsets.m_circleY % 10u) == 0u) || offsets.m_circleX == offsets.m_circleY)
+		{
+			// Set Alpha for pixel range for all symmetrical pixels.
+			SetAlphaForCircleOctant(fogOfWarComponent, components, offsets, obstacleIndicies, octantTraces, activelyRevealed);
+		}
 	});
 }
 
@@ -409,22 +419,23 @@ void FogOfWarSystems::RasterizeTriangleForReveal(FogOfWarComponent* fogOfWarComp
 
 	points.Sort([](const TPair<int32, int32>& pointA, const TPair<int32, int32>& pointB)
 	{
-		if (pointA.Value > pointB.Value)
+		if (pointA.Value == pointB.Value)
 		{
-			return true;
+			return pointA.Key < pointB.Key;
 		}
-		return pointA.Key < pointB.Key;
+
+		return pointA.Value > pointB.Value;
 	});
 
 	if (points[1].Value == points[2].Value)
 	{
-		FillFlatBottomTriangle(points[0], points[1], points[2]);
+		FillFlatBottomTriangle(fogOfWarComponent, points[0], points[1], points[2]);
 		return;
 	}
 
 	if (points[0].Value == points[1].Value)
 	{
-		FillFlatTopTriangle(points[0], points[1], points[2]);
+		FillFlatTopTriangle(fogOfWarComponent, points[0], points[1], points[2]);
 		return;
 	}
 
@@ -439,20 +450,22 @@ void FogOfWarSystems::RasterizeTriangleForReveal(FogOfWarComponent* fogOfWarComp
 	const float dividend = static_cast<float>(points[1].Value - points[0].Value) / static_cast<float>(points[2].Value - points[0].Value);
 	point3.Key = FMath::RoundToInt32((dividend * static_cast<float>(points[2].Key - points[0].Key)) + static_cast<float>(points[0].Key));
 
-	if (point3.Key > points[1].Value)
+	if (point3.Key > points[1].Key)
 	{
-		FillFlatBottomTriangle(points[0], points[1], point3);
-		FillFlatTopTriangle(points[1], point3, points[2]);
+		FillFlatBottomTriangle(fogOfWarComponent, points[0], points[1], point3);
+		FillFlatTopTriangle(fogOfWarComponent, points[1], point3, points[2]);
 	}
 	else
 	{
-		FillFlatBottomTriangle(points[0], point3, points[1]);
-		FillFlatTopTriangle(point3, points[1], points[2]);
+		FillFlatBottomTriangle(fogOfWarComponent, points[0], point3, points[1]);
+		FillFlatTopTriangle(fogOfWarComponent, point3, points[1], points[2]);
 	}
 }
 
-void FogOfWarSystems::FillFlatBottomTriangle(const TPair<int32, int32>& point0, const TPair<int32, int32>& point1, const TPair<int32, int32>& point2)
+void FogOfWarSystems::FillFlatBottomTriangle(FogOfWarComponent* fogOfWarComponent, const TPair<int32, int32>& point0, const TPair<int32, int32>& point1, const TPair<int32, int32>& point2)
 {
+	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
+
 	if (point0.Value == point1.Value || point0.Value == point2.Value)
 	{
 		return;
@@ -466,15 +479,20 @@ void FogOfWarSystems::FillFlatBottomTriangle(const TPair<int32, int32>& point0, 
 
 	for (int32 height = point0.Value; height >= point1.Value; --height)
 	{
-		// TODO JAMES: Reveal from leftEdgeX to rightEdgeX.
+		const uint32 heightIndex = static_cast<uint32>(height) * static_cast<uint32>(fogOfWarComponent->m_textureSize);
+		const uint32 leftIndex = FMath::FloorToInt32(leftEdgeX);
+		const uint32 rightIndex = FMath::CeilToInt32(rightEdgeX);
+		SetAlphaForPixelRange(fogOfWarComponent, heightIndex + leftIndex, heightIndex + rightIndex, true);
 
 		leftEdgeX -= inverseSlopeLeft;
 		rightEdgeX -= inverseSlopeRight;
 	}
 }
 
-void FogOfWarSystems::FillFlatTopTriangle(const TPair<int32, int32>& point0, const TPair<int32, int32>& point1, const TPair<int32, int32>& point2)
+void FogOfWarSystems::FillFlatTopTriangle(FogOfWarComponent* fogOfWarComponent, const TPair<int32, int32>& point0, const TPair<int32, int32>& point1, const TPair<int32, int32>& point2)
 {
+	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
+
 	if (point2.Value == point0.Value || point2.Value == point1.Value)
 	{
 		return;
@@ -488,7 +506,10 @@ void FogOfWarSystems::FillFlatTopTriangle(const TPair<int32, int32>& point0, con
 
 	for (int32 height = point2.Value; height <= point0.Value; ++height)
 	{
-		// TODO JAMES: Reveal from leftEdgeX to rightEdgeX.
+		const uint32 heightIndex = static_cast<uint32>(height) * static_cast<uint32>(fogOfWarComponent->m_textureSize);
+		const uint32 leftIndex = FMath::FloorToInt32(leftEdgeX);
+		const uint32 rightIndex = FMath::CeilToInt32(rightEdgeX);
+		SetAlphaForPixelRange(fogOfWarComponent, heightIndex + leftIndex, heightIndex + rightIndex, true);
 
 		leftEdgeX += inverseSlopeLeft;
 		rightEdgeX += inverseSlopeRight;
@@ -529,35 +550,33 @@ void FogOfWarSystems::RevealPixelRangeWithObstacles(FogOfWarComponent* fogOfWarC
 	const FVector2D cartesianToLocation = ArgusMath::ToCartesianVector2(GetWorldSpaceLocationFromPixelNumber(fogOfWarComponent, toPixelInclusive));
 
 	FVector2D currentFromIntersection = cartesianFromLocation;
-	FVector2D currentToIntersection = cartesianFromLocation;
+	FVector2D currentToIntersection = cartesianToLocation;
 
-	for (int32 i = 0; i < obstacleIndicies.Num(); ++i)
-	{
-		const ObstaclePoint& currentObstaclePoint = spatialPartitioningComponent->m_obstacles[obstacleIndicies[i].m_obstacleIndex][obstacleIndicies[i].m_obstaclePointIndex];
-		const ObstaclePoint& nextObstaclePoint = spatialPartitioningComponent->m_obstacles[obstacleIndicies[i].m_obstacleIndex].GetNext(obstacleIndicies[i].m_obstaclePointIndex);
+	// TODO JAMES: This section appears to be incorrect. I think I want to make some unit tests for GetLineSegmentIntersectionCartesian to make sure that functions as expected.
+	//for (int32 i = 0; i < obstacleIndicies.Num(); ++i)
+	//{
+	//	const ObstaclePoint& currentObstaclePoint = spatialPartitioningComponent->m_obstacles[obstacleIndicies[i].m_obstacleIndex][obstacleIndicies[i].m_obstaclePointIndex];
+	//	const ObstaclePoint& nextObstaclePoint = spatialPartitioningComponent->m_obstacles[obstacleIndicies[i].m_obstacleIndex].GetNext(obstacleIndicies[i].m_obstaclePointIndex);
 
-		FVector2D fromIntersection = cartesianFromLocation;
-		FVector2D toIntersection = cartesianToLocation;
+	//	FVector2D fromIntersection = cartesianFromLocation;
+	//	FVector2D toIntersection = cartesianToLocation;
 
-		if (ArgusMath::GetLineSegmentIntersectionCartesian(cartesianEntityLocation, cartesianFromLocation, currentObstaclePoint.m_point, nextObstaclePoint.m_point, fromIntersection))
-		{
-			if (FVector2D::DistSquared(cartesianEntityLocation, fromIntersection) < FVector2D::DistSquared(cartesianEntityLocation, currentFromIntersection))
-			{
-				currentFromIntersection = fromIntersection;
-			}
-		}
+	//	if (ArgusMath::GetLineSegmentIntersectionCartesian(cartesianEntityLocation, cartesianFromLocation, currentObstaclePoint.m_point, nextObstaclePoint.m_point, fromIntersection))
+	//	{
+	//		if (FVector2D::DistSquared(cartesianEntityLocation, fromIntersection) < FVector2D::DistSquared(cartesianEntityLocation, currentFromIntersection))
+	//		{
+	//			currentFromIntersection = fromIntersection;
+	//		}
+	//	}
 
-		if (ArgusMath::GetLineSegmentIntersectionCartesian(cartesianEntityLocation, cartesianToLocation, currentObstaclePoint.m_point, nextObstaclePoint.m_point, toIntersection))
-		{
-			if (FVector2D::DistSquared(cartesianEntityLocation, toIntersection) < FVector2D::DistSquared(cartesianEntityLocation, currentToIntersection))
-			{
-				currentToIntersection = toIntersection;
-			}
-		}
-	}
-
-	// TODO JAMES: Remove this, we are going to do a triangle rasterization approach instead.
-	SetAlphaForPixelRange(fogOfWarComponent, fromPixelInclusive, toPixelInclusive, true);
+	//	if (ArgusMath::GetLineSegmentIntersectionCartesian(cartesianEntityLocation, cartesianToLocation, currentObstaclePoint.m_point, nextObstaclePoint.m_point, toIntersection))
+	//	{
+	//		if (FVector2D::DistSquared(cartesianEntityLocation, toIntersection) < FVector2D::DistSquared(cartesianEntityLocation, currentToIntersection))
+	//		{
+	//			currentToIntersection = toIntersection;
+	//		}
+	//	}
+	//}
 
 	if (prevFrom != cartesianEntityLocation)
 	{
