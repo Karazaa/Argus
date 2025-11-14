@@ -7,6 +7,7 @@
 #include "RHICommandList.h"
 #include "Rendering/Texture2DResource.h"
 #include "SystemArgumentDefinitions/FogOfWarSystemsArgs.h"
+#include "Tasks/Task.h"
 
 #include <immintrin.h>
 
@@ -185,6 +186,7 @@ void FogOfWarSystems::SetRevealedStatePerEntity(FogOfWarComponent* fogOfWarCompo
 	}
 
 	// Calculate new actively revealed pixels.
+	TArray<UE::Tasks::FTask> revealEntityTasks;
 	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{
 		const ArgusEntity entity = ArgusEntity::RetrieveEntity(i);
@@ -203,10 +205,21 @@ void FogOfWarSystems::SetRevealedStatePerEntity(FogOfWarComponent* fogOfWarCompo
 			}
 		}
 
-		FogOfWarOffsets offsets;
-		PopulateOffsetsForEntity(fogOfWarComponent, components, offsets);
-		RevealPixelAlphaForEntity(fogOfWarComponent, components, offsets, true);
+		revealEntityTasks.Add(UE::Tasks::Launch(ARGUS_NAMEOF(FogOfWarSystems::RevealPixelAlphaForEntity), [&fogOfWarComponent, i]()
+		{
+			FogOfWarSystemsArgs components;
+			if (!components.PopulateArguments(ArgusEntity::RetrieveEntity(i)))
+			{
+				return;
+			}
+
+			FogOfWarOffsets offsets;
+			PopulateOffsetsForEntity(fogOfWarComponent, components, offsets);
+			RevealPixelAlphaForEntity(fogOfWarComponent, components, offsets, true);
+		}));
 	}
+
+	UE::Tasks::Wait(revealEntityTasks);
 }
 
 void FogOfWarSystems::ApplyExponentialDecaySmoothing(FogOfWarComponent* fogOfWarComponent, float deltaTime)
