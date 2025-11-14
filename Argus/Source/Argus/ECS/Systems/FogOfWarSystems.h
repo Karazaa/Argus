@@ -81,7 +81,7 @@ private:
 	static void PopulateOffsetsForEntity(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, FogOfWarOffsets& outOffsets);
 	static void PopulateOctantExpansionForEntity(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, const FogOfWarOffsets& offsets, CircleOctantExpansion& outCircleOctantExpansion);
 	static void RevealPixelAlphaForEntity(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, FogOfWarOffsets& offsets, bool activelyRevealed);
-	static void RasterizeCircleOfRadius(uint32 radius, FogOfWarOffsets& offsets, TFunction<void (FogOfWarOffsets& offsets)> perOctantPixelFunction);
+	static void RasterizeCircleOfRadius(FogOfWarComponent* fogOfWarComponent, uint32 radius, FogOfWarOffsets& offsets, bool accountForTriangleRasterization, TFunction<void (FogOfWarOffsets& offsets)> perOctantPixelFunction);
 	static void RasterizeTriangleForReveal(FogOfWarComponent* fogOfWarComponent, const FVector2D& point0, const FVector2D& point1, const FVector2D& point2);
 	static void FillFlatBottomTriangle(FogOfWarComponent* fogOfWarComponent, const TPair<int32, int32>& point0, const TPair<int32, int32>& point1, const TPair<int32, int32>& point2);
 	static void FillFlatTopTriangle(FogOfWarComponent* fogOfWarComponent, const TPair<int32, int32>& point0, const TPair<int32, int32>& point1, const TPair<int32, int32>& point2);

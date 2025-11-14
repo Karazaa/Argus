@@ -372,7 +372,7 @@ void FogOfWarSystems::RevealPixelAlphaForEntity(FogOfWarComponent* fogOfWarCompo
 	}
 
 	OctantTraces octantTraces = OctantTraces(ArgusMath::ToCartesianVector2(GetWorldSpaceLocationFromPixelNumber(fogOfWarComponent, components.m_fogOfWarLocationComponent->m_fogOfWarPixel)));
-	RasterizeCircleOfRadius(radius, offsets, [fogOfWarComponent, &components, &obstacleIndicies, &octantTraces, activelyRevealed](const FogOfWarOffsets& offsets)
+	RasterizeCircleOfRadius(fogOfWarComponent, radius, offsets, obstacleIndicies.Num() > 0, [fogOfWarComponent, &components, &obstacleIndicies, &octantTraces, activelyRevealed](const FogOfWarOffsets& offsets)
 	{
 		if (obstacleIndicies.Num() == 0 || ((offsets.m_circleY % fogOfWarComponent->m_triangleRasterizeModulo) == 0u) || offsets.m_circleX == offsets.m_circleY)
 		{
@@ -382,13 +382,17 @@ void FogOfWarSystems::RevealPixelAlphaForEntity(FogOfWarComponent* fogOfWarCompo
 	});
 }
 
-void FogOfWarSystems::RasterizeCircleOfRadius(uint32 radius, FogOfWarOffsets& offsets, TFunction<void(FogOfWarOffsets& offsets)> perOctantPixelFunction)
+void FogOfWarSystems::RasterizeCircleOfRadius(FogOfWarComponent* fogOfWarComponent, uint32 radius, FogOfWarOffsets& offsets, bool accountForTriangleRasterization, TFunction<void(FogOfWarOffsets& offsets)> perOctantPixelFunction)
 {
+	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
+
 	// Method of Horn for circle rasterization.
 	int32 circleD = -static_cast<int32>(radius);
 	offsets.m_circleX = radius;
 	offsets.m_circleY = 0u;
-	while (offsets.m_circleX >= offsets.m_circleY)
+
+	uint32 margin = accountForTriangleRasterization ? fogOfWarComponent->m_triangleRasterizeModulo : 0u;
+	while ((offsets.m_circleX + margin) >= offsets.m_circleY)
 	{
 		if (perOctantPixelFunction)
 		{
