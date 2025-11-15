@@ -7,7 +7,6 @@
 #include "RHICommandList.h"
 #include "Rendering/Texture2DResource.h"
 #include "SystemArgumentDefinitions/FogOfWarSystemsArgs.h"
-#include "Tasks/Task.h"
 
 #include <immintrin.h>
 
@@ -122,6 +121,8 @@ void FogOfWarSystems::SetRevealedStatePerEntity(FogOfWarComponent* fogOfWarCompo
 	ARGUS_TRACE(FogOfWarSystems::SetRevealedPixels);
 	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
 
+	fogOfWarComponent->m_revealEntityTasks.Reset();
+
 	InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId).GetComponent<InputInterfaceComponent>();
 	ARGUS_RETURN_ON_NULL(inputInterfaceComponent, ArgusECSLog);
 
@@ -158,35 +159,46 @@ void FogOfWarSystems::SetRevealedStatePerEntity(FogOfWarComponent* fogOfWarCompo
 			continue;
 		}
 
-		FogOfWarOffsets offsets;
-		PopulateOffsetsForEntity(fogOfWarComponent, components, offsets);
+		fogOfWarComponent->m_revealEntityTasks.Add(UE::Tasks::Launch(ARGUS_NAMEOF(FogOfWarSystems::RevealPixelAlphaForEntity), [&fogOfWarComponent, i]()
+		{
+			FogOfWarSystemsArgs components;
+			if (!components.PopulateArguments(ArgusEntity::RetrieveEntity(i)))
+			{
+				return;
+			}
 
-		const uint32 centerPixel = GetPixelNumberFromWorldSpaceLocation(fogOfWarComponent, components.m_transformComponent->m_location);
-		const bool newCenterPixel = centerPixel != components.m_fogOfWarLocationComponent->m_fogOfWarPixel;
-		if (newCenterPixel && entity.IsAlive() && components.m_fogOfWarLocationComponent->m_fogOfWarPixel != MAX_uint32)
-		{
-			RevealPixelAlphaForEntity(fogOfWarComponent, components, offsets, false);
-			components.m_fogOfWarLocationComponent->m_updatedPixelThisFrame = true;
-		}
-		else if (components.m_fogOfWarLocationComponent->m_clearedThisFrame)
-		{
-			RevealPixelAlphaForEntity(fogOfWarComponent, components, offsets, false);
-			components.m_fogOfWarLocationComponent->m_fogOfWarPixel = MAX_uint32;
-			components.m_fogOfWarLocationComponent->m_updatedPixelThisFrame = false;
-		}
-		else
-		{
-			components.m_fogOfWarLocationComponent->m_updatedPixelThisFrame = false;
-		}
+			FogOfWarOffsets offsets;
+			PopulateOffsetsForEntity(fogOfWarComponent, components, offsets);
 
-		if (entity.IsAlive())
-		{
-			components.m_fogOfWarLocationComponent->m_fogOfWarPixel = centerPixel;
-		}
+			const uint32 centerPixel = GetPixelNumberFromWorldSpaceLocation(fogOfWarComponent, components.m_transformComponent->m_location);
+			const bool newCenterPixel = centerPixel != components.m_fogOfWarLocationComponent->m_fogOfWarPixel;
+			if (newCenterPixel && components.m_entity.IsAlive() && components.m_fogOfWarLocationComponent->m_fogOfWarPixel != MAX_uint32)
+			{
+				RevealPixelAlphaForEntity(fogOfWarComponent, components, offsets, false);
+				components.m_fogOfWarLocationComponent->m_updatedPixelThisFrame = true;
+			}
+			else if (components.m_fogOfWarLocationComponent->m_clearedThisFrame)
+			{
+				RevealPixelAlphaForEntity(fogOfWarComponent, components, offsets, false);
+				components.m_fogOfWarLocationComponent->m_fogOfWarPixel = MAX_uint32;
+				components.m_fogOfWarLocationComponent->m_updatedPixelThisFrame = false;
+			}
+			else
+			{
+				components.m_fogOfWarLocationComponent->m_updatedPixelThisFrame = false;
+			}
+
+			if (components.m_entity.IsAlive())
+			{
+				components.m_fogOfWarLocationComponent->m_fogOfWarPixel = centerPixel;
+			}
+		}));
 	}
 
+	UE::Tasks::Wait(fogOfWarComponent->m_revealEntityTasks);
+	fogOfWarComponent->m_revealEntityTasks.Reset();
+
 	// Calculate new actively revealed pixels.
-	TArray<UE::Tasks::FTask> revealEntityTasks;
 	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{
 		const ArgusEntity entity = ArgusEntity::RetrieveEntity(i);
@@ -205,7 +217,7 @@ void FogOfWarSystems::SetRevealedStatePerEntity(FogOfWarComponent* fogOfWarCompo
 			}
 		}
 
-		revealEntityTasks.Add(UE::Tasks::Launch(ARGUS_NAMEOF(FogOfWarSystems::RevealPixelAlphaForEntity), [&fogOfWarComponent, i]()
+		fogOfWarComponent->m_revealEntityTasks.Add(UE::Tasks::Launch(ARGUS_NAMEOF(FogOfWarSystems::RevealPixelAlphaForEntity), [&fogOfWarComponent, i]()
 		{
 			FogOfWarSystemsArgs components;
 			if (!components.PopulateArguments(ArgusEntity::RetrieveEntity(i)))
@@ -219,7 +231,7 @@ void FogOfWarSystems::SetRevealedStatePerEntity(FogOfWarComponent* fogOfWarCompo
 		}));
 	}
 
-	UE::Tasks::Wait(revealEntityTasks);
+	UE::Tasks::Wait(fogOfWarComponent->m_revealEntityTasks);
 }
 
 void FogOfWarSystems::ApplyExponentialDecaySmoothing(FogOfWarComponent* fogOfWarComponent, float deltaTime)

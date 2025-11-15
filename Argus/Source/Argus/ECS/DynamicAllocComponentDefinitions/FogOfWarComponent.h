@@ -9,6 +9,7 @@
 #include "Engine/Texture2D.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "RHITypes.h"
+#include "Tasks/Task.h"
 
 struct FogOfWarComponent
 {
@@ -42,6 +43,9 @@ struct FogOfWarComponent
 
 	ARGUS_IGNORE()
 	TArray<float, ArgusContainerAllocator<0> > m_gaussianFilter;
+
+	ARGUS_IGNORE()
+	TArray<UE::Tasks::FTask, ArgusContainerAllocator<0> > m_revealEntityTasks;
 
 	uint8 m_gaussianDimension = 5u;
 	uint8 m_revealedOnceAlpha = 100u;
