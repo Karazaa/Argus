@@ -8,8 +8,6 @@
 #include "Rendering/Texture2DResource.h"
 #include "SystemArgumentDefinitions/FogOfWarSystemsArgs.h"
 
-#include <immintrin.h>
-
 void FogOfWarSystems::InitializeSystems()
 {
 	ARGUS_TRACE(FogOfWarSystems::InitializeSystems);
@@ -121,7 +119,7 @@ void FogOfWarSystems::SetRevealedStatePerEntity(FogOfWarComponent* fogOfWarCompo
 	ARGUS_TRACE(FogOfWarSystems::SetRevealedPixels);
 	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
 
-	fogOfWarComponent->m_revealEntityTasks.Reset();
+	fogOfWarComponent->m_asyncTasks.Reset();
 
 	InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId).GetComponent<InputInterfaceComponent>();
 	ARGUS_RETURN_ON_NULL(inputInterfaceComponent, ArgusECSLog);
@@ -159,7 +157,7 @@ void FogOfWarSystems::SetRevealedStatePerEntity(FogOfWarComponent* fogOfWarCompo
 			continue;
 		}
 
-		fogOfWarComponent->m_revealEntityTasks.Add(UE::Tasks::Launch(ARGUS_NAMEOF(FogOfWarSystems::RevealPixelAlphaForEntity), [&fogOfWarComponent, i]()
+		fogOfWarComponent->m_asyncTasks.Add(UE::Tasks::Launch(ARGUS_NAMEOF(FogOfWarSystems::RevealPixelAlphaForEntity), [&fogOfWarComponent, i]()
 		{
 			FogOfWarSystemsArgs components;
 			if (!components.PopulateArguments(ArgusEntity::RetrieveEntity(i)))
@@ -195,8 +193,8 @@ void FogOfWarSystems::SetRevealedStatePerEntity(FogOfWarComponent* fogOfWarCompo
 		}));
 	}
 
-	UE::Tasks::Wait(fogOfWarComponent->m_revealEntityTasks);
-	fogOfWarComponent->m_revealEntityTasks.Reset();
+	UE::Tasks::Wait(fogOfWarComponent->m_asyncTasks);
+	fogOfWarComponent->m_asyncTasks.Reset();
 
 	// Calculate new actively revealed pixels.
 	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
@@ -217,7 +215,7 @@ void FogOfWarSystems::SetRevealedStatePerEntity(FogOfWarComponent* fogOfWarCompo
 			}
 		}
 
-		fogOfWarComponent->m_revealEntityTasks.Add(UE::Tasks::Launch(ARGUS_NAMEOF(FogOfWarSystems::RevealPixelAlphaForEntity), [&fogOfWarComponent, i]()
+		fogOfWarComponent->m_asyncTasks.Add(UE::Tasks::Launch(ARGUS_NAMEOF(FogOfWarSystems::RevealPixelAlphaForEntity), [&fogOfWarComponent, i]()
 		{
 			FogOfWarSystemsArgs components;
 			if (!components.PopulateArguments(ArgusEntity::RetrieveEntity(i)))
@@ -231,7 +229,7 @@ void FogOfWarSystems::SetRevealedStatePerEntity(FogOfWarComponent* fogOfWarCompo
 		}));
 	}
 
-	UE::Tasks::Wait(fogOfWarComponent->m_revealEntityTasks);
+	UE::Tasks::Wait(fogOfWarComponent->m_asyncTasks);
 }
 
 void FogOfWarSystems::ApplyExponentialDecaySmoothing(FogOfWarComponent* fogOfWarComponent, float deltaTime)
@@ -243,14 +241,36 @@ void FogOfWarSystems::ApplyExponentialDecaySmoothing(FogOfWarComponent* fogOfWar
 		return;
 	}
 
+	const __m256 exponentialDecayCoefficient = _mm256_set1_ps(FMath::Exp(-fogOfWarComponent->m_smoothingDecayConstant * deltaTime));
+	const int32 chunkSize = ArgusMath::SafeDivide<int32>(static_cast<int32>(fogOfWarComponent->GetTotalPixels()), fogOfWarComponent->m_numberSmoothingChunks, static_cast<int32>(fogOfWarComponent->GetTotalPixels()));
+	int32 currentStartIndex = 0;
+
+	fogOfWarComponent->m_asyncTasks.Reset();
+
+	for (int32 i = 0; i < fogOfWarComponent->m_numberSmoothingChunks; ++i)
+	{
+		fogOfWarComponent->m_asyncTasks.Add(UE::Tasks::Launch(ARGUS_NAMEOF(FogOfWarSystems::RevealPixelAlphaForEntity), [fogOfWarComponent, deltaTime, &exponentialDecayCoefficient, currentStartIndex, chunkSize]()
+		{
+				ApplyExponentialDecaySmoothingForRange(fogOfWarComponent, deltaTime, exponentialDecayCoefficient, currentStartIndex, currentStartIndex + chunkSize);
+		}));
+		currentStartIndex += chunkSize;
+	}
+
+	UE::Tasks::Wait(fogOfWarComponent->m_asyncTasks);
+}
+
+void FogOfWarSystems::ApplyExponentialDecaySmoothingForRange(FogOfWarComponent* fogOfWarComponent, float deltaTime, const __m256& exponentialDecayCoefficient, int32 fromInclusive, int32 toExclusive)
+{
+	ARGUS_TRACE(FogOfWarSystems::ApplyExponentialDecaySmoothingForRange);
+	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
+
 	static constexpr int32 topIterationSize = 128;
 	static constexpr int32 midIterationSize = 32;
 	static constexpr int32 smallIterationSize = 8;
 	const uint8* sourceArray = fogOfWarComponent->m_textureData.GetData();
-	const __m256 exponentialDecayCoefficient = _mm256_set1_ps(FMath::Exp(-fogOfWarComponent->m_smoothingDecayConstant * deltaTime));
 
 	// value = targetValue + ((value - targetValue) * FMath::Exp(-decayConstant * deltaTime));
-	for (int32 i = 0; i < static_cast<int32>(fogOfWarComponent->GetTotalPixels()); i += topIterationSize)
+	for (int32 i = fromInclusive; i < toExclusive; i += topIterationSize)
 	{
 		if (memcmp(&sourceArray[i], &fogOfWarComponent->m_smoothedTextureData[i], topIterationSize) == 0)
 		{

@@ -2,6 +2,9 @@
 
 #pragma once
 
+#include "CoreMinimal.h"
+#include <immintrin.h>
+
 class ArgusEntity;
 
 struct FogOfWarComponent;
@@ -78,6 +81,7 @@ private:
 	static void InitializeGaussianFilter(FogOfWarComponent* fogOfWarComponent);
 	static void SetRevealedStatePerEntity(FogOfWarComponent* fogOfWarComponent);
 	static void ApplyExponentialDecaySmoothing(FogOfWarComponent* fogOfWarComponent, float deltaTime);
+	static void ApplyExponentialDecaySmoothingForRange(FogOfWarComponent* fogOfWarComponent, float deltaTime, const __m256& exponentialDecayCoefficient, int32 fromInclusive, int32 toExclusive);
 	static void PopulateOffsetsForEntity(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, FogOfWarOffsets& outOffsets);
 	static void PopulateOctantExpansionForEntity(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, const FogOfWarOffsets& offsets, CircleOctantExpansion& outCircleOctantExpansion);
 	static void RevealPixelAlphaForEntity(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, FogOfWarOffsets& offsets, bool activelyRevealed);

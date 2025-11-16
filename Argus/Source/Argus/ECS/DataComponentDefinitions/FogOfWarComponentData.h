@@ -25,11 +25,13 @@ public:
 	UPROPERTY(EditAnywhere)
 	uint16 m_textureSize = 1024u;
 	UPROPERTY(EditAnywhere)
-	uint8 m_triangleRasterizeModulo = 4u;
-	UPROPERTY(EditAnywhere)
 	float m_smoothingDecayConstant = 5.0f;
 	UPROPERTY(EditAnywhere)
 	bool m_shouldUseSmoothing = true;
+	UPROPERTY(EditAnywhere)
+	uint8 m_triangleRasterizeModulo = 4u;
+	UPROPERTY(EditAnywhere)
+	uint8 m_numberSmoothingChunks = 4u;
 
 	void InstantiateComponentForEntity(const ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;

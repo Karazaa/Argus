@@ -21,12 +21,14 @@ void FogOfWarComponent::Reset()
 	m_smoothedTextureData.Reset();
 	m_intermediarySmoothingData.Reset();
 	m_gaussianFilter.Reset();
+	m_asyncTasks.Reset();
 	m_gaussianDimension = 5u;
 	m_revealedOnceAlpha = 100u;
 	m_textureSize = 1024u;
-	m_triangleRasterizeModulo = 4u;
 	m_smoothingDecayConstant = 5.0f;
 	m_shouldUseSmoothing = true;
+	m_triangleRasterizeModulo = 4u;
+	m_numberSmoothingChunks = 4u;
 }
 
 void FogOfWarComponent::DrawComponentDebug() const
@@ -119,6 +121,21 @@ void FogOfWarComponent::DrawComponentDebug() const
 			}
 		}
 		ImGui::TableNextColumn();
+		ImGui::Text("m_asyncTasks");
+		ImGui::TableNextColumn();
+		ImGui::Text("Array max is currently = %d", m_asyncTasks.Max());
+		if (m_asyncTasks.Num() == 0)
+		{
+			ImGui::Text("Array is empty");
+		}
+		else
+		{
+			ImGui::Text("Size of array = %d", m_asyncTasks.Num());
+			for (int32 i = 0; i < m_asyncTasks.Num(); ++i)
+			{
+			}
+		}
+		ImGui::TableNextColumn();
 		ImGui::Text("m_gaussianDimension");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_gaussianDimension);
@@ -131,10 +148,6 @@ void FogOfWarComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_textureSize);
 		ImGui::TableNextColumn();
-		ImGui::Text("m_triangleRasterizeModulo");
-		ImGui::TableNextColumn();
-		ImGui::Text("%d", m_triangleRasterizeModulo);
-		ImGui::TableNextColumn();
 		ImGui::Text("m_smoothingDecayConstant");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_smoothingDecayConstant);
@@ -142,6 +155,14 @@ void FogOfWarComponent::DrawComponentDebug() const
 		ImGui::Text("m_shouldUseSmoothing");
 		ImGui::TableNextColumn();
 		ImGui::Text(m_shouldUseSmoothing ? "true" : "false");
+		ImGui::TableNextColumn();
+		ImGui::Text("m_triangleRasterizeModulo");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_triangleRasterizeModulo);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_numberSmoothingChunks");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_numberSmoothingChunks);
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

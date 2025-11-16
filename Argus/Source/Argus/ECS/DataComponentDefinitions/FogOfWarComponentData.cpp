@@ -16,9 +16,10 @@ void UFogOfWarComponentData::InstantiateComponentForEntity(const ArgusEntity& en
 	FogOfWarComponentRef->m_gaussianDimension = m_gaussianDimension;
 	FogOfWarComponentRef->m_revealedOnceAlpha = m_revealedOnceAlpha;
 	FogOfWarComponentRef->m_textureSize = m_textureSize;
-	FogOfWarComponentRef->m_triangleRasterizeModulo = m_triangleRasterizeModulo;
 	FogOfWarComponentRef->m_smoothingDecayConstant = m_smoothingDecayConstant;
 	FogOfWarComponentRef->m_shouldUseSmoothing = m_shouldUseSmoothing;
+	FogOfWarComponentRef->m_triangleRasterizeModulo = m_triangleRasterizeModulo;
+	FogOfWarComponentRef->m_numberSmoothingChunks = m_numberSmoothingChunks;
 }
 
 bool UFogOfWarComponentData::MatchesType(UComponentData* other) const

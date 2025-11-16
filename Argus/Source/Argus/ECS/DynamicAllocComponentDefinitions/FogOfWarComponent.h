@@ -45,15 +45,16 @@ struct FogOfWarComponent
 	TArray<float, ArgusContainerAllocator<0> > m_gaussianFilter;
 
 	ARGUS_IGNORE()
-	TArray<UE::Tasks::FTask, ArgusContainerAllocator<0> > m_revealEntityTasks;
+	TArray<UE::Tasks::FTask, ArgusContainerAllocator<0> > m_asyncTasks;
 
 	uint8 m_gaussianDimension = 5u;
 	uint8 m_revealedOnceAlpha = 100u;
 	uint16 m_textureSize = 1024u;
-	uint8 m_triangleRasterizeModulo = 4u;
 
 	float m_smoothingDecayConstant = 5.0f;
 	bool m_shouldUseSmoothing = true;
+	uint8 m_triangleRasterizeModulo = 4u;
+	uint8 m_numberSmoothingChunks = 4u;
 
 	uint32 GetTotalPixels()
 	{
