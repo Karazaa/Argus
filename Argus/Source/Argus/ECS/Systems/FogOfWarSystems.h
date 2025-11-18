@@ -33,6 +33,23 @@ private:
 		uint32 m_innerCircleX = 0u;
 	};
 
+	struct CircleQuadrant
+	{
+		uint32 m_yValue = 0u;
+		uint32 m_xStartValue = 0u;
+		uint32 m_xEndValue = 0u;
+		uint32 m_centerColumnIndex = 0u;
+	};
+
+	struct QuadrantObstacleTraces
+	{
+		FVector2D m_previousLeft = FVector2D::ZeroVector;
+		FVector2D m_previousRight = FVector2D::ZeroVector;
+
+		QuadrantObstacleTraces(FVector2D initialPosition) : m_previousLeft(initialPosition), m_previousRight(initialPosition) {}
+		QuadrantObstacleTraces() {}
+	};
+
 	struct CircleOctantExpansion
 	{
 		uint32 m_topY = 0u;
@@ -84,7 +101,7 @@ private:
 	static void ApplyExponentialDecaySmoothingForRange(FogOfWarComponent* fogOfWarComponent, float deltaTime, const __m256& exponentialDecayCoefficient, int32 fromInclusive, int32 toExclusive);
 	static void PopulateOffsetsForEntity(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, FogOfWarOffsets& outOffsets);
 	static void PopulateOctantExpansionForEntity(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, const FogOfWarOffsets& offsets, CircleOctantExpansion& outCircleOctantExpansion);
-	static void RevealPixelAlphaForEntity(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, FogOfWarOffsets& offsets, bool activelyRevealed);
+	static void RevealPixelAlphaForEntity(FogOfWarComponent* fogOfWarComponent, uint16 entityId, bool activelyRevealed);
 	static void RasterizeCircleOfRadius(FogOfWarComponent* fogOfWarComponent, uint32 radius, FogOfWarOffsets& offsets, bool accountForTriangleRasterization, TFunction<void (FogOfWarOffsets& offsets)> perOctantPixelFunction);
 	static void RasterizeTriangleForReveal(FogOfWarComponent* fogOfWarComponent, const FVector2D& point0, const FVector2D& point1, const FVector2D& point2);
 	static void FillFlatBottomTriangle(FogOfWarComponent* fogOfWarComponent, const TPair<int32, int32>& point0, const TPair<int32, int32>& point1, const TPair<int32, int32>& point2);
@@ -92,6 +109,7 @@ private:
 	static void SetAlphaForPixelRange(FogOfWarComponent* fogOfWarComponent, uint32 fromPixelInclusive, uint32 toPixelInclusive, bool activelyRevealed);
 	static void RevealPixelRangeWithObstacles(FogOfWarComponent* fogOfWarComponent, const SpatialPartitioningComponent* spatialPartitioningComponent, uint32 fromPixelInclusive, uint32 toPixelInclusive, const TArray<ObstacleIndicies>& obstacleIndicies, const FVector2D& cartesianEntityLocation, FVector2D& prevFrom, FVector2D& prevTo);
 	static void SetAlphaForCircleOctant(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, const FogOfWarOffsets& offsets, const TArray<ObstacleIndicies>& obstacleIndicies, OctantTraces& octantTraces, bool activelyRevealed);
+	static void SetAlphaForCircleQuadrant(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, const CircleQuadrant& quadrant, const TArray<ObstacleIndicies>& obstacleIndicies, QuadrantObstacleTraces& quadrantTraces, bool activelyRevealed);
 	static void UpdateTexture();
 	static void UpdateGaussianWeightsTexture();
 	static void UpdateDynamicMaterialInstance();
