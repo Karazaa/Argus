@@ -4,6 +4,7 @@
 #include "ArgusEntity.h"
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
+#include "Async/ParallelFor.h"
 #include "RHICommandList.h"
 #include "Rendering/Texture2DResource.h"
 #include "SystemArgumentDefinitions/FogOfWarSystemsArgs.h"
@@ -119,99 +120,45 @@ void FogOfWarSystems::SetRevealedStatePerEntity(FogOfWarComponent* fogOfWarCompo
 	ARGUS_TRACE(FogOfWarSystems::SetRevealedPixels);
 	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
 
-	fogOfWarComponent->m_asyncTasks.Reset();
-
 	InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId).GetComponent<InputInterfaceComponent>();
 	ARGUS_RETURN_ON_NULL(inputInterfaceComponent, ArgusECSLog);
 
-	// Clear dead entity pixels.
-	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
-	{
-		const ArgusEntity entity = ArgusEntity::RetrieveEntity(i);
-		if (entity.IsAlive())
-		{
-			continue;
-		}
-
-		FogOfWarLocationComponent* fogOfWarLocationComponent = entity.GetComponent<FogOfWarLocationComponent>();
-		if (!fogOfWarLocationComponent)
-		{
-			continue;
-		}
-
-		fogOfWarLocationComponent->m_clearedThisFrame = fogOfWarLocationComponent->m_fogOfWarPixel == MAX_uint32 ? false : true;
-	}
-
 	// Set actively revealed pixels to revealed once.
-	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{
-		const ArgusEntity entity = ArgusEntity::RetrieveEntity(i);
-		FogOfWarSystemsArgs components;
-		if (!components.PopulateArguments(entity))
+		ARGUS_TRACE(FogOfWarSystems::ClearActiveReveal);
+		ParallelFor(ARGUS_NAMEOF(FogOfWarSystems::RevealOnce), fogOfWarComponent->GetTotalPixels(), 1, [fogOfWarComponent](int32 index)
 		{
-			continue;
-		}
-
-		if (!entity.IsOnTeam(inputInterfaceComponent->m_activePlayerTeam))
-		{
-			continue;
-		}
-
-		const uint32 centerPixel = GetPixelNumberFromWorldSpaceLocation(fogOfWarComponent, components.m_transformComponent->m_location);
-		const bool newCenterPixel = centerPixel != components.m_fogOfWarLocationComponent->m_fogOfWarPixel;
-		if (newCenterPixel && components.m_entity.IsAlive() && components.m_fogOfWarLocationComponent->m_fogOfWarPixel != MAX_uint32)
-		{
-			RevealPixelAlphaForEntity(fogOfWarComponent, i, false);
-			components.m_fogOfWarLocationComponent->m_updatedPixelThisFrame = true;
-		}
-		else if (components.m_fogOfWarLocationComponent->m_clearedThisFrame)
-		{
-			RevealPixelAlphaForEntity(fogOfWarComponent, i, false);
-			components.m_fogOfWarLocationComponent->m_updatedPixelThisFrame = false;
-		}
-		else
-		{
-			components.m_fogOfWarLocationComponent->m_updatedPixelThisFrame = false;
-		}
-
-		if (components.m_entity.IsAlive())
-		{
-			components.m_fogOfWarLocationComponent->m_fogOfWarPixel = centerPixel;
-		}
+			if (fogOfWarComponent->m_textureData[index] == 0u)
+			{
+				fogOfWarComponent->m_textureData[index] = fogOfWarComponent->m_revealedOnceAlpha;
+			}
+		});
 	}
-
-	UE::Tasks::Wait(fogOfWarComponent->m_asyncTasks);
-	fogOfWarComponent->m_asyncTasks.Reset();
 
 	// Calculate new actively revealed pixels.
-	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
+	fogOfWarComponent->m_asyncTasks.Reset();
 	{
-		const ArgusEntity entity = ArgusEntity::RetrieveEntity(i);
-		FogOfWarSystemsArgs components;
-		if (!components.PopulateArguments(entity))
+		ARGUS_TRACE(FogOfWarSystems::ActivelyReveal)
+		for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 		{
-			continue;
-		}
-
-		if (components.m_fogOfWarLocationComponent->m_clearedThisFrame)
-		{
-			components.m_fogOfWarLocationComponent->m_fogOfWarPixel = MAX_uint32;
-			continue;
-		}
-
-		if (!components.m_fogOfWarLocationComponent->m_updatedPixelThisFrame)
-		{
-			UpdateDoesEntityNeedToUpdateActivelyRevealed(components, inputInterfaceComponent);
-			if (!components.m_fogOfWarLocationComponent->m_needsActivelyRevealedThisFrame)
+			const ArgusEntity entity = ArgusEntity::RetrieveEntity(i);
+			FogOfWarSystemsArgs components;
+			if (!components.PopulateArguments(entity))
 			{
 				continue;
 			}
+
+			if (!entity.IsOnTeam(inputInterfaceComponent->m_activePlayerTeam) || !components.m_entity.IsAlive())
+			{
+				continue;
+			}
+
+			components.m_fogOfWarLocationComponent->m_fogOfWarPixel = GetPixelNumberFromWorldSpaceLocation(fogOfWarComponent, components.m_transformComponent->m_location);
+			RevealPixelAlphaForEntity(fogOfWarComponent, i, true);
 		}
 
-		RevealPixelAlphaForEntity(fogOfWarComponent, i, true);
+		UE::Tasks::Wait(fogOfWarComponent->m_asyncTasks);
 	}
-
-	UE::Tasks::Wait(fogOfWarComponent->m_asyncTasks);
 }
 
 void FogOfWarSystems::ApplyExponentialDecaySmoothing(FogOfWarComponent* fogOfWarComponent, float deltaTime)
