@@ -53,6 +53,9 @@ void FogOfWarSystems::RunThreadSystems(float deltaTime)
 	FogOfWarComponent* fogOfWarComponent = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId).GetComponent<FogOfWarComponent>();
 	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
 
+	// Iterate over entire texture and set any pixels that are actively revealed to revealed once.
+	ClearActivelyRevealedPixels(fogOfWarComponent);
+
 	// Iterate over all entities and carve out a circle of pixels (activelyRevealed) based on sight radius for entities that are on the local player team (or allies).
 	SetRevealedStatePerEntity(fogOfWarComponent);
 
@@ -115,50 +118,101 @@ void FogOfWarSystems::InitializeGaussianFilter(FogOfWarComponent* fogOfWarCompon
 	UpdateGaussianWeightsTexture();
 }
 
+void FogOfWarSystems::ClearActivelyRevealedPixels(FogOfWarComponent* fogOfWarComponent)
+{
+	ARGUS_TRACE(FogOfWarSystems::ClearActivelyRevealedPixels);
+	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
+
+	const int32 chunkSize = ArgusMath::SafeDivide<int32>(static_cast<int32>(fogOfWarComponent->GetTotalPixels()), fogOfWarComponent->m_numberSmoothingChunks, static_cast<int32>(fogOfWarComponent->GetTotalPixels()));
+	int32 currentStartIndex = 0;
+
+	fogOfWarComponent->m_asyncTasks.Reset();
+
+	for (int32 i = 0; i < fogOfWarComponent->m_numberSmoothingChunks; ++i)
+	{
+		fogOfWarComponent->m_asyncTasks.Add(UE::Tasks::Launch(ARGUS_NAMEOF(FogOfWarSystems::ClearActivelyRevealedPixelsForRange), [fogOfWarComponent, currentStartIndex, chunkSize]()
+		{
+			ClearActivelyRevealedPixelsForRange(fogOfWarComponent, currentStartIndex, currentStartIndex + chunkSize);
+		}));
+		currentStartIndex += chunkSize;
+	}
+
+	UE::Tasks::Wait(fogOfWarComponent->m_asyncTasks);
+}
+
+void FogOfWarSystems::ClearActivelyRevealedPixelsForRange(FogOfWarComponent* fogOfWarComponent, int32 fromInclusive, int32 toExclusive)
+{
+	ARGUS_TRACE(FogOfWarSystems::ClearActivelyRevealedPixelsForRange);
+	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
+
+	static constexpr int32 topIterationSize = 256;
+	static constexpr int32 midIterationSize = 32;
+	static constexpr int32 smallIterationSize = 8;
+
+	for (int32 i = fromInclusive; i < toExclusive; i += topIterationSize)
+	{
+		if (!memchr(&fogOfWarComponent->m_textureData[i], 0, topIterationSize))
+		{
+			continue;
+		}
+
+		for (int32 j = i; j < i + topIterationSize; j += midIterationSize)
+		{
+			if (!memchr(&fogOfWarComponent->m_textureData[j], 0, midIterationSize))
+			{
+				continue;
+			}
+
+			for (int32 k = j; k < j + midIterationSize; k += smallIterationSize)
+			{
+				if (!memchr(&fogOfWarComponent->m_textureData[k], 0, smallIterationSize))
+				{
+					continue;
+				}
+
+				for (int32 l = k; l < k + smallIterationSize; ++l)
+				{
+					if (fogOfWarComponent->m_textureData[l] == 0u)
+					{
+						fogOfWarComponent->m_textureData[l] = fogOfWarComponent->m_revealedOnceAlpha;
+					}
+				}
+			}
+		}
+	}
+}
+
 void FogOfWarSystems::SetRevealedStatePerEntity(FogOfWarComponent* fogOfWarComponent)
 {
-	ARGUS_TRACE(FogOfWarSystems::SetRevealedPixels);
+	ARGUS_TRACE(FogOfWarSystems::SetRevealedStatePerEntity);
 	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
 
 	InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId).GetComponent<InputInterfaceComponent>();
 	ARGUS_RETURN_ON_NULL(inputInterfaceComponent, ArgusECSLog);
 
-	// Set actively revealed pixels to revealed once.
-	{
-		ARGUS_TRACE(FogOfWarSystems::ClearActiveReveal);
-		ParallelFor(ARGUS_NAMEOF(FogOfWarSystems::RevealOnce), fogOfWarComponent->GetTotalPixels(), 1, [fogOfWarComponent](int32 index)
-		{
-			if (fogOfWarComponent->m_textureData[index] == 0u)
-			{
-				fogOfWarComponent->m_textureData[index] = fogOfWarComponent->m_revealedOnceAlpha;
-			}
-		});
-	}
+	fogOfWarComponent->m_asyncTasks.Reset();
 
 	// Calculate new actively revealed pixels.
-	fogOfWarComponent->m_asyncTasks.Reset();
+	ARGUS_TRACE(FogOfWarSystems::ActivelyReveal)
+	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{
-		ARGUS_TRACE(FogOfWarSystems::ActivelyReveal)
-		for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
+		const ArgusEntity entity = ArgusEntity::RetrieveEntity(i);
+		FogOfWarSystemsArgs components;
+		if (!components.PopulateArguments(entity))
 		{
-			const ArgusEntity entity = ArgusEntity::RetrieveEntity(i);
-			FogOfWarSystemsArgs components;
-			if (!components.PopulateArguments(entity))
-			{
-				continue;
-			}
-
-			if (!entity.IsOnTeam(inputInterfaceComponent->m_activePlayerTeam) || !components.m_entity.IsAlive())
-			{
-				continue;
-			}
-
-			components.m_fogOfWarLocationComponent->m_fogOfWarPixel = GetPixelNumberFromWorldSpaceLocation(fogOfWarComponent, components.m_transformComponent->m_location);
-			RevealPixelAlphaForEntity(fogOfWarComponent, i, true);
+			continue;
 		}
 
-		UE::Tasks::Wait(fogOfWarComponent->m_asyncTasks);
+		if (!entity.IsOnTeam(inputInterfaceComponent->m_activePlayerTeam) || !components.m_entity.IsAlive())
+		{
+			continue;
+		}
+
+		components.m_fogOfWarLocationComponent->m_fogOfWarPixel = GetPixelNumberFromWorldSpaceLocation(fogOfWarComponent, components.m_transformComponent->m_location);
+		RevealPixelAlphaForEntity(fogOfWarComponent, i, true);
 	}
+
+	UE::Tasks::Wait(fogOfWarComponent->m_asyncTasks);
 }
 
 void FogOfWarSystems::ApplyExponentialDecaySmoothing(FogOfWarComponent* fogOfWarComponent, float deltaTime)
@@ -180,7 +234,7 @@ void FogOfWarSystems::ApplyExponentialDecaySmoothing(FogOfWarComponent* fogOfWar
 	{
 		fogOfWarComponent->m_asyncTasks.Add(UE::Tasks::Launch(ARGUS_NAMEOF(FogOfWarSystems::RevealPixelAlphaForEntity), [fogOfWarComponent, deltaTime, &exponentialDecayCoefficient, currentStartIndex, chunkSize]()
 		{
-				ApplyExponentialDecaySmoothingForRange(fogOfWarComponent, deltaTime, exponentialDecayCoefficient, currentStartIndex, currentStartIndex + chunkSize);
+			ApplyExponentialDecaySmoothingForRange(fogOfWarComponent, deltaTime, exponentialDecayCoefficient, currentStartIndex, currentStartIndex + chunkSize);
 		}));
 		currentStartIndex += chunkSize;
 	}

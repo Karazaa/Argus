@@ -96,6 +96,8 @@ private:
 	};
 
 	static void InitializeGaussianFilter(FogOfWarComponent* fogOfWarComponent);
+	static void ClearActivelyRevealedPixels(FogOfWarComponent* fogOfWarComponent);
+	static void ClearActivelyRevealedPixelsForRange(FogOfWarComponent* fogOfWarComponent, int32 fromInclusive, int32 toExclusive);
 	static void SetRevealedStatePerEntity(FogOfWarComponent* fogOfWarComponent);
 	static void ApplyExponentialDecaySmoothing(FogOfWarComponent* fogOfWarComponent, float deltaTime);
 	static void ApplyExponentialDecaySmoothingForRange(FogOfWarComponent* fogOfWarComponent, float deltaTime, const __m256& exponentialDecayCoefficient, int32 fromInclusive, int32 toExclusive);
