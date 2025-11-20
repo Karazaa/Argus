@@ -32,6 +32,8 @@ public:
 	uint8 m_triangleRasterizeModulo = 4u;
 	UPROPERTY(EditAnywhere)
 	uint8 m_numberSmoothingChunks = 4u;
+	UPROPERTY(EditAnywhere)
+	float m_visionObstacleAdjustDistance = 100.0f;
 
 	void InstantiateComponentForEntity(const ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;

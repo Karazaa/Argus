@@ -12,6 +12,8 @@ struct ObstaclePoint
 	FVector2D m_direction = FVector2D::ZeroVector;
 	bool m_isConvex = false;
 
+	FVector2D GetLeftVector() const { return FVector2D(-m_direction.Y, m_direction.X); }
+	FVector2D GetRightVector() const { return FVector2D(m_direction.Y, -m_direction.X); }
 	void DrawDebugObstaclePoint(UWorld* worldPointer) const;
 };
 

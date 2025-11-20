@@ -724,10 +724,23 @@ void FogOfWarSystems::RevealPixelRangeWithObstacles(FogOfWarComponent* fogOfWarC
 		const ObstaclePoint& currentObstaclePoint = spatialPartitioningComponent->m_obstacles[obstacleIndicies[i].m_obstacleIndex][obstacleIndicies[i].m_obstaclePointIndex];
 		const ObstaclePoint& nextObstaclePoint = spatialPartitioningComponent->m_obstacles[obstacleIndicies[i].m_obstacleIndex].GetNext(obstacleIndicies[i].m_obstaclePointIndex);
 
+		FVector2D currentPoint = currentObstaclePoint.m_point;
+		const FVector2D currentLeft = currentObstaclePoint.GetLeftVector();
+		FVector2D nextPoint = nextObstaclePoint.m_point;
+		const FVector2D nextLeft = nextObstaclePoint.GetLeftVector();
+
+		currentPoint += (currentLeft * fogOfWarComponent->m_visionObstacleAdjustDistance);
+		nextPoint += (nextLeft * fogOfWarComponent->m_visionObstacleAdjustDistance);
+
 		FVector2D fromIntersection = cartesianFromLocation;
 		FVector2D toIntersection = cartesianToLocation;
 
-		if (ArgusMath::GetLineSegmentIntersectionCartesian(cartesianEntityLocation, cartesianFromLocation, currentObstaclePoint.m_point, nextObstaclePoint.m_point, fromIntersection))
+		if (ArgusMath::IsLeftOfCartesian(currentPoint, nextPoint, cartesianEntityLocation))
+		{
+			continue;
+		}
+
+		if (ArgusMath::GetLineSegmentIntersectionCartesian(cartesianEntityLocation, cartesianFromLocation, currentPoint, nextPoint, fromIntersection))
 		{
 			if (FVector2D::DistSquared(cartesianEntityLocation, fromIntersection) < FVector2D::DistSquared(cartesianEntityLocation, currentFromIntersection))
 			{
@@ -735,7 +748,7 @@ void FogOfWarSystems::RevealPixelRangeWithObstacles(FogOfWarComponent* fogOfWarC
 			}
 		}
 
-		if (ArgusMath::GetLineSegmentIntersectionCartesian(cartesianEntityLocation, cartesianToLocation, currentObstaclePoint.m_point, nextObstaclePoint.m_point, toIntersection))
+		if (ArgusMath::GetLineSegmentIntersectionCartesian(cartesianEntityLocation, cartesianToLocation, currentPoint, nextPoint, toIntersection))
 		{
 			if (FVector2D::DistSquared(cartesianEntityLocation, toIntersection) < FVector2D::DistSquared(cartesianEntityLocation, currentToIntersection))
 			{

@@ -20,6 +20,7 @@ void UFogOfWarComponentData::InstantiateComponentForEntity(const ArgusEntity& en
 	FogOfWarComponentRef->m_shouldUseSmoothing = m_shouldUseSmoothing;
 	FogOfWarComponentRef->m_triangleRasterizeModulo = m_triangleRasterizeModulo;
 	FogOfWarComponentRef->m_numberSmoothingChunks = m_numberSmoothingChunks;
+	FogOfWarComponentRef->m_visionObstacleAdjustDistance = m_visionObstacleAdjustDistance;
 }
 
 bool UFogOfWarComponentData::MatchesType(UComponentData* other) const

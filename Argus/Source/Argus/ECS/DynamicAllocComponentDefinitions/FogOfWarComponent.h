@@ -55,6 +55,7 @@ struct FogOfWarComponent
 	bool m_shouldUseSmoothing = true;
 	uint8 m_triangleRasterizeModulo = 4u;
 	uint8 m_numberSmoothingChunks = 4u;
+	float m_visionObstacleAdjustDistance = 100.0f;
 
 	uint32 GetTotalPixels()
 	{
