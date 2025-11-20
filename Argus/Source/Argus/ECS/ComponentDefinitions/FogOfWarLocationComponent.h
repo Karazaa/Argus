@@ -11,13 +11,4 @@ struct FogOfWarLocationComponent
 
 	ARGUS_IGNORE()
 	uint32 m_fogOfWarPixel = MAX_uint32;
-
-	ARGUS_IGNORE()
-	bool m_clearedThisFrame = false;
-
-	ARGUS_IGNORE()
-	bool m_needsActivelyRevealedThisFrame = false;
-
-	ARGUS_IGNORE()
-	bool m_updatedPixelThisFrame = false;
 };
