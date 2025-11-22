@@ -11,6 +11,9 @@ class UArgusActorRecord;
 
 class ArgusEntity
 {
+private:
+	static TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > s_takenEntityIds;
+
 public:
 	static void				FlushAllEntities();
 	static bool				DoesEntityExist(uint16 id);
@@ -26,10 +29,47 @@ public:
 	static uint16			GetTeamEntityId(ETeam team);
 	static ArgusEntity		GetTeamEntity(ETeam team);
 
+	template <typename Function>
+	static void IterateEntities(Function&& perEntityFunction)
+	{
+		int32 currentIndex = GetLowestTakenEntityId();
+		while (currentIndex <= GetHighestTakenEntityId() && currentIndex > 0)
+		{
+			ArgusEntity entity = RetrieveEntity(currentIndex);
+			if (!entity)
+			{
+				currentIndex = s_takenEntityIds.FindFrom(true, currentIndex + 1);
+				continue;
+			}
+
+			perEntityFunction(entity);
+			currentIndex = s_takenEntityIds.FindFrom(true, currentIndex + 1);
+		}
+	}
+
+	template <typename SystemsArgs, typename Function>
+	static void IterateSystemsArgs(Function&& perSystemsArgsFunction)
+	{
+		int32 currentIndex = GetLowestTakenEntityId();
+		SystemsArgs systemsArgs = SystemsArgs();
+
+		while (currentIndex <= GetHighestTakenEntityId() && currentIndex > 0)
+		{
+			if (!systemsArgs.PopulateArguments(RetrieveEntity(currentIndex)))
+			{
+				currentIndex = s_takenEntityIds.FindFrom(true, currentIndex + 1);
+				continue;
+			}
+
+			perSystemsArgsFunction(systemsArgs);
+			currentIndex = s_takenEntityIds.FindFrom(true, currentIndex + 1);
+		}
+	}
+
 	static const ArgusEntity k_emptyEntity;
 
 private:
-	static std::bitset<ArgusECSConstants::k_maxEntities>	s_takenEntityIds;
+	
 	static uint16 s_lowestTakenEntityId;
 	static uint16 s_highestTakenEntityId;
 	

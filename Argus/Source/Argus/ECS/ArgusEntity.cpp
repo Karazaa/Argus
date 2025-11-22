@@ -11,7 +11,7 @@
 #endif //!UE_BUILD_SHIPPING
 
 const ArgusEntity ArgusEntity::k_emptyEntity = ArgusEntity();
-std::bitset<ArgusECSConstants::k_maxEntities> ArgusEntity::s_takenEntityIds = std::bitset<ArgusECSConstants::k_maxEntities>();
+TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > ArgusEntity::s_takenEntityIds;
 
 uint16 ArgusEntity::s_lowestTakenEntityId = ArgusECSConstants::k_maxEntities;
 uint16 ArgusEntity::s_highestTakenEntityId = 0u;
@@ -19,7 +19,8 @@ uint16 ArgusEntity::s_highestTakenEntityId = 0u;
 void ArgusEntity::FlushAllEntities()
 {
 	ArgusComponentRegistry::FlushAllComponents();
-	s_takenEntityIds.reset();
+	s_takenEntityIds.Reset();
+	s_takenEntityIds.SetNum(ArgusECSConstants::k_maxEntities, false);
 	s_lowestTakenEntityId = ArgusECSConstants::k_maxEntities;
 	s_highestTakenEntityId = 0u;
 }
@@ -56,7 +57,7 @@ ArgusEntity ArgusEntity::CreateEntity(uint16 lowestId)
 		return k_emptyEntity;
 	}
 
-	s_takenEntityIds.set(id);
+	s_takenEntityIds[id] = true;
 
 	if (!IsReservedEntityId(id))
 	{
@@ -82,7 +83,7 @@ void ArgusEntity::DestroyEntity(ArgusEntity& entityToDestroy)
 	}
 
 	uint16 entityToDestoryId = entityToDestroy.GetId();
-	s_takenEntityIds.set(entityToDestoryId, false);
+	s_takenEntityIds[entityToDestoryId] = false;
 	ArgusComponentRegistry::RemoveComponentsForEntity(entityToDestoryId);
 
 	entityToDestroy = k_emptyEntity;

@@ -9,23 +9,17 @@ void DecalSystems::RunSystems(float deltaTime)
 {
 	ARGUS_TRACE(DecalSystems::RunSystems);
 
-	DecalSystemsArgs components;
-	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
+	ArgusEntity::IterateSystemsArgs<DecalSystemsArgs>([](DecalSystemsArgs& components) 
 	{
-		if (!components.PopulateArguments(ArgusEntity::RetrieveEntity(i)))
-		{
-			continue;
-		}
-
 		if (!components.m_decalComponent->m_lifetimeTimer.WasTimerSet())
 		{
 			components.m_decalComponent->m_lifetimeTimer.StartTimer(components.m_decalComponent->m_lifetimeSeconds);
-			continue;
+			return;
 		}
 
 		if (components.m_decalComponent->m_lifetimeTimer.IsTimerComplete())
 		{
 			components.m_entity.Destroy();
 		}
-	}
+	});
 }
