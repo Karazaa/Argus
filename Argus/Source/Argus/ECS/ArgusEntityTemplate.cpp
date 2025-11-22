@@ -39,7 +39,7 @@ ArgusEntity UArgusEntityTemplate::MakeEntityAsync() const
 
 	assetLoadingComponent->m_streamableManager.RequestAsyncLoad(pathsToLoad, FStreamableDelegate::CreateLambda
 	(
-		[this, &entity]()
+		[this, entity]()
 		{
 			this->PopulateEntity(entity);
 		})

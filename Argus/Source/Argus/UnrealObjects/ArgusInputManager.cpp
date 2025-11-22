@@ -859,6 +859,15 @@ void UArgusInputManager::ProcessMoveToInputEvent()
 			inputMovementState = EMovementState::ProcessMoveToEntityCommand;
 		}
 	}
+	else if (UArgusEntityTemplate* moveToLocationDecalTemplate = m_owningPlayerController->GetMoveToLocationDecalTemplate())
+	{
+		ArgusEntity decalEntity = moveToLocationDecalTemplate->MakeEntityAsync();
+		if (TransformComponent* decalTransformComponent = decalEntity.AddComponent<TransformComponent>())
+		{
+			decalTransformComponent->m_location = targetLocation;
+			decalTransformComponent->m_radius = 0.0f;
+		}
+	}
 
 	for (TWeakObjectPtr<AArgusActor>& selectedActor : m_selectedArgusActors)
 	{

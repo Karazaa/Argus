@@ -39,6 +39,11 @@ bool ArgusComponentComponentSizeTest::RunTest(const FString& Parameters)
 	netSize += ConstructionComponentSize;
 	ARGUS_LOG(ArgusTestingLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(ConstructionComponent), ConstructionComponentSize);
 #pragma endregion
+#pragma region DecalComponent
+	const size_t DecalComponentSize = sizeof(DecalComponent);
+	netSize += DecalComponentSize;
+	ARGUS_LOG(ArgusTestingLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(DecalComponent), DecalComponentSize);
+#pragma endregion
 #pragma region FlockingComponent
 	const size_t FlockingComponentSize = sizeof(FlockingComponent);
 	netSize += FlockingComponentSize;

@@ -42,7 +42,7 @@ void ArgusComponentRegistry::FlushAllComponents()
 	&&&&&
 }
 
-uint16 ArgusComponentRegistry::GetOwningEntityIdForComponentMember(void* memberAddress)
+uint16 ArgusComponentRegistry::GetOwningEntityIdForComponentMember(const void* memberAddress)
 {
 	#&#&#
 

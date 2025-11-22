@@ -211,6 +211,8 @@ void AArgusPlayerController::BeginPlay()
 	ARGUS_RETURN_ON_NULL(m_reticleActor, ArgusUnrealObjectsLog);
 
 	SetViewTarget(m_argusCameraActor);
+	
+	m_moveToLocationDecalEntityTemplate.AsyncPreLoadAndStorePtr();
 }
 
 void AArgusPlayerController::SetupInputComponent()

@@ -1,5 +1,5 @@
 	if (memberAddress >= &s_#####s[0] && memberAddress <= &s_#####s[ArgusECSConstants::k_maxEntities - 1])
 	{
-		#####* pretendComponent = reinterpret_cast<#####*>(memberAddress);
+		const #####* pretendComponent = reinterpret_cast<const #####*>(memberAddress);
 		return pretendComponent - &s_#####s[0];
 	}

@@ -39,7 +39,7 @@ public:
 
 	static void RemoveComponentsForEntity(uint16 entityId);
 	static void FlushAllComponents();
-	static uint16 GetOwningEntityIdForComponentMember(void* memberAddress);
+	static uint16 GetOwningEntityIdForComponentMember(const void* memberAddress);
 
 	static void AppendComponentDebugStrings(uint16 entityId, FString& debugStringToAppendTo);
 

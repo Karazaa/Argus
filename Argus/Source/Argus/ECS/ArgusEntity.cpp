@@ -468,6 +468,11 @@ const UArgusActorRecord* ArgusEntity::GetAssociatedActorRecord() const
 	return ArgusStaticData::GetRecord<UArgusActorRecord>(argusActorRecordId);
 }
 
+void ArgusEntity::Destroy()
+{
+	ArgusEntity::DestroyEntity(*this);
+}
+
 #if !UE_BUILD_SHIPPING
 const FString ArgusEntity::GetDebugString() const
 {

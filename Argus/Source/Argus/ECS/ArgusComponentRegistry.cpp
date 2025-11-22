@@ -26,6 +26,10 @@ TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > ArgusCom
 ConstructionComponent* ArgusComponentRegistry::s_ConstructionComponents = nullptr;
 TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > ArgusComponentRegistry::s_isConstructionComponentActive;
 #pragma endregion
+#pragma region DecalComponent
+DecalComponent* ArgusComponentRegistry::s_DecalComponents = nullptr;
+TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > ArgusComponentRegistry::s_isDecalComponentActive;
+#pragma endregion
 #pragma region FlockingComponent
 FlockingComponent* ArgusComponentRegistry::s_FlockingComponents = nullptr;
 TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > ArgusComponentRegistry::s_isFlockingComponentActive;
@@ -115,27 +119,182 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 	}
 
 	// Begin set bitset bits to false
-	s_isAbilityComponentActive.Reset();
-	s_isAvoidanceGroupingComponentActive.Reset();
-	s_isCarrierComponentActive.Reset();
-	s_isCombatComponentActive.Reset();
-	s_isConstructionComponentActive.Reset();
-	s_isFlockingComponentActive.Reset();
-	s_isFogOfWarLocationComponentActive.Reset();
-	s_isHealthComponentActive.Reset();
-	s_isIdentityComponentActive.Reset();
-	s_isNavigationComponentActive.Reset();
-	s_isNearbyEntitiesComponentActive.Reset();
-	s_isObserversComponentActive.Reset();
-	s_isPassengerComponentActive.Reset();
-	s_isResourceComponentActive.Reset();
-	s_isResourceExtractionComponentActive.Reset();
-	s_isSpawningComponentActive.Reset();
-	s_isTargetingComponentActive.Reset();
-	s_isTaskComponentActive.Reset();
-	s_isTimerComponentActive.Reset();
-	s_isTransformComponentActive.Reset();
-	s_isVelocityComponentActive.Reset();
+	if (UNLIKELY(s_isAbilityComponentActive.Num() == 0))
+	{
+		s_isAbilityComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+	}
+	else
+	{
+		s_isAbilityComponentActive[entityId] = false;
+	}
+	if (UNLIKELY(s_isAvoidanceGroupingComponentActive.Num() == 0))
+	{
+		s_isAvoidanceGroupingComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+	}
+	else
+	{
+		s_isAvoidanceGroupingComponentActive[entityId] = false;
+	}
+	if (UNLIKELY(s_isCarrierComponentActive.Num() == 0))
+	{
+		s_isCarrierComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+	}
+	else
+	{
+		s_isCarrierComponentActive[entityId] = false;
+	}
+	if (UNLIKELY(s_isCombatComponentActive.Num() == 0))
+	{
+		s_isCombatComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+	}
+	else
+	{
+		s_isCombatComponentActive[entityId] = false;
+	}
+	if (UNLIKELY(s_isConstructionComponentActive.Num() == 0))
+	{
+		s_isConstructionComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+	}
+	else
+	{
+		s_isConstructionComponentActive[entityId] = false;
+	}
+	if (UNLIKELY(s_isDecalComponentActive.Num() == 0))
+	{
+		s_isDecalComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+	}
+	else
+	{
+		s_isDecalComponentActive[entityId] = false;
+	}
+	if (UNLIKELY(s_isFlockingComponentActive.Num() == 0))
+	{
+		s_isFlockingComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+	}
+	else
+	{
+		s_isFlockingComponentActive[entityId] = false;
+	}
+	if (UNLIKELY(s_isFogOfWarLocationComponentActive.Num() == 0))
+	{
+		s_isFogOfWarLocationComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+	}
+	else
+	{
+		s_isFogOfWarLocationComponentActive[entityId] = false;
+	}
+	if (UNLIKELY(s_isHealthComponentActive.Num() == 0))
+	{
+		s_isHealthComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+	}
+	else
+	{
+		s_isHealthComponentActive[entityId] = false;
+	}
+	if (UNLIKELY(s_isIdentityComponentActive.Num() == 0))
+	{
+		s_isIdentityComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+	}
+	else
+	{
+		s_isIdentityComponentActive[entityId] = false;
+	}
+	if (UNLIKELY(s_isNavigationComponentActive.Num() == 0))
+	{
+		s_isNavigationComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+	}
+	else
+	{
+		s_isNavigationComponentActive[entityId] = false;
+	}
+	if (UNLIKELY(s_isNearbyEntitiesComponentActive.Num() == 0))
+	{
+		s_isNearbyEntitiesComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+	}
+	else
+	{
+		s_isNearbyEntitiesComponentActive[entityId] = false;
+	}
+	if (UNLIKELY(s_isObserversComponentActive.Num() == 0))
+	{
+		s_isObserversComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+	}
+	else
+	{
+		s_isObserversComponentActive[entityId] = false;
+	}
+	if (UNLIKELY(s_isPassengerComponentActive.Num() == 0))
+	{
+		s_isPassengerComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+	}
+	else
+	{
+		s_isPassengerComponentActive[entityId] = false;
+	}
+	if (UNLIKELY(s_isResourceComponentActive.Num() == 0))
+	{
+		s_isResourceComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+	}
+	else
+	{
+		s_isResourceComponentActive[entityId] = false;
+	}
+	if (UNLIKELY(s_isResourceExtractionComponentActive.Num() == 0))
+	{
+		s_isResourceExtractionComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+	}
+	else
+	{
+		s_isResourceExtractionComponentActive[entityId] = false;
+	}
+	if (UNLIKELY(s_isSpawningComponentActive.Num() == 0))
+	{
+		s_isSpawningComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+	}
+	else
+	{
+		s_isSpawningComponentActive[entityId] = false;
+	}
+	if (UNLIKELY(s_isTargetingComponentActive.Num() == 0))
+	{
+		s_isTargetingComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+	}
+	else
+	{
+		s_isTargetingComponentActive[entityId] = false;
+	}
+	if (UNLIKELY(s_isTaskComponentActive.Num() == 0))
+	{
+		s_isTaskComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+	}
+	else
+	{
+		s_isTaskComponentActive[entityId] = false;
+	}
+	if (UNLIKELY(s_isTimerComponentActive.Num() == 0))
+	{
+		s_isTimerComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+	}
+	else
+	{
+		s_isTimerComponentActive[entityId] = false;
+	}
+	if (UNLIKELY(s_isTransformComponentActive.Num() == 0))
+	{
+		s_isTransformComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+	}
+	else
+	{
+		s_isTransformComponentActive[entityId] = false;
+	}
+	if (UNLIKELY(s_isVelocityComponentActive.Num() == 0))
+	{
+		s_isVelocityComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+	}
+	else
+	{
+		s_isVelocityComponentActive[entityId] = false;
+	}
 
 	// Begin set component values
 	s_AbilityComponents[entityId].Reset();
@@ -143,6 +302,7 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 	s_CarrierComponents[entityId].Reset();
 	s_CombatComponents[entityId].Reset();
 	s_ConstructionComponents[entityId].Reset();
+	s_DecalComponents[entityId].Reset();
 	s_FlockingComponents[entityId].Reset();
 	s_FogOfWarLocationComponents[entityId].Reset();
 	s_HealthComponents[entityId].Reset();
@@ -221,6 +381,13 @@ void ArgusComponentRegistry::FlushAllComponents()
 		s_ConstructionComponents = ArgusMemorySource::Reallocate<ConstructionComponent>(s_ConstructionComponents, 0, ArgusECSConstants::k_maxEntities);
 	}
 	s_isConstructionComponentActive.Reset();
+	bool didAllocateDecalComponents = false;
+	if (!s_DecalComponents)
+	{
+		didAllocateDecalComponents = true;
+		s_DecalComponents = ArgusMemorySource::Reallocate<DecalComponent>(s_DecalComponents, 0, ArgusECSConstants::k_maxEntities);
+	}
+	s_isDecalComponentActive.Reset();
 	bool didAllocateFlockingComponents = false;
 	if (!s_FlockingComponents)
 	{
@@ -376,6 +543,14 @@ void ArgusComponentRegistry::FlushAllComponents()
 		else
 		{
 			s_ConstructionComponents[i].Reset();
+		}
+		if (didAllocateDecalComponents)
+		{
+			new (&s_DecalComponents[i]) DecalComponent();
+		}
+		else
+		{
+			s_DecalComponents[i].Reset();
 		}
 		if (didAllocateFlockingComponents)
 		{
@@ -570,111 +745,116 @@ void ArgusComponentRegistry::FlushAllComponents()
  
 }
 
-uint16 ArgusComponentRegistry::GetOwningEntityIdForComponentMember(void* memberAddress)
+uint16 ArgusComponentRegistry::GetOwningEntityIdForComponentMember(const void* memberAddress)
 {
 	if (memberAddress >= &s_AbilityComponents[0] && memberAddress <= &s_AbilityComponents[ArgusECSConstants::k_maxEntities - 1])
 	{
-		AbilityComponent* pretendComponent = reinterpret_cast<AbilityComponent*>(memberAddress);
+		const AbilityComponent* pretendComponent = reinterpret_cast<const AbilityComponent*>(memberAddress);
 		return pretendComponent - &s_AbilityComponents[0];
 	}
 	if (memberAddress >= &s_AvoidanceGroupingComponents[0] && memberAddress <= &s_AvoidanceGroupingComponents[ArgusECSConstants::k_maxEntities - 1])
 	{
-		AvoidanceGroupingComponent* pretendComponent = reinterpret_cast<AvoidanceGroupingComponent*>(memberAddress);
+		const AvoidanceGroupingComponent* pretendComponent = reinterpret_cast<const AvoidanceGroupingComponent*>(memberAddress);
 		return pretendComponent - &s_AvoidanceGroupingComponents[0];
 	}
 	if (memberAddress >= &s_CarrierComponents[0] && memberAddress <= &s_CarrierComponents[ArgusECSConstants::k_maxEntities - 1])
 	{
-		CarrierComponent* pretendComponent = reinterpret_cast<CarrierComponent*>(memberAddress);
+		const CarrierComponent* pretendComponent = reinterpret_cast<const CarrierComponent*>(memberAddress);
 		return pretendComponent - &s_CarrierComponents[0];
 	}
 	if (memberAddress >= &s_CombatComponents[0] && memberAddress <= &s_CombatComponents[ArgusECSConstants::k_maxEntities - 1])
 	{
-		CombatComponent* pretendComponent = reinterpret_cast<CombatComponent*>(memberAddress);
+		const CombatComponent* pretendComponent = reinterpret_cast<const CombatComponent*>(memberAddress);
 		return pretendComponent - &s_CombatComponents[0];
 	}
 	if (memberAddress >= &s_ConstructionComponents[0] && memberAddress <= &s_ConstructionComponents[ArgusECSConstants::k_maxEntities - 1])
 	{
-		ConstructionComponent* pretendComponent = reinterpret_cast<ConstructionComponent*>(memberAddress);
+		const ConstructionComponent* pretendComponent = reinterpret_cast<const ConstructionComponent*>(memberAddress);
 		return pretendComponent - &s_ConstructionComponents[0];
+	}
+	if (memberAddress >= &s_DecalComponents[0] && memberAddress <= &s_DecalComponents[ArgusECSConstants::k_maxEntities - 1])
+	{
+		const DecalComponent* pretendComponent = reinterpret_cast<const DecalComponent*>(memberAddress);
+		return pretendComponent - &s_DecalComponents[0];
 	}
 	if (memberAddress >= &s_FlockingComponents[0] && memberAddress <= &s_FlockingComponents[ArgusECSConstants::k_maxEntities - 1])
 	{
-		FlockingComponent* pretendComponent = reinterpret_cast<FlockingComponent*>(memberAddress);
+		const FlockingComponent* pretendComponent = reinterpret_cast<const FlockingComponent*>(memberAddress);
 		return pretendComponent - &s_FlockingComponents[0];
 	}
 	if (memberAddress >= &s_FogOfWarLocationComponents[0] && memberAddress <= &s_FogOfWarLocationComponents[ArgusECSConstants::k_maxEntities - 1])
 	{
-		FogOfWarLocationComponent* pretendComponent = reinterpret_cast<FogOfWarLocationComponent*>(memberAddress);
+		const FogOfWarLocationComponent* pretendComponent = reinterpret_cast<const FogOfWarLocationComponent*>(memberAddress);
 		return pretendComponent - &s_FogOfWarLocationComponents[0];
 	}
 	if (memberAddress >= &s_HealthComponents[0] && memberAddress <= &s_HealthComponents[ArgusECSConstants::k_maxEntities - 1])
 	{
-		HealthComponent* pretendComponent = reinterpret_cast<HealthComponent*>(memberAddress);
+		const HealthComponent* pretendComponent = reinterpret_cast<const HealthComponent*>(memberAddress);
 		return pretendComponent - &s_HealthComponents[0];
 	}
 	if (memberAddress >= &s_IdentityComponents[0] && memberAddress <= &s_IdentityComponents[ArgusECSConstants::k_maxEntities - 1])
 	{
-		IdentityComponent* pretendComponent = reinterpret_cast<IdentityComponent*>(memberAddress);
+		const IdentityComponent* pretendComponent = reinterpret_cast<const IdentityComponent*>(memberAddress);
 		return pretendComponent - &s_IdentityComponents[0];
 	}
 	if (memberAddress >= &s_NavigationComponents[0] && memberAddress <= &s_NavigationComponents[ArgusECSConstants::k_maxEntities - 1])
 	{
-		NavigationComponent* pretendComponent = reinterpret_cast<NavigationComponent*>(memberAddress);
+		const NavigationComponent* pretendComponent = reinterpret_cast<const NavigationComponent*>(memberAddress);
 		return pretendComponent - &s_NavigationComponents[0];
 	}
 	if (memberAddress >= &s_NearbyEntitiesComponents[0] && memberAddress <= &s_NearbyEntitiesComponents[ArgusECSConstants::k_maxEntities - 1])
 	{
-		NearbyEntitiesComponent* pretendComponent = reinterpret_cast<NearbyEntitiesComponent*>(memberAddress);
+		const NearbyEntitiesComponent* pretendComponent = reinterpret_cast<const NearbyEntitiesComponent*>(memberAddress);
 		return pretendComponent - &s_NearbyEntitiesComponents[0];
 	}
 	if (memberAddress >= &s_ObserversComponents[0] && memberAddress <= &s_ObserversComponents[ArgusECSConstants::k_maxEntities - 1])
 	{
-		ObserversComponent* pretendComponent = reinterpret_cast<ObserversComponent*>(memberAddress);
+		const ObserversComponent* pretendComponent = reinterpret_cast<const ObserversComponent*>(memberAddress);
 		return pretendComponent - &s_ObserversComponents[0];
 	}
 	if (memberAddress >= &s_PassengerComponents[0] && memberAddress <= &s_PassengerComponents[ArgusECSConstants::k_maxEntities - 1])
 	{
-		PassengerComponent* pretendComponent = reinterpret_cast<PassengerComponent*>(memberAddress);
+		const PassengerComponent* pretendComponent = reinterpret_cast<const PassengerComponent*>(memberAddress);
 		return pretendComponent - &s_PassengerComponents[0];
 	}
 	if (memberAddress >= &s_ResourceComponents[0] && memberAddress <= &s_ResourceComponents[ArgusECSConstants::k_maxEntities - 1])
 	{
-		ResourceComponent* pretendComponent = reinterpret_cast<ResourceComponent*>(memberAddress);
+		const ResourceComponent* pretendComponent = reinterpret_cast<const ResourceComponent*>(memberAddress);
 		return pretendComponent - &s_ResourceComponents[0];
 	}
 	if (memberAddress >= &s_ResourceExtractionComponents[0] && memberAddress <= &s_ResourceExtractionComponents[ArgusECSConstants::k_maxEntities - 1])
 	{
-		ResourceExtractionComponent* pretendComponent = reinterpret_cast<ResourceExtractionComponent*>(memberAddress);
+		const ResourceExtractionComponent* pretendComponent = reinterpret_cast<const ResourceExtractionComponent*>(memberAddress);
 		return pretendComponent - &s_ResourceExtractionComponents[0];
 	}
 	if (memberAddress >= &s_SpawningComponents[0] && memberAddress <= &s_SpawningComponents[ArgusECSConstants::k_maxEntities - 1])
 	{
-		SpawningComponent* pretendComponent = reinterpret_cast<SpawningComponent*>(memberAddress);
+		const SpawningComponent* pretendComponent = reinterpret_cast<const SpawningComponent*>(memberAddress);
 		return pretendComponent - &s_SpawningComponents[0];
 	}
 	if (memberAddress >= &s_TargetingComponents[0] && memberAddress <= &s_TargetingComponents[ArgusECSConstants::k_maxEntities - 1])
 	{
-		TargetingComponent* pretendComponent = reinterpret_cast<TargetingComponent*>(memberAddress);
+		const TargetingComponent* pretendComponent = reinterpret_cast<const TargetingComponent*>(memberAddress);
 		return pretendComponent - &s_TargetingComponents[0];
 	}
 	if (memberAddress >= &s_TaskComponents[0] && memberAddress <= &s_TaskComponents[ArgusECSConstants::k_maxEntities - 1])
 	{
-		TaskComponent* pretendComponent = reinterpret_cast<TaskComponent*>(memberAddress);
+		const TaskComponent* pretendComponent = reinterpret_cast<const TaskComponent*>(memberAddress);
 		return pretendComponent - &s_TaskComponents[0];
 	}
 	if (memberAddress >= &s_TimerComponents[0] && memberAddress <= &s_TimerComponents[ArgusECSConstants::k_maxEntities - 1])
 	{
-		TimerComponent* pretendComponent = reinterpret_cast<TimerComponent*>(memberAddress);
+		const TimerComponent* pretendComponent = reinterpret_cast<const TimerComponent*>(memberAddress);
 		return pretendComponent - &s_TimerComponents[0];
 	}
 	if (memberAddress >= &s_TransformComponents[0] && memberAddress <= &s_TransformComponents[ArgusECSConstants::k_maxEntities - 1])
 	{
-		TransformComponent* pretendComponent = reinterpret_cast<TransformComponent*>(memberAddress);
+		const TransformComponent* pretendComponent = reinterpret_cast<const TransformComponent*>(memberAddress);
 		return pretendComponent - &s_TransformComponents[0];
 	}
 	if (memberAddress >= &s_VelocityComponents[0] && memberAddress <= &s_VelocityComponents[ArgusECSConstants::k_maxEntities - 1])
 	{
-		VelocityComponent* pretendComponent = reinterpret_cast<VelocityComponent*>(memberAddress);
+		const VelocityComponent* pretendComponent = reinterpret_cast<const VelocityComponent*>(memberAddress);
 		return pretendComponent - &s_VelocityComponents[0];
 	}
 
@@ -703,6 +883,10 @@ void ArgusComponentRegistry::DrawComponentsDebug(uint16 entityId)
 	if (const ConstructionComponent* ConstructionComponentPtr = GetComponent<ConstructionComponent>(entityId))
 	{
 		ConstructionComponentPtr->DrawComponentDebug();
+	}
+	if (const DecalComponent* DecalComponentPtr = GetComponent<DecalComponent>(entityId))
+	{
+		DecalComponentPtr->DrawComponentDebug();
 	}
 	if (const FlockingComponent* FlockingComponentPtr = GetComponent<FlockingComponent>(entityId))
 	{

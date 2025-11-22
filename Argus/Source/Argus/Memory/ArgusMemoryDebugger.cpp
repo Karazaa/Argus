@@ -10,6 +10,8 @@ static TAutoConsoleVariable<bool> CVarDrawMemoryDebugger(TEXT("Argus.Debug.Memor
 
 void ArgusMemoryDebugger::DrawMemoryDebugger()
 {
+	ARGUS_TRACE(ArgusMemoryDebugger::DrawMemoryDebugger);
+
 	if (!CVarDrawMemoryDebugger.GetValueOnGameThread())
 	{
 		return;

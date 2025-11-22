@@ -46,6 +46,11 @@ void SpatialPartitioningSystems::ClearSeenByStatus()
 	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{
 		ArgusEntity entity = ArgusEntity::RetrieveEntity(i);
+		if (!entity)
+		{
+			continue;
+		}
+
 		if (IdentityComponent* identityComponent = entity.GetComponent<IdentityComponent>())
 		{
 			identityComponent->ClearSeenBy();
@@ -60,6 +65,11 @@ void SpatialPartitioningSystems::CacheAdjacentEntityIds(const SpatialPartitionin
 	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
 	{
 		ArgusEntity entity = ArgusEntity::RetrieveEntity(i);
+		if (!entity)
+		{
+			continue;
+		}
+
 		NearbyEntitiesComponent* nearbyEntitiesComponent = entity.GetComponent<NearbyEntitiesComponent>();
 		const TransformComponent* transformComponent = entity.GetComponent<TransformComponent>();
 		if (!nearbyEntitiesComponent || !transformComponent)

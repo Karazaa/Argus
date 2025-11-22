@@ -31,11 +31,17 @@ public:
 	void CancelTimer();
 	void CancelTimer(const ArgusEntity& entityWithTimer);
 
+	float GetTimeRemaining() const;
 	float GetTimeRemaining(const ArgusEntity& entityWithTimer) const;
+	float GetTimeElapsedProportion() const;
 	float GetTimeElapsedProportion(const ArgusEntity& entityWithTimer) const;
 
+	bool IsTimerTicking() const;
 	bool IsTimerTicking(const ArgusEntity& entityWithTimer) const;
+	bool IsTimerComplete() const;
 	bool IsTimerComplete(const ArgusEntity& entityWithTimer) const;
+	bool WasTimerSet() const;
+	bool WasTimerSet(const ArgusEntity& entityWithTimer) const;
 
 	uint8 GetTimerIndex() const { return m_timerIndex; }
 

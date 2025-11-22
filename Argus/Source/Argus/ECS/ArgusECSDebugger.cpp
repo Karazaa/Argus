@@ -21,6 +21,8 @@ TArray<std::string> ArgusECSDebugger::s_resourceToAddStrings = TArray<std::strin
 
 void ArgusECSDebugger::DrawECSDebugger()
 {
+	ARGUS_TRACE(ArgusECSDebugger::DrawECSDebugger);
+
 	if (!CVarDrawECSDebugger.GetValueOnGameThread())
 	{
 		return;

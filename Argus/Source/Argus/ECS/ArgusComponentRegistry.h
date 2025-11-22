@@ -16,6 +16,7 @@
 #include "ComponentDefinitions\CarrierComponent.h"
 #include "ComponentDefinitions\CombatComponent.h"
 #include "ComponentDefinitions\ConstructionComponent.h"
+#include "ComponentDefinitions\DecalComponent.h"
 #include "ComponentDefinitions\FlockingComponent.h"
 #include "ComponentDefinitions\FogOfWarLocationComponent.h"
 #include "ComponentDefinitions\HealthComponent.h"
@@ -63,7 +64,7 @@ public:
 
 	static void RemoveComponentsForEntity(uint16 entityId);
 	static void FlushAllComponents();
-	static uint16 GetOwningEntityIdForComponentMember(void* memberAddress);
+	static uint16 GetOwningEntityIdForComponentMember(const void* memberAddress);
 
 	static void AppendComponentDebugStrings(uint16 entityId, FString& debugStringToAppendTo);
 
@@ -71,7 +72,7 @@ public:
 	static void DrawComponentsDebug(uint16 entityId);
 #endif //!UE_BUILD_SHIPPING
 
-	static constexpr uint32 k_numComponentTypes = 26;
+	static constexpr uint32 k_numComponentTypes = 27;
 
 	// Begin component specific template specifiers.
 	
@@ -549,6 +550,101 @@ public:
 	}
 
 	friend struct ConstructionComponent;
+#pragma endregion
+#pragma region DecalComponent
+private:
+	static DecalComponent* s_DecalComponents;
+	static TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > s_isDecalComponentActive;
+public:
+	template<>
+	inline DecalComponent* GetComponent<DecalComponent>(uint16 entityId)
+	{
+		if (UNLIKELY(!s_DecalComponents))
+		{
+			return nullptr;
+		}
+
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(DecalComponent));
+			return nullptr;
+		}
+
+		if (UNLIKELY(s_isDecalComponentActive.Num() == 0))
+		{
+			return nullptr;
+		}
+
+		if (!s_isDecalComponentActive[entityId])
+		{
+			return nullptr;
+		}
+
+		return &s_DecalComponents[entityId];
+	}
+
+	template<>
+	inline DecalComponent* AddComponent<DecalComponent>(uint16 entityId)
+	{
+		if (UNLIKELY(!s_DecalComponents))
+		{
+			return nullptr;
+		}
+
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(DecalComponent));
+			return nullptr;
+		}
+
+		if (UNLIKELY(s_isDecalComponentActive.Num() == 0))
+		{
+			s_isDecalComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
+		if (UNLIKELY(s_isDecalComponentActive[entityId]))
+		{
+			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(DecalComponent), entityId);
+			return &s_DecalComponents[entityId];
+		}
+
+		s_isDecalComponentActive[entityId] = true;
+		s_DecalComponents[entityId].Reset();
+		return &s_DecalComponents[entityId];
+	}
+
+	template<>
+	inline DecalComponent* GetOrAddComponent<DecalComponent>(uint16 entityId)
+	{
+		if (UNLIKELY(!s_DecalComponents))
+		{
+			return nullptr;
+		}
+
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(DecalComponent));
+			return nullptr;
+		}
+
+		if (UNLIKELY(s_isDecalComponentActive.Num() == 0))
+		{
+			s_isDecalComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
+		if (s_isDecalComponentActive[entityId])
+		{
+			return &s_DecalComponents[entityId];
+		}
+		else
+		{
+			s_isDecalComponentActive[entityId] = true;
+			s_DecalComponents[entityId].Reset();
+			return &s_DecalComponents[entityId];
+		}
+	}
+
+	friend struct DecalComponent;
 #pragma endregion
 #pragma region FlockingComponent
 private:

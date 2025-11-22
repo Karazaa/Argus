@@ -78,6 +78,8 @@ public:
 		return ArgusComponentRegistry::GetOrAddComponent<ArgusComponent>(m_id);
 	}
 
+	void Destroy();
+
 private:
 	ArgusEntity();
 	ArgusEntity(uint16 id);

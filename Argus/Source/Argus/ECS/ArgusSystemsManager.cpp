@@ -8,6 +8,7 @@
 #include "Systems/AvoidanceSystems.h"
 #include "Systems/CombatSystems.h"
 #include "Systems/ConstructionSystems.h"
+#include "Systems/DecalSystems.h"
 #include "Systems/FlockingSystems.h"
 #include "Systems/FogOfWarSystems.h"
 #include "Systems/NavigationSystems.h"
@@ -56,6 +57,7 @@ void ArgusSystemsManager::RunSystems(UWorld* worldPointer, float deltaTime)
 	didEntityPositionChangeThisFrame |= TransformSystems::RunSystems(worldPointer, deltaTime);
 	FlockingSystems::RunSystems(deltaTime);
 	didEntityPositionChangeThisFrame |= SpawningSystems::RunSystems(deltaTime);
+	DecalSystems::RunSystems(deltaTime);
 
 #if !UE_BUILD_SHIPPING
 	ArgusECSDebugger::DrawECSDebugger();
