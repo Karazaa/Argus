@@ -8,22 +8,16 @@ void TimerSystems::RunSystems(float deltaTime)
 {
 	ARGUS_TRACE(TimerSystems::RunSystems);
 
-	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
+	ArgusEntity::IterateEntities([deltaTime](ArgusEntity entity) 
 	{
-		ArgusEntity potentialEntity = ArgusEntity::RetrieveEntity(i);
-		if (!potentialEntity)
-		{
-			continue;
-		}
-
-		TimerComponent* timerComponent = potentialEntity.GetComponent<TimerComponent>();
+		TimerComponent* timerComponent = entity.GetComponent<TimerComponent>();
 		if (!timerComponent)
 		{
-			continue;
+			return;
 		}
 
 		AdvaceTimers(deltaTime, timerComponent);
-	}
+	});
 }
 
 void TimerSystems::AdvaceTimers(float deltaTime, TimerComponent* timerComponent)

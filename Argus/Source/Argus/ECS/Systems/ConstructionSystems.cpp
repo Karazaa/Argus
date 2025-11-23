@@ -8,21 +8,15 @@ void ConstructionSystems::RunSystems(float deltaTime)
 {
 	ARGUS_TRACE(ConstructionSystems::RunSystems);
 
-	ConstructionSystemsArgs components;
-	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
+	ArgusEntity::IterateSystemsArgs<ConstructionSystemsArgs>([deltaTime](ConstructionSystemsArgs& components) 
 	{
-		if (!components.PopulateArguments(ArgusEntity::RetrieveEntity(i)))
-		{
-			continue;
-		}
-
 		if ((components.m_entity.IsKillable() && !components.m_entity.IsAlive()) || components.m_entity.IsPassenger())
 		{
-			continue;
+			return;
 		}
 
 		ProcessConstructionTaskCommands(deltaTime, components);
-	}
+	});
 }
 
 bool ConstructionSystems::CanEntityConstructOtherEntity(const ArgusEntity& potentialConstructor, const ArgusEntity& potentialConstructee)

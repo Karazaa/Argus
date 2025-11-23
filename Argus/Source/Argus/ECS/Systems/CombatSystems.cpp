@@ -7,21 +7,15 @@ void CombatSystems::RunSystems(float deltaTime)
 {
 	ARGUS_TRACE(CombatSystems::RunSystems);
 
-	CombatSystemsArgs components;
-	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
+	ArgusEntity::IterateSystemsArgs<CombatSystemsArgs>([deltaTime](CombatSystemsArgs& components)
 	{
-		if (!components.PopulateArguments(ArgusEntity::RetrieveEntity(i)))
-		{
-			continue;
-		}
-
 		if ((components.m_entity.IsKillable() && !components.m_entity.IsAlive()) || components.m_entity.IsPassenger())
 		{
-			continue;
+			return;
 		}
 
 		ProcessCombatTaskCommands(deltaTime, components);
-	}
+	});
 }
 
 bool CombatSystems::CanEntityAttackOtherEntity(const ArgusEntity& potentialAttacker, const ArgusEntity& potentialVictim)

@@ -12,22 +12,16 @@ bool SpawningSystems::RunSystems(float deltaTime)
 
 	bool spawnedAnEntityThisFrame = false;
 
-	SpawningSystemsArgs components;
-	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
+	ArgusEntity::IterateSystemsArgs<SpawningSystemsArgs>([deltaTime, &spawnedAnEntityThisFrame](SpawningSystemsArgs& components)
 	{
-		if (!components.PopulateArguments(ArgusEntity::RetrieveEntity(i)))
-		{
-			continue;
-		}
-
 		if ((components.m_entity.IsKillable() && !components.m_entity.IsAlive()) || components.m_entity.IsPassenger())
 		{
-			continue;
+			return;
 		}
 
 		if (components.m_taskComponent->m_constructionState == EConstructionState::BeingConstructed)
 		{
-			continue;
+			return;
 		}
 
 		if (components.m_spawningComponent->m_spawnQueueIndexToCancel.IsSet())
@@ -36,7 +30,7 @@ bool SpawningSystems::RunSystems(float deltaTime)
 		}
 
 		spawnedAnEntityThisFrame |= ProcessSpawningTaskCommands(deltaTime, components);
-	}
+	});
 
 	return spawnedAnEntityThisFrame;
 }

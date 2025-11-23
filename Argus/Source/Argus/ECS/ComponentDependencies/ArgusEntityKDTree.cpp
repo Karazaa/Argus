@@ -178,28 +178,23 @@ void ArgusEntityKDTree::SeedTreeWithAverageEntityLocation(bool forFlyingEntities
 
 	FVector averageLocation = FVector::ZeroVector;
 	float numIncludedEntities = 0.0f;
-	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
-	{
-		ArgusEntity retrievedEntity = ArgusEntity::RetrieveEntity(i);
-		if (!retrievedEntity)
-		{
-			continue;
-		}
 
-		const TransformComponent* transformComponent = retrievedEntity.GetComponent<TransformComponent>();
+	ArgusEntity::IterateEntities([forFlyingEntities, &averageLocation, &numIncludedEntities](ArgusEntity entity) 
+	{
+		const TransformComponent* transformComponent = entity.GetComponent<TransformComponent>();
 		if (!transformComponent)
 		{
-			continue;
+			return;
 		}
 
-		if (forFlyingEntities != retrievedEntity.IsFlying())
+		if (forFlyingEntities != entity.IsFlying())
 		{
-			continue;
+			return;
 		}
 
 		averageLocation += transformComponent->m_location;
 		numIncludedEntities += 1.0f;
-	}
+	});
 
 	if (numIncludedEntities == 0.0f)
 	{

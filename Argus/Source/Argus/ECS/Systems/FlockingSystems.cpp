@@ -11,22 +11,16 @@ void FlockingSystems::RunSystems(float deltaTime)
 {
 	ARGUS_TRACE(FlockingSystems::RunSystems);
 
-	FlockingSystemsArgs components;
-	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
+	ArgusEntity::IterateSystemsArgs<FlockingSystemsArgs>([deltaTime](FlockingSystemsArgs& components) 
 	{
-		if (!components.PopulateArguments(ArgusEntity::RetrieveEntity(i)))
-		{
-			continue;
-		}
-
 		// If executing move task or not shrinking, continue.
 		if (components.m_taskComponent->IsExecutingMoveTask() || components.m_flockingComponent->m_flockingState != EFlockingState::Shrinking)
 		{
-			continue;
+			return;
 		}
 
 		EndFlockingIfNecessary(deltaTime, components);
-	}
+	});
 } 
 
 void FlockingSystems::ChooseFlockingRootEntityIfGroupLeader(const TransformSystemsArgs& components)

@@ -20,31 +20,27 @@ void AvoidanceSystems::RunSystems(UWorld* worldPointer, float deltaTime)
 	ARGUS_TRACE(AvoidanceSystems::RunSystems);
 
 	TransformSystemsArgs components;
-	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
-	{
-		if (!components.PopulateArguments(ArgusEntity::RetrieveEntity(i)))
-		{
-			continue;
-		}
 
+	ArgusEntity::IterateSystemsArgs<TransformSystemsArgs>([worldPointer, deltaTime](TransformSystemsArgs& components)
+	{
 		if (components.m_entity.IsKillable() && !components.m_entity.IsAlive())
 		{
-			continue;
+			return;
 		}
 
 		if (components.m_taskComponent->m_constructionState == EConstructionState::BeingConstructed)
 		{
-			continue;
+			return;
 		}
 
 		const NearbyEntitiesComponent* nearbyEntitiesComponent = components.m_entity.GetComponent<NearbyEntitiesComponent>();
 		if (!nearbyEntitiesComponent)
 		{
-			continue;
+			return;
 		}
 
 		ProcessORCAvoidance(worldPointer, deltaTime, components, nearbyEntitiesComponent);
-	}
+	});
 }
 
 #pragma region Optimal Reciprocal Collision Avoidance

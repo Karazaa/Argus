@@ -193,24 +193,16 @@ void FogOfWarSystems::SetRevealedStatePerEntity(FogOfWarComponent* fogOfWarCompo
 	fogOfWarComponent->m_asyncTasks.Reset();
 
 	// Calculate new actively revealed pixels.
-	ARGUS_TRACE(FogOfWarSystems::ActivelyReveal)
-	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
+	ArgusEntity::IterateSystemsArgs<FogOfWarSystemsArgs>([fogOfWarComponent, inputInterfaceComponent](FogOfWarSystemsArgs& components)
 	{
-		const ArgusEntity entity = ArgusEntity::RetrieveEntity(i);
-		FogOfWarSystemsArgs components;
-		if (!components.PopulateArguments(entity))
+		if (!components.m_entity.IsOnTeam(inputInterfaceComponent->m_activePlayerTeam) || !components.m_entity.IsAlive())
 		{
-			continue;
-		}
-
-		if (!entity.IsOnTeam(inputInterfaceComponent->m_activePlayerTeam) || !components.m_entity.IsAlive())
-		{
-			continue;
+			return;
 		}
 
 		components.m_fogOfWarLocationComponent->m_fogOfWarPixel = GetPixelNumberFromWorldSpaceLocation(fogOfWarComponent, components.m_transformComponent->m_location);
-		RevealPixelAlphaForEntity(fogOfWarComponent, i);
-	}
+		RevealPixelAlphaForEntity(fogOfWarComponent, components.m_entity.GetId());
+	});
 
 	UE::Tasks::Wait(fogOfWarComponent->m_asyncTasks);
 }

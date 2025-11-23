@@ -9,21 +9,15 @@ void ResourceSystems::RunSystems(float deltaTime)
 {
 	ARGUS_TRACE(ResourceSystems::RunSystems);
 
-	ResourceSystemsArgs components;
-	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
+	ArgusEntity::IterateSystemsArgs<ResourceSystemsArgs>([deltaTime](ResourceSystemsArgs& components) 
 	{
-		if (!components.PopulateArguments(ArgusEntity::RetrieveEntity(i)))
-		{
-			continue;
-		}
-
 		if ((components.m_entity.IsKillable() && !components.m_entity.IsAlive()) || components.m_entity.IsPassenger())
 		{
-			continue;
+			return;
 		}
 
 		ProcessResourceExtractionState(components);
-	}
+	});
 };
 
 void ResourceSystems::ProcessResourceExtractionState(const ResourceSystemsArgs& components)

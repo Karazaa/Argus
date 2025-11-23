@@ -43,38 +43,27 @@ void SpatialPartitioningSystems::RunSystems()
 void SpatialPartitioningSystems::ClearSeenByStatus()
 {
 	ARGUS_TRACE(SpatialPartitioningSystems::ClearSeenByStatus);
-	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
-	{
-		ArgusEntity entity = ArgusEntity::RetrieveEntity(i);
-		if (!entity)
-		{
-			continue;
-		}
 
+	ArgusEntity::IterateEntities([](ArgusEntity entity) 
+	{
 		if (IdentityComponent* identityComponent = entity.GetComponent<IdentityComponent>())
 		{
 			identityComponent->ClearSeenBy();
 		}
-	}
+	});
 }
 
 void SpatialPartitioningSystems::CacheAdjacentEntityIds(const SpatialPartitioningComponent* spatialPartitioningComponent)
 {
 	ARGUS_TRACE(SpatialPartitioningSystems::CacheAdjacentEntityIds);
 
-	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
+	ArgusEntity::IterateEntities([spatialPartitioningComponent](ArgusEntity entity) 
 	{
-		ArgusEntity entity = ArgusEntity::RetrieveEntity(i);
-		if (!entity)
-		{
-			continue;
-		}
-
 		NearbyEntitiesComponent* nearbyEntitiesComponent = entity.GetComponent<NearbyEntitiesComponent>();
 		const TransformComponent* transformComponent = entity.GetComponent<TransformComponent>();
 		if (!nearbyEntitiesComponent || !transformComponent)
 		{
-			continue;
+			return;
 		}
 
 		nearbyEntitiesComponent->m_nearbyEntities.ResetAll();
@@ -94,21 +83,21 @@ void SpatialPartitioningSystems::CacheAdjacentEntityIds(const SpatialPartitionin
 		}
 
 		const TFunction<bool(const ArgusEntityKDTreeNode*)> queryFilter = [entity](const ArgusEntityKDTreeNode* entityNode)
-		{
-			ARGUS_RETURN_ON_NULL_BOOL(entityNode, ArgusECSLog);
-			if (entityNode->m_entityId == entity.GetId())
 			{
-				return false;
-			}
+				ARGUS_RETURN_ON_NULL_BOOL(entityNode, ArgusECSLog);
+				if (entityNode->m_entityId == entity.GetId())
+				{
+					return false;
+				}
 
-			ArgusEntity otherEntity = ArgusEntity::RetrieveEntity(entityNode->m_entityId);
-			if (!otherEntity || otherEntity.IsPassenger())
-			{
-				return false;
-			}
+				ArgusEntity otherEntity = ArgusEntity::RetrieveEntity(entityNode->m_entityId);
+				if (!otherEntity || otherEntity.IsPassenger())
+				{
+					return false;
+				}
 
-			return true;
-		};
+				return true;
+			};
 
 		float meleeRange = 0.0f;
 		float rangedRange = 0.0f;
@@ -120,37 +109,31 @@ void SpatialPartitioningSystems::CacheAdjacentEntityIds(const SpatialPartitionin
 			rangedRange = targetingComponent->m_rangedRange;
 			sightRange = targetingComponent->m_sightRange;
 		}
-		ArgusEntityKDTreeQueryRangeThresholds queryThresholds = ArgusEntityKDTreeQueryRangeThresholds(rangedRange, meleeRange, adjacentEntityRange, flockingRange, i);
+		ArgusEntityKDTreeQueryRangeThresholds queryThresholds = ArgusEntityKDTreeQueryRangeThresholds(rangedRange, meleeRange, adjacentEntityRange, flockingRange, entity.GetId());
 		spatialPartitioningComponent->m_argusEntityKDTree.FindOtherArgusEntityIdsWithinRangeOfArgusEntity(nearbyEntitiesComponent->m_nearbyEntities, queryThresholds, entity, sightRange, queryFilter);
 		spatialPartitioningComponent->m_flyingArgusEntityKDTree.FindOtherArgusEntityIdsWithinRangeOfArgusEntity(nearbyEntitiesComponent->m_nearbyFlyingEntities, queryThresholds, entity, sightRange, queryFilter);
-	}
+	});
 }
 
 void SpatialPartitioningSystems::CalculateAdjacentEntityGroups()
 {
 	ARGUS_TRACE(SpatialPartitioningSystems::CalculateAdjacentEntityGroups);
 
-	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
+	ArgusEntity::IterateEntities([](ArgusEntity entity) 
 	{
 		FVector averageLocation = FVector::ZeroVector;
 		float numberOfEntitiesInGroup = 0.0f;
 		uint16 numberOfStoppedEntities = 0u;
 		TArray<ArgusEntity> entitiesInGroup;
-		if (!FloodFillGroupRecursive(i, i, averageLocation, numberOfEntitiesInGroup, numberOfStoppedEntities, entitiesInGroup))
+		if (!FloodFillGroupRecursive(entity.GetId(), entity.GetId(), averageLocation, numberOfEntitiesInGroup, numberOfStoppedEntities, entitiesInGroup))
 		{
-			continue;
-		}
-		
-		ArgusEntity entity = ArgusEntity::RetrieveEntity(i);
-		if (!entity)
-		{
-			continue;
+			return;
 		}
 
 		AvoidanceGroupingComponent* avoidanceGroupingComponent = entity.GetComponent<AvoidanceGroupingComponent>();
 		if (!avoidanceGroupingComponent)
 		{
-			continue;
+			return;
 		}
 
 		avoidanceGroupingComponent->m_groupAverageLocation = ArgusMath::SafeDivide(averageLocation, numberOfEntitiesInGroup);
@@ -170,7 +153,7 @@ void SpatialPartitioningSystems::CalculateAdjacentEntityGroups()
 				continue;
 			}
 		}
-	}
+	});
 }
 
 bool SpatialPartitioningSystems::FloodFillGroupRecursive(uint16 groupId, uint16 entityId, FVector& averageLocation, float& numberOfEntitiesInGroup, uint16& numberOfStoppedEntities, TArray<ArgusEntity>& entitiesInGroup)

@@ -16,22 +16,17 @@ bool TransformSystems::RunSystems(UWorld* worldPointer, float deltaTime)
 	ARGUS_TRACE(TransformSystems::RunSystems);
 
 	bool didMovementUpdateThisFrame = false;
-	TransformSystemsArgs components;
-	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
-	{
-		if (!components.PopulateArguments(ArgusEntity::RetrieveEntity(i)))
-		{
-			continue;
-		}
 
+	ArgusEntity::IterateSystemsArgs<TransformSystemsArgs>([worldPointer, deltaTime, &didMovementUpdateThisFrame](TransformSystemsArgs& components) 
+	{
 		if ((components.m_entity.IsKillable() && !components.m_entity.IsAlive()) || components.m_entity.IsPassenger())
 		{
-			continue;
+			return;
 		}
 
 		if (components.m_taskComponent->m_constructionState == EConstructionState::BeingConstructed)
 		{
-			continue;
+			return;
 		}
 
 		const bool didEntityMove = ProcessMovementTaskCommands(worldPointer, deltaTime, components);
@@ -47,7 +42,7 @@ bool TransformSystems::RunSystems(UWorld* worldPointer, float deltaTime)
 		{
 			ShowTraceForFlyingEntity(worldPointer, components);
 		}
-	}
+	});
 
 	return didMovementUpdateThisFrame;
 }

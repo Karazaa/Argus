@@ -21,27 +21,21 @@ void NavigationSystems::RunSystems(UWorld* worldPointer)
 
 	ARGUS_RETURN_ON_NULL(worldPointer, ArgusECSLog);
 
-	NavigationSystemsArgs components;
-	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
+	ArgusEntity::IterateSystemsArgs<NavigationSystemsArgs>([worldPointer](NavigationSystemsArgs& components) 
 	{
-		if (!components.PopulateArguments(ArgusEntity::RetrieveEntity(i)))
-		{
-			continue;
-		}
-
 		if ((components.m_entity.IsKillable() && !components.m_entity.IsAlive()) || components.m_entity.IsPassenger())
 		{
-			continue;
+			return;
 		}
 
 		if (components.m_taskComponent->m_constructionState == EConstructionState::BeingConstructed)
 		{
-			continue;
+			return;
 		}
 
 		ProcessNavigationTaskCommands(worldPointer, components);
 		RecalculateMoveToEntityPaths(worldPointer, components);
-	}
+	});
 }
 
 void NavigationSystems::NavigateFromEntityToEntity(UWorld* worldPointer, ArgusEntity targetEntity, const NavigationSystemsArgs& components)

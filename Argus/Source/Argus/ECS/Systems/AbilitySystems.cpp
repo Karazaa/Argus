@@ -14,25 +14,19 @@ void AbilitySystems::RunSystems(float deltaTime)
 	ReticleComponent* reticleComponent = ArgusEntity::GetSingletonEntity().GetComponent<ReticleComponent>();
 	ARGUS_RETURN_ON_NULL(reticleComponent, ArgusECSLog);
 
-	AbilitySystemsArgs components;
-	components.m_reticleComponent = reticleComponent;
-	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
+	ArgusEntity::IterateSystemsArgs<AbilitySystemsArgs>([reticleComponent, deltaTime](AbilitySystemsArgs& components)
 	{
-		if (!components.PopulateArguments(ArgusEntity::RetrieveEntity(i)))
-		{
-			continue;
-		}
-
+		components.m_reticleComponent = reticleComponent;
 		if ((components.m_entity.IsKillable() && !components.m_entity.IsAlive()) || components.m_entity.IsPassenger())
 		{
 			components.m_taskComponent->m_abilityState = EAbilityState::None;
-			continue;
+			return;
 		}
 
 		if (components.m_taskComponent->m_constructionState == EConstructionState::BeingConstructed)
 		{
 			components.m_taskComponent->m_abilityState = EAbilityState::None;
-			continue;
+			return;
 		}
 
 		if (components.m_abilityComponent->m_abilityToRefundId > 0u)
@@ -41,7 +35,7 @@ void AbilitySystems::RunSystems(float deltaTime)
 		}
 
 		ProcessAbilityTaskCommands(components);
-	}
+	});
 }
 
 void AbilitySystems::CastAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsArgs& components)

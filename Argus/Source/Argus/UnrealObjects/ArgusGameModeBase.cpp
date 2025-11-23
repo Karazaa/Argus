@@ -87,18 +87,12 @@ void AArgusGameModeBase::ManageActorStateForEntities(const UWorld* worldPointer,
 	ARGUS_RETURN_ON_NULL(gameInstance, ArgusUnrealObjectsLog);
 	ARGUS_RETURN_ON_NULL(m_activePlayerController, ArgusUnrealObjectsLog);
 
-	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
+	ArgusEntity::IterateEntities([this, gameInstance, deltaTime](ArgusEntity entity) 
 	{
-		ArgusEntity entity = ArgusEntity::RetrieveEntity(i);
-		if (!entity)
-		{
-			continue;
-		}
-
 		TaskComponent* taskComponent = entity.GetComponent<TaskComponent>();
 		if (!taskComponent)
 		{
-			continue;
+			return;
 		}
 
 		if (taskComponent->m_baseState == EBaseState::SpawnedWaitingForActorTake)
@@ -114,7 +108,7 @@ void AArgusGameModeBase::ManageActorStateForEntities(const UWorld* worldPointer,
 		{
 			argusActor->Update(deltaTime, m_activePlayerController->GetPlayerTeam());
 		}
-	}
+	});
 }
 
 void AArgusGameModeBase::SpawnActorForEntity(ArgusEntity spawnedEntity)
