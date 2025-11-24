@@ -19,7 +19,7 @@ void DecalSystems::RunSystems(float deltaTime)
 
 		if (components.m_decalComponent->m_lifetimeTimer.IsTimerComplete())
 		{
-			components.m_entity.Destroy();
+			components.m_taskComponent->m_baseState = EBaseState::DestroyedWaitingForActorRelease;
 		}
 	});
 }

@@ -13,7 +13,7 @@ AArgusActor* ArgusActorPool::Take(UWorld* worldPointer, const TSoftClassPtr<AArg
 {
 	ARGUS_MEMORY_TRACE(ArgusActorPool);
 
-	if (!classSoftPointer)
+	if (classSoftPointer.IsNull())
 	{
 		return nullptr;
 	}

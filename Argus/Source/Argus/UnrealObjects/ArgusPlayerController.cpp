@@ -6,6 +6,7 @@
 #include "ArgusInputActionSet.h"
 #include "ArgusInputManager.h"
 #include "ArgusLogging.h"
+#include "ArgusStaticData.h"
 #include "ArgusUIElement.h"
 #include "Engine/GameViewportClient.h"
 #include "Engine/LocalPlayer.h"
@@ -145,6 +146,11 @@ bool AArgusPlayerController::GetArgusActorsFromArgusEntities(const TArray<ArgusE
 	return true;
 }
 
+const UArgusActorRecord* AArgusPlayerController::GetMoveToLocationDecalActorRecord() const
+{
+	return ArgusStaticData::GetRecord<UArgusActorRecord>(m_moveToLocationDecalActorRecordId);
+}
+
 void AArgusPlayerController::FilterArgusActorsToPlayerTeam(TArray<AArgusActor*>& argusActors) const
 {
 	argusActors = argusActors.FilterByPredicate
@@ -212,7 +218,7 @@ void AArgusPlayerController::BeginPlay()
 
 	SetViewTarget(m_argusCameraActor);
 	
-	m_moveToLocationDecalEntityTemplate.AsyncPreLoadAndStorePtr();
+	ArgusStaticData::AsyncPreLoadRecord<UArgusActorRecord>(m_moveToLocationDecalActorRecordId);
 }
 
 void AArgusPlayerController::SetupInputComponent()

@@ -859,13 +859,21 @@ void UArgusInputManager::ProcessMoveToInputEvent()
 			inputMovementState = EMovementState::ProcessMoveToEntityCommand;
 		}
 	}
-	else if (UArgusEntityTemplate* moveToLocationDecalTemplate = m_owningPlayerController->GetMoveToLocationDecalTemplate())
+	else if (const UArgusActorRecord* moveToLocationDecalRecord = m_owningPlayerController->GetMoveToLocationDecalActorRecord())
 	{
-		ArgusEntity decalEntity = moveToLocationDecalTemplate->MakeEntityAsync();
-		if (TransformComponent* decalTransformComponent = decalEntity.AddComponent<TransformComponent>())
+		if (UArgusEntityTemplate* moveToLocationDecalTemplate = moveToLocationDecalRecord->m_entityTemplate.LoadAndStorePtr())
 		{
-			decalTransformComponent->m_location = targetLocation;
-			decalTransformComponent->m_radius = 0.0f;
+			ArgusEntity decalEntity = moveToLocationDecalTemplate->MakeEntityAsync();
+			if (TransformComponent* decalTransformComponent = decalEntity.AddComponent<TransformComponent>())
+			{
+				decalTransformComponent->m_location = targetLocation;
+				decalTransformComponent->m_radius = 0.0f;
+			}
+			if (TaskComponent* decalTaskComponent = decalEntity.AddComponent<TaskComponent>())
+			{
+				decalTaskComponent->m_spawnedFromArgusActorRecordId = moveToLocationDecalRecord->m_id;
+				decalTaskComponent->m_baseState = EBaseState::SpawnedWaitingForActorTake;
+			}
 		}
 	}
 

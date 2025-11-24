@@ -170,7 +170,7 @@ void AArgusGameModeBase::DespawnActorForEntity(ArgusEntity spawnedEntity)
 	}
 	taskComponent->m_baseState = EBaseState::Alive;
 
-	ArgusEntity::DestroyEntity(spawnedEntity);
+	spawnedEntity.Destroy();
 }
 
 FColor AArgusGameModeBase::GetTeamColor(ETeam team)

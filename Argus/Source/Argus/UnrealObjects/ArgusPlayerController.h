@@ -15,6 +15,7 @@
 class AArgusActor;
 class ArgusEntity;
 class AReticleActor;
+class UArgusActorRecord;
 class UArgusInputActionSet;
 class UArgusInputManager;
 class UArgusUIElement;
@@ -34,7 +35,7 @@ public:
 	AArgusActor* GetArgusActorForArgusEntity(const ArgusEntity& entity) const;
 	bool GetArgusActorsFromArgusEntityIds(const TArray<uint16>& inArgusEntityIds, TArray<AArgusActor*>& outArgusActors) const;
 	bool GetArgusActorsFromArgusEntities(const TArray<ArgusEntity>& inArgusEntities, TArray<AArgusActor*>& outArgusActors) const;
-	UArgusEntityTemplate* GetMoveToLocationDecalTemplate() const { return m_moveToLocationDecalEntityTemplate.LoadAndStorePtr(); };
+	const UArgusActorRecord* GetMoveToLocationDecalActorRecord() const;
 	ETeam GetPlayerTeam() const { return m_playerTeam; }
 
 	void FilterArgusActorsToPlayerTeam(TArray<AArgusActor*>& argusActors) const;
@@ -75,8 +76,8 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Reticle")
 	FTransform m_defaultInitialReticleTransform = FTransform::Identity;
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Decals")
-	FSoftPtrLoadStore_UArgusEntityTemplate m_moveToLocationDecalEntityTemplate;
+	UPROPERTY(EditAnywhere, Category = "Decals")
+	uint32 m_moveToLocationDecalActorRecordId = 0u;
 
 	UPROPERTY(Transient)
 	TObjectPtr<AArgusCameraActor> m_argusCameraActor = nullptr;
