@@ -27,18 +27,25 @@ const char* ArgusStaticDataCodeGenerator::s_recordDatabaseCppTemplateFileName = 
 const char* ArgusStaticDataCodeGenerator::s_recordDatabaseFileNameSuffix = "Database";
 const char* ArgusStaticDataCodeGenerator::s_softPtrLoadStoreHeaderTemplateFileName = "SoftPtrLoadStoreHeaderTemplate.txt";
 const char* ArgusStaticDataCodeGenerator::s_softObjectLoadStorePerTypeHeaderTemplateFileName = "SoftObjectLoadStorePerTypeHeaderTemplate.txt";
+const char* ArgusStaticDataCodeGenerator::s_softClassLoadStorePerTypeHeaderTemplateFileName = "SoftClassLoadStorePerTypeHeaderTemplate.txt";
 const char* ArgusStaticDataCodeGenerator::s_softPtrLoadStoreHeaderFileName = "SoftPtrLoadStore.h";
 const char* ArgusStaticDataCodeGenerator::s_softPtrLoadStoreCppTemplateFileName = "SoftPtrLoadStoreCppTemplate.txt";
 const char* ArgusStaticDataCodeGenerator::s_softObjectLoadStorePerTypeCppTemplateFileName = "SoftObjectLoadStorePerTypeCppTemplate.txt";
+const char* ArgusStaticDataCodeGenerator::s_softClassLoadStorePerTypeCppTemplateFileName = "SoftClassLoadStorePerTypeCppTemplate.txt";
 const char* ArgusStaticDataCodeGenerator::s_softPtrLoadStoreCppFileName = "SoftPtrLoadStore.cpp";
-const char* ArgusStaticDataCodeGenerator::s_softPtrLoadStoreTypeNames[ArgusStaticDataCodeGenerator::k_numSoftPtrLoadStoreTypes] = 
+const char* ArgusStaticDataCodeGenerator::s_softObjectLoadStoreTypeNames[ArgusStaticDataCodeGenerator::k_numSoftObjectLoadStoreTypes] =
 {
 	"UArgusEntityTemplate", 
 	"UTexture",
 	"UMaterialInterface"
 };
-const char* ArgusStaticDataCodeGenerator::s_softPtrLoadStoreIncludes[ArgusStaticDataCodeGenerator::k_numSoftPtrLoadStoreTypes] = 
+const char* ArgusStaticDataCodeGenerator::s_softClassLoadStoreTypeNames[ArgusStaticDataCodeGenerator::k_numSoftClassLoadStoreTypes] =
+{
+	"AArgusActor"
+};
+const char* ArgusStaticDataCodeGenerator::s_softPtrLoadStoreIncludes[ArgusStaticDataCodeGenerator::k_numSoftObjectLoadStoreTypes + ArgusStaticDataCodeGenerator::k_numSoftClassLoadStoreTypes] =
 { 
+	"#include \"ArgusActor.h\"",
 	"#include \"ArgusEntityTemplate.h\"", 
 	"#include \"Engine/Texture.h\"",
 	"#include \"Materials/MaterialInterface.h\""
@@ -74,10 +81,12 @@ void ArgusStaticDataCodeGenerator::GenerateStaticDataCode(const ArgusCodeGenerat
 	ParseTemplateParams parseSoftPtrLoadStoreHeaderTemplateParams;
 	parseSoftPtrLoadStoreHeaderTemplateParams.templateFilePath = std::string(cStrTemplateDirectory).append(s_softPtrLoadStoreHeaderTemplateFileName);
 	parseSoftPtrLoadStoreHeaderTemplateParams.perRecordTemplateFilePath = std::string(cStrTemplateDirectory).append(s_softObjectLoadStorePerTypeHeaderTemplateFileName);
+	parseSoftPtrLoadStoreHeaderTemplateParams.perRecordEditorTemplateFilePath = std::string(cStrTemplateDirectory).append(s_softClassLoadStorePerTypeHeaderTemplateFileName);
 
 	ParseTemplateParams parseSoftPtrLoadStoreCppTemplateParams;
 	parseSoftPtrLoadStoreCppTemplateParams.templateFilePath = std::string(cStrTemplateDirectory).append(s_softPtrLoadStoreCppTemplateFileName);
 	parseSoftPtrLoadStoreCppTemplateParams.perRecordTemplateFilePath = std::string(cStrTemplateDirectory).append(s_softObjectLoadStorePerTypeCppTemplateFileName);
+	parseSoftPtrLoadStoreCppTemplateParams.perRecordEditorTemplateFilePath = std::string(cStrTemplateDirectory).append(s_softClassLoadStorePerTypeCppTemplateFileName);
 
 	UE_LOG(ArgusCodeGeneratorLog, Display, TEXT("[%s] Parsing from template files to generate non-ECS Static Data code."), ARGUS_FUNCNAME)
 
@@ -430,14 +439,21 @@ bool ArgusStaticDataCodeGenerator::ParseSoftPtrLoadStoreTemplate(const ParseTemp
 	{
 		if (templateLineText.find("$$$$$") != std::string::npos)
 		{
-			for (int i = 0; i < k_numSoftPtrLoadStoreTypes; ++i)
+			for (int i = 0; i < k_numSoftObjectLoadStoreTypes + k_numSoftClassLoadStoreTypes; ++i)
 			{
 				outParsedFileContents.m_lines.push_back(s_softPtrLoadStoreIncludes[i]);
 			}
 		}
+		else if (templateLineText.find("%%%%%") != std::string::npos)
+		{
+			if (!ParseSoftPtrLoadStorePerTypeTemplate(templateParams, true, outParsedFileContents))
+			{
+				return false;
+			}
+		}
 		else if (templateLineText.find("@@@@@") != std::string::npos)
 		{
-			if (!ParseSoftPtrLoadStorePerTypeTemplate(templateParams, outParsedFileContents))
+			if (!ParseSoftPtrLoadStorePerTypeTemplate(templateParams, false, outParsedFileContents))
 			{
 				return false;
 			}
@@ -452,10 +468,10 @@ bool ArgusStaticDataCodeGenerator::ParseSoftPtrLoadStoreTemplate(const ParseTemp
 	return true;
 }
 
-bool ArgusStaticDataCodeGenerator::ParseSoftPtrLoadStorePerTypeTemplate(const ParseTemplateParams& templateParams, ArgusCodeGeneratorUtil::FileWriteData& outParsedFileContents)
+bool ArgusStaticDataCodeGenerator::ParseSoftPtrLoadStorePerTypeTemplate(const ParseTemplateParams& templateParams, bool generateSoftClasses, ArgusCodeGeneratorUtil::FileWriteData& outParsedFileContents)
 {
-	std::ifstream inPerTypeTemplateStream = std::ifstream(templateParams.perRecordTemplateFilePath);
-	const FString uePerTypeTemplateFilePath = FString(templateParams.perRecordTemplateFilePath.c_str());
+	std::ifstream inPerTypeTemplateStream = std::ifstream(generateSoftClasses ? templateParams.perRecordEditorTemplateFilePath : templateParams.perRecordTemplateFilePath);
+	const FString uePerTypeTemplateFilePath = FString(generateSoftClasses ? templateParams.perRecordEditorTemplateFilePath.c_str() : templateParams.perRecordTemplateFilePath.c_str());
 	if (!inPerTypeTemplateStream.is_open())
 	{
 		UE_LOG(ArgusCodeGeneratorLog, Error, TEXT("[%s] Failed to read from template file: %s"), ARGUS_FUNCNAME, *uePerTypeTemplateFilePath);
@@ -471,14 +487,17 @@ bool ArgusStaticDataCodeGenerator::ParseSoftPtrLoadStorePerTypeTemplate(const Pa
 	}
 	inPerTypeTemplateStream.close();
 
-	for (int i = 0; i < k_numSoftPtrLoadStoreTypes; ++i)
+	int numberOfTypes = generateSoftClasses ? k_numSoftClassLoadStoreTypes : k_numSoftObjectLoadStoreTypes;
+	const char** typeArray = generateSoftClasses ? s_softClassLoadStoreTypeNames : s_softObjectLoadStoreTypeNames;
+
+	for (int i = 0; i < numberOfTypes; ++i)
 	{
 		for (int j = 0; j < fileContents.size(); ++j)
 		{
 			if (fileContents[j].find("#####") != std::string::npos)
 			{
 				std::string perRecordLineText = fileContents[j];
-				outParsedFileContents.m_lines.push_back(std::regex_replace(perRecordLineText, std::regex("#####"), s_softPtrLoadStoreTypeNames[i]));
+				outParsedFileContents.m_lines.push_back(std::regex_replace(perRecordLineText, std::regex("#####"), typeArray[i]));
 			}
 			else
 			{

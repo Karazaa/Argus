@@ -1,0 +1,23 @@
+
+#pragma region #####
+class #####;
+
+USTRUCT(BlueprintType)
+struct FSoftClassLoadStore_#####
+{
+	GENERATED_BODY()
+
+public:
+	UClass* LoadAndStorePtr() const;
+	bool AsyncPreLoadAndStorePtr() const;
+	void SetHardPtr(UClass* pointer);
+	operator bool() const { return m_hardPtr || !m_softPtr.IsNull(); }
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TSoftClassPtr<#####> m_softPtr = nullptr;
+
+	UPROPERTY(Transient)
+	mutable TObjectPtr<UClass> m_hardPtr = nullptr;
+};
+#pragma endregion

@@ -4,14 +4,15 @@
 #pragma once
 
 #include "SoftPtrLoadStore.h"
-#include "ArgusActor.h"
 #include "ArgusEntity.h"
 #include "ArgusLogging.h"
+#include "ArgusActor.h"
 #include "ArgusEntityTemplate.h"
 #include "Engine/Texture.h"
 #include "Materials/MaterialInterface.h"
 
 #pragma region Soft Objects
+
 #pragma region UArgusEntityTemplate
 	UArgusEntityTemplate* FSoftObjectLoadStore_UArgusEntityTemplate::LoadAndStorePtr() const
 	{
@@ -155,9 +156,11 @@
 		m_hardPtr = pointer;
 	};
 #pragma endregion
+
 #pragma endregion
 
 #pragma region Soft Classes
+
 #pragma region AArgusActor
 	UClass* FSoftClassLoadStore_AArgusActor::LoadAndStorePtr() const
 	{
@@ -205,4 +208,5 @@
 		m_hardPtr = pointer;
 	};
 #pragma endregion
+
 #pragma endregion

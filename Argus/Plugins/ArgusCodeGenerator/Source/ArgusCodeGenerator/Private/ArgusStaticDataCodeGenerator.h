@@ -29,14 +29,18 @@ private:
 	static const char* s_recordDatabaseFileNameSuffix;
 	static const char* s_softPtrLoadStoreHeaderTemplateFileName;
 	static const char* s_softObjectLoadStorePerTypeHeaderTemplateFileName;
+	static const char* s_softClassLoadStorePerTypeHeaderTemplateFileName;
 	static const char* s_softPtrLoadStoreHeaderFileName;
 	static const char* s_softPtrLoadStoreCppTemplateFileName;
 	static const char* s_softObjectLoadStorePerTypeCppTemplateFileName;
+	static const char* s_softClassLoadStorePerTypeCppTemplateFileName;
 	static const char* s_softPtrLoadStoreCppFileName;
 
-	static constexpr int k_numSoftPtrLoadStoreTypes = 3;
-	static const char* s_softPtrLoadStoreTypeNames[k_numSoftPtrLoadStoreTypes];
-	static const char* s_softPtrLoadStoreIncludes[k_numSoftPtrLoadStoreTypes];
+	static constexpr int k_numSoftObjectLoadStoreTypes = 3;
+	static constexpr int k_numSoftClassLoadStoreTypes = 1;
+	static const char* s_softObjectLoadStoreTypeNames[k_numSoftObjectLoadStoreTypes];
+	static const char* s_softClassLoadStoreTypeNames[k_numSoftClassLoadStoreTypes];
+	static const char* s_softPtrLoadStoreIncludes[k_numSoftObjectLoadStoreTypes + k_numSoftClassLoadStoreTypes];
 
 	struct ParseTemplateParams
 	{
@@ -53,5 +57,5 @@ private:
 	static bool ParsePerRecordTemplate(const ArgusCodeGeneratorUtil::ParseStaticDataRecordsOutput& parsedStaticDataRecords, const ParseTemplateParams& templateParams, ArgusCodeGeneratorUtil::FileWriteData& outParsedFileContents);
 	static bool ParsePerRecordEditorTemplate(const ArgusCodeGeneratorUtil::ParseStaticDataRecordsOutput& parsedStaticDataRecords, const ParseTemplateParams& templateParams, ArgusCodeGeneratorUtil::FileWriteData& outParsedFileContents);
 	static bool ParseSoftPtrLoadStoreTemplate(const ParseTemplateParams& templateParams, ArgusCodeGeneratorUtil::FileWriteData& outParsedFileContents);
-	static bool ParseSoftPtrLoadStorePerTypeTemplate(const ParseTemplateParams& templateParams, ArgusCodeGeneratorUtil::FileWriteData& outParsedFileContents);
+	static bool ParseSoftPtrLoadStorePerTypeTemplate(const ParseTemplateParams& templateParams, bool generateSoftClasses, ArgusCodeGeneratorUtil::FileWriteData& outParsedFileContents);
 };

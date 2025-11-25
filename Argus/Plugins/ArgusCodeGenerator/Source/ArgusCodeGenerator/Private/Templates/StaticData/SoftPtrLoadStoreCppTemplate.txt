@@ -7,4 +7,13 @@
 #include "ArgusEntity.h"
 #include "ArgusLogging.h"
 $$$$$
+
+#pragma region Soft Objects
 @@@@@
+
+#pragma endregion
+
+#pragma region Soft Classes
+%%%%%
+
+#pragma endregion

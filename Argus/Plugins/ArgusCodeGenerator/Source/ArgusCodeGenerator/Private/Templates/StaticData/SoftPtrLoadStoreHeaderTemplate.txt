@@ -5,4 +5,15 @@
 
 #include "CoreMinimal.h"
 #include "SoftPtrLoadStore.generated.h"
+
+class UClass;
+
+#pragma region Soft Objects
 @@@@@
+
+#pragma endregion
+
+#pragma region Soft Classes
+%%%%%
+
+#pragma endregion

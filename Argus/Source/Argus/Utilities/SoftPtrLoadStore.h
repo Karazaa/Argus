@@ -6,7 +6,10 @@
 #include "CoreMinimal.h"
 #include "SoftPtrLoadStore.generated.h"
 
-#pragma region SoftObjects
+class UClass;
+
+#pragma region Soft Objects
+
 #pragma region UArgusEntityTemplate
 class UArgusEntityTemplate;
 
@@ -75,12 +78,13 @@ protected:
 	mutable TObjectPtr<UMaterialInterface> m_hardPtr = nullptr;
 };
 #pragma endregion
+
 #pragma endregion
 
-#pragma region SoftClasses
+#pragma region Soft Classes
+
 #pragma region AArgusActor
 class AArgusActor;
-class UClass;
 
 USTRUCT(BlueprintType)
 struct FSoftClassLoadStore_AArgusActor
@@ -101,4 +105,5 @@ protected:
 	mutable TObjectPtr<UClass> m_hardPtr = nullptr;
 };
 #pragma endregion
+
 #pragma endregion
