@@ -15,6 +15,7 @@ class	UEnhancedInputComponent;
 class   UEnhancedPlayerInput;
 struct	FInputActionValue;
 struct	ReticleComponent;
+struct  TargetingComponent;
 
 UCLASS()
 class UArgusInputManager : public UObject
@@ -120,7 +121,7 @@ private:
 	void ProcessMarqueeSelectInputEvent(const AArgusCameraActor* argusCamera, bool isAdditive);
 	void PopulateMarqueeSelectPolygon(const AArgusCameraActor* argusCamera, TArray<FVector2D>& convexPolygon);
 	void ProcessMoveToInputEvent();
-	void ProcessMoveToInputEventPerSelectedActor(AArgusActor* argusActor, EMovementState inputMovementState, ArgusEntity targetEntity, FVector targetLocation);
+	void ProcessMoveToInputEventPerSelectedActor(AArgusActor* argusActor, EMovementState inputMovementState, ArgusEntity targetEntity, FVector targetLocation, ArgusEntity decalEntity);
 	void ProcessSetWaypointInputEvent();
 	void ProcessSetWaypointInputEventPerSelectedActor(AArgusActor* argusActor, FVector targetLocation);
 	void ProcessZoomInputEvent(AArgusCameraActor* argusCamera, const FInputActionValue& value);
@@ -145,10 +146,11 @@ private:
 	void ProcessReticleAbilityForSelectedEntities(const ReticleComponent* reticleComponent);
 	void ProcessReticleAbilityPerSelectedEntity(const ArgusEntity& entity, uint32 abilityRecordId);
 
-	void ShowMoveToLocationDecal(const FVector& targetLocation);
+	ArgusEntity InstantiateMoveToLocationDecalEntity(const FVector& targetLocation) const;
+	void SetMoveToLocationDecalPerEntity(TargetingComponent* targetingComponent, ArgusEntity decalEntity) const;
+	void ClearMoveToLocationDecalPerEntity(ArgusEntity entity) const;
 
 	FVector m_cachedLastSelectInputWorldSpaceLocation = FVector::ZeroVector;
 	bool m_selectInputDown = false;
 	bool m_canRotateCamera = false;
-	ArgusEntity m_moveToLocationDecalEntity = ArgusEntity::k_emptyEntity;
 };

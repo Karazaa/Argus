@@ -851,6 +851,7 @@ void UArgusInputManager::ProcessMoveToInputEvent()
 
 	EMovementState inputMovementState = EMovementState::ProcessMoveToLocationCommand;
 	ArgusEntity targetEntity = ArgusEntity::k_emptyEntity;
+	ArgusEntity decalEntity = ArgusEntity::k_emptyEntity;
 	if (AArgusActor* argusActor = Cast<AArgusActor>(hitResult.GetActor()))
 	{
 		targetEntity = argusActor->GetEntity();
@@ -861,7 +862,7 @@ void UArgusInputManager::ProcessMoveToInputEvent()
 	}
 	else
 	{
-		ShowMoveToLocationDecal(targetLocation);
+		decalEntity = InstantiateMoveToLocationDecalEntity(targetLocation);
 	}
 
 	for (TWeakObjectPtr<AArgusActor>& selectedActor : m_selectedArgusActors)
@@ -871,11 +872,11 @@ void UArgusInputManager::ProcessMoveToInputEvent()
 			continue;
 		}
 
-		ProcessMoveToInputEventPerSelectedActor(selectedActor.Get(), inputMovementState, targetEntity, targetLocation);
+		ProcessMoveToInputEventPerSelectedActor(selectedActor.Get(), inputMovementState, targetEntity, targetLocation, decalEntity);
 	}
 }
 
-void UArgusInputManager::ProcessMoveToInputEventPerSelectedActor(AArgusActor* argusActor, EMovementState inputMovementState, ArgusEntity targetEntity, FVector targetLocation)
+void UArgusInputManager::ProcessMoveToInputEventPerSelectedActor(AArgusActor* argusActor, EMovementState inputMovementState, ArgusEntity targetEntity, FVector targetLocation, ArgusEntity decalEntity)
 {
 	if (!argusActor)
 	{
@@ -915,7 +916,7 @@ void UArgusInputManager::ProcessMoveToInputEventPerSelectedActor(AArgusActor* ar
 				AvoidanceSystems::DecrementIdleEntitiesInGroup(selectedEntity);
 				taskComponent->m_movementState = inputMovementState;
 			}
-			
+
 			targetingComponent->m_targetEntityId = targetEntity.GetId();
 			targetingComponent->m_targetLocation.Reset();
 		}
@@ -928,6 +929,8 @@ void UArgusInputManager::ProcessMoveToInputEventPerSelectedActor(AArgusActor* ar
 			taskComponent->m_movementState = inputMovementState;
 		}
 		
+		SetMoveToLocationDecalPerEntity(targetingComponent, decalEntity);
+
 		targetingComponent->m_targetEntityId = ArgusEntity::k_emptyEntity.GetId();
 		targetingComponent->m_targetLocation = targetLocation;
 	}
@@ -1264,6 +1267,7 @@ void UArgusInputManager::AddSelectedActorExclusive(AArgusActor* argusActor)
 		{
 			selectedActor->SetSelectionState(false);
 		}
+		ClearMoveToLocationDecalPerEntity(selectedActor->GetEntity());
 	}
 	m_selectedArgusActors.Empty();
 
@@ -1285,6 +1289,7 @@ void UArgusInputManager::AddSelectedActorAdditive(AArgusActor* argusActor)
 	if (m_selectedArgusActors.Contains(argusActor))
 	{
 		argusActor->SetSelectionState(false);
+		ClearMoveToLocationDecalPerEntity(argusActor->GetEntity());
 		m_selectedArgusActors.Remove(argusActor);
 	}
 	else
@@ -1576,44 +1581,70 @@ void UArgusInputManager::ProcessReticleAbilityPerSelectedEntity(const ArgusEntit
 	taskComponent->m_abilityState = EAbilityState::ProcessCastReticleAbility;
 }
 
-void UArgusInputManager::ShowMoveToLocationDecal(const FVector& targetLocation)
+ArgusEntity UArgusInputManager::InstantiateMoveToLocationDecalEntity(const FVector& targetLocation) const
 {
 	const UArgusActorRecord* moveToLocationDecalRecord = m_owningPlayerController->GetMoveToLocationDecalActorRecord();
 	if (!moveToLocationDecalRecord)
 	{
-		return;
-	}
-
-	if (m_moveToLocationDecalEntity)
-	{
-		if (DecalComponent* decalComponent = m_moveToLocationDecalEntity.GetComponent<DecalComponent>())
-		{
-			decalComponent->m_lifetimeTimer.Reset();
-			decalComponent->m_lifetimeTimer.StartTimer(decalComponent->m_lifetimeSeconds);
-
-			if (TransformComponent* transformComponent = m_moveToLocationDecalEntity.GetComponent<TransformComponent>())
-			{
-				transformComponent->m_location = targetLocation;
-			}
-
-			return;
-		}
-
-		m_moveToLocationDecalEntity = ArgusEntity::k_emptyEntity;
+		return ArgusEntity::k_emptyEntity;
 	}
 
 	const UArgusEntityTemplate* moveToLocationDecalTemplate = moveToLocationDecalRecord->m_entityTemplate.LoadAndStorePtr();
-	ARGUS_RETURN_ON_NULL(moveToLocationDecalTemplate, ArgusInputLog);
+	if (!moveToLocationDecalTemplate)
+	{
+		return ArgusEntity::k_emptyEntity;
+	}
 
-	m_moveToLocationDecalEntity = moveToLocationDecalTemplate->MakeEntityAsync();
-	if (TransformComponent* decalTransformComponent = m_moveToLocationDecalEntity.AddComponent<TransformComponent>())
+	ArgusEntity output = moveToLocationDecalTemplate->MakeEntityAsync();
+	if (TransformComponent* decalTransformComponent = output.AddComponent<TransformComponent>())
 	{
 		decalTransformComponent->m_location = targetLocation;
 		decalTransformComponent->m_radius = 0.0f;
 	}
-	if (TaskComponent* decalTaskComponent = m_moveToLocationDecalEntity.AddComponent<TaskComponent>())
+	if (TaskComponent* decalTaskComponent = output.AddComponent<TaskComponent>())
 	{
 		decalTaskComponent->m_spawnedFromArgusActorRecordId = moveToLocationDecalRecord->m_id;
 		decalTaskComponent->m_baseState = EBaseState::SpawnedWaitingForActorTake;
 	}
+
+	return output;
+}
+
+void UArgusInputManager::SetMoveToLocationDecalPerEntity(TargetingComponent* targetingComponent, ArgusEntity decalEntity) const
+{
+	ARGUS_RETURN_ON_NULL(targetingComponent, ArgusInputLog);
+
+	ArgusEntity oldDecalEntity = ArgusEntity::RetrieveEntity(targetingComponent->m_decalEntityId);
+	if (oldDecalEntity)
+	{
+		if (TaskComponent* oldDecalTaskComponent = oldDecalEntity.GetComponent<TaskComponent>())
+		{
+			oldDecalTaskComponent->m_baseState = EBaseState::DestroyedWaitingForActorRelease;
+		}
+	}
+
+	targetingComponent->m_decalEntityId = decalEntity.GetId();
+}
+
+void UArgusInputManager::ClearMoveToLocationDecalPerEntity(ArgusEntity entity) const
+{
+	TargetingComponent* targetingComponent = entity.GetComponent<TargetingComponent>();
+	if (!targetingComponent)
+	{
+		return;
+	}
+
+	ArgusEntity oldDecalEntity = ArgusEntity::RetrieveEntity(targetingComponent->m_decalEntityId);
+	if (!oldDecalEntity)
+	{
+		targetingComponent->m_decalEntityId = ArgusECSConstants::k_maxEntities;
+		return;
+	}
+
+	if (TaskComponent* oldDecalTaskComponent = oldDecalEntity.GetComponent<TaskComponent>())
+	{
+		oldDecalTaskComponent->m_baseState = EBaseState::DestroyedWaitingForActorRelease;
+	}
+
+	targetingComponent->m_decalEntityId = ArgusECSConstants::k_maxEntities;
 }

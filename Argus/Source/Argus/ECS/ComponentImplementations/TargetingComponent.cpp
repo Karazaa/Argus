@@ -24,6 +24,7 @@ void TargetingComponent::Reset()
 	m_rangedRange = 400.0f;
 	m_sightRange = 1200.0f;
 	m_targetEntityId = ArgusECSConstants::k_maxEntities;
+	m_decalEntityId = ArgusECSConstants::k_maxEntities;
 }
 
 void TargetingComponent::DrawComponentDebug() const
@@ -63,6 +64,10 @@ void TargetingComponent::DrawComponentDebug() const
 		ImGui::Text("m_targetEntityId");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_targetEntityId);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_decalEntityId");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_decalEntityId);
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

@@ -11,7 +11,7 @@ void DecalSystems::RunSystems(float deltaTime)
 
 	ArgusEntity::IterateSystemsArgs<DecalSystemsArgs>([deltaTime](DecalSystemsArgs& components)
 	{
-		if (!components.m_decalComponent->m_lifetimeTimer.WasTimerSet())
+		if (components.m_decalComponent->m_lifetimeSeconds > 0.0f && !components.m_decalComponent->m_lifetimeTimer.WasTimerSet())
 		{
 			components.m_decalComponent->m_lifetimeTimer.StartTimer(components.m_decalComponent->m_lifetimeSeconds);
 			return;
