@@ -6,6 +6,7 @@
 #include "CoreMinimal.h"
 #include "SoftPtrLoadStore.generated.h"
 
+#pragma region SoftObjects
 #pragma region UArgusEntityTemplate
 class UArgusEntityTemplate;
 
@@ -73,4 +74,31 @@ protected:
 	UPROPERTY(Transient)
 	mutable TObjectPtr<UMaterialInterface> m_hardPtr = nullptr;
 };
+#pragma endregion
+#pragma endregion
+
+#pragma region SoftClasses
+#pragma region AArgusActor
+class AArgusActor;
+class UClass;
+
+USTRUCT(BlueprintType)
+struct FSoftClassLoadStore_AArgusActor
+{
+	GENERATED_BODY()
+
+public:
+	UClass* LoadAndStorePtr() const;
+	bool AsyncPreLoadAndStorePtr() const;
+	void SetHardPtr(UClass* pointer);
+	operator bool() const { return m_hardPtr || !m_softPtr.IsNull(); }
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TSoftClassPtr<AArgusActor> m_softPtr = nullptr;
+
+	UPROPERTY(Transient)
+	mutable TObjectPtr<UClass> m_hardPtr = nullptr;
+};
+#pragma endregion
 #pragma endregion

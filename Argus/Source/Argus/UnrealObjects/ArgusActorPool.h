@@ -12,7 +12,7 @@ class ArgusActorPool
 public:
 	~ArgusActorPool();
 
-	AArgusActor* Take(UWorld* worldPointer, const TSoftClassPtr<AArgusActor>& classSoftPointer);
+	AArgusActor* Take(UWorld* worldPointer, UClass* classSoftPointer);
 	void Release(AArgusActor*& actorPointer);
 	void Release(TObjectPtr<AArgusActor>& actorPointer);
 	void ClearPool();

@@ -121,7 +121,7 @@ void AArgusActorPoolFunctionalTest::StartInstantiateActorTestStep()
 {
 	StartStep(TEXT("Instantiate first actor object from pool."));
 
-	m_actor0 = m_argusActorPool.Take(GetWorld(), m_class0);
+	m_actor0 = m_argusActorPool.Take(GetWorld(), m_class0.LoadSynchronous());
 }
 
 void AArgusActorPoolFunctionalTest::StartReleaseActorTestStep()
@@ -135,7 +135,7 @@ void AArgusActorPoolFunctionalTest::StartInstantiateSecondActorTestStep()
 {
 	StartStep(TEXT("Instantiate second actor object from pool."));
 
-	m_actor1 = m_argusActorPool.Take(GetWorld(), m_class1);
+	m_actor1 = m_argusActorPool.Take(GetWorld(), m_class1.LoadSynchronous());
 }
 
 void AArgusActorPoolFunctionalTest::StartReleaseSecondActorTestStep()
@@ -149,7 +149,7 @@ void AArgusActorPoolFunctionalTest::StartTakeInstantiatedActorTestStep()
 {
 	StartStep(TEXT("Take already instantiated first actor object from pool."));
 
-	m_actor0 = m_argusActorPool.Take(GetWorld(), m_class0);
+	m_actor0 = m_argusActorPool.Take(GetWorld(), m_class0.LoadSynchronous());
 }
 
 void AArgusActorPoolFunctionalTest::StartMakeEntityForActorTestStep()
@@ -166,7 +166,7 @@ void AArgusActorPoolFunctionalTest::StartTakeSecondInstantiatedActorTestStep()
 {
 	StartStep(TEXT("Take already instantiated second actor object from pool."));
 
-	m_actor1 = m_argusActorPool.Take(GetWorld(), m_class1);
+	m_actor1 = m_argusActorPool.Take(GetWorld(), m_class1.LoadSynchronous());
 }
 
 void AArgusActorPoolFunctionalTest::StartMakeEntityForSecondActorTestStep()

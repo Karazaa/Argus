@@ -131,7 +131,7 @@ void AArgusGameModeBase::SpawnActorForEntity(ArgusEntity spawnedEntity)
 		return;
 	}
 
-	AArgusActor* spawnedActor = m_argusActorPool.Take(worldPointer, actorRecord->m_argusActorClass);
+	AArgusActor* spawnedActor = m_argusActorPool.Take(worldPointer, actorRecord->m_argusActorClass.LoadAndStorePtr());
 	if (!spawnedActor)
 	{
 		return;

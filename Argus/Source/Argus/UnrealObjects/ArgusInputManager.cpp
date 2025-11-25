@@ -1586,17 +1586,20 @@ void UArgusInputManager::ShowMoveToLocationDecal(const FVector& targetLocation)
 
 	if (m_moveToLocationDecalEntity)
 	{
-		if (TransformComponent* transformComponent = m_moveToLocationDecalEntity.GetComponent<TransformComponent>())
-		{
-			transformComponent->m_location = targetLocation;
-		}
 		if (DecalComponent* decalComponent = m_moveToLocationDecalEntity.GetComponent<DecalComponent>())
 		{
 			decalComponent->m_lifetimeTimer.Reset();
 			decalComponent->m_lifetimeTimer.StartTimer(decalComponent->m_lifetimeSeconds);
+
+			if (TransformComponent* transformComponent = m_moveToLocationDecalEntity.GetComponent<TransformComponent>())
+			{
+				transformComponent->m_location = targetLocation;
+			}
+
+			return;
 		}
 
-		return;
+		m_moveToLocationDecalEntity = ArgusEntity::k_emptyEntity;
 	}
 
 	const UArgusEntityTemplate* moveToLocationDecalTemplate = moveToLocationDecalRecord->m_entityTemplate.LoadAndStorePtr();

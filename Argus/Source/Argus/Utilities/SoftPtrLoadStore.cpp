@@ -4,12 +4,14 @@
 #pragma once
 
 #include "SoftPtrLoadStore.h"
+#include "ArgusActor.h"
 #include "ArgusEntity.h"
 #include "ArgusLogging.h"
 #include "ArgusEntityTemplate.h"
 #include "Engine/Texture.h"
 #include "Materials/MaterialInterface.h"
 
+#pragma region Soft Objects
 #pragma region UArgusEntityTemplate
 	UArgusEntityTemplate* FSoftObjectLoadStore_UArgusEntityTemplate::LoadAndStorePtr() const
 	{
@@ -152,4 +154,55 @@
 	{
 		m_hardPtr = pointer;
 	};
+#pragma endregion
+#pragma endregion
+
+#pragma region Soft Classes
+#pragma region AArgusActor
+	UClass* FSoftClassLoadStore_AArgusActor::LoadAndStorePtr() const
+	{
+		ARGUS_TRACE(FSoftClassLoadStore_AArgusActor::LoadAndStorePtr);
+
+		if (m_hardPtr)
+		{
+			return m_hardPtr.Get();
+		}
+
+		if (m_softPtr.IsNull())
+		{
+			return nullptr;
+		}
+
+		m_hardPtr = m_softPtr.LoadSynchronous();
+		return m_hardPtr.Get();
+	}
+
+	bool FSoftClassLoadStore_AArgusActor::AsyncPreLoadAndStorePtr() const
+	{
+		ARGUS_TRACE(FSoftClassLoadStore_AArgusActor::AsyncPreLoadAndStorePtr);
+
+		if (m_hardPtr || m_softPtr.IsNull())
+		{
+			return true;
+		}
+
+		AssetLoadingComponent* assetLoadingComponent = ArgusEntity::GetSingletonEntity().GetComponent<AssetLoadingComponent>();
+		ARGUS_RETURN_ON_NULL_BOOL(assetLoadingComponent, ArgusStaticDataLog);
+
+		assetLoadingComponent->m_streamableManager.RequestAsyncLoad(m_softPtr.ToSoftObjectPath(), FStreamableDelegate::CreateLambda
+		(
+			[this]()
+			{
+				m_hardPtr = m_softPtr.Get();
+			})
+		);
+
+		return true;
+	}
+
+	void FSoftClassLoadStore_AArgusActor::SetHardPtr(UClass* pointer)
+	{
+		m_hardPtr = pointer;
+	};
+#pragma endregion
 #pragma endregion

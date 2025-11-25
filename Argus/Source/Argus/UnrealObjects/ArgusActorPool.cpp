@@ -9,16 +9,10 @@ ArgusActorPool::~ArgusActorPool()
 	ClearPool();
 }
 
-AArgusActor* ArgusActorPool::Take(UWorld* worldPointer, const TSoftClassPtr<AArgusActor>& classSoftPointer)
+AArgusActor* ArgusActorPool::Take(UWorld* worldPointer, UClass* classPointer)
 {
 	ARGUS_MEMORY_TRACE(ArgusActorPool);
 
-	if (classSoftPointer.IsNull())
-	{
-		return nullptr;
-	}
-
-	UClass* classPointer = classSoftPointer.LoadSynchronous();
 	if (!classPointer)
 	{
 		return nullptr;

@@ -17,7 +17,7 @@ class ARGUS_API UArgusActorRecord : public UArgusStaticRecord
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TSoftClassPtr<AArgusActor> m_argusActorClass = nullptr;
+	FSoftClassLoadStore_AArgusActor m_argusActorClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FSoftObjectLoadStore_UArgusEntityTemplate m_entityTemplate;
