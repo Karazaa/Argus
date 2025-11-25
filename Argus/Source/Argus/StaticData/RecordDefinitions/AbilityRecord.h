@@ -34,7 +34,7 @@ public:
 	float m_timeToCastSeconds = 0.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FSoftPtrLoadStore_UTexture m_abilityIcon;
+	FSoftObjectLoadStore_UTexture m_abilityIcon;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FResourceSet m_requiredResourceChangeToCast;
@@ -43,7 +43,7 @@ public:
 	uint8 m_reticleFlags = 0u;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FSoftPtrLoadStore_UMaterialInterface m_reticleMaterial;
+	FSoftObjectLoadStore_UMaterialInterface m_reticleMaterial;
 
 	bool GetRequiresReticle() const
 	{

@@ -10,7 +10,7 @@
 class UArgusEntityTemplate;
 
 USTRUCT(BlueprintType)
-struct FSoftPtrLoadStore_UArgusEntityTemplate
+struct FSoftObjectLoadStore_UArgusEntityTemplate
 {
 	GENERATED_BODY()
 
@@ -33,7 +33,7 @@ protected:
 class UTexture;
 
 USTRUCT(BlueprintType)
-struct FSoftPtrLoadStore_UTexture
+struct FSoftObjectLoadStore_UTexture
 {
 	GENERATED_BODY()
 
@@ -56,7 +56,7 @@ protected:
 class UMaterialInterface;
 
 USTRUCT(BlueprintType)
-struct FSoftPtrLoadStore_UMaterialInterface
+struct FSoftObjectLoadStore_UMaterialInterface
 {
 	GENERATED_BODY()
 

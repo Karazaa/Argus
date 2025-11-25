@@ -20,10 +20,10 @@ public:
 	TSoftClassPtr<AArgusActor> m_argusActorClass = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FSoftPtrLoadStore_UArgusEntityTemplate m_entityTemplate;
+	FSoftObjectLoadStore_UArgusEntityTemplate m_entityTemplate;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FSoftPtrLoadStore_UTexture m_actorInfoIcon;
+	FSoftObjectLoadStore_UTexture m_actorInfoIcon;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FText m_actorInfoName;

@@ -28,10 +28,10 @@ private:
 	static const char* s_recordDatabaseCppTemplateFileName;
 	static const char* s_recordDatabaseFileNameSuffix;
 	static const char* s_softPtrLoadStoreHeaderTemplateFileName;
-	static const char* s_softPtrLoadStorePerTypeHeaderTemplateFileName;
+	static const char* s_softObjectLoadStorePerTypeHeaderTemplateFileName;
 	static const char* s_softPtrLoadStoreHeaderFileName;
 	static const char* s_softPtrLoadStoreCppTemplateFileName;
-	static const char* s_softPtrLoadStorePerTypeCppTemplateFileName;
+	static const char* s_softObjectLoadStorePerTypeCppTemplateFileName;
 	static const char* s_softPtrLoadStoreCppFileName;
 
 	static constexpr int k_numSoftPtrLoadStoreTypes = 3;

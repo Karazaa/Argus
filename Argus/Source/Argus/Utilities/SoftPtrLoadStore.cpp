@@ -11,7 +11,7 @@
 #include "Materials/MaterialInterface.h"
 
 #pragma region UArgusEntityTemplate
-	UArgusEntityTemplate* FSoftPtrLoadStore_UArgusEntityTemplate::LoadAndStorePtr() const
+	UArgusEntityTemplate* FSoftObjectLoadStore_UArgusEntityTemplate::LoadAndStorePtr() const
 	{
 		ARGUS_TRACE(FSoftPtrLoadStore_UArgusEntityTemplate::LoadAndStorePtr);
 
@@ -29,7 +29,7 @@
 		return m_hardPtr.Get();
 	}
 
-	bool FSoftPtrLoadStore_UArgusEntityTemplate::AsyncPreLoadAndStorePtr() const
+	bool FSoftObjectLoadStore_UArgusEntityTemplate::AsyncPreLoadAndStorePtr() const
 	{
 		ARGUS_TRACE(FSoftPtrLoadStore_UArgusEntityTemplate::AsyncPreLoadAndStorePtr);
 
@@ -52,14 +52,14 @@
 		return true;
 	}
 
-	void FSoftPtrLoadStore_UArgusEntityTemplate::SetHardPtr(UArgusEntityTemplate* pointer)
+	void FSoftObjectLoadStore_UArgusEntityTemplate::SetHardPtr(UArgusEntityTemplate* pointer)
 	{
 		m_hardPtr = pointer;
 	};
 #pragma endregion
 
 #pragma region UTexture
-	UTexture* FSoftPtrLoadStore_UTexture::LoadAndStorePtr() const
+	UTexture* FSoftObjectLoadStore_UTexture::LoadAndStorePtr() const
 	{
 		ARGUS_TRACE(FSoftPtrLoadStore_UTexture::LoadAndStorePtr);
 
@@ -77,7 +77,7 @@
 		return m_hardPtr.Get();
 	}
 
-	bool FSoftPtrLoadStore_UTexture::AsyncPreLoadAndStorePtr() const
+	bool FSoftObjectLoadStore_UTexture::AsyncPreLoadAndStorePtr() const
 	{
 		ARGUS_TRACE(FSoftPtrLoadStore_UTexture::AsyncPreLoadAndStorePtr);
 
@@ -100,14 +100,14 @@
 		return true;
 	}
 
-	void FSoftPtrLoadStore_UTexture::SetHardPtr(UTexture* pointer)
+	void FSoftObjectLoadStore_UTexture::SetHardPtr(UTexture* pointer)
 	{
 		m_hardPtr = pointer;
 	};
 #pragma endregion
 
 #pragma region UMaterialInterface
-	UMaterialInterface* FSoftPtrLoadStore_UMaterialInterface::LoadAndStorePtr() const
+	UMaterialInterface* FSoftObjectLoadStore_UMaterialInterface::LoadAndStorePtr() const
 	{
 		ARGUS_TRACE(FSoftPtrLoadStore_UMaterialInterface::LoadAndStorePtr);
 
@@ -125,7 +125,7 @@
 		return m_hardPtr.Get();
 	}
 
-	bool FSoftPtrLoadStore_UMaterialInterface::AsyncPreLoadAndStorePtr() const
+	bool FSoftObjectLoadStore_UMaterialInterface::AsyncPreLoadAndStorePtr() const
 	{
 		ARGUS_TRACE(FSoftPtrLoadStore_UMaterialInterface::AsyncPreLoadAndStorePtr);
 
@@ -148,7 +148,7 @@
 		return true;
 	}
 
-	void FSoftPtrLoadStore_UMaterialInterface::SetHardPtr(UMaterialInterface* pointer)
+	void FSoftObjectLoadStore_UMaterialInterface::SetHardPtr(UMaterialInterface* pointer)
 	{
 		m_hardPtr = pointer;
 	};

@@ -1,6 +1,6 @@
 
 #pragma region #####
-	#####* FSoftPtrLoadStore_#####::LoadAndStorePtr() const
+	#####* FSoftObjectLoadStore_#####::LoadAndStorePtr() const
 	{
 		ARGUS_TRACE(FSoftPtrLoadStore_#####::LoadAndStorePtr);
 
@@ -18,7 +18,7 @@
 		return m_hardPtr.Get();
 	}
 
-	bool FSoftPtrLoadStore_#####::AsyncPreLoadAndStorePtr() const
+	bool FSoftObjectLoadStore_#####::AsyncPreLoadAndStorePtr() const
 	{
 		ARGUS_TRACE(FSoftPtrLoadStore_#####::AsyncPreLoadAndStorePtr);
 
@@ -41,7 +41,7 @@
 		return true;
 	}
 
-	void FSoftPtrLoadStore_#####::SetHardPtr(#####* pointer)
+	void FSoftObjectLoadStore_#####::SetHardPtr(#####* pointer)
 	{
 		m_hardPtr = pointer;
 	};

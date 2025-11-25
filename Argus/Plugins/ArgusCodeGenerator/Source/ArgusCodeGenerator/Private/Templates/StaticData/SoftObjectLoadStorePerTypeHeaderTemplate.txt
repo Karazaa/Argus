@@ -3,7 +3,7 @@
 class #####;
 
 USTRUCT(BlueprintType)
-struct FSoftPtrLoadStore_#####
+struct FSoftObjectLoadStore_#####
 {
 	GENERATED_BODY()
 
