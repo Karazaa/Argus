@@ -859,22 +859,9 @@ void UArgusInputManager::ProcessMoveToInputEvent()
 			inputMovementState = EMovementState::ProcessMoveToEntityCommand;
 		}
 	}
-	else if (const UArgusActorRecord* moveToLocationDecalRecord = m_owningPlayerController->GetMoveToLocationDecalActorRecord())
+	else
 	{
-		if (UArgusEntityTemplate* moveToLocationDecalTemplate = moveToLocationDecalRecord->m_entityTemplate.LoadAndStorePtr())
-		{
-			ArgusEntity decalEntity = moveToLocationDecalTemplate->MakeEntityAsync();
-			if (TransformComponent* decalTransformComponent = decalEntity.AddComponent<TransformComponent>())
-			{
-				decalTransformComponent->m_location = targetLocation;
-				decalTransformComponent->m_radius = 0.0f;
-			}
-			if (TaskComponent* decalTaskComponent = decalEntity.AddComponent<TaskComponent>())
-			{
-				decalTaskComponent->m_spawnedFromArgusActorRecordId = moveToLocationDecalRecord->m_id;
-				decalTaskComponent->m_baseState = EBaseState::SpawnedWaitingForActorTake;
-			}
-		}
+		ShowMoveToLocationDecal(targetLocation);
 	}
 
 	for (TWeakObjectPtr<AArgusActor>& selectedActor : m_selectedArgusActors)
@@ -1587,4 +1574,43 @@ void UArgusInputManager::ProcessReticleAbilityPerSelectedEntity(const ArgusEntit
 	}
 
 	taskComponent->m_abilityState = EAbilityState::ProcessCastReticleAbility;
+}
+
+void UArgusInputManager::ShowMoveToLocationDecal(const FVector& targetLocation)
+{
+	const UArgusActorRecord* moveToLocationDecalRecord = m_owningPlayerController->GetMoveToLocationDecalActorRecord();
+	if (!moveToLocationDecalRecord)
+	{
+		return;
+	}
+
+	if (m_moveToLocationDecalEntity)
+	{
+		if (TransformComponent* transformComponent = m_moveToLocationDecalEntity.GetComponent<TransformComponent>())
+		{
+			transformComponent->m_location = targetLocation;
+		}
+		if (DecalComponent* decalComponent = m_moveToLocationDecalEntity.GetComponent<DecalComponent>())
+		{
+			decalComponent->m_lifetimeTimer.Reset();
+			decalComponent->m_lifetimeTimer.StartTimer(decalComponent->m_lifetimeSeconds);
+		}
+
+		return;
+	}
+
+	const UArgusEntityTemplate* moveToLocationDecalTemplate = moveToLocationDecalRecord->m_entityTemplate.LoadAndStorePtr();
+	ARGUS_RETURN_ON_NULL(moveToLocationDecalTemplate, ArgusInputLog);
+
+	m_moveToLocationDecalEntity = moveToLocationDecalTemplate->MakeEntityAsync();
+	if (TransformComponent* decalTransformComponent = m_moveToLocationDecalEntity.AddComponent<TransformComponent>())
+	{
+		decalTransformComponent->m_location = targetLocation;
+		decalTransformComponent->m_radius = 0.0f;
+	}
+	if (TaskComponent* decalTaskComponent = m_moveToLocationDecalEntity.AddComponent<TaskComponent>())
+	{
+		decalTaskComponent->m_spawnedFromArgusActorRecordId = moveToLocationDecalRecord->m_id;
+		decalTaskComponent->m_baseState = EBaseState::SpawnedWaitingForActorTake;
+	}
 }

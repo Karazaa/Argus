@@ -145,7 +145,10 @@ private:
 	void ProcessReticleAbilityForSelectedEntities(const ReticleComponent* reticleComponent);
 	void ProcessReticleAbilityPerSelectedEntity(const ArgusEntity& entity, uint32 abilityRecordId);
 
+	void ShowMoveToLocationDecal(const FVector& targetLocation);
+
 	FVector m_cachedLastSelectInputWorldSpaceLocation = FVector::ZeroVector;
 	bool m_selectInputDown = false;
 	bool m_canRotateCamera = false;
+	ArgusEntity m_moveToLocationDecalEntity = ArgusEntity::k_emptyEntity;
 };
