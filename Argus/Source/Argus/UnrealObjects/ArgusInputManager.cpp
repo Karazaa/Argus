@@ -694,6 +694,11 @@ void UArgusInputManager::ProcessMarqueeSelectInputEvent(const AArgusCameraActor*
 		}
 	}
 
+	if (FVector::DistSquared(m_cachedLastSelectInputWorldSpaceLocation, hitResult.Location) < FMath::Square(ArgusECSConstants::k_minimumMarqueeSelectDistance))
+	{
+		return;
+	}
+
 	TArray<FVector2D> groundConvexPolygon;
 	TArray<FVector2D> flyingConvexPolygon;
 	groundConvexPolygon.SetNumZeroed(4);
@@ -1266,14 +1271,15 @@ void UArgusInputManager::AddSelectedActorExclusive(AArgusActor* argusActor)
 		else if (selectedActor.IsValid())
 		{
 			selectedActor->SetSelectionState(false);
+			ClearMoveToLocationDecalPerEntity(selectedActor->GetEntity());
 		}
-		ClearMoveToLocationDecalPerEntity(selectedActor->GetEntity());
 	}
 	m_selectedArgusActors.Empty();
 
 	if (!alreadySelected)
 	{
 		argusActor->SetSelectionState(true);
+		ActivateCachedMoveToLocationDecalPerEntity(argusActor->GetEntity());
 	}
 	m_selectedArgusActors.Emplace(argusActor);
 
@@ -1295,6 +1301,7 @@ void UArgusInputManager::AddSelectedActorAdditive(AArgusActor* argusActor)
 	else
 	{
 		argusActor->SetSelectionState(true);
+		ActivateCachedMoveToLocationDecalPerEntity(argusActor->GetEntity());
 		m_selectedArgusActors.Emplace(argusActor);
 	}
 
@@ -1310,6 +1317,7 @@ void UArgusInputManager::AddMarqueeSelectedActorsExclusive(const TArray<AArgusAc
 		if (selectedActor.IsValid())
 		{
 			selectedActor->SetSelectionState(false);
+			ClearMoveToLocationDecalPerEntity(selectedActor->GetEntity());
 		}
 	}
 	m_selectedArgusActors.Empty();
@@ -1330,6 +1338,7 @@ void UArgusInputManager::AddMarqueeSelectedActorsAdditive(const TArray<AArgusAct
 		if (marqueeSelectedActors[i])
 		{
 			marqueeSelectedActors[i]->SetSelectionState(true);
+			ActivateCachedMoveToLocationDecalPerEntity(marqueeSelectedActors[i]->GetEntity());
 			m_selectedArgusActors.Emplace(marqueeSelectedActors[i]);
 		}
 	}
@@ -1647,4 +1656,60 @@ void UArgusInputManager::ClearMoveToLocationDecalPerEntity(ArgusEntity entity) c
 	}
 
 	targetingComponent->m_decalEntityId = ArgusECSConstants::k_maxEntities;
+}
+
+void UArgusInputManager::ActivateCachedMoveToLocationDecalPerEntity(ArgusEntity entity) const
+{
+	if (!entity)
+	{
+		return;
+	}
+
+	TaskComponent* taskComponent = entity.GetComponent<TaskComponent>();
+	ARGUS_RETURN_ON_NULL(taskComponent, ArgusInputLog);
+
+	if (taskComponent->m_movementState != EMovementState::MoveToLocation)
+	{
+		return;
+	}
+
+	TargetingComponent* targetingComponent = entity.GetComponent<TargetingComponent>();
+	if (!targetingComponent)
+	{
+		return;
+	}
+
+	if (!targetingComponent->HasLocationTarget())
+	{
+		return;
+	}
+
+	const FVector targetLocation = targetingComponent->m_targetLocation.GetValue();
+	for (const TWeakObjectPtr<AArgusActor>& selectedActor : m_selectedArgusActors)
+	{
+		if (!selectedActor.IsValid())
+		{
+			continue;
+		}
+
+		ArgusEntity selectedEntity = selectedActor->GetEntity();
+		if (!selectedEntity)
+		{
+			continue;
+		}
+
+		TargetingComponent* selectedTargetingComponent = selectedEntity.GetComponent<TargetingComponent>();
+		if (!selectedTargetingComponent || !selectedTargetingComponent->HasLocationTarget())
+		{
+			continue;
+		}
+
+		if (selectedTargetingComponent->m_targetLocation.GetValue() == targetLocation)
+		{
+			targetingComponent->m_decalEntityId = selectedTargetingComponent->m_decalEntityId;
+			return;
+		}
+	}
+
+	targetingComponent->m_decalEntityId = InstantiateMoveToLocationDecalEntity(targetLocation).GetId();
 }

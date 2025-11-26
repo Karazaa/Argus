@@ -149,6 +149,7 @@ private:
 	ArgusEntity InstantiateMoveToLocationDecalEntity(const FVector& targetLocation) const;
 	void SetMoveToLocationDecalPerEntity(TargetingComponent* targetingComponent, ArgusEntity decalEntity) const;
 	void ClearMoveToLocationDecalPerEntity(ArgusEntity entity) const;
+	void ActivateCachedMoveToLocationDecalPerEntity(ArgusEntity entity) const;
 
 	FVector m_cachedLastSelectInputWorldSpaceLocation = FVector::ZeroVector;
 	bool m_selectInputDown = false;
