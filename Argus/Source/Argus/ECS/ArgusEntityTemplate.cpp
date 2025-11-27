@@ -19,7 +19,7 @@ ArgusEntity UArgusEntityTemplate::MakeEntity(uint16 entityId) const
 	return entity;
 }
 
-ArgusEntity UArgusEntityTemplate::MakeEntityAsync() const
+ArgusEntity UArgusEntityTemplate::MakeEntityAsync(const TFunction<void(ArgusEntity)> onCompleteCallback) const
 {
 	AssetLoadingComponent* assetLoadingComponent = ArgusEntity::GetSingletonEntity().GetComponent<AssetLoadingComponent>();
 	if (!assetLoadingComponent)
@@ -39,9 +39,13 @@ ArgusEntity UArgusEntityTemplate::MakeEntityAsync() const
 
 	assetLoadingComponent->m_streamableManager.RequestAsyncLoad(pathsToLoad, FStreamableDelegate::CreateLambda
 	(
-		[this, entity]()
+		[this, entity, onCompleteCallback]()
 		{
 			this->PopulateEntity(entity);
+			if (onCompleteCallback)
+			{
+				onCompleteCallback(entity);
+			}
 		})
 	);
 

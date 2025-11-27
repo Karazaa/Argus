@@ -146,7 +146,7 @@ private:
 	void ProcessReticleAbilityForSelectedEntities(const ReticleComponent* reticleComponent);
 	void ProcessReticleAbilityPerSelectedEntity(const ArgusEntity& entity, uint32 abilityRecordId);
 
-	ArgusEntity InstantiateMoveToLocationDecalEntity(const FVector& targetLocation) const;
+	ArgusEntity InstantiateMoveToLocationDecalEntity(const FVector& targetLocation, uint16 numReferencers) const;
 	void SetMoveToLocationDecalPerEntity(TargetingComponent* targetingComponent, ArgusEntity decalEntity) const;
 	void ClearMoveToLocationDecalPerEntity(ArgusEntity entity) const;
 	void ActivateCachedMoveToLocationDecalPerEntity(ArgusEntity entity) const;

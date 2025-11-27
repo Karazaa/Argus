@@ -14,4 +14,7 @@ struct DecalComponent
 
 	ARGUS_IGNORE()
 	TimerHandle m_lifetimeTimer;
+
+	ARGUS_IGNORE()
+	uint16 m_referencingEntityCount = 0u;
 };
