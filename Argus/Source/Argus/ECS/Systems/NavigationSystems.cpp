@@ -201,6 +201,13 @@ void NavigationSystems::ChangeTasksOnNavigatingToEntity(ArgusEntity targetEntity
 
 void NavigationSystems::ChangeFlockingStateOnNavigatingToLocation(const NavigationSystemsArgs& components)
 {
+	if (AvoidanceGroupingComponent* avoidanceGroupingComponent = components.m_entity.GetComponent<AvoidanceGroupingComponent>())
+	{
+		avoidanceGroupingComponent->m_groupId = components.m_entity.GetId();
+		avoidanceGroupingComponent->m_groupAverageLocation = components.m_transformComponent->m_location;
+		avoidanceGroupingComponent->m_numberOfIdleEntities = 0u;
+	}
+
 	FlockingComponent* flockingComponent = components.m_entity.GetComponent<FlockingComponent>();
 	if (!flockingComponent)
 	{

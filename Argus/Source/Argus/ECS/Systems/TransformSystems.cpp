@@ -8,6 +8,7 @@
 #include "Systems/AvoidanceSystems.h"
 #include "Systems/CarrierSystems.h"
 #include "Systems/CombatSystems.h"
+#include "Systems/DecalSystems.h"
 #include "Systems/FlockingSystems.h"
 #include "Systems/TargetingSystems.h"
 
@@ -376,6 +377,8 @@ void TransformSystems::OnCompleteNavigationPath(const TransformSystemsArgs& comp
 	{
 		return;
 	}
+
+	DecalSystems::ClearMoveToLocationDecalPerEntity(components.m_entity);
 
 	if (components.m_navigationComponent->m_queuedWaypoints.IsEmpty())
 	{

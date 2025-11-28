@@ -13,6 +13,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedPlayerInput.h"
 #include "Systems/AvoidanceSystems.h"
+#include "Systems/DecalSystems.h"
 #include "Systems/TransformSystems.h"
 
 bool UArgusInputManager::ShouldUpdateSelectedActorDisplay(ArgusEntity& templateSelectedEntity)
@@ -867,7 +868,7 @@ void UArgusInputManager::ProcessMoveToInputEvent()
 	}
 	else
 	{
-		decalEntity = InstantiateMoveToLocationDecalEntity(targetLocation, m_selectedArgusActors.Num());
+		decalEntity = DecalSystems::InstantiateMoveToLocationDecalEntity(m_owningPlayerController->GetMoveToLocationDecalActorRecord(), targetLocation, m_selectedArgusActors.Num());
 	}
 
 	for (TWeakObjectPtr<AArgusActor>& selectedActor : m_selectedArgusActors)
@@ -925,6 +926,8 @@ void UArgusInputManager::ProcessMoveToInputEventPerSelectedActor(AArgusActor* ar
 			targetingComponent->m_targetEntityId = targetEntity.GetId();
 			targetingComponent->m_targetLocation.Reset();
 		}
+
+		DecalSystems::ClearMoveToLocationDecalPerEntity(selectedEntity);
 	}
 	else if (inputMovementState == EMovementState::ProcessMoveToLocationCommand)
 	{
@@ -934,7 +937,7 @@ void UArgusInputManager::ProcessMoveToInputEventPerSelectedActor(AArgusActor* ar
 			taskComponent->m_movementState = inputMovementState;
 		}
 		
-		SetMoveToLocationDecalPerEntity(targetingComponent, decalEntity);
+		DecalSystems::SetMoveToLocationDecalPerEntity(targetingComponent, decalEntity);
 
 		targetingComponent->m_targetEntityId = ArgusEntity::k_emptyEntity.GetId();
 		targetingComponent->m_targetLocation = targetLocation;
@@ -1271,7 +1274,7 @@ void UArgusInputManager::AddSelectedActorExclusive(AArgusActor* argusActor)
 		else if (selectedActor.IsValid())
 		{
 			selectedActor->SetSelectionState(false);
-			ClearMoveToLocationDecalPerEntity(selectedActor->GetEntity());
+			DecalSystems::ClearMoveToLocationDecalPerEntity(selectedActor->GetEntity());
 		}
 	}
 	m_selectedArgusActors.Empty();
@@ -1279,7 +1282,7 @@ void UArgusInputManager::AddSelectedActorExclusive(AArgusActor* argusActor)
 	if (!alreadySelected)
 	{
 		argusActor->SetSelectionState(true);
-		ActivateCachedMoveToLocationDecalPerEntity(argusActor->GetEntity());
+		DecalSystems::ActivateCachedMoveToLocationDecalPerEntity(m_owningPlayerController->GetMoveToLocationDecalActorRecord(), argusActor->GetEntity());
 	}
 	m_selectedArgusActors.Emplace(argusActor);
 
@@ -1295,13 +1298,13 @@ void UArgusInputManager::AddSelectedActorAdditive(AArgusActor* argusActor)
 	if (m_selectedArgusActors.Contains(argusActor))
 	{
 		argusActor->SetSelectionState(false);
-		ClearMoveToLocationDecalPerEntity(argusActor->GetEntity());
+		DecalSystems::ClearMoveToLocationDecalPerEntity(argusActor->GetEntity());
 		m_selectedArgusActors.Remove(argusActor);
 	}
 	else
 	{
 		argusActor->SetSelectionState(true);
-		ActivateCachedMoveToLocationDecalPerEntity(argusActor->GetEntity());
+		DecalSystems::ActivateCachedMoveToLocationDecalPerEntity(m_owningPlayerController->GetMoveToLocationDecalActorRecord(), argusActor->GetEntity());
 		m_selectedArgusActors.Emplace(argusActor);
 	}
 
@@ -1317,7 +1320,7 @@ void UArgusInputManager::AddMarqueeSelectedActorsExclusive(const TArray<AArgusAc
 		if (selectedActor.IsValid())
 		{
 			selectedActor->SetSelectionState(false);
-			ClearMoveToLocationDecalPerEntity(selectedActor->GetEntity());
+			DecalSystems::ClearMoveToLocationDecalPerEntity(selectedActor->GetEntity());
 		}
 	}
 	m_selectedArgusActors.Empty();
@@ -1338,7 +1341,7 @@ void UArgusInputManager::AddMarqueeSelectedActorsAdditive(const TArray<AArgusAct
 		if (marqueeSelectedActors[i])
 		{
 			marqueeSelectedActors[i]->SetSelectionState(true);
-			ActivateCachedMoveToLocationDecalPerEntity(marqueeSelectedActors[i]->GetEntity());
+			DecalSystems::ActivateCachedMoveToLocationDecalPerEntity(m_owningPlayerController->GetMoveToLocationDecalActorRecord(), marqueeSelectedActors[i]->GetEntity());
 			m_selectedArgusActors.Emplace(marqueeSelectedActors[i]);
 		}
 	}
@@ -1588,159 +1591,4 @@ void UArgusInputManager::ProcessReticleAbilityPerSelectedEntity(const ArgusEntit
 	}
 
 	taskComponent->m_abilityState = EAbilityState::ProcessCastReticleAbility;
-}
-
-ArgusEntity UArgusInputManager::InstantiateMoveToLocationDecalEntity(const FVector& targetLocation, uint16 numReferencers) const
-{
-	const UArgusActorRecord* moveToLocationDecalRecord = m_owningPlayerController->GetMoveToLocationDecalActorRecord();
-	if (!moveToLocationDecalRecord)
-	{
-		return ArgusEntity::k_emptyEntity;
-	}
-
-	const UArgusEntityTemplate* moveToLocationDecalTemplate = moveToLocationDecalRecord->m_entityTemplate.LoadAndStorePtr();
-	if (!moveToLocationDecalTemplate)
-	{
-		return ArgusEntity::k_emptyEntity;
-	}
-
-	const uint32 recordId = moveToLocationDecalRecord->m_id;
-	TFunction<void(ArgusEntity)> callback = nullptr;
-	callback = [targetLocation, recordId, numReferencers](ArgusEntity entity)
-	{
-		if (TransformComponent* decalTransformComponent = entity.GetComponent<TransformComponent>())
-		{
-			decalTransformComponent->m_location = targetLocation;
-			decalTransformComponent->m_radius = 0.0f;
-		}
-		if (TaskComponent* decalTaskComponent = entity.GetComponent<TaskComponent>())
-		{
-			decalTaskComponent->m_spawnedFromArgusActorRecordId = recordId;
-			decalTaskComponent->m_baseState = EBaseState::SpawnedWaitingForActorTake;
-		}
-		if (DecalComponent* decalDecalComponent = entity.GetComponent<DecalComponent>())
-		{
-			decalDecalComponent->m_referencingEntityCount = numReferencers;
-		}
-	};
-
-	return moveToLocationDecalTemplate->MakeEntityAsync(callback);
-}
-
-void UArgusInputManager::SetMoveToLocationDecalPerEntity(TargetingComponent* targetingComponent, ArgusEntity decalEntity) const
-{
-	ARGUS_RETURN_ON_NULL(targetingComponent, ArgusInputLog);
-
-	ArgusEntity oldDecalEntity = ArgusEntity::RetrieveEntity(targetingComponent->m_decalEntityId);
-	if (oldDecalEntity)
-	{
-		DecalComponent* oldDecalComponent = oldDecalEntity.GetComponent<DecalComponent>();
-		TaskComponent* oldTaskComponent = oldDecalEntity.GetComponent<TaskComponent>();
-		ARGUS_RETURN_ON_NULL(oldDecalComponent, ArgusInputLog);
-		ARGUS_RETURN_ON_NULL(oldTaskComponent, ArgusInputLog);
-
-		oldDecalComponent->m_referencingEntityCount--;
-		if (oldDecalComponent->m_referencingEntityCount == 0u)
-		{
-			oldTaskComponent->m_baseState = EBaseState::DestroyedWaitingForActorRelease;
-		}
-	}
-
-	// TODO JAMES: Need to increment number of referencing entities.
-
-	targetingComponent->m_decalEntityId = decalEntity.GetId();
-}
-
-void UArgusInputManager::ClearMoveToLocationDecalPerEntity(ArgusEntity entity) const
-{
-	TargetingComponent* targetingComponent = entity.GetComponent<TargetingComponent>();
-	if (!targetingComponent)
-	{
-		return;
-	}
-
-	ArgusEntity oldDecalEntity = ArgusEntity::RetrieveEntity(targetingComponent->m_decalEntityId);
-	if (!oldDecalEntity)
-	{
-		targetingComponent->m_decalEntityId = ArgusECSConstants::k_maxEntities;
-		return;
-	}
-
-	DecalComponent* decalComponent = oldDecalEntity.GetComponent<DecalComponent>();
-	TaskComponent* taskComponent = oldDecalEntity.GetComponent<TaskComponent>();
-	ARGUS_RETURN_ON_NULL(decalComponent, ArgusInputLog);
-	ARGUS_RETURN_ON_NULL(taskComponent, ArgusInputLog);
-
-	decalComponent->m_referencingEntityCount--;
-	if (decalComponent->m_referencingEntityCount == 0u)
-	{
-		taskComponent->m_baseState = EBaseState::DestroyedWaitingForActorRelease;
-	}
-
-	targetingComponent->m_decalEntityId = ArgusECSConstants::k_maxEntities;
-}
-
-void UArgusInputManager::ActivateCachedMoveToLocationDecalPerEntity(ArgusEntity entity) const
-{
-	if (!entity)
-	{
-		return;
-	}
-
-	TaskComponent* taskComponent = entity.GetComponent<TaskComponent>();
-	ARGUS_RETURN_ON_NULL(taskComponent, ArgusInputLog);
-
-	if (taskComponent->m_movementState != EMovementState::MoveToLocation)
-	{
-		return;
-	}
-
-	TargetingComponent* targetingComponent = entity.GetComponent<TargetingComponent>();
-	if (!targetingComponent)
-	{
-		return;
-	}
-
-	if (!targetingComponent->HasLocationTarget())
-	{
-		return;
-	}
-
-	const FVector targetLocation = targetingComponent->m_targetLocation.GetValue();
-	for (const TWeakObjectPtr<AArgusActor>& selectedActor : m_selectedArgusActors)
-	{
-		if (!selectedActor.IsValid())
-		{
-			continue;
-		}
-
-		ArgusEntity selectedEntity = selectedActor->GetEntity();
-		if (!selectedEntity)
-		{
-			continue;
-		}
-
-		TargetingComponent* selectedTargetingComponent = selectedEntity.GetComponent<TargetingComponent>();
-		if (!selectedTargetingComponent || !selectedTargetingComponent->HasLocationTarget())
-		{
-			continue;
-		}
-
-		if (selectedTargetingComponent->m_targetLocation.GetValue() == targetLocation)
-		{
-			targetingComponent->m_decalEntityId = selectedTargetingComponent->m_decalEntityId;
-			ArgusEntity decalEntity = ArgusEntity::RetrieveEntity(selectedTargetingComponent->m_decalEntityId);
-			if (decalEntity)
-			{
-				if (DecalComponent* decalComponent = decalEntity.GetComponent<DecalComponent>())
-				{
-					decalComponent->m_referencingEntityCount++;
-				}
-			}
-
-			return;
-		}
-	}
-
-	targetingComponent->m_decalEntityId = InstantiateMoveToLocationDecalEntity(targetLocation, 1u).GetId();
 }
