@@ -882,7 +882,7 @@ void UArgusInputManager::ProcessMoveToInputEvent()
 	}
 }
 
-void UArgusInputManager::ProcessMoveToInputEventPerSelectedActor(AArgusActor* argusActor, EMovementState inputMovementState, ArgusEntity targetEntity, FVector targetLocation, ArgusEntity decalEntity)
+void UArgusInputManager::ProcessMoveToInputEventPerSelectedActor(AArgusActor* argusActor, EMovementState inputMovementState, ArgusEntity targetEntity, const FVector& targetLocation, ArgusEntity decalEntity)
 {
 	if (!argusActor)
 	{
@@ -975,6 +975,8 @@ void UArgusInputManager::ProcessSetWaypointInputEvent()
 		);
 	}
 
+	ArgusEntity decalEntity = DecalSystems::InstantiateMoveToLocationDecalEntity(m_owningPlayerController->GetMoveToLocationDecalActorRecord(), targetLocation, m_selectedArgusActors.Num());
+
 	for (TWeakObjectPtr<AArgusActor>& selectedActor : m_selectedArgusActors)
 	{
 		if (!selectedActor.IsValid())
@@ -982,11 +984,11 @@ void UArgusInputManager::ProcessSetWaypointInputEvent()
 			continue;
 		}
 
-		ProcessSetWaypointInputEventPerSelectedActor(selectedActor.Get(), targetLocation);
+		ProcessSetWaypointInputEventPerSelectedActor(selectedActor.Get(), targetLocation, decalEntity);
 	}
 }
 
-void UArgusInputManager::ProcessSetWaypointInputEventPerSelectedActor(AArgusActor* argusActor, FVector targetLocation)
+void UArgusInputManager::ProcessSetWaypointInputEventPerSelectedActor(AArgusActor* argusActor, const FVector& targetLocation, ArgusEntity decalEntity)
 {
 	ARGUS_MEMORY_TRACE(ArgusNavigationSystems);
 
@@ -1019,12 +1021,13 @@ void UArgusInputManager::ProcessSetWaypointInputEventPerSelectedActor(AArgusActo
 			taskComponent->m_movementState = EMovementState::ProcessMoveToLocationCommand;
 			targetingComponent->m_targetEntityId = ArgusEntity::k_emptyEntity.GetId();
 			targetingComponent->m_targetLocation = targetLocation;
+			targetingComponent->m_decalEntityId = decalEntity.GetId();
 			navigationComponent->ResetQueuedWaypoints();
 			break;
 		case EMovementState::ProcessMoveToLocationCommand:
 		case EMovementState::MoveToLocation:
 			taskComponent->m_movementState = EMovementState::ProcessMoveToLocationCommand;
-			navigationComponent->m_queuedWaypoints.PushLast(targetLocation);
+			navigationComponent->m_queuedWaypoints.PushLast(NavigationWaypoint(targetLocation, decalEntity.GetId()));
 			break;
 		default:
 			break;

@@ -4,6 +4,7 @@
 
 #include "ArgusMacros.h"
 #include "ComponentDependencies/ArgusDeque.h"
+#include "ComponentDependencies/NavigationWaypoint.h"
 
 struct NavigationComponent
 {
@@ -13,7 +14,7 @@ struct NavigationComponent
 	TArray<FVector, ArgusContainerAllocator<15> > m_navigationPoints;
 
 	ARGUS_IGNORE()
-	ArgusDeque<FVector, ArgusContainerAllocator<5> > m_queuedWaypoints;
+	ArgusDeque<NavigationWaypoint, ArgusContainerAllocator<5> > m_queuedWaypoints;
 
 	ARGUS_IGNORE()
 	int32 m_lastPointIndex = 0;

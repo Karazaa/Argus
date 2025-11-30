@@ -21,6 +21,7 @@ void DecalComponent::Reset()
 {
 	m_lifetimeSeconds = 1.0f;
 	m_lifetimeTimer.Reset();
+	m_referencingEntityCount = 0u;
 }
 
 void DecalComponent::DrawComponentDebug() const
@@ -55,6 +56,10 @@ void DecalComponent::DrawComponentDebug() const
 		{
 			ImGui::Text("Not set");
 		}
+		ImGui::TableNextColumn();
+		ImGui::Text("m_referencingEntityCount");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_referencingEntityCount);
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

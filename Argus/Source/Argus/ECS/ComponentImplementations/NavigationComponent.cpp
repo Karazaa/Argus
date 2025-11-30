@@ -61,7 +61,6 @@ void NavigationComponent::DrawComponentDebug() const
 		{
 			for (auto element : m_queuedWaypoints)
 			{
-				ImGui::Text("(%.2f, %.2f, %.2f)", element.X, element.Y, element.Z);
 			}
 		}
 		ImGui::TableNextColumn();

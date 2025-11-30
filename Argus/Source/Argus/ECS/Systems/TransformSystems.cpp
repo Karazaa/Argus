@@ -391,7 +391,9 @@ void TransformSystems::OnCompleteNavigationPath(const TransformSystemsArgs& comp
 	{
 		components.m_taskComponent->m_movementState = EMovementState::ProcessMoveToLocationCommand;
 		components.m_navigationComponent->ResetPath();
-		components.m_targetingComponent->m_targetLocation = components.m_navigationComponent->m_queuedWaypoints.First();
+		NavigationWaypoint& nextWaypoint = components.m_navigationComponent->m_queuedWaypoints.First();
+		components.m_targetingComponent->m_targetLocation = nextWaypoint.m_location;
+		components.m_targetingComponent->m_decalEntityId = nextWaypoint.m_decalEntityId;
 		components.m_navigationComponent->m_queuedWaypoints.PopFirst();
 	}
 }
