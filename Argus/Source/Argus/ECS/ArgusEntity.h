@@ -33,7 +33,7 @@ public:
 	static void IterateEntities(Function&& perEntityFunction)
 	{
 		int32 currentIndex = GetLowestTakenEntityId();
-		while (currentIndex <= GetHighestTakenEntityId() && currentIndex > 0)
+		while (currentIndex <= GetHighestTakenEntityId() && currentIndex >= 0)
 		{
 			ArgusEntity entity = RetrieveEntity(currentIndex);
 			if (!entity)
@@ -53,7 +53,7 @@ public:
 		int32 currentIndex = GetLowestTakenEntityId();
 		SystemsArgs systemsArgs = SystemsArgs();
 
-		while (currentIndex <= GetHighestTakenEntityId() && currentIndex > 0)
+		while (currentIndex <= GetHighestTakenEntityId() && currentIndex >= 0)
 		{
 			if (!systemsArgs.PopulateArguments(RetrieveEntity(currentIndex)))
 			{
