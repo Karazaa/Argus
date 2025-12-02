@@ -20,8 +20,9 @@ uint16 DecalComponent::GetOwningEntityId() const
 void DecalComponent::Reset()
 {
 	m_lifetimeSeconds = 1.0f;
-	m_lifetimeTimer.Reset();
 	m_referencingEntityCount = 0u;
+	m_connectedEntityId = ArgusECSConstants::k_maxEntities;
+	m_lifetimeTimer.Reset();
 }
 
 void DecalComponent::DrawComponentDebug() const
@@ -38,6 +39,14 @@ void DecalComponent::DrawComponentDebug() const
 		ImGui::Text("m_lifetimeSeconds");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_lifetimeSeconds);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_referencingEntityCount");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_referencingEntityCount);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_connectedEntityId");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_connectedEntityId);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_lifetimeTimer");
 		ImGui::TableNextColumn();
@@ -56,10 +65,6 @@ void DecalComponent::DrawComponentDebug() const
 		{
 			ImGui::Text("Not set");
 		}
-		ImGui::TableNextColumn();
-		ImGui::Text("m_referencingEntityCount");
-		ImGui::TableNextColumn();
-		ImGui::Text("%d", m_referencingEntityCount);
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

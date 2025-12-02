@@ -12,4 +12,5 @@ struct DecalSystemsArgs
 	TaskComponent* m_taskComponent = nullptr;
 	DecalComponent* m_decalComponent = nullptr;
 	TimerComponent* m_timerComponent = nullptr;
+	TransformComponent* m_transformComponent = nullptr;
 };

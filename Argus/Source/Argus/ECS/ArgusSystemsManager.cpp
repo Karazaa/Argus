@@ -57,7 +57,7 @@ void ArgusSystemsManager::RunSystems(UWorld* worldPointer, float deltaTime)
 	didEntityPositionChangeThisFrame |= TransformSystems::RunSystems(worldPointer, deltaTime);
 	FlockingSystems::RunSystems(deltaTime);
 	didEntityPositionChangeThisFrame |= SpawningSystems::RunSystems(deltaTime);
-	DecalSystems::RunSystems(deltaTime);
+	DecalSystems::RunSystems(worldPointer, deltaTime);
 
 #if !UE_BUILD_SHIPPING
 	ArgusECSDebugger::DrawECSDebugger();

@@ -15,8 +15,9 @@ bool DecalSystemsArgs::PopulateArguments(const ArgusEntity& entity)
 	m_taskComponent = entity.GetComponent<TaskComponent>();
 	m_decalComponent = entity.GetComponent<DecalComponent>();
 	m_timerComponent = entity.GetComponent<TimerComponent>();
+	m_transformComponent = entity.GetComponent<TransformComponent>();
 
-	if (!m_entity || !m_taskComponent || !m_decalComponent || !m_timerComponent)
+	if (!m_entity || !m_taskComponent || !m_decalComponent || !m_timerComponent || !m_transformComponent)
 	{
 		return false;
 	}
@@ -26,7 +27,7 @@ bool DecalSystemsArgs::PopulateArguments(const ArgusEntity& entity)
 
 bool DecalSystemsArgs::AreComponentsValidCheck(const WIDECHAR* functionName) const
 {
-	if (UNLIKELY(!m_entity || !m_taskComponent || !m_decalComponent || !m_timerComponent))
+	if (UNLIKELY(!m_entity || !m_taskComponent || !m_decalComponent || !m_timerComponent || !m_transformComponent))
 	{
 		ArgusLogging::LogInvalidComponentReferences(functionName, ARGUS_NAMEOF(DecalSystemsArgs));
 		return false;

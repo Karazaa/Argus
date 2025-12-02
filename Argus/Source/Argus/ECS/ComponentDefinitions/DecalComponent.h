@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "ArgusECSConstants.h"
 #include "ArgusMacros.h"
 #include "ComponentDependencies/Timer.h"
 #include "CoreMinimal.h"
@@ -13,8 +14,11 @@ struct DecalComponent
 	float m_lifetimeSeconds = 1.0f;
 
 	ARGUS_IGNORE()
-	TimerHandle m_lifetimeTimer;
+	uint16 m_referencingEntityCount = 0u;
 
 	ARGUS_IGNORE()
-	uint16 m_referencingEntityCount = 0u;
+	uint16 m_connectedEntityId = ArgusECSConstants::k_maxEntities;
+
+	ARGUS_IGNORE()
+	TimerHandle m_lifetimeTimer;
 };

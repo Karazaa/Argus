@@ -5,29 +5,64 @@
 #include "ArgusEntityTemplate.h"
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
+#include "DrawDebugHelpers.h"
+#include "Engine/World.h"
 #include "RecordDefinitions/ArgusActorRecord.h"
 
-void DecalSystems::RunSystems(float deltaTime)
+void DecalSystems::RunSystems(UWorld* worldPointer, float deltaTime)
 {
 	ARGUS_TRACE(DecalSystems::RunSystems);
 
-	ArgusEntity::IterateSystemsArgs<DecalSystemsArgs>([deltaTime](DecalSystemsArgs& components)
+	ARGUS_RETURN_ON_NULL(worldPointer, ArgusECSLog);
+
+	ArgusEntity::IterateSystemsArgs<DecalSystemsArgs>([worldPointer, deltaTime](DecalSystemsArgs& components)
 	{
 		if (components.m_decalComponent->m_lifetimeSeconds > 0.0f && !components.m_decalComponent->m_lifetimeTimer.WasTimerSet())
 		{
 			components.m_decalComponent->m_lifetimeTimer.StartTimer(components.m_decalComponent->m_lifetimeSeconds);
-			return;
 		}
-
-		if (components.m_decalComponent->m_lifetimeTimer.IsTimerComplete())
+		else if (components.m_decalComponent->m_lifetimeTimer.IsTimerComplete())
 		{
 			components.m_taskComponent->m_baseState = EBaseState::DestroyedWaitingForActorRelease;
+		}
+
+		if (components.m_decalComponent->m_connectedEntityId != ArgusECSConstants::k_maxEntities)
+		{
+			DrawLineForConnectedDecals(worldPointer, components);
 		}
 	});
 }
 
+void DecalSystems::DrawLineForConnectedDecals(UWorld* worldPointer, DecalSystemsArgs& components)
+{
+	ARGUS_RETURN_ON_NULL(worldPointer, ArgusECSLog);
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+
+	const FVector fromLocation = components.m_transformComponent->m_location;
+
+	ArgusEntity connectedEntity = ArgusEntity::RetrieveEntity(components.m_decalComponent->m_connectedEntityId);
+	if (!connectedEntity)
+	{
+		components.m_decalComponent->m_connectedEntityId = ArgusECSConstants::k_maxEntities;
+		return;
+	}
+
+	TransformComponent* connectedTransformComponent = connectedEntity.GetComponent<TransformComponent>();
+	if (!connectedTransformComponent)
+	{
+		return;
+	}
+
+	DrawDebugLine(worldPointer, fromLocation, connectedTransformComponent->m_location, FColor::Green);
+}
+
 ArgusEntity DecalSystems::InstantiateMoveToLocationDecalEntity(const UArgusActorRecord* moveToLocationDecalRecord, const FVector& targetLocation, uint16 numReferencers)
 {
+	ARGUS_TRACE(DecalSystems::InstantiateMoveToLocationDecalEntity);
+
 	if (!moveToLocationDecalRecord)
 	{
 		return ArgusEntity::k_emptyEntity;
@@ -64,6 +99,8 @@ ArgusEntity DecalSystems::InstantiateMoveToLocationDecalEntity(const UArgusActor
 
 void DecalSystems::SetMoveToLocationDecalPerEntity(TargetingComponent* targetingComponent, ArgusEntity decalEntity)
 {
+	ARGUS_TRACE(DecalSystems::SetMoveToLocationDecalPerEntity);
+
 	ARGUS_RETURN_ON_NULL(targetingComponent, ArgusInputLog);
 
 	ArgusEntity oldDecalEntity = ArgusEntity::RetrieveEntity(targetingComponent->m_decalEntityId);
@@ -86,6 +123,8 @@ void DecalSystems::SetMoveToLocationDecalPerEntity(TargetingComponent* targeting
 
 void DecalSystems::ActivateCachedMoveToLocationDecalPerEntity(const UArgusActorRecord* moveToLocationDecalRecord, ArgusEntity entity)
 {
+	ARGUS_TRACE(DecalSystems::ActivateCachedMoveToLocationDecalPerEntity);
+
 	if (!entity)
 	{
 		return;
@@ -105,16 +144,76 @@ void DecalSystems::ActivateCachedMoveToLocationDecalPerEntity(const UArgusActorR
 		return;
 	}
 
-	if (!targetingComponent->HasLocationTarget())
+	if (targetingComponent->HasLocationTarget())
+	{
+		const FVector targetLocation = targetingComponent->m_targetLocation.GetValue();
+		ActivateMoveToLocationDecalEntity(moveToLocationDecalRecord, targetLocation, targetingComponent->m_decalEntityId);
+	}
+
+	NavigationComponent* navigationComponent = entity.GetComponent<NavigationComponent>();
+	if (!navigationComponent)
 	{
 		return;
 	}
 
-	const FVector targetLocation = targetingComponent->m_targetLocation.GetValue();
+	uint16 previousEntityId = targetingComponent->m_decalEntityId;
+	for (NavigationWaypoint& queuedWaypoint : navigationComponent->m_queuedWaypoints)
+	{
+		ActivateMoveToLocationDecalEntity(moveToLocationDecalRecord, queuedWaypoint.m_location, queuedWaypoint.m_decalEntityId);
+		ArgusEntity decalEntity = ArgusEntity::RetrieveEntity(queuedWaypoint.m_decalEntityId);
+
+		if (!decalEntity)
+		{
+			continue;
+		}
+
+		DecalComponent* decalComponent = decalEntity.GetComponent<DecalComponent>();
+		if (!decalComponent)
+		{
+			continue;
+		}
+
+		decalComponent->m_connectedEntityId = previousEntityId;
+		previousEntityId = queuedWaypoint.m_decalEntityId;
+	}
+}
+
+void DecalSystems::ClearMoveToLocationDecalPerEntity(ArgusEntity entity, bool clearQueuedWaypoints)
+{
+	ARGUS_TRACE(DecalSystems::ClearMoveToLocationDecalPerEntity);
+
+	TargetingComponent* targetingComponent = entity.GetComponent<TargetingComponent>();
+	if (!targetingComponent)
+	{
+		return;
+	}
+
+	ClearMoveToLocationDecalEntity(targetingComponent->m_decalEntityId);
+
+	if (!clearQueuedWaypoints)
+	{
+		return;
+	}
+
+	NavigationComponent* navigationComponent = entity.GetComponent<NavigationComponent>();
+	if (!navigationComponent)
+	{
+		return;
+	}
+
+	for (NavigationWaypoint& queuedWaypoint : navigationComponent->m_queuedWaypoints)
+	{
+		ClearMoveToLocationDecalEntity(queuedWaypoint.m_decalEntityId);
+	}
+}
+
+void DecalSystems::ActivateMoveToLocationDecalEntity(const UArgusActorRecord* moveToLocationDecalRecord, const FVector& location, uint16& decalEntityId)
+{
+	ARGUS_TRACE(DecalSystems::ActivateMoveToLocationDecalEntity);
 
 	const InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::GetSingletonEntity().GetComponent<InputInterfaceComponent>();
 	ARGUS_RETURN_ON_NULL(inputInterfaceComponent, ArgusECSLog);
-	
+
 	for (int32 i = 0; i < inputInterfaceComponent->m_selectedArgusEntityIds.Num(); ++i)
 	{
 		ArgusEntity selectedEntity = ArgusEntity::RetrieveEntity(inputInterfaceComponent->m_selectedArgusEntityIds[i]);
@@ -129,9 +228,35 @@ void DecalSystems::ActivateCachedMoveToLocationDecalPerEntity(const UArgusActorR
 			continue;
 		}
 
-		if (selectedTargetingComponent->m_targetLocation.GetValue() == targetLocation)
+		if (selectedTargetingComponent->m_targetLocation.GetValue() == location)
 		{
-			targetingComponent->m_decalEntityId = selectedTargetingComponent->m_decalEntityId;
+			decalEntityId = selectedTargetingComponent->m_decalEntityId;
+			ArgusEntity decalEntity = ArgusEntity::RetrieveEntity(selectedTargetingComponent->m_decalEntityId);
+			if (decalEntity)
+			{
+				if (DecalComponent* decalComponent = decalEntity.GetComponent<DecalComponent>())
+				{
+					decalComponent->m_referencingEntityCount++;
+				}
+			}
+
+			return;
+		}
+
+		NavigationComponent* navigationComponent = selectedEntity.GetComponent<NavigationComponent>();
+		if (!navigationComponent)
+		{
+			continue;
+		}
+
+		for (NavigationWaypoint& queuedWaypoint : navigationComponent->m_queuedWaypoints)
+		{
+			if (queuedWaypoint.m_location != location)
+			{
+				continue;
+			}
+
+			decalEntityId = queuedWaypoint.m_decalEntityId;
 			ArgusEntity decalEntity = ArgusEntity::RetrieveEntity(selectedTargetingComponent->m_decalEntityId);
 			if (decalEntity)
 			{
@@ -145,19 +270,16 @@ void DecalSystems::ActivateCachedMoveToLocationDecalPerEntity(const UArgusActorR
 		}
 	}
 
-	targetingComponent->m_decalEntityId = DecalSystems::InstantiateMoveToLocationDecalEntity(moveToLocationDecalRecord, targetLocation, 1u).GetId();
+	decalEntityId = DecalSystems::InstantiateMoveToLocationDecalEntity(moveToLocationDecalRecord, location, 1u).GetId();
 }
 
-void DecalSystems::ClearMoveToLocationDecalPerEntity(ArgusEntity entity)
+void DecalSystems::ClearMoveToLocationDecalEntity(uint16& decalEntityId)
 {
-	TargetingComponent* targetingComponent = entity.GetComponent<TargetingComponent>();
-	if (!targetingComponent)
-	{
-		return;
-	}
+	ARGUS_TRACE(DecalSystems::ClearMoveToLocationDecalEntity);
 
-	ArgusEntity oldDecalEntity = ArgusEntity::RetrieveEntity(targetingComponent->m_decalEntityId);
-	targetingComponent->m_decalEntityId = ArgusECSConstants::k_maxEntities;
+	ArgusEntity oldDecalEntity = ArgusEntity::RetrieveEntity(decalEntityId);
+	decalEntityId = ArgusECSConstants::k_maxEntities;
+
 	if (!oldDecalEntity)
 	{
 		return;

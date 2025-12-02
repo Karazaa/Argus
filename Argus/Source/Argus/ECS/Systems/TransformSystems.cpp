@@ -378,7 +378,7 @@ void TransformSystems::OnCompleteNavigationPath(const TransformSystemsArgs& comp
 		return;
 	}
 
-	DecalSystems::ClearMoveToLocationDecalPerEntity(components.m_entity);
+	DecalSystems::ClearMoveToLocationDecalPerEntity(components.m_entity, false);
 
 	if (components.m_navigationComponent->m_queuedWaypoints.IsEmpty())
 	{
@@ -395,6 +395,17 @@ void TransformSystems::OnCompleteNavigationPath(const TransformSystemsArgs& comp
 		components.m_targetingComponent->m_targetLocation = nextWaypoint.m_location;
 		components.m_targetingComponent->m_decalEntityId = nextWaypoint.m_decalEntityId;
 		components.m_navigationComponent->m_queuedWaypoints.PopFirst();
+
+		if (!components.m_navigationComponent->m_queuedWaypoints.IsEmpty())
+		{
+			if (ArgusEntity decalEntity = ArgusEntity::RetrieveEntity(components.m_navigationComponent->m_queuedWaypoints.First().m_decalEntityId))
+			{
+				if (DecalComponent* decalComponent = decalEntity.GetComponent<DecalComponent>())
+				{
+					decalComponent->m_connectedEntityId = nextWaypoint.m_decalEntityId;
+				}
+			}
+		}
 	}
 }
 

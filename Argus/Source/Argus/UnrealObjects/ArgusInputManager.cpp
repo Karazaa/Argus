@@ -927,7 +927,7 @@ void UArgusInputManager::ProcessMoveToInputEventPerSelectedActor(AArgusActor* ar
 			targetingComponent->m_targetLocation.Reset();
 		}
 
-		DecalSystems::ClearMoveToLocationDecalPerEntity(selectedEntity);
+		DecalSystems::ClearMoveToLocationDecalPerEntity(selectedEntity, true);
 	}
 	else if (inputMovementState == EMovementState::ProcessMoveToLocationCommand)
 	{
@@ -1277,7 +1277,7 @@ void UArgusInputManager::AddSelectedActorExclusive(AArgusActor* argusActor)
 		else if (selectedActor.IsValid())
 		{
 			selectedActor->SetSelectionState(false);
-			DecalSystems::ClearMoveToLocationDecalPerEntity(selectedActor->GetEntity());
+			DecalSystems::ClearMoveToLocationDecalPerEntity(selectedActor->GetEntity(), true);
 		}
 	}
 	m_selectedArgusActors.Empty();
@@ -1301,7 +1301,7 @@ void UArgusInputManager::AddSelectedActorAdditive(AArgusActor* argusActor)
 	if (m_selectedArgusActors.Contains(argusActor))
 	{
 		argusActor->SetSelectionState(false);
-		DecalSystems::ClearMoveToLocationDecalPerEntity(argusActor->GetEntity());
+		DecalSystems::ClearMoveToLocationDecalPerEntity(argusActor->GetEntity(), true);
 		m_selectedArgusActors.Remove(argusActor);
 	}
 	else
@@ -1323,7 +1323,7 @@ void UArgusInputManager::AddMarqueeSelectedActorsExclusive(const TArray<AArgusAc
 		if (selectedActor.IsValid())
 		{
 			selectedActor->SetSelectionState(false);
-			DecalSystems::ClearMoveToLocationDecalPerEntity(selectedActor->GetEntity());
+			DecalSystems::ClearMoveToLocationDecalPerEntity(selectedActor->GetEntity(), true);
 		}
 	}
 	m_selectedArgusActors.Empty();
