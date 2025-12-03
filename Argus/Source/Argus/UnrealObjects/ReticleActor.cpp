@@ -17,6 +17,8 @@ AReticleActor::AReticleActor()
 
 void AReticleActor::UpdateReticle()
 {
+	ARGUS_TRACE(AReticleActor::UpdateReticle);
+
 	if (!m_decalComponent)
 	{
 		return;

@@ -868,7 +868,7 @@ void UArgusInputManager::ProcessMoveToInputEvent()
 	}
 	else
 	{
-		decalEntity = DecalSystems::InstantiateMoveToLocationDecalEntity(m_owningPlayerController->GetMoveToLocationDecalActorRecord(), targetLocation, m_selectedArgusActors.Num());
+		decalEntity = DecalSystems::InstantiateMoveToLocationDecalEntity(m_owningPlayerController->GetMoveToLocationDecalActorRecord(), targetLocation, m_selectedArgusActors.Num(), ArgusECSConstants::k_maxEntities);
 	}
 
 	for (TWeakObjectPtr<AArgusActor>& selectedActor : m_selectedArgusActors)
@@ -894,6 +894,8 @@ void UArgusInputManager::ProcessMoveToInputEventPerSelectedActor(AArgusActor* ar
 	{
 		return;
 	}
+
+	DecalSystems::ClearMoveToLocationDecalPerEntity(selectedEntity, true);
 
 	TaskComponent* taskComponent = selectedEntity.GetComponent<TaskComponent>();
 	TargetingComponent* targetingComponent = selectedEntity.GetComponent<TargetingComponent>();
@@ -975,7 +977,7 @@ void UArgusInputManager::ProcessSetWaypointInputEvent()
 		);
 	}
 
-	ArgusEntity decalEntity = DecalSystems::InstantiateMoveToLocationDecalEntity(m_owningPlayerController->GetMoveToLocationDecalActorRecord(), targetLocation, m_selectedArgusActors.Num());
+	ArgusEntity decalEntity = DecalSystems::InstantiateMoveToLocationDecalEntity(m_owningPlayerController->GetMoveToLocationDecalActorRecord(), targetLocation, m_selectedArgusActors.Num(), DecalSystems::GetMostRecentSelectedWaypointDecalEntityId());
 
 	for (TWeakObjectPtr<AArgusActor>& selectedActor : m_selectedArgusActors)
 	{
@@ -1280,7 +1282,7 @@ void UArgusInputManager::AddSelectedActorExclusive(AArgusActor* argusActor)
 			DecalSystems::ClearMoveToLocationDecalPerEntity(selectedActor->GetEntity(), true);
 		}
 	}
-	m_selectedArgusActors.Empty();
+	ClearSelectedActors();
 
 	if (!alreadySelected)
 	{
@@ -1326,7 +1328,7 @@ void UArgusInputManager::AddMarqueeSelectedActorsExclusive(const TArray<AArgusAc
 			DecalSystems::ClearMoveToLocationDecalPerEntity(selectedActor->GetEntity(), true);
 		}
 	}
-	m_selectedArgusActors.Empty();
+	ClearSelectedActors();
 
 	AddMarqueeSelectedActorsAdditive(marqueeSelectedActors);
 }
@@ -1384,6 +1386,19 @@ bool UArgusInputManager::CleanUpSelectedActors()
 	}
 
 	return removedActors;
+}
+
+void UArgusInputManager::ClearSelectedActors()
+{
+	m_selectedArgusActors.Reset();
+
+	InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::GetSingletonEntity().GetComponent<InputInterfaceComponent>();
+	ARGUS_RETURN_ON_NULL(inputInterfaceComponent, ArgusInputLog);
+
+	inputInterfaceComponent->m_selectedArgusEntityIds.Reset();
+	inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.Reset();
+	inputInterfaceComponent->m_indexOfActiveAbilityGroup = -1;
+	inputInterfaceComponent->m_selectedActorsDisplayState = ESelectedActorsDisplayState::ChangedThisFrame;
 }
 
 void UArgusInputManager::OnSelectedArgusArgusActorsChanged()

@@ -13,12 +13,13 @@ public:
 	static void RunSystems(UWorld* worldPointer, float deltaTime);
 
 	static void DrawLineForConnectedDecals(UWorld* worldPointer, DecalSystemsArgs& components);
-	static ArgusEntity InstantiateMoveToLocationDecalEntity(const UArgusActorRecord* moveToLocationDecalRecord, const FVector& targetLocation, uint16 numReferencers);
+	static ArgusEntity InstantiateMoveToLocationDecalEntity(const UArgusActorRecord* moveToLocationDecalRecord, const FVector& targetLocation, uint16 numReferencers, uint16 connectedEntityId);
 	static void SetMoveToLocationDecalPerEntity(TargetingComponent* targetingComponent, ArgusEntity decalEntity);
 	static void ActivateCachedMoveToLocationDecalPerEntity(const UArgusActorRecord* moveToLocationDecalRecord, ArgusEntity entity);
 	static void ClearMoveToLocationDecalPerEntity(ArgusEntity entity, bool clearQueuedWaypoints);
+	static uint16 GetMostRecentSelectedWaypointDecalEntityId();
 
 private:
-	static void ActivateMoveToLocationDecalEntity(const UArgusActorRecord* moveToLocationDecalRecord, const FVector& location, uint16& decalEntityId);
+	static void ActivateMoveToLocationDecalEntity(const UArgusActorRecord* moveToLocationDecalRecord, const FVector& location, uint16 connectedEntityId, uint16& decalEntityId);
 	static void ClearMoveToLocationDecalEntity(uint16& decalEntityId);
 };

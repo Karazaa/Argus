@@ -18,6 +18,8 @@
 
 void AArgusPlayerController::ProcessArgusPlayerInput(float deltaTime)
 {
+	ARGUS_TRACE(AArgusPlayerController::ProcessArgusPlayerInput);
+
 	if (!m_argusInputManager)
 	{
 		return;
@@ -245,6 +247,8 @@ void AArgusPlayerController::SetupInputComponent()
 
 void AArgusPlayerController::UpdateUIWidgetDisplay(const FVector2D& mouseScreenSpaceLocation)
 {
+	ARGUS_TRACE(AArgusPlayerController::UpdateUIWidgetDisplay);
+
 	UArgusUIElement::UpdateDisplayParameters uiParams = UArgusUIElement::UpdateDisplayParameters(mouseScreenSpaceLocation, m_playerTeam);
 
 	if (m_baseCanvasUserWidget)
