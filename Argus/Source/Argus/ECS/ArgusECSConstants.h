@@ -39,6 +39,7 @@ namespace ArgusECSConstants
 	static constexpr float k_flightTransitionAltitudeThreshold = 1.0f;
 
 	static constexpr float k_minimumMarqueeSelectDistance = 25.0f;
+	static constexpr float k_connectedDecalLineHeightAdjustment = 1.0f;
 
 #if !UE_BUILD_SHIPPING
 	static constexpr float k_debugDrawLineWidth = 3.0f;

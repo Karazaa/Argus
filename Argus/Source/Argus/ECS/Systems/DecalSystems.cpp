@@ -42,7 +42,7 @@ void DecalSystems::DrawLineForConnectedDecals(UWorld* worldPointer, DecalSystems
 	}
 
 	FVector fromLocation = components.m_transformComponent->m_location;
-	fromLocation.Z += 1.0f;
+	fromLocation.Z += ArgusECSConstants::k_connectedDecalLineHeightAdjustment;
 
 	ArgusEntity connectedEntity = ArgusEntity::RetrieveEntity(components.m_decalComponent->m_connectedEntityId);
 	if (!connectedEntity)
@@ -58,7 +58,7 @@ void DecalSystems::DrawLineForConnectedDecals(UWorld* worldPointer, DecalSystems
 	}
 
 	FVector toLocation = connectedTransformComponent->m_location;
-	toLocation.Z += 1.0f;
+	toLocation.Z += ArgusECSConstants::k_connectedDecalLineHeightAdjustment;
 
 	DrawDebugLine(worldPointer, fromLocation, toLocation, FColor::Green);
 }
@@ -285,7 +285,7 @@ void DecalSystems::ActivateMoveToLocationDecalEntity(const UArgusActorRecord* mo
 			}
 
 			decalEntityId = queuedWaypoint.m_decalEntityId;
-			ArgusEntity decalEntity = ArgusEntity::RetrieveEntity(selectedTargetingComponent->m_decalEntityId);
+			ArgusEntity decalEntity = ArgusEntity::RetrieveEntity(decalEntityId);
 			if (decalEntity)
 			{
 				if (DecalComponent* decalComponent = decalEntity.GetComponent<DecalComponent>())

@@ -1140,11 +1140,25 @@ void UArgusInputManager::ProcessRotateCameraInputEvent(AArgusCameraActor* argusC
 
 void UArgusInputManager::ProcessControlGroup(uint8 controlGroupIndex, AArgusCameraActor* argusCamera)
 {
+	if (!ValidateOwningPlayerController())
+	{
+		return;
+	}
+
 	if (m_controlGroupActors[controlGroupIndex].IsEmpty())
 	{
 		return;
 	}
 
+	for (TWeakObjectPtr<AArgusActor>& controlGroupActor : m_controlGroupActors[controlGroupIndex])
+	{
+		if (!controlGroupActor.IsValid())
+		{
+			continue;
+		}
+
+		DecalSystems::ActivateCachedMoveToLocationDecalPerEntity(m_owningPlayerController->GetMoveToLocationDecalActorRecord(), controlGroupActor->GetEntity());
+	}
 	for (TWeakObjectPtr<AArgusActor>& selectedActor : m_selectedArgusActors)
 	{
 		if (!selectedActor.IsValid())
@@ -1153,6 +1167,7 @@ void UArgusInputManager::ProcessControlGroup(uint8 controlGroupIndex, AArgusCame
 		}
 
 		selectedActor->SetSelectionState(false);
+		DecalSystems::ClearMoveToLocationDecalPerEntity(selectedActor->GetEntity(), true);
 	}
 	m_selectedArgusActors = m_controlGroupActors[controlGroupIndex];
 	CleanUpSelectedActors();
