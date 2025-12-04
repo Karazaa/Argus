@@ -15,6 +15,7 @@ bool TaskSystemsArgs::PopulateArguments(const ArgusEntity& entity)
 	m_taskComponent = entity.GetComponent<TaskComponent>();
 	m_targetingComponent = entity.GetComponent<TargetingComponent>();
 	m_nearbyEntitiesComponent = entity.GetComponent<NearbyEntitiesComponent>();
+	m_navigationComponent = entity.GetComponent<NavigationComponent>();
 
 	if (!m_entity || !m_taskComponent || !m_targetingComponent || !m_nearbyEntitiesComponent)
 	{

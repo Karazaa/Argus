@@ -12,4 +12,7 @@ struct TaskSystemsArgs
 	TaskComponent* m_taskComponent = nullptr;
 	TargetingComponent* m_targetingComponent = nullptr;
 	NearbyEntitiesComponent* m_nearbyEntitiesComponent = nullptr;
+
+	ARGUS_GET_BUT_SKIP()
+	NavigationComponent* m_navigationComponent = nullptr;
 };

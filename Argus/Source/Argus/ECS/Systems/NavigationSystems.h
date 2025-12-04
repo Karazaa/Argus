@@ -12,6 +12,7 @@ public:
 
 	static void NavigateFromEntityToEntity(UWorld* worldPointer, ArgusEntity targetEntity, const NavigationSystemsArgs& components);
 	static void NavigateFromEntityToLocation(UWorld* worldPointer, std::optional<FVector> targetLocation, const NavigationSystemsArgs& components);
+	static void StartNavigatingToQueuedWaypoint(TaskComponent* taskComponent, TargetingComponent* targetingComponent, NavigationComponent* navigationComponent);
 
 private:
 	static void ProcessNavigationTaskCommands(UWorld* worldPointer, const NavigationSystemsArgs& components);

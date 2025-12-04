@@ -94,6 +94,36 @@ void NavigationSystems::NavigateFromEntityToLocation(UWorld* worldPointer, std::
 	components.m_velocityComponent->m_currentVelocity = FVector2D((firstLocation - moverLocation).GetSafeNormal() * components.m_velocityComponent->m_desiredSpeedUnitsPerSecond);
 }
 
+void NavigationSystems::StartNavigatingToQueuedWaypoint(TaskComponent* taskComponent, TargetingComponent* targetingComponent, NavigationComponent* navigationComponent)
+{
+	ARGUS_RETURN_ON_NULL(taskComponent, ArgusECSLog);
+	ARGUS_RETURN_ON_NULL(targetingComponent, ArgusECSLog);
+	ARGUS_RETURN_ON_NULL(navigationComponent, ArgusECSLog);
+
+	if (navigationComponent->m_queuedWaypoints.IsEmpty())
+	{
+		return;
+	}
+
+	taskComponent->m_movementState = EMovementState::ProcessMoveToLocationCommand;
+	navigationComponent->ResetPath();
+	NavigationWaypoint& nextWaypoint = navigationComponent->m_queuedWaypoints.First();
+	targetingComponent->m_targetLocation = nextWaypoint.m_location;
+	targetingComponent->m_decalEntityId = nextWaypoint.m_decalEntityId;
+	navigationComponent->m_queuedWaypoints.PopFirst();
+
+	if (!navigationComponent->m_queuedWaypoints.IsEmpty())
+	{
+		if (ArgusEntity decalEntity = ArgusEntity::RetrieveEntity(navigationComponent->m_queuedWaypoints.First().m_decalEntityId))
+		{
+			if (DecalComponent* decalComponent = decalEntity.GetComponent<DecalComponent>())
+			{
+				decalComponent->m_connectedEntityId = nextWaypoint.m_decalEntityId;
+			}
+		}
+	}
+}
+
 void NavigationSystems::ProcessNavigationTaskCommands(UWorld* worldPointer, const NavigationSystemsArgs& components)
 {
 	ARGUS_TRACE(NavigationSystems::ProcessNavigationTaskCommands);

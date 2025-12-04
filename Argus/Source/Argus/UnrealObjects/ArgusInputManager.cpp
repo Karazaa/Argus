@@ -1388,7 +1388,7 @@ void UArgusInputManager::AddMarqueeSelectedActorsAdditive(const TArray<AArgusAct
 
 	for (int32 i = 0; i < selectedActorsNum; ++i)
 	{
-		if (marqueeSelectedActors[i])
+		if (marqueeSelectedActors[i] && !m_selectedArgusActors.Contains(marqueeSelectedActors[i]))
 		{
 			marqueeSelectedActors[i]->SetSelectionState(true);
 			DecalSystems::ActivateCachedMoveToLocationDecalPerEntity(m_owningPlayerController->GetMoveToLocationDecalActorRecord(), marqueeSelectedActors[i]->GetEntity());

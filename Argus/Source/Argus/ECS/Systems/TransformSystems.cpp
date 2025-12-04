@@ -10,6 +10,7 @@
 #include "Systems/CombatSystems.h"
 #include "Systems/DecalSystems.h"
 #include "Systems/FlockingSystems.h"
+#include "Systems/NavigationSystems.h"
 #include "Systems/TargetingSystems.h"
 
 bool TransformSystems::RunSystems(UWorld* worldPointer, float deltaTime)
@@ -389,23 +390,7 @@ void TransformSystems::OnCompleteNavigationPath(const TransformSystemsArgs& comp
 	}
 	else
 	{
-		components.m_taskComponent->m_movementState = EMovementState::ProcessMoveToLocationCommand;
-		components.m_navigationComponent->ResetPath();
-		NavigationWaypoint& nextWaypoint = components.m_navigationComponent->m_queuedWaypoints.First();
-		components.m_targetingComponent->m_targetLocation = nextWaypoint.m_location;
-		components.m_targetingComponent->m_decalEntityId = nextWaypoint.m_decalEntityId;
-		components.m_navigationComponent->m_queuedWaypoints.PopFirst();
-
-		if (!components.m_navigationComponent->m_queuedWaypoints.IsEmpty())
-		{
-			if (ArgusEntity decalEntity = ArgusEntity::RetrieveEntity(components.m_navigationComponent->m_queuedWaypoints.First().m_decalEntityId))
-			{
-				if (DecalComponent* decalComponent = decalEntity.GetComponent<DecalComponent>())
-				{
-					decalComponent->m_connectedEntityId = nextWaypoint.m_decalEntityId;
-				}
-			}
-		}
+		NavigationSystems::StartNavigatingToQueuedWaypoint(components.m_taskComponent, components.m_targetingComponent, components.m_navigationComponent);
 	}
 }
 

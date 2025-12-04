@@ -6,6 +6,7 @@
 #include "ArgusMacros.h"
 #include "Systems/CombatSystems.h"
 #include "Systems/ConstructionSystems.h"
+#include "Systems/NavigationSystems.h"
 #include "Systems/TargetingSystems.h"
 
 void TaskSystems::RunSystems(float deltaTime)
@@ -33,6 +34,12 @@ void TaskSystems::ProcessIdleEntity(const TaskSystemsArgs& components)
 
 	if (!components.m_entity.IsIdle())
 	{
+		return;
+	}
+
+	if (components.m_navigationComponent && !components.m_navigationComponent->m_queuedWaypoints.IsEmpty())
+	{
+		NavigationSystems::StartNavigatingToQueuedWaypoint(components.m_taskComponent, components.m_targetingComponent, components.m_navigationComponent);
 		return;
 	}
 
