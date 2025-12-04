@@ -208,7 +208,17 @@ uint16 DecalSystems::GetMostRecentSelectedWaypointDecalEntityId()
 		return ArgusECSConstants::k_maxEntities;
 	}
 
-	ArgusEntity oneSelectedEntity = ArgusEntity::RetrieveEntity(inputInterfaceComponent->m_selectedArgusEntityIds[0]);
+	ArgusEntity oneSelectedEntity = ArgusEntity::k_emptyEntity;
+	for (int32 i = 0; i < inputInterfaceComponent->m_selectedArgusEntityIds.Num(); ++i)
+	{
+		ArgusEntity potentialEntity = ArgusEntity::RetrieveEntity(inputInterfaceComponent->m_selectedArgusEntityIds[i]);
+		if (!potentialEntity || !potentialEntity.GetComponent<NavigationComponent>() || !potentialEntity.GetComponent<TargetingComponent>())
+		{
+			continue;
+		}
+		oneSelectedEntity = potentialEntity;
+	}
+	
 	if (!oneSelectedEntity)
 	{
 		return ArgusECSConstants::k_maxEntities;

@@ -977,7 +977,28 @@ void UArgusInputManager::ProcessSetWaypointInputEvent()
 		);
 	}
 
-	ArgusEntity decalEntity = DecalSystems::InstantiateMoveToLocationDecalEntity(m_owningPlayerController->GetMoveToLocationDecalActorRecord(), targetLocation, m_selectedArgusActors.Num(), DecalSystems::GetMostRecentSelectedWaypointDecalEntityId());
+	uint16 numWaypointEligibleEntities = 0u;
+	for (TWeakObjectPtr<AArgusActor>& selectedActor : m_selectedArgusActors)
+	{
+		if (!selectedActor.IsValid())
+		{
+			continue;
+		}
+
+		ArgusEntity selectedEntity = selectedActor->GetEntity();
+		if (!selectedEntity || !selectedEntity.GetComponent<TaskComponent>() || !selectedEntity.GetComponent<TargetingComponent>() || !selectedEntity.GetComponent<NavigationComponent>())
+		{
+			continue;
+		}
+		numWaypointEligibleEntities++;
+	}
+
+	if (numWaypointEligibleEntities == 0u)
+	{
+		return;
+	}
+	
+	ArgusEntity decalEntity = DecalSystems::InstantiateMoveToLocationDecalEntity(m_owningPlayerController->GetMoveToLocationDecalActorRecord(), targetLocation, numWaypointEligibleEntities, DecalSystems::GetMostRecentSelectedWaypointDecalEntityId());
 
 	for (TWeakObjectPtr<AArgusActor>& selectedActor : m_selectedArgusActors)
 	{
@@ -1018,8 +1039,6 @@ void UArgusInputManager::ProcessSetWaypointInputEventPerSelectedActor(AArgusActo
 	{
 		case EMovementState::None:
 		case EMovementState::FailedToFindPath:
-		case EMovementState::ProcessMoveToEntityCommand:
-		case EMovementState::MoveToEntity:
 			taskComponent->m_movementState = EMovementState::ProcessMoveToLocationCommand;
 			targetingComponent->m_targetEntityId = ArgusEntity::k_emptyEntity.GetId();
 			targetingComponent->m_targetLocation = targetLocation;
@@ -1032,6 +1051,7 @@ void UArgusInputManager::ProcessSetWaypointInputEventPerSelectedActor(AArgusActo
 			navigationComponent->m_queuedWaypoints.PushLast(NavigationWaypoint(targetLocation, decalEntity.GetId()));
 			break;
 		default:
+			navigationComponent->m_queuedWaypoints.PushLast(NavigationWaypoint(targetLocation, decalEntity.GetId()));
 			break;
 	}
 }
@@ -1157,11 +1177,21 @@ void UArgusInputManager::ProcessControlGroup(uint8 controlGroupIndex, AArgusCame
 			continue;
 		}
 
+		if (m_selectedArgusActors.Contains(controlGroupActor))
+		{
+			continue;
+		}
+
 		DecalSystems::ActivateCachedMoveToLocationDecalPerEntity(m_owningPlayerController->GetMoveToLocationDecalActorRecord(), controlGroupActor->GetEntity());
 	}
 	for (TWeakObjectPtr<AArgusActor>& selectedActor : m_selectedArgusActors)
 	{
 		if (!selectedActor.IsValid())
+		{
+			continue;
+		}
+
+		if (m_controlGroupActors[controlGroupIndex].Contains(selectedActor))
 		{
 			continue;
 		}

@@ -11,5 +11,8 @@ struct ConstructionSystemsArgs
 	TaskComponent* m_taskComponent = nullptr;
 
 	ARGUS_GET_BUT_SKIP()
+	TargetingComponent* m_targetingComponent = nullptr;
+
+	ARGUS_GET_BUT_SKIP()
 	ConstructionComponent* m_constructionComponent = nullptr;
 };

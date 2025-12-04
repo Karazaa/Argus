@@ -107,14 +107,13 @@ void ConstructionSystems::ProcessConstructingOtherState(float deltaTime, const C
 		return;
 	}
 
-	const TargetingComponent* targetingComponent = components.m_entity.GetComponent<TargetingComponent>();
-	if (!targetingComponent)
+	if (!components.m_targetingComponent)
 	{
 		components.m_taskComponent->m_constructionState = EConstructionState::None;
 		return;
 	}
 
-	const ArgusEntity constructee = ArgusEntity::RetrieveEntity(targetingComponent->m_targetEntityId);
+	const ArgusEntity constructee = ArgusEntity::RetrieveEntity(components.m_targetingComponent->m_targetEntityId);
 	if (!constructee)
 	{
 		components.m_taskComponent->m_constructionState = EConstructionState::None;
@@ -146,7 +145,7 @@ void ConstructionSystems::ProcessConstructingOtherState(float deltaTime, const C
 	if (constructeeConstructionComponent->m_currentWorkSeconds >= constructeeConstructionComponent->m_requiredWorkSeconds)
 	{
 		constructeeConstructionComponent->m_currentWorkSeconds = constructeeConstructionComponent->m_requiredWorkSeconds;
-		components.m_taskComponent->m_constructionState = EConstructionState::None;
+		StopConstructingOther(components);
 	}
 }
 
@@ -168,4 +167,17 @@ void ConstructionSystems::ProcessAutomaticConstruction(float deltaTime, const Co
 
 	const float timeElapsedProportion = components.m_constructionComponent->m_automaticConstructionTimerHandle.GetTimeElapsedProportion(components.m_entity);
 	components.m_constructionComponent->m_currentWorkSeconds = timeElapsedProportion * components.m_constructionComponent->m_requiredWorkSeconds;
+}
+
+void ConstructionSystems::StopConstructingOther(const ConstructionSystemsArgs& components)
+{
+	components.m_taskComponent->m_constructionState = EConstructionState::None;
+	if (components.m_targetingComponent)
+	{
+		components.m_targetingComponent->m_targetEntityId = ArgusECSConstants::k_maxEntities;
+	}
+	if (components.m_taskComponent->m_movementState == EMovementState::InRangeOfTargetEntity)
+	{
+		components.m_taskComponent->m_movementState = EMovementState::None;
+	}
 }

@@ -13,6 +13,7 @@ bool ConstructionSystemsArgs::PopulateArguments(const ArgusEntity& entity)
 
 	m_entity = entity;
 	m_taskComponent = entity.GetComponent<TaskComponent>();
+	m_targetingComponent = entity.GetComponent<TargetingComponent>();
 	m_constructionComponent = entity.GetComponent<ConstructionComponent>();
 
 	if (!m_entity || !m_taskComponent)
