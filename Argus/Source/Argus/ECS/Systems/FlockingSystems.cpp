@@ -14,7 +14,7 @@ void FlockingSystems::RunSystems(float deltaTime)
 	ArgusEntity::IterateSystemsArgs<FlockingSystemsArgs>([deltaTime](FlockingSystemsArgs& components) 
 	{
 		// If executing move task or not shrinking, continue.
-		if (components.m_taskComponent->IsExecutingMoveTask() || components.m_flockingComponent->m_flockingState != EFlockingState::Shrinking)
+		if (components.m_flockingComponent->m_flockingState != EFlockingState::Shrinking)
 		{
 			return;
 		}
@@ -32,10 +32,12 @@ void FlockingSystems::ChooseFlockingRootEntityIfGroupLeader(const TransformSyste
 
 	AvoidanceGroupingComponent* groupingComponent = components.m_entity.GetComponent<AvoidanceGroupingComponent>();
 	FlockingComponent* flockingComponent = components.m_entity.GetComponent<FlockingComponent>();
-	if (!groupingComponent)
+	if (!groupingComponent || !flockingComponent)
 	{
 		return;
 	}
+
+	flockingComponent->m_flockingState = EFlockingState::Shrinking;
 
 	if (groupingComponent->m_groupId != components.m_entity.GetId())
 	{
@@ -125,10 +127,19 @@ ArgusEntity FlockingSystems::GetFlockingRootEntity(const ArgusEntity& entity)
 		return ArgusEntity::k_emptyEntity;
 	}
 
-	const FlockingComponent* flockingComponent = groupLeader.GetComponent<FlockingComponent>();
+	FlockingComponent* flockingComponent = groupLeader.GetComponent<FlockingComponent>();
 	if (!flockingComponent)
 	{
 		return ArgusEntity::k_emptyEntity;
+	}
+
+	if (TaskComponent* taskComponent = entity.GetComponent<TaskComponent>())
+	{
+		if (taskComponent->IsExecutingMoveTask())
+		{
+			flockingComponent->m_flockingRootId = groupLeader.GetId();
+			return groupLeader;
+		}
 	}
 
 	return ArgusEntity::RetrieveEntity(flockingComponent->m_flockingRootId);
