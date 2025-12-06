@@ -310,7 +310,7 @@ void FogOfWarSystems::PopulateOffsetsForEntity(FogOfWarComponent* fogOfWarCompon
 	// The radius overlaps the right edge of the texture.
 	if (((components.m_fogOfWarLocationComponent->m_fogOfWarPixel + outOffsets.m_rightOffset) / textureSize) != centerPixelRowNumber)
 	{
-		outOffsets.m_rightOffset = textureSize - (components.m_fogOfWarLocationComponent->m_fogOfWarPixel % textureSize);
+		outOffsets.m_rightOffset = textureSize - ((components.m_fogOfWarLocationComponent->m_fogOfWarPixel % textureSize) + 1u);
 	}
 
 	outOffsets.m_topOffset = radius;
@@ -710,6 +710,7 @@ void FogOfWarSystems::RevealPixelRangeWithObstacles(FogOfWarComponent* fogOfWarC
 
 	FVector2D currentFromIntersection = cartesianFromLocation;
 	FVector2D currentToIntersection = cartesianToLocation;
+	
 
 	for (int32 i = 0; i < obstacleIndicies.Num(); ++i)
 	{
@@ -934,7 +935,9 @@ FVector2D FogOfWarSystems::GetWorldSpaceLocationFromPixelNumber(FogOfWarComponen
 	const float leftOffset = static_cast<float>(pixelNumber % fogOfWarComponent->m_textureSize) * textureIncrement;
 	const float topOffset = static_cast<float>(pixelNumber / fogOfWarComponent->m_textureSize) * textureIncrement;
 	
-	return FVector2D(spatialPartitioningComponent->m_validSpaceExtent - topOffset, leftOffset - spatialPartitioningComponent->m_validSpaceExtent);
+	FVector2D output = FVector2D(spatialPartitioningComponent->m_validSpaceExtent - topOffset, leftOffset - spatialPartitioningComponent->m_validSpaceExtent);
+	ClampVectorToWorldBounds(output);
+	return output;
 }
 
 uint32 FogOfWarSystems::GetPixelRadiusFromWorldSpaceRadius(FogOfWarComponent* fogOfWarComponent, float radius)
@@ -945,4 +948,13 @@ uint32 FogOfWarSystems::GetPixelRadiusFromWorldSpaceRadius(FogOfWarComponent* fo
 
 	const float portion = ArgusMath::SafeDivide(radius, (2.0f * spatialPartitioningComponent->m_validSpaceExtent));
 	return FMath::FloorToInt32(static_cast<float>(fogOfWarComponent->m_textureSize) * portion);
+}
+
+void FogOfWarSystems::ClampVectorToWorldBounds(FVector2D& vector)
+{
+	SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId).GetComponent<SpatialPartitioningComponent>();
+	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
+
+	vector.X = FMath::Clamp(vector.X, -spatialPartitioningComponent->m_validSpaceExtent, spatialPartitioningComponent->m_validSpaceExtent);
+	vector.Y = FMath::Clamp(vector.Y, -spatialPartitioningComponent->m_validSpaceExtent, spatialPartitioningComponent->m_validSpaceExtent);
 }
