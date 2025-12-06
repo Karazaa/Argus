@@ -314,12 +314,6 @@ void ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
 			FormatImGuiArrayField(avoidanceRangeName, "", false, outParsedVariableContents, FormatImGuiIntField);
 
-			std::string flockingRangeName = std::vformat("{}.GetEntityIdsInFlockingRange()", std::make_format_args(parsedVariableData[i].m_varName));
-			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
-			outParsedVariableContents.push_back(std::vformat("\t\tImGui::Text(\"{}\");", std::make_format_args(flockingRangeName)));
-			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
-			FormatImGuiArrayField(flockingRangeName, "", false, outParsedVariableContents, FormatImGuiIntField);
-
 			std::string sightRangeName = std::vformat("{}.GetEntityIdsInSightRange()", std::make_format_args(parsedVariableData[i].m_varName));
 			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
 			outParsedVariableContents.push_back(std::vformat("\t\tImGui::Text(\"{}\");", std::make_format_args(sightRangeName)));

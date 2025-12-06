@@ -296,7 +296,7 @@ void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const Creat
 #if !UE_BUILD_SHIPPING
 	if (ArgusECSDebugger::ShouldShowAvoidanceDebugForEntity(components.m_entity.GetId()))
 	{
-		DrawDebugCircle(worldPointer, params.m_sourceEntityLocation3D, (2.0f * components.m_transformComponent->m_radius) + ArgusECSConstants::k_flockingRangeExtension, 20, FColor::Orange, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth, FVector::RightVector, FVector::ForwardVector, false);
+		DrawDebugCircle(worldPointer, params.m_sourceEntityLocation3D, (2.0f * components.m_transformComponent->m_radius), 20, FColor::Orange, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth, FVector::RightVector, FVector::ForwardVector, false);
 		DrawDebugCircle(worldPointer, params.m_sourceEntityLocation3D, adjacentEntityRange, 20, FColor::Yellow, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth, FVector::RightVector, FVector::ForwardVector, false);
 	}
 #endif //!UE_BUILD_SHIPPING
@@ -762,7 +762,7 @@ float AvoidanceSystems::GetEffortCoefficientForAvoidanceGroupPair(const Transfor
 	}
 
 	const float squaredDistance = FVector::DistSquared2D(sourceEntityComponents.m_transformComponent->m_location, foundTransformComponent->m_location);
-	if (squaredDistance > FMath::Square((sourceEntityComponents.m_transformComponent->m_radius * 2.0f) + ArgusECSConstants::k_flockingRangeExtension))
+	if (squaredDistance > FMath::Square(sourceEntityComponents.m_transformComponent->m_radius * 2.0f))
 	{
 		return 0.0f;
 	}

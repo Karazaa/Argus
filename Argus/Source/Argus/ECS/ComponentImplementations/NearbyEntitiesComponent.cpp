@@ -53,22 +53,6 @@ void NearbyEntitiesComponent::DrawComponentDebug() const
 			}
 		}
 		ImGui::TableNextColumn();
-		ImGui::Text("m_nearbyEntities.GetEntityIdsInFlockingRange()");
-		ImGui::TableNextColumn();
-		ImGui::Text("Array max is currently = %d", m_nearbyEntities.GetEntityIdsInFlockingRange().Max());
-		if (m_nearbyEntities.GetEntityIdsInFlockingRange().Num() == 0)
-		{
-			ImGui::Text("Array is empty");
-		}
-		else
-		{
-			ImGui::Text("Size of array = %d", m_nearbyEntities.GetEntityIdsInFlockingRange().Num());
-			for (int32 i = 0; i < m_nearbyEntities.GetEntityIdsInFlockingRange().Num(); ++i)
-			{
-				ImGui::Text("%d", m_nearbyEntities.GetEntityIdsInFlockingRange()[i]);
-			}
-		}
-		ImGui::TableNextColumn();
 		ImGui::Text("m_nearbyEntities.GetEntityIdsInSightRange()");
 		ImGui::TableNextColumn();
 		ImGui::Text("Array max is currently = %d", m_nearbyEntities.GetEntityIdsInSightRange().Max());
@@ -136,22 +120,6 @@ void NearbyEntitiesComponent::DrawComponentDebug() const
 			for (int32 i = 0; i < m_nearbyFlyingEntities.GetEntityIdsInAvoidanceRange().Num(); ++i)
 			{
 				ImGui::Text("%d", m_nearbyFlyingEntities.GetEntityIdsInAvoidanceRange()[i]);
-			}
-		}
-		ImGui::TableNextColumn();
-		ImGui::Text("m_nearbyFlyingEntities.GetEntityIdsInFlockingRange()");
-		ImGui::TableNextColumn();
-		ImGui::Text("Array max is currently = %d", m_nearbyFlyingEntities.GetEntityIdsInFlockingRange().Max());
-		if (m_nearbyFlyingEntities.GetEntityIdsInFlockingRange().Num() == 0)
-		{
-			ImGui::Text("Array is empty");
-		}
-		else
-		{
-			ImGui::Text("Size of array = %d", m_nearbyFlyingEntities.GetEntityIdsInFlockingRange().Num());
-			for (int32 i = 0; i < m_nearbyFlyingEntities.GetEntityIdsInFlockingRange().Num(); ++i)
-			{
-				ImGui::Text("%d", m_nearbyFlyingEntities.GetEntityIdsInFlockingRange()[i]);
 			}
 		}
 		ImGui::TableNextColumn();

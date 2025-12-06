@@ -31,17 +31,15 @@ struct ArgusEntityKDTreeNode
 
 struct ArgusEntityKDTreeQueryRangeThresholds
 {
-	ArgusEntityKDTreeQueryRangeThresholds(float rangedRangeThreshold, float meleeRangeThreshold, float avoidanceRangeThreshold, float flockingRangeThreshold, uint16 seenByEntityId) :
+	ArgusEntityKDTreeQueryRangeThresholds(float rangedRangeThreshold, float meleeRangeThreshold, float avoidanceRangeThreshold, uint16 seenByEntityId) :
 		m_rangedRangeThresholdSquared(rangedRangeThreshold * rangedRangeThreshold),
 		m_meleeRangeThresholdSquared(meleeRangeThreshold * meleeRangeThreshold),
 		m_avoidanceRangeThresholdSquared(avoidanceRangeThreshold * avoidanceRangeThreshold),
-		m_flockingRangeThresholdSquared(flockingRangeThreshold * flockingRangeThreshold),
 		m_seenByEntityId(seenByEntityId){}
 
 	float m_rangedRangeThresholdSquared = 0.0f;
 	float m_meleeRangeThresholdSquared = 0.0f;
 	float m_avoidanceRangeThresholdSquared = 0.0f;
-	float m_flockingRangeThresholdSquared = 0.0f;
 	uint16 m_seenByEntityId = ArgusECSConstants::k_maxEntities;
 };
 
@@ -56,14 +54,12 @@ public:
 	const TArray<uint16, ArgusContainerAllocator<20> >& GetEntityIdsInRangedRange() const { return m_entityIdsWithinRangedRange; }
 	const TArray<uint16, ArgusContainerAllocator<10> >& GetEntityIdsInMeleeRange() const { return m_entityIdsWithinMeleeRange; }
 	const TArray<uint16, ArgusContainerAllocator<10> >& GetEntityIdsInAvoidanceRange() const { return m_entityIdsWithinAvoidanceRange; }
-	const TArray<uint16, ArgusContainerAllocator<10> >& GetEntityIdsInFlockingRange() const { return m_entityIdsWithinFlockingRange; }
 
 private:
 	TArray<uint16, ArgusContainerAllocator<20> > m_entityIdsWithinSightRange;
 	TArray<uint16, ArgusContainerAllocator<20> > m_entityIdsWithinRangedRange;
 	TArray<uint16, ArgusContainerAllocator<10> > m_entityIdsWithinMeleeRange;
 	TArray<uint16, ArgusContainerAllocator<10> > m_entityIdsWithinAvoidanceRange;
-	TArray<uint16, ArgusContainerAllocator<10> > m_entityIdsWithinFlockingRange;
 };
 
 class ArgusEntityKDTree : public ArgusKDTree<	ArgusEntityKDTreeNode, ArgusEntityKDTreeRangeOutput, 

@@ -102,14 +102,13 @@ void SpatialPartitioningSystems::CacheAdjacentEntityIds(const SpatialPartitionin
 		float meleeRange = 0.0f;
 		float rangedRange = 0.0f;
 		float sightRange = adjacentEntityRange;
-		const float flockingRange = (transformComponent->m_radius * 2.0f) + ArgusECSConstants::k_flockingRangeExtension;
 		if (const TargetingComponent* targetingComponent = entity.GetComponent<TargetingComponent>())
 		{
 			meleeRange = targetingComponent->m_meleeRange;
 			rangedRange = targetingComponent->m_rangedRange;
 			sightRange = targetingComponent->m_sightRange;
 		}
-		ArgusEntityKDTreeQueryRangeThresholds queryThresholds = ArgusEntityKDTreeQueryRangeThresholds(rangedRange, meleeRange, adjacentEntityRange, flockingRange, entity.GetId());
+		ArgusEntityKDTreeQueryRangeThresholds queryThresholds = ArgusEntityKDTreeQueryRangeThresholds(rangedRange, meleeRange, adjacentEntityRange, entity.GetId());
 		spatialPartitioningComponent->m_argusEntityKDTree.FindOtherArgusEntityIdsWithinRangeOfArgusEntity(nearbyEntitiesComponent->m_nearbyEntities, queryThresholds, entity, sightRange, queryFilter);
 		spatialPartitioningComponent->m_flyingArgusEntityKDTree.FindOtherArgusEntityIdsWithinRangeOfArgusEntity(nearbyEntitiesComponent->m_nearbyFlyingEntities, queryThresholds, entity, sightRange, queryFilter);
 	});
