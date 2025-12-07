@@ -9,7 +9,7 @@
 // unexplained reason is just an inline allocator of size 3.
 template<uint32		NumPreAllocatedElements,
 		typename	InElementAllocator = ArgusContainerAllocator<NumPreAllocatedElements>,
-		typename	InBitArrayAllocator = ArgusContainerAllocator<4>
+		typename	InBitArrayAllocator = ArgusContainerAllocator<4u>
 		>
 class ArgusSparseArrayAllocator
 {
@@ -22,7 +22,7 @@ public:
 template<
 	uint32		NumPreAllocatedElements,
 	typename	InSparseArrayAllocator = ArgusSparseArrayAllocator<NumPreAllocatedElements>,
-	typename	InHashAllocator = ArgusContainerAllocator<1>,
+	typename	InHashAllocator = ArgusContainerAllocator<1u>,
 	uint32		AverageNumberOfElementsPerHashBucket = DEFAULT_NUMBER_OF_ELEMENTS_PER_HASH_BUCKET,
 	uint32		BaseNumberOfHashBuckets = DEFAULT_BASE_NUMBER_OF_HASH_BUCKETS,
 	uint32		MinNumberOfHashedElements = DEFAULT_MIN_NUMBER_OF_HASHED_ELEMENTS

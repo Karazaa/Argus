@@ -15,7 +15,7 @@ public:
 class AvoidanceGroupingComponentObservers
 {
 private:
-	TArray<IAvoidanceGroupingComponentObserver*, ArgusContainerAllocator<2> > m_AvoidanceGroupingComponentObservers;
+	TArray<IAvoidanceGroupingComponentObserver*, ArgusContainerAllocator<2u> > m_AvoidanceGroupingComponentObservers;
 
 public:
 	void AddObserver(IAvoidanceGroupingComponentObserver* observer)

@@ -33,10 +33,10 @@ struct FlockingComponent
 	uint16 m_flockingRootId = ArgusECSConstants::k_maxEntities;
 
 	ARGUS_IGNORE()
-	uint16 m_concentricFlockingTier = 0u;
+	uint16 m_numEntitiesInStableRange = 0u;
 
 	ARGUS_IGNORE()
-	uint16 m_numEntitiesInStableRange = 0u;
+	uint8 m_concentricFlockingTier = 0u;
 
 	ARGUS_IGNORE()
 	EFlockingState m_flockingState = EFlockingState::Stable;

@@ -15,7 +15,7 @@ public:
 class VelocityComponentObservers
 {
 private:
-	TArray<IVelocityComponentObserver*, ArgusContainerAllocator<2> > m_VelocityComponentObservers;
+	TArray<IVelocityComponentObserver*, ArgusContainerAllocator<2u> > m_VelocityComponentObservers;
 
 public:
 	void AddObserver(IVelocityComponentObserver* observer)

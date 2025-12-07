@@ -15,7 +15,7 @@ public:
 class TransformComponentObservers
 {
 private:
-	TArray<ITransformComponentObserver*, ArgusContainerAllocator<2> > m_TransformComponentObservers;
+	TArray<ITransformComponentObserver*, ArgusContainerAllocator<2u> > m_TransformComponentObservers;
 
 public:
 	void AddObserver(ITransformComponentObserver* observer)

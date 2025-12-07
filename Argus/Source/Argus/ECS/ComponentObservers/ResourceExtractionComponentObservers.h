@@ -15,7 +15,7 @@ public:
 class ResourceExtractionComponentObservers
 {
 private:
-	TArray<IResourceExtractionComponentObserver*, ArgusContainerAllocator<2> > m_ResourceExtractionComponentObservers;
+	TArray<IResourceExtractionComponentObserver*, ArgusContainerAllocator<2u> > m_ResourceExtractionComponentObservers;
 
 public:
 	void AddObserver(IResourceExtractionComponentObserver* observer)

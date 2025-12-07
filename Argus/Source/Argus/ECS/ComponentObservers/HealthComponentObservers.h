@@ -15,7 +15,7 @@ public:
 class HealthComponentObservers
 {
 private:
-	TArray<IHealthComponentObserver*, ArgusContainerAllocator<2> > m_HealthComponentObservers;
+	TArray<IHealthComponentObserver*, ArgusContainerAllocator<2u> > m_HealthComponentObservers;
 
 public:
 	void AddObserver(IHealthComponentObserver* observer)

@@ -16,7 +16,7 @@ public:
 class AbilityComponentObservers
 {
 private:
-	TArray<IAbilityComponentObserver*, ArgusContainerAllocator<2> > m_AbilityComponentObservers;
+	TArray<IAbilityComponentObserver*, ArgusContainerAllocator<2u> > m_AbilityComponentObservers;
 
 public:
 	void AddObserver(IAbilityComponentObserver* observer)

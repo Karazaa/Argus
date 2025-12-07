@@ -15,7 +15,7 @@ public:
 class DecalComponentObservers
 {
 private:
-	TArray<IDecalComponentObserver*, ArgusContainerAllocator<2> > m_DecalComponentObservers;
+	TArray<IDecalComponentObserver*, ArgusContainerAllocator<2u> > m_DecalComponentObservers;
 
 public:
 	void AddObserver(IDecalComponentObserver* observer)

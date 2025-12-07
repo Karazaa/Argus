@@ -15,7 +15,7 @@ public:
 class NavigationComponentObservers
 {
 private:
-	TArray<INavigationComponentObserver*, ArgusContainerAllocator<2> > m_NavigationComponentObservers;
+	TArray<INavigationComponentObserver*, ArgusContainerAllocator<2u> > m_NavigationComponentObservers;
 
 public:
 	void AddObserver(INavigationComponentObserver* observer)

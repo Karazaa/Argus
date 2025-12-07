@@ -225,7 +225,7 @@ public:
 };
 
 template <uint32 NumPreAllocatedElements>
-using ArgusContainerAllocator = SizedArgusContainerAllocator<NumPreAllocatedElements, 32>;
+using ArgusContainerAllocator = SizedArgusContainerAllocator<NumPreAllocatedElements, 32u>;
 
 template <uint32 NumPreAllocatedElements, int IndexSize>
 struct TAllocatorTraits< SizedArgusContainerAllocator<NumPreAllocatedElements, IndexSize> > : TAllocatorTraitsBase< SizedArgusContainerAllocator<NumPreAllocatedElements, IndexSize> >

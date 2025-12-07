@@ -16,7 +16,7 @@ public:
 class PassengerComponentObservers
 {
 private:
-	TArray<IPassengerComponentObserver*, ArgusContainerAllocator<2> > m_PassengerComponentObservers;
+	TArray<IPassengerComponentObserver*, ArgusContainerAllocator<2u> > m_PassengerComponentObservers;
 
 public:
 	void AddObserver(IPassengerComponentObserver* observer)

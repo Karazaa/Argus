@@ -23,6 +23,7 @@
 #include "ComponentDefinitions\IdentityComponent.h"
 #include "ComponentDefinitions\NavigationComponent.h"
 #include "ComponentDefinitions\NearbyEntitiesComponent.h"
+#include "ComponentDefinitions\NearbyObstaclesComponent.h"
 #include "ComponentDefinitions\ObserversComponent.h"
 #include "ComponentDefinitions\PassengerComponent.h"
 #include "ComponentDefinitions\ResourceComponent.h"
@@ -72,7 +73,7 @@ public:
 	static void DrawComponentsDebug(uint16 entityId);
 #endif //!UE_BUILD_SHIPPING
 
-	static constexpr uint32 k_numComponentTypes = 27;
+	static constexpr uint32 k_numComponentTypes = 28;
 
 	// Begin component specific template specifiers.
 	
@@ -1215,6 +1216,101 @@ public:
 	}
 
 	friend struct NearbyEntitiesComponent;
+#pragma endregion
+#pragma region NearbyObstaclesComponent
+private:
+	static NearbyObstaclesComponent* s_NearbyObstaclesComponents;
+	static TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > s_isNearbyObstaclesComponentActive;
+public:
+	template<>
+	inline NearbyObstaclesComponent* GetComponent<NearbyObstaclesComponent>(uint16 entityId)
+	{
+		if (UNLIKELY(!s_NearbyObstaclesComponents))
+		{
+			return nullptr;
+		}
+
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(NearbyObstaclesComponent));
+			return nullptr;
+		}
+
+		if (UNLIKELY(s_isNearbyObstaclesComponentActive.Num() == 0))
+		{
+			return nullptr;
+		}
+
+		if (!s_isNearbyObstaclesComponentActive[entityId])
+		{
+			return nullptr;
+		}
+
+		return &s_NearbyObstaclesComponents[entityId];
+	}
+
+	template<>
+	inline NearbyObstaclesComponent* AddComponent<NearbyObstaclesComponent>(uint16 entityId)
+	{
+		if (UNLIKELY(!s_NearbyObstaclesComponents))
+		{
+			return nullptr;
+		}
+
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(NearbyObstaclesComponent));
+			return nullptr;
+		}
+
+		if (UNLIKELY(s_isNearbyObstaclesComponentActive.Num() == 0))
+		{
+			s_isNearbyObstaclesComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
+		if (UNLIKELY(s_isNearbyObstaclesComponentActive[entityId]))
+		{
+			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(NearbyObstaclesComponent), entityId);
+			return &s_NearbyObstaclesComponents[entityId];
+		}
+
+		s_isNearbyObstaclesComponentActive[entityId] = true;
+		s_NearbyObstaclesComponents[entityId].Reset();
+		return &s_NearbyObstaclesComponents[entityId];
+	}
+
+	template<>
+	inline NearbyObstaclesComponent* GetOrAddComponent<NearbyObstaclesComponent>(uint16 entityId)
+	{
+		if (UNLIKELY(!s_NearbyObstaclesComponents))
+		{
+			return nullptr;
+		}
+
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(NearbyObstaclesComponent));
+			return nullptr;
+		}
+
+		if (UNLIKELY(s_isNearbyObstaclesComponentActive.Num() == 0))
+		{
+			s_isNearbyObstaclesComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
+		if (s_isNearbyObstaclesComponentActive[entityId])
+		{
+			return &s_NearbyObstaclesComponents[entityId];
+		}
+		else
+		{
+			s_isNearbyObstaclesComponentActive[entityId] = true;
+			s_NearbyObstaclesComponents[entityId].Reset();
+			return &s_NearbyObstaclesComponents[entityId];
+		}
+	}
+
+	friend struct NearbyObstaclesComponent;
 #pragma endregion
 #pragma region ObserversComponent
 private:

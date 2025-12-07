@@ -15,7 +15,7 @@ public:
 class SpawningComponentObservers
 {
 private:
-	TArray<ISpawningComponentObserver*, ArgusContainerAllocator<2> > m_SpawningComponentObservers;
+	TArray<ISpawningComponentObserver*, ArgusContainerAllocator<2u> > m_SpawningComponentObservers;
 
 public:
 	void AddObserver(ISpawningComponentObserver* observer)

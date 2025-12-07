@@ -15,7 +15,7 @@ public:
 class ConstructionComponentObservers
 {
 private:
-	TArray<IConstructionComponentObserver*, ArgusContainerAllocator<2> > m_ConstructionComponentObservers;
+	TArray<IConstructionComponentObserver*, ArgusContainerAllocator<2u> > m_ConstructionComponentObservers;
 
 public:
 	void AddObserver(IConstructionComponentObserver* observer)

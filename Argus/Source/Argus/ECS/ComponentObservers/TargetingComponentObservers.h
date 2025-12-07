@@ -15,7 +15,7 @@ public:
 class TargetingComponentObservers
 {
 private:
-	TArray<ITargetingComponentObserver*, ArgusContainerAllocator<2> > m_TargetingComponentObservers;
+	TArray<ITargetingComponentObserver*, ArgusContainerAllocator<2u> > m_TargetingComponentObservers;
 
 public:
 	void AddObserver(ITargetingComponentObserver* observer)

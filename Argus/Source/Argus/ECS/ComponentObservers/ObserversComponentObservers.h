@@ -15,7 +15,7 @@ public:
 class ObserversComponentObservers
 {
 private:
-	TArray<IObserversComponentObserver*, ArgusContainerAllocator<2> > m_ObserversComponentObservers;
+	TArray<IObserversComponentObserver*, ArgusContainerAllocator<2u> > m_ObserversComponentObservers;
 
 public:
 	void AddObserver(IObserversComponentObserver* observer)

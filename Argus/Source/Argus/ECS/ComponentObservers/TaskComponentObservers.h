@@ -17,7 +17,7 @@ public:
 class TaskComponentObservers
 {
 private:
-	TArray<ITaskComponentObserver*, ArgusContainerAllocator<2> > m_TaskComponentObservers;
+	TArray<ITaskComponentObserver*, ArgusContainerAllocator<2u> > m_TaskComponentObservers;
 
 public:
 	void AddObserver(ITaskComponentObserver* observer)

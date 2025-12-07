@@ -15,7 +15,7 @@ public:
 class FlockingComponentObservers
 {
 private:
-	TArray<IFlockingComponentObserver*, ArgusContainerAllocator<2> > m_FlockingComponentObservers;
+	TArray<IFlockingComponentObserver*, ArgusContainerAllocator<2u> > m_FlockingComponentObservers;
 
 public:
 	void AddObserver(IFlockingComponentObserver* observer)

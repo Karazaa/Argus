@@ -74,6 +74,11 @@ bool ArgusComponentComponentSizeTest::RunTest(const FString& Parameters)
 	netSize += NearbyEntitiesComponentSize;
 	ARGUS_LOG(ArgusTestingLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(NearbyEntitiesComponent), NearbyEntitiesComponentSize);
 #pragma endregion
+#pragma region NearbyObstaclesComponent
+	const size_t NearbyObstaclesComponentSize = sizeof(NearbyObstaclesComponent);
+	netSize += NearbyObstaclesComponentSize;
+	ARGUS_LOG(ArgusTestingLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(NearbyObstaclesComponent), NearbyObstaclesComponentSize);
+#pragma endregion
 #pragma region ObserversComponent
 	const size_t ObserversComponentSize = sizeof(ObserversComponent);
 	netSize += ObserversComponentSize;

@@ -15,7 +15,7 @@ public:
 class TimerComponentObservers
 {
 private:
-	TArray<ITimerComponentObserver*, ArgusContainerAllocator<2> > m_TimerComponentObservers;
+	TArray<ITimerComponentObserver*, ArgusContainerAllocator<2u> > m_TimerComponentObservers;
 
 public:
 	void AddObserver(ITimerComponentObserver* observer)

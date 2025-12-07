@@ -24,8 +24,8 @@ void FlockingComponent::Reset()
 	m_maxShrinkingDurationTimeoutSeconds = 3.0f;
 	m_flockingRootRadiusIncrement = 55.0f;
 	m_flockingRootId = ArgusECSConstants::k_maxEntities;
-	m_concentricFlockingTier = 0u;
 	m_numEntitiesInStableRange = 0u;
+	m_concentricFlockingTier = 0u;
 	m_flockingState = EFlockingState::Stable;
 }
 
@@ -60,13 +60,13 @@ void FlockingComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_flockingRootId);
 		ImGui::TableNextColumn();
-		ImGui::Text("m_concentricFlockingTier");
-		ImGui::TableNextColumn();
-		ImGui::Text("%d", m_concentricFlockingTier);
-		ImGui::TableNextColumn();
 		ImGui::Text("m_numEntitiesInStableRange");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_numEntitiesInStableRange);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_concentricFlockingTier");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_concentricFlockingTier);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_flockingState");
 		ImGui::TableNextColumn();

@@ -33,19 +33,19 @@ struct FogOfWarComponent
 	TextureRegionsUpdateData m_textureRegionsUpdateData;
 
 	ARGUS_IGNORE()
-	TArray<uint8, ArgusContainerAllocator<0> > m_textureData;
+	TArray<uint8, ArgusContainerAllocator<0u> > m_textureData;
 
 	ARGUS_IGNORE()
-	TArray<uint8, ArgusContainerAllocator<0> > m_smoothedTextureData;
+	TArray<uint8, ArgusContainerAllocator<0u> > m_smoothedTextureData;
 
 	ARGUS_IGNORE()
-	TArray<float, ArgusContainerAllocator<0> > m_intermediarySmoothingData;
+	TArray<float, ArgusContainerAllocator<0u> > m_intermediarySmoothingData;
 
 	ARGUS_IGNORE()
-	TArray<float, ArgusContainerAllocator<0> > m_gaussianFilter;
+	TArray<float, ArgusContainerAllocator<0u> > m_gaussianFilter;
 
 	ARGUS_IGNORE()
-	TArray<UE::Tasks::FTask, ArgusContainerAllocator<0> > m_asyncTasks;
+	TArray<UE::Tasks::FTask, ArgusContainerAllocator<0u> > m_asyncTasks;
 
 	uint8 m_gaussianDimension = 5u;
 	uint8 m_revealedOnceAlpha = 100u;

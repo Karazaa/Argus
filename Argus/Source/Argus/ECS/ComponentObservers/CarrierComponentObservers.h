@@ -15,7 +15,7 @@ public:
 class CarrierComponentObservers
 {
 private:
-	TArray<ICarrierComponentObserver*, ArgusContainerAllocator<2> > m_CarrierComponentObservers;
+	TArray<ICarrierComponentObserver*, ArgusContainerAllocator<2u> > m_CarrierComponentObservers;
 
 public:
 	void AddObserver(ICarrierComponentObserver* observer)

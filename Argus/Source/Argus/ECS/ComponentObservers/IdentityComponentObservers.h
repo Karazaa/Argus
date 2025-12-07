@@ -15,7 +15,7 @@ public:
 class IdentityComponentObservers
 {
 private:
-	TArray<IIdentityComponentObserver*, ArgusContainerAllocator<2> > m_IdentityComponentObservers;
+	TArray<IIdentityComponentObserver*, ArgusContainerAllocator<2u> > m_IdentityComponentObservers;
 
 public:
 	void AddObserver(IIdentityComponentObserver* observer)

@@ -16,7 +16,7 @@ public:
 class #####Observers
 {
 private:
-	TArray<I#####Observer*, ArgusContainerAllocator<2> > m_#####Observers;
+	TArray<I#####Observer*, ArgusContainerAllocator<2u> > m_#####Observers;
 
 public:
 	void AddObserver(I#####Observer* observer)

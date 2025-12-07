@@ -54,6 +54,10 @@ TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > ArgusCom
 NearbyEntitiesComponent* ArgusComponentRegistry::s_NearbyEntitiesComponents = nullptr;
 TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > ArgusComponentRegistry::s_isNearbyEntitiesComponentActive;
 #pragma endregion
+#pragma region NearbyObstaclesComponent
+NearbyObstaclesComponent* ArgusComponentRegistry::s_NearbyObstaclesComponents = nullptr;
+TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > ArgusComponentRegistry::s_isNearbyObstaclesComponentActive;
+#pragma endregion
 #pragma region ObserversComponent
 ObserversComponent* ArgusComponentRegistry::s_ObserversComponents = nullptr;
 TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > ArgusComponentRegistry::s_isObserversComponentActive;
@@ -215,6 +219,14 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 	{
 		s_isNearbyEntitiesComponentActive[entityId] = false;
 	}
+	if (UNLIKELY(s_isNearbyObstaclesComponentActive.Num() == 0))
+	{
+		s_isNearbyObstaclesComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+	}
+	else
+	{
+		s_isNearbyObstaclesComponentActive[entityId] = false;
+	}
 	if (UNLIKELY(s_isObserversComponentActive.Num() == 0))
 	{
 		s_isObserversComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
@@ -309,6 +321,7 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 	s_IdentityComponents[entityId].Reset();
 	s_NavigationComponents[entityId].Reset();
 	s_NearbyEntitiesComponents[entityId].Reset();
+	s_NearbyObstaclesComponents[entityId].Reset();
 	s_ObserversComponents[entityId].Reset();
 	s_PassengerComponents[entityId].Reset();
 	s_ResourceComponents[entityId].Reset();
@@ -430,6 +443,13 @@ void ArgusComponentRegistry::FlushAllComponents()
 		s_NearbyEntitiesComponents = ArgusMemorySource::Reallocate<NearbyEntitiesComponent>(s_NearbyEntitiesComponents, 0, ArgusECSConstants::k_maxEntities);
 	}
 	s_isNearbyEntitiesComponentActive.Reset();
+	bool didAllocateNearbyObstaclesComponents = false;
+	if (!s_NearbyObstaclesComponents)
+	{
+		didAllocateNearbyObstaclesComponents = true;
+		s_NearbyObstaclesComponents = ArgusMemorySource::Reallocate<NearbyObstaclesComponent>(s_NearbyObstaclesComponents, 0, ArgusECSConstants::k_maxEntities);
+	}
+	s_isNearbyObstaclesComponentActive.Reset();
 	bool didAllocateObserversComponents = false;
 	if (!s_ObserversComponents)
 	{
@@ -599,6 +619,14 @@ void ArgusComponentRegistry::FlushAllComponents()
 		else
 		{
 			s_NearbyEntitiesComponents[i].Reset();
+		}
+		if (didAllocateNearbyObstaclesComponents)
+		{
+			new (&s_NearbyObstaclesComponents[i]) NearbyObstaclesComponent();
+		}
+		else
+		{
+			s_NearbyObstaclesComponents[i].Reset();
 		}
 		if (didAllocateObserversComponents)
 		{
@@ -807,6 +835,11 @@ uint16 ArgusComponentRegistry::GetOwningEntityIdForComponentMember(const void* m
 		const NearbyEntitiesComponent* pretendComponent = reinterpret_cast<const NearbyEntitiesComponent*>(memberAddress);
 		return pretendComponent - &s_NearbyEntitiesComponents[0];
 	}
+	if (memberAddress >= &s_NearbyObstaclesComponents[0] && memberAddress <= &s_NearbyObstaclesComponents[ArgusECSConstants::k_maxEntities - 1])
+	{
+		const NearbyObstaclesComponent* pretendComponent = reinterpret_cast<const NearbyObstaclesComponent*>(memberAddress);
+		return pretendComponent - &s_NearbyObstaclesComponents[0];
+	}
 	if (memberAddress >= &s_ObserversComponents[0] && memberAddress <= &s_ObserversComponents[ArgusECSConstants::k_maxEntities - 1])
 	{
 		const ObserversComponent* pretendComponent = reinterpret_cast<const ObserversComponent*>(memberAddress);
@@ -911,6 +944,10 @@ void ArgusComponentRegistry::DrawComponentsDebug(uint16 entityId)
 	if (const NearbyEntitiesComponent* NearbyEntitiesComponentPtr = GetComponent<NearbyEntitiesComponent>(entityId))
 	{
 		NearbyEntitiesComponentPtr->DrawComponentDebug();
+	}
+	if (const NearbyObstaclesComponent* NearbyObstaclesComponentPtr = GetComponent<NearbyObstaclesComponent>(entityId))
+	{
+		NearbyObstaclesComponentPtr->DrawComponentDebug();
 	}
 	if (const ObserversComponent* ObserversComponentPtr = GetComponent<ObserversComponent>(entityId))
 	{

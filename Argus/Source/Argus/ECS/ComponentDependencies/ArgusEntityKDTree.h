@@ -50,16 +50,16 @@ public:
 	void ConsolidateInArray(TArray<uint16>& allEntityIds);
 	void ResetAll();
 	bool FoundAny() const;
-	const TArray<uint16, ArgusContainerAllocator<20> >& GetEntityIdsInSightRange() const { return m_entityIdsWithinSightRange; }
-	const TArray<uint16, ArgusContainerAllocator<20> >& GetEntityIdsInRangedRange() const { return m_entityIdsWithinRangedRange; }
-	const TArray<uint16, ArgusContainerAllocator<10> >& GetEntityIdsInMeleeRange() const { return m_entityIdsWithinMeleeRange; }
-	const TArray<uint16, ArgusContainerAllocator<10> >& GetEntityIdsInAvoidanceRange() const { return m_entityIdsWithinAvoidanceRange; }
+	const TArray<uint16, ArgusContainerAllocator<20u> >& GetEntityIdsInSightRange() const { return m_entityIdsWithinSightRange; }
+	const TArray<uint16, ArgusContainerAllocator<20u> >& GetEntityIdsInRangedRange() const { return m_entityIdsWithinRangedRange; }
+	const TArray<uint16, ArgusContainerAllocator<10u> >& GetEntityIdsInMeleeRange() const { return m_entityIdsWithinMeleeRange; }
+	const TArray<uint16, ArgusContainerAllocator<10u> >& GetEntityIdsInAvoidanceRange() const { return m_entityIdsWithinAvoidanceRange; }
 
 private:
-	TArray<uint16, ArgusContainerAllocator<20> > m_entityIdsWithinSightRange;
-	TArray<uint16, ArgusContainerAllocator<20> > m_entityIdsWithinRangedRange;
-	TArray<uint16, ArgusContainerAllocator<10> > m_entityIdsWithinMeleeRange;
-	TArray<uint16, ArgusContainerAllocator<10> > m_entityIdsWithinAvoidanceRange;
+	TArray<uint16, ArgusContainerAllocator<20u> > m_entityIdsWithinSightRange;
+	TArray<uint16, ArgusContainerAllocator<20u> > m_entityIdsWithinRangedRange;
+	TArray<uint16, ArgusContainerAllocator<10u> > m_entityIdsWithinMeleeRange;
+	TArray<uint16, ArgusContainerAllocator<10u> > m_entityIdsWithinAvoidanceRange;
 };
 
 class ArgusEntityKDTree : public ArgusKDTree<	ArgusEntityKDTreeNode, ArgusEntityKDTreeRangeOutput, 

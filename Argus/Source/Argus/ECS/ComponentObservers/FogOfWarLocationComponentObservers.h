@@ -15,7 +15,7 @@ public:
 class FogOfWarLocationComponentObservers
 {
 private:
-	TArray<IFogOfWarLocationComponentObserver*, ArgusContainerAllocator<2> > m_FogOfWarLocationComponentObservers;
+	TArray<IFogOfWarLocationComponentObserver*, ArgusContainerAllocator<2u> > m_FogOfWarLocationComponentObservers;
 
 public:
 	void AddObserver(IFogOfWarLocationComponentObserver* observer)

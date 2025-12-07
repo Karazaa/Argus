@@ -15,7 +15,7 @@ public:
 class NearbyEntitiesComponentObservers
 {
 private:
-	TArray<INearbyEntitiesComponentObserver*, ArgusContainerAllocator<2> > m_NearbyEntitiesComponentObservers;
+	TArray<INearbyEntitiesComponentObserver*, ArgusContainerAllocator<2u> > m_NearbyEntitiesComponentObservers;
 
 public:
 	void AddObserver(INearbyEntitiesComponentObserver* observer)
