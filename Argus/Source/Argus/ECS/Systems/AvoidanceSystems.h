@@ -34,7 +34,7 @@ private:
 		float m_defaultInverseEntityPredictionTime = 0.0f;
 		float m_inverseObstaclePredictionTime = 0.0f;
 		float m_entityRadius = 45.0f;
-		const SpatialPartitioningComponent* m_spatialPartitioningComponent = nullptr;
+		SpatialPartitioningComponent* m_spatialPartitioningComponent = nullptr;
 	};
 	struct CreateEntityORCALinesParamsPerEntity
 	{

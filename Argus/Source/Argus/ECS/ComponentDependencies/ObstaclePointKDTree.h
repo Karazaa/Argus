@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "ArgusContainerAllocator.h"
 #include "ArgusKDTree.h"
 #include "ObstaclePoint.h"
 
@@ -39,8 +40,11 @@ class ObstaclePointKDTreeRangeOutput
 {
 public:
 	void Add(const ObstaclePointKDTreeNode* nodeToAdd, const ObstaclePointKDTreeQueryRangeThresholds& thresholds, float distFromTargetSquared);
+	void ResetAll();
+	const TArray<ObstacleIndicies, ArgusContainerAllocator<20u> >& GetInRangeObstacleIndicies() const { return m_inRangeObstacleIndicies; }
 
-	TArray<ObstacleIndicies> m_inRangeObstacleIndicies;
+private:
+	TArray<ObstacleIndicies, ArgusContainerAllocator<20u> > m_inRangeObstacleIndicies;
 };
 
 class ObstaclePointKDTree : public ArgusKDTree<	ObstaclePointKDTreeNode, ObstaclePointKDTreeRangeOutput, 
@@ -48,5 +52,9 @@ class ObstaclePointKDTree : public ArgusKDTree<	ObstaclePointKDTreeNode, Obstacl
 {
 public:
 	void InsertObstaclesIntoKDTree(const TArray<ObstaclePointArray>& obstacles);
-	bool FindObstacleIndiciesWithinRangeOfLocation(TArray<ObstacleIndicies>& obstacleIndicies, const FVector& location, const float range) const;
+	bool FindObstacleIndiciesWithinRangeOfLocation(TArray<ObstacleIndicies>& obstacleIndicies, const FVector& location, const float range);
+	bool FindObstacleIndiciesWithinRangeOfLocation(ObstaclePointKDTreeRangeOutput& obstacleIndicies, const FVector& location, const float range) const;
+
+private:
+	ObstaclePointKDTreeRangeOutput m_queryScratchData;
 };

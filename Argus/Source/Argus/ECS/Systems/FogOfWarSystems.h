@@ -6,10 +6,10 @@
 #include <immintrin.h>
 
 class ArgusEntity;
+class ObstaclePointKDTreeRangeOutput;
 
 struct FogOfWarComponent;
 struct FogOfWarSystemsArgs;
-struct ObstacleIndicies;
 struct InputInterfaceComponent;
 struct SpatialPartitioningComponent;
 
@@ -109,8 +109,8 @@ private:
 	static void FillFlatBottomTriangle(FogOfWarComponent* fogOfWarComponent, const TPair<int32, int32>& point0, const TPair<int32, int32>& point1, const TPair<int32, int32>& point2);
 	static void FillFlatTopTriangle(FogOfWarComponent* fogOfWarComponent, const TPair<int32, int32>& point0, const TPair<int32, int32>& point1, const TPair<int32, int32>& point2);
 	static void SetAlphaForPixelRange(FogOfWarComponent* fogOfWarComponent, uint32 fromPixelInclusive, uint32 toPixelInclusive);
-	static void RevealPixelRangeWithObstacles(FogOfWarComponent* fogOfWarComponent, const SpatialPartitioningComponent* spatialPartitioningComponent, uint32 fromPixelInclusive, uint32 toPixelInclusive, const TArray<ObstacleIndicies>& obstacleIndicies, const FVector2D& cartesianEntityLocation, FVector2D& prevFrom, FVector2D& prevTo);
-	static void SetAlphaForCircleQuadrant(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, const CircleQuadrant& quadrant, const TArray<ObstacleIndicies>& obstacleIndicies, QuadrantObstacleTraces& quadrantTraces);
+	static void RevealPixelRangeWithObstacles(FogOfWarComponent* fogOfWarComponent, const SpatialPartitioningComponent* spatialPartitioningComponent, uint32 fromPixelInclusive, uint32 toPixelInclusive, const ObstaclePointKDTreeRangeOutput& obstacleIndicies, const FVector2D& cartesianEntityLocation, FVector2D& prevFrom, FVector2D& prevTo);
+	static void SetAlphaForCircleQuadrant(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, const CircleQuadrant& quadrant, const bool hasObstacles, QuadrantObstacleTraces& quadrantTraces);
 	static void UpdateTexture();
 	static void UpdateGaussianWeightsTexture();
 	static void UpdateDynamicMaterialInstance();

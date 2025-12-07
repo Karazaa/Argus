@@ -19,7 +19,7 @@ uint16 NearbyObstaclesComponent::GetOwningEntityId() const
 
 void NearbyObstaclesComponent::Reset()
 {
-	m_obstacleIndiciesInSightRange.Reset();
+	m_obstacleIndicies.ResetAll();
 }
 
 void NearbyObstaclesComponent::DrawComponentDebug() const
@@ -35,18 +35,6 @@ void NearbyObstaclesComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_obstacleIndiciesInSightRange");
 		ImGui::TableNextColumn();
-		ImGui::Text("Array max is currently = %d", m_obstacleIndiciesInSightRange.Max());
-		if (m_obstacleIndiciesInSightRange.Num() == 0)
-		{
-			ImGui::Text("Array is empty");
-		}
-		else
-		{
-			ImGui::Text("Size of array = %d", m_obstacleIndiciesInSightRange.Num());
-			for (int32 i = 0; i < m_obstacleIndiciesInSightRange.Num(); ++i)
-			{
-			}
-		}
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

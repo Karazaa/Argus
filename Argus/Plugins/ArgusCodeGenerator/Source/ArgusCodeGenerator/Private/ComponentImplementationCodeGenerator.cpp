@@ -236,7 +236,8 @@ void ComponentImplementationGenerator::GeneratePerVariableResetText(const std::v
 			continue;
 		}
 
-		const bool isKDTreeOutput = parsedVariableData[i].m_typeName.find("ArgusEntityKDTreeRangeOutput") != std::string::npos;
+		bool isKDTreeOutput = parsedVariableData[i].m_typeName.find("ArgusEntityKDTreeRangeOutput") != std::string::npos;
+		isKDTreeOutput |= parsedVariableData[i].m_typeName.find("ObstaclePointKDTreeRangeOutput") != std::string::npos;
 		if (isKDTreeOutput)
 		{
 			outParsedVariableContents.push_back(std::vformat("\t{}.ResetAll();", std::make_format_args(parsedVariableData[i].m_varName)));

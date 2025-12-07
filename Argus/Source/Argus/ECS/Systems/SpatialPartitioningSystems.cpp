@@ -111,6 +111,12 @@ void SpatialPartitioningSystems::CacheAdjacentEntityIds(const SpatialPartitionin
 		ArgusEntityKDTreeQueryRangeThresholds queryThresholds = ArgusEntityKDTreeQueryRangeThresholds(rangedRange, meleeRange, adjacentEntityRange, entity.GetId());
 		spatialPartitioningComponent->m_argusEntityKDTree.FindOtherArgusEntityIdsWithinRangeOfArgusEntity(nearbyEntitiesComponent->m_nearbyEntities, queryThresholds, entity, sightRange, queryFilter);
 		spatialPartitioningComponent->m_flyingArgusEntityKDTree.FindOtherArgusEntityIdsWithinRangeOfArgusEntity(nearbyEntitiesComponent->m_nearbyFlyingEntities, queryThresholds, entity, sightRange, queryFilter);
+		if (NearbyObstaclesComponent* nearbyObstaclesComponent = entity.GetComponent<NearbyObstaclesComponent>())
+		{
+			// TODO JAMES: Gate updates by whether or not the entity is capable of moving?
+			nearbyObstaclesComponent->m_obstacleIndicies.ResetAll();
+			spatialPartitioningComponent->m_obstaclePointKDTree.FindObstacleIndiciesWithinRangeOfLocation(nearbyObstaclesComponent->m_obstacleIndicies, ArgusMath::ToCartesianVector(transformComponent->m_location), sightRange);
+		}
 	});
 }
 
@@ -256,6 +262,20 @@ void SpatialPartitioningSystems::CalculateAvoidanceObstacles(SpatialPartitioning
 	DrawDebugObstacles(worldPointer, spatialPartitioningComponent->m_obstacles);
 
 	spatialPartitioningComponent->m_obstaclePointKDTree.InsertObstaclesIntoKDTree(spatialPartitioningComponent->m_obstacles);
+
+	ArgusEntity::IterateEntities([spatialPartitioningComponent](ArgusEntity entity)
+	{
+		TransformComponent* transformComponent = entity.GetComponent<TransformComponent>();
+		TargetingComponent* targetingComponent = entity.GetComponent<TargetingComponent>();
+		NearbyObstaclesComponent* nearbyObstaclesComponent = entity.GetComponent<NearbyObstaclesComponent>();
+		if (!transformComponent || !targetingComponent || !nearbyObstaclesComponent)
+		{
+			return;
+		}
+
+		nearbyObstaclesComponent->m_obstacleIndicies.ResetAll();
+		spatialPartitioningComponent->m_obstaclePointKDTree.FindObstacleIndiciesWithinRangeOfLocation(nearbyObstaclesComponent->m_obstacleIndicies, ArgusMath::ToCartesianVector(transformComponent->m_location), targetingComponent->m_sightRange);
+	});
 }
 
 float SpatialPartitioningSystems::FindAreaOfObstacleCartesian(const ObstaclePointArray& obstaclePoints)

@@ -62,7 +62,7 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 		return;
 	}
 
-	const SpatialPartitioningComponent* spatialPartitioningComponent = singletonEntity.GetComponent<SpatialPartitioningComponent>();
+	SpatialPartitioningComponent* spatialPartitioningComponent = singletonEntity.GetComponent<SpatialPartitioningComponent>();
 	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
 
 	FVector2D desiredVelocity = GetDesiredVelocity(components);

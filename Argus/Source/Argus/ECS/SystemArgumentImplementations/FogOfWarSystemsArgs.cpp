@@ -16,6 +16,7 @@ bool FogOfWarSystemsArgs::PopulateArguments(const ArgusEntity& entity)
 	m_targetingComponent = entity.GetComponent<TargetingComponent>();
 	m_taskComponent = entity.GetComponent<TaskComponent>();
 	m_transformComponent = entity.GetComponent<TransformComponent>();
+	m_nearbyObstaclesComponent = entity.GetComponent<NearbyObstaclesComponent>();
 
 	if (!m_entity || !m_fogOfWarLocationComponent || !m_targetingComponent || !m_taskComponent || !m_transformComponent)
 	{

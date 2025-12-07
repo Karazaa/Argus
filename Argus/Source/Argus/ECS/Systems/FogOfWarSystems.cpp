@@ -382,37 +382,25 @@ void FogOfWarSystems::RevealPixelAlphaForEntity(FogOfWarComponent* fogOfWarCompo
 			return;
 		}
 
-		TArray<ObstacleIndicies> obstacleIndicies;
-		if (components.m_taskComponent->m_flightState == EFlightState::Grounded)
-		{
-			SpatialPartitioningComponent* spatialParitioningComponent = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId).GetComponent<SpatialPartitioningComponent>();
-			ARGUS_RETURN_ON_NULL(spatialParitioningComponent, ArgusECSLog);
-
-			spatialParitioningComponent->m_obstaclePointKDTree.FindObstacleIndiciesWithinRangeOfLocation
-			(
-				obstacleIndicies,
-				ArgusMath::ToCartesianVector(components.m_transformComponent->m_location),
-				components.m_targetingComponent->m_sightRange
-			);
-		}
-
+		bool nearObstacles = false;
 		uint32 modifiedRadius = radius;
-		if (obstacleIndicies.Num() > 0)
+		if (components.m_taskComponent->m_flightState == EFlightState::Grounded && components.m_nearbyObstaclesComponent && components.m_nearbyObstaclesComponent->m_obstacleIndicies.GetInRangeObstacleIndicies().Num())
 		{
+			nearObstacles = true;
 			modifiedRadius--;
 		}
 
 		FogOfWarOffsets offsets;
 		PopulateOffsetsForEntity(fogOfWarComponent, components, offsets);
 		QuadrantObstacleTraces topTraces = QuadrantObstacleTraces(initialLocation);
-		RasterizeCircleOfRadius(fogOfWarComponent, modifiedRadius, offsets, obstacleIndicies.Num() > 0, [fogOfWarComponent, &components, &obstacleIndicies, &topTraces](const FogOfWarOffsets& offsets)
+		RasterizeCircleOfRadius(fogOfWarComponent, modifiedRadius, offsets, nearObstacles, [fogOfWarComponent, nearObstacles, &components, &topTraces](const FogOfWarOffsets& offsets)
 		{
 			CircleQuadrant quadrant;
 			quadrant.m_yValue = offsets.m_circleX <= offsets.m_topOffset ? offsets.m_circleX : offsets.m_topOffset;
 			quadrant.m_xStartValue = offsets.m_circleY <= offsets.m_leftOffset ? offsets.m_circleY : offsets.m_leftOffset;
 			quadrant.m_xEndValue = offsets.m_circleY <= offsets.m_rightOffset ? offsets.m_circleY : offsets.m_rightOffset;
 			quadrant.m_centerColumnIndex = components.m_fogOfWarLocationComponent->m_fogOfWarPixel - (quadrant.m_yValue * static_cast<uint32>(fogOfWarComponent->m_textureSize));
-			SetAlphaForCircleQuadrant(fogOfWarComponent, components, quadrant, obstacleIndicies, topTraces);
+			SetAlphaForCircleQuadrant(fogOfWarComponent, components, quadrant, nearObstacles, topTraces);
 		});
 	}));
 #pragma endregion
@@ -426,37 +414,25 @@ void FogOfWarSystems::RevealPixelAlphaForEntity(FogOfWarComponent* fogOfWarCompo
 			return;
 		}
 
-		TArray<ObstacleIndicies> obstacleIndicies;
-		if (components.m_taskComponent->m_flightState == EFlightState::Grounded)
-		{
-			SpatialPartitioningComponent* spatialParitioningComponent = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId).GetComponent<SpatialPartitioningComponent>();
-			ARGUS_RETURN_ON_NULL(spatialParitioningComponent, ArgusECSLog);
-
-			spatialParitioningComponent->m_obstaclePointKDTree.FindObstacleIndiciesWithinRangeOfLocation
-			(
-				obstacleIndicies,
-				ArgusMath::ToCartesianVector(components.m_transformComponent->m_location),
-				components.m_targetingComponent->m_sightRange
-			);
-		}
-
+		bool nearObstacles = false;
 		uint32 modifiedRadius = radius;
-		if (obstacleIndicies.Num() > 0)
+		if (components.m_taskComponent->m_flightState == EFlightState::Grounded && components.m_nearbyObstaclesComponent && components.m_nearbyObstaclesComponent->m_obstacleIndicies.GetInRangeObstacleIndicies().Num())
 		{
+			nearObstacles = true;
 			modifiedRadius--;
 		}
 
 		FogOfWarOffsets offsets;
 		PopulateOffsetsForEntity(fogOfWarComponent, components, offsets);
 		QuadrantObstacleTraces midUpTraces = QuadrantObstacleTraces(initialLocation);
-		RasterizeCircleOfRadius(fogOfWarComponent, modifiedRadius, offsets, obstacleIndicies.Num() > 0, [fogOfWarComponent, &components, &obstacleIndicies, &midUpTraces](const FogOfWarOffsets& offsets)
+		RasterizeCircleOfRadius(fogOfWarComponent, modifiedRadius, offsets, nearObstacles, [fogOfWarComponent, nearObstacles, &components, &midUpTraces](const FogOfWarOffsets& offsets)
 		{
 			CircleQuadrant quadrant;
 			quadrant.m_yValue = offsets.m_circleY <= offsets.m_topOffset ? offsets.m_circleY : offsets.m_topOffset;
 			quadrant.m_xStartValue = offsets.m_circleX <= offsets.m_leftOffset ? offsets.m_circleX : offsets.m_leftOffset;
 			quadrant.m_xEndValue = offsets.m_circleX <= offsets.m_rightOffset ? offsets.m_circleX : offsets.m_rightOffset;
 			quadrant.m_centerColumnIndex = components.m_fogOfWarLocationComponent->m_fogOfWarPixel - (quadrant.m_yValue * static_cast<uint32>(fogOfWarComponent->m_textureSize));
-			SetAlphaForCircleQuadrant(fogOfWarComponent, components, quadrant, obstacleIndicies, midUpTraces);
+			SetAlphaForCircleQuadrant(fogOfWarComponent, components, quadrant, nearObstacles, midUpTraces);
 		});
 	}));
 #pragma endregion
@@ -470,37 +446,25 @@ void FogOfWarSystems::RevealPixelAlphaForEntity(FogOfWarComponent* fogOfWarCompo
 			return;
 		}
 
-		TArray<ObstacleIndicies> obstacleIndicies;
-		if (components.m_taskComponent->m_flightState == EFlightState::Grounded)
-		{
-			SpatialPartitioningComponent* spatialParitioningComponent = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId).GetComponent<SpatialPartitioningComponent>();
-			ARGUS_RETURN_ON_NULL(spatialParitioningComponent, ArgusECSLog);
-
-			spatialParitioningComponent->m_obstaclePointKDTree.FindObstacleIndiciesWithinRangeOfLocation
-			(
-				obstacleIndicies,
-				ArgusMath::ToCartesianVector(components.m_transformComponent->m_location),
-				components.m_targetingComponent->m_sightRange
-			);
-		}
-
+		bool nearObstacles = false;
 		uint32 modifiedRadius = radius;
-		if (obstacleIndicies.Num() > 0)
+		if (components.m_taskComponent->m_flightState == EFlightState::Grounded && components.m_nearbyObstaclesComponent && components.m_nearbyObstaclesComponent->m_obstacleIndicies.GetInRangeObstacleIndicies().Num())
 		{
+			nearObstacles = true;
 			modifiedRadius--;
 		}
 
 		FogOfWarOffsets offsets;
 		PopulateOffsetsForEntity(fogOfWarComponent, components, offsets);
 		QuadrantObstacleTraces midDownTraces = QuadrantObstacleTraces(initialLocation);
-		RasterizeCircleOfRadius(fogOfWarComponent, modifiedRadius, offsets, obstacleIndicies.Num() > 0, [fogOfWarComponent, &components, &obstacleIndicies, &midDownTraces](const FogOfWarOffsets& offsets)
+		RasterizeCircleOfRadius(fogOfWarComponent, modifiedRadius, offsets, nearObstacles, [fogOfWarComponent, nearObstacles, &components, &midDownTraces](const FogOfWarOffsets& offsets)
 		{
 			CircleQuadrant quadrant;
 			quadrant.m_yValue = offsets.m_circleY <= offsets.m_bottomOffset ? offsets.m_circleY : offsets.m_bottomOffset;
 			quadrant.m_xStartValue = offsets.m_circleX <= offsets.m_leftOffset ? offsets.m_circleX : offsets.m_leftOffset;
 			quadrant.m_xEndValue = offsets.m_circleX <= offsets.m_rightOffset ? offsets.m_circleX : offsets.m_rightOffset;
 			quadrant.m_centerColumnIndex = components.m_fogOfWarLocationComponent->m_fogOfWarPixel + (quadrant.m_yValue * static_cast<uint32>(fogOfWarComponent->m_textureSize));
-			SetAlphaForCircleQuadrant(fogOfWarComponent, components, quadrant, obstacleIndicies, midDownTraces);
+			SetAlphaForCircleQuadrant(fogOfWarComponent, components, quadrant, nearObstacles, midDownTraces);
 		});
 	}));
 #pragma endregion
@@ -514,37 +478,25 @@ void FogOfWarSystems::RevealPixelAlphaForEntity(FogOfWarComponent* fogOfWarCompo
 			return;
 		}
 
-		TArray<ObstacleIndicies> obstacleIndicies;
-		if (components.m_taskComponent->m_flightState == EFlightState::Grounded)
-		{
-			SpatialPartitioningComponent* spatialParitioningComponent = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId).GetComponent<SpatialPartitioningComponent>();
-			ARGUS_RETURN_ON_NULL(spatialParitioningComponent, ArgusECSLog);
-
-			spatialParitioningComponent->m_obstaclePointKDTree.FindObstacleIndiciesWithinRangeOfLocation
-			(
-				obstacleIndicies,
-				ArgusMath::ToCartesianVector(components.m_transformComponent->m_location),
-				components.m_targetingComponent->m_sightRange
-			);
-		}
-
+		bool nearObstacles = false;
 		uint32 modifiedRadius = radius;
-		if (obstacleIndicies.Num() > 0)
+		if (components.m_taskComponent->m_flightState == EFlightState::Grounded && components.m_nearbyObstaclesComponent && components.m_nearbyObstaclesComponent->m_obstacleIndicies.GetInRangeObstacleIndicies().Num())
 		{
+			nearObstacles = true;
 			modifiedRadius--;
 		}
 
 		FogOfWarOffsets offsets;
 		PopulateOffsetsForEntity(fogOfWarComponent, components, offsets);
 		QuadrantObstacleTraces bottomTraces = QuadrantObstacleTraces(initialLocation);
-		RasterizeCircleOfRadius(fogOfWarComponent, modifiedRadius, offsets, obstacleIndicies.Num() > 0, [fogOfWarComponent, &components, &obstacleIndicies, &bottomTraces](const FogOfWarOffsets& offsets)
+		RasterizeCircleOfRadius(fogOfWarComponent, modifiedRadius, offsets, nearObstacles, [fogOfWarComponent, nearObstacles, &components, &bottomTraces](const FogOfWarOffsets& offsets)
 		{
 			CircleQuadrant quadrant;
 			quadrant.m_yValue = offsets.m_circleX <= offsets.m_bottomOffset ? offsets.m_circleX : offsets.m_bottomOffset;
 			quadrant.m_xStartValue = offsets.m_circleY <= offsets.m_leftOffset ? offsets.m_circleY : offsets.m_leftOffset;
 			quadrant.m_xEndValue = offsets.m_circleY <= offsets.m_rightOffset ? offsets.m_circleY : offsets.m_rightOffset;
 			quadrant.m_centerColumnIndex = components.m_fogOfWarLocationComponent->m_fogOfWarPixel + (quadrant.m_yValue * static_cast<uint32>(fogOfWarComponent->m_textureSize));
-			SetAlphaForCircleQuadrant(fogOfWarComponent, components, quadrant, obstacleIndicies, bottomTraces);
+			SetAlphaForCircleQuadrant(fogOfWarComponent, components, quadrant, nearObstacles, bottomTraces);
 		});
 	}));
 #pragma endregion
@@ -699,7 +651,7 @@ void FogOfWarSystems::SetAlphaForPixelRange(FogOfWarComponent* fogOfWarComponent
 	return;
 }
 
-void FogOfWarSystems::RevealPixelRangeWithObstacles(FogOfWarComponent* fogOfWarComponent, const SpatialPartitioningComponent* spatialPartitioningComponent, uint32 fromPixelInclusive, uint32 toPixelInclusive, const TArray<ObstacleIndicies>& obstacleIndicies, const FVector2D& cartesianEntityLocation, FVector2D& prevFrom, FVector2D& prevTo)
+void FogOfWarSystems::RevealPixelRangeWithObstacles(FogOfWarComponent* fogOfWarComponent, const SpatialPartitioningComponent* spatialPartitioningComponent, uint32 fromPixelInclusive, uint32 toPixelInclusive, const ObstaclePointKDTreeRangeOutput& obstacleIndicies, const FVector2D& cartesianEntityLocation, FVector2D& prevFrom, FVector2D& prevTo)
 {
 	ARGUS_TRACE(FogOfWarSystems::RevealPixelRangeWithObstacles);
 	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
@@ -712,10 +664,10 @@ void FogOfWarSystems::RevealPixelRangeWithObstacles(FogOfWarComponent* fogOfWarC
 	FVector2D currentToIntersection = cartesianToLocation;
 	
 
-	for (int32 i = 0; i < obstacleIndicies.Num(); ++i)
+	for (int32 i = 0; i < obstacleIndicies.GetInRangeObstacleIndicies().Num(); ++i)
 	{
-		const ObstaclePoint& currentObstaclePoint = spatialPartitioningComponent->m_obstacles[obstacleIndicies[i].m_obstacleIndex][obstacleIndicies[i].m_obstaclePointIndex];
-		const ObstaclePoint& nextObstaclePoint = spatialPartitioningComponent->m_obstacles[obstacleIndicies[i].m_obstacleIndex].GetNext(obstacleIndicies[i].m_obstaclePointIndex);
+		const ObstaclePoint& currentObstaclePoint = spatialPartitioningComponent->m_obstacles[obstacleIndicies.GetInRangeObstacleIndicies()[i].m_obstacleIndex][obstacleIndicies.GetInRangeObstacleIndicies()[i].m_obstaclePointIndex];
+		const ObstaclePoint& nextObstaclePoint = spatialPartitioningComponent->m_obstacles[obstacleIndicies.GetInRangeObstacleIndicies()[i].m_obstacleIndex].GetNext(obstacleIndicies.GetInRangeObstacleIndicies()[i].m_obstaclePointIndex);
 
 		FVector2D currentPoint = currentObstaclePoint.m_point;
 		const FVector2D currentLeft = currentObstaclePoint.GetLeftVector();
@@ -763,7 +715,7 @@ void FogOfWarSystems::RevealPixelRangeWithObstacles(FogOfWarComponent* fogOfWarC
 	prevTo = currentToIntersection;
 }
 
-void FogOfWarSystems::SetAlphaForCircleQuadrant(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, const CircleQuadrant& quadrant, const TArray<ObstacleIndicies>& obstacleIndicies, QuadrantObstacleTraces& quadrantTraces)
+void FogOfWarSystems::SetAlphaForCircleQuadrant(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components, const CircleQuadrant& quadrant, const bool hasObstacles, QuadrantObstacleTraces& quadrantTraces)
 {
 	ARGUS_TRACE(FogOfWarSystems::SetAlphaForCircleQuadrant);
 	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
@@ -772,12 +724,12 @@ void FogOfWarSystems::SetAlphaForCircleQuadrant(FogOfWarComponent* fogOfWarCompo
 		return;
 	}
 
-	if (obstacleIndicies.Num() > 0)
+	if (hasObstacles && components.m_nearbyObstaclesComponent)
 	{
 		const SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::GetSingletonEntity().GetComponent<SpatialPartitioningComponent>();
 		const FVector2D cartesianCenterLocation = ArgusMath::ToCartesianVector2(GetWorldSpaceLocationFromPixelNumber(fogOfWarComponent, components.m_fogOfWarLocationComponent->m_fogOfWarPixel));
 		RevealPixelRangeWithObstacles(fogOfWarComponent, spatialPartitioningComponent, quadrant.m_centerColumnIndex - quadrant.m_xStartValue, quadrant.m_centerColumnIndex + quadrant.m_xEndValue,
-			obstacleIndicies, cartesianCenterLocation, quadrantTraces.m_previousLeft, quadrantTraces.m_previousRight);
+			components.m_nearbyObstaclesComponent->m_obstacleIndicies, cartesianCenterLocation, quadrantTraces.m_previousLeft, quadrantTraces.m_previousRight);
 
 		return;
 	}

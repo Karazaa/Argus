@@ -102,6 +102,11 @@ void ObstaclePointKDTreeRangeOutput::Add(const ObstaclePointKDTreeNode* nodeToAd
 	m_inRangeObstacleIndicies.Add(nodeToAdd->m_indicies);
 }
 
+void ObstaclePointKDTreeRangeOutput::ResetAll()
+{
+	m_inRangeObstacleIndicies.Reset();
+}
+
 void ObstaclePointKDTree::InsertObstaclesIntoKDTree(const TArray<ObstaclePointArray>& obstacles)
 {
 	ARGUS_MEMORY_TRACE(ArgusKDTree);
@@ -128,7 +133,7 @@ void ObstaclePointKDTree::InsertObstaclesIntoKDTree(const TArray<ObstaclePointAr
 	}
 }
 
-bool ObstaclePointKDTree::FindObstacleIndiciesWithinRangeOfLocation(TArray<ObstacleIndicies>& obstacleIndicies, const FVector& location, const float range) const
+bool ObstaclePointKDTree::FindObstacleIndiciesWithinRangeOfLocation(TArray<ObstacleIndicies>& obstacleIndicies, const FVector& location, const float range)
 {
 	ARGUS_TRACE(ObstaclePointKDTree::FindObstacleIndiciesWithinRangeOfLocation);
 
@@ -143,13 +148,33 @@ bool ObstaclePointKDTree::FindObstacleIndiciesWithinRangeOfLocation(TArray<Obsta
 		return false;
 	}
 
-	ObstaclePointKDTreeRangeOutput foundObstacles;
-	FindNodesWithinRangeOfLocationRecursive(foundObstacles, ObstaclePointKDTreeQueryRangeThresholds(), m_rootNode, location, FMath::Square(range), nullptr, 0u);
-	obstacleIndicies.Reserve(foundObstacles.m_inRangeObstacleIndicies.Num());
-	for (int32 i = 0; i < foundObstacles.m_inRangeObstacleIndicies.Num(); ++i)
+	m_queryScratchData.ResetAll();
+	FindNodesWithinRangeOfLocationRecursive(m_queryScratchData, ObstaclePointKDTreeQueryRangeThresholds(), m_rootNode, location, FMath::Square(range), nullptr, 0u);
+	obstacleIndicies.Reserve(m_queryScratchData.GetInRangeObstacleIndicies().Num());
+	for (int32 i = 0; i < m_queryScratchData.GetInRangeObstacleIndicies().Num(); ++i)
 	{
-		obstacleIndicies.Add(foundObstacles.m_inRangeObstacleIndicies[i]);
+		obstacleIndicies.Add(m_queryScratchData.GetInRangeObstacleIndicies()[i]);
 	}
 
 	return obstacleIndicies.Num() > 0;
+}
+
+bool ObstaclePointKDTree::FindObstacleIndiciesWithinRangeOfLocation(ObstaclePointKDTreeRangeOutput& obstacleIndicies, const FVector& location, const float range) const
+{
+	ARGUS_TRACE(ObstaclePointKDTree::FindObstacleIndiciesWithinRangeOfLocation);
+
+	if (!m_rootNode)
+	{
+		return false;
+	}
+
+	if (range <= 0.0f)
+	{
+		ARGUS_LOG(ArgusUtilitiesLog, Error, TEXT("[%s] Searching range is less than or equal to 0."), ARGUS_FUNCNAME);
+		return false;
+	}
+
+	FindNodesWithinRangeOfLocationRecursive(obstacleIndicies, ObstaclePointKDTreeQueryRangeThresholds(), m_rootNode, location, FMath::Square(range), nullptr, 0u);
+
+	return obstacleIndicies.GetInRangeObstacleIndicies().Num() > 0;
 }
