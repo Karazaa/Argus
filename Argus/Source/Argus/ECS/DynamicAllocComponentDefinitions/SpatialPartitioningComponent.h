@@ -25,4 +25,14 @@ struct SpatialPartitioningComponent
 
 	float m_validSpaceExtent = 3000.0f;
 	float m_flyingPlaneHeight = 300.0f;
+
+	const ObstaclePoint& GetObstaclePointFromIndicies(const ObstacleIndicies& indicies) const 
+	{
+		return m_obstacles[indicies.m_obstacleIndex][indicies.m_obstaclePointIndex];
+	}
+
+	const ObstaclePoint& GetNextObstaclePointFromIndicies(const ObstacleIndicies& indicies) const
+	{
+		return m_obstacles[indicies.m_obstacleIndex].GetNext(indicies.m_obstaclePointIndex);
+	}
 };

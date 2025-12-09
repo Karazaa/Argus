@@ -15,6 +15,8 @@ public:
 	static void RunSystems();
 	static void CalculateAvoidanceObstacles(SpatialPartitioningComponent* spatialPartitioningComponent, UWorld* worldPointer);
 	static float FindAreaOfObstacleCartesian(const ObstaclePointArray& obstaclePoints);
+	static bool IsEntityInLineOfSightOfOther(ArgusEntity sourceEntity, ArgusEntity targetEntity);
+	static bool IsPointInLineOfSightOfEntity(ArgusEntity sourceEntity, const FVector& targetLocation);
 
 private:
 	static void ClearSeenByStatus();

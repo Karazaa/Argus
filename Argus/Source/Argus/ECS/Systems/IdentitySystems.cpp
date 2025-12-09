@@ -4,15 +4,7 @@
 #include "ArgusEntity.h"
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
-
-//void IdentitySystems::RunSystems(float deltaTime)
-//{
-//	ARGUS_TRACE(IdentitySystems::RunSystems);
-//
-//	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
-//	{
-//	}
-//}
+#include "Systems/SpatialPartitioningSystems.h"
 
 void IdentitySystems::RegisterEntityAsSeenByOther(const uint16 perceivedEntityId, const uint16 perceiverEntityId)
 {
@@ -24,8 +16,14 @@ void IdentitySystems::RegisterEntityAsSeenByOther(const uint16 perceivedEntityId
 	}
 
 	const IdentityComponent* perceiverIdentityComponent = perceiverEntity.GetComponent<IdentityComponent>();
+	const TaskComponent* perceiverTaskComponent = perceiverEntity.GetComponent<TaskComponent>();
 	IdentityComponent* perceivedIdentityComponent = perceivedEntity.GetComponent<IdentityComponent>();
 	if (!perceiverIdentityComponent || !perceivedIdentityComponent)
+	{
+		return;
+	}
+
+	if (perceiverTaskComponent->m_flightState == EFlightState::Grounded && !SpatialPartitioningSystems::IsEntityInLineOfSightOfOther(perceiverEntity, perceivedEntity))
 	{
 		return;
 	}

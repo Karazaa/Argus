@@ -296,6 +296,65 @@ float SpatialPartitioningSystems::FindAreaOfObstacleCartesian(const ObstaclePoin
 	return area;
 }
 
+bool SpatialPartitioningSystems::IsEntityInLineOfSightOfOther(ArgusEntity sourceEntity, ArgusEntity targetEntity)
+{
+	if (!sourceEntity || !targetEntity)
+	{
+		return false;
+	}
+
+	const TransformComponent* targetTransformComponent = targetEntity.GetComponent<TransformComponent>();
+	if (!targetTransformComponent)
+	{
+		return false;
+	}
+
+	return IsPointInLineOfSightOfEntity(sourceEntity, targetTransformComponent->m_location);
+}
+
+bool SpatialPartitioningSystems::IsPointInLineOfSightOfEntity(ArgusEntity sourceEntity, const FVector& targetLocation)
+{
+	ARGUS_TRACE(SpatialPartitioningSystems::IsPointInLineOfSightOfEntity);
+
+	if (!sourceEntity)
+	{
+		return false;
+	}
+
+	const TransformComponent* transformComponent = sourceEntity.GetComponent<TransformComponent>();
+	const NearbyObstaclesComponent* nearbyObstaclesComponent = sourceEntity.GetComponent<NearbyObstaclesComponent>();
+	const TargetingComponent* targetingComponent = sourceEntity.GetComponent<TargetingComponent>();
+	if (!transformComponent || !nearbyObstaclesComponent || !targetingComponent)
+	{
+		return false;
+	}
+
+	if (FVector::DistSquared2D(transformComponent->m_location, targetLocation) > FMath::Square(targetingComponent->m_sightRange))
+	{
+		return false;
+	}
+
+	const SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::GetSingletonEntity().GetComponent<SpatialPartitioningComponent>();
+	ARGUS_RETURN_ON_NULL_BOOL(spatialPartitioningComponent, ArgusECSLog);
+
+	const FVector2D cartesianSourceLocation = FVector2D(ArgusMath::ToCartesianVector(transformComponent->m_location));
+	const FVector2D cartesianTargetLocation = FVector2D(ArgusMath::ToCartesianVector(targetLocation));
+	const TArray<ObstacleIndicies, ArgusContainerAllocator<20u> >& inRangeObstacleIndicies = nearbyObstaclesComponent->m_obstacleIndicies.GetInRangeObstacleIndicies();
+
+	for (int32 i = 0; i < inRangeObstacleIndicies.Num(); ++i)
+	{
+		const ObstaclePoint& currentObstaclePoint = spatialPartitioningComponent->GetObstaclePointFromIndicies(inRangeObstacleIndicies[i]);
+		const ObstaclePoint& nextObstaclePoint = spatialPartitioningComponent->GetNextObstaclePointFromIndicies(inRangeObstacleIndicies[i]);
+
+		if (ArgusMath::DoLineSegmentsIntersectCartesian(cartesianSourceLocation, cartesianTargetLocation, currentObstaclePoint.m_point, nextObstaclePoint.m_point))
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
 bool SpatialPartitioningSystems::GetNavMeshWalls(const SpatialPartitioningComponent* spatialPartitioningComponent, const ARecastNavMesh* navMesh, const FNavLocation& originLocation, TArray<FVector>& outNavWalls)
 {
 	ARGUS_TRACE(SpatialPartitioningSystems::GetNavMeshWalls);
