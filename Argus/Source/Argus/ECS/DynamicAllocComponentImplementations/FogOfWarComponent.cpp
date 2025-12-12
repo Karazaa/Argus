@@ -137,6 +137,9 @@ void FogOfWarComponent::DrawComponentDebug() const
 			}
 		}
 		ImGui::TableNextColumn();
+		ImGui::Text("m_revealedPixelBits");
+		ImGui::TableNextColumn();
+		ImGui::TableNextColumn();
 		ImGui::Text("m_gaussianDimension");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_gaussianDimension);

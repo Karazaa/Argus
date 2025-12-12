@@ -33,7 +33,7 @@ void NearbyObstaclesComponent::DrawComponentDebug() const
 	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings))
 	{
 		ImGui::TableNextColumn();
-		ImGui::Text("m_obstacleIndiciesInSightRange");
+		ImGui::Text("m_obstacleIndicies");
 		ImGui::TableNextColumn();
 		ImGui::EndTable();
 	}

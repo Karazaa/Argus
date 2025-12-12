@@ -47,6 +47,9 @@ struct FogOfWarComponent
 	ARGUS_IGNORE()
 	TArray<UE::Tasks::FTask, ArgusContainerAllocator<0u> > m_asyncTasks;
 
+	ARGUS_IGNORE()
+	TBitArray<ArgusContainerAllocator<0u> > m_revealedPixelBits;
+
 	uint8 m_gaussianDimension = 5u;
 	uint8 m_revealedOnceAlpha = 100u;
 	uint16 m_textureSize = 1024u;
