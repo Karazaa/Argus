@@ -42,8 +42,6 @@ void FogOfWarSystems::InitializeSystems()
 		fogOfWarComponent->m_intermediarySmoothingData.Init(255.0f, fogOfWarComponent->GetTotalPixels());
 	}
 
-	fogOfWarComponent->m_revealedPixelBits.Init(false, fogOfWarComponent->GetTotalPixels());
-
 	InitializeGaussianFilter(fogOfWarComponent);
 	UpdateDynamicMaterialInstance();
 }
@@ -650,7 +648,6 @@ void FogOfWarSystems::SetAlphaForPixelRange(FogOfWarComponent* fogOfWarComponent
 	uint8* firstAddress = &fogOfWarComponent->m_textureData[fromPixelInclusive];
 	uint32 rowLength = (toPixelInclusive - fromPixelInclusive) + 1;
 	memset(firstAddress, 0, rowLength);
-	fogOfWarComponent->m_revealedPixelBits.SetRange(fromPixelInclusive, rowLength, true);
 	return;
 }
 
