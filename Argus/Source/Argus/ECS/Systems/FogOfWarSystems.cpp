@@ -182,68 +182,6 @@ void FogOfWarSystems::ClearActivelyRevealedPixelsForRange(FogOfWarComponent* fog
 	}
 }
 
-void FogOfWarSystems::ClearActivelyRevealedPixelsByEntity(FogOfWarComponent* fogOfWarComponent)
-{
-	ARGUS_TRACE(FogOfWarSystems::ClearActivelyRevealedPixels);
-	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
-
-	InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId).GetComponent<InputInterfaceComponent>();
-	ARGUS_RETURN_ON_NULL(inputInterfaceComponent, ArgusECSLog);
-
-	fogOfWarComponent->m_asyncTasks.Reset();
-
-	for (int32 i = 0; i < fogOfWarComponent->m_numberSmoothingChunks; ++i)
-	{
-		// Calculate new actively revealed pixels.
-		ArgusEntity::IterateSystemsArgs<FogOfWarSystemsArgs>([fogOfWarComponent, inputInterfaceComponent](FogOfWarSystemsArgs& components)
-		{
-			if (!components.m_entity.IsOnTeam(inputInterfaceComponent->m_activePlayerTeam) || !components.m_entity.IsAlive())
-			{
-				return;
-			}
-
-			ArgusEntity entity = components.m_entity;
-			fogOfWarComponent->m_asyncTasks.Add(UE::Tasks::Launch(ARGUS_NAMEOF(FogOfWarSystems::ClearActivelyRevealedPixelsPerEntity), [fogOfWarComponent, entity]()
-			{
-				FogOfWarSystemsArgs components;
-				if (!components.PopulateArguments(entity))
-				{
-					return;
-				}
-
-				ClearActivelyRevealedPixelsPerEntity(fogOfWarComponent, components);
-			}));			
-		});
-	}
-
-	UE::Tasks::Wait(fogOfWarComponent->m_asyncTasks);
-}
-
-void FogOfWarSystems::ClearActivelyRevealedPixelsPerEntity(FogOfWarComponent* fogOfWarComponent, const FogOfWarSystemsArgs& components)
-{
-	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
-	{
-		return;
-	}
-
-	FogOfWarOffsets offsets;
-	PopulateOffsetsForEntity(fogOfWarComponent, components, offsets);
-	const uint32 textureSize = static_cast<uint32>(fogOfWarComponent->m_textureSize);
-	const uint32 initialCenterIndex = components.m_fogOfWarLocationComponent->m_fogOfWarPixel - (offsets.m_topOffset * textureSize);
-
-	for (uint32 i = 0u; i <= (offsets.m_topOffset + offsets.m_bottomOffset); ++i)
-	{
-		const uint32 shiftedCenterIndex = initialCenterIndex + (i * textureSize);
-		for (uint32 j = (shiftedCenterIndex - offsets.m_leftOffset); j <= (shiftedCenterIndex + offsets.m_rightOffset); ++j)
-		{
-			if (fogOfWarComponent->m_textureData[j] == 0u)
-			{
-				fogOfWarComponent->m_textureData[j] = fogOfWarComponent->m_revealedOnceAlpha;
-			}
-		}
-	}
-}
-
 void FogOfWarSystems::SetRevealedStatePerEntity(FogOfWarComponent* fogOfWarComponent)
 {
 	ARGUS_TRACE(FogOfWarSystems::SetRevealedStatePerEntity);
