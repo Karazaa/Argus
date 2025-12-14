@@ -39,6 +39,8 @@ struct InputInterfaceComponent
 
 	float m_doubleClickThresholdSeconds = 1.0f;
 
+	float m_doubleClickQueryRange = 1000.0f;
+
 	ARGUS_IGNORE()
 	uint16 m_lastSelectedEntityId = ArgusECSConstants::k_maxEntities;
 
@@ -47,6 +49,19 @@ struct InputInterfaceComponent
 		for (int32 i = 0; i < m_activeAbilityGroupArgusEntityIds.Num(); ++i)
 		{
 			if (m_activeAbilityGroupArgusEntityIds[i] == entityId)
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	bool IsEntityIdSelected(uint16 entityId) const
+	{
+		for (int32 i = 0; i < m_selectedArgusEntityIds.Num(); ++i)
+		{
+			if (m_selectedArgusEntityIds[i] == entityId)
 			{
 				return true;
 			}

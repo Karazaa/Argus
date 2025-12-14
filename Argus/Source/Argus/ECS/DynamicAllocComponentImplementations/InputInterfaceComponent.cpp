@@ -21,6 +21,7 @@ void InputInterfaceComponent::Reset()
 	m_activePlayerTeam = ETeam::TeamA;
 	m_doubleClickTimer.Reset();
 	m_doubleClickThresholdSeconds = 1.0f;
+	m_doubleClickQueryRange = 1000.0f;
 	m_lastSelectedEntityId = ArgusECSConstants::k_maxEntities;
 }
 
@@ -102,6 +103,10 @@ void InputInterfaceComponent::DrawComponentDebug() const
 		ImGui::Text("m_doubleClickThresholdSeconds");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_doubleClickThresholdSeconds);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_doubleClickQueryRange");
+		ImGui::TableNextColumn();
+		ImGui::Text("%.2f", m_doubleClickQueryRange);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_lastSelectedEntityId");
 		ImGui::TableNextColumn();

@@ -2,10 +2,15 @@
 
 #pragma once
 
-class ArgusEntity;
+#include "ArgusEntity.h"
+
+struct InputInterfaceComponent;
 
 class InputInterfaceSystems
 {
 public:
-	static void CheckAndHandleEntityDoubleClick(const ArgusEntity& entity);
+	static void CheckAndHandleEntityDoubleClick(ArgusEntity entity);
+
+private:
+	static void AddAdjacentLikeEntitiesAsSelected(ArgusEntity entity, InputInterfaceComponent* inputInterfaceComponent);
 };

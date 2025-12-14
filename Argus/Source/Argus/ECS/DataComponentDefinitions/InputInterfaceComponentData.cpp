@@ -11,6 +11,7 @@ void UInputInterfaceComponentData::InstantiateComponentForEntity(const ArgusEnti
 	ARGUS_RETURN_ON_NULL(InputInterfaceComponentRef, ArgusECSLog);
 
 	InputInterfaceComponentRef->m_doubleClickThresholdSeconds = m_doubleClickThresholdSeconds;
+	InputInterfaceComponentRef->m_doubleClickQueryRange = m_doubleClickQueryRange;
 }
 
 bool UInputInterfaceComponentData::MatchesType(UComponentData* other) const

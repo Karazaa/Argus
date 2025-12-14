@@ -39,4 +39,14 @@ struct TransformComponent
 	{
 		return m_smoothedYaw.GetValue();
 	}
+
+	bool CanFly() const
+	{
+		return m_flightCapability == EFlightCapability::BothGroundedAndFlying || m_flightCapability == EFlightCapability::OnlyFlying;
+	}
+
+	bool CanWalk() const
+	{
+		return m_flightCapability == EFlightCapability::BothGroundedAndFlying || m_flightCapability == EFlightCapability::OnlyGrounded;
+	}
 };

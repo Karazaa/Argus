@@ -14,6 +14,8 @@ class ARGUS_API UInputInterfaceComponentData : public UComponentData
 public:
 	UPROPERTY(EditAnywhere)
 	float m_doubleClickThresholdSeconds = 1.0f;
+	UPROPERTY(EditAnywhere)
+	float m_doubleClickQueryRange = 1000.0f;
 
 	void InstantiateComponentForEntity(const ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;
