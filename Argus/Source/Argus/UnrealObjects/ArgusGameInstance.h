@@ -17,6 +17,7 @@ class ARGUS_API UArgusGameInstance : public UGameInstance
 	
 public:
 	static UArgusStaticDatabase* GetStaticDatabase();
+	static UArgusGameInstance* GetArgusGameInstance();
 	
 	virtual void Init() override;
 	virtual void Shutdown() override;
@@ -31,6 +32,7 @@ protected:
 
 private:
 	static UArgusStaticDatabase* s_staticDatabaseLoadedReference;
+	static UArgusGameInstance* s_gameInstance;
 
 	TMap<uint16, TWeakObjectPtr<AArgusActor>> m_argusEntityActorMap;
 };

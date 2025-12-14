@@ -13,4 +13,5 @@ public:
 
 private:
 	static void AddAdjacentLikeEntitiesAsSelected(ArgusEntity entity, InputInterfaceComponent* inputInterfaceComponent);
+	static void AddEntityIdAsSelected(uint16 entityId);
 };

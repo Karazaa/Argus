@@ -5,6 +5,7 @@
 #include "ArgusLogging.h"
 
 UArgusStaticDatabase* UArgusGameInstance::s_staticDatabaseLoadedReference = nullptr;
+UArgusGameInstance* UArgusGameInstance::s_gameInstance = nullptr;
 
 UArgusStaticDatabase* UArgusGameInstance::GetStaticDatabase()
 {
@@ -12,14 +13,21 @@ UArgusStaticDatabase* UArgusGameInstance::GetStaticDatabase()
 	return s_staticDatabaseLoadedReference;
 }
 
+UArgusGameInstance* UArgusGameInstance::GetArgusGameInstance()
+{
+	return s_gameInstance;
+}
+
 void UArgusGameInstance::Init()
 {
 	s_staticDatabaseLoadedReference = m_staticDatabase.Get();
+	s_gameInstance = this;
 }
 
 void UArgusGameInstance::Shutdown()
 {
 	s_staticDatabaseLoadedReference = nullptr;
+	s_gameInstance = nullptr;
 	m_argusEntityActorMap.Empty();
 }
 

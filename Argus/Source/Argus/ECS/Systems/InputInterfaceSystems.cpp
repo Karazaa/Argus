@@ -1,6 +1,7 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "InputInterfaceSystems.h"
+#include "ArgusGameInstance.h"
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
 
@@ -86,4 +87,25 @@ void InputInterfaceSystems::AddAdjacentLikeEntitiesAsSelected(ArgusEntity entity
 	{
 		spatialPartitioningComponent->m_argusEntityKDTree.FindArgusEntityIdsWithinRangeOfLocation(foundGroundedEntityIds, transformComponent->m_location, inputInterfaceComponent->m_doubleClickQueryRange, predicate);
 	}
+
+	for (int32 i = 0u; i < foundFlyingEntityIds.Num(); ++i)
+	{
+		AddEntityIdAsSelected(foundFlyingEntityIds[i]);
+	}
+
+	for (int32 i = 0u; i < foundGroundedEntityIds.Num(); ++i)
+	{
+		AddEntityIdAsSelected(foundGroundedEntityIds[i]);
+	}
+}
+
+void InputInterfaceSystems::AddEntityIdAsSelected(uint16 entityId)
+{
+	UArgusGameInstance* gameInstance = UArgusGameInstance::GetArgusGameInstance();
+	ARGUS_RETURN_ON_NULL(gameInstance, ArgusECSLog);
+
+	AArgusActor* actor = gameInstance->GetArgusActorFromArgusEntity(ArgusEntity::RetrieveEntity(entityId));
+	ARGUS_RETURN_ON_NULL(actor, ArgusECSLog);
+
+	// TODO JAMES: Set selected state and place into interface arrays for selected entities and/or active ability groups.
 }
