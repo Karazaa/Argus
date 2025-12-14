@@ -137,20 +137,6 @@ bool TimerHandleFinishTimerTest::RunTest(const FString& Parameters)
 
 	TimerHandle timerHandle;
 
-#pragma region Test retrieving a Timer pointer from a TimerHandle
-	AddExpectedErrorPlain
-	(
-		FString::Printf
-		(
-			TEXT("Could not retrieve a %s from %s associated with passed in %s (%d)."),
-			ARGUS_NAMEOF(Timer*),
-			ARGUS_NAMEOF(TimerComponent),
-			ARGUS_NAMEOF(ArgusEntity),
-			timerEntity.GetId()
-		)
-	);
-#pragma endregion
-
 	timerHandle.FinishTimerHandling(timerEntity);
 	timerHandle.StartTimer(timerEntity, expectedTimerDurationSeconds);
 	timerHandle.FinishTimerHandling(timerEntity);
@@ -205,20 +191,6 @@ bool TimerHandleCancelTimerTest::RunTest(const FString& Parameters)
 	}
 
 	TimerHandle timerHandle;
-
-#pragma region Test retrieving a Timer pointer from a TimerHandle
-	AddExpectedErrorPlain
-	(
-		FString::Printf
-		(
-			TEXT("Could not retrieve a %s from %s associated with passed in %s (%d)."),
-			ARGUS_NAMEOF(Timer*),
-			ARGUS_NAMEOF(TimerComponent),
-			ARGUS_NAMEOF(ArgusEntity),
-			timerEntity.GetId()
-		)
-	);
-#pragma endregion
 
 	timerHandle.CancelTimer(timerEntity);
 	timerHandle.StartTimer(timerEntity, expectedTimerDurationSeconds);

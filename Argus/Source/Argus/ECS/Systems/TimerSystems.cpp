@@ -19,7 +19,13 @@ void TimerSystems::RunSystems(float deltaTime)
 		AdvaceTimers(deltaTime, timerComponent);
 	});
 
-	TimerComponent* singletonTimerComponent = ArgusEntity::GetSingletonEntity().GetComponent<TimerComponent>();
+	ArgusEntity singletonEntity = ArgusEntity::GetSingletonEntity();
+	if (!singletonEntity)
+	{
+		return;
+	}
+
+	TimerComponent* singletonTimerComponent = singletonEntity.GetComponent<TimerComponent>();
 	if (!singletonTimerComponent)
 	{
 		return;
