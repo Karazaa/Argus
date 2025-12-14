@@ -257,22 +257,5 @@ Timer* TimerHandle::GetTimerForEntity(const ArgusEntity& entityWithTimer, const 
 		return nullptr;
 	}
 
-	Timer* timer = timerComponent->GetTimerFromHandle(this);
-	if (!timer)
-	{
-		ARGUS_LOG
-		(
-			ArgusECSLog,
-			Error,
-			TEXT("[%s] Could not retrieve a %s from %s associated with passed in %s (%d)."),
-			functionName,
-			ARGUS_NAMEOF(Timer*),
-			ARGUS_NAMEOF(TimerComponent),
-			ARGUS_NAMEOF(ArgusEntity),
-			entityWithTimer.GetId()
-		);
-		return nullptr;
-	}
-
-	return timer;
+	return timerComponent->GetTimerFromHandle(this);
 }

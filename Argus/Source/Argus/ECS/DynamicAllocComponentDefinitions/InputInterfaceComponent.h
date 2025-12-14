@@ -2,8 +2,10 @@
 
 #pragma once
 
+#include "ArgusECSConstants.h"
 #include "ArgusMacros.h"
 #include "ComponentDefinitions/IdentityComponent.h"
+#include "ComponentDependencies/Timer.h"
 #include "CoreMinimal.h"
 
 UENUM()
@@ -32,6 +34,14 @@ struct InputInterfaceComponent
 	ARGUS_IGNORE()
 	ETeam m_activePlayerTeam = ETeam::TeamA;
 
+	ARGUS_IGNORE()
+	TimerHandle m_doubleClickTimer;
+
+	float m_doubleClickThresholdSeconds = 1.0f;
+
+	ARGUS_IGNORE()
+	uint16 m_lastSelectedEntityId = ArgusECSConstants::k_maxEntities;
+
 	bool IsEntityIdInActiveAbilityGroup(uint16 entityId) const
 	{
 		for (int32 i = 0; i < m_activeAbilityGroupArgusEntityIds.Num(); ++i)
@@ -44,4 +54,6 @@ struct InputInterfaceComponent
 
 		return false;
 	}
+
+	uint16 GetOwningEntityId() const { return ArgusECSConstants::k_singletonEntityId; }
 };

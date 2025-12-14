@@ -19,6 +19,9 @@ void InputInterfaceComponent::Reset()
 	m_selectedActorsDisplayState = ESelectedActorsDisplayState::NotChanged;
 	m_indexOfActiveAbilityGroup = 0;
 	m_activePlayerTeam = ETeam::TeamA;
+	m_doubleClickTimer.Reset();
+	m_doubleClickThresholdSeconds = 1.0f;
+	m_lastSelectedEntityId = ArgusECSConstants::k_maxEntities;
 }
 
 void InputInterfaceComponent::DrawComponentDebug() const
@@ -77,6 +80,32 @@ void InputInterfaceComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		const char* valueName_m_activePlayerTeam = ARGUS_FSTRING_TO_CHAR(StaticEnum<ETeam>()->GetNameStringByValue(static_cast<uint8>(m_activePlayerTeam)))
 		ImGui::Text(valueName_m_activePlayerTeam);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_doubleClickTimer");
+		ImGui::TableNextColumn();
+		const ArgusEntity owningEntity = ArgusEntity::RetrieveEntity(GetOwningEntityId());
+		if (m_doubleClickTimer.IsTimerTicking(owningEntity))
+		{
+			ImGui::Text("%.2f", m_doubleClickTimer.GetTimeRemaining(owningEntity));
+			ImGui::SameLine();
+			ImGui::ProgressBar(m_doubleClickTimer.GetTimeElapsedProportion(owningEntity));
+		}
+		else if (m_doubleClickTimer.IsTimerComplete(owningEntity))
+		{
+			ImGui::Text("Timer complete");
+		}
+		else
+		{
+			ImGui::Text("Not set");
+		}
+		ImGui::TableNextColumn();
+		ImGui::Text("m_doubleClickThresholdSeconds");
+		ImGui::TableNextColumn();
+		ImGui::Text("%.2f", m_doubleClickThresholdSeconds);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_lastSelectedEntityId");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_lastSelectedEntityId);
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

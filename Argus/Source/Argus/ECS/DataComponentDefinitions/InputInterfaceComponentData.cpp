@@ -10,6 +10,7 @@ void UInputInterfaceComponentData::InstantiateComponentForEntity(const ArgusEnti
 	InputInterfaceComponent* InputInterfaceComponentRef = entity.GetOrAddComponent<InputInterfaceComponent>();
 	ARGUS_RETURN_ON_NULL(InputInterfaceComponentRef, ArgusECSLog);
 
+	InputInterfaceComponentRef->m_doubleClickThresholdSeconds = m_doubleClickThresholdSeconds;
 }
 
 bool UInputInterfaceComponentData::MatchesType(UComponentData* other) const

@@ -14,6 +14,7 @@
 #include "EnhancedPlayerInput.h"
 #include "Systems/AvoidanceSystems.h"
 #include "Systems/DecalSystems.h"
+#include "Systems/InputInterfaceSystems.h"
 #include "Systems/TransformSystems.h"
 
 bool UArgusInputManager::ShouldUpdateSelectedActorDisplay(ArgusEntity& templateSelectedEntity)
@@ -1138,7 +1139,7 @@ void UArgusInputManager::ProcessAbilityInputEventPerSelectedEntity(const ArgusEn
 void UArgusInputManager::ProcessEscapeInputEvent()
 {
 
-;}
+}
 
 void UArgusInputManager::ProcessRotateCameraInputEvent(AArgusCameraActor* argusCamera, const FInputActionValue& value)
 {
@@ -1313,6 +1314,8 @@ void UArgusInputManager::AddSelectedActorExclusive(AArgusActor* argusActor)
 	ARGUS_MEMORY_TRACE(ArgusInputManager);
 
 	ARGUS_RETURN_ON_NULL(argusActor, ArgusInputLog);
+
+	InputInterfaceSystems::CheckAndHandleEntityDoubleClick(argusActor->GetEntity());
 
 	bool alreadySelected = false;
 	for (TWeakObjectPtr<AArgusActor>& selectedActor : m_selectedArgusActors)
