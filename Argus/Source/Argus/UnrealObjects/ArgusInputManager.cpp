@@ -476,7 +476,7 @@ void UArgusInputManager::PrepareToProcessInputEvents()
 
 	if (CleanUpSelectedActors())
 	{
-		OnSelectedArgusArgusActorsChanged();
+		OnSelectedArgusActorsChanged();
 	}
 }
 
@@ -1202,7 +1202,7 @@ void UArgusInputManager::ProcessControlGroup(uint8 controlGroupIndex, AArgusCame
 	}
 	m_selectedArgusActors = m_controlGroupActors[controlGroupIndex];
 	CleanUpSelectedActors();
-	OnSelectedArgusArgusActorsChanged();
+	OnSelectedArgusActorsChanged();
 
 	ArgusEntity singletonEntity = ArgusEntity::GetSingletonEntity();
 	if (!singletonEntity)
@@ -1339,7 +1339,7 @@ void UArgusInputManager::AddSelectedActorExclusive(AArgusActor* argusActor)
 	}
 	m_selectedArgusActors.Emplace(argusActor);
 
-	OnSelectedArgusArgusActorsChanged();
+	OnSelectedArgusActorsChanged();
 }
 
 void UArgusInputManager::AddSelectedActorAdditive(AArgusActor* argusActor)
@@ -1361,7 +1361,7 @@ void UArgusInputManager::AddSelectedActorAdditive(AArgusActor* argusActor)
 		m_selectedArgusActors.Emplace(argusActor);
 	}
 
-	OnSelectedArgusArgusActorsChanged();
+	OnSelectedArgusActorsChanged();
 }
 
 void UArgusInputManager::AddMarqueeSelectedActorsExclusive(const TArray<AArgusActor*>& marqueeSelectedActors)
@@ -1401,7 +1401,7 @@ void UArgusInputManager::AddMarqueeSelectedActorsAdditive(const TArray<AArgusAct
 
 	if (selectedActorsNum > 0)
 	{
-		OnSelectedArgusArgusActorsChanged();
+		OnSelectedArgusActorsChanged();
 	}
 }
 
@@ -1449,7 +1449,7 @@ void UArgusInputManager::ClearSelectedActors()
 	inputInterfaceComponent->m_selectedActorsDisplayState = ESelectedActorsDisplayState::ChangedThisFrame;
 }
 
-void UArgusInputManager::OnSelectedArgusArgusActorsChanged()
+void UArgusInputManager::OnSelectedArgusActorsChanged()
 {
 	InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::GetSingletonEntity().GetComponent<InputInterfaceComponent>();
 	ARGUS_RETURN_ON_NULL(inputInterfaceComponent, ArgusInputLog);

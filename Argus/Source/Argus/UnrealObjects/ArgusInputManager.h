@@ -140,7 +140,7 @@ private:
 	void AddMarqueeSelectedActorsAdditive(const TArray<AArgusActor*>& marqueeSelectedActors);
 	bool CleanUpSelectedActors();
 	void ClearSelectedActors();
-	void OnSelectedArgusArgusActorsChanged();
+	void OnSelectedArgusActorsChanged();
 
 	void InterruptReticle();
 	void SetReticleState();
