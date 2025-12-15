@@ -108,7 +108,6 @@ private:
 	};
 
 	TWeakObjectPtr<AArgusPlayerController> m_owningPlayerController = nullptr;
-	TSet<TWeakObjectPtr<AArgusActor>> m_selectedArgusActors;
 	TSet<TWeakObjectPtr<AArgusActor>> m_controlGroupActors[6];
 	TArray<InputCache> m_inputEventsThisFrame;
 
@@ -121,9 +120,7 @@ private:
 	void ProcessMarqueeSelectInputEvent(const AArgusCameraActor* argusCamera, bool isAdditive);
 	void PopulateMarqueeSelectPolygon(const AArgusCameraActor* argusCamera, TArray<FVector2D>& convexPolygon);
 	void ProcessMoveToInputEvent();
-	void ProcessMoveToInputEventPerSelectedActor(AArgusActor* argusActor, EMovementState inputMovementState, ArgusEntity targetEntity, const FVector& targetLocation, ArgusEntity decalEntity);
 	void ProcessSetWaypointInputEvent();
-	void ProcessSetWaypointInputEventPerSelectedActor(AArgusActor* argusActor, const FVector& targetLocation, ArgusEntity decalEntity);
 	void ProcessZoomInputEvent(AArgusCameraActor* argusCamera, const FInputActionValue& value);
 	void ProcessAbilityInputEvent(uint8 abilityIndex);
 	void ProcessAbilityInputEventPerSelectedEntity(const ArgusEntity& entity, uint8 abilityIndex);
@@ -134,15 +131,9 @@ private:
 	void ProcessChangeActiveAbilityGroup();
 	void ProcessUserInterfaceEntityClicked(const ArgusEntity& entity);
 
-	void AddSelectedActorExclusive(AArgusActor* argusActor);
-	void AddSelectedActorAdditive(AArgusActor* argusActor);
 	void AddMarqueeSelectedActorsExclusive(const TArray<AArgusActor*>& marqueeSelectedActors);
 	void AddMarqueeSelectedActorsAdditive(const TArray<AArgusActor*>& marqueeSelectedActors);
-	bool CleanUpSelectedActors();
 	void ClearSelectedActors();
-	void OnSelectedArgusActorsChanged();
-
-	void InterruptReticle();
 	void SetReticleState();
 	void ProcessReticleAbilityForSelectedEntities(const ReticleComponent* reticleComponent);
 	void ProcessReticleAbilityPerSelectedEntity(const ArgusEntity& entity, uint32 abilityRecordId);
