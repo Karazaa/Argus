@@ -473,11 +473,7 @@ void UArgusInputManager::PrepareToProcessInputEvents()
 	ARGUS_RETURN_ON_NULL(inputInterfaceComponent, ArgusInputLog);
 
 	inputInterfaceComponent->m_selectedActorsDisplayState = ESelectedActorsDisplayState::NotChanged;
-
-	if (CleanUpSelectedActors())
-	{
-		OnSelectedArgusActorsChanged();
-	}
+	InputInterfaceSystems::RemoveNoLongerSelectableEntities();
 }
 
 void UArgusInputManager::ProcessInputEvent(AArgusCameraActor* argusCamera, const InputCache& inputType)
@@ -499,11 +495,11 @@ void UArgusInputManager::ProcessInputEvent(AArgusCameraActor* argusCamera, const
 			ProcessMarqueeSelectInputEvent(argusCamera, true);
 			break;
 		case InputType::MoveTo:
-			InterruptReticle();
+			InputInterfaceSystems::InterruptReticle();
 			ProcessMoveToInputEvent();
 			break;
 		case InputType::SetWaypoint:
-			InterruptReticle();
+			InputInterfaceSystems::InterruptReticle();
 			ProcessSetWaypointInputEvent();
 			break;
 		case InputType::Zoom:
@@ -522,7 +518,7 @@ void UArgusInputManager::ProcessInputEvent(AArgusCameraActor* argusCamera, const
 			ProcessAbilityInputEvent(3u);
 			break;
 		case InputType::Escape:
-			InterruptReticle();
+			InputInterfaceSystems::InterruptReticle();
 			ProcessEscapeInputEvent();
 			break;
 		case InputType::RotateCamera:
@@ -579,7 +575,7 @@ void UArgusInputManager::ProcessInputEvent(AArgusCameraActor* argusCamera, const
 			ProcessSetControlGroup(5u);
 			break;
 		case InputType::ChangeActiveAbilityGroup:
-			InterruptReticle();
+			InputInterfaceSystems::InterruptReticle();
 			ProcessChangeActiveAbilityGroup();
 			break;
 		case InputType::UserInterfaceEntityClicked:
@@ -641,11 +637,11 @@ void UArgusInputManager::ProcessSelectInputEvent(bool isAdditive)
 
 	if (isAdditive)
 	{
-		AddSelectedActorAdditive(argusActor);
+		InputInterfaceSystems::AddSelectedEntityAdditive(argusActor->GetEntity(), m_owningPlayerController->GetMoveToLocationDecalActorRecord());
 	}
 	else
 	{
-		AddSelectedActorExclusive(argusActor);
+		InputInterfaceSystems::AddSelectedEntityExclusive(argusActor->GetEntity(), m_owningPlayerController->GetMoveToLocationDecalActorRecord());
 	}
 
 	if (CVarEnableVerboseArgusInputLogging.GetValueOnGameThread())
@@ -827,6 +823,9 @@ void UArgusInputManager::PopulateMarqueeSelectPolygon(const AArgusCameraActor* a
 
 void UArgusInputManager::ProcessMoveToInputEvent()
 {
+	InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::GetSingletonEntity().GetComponent<InputInterfaceComponent>();
+	ARGUS_RETURN_ON_NULL(inputInterfaceComponent, ArgusECSLog);
+
 	if (!ValidateOwningPlayerController())
 	{
 		return;
@@ -869,82 +868,10 @@ void UArgusInputManager::ProcessMoveToInputEvent()
 	}
 	else
 	{
-		decalEntity = DecalSystems::InstantiateMoveToLocationDecalEntity(m_owningPlayerController->GetMoveToLocationDecalActorRecord(), targetLocation, m_selectedArgusActors.Num(), ArgusECSConstants::k_maxEntities);
+		decalEntity = DecalSystems::InstantiateMoveToLocationDecalEntity(m_owningPlayerController->GetMoveToLocationDecalActorRecord(), targetLocation, inputInterfaceComponent->m_selectedArgusEntityIds.Num(), ArgusECSConstants::k_maxEntities);
 	}
 
-	for (TWeakObjectPtr<AArgusActor>& selectedActor : m_selectedArgusActors)
-	{
-		if (!selectedActor.IsValid())
-		{
-			continue;
-		}
-
-		ProcessMoveToInputEventPerSelectedActor(selectedActor.Get(), inputMovementState, targetEntity, targetLocation, decalEntity);
-	}
-}
-
-void UArgusInputManager::ProcessMoveToInputEventPerSelectedActor(AArgusActor* argusActor, EMovementState inputMovementState, ArgusEntity targetEntity, const FVector& targetLocation, ArgusEntity decalEntity)
-{
-	if (!argusActor)
-	{
-		return;
-	}
-
-	ArgusEntity selectedEntity = argusActor->GetEntity();
-	if (!selectedEntity)
-	{
-		return;
-	}
-
-	DecalSystems::ClearMoveToLocationDecalPerEntity(selectedEntity, true);
-
-	TaskComponent* taskComponent = selectedEntity.GetComponent<TaskComponent>();
-	TargetingComponent* targetingComponent = selectedEntity.GetComponent<TargetingComponent>();
-	NavigationComponent* navigationComponent = selectedEntity.GetComponent<NavigationComponent>();
-
-	if (!taskComponent || !targetingComponent)
-	{
-		return;
-	}
-
-	if (navigationComponent)
-	{
-		navigationComponent->ResetQueuedWaypoints();
-	}
-	
-	if (inputMovementState == EMovementState::ProcessMoveToEntityCommand)
-	{
-		if (targetEntity == selectedEntity)
-		{
-			taskComponent->m_movementState = EMovementState::None;
-		}
-		else
-		{
-			if (navigationComponent)
-			{
-				AvoidanceSystems::DecrementIdleEntitiesInGroup(selectedEntity);
-				taskComponent->m_movementState = inputMovementState;
-			}
-
-			targetingComponent->m_targetEntityId = targetEntity.GetId();
-			targetingComponent->m_targetLocation.Reset();
-		}
-
-		DecalSystems::ClearMoveToLocationDecalPerEntity(selectedEntity, true);
-	}
-	else if (inputMovementState == EMovementState::ProcessMoveToLocationCommand)
-	{
-		if (navigationComponent)
-		{
-			AvoidanceSystems::DecrementIdleEntitiesInGroup(selectedEntity);
-			taskComponent->m_movementState = inputMovementState;
-		}
-		
-		DecalSystems::SetMoveToLocationDecalPerEntity(targetingComponent, decalEntity);
-
-		targetingComponent->m_targetEntityId = ArgusEntity::k_emptyEntity.GetId();
-		targetingComponent->m_targetLocation = targetLocation;
-	}
+	InputInterfaceSystems::MoveSelectedEntitiesToTarget(inputMovementState, targetEntity, targetLocation, decalEntity);
 }
 
 void UArgusInputManager::ProcessSetWaypointInputEvent()
@@ -978,83 +905,14 @@ void UArgusInputManager::ProcessSetWaypointInputEvent()
 		);
 	}
 
-	uint16 numWaypointEligibleEntities = 0u;
-	for (TWeakObjectPtr<AArgusActor>& selectedActor : m_selectedArgusActors)
-	{
-		if (!selectedActor.IsValid())
-		{
-			continue;
-		}
-
-		ArgusEntity selectedEntity = selectedActor->GetEntity();
-		if (!selectedEntity || !selectedEntity.GetComponent<TaskComponent>() || !selectedEntity.GetComponent<TargetingComponent>() || !selectedEntity.GetComponent<NavigationComponent>())
-		{
-			continue;
-		}
-		numWaypointEligibleEntities++;
-	}
-
+	const uint16 numWaypointEligibleEntities = InputInterfaceSystems::GetNumWaypointEligibleEntities();
 	if (numWaypointEligibleEntities == 0u)
 	{
 		return;
 	}
 	
 	ArgusEntity decalEntity = DecalSystems::InstantiateMoveToLocationDecalEntity(m_owningPlayerController->GetMoveToLocationDecalActorRecord(), targetLocation, numWaypointEligibleEntities, DecalSystems::GetMostRecentSelectedWaypointDecalEntityId());
-
-	for (TWeakObjectPtr<AArgusActor>& selectedActor : m_selectedArgusActors)
-	{
-		if (!selectedActor.IsValid())
-		{
-			continue;
-		}
-
-		ProcessSetWaypointInputEventPerSelectedActor(selectedActor.Get(), targetLocation, decalEntity);
-	}
-}
-
-void UArgusInputManager::ProcessSetWaypointInputEventPerSelectedActor(AArgusActor* argusActor, const FVector& targetLocation, ArgusEntity decalEntity)
-{
-	ARGUS_MEMORY_TRACE(ArgusNavigationSystems);
-
-	if (!argusActor)
-	{
-		return;
-	}
-
-	ArgusEntity selectedEntity = argusActor->GetEntity();
-	if (!selectedEntity)
-	{
-		return;
-	}
-
-	TaskComponent* taskComponent = selectedEntity.GetComponent<TaskComponent>();
-	TargetingComponent* targetingComponent = selectedEntity.GetComponent<TargetingComponent>();
-	NavigationComponent* navigationComponent = selectedEntity.GetComponent<NavigationComponent>();
-
-	if (!taskComponent || !targetingComponent || !navigationComponent)
-	{
-		return;
-	}
-
-	switch (taskComponent->m_movementState)
-	{
-		case EMovementState::None:
-		case EMovementState::FailedToFindPath:
-			taskComponent->m_movementState = EMovementState::ProcessMoveToLocationCommand;
-			targetingComponent->m_targetEntityId = ArgusEntity::k_emptyEntity.GetId();
-			targetingComponent->m_targetLocation = targetLocation;
-			targetingComponent->m_decalEntityId = decalEntity.GetId();
-			navigationComponent->ResetQueuedWaypoints();
-			break;
-		case EMovementState::ProcessMoveToLocationCommand:
-		case EMovementState::MoveToLocation:
-			taskComponent->m_movementState = EMovementState::ProcessMoveToLocationCommand;
-			navigationComponent->m_queuedWaypoints.PushLast(NavigationWaypoint(targetLocation, decalEntity.GetId()));
-			break;
-		default:
-			navigationComponent->m_queuedWaypoints.PushLast(NavigationWaypoint(targetLocation, decalEntity.GetId()));
-			break;
-	}
+	InputInterfaceSystems::SetWaypointForSelectedEntities(targetLocation, decalEntity);
 }
 
 void UArgusInputManager::ProcessZoomInputEvent(AArgusCameraActor* argusCamera, const FInputActionValue& value)
@@ -1161,78 +1019,80 @@ void UArgusInputManager::ProcessRotateCameraInputEvent(AArgusCameraActor* argusC
 
 void UArgusInputManager::ProcessControlGroup(uint8 controlGroupIndex, AArgusCameraActor* argusCamera)
 {
-	if (!ValidateOwningPlayerController())
-	{
-		return;
-	}
+	// TODO JAMES: Move to InputInterfaceSystems
+	//if (!ValidateOwningPlayerController())
+	//{
+	//	return;
+	//}
 
-	if (m_controlGroupActors[controlGroupIndex].IsEmpty())
-	{
-		return;
-	}
+	//if (m_controlGroupActors[controlGroupIndex].IsEmpty())
+	//{
+	//	return;
+	//}
 
-	for (TWeakObjectPtr<AArgusActor>& controlGroupActor : m_controlGroupActors[controlGroupIndex])
-	{
-		if (!controlGroupActor.IsValid())
-		{
-			continue;
-		}
+	//for (TWeakObjectPtr<AArgusActor>& controlGroupActor : m_controlGroupActors[controlGroupIndex])
+	//{
+	//	if (!controlGroupActor.IsValid())
+	//	{
+	//		continue;
+	//	}
 
-		if (m_selectedArgusActors.Contains(controlGroupActor))
-		{
-			continue;
-		}
+	//	if (m_selectedArgusActors.Contains(controlGroupActor))
+	//	{
+	//		continue;
+	//	}
 
-		DecalSystems::ActivateCachedMoveToLocationDecalPerEntity(m_owningPlayerController->GetMoveToLocationDecalActorRecord(), controlGroupActor->GetEntity());
-	}
-	for (TWeakObjectPtr<AArgusActor>& selectedActor : m_selectedArgusActors)
-	{
-		if (!selectedActor.IsValid())
-		{
-			continue;
-		}
+	//	DecalSystems::ActivateCachedMoveToLocationDecalPerEntity(m_owningPlayerController->GetMoveToLocationDecalActorRecord(), controlGroupActor->GetEntity());
+	//}
+	//for (TWeakObjectPtr<AArgusActor>& selectedActor : m_selectedArgusActors)
+	//{
+	//	if (!selectedActor.IsValid())
+	//	{
+	//		continue;
+	//	}
 
-		if (m_controlGroupActors[controlGroupIndex].Contains(selectedActor))
-		{
-			continue;
-		}
+	//	if (m_controlGroupActors[controlGroupIndex].Contains(selectedActor))
+	//	{
+	//		continue;
+	//	}
 
-		selectedActor->SetSelectionState(false);
-		DecalSystems::ClearMoveToLocationDecalPerEntity(selectedActor->GetEntity(), true);
-	}
-	m_selectedArgusActors = m_controlGroupActors[controlGroupIndex];
-	CleanUpSelectedActors();
-	OnSelectedArgusActorsChanged();
+	//	selectedActor->SetSelectionState(false);
+	//	DecalSystems::ClearMoveToLocationDecalPerEntity(selectedActor->GetEntity(), true);
+	//}
+	//m_selectedArgusActors = m_controlGroupActors[controlGroupIndex];
+	//CleanUpSelectedActors();
+	//OnSelectedArgusActorsChanged();
 
-	ArgusEntity singletonEntity = ArgusEntity::GetSingletonEntity();
-	if (!singletonEntity)
-	{
-		return;
-	}
+	//ArgusEntity singletonEntity = ArgusEntity::GetSingletonEntity();
+	//if (!singletonEntity)
+	//{
+	//	return;
+	//}
 
-	const InputInterfaceComponent* inputInterfaceComponent = singletonEntity.GetComponent<InputInterfaceComponent>();
-	if (!inputInterfaceComponent)
-	{
-		return;
-	}
+	//const InputInterfaceComponent* inputInterfaceComponent = singletonEntity.GetComponent<InputInterfaceComponent>();
+	//if (!inputInterfaceComponent)
+	//{
+	//	return;
+	//}
 
-	if (inputInterfaceComponent->m_indexOfActiveAbilityGroup < 0 && inputInterfaceComponent->m_indexOfActiveAbilityGroup >= inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.Num())
-	{
-		return;
-	}
+	//if (inputInterfaceComponent->m_indexOfActiveAbilityGroup < 0 && inputInterfaceComponent->m_indexOfActiveAbilityGroup >= inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.Num())
+	//{
+	//	return;
+	//}
 
-	ArgusEntity templateEntity = ArgusEntity::RetrieveEntity(inputInterfaceComponent->m_indexOfActiveAbilityGroup);
-	if (!templateEntity)
-	{
-		return;
-	}
+	//ArgusEntity templateEntity = ArgusEntity::RetrieveEntity(inputInterfaceComponent->m_indexOfActiveAbilityGroup);
+	//if (!templateEntity)
+	//{
+	//	return;
+	//}
 
-	argusCamera->FocusOnArgusEntity(templateEntity);
+	//argusCamera->FocusOnArgusEntity(templateEntity);
 }
 
 void UArgusInputManager::ProcessSetControlGroup(uint8 controlGroupIndex)
 {
-	m_controlGroupActors[controlGroupIndex] = m_selectedArgusActors;
+	// TODO JAMES: Move to InputInterfaceSystems
+	// m_controlGroupActors[controlGroupIndex] = m_selectedArgusActors;
 }
 
 void UArgusInputManager::ProcessChangeActiveAbilityGroup()
@@ -1304,254 +1164,52 @@ void UArgusInputManager::ProcessUserInterfaceEntityClicked(const ArgusEntity& en
 		return;
 	}
 
-	AddSelectedActorExclusive(m_owningPlayerController->GetArgusActorForArgusEntity(entity));
+	InputInterfaceSystems::AddSelectedEntityExclusive(entity, m_owningPlayerController->GetMoveToLocationDecalActorRecord());
 }
 
 #pragma endregion
 
-void UArgusInputManager::AddSelectedActorExclusive(AArgusActor* argusActor)
-{
-	ARGUS_MEMORY_TRACE(ArgusInputManager);
-
-	ARGUS_RETURN_ON_NULL(argusActor, ArgusInputLog);
-
-	InputInterfaceSystems::CheckAndHandleEntityDoubleClick(argusActor->GetEntity());
-
-	bool alreadySelected = false;
-	for (TWeakObjectPtr<AArgusActor>& selectedActor : m_selectedArgusActors)
-	{
-		if (selectedActor.Get() == argusActor)
-		{
-			alreadySelected = true;
-		}
-		else if (selectedActor.IsValid())
-		{
-			selectedActor->SetSelectionState(false);
-			DecalSystems::ClearMoveToLocationDecalPerEntity(selectedActor->GetEntity(), true);
-		}
-	}
-	ClearSelectedActors();
-
-	if (!alreadySelected)
-	{
-		argusActor->SetSelectionState(true);
-		DecalSystems::ActivateCachedMoveToLocationDecalPerEntity(m_owningPlayerController->GetMoveToLocationDecalActorRecord(), argusActor->GetEntity());
-	}
-	m_selectedArgusActors.Emplace(argusActor);
-
-	OnSelectedArgusActorsChanged();
-}
-
-void UArgusInputManager::AddSelectedActorAdditive(AArgusActor* argusActor)
-{
-	ARGUS_MEMORY_TRACE(ArgusInputManager);
-
-	ARGUS_RETURN_ON_NULL(argusActor, ArgusInputLog);
-
-	if (m_selectedArgusActors.Contains(argusActor))
-	{
-		argusActor->SetSelectionState(false);
-		DecalSystems::ClearMoveToLocationDecalPerEntity(argusActor->GetEntity(), true);
-		m_selectedArgusActors.Remove(argusActor);
-	}
-	else
-	{
-		argusActor->SetSelectionState(true);
-		DecalSystems::ActivateCachedMoveToLocationDecalPerEntity(m_owningPlayerController->GetMoveToLocationDecalActorRecord(), argusActor->GetEntity());
-		m_selectedArgusActors.Emplace(argusActor);
-	}
-
-	OnSelectedArgusActorsChanged();
-}
-
 void UArgusInputManager::AddMarqueeSelectedActorsExclusive(const TArray<AArgusActor*>& marqueeSelectedActors)
 {
-	ARGUS_MEMORY_TRACE(ArgusInputManager);
+	// TODO JAMES: Move to InputInterfaceSystems
+	//ARGUS_MEMORY_TRACE(ArgusInputManager);
 
-	for (TWeakObjectPtr<AArgusActor>& selectedActor : m_selectedArgusActors)
-	{
-		if (selectedActor.IsValid())
-		{
-			selectedActor->SetSelectionState(false);
-			DecalSystems::ClearMoveToLocationDecalPerEntity(selectedActor->GetEntity(), true);
-		}
-	}
-	ClearSelectedActors();
+	//for (TWeakObjectPtr<AArgusActor>& selectedActor : m_selectedArgusActors)
+	//{
+	//	if (selectedActor.IsValid())
+	//	{
+	//		selectedActor->SetSelectionState(false);
+	//		DecalSystems::ClearMoveToLocationDecalPerEntity(selectedActor->GetEntity(), true);
+	//	}
+	//}
+	//ClearSelectedActors();
 
-	AddMarqueeSelectedActorsAdditive(marqueeSelectedActors);
+	//AddMarqueeSelectedActorsAdditive(marqueeSelectedActors);
 }
 
 void UArgusInputManager::AddMarqueeSelectedActorsAdditive(const TArray<AArgusActor*>& marqueeSelectedActors)
 {
-	ARGUS_MEMORY_TRACE(ArgusInputManager);
+	// TODO JAMES: Move to InputInterfaceSystems
+	//ARGUS_MEMORY_TRACE(ArgusInputManager);
 
-	const int32 selectedActorsNum = marqueeSelectedActors.Num();
-	const int32 existingSelectedActorNum = m_selectedArgusActors.Num();
-	m_selectedArgusActors.Reserve(selectedActorsNum + existingSelectedActorNum);
+	//const int32 selectedActorsNum = marqueeSelectedActors.Num();
+	//const int32 existingSelectedActorNum = m_selectedArgusActors.Num();
+	//m_selectedArgusActors.Reserve(selectedActorsNum + existingSelectedActorNum);
 
-	for (int32 i = 0; i < selectedActorsNum; ++i)
-	{
-		if (marqueeSelectedActors[i] && !m_selectedArgusActors.Contains(marqueeSelectedActors[i]))
-		{
-			marqueeSelectedActors[i]->SetSelectionState(true);
-			DecalSystems::ActivateCachedMoveToLocationDecalPerEntity(m_owningPlayerController->GetMoveToLocationDecalActorRecord(), marqueeSelectedActors[i]->GetEntity());
-			m_selectedArgusActors.Emplace(marqueeSelectedActors[i]);
-		}
-	}
+	//for (int32 i = 0; i < selectedActorsNum; ++i)
+	//{
+	//	if (marqueeSelectedActors[i] && !m_selectedArgusActors.Contains(marqueeSelectedActors[i]))
+	//	{
+	//		marqueeSelectedActors[i]->SetSelectionState(true);
+	//		DecalSystems::ActivateCachedMoveToLocationDecalPerEntity(m_owningPlayerController->GetMoveToLocationDecalActorRecord(), marqueeSelectedActors[i]->GetEntity());
+	//		m_selectedArgusActors.Emplace(marqueeSelectedActors[i]);
+	//	}
+	//}
 
-	if (selectedActorsNum > 0)
-	{
-		OnSelectedArgusActorsChanged();
-	}
-}
-
-bool UArgusInputManager::CleanUpSelectedActors()
-{
-	bool removedActors = false;
-
-	TArray<TWeakObjectPtr<AArgusActor>> noLongerSelectableArgusActors;
-	for (TWeakObjectPtr<AArgusActor>& selectedActor : m_selectedArgusActors)
-	{
-		if (!selectedActor.IsValid())
-		{
-			continue;
-		}
-
-		if (selectedActor->GetEntity().IsAlive() && !selectedActor->GetEntity().IsPassenger())
-		{
-			selectedActor->SetSelectionState(true);
-			continue;
-		}
-
-		selectedActor->SetSelectionState(false);
-		noLongerSelectableArgusActors.Add(selectedActor);
-	}
-
-	for (TWeakObjectPtr<AArgusActor>& noLongerSelectableArgusActor : noLongerSelectableArgusActors)
-	{
-		removedActors = true;
-		m_selectedArgusActors.Remove(noLongerSelectableArgusActor);
-	}
-
-	return removedActors;
-}
-
-void UArgusInputManager::ClearSelectedActors()
-{
-	m_selectedArgusActors.Reset();
-
-	InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::GetSingletonEntity().GetComponent<InputInterfaceComponent>();
-	ARGUS_RETURN_ON_NULL(inputInterfaceComponent, ArgusInputLog);
-
-	inputInterfaceComponent->m_selectedArgusEntityIds.Reset();
-	inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.Reset();
-	inputInterfaceComponent->m_indexOfActiveAbilityGroup = -1;
-	inputInterfaceComponent->m_selectedActorsDisplayState = ESelectedActorsDisplayState::ChangedThisFrame;
-}
-
-void UArgusInputManager::OnSelectedArgusActorsChanged()
-{
-	InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::GetSingletonEntity().GetComponent<InputInterfaceComponent>();
-	ARGUS_RETURN_ON_NULL(inputInterfaceComponent, ArgusInputLog);
-
-	inputInterfaceComponent->m_selectedArgusEntityIds.Reset();
-	inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.Reset();
-	inputInterfaceComponent->m_indexOfActiveAbilityGroup = -1;
-	inputInterfaceComponent->m_selectedActorsDisplayState = ESelectedActorsDisplayState::ChangedThisFrame;
-
-	for (TWeakObjectPtr<AArgusActor>& selectedActor : m_selectedArgusActors)
-	{
-		if (!selectedActor.IsValid())
-		{
-			continue;
-		}
-
-		const ArgusEntity entity = selectedActor->GetEntity();
-		if (!entity)
-		{
-			continue;
-		}
-		inputInterfaceComponent->m_selectedArgusEntityIds.Add(entity.GetId());
-	}
-
-	inputInterfaceComponent->m_selectedArgusEntityIds.Sort([](uint16 entityAId, uint16 entityBId)
-	{
-		const TaskComponent* taskComponentA = ArgusEntity::RetrieveEntity(entityAId).GetComponent<TaskComponent>();
-		const TaskComponent* taskComponentB = ArgusEntity::RetrieveEntity(entityBId).GetComponent<TaskComponent>();
-		ARGUS_RETURN_ON_NULL_BOOL(taskComponentA, ArgusInputLog);
-		ARGUS_RETURN_ON_NULL_BOOL(taskComponentB, ArgusInputLog);
-
-		const AbilityComponent* abilityComponentA = ArgusEntity::RetrieveEntity(entityAId).GetComponent<AbilityComponent>();
-		const AbilityComponent* abilityComponentB = ArgusEntity::RetrieveEntity(entityBId).GetComponent<AbilityComponent>();
-
-		const bool noAbilityA = !abilityComponentA || !abilityComponentA->HasAnyAbility();
-		const bool noAbilityB = !abilityComponentB || !abilityComponentB->HasAnyAbility();
-		if (noAbilityA || noAbilityB)
-		{
-			if (noAbilityA && noAbilityB)
-			{
-				return taskComponentA->m_spawnedFromArgusActorRecordId < taskComponentB->m_spawnedFromArgusActorRecordId;
-			}
-
-			return noAbilityB;
-		}
-
-		return abilityComponentA->m_abilityCasterPriority > abilityComponentB->m_abilityCasterPriority;
-	});
-
-	InterruptReticle();
-	const int32 numSelected = inputInterfaceComponent->m_selectedArgusEntityIds.Num();
-	if (numSelected == 0)
-	{
-		return;
-	}
-
-	inputInterfaceComponent->m_indexOfActiveAbilityGroup = 0;
-	inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.Add(inputInterfaceComponent->m_selectedArgusEntityIds[0]);
-	
-	const ArgusEntity templateEntity = ArgusEntity::RetrieveEntity(inputInterfaceComponent->m_selectedArgusEntityIds[0]);
-	const TaskComponent* templateTaskComponent = templateEntity.GetComponent<TaskComponent>();
-	ARGUS_RETURN_ON_NULL(templateTaskComponent, ArgusInputLog);
-
-	const AbilityComponent* templateAbilityComponent = templateEntity.GetComponent<AbilityComponent>();
-	if (!templateAbilityComponent || !templateAbilityComponent->HasAnyAbility())
-	{
-		for (int32 i = 1; i < numSelected; ++i)
-		{
-			const TaskComponent* taskComponent = ArgusEntity::RetrieveEntity(inputInterfaceComponent->m_selectedArgusEntityIds[i]).GetComponent<TaskComponent>();
-			if (!taskComponent || taskComponent->m_spawnedFromArgusActorRecordId != templateTaskComponent->m_spawnedFromArgusActorRecordId)
-			{
-				break;
-			}
-
-			inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.Add(inputInterfaceComponent->m_selectedArgusEntityIds[i]);
-		}
-		return;
-	}
-
-	for (int32 i = 1; i < numSelected; ++i)
-	{
-		const AbilityComponent* abilityComponent = ArgusEntity::RetrieveEntity(inputInterfaceComponent->m_selectedArgusEntityIds[i]).GetComponent<AbilityComponent>();
-		if (!abilityComponent || !abilityComponent->HasAnyAbility() || !abilityComponent->HasSameAbilities(templateAbilityComponent))
-		{
-			break;
-		}
-
-		inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.Add(inputInterfaceComponent->m_selectedArgusEntityIds[i]);
-	}
-}
-
-void UArgusInputManager::InterruptReticle()
-{
-	ReticleComponent* reticleComponent = ArgusEntity::GetSingletonEntity().GetComponent<ReticleComponent>();
-	ARGUS_RETURN_ON_NULL(reticleComponent, ArgusInputLog);
-
-	if (!reticleComponent->IsReticleEnabled())
-	{
-		return;
-	}
-
-	reticleComponent->DisableReticle();
+	//if (selectedActorsNum > 0)
+	//{
+	//	OnSelectedArgusActorsChanged();
+	//}
 }
 
 void UArgusInputManager::SetReticleState()
