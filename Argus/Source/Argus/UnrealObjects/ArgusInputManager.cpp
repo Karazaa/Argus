@@ -726,12 +726,6 @@ void UArgusInputManager::ProcessMarqueeSelectInputEvent(const AArgusCameraActor*
 		entityIdsWithinBounds.Add(flyingEntityIdsWithinBounds[i]);
 	}
 
-	TArray<AArgusActor*> actorsWithinBounds;
-	if (!m_owningPlayerController->GetArgusActorsFromArgusEntityIds(entityIdsWithinBounds, actorsWithinBounds))
-	{
-		return;
-	}
-
 	bool shouldIgnoreTeamRequirement = false;
 
 #if !UE_BUILD_SHIPPING
@@ -740,10 +734,10 @@ void UArgusInputManager::ProcessMarqueeSelectInputEvent(const AArgusCameraActor*
 
 	if (!shouldIgnoreTeamRequirement)
 	{
-		m_owningPlayerController->FilterArgusActorsToPlayerTeam(actorsWithinBounds);
+		m_owningPlayerController->FilterArgusEntityIdsToPlayerTeam(entityIdsWithinBounds);
 	}
 	
-	const int numFoundEntities = actorsWithinBounds.Num();
+	const int numFoundEntities = entityIdsWithinBounds.Num();
 	if (CVarEnableVerboseArgusInputLogging.GetValueOnGameThread())
 	{
 		ARGUS_LOG
@@ -759,11 +753,11 @@ void UArgusInputManager::ProcessMarqueeSelectInputEvent(const AArgusCameraActor*
 
 	if (!isAdditive && numFoundEntities > 0)
 	{
-		AddMarqueeSelectedActorsExclusive(actorsWithinBounds);
+		InputInterfaceSystems::AddMultipleSelectedEntitiesExclusive(entityIdsWithinBounds, m_owningPlayerController->GetMoveToLocationDecalActorRecord());
 	}
 	else
 	{
-		AddMarqueeSelectedActorsAdditive(actorsWithinBounds);
+		InputInterfaceSystems::AddMultipleSelectedEntitiesAdditive(entityIdsWithinBounds, m_owningPlayerController->GetMoveToLocationDecalActorRecord());
 	}
 }
 
@@ -1168,49 +1162,6 @@ void UArgusInputManager::ProcessUserInterfaceEntityClicked(const ArgusEntity& en
 }
 
 #pragma endregion
-
-void UArgusInputManager::AddMarqueeSelectedActorsExclusive(const TArray<AArgusActor*>& marqueeSelectedActors)
-{
-	// TODO JAMES: Move to InputInterfaceSystems
-	//ARGUS_MEMORY_TRACE(ArgusInputManager);
-
-	//for (TWeakObjectPtr<AArgusActor>& selectedActor : m_selectedArgusActors)
-	//{
-	//	if (selectedActor.IsValid())
-	//	{
-	//		selectedActor->SetSelectionState(false);
-	//		DecalSystems::ClearMoveToLocationDecalPerEntity(selectedActor->GetEntity(), true);
-	//	}
-	//}
-	//ClearSelectedActors();
-
-	//AddMarqueeSelectedActorsAdditive(marqueeSelectedActors);
-}
-
-void UArgusInputManager::AddMarqueeSelectedActorsAdditive(const TArray<AArgusActor*>& marqueeSelectedActors)
-{
-	// TODO JAMES: Move to InputInterfaceSystems
-	//ARGUS_MEMORY_TRACE(ArgusInputManager);
-
-	//const int32 selectedActorsNum = marqueeSelectedActors.Num();
-	//const int32 existingSelectedActorNum = m_selectedArgusActors.Num();
-	//m_selectedArgusActors.Reserve(selectedActorsNum + existingSelectedActorNum);
-
-	//for (int32 i = 0; i < selectedActorsNum; ++i)
-	//{
-	//	if (marqueeSelectedActors[i] && !m_selectedArgusActors.Contains(marqueeSelectedActors[i]))
-	//	{
-	//		marqueeSelectedActors[i]->SetSelectionState(true);
-	//		DecalSystems::ActivateCachedMoveToLocationDecalPerEntity(m_owningPlayerController->GetMoveToLocationDecalActorRecord(), marqueeSelectedActors[i]->GetEntity());
-	//		m_selectedArgusActors.Emplace(marqueeSelectedActors[i]);
-	//	}
-	//}
-
-	//if (selectedActorsNum > 0)
-	//{
-	//	OnSelectedArgusActorsChanged();
-	//}
-}
 
 void UArgusInputManager::SetReticleState()
 {
