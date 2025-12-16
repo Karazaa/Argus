@@ -127,6 +127,7 @@ void ArgusSystemsManager::SetInitialSingletonState(UWorld* worldPointer, ETeam a
 	ARGUS_RETURN_ON_NULL(inputInterfaceComponent, ArgusECSLog);
 
 	inputInterfaceComponent->m_activePlayerTeam = activePlayerTeam;
+	inputInterfaceComponent->m_controlGroups.SetNumZeroed(inputInterfaceComponent->m_numControlGroups);
 	FogOfWarSystems::InitializeSystems();
 }
 

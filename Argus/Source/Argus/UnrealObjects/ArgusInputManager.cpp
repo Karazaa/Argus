@@ -1013,80 +1013,13 @@ void UArgusInputManager::ProcessRotateCameraInputEvent(AArgusCameraActor* argusC
 
 void UArgusInputManager::ProcessControlGroup(uint8 controlGroupIndex, AArgusCameraActor* argusCamera)
 {
-	// TODO JAMES: Move to InputInterfaceSystems
-	//if (!ValidateOwningPlayerController())
-	//{
-	//	return;
-	//}
-
-	//if (m_controlGroupActors[controlGroupIndex].IsEmpty())
-	//{
-	//	return;
-	//}
-
-	//for (TWeakObjectPtr<AArgusActor>& controlGroupActor : m_controlGroupActors[controlGroupIndex])
-	//{
-	//	if (!controlGroupActor.IsValid())
-	//	{
-	//		continue;
-	//	}
-
-	//	if (m_selectedArgusActors.Contains(controlGroupActor))
-	//	{
-	//		continue;
-	//	}
-
-	//	DecalSystems::ActivateCachedMoveToLocationDecalPerEntity(m_owningPlayerController->GetMoveToLocationDecalActorRecord(), controlGroupActor->GetEntity());
-	//}
-	//for (TWeakObjectPtr<AArgusActor>& selectedActor : m_selectedArgusActors)
-	//{
-	//	if (!selectedActor.IsValid())
-	//	{
-	//		continue;
-	//	}
-
-	//	if (m_controlGroupActors[controlGroupIndex].Contains(selectedActor))
-	//	{
-	//		continue;
-	//	}
-
-	//	selectedActor->SetSelectionState(false);
-	//	DecalSystems::ClearMoveToLocationDecalPerEntity(selectedActor->GetEntity(), true);
-	//}
-	//m_selectedArgusActors = m_controlGroupActors[controlGroupIndex];
-	//CleanUpSelectedActors();
-	//OnSelectedArgusActorsChanged();
-
-	//ArgusEntity singletonEntity = ArgusEntity::GetSingletonEntity();
-	//if (!singletonEntity)
-	//{
-	//	return;
-	//}
-
-	//const InputInterfaceComponent* inputInterfaceComponent = singletonEntity.GetComponent<InputInterfaceComponent>();
-	//if (!inputInterfaceComponent)
-	//{
-	//	return;
-	//}
-
-	//if (inputInterfaceComponent->m_indexOfActiveAbilityGroup < 0 && inputInterfaceComponent->m_indexOfActiveAbilityGroup >= inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.Num())
-	//{
-	//	return;
-	//}
-
-	//ArgusEntity templateEntity = ArgusEntity::RetrieveEntity(inputInterfaceComponent->m_indexOfActiveAbilityGroup);
-	//if (!templateEntity)
-	//{
-	//	return;
-	//}
-
+	InputInterfaceSystems::SelectControlGroup(controlGroupIndex, m_owningPlayerController->GetMoveToLocationDecalActorRecord());
 	//argusCamera->FocusOnArgusEntity(templateEntity);
 }
 
 void UArgusInputManager::ProcessSetControlGroup(uint8 controlGroupIndex)
 {
-	// TODO JAMES: Move to InputInterfaceSystems
-	// m_controlGroupActors[controlGroupIndex] = m_selectedArgusActors;
+	InputInterfaceSystems::SetControlGroup(controlGroupIndex);
 }
 
 void UArgusInputManager::ProcessChangeActiveAbilityGroup()
