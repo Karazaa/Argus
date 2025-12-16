@@ -39,7 +39,9 @@ public:
 	ETeam GetPlayerTeam() const { return m_playerTeam; }
 
 	void FilterArgusActorsToPlayerTeam(TArray<AArgusActor*>& argusActors) const;
+	void FilterArgusEntityIdsToPlayerTeam(TArray<uint16>& entityIds) const;
 	bool IsArgusActorOnPlayerTeam(const AArgusActor* const actor) const;
+	bool IsArgusEntityOnPlayerTeam(ArgusEntity entity) const;
 
 	void InitializeUIWidgets();
 

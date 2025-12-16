@@ -95,6 +95,38 @@ void InputInterfaceSystems::AddSelectedEntityAdditive(ArgusEntity selectedEntity
 	OnSelectedEntitiesChanged();
 }
 
+void InputInterfaceSystems::AddMultipleSelectedEntitiesExclusive(TArray<uint16>& selectedEntityIds, const UArgusActorRecord* moveToLocationDecalActorRecord)
+{
+	RemoveAllSelectedEntities(ArgusEntity::k_emptyEntity);
+	AddMultipleSelectedEntitiesAdditive(selectedEntityIds, moveToLocationDecalActorRecord);
+}
+
+void InputInterfaceSystems::AddMultipleSelectedEntitiesAdditive(TArray<uint16>& selectedEntityIds, const UArgusActorRecord* moveToLocationDecalActorRecord)
+{
+	InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::GetSingletonEntity().GetComponent<InputInterfaceComponent>();
+	ARGUS_RETURN_ON_NULL(inputInterfaceComponent, ArgusECSLog);
+
+	const int32 numSelectedEntities = selectedEntityIds.Num();
+	if (numSelectedEntities > inputInterfaceComponent->m_selectedArgusEntityIds.GetSlack())
+	{
+		inputInterfaceComponent->m_selectedArgusEntityIds.Reserve(selectedEntityIds.Num() + inputInterfaceComponent->m_selectedArgusEntityIds.Num());
+	}
+
+	for (int32 i = 0; i < numSelectedEntities; ++i)
+	{
+		ArgusEntity selectedEntity = ArgusEntity::RetrieveEntity(selectedEntityIds[i]);
+		if (selectedEntityIds[i] && !inputInterfaceComponent->m_selectedArgusEntityIds.Contains(selectedEntityIds[i]))
+		{
+			AddSelectedEntityAdditive(selectedEntity, moveToLocationDecalActorRecord);
+		}
+	}
+
+	if (numSelectedEntities > 0)
+	{
+		OnSelectedEntitiesChanged();
+	}
+}
+
 void InputInterfaceSystems::RemoveNoLongerSelectableEntities()
 {
 	const UArgusGameInstance* gameInstance = UArgusGameInstance::GetArgusGameInstance();

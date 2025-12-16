@@ -17,6 +17,8 @@ public:
 
 	static void AddSelectedEntityExclusive(ArgusEntity selectedEntity, const UArgusActorRecord* moveToLocationDecalActorRecord);
 	static void AddSelectedEntityAdditive(ArgusEntity selectedEntity, const UArgusActorRecord* moveToLocationDecalActorRecord);
+	static void AddMultipleSelectedEntitiesExclusive(TArray<uint16>& selectedEntityIds, const UArgusActorRecord* moveToLocationDecalActorRecord);
+	static void AddMultipleSelectedEntitiesAdditive(TArray<uint16>& selectedEntityIds, const UArgusActorRecord* moveToLocationDecalActorRecord);
 	static void RemoveNoLongerSelectableEntities();
 	static bool RemoveAllSelectedEntities(ArgusEntity excludedEntity);
 

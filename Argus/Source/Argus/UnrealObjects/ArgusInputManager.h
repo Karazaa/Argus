@@ -131,9 +131,6 @@ private:
 	void ProcessChangeActiveAbilityGroup();
 	void ProcessUserInterfaceEntityClicked(const ArgusEntity& entity);
 
-	void AddMarqueeSelectedActorsExclusive(const TArray<AArgusActor*>& marqueeSelectedActors);
-	void AddMarqueeSelectedActorsAdditive(const TArray<AArgusActor*>& marqueeSelectedActors);
-	void ClearSelectedActors();
 	void SetReticleState();
 	void ProcessReticleAbilityForSelectedEntities(const ReticleComponent* reticleComponent);
 	void ProcessReticleAbilityPerSelectedEntity(const ArgusEntity& entity, uint32 abilityRecordId);

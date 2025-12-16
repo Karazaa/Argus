@@ -169,11 +169,37 @@ void AArgusPlayerController::FilterArgusActorsToPlayerTeam(TArray<AArgusActor*>&
 	);
 }
 
+void AArgusPlayerController::FilterArgusEntityIdsToPlayerTeam(TArray<uint16>& entityIds) const
+{
+	entityIds = entityIds.FilterByPredicate
+	(
+		[this](uint16 entityIdToCheck)
+		{
+			ArgusEntity entityToCheck = ArgusEntity::RetrieveEntity(entityIdToCheck);
+			if (!entityToCheck)
+			{
+				return false;
+			}
+
+			return entityToCheck.IsAlive() && !entityToCheck.IsPassenger() && IsArgusEntityOnPlayerTeam(entityToCheck);
+		}
+	);
+}
+
 bool AArgusPlayerController::IsArgusActorOnPlayerTeam(const AArgusActor* const actor) const
 {
 	ARGUS_RETURN_ON_NULL_BOOL(actor, ArgusUnrealObjectsLog);
+	return IsArgusEntityOnPlayerTeam(actor->GetEntity());
+}
 
-	const IdentityComponent* identityComponent = actor->GetEntity().GetComponent<IdentityComponent>();
+bool AArgusPlayerController::IsArgusEntityOnPlayerTeam(ArgusEntity entity) const
+{
+	if (!entity)
+	{
+		return false;
+	}
+
+	const IdentityComponent* identityComponent = entity.GetComponent<IdentityComponent>();
 	if (!identityComponent)
 	{
 		return false;
