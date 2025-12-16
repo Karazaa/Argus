@@ -22,6 +22,9 @@ public:
 	static void RemoveNoLongerSelectableEntities();
 	static bool RemoveAllSelectedEntities(ArgusEntity excludedEntity);
 
+	static void SetControlGroup(uint8 controlGroupIndex);
+	static void SelectControlGroup(uint8 controlGroupIndex, const UArgusActorRecord* moveToLocationDecalActorRecord);
+
 	static void CheckAndHandleEntityDoubleClick(ArgusEntity entity);
 
 	static void InterruptReticle();

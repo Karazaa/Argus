@@ -26,6 +26,9 @@ struct InputInterfaceComponent
 	TArray<uint16> m_activeAbilityGroupArgusEntityIds;
 
 	ARGUS_IGNORE()
+	TArray<TArray<uint16> > m_controlGroups;
+
+	ARGUS_IGNORE()
 	ESelectedActorsDisplayState m_selectedActorsDisplayState = ESelectedActorsDisplayState::NotChanged;
 
 	ARGUS_IGNORE()
@@ -43,6 +46,8 @@ struct InputInterfaceComponent
 
 	ARGUS_IGNORE()
 	uint16 m_lastSelectedEntityId = ArgusECSConstants::k_maxEntities;
+
+	uint8 m_numControlGroups = 12u;
 
 	bool IsEntityIdInActiveAbilityGroup(uint16 entityId) const
 	{

@@ -186,6 +186,42 @@ bool InputInterfaceSystems::RemoveAllSelectedEntities(ArgusEntity excludedEntity
 	return wasExcludedEntityPresent;
 }
 
+void InputInterfaceSystems::SetControlGroup(uint8 controlGroupIndex)
+{
+	InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::GetSingletonEntity().GetComponent<InputInterfaceComponent>();
+	ARGUS_RETURN_ON_NULL(inputInterfaceComponent, ArgusInputLog);
+
+	if (controlGroupIndex >= inputInterfaceComponent->m_numControlGroups)
+	{
+		return;
+	}
+
+	if (inputInterfaceComponent->m_controlGroups[controlGroupIndex].Max() < inputInterfaceComponent->m_selectedArgusEntityIds.Num())
+	{
+		inputInterfaceComponent->m_controlGroups[controlGroupIndex].Reserve(inputInterfaceComponent->m_selectedArgusEntityIds.Num());
+	}
+	inputInterfaceComponent->m_controlGroups[controlGroupIndex].Reset();
+
+	for (int32 i = 0; i < inputInterfaceComponent->m_selectedArgusEntityIds.Num(); ++i)
+	{
+		inputInterfaceComponent->m_controlGroups[controlGroupIndex].Add(inputInterfaceComponent->m_selectedArgusEntityIds[i]);
+	}
+}
+
+void InputInterfaceSystems::SelectControlGroup(uint8 controlGroupIndex, const UArgusActorRecord* moveToLocationDecalActorRecord)
+{
+	InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::GetSingletonEntity().GetComponent<InputInterfaceComponent>();
+	ARGUS_RETURN_ON_NULL(inputInterfaceComponent, ArgusInputLog);
+
+	if (controlGroupIndex >= inputInterfaceComponent->m_numControlGroups)
+	{
+		return;
+	}
+
+	RemoveAllSelectedEntities(ArgusEntity::k_emptyEntity);
+	AddMultipleSelectedEntitiesAdditive(inputInterfaceComponent->m_controlGroups[controlGroupIndex], moveToLocationDecalActorRecord);
+}
+
 void InputInterfaceSystems::CheckAndHandleEntityDoubleClick(ArgusEntity entity)
 {
 	if (!entity)

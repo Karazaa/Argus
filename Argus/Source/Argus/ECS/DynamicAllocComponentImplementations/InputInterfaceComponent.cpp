@@ -16,6 +16,7 @@ void InputInterfaceComponent::Reset()
 {
 	m_selectedArgusEntityIds.Reset();
 	m_activeAbilityGroupArgusEntityIds.Reset();
+	m_controlGroups.Reset();
 	m_selectedActorsDisplayState = ESelectedActorsDisplayState::NotChanged;
 	m_indexOfActiveAbilityGroup = 0;
 	m_activePlayerTeam = ETeam::TeamA;
@@ -23,6 +24,7 @@ void InputInterfaceComponent::Reset()
 	m_doubleClickThresholdSeconds = 1.0f;
 	m_doubleClickQueryRange = 1000.0f;
 	m_lastSelectedEntityId = ArgusECSConstants::k_maxEntities;
+	m_numControlGroups = 12u;
 }
 
 void InputInterfaceComponent::DrawComponentDebug() const
@@ -65,6 +67,22 @@ void InputInterfaceComponent::DrawComponentDebug() const
 			for (int32 i = 0; i < m_activeAbilityGroupArgusEntityIds.Num(); ++i)
 			{
 				ImGui::Text("%d", m_activeAbilityGroupArgusEntityIds[i]);
+			}
+		}
+		ImGui::TableNextColumn();
+		ImGui::Text("m_controlGroups");
+		ImGui::TableNextColumn();
+		ImGui::Text("Array max is currently = %d", m_controlGroups.Max());
+		if (m_controlGroups.Num() == 0)
+		{
+			ImGui::Text("Array is empty");
+		}
+		else
+		{
+			ImGui::Text("Size of array = %d", m_controlGroups.Num());
+			for (int32 i = 0; i < m_controlGroups.Num(); ++i)
+			{
+				// ImGui::Text("%d", m_controlGroups[i]);
 			}
 		}
 		ImGui::TableNextColumn();
@@ -111,6 +129,10 @@ void InputInterfaceComponent::DrawComponentDebug() const
 		ImGui::Text("m_lastSelectedEntityId");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_lastSelectedEntityId);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_numControlGroups");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_numControlGroups);
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING
