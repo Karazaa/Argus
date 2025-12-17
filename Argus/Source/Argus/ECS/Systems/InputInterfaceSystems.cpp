@@ -219,7 +219,7 @@ void InputInterfaceSystems::SelectControlGroup(uint8 controlGroupIndex, const UA
 	}
 
 	RemoveAllSelectedEntities(ArgusEntity::k_emptyEntity);
-	AddMultipleSelectedEntitiesAdditive(inputInterfaceComponent->m_controlGroups[controlGroupIndex], moveToLocationDecalActorRecord);
+	AddMultipleSelectedEntitiesAdditive(inputInterfaceComponent->m_controlGroups[controlGroupIndex].m_entityIds, moveToLocationDecalActorRecord);
 }
 
 void InputInterfaceSystems::CheckAndHandleEntityDoubleClick(ArgusEntity entity)

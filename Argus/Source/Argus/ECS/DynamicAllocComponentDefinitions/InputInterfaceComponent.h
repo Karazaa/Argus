@@ -5,6 +5,7 @@
 #include "ArgusECSConstants.h"
 #include "ArgusMacros.h"
 #include "ComponentDefinitions/IdentityComponent.h"
+#include "ComponentDependencies/ControlGroup.h"
 #include "ComponentDependencies/Timer.h"
 #include "CoreMinimal.h"
 
@@ -26,7 +27,7 @@ struct InputInterfaceComponent
 	TArray<uint16> m_activeAbilityGroupArgusEntityIds;
 
 	ARGUS_IGNORE()
-	TArray<TArray<uint16> > m_controlGroups;
+	TArray<ControlGroup> m_controlGroups;
 
 	ARGUS_IGNORE()
 	ESelectedActorsDisplayState m_selectedActorsDisplayState = ESelectedActorsDisplayState::NotChanged;

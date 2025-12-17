@@ -82,7 +82,6 @@ void InputInterfaceComponent::DrawComponentDebug() const
 			ImGui::Text("Size of array = %d", m_controlGroups.Num());
 			for (int32 i = 0; i < m_controlGroups.Num(); ++i)
 			{
-				// ImGui::Text("%d", m_controlGroups[i]);
 			}
 		}
 		ImGui::TableNextColumn();
