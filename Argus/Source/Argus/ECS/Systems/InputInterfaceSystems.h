@@ -24,6 +24,7 @@ public:
 
 	static void SetControlGroup(uint8 controlGroupIndex);
 	static void SelectControlGroup(uint8 controlGroupIndex, const UArgusActorRecord* moveToLocationDecalActorRecord);
+	static ArgusEntity GetASelectedEntity();
 
 	static void CheckAndHandleEntityDoubleClick(ArgusEntity entity);
 

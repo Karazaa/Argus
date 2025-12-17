@@ -222,6 +222,19 @@ void InputInterfaceSystems::SelectControlGroup(uint8 controlGroupIndex, const UA
 	AddMultipleSelectedEntitiesAdditive(inputInterfaceComponent->m_controlGroups[controlGroupIndex].m_entityIds, moveToLocationDecalActorRecord);
 }
 
+ArgusEntity InputInterfaceSystems::GetASelectedEntity()
+{
+	InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::GetSingletonEntity().GetComponent<InputInterfaceComponent>();
+	ARGUS_RETURN_ON_NULL_VALUE(inputInterfaceComponent, ArgusInputLog, ArgusEntity::k_emptyEntity);
+
+	if (inputInterfaceComponent->m_selectedArgusEntityIds.Num() <= 0)
+	{
+		return ArgusEntity::k_emptyEntity;
+	}
+
+	return ArgusEntity::RetrieveEntity(inputInterfaceComponent->m_selectedArgusEntityIds[0]);
+}
+
 void InputInterfaceSystems::CheckAndHandleEntityDoubleClick(ArgusEntity entity)
 {
 	if (!entity)

@@ -152,7 +152,7 @@ void ArgusECSDebugger::DrawCurrentlySelectedEntities()
 void ArgusECSDebugger::DrawEntityDockSpace()
 {
 	ImGui::SetNextWindowSize(ImVec2(260, 260), ImGuiCond_FirstUseEver);
-	if (!ImGui::Begin("Entity Windows"))
+	if (!ImGui::Begin("Entity Info"))
 	{
 		ImGui::End();
 		return;

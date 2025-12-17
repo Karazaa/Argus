@@ -292,6 +292,7 @@ void ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 		const bool isKDTreeOutput = parsedVariableData[i].m_typeName.find("ArgusEntityKDTreeRangeOutput") != std::string::npos;
 		const bool isSpawnEntityInfo = parsedVariableData[i].m_typeName.find("SpawnEntityInfo") != std::string::npos; 
 		const bool isBool = parsedVariableData[i].m_typeName.find("bool") != std::string::npos;
+		const bool isControlGroup = parsedVariableData[i].m_typeName.find("ControlGroup") != std::string::npos;
 
 		std::string cleanTypeName = parsedVariableData[i].m_typeName.substr(1, parsedVariableData[i].m_typeName.length() - 1);
 
@@ -401,6 +402,10 @@ void ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 		else if (isSpawnEntityInfo)
 		{
 			atomicFieldFormattingFunction = FormatImGuiSpawnEntityInfoField;
+		}
+		else if (isControlGroup)
+		{
+			atomicFieldFormattingFunction = FormatImGuiControlGroupField;
 		}
 
 		if (isQueue)
@@ -617,4 +622,23 @@ void ComponentImplementationGenerator::FormatImGuiSpawnEntityInfoField(const std
 	std::string modifiedVariableName = variableName;
 	modifiedVariableName.append(".m_argusActorRecordId");
 	FormatImGuiRecordField(modifiedVariableName, "ARGUS_STATIC_DATA(UArgusActorRecord)", prefix, outParsedVariableContents);
+}
+
+void ComponentImplementationGenerator::FormatImGuiControlGroupField(const std::string& variableName, const std::string& extraData, const std::string& prefix, std::vector<std::string>& outParsedVariableContents)
+{
+	outParsedVariableContents.push_back(std::vformat("\t\t\t\tImGui::Text(\"Array max is currently = %d\", {}.Max());", std::make_format_args(variableName)));
+	outParsedVariableContents.push_back(std::vformat("\t\t\t\tif ({}.Num() == 0)", std::make_format_args(variableName)));
+	outParsedVariableContents.push_back("\t\t\t\t{");
+	outParsedVariableContents.push_back("\t\t\t\t\tImGui::Text(\"Array is empty\");");
+	outParsedVariableContents.push_back("\t\t\t\t}");
+	outParsedVariableContents.push_back("\t\t\t\telse");
+	outParsedVariableContents.push_back("\t\t\t\t{");
+	outParsedVariableContents.push_back(std::vformat("\t\t\t\t\tImGui::Text(\"Size of array = %d\", {}.Num());", std::make_format_args(variableName)));
+	outParsedVariableContents.push_back(std::vformat("\t\t\t\t\tfor (int32 j = 0; j < {}.Num(); ++j)", std::make_format_args(variableName)));
+	outParsedVariableContents.push_back("\t\t\t\t\t{");
+	std::string subVariableName = std::vformat("{}[j]", std::make_format_args(variableName));
+	std::string secondPrefix = "\t\t\t\t\t";
+	FormatImGuiIntField(subVariableName, extraData, secondPrefix, outParsedVariableContents);
+	outParsedVariableContents.push_back("\t\t\t\t\t}");
+	outParsedVariableContents.push_back("\t\t\t\t}");
 }
