@@ -82,6 +82,19 @@ void InputInterfaceComponent::DrawComponentDebug() const
 			ImGui::Text("Size of array = %d", m_controlGroups.Num());
 			for (int32 i = 0; i < m_controlGroups.Num(); ++i)
 			{
+				ImGui::Text("Array max is currently = %d", m_controlGroups[i].Max());
+				if (m_controlGroups[i].Num() == 0)
+				{
+					ImGui::Text("Array is empty");
+				}
+				else
+				{
+					ImGui::Text("Size of array = %d", m_controlGroups[i].Num());
+					for (int32 j = 0; j < m_controlGroups[i].Num(); ++j)
+					{
+							ImGui::Text("%d", m_controlGroups[i][j]);
+					}
+				}
 			}
 		}
 		ImGui::TableNextColumn();

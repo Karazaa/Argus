@@ -39,6 +39,13 @@ if (UNLIKELY(!VariableName)) \
 	return false;\
 }
 
+#define ARGUS_RETURN_ON_NULL_VALUE(VariableName, CategoryName, Value) \
+if (UNLIKELY(!VariableName)) \
+{ \
+	ARGUS_ERROR_NULL(CategoryName, VariableName); \
+	return Value;\
+}
+
 #define ARGUS_RETURN_ON_NULL_UINT16(VariableName, CategoryName, Value) \
 if (UNLIKELY(!VariableName)) \
 { \

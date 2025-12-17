@@ -1013,8 +1013,10 @@ void UArgusInputManager::ProcessRotateCameraInputEvent(AArgusCameraActor* argusC
 
 void UArgusInputManager::ProcessControlGroup(uint8 controlGroupIndex, AArgusCameraActor* argusCamera)
 {
+	ARGUS_RETURN_ON_NULL(argusCamera, ArgusInputLog);
+
 	InputInterfaceSystems::SelectControlGroup(controlGroupIndex, m_owningPlayerController->GetMoveToLocationDecalActorRecord());
-	//argusCamera->FocusOnArgusEntity(templateEntity);
+	argusCamera->FocusOnArgusEntity(InputInterfaceSystems::GetASelectedEntity());
 }
 
 void UArgusInputManager::ProcessSetControlGroup(uint8 controlGroupIndex)
