@@ -859,9 +859,9 @@ bool FogOfWarSystems::GetPixelCoordsFromWorldSpaceLocation(FogOfWarComponent* fo
 
 uint32 FogOfWarSystems::GetPixelNumberFromWorldSpaceLocation(FogOfWarComponent* fogOfWarComponent, const FVector& worldSpaceLocation)
 {
-	ARGUS_RETURN_ON_NULL_UINT32(fogOfWarComponent, ArgusECSLog, 0u);
+	ARGUS_RETURN_ON_NULL_VALUE(fogOfWarComponent, ArgusECSLog, 0u);
 	SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId).GetComponent<SpatialPartitioningComponent>();
-	ARGUS_RETURN_ON_NULL_UINT32(spatialPartitioningComponent, ArgusECSLog, 0u);
+	ARGUS_RETURN_ON_NULL_VALUE(spatialPartitioningComponent, ArgusECSLog, 0u);
 
 	const float textureSize = static_cast<float>(fogOfWarComponent->m_textureSize);
 	const float worldspaceWidth = spatialPartitioningComponent->m_validSpaceExtent * 2.0f;
@@ -877,9 +877,9 @@ uint32 FogOfWarSystems::GetPixelNumberFromWorldSpaceLocation(FogOfWarComponent* 
 
 FVector2D FogOfWarSystems::GetWorldSpaceLocationFromPixelNumber(FogOfWarComponent* fogOfWarComponent, uint32 pixelNumber)
 {
-	ARGUS_RETURN_ON_NULL_FVECTOR2D(fogOfWarComponent, ArgusECSLog, FVector2D::ZeroVector);
+	ARGUS_RETURN_ON_NULL_VALUE(fogOfWarComponent, ArgusECSLog, FVector2D::ZeroVector);
 	SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId).GetComponent<SpatialPartitioningComponent>();
-	ARGUS_RETURN_ON_NULL_FVECTOR2D(spatialPartitioningComponent, ArgusECSLog, FVector2D::ZeroVector);
+	ARGUS_RETURN_ON_NULL_VALUE(spatialPartitioningComponent, ArgusECSLog, FVector2D::ZeroVector);
 
 	const float worldspaceWidth = spatialPartitioningComponent->m_validSpaceExtent * 2.0f;
 	const float textureIncrement = ArgusMath::SafeDivide(worldspaceWidth, static_cast<float>(fogOfWarComponent->m_textureSize));
@@ -894,9 +894,9 @@ FVector2D FogOfWarSystems::GetWorldSpaceLocationFromPixelNumber(FogOfWarComponen
 
 uint32 FogOfWarSystems::GetPixelRadiusFromWorldSpaceRadius(FogOfWarComponent* fogOfWarComponent, float radius)
 {
-	ARGUS_RETURN_ON_NULL_UINT32(fogOfWarComponent, ArgusECSLog, 0u);
+	ARGUS_RETURN_ON_NULL_VALUE(fogOfWarComponent, ArgusECSLog, 0u);
 	SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId).GetComponent<SpatialPartitioningComponent>();
-	ARGUS_RETURN_ON_NULL_UINT32(spatialPartitioningComponent, ArgusECSLog, 0u);
+	ARGUS_RETURN_ON_NULL_VALUE(spatialPartitioningComponent, ArgusECSLog, 0u);
 
 	const float portion = ArgusMath::SafeDivide(radius, (2.0f * spatialPartitioningComponent->m_validSpaceExtent));
 	return FMath::FloorToInt32(static_cast<float>(fogOfWarComponent->m_textureSize) * portion);

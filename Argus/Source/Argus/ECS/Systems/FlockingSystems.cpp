@@ -223,7 +223,7 @@ bool FlockingSystems::PackFlockingRoot(const FlockingSystemsArgs& components)
 
 float FlockingSystems::GetCurrentFlockingRootRadius(const FlockingComponent* flockingRootFlockingComponent)
 {
-	ARGUS_RETURN_ON_NULL_FLOAT(flockingRootFlockingComponent, ArgusECSLog, 0.0f);
+	ARGUS_RETURN_ON_NULL_VALUE(flockingRootFlockingComponent, ArgusECSLog, 0.0f);
 
 	if (flockingRootFlockingComponent->m_concentricFlockingTier == 0u)
 	{
@@ -235,7 +235,7 @@ float FlockingSystems::GetCurrentFlockingRootRadius(const FlockingComponent* flo
 
 uint16 FlockingSystems::GetCurrentFlockingRootMaxCount(const FlockingComponent* flockingRootFlockingComponent)
 {
-	ARGUS_RETURN_ON_NULL_UINT16(flockingRootFlockingComponent, ArgusECSLog, 1u);
+	ARGUS_RETURN_ON_NULL_VALUE(flockingRootFlockingComponent, ArgusECSLog, 1u);
 
 	if (flockingRootFlockingComponent->m_concentricFlockingTier == 0u)
 	{
