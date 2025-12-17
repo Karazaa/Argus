@@ -27,7 +27,7 @@ void InputInterfaceSystems::SetWaypointForSelectedEntities(const FVector& target
 uint16 InputInterfaceSystems::GetNumWaypointEligibleEntities()
 {
 	InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::GetSingletonEntity().GetComponent<InputInterfaceComponent>();
-	ARGUS_RETURN_ON_NULL_UINT16(inputInterfaceComponent, ArgusECSLog, 0u);
+	ARGUS_RETURN_ON_NULL_VALUE(inputInterfaceComponent, ArgusECSLog, 0u);
 
 	uint16 numWaypointEligibleEntities = 0u;
 	for (int32 i = 0; i < inputInterfaceComponent->m_selectedArgusEntityIds.Num(); ++i)
