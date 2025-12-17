@@ -201,7 +201,7 @@ void DecalSystems::ClearMoveToLocationDecalPerEntity(ArgusEntity entity, bool cl
 uint16 DecalSystems::GetMostRecentSelectedWaypointDecalEntityId()
 {
 	const InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::GetSingletonEntity().GetComponent<InputInterfaceComponent>();
-	ARGUS_RETURN_ON_NULL_UINT16(inputInterfaceComponent, ArgusECSLog, ArgusECSConstants::k_maxEntities);
+	ARGUS_RETURN_ON_NULL_VALUE(inputInterfaceComponent, ArgusECSLog, ArgusECSConstants::k_maxEntities);
 
 	if (inputInterfaceComponent->m_selectedArgusEntityIds.IsEmpty())
 	{

@@ -46,34 +46,6 @@ if (UNLIKELY(!VariableName)) \
 	return Value;\
 }
 
-#define ARGUS_RETURN_ON_NULL_UINT16(VariableName, CategoryName, Value) \
-if (UNLIKELY(!VariableName)) \
-{ \
-	ARGUS_ERROR_NULL(CategoryName, VariableName); \
-	return Value;\
-}
-
-#define ARGUS_RETURN_ON_NULL_UINT32(VariableName, CategoryName, Value) \
-if (UNLIKELY(!VariableName)) \
-{ \
-	ARGUS_ERROR_NULL(CategoryName, VariableName); \
-	return Value;\
-}
-
-#define ARGUS_RETURN_ON_NULL_FLOAT(VariableName, CategoryName, Value) \
-if (UNLIKELY(!VariableName)) \
-{ \
-	ARGUS_ERROR_NULL(CategoryName, VariableName); \
-	return Value;\
-}
-
-#define ARGUS_RETURN_ON_NULL_FVECTOR2D(VariableName, CategoryName, Value) \
-if (UNLIKELY(!VariableName)) \
-{ \
-	ARGUS_ERROR_NULL(CategoryName, VariableName); \
-	return Value;\
-}
-
 DECLARE_LOG_CATEGORY_EXTERN(ArgusECSLog, Display, All);
 DECLARE_LOG_CATEGORY_EXTERN(ArgusInputLog, Display, All);
 DECLARE_LOG_CATEGORY_EXTERN(ArgusMemoryLog, Display, All);
