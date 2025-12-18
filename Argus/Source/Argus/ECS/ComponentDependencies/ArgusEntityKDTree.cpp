@@ -89,7 +89,7 @@ void ArgusEntityKDTreeRangeOutput::Add(const ArgusEntityKDTreeNode* nodeToAdd, c
 	}
 
 	ArgusEntity nodeToAddEntity = ArgusEntity::RetrieveEntity(nodeToAdd->m_entityId);
-	if (!nodeToAddEntity || !nodeToAddEntity.IsAlive())
+	if (!nodeToAddEntity)
 	{
 		return;
 	}
@@ -313,6 +313,13 @@ uint16 ArgusEntityKDTree::FindArgusEntityIdClosestToLocation(const FVector& loca
 			{
 				return false;
 			}
+
+			ArgusEntity nodeEntity = ArgusEntity::RetrieveEntity(nodeToSkip->m_entityId);
+			if (!nodeEntity || !nodeEntity.IsAlive())
+			{
+				return false;
+			}
+
 			return nodeToSkip->m_entityId != entityIdToIgnore;
 		};
 	}
@@ -381,13 +388,20 @@ bool ArgusEntityKDTree::FindArgusEntityIdsWithinRangeOfLocation(ArgusEntityKDTre
 	if (entityIdToIgnore != ArgusECSConstants::k_maxEntities)
 	{
 		predicate = [entityIdToIgnore](const ArgusEntityKDTreeNode* nodeToSkip)
+		{
+			if (!nodeToSkip)
 			{
-				if (!nodeToSkip)
-				{
-					return false;
-				}
-				return nodeToSkip->m_entityId != entityIdToIgnore;
-			};
+				return false;
+			}
+
+			ArgusEntity nodeEntity = ArgusEntity::RetrieveEntity(nodeToSkip->m_entityId);
+			if (!nodeEntity || !nodeEntity.IsAlive())
+			{
+				return false;
+			}
+
+			return nodeToSkip->m_entityId != entityIdToIgnore;
+		};
 	}
 
 	return FindArgusEntityIdsWithinRangeOfLocation(output, thresholds, location, range, predicate);
