@@ -17,9 +17,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	ETeam m_team = ETeam::None;
 
-	UPROPERTY(EditAnywhere, meta = (Bitmask, BitmaskEnum = ETeam))
+	UPROPERTY(EditAnywhere, meta = (Bitmask, BitmaskEnum = "/Script/Argus.ETeam"))
 	uint8 m_allies = 0u;
 
-	UPROPERTY(EditAnywhere, meta = (Bitmask, BitmaskEnum = ETeam))
+	UPROPERTY(EditAnywhere, meta = (Bitmask, BitmaskEnum = "/Script/Argus.ETeam"))
 	uint8 m_enemies = 0u;
 };

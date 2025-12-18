@@ -7,13 +7,7 @@
 #include "HAL/IConsoleManager.h"
 #include "Logging/LogVerbosity.h"
 
-#define ARGUS_LOG(CategoryName, Verbosity, Format, ...) \
-do \
-{ \
-	UE_LOG(CategoryName, Verbosity, Format, ##__VA_ARGS__); \
-	ArgusLogging::ShowEditorNotification(FString::Printf(Format, ##__VA_ARGS__), FString{}, ELogVerbosity::Verbosity); \
-} \
-while (0);
+#define ARGUS_LOG(CategoryName, Verbosity, Format, ...) // UE_LOG(CategoryName, Verbosity, Format, ##__VA_ARGS__);
 
 #define ARGUS_ERROR_NULL(CategoryName, VariableName) \
 ARGUS_LOG(CategoryName, Error, TEXT("[%s] The variable, %s, is null!"), ARGUS_FUNCNAME, ARGUS_NAMEOF(VariableName));

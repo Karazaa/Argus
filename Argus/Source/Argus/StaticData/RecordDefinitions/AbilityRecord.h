@@ -39,7 +39,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FResourceSet m_requiredResourceChangeToCast;
 
-	UPROPERTY(EditAnywhere, meta = (Bitmask, BitmaskEnum = EReticleFlags))
+	UPROPERTY(EditAnywhere, meta = (Bitmask, BitmaskEnum = "/Script/Argus.EReticleFlags"))
 	uint8 m_reticleFlags = 0u;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
