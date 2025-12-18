@@ -26,7 +26,7 @@ public:
 	static void SelectControlGroup(uint8 controlGroupIndex, const UArgusActorRecord* moveToLocationDecalActorRecord);
 	static ArgusEntity GetASelectedEntity();
 
-	static void CheckAndHandleEntityDoubleClick(ArgusEntity entity);
+	static void CheckAndHandleEntityDoubleClick(ArgusEntity entity, const UArgusActorRecord* moveToLocationDecalActorRecord);
 
 	static void InterruptReticle();
 
@@ -34,8 +34,7 @@ private:
 	static void MoveEntityToTarget(ArgusEntity entity, EMovementState inputMovementState, ArgusEntity targetEntity, const FVector& targetLocation, ArgusEntity decalEntity);
 	static void SetWaypointForEntity(ArgusEntity entity, const FVector& targetLocation, ArgusEntity decalEntity);
 	static void RemoveSelectionStateForEntity(ArgusEntity entity);
-	static void AddAdjacentLikeEntitiesAsSelected(ArgusEntity entity, InputInterfaceComponent* inputInterfaceComponent);
-	static void AddEntityIdAsSelected(uint16 entityId);
+	static void AddAdjacentLikeEntitiesAsSelected(ArgusEntity entity, InputInterfaceComponent* inputInterfaceComponent, const UArgusActorRecord* moveToLocationDecalActorRecord);
 
 	static void OnSelectedEntitiesChanged();
 

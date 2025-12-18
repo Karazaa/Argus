@@ -63,7 +63,7 @@ void InputInterfaceSystems::AddSelectedEntityExclusive(ArgusEntity selectedEntit
 	}
 	inputInterfaceComponent->m_selectedArgusEntityIds.Add(selectedEntity.GetId());
 
-	InputInterfaceSystems::CheckAndHandleEntityDoubleClick(selectedEntity);
+	InputInterfaceSystems::CheckAndHandleEntityDoubleClick(selectedEntity, moveToLocationDecalActorRecord);
 
 	OnSelectedEntitiesChanged();
 }
@@ -235,7 +235,7 @@ ArgusEntity InputInterfaceSystems::GetASelectedEntity()
 	return ArgusEntity::RetrieveEntity(inputInterfaceComponent->m_selectedArgusEntityIds[0]);
 }
 
-void InputInterfaceSystems::CheckAndHandleEntityDoubleClick(ArgusEntity entity)
+void InputInterfaceSystems::CheckAndHandleEntityDoubleClick(ArgusEntity entity, const UArgusActorRecord* moveToLocationDecalActorRecord)
 {
 	if (!entity)
 	{
@@ -253,7 +253,7 @@ void InputInterfaceSystems::CheckAndHandleEntityDoubleClick(ArgusEntity entity)
 			inputInterfaceComponent->m_lastSelectedEntityId = ArgusECSConstants::k_maxEntities;
 			inputInterfaceComponent->m_doubleClickTimer.CancelTimer(singletonEntity);
 
-			AddAdjacentLikeEntitiesAsSelected(entity, inputInterfaceComponent);
+			AddAdjacentLikeEntitiesAsSelected(entity, inputInterfaceComponent, moveToLocationDecalActorRecord);
 			return;
 		}
 	}
@@ -378,7 +378,7 @@ void InputInterfaceSystems::RemoveSelectionStateForEntity(ArgusEntity entity)
 	DecalSystems::ClearMoveToLocationDecalPerEntity(entity, true);
 }
 
-void InputInterfaceSystems::AddAdjacentLikeEntitiesAsSelected(ArgusEntity entity, InputInterfaceComponent* inputInterfaceComponent)
+void InputInterfaceSystems::AddAdjacentLikeEntitiesAsSelected(ArgusEntity entity, InputInterfaceComponent* inputInterfaceComponent, const UArgusActorRecord* moveToLocationDecalActorRecord)
 {
 	ARGUS_RETURN_ON_NULL(inputInterfaceComponent, ArgusECSLog);
 
@@ -433,26 +433,16 @@ void InputInterfaceSystems::AddAdjacentLikeEntitiesAsSelected(ArgusEntity entity
 		spatialPartitioningComponent->m_argusEntityKDTree.FindArgusEntityIdsWithinRangeOfLocation(foundGroundedEntityIds, transformComponent->m_location, inputInterfaceComponent->m_doubleClickQueryRange, predicate);
 	}
 
-	for (int32 i = 0u; i < foundFlyingEntityIds.Num(); ++i)
+	if (foundGroundedEntityIds.GetSlack() < foundFlyingEntityIds.Num())
 	{
-		AddEntityIdAsSelected(foundFlyingEntityIds[i]);
+		foundGroundedEntityIds.Reserve(foundGroundedEntityIds.Num() + foundFlyingEntityIds.Num());
+	}
+	for (int32 i = 0; i < foundFlyingEntityIds.Num(); ++i)
+	{
+		foundGroundedEntityIds.Add(foundFlyingEntityIds[i]);
 	}
 
-	for (int32 i = 0u; i < foundGroundedEntityIds.Num(); ++i)
-	{
-		AddEntityIdAsSelected(foundGroundedEntityIds[i]);
-	}
-}
-
-void InputInterfaceSystems::AddEntityIdAsSelected(uint16 entityId)
-{
-	const UArgusGameInstance* gameInstance = UArgusGameInstance::GetArgusGameInstance();
-	ARGUS_RETURN_ON_NULL(gameInstance, ArgusECSLog);
-
-	AArgusActor* actor = gameInstance->GetArgusActorFromArgusEntity(ArgusEntity::RetrieveEntity(entityId));
-	ARGUS_RETURN_ON_NULL(actor, ArgusECSLog);
-
-	// TODO JAMES: Set selected state and place into interface arrays for selected entities and/or active ability groups.
+	AddMultipleSelectedEntitiesAdditive(foundGroundedEntityIds, moveToLocationDecalActorRecord);
 }
 
 void InputInterfaceSystems::OnSelectedEntitiesChanged()
