@@ -119,7 +119,7 @@ void AbilitySystems::CastAbility(const UAbilityRecord* abilityRecord, const Abil
 	{
 		if (!ResourceSystems::ApplyTeamResourceChangeIfAffordable(components.m_entity, abilityRecord->m_requiredResourceChangeToCast))
 		{
-			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Successfully casted ability id %d, but could not afford it!") ARGUS_FUNCNAME, abilityRecord->m_id);
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Successfully casted ability id %d, but could not afford it!"), ARGUS_FUNCNAME, abilityRecord->m_id);
 		}
 	}
 
@@ -178,7 +178,7 @@ void AbilitySystems::ProcessAbilityRefundRequests(const AbilitySystemsArgs& comp
 	const FResourceSet refund = -abilityRecord->m_requiredResourceChangeToCast;
 	if (!ResourceSystems::ApplyTeamResourceChangeIfAffordable(components.m_entity, refund))
 	{
-		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Successfully refunded ability id %d, but could not afford the refund???") ARGUS_FUNCNAME, abilityRecord->m_id);
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Successfully refunded ability id %d, but could not afford the refund???"), ARGUS_FUNCNAME, abilityRecord->m_id);
 	}
 
 	components.m_abilityComponent->m_abilityToRefundId = 0u;

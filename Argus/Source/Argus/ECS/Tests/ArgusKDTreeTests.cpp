@@ -41,6 +41,11 @@ void PopulateKDTreeForTests(ArgusEntityKDTree& tree, CollectionOfArgusEntities& 
 	TransformComponent* transformComponent2 = entities.entity2.AddComponent<TransformComponent>();
 	TransformComponent* transformComponent3 = entities.entity3.AddComponent<TransformComponent>();
 	TransformComponent* transformComponent4 = entities.entity4.AddComponent<TransformComponent>();
+	TaskComponent* taskComponent0 = entities.entity0.AddComponent<TaskComponent>();
+	TaskComponent* taskComponent1 = entities.entity1.AddComponent<TaskComponent>();
+	TaskComponent* taskComponent2 = entities.entity2.AddComponent<TaskComponent>();
+	TaskComponent* taskComponent3 = entities.entity3.AddComponent<TaskComponent>();
+	TaskComponent* taskComponent4 = entities.entity4.AddComponent<TaskComponent>();
 
 	if (transformComponent0 &&
 		transformComponent1 &&
@@ -58,6 +63,19 @@ void PopulateKDTreeForTests(ArgusEntityKDTree& tree, CollectionOfArgusEntities& 
 		transformComponent2->m_radius = 0.0f;
 		transformComponent3->m_radius = 0.0f;
 		transformComponent4->m_radius = 0.0f;
+	}
+
+	if (taskComponent0 &&
+		taskComponent1 &&
+		taskComponent2 &&
+		taskComponent3 &&
+		taskComponent4)
+	{
+		taskComponent0->m_baseState = EBaseState::Alive;
+		taskComponent1->m_baseState = EBaseState::Alive;
+		taskComponent2->m_baseState = EBaseState::Alive;
+		taskComponent3->m_baseState = EBaseState::Alive;
+		taskComponent4->m_baseState = EBaseState::Alive;
 	}
 
 	if (insertIntoTree)
