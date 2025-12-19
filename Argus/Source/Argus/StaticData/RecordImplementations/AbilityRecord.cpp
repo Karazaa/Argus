@@ -15,9 +15,17 @@ void UAbilityRecord::OnAsyncLoaded() const
 	}
 	for (int32 i = 0; i < m_abilityEffects.Num(); ++i)
 	{
-		if (m_abilityEffects[i].m_abilityType == EAbilityTypes::Spawn || m_abilityEffects[i].m_abilityType == EAbilityTypes::Construct)
+		switch (m_abilityEffects[i].m_abilityType)
 		{
-			ArgusStaticData::AsyncPreLoadRecord<UArgusActorRecord>(m_abilityEffects[i].m_argusActorRecordId);
+			case EAbilityTypes::Spawn:
+			case EAbilityTypes::Construct:
+				ArgusStaticData::AsyncPreLoadRecord<UArgusActorRecord>(m_abilityEffects[i].m_argusActorRecordId);
+				break;
+			case EAbilityTypes::AddAbilityOverride:
+				ArgusStaticData::AsyncPreLoadRecord<UAbilityRecord>(m_abilityEffects[i].m_abilityRecordId);
+				break;
+			default:
+				break;
 		}
 	}
 }
