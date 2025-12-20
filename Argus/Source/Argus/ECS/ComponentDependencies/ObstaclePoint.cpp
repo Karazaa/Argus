@@ -175,3 +175,25 @@ void ObstaclePointArray::CloseLoop()
 		Insert(obstaclePointsToAdd, Num());
 	}
 }
+
+bool ObstaclePointArray::IsPointElevated(int32 index) const
+{
+	if (index < 0 || index >= Num())
+	{
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Index, %d, was out of range of the %s"), ARGUS_FUNCNAME, index, ARGUS_NAMEOF(ObstaclePointArray));
+		return false;
+	}
+
+	return (GetData()[index].m_height > m_floorHeight);
+}
+
+bool ObstaclePointArray::IsNextPointElevated(int32 index) const
+{
+	if (index < 0 || index >= Num())
+	{
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Index, %d, was out of range of the %s"), ARGUS_FUNCNAME, index, ARGUS_NAMEOF(ObstaclePointArray));
+		return false;
+	}
+
+	return GetNext(index).m_height > m_floorHeight;
+}

@@ -17,9 +17,9 @@ void SpatialPartitioningComponent::Reset()
 	m_argusEntityKDTree.FlushAllNodes();
 	m_flyingArgusEntityKDTree.FlushAllNodes();
 	m_obstaclePointKDTree.FlushAllNodes();
-	m_obstacles.Reset();
 	m_validSpaceExtent = 3000.0f;
 	m_flyingPlaneHeight = 300.0f;
+	m_elevatedObstaclePointHeightThreshold = 10.0f;
 }
 
 void SpatialPartitioningComponent::DrawComponentDebug() const
@@ -44,18 +44,6 @@ void SpatialPartitioningComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_obstacles");
 		ImGui::TableNextColumn();
-		ImGui::Text("Array max is currently = %d", m_obstacles.Max());
-		if (m_obstacles.Num() == 0)
-		{
-			ImGui::Text("Array is empty");
-		}
-		else
-		{
-			ImGui::Text("Size of array = %d", m_obstacles.Num());
-			for (int32 i = 0; i < m_obstacles.Num(); ++i)
-			{
-			}
-		}
 		ImGui::TableNextColumn();
 		ImGui::Text("m_validSpaceExtent");
 		ImGui::TableNextColumn();
@@ -64,6 +52,10 @@ void SpatialPartitioningComponent::DrawComponentDebug() const
 		ImGui::Text("m_flyingPlaneHeight");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_flyingPlaneHeight);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_elevatedObstaclePointHeightThreshold");
+		ImGui::TableNextColumn();
+		ImGui::Text("%.2f", m_elevatedObstaclePointHeightThreshold);
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

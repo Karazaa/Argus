@@ -12,6 +12,7 @@ void USpatialPartitioningComponentData::InstantiateComponentForEntity(const Argu
 
 	SpatialPartitioningComponentRef->m_validSpaceExtent = m_validSpaceExtent;
 	SpatialPartitioningComponentRef->m_flyingPlaneHeight = m_flyingPlaneHeight;
+	SpatialPartitioningComponentRef->m_elevatedObstaclePointHeightThreshold = m_elevatedObstaclePointHeightThreshold;
 }
 
 bool USpatialPartitioningComponentData::MatchesType(UComponentData* other) const

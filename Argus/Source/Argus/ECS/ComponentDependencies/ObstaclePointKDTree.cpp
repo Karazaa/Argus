@@ -107,7 +107,7 @@ void ObstaclePointKDTreeRangeOutput::ResetAll()
 	m_inRangeObstacleIndicies.Reset();
 }
 
-void ObstaclePointKDTree::InsertObstaclesIntoKDTree(const TArray<ObstaclePointArray>& obstacles)
+void ObstaclePointKDTree::InsertObstaclesIntoKDTree(const ObstaclesContainer& obstacles)
 {
 	ARGUS_MEMORY_TRACE(ArgusKDTree);
 	ARGUS_TRACE(ArgusKDTree::InsertObstaclesIntoKDTree);

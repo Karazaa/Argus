@@ -436,7 +436,7 @@ bool SpatialPartitioningSystems::GetNavMeshWalls(const SpatialPartitioningCompon
 	return false;
 }
 
-void SpatialPartitioningSystems::ConvertWallsIntoObstacles(const TArray<FVector>& navEdges, TArray<ObstaclePointArray>& outObstacles)
+void SpatialPartitioningSystems::ConvertWallsIntoObstacles(const TArray<FVector>& navEdges, ObstaclesContainer& outObstacles)
 {
 	ARGUS_TRACE(SpatialPartitioningSystems::ConvertWallsIntoObstacles);
 
@@ -448,6 +448,8 @@ void SpatialPartitioningSystems::ConvertWallsIntoObstacles(const TArray<FVector>
 
 	for (int32 i = 0; i < numNavEdges; i += 2)
 	{
+		const float edgeVertex0Height = navEdges[i].Z;
+		const float edgeVertex1Height = navEdges[i + 1].Z;
 		const FVector2D edgeVertex0 = ArgusMath::ToCartesianVector2(FVector2D(navEdges[i]));
 		const FVector2D edgeVertex1 = ArgusMath::ToCartesianVector2(FVector2D(navEdges[i + 1]));
 
@@ -469,21 +471,25 @@ void SpatialPartitioningSystems::ConvertWallsIntoObstacles(const TArray<FVector>
 			{
 				matchesStart = true;
 				pointToAdd.m_point = edgeVertex1;
+				pointToAdd.m_height = edgeVertex1Height;
 			}
 			if (startOfChainLocation == edgeVertex1)
 			{
 				matchesStart = true;
 				pointToAdd.m_point = edgeVertex0;
+				pointToAdd.m_height = edgeVertex0Height;
 			}
 			if (endOfChainLocation == edgeVertex0)
 			{
 				matchesEnd = true;
 				pointToAdd.m_point = edgeVertex1;
+				pointToAdd.m_height = edgeVertex1Height;
 			}
 			if (endOfChainLocation == edgeVertex1)
 			{
 				matchesEnd = true;
 				pointToAdd.m_point = edgeVertex0;
+				pointToAdd.m_height = edgeVertex0Height;
 			}
 
 			if (matchesStart && !matchesEnd)
@@ -512,7 +518,9 @@ void SpatialPartitioningSystems::ConvertWallsIntoObstacles(const TArray<FVector>
 
 		ObstaclePoint vertex0Obstacle, vertex1Obstacle;
 		vertex0Obstacle.m_point = edgeVertex0;
+		vertex0Obstacle.m_height = edgeVertex0Height;
 		vertex1Obstacle.m_point = edgeVertex1;
+		vertex1Obstacle.m_height = edgeVertex1Height;
 		ObstaclePointArray& array = outObstacles.Emplace_GetRef();
 		array.Add(vertex0Obstacle);
 		array.AddObstaclePointsWithFillIn(vertex1Obstacle, false);
@@ -592,6 +600,7 @@ void SpatialPartitioningSystems::CalculateDirectionAndConvexForObstacles(Obstacl
 		outObstacle.Reverse();
 	}
 
+	float floorHeight = FLT_MAX;
 	for (int32 i = 0; i < numObstaclePoints; ++i)
 	{
 		const int32 nextIndex = (i + 1) % numObstaclePoints;
@@ -600,10 +609,16 @@ void SpatialPartitioningSystems::CalculateDirectionAndConvexForObstacles(Obstacl
 
 		const int32 lastIndex = (i - 1) >= 0 ? (i - 1) : numObstaclePoints - 1;
 		outObstacle[i].m_isConvex = ArgusMath::IsLeftOfCartesian(outObstacle[lastIndex].m_point, outObstacle[i].m_point, outObstacle[nextIndex].m_point);
+	
+		floorHeight = outObstacle[i].m_height < floorHeight ? outObstacle[i].m_height : floorHeight;
 	}
+
+	const SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::GetSingletonEntity().GetComponent<SpatialPartitioningComponent>();
+	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
+	outObstacle.m_floorHeight = floorHeight + spatialPartitioningComponent->m_elevatedObstaclePointHeightThreshold;
 }
 
-void SpatialPartitioningSystems::DrawDebugObstacles(UWorld* worldPointer, const TArray<ObstaclePointArray>& obstacles)
+void SpatialPartitioningSystems::DrawDebugObstacles(UWorld* worldPointer, const ObstaclesContainer& obstacles)
 {
 	if (!worldPointer)
 	{
@@ -619,15 +634,17 @@ void SpatialPartitioningSystems::DrawDebugObstacles(UWorld* worldPointer, const 
 	{
 		for (int32 j = 0; j < obstacles[i].Num(); ++j)
 		{
+			const float debugHeight = obstacles[i][j].m_height + ArgusECSConstants::k_debugDrawHeightAdjustment;
 			DrawDebugString
 			(
 				worldPointer,
-				FVector(ArgusMath::ToUnrealVector2(obstacles[i][j].m_point), ArgusECSConstants::k_debugDrawHeightAdjustment),
+				FVector(ArgusMath::ToUnrealVector2(obstacles[i][j].m_point), debugHeight),
 				FString::Printf
 				(
-					TEXT("%d\nIsConvex: %d"),
+					TEXT("%d\nIsConvex: %d\nIsElevated: %d"),
 					j,
-					obstacles[i][j].m_isConvex
+					obstacles[i][j].m_isConvex,
+					obstacles[i].IsPointElevated(j)
 				),
 				nullptr,
 				FColor::Purple,
@@ -638,9 +655,9 @@ void SpatialPartitioningSystems::DrawDebugObstacles(UWorld* worldPointer, const 
 			DrawDebugLine
 			(
 				worldPointer,
-				FVector(ArgusMath::ToUnrealVector2(obstacles[i][j].m_point), ArgusECSConstants::k_debugDrawHeightAdjustment),
-				FVector(ArgusMath::ToUnrealVector2(obstacles[i][j].m_point + (obstacles[i][j].m_direction * 100.0f)), ArgusECSConstants::k_debugDrawHeightAdjustment),
-				FColor::Purple,
+				FVector(ArgusMath::ToUnrealVector2(obstacles[i][j].m_point), debugHeight),
+				FVector(ArgusMath::ToUnrealVector2(obstacles[i][j].m_point + (obstacles[i][j].m_direction * 100.0f)), debugHeight),
+				obstacles[i].IsPointElevated(j) ? FColor::Magenta : FColor::Purple,
 				true,
 				60.0f,
 				0u,
@@ -649,10 +666,10 @@ void SpatialPartitioningSystems::DrawDebugObstacles(UWorld* worldPointer, const 
 			DrawDebugSphere
 			(
 				worldPointer,
-				FVector(ArgusMath::ToUnrealVector2(obstacles[i][j].m_point), ArgusECSConstants::k_debugDrawHeightAdjustment),
+				FVector(ArgusMath::ToUnrealVector2(obstacles[i][j].m_point), debugHeight),
 				10.0f,
 				4u,
-				FColor::Purple,
+				obstacles[i].IsPointElevated(j) ? FColor::Magenta : FColor::Purple,
 				true,
 				60.0f,
 				0u,
