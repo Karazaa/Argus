@@ -335,6 +335,7 @@ bool SpatialPartitioningSystems::IsPointInLineOfSightOfEntity(ArgusEntity source
 	}
 
 	const SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::GetSingletonEntity().GetComponent<SpatialPartitioningComponent>();
+	const FogOfWarComponent* fogOfWarComponent = ArgusEntity::GetSingletonEntity().GetComponent<FogOfWarComponent>();
 	ARGUS_RETURN_ON_NULL_BOOL(spatialPartitioningComponent, ArgusECSLog);
 
 	const FVector2D cartesianSourceLocation = FVector2D(ArgusMath::ToCartesianVector(transformComponent->m_location));
@@ -343,10 +344,29 @@ bool SpatialPartitioningSystems::IsPointInLineOfSightOfEntity(ArgusEntity source
 
 	for (int32 i = 0; i < inRangeObstacleIndicies.Num(); ++i)
 	{
-		const ObstaclePoint& currentObstaclePoint = spatialPartitioningComponent->GetObstaclePointFromIndicies(inRangeObstacleIndicies[i]);
-		const ObstaclePoint& nextObstaclePoint = spatialPartitioningComponent->GetNextObstaclePointFromIndicies(inRangeObstacleIndicies[i]);
+		const ObstacleIndicies& obstacleIndicies = inRangeObstacleIndicies[i];
+		if (spatialPartitioningComponent->IsPointElevated(obstacleIndicies) || spatialPartitioningComponent->IsNextPointElevated(obstacleIndicies))
+		{
+			continue;
+		}
 
-		if (ArgusMath::DoLineSegmentsIntersectCartesian(cartesianSourceLocation, cartesianTargetLocation, currentObstaclePoint.m_point, nextObstaclePoint.m_point))
+		const ObstaclePoint& currentObstaclePoint = spatialPartitioningComponent->GetObstaclePointFromIndicies(obstacleIndicies);
+		const ObstaclePoint& nextObstaclePoint = spatialPartitioningComponent->GetNextObstaclePointFromIndicies(obstacleIndicies);
+
+		FVector2D currentPoint = currentObstaclePoint.m_point;
+		const FVector2D currentLeft = currentObstaclePoint.GetLeftVector();
+		FVector2D nextPoint = nextObstaclePoint.m_point;
+		const FVector2D nextLeft = nextObstaclePoint.GetLeftVector();
+
+		currentPoint += (currentLeft * fogOfWarComponent->m_visionObstacleAdjustDistance);
+		nextPoint += (nextLeft * (fogOfWarComponent ? fogOfWarComponent->m_visionObstacleAdjustDistance : 0.0f));
+
+		if (ArgusMath::IsLeftOfCartesian(cartesianSourceLocation, currentPoint, nextPoint))
+		{
+			continue;
+		}
+
+		if (ArgusMath::DoLineSegmentsIntersectCartesian(cartesianSourceLocation, cartesianTargetLocation, currentPoint, nextPoint))
 		{
 			return false;
 		}
