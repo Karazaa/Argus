@@ -94,9 +94,12 @@ const ObstaclePoint& ObstaclePointArray::GetNext(int32 index) const
 
 void ObstaclePointArray::FillInBetweenObstaclePoints(const ObstaclePoint& fromPoint, const ObstaclePoint& toPoint, TArray<ObstaclePoint>& outPoints)
 {
+	const float deltaHeight = toPoint.m_height - fromPoint.m_height;
 	const FVector2D betweenObstaclePoints = toPoint.m_point - fromPoint.m_point;
 	float distanceBetweenObstaclePoints = betweenObstaclePoints.Length();
-	const FVector2D directionBetweenObstaclePoints = betweenObstaclePoints / distanceBetweenObstaclePoints;
+
+	const FVector2D directionBetweenObstaclePoints = ArgusMath::SafeDivide(betweenObstaclePoints, distanceBetweenObstaclePoints);
+	const float slopeBetweenObstaclePoints = ArgusMath::SafeDivide(deltaHeight, distanceBetweenObstaclePoints);
 
 	outPoints.Reserve(2 + FMath::FloorToInt32(distanceBetweenObstaclePoints / ArgusECSConstants::k_avoidanceObstacleSplitDistance));
 
@@ -108,6 +111,7 @@ void ObstaclePointArray::FillInBetweenObstaclePoints(const ObstaclePoint& fromPo
 
 		ObstaclePoint& pointToInsert = outPoints.Emplace_GetRef();
 		pointToInsert.m_point = fromPoint.m_point + ((iterations * ArgusECSConstants::k_avoidanceObstacleSplitDistance) * directionBetweenObstaclePoints);
+		pointToInsert.m_height = fromPoint.m_height + ((iterations * ArgusECSConstants::k_avoidanceObstacleSplitDistance) * slopeBetweenObstaclePoints);
 	}
 }
 

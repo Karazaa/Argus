@@ -666,13 +666,14 @@ void FogOfWarSystems::RevealPixelRangeWithObstacles(FogOfWarComponent* fogOfWarC
 	const TArray<ObstacleIndicies, ArgusContainerAllocator<20u> >& inRangeObstacleIndicies = obstacleIndicies.GetInRangeObstacleIndicies();
 	for (int32 i = 0; i < inRangeObstacleIndicies.Num(); ++i)
 	{
-		if (spatialPartitioningComponent->IsPointElevated(inRangeObstacleIndicies[i]) && spatialPartitioningComponent->IsNextPointElevated(inRangeObstacleIndicies[i]))
+		const ObstacleIndicies& obstacleIndicies = inRangeObstacleIndicies[i];
+		if (spatialPartitioningComponent->IsPointElevated(obstacleIndicies) && spatialPartitioningComponent->IsNextPointElevated(obstacleIndicies))
 		{
 			continue;
 		}
 
-		const ObstaclePoint& currentObstaclePoint = spatialPartitioningComponent->GetObstaclePointFromIndicies(inRangeObstacleIndicies[i]);
-		const ObstaclePoint& nextObstaclePoint = spatialPartitioningComponent->GetNextObstaclePointFromIndicies(inRangeObstacleIndicies[i]);
+		const ObstaclePoint& currentObstaclePoint = spatialPartitioningComponent->GetObstaclePointFromIndicies(obstacleIndicies);
+		const ObstaclePoint& nextObstaclePoint = spatialPartitioningComponent->GetNextObstaclePointFromIndicies(obstacleIndicies);
 
 		FVector2D currentPoint = currentObstaclePoint.m_point;
 		const FVector2D currentLeft = currentObstaclePoint.GetLeftVector();
