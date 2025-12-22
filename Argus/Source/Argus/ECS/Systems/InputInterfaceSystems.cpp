@@ -30,16 +30,15 @@ uint16 InputInterfaceSystems::GetNumWaypointEligibleEntities()
 	ARGUS_RETURN_ON_NULL_VALUE(inputInterfaceComponent, ArgusECSLog, 0u);
 
 	uint16 numWaypointEligibleEntities = 0u;
-	for (int32 i = 0; i < inputInterfaceComponent->m_selectedArgusEntityIds.Num(); ++i)
+	IterateSelectedEntities([&numWaypointEligibleEntities](ArgusEntity selectedEntity) 
 	{
-		ArgusEntity selectedEntity = ArgusEntity::RetrieveEntity(inputInterfaceComponent->m_selectedArgusEntityIds[i]);
-		if (!selectedEntity || !selectedEntity.GetComponent<TaskComponent>() || !selectedEntity.GetComponent<TargetingComponent>() || !selectedEntity.GetComponent<NavigationComponent>())
+		if (!selectedEntity.GetComponent<TaskComponent>() || !selectedEntity.GetComponent<TargetingComponent>() || !selectedEntity.GetComponent<NavigationComponent>())
 		{
-			continue;
+			return;
 		}
 
 		numWaypointEligibleEntities++;
-	}
+	});
 
 	return numWaypointEligibleEntities;
 }
@@ -101,32 +100,6 @@ void InputInterfaceSystems::AddMultipleSelectedEntitiesExclusive(TArray<uint16>&
 	AddMultipleSelectedEntitiesAdditive(selectedEntityIds, moveToLocationDecalActorRecord);
 }
 
-void InputInterfaceSystems::AddMultipleSelectedEntitiesAdditive(TArray<uint16>& selectedEntityIds, const UArgusActorRecord* moveToLocationDecalActorRecord)
-{
-	InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::GetSingletonEntity().GetComponent<InputInterfaceComponent>();
-	ARGUS_RETURN_ON_NULL(inputInterfaceComponent, ArgusECSLog);
-
-	const int32 numSelectedEntities = selectedEntityIds.Num();
-	if (numSelectedEntities > inputInterfaceComponent->m_selectedArgusEntityIds.GetSlack())
-	{
-		inputInterfaceComponent->m_selectedArgusEntityIds.Reserve(selectedEntityIds.Num() + inputInterfaceComponent->m_selectedArgusEntityIds.Num());
-	}
-
-	for (int32 i = 0; i < numSelectedEntities; ++i)
-	{
-		ArgusEntity selectedEntity = ArgusEntity::RetrieveEntity(selectedEntityIds[i]);
-		if (selectedEntityIds[i] && !inputInterfaceComponent->m_selectedArgusEntityIds.Contains(selectedEntityIds[i]))
-		{
-			AddSelectedEntityAdditive(selectedEntity, moveToLocationDecalActorRecord);
-		}
-	}
-
-	if (numSelectedEntities > 0)
-	{
-		OnSelectedEntitiesChanged();
-	}
-}
-
 void InputInterfaceSystems::RemoveNoLongerSelectableEntities()
 {
 	const UArgusGameInstance* gameInstance = UArgusGameInstance::GetArgusGameInstance();
@@ -184,6 +157,124 @@ bool InputInterfaceSystems::RemoveAllSelectedEntities(ArgusEntity excludedEntity
 	inputInterfaceComponent->m_selectedActorsDisplayState = ESelectedActorsDisplayState::ChangedThisFrame;
 
 	return wasExcludedEntityPresent;
+}
+
+void InputInterfaceSystems::SetAbilityStateForCastIndex(uint8 abilityIndex)
+{
+	IterateActiveAbilityGroupEntities([abilityIndex](ArgusEntity selectedEntity)
+	{
+		TaskComponent* taskComponent = selectedEntity.GetComponent<TaskComponent>();
+		if (!taskComponent)
+		{
+			return;
+		}
+
+		switch (abilityIndex)
+		{
+			case 0u:
+				taskComponent->m_abilityState = EAbilityState::ProcessCastAbility0Command;
+				break;
+			case 1u:
+				taskComponent->m_abilityState = EAbilityState::ProcessCastAbility1Command;
+				break;
+			case 2u:
+				taskComponent->m_abilityState = EAbilityState::ProcessCastAbility2Command;
+				break;
+			case 3u:
+				taskComponent->m_abilityState = EAbilityState::ProcessCastAbility3Command;
+				break;
+			default:
+				break;
+		}
+	});
+}
+
+void InputInterfaceSystems::SetAbilityStateForReticleAbility(const ReticleComponent* reticleComponent)
+{
+	ARGUS_RETURN_ON_NULL(reticleComponent, ArgusECSLog);
+
+	IterateActiveAbilityGroupEntities([reticleComponent](ArgusEntity selectedEntity)
+	{
+		TaskComponent* taskComponent = selectedEntity.GetComponent<TaskComponent>();
+		if (!taskComponent)
+		{
+			return;
+		}
+
+		AbilityComponent* abilityComponent = selectedEntity.GetComponent<AbilityComponent>();
+		if (!abilityComponent)
+		{
+			return;
+		}
+
+		if (!abilityComponent->HasAbility(reticleComponent->m_abilityRecordId))
+		{
+			return;
+		}
+
+		taskComponent->m_abilityState = EAbilityState::ProcessCastReticleAbility;
+	});
+}
+
+void InputInterfaceSystems::ChangeActiveAbilityGroup()
+{
+	InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::GetSingletonEntity().GetComponent<InputInterfaceComponent>();
+	ARGUS_RETURN_ON_NULL(inputInterfaceComponent, ArgusInputLog);
+
+	if (inputInterfaceComponent->m_selectedArgusEntityIds.Num() == 0)
+	{
+		return;
+	}
+
+	const int8 previousIndexOfActiveAbilityGroup = inputInterfaceComponent->m_indexOfActiveAbilityGroup;
+	if (previousIndexOfActiveAbilityGroup < 0)
+	{
+		return;
+	}
+
+	const AbilityComponent* previousActiveAbilityGroupAbilities = nullptr;
+	if (ArgusEntity previousTemplateEntity = ArgusEntity::RetrieveEntity(inputInterfaceComponent->m_selectedArgusEntityIds[previousIndexOfActiveAbilityGroup]))
+	{
+		previousActiveAbilityGroupAbilities = previousTemplateEntity.GetComponent<AbilityComponent>();
+	}
+
+	const AbilityComponent* templateEntityAbilities = nullptr;
+	for (int8 i = 1; i < inputInterfaceComponent->m_selectedArgusEntityIds.Num(); ++i)
+	{
+		int8 indexToCheck = ((previousIndexOfActiveAbilityGroup + i) % inputInterfaceComponent->m_selectedArgusEntityIds.Num());
+
+		ArgusEntity entityToCheck = ArgusEntity::RetrieveEntity(inputInterfaceComponent->m_selectedArgusEntityIds[indexToCheck]);
+		if (!entityToCheck)
+		{
+			continue;
+		}
+
+		const AbilityComponent* abilityComponentToCheck = entityToCheck.GetComponent<AbilityComponent>();
+		if (!abilityComponentToCheck)
+		{
+			continue;
+		}
+
+		if (previousActiveAbilityGroupAbilities && previousActiveAbilityGroupAbilities->HasSameAbilities(abilityComponentToCheck))
+		{
+			continue;
+		}
+
+		if (templateEntityAbilities == nullptr)
+		{
+			templateEntityAbilities = abilityComponentToCheck;
+			inputInterfaceComponent->m_indexOfActiveAbilityGroup = indexToCheck;
+			inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.Empty();
+			inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.Add(entityToCheck.GetId());
+			inputInterfaceComponent->m_selectedActorsDisplayState = ESelectedActorsDisplayState::ChangedThisFrame;
+			continue;
+		}
+
+		if (templateEntityAbilities->HasSameAbilities(abilityComponentToCheck))
+		{
+			inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.Add(entityToCheck.GetId());
+		}
+	}
 }
 
 void InputInterfaceSystems::SetControlGroup(uint8 controlGroupIndex)

@@ -21,13 +21,13 @@ struct InputInterfaceComponent
 	ARGUS_DYNAMIC_COMPONENT_SHARED;
 
 	ARGUS_IGNORE()
-	TArray<uint16> m_selectedArgusEntityIds;
+	TArray<uint16, ArgusContainerAllocator<100u> > m_selectedArgusEntityIds;
 
 	ARGUS_IGNORE()
-	TArray<uint16> m_activeAbilityGroupArgusEntityIds;
+	TArray<uint16, ArgusContainerAllocator<100u> > m_activeAbilityGroupArgusEntityIds;
 
 	ARGUS_IGNORE()
-	TArray<ControlGroup> m_controlGroups;
+	TArray<ControlGroup, ArgusContainerAllocator<12u> > m_controlGroups;
 
 	ARGUS_IGNORE()
 	ESelectedActorsDisplayState m_selectedActorsDisplayState = ESelectedActorsDisplayState::NotChanged;

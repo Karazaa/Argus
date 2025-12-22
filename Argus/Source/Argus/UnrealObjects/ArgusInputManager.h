@@ -47,12 +47,24 @@ public:
 		ControlGroup3,
 		ControlGroup4,
 		ControlGroup5,
+		ControlGroup6,
+		ControlGroup7,
+		ControlGroup8,
+		ControlGroup9,
+		ControlGroup10,
+		ControlGroup11,
 		SetControlGroup0,
 		SetControlGroup1,
 		SetControlGroup2,
 		SetControlGroup3,
 		SetControlGroup4,
 		SetControlGroup5,
+		SetControlGroup6,
+		SetControlGroup7,
+		SetControlGroup8,
+		SetControlGroup9,
+		SetControlGroup10,
+		SetControlGroup11,
 		ChangeActiveAbilityGroup,
 		UserInterfaceEntityClicked,
 	};
@@ -82,12 +94,24 @@ public:
 	void OnControlGroup3(const FInputActionValue& value);
 	void OnControlGroup4(const FInputActionValue& value);
 	void OnControlGroup5(const FInputActionValue& value);
+	void OnControlGroup6(const FInputActionValue& value);
+	void OnControlGroup7(const FInputActionValue& value);
+	void OnControlGroup8(const FInputActionValue& value);
+	void OnControlGroup9(const FInputActionValue& value);
+	void OnControlGroup10(const FInputActionValue& value);
+	void OnControlGroup11(const FInputActionValue& value);
 	void OnSetControlGroup0(const FInputActionValue& value);
 	void OnSetControlGroup1(const FInputActionValue& value);
 	void OnSetControlGroup2(const FInputActionValue& value);
 	void OnSetControlGroup3(const FInputActionValue& value);
 	void OnSetControlGroup4(const FInputActionValue& value);
 	void OnSetControlGroup5(const FInputActionValue& value);
+	void OnSetControlGroup6(const FInputActionValue& value);
+	void OnSetControlGroup7(const FInputActionValue& value);
+	void OnSetControlGroup8(const FInputActionValue& value);
+	void OnSetControlGroup9(const FInputActionValue& value);
+	void OnSetControlGroup10(const FInputActionValue& value);
+	void OnSetControlGroup11(const FInputActionValue& value);
 	void OnChangeActiveAbilityGroup(const FInputActionValue& value);
 
 	void ProcessPlayerInput(AArgusCameraActor* argusCamera, const AArgusCameraActor::UpdateCameraPanningParameters& updateCameraPanningParameters, float deltaTime);
@@ -123,7 +147,6 @@ private:
 	void ProcessSetWaypointInputEvent();
 	void ProcessZoomInputEvent(AArgusCameraActor* argusCamera, const FInputActionValue& value);
 	void ProcessAbilityInputEvent(uint8 abilityIndex);
-	void ProcessAbilityInputEventPerSelectedEntity(const ArgusEntity& entity, uint8 abilityIndex);
 	void ProcessEscapeInputEvent();
 	void ProcessRotateCameraInputEvent(AArgusCameraActor* argusCamera, const FInputActionValue& value);
 	void ProcessControlGroup(uint8 controlGroupIndex, AArgusCameraActor* argusCamera);
@@ -133,7 +156,6 @@ private:
 
 	void SetReticleState();
 	void ProcessReticleAbilityForSelectedEntities(const ReticleComponent* reticleComponent);
-	void ProcessReticleAbilityPerSelectedEntity(const ArgusEntity& entity, uint32 abilityRecordId);
 
 	FVector m_cachedLastSelectInputWorldSpaceLocation = FVector::ZeroVector;
 	bool m_selectInputDown = false;

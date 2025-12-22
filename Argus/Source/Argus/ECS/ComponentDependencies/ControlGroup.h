@@ -2,11 +2,11 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "ArgusContainerAllocator.h"
 
 struct ControlGroup
 {
-	TArray<uint16> m_entityIds;
+	TArray<uint16, ArgusContainerAllocator<100u> > m_entityIds;
 
 	int32 Max() const { return m_entityIds.Max(); }
 	int32 Num() const { return m_entityIds.Num(); }

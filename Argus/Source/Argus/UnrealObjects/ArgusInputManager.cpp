@@ -186,74 +186,122 @@ void UArgusInputManager::OnUserInterfaceEntityClicked(const ArgusEntity& clicked
 
 void UArgusInputManager::OnControlGroup0(const FInputActionValue& value)
 {
-	ARGUS_MEMORY_TRACE(ArgusInputManager);
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::ControlGroup0, value));
 }
 
 void UArgusInputManager::OnControlGroup1(const FInputActionValue& value)
 {
-	ARGUS_MEMORY_TRACE(ArgusInputManager);
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::ControlGroup1, value));
 }
 
 void UArgusInputManager::OnControlGroup2(const FInputActionValue& value)
 {
-	ARGUS_MEMORY_TRACE(ArgusInputManager);
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::ControlGroup2, value));
 }
 
 void UArgusInputManager::OnControlGroup3(const FInputActionValue& value)
 {
-	ARGUS_MEMORY_TRACE(ArgusInputManager);
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::ControlGroup3, value));
 }
 
 void UArgusInputManager::OnControlGroup4(const FInputActionValue& value)
 {
-	ARGUS_MEMORY_TRACE(ArgusInputManager);
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::ControlGroup4, value));
 }
 
 void UArgusInputManager::OnControlGroup5(const FInputActionValue& value)
 {
-	ARGUS_MEMORY_TRACE(ArgusInputManager);
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::ControlGroup5, value));
+}
+
+void UArgusInputManager::OnControlGroup6(const FInputActionValue& value)
+{
+	m_inputEventsThisFrame.Emplace(InputCache(InputType::ControlGroup6, value));
+}
+
+void UArgusInputManager::OnControlGroup7(const FInputActionValue& value)
+{
+	m_inputEventsThisFrame.Emplace(InputCache(InputType::ControlGroup7, value));
+}
+
+void UArgusInputManager::OnControlGroup8(const FInputActionValue& value)
+{
+	m_inputEventsThisFrame.Emplace(InputCache(InputType::ControlGroup8, value));
+}
+
+void UArgusInputManager::OnControlGroup9(const FInputActionValue& value)
+{
+	m_inputEventsThisFrame.Emplace(InputCache(InputType::ControlGroup9, value));
+}
+
+void UArgusInputManager::OnControlGroup10(const FInputActionValue& value)
+{
+	m_inputEventsThisFrame.Emplace(InputCache(InputType::ControlGroup10, value));
+}
+
+void UArgusInputManager::OnControlGroup11(const FInputActionValue& value)
+{
+	m_inputEventsThisFrame.Emplace(InputCache(InputType::ControlGroup11, value));
 }
 
 void UArgusInputManager::OnSetControlGroup0(const FInputActionValue& value)
 {
-	ARGUS_MEMORY_TRACE(ArgusInputManager);
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::SetControlGroup0, value));
 }
 
 void UArgusInputManager::OnSetControlGroup1(const FInputActionValue& value)
 {
-	ARGUS_MEMORY_TRACE(ArgusInputManager);
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::SetControlGroup1, value));
 }
 
 void UArgusInputManager::OnSetControlGroup2(const FInputActionValue& value)
 {
-	ARGUS_MEMORY_TRACE(ArgusInputManager);
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::SetControlGroup2, value));
 }
 
 void UArgusInputManager::OnSetControlGroup3(const FInputActionValue& value)
 {
-	ARGUS_MEMORY_TRACE(ArgusInputManager);
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::SetControlGroup3, value));
 }
 
 void UArgusInputManager::OnSetControlGroup4(const FInputActionValue& value)
 {
-	ARGUS_MEMORY_TRACE(ArgusInputManager);
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::SetControlGroup4, value));
 }
 
 void UArgusInputManager::OnSetControlGroup5(const FInputActionValue& value)
 {
-	ARGUS_MEMORY_TRACE(ArgusInputManager);
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::SetControlGroup5, value));
+}
+
+void UArgusInputManager::OnSetControlGroup6(const FInputActionValue& value)
+{
+	m_inputEventsThisFrame.Emplace(InputCache(InputType::SetControlGroup6, value));
+}
+
+void UArgusInputManager::OnSetControlGroup7(const FInputActionValue& value)
+{
+	m_inputEventsThisFrame.Emplace(InputCache(InputType::SetControlGroup7, value));
+}
+
+void UArgusInputManager::OnSetControlGroup8(const FInputActionValue& value)
+{
+	m_inputEventsThisFrame.Emplace(InputCache(InputType::SetControlGroup8, value));
+}
+
+void UArgusInputManager::OnSetControlGroup9(const FInputActionValue& value)
+{
+	m_inputEventsThisFrame.Emplace(InputCache(InputType::SetControlGroup9, value));
+}
+
+void UArgusInputManager::OnSetControlGroup10(const FInputActionValue& value)
+{
+	m_inputEventsThisFrame.Emplace(InputCache(InputType::SetControlGroup10, value));
+}
+
+void UArgusInputManager::OnSetControlGroup11(const FInputActionValue& value)
+{
+	m_inputEventsThisFrame.Emplace(InputCache(InputType::SetControlGroup11, value));
 }
 
 void UArgusInputManager::OnChangeActiveAbilityGroup(const FInputActionValue& value)
@@ -426,6 +474,30 @@ void UArgusInputManager::BindActions(TSoftObjectPtr<UArgusInputActionSet>& argus
 	{
 		enhancedInputComponent->BindAction(controlGroupAction5, ETriggerEvent::Triggered, this, &UArgusInputManager::OnControlGroup5);
 	}
+	if (const UInputAction* controlGroupAction6 = actionSet->m_controlGroup6.LoadSynchronous())
+	{
+		enhancedInputComponent->BindAction(controlGroupAction6, ETriggerEvent::Triggered, this, &UArgusInputManager::OnControlGroup6);
+	}
+	if (const UInputAction* controlGroupAction7 = actionSet->m_controlGroup7.LoadSynchronous())
+	{
+		enhancedInputComponent->BindAction(controlGroupAction7, ETriggerEvent::Triggered, this, &UArgusInputManager::OnControlGroup7);
+	}
+	if (const UInputAction* controlGroupAction8 = actionSet->m_controlGroup8.LoadSynchronous())
+	{
+		enhancedInputComponent->BindAction(controlGroupAction8, ETriggerEvent::Triggered, this, &UArgusInputManager::OnControlGroup8);
+	}
+	if (const UInputAction* controlGroupAction9 = actionSet->m_controlGroup9.LoadSynchronous())
+	{
+		enhancedInputComponent->BindAction(controlGroupAction9, ETriggerEvent::Triggered, this, &UArgusInputManager::OnControlGroup9);
+	}
+	if (const UInputAction* controlGroupAction10 = actionSet->m_controlGroup10.LoadSynchronous())
+	{
+		enhancedInputComponent->BindAction(controlGroupAction10, ETriggerEvent::Triggered, this, &UArgusInputManager::OnControlGroup10);
+	}
+	if (const UInputAction* controlGroupAction11 = actionSet->m_controlGroup11.LoadSynchronous())
+	{
+		enhancedInputComponent->BindAction(controlGroupAction11, ETriggerEvent::Triggered, this, &UArgusInputManager::OnControlGroup11);
+	}
 	if (const UInputAction* setControlGroupAction0 = actionSet->m_setControlGroup0.LoadSynchronous())
 	{
 		enhancedInputComponent->BindAction(setControlGroupAction0, ETriggerEvent::Triggered, this, &UArgusInputManager::OnSetControlGroup0);
@@ -449,6 +521,30 @@ void UArgusInputManager::BindActions(TSoftObjectPtr<UArgusInputActionSet>& argus
 	if (const UInputAction* setControlGroupAction5 = actionSet->m_setControlGroup5.LoadSynchronous())
 	{
 		enhancedInputComponent->BindAction(setControlGroupAction5, ETriggerEvent::Triggered, this, &UArgusInputManager::OnSetControlGroup5);
+	}
+	if (const UInputAction* setControlGroupAction6 = actionSet->m_setControlGroup6.LoadSynchronous())
+	{
+		enhancedInputComponent->BindAction(setControlGroupAction6, ETriggerEvent::Triggered, this, &UArgusInputManager::OnSetControlGroup6);
+	}
+	if (const UInputAction* setControlGroupAction7 = actionSet->m_setControlGroup7.LoadSynchronous())
+	{
+		enhancedInputComponent->BindAction(setControlGroupAction7, ETriggerEvent::Triggered, this, &UArgusInputManager::OnSetControlGroup7);
+	}
+	if (const UInputAction* setControlGroupAction8 = actionSet->m_setControlGroup8.LoadSynchronous())
+	{
+		enhancedInputComponent->BindAction(setControlGroupAction8, ETriggerEvent::Triggered, this, &UArgusInputManager::OnSetControlGroup8);
+	}
+	if (const UInputAction* setControlGroupAction9 = actionSet->m_setControlGroup9.LoadSynchronous())
+	{
+		enhancedInputComponent->BindAction(setControlGroupAction9, ETriggerEvent::Triggered, this, &UArgusInputManager::OnSetControlGroup9);
+	}
+	if (const UInputAction* setControlGroupAction10 = actionSet->m_setControlGroup10.LoadSynchronous())
+	{
+		enhancedInputComponent->BindAction(setControlGroupAction10, ETriggerEvent::Triggered, this, &UArgusInputManager::OnSetControlGroup10);
+	}
+	if (const UInputAction* setControlGroupAction11 = actionSet->m_setControlGroup11.LoadSynchronous())
+	{
+		enhancedInputComponent->BindAction(setControlGroupAction11, ETriggerEvent::Triggered, this, &UArgusInputManager::OnSetControlGroup11);
 	}
 	if (const UInputAction* changeActiveAbilityGroupAction = actionSet->m_changeActiveAbilityGroup.LoadSynchronous())
 	{
@@ -556,6 +652,24 @@ void UArgusInputManager::ProcessInputEvent(AArgusCameraActor* argusCamera, const
 		case InputType::ControlGroup5:
 			ProcessControlGroup(5u, argusCamera);
 			break;
+		case InputType::ControlGroup6:
+			ProcessControlGroup(6u, argusCamera);
+			break;
+		case InputType::ControlGroup7:
+			ProcessControlGroup(7u, argusCamera);
+			break;
+		case InputType::ControlGroup8:
+			ProcessControlGroup(8u, argusCamera);
+			break;
+		case InputType::ControlGroup9:
+			ProcessControlGroup(9u, argusCamera);
+			break;
+		case InputType::ControlGroup10:
+			ProcessControlGroup(10u, argusCamera);
+			break;
+		case InputType::ControlGroup11:
+			ProcessControlGroup(11u, argusCamera);
+			break;
 		case InputType::SetControlGroup0:
 			ProcessSetControlGroup(0u);
 			break;
@@ -573,6 +687,24 @@ void UArgusInputManager::ProcessInputEvent(AArgusCameraActor* argusCamera, const
 			break;
 		case InputType::SetControlGroup5:
 			ProcessSetControlGroup(5u);
+			break;
+		case InputType::SetControlGroup6:
+			ProcessSetControlGroup(6u);
+			break;
+		case InputType::SetControlGroup7:
+			ProcessSetControlGroup(7u);
+			break;
+		case InputType::SetControlGroup8:
+			ProcessSetControlGroup(8u);
+			break;
+		case InputType::SetControlGroup9:
+			ProcessSetControlGroup(9u);
+			break;
+		case InputType::SetControlGroup10:
+			ProcessSetControlGroup(10u);
+			break;
+		case InputType::SetControlGroup11:
+			ProcessSetControlGroup(11u);
 			break;
 		case InputType::ChangeActiveAbilityGroup:
 			InputInterfaceSystems::InterruptReticle();
@@ -939,53 +1071,7 @@ void UArgusInputManager::ProcessAbilityInputEvent(uint8 abilityIndex)
 		);
 	}
 
-	const InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::GetSingletonEntity().GetComponent<InputInterfaceComponent>();
-	if (!inputInterfaceComponent)
-	{
-		return;
-	}
-
-	for (int32 i = 0; i < inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.Num(); ++i)
-	{
-		if (inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds[i] == ArgusECSConstants::k_maxEntities)
-		{
-			continue;
-		}
-
-		ProcessAbilityInputEventPerSelectedEntity(ArgusEntity::RetrieveEntity(inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds[i]), abilityIndex);
-	}
-}
-
-void UArgusInputManager::ProcessAbilityInputEventPerSelectedEntity(const ArgusEntity& entity, uint8 abilityIndex)
-{
-	if (!entity)
-	{
-		return;
-	}
-
-	TaskComponent* taskComponent = entity.GetComponent<TaskComponent>();
-	if (!taskComponent)
-	{
-		return;
-	}
-
-	switch (abilityIndex)
-	{
-		case 0u:
-			taskComponent->m_abilityState = EAbilityState::ProcessCastAbility0Command;
-			break;
-		case 1u:
-			taskComponent->m_abilityState = EAbilityState::ProcessCastAbility1Command;
-			break;
-		case 2u:
-			taskComponent->m_abilityState = EAbilityState::ProcessCastAbility2Command;
-			break;
-		case 3u:
-			taskComponent->m_abilityState = EAbilityState::ProcessCastAbility3Command;
-			break;
-		default:
-			break;
-	}
+	InputInterfaceSystems::SetAbilityStateForCastIndex(abilityIndex);
 }
 
 void UArgusInputManager::ProcessEscapeInputEvent()
@@ -1026,63 +1112,7 @@ void UArgusInputManager::ProcessSetControlGroup(uint8 controlGroupIndex)
 
 void UArgusInputManager::ProcessChangeActiveAbilityGroup()
 {
-	InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::GetSingletonEntity().GetComponent<InputInterfaceComponent>();
-	ARGUS_RETURN_ON_NULL(inputInterfaceComponent, ArgusInputLog);
-
-	if (inputInterfaceComponent->m_selectedArgusEntityIds.Num() == 0)
-	{
-		return;
-	}
-
-	const int8 previousIndexOfActiveAbilityGroup = inputInterfaceComponent->m_indexOfActiveAbilityGroup;
-	if (previousIndexOfActiveAbilityGroup < 0)
-	{
-		return;
-	}
-
-	const AbilityComponent* previousActiveAbilityGroupAbilities = nullptr;
-	if (ArgusEntity previousTemplateEntity = ArgusEntity::RetrieveEntity(inputInterfaceComponent->m_selectedArgusEntityIds[previousIndexOfActiveAbilityGroup]))
-	{
-		previousActiveAbilityGroupAbilities = previousTemplateEntity.GetComponent<AbilityComponent>();
-	}
-
-	const AbilityComponent* templateEntityAbilities = nullptr;
-	for (int8 i = 1; i < inputInterfaceComponent->m_selectedArgusEntityIds.Num(); ++i)
-	{
-		int8 indexToCheck = ((previousIndexOfActiveAbilityGroup + i) % inputInterfaceComponent->m_selectedArgusEntityIds.Num());
-
-		ArgusEntity entityToCheck = ArgusEntity::RetrieveEntity(inputInterfaceComponent->m_selectedArgusEntityIds[indexToCheck]);
-		if (!entityToCheck)
-		{
-			continue;
-		}
-
-		const AbilityComponent* abilityComponentToCheck = entityToCheck.GetComponent<AbilityComponent>();
-		if (!abilityComponentToCheck)
-		{
-			continue;
-		}
-
-		if (previousActiveAbilityGroupAbilities && previousActiveAbilityGroupAbilities->HasSameAbilities(abilityComponentToCheck))
-		{
-			continue;
-		}
-
-		if (templateEntityAbilities == nullptr)
-		{
-			templateEntityAbilities = abilityComponentToCheck;
-			inputInterfaceComponent->m_indexOfActiveAbilityGroup = indexToCheck;
-			inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.Empty();
-			inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.Add(entityToCheck.GetId());
-			inputInterfaceComponent->m_selectedActorsDisplayState = ESelectedActorsDisplayState::ChangedThisFrame;
-			continue;
-		}
-
-		if (templateEntityAbilities->HasSameAbilities(abilityComponentToCheck))
-		{
-			inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.Add(entityToCheck.GetId());
-		}
-	}
+	InputInterfaceSystems::ChangeActiveAbilityGroup();
 }
 
 void UArgusInputManager::ProcessUserInterfaceEntityClicked(const ArgusEntity& entity)
@@ -1167,38 +1197,5 @@ void UArgusInputManager::ProcessReticleAbilityForSelectedEntities(const ReticleC
 		);
 	}
 
-	const InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::GetSingletonEntity().GetComponent<InputInterfaceComponent>();
-	ARGUS_RETURN_ON_NULL(inputInterfaceComponent, ArgusInputLog);
-
-	for (int32 i = 0; i < inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.Num(); ++i)
-	{
-		if (inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds[i] == ArgusECSConstants::k_maxEntities)
-		{
-			continue;
-		}
-
-		ProcessReticleAbilityPerSelectedEntity(ArgusEntity::RetrieveEntity(inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds[i]), reticleComponent->m_abilityRecordId);
-	}
-}
-
-void UArgusInputManager::ProcessReticleAbilityPerSelectedEntity(const ArgusEntity& entity, uint32 abilityRecordId)
-{
-	TaskComponent* taskComponent = entity.GetComponent<TaskComponent>();
-	if (!taskComponent)
-	{
-		return;
-	}
-
-	AbilityComponent* abilityComponent = entity.GetComponent<AbilityComponent>();
-	if (!abilityComponent)
-	{
-		return;
-	}
-
-	if (!abilityComponent->HasAbility(abilityRecordId))
-	{
-		return;
-	}
-
-	taskComponent->m_abilityState = EAbilityState::ProcessCastReticleAbility;
+	InputInterfaceSystems::SetAbilityStateForReticleAbility(reticleComponent);
 }
