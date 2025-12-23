@@ -13,7 +13,7 @@ class UIconWidget : public UArgusUIElement
 	GENERATED_BODY()
 
 public:
-	void Populate(const TFunction<void(uint16)>& onClickedCallback, uint16 identifier);
+	void Populate(const TFunction<void(uint16)>& onClickedCallback, uint16 identifier = 0u);
 	void SetBrush(const FSlateBrush& brush);
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& inGeometry, const FPointerEvent& nMouseEvent) override;
 

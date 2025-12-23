@@ -8,6 +8,17 @@
 #include "Widgets/ArgusActorCastBarWidget.h"
 #include "Widgets/ArgusActorHealthBarWidget.h"
 #include "Widgets/IconQueueWidget.h"
+#include "Widgets/IconWidget.h"
+
+void USingleSelectedEntityView::NativeConstruct()
+{
+	if (!m_entityIcon)
+	{
+		return;
+	}
+
+	m_entityIcon->Populate([this](uint16) { this->OnEntityIconClicked(); });
+}
 
 void USingleSelectedEntityView::UpdateDisplay(const UpdateDisplayParameters& updateDisplayParams)
 {
@@ -21,15 +32,15 @@ void USingleSelectedEntityView::UpdateDisplay(const UpdateDisplayParameters& upd
 		return;
 	}
 
-	ArgusEntity selectedEntity = ArgusEntity::RetrieveEntity(inputInterfaceComponent->m_selectedArgusEntityIds[0]);
-	m_entityHealthBar->RefreshDisplay(selectedEntity);
-	m_entityCastBar->RefreshDisplay(selectedEntity);
-	m_iconQueue->RefreshDisplay(selectedEntity);
+	m_selectedEntity = ArgusEntity::RetrieveEntity(inputInterfaceComponent->m_selectedArgusEntityIds[0]);
+	m_entityHealthBar->RefreshDisplay(m_selectedEntity);
+	m_entityCastBar->RefreshDisplay(m_selectedEntity);
+	m_iconQueue->RefreshDisplay(m_selectedEntity);
 }
 
 void USingleSelectedEntityView::OnUpdateSelectedArgusActors(const ArgusEntity& templateEntity)
 {
-	ARGUS_RETURN_ON_NULL(m_entityImage, ArgusUILog);
+	ARGUS_RETURN_ON_NULL(m_entityIcon, ArgusUILog);
 	ARGUS_RETURN_ON_NULL(m_entityName, ArgusUILog);
 	ARGUS_RETURN_ON_NULL(m_entityHealthBar, ArgusUILog);
 	ARGUS_RETURN_ON_NULL(m_entityCastBar, ArgusUILog);
@@ -42,7 +53,7 @@ void USingleSelectedEntityView::OnUpdateSelectedArgusActors(const ArgusEntity& t
 	}
 
 	m_entityImageSlateBrush.SetResourceObject(templateArgusActorRecord->m_actorInfoIcon.LoadAndStorePtr());
-	m_entityImage->SetBrush(m_entityImageSlateBrush);
+	m_entityIcon->SetBrush(m_entityImageSlateBrush);
 	m_entityName->SetText(templateArgusActorRecord->m_actorInfoName);
 	m_entityHealthBar->SetInitialDisplay(templateEntity);
 	m_entityCastBar->SetInitialDisplay(templateEntity);
@@ -58,4 +69,12 @@ void USingleSelectedEntityView::OnUpdateSelectedArgusActors(const ArgusEntity& t
 	}
 	m_iconQueue->SetIconQueueDataSource(dataSource, templateEntity);
 	m_iconQueue->SetInputManager(m_inputManager.Get());
+}
+
+void USingleSelectedEntityView::OnEntityIconClicked()
+{
+	if (!m_inputManager.IsValid())
+	{
+		return;
+	}
 }
