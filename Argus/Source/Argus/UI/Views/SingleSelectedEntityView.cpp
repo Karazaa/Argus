@@ -2,6 +2,7 @@
 
 #include "Views/SingleSelectedEntityView.h"
 #include "ArgusEntity.h"
+#include "ArgusInputManager.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "RecordDefinitions/ArgusActorRecord.h"
@@ -77,4 +78,6 @@ void USingleSelectedEntityView::OnEntityIconClicked()
 	{
 		return;
 	}
+
+	m_inputManager->OnUserInterfaceFocusEntityClicked(m_selectedEntity);
 }

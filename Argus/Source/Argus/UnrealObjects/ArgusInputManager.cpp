@@ -184,6 +184,19 @@ void UArgusInputManager::OnUserInterfaceEntityClicked(const ArgusEntity& clicked
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::UserInterfaceEntityClicked, clickedEntity));
 }
 
+void UArgusInputManager::OnUserInterfaceFocusEntityClicked(const ArgusEntity& clickedEntity)
+{
+	if (!ValidateOwningPlayerController())
+	{
+		return;
+	}
+
+	AArgusCameraActor* cameraActor = m_owningPlayerController->GetArgusCameraActor();
+	ARGUS_RETURN_ON_NULL(cameraActor, ArgusInputLog);
+
+	cameraActor->FocusOnArgusEntity(clickedEntity);
+}
+
 void UArgusInputManager::OnControlGroup0(const FInputActionValue& value)
 {
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::ControlGroup0, value));

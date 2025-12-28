@@ -37,6 +37,7 @@ public:
 	bool GetArgusActorsFromArgusEntities(const TArray<ArgusEntity>& inArgusEntities, TArray<AArgusActor*>& outArgusActors) const;
 	const UArgusActorRecord* GetMoveToLocationDecalActorRecord() const;
 	ETeam GetPlayerTeam() const { return m_playerTeam; }
+	AArgusCameraActor* GetArgusCameraActor() const { return m_argusCameraActor.Get(); }
 
 	void FilterArgusActorsToPlayerTeam(TArray<AArgusActor*>& argusActors) const;
 	void FilterArgusEntityIdsToPlayerTeam(TArray<uint16>& entityIds) const;
