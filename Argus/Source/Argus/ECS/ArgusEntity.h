@@ -47,6 +47,21 @@ public:
 		}
 	}
 
+	template <typename Function>
+	static void IterateTeamEntities(Function&& perEntityFunction)
+	{
+		for (uint8 i = 1; i < 8; ++i)
+		{
+			ArgusEntity entity = RetrieveEntity(ArgusECSConstants::k_singletonEntityId - i);
+			if (!entity)
+			{
+				continue;
+			}
+
+			perEntityFunction(entity);
+		}
+	}
+
 	template <typename SystemsArgs, typename Function>
 	static void IterateSystemsArgs(Function&& perSystemsArgsFunction)
 	{

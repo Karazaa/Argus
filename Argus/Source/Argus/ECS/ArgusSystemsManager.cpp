@@ -16,6 +16,7 @@
 #include "Systems/SpatialPartitioningSystems.h"
 #include "Systems/SpawningSystems.h"
 #include "Systems/TaskSystems.h"
+#include "Systems/TeamCommanderSystems.h"
 #include "Systems/TimerSystems.h"
 #include "Systems/TransformSystems.h"
 
@@ -48,6 +49,7 @@ void ArgusSystemsManager::RunSystems(UWorld* worldPointer, float deltaTime)
 
 	TimerSystems::RunSystems(deltaTime);
 	TaskSystems::RunSystems(deltaTime);
+	TeamCommanderSystems::RunSystems(deltaTime);
 	AbilitySystems::RunSystems(deltaTime);
 	CombatSystems::RunSystems(deltaTime);
 	ResourceSystems::RunSystems(deltaTime);
@@ -141,8 +143,10 @@ void ArgusSystemsManager::PopulateTeamComponents(const FResourceSet& initialTeam
 			continue;
 		}
 
-		ResourceComponent* teamResourceComponent = ArgusEntity::CreateEntity(i).GetOrAddComponent<ResourceComponent>();
-		if (!teamResourceComponent)
+		ArgusEntity teamEntity = ArgusEntity::CreateEntity(i);
+		ResourceComponent* teamResourceComponent = teamEntity.GetOrAddComponent<ResourceComponent>();
+		TeamCommanderComponent* teamCommanderComponent = teamEntity.GetOrAddComponent<TeamCommanderComponent>();
+		if (!teamResourceComponent || !teamCommanderComponent)
 		{
 			continue;
 		}
