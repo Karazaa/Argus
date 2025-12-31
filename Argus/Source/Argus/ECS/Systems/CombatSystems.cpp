@@ -20,6 +20,11 @@ void CombatSystems::RunSystems(float deltaTime)
 
 bool CombatSystems::CanEntityAttackOtherEntity(const ArgusEntity& potentialAttacker, const ArgusEntity& potentialVictim)
 {
+	if (!potentialVictim.IsAlive())
+	{
+		return false;
+	}
+
 	const IdentityComponent* attackerIdentityComponent = potentialAttacker.GetComponent<IdentityComponent>();
 	const IdentityComponent* victimIdentityComponent = potentialVictim.GetComponent<IdentityComponent>();
 	const CombatComponent* attackerCombatComponent = potentialAttacker.GetComponent<CombatComponent>();
@@ -238,8 +243,5 @@ void CombatSystems::StopAttackingEntity(const CombatSystemsArgs& components)
 {
 	components.m_targetingComponent->m_targetEntityId = ArgusECSConstants::k_maxEntities;
 	components.m_taskComponent->m_combatState = ECombatState::None;
-	if (components.m_taskComponent->m_movementState == EMovementState::InRangeOfTargetEntity)
-	{
-		components.m_taskComponent->m_movementState = EMovementState::None;
-	}
+	components.m_taskComponent->m_movementState = EMovementState::None;
 }

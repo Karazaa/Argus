@@ -11,4 +11,5 @@ public:
 
 private:
 	static void UpdateTeamCommanderPerEntity(const TeamCommanderSystemsArgs& components);
+	static void ClearUpdatesPerCommanderEntity(ArgusEntity teamCommmanderEntity);
 };

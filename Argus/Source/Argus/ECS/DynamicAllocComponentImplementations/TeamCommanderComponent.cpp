@@ -14,6 +14,8 @@
 // Component shared functionality
 void TeamCommanderComponent::Reset()
 {
+	m_idleEntityIdsForTeam.Reset();
+	m_numResourceExtractors = 0u;
 	m_numLivingUnits = 0u;
 }
 
@@ -27,6 +29,26 @@ void TeamCommanderComponent::DrawComponentDebug() const
 
 	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings))
 	{
+		ImGui::TableNextColumn();
+		ImGui::Text("m_idleEntityIdsForTeam");
+		ImGui::TableNextColumn();
+		ImGui::Text("Array max is currently = %d", m_idleEntityIdsForTeam.Max());
+		if (m_idleEntityIdsForTeam.Num() == 0)
+		{
+			ImGui::Text("Array is empty");
+		}
+		else
+		{
+			ImGui::Text("Size of array = %d", m_idleEntityIdsForTeam.Num());
+			for (int32 i = 0; i < m_idleEntityIdsForTeam.Num(); ++i)
+			{
+				ImGui::Text("%d", m_idleEntityIdsForTeam[i]);
+			}
+		}
+		ImGui::TableNextColumn();
+		ImGui::Text("m_numResourceExtractors");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_numResourceExtractors);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_numLivingUnits");
 		ImGui::TableNextColumn();
