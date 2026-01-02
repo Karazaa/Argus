@@ -135,15 +135,14 @@ void ArgusSystemsManager::SetInitialSingletonState(UWorld* worldPointer, ETeam a
 
 void ArgusSystemsManager::PopulateTeamComponents(const FResourceSet& initialTeamResourceSet)
 {
-	uint16 sizeOfTeamEnum = sizeof(ETeam) * 8;
-	for (uint16 i = ArgusECSConstants::k_singletonEntityId - sizeOfTeamEnum; i < ArgusECSConstants::k_singletonEntityId; ++i)
+	for (uint8 i = 1u; i <= (sizeof(ETeam) * 8u); ++i)
 	{
-		if (ArgusEntity::DoesEntityExist(i))
+		if (ArgusEntity::DoesEntityExist(ArgusECSConstants::k_singletonEntityId - i))
 		{
 			continue;
 		}
 
-		ArgusEntity teamEntity = ArgusEntity::CreateEntity(i);
+		ArgusEntity teamEntity = ArgusEntity::CreateEntity(ArgusECSConstants::k_singletonEntityId - i);
 		ResourceComponent* teamResourceComponent = teamEntity.GetOrAddComponent<ResourceComponent>();
 		TeamCommanderComponent* teamCommanderComponent = teamEntity.GetOrAddComponent<TeamCommanderComponent>();
 		if (!teamResourceComponent || !teamCommanderComponent)
@@ -152,5 +151,6 @@ void ArgusSystemsManager::PopulateTeamComponents(const FResourceSet& initialTeam
 		}
 
 		teamResourceComponent->m_currentResources.ApplyResourceChange(initialTeamResourceSet);
+		teamCommanderComponent->m_teamToCommand = static_cast<ETeam>(1u << (i - 1u));
 	}
 }

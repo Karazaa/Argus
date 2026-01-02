@@ -15,8 +15,10 @@
 void TeamCommanderComponent::Reset()
 {
 	m_idleEntityIdsForTeam.Reset();
+	m_seenResourceSourceEntityIds.Reset();
 	m_numResourceExtractors = 0u;
 	m_numLivingUnits = 0u;
+	m_teamToCommand = ETeam::None;
 }
 
 void TeamCommanderComponent::DrawComponentDebug() const
@@ -46,6 +48,22 @@ void TeamCommanderComponent::DrawComponentDebug() const
 			}
 		}
 		ImGui::TableNextColumn();
+		ImGui::Text("m_seenResourceSourceEntityIds");
+		ImGui::TableNextColumn();
+		ImGui::Text("Array max is currently = %d", m_seenResourceSourceEntityIds.Max());
+		if (m_seenResourceSourceEntityIds.Num() == 0)
+		{
+			ImGui::Text("Array is empty");
+		}
+		else
+		{
+			ImGui::Text("Size of array = %d", m_seenResourceSourceEntityIds.Num());
+			for (int32 i = 0; i < m_seenResourceSourceEntityIds.Num(); ++i)
+			{
+				ImGui::Text("%d", m_seenResourceSourceEntityIds[i]);
+			}
+		}
+		ImGui::TableNextColumn();
 		ImGui::Text("m_numResourceExtractors");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_numResourceExtractors);
@@ -53,6 +71,11 @@ void TeamCommanderComponent::DrawComponentDebug() const
 		ImGui::Text("m_numLivingUnits");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_numLivingUnits);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_teamToCommand");
+		ImGui::TableNextColumn();
+		const char* valueName_m_teamToCommand = ARGUS_FSTRING_TO_CHAR(StaticEnum<ETeam>()->GetNameStringByValue(static_cast<uint8>(m_teamToCommand)))
+		ImGui::Text(valueName_m_teamToCommand);
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

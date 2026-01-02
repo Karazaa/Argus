@@ -24,6 +24,7 @@ void IdentityComponent::Reset()
 	m_allies = 0u;
 	m_enemies = 0u;
 	m_seenBy = 0u;
+	m_everSeenBy = 0u;
 }
 
 void IdentityComponent::DrawComponentDebug() const
@@ -68,6 +69,10 @@ void IdentityComponent::DrawComponentDebug() const
 		ImGui::Text("m_seenBy");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_seenBy);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_everSeenBy");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_everSeenBy);
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

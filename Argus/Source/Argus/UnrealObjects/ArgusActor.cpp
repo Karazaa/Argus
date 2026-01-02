@@ -287,7 +287,7 @@ void AArgusActor::Update(float deltaTime, ETeam activePlayerControllerTeam)
 		fogOfWarVisible = ArgusECSDebugger::ShouldDrawFogOfWar();
 #endif //!UE_BUILD_SHIPPING
 
-		if (identityComponent->IsSeenBy(activePlayerControllerTeam) || !fogOfWarVisible)
+		if (identityComponent->IsSeenBy(activePlayerControllerTeam) || (!m_entity.IsMoveable() && m_entity.IsAlive()) || !fogOfWarVisible)
 		{
 			Show();
 		}

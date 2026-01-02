@@ -3,25 +3,9 @@
 #pragma once
 
 #include "ArgusMacros.h"
-#include "CoreMinimal.h"
-#include "IdentityComponent.generated.h"
+#include "ComponentDependencies/Teams.h"
 
 class UFactionRecord;
-
-UENUM(meta = (Bitflags, UseEnumValuesAsMaskValuesInEditor = "true"))
-enum class ETeam : uint8
-{
-	None = 0,
-	TeamA = 1u << 0,
-	TeamB = 1u << 1,
-	TeamC = 1u << 2,
-	TeamD = 1u << 3,
-	TeamE = 1u << 4,
-	TeamF = 1u << 5,
-	TeamG = 1u << 6,
-	TeamH = 1u << 7
-};
-ENUM_CLASS_FLAGS(ETeam);
 
 struct IdentityComponent
 {
@@ -41,6 +25,9 @@ struct IdentityComponent
 
 	ARGUS_IGNORE()
 	uint8 m_seenBy = 0u;
+
+	ARGUS_IGNORE()
+	uint8 m_everSeenBy = 0u;
 
 	void AddEnemyTeam(ETeam enemyTeam)
 	{
@@ -67,6 +54,7 @@ struct IdentityComponent
 	void AddSeenBy(ETeam seeingTeam)
 	{
 		m_seenBy |= (static_cast<uint8>(seeingTeam));
+		m_everSeenBy |= m_seenBy;
 	}
 
 	void ClearSeenBy()
@@ -77,6 +65,11 @@ struct IdentityComponent
 	bool IsSeenBy(ETeam team) const
 	{
 		return m_seenBy & (static_cast<uint8>(team));
+	}
+
+	bool WasEverSeenBy(ETeam team) const
+	{
+		return m_everSeenBy & (static_cast<uint8>(team));
 	}
 
 	bool IsSeenByAllies() const 

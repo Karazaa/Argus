@@ -50,7 +50,7 @@ public:
 	template <typename Function>
 	static void IterateTeamEntities(Function&& perEntityFunction)
 	{
-		for (uint8 i = 1; i <= 8; ++i)
+		for (uint8 i = 1u; i <= (sizeof(ETeam) * 8u); ++i)
 		{
 			ArgusEntity entity = RetrieveEntity(ArgusECSConstants::k_singletonEntityId - i);
 			if (!entity)

@@ -35,7 +35,7 @@ bool CombatSystems::CanEntityAttackOtherEntity(const ArgusEntity& potentialAttac
 		return false;
 	}
 
-	if (victimIdentityComponent->IsInTeamMask(attackerIdentityComponent->m_allies))
+	if (!victimIdentityComponent->IsInTeamMask(attackerIdentityComponent->m_enemies))
 	{
 		return false;
 	}
