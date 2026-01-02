@@ -10,6 +10,7 @@
 #if !UE_BUILD_SHIPPING
 
 static TAutoConsoleVariable<bool> CVarDrawECSDebugger(TEXT("Argus.Debug.ECS"), false, TEXT("Whether or not the ECS ImGui debugger should be drawn."));
+bool ArgusECSDebugger::s_shouldDrawFogOfWar = true;
 bool ArgusECSDebugger::s_onlyDebugSelectedEntities = false;
 bool ArgusECSDebugger::s_ignoreTeamRequirementsForSelectingEntities = false;
 bool ArgusECSDebugger::s_entityDebugToggles[ArgusECSConstants::k_maxEntities];
@@ -73,6 +74,7 @@ void ArgusECSDebugger::DrawEntityScrollRegion()
 {
 	DrawResourceRegion();
 
+	ImGui::Checkbox("Draw fog of war", &s_shouldDrawFogOfWar);
 	ImGui::Checkbox("Only debug selected entities", &s_onlyDebugSelectedEntities);
 	ImGui::SameLine();
 	ImGui::Checkbox("Ignore team requirements for selection", &s_ignoreTeamRequirementsForSelectingEntities);

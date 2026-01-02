@@ -19,6 +19,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static void SetFogOfWarDynamicMaterialInstance(UMaterialInstanceDynamic* dynamicMaterialInstance);
 
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (DevelopmentOnly))
+	static bool ShouldDrawFogOfWar();
+
 private:
 	static UArgusInputManager* GetArgusInputManager(UObject* worldContextObject);
 };

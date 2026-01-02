@@ -48,7 +48,7 @@ void FogOfWarSystems::InitializeSystems()
 
 void FogOfWarSystems::RunThreadSystems(float deltaTime)
 {
-	ARGUS_TRACE(FogOfWarSystems::RunSystems);
+	ARGUS_TRACE(FogOfWarSystems::RunThreadSystems);
 
 	FogOfWarComponent* fogOfWarComponent = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId).GetComponent<FogOfWarComponent>();
 	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);

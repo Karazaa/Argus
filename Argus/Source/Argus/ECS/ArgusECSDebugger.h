@@ -16,8 +16,10 @@ public:
 	static bool ShouldShowNavigationDebugForEntity(uint16 entityId);
 	static bool ShouldShowFlockingDebugForEntity(uint16 entityId);
 	static bool ShouldIgnoreTeamRequirementsForSelectingEntities() { return s_ignoreTeamRequirementsForSelectingEntities; };
+	static bool ShouldDrawFogOfWar() { return s_shouldDrawFogOfWar; }
 
 private:
+	static bool s_shouldDrawFogOfWar;
 	static bool s_onlyDebugSelectedEntities;
 	static bool s_ignoreTeamRequirementsForSelectingEntities;
 	static bool s_entityDebugToggles[ArgusECSConstants::k_maxEntities];

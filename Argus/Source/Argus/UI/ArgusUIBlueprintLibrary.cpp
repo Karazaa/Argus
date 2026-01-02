@@ -8,6 +8,10 @@
 #include "ArgusPlayerController.h"
 #include "Engine/World.h"
 
+#if !UE_BUILD_SHIPPING
+#include "ArgusECSDebugger.h"
+#endif
+
 void UArgusUIBlueprintLibrary::SetFogOfWarDynamicMaterialInstance(UMaterialInstanceDynamic* dynamicMaterialInstance)
 {
 	ARGUS_RETURN_ON_NULL(dynamicMaterialInstance, ArgusUnrealObjectsLog);
@@ -16,6 +20,16 @@ void UArgusUIBlueprintLibrary::SetFogOfWarDynamicMaterialInstance(UMaterialInsta
 	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusUnrealObjectsLog);
 
 	fogOfWarComponent->m_dynamicMaterialInstance = dynamicMaterialInstance;
+}
+
+bool UArgusUIBlueprintLibrary::ShouldDrawFogOfWar()
+{
+	bool output = true;
+#if !UE_BUILD_SHIPPING
+	output = ArgusECSDebugger::ShouldDrawFogOfWar();
+#endif
+
+	return output;
 }
 
 UArgusInputManager* UArgusUIBlueprintLibrary::GetArgusInputManager(UObject* worldContextObject)
