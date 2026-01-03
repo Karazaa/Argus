@@ -18,3 +18,5 @@ enum class ETeam : uint8
 	TeamH = 1u << 7
 };
 ENUM_CLASS_FLAGS(ETeam);
+
+using BITMASK_ETeam = uint8;

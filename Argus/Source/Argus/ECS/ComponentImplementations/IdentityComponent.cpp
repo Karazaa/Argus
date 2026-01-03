@@ -55,12 +55,27 @@ void IdentityComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_team");
 		ImGui::TableNextColumn();
-		const char* valueName_m_team = ARGUS_FSTRING_TO_CHAR(StaticEnum<ETeam>()->GetNameStringByValue(static_cast<uint8>(m_team)))
+		const char* valueName_m_team = ARGUS_FSTRING_TO_CHAR(StaticEnum<ETeam>()->GetNameStringByValue(static_cast<uint8>(m_team)));
 		ImGui::Text(valueName_m_team);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_allies");
 		ImGui::TableNextColumn();
-		ImGui::Text("%d", m_allies);
+		uint8 enumSize = sizeof(ETeam) * 8u;
+		bool triggered_m_allies = false;
+		for (uint8 i = 0u; i < enumSize; ++i)
+		{
+			uint32 enumValue = 1 << i;
+			if (m_allies & enumValue)
+			{
+				if (triggered_m_allies)
+				{
+					ImGui::SameLine();
+				}
+				const char* valueName_m_allies = ARGUS_FSTRING_TO_CHAR(StaticEnum<ETeam>()->GetNameStringByValue(enumValue));
+				ImGui::Text("%s, ", valueName_m_allies);
+				triggered_m_allies = true;
+			}
+		}
 		ImGui::TableNextColumn();
 		ImGui::Text("m_enemies");
 		ImGui::TableNextColumn();

@@ -18,16 +18,16 @@ struct IdentityComponent
 	ETeam m_team = ETeam::None;
 
 	ARGUS_IGNORE()
-	uint8 m_allies = 0u;
+	BITMASK_ETeam m_allies = 0u;
 
 	ARGUS_IGNORE()
-	uint8 m_enemies = 0u;
+	BITMASK_ETeam m_enemies = 0u;
 
 	ARGUS_IGNORE()
-	uint8 m_seenBy = 0u;
+	BITMASK_ETeam m_seenBy = 0u;
 
 	ARGUS_IGNORE()
-	uint8 m_everSeenBy = 0u;
+	BITMASK_ETeam m_everSeenBy = 0u;
 
 	void AddEnemyTeam(ETeam enemyTeam)
 	{
@@ -36,40 +36,40 @@ struct IdentityComponent
 			return;
 		}
 
-		m_allies &= ~(static_cast<uint8>(enemyTeam));
-		m_enemies |= (static_cast<uint8>(enemyTeam));
+		m_allies &= ~(static_cast<BITMASK_ETeam>(enemyTeam));
+		m_enemies |= (static_cast<BITMASK_ETeam>(enemyTeam));
 	}
 
 	void AddAllyTeam(ETeam allyTeam)
 	{
-		m_enemies &= ~(static_cast<uint8>(allyTeam));
-		m_allies |= (static_cast<uint8>(allyTeam));
+		m_enemies &= ~(static_cast<BITMASK_ETeam>(allyTeam));
+		m_allies |= (static_cast<BITMASK_ETeam>(allyTeam));
 	}
 
-	bool IsInTeamMask(uint8 teamMask) const
+	bool IsInTeamMask(BITMASK_ETeam teamMask) const
 	{
-		return teamMask & (static_cast<uint8>(m_team));
+		return teamMask & (static_cast<BITMASK_ETeam>(m_team));
 	}
 
 	void AddSeenBy(ETeam seeingTeam)
 	{
-		m_seenBy |= (static_cast<uint8>(seeingTeam));
+		m_seenBy |= (static_cast<BITMASK_ETeam>(seeingTeam));
 		m_everSeenBy |= m_seenBy;
 	}
 
 	void ClearSeenBy()
 	{
-		m_seenBy = static_cast<uint8>(m_team);
+		m_seenBy = static_cast<BITMASK_ETeam>(m_team);
 	}
 
 	bool IsSeenBy(ETeam team) const
 	{
-		return m_seenBy & (static_cast<uint8>(team));
+		return m_seenBy & (static_cast<BITMASK_ETeam>(team));
 	}
 
 	bool WasEverSeenBy(ETeam team) const
 	{
-		return m_everSeenBy & (static_cast<uint8>(team));
+		return m_everSeenBy & (static_cast<BITMASK_ETeam>(team));
 	}
 
 	bool IsSeenByAllies() const 

@@ -293,6 +293,7 @@ void ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 		const bool isSpawnEntityInfo = parsedVariableData[i].m_typeName.find("SpawnEntityInfo") != std::string::npos; 
 		const bool isBool = parsedVariableData[i].m_typeName.find("bool") != std::string::npos;
 		const bool isControlGroup = parsedVariableData[i].m_typeName.find("ControlGroup") != std::string::npos;
+		const bool isBitmask = parsedVariableData[i].m_typeName.find("BITMASK") != std::string::npos;
 
 		std::string cleanTypeName = parsedVariableData[i].m_typeName.substr(1, parsedVariableData[i].m_typeName.length() - 1);
 
@@ -357,6 +358,11 @@ void ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 			{
 				extraData = "FVector2D";
 			}
+		}
+		else if (isBitmask)
+		{
+			extraData = cleanTypeName;
+			atomicFieldFormattingFunction = FormatImGuiBitmaskField;
 		}
 		else if (isInteger)
 		{
@@ -492,6 +498,11 @@ void ComponentImplementationGenerator::FormatImGuiFloatField(const std::string& 
 }
 
 void ComponentImplementationGenerator::FormatImGuiIntField(const std::string& variableName, const std::string& extraData, const std::string& prefix, std::vector<std::string>& outParsedVariableContents)
+{
+	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::Text(\"%d\", {});", std::make_format_args(prefix, variableName)));
+}
+
+void ComponentImplementationGenerator::FormatImGuiBitmaskField(const std::string& variableName, const std::string& extraData, const std::string& prefix, std::vector<std::string>& outParsedVariableContents)
 {
 	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::Text(\"%d\", {});", std::make_format_args(prefix, variableName)));
 }
