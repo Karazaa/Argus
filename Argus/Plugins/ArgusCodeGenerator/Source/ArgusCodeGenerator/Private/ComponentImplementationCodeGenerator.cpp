@@ -504,7 +504,27 @@ void ComponentImplementationGenerator::FormatImGuiIntField(const std::string& va
 
 void ComponentImplementationGenerator::FormatImGuiBitmaskField(const std::string& variableName, const std::string& extraData, const std::string& prefix, std::vector<std::string>& outParsedVariableContents)
 {
-	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::Text(\"%d\", {});", std::make_format_args(prefix, variableName)));
+	const size_t size = extraData.length();
+	const size_t splitIndex = extraData.find("_") + 1;
+	std::string enumName = extraData.substr(splitIndex, size - splitIndex);
+
+	outParsedVariableContents.push_back(std::vformat("{}\t\tuint8 enumSize_{} = sizeof({}) * 8u;", std::make_format_args(prefix, variableName, enumName)));
+	outParsedVariableContents.push_back(std::vformat("{}\t\tbool triggered_{} = false;", std::make_format_args(prefix, variableName)));
+	outParsedVariableContents.push_back(std::vformat("{}\t\tfor (uint8 i = 0u; i < enumSize_{}; ++i)", std::make_format_args(prefix, variableName)));
+	outParsedVariableContents.push_back(std::string(prefix).append("\t\t{"));
+	outParsedVariableContents.push_back(std::vformat("{}\t\t\tuint32 enumValue_{} = 1 << i;", std::make_format_args(prefix, variableName)));
+	outParsedVariableContents.push_back(std::vformat("{}\t\t\tif ({} & enumValue_{})", std::make_format_args(prefix, variableName, variableName)));
+	outParsedVariableContents.push_back(std::string(prefix).append("\t\t\t{"));
+	outParsedVariableContents.push_back(std::vformat("{}\t\t\t\tif (triggered_{})", std::make_format_args(prefix, variableName)));
+	outParsedVariableContents.push_back(std::string(prefix).append("\t\t\t\t{"));
+	outParsedVariableContents.push_back(std::vformat("{}\t\t\t\t\tImGui::SameLine();", std::make_format_args(prefix)));
+	outParsedVariableContents.push_back(std::string(prefix).append("\t\t\t\t}"));
+	outParsedVariableContents.push_back(std::vformat("{}\t\t\t\tconst char* valueName_{} = ARGUS_FSTRING_TO_CHAR(StaticEnum<{}>()->GetNameStringByValue(enumValue_{}));", 
+		std::make_format_args(prefix, variableName, enumName, variableName)));
+	outParsedVariableContents.push_back(std::vformat("{}\t\t\t\tImGui::Text(\"%s, \", valueName_{});", std::make_format_args(prefix, variableName)));
+	outParsedVariableContents.push_back(std::vformat("{}\t\t\t\ttriggered_{} = true;", std::make_format_args(prefix, variableName)));
+	outParsedVariableContents.push_back(std::string(prefix).append("\t\t\t}"));
+	outParsedVariableContents.push_back(std::string(prefix).append("\t\t}"));
 }
 
 void ComponentImplementationGenerator::FormatImGuiBoolField(const std::string& variableName, const std::string& extraData, const std::string& prefix, std::vector<std::string>& outParsedVariableContents)

@@ -55,23 +55,23 @@ void IdentityComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_team");
 		ImGui::TableNextColumn();
-		const char* valueName_m_team = ARGUS_FSTRING_TO_CHAR(StaticEnum<ETeam>()->GetNameStringByValue(static_cast<uint8>(m_team)));
+		const char* valueName_m_team = ARGUS_FSTRING_TO_CHAR(StaticEnum<ETeam>()->GetNameStringByValue(static_cast<uint8>(m_team)))
 		ImGui::Text(valueName_m_team);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_allies");
 		ImGui::TableNextColumn();
-		uint8 enumSize = sizeof(ETeam) * 8u;
+		uint8 enumSize_m_allies = sizeof(ETeam) * 8u;
 		bool triggered_m_allies = false;
-		for (uint8 i = 0u; i < enumSize; ++i)
+		for (uint8 i = 0u; i < enumSize_m_allies; ++i)
 		{
-			uint32 enumValue = 1 << i;
-			if (m_allies & enumValue)
+			uint32 enumValue_m_allies = 1 << i;
+			if (m_allies & enumValue_m_allies)
 			{
 				if (triggered_m_allies)
 				{
 					ImGui::SameLine();
 				}
-				const char* valueName_m_allies = ARGUS_FSTRING_TO_CHAR(StaticEnum<ETeam>()->GetNameStringByValue(enumValue));
+				const char* valueName_m_allies = ARGUS_FSTRING_TO_CHAR(StaticEnum<ETeam>()->GetNameStringByValue(enumValue_m_allies));
 				ImGui::Text("%s, ", valueName_m_allies);
 				triggered_m_allies = true;
 			}
@@ -79,15 +79,60 @@ void IdentityComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_enemies");
 		ImGui::TableNextColumn();
-		ImGui::Text("%d", m_enemies);
+		uint8 enumSize_m_enemies = sizeof(ETeam) * 8u;
+		bool triggered_m_enemies = false;
+		for (uint8 i = 0u; i < enumSize_m_enemies; ++i)
+		{
+			uint32 enumValue_m_enemies = 1 << i;
+			if (m_enemies & enumValue_m_enemies)
+			{
+				if (triggered_m_enemies)
+				{
+					ImGui::SameLine();
+				}
+				const char* valueName_m_enemies = ARGUS_FSTRING_TO_CHAR(StaticEnum<ETeam>()->GetNameStringByValue(enumValue_m_enemies));
+				ImGui::Text("%s, ", valueName_m_enemies);
+				triggered_m_enemies = true;
+			}
+		}
 		ImGui::TableNextColumn();
 		ImGui::Text("m_seenBy");
 		ImGui::TableNextColumn();
-		ImGui::Text("%d", m_seenBy);
+		uint8 enumSize_m_seenBy = sizeof(ETeam) * 8u;
+		bool triggered_m_seenBy = false;
+		for (uint8 i = 0u; i < enumSize_m_seenBy; ++i)
+		{
+			uint32 enumValue_m_seenBy = 1 << i;
+			if (m_seenBy & enumValue_m_seenBy)
+			{
+				if (triggered_m_seenBy)
+				{
+					ImGui::SameLine();
+				}
+				const char* valueName_m_seenBy = ARGUS_FSTRING_TO_CHAR(StaticEnum<ETeam>()->GetNameStringByValue(enumValue_m_seenBy));
+				ImGui::Text("%s, ", valueName_m_seenBy);
+				triggered_m_seenBy = true;
+			}
+		}
 		ImGui::TableNextColumn();
 		ImGui::Text("m_everSeenBy");
 		ImGui::TableNextColumn();
-		ImGui::Text("%d", m_everSeenBy);
+		uint8 enumSize_m_everSeenBy = sizeof(ETeam) * 8u;
+		bool triggered_m_everSeenBy = false;
+		for (uint8 i = 0u; i < enumSize_m_everSeenBy; ++i)
+		{
+			uint32 enumValue_m_everSeenBy = 1 << i;
+			if (m_everSeenBy & enumValue_m_everSeenBy)
+			{
+				if (triggered_m_everSeenBy)
+				{
+					ImGui::SameLine();
+				}
+				const char* valueName_m_everSeenBy = ARGUS_FSTRING_TO_CHAR(StaticEnum<ETeam>()->GetNameStringByValue(enumValue_m_everSeenBy));
+				ImGui::Text("%s, ", valueName_m_everSeenBy);
+				triggered_m_everSeenBy = true;
+			}
+		}
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING
