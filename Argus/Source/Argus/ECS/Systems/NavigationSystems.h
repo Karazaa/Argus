@@ -16,6 +16,7 @@ public:
 
 private:
 	static void ProcessNavigationTaskCommands(UWorld* worldPointer, const NavigationSystemsArgs& components);
+	static void ResetAvoidanceGroupingComponent(const NavigationSystemsArgs& components);
 	static void RecalculateMoveToEntityPaths(UWorld* worldPointer, const NavigationSystemsArgs& components);
 	static void ChangeTasksOnNavigatingToEntity(ArgusEntity targetEntity, const NavigationSystemsArgs& components);
 	static void ChangeFlockingStateOnNavigatingToLocation(const NavigationSystemsArgs& components);

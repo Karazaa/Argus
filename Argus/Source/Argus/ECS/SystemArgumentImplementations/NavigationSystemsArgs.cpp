@@ -17,6 +17,7 @@ bool NavigationSystemsArgs::PopulateArguments(const ArgusEntity& entity)
 	m_targetingComponent = entity.GetComponent<TargetingComponent>();
 	m_transformComponent = entity.GetComponent<TransformComponent>();
 	m_velocityComponent = entity.GetComponent<VelocityComponent>();
+	m_avoidanceGroupingComponent = entity.GetComponent<AvoidanceGroupingComponent>();
 
 	if (!m_entity || !m_taskComponent || !m_navigationComponent || !m_targetingComponent || !m_transformComponent || !m_velocityComponent)
 	{

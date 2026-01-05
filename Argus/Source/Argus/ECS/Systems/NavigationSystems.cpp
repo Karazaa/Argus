@@ -137,6 +137,7 @@ void NavigationSystems::ProcessNavigationTaskCommands(UWorld* worldPointer, cons
 	switch (components.m_taskComponent->m_movementState)
 	{
 		case EMovementState::ProcessMoveToLocationCommand:
+			ResetAvoidanceGroupingComponent(components);
 			components.m_taskComponent->m_movementState = EMovementState::MoveToLocation;
 			NavigateFromEntityToLocation(worldPointer, components.m_targetingComponent->m_targetLocation.GetValue(), components);
 			ChangeFlockingStateOnNavigatingToLocation(components);
@@ -144,6 +145,7 @@ void NavigationSystems::ProcessNavigationTaskCommands(UWorld* worldPointer, cons
 
 		case EMovementState::ProcessMoveToEntityCommand:
 		{
+			ResetAvoidanceGroupingComponent(components);
 			components.m_taskComponent->m_movementState = EMovementState::MoveToEntity;
 			ArgusEntity targetEntity = ArgusEntity::RetrieveEntity(components.m_targetingComponent->m_targetEntityId);
 			NavigateFromEntityToEntity(worldPointer, targetEntity, components);
@@ -153,6 +155,18 @@ void NavigationSystems::ProcessNavigationTaskCommands(UWorld* worldPointer, cons
 		default:
 			break;
 	}
+}
+
+void NavigationSystems::ResetAvoidanceGroupingComponent(const NavigationSystemsArgs& components)
+{
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME) || !components.m_avoidanceGroupingComponent)
+	{
+		return;
+	}
+
+	components.m_avoidanceGroupingComponent->m_groupId = components.m_entity.GetId();
+	components.m_avoidanceGroupingComponent->m_groupAverageLocation = components.m_transformComponent->m_location;
+	components.m_avoidanceGroupingComponent->m_numberOfIdleEntities = 0u;
 }
 
 void NavigationSystems::RecalculateMoveToEntityPaths(UWorld* worldPointer, const NavigationSystemsArgs& components)

@@ -13,4 +13,7 @@ struct NavigationSystemsArgs
 	TargetingComponent* m_targetingComponent = nullptr;
 	TransformComponent* m_transformComponent = nullptr;
 	VelocityComponent* m_velocityComponent = nullptr;
+
+	ARGUS_GET_BUT_SKIP()
+	AvoidanceGroupingComponent* m_avoidanceGroupingComponent = nullptr;
 };
