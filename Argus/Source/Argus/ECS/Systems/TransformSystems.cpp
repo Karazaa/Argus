@@ -324,6 +324,7 @@ void TransformSystems::FaceTargetEntity(const TransformSystemsArgs& components)
 
 void TransformSystems::FaceTowardsLocationXY(TransformComponent* transformComponent, FVector vectorFromTransformToTarget)
 {
+	vectorFromTransformToTarget.Z = 0.0f;
 	if (vectorFromTransformToTarget.Equals(FVector::ZeroVector))
 	{
 		return;
