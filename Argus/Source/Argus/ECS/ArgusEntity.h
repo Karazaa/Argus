@@ -100,14 +100,16 @@ public:
 	bool			IsMoveable() const;
 	bool			IsSelected() const;
 	bool			IsIdle() const;
-	bool			IsInRangeOfOtherEntity(const ArgusEntity& other, float range) const;
+	bool			IsInRangeOfOtherEntity(ArgusEntity otherEntity, float range) const;
 	bool			IsPassenger() const;
 	bool			IsCarryingPassengers() const;
 	bool			IsOnTeam(ETeam team) const;
-	bool			IsOnSameTeamAsOtherEntity(const ArgusEntity& other) const;
+	bool			IsOnSameTeamAsOtherEntity(ArgusEntity otherEntity) const;
 	bool			IsFlying() const;
 	bool			CanFly() const;
 	FVector			GetCurrentTargetLocation() const;
+	float			GetDistanceSquaredToOtherEntity(ArgusEntity otherEntity) const;
+	float			GetDistanceToOtherEntity(ArgusEntity otherEntity) const;
 
 	const UArgusActorRecord* GetAssociatedActorRecord() const;
 

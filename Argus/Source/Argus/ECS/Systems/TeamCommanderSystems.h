@@ -12,7 +12,7 @@ public:
 private:
 	static void UpdateTeamCommanderPerEntity(const TeamCommanderSystemsArgs& components);
 	static void UpdateTeamCommanderPerEntityOnTeam(const TeamCommanderSystemsArgs& components, TeamCommanderComponent* teamCommanderComponent);
-	static void UpdateTeamCommanderPerEntityOnOtherTeam(const TeamCommanderSystemsArgs& components, TeamCommanderComponent* teamCommanderComponent);
+	static void UpdateTeamCommanderPerNeutralEntity(const TeamCommanderSystemsArgs& components, ArgusEntity teamCommanderEntity);
 
 	static void ActUponUpdatesPerCommanderEntity(ArgusEntity teamCommmanderEntity);
 	static void AssignIdleEntityToWork(ArgusEntity idleEntity, TeamCommanderComponent* teamCommanderComponent);

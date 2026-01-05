@@ -209,21 +209,11 @@ uint16 ArgusEntity::GetId() const
 
 bool ArgusEntity::IsKillable() const
 {
-	if (!DoesEntityExist(m_id))
-	{
-		return false;
-	}
-
 	return GetComponent<HealthComponent>() != nullptr;
 }
 
 bool ArgusEntity::IsAlive() const
 {
-	if (!DoesEntityExist(m_id))
-	{
-		return false;
-	}
-
 	TaskComponent* taskComponent = GetComponent<TaskComponent>();
 	if (!taskComponent)
 	{
@@ -235,11 +225,6 @@ bool ArgusEntity::IsAlive() const
 
 bool ArgusEntity::IsMoveable() const
 {
-	if (!DoesEntityExist(m_id))
-	{
-		return false;
-	}
-
 	if (!IsAlive() || IsPassenger())
 	{
 		return false;
@@ -254,11 +239,6 @@ bool ArgusEntity::IsMoveable() const
 
 bool ArgusEntity::IsSelected() const
 {
-	if (!DoesEntityExist(m_id))
-	{
-		return false;
-	}
-
 	const ArgusEntity singletonEntity = ArgusECSConstants::k_singletonEntityId;
 	if (!singletonEntity)
 	{
@@ -284,11 +264,6 @@ bool ArgusEntity::IsSelected() const
 
 bool ArgusEntity::IsIdle() const
 {
-	if (!DoesEntityExist(m_id))
-	{
-		return false;
-	}
-
 	const TaskComponent* taskComponent = GetComponent<TaskComponent>();
 	if (!taskComponent)
 	{
@@ -308,20 +283,15 @@ bool ArgusEntity::IsIdle() const
 			taskComponent->m_resourceExtractionState == EResourceExtractionState::None;
 }
 
-bool ArgusEntity::IsInRangeOfOtherEntity(const ArgusEntity& other, float range) const
+bool ArgusEntity::IsInRangeOfOtherEntity(ArgusEntity otherEntity, float range) const
 {
-	if (!DoesEntityExist(m_id))
-	{
-		return false;
-	}
-
 	const TransformComponent* transformComponent = GetComponent<TransformComponent>();
 	if (!transformComponent)
 	{
 		return false;
 	}
 
-	const TransformComponent* otherTransformComponent = other.GetComponent<TransformComponent>();
+	const TransformComponent* otherTransformComponent = otherEntity.GetComponent<TransformComponent>();
 	if (!otherTransformComponent)
 	{
 		return false;
@@ -333,11 +303,6 @@ bool ArgusEntity::IsInRangeOfOtherEntity(const ArgusEntity& other, float range) 
 
 bool ArgusEntity::IsPassenger() const
 {
-	if (!DoesEntityExist(m_id))
-	{
-		return false;
-	}
-
 	const PassengerComponent* passengerComponent = GetComponent<PassengerComponent>();
 	if (!passengerComponent)
 	{
@@ -349,11 +314,6 @@ bool ArgusEntity::IsPassenger() const
 
 bool ArgusEntity::IsCarryingPassengers() const
 {
-	if (!DoesEntityExist(m_id))
-	{
-		return false;
-	}
-
 	const CarrierComponent* carrierComponent = GetComponent<CarrierComponent>();
 	if (!carrierComponent)
 	{
@@ -365,11 +325,6 @@ bool ArgusEntity::IsCarryingPassengers() const
 
 bool ArgusEntity::IsOnTeam(ETeam team) const
 {
-	if (!DoesEntityExist(m_id))
-	{
-		return false;
-	}
-
 	const IdentityComponent* identityComponent = GetComponent<IdentityComponent>();
 	if (!identityComponent)
 	{
@@ -379,13 +334,8 @@ bool ArgusEntity::IsOnTeam(ETeam team) const
 	return identityComponent->m_team == team;
 }
 
-bool ArgusEntity::IsOnSameTeamAsOtherEntity(const ArgusEntity& otherEntity) const
+bool ArgusEntity::IsOnSameTeamAsOtherEntity(ArgusEntity otherEntity) const
 {
-	if (!otherEntity)
-	{
-		return false;
-	}
-
 	const IdentityComponent* otherIdentityComponent = otherEntity.GetComponent<IdentityComponent>();
 	if (!otherIdentityComponent)
 	{
@@ -420,15 +370,11 @@ bool ArgusEntity::CanFly() const
 FVector ArgusEntity::GetCurrentTargetLocation() const
 {
 	const TargetingComponent* targetingComponent = GetComponent<TargetingComponent>();
-	if (!targetingComponent)
-	{
-		// TODO JAMES: Error here
-		return FVector::ZeroVector;
-	}
+	ARGUS_RETURN_ON_NULL_VALUE(targetingComponent, ArgusECSLog, FVector::ZeroVector);
 
 	if (!targetingComponent->HasAnyTarget())
 	{
-		// TODO JAMES: Error here
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Trying to get target location, but the entity has no target!"), ARGUS_FUNCNAME);
 		return FVector::ZeroVector;
 	}
 
@@ -438,22 +384,29 @@ FVector ArgusEntity::GetCurrentTargetLocation() const
 	}
 
 	TransformComponent* targetEntityTransformComponent = RetrieveEntity(targetingComponent->m_targetEntityId).GetComponent<TransformComponent>();
-	if (!targetEntityTransformComponent)
-	{
-		// TODO JAMES: Error here
-		return FVector::ZeroVector;
-	}
+	ARGUS_RETURN_ON_NULL_VALUE(targetEntityTransformComponent, ArgusECSLog, FVector::ZeroVector);
 
 	return targetEntityTransformComponent->m_location;
 }
 
+float ArgusEntity::GetDistanceSquaredToOtherEntity(ArgusEntity otherEntity) const
+{
+	const TransformComponent* transformComponent = GetComponent<TransformComponent>();
+	ARGUS_RETURN_ON_NULL_VALUE(transformComponent, ArgusECSLog, 0.0f);
+
+	const TransformComponent* otherTransformComponent = otherEntity.GetComponent<TransformComponent>();
+	ARGUS_RETURN_ON_NULL_VALUE(otherTransformComponent, ArgusECSLog, 0.0f);
+
+	return FVector::DistSquared(transformComponent->m_location, otherTransformComponent->m_location);
+}
+
+float ArgusEntity::GetDistanceToOtherEntity(ArgusEntity other) const
+{
+	return FMath::Sqrt(GetDistanceSquaredToOtherEntity(other));
+}
+
 const UArgusActorRecord* ArgusEntity::GetAssociatedActorRecord() const
 {
-	if (!DoesEntityExist(m_id))
-	{
-		return nullptr;
-	}
-
 	const TaskComponent* taskComponent = GetComponent<TaskComponent>();
 	if (!taskComponent)
 	{

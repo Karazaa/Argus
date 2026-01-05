@@ -23,6 +23,18 @@ struct TargetingComponent
 	ARGUS_IGNORE()
 	uint16 m_decalEntityId = ArgusECSConstants::k_maxEntities;
 
+	void SetLocationTarget(const FVector& targetLocation)
+	{
+		m_targetEntityId = ArgusECSConstants::k_maxEntities;
+		m_targetLocation = targetLocation;
+	}
+
+	void SetEntityTarget(uint16 targetEntityId)
+	{
+		m_targetLocation.Reset();
+		m_targetEntityId = targetEntityId;
+	}
+
 	bool HasLocationTarget() const
 	{
 		return m_targetLocation.IsSet();

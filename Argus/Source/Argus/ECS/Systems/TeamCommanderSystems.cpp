@@ -19,22 +19,24 @@ void TeamCommanderSystems::UpdateTeamCommanderPerEntity(const TeamCommanderSyste
 {
 	ARGUS_TRACE(TeamCommanderSystems::UpdateTeamCommanderPerEntity);
 
-	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME) || !components.m_entity.IsAlive())
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
+		return;
+	}
+
+	if (components.m_identityComponent->m_team == ETeam::None)
+	{
+		ArgusEntity::IterateTeamEntities([&components](ArgusEntity teamCommanderEntity)
+		{
+			TeamCommanderSystems::UpdateTeamCommanderPerNeutralEntity(components, teamCommanderEntity);
+		});
 		return;
 	}
 
 	TeamCommanderComponent* teamCommanderComponent = ArgusEntity::GetTeamEntity(components.m_identityComponent->m_team).GetComponent<TeamCommanderComponent>();
 	ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
 
-	if (components.m_entity.IsOnTeam(teamCommanderComponent->m_teamToCommand))
-	{
-		UpdateTeamCommanderPerEntityOnTeam(components, teamCommanderComponent);
-	}
-	else
-	{
-		UpdateTeamCommanderPerEntityOnOtherTeam(components, teamCommanderComponent);
-	}
+	UpdateTeamCommanderPerEntityOnTeam(components, teamCommanderComponent);
 }
 
 void TeamCommanderSystems::UpdateTeamCommanderPerEntityOnTeam(const TeamCommanderSystemsArgs& components, TeamCommanderComponent* teamCommanderComponent)
@@ -59,10 +61,11 @@ void TeamCommanderSystems::UpdateTeamCommanderPerEntityOnTeam(const TeamCommande
 	}
 }
 
-void TeamCommanderSystems::UpdateTeamCommanderPerEntityOnOtherTeam(const TeamCommanderSystemsArgs& components, TeamCommanderComponent* teamCommanderComponent)
+void TeamCommanderSystems::UpdateTeamCommanderPerNeutralEntity(const TeamCommanderSystemsArgs& components, ArgusEntity teamCommanderEntity)
 {
 	ARGUS_TRACE(TeamCommanderSystems::UpdateTeamCommanderPerEntityOnOtherTeam);
 
+	TeamCommanderComponent* teamCommanderComponent = teamCommanderEntity.GetComponent<TeamCommanderComponent>();
 	ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
@@ -82,8 +85,17 @@ void TeamCommanderSystems::ActUponUpdatesPerCommanderEntity(ArgusEntity teamEnti
 {
 	ARGUS_TRACE(TeamCommanderSystems::ActUponUpdatesPerCommanderEntity);
 
+	const InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::GetSingletonEntity().GetComponent<InputInterfaceComponent>();
+	ARGUS_RETURN_ON_NULL(inputInterfaceComponent, ArgusECSLog);
+
 	TeamCommanderComponent* teamCommanderComponent = teamEntity.GetComponent<TeamCommanderComponent>();
 	ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
+
+	// TODO JAMES: Are there any circumstances in which we want to allow the AI to control a player team?
+	if (teamCommanderComponent->m_teamToCommand == inputInterfaceComponent->m_activePlayerTeam)
+	{
+		return;
+	}
 
 	for (int32 i = 0; i < teamCommanderComponent->m_idleEntityIdsForTeam.Num(); ++i)
 	{
@@ -104,6 +116,15 @@ void TeamCommanderSystems::AssignEntityToResourceExtractionIfAble(ArgusEntity en
 	ARGUS_TRACE(TeamCommanderSystems::AssignEntityToResourceExtractionIfAble);
 	ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
 
+	TaskComponent* taskComponent = entity.GetComponent<TaskComponent>();
+	TargetingComponent* targetingComponent = entity.GetComponent<TargetingComponent>();
+	if (!taskComponent || !targetingComponent)
+	{
+		return;
+	}
+
+	ArgusEntity closestEntity = ArgusEntity::k_emptyEntity;
+	float closestDistanceSquared = FLT_MAX;
 	for (int32 i = 0; i < teamCommanderComponent->m_seenResourceSourceEntityIds.Num(); ++i)
 	{
 		ArgusEntity resourceSourceEntity = ArgusEntity::RetrieveEntity(teamCommanderComponent->m_seenResourceSourceEntityIds[i]);
@@ -112,8 +133,22 @@ void TeamCommanderSystems::AssignEntityToResourceExtractionIfAble(ArgusEntity en
 			continue;
 		}
 
-		// TODO JAMES: Do assignment then break.
+		const float distanceSquared = entity.GetDistanceSquaredToOtherEntity(resourceSourceEntity);
+		if (distanceSquared < closestDistanceSquared)
+		{
+			closestDistanceSquared = distanceSquared;
+			closestEntity = resourceSourceEntity;
+		}
 	}
+
+	if (!closestEntity)
+	{
+		return;
+	}
+
+	targetingComponent->SetEntityTarget(closestEntity.GetId());
+	taskComponent->m_resourceExtractionState = EResourceExtractionState::DispatchedToExtract;
+	taskComponent->m_movementState = EMovementState::ProcessMoveToEntityCommand;
 }
 
 void TeamCommanderSystems::ClearUpdatesPerCommanderEntity(ArgusEntity teamEntity)
