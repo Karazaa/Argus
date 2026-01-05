@@ -11,6 +11,7 @@ struct InputInterfaceComponent;
 class InputInterfaceSystems
 {
 public:
+	static bool HasAnySelectedEntities();
 	static void MoveSelectedEntitiesToTarget(EMovementState inputMovementState, ArgusEntity targetEntity, const FVector& targetLocation, ArgusEntity decalEntity);
 	static void SetWaypointForSelectedEntities(const FVector& targetLocation, ArgusEntity decalEntity);
 	static uint16 GetNumWaypointEligibleEntities();

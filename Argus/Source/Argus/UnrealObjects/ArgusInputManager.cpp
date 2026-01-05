@@ -1005,7 +1005,7 @@ void UArgusInputManager::ProcessMoveToInputEvent()
 			inputMovementState = EMovementState::ProcessMoveToEntityCommand;
 		}
 	}
-	else
+	else if (inputInterfaceComponent->m_selectedArgusEntityIds.Num() > 0)
 	{
 		decalEntity = DecalSystems::InstantiateMoveToLocationDecalEntity(m_owningPlayerController->GetMoveToLocationDecalActorRecord(), targetLocation, inputInterfaceComponent->m_selectedArgusEntityIds.Num(), ArgusECSConstants::k_maxEntities);
 	}

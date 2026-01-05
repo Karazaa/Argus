@@ -8,6 +8,14 @@
 #include "Systems/AvoidanceSystems.h"
 #include "Systems/DecalSystems.h"
 
+bool InputInterfaceSystems::HasAnySelectedEntities()
+{
+	InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::GetSingletonEntity().GetComponent<InputInterfaceComponent>();
+	ARGUS_RETURN_ON_NULL_BOOL(inputInterfaceComponent, ArgusECSLog);
+
+	return inputInterfaceComponent->m_selectedArgusEntityIds.Num() > 0;
+}
+
 void InputInterfaceSystems::MoveSelectedEntitiesToTarget(EMovementState inputMovementState, ArgusEntity targetEntity, const FVector& targetLocation, ArgusEntity decalEntity)
 {
 	IterateSelectedEntities([inputMovementState, targetEntity, targetLocation, decalEntity](ArgusEntity selectedEntity)
