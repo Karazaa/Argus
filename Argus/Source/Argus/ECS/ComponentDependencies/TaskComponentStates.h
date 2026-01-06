@@ -62,7 +62,8 @@ enum class ECombatState : uint8
 {
 	None,
 	DispatchedToAttack,
-	Attacking
+	Attacking,
+	OnAttackMove
 };
 
 UENUM()

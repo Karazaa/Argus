@@ -97,6 +97,9 @@ void CombatSystems::ProcessCombatTaskCommands(float deltaTime, const CombatSyste
 		case ECombatState::Attacking:
 			ProcessAttackCommand(deltaTime, components);
 			break;
+		case ECombatState::OnAttackMove:
+			ProcessAttackMoveCommand(deltaTime, components);
+			break;
 	}
 }
 
@@ -153,6 +156,34 @@ void CombatSystems::ProcessAttackCommand(float deltaTime, const CombatSystemsArg
 	{
 		PerformContinuousAttack(deltaTime, targetEntity, components);
 	}
+}
+
+void CombatSystems::ProcessAttackMoveCommand(float deltaTime, const CombatSystemsArgs& components)
+{
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+
+	const NearbyEntitiesComponent* nearbyEntitiesComponent = components.m_entity.GetComponent<NearbyEntitiesComponent>();
+	if (!nearbyEntitiesComponent)
+	{
+		return;
+	}
+
+	const bool canAttackGrounded = CanAttackGrounded(components);
+	nearbyEntitiesComponent->IterateSeenEntityIds(CanAttackGrounded(components), CanAttackFlying(components), [&components](uint16 targetEntityId) 
+	{
+		if (!CanEntityAttackOtherEntity(components.m_entity, ArgusEntity::RetrieveEntity(targetEntityId)))
+		{
+			return false;
+		}
+
+		components.m_targetingComponent->SetEntityTarget(targetEntityId);
+		components.m_taskComponent->m_combatState = ECombatState::DispatchedToAttack;
+		components.m_taskComponent->m_movementState = EMovementState::ProcessMoveToEntityCommand;
+		return true;
+	});
 }
 
 void CombatSystems::PerformTimerAttack(const ArgusEntity& targetEntity, const CombatSystemsArgs& components)
@@ -244,4 +275,26 @@ void CombatSystems::StopAttackingEntity(const CombatSystemsArgs& components)
 	components.m_targetingComponent->m_targetEntityId = ArgusECSConstants::k_maxEntities;
 	components.m_taskComponent->m_combatState = ECombatState::None;
 	components.m_taskComponent->m_movementState = EMovementState::None;
+}
+
+bool CombatSystems::CanAttackGrounded(const CombatSystemsArgs& components)
+{
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return false;
+	}
+
+	return (components.m_taskComponent->m_flightState == EFlightState::Grounded && components.m_combatComponent->m_attackType == EAttackType::Melee) ||
+		(components.m_combatComponent->m_attackType == EAttackType::Ranged && (components.m_combatComponent->m_rangedAttackCapability == ERangedAttackCapability::GroundedOnly || components.m_combatComponent->m_rangedAttackCapability == ERangedAttackCapability::GroundedAndFlying));
+}
+
+bool CombatSystems::CanAttackFlying(const CombatSystemsArgs& components)
+{
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return false;
+	}
+
+	return (components.m_taskComponent->m_flightState == EFlightState::Flying && components.m_combatComponent->m_attackType == EAttackType::Melee) ||
+		(components.m_combatComponent->m_attackType == EAttackType::Ranged && (components.m_combatComponent->m_rangedAttackCapability == ERangedAttackCapability::FlyingOnly || components.m_combatComponent->m_rangedAttackCapability == ERangedAttackCapability::GroundedAndFlying));
 }
