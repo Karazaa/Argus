@@ -31,6 +31,7 @@ public:
 		MarqueeSelect,
 		MarqueeSelectAdditive,
 		MoveTo,
+		AttackMoveTo,
 		SetWaypoint,
 		Zoom,
 		Ability0,
@@ -76,6 +77,7 @@ public:
 	void OnMarqueeSelect(const FInputActionValue& value);
 	void OnMarqueeSelectAdditive(const FInputActionValue& value);
 	void OnMoveTo(const FInputActionValue& value);
+	void OnAttackMoveTo(const FInputActionValue& value);
 	void OnSetWaypoint(const FInputActionValue& value);
 	void OnZoom(const FInputActionValue& value);
 	void OnAbility0(const FInputActionValue& value);
@@ -144,7 +146,7 @@ private:
 	void ProcessSelectInputEvent(bool isAdditive);
 	void ProcessMarqueeSelectInputEvent(const AArgusCameraActor* argusCamera, bool isAdditive);
 	void PopulateMarqueeSelectPolygon(const AArgusCameraActor* argusCamera, TArray<FVector2D>& convexPolygon);
-	void ProcessMoveToInputEvent();
+	void ProcessMoveToInputEvent(bool onAttackMove = false);
 	void ProcessSetWaypointInputEvent();
 	void ProcessZoomInputEvent(AArgusCameraActor* argusCamera, const FInputActionValue& value);
 	void ProcessAbilityInputEvent(uint8 abilityIndex);

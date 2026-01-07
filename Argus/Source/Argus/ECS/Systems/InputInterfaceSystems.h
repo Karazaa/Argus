@@ -12,7 +12,7 @@ class InputInterfaceSystems
 {
 public:
 	static bool HasAnySelectedEntities();
-	static void MoveSelectedEntitiesToTarget(EMovementState inputMovementState, ArgusEntity targetEntity, const FVector& targetLocation, ArgusEntity decalEntity);
+	static void MoveSelectedEntitiesToTarget(EMovementState inputMovementState, ArgusEntity targetEntity, const FVector& targetLocation, ArgusEntity decalEntity, bool onAttackMove);
 	static void SetWaypointForSelectedEntities(const FVector& targetLocation, ArgusEntity decalEntity);
 	static uint16 GetNumWaypointEligibleEntities();
 
@@ -61,7 +61,7 @@ public:
 	}
 
 private:
-	static void MoveEntityToTarget(ArgusEntity entity, EMovementState inputMovementState, ArgusEntity targetEntity, const FVector& targetLocation, ArgusEntity decalEntity);
+	static void MoveEntityToTarget(ArgusEntity entity, EMovementState inputMovementState, ArgusEntity targetEntity, const FVector& targetLocation, ArgusEntity decalEntity, bool onAttackMove);
 	static void SetWaypointForEntity(ArgusEntity entity, const FVector& targetLocation, ArgusEntity decalEntity);
 	static void RemoveSelectionStateForEntity(ArgusEntity entity);
 	static void AddAdjacentLikeEntitiesAsSelected(ArgusEntity entity, InputInterfaceComponent* inputInterfaceComponent, const UArgusActorRecord* moveToLocationDecalActorRecord);

@@ -29,6 +29,9 @@ public:
 	TSoftObjectPtr<UInputAction> m_moveToAction = nullptr;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TSoftObjectPtr<UInputAction> m_attackMoveToAction = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TSoftObjectPtr<UInputAction> m_setWaypointAction = nullptr;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

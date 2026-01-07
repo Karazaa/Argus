@@ -86,91 +86,81 @@ void UArgusInputManager::SetupInputComponent(AArgusPlayerController* owningPlaye
 #pragma region Input Action Delegates
 void UArgusInputManager::OnSelect(const FInputActionValue& value)
 {
-	ARGUS_MEMORY_TRACE(ArgusInputManager);
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::Select, value));
 }
 
 void UArgusInputManager::OnSelectAdditive(const FInputActionValue& value)
 {
-	ARGUS_MEMORY_TRACE(ArgusInputManager);
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::SelectAdditive, value));
 }
 
 void UArgusInputManager::OnMarqueeSelect(const FInputActionValue& value)
 {
-	ARGUS_MEMORY_TRACE(ArgusInputManager);
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::MarqueeSelect, value));
 }
 
 void UArgusInputManager::OnMarqueeSelectAdditive(const FInputActionValue& value)
 {
-	ARGUS_MEMORY_TRACE(ArgusInputManager);
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::MarqueeSelectAdditive, value));
 }
 
 void UArgusInputManager::OnMoveTo(const FInputActionValue& value)
 {
-	ARGUS_MEMORY_TRACE(ArgusInputManager);
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::MoveTo, value));
+}
+
+void UArgusInputManager::OnAttackMoveTo(const FInputActionValue& value)
+{
+	m_inputEventsThisFrame.Emplace(InputCache(InputType::AttackMoveTo, value));
 }
 
 void UArgusInputManager::OnSetWaypoint(const FInputActionValue& value)
 {
-	ARGUS_MEMORY_TRACE(ArgusInputManager);
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::SetWaypoint, value));
 }
 
 void UArgusInputManager::OnZoom(const FInputActionValue& value)
 {
-	ARGUS_MEMORY_TRACE(ArgusInputManager);
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::Zoom, value));
 }
 
 void UArgusInputManager::OnAbility0(const FInputActionValue& value)
 {
-	ARGUS_MEMORY_TRACE(ArgusInputManager);
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::Ability0, value));
 }
 
 void UArgusInputManager::OnAbility1(const FInputActionValue& value)
 {
-	ARGUS_MEMORY_TRACE(ArgusInputManager);
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::Ability1, value));
 }
 
 void UArgusInputManager::OnAbility2(const FInputActionValue& value)
 {
-	ARGUS_MEMORY_TRACE(ArgusInputManager);
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::Ability2, value));
 }
 
 void UArgusInputManager::OnAbility3(const FInputActionValue& value)
 {
-	ARGUS_MEMORY_TRACE(ArgusInputManager);
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::Ability3, value));
 }
 
 void UArgusInputManager::OnEscape(const FInputActionValue& value)
 {
-	ARGUS_MEMORY_TRACE(ArgusInputManager);
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::Escape, value));
 }
 
 void UArgusInputManager::OnRotateCamera(const FInputActionValue& value)
 {
-	ARGUS_MEMORY_TRACE(ArgusInputManager);
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::RotateCamera, value));
 }
 
 void UArgusInputManager::OnStartPanningLockout(const FInputActionValue& value)
 {
-	ARGUS_MEMORY_TRACE(ArgusInputManager);
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::StartPanningLockout, value));
 }
 
 void UArgusInputManager::OnStopPanningLockout(const FInputActionValue& value)
 {
-	ARGUS_MEMORY_TRACE(ArgusInputManager);
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::StopPanningLockout, value));
 }
 
@@ -423,6 +413,10 @@ void UArgusInputManager::BindActions(TSoftObjectPtr<UArgusInputActionSet>& argus
 	{
 		enhancedInputComponent->BindAction(moveToAction, ETriggerEvent::Triggered, this, &UArgusInputManager::OnMoveTo);
 	}
+	if (const UInputAction* attackMoveToAction = actionSet->m_attackMoveToAction.LoadSynchronous())
+	{
+		enhancedInputComponent->BindAction(attackMoveToAction, ETriggerEvent::Triggered, this, &UArgusInputManager::OnAttackMoveTo);
+	}
 	if (const UInputAction* setWaypointAction = actionSet->m_setWaypointAction.LoadSynchronous())
 	{
 		enhancedInputComponent->BindAction(setWaypointAction, ETriggerEvent::Triggered, this, &UArgusInputManager::OnSetWaypoint);
@@ -605,7 +599,11 @@ void UArgusInputManager::ProcessInputEvent(AArgusCameraActor* argusCamera, const
 			break;
 		case InputType::MoveTo:
 			InputInterfaceSystems::InterruptReticle();
-			ProcessMoveToInputEvent();
+			ProcessMoveToInputEvent(false);
+			break;
+		case InputType::AttackMoveTo:
+			InputInterfaceSystems::InterruptReticle();
+			ProcessMoveToInputEvent(true);
 			break;
 		case InputType::SetWaypoint:
 			InputInterfaceSystems::InterruptReticle();
@@ -960,7 +958,7 @@ void UArgusInputManager::PopulateMarqueeSelectPolygon(const AArgusCameraActor* a
 	}
 }
 
-void UArgusInputManager::ProcessMoveToInputEvent()
+void UArgusInputManager::ProcessMoveToInputEvent(bool onAttackMove)
 {
 	InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::GetSingletonEntity().GetComponent<InputInterfaceComponent>();
 	ARGUS_RETURN_ON_NULL(inputInterfaceComponent, ArgusECSLog);
@@ -1010,7 +1008,7 @@ void UArgusInputManager::ProcessMoveToInputEvent()
 		decalEntity = DecalSystems::InstantiateMoveToLocationDecalEntity(m_owningPlayerController->GetMoveToLocationDecalActorRecord(), targetLocation, inputInterfaceComponent->m_selectedArgusEntityIds.Num(), ArgusECSConstants::k_maxEntities);
 	}
 
-	InputInterfaceSystems::MoveSelectedEntitiesToTarget(inputMovementState, targetEntity, targetLocation, decalEntity);
+	InputInterfaceSystems::MoveSelectedEntitiesToTarget(inputMovementState, targetEntity, targetLocation, decalEntity, onAttackMove);
 }
 
 void UArgusInputManager::ProcessSetWaypointInputEvent()

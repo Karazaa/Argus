@@ -16,11 +16,11 @@ bool InputInterfaceSystems::HasAnySelectedEntities()
 	return inputInterfaceComponent->m_selectedArgusEntityIds.Num() > 0;
 }
 
-void InputInterfaceSystems::MoveSelectedEntitiesToTarget(EMovementState inputMovementState, ArgusEntity targetEntity, const FVector& targetLocation, ArgusEntity decalEntity)
+void InputInterfaceSystems::MoveSelectedEntitiesToTarget(EMovementState inputMovementState, ArgusEntity targetEntity, const FVector& targetLocation, ArgusEntity decalEntity, bool onAttackMove)
 {
-	IterateSelectedEntities([inputMovementState, targetEntity, targetLocation, decalEntity](ArgusEntity selectedEntity)
+	IterateSelectedEntities([inputMovementState, targetEntity, targetLocation, decalEntity, onAttackMove](ArgusEntity selectedEntity)
 	{
-		MoveEntityToTarget(selectedEntity, inputMovementState, targetEntity, targetLocation, decalEntity);
+		MoveEntityToTarget(selectedEntity, inputMovementState, targetEntity, targetLocation, decalEntity, onAttackMove);
 	});
 }
 
@@ -375,7 +375,7 @@ void InputInterfaceSystems::InterruptReticle()
 	reticleComponent->DisableReticle();
 }
 
-void InputInterfaceSystems::MoveEntityToTarget(ArgusEntity entity, EMovementState inputMovementState, ArgusEntity targetEntity, const FVector& targetLocation, ArgusEntity decalEntity)
+void InputInterfaceSystems::MoveEntityToTarget(ArgusEntity entity, EMovementState inputMovementState, ArgusEntity targetEntity, const FVector& targetLocation, ArgusEntity decalEntity, bool onAttackMove)
 {
 	if (!entity)
 	{
@@ -392,6 +392,8 @@ void InputInterfaceSystems::MoveEntityToTarget(ArgusEntity entity, EMovementStat
 	{
 		return;
 	}
+
+	taskComponent->m_combatState = onAttackMove ? ECombatState::OnAttackMove : ECombatState::None;
 
 	if (navigationComponent)
 	{
