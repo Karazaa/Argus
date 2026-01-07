@@ -25,17 +25,21 @@ bool CombatSystems::CanEntityAttackOtherEntity(const ArgusEntity& potentialAttac
 		return false;
 	}
 
-	const IdentityComponent* attackerIdentityComponent = potentialAttacker.GetComponent<IdentityComponent>();
-	const IdentityComponent* victimIdentityComponent = potentialVictim.GetComponent<IdentityComponent>();
-	const CombatComponent* attackerCombatComponent = potentialAttacker.GetComponent<CombatComponent>();
-	const TaskComponent* attackerTaskComponent = potentialAttacker.GetComponent<TaskComponent>();
-
-	if (!attackerIdentityComponent || !victimIdentityComponent || !attackerCombatComponent || !attackerTaskComponent)
+	CombatSystemsArgs components;
+	if (!components.PopulateArguments(potentialAttacker))
 	{
 		return false;
 	}
 
-	if (!victimIdentityComponent->IsInTeamMask(attackerIdentityComponent->m_enemies))
+	const IdentityComponent* victimIdentityComponent = potentialVictim.GetComponent<IdentityComponent>();
+	const TaskComponent* attackerTaskComponent = potentialAttacker.GetComponent<TaskComponent>();
+
+	if (!victimIdentityComponent || !attackerTaskComponent)
+	{
+		return false;
+	}
+
+	if (!victimIdentityComponent->IsInTeamMask(components.m_identityComponent->m_enemies))
 	{
 		return false;
 	}
@@ -45,36 +49,16 @@ bool CombatSystems::CanEntityAttackOtherEntity(const ArgusEntity& potentialAttac
 		return false;
 	}
 
-	if (attackerCombatComponent->m_attackType == EAttackType::Melee)
+	if (const TaskComponent* victimTaskComponent = potentialVictim.GetComponent<TaskComponent>())
 	{
-		if (const TaskComponent* victimTaskComponent = potentialVictim.GetComponent<TaskComponent>())
+		if (victimTaskComponent->m_flightState == EFlightState::Grounded)
 		{
-			return attackerTaskComponent->m_flightState == victimTaskComponent->m_flightState;
+			return CanAttackGrounded(components);
 		}
-		return attackerTaskComponent->m_flightState == EFlightState::Grounded;
-	}
-
-	switch (attackerCombatComponent->m_rangedAttackCapability)
-	{
-		case ERangedAttackCapability::GroundedOnly:
-			if (const TaskComponent* victimTaskComponent = potentialVictim.GetComponent<TaskComponent>())
-			{
-				return victimTaskComponent->m_flightState == EFlightState::Grounded || victimTaskComponent->m_flightState == EFlightState::Landing;
-			}
-			return true;
-
-		case ERangedAttackCapability::FlyingOnly:
-			if (const TaskComponent* victimTaskComponent = potentialVictim.GetComponent<TaskComponent>())
-			{
-				return victimTaskComponent->m_flightState == EFlightState::Flying || victimTaskComponent->m_flightState == EFlightState::TakingOff;
-			}
-			return false;
-
-		case ERangedAttackCapability::GroundedAndFlying:
-			return true;
-
-		default:
-			break;
+		if (victimTaskComponent->m_flightState == EFlightState::Flying)
+		{
+			return CanAttackFlying(components);
+		}
 	}
 
 	return true;

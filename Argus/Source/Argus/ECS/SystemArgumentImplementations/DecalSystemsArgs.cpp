@@ -13,7 +13,7 @@ bool DecalSystemsArgs::PopulateArguments(const ArgusEntity& entity)
 
 	m_entity = entity;
 	m_taskComponent = entity.GetComponent<TaskComponent>();
-	m_decalComponent = entity.GetComponent<DecalComponent>();
+	m_decalComponent = entity.GetComponent<ArgusDecalComponent>();
 	m_timerComponent = entity.GetComponent<TimerComponent>();
 	m_transformComponent = entity.GetComponent<TransformComponent>();
 

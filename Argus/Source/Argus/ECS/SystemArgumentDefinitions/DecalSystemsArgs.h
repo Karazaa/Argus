@@ -10,7 +10,7 @@ struct DecalSystemsArgs
 	ARGUS_SYSTEM_ARGS_SHARED;
 
 	TaskComponent* m_taskComponent = nullptr;
-	DecalComponent* m_decalComponent = nullptr;
+	ArgusDecalComponent* m_decalComponent = nullptr;
 	TimerComponent* m_timerComponent = nullptr;
 	TransformComponent* m_transformComponent = nullptr;
 };

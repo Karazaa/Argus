@@ -116,7 +116,7 @@ void NavigationSystems::StartNavigatingToQueuedWaypoint(TaskComponent* taskCompo
 	{
 		if (ArgusEntity decalEntity = ArgusEntity::RetrieveEntity(navigationComponent->m_queuedWaypoints.First().m_decalEntityId))
 		{
-			if (DecalComponent* decalComponent = decalEntity.GetComponent<DecalComponent>())
+			if (ArgusDecalComponent* decalComponent = decalEntity.GetComponent<ArgusDecalComponent>())
 			{
 				decalComponent->m_connectedEntityId = nextWaypoint.m_decalEntityId;
 			}

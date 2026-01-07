@@ -92,7 +92,7 @@ ArgusEntity DecalSystems::InstantiateMoveToLocationDecalEntity(const UArgusActor
 			decalTaskComponent->m_spawnedFromArgusActorRecordId = recordId;
 			decalTaskComponent->m_baseState = EBaseState::SpawnedWaitingForActorTake;
 		}
-		if (DecalComponent* decalDecalComponent = entity.GetComponent<DecalComponent>())
+		if (ArgusDecalComponent* decalDecalComponent = entity.GetComponent<ArgusDecalComponent>())
 		{
 			decalDecalComponent->m_referencingEntityCount = numReferencers;
 			decalDecalComponent->m_connectedEntityId = connectedEntityId;
@@ -111,7 +111,7 @@ void DecalSystems::SetMoveToLocationDecalPerEntity(TargetingComponent* targeting
 	ArgusEntity oldDecalEntity = ArgusEntity::RetrieveEntity(targetingComponent->m_decalEntityId);
 	if (oldDecalEntity)
 	{
-		DecalComponent* oldDecalComponent = oldDecalEntity.GetComponent<DecalComponent>();
+		ArgusDecalComponent* oldDecalComponent = oldDecalEntity.GetComponent<ArgusDecalComponent>();
 		TaskComponent* oldTaskComponent = oldDecalEntity.GetComponent<TaskComponent>();
 		ARGUS_RETURN_ON_NULL(oldDecalComponent, ArgusInputLog);
 		ARGUS_RETURN_ON_NULL(oldTaskComponent, ArgusInputLog);
@@ -271,7 +271,7 @@ void DecalSystems::ActivateMoveToLocationDecalEntity(const UArgusActorRecord* mo
 			ArgusEntity decalEntity = ArgusEntity::RetrieveEntity(selectedTargetingComponent->m_decalEntityId);
 			if (decalEntity)
 			{
-				if (DecalComponent* decalComponent = decalEntity.GetComponent<DecalComponent>())
+				if (ArgusDecalComponent* decalComponent = decalEntity.GetComponent<ArgusDecalComponent>())
 				{
 					decalComponent->m_referencingEntityCount++;
 					decalComponent->m_connectedEntityId = connectedEntityId;
@@ -298,7 +298,7 @@ void DecalSystems::ActivateMoveToLocationDecalEntity(const UArgusActorRecord* mo
 			ArgusEntity decalEntity = ArgusEntity::RetrieveEntity(decalEntityId);
 			if (decalEntity)
 			{
-				if (DecalComponent* decalComponent = decalEntity.GetComponent<DecalComponent>())
+				if (ArgusDecalComponent* decalComponent = decalEntity.GetComponent<ArgusDecalComponent>())
 				{
 					decalComponent->m_referencingEntityCount++;
 					decalComponent->m_connectedEntityId = connectedEntityId;
@@ -324,7 +324,7 @@ void DecalSystems::ClearMoveToLocationDecalEntity(uint16& decalEntityId)
 		return;
 	}
 
-	DecalComponent* decalComponent = oldDecalEntity.GetComponent<DecalComponent>();
+	ArgusDecalComponent* decalComponent = oldDecalEntity.GetComponent<ArgusDecalComponent>();
 	TaskComponent* taskComponent = oldDecalEntity.GetComponent<TaskComponent>();
 	if (!decalComponent || !taskComponent)
 	{

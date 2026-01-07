@@ -10,6 +10,10 @@
 AbilityComponent* ArgusComponentRegistry::s_AbilityComponents = nullptr;
 TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > ArgusComponentRegistry::s_isAbilityComponentActive;
 #pragma endregion
+#pragma region ArgusDecalComponent
+ArgusDecalComponent* ArgusComponentRegistry::s_ArgusDecalComponents = nullptr;
+TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > ArgusComponentRegistry::s_isArgusDecalComponentActive;
+#pragma endregion
 #pragma region AvoidanceGroupingComponent
 AvoidanceGroupingComponent* ArgusComponentRegistry::s_AvoidanceGroupingComponents = nullptr;
 TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > ArgusComponentRegistry::s_isAvoidanceGroupingComponentActive;
@@ -25,10 +29,6 @@ TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > ArgusCom
 #pragma region ConstructionComponent
 ConstructionComponent* ArgusComponentRegistry::s_ConstructionComponents = nullptr;
 TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > ArgusComponentRegistry::s_isConstructionComponentActive;
-#pragma endregion
-#pragma region DecalComponent
-DecalComponent* ArgusComponentRegistry::s_DecalComponents = nullptr;
-TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > ArgusComponentRegistry::s_isDecalComponentActive;
 #pragma endregion
 #pragma region FlockingComponent
 FlockingComponent* ArgusComponentRegistry::s_FlockingComponents = nullptr;
@@ -134,6 +134,14 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 	{
 		s_isAbilityComponentActive[entityId] = false;
 	}
+	if (UNLIKELY(s_isArgusDecalComponentActive.Num() == 0))
+	{
+		s_isArgusDecalComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+	}
+	else
+	{
+		s_isArgusDecalComponentActive[entityId] = false;
+	}
 	if (UNLIKELY(s_isAvoidanceGroupingComponentActive.Num() == 0))
 	{
 		s_isAvoidanceGroupingComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
@@ -165,14 +173,6 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 	else
 	{
 		s_isConstructionComponentActive[entityId] = false;
-	}
-	if (UNLIKELY(s_isDecalComponentActive.Num() == 0))
-	{
-		s_isDecalComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
-	}
-	else
-	{
-		s_isDecalComponentActive[entityId] = false;
 	}
 	if (UNLIKELY(s_isFlockingComponentActive.Num() == 0))
 	{
@@ -313,11 +313,11 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 
 	// Begin set component values
 	s_AbilityComponents[entityId].Reset();
+	s_ArgusDecalComponents[entityId].Reset();
 	s_AvoidanceGroupingComponents[entityId].Reset();
 	s_CarrierComponents[entityId].Reset();
 	s_CombatComponents[entityId].Reset();
 	s_ConstructionComponents[entityId].Reset();
-	s_DecalComponents[entityId].Reset();
 	s_FlockingComponents[entityId].Reset();
 	s_FogOfWarLocationComponents[entityId].Reset();
 	s_HealthComponents[entityId].Reset();
@@ -373,6 +373,13 @@ void ArgusComponentRegistry::FlushAllComponents()
 		s_AbilityComponents = ArgusMemorySource::Reallocate<AbilityComponent>(s_AbilityComponents, 0, ArgusECSConstants::k_maxEntities);
 	}
 	s_isAbilityComponentActive.Reset();
+	bool didAllocateArgusDecalComponents = false;
+	if (!s_ArgusDecalComponents)
+	{
+		didAllocateArgusDecalComponents = true;
+		s_ArgusDecalComponents = ArgusMemorySource::Reallocate<ArgusDecalComponent>(s_ArgusDecalComponents, 0, ArgusECSConstants::k_maxEntities);
+	}
+	s_isArgusDecalComponentActive.Reset();
 	bool didAllocateAvoidanceGroupingComponents = false;
 	if (!s_AvoidanceGroupingComponents)
 	{
@@ -401,13 +408,6 @@ void ArgusComponentRegistry::FlushAllComponents()
 		s_ConstructionComponents = ArgusMemorySource::Reallocate<ConstructionComponent>(s_ConstructionComponents, 0, ArgusECSConstants::k_maxEntities);
 	}
 	s_isConstructionComponentActive.Reset();
-	bool didAllocateDecalComponents = false;
-	if (!s_DecalComponents)
-	{
-		didAllocateDecalComponents = true;
-		s_DecalComponents = ArgusMemorySource::Reallocate<DecalComponent>(s_DecalComponents, 0, ArgusECSConstants::k_maxEntities);
-	}
-	s_isDecalComponentActive.Reset();
 	bool didAllocateFlockingComponents = false;
 	if (!s_FlockingComponents)
 	{
@@ -539,6 +539,14 @@ void ArgusComponentRegistry::FlushAllComponents()
 		{
 			s_AbilityComponents[i].Reset();
 		}
+		if (didAllocateArgusDecalComponents)
+		{
+			new (&s_ArgusDecalComponents[i]) ArgusDecalComponent();
+		}
+		else
+		{
+			s_ArgusDecalComponents[i].Reset();
+		}
 		if (didAllocateAvoidanceGroupingComponents)
 		{
 			new (&s_AvoidanceGroupingComponents[i]) AvoidanceGroupingComponent();
@@ -570,14 +578,6 @@ void ArgusComponentRegistry::FlushAllComponents()
 		else
 		{
 			s_ConstructionComponents[i].Reset();
-		}
-		if (didAllocateDecalComponents)
-		{
-			new (&s_DecalComponents[i]) DecalComponent();
-		}
-		else
-		{
-			s_DecalComponents[i].Reset();
 		}
 		if (didAllocateFlockingComponents)
 		{
@@ -799,6 +799,11 @@ uint16 ArgusComponentRegistry::GetOwningEntityIdForComponentMember(const void* m
 		const AbilityComponent* pretendComponent = reinterpret_cast<const AbilityComponent*>(memberAddress);
 		return pretendComponent - &s_AbilityComponents[0];
 	}
+	if (memberAddress >= &s_ArgusDecalComponents[0] && memberAddress <= &s_ArgusDecalComponents[ArgusECSConstants::k_maxEntities - 1])
+	{
+		const ArgusDecalComponent* pretendComponent = reinterpret_cast<const ArgusDecalComponent*>(memberAddress);
+		return pretendComponent - &s_ArgusDecalComponents[0];
+	}
 	if (memberAddress >= &s_AvoidanceGroupingComponents[0] && memberAddress <= &s_AvoidanceGroupingComponents[ArgusECSConstants::k_maxEntities - 1])
 	{
 		const AvoidanceGroupingComponent* pretendComponent = reinterpret_cast<const AvoidanceGroupingComponent*>(memberAddress);
@@ -818,11 +823,6 @@ uint16 ArgusComponentRegistry::GetOwningEntityIdForComponentMember(const void* m
 	{
 		const ConstructionComponent* pretendComponent = reinterpret_cast<const ConstructionComponent*>(memberAddress);
 		return pretendComponent - &s_ConstructionComponents[0];
-	}
-	if (memberAddress >= &s_DecalComponents[0] && memberAddress <= &s_DecalComponents[ArgusECSConstants::k_maxEntities - 1])
-	{
-		const DecalComponent* pretendComponent = reinterpret_cast<const DecalComponent*>(memberAddress);
-		return pretendComponent - &s_DecalComponents[0];
 	}
 	if (memberAddress >= &s_FlockingComponents[0] && memberAddress <= &s_FlockingComponents[ArgusECSConstants::k_maxEntities - 1])
 	{
@@ -920,6 +920,10 @@ void ArgusComponentRegistry::DrawComponentsDebug(uint16 entityId)
 	{
 		AbilityComponentPtr->DrawComponentDebug();
 	}
+	if (const ArgusDecalComponent* ArgusDecalComponentPtr = GetComponent<ArgusDecalComponent>(entityId))
+	{
+		ArgusDecalComponentPtr->DrawComponentDebug();
+	}
 	if (const AvoidanceGroupingComponent* AvoidanceGroupingComponentPtr = GetComponent<AvoidanceGroupingComponent>(entityId))
 	{
 		AvoidanceGroupingComponentPtr->DrawComponentDebug();
@@ -935,10 +939,6 @@ void ArgusComponentRegistry::DrawComponentsDebug(uint16 entityId)
 	if (const ConstructionComponent* ConstructionComponentPtr = GetComponent<ConstructionComponent>(entityId))
 	{
 		ConstructionComponentPtr->DrawComponentDebug();
-	}
-	if (const DecalComponent* DecalComponentPtr = GetComponent<DecalComponent>(entityId))
-	{
-		DecalComponentPtr->DrawComponentDebug();
 	}
 	if (const FlockingComponent* FlockingComponentPtr = GetComponent<FlockingComponent>(entityId))
 	{

@@ -19,6 +19,11 @@ bool ArgusComponentComponentSizeTest::RunTest(const FString& Parameters)
 	netSize += AbilityComponentSize;
 	ARGUS_LOG(ArgusTestingLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(AbilityComponent), AbilityComponentSize);
 #pragma endregion
+#pragma region ArgusDecalComponent
+	const size_t ArgusDecalComponentSize = sizeof(ArgusDecalComponent);
+	netSize += ArgusDecalComponentSize;
+	ARGUS_LOG(ArgusTestingLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusDecalComponent), ArgusDecalComponentSize);
+#pragma endregion
 #pragma region AvoidanceGroupingComponent
 	const size_t AvoidanceGroupingComponentSize = sizeof(AvoidanceGroupingComponent);
 	netSize += AvoidanceGroupingComponentSize;
@@ -38,11 +43,6 @@ bool ArgusComponentComponentSizeTest::RunTest(const FString& Parameters)
 	const size_t ConstructionComponentSize = sizeof(ConstructionComponent);
 	netSize += ConstructionComponentSize;
 	ARGUS_LOG(ArgusTestingLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(ConstructionComponent), ConstructionComponentSize);
-#pragma endregion
-#pragma region DecalComponent
-	const size_t DecalComponentSize = sizeof(DecalComponent);
-	netSize += DecalComponentSize;
-	ARGUS_LOG(ArgusTestingLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(DecalComponent), DecalComponentSize);
 #pragma endregion
 #pragma region FlockingComponent
 	const size_t FlockingComponentSize = sizeof(FlockingComponent);

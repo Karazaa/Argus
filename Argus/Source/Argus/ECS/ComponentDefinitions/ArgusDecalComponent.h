@@ -5,9 +5,15 @@
 #include "ArgusECSConstants.h"
 #include "ArgusMacros.h"
 #include "ComponentDependencies/Timer.h"
-#include "CoreMinimal.h"
 
-struct DecalComponent
+UENUM()
+enum class EDecalType : uint8 
+{
+	MoveToLocation,
+	AttackMoveToLocation
+};
+
+struct ArgusDecalComponent
 {
 	ARGUS_COMPONENT_SHARED;
 
@@ -21,4 +27,7 @@ struct DecalComponent
 
 	ARGUS_IGNORE()
 	TimerHandle m_lifetimeTimer;
+
+	ARGUS_IGNORE()
+	EDecalType m_decalType = EDecalType::MoveToLocation;
 };

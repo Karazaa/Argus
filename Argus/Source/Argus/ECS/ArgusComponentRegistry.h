@@ -12,11 +12,11 @@
 
 // Begin component specific includes.
 #include "ComponentDefinitions\AbilityComponent.h"
+#include "ComponentDefinitions\ArgusDecalComponent.h"
 #include "ComponentDefinitions\AvoidanceGroupingComponent.h"
 #include "ComponentDefinitions\CarrierComponent.h"
 #include "ComponentDefinitions\CombatComponent.h"
 #include "ComponentDefinitions\ConstructionComponent.h"
-#include "ComponentDefinitions\DecalComponent.h"
 #include "ComponentDefinitions\FlockingComponent.h"
 #include "ComponentDefinitions\FogOfWarLocationComponent.h"
 #include "ComponentDefinitions\HealthComponent.h"
@@ -172,6 +172,101 @@ public:
 	}
 
 	friend struct AbilityComponent;
+#pragma endregion
+#pragma region ArgusDecalComponent
+private:
+	static ArgusDecalComponent* s_ArgusDecalComponents;
+	static TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > s_isArgusDecalComponentActive;
+public:
+	template<>
+	inline ArgusDecalComponent* GetComponent<ArgusDecalComponent>(uint16 entityId)
+	{
+		if (UNLIKELY(!s_ArgusDecalComponents))
+		{
+			return nullptr;
+		}
+
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(ArgusDecalComponent));
+			return nullptr;
+		}
+
+		if (UNLIKELY(s_isArgusDecalComponentActive.Num() == 0))
+		{
+			return nullptr;
+		}
+
+		if (!s_isArgusDecalComponentActive[entityId])
+		{
+			return nullptr;
+		}
+
+		return &s_ArgusDecalComponents[entityId];
+	}
+
+	template<>
+	inline ArgusDecalComponent* AddComponent<ArgusDecalComponent>(uint16 entityId)
+	{
+		if (UNLIKELY(!s_ArgusDecalComponents))
+		{
+			return nullptr;
+		}
+
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(ArgusDecalComponent));
+			return nullptr;
+		}
+
+		if (UNLIKELY(s_isArgusDecalComponentActive.Num() == 0))
+		{
+			s_isArgusDecalComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
+		if (UNLIKELY(s_isArgusDecalComponentActive[entityId]))
+		{
+			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusDecalComponent), entityId);
+			return &s_ArgusDecalComponents[entityId];
+		}
+
+		s_isArgusDecalComponentActive[entityId] = true;
+		s_ArgusDecalComponents[entityId].Reset();
+		return &s_ArgusDecalComponents[entityId];
+	}
+
+	template<>
+	inline ArgusDecalComponent* GetOrAddComponent<ArgusDecalComponent>(uint16 entityId)
+	{
+		if (UNLIKELY(!s_ArgusDecalComponents))
+		{
+			return nullptr;
+		}
+
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(ArgusDecalComponent));
+			return nullptr;
+		}
+
+		if (UNLIKELY(s_isArgusDecalComponentActive.Num() == 0))
+		{
+			s_isArgusDecalComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
+		if (s_isArgusDecalComponentActive[entityId])
+		{
+			return &s_ArgusDecalComponents[entityId];
+		}
+		else
+		{
+			s_isArgusDecalComponentActive[entityId] = true;
+			s_ArgusDecalComponents[entityId].Reset();
+			return &s_ArgusDecalComponents[entityId];
+		}
+	}
+
+	friend struct ArgusDecalComponent;
 #pragma endregion
 #pragma region AvoidanceGroupingComponent
 private:
@@ -552,101 +647,6 @@ public:
 	}
 
 	friend struct ConstructionComponent;
-#pragma endregion
-#pragma region DecalComponent
-private:
-	static DecalComponent* s_DecalComponents;
-	static TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > s_isDecalComponentActive;
-public:
-	template<>
-	inline DecalComponent* GetComponent<DecalComponent>(uint16 entityId)
-	{
-		if (UNLIKELY(!s_DecalComponents))
-		{
-			return nullptr;
-		}
-
-		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
-		{
-			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(DecalComponent));
-			return nullptr;
-		}
-
-		if (UNLIKELY(s_isDecalComponentActive.Num() == 0))
-		{
-			return nullptr;
-		}
-
-		if (!s_isDecalComponentActive[entityId])
-		{
-			return nullptr;
-		}
-
-		return &s_DecalComponents[entityId];
-	}
-
-	template<>
-	inline DecalComponent* AddComponent<DecalComponent>(uint16 entityId)
-	{
-		if (UNLIKELY(!s_DecalComponents))
-		{
-			return nullptr;
-		}
-
-		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
-		{
-			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(DecalComponent));
-			return nullptr;
-		}
-
-		if (UNLIKELY(s_isDecalComponentActive.Num() == 0))
-		{
-			s_isDecalComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
-		}
-
-		if (UNLIKELY(s_isDecalComponentActive[entityId]))
-		{
-			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(DecalComponent), entityId);
-			return &s_DecalComponents[entityId];
-		}
-
-		s_isDecalComponentActive[entityId] = true;
-		s_DecalComponents[entityId].Reset();
-		return &s_DecalComponents[entityId];
-	}
-
-	template<>
-	inline DecalComponent* GetOrAddComponent<DecalComponent>(uint16 entityId)
-	{
-		if (UNLIKELY(!s_DecalComponents))
-		{
-			return nullptr;
-		}
-
-		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
-		{
-			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(DecalComponent));
-			return nullptr;
-		}
-
-		if (UNLIKELY(s_isDecalComponentActive.Num() == 0))
-		{
-			s_isDecalComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
-		}
-
-		if (s_isDecalComponentActive[entityId])
-		{
-			return &s_DecalComponents[entityId];
-		}
-		else
-		{
-			s_isDecalComponentActive[entityId] = true;
-			s_DecalComponents[entityId].Reset();
-			return &s_DecalComponents[entityId];
-		}
-	}
-
-	friend struct DecalComponent;
 #pragma endregion
 #pragma region FlockingComponent
 private:
