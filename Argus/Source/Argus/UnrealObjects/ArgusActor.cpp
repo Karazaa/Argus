@@ -66,7 +66,7 @@ ArgusEntity AArgusActor::GetEntity() const
 	return m_entity;
 }
 
-void AArgusActor::SetEntity(const ArgusEntity& entity)
+void AArgusActor::SetEntity(ArgusEntity entity)
 {
 	const UWorld* world = GetWorld();
 	if (!world)

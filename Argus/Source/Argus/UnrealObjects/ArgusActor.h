@@ -26,7 +26,7 @@ public:
 	virtual void Reset();
 
 	ArgusEntity GetEntity() const;
-	void SetEntity(const ArgusEntity& entity);
+	virtual void SetEntity(ArgusEntity entity);
 	void SetSelectionState(bool isSelected);
 	void Show();
 	void Hide();
@@ -83,7 +83,7 @@ protected:
 	void UpdateUIWidgetComponentLocation();
 	void FixupTransformForFlying();
 
-private:
+protected:
 	ArgusEntity m_entity = ArgusEntity::k_emptyEntity;
 	bool m_isSelected = false;
 	TWeakObjectPtr<UArgusActorInfoView> m_argusActorInfoWidget = nullptr;
