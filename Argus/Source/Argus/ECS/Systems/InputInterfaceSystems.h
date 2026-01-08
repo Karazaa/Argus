@@ -60,14 +60,6 @@ public:
 		}
 	}
 
-private:
-	static void MoveEntityToTarget(ArgusEntity entity, EMovementState inputMovementState, ArgusEntity targetEntity, const FVector& targetLocation, ArgusEntity decalEntity, bool onAttackMove);
-	static void SetWaypointForEntity(ArgusEntity entity, const FVector& targetLocation, ArgusEntity decalEntity);
-	static void RemoveSelectionStateForEntity(ArgusEntity entity);
-	static void AddAdjacentLikeEntitiesAsSelected(ArgusEntity entity, InputInterfaceComponent* inputInterfaceComponent, const UArgusActorRecord* moveToLocationDecalActorRecord);
-
-	static void OnSelectedEntitiesChanged();
-
 	template <typename Function>
 	static void IterateSelectedEntities(Function&& perEntityFunction)
 	{
@@ -99,4 +91,12 @@ private:
 			}
 		}
 	}
+
+private:
+	static void MoveEntityToTarget(ArgusEntity entity, EMovementState inputMovementState, ArgusEntity targetEntity, const FVector& targetLocation, ArgusEntity decalEntity, bool onAttackMove);
+	static void SetWaypointForEntity(ArgusEntity entity, const FVector& targetLocation, ArgusEntity decalEntity);
+	static void RemoveSelectionStateForEntity(ArgusEntity entity);
+	static void AddAdjacentLikeEntitiesAsSelected(ArgusEntity entity, InputInterfaceComponent* inputInterfaceComponent, const UArgusActorRecord* moveToLocationDecalActorRecord);
+
+	static void OnSelectedEntitiesChanged();
 };

@@ -13,7 +13,7 @@ public:
 	static void RunSystems(UWorld* worldPointer, float deltaTime);
 
 	static void DrawLineForConnectedDecals(UWorld* worldPointer, DecalSystemsArgs& components);
-	static ArgusEntity InstantiateMoveToLocationDecalEntity(const UArgusActorRecord* moveToLocationDecalRecord, const FVector& targetLocation, uint16 numReferencers, uint16 connectedEntityId);
+	static ArgusEntity InstantiateMoveToLocationDecalEntity(const UArgusActorRecord* moveToLocationDecalRecord, const FVector& targetLocation, uint16 numReferencers, uint16 connectedEntityId, bool onAttackMove);
 	static void SetMoveToLocationDecalPerEntity(TargetingComponent* targetingComponent, ArgusEntity decalEntity);
 	static void ActivateCachedMoveToLocationDecalPerEntity(const UArgusActorRecord* moveToLocationDecalRecord, ArgusEntity entity);
 	static void ClearMoveToLocationDecalPerEntity(ArgusEntity entity, bool clearQueuedWaypoints);

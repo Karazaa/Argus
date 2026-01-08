@@ -1005,7 +1005,7 @@ void UArgusInputManager::ProcessMoveToInputEvent(bool onAttackMove)
 	}
 	else if (inputInterfaceComponent->m_selectedArgusEntityIds.Num() > 0)
 	{
-		decalEntity = DecalSystems::InstantiateMoveToLocationDecalEntity(m_owningPlayerController->GetMoveToLocationDecalActorRecord(), targetLocation, inputInterfaceComponent->m_selectedArgusEntityIds.Num(), ArgusECSConstants::k_maxEntities);
+		decalEntity = DecalSystems::InstantiateMoveToLocationDecalEntity(m_owningPlayerController->GetMoveToLocationDecalActorRecord(), targetLocation, inputInterfaceComponent->m_selectedArgusEntityIds.Num(), ArgusECSConstants::k_maxEntities, onAttackMove);
 	}
 
 	InputInterfaceSystems::MoveSelectedEntitiesToTarget(inputMovementState, targetEntity, targetLocation, decalEntity, onAttackMove);
@@ -1048,7 +1048,7 @@ void UArgusInputManager::ProcessSetWaypointInputEvent()
 		return;
 	}
 	
-	ArgusEntity decalEntity = DecalSystems::InstantiateMoveToLocationDecalEntity(m_owningPlayerController->GetMoveToLocationDecalActorRecord(), targetLocation, numWaypointEligibleEntities, DecalSystems::GetMostRecentSelectedWaypointDecalEntityId());
+	ArgusEntity decalEntity = DecalSystems::InstantiateMoveToLocationDecalEntity(m_owningPlayerController->GetMoveToLocationDecalActorRecord(), targetLocation, numWaypointEligibleEntities, DecalSystems::GetMostRecentSelectedWaypointDecalEntityId(), false);
 	InputInterfaceSystems::SetWaypointForSelectedEntities(targetLocation, decalEntity);
 }
 
