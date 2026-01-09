@@ -382,6 +382,11 @@ void TransformSystems::OnCompleteNavigationPath(const TransformSystemsArgs& comp
 
 	DecalSystems::ClearMoveToLocationDecalPerEntity(components.m_entity, false);
 
+	if (components.m_taskComponent->m_combatState == ECombatState::OnAttackMove)
+	{
+		components.m_taskComponent->m_combatState = ECombatState::None;
+	}
+
 	if (components.m_navigationComponent->m_queuedWaypoints.IsEmpty())
 	{
 		components.m_taskComponent->m_movementState = EMovementState::None;
