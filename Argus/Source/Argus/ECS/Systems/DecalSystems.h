@@ -20,6 +20,6 @@ public:
 	static uint16 GetMostRecentSelectedWaypointDecalEntityId();
 
 private:
-	static void ActivateMoveToLocationDecalEntity(const UArgusActorRecord* moveToLocationDecalRecord, const FVector& location, uint16 connectedEntityId, uint16& decalEntityId);
+	static void ActivateMoveToLocationDecalEntity(const UArgusActorRecord* moveToLocationDecalRecord, const FVector& location, uint16 connectedEntityId, uint16& decalEntityId, bool newSelectedOnAttackMove);
 	static void ClearMoveToLocationDecalEntity(uint16& decalEntityId);
 };

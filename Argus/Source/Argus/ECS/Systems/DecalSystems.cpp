@@ -164,7 +164,7 @@ void DecalSystems::ActivateCachedMoveToLocationDecalPerEntity(const UArgusActorR
 	if (targetingComponent->HasLocationTarget())
 	{
 		const FVector targetLocation = targetingComponent->m_targetLocation.GetValue();
-		ActivateMoveToLocationDecalEntity(moveToLocationDecalRecord, targetLocation, ArgusECSConstants::k_maxEntities, targetingComponent->m_decalEntityId);
+		ActivateMoveToLocationDecalEntity(moveToLocationDecalRecord, targetLocation, ArgusECSConstants::k_maxEntities, targetingComponent->m_decalEntityId, taskComponent->m_combatState == ECombatState::OnAttackMove);
 	}
 
 	NavigationComponent* navigationComponent = entity.GetComponent<NavigationComponent>();
@@ -176,7 +176,7 @@ void DecalSystems::ActivateCachedMoveToLocationDecalPerEntity(const UArgusActorR
 	uint16 previousEntityId = targetingComponent->m_decalEntityId;
 	for (NavigationWaypoint& queuedWaypoint : navigationComponent->m_queuedWaypoints)
 	{
-		ActivateMoveToLocationDecalEntity(moveToLocationDecalRecord, queuedWaypoint.m_location, previousEntityId, queuedWaypoint.m_decalEntityId);
+		ActivateMoveToLocationDecalEntity(moveToLocationDecalRecord, queuedWaypoint.m_location, previousEntityId, queuedWaypoint.m_decalEntityId, false);
 		previousEntityId = queuedWaypoint.m_decalEntityId;
 	}
 }
@@ -256,14 +256,14 @@ uint16 DecalSystems::GetMostRecentSelectedWaypointDecalEntityId()
 	return navigationComponent->m_queuedWaypoints.Last().m_decalEntityId;
 }
 
-void DecalSystems::ActivateMoveToLocationDecalEntity(const UArgusActorRecord* moveToLocationDecalRecord, const FVector& location, uint16 connectedEntityId, uint16& decalEntityId)
+void DecalSystems::ActivateMoveToLocationDecalEntity(const UArgusActorRecord* moveToLocationDecalRecord, const FVector& location, uint16 connectedEntityId, uint16& decalEntityId, bool newSelectedOnAttackMove)
 {
 	ARGUS_TRACE(DecalSystems::ActivateMoveToLocationDecalEntity);
 
 	const InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::GetSingletonEntity().GetComponent<InputInterfaceComponent>();
 	ARGUS_RETURN_ON_NULL(inputInterfaceComponent, ArgusECSLog);
 
-	bool onAttackMove = false;
+	bool priorSelectedOnAttackMove = false;
 	for (int32 i = 0; i < inputInterfaceComponent->m_selectedArgusEntityIds.Num(); ++i)
 	{
 		ArgusEntity selectedEntity = ArgusEntity::RetrieveEntity(inputInterfaceComponent->m_selectedArgusEntityIds[i]);
@@ -293,7 +293,7 @@ void DecalSystems::ActivateMoveToLocationDecalEntity(const UArgusActorRecord* mo
 
 			if (TaskComponent* taskComponent = selectedEntity.GetComponent<TaskComponent>())
 			{
-				onAttackMove |= taskComponent->m_combatState == ECombatState::OnAttackMove;
+				priorSelectedOnAttackMove |= taskComponent->m_combatState == ECombatState::OnAttackMove;
 			}
 			return;
 		}
@@ -326,7 +326,7 @@ void DecalSystems::ActivateMoveToLocationDecalEntity(const UArgusActorRecord* mo
 		}
 	}
 
-	decalEntityId = DecalSystems::InstantiateMoveToLocationDecalEntity(moveToLocationDecalRecord, location, 1u, connectedEntityId, onAttackMove).GetId();
+	decalEntityId = DecalSystems::InstantiateMoveToLocationDecalEntity(moveToLocationDecalRecord, location, 1u, connectedEntityId, newSelectedOnAttackMove || priorSelectedOnAttackMove).GetId();
 }
 
 void DecalSystems::ClearMoveToLocationDecalEntity(uint16& decalEntityId)
