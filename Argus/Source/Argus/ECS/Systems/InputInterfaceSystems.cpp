@@ -393,7 +393,13 @@ void InputInterfaceSystems::MoveEntityToTarget(ArgusEntity entity, EMovementStat
 		return;
 	}
 
-	taskComponent->m_combatState = onAttackMove ? ECombatState::OnAttackMove : ECombatState::None;
+	if (CombatComponent* combatComponent = entity.GetComponent<CombatComponent>())
+	{
+		if (entity.IsMoveable())
+		{
+			taskComponent->m_combatState = onAttackMove ? ECombatState::OnAttackMove : ECombatState::None;
+		}
+	}
 
 	if (navigationComponent)
 	{
@@ -428,7 +434,7 @@ void InputInterfaceSystems::MoveEntityToTarget(ArgusEntity entity, EMovementStat
 			taskComponent->m_movementState = inputMovementState;
 		}
 
-		DecalSystems::SetMoveToLocationDecalPerEntity(targetingComponent, decalEntity);
+		DecalSystems::SetMoveToLocationDecalPerEntity(entity, targetingComponent, decalEntity);
 
 		targetingComponent->m_targetEntityId = ArgusEntity::k_emptyEntity.GetId();
 		targetingComponent->m_targetLocation = targetLocation;
