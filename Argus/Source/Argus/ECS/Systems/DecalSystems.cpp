@@ -5,6 +5,7 @@
 #include "ArgusEntityTemplate.h"
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
+#include "ArgusMaterialCache.h"
 #include "DrawDebugHelpers.h"
 #include "Engine/World.h"
 #include "RecordDefinitions/ArgusActorRecord.h"
@@ -78,15 +79,15 @@ ArgusEntity DecalSystems::InstantiateMoveToLocationDecalEntity(const UArgusActor
 		return ArgusEntity::k_emptyEntity;
 	}
 
-	MaterialCacheComponent* materialCacheComponent = ArgusEntity::GetSingletonEntity().GetComponent<MaterialCacheComponent>();
-	ARGUS_RETURN_ON_NULL_VALUE(materialCacheComponent, ArgusUnrealObjectsLog, ArgusEntity::k_emptyEntity);
+	FArgusMaterialCache* materialCache = FArgusMaterialCache::Get();
+	ARGUS_RETURN_ON_NULL_VALUE(materialCache, ArgusECSLog, ArgusEntity::k_emptyEntity);
 	if (onAttackMove)
 	{
-		materialCacheComponent->m_attackMoveToLocationDecalMaterial.AsyncPreLoadAndStorePtr();
+		materialCache->m_attackMoveToLocationDecalMaterial.AsyncPreLoadAndStorePtr();
 	}
 	else
 	{
-		materialCacheComponent->m_moveToLocationDecalMaterial.AsyncPreLoadAndStorePtr();
+		materialCache->m_moveToLocationDecalMaterial.AsyncPreLoadAndStorePtr();
 	}
 
 	const uint32 recordId = moveToLocationDecalRecord->m_id;

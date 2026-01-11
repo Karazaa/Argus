@@ -107,9 +107,6 @@ ArgusMap<uint16, FogOfWarComponent*, ArgusSetAllocator<1> > ArgusComponentRegist
 #pragma region InputInterfaceComponent
 ArgusMap<uint16, InputInterfaceComponent*, ArgusSetAllocator<1> > ArgusComponentRegistry::s_InputInterfaceComponents;
 #pragma endregion
-#pragma region MaterialCacheComponent
-ArgusMap<uint16, MaterialCacheComponent*, ArgusSetAllocator<1> > ArgusComponentRegistry::s_MaterialCacheComponents;
-#pragma endregion
 #pragma region ReticleComponent
 ArgusMap<uint16, ReticleComponent*, ArgusSetAllocator<1> > ArgusComponentRegistry::s_ReticleComponents;
 #pragma endregion
@@ -351,10 +348,6 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 	if (s_InputInterfaceComponents.Contains(entityId))
 	{
 		s_InputInterfaceComponents.Remove(entityId);
-	}
-	if (s_MaterialCacheComponents.Contains(entityId))
-	{
-		s_MaterialCacheComponents.Remove(entityId);
 	}
 	if (s_ReticleComponents.Contains(entityId))
 	{
@@ -761,18 +754,6 @@ void ArgusComponentRegistry::FlushAllComponents()
 		}
 	);
  
-	s_MaterialCacheComponents.RemoveAll([](const uint16& entityId, MaterialCacheComponent*& component)
-		{
-			if (ArgusEntity::IsReservedEntityId(entityId) && component)
-			{
-				component->Reset();
-				return false;
-			}
-
-			return true;
-		}
-	);
- 
 	s_ReticleComponents.RemoveAll([](const uint16& entityId, ReticleComponent*& component)
 		{
 			if (ArgusEntity::IsReservedEntityId(entityId) && component)
@@ -1038,10 +1019,6 @@ void ArgusComponentRegistry::DrawComponentsDebug(uint16 entityId)
 	if (const InputInterfaceComponent* InputInterfaceComponentPtr = GetComponent<InputInterfaceComponent>(entityId))
 	{
 		InputInterfaceComponentPtr->DrawComponentDebug();
-	}
-	if (const MaterialCacheComponent* MaterialCacheComponentPtr = GetComponent<MaterialCacheComponent>(entityId))
-	{
-		MaterialCacheComponentPtr->DrawComponentDebug();
 	}
 	if (const ReticleComponent* ReticleComponentPtr = GetComponent<ReticleComponent>(entityId))
 	{

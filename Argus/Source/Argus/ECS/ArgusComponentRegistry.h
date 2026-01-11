@@ -39,7 +39,6 @@
 #include "DynamicAllocComponentDefinitions\AssetLoadingComponent.h"
 #include "DynamicAllocComponentDefinitions\FogOfWarComponent.h"
 #include "DynamicAllocComponentDefinitions\InputInterfaceComponent.h"
-#include "DynamicAllocComponentDefinitions\MaterialCacheComponent.h"
 #include "DynamicAllocComponentDefinitions\ReticleComponent.h"
 #include "DynamicAllocComponentDefinitions\SpatialPartitioningComponent.h"
 #include "DynamicAllocComponentDefinitions\TeamCommanderComponent.h"
@@ -75,7 +74,7 @@ public:
 	static void DrawComponentsDebug(uint16 entityId);
 #endif //!UE_BUILD_SHIPPING
 
-	static constexpr uint32 k_numComponentTypes = 30;
+	static constexpr uint32 k_numComponentTypes = 29;
 
 	// Begin component specific template specifiers.
 	
@@ -2445,66 +2444,6 @@ public:
 		}
 
 		return s_InputInterfaceComponents[entityId];
-	}
-#pragma endregion
-#pragma region MaterialCacheComponent
-private:
-	static ArgusMap<uint16, MaterialCacheComponent*, ArgusSetAllocator<1> > s_MaterialCacheComponents;
-public:
-	template<>
-	inline MaterialCacheComponent* GetComponent<MaterialCacheComponent>(uint16 entityId)
-	{
-		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
-		{
-			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(MaterialCacheComponent));
-			return nullptr;
-		}
-
-		if (!s_MaterialCacheComponents.Contains(entityId))
-		{
-			return nullptr;
-		}
-
-		return s_MaterialCacheComponents[entityId];
-	}
-
-	template<>
-	inline MaterialCacheComponent* AddComponent<MaterialCacheComponent>(uint16 entityId)
-	{
-		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
-		{
-			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(MaterialCacheComponent));
-			return nullptr;
-		}
-
-		if (UNLIKELY(s_MaterialCacheComponents.Contains(entityId)))
-		{
-			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(MaterialCacheComponent), entityId);
-			return s_MaterialCacheComponents[entityId];
-		}
-
-		MaterialCacheComponent* output = new (ArgusMemorySource::Allocate<MaterialCacheComponent>()) MaterialCacheComponent();
-		s_MaterialCacheComponents.Emplace(entityId, output);
-		return output;
-	}
-
-	template<>
-	inline MaterialCacheComponent* GetOrAddComponent<MaterialCacheComponent>(uint16 entityId)
-	{
-		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
-		{
-			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(MaterialCacheComponent));
-			return nullptr;
-		}
-
-		if (!s_MaterialCacheComponents.Contains(entityId))
-		{
-			MaterialCacheComponent* output = new (ArgusMemorySource::Allocate<MaterialCacheComponent>()) MaterialCacheComponent();
-			s_MaterialCacheComponents.Emplace(entityId, output);
-			return output;
-		}
-
-		return s_MaterialCacheComponents[entityId];
 	}
 #pragma endregion
 #pragma region ReticleComponent

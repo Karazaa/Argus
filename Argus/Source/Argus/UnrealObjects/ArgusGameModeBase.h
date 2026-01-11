@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ArgusMaterialCache.h"
 #include "ArgusActorPool.h"
 #include "ArgusSystemsManager.h"
 #include "ArgusSystemsThread.h"
@@ -37,6 +38,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	FResourceSet m_initialTeamResourceSet;
+
+	UPROPERTY(EditDefaultsOnly)
+	FArgusMaterialCache m_materialCache;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	TMap<ETeam, TObjectPtr<UTeamColorRecord>> m_teamColorMap;
