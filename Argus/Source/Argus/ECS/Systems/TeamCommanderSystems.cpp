@@ -12,7 +12,22 @@ void TeamCommanderSystems::RunSystems(float deltaTime)
 
 	ArgusEntity::IterateTeamEntities(TeamCommanderSystems::ClearUpdatesPerCommanderEntity);
 	ArgusEntity::IterateSystemsArgs<TeamCommanderSystemsArgs>(TeamCommanderSystems::UpdateTeamCommanderPerEntity);
+	ArgusEntity::IterateTeamEntities(TeamCommanderSystems::UpdateTeamCommanderPriorities);
 	ArgusEntity::IterateTeamEntities(TeamCommanderSystems::ActUponUpdatesPerCommanderEntity);
+}
+
+void TeamCommanderSystems::ClearUpdatesPerCommanderEntity(ArgusEntity teamEntity)
+{
+	ARGUS_TRACE(TeamCommanderSystems::ClearUpdatesPerCommanderEntity);
+
+	TeamCommanderComponent* teamCommanderComponent = teamEntity.GetComponent<TeamCommanderComponent>();
+	ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
+
+	teamCommanderComponent->m_idleEntityIdsForTeam.Reset();
+	teamCommanderComponent->m_seenResourceSourceEntityIds.Reset();
+	teamCommanderComponent->m_numResourceExtractors = 0u;
+	teamCommanderComponent->m_numLivingUnits = 0u;
+	teamCommanderComponent->m_priorities.Reset();
 }
 
 void TeamCommanderSystems::UpdateTeamCommanderPerEntity(const TeamCommanderSystemsArgs& components)
@@ -81,6 +96,24 @@ void TeamCommanderSystems::UpdateTeamCommanderPerNeutralEntity(const TeamCommand
 	}
 }
 
+void TeamCommanderSystems::UpdateTeamCommanderPriorities(ArgusEntity teamEntity)
+{
+	ARGUS_TRACE(TeamCommanderSystems::UpdateTeamCommanderPriorities);
+
+	TeamCommanderComponent* teamCommanderComponent = teamEntity.GetComponent<TeamCommanderComponent>();
+	ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
+
+	for (uint8 i = 0u; i < static_cast<uint8>(ETeamCommanderDirective::Count); ++i)
+	{
+		const ETeamCommanderDirective directiveToEvaluate = static_cast<ETeamCommanderDirective>(i);
+		TeamCommanderPriority& priority = teamCommanderComponent->m_priorities.Emplace_GetRef();
+		priority.m_directive = directiveToEvaluate;
+		priority.m_weight = 1.0f;
+	}
+
+	teamCommanderComponent->m_priorities.Sort();
+}
+
 void TeamCommanderSystems::ActUponUpdatesPerCommanderEntity(ArgusEntity teamEntity)
 {
 	ARGUS_TRACE(TeamCommanderSystems::ActUponUpdatesPerCommanderEntity);
@@ -108,19 +141,41 @@ void TeamCommanderSystems::AssignIdleEntityToWork(ArgusEntity idleEntity, TeamCo
 	ARGUS_TRACE(TeamCommanderSystems::AssignIdleEntityToWork);
 	ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
 
-	AssignEntityToResourceExtractionIfAble(idleEntity, teamCommanderComponent);
+	for (int32 i = 0; i < teamCommanderComponent->m_priorities.Num(); ++i)
+	{
+		if (AssignIdleEntityToDirectiveIfAble(idleEntity, teamCommanderComponent, teamCommanderComponent->m_priorities[i].m_directive))
+		{
+			return;
+		}
+	}
 }
 
-void TeamCommanderSystems::AssignEntityToResourceExtractionIfAble(ArgusEntity entity, TeamCommanderComponent* teamCommanderComponent)
+bool TeamCommanderSystems::AssignIdleEntityToDirectiveIfAble(ArgusEntity idleEntity, TeamCommanderComponent* teamCommanderComponent, ETeamCommanderDirective directive)
+{
+	ARGUS_TRACE(TeamCommanderSystems::AssignIdleEntityToDirectiveIfAble);
+	switch (directive)
+	{
+		case ETeamCommanderDirective::ExtractResources:
+			return AssignEntityToResourceExtractionIfAble(idleEntity, teamCommanderComponent);
+		case ETeamCommanderDirective::Scout:
+			return AssignEntityToScoutingIfAble(idleEntity, teamCommanderComponent);
+		default:
+			break;
+	}
+
+	return false;
+}
+
+bool TeamCommanderSystems::AssignEntityToResourceExtractionIfAble(ArgusEntity entity, TeamCommanderComponent* teamCommanderComponent)
 {
 	ARGUS_TRACE(TeamCommanderSystems::AssignEntityToResourceExtractionIfAble);
-	ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
+	ARGUS_RETURN_ON_NULL_BOOL(teamCommanderComponent, ArgusECSLog);
 
 	TaskComponent* taskComponent = entity.GetComponent<TaskComponent>();
 	TargetingComponent* targetingComponent = entity.GetComponent<TargetingComponent>();
 	if (!taskComponent || !targetingComponent)
 	{
-		return;
+		return false;
 	}
 
 	ArgusEntity closestEntity = ArgusEntity::k_emptyEntity;
@@ -143,23 +198,20 @@ void TeamCommanderSystems::AssignEntityToResourceExtractionIfAble(ArgusEntity en
 
 	if (!closestEntity)
 	{
-		return;
+		return false;
 	}
 
 	targetingComponent->SetEntityTarget(closestEntity.GetId());
 	taskComponent->m_resourceExtractionState = EResourceExtractionState::DispatchedToExtract;
 	taskComponent->m_movementState = EMovementState::ProcessMoveToEntityCommand;
+
+	return true;
 }
 
-void TeamCommanderSystems::ClearUpdatesPerCommanderEntity(ArgusEntity teamEntity)
+bool TeamCommanderSystems::AssignEntityToScoutingIfAble(ArgusEntity entity, TeamCommanderComponent* teamCommanderComponent)
 {
-	ARGUS_TRACE(TeamCommanderSystems::ClearUpdatesPerCommanderEntity);
+	ARGUS_TRACE(TeamCommanderSystems::AssignEntityToScoutingIfAble);
+	ARGUS_RETURN_ON_NULL_BOOL(teamCommanderComponent, ArgusECSLog);
 
-	TeamCommanderComponent* teamCommanderComponent = teamEntity.GetComponent<TeamCommanderComponent>();
-	ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
-
-	teamCommanderComponent->m_idleEntityIdsForTeam.Reset();
-	teamCommanderComponent->m_seenResourceSourceEntityIds.Reset();
-	teamCommanderComponent->m_numResourceExtractors = 0u;
-	teamCommanderComponent->m_numLivingUnits = 0u;
+	return true;
 }

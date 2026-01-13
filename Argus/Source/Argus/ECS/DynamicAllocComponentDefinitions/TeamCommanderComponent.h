@@ -4,6 +4,7 @@
 
 #include "ArgusContainerAllocator.h"
 #include "ArgusMacros.h"
+#include "ComponentDependencies/TeamCommanderPriorities.h"
 #include "ComponentDependencies/Teams.h"
 
 struct TeamCommanderComponent
@@ -15,6 +16,9 @@ struct TeamCommanderComponent
 
 	ARGUS_IGNORE()
 	TArray<uint16, ArgusContainerAllocator<10u> > m_seenResourceSourceEntityIds;
+
+	ARGUS_IGNORE()
+	TArray<TeamCommanderPriority, ArgusContainerAllocator<2u> > m_priorities;
 
 	ARGUS_IGNORE()
 	uint16 m_numResourceExtractors = 0u;

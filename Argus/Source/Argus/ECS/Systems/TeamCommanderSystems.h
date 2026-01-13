@@ -10,12 +10,17 @@ public:
 	static void RunSystems(float deltaTime);
 
 private:
+	static void ClearUpdatesPerCommanderEntity(ArgusEntity teamCommmanderEntity);
+
 	static void UpdateTeamCommanderPerEntity(const TeamCommanderSystemsArgs& components);
 	static void UpdateTeamCommanderPerEntityOnTeam(const TeamCommanderSystemsArgs& components, TeamCommanderComponent* teamCommanderComponent);
 	static void UpdateTeamCommanderPerNeutralEntity(const TeamCommanderSystemsArgs& components, ArgusEntity teamCommanderEntity);
 
+	static void UpdateTeamCommanderPriorities(ArgusEntity teamCommmanderEntity);
+
 	static void ActUponUpdatesPerCommanderEntity(ArgusEntity teamCommmanderEntity);
 	static void AssignIdleEntityToWork(ArgusEntity idleEntity, TeamCommanderComponent* teamCommanderComponent);
-	static void AssignEntityToResourceExtractionIfAble(ArgusEntity entity, TeamCommanderComponent* teamCommanderComponent);
-	static void ClearUpdatesPerCommanderEntity(ArgusEntity teamCommmanderEntity);
+	static bool AssignIdleEntityToDirectiveIfAble(ArgusEntity idleEntity, TeamCommanderComponent* teamCommanderComponent, ETeamCommanderDirective directive);
+	static bool AssignEntityToResourceExtractionIfAble(ArgusEntity entity, TeamCommanderComponent* teamCommanderComponent);
+	static bool AssignEntityToScoutingIfAble(ArgusEntity entity, TeamCommanderComponent* teamCommanderComponent);
 };

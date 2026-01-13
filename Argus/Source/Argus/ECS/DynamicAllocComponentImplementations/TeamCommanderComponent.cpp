@@ -16,6 +16,7 @@ void TeamCommanderComponent::Reset()
 {
 	m_idleEntityIdsForTeam.Reset();
 	m_seenResourceSourceEntityIds.Reset();
+	m_priorities.Reset();
 	m_numResourceExtractors = 0u;
 	m_numLivingUnits = 0u;
 	m_teamToCommand = ETeam::None;
@@ -61,6 +62,21 @@ void TeamCommanderComponent::DrawComponentDebug() const
 			for (int32 i = 0; i < m_seenResourceSourceEntityIds.Num(); ++i)
 			{
 				ImGui::Text("%d", m_seenResourceSourceEntityIds[i]);
+			}
+		}
+		ImGui::TableNextColumn();
+		ImGui::Text("m_priorities");
+		ImGui::TableNextColumn();
+		ImGui::Text("Array max is currently = %d", m_priorities.Max());
+		if (m_priorities.Num() == 0)
+		{
+			ImGui::Text("Array is empty");
+		}
+		else
+		{
+			ImGui::Text("Size of array = %d", m_priorities.Num());
+			for (int32 i = 0; i < m_priorities.Num(); ++i)
+			{
 			}
 		}
 		ImGui::TableNextColumn();
