@@ -4,6 +4,7 @@
 #include "ArgusEntity.h"
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
+#include "ArgusMath.h"
 #include "Systems/ResourceSystems.h"
 
 void TeamCommanderSystems::RunSystems(float deltaTime)
@@ -14,6 +15,18 @@ void TeamCommanderSystems::RunSystems(float deltaTime)
 	ArgusEntity::IterateSystemsArgs<TeamCommanderSystemsArgs>(TeamCommanderSystems::UpdateTeamCommanderPerEntity);
 	ArgusEntity::IterateTeamEntities(TeamCommanderSystems::UpdateTeamCommanderPriorities);
 	ArgusEntity::IterateTeamEntities(TeamCommanderSystems::ActUponUpdatesPerCommanderEntity);
+}
+
+void TeamCommanderSystems::InitializeRevealedAreas(TeamCommanderComponent* teamCommanderComponent)
+{
+	ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
+	const SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::GetSingletonEntity().GetComponent<SpatialPartitioningComponent>();
+	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
+
+	const float worldspaceWidth = spatialPartitioningComponent->m_validSpaceExtent * 2.0f;
+	const float areasPerWidth = ArgusMath::SafeDivide(worldspaceWidth, teamCommanderComponent->m_revealedAreaDimensionLength);
+	const int32 numAreas = FMath::FloorToInt32(FMath::Square(areasPerWidth));
+	teamCommanderComponent->m_revealedAreas.SetNum(numAreas, false);
 }
 
 void TeamCommanderSystems::ClearUpdatesPerCommanderEntity(ArgusEntity teamEntity)
@@ -74,6 +87,8 @@ void TeamCommanderSystems::UpdateTeamCommanderPerEntityOnTeam(const TeamCommande
 	{
 		teamCommanderComponent->m_numResourceExtractors++;
 	}
+
+	UpdateRevealedAreasPerEntityOnTeam(components, teamCommanderComponent);
 }
 
 void TeamCommanderSystems::UpdateTeamCommanderPerNeutralEntity(const TeamCommanderSystemsArgs& components, ArgusEntity teamCommanderEntity)
@@ -94,6 +109,19 @@ void TeamCommanderSystems::UpdateTeamCommanderPerNeutralEntity(const TeamCommand
 			teamCommanderComponent->m_seenResourceSourceEntityIds.Add(components.m_entity.GetId());
 		}
 	}
+}
+
+void TeamCommanderSystems::UpdateRevealedAreasPerEntityOnTeam(const TeamCommanderSystemsArgs& components, TeamCommanderComponent* teamCommanderComponent)
+{
+	ARGUS_TRACE(TeamCommanderSystems::UpdateRevealedAreasPerEntityOnTeam);
+
+	ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME) || !components.m_transformComponent || !components.m_targetingComponent)
+	{
+		return;
+	}
+
+
 }
 
 void TeamCommanderSystems::UpdateTeamCommanderPriorities(ArgusEntity teamEntity)

@@ -8,6 +8,7 @@ class TeamCommanderSystems
 {
 public:
 	static void RunSystems(float deltaTime);
+	static void InitializeRevealedAreas(TeamCommanderComponent* teamCommanderComponent);
 
 private:
 	static void ClearUpdatesPerCommanderEntity(ArgusEntity teamCommmanderEntity);
@@ -15,6 +16,7 @@ private:
 	static void UpdateTeamCommanderPerEntity(const TeamCommanderSystemsArgs& components);
 	static void UpdateTeamCommanderPerEntityOnTeam(const TeamCommanderSystemsArgs& components, TeamCommanderComponent* teamCommanderComponent);
 	static void UpdateTeamCommanderPerNeutralEntity(const TeamCommanderSystemsArgs& components, ArgusEntity teamCommanderEntity);
+	static void UpdateRevealedAreasPerEntityOnTeam(const TeamCommanderSystemsArgs& components, TeamCommanderComponent* teamCommanderComponent);
 
 	static void UpdateTeamCommanderPriorities(ArgusEntity teamCommmanderEntity);
 

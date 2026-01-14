@@ -33,11 +33,11 @@ public:
 	AArgusPlayerController* GetActivePlayerController() const { return m_activePlayerController.Get(); }
 
 protected:
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Singleton")
-	TSoftObjectPtr<UArgusEntityTemplate> m_singletonTemplate = nullptr;
+	UPROPERTY(EditDefaultsOnly, Category = "EntityTemplates")
+	TSoftObjectPtr<UArgusEntityTemplate> m_singletonEntityTemplate = nullptr;
 
-	UPROPERTY(EditDefaultsOnly)
-	FResourceSet m_initialTeamResourceSet;
+	UPROPERTY(EditDefaultsOnly, Category = "EntityTemplates")
+	TSoftObjectPtr<UArgusEntityTemplate> m_teamEntityTemplate = nullptr;
 
 	UPROPERTY(EditDefaultsOnly)
 	FArgusMaterialCache m_materialCache;

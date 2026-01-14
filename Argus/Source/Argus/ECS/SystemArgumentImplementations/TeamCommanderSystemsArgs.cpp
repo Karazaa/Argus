@@ -14,6 +14,8 @@ bool TeamCommanderSystemsArgs::PopulateArguments(const ArgusEntity& entity)
 	m_entity = entity;
 	m_taskComponent = entity.GetComponent<TaskComponent>();
 	m_identityComponent = entity.GetComponent<IdentityComponent>();
+	m_transformComponent = entity.GetComponent<TransformComponent>();
+	m_targetingComponent = entity.GetComponent<TargetingComponent>();
 
 	if (!m_entity || !m_taskComponent || !m_identityComponent)
 	{

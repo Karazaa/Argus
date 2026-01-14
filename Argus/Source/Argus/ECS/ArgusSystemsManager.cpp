@@ -25,12 +25,12 @@
 #include "ArgusMemoryDebugger.h"
 #endif //!UE_BUILD_SHIPPING
 
-void ArgusSystemsManager::Initialize(UWorld* worldPointer, const FResourceSet& initialTeamResourceSet, const UArgusEntityTemplate* singletonTemplate)
+void ArgusSystemsManager::Initialize(UWorld* worldPointer, const UArgusEntityTemplate* singletonEntityTemplate, const UArgusEntityTemplate* teamEntityTemplate)
 {
 	ARGUS_RETURN_ON_NULL(worldPointer, ArgusECSLog);
 
-	PopulateSingletonComponents(worldPointer, singletonTemplate);
-	PopulateTeamComponents(initialTeamResourceSet);
+	PopulateSingletonComponents(worldPointer, singletonEntityTemplate);
+	PopulateTeamComponents(teamEntityTemplate);
 }
 
 void ArgusSystemsManager::OnStartPlay(UWorld* worldPointer, ETeam activePlayerTeam)
@@ -74,14 +74,14 @@ void ArgusSystemsManager::RunPostThreadSystems()
 	SpatialPartitioningSystems::RunSystems();
 }
 
-void ArgusSystemsManager::PopulateSingletonComponents(UWorld* worldPointer, const UArgusEntityTemplate* singletonTemplate)
+void ArgusSystemsManager::PopulateSingletonComponents(UWorld* worldPointer, const UArgusEntityTemplate* singletonEntityTemplate)
 {
 	ARGUS_RETURN_ON_NULL(worldPointer, ArgusECSLog);
 
 	ArgusEntity singletonEntity = ArgusEntity::k_emptyEntity;
-	if (singletonTemplate)
+	if (singletonEntityTemplate)
 	{
-		singletonEntity = singletonTemplate->MakeEntity(ArgusECSConstants::k_singletonEntityId);
+		singletonEntity = singletonEntityTemplate->MakeEntity(ArgusECSConstants::k_singletonEntityId);
 	}
 	else
 	{
@@ -133,7 +133,7 @@ void ArgusSystemsManager::SetInitialSingletonState(UWorld* worldPointer, ETeam a
 	FogOfWarSystems::InitializeSystems();
 }
 
-void ArgusSystemsManager::PopulateTeamComponents(const FResourceSet& initialTeamResourceSet)
+void ArgusSystemsManager::PopulateTeamComponents(const UArgusEntityTemplate* teamEntityTemplate)
 {
 	for (uint8 i = 1u; i <= (sizeof(ETeam) * 8u); ++i)
 	{
@@ -142,7 +142,16 @@ void ArgusSystemsManager::PopulateTeamComponents(const FResourceSet& initialTeam
 			continue;
 		}
 
-		ArgusEntity teamEntity = ArgusEntity::CreateEntity(ArgusECSConstants::k_singletonEntityId - i);
+		ArgusEntity teamEntity = ArgusEntity::k_emptyEntity;
+		if (teamEntityTemplate)
+		{
+			teamEntity = teamEntityTemplate->MakeEntity(ArgusECSConstants::k_singletonEntityId - i);
+		}
+		else
+		{
+			teamEntity = ArgusEntity::CreateEntity(ArgusECSConstants::k_singletonEntityId - i);
+		}
+
 		ResourceComponent* teamResourceComponent = teamEntity.GetOrAddComponent<ResourceComponent>();
 		TeamCommanderComponent* teamCommanderComponent = teamEntity.GetOrAddComponent<TeamCommanderComponent>();
 		if (!teamResourceComponent || !teamCommanderComponent)
@@ -150,7 +159,7 @@ void ArgusSystemsManager::PopulateTeamComponents(const FResourceSet& initialTeam
 			continue;
 		}
 
-		teamResourceComponent->m_currentResources.ApplyResourceChange(initialTeamResourceSet);
 		teamCommanderComponent->m_teamToCommand = static_cast<ETeam>(1u << (i - 1u));
+		TeamCommanderSystems::InitializeRevealedAreas(teamCommanderComponent);
 	}
 }

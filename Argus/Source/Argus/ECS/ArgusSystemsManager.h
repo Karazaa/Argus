@@ -12,13 +12,13 @@ class UWorld;
 class ArgusSystemsManager
 {
 public:
-	static void Initialize(UWorld* worldPointer, const FResourceSet& initialTeamResourceSet, const UArgusEntityTemplate* singletonTemplate);
+	static void Initialize(UWorld* worldPointer, const UArgusEntityTemplate* singletonEntityTemplate, const UArgusEntityTemplate* teamEntityTemplate);
 	static void OnStartPlay(UWorld* worldPointer, ETeam activePlayerTeam);
 	static void RunSystems(UWorld* worldPointer, float deltaTime);
 	static void RunPostThreadSystems();
 
 private:
-	static void PopulateSingletonComponents(UWorld* worldPointer, const UArgusEntityTemplate* singletonTemplate);
+	static void PopulateSingletonComponents(UWorld* worldPointer, const UArgusEntityTemplate* singletonEntityTemplate);
 	static void SetInitialSingletonState(UWorld* worldPointer, ETeam activePlayerTeam);
-	static void PopulateTeamComponents(const FResourceSet& initialTeamResourceSet);
+	static void PopulateTeamComponents(const UArgusEntityTemplate* teamEntityTemplate);
 };
