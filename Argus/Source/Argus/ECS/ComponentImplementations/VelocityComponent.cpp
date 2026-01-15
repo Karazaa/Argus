@@ -39,18 +39,22 @@ void VelocityComponent::DrawComponentDebug() const
 		ImGui::Text("m_currentVelocity");
 		ImGui::TableNextColumn();
 		ImGui::Text("(%.2f, %.2f)", m_currentVelocity.X, m_currentVelocity.Y);
+		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_proposedAvoidanceVelocity");
 		ImGui::TableNextColumn();
 		ImGui::Text("(%.2f, %.2f)", m_proposedAvoidanceVelocity.X, m_proposedAvoidanceVelocity.Y);
+		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_desiredSpeedUnitsPerSecond");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_desiredSpeedUnitsPerSecond);
+		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_desiredFlightSpeedUnitsPerSecond");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_desiredFlightSpeedUnitsPerSecond);
+		ImGui::NewLine();
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

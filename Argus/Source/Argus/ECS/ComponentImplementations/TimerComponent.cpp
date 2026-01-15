@@ -43,10 +43,13 @@ void TimerComponent::DrawComponentDebug() const
 		else
 		{
 			ImGui::Text("Size of array = %d", m_timers.Num());
+			ImGui::Indent();
 			for (int32 i = 0; i < m_timers.Num(); ++i)
 			{
 			}
+			ImGui::Unindent();
 		}
+		ImGui::NewLine();
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

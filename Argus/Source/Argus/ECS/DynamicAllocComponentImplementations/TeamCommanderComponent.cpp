@@ -44,11 +44,14 @@ void TeamCommanderComponent::DrawComponentDebug() const
 		else
 		{
 			ImGui::Text("Size of array = %d", m_idleEntityIdsForTeam.Num());
+			ImGui::Indent();
 			for (int32 i = 0; i < m_idleEntityIdsForTeam.Num(); ++i)
 			{
 				ImGui::Text("%d", m_idleEntityIdsForTeam[i]);
 			}
+			ImGui::Unindent();
 		}
+		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_seenResourceSourceEntityIds");
 		ImGui::TableNextColumn();
@@ -60,11 +63,14 @@ void TeamCommanderComponent::DrawComponentDebug() const
 		else
 		{
 			ImGui::Text("Size of array = %d", m_seenResourceSourceEntityIds.Num());
+			ImGui::Indent();
 			for (int32 i = 0; i < m_seenResourceSourceEntityIds.Num(); ++i)
 			{
 				ImGui::Text("%d", m_seenResourceSourceEntityIds[i]);
 			}
+			ImGui::Unindent();
 		}
+		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_priorities");
 		ImGui::TableNextColumn();
@@ -76,30 +82,41 @@ void TeamCommanderComponent::DrawComponentDebug() const
 		else
 		{
 			ImGui::Text("Size of array = %d", m_priorities.Num());
+			ImGui::Indent();
 			for (int32 i = 0; i < m_priorities.Num(); ++i)
 			{
+				const char* valueName_m_priorities = ARGUS_FSTRING_TO_CHAR(StaticEnum<ETeamCommanderDirective>()->GetNameStringByValue(static_cast<uint8>(m_priorities[i].m_directive)))
+				ImGui::Text(valueName_m_priorities);
+				ImGui::Text("%.2f", m_priorities[i].m_weight);
 			}
+			ImGui::Unindent();
 		}
+		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_revealedAreas");
 		ImGui::TableNextColumn();
+		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_revealedAreaDimensionLength");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_revealedAreaDimensionLength);
+		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_numResourceExtractors");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_numResourceExtractors);
+		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_numLivingUnits");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_numLivingUnits);
+		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_teamToCommand");
 		ImGui::TableNextColumn();
 		const char* valueName_m_teamToCommand = ARGUS_FSTRING_TO_CHAR(StaticEnum<ETeam>()->GetNameStringByValue(static_cast<uint8>(m_teamToCommand)))
 		ImGui::Text(valueName_m_teamToCommand);
+		ImGui::NewLine();
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

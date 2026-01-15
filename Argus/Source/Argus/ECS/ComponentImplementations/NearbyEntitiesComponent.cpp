@@ -47,10 +47,12 @@ void NearbyEntitiesComponent::DrawComponentDebug() const
 		else
 		{
 			ImGui::Text("Size of array = %d", m_nearbyEntities.GetEntityIdsInAvoidanceRange().Num());
+			ImGui::Indent();
 			for (int32 i = 0; i < m_nearbyEntities.GetEntityIdsInAvoidanceRange().Num(); ++i)
 			{
 				ImGui::Text("%d", m_nearbyEntities.GetEntityIdsInAvoidanceRange()[i]);
 			}
+			ImGui::Unindent();
 		}
 		ImGui::TableNextColumn();
 		ImGui::Text("m_nearbyEntities.GetEntityIdsInSightRange()");
@@ -63,10 +65,12 @@ void NearbyEntitiesComponent::DrawComponentDebug() const
 		else
 		{
 			ImGui::Text("Size of array = %d", m_nearbyEntities.GetEntityIdsInSightRange().Num());
+			ImGui::Indent();
 			for (int32 i = 0; i < m_nearbyEntities.GetEntityIdsInSightRange().Num(); ++i)
 			{
 				ImGui::Text("%d", m_nearbyEntities.GetEntityIdsInSightRange()[i]);
 			}
+			ImGui::Unindent();
 		}
 		ImGui::TableNextColumn();
 		ImGui::Text("m_nearbyEntities.GetEntityIdsInRangedRange()");
@@ -79,10 +83,12 @@ void NearbyEntitiesComponent::DrawComponentDebug() const
 		else
 		{
 			ImGui::Text("Size of array = %d", m_nearbyEntities.GetEntityIdsInRangedRange().Num());
+			ImGui::Indent();
 			for (int32 i = 0; i < m_nearbyEntities.GetEntityIdsInRangedRange().Num(); ++i)
 			{
 				ImGui::Text("%d", m_nearbyEntities.GetEntityIdsInRangedRange()[i]);
 			}
+			ImGui::Unindent();
 		}
 		ImGui::TableNextColumn();
 		ImGui::Text("m_nearbyEntities.GetEntityIdsInMeleeRange()");
@@ -95,10 +101,12 @@ void NearbyEntitiesComponent::DrawComponentDebug() const
 		else
 		{
 			ImGui::Text("Size of array = %d", m_nearbyEntities.GetEntityIdsInMeleeRange().Num());
+			ImGui::Indent();
 			for (int32 i = 0; i < m_nearbyEntities.GetEntityIdsInMeleeRange().Num(); ++i)
 			{
 				ImGui::Text("%d", m_nearbyEntities.GetEntityIdsInMeleeRange()[i]);
 			}
+			ImGui::Unindent();
 		}
 		ImGui::TableNextColumn();
 		ImGui::Text("===============");
@@ -117,10 +125,12 @@ void NearbyEntitiesComponent::DrawComponentDebug() const
 		else
 		{
 			ImGui::Text("Size of array = %d", m_nearbyFlyingEntities.GetEntityIdsInAvoidanceRange().Num());
+			ImGui::Indent();
 			for (int32 i = 0; i < m_nearbyFlyingEntities.GetEntityIdsInAvoidanceRange().Num(); ++i)
 			{
 				ImGui::Text("%d", m_nearbyFlyingEntities.GetEntityIdsInAvoidanceRange()[i]);
 			}
+			ImGui::Unindent();
 		}
 		ImGui::TableNextColumn();
 		ImGui::Text("m_nearbyFlyingEntities.GetEntityIdsInSightRange()");
@@ -133,10 +143,12 @@ void NearbyEntitiesComponent::DrawComponentDebug() const
 		else
 		{
 			ImGui::Text("Size of array = %d", m_nearbyFlyingEntities.GetEntityIdsInSightRange().Num());
+			ImGui::Indent();
 			for (int32 i = 0; i < m_nearbyFlyingEntities.GetEntityIdsInSightRange().Num(); ++i)
 			{
 				ImGui::Text("%d", m_nearbyFlyingEntities.GetEntityIdsInSightRange()[i]);
 			}
+			ImGui::Unindent();
 		}
 		ImGui::TableNextColumn();
 		ImGui::Text("m_nearbyFlyingEntities.GetEntityIdsInRangedRange()");
@@ -149,10 +161,12 @@ void NearbyEntitiesComponent::DrawComponentDebug() const
 		else
 		{
 			ImGui::Text("Size of array = %d", m_nearbyFlyingEntities.GetEntityIdsInRangedRange().Num());
+			ImGui::Indent();
 			for (int32 i = 0; i < m_nearbyFlyingEntities.GetEntityIdsInRangedRange().Num(); ++i)
 			{
 				ImGui::Text("%d", m_nearbyFlyingEntities.GetEntityIdsInRangedRange()[i]);
 			}
+			ImGui::Unindent();
 		}
 		ImGui::TableNextColumn();
 		ImGui::Text("m_nearbyFlyingEntities.GetEntityIdsInMeleeRange()");
@@ -165,10 +179,12 @@ void NearbyEntitiesComponent::DrawComponentDebug() const
 		else
 		{
 			ImGui::Text("Size of array = %d", m_nearbyFlyingEntities.GetEntityIdsInMeleeRange().Num());
+			ImGui::Indent();
 			for (int32 i = 0; i < m_nearbyFlyingEntities.GetEntityIdsInMeleeRange().Num(); ++i)
 			{
 				ImGui::Text("%d", m_nearbyFlyingEntities.GetEntityIdsInMeleeRange()[i]);
 			}
+			ImGui::Unindent();
 		}
 		ImGui::TableNextColumn();
 		ImGui::Text("===============");

@@ -41,31 +41,38 @@ void TransformComponent::DrawComponentDebug() const
 		ImGui::Text("m_location");
 		ImGui::TableNextColumn();
 		ImGui::Text("(%.2f, %.2f, %.2f)", m_location.X, m_location.Y, m_location.Z);
+		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_smoothedYaw");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_smoothedYaw.GetValue());
+		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_smoothedTransitionAltitude");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_smoothedTransitionAltitude.GetValue());
+		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_targetYaw");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_targetYaw);
+		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_targetTransitionAltitude");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_targetTransitionAltitude);
+		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_radius");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_radius);
+		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_flightCapability");
 		ImGui::TableNextColumn();
 		const char* valueName_m_flightCapability = ARGUS_FSTRING_TO_CHAR(StaticEnum<EFlightCapability>()->GetNameStringByValue(static_cast<uint8>(m_flightCapability)))
 		ImGui::Text(valueName_m_flightCapability);
+		ImGui::NewLine();
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

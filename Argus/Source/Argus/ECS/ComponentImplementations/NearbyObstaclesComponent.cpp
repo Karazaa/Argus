@@ -35,6 +35,7 @@ void NearbyObstaclesComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_obstacleIndicies");
 		ImGui::TableNextColumn();
+		ImGui::NewLine();
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

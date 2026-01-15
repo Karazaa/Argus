@@ -40,14 +40,17 @@ void ArgusDecalComponent::DrawComponentDebug() const
 		ImGui::Text("m_lifetimeSeconds");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_lifetimeSeconds);
+		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_referencingEntityCount");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_referencingEntityCount);
+		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_connectedEntityId");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_connectedEntityId);
+		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_lifetimeTimer");
 		ImGui::TableNextColumn();
@@ -66,11 +69,13 @@ void ArgusDecalComponent::DrawComponentDebug() const
 		{
 			ImGui::Text("Not set");
 		}
+		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_decalType");
 		ImGui::TableNextColumn();
 		const char* valueName_m_decalType = ARGUS_FSTRING_TO_CHAR(StaticEnum<EDecalType>()->GetNameStringByValue(static_cast<uint8>(m_decalType)))
 		ImGui::Text(valueName_m_decalType);
+		ImGui::NewLine();
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

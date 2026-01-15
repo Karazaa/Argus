@@ -29,6 +29,7 @@ void AssetLoadingComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_streamableManager");
 		ImGui::TableNextColumn();
+		ImGui::NewLine();
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

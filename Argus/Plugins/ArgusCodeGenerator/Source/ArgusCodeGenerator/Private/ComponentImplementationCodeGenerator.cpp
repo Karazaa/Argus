@@ -123,6 +123,7 @@ bool ComponentImplementationGenerator::ParseComponentImplementationCppFileTempla
 						GeneratePerVariableImGuiText(parsedComponentData.m_componentVariableData[i], outParsedFileContents[i].m_lines);
 						outParsedFileContents[i].m_lines.push_back("\t\tImGui::EndTable();");
 						outParsedFileContents[i].m_lines.push_back("\t}");
+
 					}
 					else if (rawLines[j].find("%%%%%") != std::string::npos)
 					{
@@ -294,6 +295,7 @@ void ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 		const bool isBool = parsedVariableData[i].m_typeName.find("bool") != std::string::npos;
 		const bool isControlGroup = parsedVariableData[i].m_typeName.find("ControlGroup") != std::string::npos;
 		const bool isBitmask = parsedVariableData[i].m_typeName.find("BITMASK") != std::string::npos;
+		const bool isTeamCommanderPriority = parsedVariableData[i].m_typeName.find("TeamCommanderPriority") != std::string::npos;
 
 		std::string cleanTypeName = parsedVariableData[i].m_typeName.substr(1, parsedVariableData[i].m_typeName.length() - 1);
 
@@ -413,6 +415,10 @@ void ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 		{
 			atomicFieldFormattingFunction = FormatImGuiControlGroupField;
 		}
+		else if (isTeamCommanderPriority)
+		{
+			atomicFieldFormattingFunction = FormatImGuiTeamCommanderPriorityField;
+		}
 
 		if (isQueue)
 		{
@@ -435,6 +441,8 @@ void ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 			}
 			atomicFieldFormattingFunction(variableName, extraData, "", outParsedVariableContents);
 		}
+
+		outParsedVariableContents.push_back("\t\tImGui::NewLine();");
 	}
 }
 
@@ -448,6 +456,7 @@ void ComponentImplementationGenerator::FormatImGuiArrayField(const std::string& 
 	outParsedVariableContents.push_back("\t\telse");
 	outParsedVariableContents.push_back("\t\t{");
 	outParsedVariableContents.push_back(std::vformat("\t\t\tImGui::Text(\"Size of array = %d\", {}.Num());", std::make_format_args(variableName)));
+	outParsedVariableContents.push_back("\t\t\tImGui::Indent();");
 	outParsedVariableContents.push_back(std::vformat("\t\t\tfor (int32 i = 0; i < {}.Num(); ++i)", std::make_format_args(variableName)));
 	outParsedVariableContents.push_back("\t\t\t{");
 	std::string subVariableName = std::vformat("{}[i]", std::make_format_args(variableName));
@@ -457,6 +466,7 @@ void ComponentImplementationGenerator::FormatImGuiArrayField(const std::string& 
 		elementFormattingFunction(subVariableName, extraData, prefix, outParsedVariableContents);
 	}
 	outParsedVariableContents.push_back("\t\t\t}");
+	outParsedVariableContents.push_back("\t\t\tImGui::Unindent();");
 	outParsedVariableContents.push_back("\t\t}");
 }
 
@@ -585,7 +595,16 @@ void ComponentImplementationGenerator::FormatImGuiFVector2DField(const std::stri
 void ComponentImplementationGenerator::FormatImGuiEnumField(const std::string& variableName, const std::string& extraData, const std::string& prefix, std::vector<std::string>& outParsedVariableContents)
 {
 	std::string newVariableName = "valueName_";
-	newVariableName.append(variableName);
+	const size_t bracket = variableName.find("[");
+	if (bracket != std::string::npos)
+	{
+		newVariableName.append(variableName.substr(0, bracket));
+	}
+	else
+	{
+		newVariableName.append(variableName);
+	}
+	
 	outParsedVariableContents.push_back(std::vformat("{}\t\tconst char* {} = ARGUS_FSTRING_TO_CHAR(StaticEnum<{}>()->GetNameStringByValue(static_cast<uint8>({})))", std::make_format_args(prefix, newVariableName, extraData, variableName)));
 	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::Text({});", std::make_format_args(prefix, newVariableName)));
 }
@@ -672,4 +691,18 @@ void ComponentImplementationGenerator::FormatImGuiControlGroupField(const std::s
 	FormatImGuiIntField(subVariableName, extraData, secondPrefix, outParsedVariableContents);
 	outParsedVariableContents.push_back("\t\t\t\t\t}");
 	outParsedVariableContents.push_back("\t\t\t\t}");
+}
+
+void ComponentImplementationGenerator::FormatImGuiTeamCommanderPriorityField(const std::string& variableName, const std::string& extraData, const std::string& prefix, std::vector<std::string>& outParsedVariableContents)
+{
+	std::string enumVarName = variableName;
+	enumVarName.append(".m_directive");
+	std::string enumTypeName = "ETeamCommanderDirective";
+
+	FormatImGuiEnumField(enumVarName, enumTypeName, prefix, outParsedVariableContents);
+
+	std::string floatVarName = variableName;
+	floatVarName.append(".m_weight");
+
+	FormatImGuiFloatField(floatVarName, extraData, prefix, outParsedVariableContents);
 }

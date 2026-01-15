@@ -44,15 +44,19 @@ void CarrierComponent::DrawComponentDebug() const
 		else
 		{
 			ImGui::Text("Size of array = %d", m_passengerEntityIds.Num());
+			ImGui::Indent();
 			for (int32 i = 0; i < m_passengerEntityIds.Num(); ++i)
 			{
 				ImGui::Text("%d", m_passengerEntityIds[i]);
 			}
+			ImGui::Unindent();
 		}
+		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_carrierCapacity");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_carrierCapacity);
+		ImGui::NewLine();
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

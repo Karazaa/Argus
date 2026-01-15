@@ -37,12 +37,15 @@ void ObserversComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_AbilityComponentObservers");
 		ImGui::TableNextColumn();
+		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_PassengerComponentObservers");
 		ImGui::TableNextColumn();
+		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_TaskComponentObservers");
 		ImGui::TableNextColumn();
+		ImGui::NewLine();
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

@@ -35,22 +35,27 @@ void ReticleComponent::DrawComponentDebug() const
 		ImGui::Text("m_reticleLocation");
 		ImGui::TableNextColumn();
 		ImGui::Text("(%.2f, %.2f, %.2f)", m_reticleLocation.X, m_reticleLocation.Y, m_reticleLocation.Z);
+		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_abilityRecordId");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_abilityRecordId);
+		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_radius");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_radius);
+		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_isBlocked");
 		ImGui::TableNextColumn();
 		ImGui::Text(m_isBlocked ? "true" : "false");
+		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_wasAbilityCast");
 		ImGui::TableNextColumn();
 		ImGui::Text(m_wasAbilityCast ? "true" : "false");
+		ImGui::NewLine();
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

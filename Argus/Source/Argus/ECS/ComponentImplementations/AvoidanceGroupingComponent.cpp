@@ -39,19 +39,23 @@ void AvoidanceGroupingComponent::DrawComponentDebug() const
 		ImGui::Text("m_groupAverageLocation");
 		ImGui::TableNextColumn();
 		ImGui::Text("(%.2f, %.2f, %.2f)", m_groupAverageLocation.X, m_groupAverageLocation.Y, m_groupAverageLocation.Z);
+		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_groupId");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_groupId);
+		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_numberOfIdleEntities");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_numberOfIdleEntities);
+		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_avoidancePriority");
 		ImGui::TableNextColumn();
 		const char* valueName_m_avoidancePriority = ARGUS_FSTRING_TO_CHAR(StaticEnum<EAvoidancePriority>()->GetNameStringByValue(static_cast<uint8>(m_avoidancePriority)))
 		ImGui::Text(valueName_m_avoidancePriority);
+		ImGui::NewLine();
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

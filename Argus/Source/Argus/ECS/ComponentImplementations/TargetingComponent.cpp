@@ -48,26 +48,32 @@ void TargetingComponent::DrawComponentDebug() const
 		{
 			ImGui::Text("Optional not set");
 		}
+		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_meleeRange");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_meleeRange);
+		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_rangedRange");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_rangedRange);
+		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_sightRange");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_sightRange);
+		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_targetEntityId");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_targetEntityId);
+		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_decalEntityId");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_decalEntityId);
+		ImGui::NewLine();
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

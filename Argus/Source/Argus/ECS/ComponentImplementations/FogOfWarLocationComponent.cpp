@@ -36,6 +36,7 @@ void FogOfWarLocationComponent::DrawComponentDebug() const
 		ImGui::Text("m_fogOfWarPixel");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_fogOfWarPixel);
+		ImGui::NewLine();
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

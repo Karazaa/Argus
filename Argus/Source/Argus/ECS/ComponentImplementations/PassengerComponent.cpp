@@ -36,6 +36,7 @@ void PassengerComponent::DrawComponentDebug() const
 		ImGui::Text("m_carrierEntityId");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_carrierEntityId);
+		ImGui::NewLine();
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING
