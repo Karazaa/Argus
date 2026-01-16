@@ -38,6 +38,7 @@ void ArgusSystemsManager::OnStartPlay(UWorld* worldPointer, ETeam activePlayerTe
 	ARGUS_RETURN_ON_NULL(worldPointer, ArgusECSLog);
 
 	SetInitialSingletonState(worldPointer, activePlayerTeam);
+	SpatialPartitioningSystems::RunSystems();
 }
 
 void ArgusSystemsManager::RunSystems(UWorld* worldPointer, float deltaTime)

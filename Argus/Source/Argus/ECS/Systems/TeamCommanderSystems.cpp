@@ -121,8 +121,11 @@ void TeamCommanderSystems::UpdateRevealedAreasPerEntityOnTeam(const TeamCommande
 		return;
 	}
 
-	const int32 areaIndex = GetRevealedAreaIndexFromWorldSpaceLocation(components, teamCommanderComponent);
-	teamCommanderComponent->m_revealedAreas[areaIndex] = true;
+	const int32 areaIndex = GetAreaIndexFromWorldSpaceLocation(components, teamCommanderComponent);
+	if (areaIndex >= 0)
+	{
+		teamCommanderComponent->m_revealedAreas[areaIndex] = true;
+	}
 }
 
 void TeamCommanderSystems::UpdateTeamCommanderPriorities(ArgusEntity teamEntity)
@@ -242,11 +245,27 @@ bool TeamCommanderSystems::AssignEntityToScoutingIfAble(ArgusEntity entity, Team
 	ARGUS_TRACE(TeamCommanderSystems::AssignEntityToScoutingIfAble);
 	ARGUS_RETURN_ON_NULL_BOOL(teamCommanderComponent, ArgusECSLog);
 
+	TeamCommanderSystemsArgs components;
+	if (!components.PopulateArguments(entity) || !components.m_transformComponent || !components.m_targetingComponent)
+	{
+		return  false;
+	}
+
+	const int32 unrevealedIndex = GetClosestUnrevealedAreaToEntity(components, teamCommanderComponent);
+	if (unrevealedIndex < 0)
+	{
+		return false;
+	}
+
+	components.m_targetingComponent->SetLocationTarget(GetWorldSpaceLocationFromAreaIndex(unrevealedIndex, teamCommanderComponent));
+	components.m_taskComponent->m_movementState = EMovementState::ProcessMoveToLocationCommand;
+
 	return true;
 }
 
-int32 TeamCommanderSystems::GetRevealedAreaIndexFromWorldSpaceLocation(const TeamCommanderSystemsArgs& components, TeamCommanderComponent* teamCommanderComponent)
+int32 TeamCommanderSystems::GetAreaIndexFromWorldSpaceLocation(const TeamCommanderSystemsArgs& components, TeamCommanderComponent* teamCommanderComponent)
 {
+	ARGUS_RETURN_ON_NULL_VALUE(teamCommanderComponent, ArgusECSLog, -1);
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME) || !components.m_transformComponent || !components.m_targetingComponent)
 	{
 		return -1;
@@ -265,4 +284,103 @@ int32 TeamCommanderSystems::GetRevealedAreaIndexFromWorldSpaceLocation(const Tea
 	int32 yValue32 = FMath::FloorToInt32(yValue);
 
 	return (yValue32 * FMath::FloorToInt32(areasPerDimension)) + xValue32;
+}
+
+FVector TeamCommanderSystems::GetWorldSpaceLocationFromAreaIndex(int32 areaIndex, TeamCommanderComponent* teamCommanderComponent)
+{
+	ARGUS_RETURN_ON_NULL_VALUE(teamCommanderComponent, ArgusECSLog, FVector::ZeroVector);
+	if (areaIndex < 0)
+	{
+		return FVector::ZeroVector;
+	}
+
+	SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::GetSingletonEntity().GetComponent<SpatialPartitioningComponent>();
+	ARGUS_RETURN_ON_NULL_VALUE(spatialPartitioningComponent, ArgusECSLog, FVector::ZeroVector);
+
+	const float worldspaceWidth = spatialPartitioningComponent->m_validSpaceExtent * 2.0f;
+	const int32 areasPerDimension = FMath::FloorToInt32(ArgusMath::SafeDivide(worldspaceWidth, teamCommanderComponent->m_revealedAreaDimensionLength));
+
+	int32 xCoordinate, yCoordinate;
+	ConvertAreaIndexToAreaCoordinates(areaIndex, areasPerDimension, xCoordinate, yCoordinate);
+
+	const float xOffset = ((static_cast<float>(xCoordinate) + 0.5f) * teamCommanderComponent->m_revealedAreaDimensionLength);
+	const float yOffset = ((static_cast<float>(yCoordinate) + 0.5f) * teamCommanderComponent->m_revealedAreaDimensionLength);
+
+	FVector output = FVector::ZeroVector;
+	output.Y = xOffset - spatialPartitioningComponent->m_validSpaceExtent;
+	output.X = spatialPartitioningComponent->m_validSpaceExtent - yOffset;
+	return output;
+}
+
+int32 TeamCommanderSystems::GetClosestUnrevealedAreaToEntity(const TeamCommanderSystemsArgs& components, TeamCommanderComponent* teamCommanderComponent)
+{
+	ARGUS_RETURN_ON_NULL_VALUE(teamCommanderComponent, ArgusECSLog, -1);
+
+	SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::GetSingletonEntity().GetComponent<SpatialPartitioningComponent>();
+	ARGUS_RETURN_ON_NULL_VALUE(spatialPartitioningComponent, ArgusECSLog, -1);
+
+	const float worldspaceWidth = spatialPartitioningComponent->m_validSpaceExtent * 2.0f;
+	const int32 areasPerDimension = FMath::FloorToInt32(ArgusMath::SafeDivide(worldspaceWidth, teamCommanderComponent->m_revealedAreaDimensionLength));
+	int32 entityXCoordinate, entityYCoordinate;
+	ConvertAreaIndexToAreaCoordinates(GetAreaIndexFromWorldSpaceLocation(components, teamCommanderComponent), areasPerDimension, entityXCoordinate, entityYCoordinate);
+
+	if (entityXCoordinate < 0 || entityYCoordinate < 0)
+	{
+		return -1;
+	}
+
+	for (int32 i = 1; i < areasPerDimension; ++i)
+	{
+		const int32 leftBoundX = FMath::Max(entityXCoordinate - i, 0);
+		const int32 rightBoundX = FMath::Min(entityXCoordinate + i, (areasPerDimension - 1));
+		const int32 upperBoundY = FMath::Max(entityYCoordinate - i, 0);
+		const int32 lowerBoundY = FMath::Min(entityYCoordinate + i, (areasPerDimension - 1));
+
+		for (int32 j = -i; j <= i; ++j)
+		{
+			const int32 xBoundY = FMath::Min(FMath::Max(entityYCoordinate + i, 0), (areasPerDimension - 1));
+			const int32 yBoundX = FMath::Min(FMath::Max(entityXCoordinate + i, 0), (areasPerDimension - 1));
+
+			int32 indexToCheck;
+			ConvertAreaCoordinatesToAreaIndex(leftBoundX, xBoundY, areasPerDimension, indexToCheck);
+			if (indexToCheck > 0 && !teamCommanderComponent->m_revealedAreas[indexToCheck])
+			{
+				return indexToCheck;
+			}
+			ConvertAreaCoordinatesToAreaIndex(rightBoundX, xBoundY, areasPerDimension, indexToCheck);
+			if (indexToCheck > 0 && !teamCommanderComponent->m_revealedAreas[indexToCheck])
+			{
+				return indexToCheck;
+			}
+			ConvertAreaCoordinatesToAreaIndex(yBoundX, upperBoundY, areasPerDimension, indexToCheck);
+			if (indexToCheck > 0 && !teamCommanderComponent->m_revealedAreas[indexToCheck])
+			{
+				return indexToCheck;
+			}
+			ConvertAreaCoordinatesToAreaIndex(yBoundX, lowerBoundY, areasPerDimension, indexToCheck);
+			if (indexToCheck > 0 && !teamCommanderComponent->m_revealedAreas[indexToCheck])
+			{
+				return indexToCheck;
+			}
+		}
+	}
+
+	return -1;
+}
+
+void TeamCommanderSystems::ConvertAreaIndexToAreaCoordinates(int32 areaIndex, int32 areasPerDimension, int32& xCoordinate, int32& yCoordinate)
+{
+	if (areaIndex < 0)
+	{
+		xCoordinate = -1;
+		yCoordinate = -1;
+	}
+
+	yCoordinate = ArgusMath::SafeDivide(areaIndex, areasPerDimension);
+	xCoordinate = areaIndex % areasPerDimension;
+}
+
+void TeamCommanderSystems::ConvertAreaCoordinatesToAreaIndex(int32 xCoordinate, int32 yCoordinate, int32 areasPerDimension, int32& areaIndex)
+{
+	areaIndex = (yCoordinate * areasPerDimension) + xCoordinate;
 }
