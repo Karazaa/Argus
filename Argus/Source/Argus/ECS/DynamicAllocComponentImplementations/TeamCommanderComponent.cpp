@@ -19,6 +19,7 @@ void TeamCommanderComponent::Reset()
 	m_priorities.Reset();
 	m_revealedAreaDimensionLength = 800.0f;
 	m_numResourceExtractors = 0u;
+	m_numResourceSinks = 0u;
 	m_numLivingUnits = 0u;
 	m_teamToCommand = ETeam::None;
 }
@@ -105,6 +106,11 @@ void TeamCommanderComponent::DrawComponentDebug() const
 		ImGui::Text("m_numResourceExtractors");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_numResourceExtractors);
+		ImGui::NewLine();
+		ImGui::TableNextColumn();
+		ImGui::Text("m_numResourceSinks");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_numResourceSinks);
 		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_numLivingUnits");

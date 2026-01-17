@@ -19,6 +19,8 @@ private:
 	static void UpdateRevealedAreasPerEntityOnTeam(const TeamCommanderSystemsArgs& components, TeamCommanderComponent* teamCommanderComponent);
 
 	static void UpdateTeamCommanderPriorities(ArgusEntity teamCommmanderEntity);
+	static void UpdateResourceExtractionTeamPriority(TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority);
+	static void UpdateScoutingTeamPriority(TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority);
 
 	static void ActUponUpdatesPerCommanderEntity(ArgusEntity teamCommmanderEntity);
 	static void AssignIdleEntityToWork(ArgusEntity idleEntity, TeamCommanderComponent* teamCommanderComponent);

@@ -18,13 +18,3 @@ struct TeamCommanderPriority
 	ETeamCommanderDirective m_directive = ETeamCommanderDirective::Scout;
 	float m_weight = 0.0f;
 };
-
-FORCEINLINE bool operator<(const TeamCommanderPriority& left, const TeamCommanderPriority& right)
-{
-	if (left.m_weight < right.m_weight)
-	{
-		return true;
-	}
-		
-	return left.m_directive < right.m_directive;
-}

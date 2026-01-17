@@ -55,7 +55,8 @@ void ResourceSystems::ProcessResourceExtractionTiming(const ResourceSystemsArgs&
 
 	if (!components.m_targetingComponent->HasEntityTarget())
 	{
-		components.m_taskComponent->m_resourceExtractionState = EResourceExtractionState::None;
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Attempted to extract resources for entity %d without having an entity target!"), ARGUS_FUNCNAME, components.m_entity.GetId());
+		ClearResourceGatheringForEntity(components);
 		return;
 	}
 
@@ -69,6 +70,7 @@ void ResourceSystems::ProcessResourceExtractionTiming(const ResourceSystemsArgs&
 
 	if (!CanEntityExtractResourcesFromOtherEntity(components.m_entity, targetEntity))
 	{
+		ClearResourceGatheringForEntity(components);
 		return;
 	}
 
@@ -231,7 +233,7 @@ void ResourceSystems::MoveToNearestDepositSink(const ResourceSystemsArgs& compon
 	const uint16 targetDepositEntityId = spatialPartitioningComponent->m_argusEntityKDTree.FindOtherArgusEntityIdClosestToArgusEntity(components.m_entity, queryFilter);
 	if (targetDepositEntityId == ArgusECSConstants::k_maxEntities)
 	{
-		components.m_taskComponent->m_resourceExtractionState = EResourceExtractionState::None;
+		ClearResourceGatheringForEntity(components);
 		return;
 	}
 
@@ -249,14 +251,14 @@ void ResourceSystems::MoveToLastExtractionSource(const ResourceSystemsArgs& comp
 
 	if (components.m_resourceExtractionComponent->m_lastExtractionSourceEntityId == ArgusECSConstants::k_maxEntities)
 	{
-		components.m_taskComponent->m_resourceExtractionState = EResourceExtractionState::None;
+		ClearResourceGatheringForEntity(components);
 		return;
 	}
 
 	ArgusEntity lastExtractionSource = ArgusEntity::RetrieveEntity(components.m_resourceExtractionComponent->m_lastExtractionSourceEntityId);
 	if (!lastExtractionSource || !lastExtractionSource.IsAlive())
 	{
-		components.m_taskComponent->m_resourceExtractionState = EResourceExtractionState::None;
+		ClearResourceGatheringForEntity(components);
 		return;
 	}
 
@@ -439,4 +441,16 @@ void ResourceSystems::TransferResourcesBetweenComponents(ResourceComponent* sour
 
 	sourceComponent->m_currentResources.ApplyResourceChange(-potentialResourceChange);
 	targetComponent->m_currentResources.ApplyResourceChange(potentialResourceChange);
+}
+
+void ResourceSystems::ClearResourceGatheringForEntity(const ResourceSystemsArgs& components)
+{
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+
+	components.m_targetingComponent->Reset();
+	components.m_taskComponent->m_movementState = EMovementState::None;
+	components.m_taskComponent->m_resourceExtractionState = EResourceExtractionState::None;
 }

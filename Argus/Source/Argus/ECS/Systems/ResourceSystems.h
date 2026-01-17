@@ -37,4 +37,5 @@ public:
 
 private:
 	static void TransferResourcesBetweenComponents(ResourceComponent* sourceComponent, ResourceComponent* targetComponent, const FResourceSet& amount, const UResourceSetRecord* resourceCapacityRecord = nullptr);
+	static void ClearResourceGatheringForEntity(const ResourceSystemsArgs& components);
 };

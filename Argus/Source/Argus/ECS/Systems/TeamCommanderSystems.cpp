@@ -39,6 +39,7 @@ void TeamCommanderSystems::ClearUpdatesPerCommanderEntity(ArgusEntity teamEntity
 	teamCommanderComponent->m_idleEntityIdsForTeam.Reset();
 	teamCommanderComponent->m_seenResourceSourceEntityIds.Reset();
 	teamCommanderComponent->m_numResourceExtractors = 0u;
+	teamCommanderComponent->m_numResourceSinks = 0u;
 	teamCommanderComponent->m_numLivingUnits = 0u;
 	teamCommanderComponent->m_priorities.Reset();
 }
@@ -78,7 +79,7 @@ void TeamCommanderSystems::UpdateTeamCommanderPerEntityOnTeam(const TeamCommande
 	}
 
 	teamCommanderComponent->m_numLivingUnits++;
-	if (components.m_entity.IsIdle())
+	if (components.m_entity.IsIdle() && !components.m_entity.IsPassenger())
 	{
 		teamCommanderComponent->m_idleEntityIdsForTeam.Add(components.m_entity.GetId());
 	}
@@ -86,6 +87,11 @@ void TeamCommanderSystems::UpdateTeamCommanderPerEntityOnTeam(const TeamCommande
 	if (components.m_taskComponent->m_resourceExtractionState != EResourceExtractionState::None)
 	{
 		teamCommanderComponent->m_numResourceExtractors++;
+	}
+
+	if (components.m_resourceComponent && components.m_resourceComponent->m_resourceComponentOwnerType == EResourceComponentOwnerType::Sink)
+	{
+		teamCommanderComponent->m_numResourceSinks++;
 	}
 
 	UpdateRevealedAreasPerEntityOnTeam(components, teamCommanderComponent);
@@ -140,10 +146,45 @@ void TeamCommanderSystems::UpdateTeamCommanderPriorities(ArgusEntity teamEntity)
 		const ETeamCommanderDirective directiveToEvaluate = static_cast<ETeamCommanderDirective>(i);
 		TeamCommanderPriority& priority = teamCommanderComponent->m_priorities.Emplace_GetRef();
 		priority.m_directive = directiveToEvaluate;
-		priority.m_weight = 1.0f;
+		switch (priority.m_directive)
+		{
+			case ETeamCommanderDirective::ExtractResources:
+				UpdateResourceExtractionTeamPriority(teamCommanderComponent, priority);
+				continue;
+			case ETeamCommanderDirective::Scout:
+				UpdateScoutingTeamPriority(teamCommanderComponent, priority);
+				continue;
+			default:
+				continue;
+		}
 	}
 
-	teamCommanderComponent->m_priorities.Sort();
+	teamCommanderComponent->m_priorities.Sort([](const TeamCommanderPriority& left, const TeamCommanderPriority& right)
+	{		
+		return right.m_weight <= left.m_weight;
+	});
+}
+
+void TeamCommanderSystems::UpdateResourceExtractionTeamPriority(TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority)
+{
+	ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
+	if (priority.m_directive != ETeamCommanderDirective::ExtractResources)
+	{
+		return;
+	}
+
+	priority.m_weight = (teamCommanderComponent->m_seenResourceSourceEntityIds.Num() > 0 || teamCommanderComponent->m_numResourceSinks > 0u) ? 1.0f : 0.0f;
+}
+
+void TeamCommanderSystems::UpdateScoutingTeamPriority(TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority)
+{
+	ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
+	if (priority.m_directive != ETeamCommanderDirective::Scout)
+	{
+		return;
+	}
+
+	priority.m_weight = 1.0f;
 }
 
 void TeamCommanderSystems::ActUponUpdatesPerCommanderEntity(ArgusEntity teamEntity)
@@ -336,6 +377,7 @@ int32 TeamCommanderSystems::GetClosestUnrevealedAreaToEntity(const TeamCommander
 		const int32 upperBoundY = FMath::Max(entityYCoordinate - i, 0);
 		const int32 lowerBoundY = FMath::Min(entityYCoordinate + i, (areasPerDimension - 1));
 
+		TArray<int32> validAreasNearby;
 		for (int32 j = -i; j <= i; ++j)
 		{
 			const int32 xBoundY = FMath::Min(FMath::Max(entityYCoordinate + i, 0), (areasPerDimension - 1));
@@ -345,23 +387,28 @@ int32 TeamCommanderSystems::GetClosestUnrevealedAreaToEntity(const TeamCommander
 			ConvertAreaCoordinatesToAreaIndex(leftBoundX, xBoundY, areasPerDimension, indexToCheck);
 			if (indexToCheck > 0 && !teamCommanderComponent->m_revealedAreas[indexToCheck])
 			{
-				return indexToCheck;
+				validAreasNearby.Add(indexToCheck);
 			}
 			ConvertAreaCoordinatesToAreaIndex(rightBoundX, xBoundY, areasPerDimension, indexToCheck);
 			if (indexToCheck > 0 && !teamCommanderComponent->m_revealedAreas[indexToCheck])
 			{
-				return indexToCheck;
+				validAreasNearby.Add(indexToCheck);
 			}
 			ConvertAreaCoordinatesToAreaIndex(yBoundX, upperBoundY, areasPerDimension, indexToCheck);
 			if (indexToCheck > 0 && !teamCommanderComponent->m_revealedAreas[indexToCheck])
 			{
-				return indexToCheck;
+				validAreasNearby.Add(indexToCheck);
 			}
 			ConvertAreaCoordinatesToAreaIndex(yBoundX, lowerBoundY, areasPerDimension, indexToCheck);
 			if (indexToCheck > 0 && !teamCommanderComponent->m_revealedAreas[indexToCheck])
 			{
-				return indexToCheck;
+				validAreasNearby.Add(indexToCheck);
 			}
+		}
+
+		if (validAreasNearby.Num() > 0)
+		{
+			return validAreasNearby[FMath::RandRange(0, validAreasNearby.Num() - 1)];
 		}
 	}
 

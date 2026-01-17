@@ -12,12 +12,13 @@ bool TeamCommanderSystemsArgs::PopulateArguments(const ArgusEntity& entity)
 	}
 
 	m_entity = entity;
-	m_taskComponent = entity.GetComponent<TaskComponent>();
 	m_identityComponent = entity.GetComponent<IdentityComponent>();
-	m_transformComponent = entity.GetComponent<TransformComponent>();
+	m_taskComponent = entity.GetComponent<TaskComponent>();
+	m_resourceComponent = entity.GetComponent<ResourceComponent>();
 	m_targetingComponent = entity.GetComponent<TargetingComponent>();
+	m_transformComponent = entity.GetComponent<TransformComponent>();
 
-	if (!m_entity || !m_taskComponent || !m_identityComponent)
+	if (!m_entity || !m_identityComponent || !m_taskComponent)
 	{
 		return false;
 	}
@@ -27,7 +28,7 @@ bool TeamCommanderSystemsArgs::PopulateArguments(const ArgusEntity& entity)
 
 bool TeamCommanderSystemsArgs::AreComponentsValidCheck(const WIDECHAR* functionName) const
 {
-	if (UNLIKELY(!m_entity || !m_taskComponent || !m_identityComponent))
+	if (UNLIKELY(!m_entity || !m_identityComponent || !m_taskComponent))
 	{
 		ArgusLogging::LogInvalidComponentReferences(functionName, ARGUS_NAMEOF(TeamCommanderSystemsArgs));
 		return false;

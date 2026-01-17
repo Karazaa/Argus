@@ -30,6 +30,9 @@ struct TeamCommanderComponent
 	uint16 m_numResourceExtractors = 0u;
 
 	ARGUS_IGNORE()
+	uint16 m_numResourceSinks = 0u;
+
+	ARGUS_IGNORE()
 	uint16 m_numLivingUnits = 0u;
 
 	ARGUS_IGNORE()

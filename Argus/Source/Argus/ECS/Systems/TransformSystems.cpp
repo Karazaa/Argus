@@ -366,6 +366,8 @@ void TransformSystems::OnWithinRangeOfTargetEntity(const TransformSystemsArgs& c
 		passengerComponent->Set_m_carrierEntityId(targetEntity.GetId());
 		targetCarrierComponent->m_passengerEntityIds.Add(components.m_entity.GetId());
 		components.m_targetingComponent->m_targetEntityId = ArgusECSConstants::k_maxEntities;
+		components.m_taskComponent->m_movementState = EMovementState::None;
+		components.m_velocityComponent->m_currentVelocity = FVector2D::ZeroVector;
 		return;
 	}
 

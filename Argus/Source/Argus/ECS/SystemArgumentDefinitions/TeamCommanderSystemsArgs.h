@@ -9,12 +9,15 @@ struct TeamCommanderSystemsArgs
 {
 	ARGUS_SYSTEM_ARGS_SHARED;
 
-	TaskComponent* m_taskComponent = nullptr;
 	IdentityComponent* m_identityComponent = nullptr;
-
+	TaskComponent* m_taskComponent = nullptr;
+	
 	ARGUS_GET_BUT_SKIP()
-	TransformComponent* m_transformComponent = nullptr;
+	ResourceComponent* m_resourceComponent = nullptr;
 
 	ARGUS_GET_BUT_SKIP()
 	TargetingComponent* m_targetingComponent = nullptr;
+
+	ARGUS_GET_BUT_SKIP()
+	TransformComponent* m_transformComponent = nullptr;
 };
