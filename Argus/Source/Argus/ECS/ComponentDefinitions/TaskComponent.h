@@ -4,6 +4,7 @@
 
 #include "ArgusMacros.h"
 #include "ComponentDependencies/TaskComponentStates.h"
+#include "ComponentDependencies//TeamCommanderPriorities.h"
 #include "ComponentObservers/TaskComponentObservers.h"
 #include "CoreMinimal.h"
 
@@ -35,6 +36,9 @@ struct TaskComponent
 	EResourceExtractionState m_resourceExtractionState = EResourceExtractionState::None;
 
 	ARGUS_OBSERVABLE_PROPERTY_DECLARATION(EFlightState, m_flightState, EFlightState::Grounded)
+
+	ARGUS_IGNORE()
+	ETeamCommanderDirective m_directiveFromTeamCommander = ETeamCommanderDirective::Count;
 
 	bool IsExecutingMoveTask() const
 	{

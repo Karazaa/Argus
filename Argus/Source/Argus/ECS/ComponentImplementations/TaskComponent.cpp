@@ -28,6 +28,7 @@ void TaskComponent::Reset()
 	m_combatState = ECombatState::None;
 	m_resourceExtractionState = EResourceExtractionState::None;
 	m_flightState = EFlightState::Grounded;
+	m_directiveFromTeamCommander = ETeamCommanderDirective::Count;
 }
 
 void TaskComponent::DrawComponentDebug() const
@@ -92,6 +93,12 @@ void TaskComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		const char* valueName_m_flightState = ARGUS_FSTRING_TO_CHAR(StaticEnum<EFlightState>()->GetNameStringByValue(static_cast<uint8>(m_flightState)))
 		ImGui::Text(valueName_m_flightState);
+		ImGui::NewLine();
+		ImGui::TableNextColumn();
+		ImGui::Text("m_directiveFromTeamCommander");
+		ImGui::TableNextColumn();
+		const char* valueName_m_directiveFromTeamCommander = ARGUS_FSTRING_TO_CHAR(StaticEnum<ETeamCommanderDirective>()->GetNameStringByValue(static_cast<uint8>(m_directiveFromTeamCommander)))
+		ImGui::Text(valueName_m_directiveFromTeamCommander);
 		ImGui::NewLine();
 		ImGui::EndTable();
 	}

@@ -148,6 +148,9 @@ void TeamCommanderSystems::UpdateTeamCommanderPriorities(ArgusEntity teamEntity)
 		priority.m_directive = directiveToEvaluate;
 		switch (priority.m_directive)
 		{
+			case ETeamCommanderDirective::ConstructResourceSink:
+				UpdateConstructResourceSinkTeamPriority(teamCommanderComponent, priority);
+				continue;
 			case ETeamCommanderDirective::ExtractResources:
 				UpdateResourceExtractionTeamPriority(teamCommanderComponent, priority);
 				continue;
@@ -165,24 +168,42 @@ void TeamCommanderSystems::UpdateTeamCommanderPriorities(ArgusEntity teamEntity)
 	});
 }
 
+void TeamCommanderSystems::UpdateConstructResourceSinkTeamPriority(TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority)
+{
+	ARGUS_TRACE(TeamCommanderSystems::UpdateConstructResourceSinkTeamPriority);
+	ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
+	if (priority.m_directive != ETeamCommanderDirective::ConstructResourceSink)
+	{
+		return;
+	}
+
+	// TODO JAMES: Update priority based on whether or not we have enough resource sinks / if the resource sinks are close enough to the resource sources.
+
+	priority.m_weight = 1.0f;
+}
+
 void TeamCommanderSystems::UpdateResourceExtractionTeamPriority(TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority)
 {
+	ARGUS_TRACE(TeamCommanderSystems::UpdateResourceExtractionTeamPriority);
 	ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
 	if (priority.m_directive != ETeamCommanderDirective::ExtractResources)
 	{
 		return;
 	}
 
-	priority.m_weight = (teamCommanderComponent->m_seenResourceSourceEntityIds.Num() > 0 || teamCommanderComponent->m_numResourceSinks > 0u) ? 1.0f : 0.0f;
+	priority.m_weight = (teamCommanderComponent->m_seenResourceSourceEntityIds.Num() > 0 && teamCommanderComponent->m_numResourceSinks > 0u) ? 1.0f : 0.0f;
 }
 
 void TeamCommanderSystems::UpdateScoutingTeamPriority(TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority)
 {
+	ARGUS_TRACE(TeamCommanderSystems::UpdateScoutingTeamPriority);
 	ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
 	if (priority.m_directive != ETeamCommanderDirective::Scout)
 	{
 		return;
 	}
+
+	// TODO JAMES: We should probably massively de-prioritize this based on how much of the map has been discovered. 
 
 	priority.m_weight = 1.0f;
 }
@@ -228,6 +249,8 @@ bool TeamCommanderSystems::AssignIdleEntityToDirectiveIfAble(ArgusEntity idleEnt
 	ARGUS_TRACE(TeamCommanderSystems::AssignIdleEntityToDirectiveIfAble);
 	switch (directive)
 	{
+		case ETeamCommanderDirective::ConstructResourceSink:
+			return AssignEntityToConstructResourceSinkIfAble(idleEntity, teamCommanderComponent);
 		case ETeamCommanderDirective::ExtractResources:
 			return AssignEntityToResourceExtractionIfAble(idleEntity, teamCommanderComponent);
 		case ETeamCommanderDirective::Scout:
@@ -235,6 +258,17 @@ bool TeamCommanderSystems::AssignIdleEntityToDirectiveIfAble(ArgusEntity idleEnt
 		default:
 			break;
 	}
+
+	return false;
+}
+
+bool TeamCommanderSystems::AssignEntityToConstructResourceSinkIfAble(ArgusEntity entity, TeamCommanderComponent* teamCommanderComponent)
+{
+	ARGUS_TRACE(TeamCommanderSystems::AssignEntityToResourceExtractionIfAble);
+	ARGUS_RETURN_ON_NULL_BOOL(teamCommanderComponent, ArgusECSLog);
+
+	// TODO JAMES: Determine conditions that would allow an entity to construct a resource sink.
+	// Then assign the entity to do that/queue ability.
 
 	return false;
 }
@@ -277,7 +311,7 @@ bool TeamCommanderSystems::AssignEntityToResourceExtractionIfAble(ArgusEntity en
 	targetingComponent->SetEntityTarget(closestEntity.GetId());
 	taskComponent->m_resourceExtractionState = EResourceExtractionState::DispatchedToExtract;
 	taskComponent->m_movementState = EMovementState::ProcessMoveToEntityCommand;
-
+	taskComponent->m_directiveFromTeamCommander = ETeamCommanderDirective::ExtractResources;
 	return true;
 }
 
@@ -300,7 +334,7 @@ bool TeamCommanderSystems::AssignEntityToScoutingIfAble(ArgusEntity entity, Team
 
 	components.m_targetingComponent->SetLocationTarget(GetWorldSpaceLocationFromAreaIndex(unrevealedIndex, teamCommanderComponent));
 	components.m_taskComponent->m_movementState = EMovementState::ProcessMoveToLocationCommand;
-
+	components.m_taskComponent->m_directiveFromTeamCommander = ETeamCommanderDirective::Scout;
 	return true;
 }
 

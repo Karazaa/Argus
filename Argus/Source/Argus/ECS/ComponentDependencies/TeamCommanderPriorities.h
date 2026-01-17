@@ -7,6 +7,7 @@
 UENUM()
 enum class ETeamCommanderDirective : uint8
 {
+	ConstructResourceSink,
 	ExtractResources,
 	Scout,
 
