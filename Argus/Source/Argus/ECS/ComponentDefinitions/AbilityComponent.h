@@ -178,4 +178,13 @@ struct AbilityComponent
 				GetActiveAbilityId(EAbilityIndex::Ability2) == otherAbilityComponent->GetActiveAbilityId(EAbilityIndex::Ability2) &&
 				GetActiveAbilityId(EAbilityIndex::Ability3) == otherAbilityComponent->GetActiveAbilityId(EAbilityIndex::Ability3);
 	}
+
+	template <typename Function>
+	void IterateActiveAbilityIds(Function&& function)
+	{
+		function(GetActiveAbilityId(EAbilityIndex::Ability0));
+		function(GetActiveAbilityId(EAbilityIndex::Ability1));
+		function(GetActiveAbilityId(EAbilityIndex::Ability2));
+		function(GetActiveAbilityId(EAbilityIndex::Ability3));
+	}
 };

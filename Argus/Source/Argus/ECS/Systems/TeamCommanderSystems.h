@@ -35,4 +35,6 @@ private:
 	static int32 GetClosestUnrevealedAreaToEntity(const TeamCommanderSystemsArgs& components, TeamCommanderComponent* teamCommanderComponent);
 	static void ConvertAreaIndexToAreaCoordinates(int32 areaIndex, int32 areasPerDimension, int32& xCoordinate, int32& yCoordinate);
 	static void ConvertAreaCoordinatesToAreaIndex(int32 xCoordinate, int32 yCoordinate, int32 areasPerDimension, int32& areaIndex);
+
+	static bool CanEntityConstructResourceSink(ArgusEntity idleEntity, TeamCommanderComponent* teamCommanderComponent);
 };

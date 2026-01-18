@@ -5,6 +5,7 @@
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
 #include "ArgusMath.h"
+#include "ArgusStaticData.h"
 #include "Systems/ResourceSystems.h"
 
 void TeamCommanderSystems::RunSystems(float deltaTime)
@@ -280,6 +281,7 @@ bool TeamCommanderSystems::AssignEntityToConstructResourceSinkIfAble(ArgusEntity
 	ARGUS_TRACE(TeamCommanderSystems::AssignEntityToResourceExtractionIfAble);
 	ARGUS_RETURN_ON_NULL_BOOL(teamCommanderComponent, ArgusECSLog);
 
+	const bool canConstruct = CanEntityConstructResourceSink(entity, teamCommanderComponent);
 	// TODO JAMES: Determine conditions that would allow an entity to construct a resource sink.
 	// Then assign the entity to do that/queue ability.
 
@@ -477,4 +479,36 @@ void TeamCommanderSystems::ConvertAreaIndexToAreaCoordinates(int32 areaIndex, in
 void TeamCommanderSystems::ConvertAreaCoordinatesToAreaIndex(int32 xCoordinate, int32 yCoordinate, int32 areasPerDimension, int32& areaIndex)
 {
 	areaIndex = (yCoordinate * areasPerDimension) + xCoordinate;
+}
+
+bool TeamCommanderSystems::CanEntityConstructResourceSink(ArgusEntity idleEntity, TeamCommanderComponent* teamCommanderComponent)
+{
+	ARGUS_RETURN_ON_NULL_BOOL(teamCommanderComponent, ArgusECSLog);
+
+	AbilityComponent* abilityComponent = idleEntity.GetComponent<AbilityComponent>();
+	if (!abilityComponent)
+	{
+		return false;
+	}
+
+	const UAbilityRecord* constructionRecord = nullptr;
+	abilityComponent->IterateActiveAbilityIds([&constructionRecord](uint32 abilityRecordId)
+	{
+		if (abilityRecordId == 0u)
+		{
+			return;
+		}
+
+		if (const UAbilityRecord* record = ArgusStaticData::GetRecord<UAbilityRecord>(abilityRecordId))
+		{
+			constructionRecord = record;
+		}
+	});
+
+	if (!constructionRecord)
+	{
+		return false;
+	}
+
+	return true;
 }
