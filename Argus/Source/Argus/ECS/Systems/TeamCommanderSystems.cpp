@@ -38,9 +38,7 @@ void TeamCommanderSystems::ClearUpdatesPerCommanderEntity(ArgusEntity teamEntity
 
 	teamCommanderComponent->m_idleEntityIdsForTeam.Reset();
 	teamCommanderComponent->m_seenResourceSourceEntityIds.Reset();
-	teamCommanderComponent->m_numResourceExtractors = 0u;
-	teamCommanderComponent->m_numResourceSinks = 0u;
-	teamCommanderComponent->m_numLivingUnits = 0u;
+	teamCommanderComponent->m_resourceSinkEntityIds.Reset();
 	teamCommanderComponent->m_priorities.Reset();
 }
 
@@ -78,20 +76,14 @@ void TeamCommanderSystems::UpdateTeamCommanderPerEntityOnTeam(const TeamCommande
 		return;
 	}
 
-	teamCommanderComponent->m_numLivingUnits++;
 	if (components.m_entity.IsIdle() && !components.m_entity.IsPassenger())
 	{
 		teamCommanderComponent->m_idleEntityIdsForTeam.Add(components.m_entity.GetId());
 	}
 
-	if (components.m_taskComponent->m_resourceExtractionState != EResourceExtractionState::None)
-	{
-		teamCommanderComponent->m_numResourceExtractors++;
-	}
-
 	if (components.m_resourceComponent && components.m_resourceComponent->m_resourceComponentOwnerType == EResourceComponentOwnerType::Sink)
 	{
-		teamCommanderComponent->m_numResourceSinks++;
+		teamCommanderComponent->m_resourceSinkEntityIds.Add(components.m_entity.GetId());
 	}
 
 	UpdateRevealedAreasPerEntityOnTeam(components, teamCommanderComponent);
@@ -162,9 +154,19 @@ void TeamCommanderSystems::UpdateTeamCommanderPriorities(ArgusEntity teamEntity)
 		}
 	}
 
-	teamCommanderComponent->m_priorities.Sort([](const TeamCommanderPriority& left, const TeamCommanderPriority& right)
-	{		
-		return right.m_weight <= left.m_weight;
+	teamCommanderComponent->m_priorities.Sort([](const TeamCommanderPriority& A, const TeamCommanderPriority& B)
+	{	
+		if (A.m_weight < B.m_weight)
+		{
+			return false;
+		}
+
+		if (A.m_weight == B.m_weight)
+		{
+			return A.m_directive < B.m_directive;
+		}
+
+		return true;
 	});
 }
 
@@ -177,9 +179,20 @@ void TeamCommanderSystems::UpdateConstructResourceSinkTeamPriority(TeamCommander
 		return;
 	}
 
-	// TODO JAMES: Update priority based on whether or not we have enough resource sinks / if the resource sinks are close enough to the resource sources.
+	if (teamCommanderComponent->m_resourceSinkEntityIds.Num() == 0 && teamCommanderComponent->m_seenResourceSourceEntityIds.Num() > 0)
+	{
+		priority.m_weight = 2.0f;
+		return;
+	}
 
-	priority.m_weight = 1.0f;
+	// TODO JAMES: (Design question) What is the right proportion of resource sinks to resource sources? Do we need to define acceptable ranges from source to sink?
+	if (teamCommanderComponent->m_resourceSinkEntityIds.Num() < teamCommanderComponent->m_seenResourceSourceEntityIds.Num())
+	{
+		priority.m_weight = 1.0f;
+		return;
+	}
+
+	priority.m_weight = 0.0f;
 }
 
 void TeamCommanderSystems::UpdateResourceExtractionTeamPriority(TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority)
@@ -191,7 +204,7 @@ void TeamCommanderSystems::UpdateResourceExtractionTeamPriority(TeamCommanderCom
 		return;
 	}
 
-	priority.m_weight = (teamCommanderComponent->m_seenResourceSourceEntityIds.Num() > 0 && teamCommanderComponent->m_numResourceSinks > 0u) ? 1.0f : 0.0f;
+	priority.m_weight = (teamCommanderComponent->m_seenResourceSourceEntityIds.Num() > 0 && teamCommanderComponent->m_resourceSinkEntityIds.Num() > 0) ? 1.0f : 0.0f;
 }
 
 void TeamCommanderSystems::UpdateScoutingTeamPriority(TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority)
