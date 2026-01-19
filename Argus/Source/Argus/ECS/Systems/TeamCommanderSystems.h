@@ -4,6 +4,8 @@
 
 #include "SystemArgumentDefinitions/TeamCommanderSystemsArgs.h"
 
+class UAbilityRecord;
+
 class TeamCommanderSystems
 {
 public:
@@ -25,8 +27,8 @@ private:
 
 	static void ActUponUpdatesPerCommanderEntity(ArgusEntity teamCommmanderEntity);
 	static void AssignIdleEntityToWork(ArgusEntity idleEntity, TeamCommanderComponent* teamCommanderComponent);
-	static bool AssignIdleEntityToDirectiveIfAble(ArgusEntity idleEntity, TeamCommanderComponent* teamCommanderComponent, ETeamCommanderDirective directive);
-	static bool AssignEntityToConstructResourceSinkIfAble(ArgusEntity entity, TeamCommanderComponent* teamCommanderComponent);
+	static bool AssignIdleEntityToDirectiveIfAble(ArgusEntity idleEntity, TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority);
+	static bool AssignEntityToConstructResourceSinkIfAble(ArgusEntity entity, TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority);
 	static bool AssignEntityToResourceExtractionIfAble(ArgusEntity entity, TeamCommanderComponent* teamCommanderComponent);
 	static bool AssignEntityToScoutingIfAble(ArgusEntity entity, TeamCommanderComponent* teamCommanderComponent);
 
@@ -36,5 +38,7 @@ private:
 	static void ConvertAreaIndexToAreaCoordinates(int32 areaIndex, int32 areasPerDimension, int32& xCoordinate, int32& yCoordinate);
 	static void ConvertAreaCoordinatesToAreaIndex(int32 xCoordinate, int32 yCoordinate, int32 areasPerDimension, int32& areaIndex);
 
-	static bool CanEntityConstructResourceSink(ArgusEntity idleEntity, TeamCommanderComponent* teamCommanderComponent);
+	static const UAbilityRecord* GetConstructResourceSinkAbility(ArgusEntity entity, EAbilityIndex& abilityIndex);
+	static bool DoesAbilityConstructResourceSink(const UAbilityRecord* abilityRecord);
+	static void FindTargetLocForConstructResourceSink(ArgusEntity entity, const UAbilityRecord* abilityRecord, TeamCommanderComponent* teamCommanderComponent);
 };

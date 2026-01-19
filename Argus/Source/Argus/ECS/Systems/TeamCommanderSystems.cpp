@@ -6,6 +6,7 @@
 #include "ArgusMacros.h"
 #include "ArgusMath.h"
 #include "ArgusStaticData.h"
+#include "DataComponentDefinitions/ResourceComponentData.h"
 #include "Systems/ResourceSystems.h"
 
 void TeamCommanderSystems::RunSystems(float deltaTime)
@@ -155,20 +156,7 @@ void TeamCommanderSystems::UpdateTeamCommanderPriorities(ArgusEntity teamEntity)
 		}
 	}
 
-	teamCommanderComponent->m_priorities.Sort([](const TeamCommanderPriority& A, const TeamCommanderPriority& B)
-	{	
-		if (A.m_weight < B.m_weight)
-		{
-			return false;
-		}
-
-		if (A.m_weight == B.m_weight)
-		{
-			return A.m_directive < B.m_directive;
-		}
-
-		return true;
-	});
+	teamCommanderComponent->m_priorities.Sort();
 }
 
 void TeamCommanderSystems::UpdateConstructResourceSinkTeamPriority(TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority)
@@ -251,20 +239,20 @@ void TeamCommanderSystems::AssignIdleEntityToWork(ArgusEntity idleEntity, TeamCo
 
 	for (int32 i = 0; i < teamCommanderComponent->m_priorities.Num(); ++i)
 	{
-		if (AssignIdleEntityToDirectiveIfAble(idleEntity, teamCommanderComponent, teamCommanderComponent->m_priorities[i].m_directive))
+		if (AssignIdleEntityToDirectiveIfAble(idleEntity, teamCommanderComponent, teamCommanderComponent->m_priorities[i]))
 		{
 			return;
 		}
 	}
 }
 
-bool TeamCommanderSystems::AssignIdleEntityToDirectiveIfAble(ArgusEntity idleEntity, TeamCommanderComponent* teamCommanderComponent, ETeamCommanderDirective directive)
+bool TeamCommanderSystems::AssignIdleEntityToDirectiveIfAble(ArgusEntity idleEntity, TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority)
 {
 	ARGUS_TRACE(TeamCommanderSystems::AssignIdleEntityToDirectiveIfAble);
-	switch (directive)
+	switch (priority.m_directive)
 	{
 		case ETeamCommanderDirective::ConstructResourceSink:
-			return AssignEntityToConstructResourceSinkIfAble(idleEntity, teamCommanderComponent);
+			return AssignEntityToConstructResourceSinkIfAble(idleEntity, teamCommanderComponent, priority);
 		case ETeamCommanderDirective::ExtractResources:
 			return AssignEntityToResourceExtractionIfAble(idleEntity, teamCommanderComponent);
 		case ETeamCommanderDirective::Scout:
@@ -276,16 +264,28 @@ bool TeamCommanderSystems::AssignIdleEntityToDirectiveIfAble(ArgusEntity idleEnt
 	return false;
 }
 
-bool TeamCommanderSystems::AssignEntityToConstructResourceSinkIfAble(ArgusEntity entity, TeamCommanderComponent* teamCommanderComponent)
+bool TeamCommanderSystems::AssignEntityToConstructResourceSinkIfAble(ArgusEntity entity, TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority)
 {
 	ARGUS_TRACE(TeamCommanderSystems::AssignEntityToResourceExtractionIfAble);
 	ARGUS_RETURN_ON_NULL_BOOL(teamCommanderComponent, ArgusECSLog);
 
-	const bool canConstruct = CanEntityConstructResourceSink(entity, teamCommanderComponent);
-	// TODO JAMES: Determine conditions that would allow an entity to construct a resource sink.
-	// Then assign the entity to do that/queue ability.
+	EAbilityIndex abilityIndex = EAbilityIndex::None;
+	const UAbilityRecord* constructionAbility = GetConstructResourceSinkAbility(entity, abilityIndex);
+	if (!constructionAbility || abilityIndex == EAbilityIndex::None)
+	{
+		return false;
+	}
 
-	return false;
+	// TODO JAMES: For now, temporarily nuking construction priority so that only one entity is assigned to construction at a time. This will stay in place until the actual construction logic is authored.
+	FindTargetLocForConstructResourceSink(entity, constructionAbility, teamCommanderComponent);
+	if (TaskComponent* taskComponent = entity.GetComponent<TaskComponent>())
+	{
+		taskComponent->m_directiveFromTeamCommander = priority.m_directive;
+	}
+	priority.m_weight = 0.0f;
+	teamCommanderComponent->m_priorities.Sort();
+
+	return true;
 }
 
 bool TeamCommanderSystems::AssignEntityToResourceExtractionIfAble(ArgusEntity entity, TeamCommanderComponent* teamCommanderComponent)
@@ -481,34 +481,85 @@ void TeamCommanderSystems::ConvertAreaCoordinatesToAreaIndex(int32 xCoordinate, 
 	areaIndex = (yCoordinate * areasPerDimension) + xCoordinate;
 }
 
-bool TeamCommanderSystems::CanEntityConstructResourceSink(ArgusEntity idleEntity, TeamCommanderComponent* teamCommanderComponent)
+const UAbilityRecord* TeamCommanderSystems::GetConstructResourceSinkAbility(ArgusEntity entity, EAbilityIndex& abilityIndex)
 {
-	ARGUS_RETURN_ON_NULL_BOOL(teamCommanderComponent, ArgusECSLog);
+	ARGUS_TRACE(TeamCommanderSystems::GetConstructResourceSinkAbility);
 
-	AbilityComponent* abilityComponent = idleEntity.GetComponent<AbilityComponent>();
+	abilityIndex = EAbilityIndex::None;
+	AbilityComponent* abilityComponent = entity.GetComponent<AbilityComponent>();
 	if (!abilityComponent)
 	{
-		return false;
+		return nullptr;
 	}
 
 	const UAbilityRecord* constructionRecord = nullptr;
-	abilityComponent->IterateActiveAbilityIds([&constructionRecord](uint32 abilityRecordId)
+	abilityComponent->IterateActiveAbilityIds([&constructionRecord, &abilityIndex](uint32 abilityRecordId, EAbilityIndex iteratedAbilityIndex)
 	{
-		if (abilityRecordId == 0u)
+		const UAbilityRecord* record = ArgusStaticData::GetRecord<UAbilityRecord>(abilityRecordId);
+		if (!record)
 		{
 			return;
 		}
 
-		if (const UAbilityRecord* record = ArgusStaticData::GetRecord<UAbilityRecord>(abilityRecordId))
+		if (DoesAbilityConstructResourceSink(record))
 		{
+			abilityIndex = iteratedAbilityIndex;
 			constructionRecord = record;
 		}
 	});
 
-	if (!constructionRecord)
+	return constructionRecord;
+}
+
+bool TeamCommanderSystems::DoesAbilityConstructResourceSink(const UAbilityRecord* abilityRecord)
+{
+	if (!abilityRecord)
 	{
 		return false;
 	}
 
-	return true;
+	for (int32 i = 0; i < abilityRecord->m_abilityEffects.Num(); ++i)
+	{
+		if (abilityRecord->m_abilityEffects[i].m_abilityType != EAbilityTypes::Construct)
+		{
+			continue;
+		}
+
+		const UArgusActorRecord* actorRecord = ArgusStaticData::GetRecord<UArgusActorRecord>(abilityRecord->m_abilityEffects[i].m_argusActorRecordId);
+		if (!actorRecord)
+		{
+			continue;
+		}
+
+		const UArgusEntityTemplate* entityTemplate = actorRecord->m_entityTemplate.LoadAndStorePtr();
+		if (!entityTemplate)
+		{
+			continue;
+		}
+
+		for (int32 j = 0; j < entityTemplate->m_componentData.Num(); ++j)
+		{
+			// TODO JAMES: Component data might not be loaded right now. How can we support async loading here? Should component data have a hard reference so it can never be garbage collected?
+
+			ARGUS_TRACE(TeamCommanderSystems::LoadComponentData);
+			const UResourceComponentData* resourceComponentData = Cast<UResourceComponentData>(entityTemplate->m_componentData[j].LoadSynchronous());
+			if (!resourceComponentData)
+			{
+				continue;
+			}
+
+			if (resourceComponentData->m_resourceComponentOwnerType == EResourceComponentOwnerType::Sink)
+			{
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+void TeamCommanderSystems::FindTargetLocForConstructResourceSink(ArgusEntity entity, const UAbilityRecord* abilityRecord, TeamCommanderComponent* teamCommanderComponent)
+{
+	ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
+	ARGUS_RETURN_ON_NULL(abilityRecord, ArgusECSLog);
 }

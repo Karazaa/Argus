@@ -182,9 +182,9 @@ struct AbilityComponent
 	template <typename Function>
 	void IterateActiveAbilityIds(Function&& function)
 	{
-		function(GetActiveAbilityId(EAbilityIndex::Ability0));
-		function(GetActiveAbilityId(EAbilityIndex::Ability1));
-		function(GetActiveAbilityId(EAbilityIndex::Ability2));
-		function(GetActiveAbilityId(EAbilityIndex::Ability3));
+		function(GetActiveAbilityId(EAbilityIndex::Ability0), EAbilityIndex::Ability0);
+		function(GetActiveAbilityId(EAbilityIndex::Ability1), EAbilityIndex::Ability1);
+		function(GetActiveAbilityId(EAbilityIndex::Ability2), EAbilityIndex::Ability2);
+		function(GetActiveAbilityId(EAbilityIndex::Ability3), EAbilityIndex::Ability3);
 	}
 };
