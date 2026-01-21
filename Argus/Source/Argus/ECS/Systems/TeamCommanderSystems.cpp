@@ -271,7 +271,7 @@ bool TeamCommanderSystems::AssignEntityToConstructResourceSinkIfAble(ArgusEntity
 
 	EAbilityIndex abilityIndex = EAbilityIndex::None;
 	const UAbilityRecord* constructionAbility = GetConstructResourceSinkAbility(entity, abilityIndex);
-	if (!constructionAbility || abilityIndex == EAbilityIndex::None)
+	if (!constructionAbility || abilityIndex == EAbilityIndex::None || !ResourceSystems::CanEntityAffordTeamResourceChange(entity, constructionAbility->m_requiredResourceChangeToCast))
 	{
 		return false;
 	}
@@ -562,4 +562,60 @@ void TeamCommanderSystems::FindTargetLocForConstructResourceSink(ArgusEntity ent
 {
 	ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
 	ARGUS_RETURN_ON_NULL(abilityRecord, ArgusECSLog);
+
+	ArgusEntity nearestResourceSource = GetNearestSeenResourceSourceToEntity(entity, teamCommanderComponent);
+	if (!nearestResourceSource)
+	{
+		return;
+	}
+
+	TransformComponent* resourceSourceTransformComponent = nearestResourceSource.GetComponent<TransformComponent>();
+	TransformComponent* transformComponent = entity.GetComponent<TransformComponent>();
+	ARGUS_RETURN_ON_NULL(resourceSourceTransformComponent, ArgusECSLog);
+	ARGUS_RETURN_ON_NULL(transformComponent, ArgusECSLog);
+
+	const FVector2D fromSinkToEntity = FVector2D((transformComponent->m_location - resourceSourceTransformComponent->m_location).GetSafeNormal());
+
+	// TODO JAMES: We may want to establish a "safe zone" around resource sinks where you cannot construct an entity;
+	const float safeZoneDistance = 150.0f;
+
+	// TODO JAMES: Look at AbilitySystems::PrepReticleForConstructAbility for examples of how to get relevant radius from ability record.
+	const float radiusDistance = 50.0f;
+
+	// TODO JAMES: We probably need some method of projecting down to the ground to determine spawn location.
+	const FVector2D candidatePoint = (fromSinkToEntity * (safeZoneDistance + radiusDistance)) + FVector2D(resourceSourceTransformComponent->m_location);
+
+	// TODO JAMES: Look at UArgusInputManager::SetReticleState for examples of spatial queries for determining if anything is beneath the target point. 
+}
+
+ArgusEntity TeamCommanderSystems::GetNearestSeenResourceSourceToEntity(ArgusEntity entity, TeamCommanderComponent* teamCommanderComponent)
+{
+	ARGUS_RETURN_ON_NULL_VALUE(teamCommanderComponent, ArgusECSLog, ArgusEntity::k_emptyEntity);
+
+	const TransformComponent* transformComponent = entity.GetComponent<TransformComponent>();
+	if (!transformComponent)
+	{
+		return ArgusEntity::k_emptyEntity;
+	}
+
+	float minDistanceSquared = FLT_MAX;
+	ArgusEntity nearestResourceSource = ArgusEntity::k_emptyEntity;
+	for (int32 i = 0; i < teamCommanderComponent->m_seenResourceSourceEntityIds.Num(); ++i)
+	{
+		ArgusEntity resourceSourceEntity = ArgusEntity::RetrieveEntity(teamCommanderComponent->m_seenResourceSourceEntityIds[i]);
+		TransformComponent* resourceSinkSourceTransformComponent = resourceSourceEntity.GetComponent<TransformComponent>();
+		if (!resourceSinkSourceTransformComponent)
+		{
+			continue;
+		}
+
+		const float distanceSquared = FVector::DistSquared2D(transformComponent->m_location, resourceSinkSourceTransformComponent->m_location);
+		if (distanceSquared < minDistanceSquared)
+		{
+			minDistanceSquared = distanceSquared;
+			nearestResourceSource = resourceSourceEntity;
+		}
+	}
+
+	return nearestResourceSource;
 }

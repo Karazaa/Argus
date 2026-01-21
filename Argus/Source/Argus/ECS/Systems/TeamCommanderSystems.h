@@ -41,4 +41,5 @@ private:
 	static const UAbilityRecord* GetConstructResourceSinkAbility(ArgusEntity entity, EAbilityIndex& abilityIndex);
 	static bool DoesAbilityConstructResourceSink(const UAbilityRecord* abilityRecord);
 	static void FindTargetLocForConstructResourceSink(ArgusEntity entity, const UAbilityRecord* abilityRecord, TeamCommanderComponent* teamCommanderComponent);
+	static ArgusEntity GetNearestSeenResourceSourceToEntity(ArgusEntity entity, TeamCommanderComponent* teamCommanderComponent);
 };
