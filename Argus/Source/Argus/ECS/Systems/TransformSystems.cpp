@@ -122,7 +122,7 @@ void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float delta
 
 	if (components.m_taskComponent->m_flightState == EFlightState::Grounded)
 	{
-		moverLocation = ProjectLocationOntoNavigationData(worldPointer, components.m_transformComponent, moverLocation);
+		moverLocation = ProjectLocationOntoNavigationData(worldPointer, components.m_transformComponent->m_radius, moverLocation);
 	}
 	components.m_transformComponent->m_location = moverLocation;
 	components.m_transformComponent->m_smoothedYaw.SmoothChase(components.m_transformComponent->m_targetYaw, deltaTime);
@@ -135,6 +135,30 @@ void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float delta
 	{
 		OnCompleteNavigationPath(components, moverLocation);
 	}
+}
+
+FVector TransformSystems::ProjectLocationOntoNavigationData(UWorld* worldPointer, float navAgentRadius, const FVector& location)
+{
+	if (!worldPointer)
+	{
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Passed in %s was invalid."), ARGUS_FUNCNAME, ARGUS_NAMEOF(UWorld*))
+			return location;
+	}
+
+	UNavigationSystemV1* unrealNavigationSystem = UNavigationSystemV1::GetCurrent(worldPointer);
+	if (!unrealNavigationSystem)
+	{
+		return location;
+	}
+
+	FNavLocation projectedLocation;
+	const FVector agentExtents = FVector(navAgentRadius, navAgentRadius, ArgusECSConstants::k_navigationAgentDefaultHeight / 2.0f);
+	if (unrealNavigationSystem->ProjectPointToNavigation(location, projectedLocation, agentExtents, unrealNavigationSystem->MainNavData))
+	{
+		return projectedLocation.Location;
+	}
+
+	return location;
 }
 
 bool TransformSystems::ProcessMovementTaskCommands(UWorld* worldPointer, float deltaTime, const TransformSystemsArgs& components)
@@ -247,7 +271,7 @@ void TransformSystems::ProcessLandCommand(UWorld* worldPointer, float deltaTime,
 	endLocation.Z = ArgusECSConstants::k_lowestPossibleAltitude;
 	if (worldPointer->LineTraceSingleByChannel(hitResult, startLocation, endLocation, ECC_RETICLE))
 	{
-		components.m_transformComponent->m_targetTransitionAltitude = ProjectLocationOntoNavigationData(worldPointer, components.m_transformComponent, hitResult.Location).Z;
+		components.m_transformComponent->m_targetTransitionAltitude = ProjectLocationOntoNavigationData(worldPointer, components.m_transformComponent->m_radius, hitResult.Location).Z;
 	}
 	else
 	{
@@ -399,37 +423,6 @@ void TransformSystems::OnCompleteNavigationPath(const TransformSystemsArgs& comp
 	else
 	{
 		NavigationSystems::StartNavigatingToQueuedWaypoint(components.m_taskComponent, components.m_targetingComponent, components.m_navigationComponent);
-	}
-}
-
-FVector TransformSystems::ProjectLocationOntoNavigationData(UWorld* worldPointer, const TransformComponent* transformComponent, const FVector& location)
-{
-	if (!worldPointer)
-	{
-		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Passed in %s was invalid."), ARGUS_FUNCNAME, ARGUS_NAMEOF(UWorld*))
-		return location;
-	}
-
-	if (!transformComponent)
-	{
-		return location;
-	}
-
-	UNavigationSystemV1* unrealNavigationSystem = UNavigationSystemV1::GetCurrent(worldPointer);
-	if (!unrealNavigationSystem)
-	{
-		return location;
-	}
-
-	FNavLocation projectedLocation;
-	const FVector agentExtents = FVector(transformComponent->m_radius, transformComponent->m_radius, ArgusECSConstants::k_navigationAgentDefaultHeight / 2.0f);
-	if (unrealNavigationSystem->ProjectPointToNavigation(location, projectedLocation, agentExtents, unrealNavigationSystem->MainNavData))
-	{
-		return projectedLocation.Location;
-	}
-	else
-	{
-		return location;
 	}
 }
 

@@ -47,7 +47,7 @@ bool ObstaclePointKDTreeNode::PassesRangeCheck(const FVector& targetLocation, fl
 		return false;
 	}
 
-	nodeRangeSquared = FVector::DistSquared(GetLocation(), targetLocation);
+	nodeRangeSquared = FVector::DistSquared2D(GetLocation(), targetLocation);
 	if (nodeRangeSquared < rangeSquared)
 	{
 		return true;

@@ -163,6 +163,43 @@ void AbilitySystems::PrepReticle(const UAbilityRecord* abilityRecord, const Abil
 	components.m_taskComponent->m_abilityState = EAbilityState::None;
 }
 
+const UArgusEntityTemplate* AbilitySystems::GetEntityTemplateForConstructionAbility(const UAbilityRecord* abilityRecord)
+{
+	ARGUS_RETURN_ON_NULL_POINTER(abilityRecord, ArgusECSLog);
+
+	bool hasConstruction = false;
+	int32 index = 0;
+	for (index; index < abilityRecord->m_abilityEffects.Num(); ++index)
+	{
+		if (abilityRecord->m_abilityEffects[index].m_abilityType == EAbilityTypes::Construct)
+		{
+			hasConstruction = true;
+			break;
+		}
+	}
+
+	if (!hasConstruction)
+	{
+		return nullptr;
+	}
+
+	const UArgusActorRecord* argusActorRecord = ArgusStaticData::GetRecord<UArgusActorRecord>(abilityRecord->m_abilityEffects[index].m_argusActorRecordId);
+	ARGUS_RETURN_ON_NULL_POINTER(argusActorRecord, ArgusECSLog);
+
+	return argusActorRecord->m_entityTemplate.LoadAndStorePtr();
+}
+
+float AbilitySystems::GetRaidusOfConstructionAbility(const UAbilityRecord* abilityRecord)
+{
+	const UArgusEntityTemplate* entityTemplate = GetEntityTemplateForConstructionAbility(abilityRecord);
+	ARGUS_RETURN_ON_NULL_VALUE(entityTemplate, ArgusECSLog, 0.0f);
+
+	const UTransformComponentData* transformComponent = entityTemplate->GetComponentFromTemplate<UTransformComponentData>();
+	ARGUS_RETURN_ON_NULL_VALUE(transformComponent, ArgusECSLog, 0.0f);
+
+	return transformComponent->m_radius;
+}
+
 void AbilitySystems::ProcessAbilityRefundRequests(const AbilitySystemsArgs& components)
 {
 	ARGUS_TRACE(AbilitySystems::ProcessAbilityRefundRequests);
@@ -435,25 +472,7 @@ void AbilitySystems::PrepReticleForConstructAbility(const UAbilityRecord* abilit
 		return;
 	}
 
-	const UArgusActorRecord* argusActorRecord = ArgusStaticData::GetRecord<UArgusActorRecord>(abilityEffect.m_argusActorRecordId);
-	if (!argusActorRecord)
-	{
-		return;
-	}
-
-	const UArgusEntityTemplate* argusEntityTemplate = argusActorRecord->m_entityTemplate.LoadAndStorePtr();
-	if (!argusEntityTemplate)
-	{
-		return;
-	}
-
-	const UTransformComponentData* transformComponent = argusEntityTemplate->GetComponentFromTemplate<UTransformComponentData>();
-	if (!transformComponent)
-	{
-		return;
-	}
-
-	components.m_reticleComponent->m_radius = transformComponent->m_radius;
+	components.m_reticleComponent->m_radius = GetRaidusOfConstructionAbility(abilityRecord);
 }
 
 void AbilitySystems::LogAbilityRecordError(const WIDECHAR* functionName)

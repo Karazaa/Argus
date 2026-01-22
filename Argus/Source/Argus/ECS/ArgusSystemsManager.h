@@ -15,10 +15,11 @@ public:
 	static void Initialize(UWorld* worldPointer, const UArgusEntityTemplate* singletonEntityTemplate, const UArgusEntityTemplate* teamEntityTemplate);
 	static void OnStartPlay(UWorld* worldPointer, ETeam activePlayerTeam);
 	static void RunSystems(UWorld* worldPointer, float deltaTime);
-	static void RunPostThreadSystems();
+	static void RunPostThreadSystems(UWorld* worldPointer, float deltaTime);
 
 private:
 	static void PopulateSingletonComponents(UWorld* worldPointer, const UArgusEntityTemplate* singletonEntityTemplate);
 	static void SetInitialSingletonState(UWorld* worldPointer, ETeam activePlayerTeam);
 	static void PopulateTeamComponents(const UArgusEntityTemplate* teamEntityTemplate);
+	static void UpdateSingletonComponents(UWorld* worldPointer);
 };

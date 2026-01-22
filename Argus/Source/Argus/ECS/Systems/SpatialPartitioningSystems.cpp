@@ -375,6 +375,27 @@ bool SpatialPartitioningSystems::IsPointInLineOfSightOfEntity(ArgusEntity source
 	return true;
 }
 
+bool SpatialPartitioningSystems::AnyObstaclesOrEntitiesInCircle(const FVector& center, float radius)
+{
+	SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::GetSingletonEntity().GetComponent<SpatialPartitioningComponent>();
+	ARGUS_RETURN_ON_NULL_BOOL(spatialPartitioningComponent, ArgusInputLog);
+
+	TArray<uint16> nearbyArgusEntityIds;
+	spatialPartitioningComponent->m_argusEntityKDTree.FindArgusEntityIdsWithinRangeOfLocation(nearbyArgusEntityIds, center, radius);
+	bool anyFound = nearbyArgusEntityIds.Num() > 0;
+
+	if (!anyFound)
+	{
+		TArray<ObstacleIndicies> obstacleIndicies;
+		FVector location = ArgusMath::ToCartesianVector(center);
+		location.Z = 0.0f;
+		spatialPartitioningComponent->m_obstaclePointKDTree.FindObstacleIndiciesWithinRangeOfLocation(obstacleIndicies, location, radius);
+		anyFound = obstacleIndicies.Num() > 0;
+	}
+
+	return anyFound;
+}
+
 bool SpatialPartitioningSystems::GetNavMeshWalls(const SpatialPartitioningComponent* spatialPartitioningComponent, const ARecastNavMesh* navMesh, const FNavLocation& originLocation, TArray<FVector>& outNavWalls)
 {
 	ARGUS_TRACE(SpatialPartitioningSystems::GetNavMeshWalls);

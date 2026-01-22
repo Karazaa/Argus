@@ -42,6 +42,7 @@
 #include "DynamicAllocComponentDefinitions\ReticleComponent.h"
 #include "DynamicAllocComponentDefinitions\SpatialPartitioningComponent.h"
 #include "DynamicAllocComponentDefinitions\TeamCommanderComponent.h"
+#include "DynamicAllocComponentDefinitions\WorldReferenceComponent.h"
 
 class ArgusComponentRegistry
 {
@@ -74,7 +75,7 @@ public:
 	static void DrawComponentsDebug(uint16 entityId);
 #endif //!UE_BUILD_SHIPPING
 
-	static constexpr uint32 k_numComponentTypes = 29;
+	static constexpr uint32 k_numComponentTypes = 30;
 
 	// Begin component specific template specifiers.
 	
@@ -2624,6 +2625,66 @@ public:
 		}
 
 		return s_TeamCommanderComponents[entityId];
+	}
+#pragma endregion
+#pragma region WorldReferenceComponent
+private:
+	static ArgusMap<uint16, WorldReferenceComponent*, ArgusSetAllocator<1> > s_WorldReferenceComponents;
+public:
+	template<>
+	inline WorldReferenceComponent* GetComponent<WorldReferenceComponent>(uint16 entityId)
+	{
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(WorldReferenceComponent));
+			return nullptr;
+		}
+
+		if (!s_WorldReferenceComponents.Contains(entityId))
+		{
+			return nullptr;
+		}
+
+		return s_WorldReferenceComponents[entityId];
+	}
+
+	template<>
+	inline WorldReferenceComponent* AddComponent<WorldReferenceComponent>(uint16 entityId)
+	{
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(WorldReferenceComponent));
+			return nullptr;
+		}
+
+		if (UNLIKELY(s_WorldReferenceComponents.Contains(entityId)))
+		{
+			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(WorldReferenceComponent), entityId);
+			return s_WorldReferenceComponents[entityId];
+		}
+
+		WorldReferenceComponent* output = new (ArgusMemorySource::Allocate<WorldReferenceComponent>()) WorldReferenceComponent();
+		s_WorldReferenceComponents.Emplace(entityId, output);
+		return output;
+	}
+
+	template<>
+	inline WorldReferenceComponent* GetOrAddComponent<WorldReferenceComponent>(uint16 entityId)
+	{
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(WorldReferenceComponent));
+			return nullptr;
+		}
+
+		if (!s_WorldReferenceComponents.Contains(entityId))
+		{
+			WorldReferenceComponent* output = new (ArgusMemorySource::Allocate<WorldReferenceComponent>()) WorldReferenceComponent();
+			s_WorldReferenceComponents.Emplace(entityId, output);
+			return output;
+		}
+
+		return s_WorldReferenceComponents[entityId];
 	}
 #pragma endregion
 };

@@ -9,13 +9,11 @@
 #include "ArgusPlayerController.h"
 #include "ArgusStaticData.h"
 #include "ArgusTesting.h"
-#include "Components/InputComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedPlayerInput.h"
-#include "Systems/AvoidanceSystems.h"
 #include "Systems/DecalSystems.h"
 #include "Systems/InputInterfaceSystems.h"
-#include "Systems/TransformSystems.h"
+#include "Systems/SpatialPartitioningSystems.h"
 
 bool UArgusInputManager::ShouldUpdateSelectedActorDisplay(ArgusEntity& templateSelectedEntity)
 {
@@ -1173,25 +1171,7 @@ void UArgusInputManager::SetReticleState()
 	}
 
 	reticleComponent->m_reticleLocation = hitResult.Location;
-
-	SpatialPartitioningComponent* spatialPartitioningComponent = singletonEntity.GetComponent<SpatialPartitioningComponent>();
-	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusInputLog);
-
-	TArray<uint16> nearbyArgusEntityIds;
-	const float querySize = reticleComponent->m_radius;
-	spatialPartitioningComponent->m_argusEntityKDTree.FindArgusEntityIdsWithinRangeOfLocation(nearbyArgusEntityIds, reticleComponent->m_reticleLocation, querySize);
-	bool anyFound = nearbyArgusEntityIds.Num() > 0;
-
-	if (!anyFound)
-	{
-		TArray<ObstacleIndicies> obstacleIndicies;
-		FVector location = ArgusMath::ToCartesianVector(reticleComponent->m_reticleLocation);
-		location.Z = 0.0f;
-		spatialPartitioningComponent->m_obstaclePointKDTree.FindObstacleIndiciesWithinRangeOfLocation(obstacleIndicies, location, querySize);
-		anyFound = obstacleIndicies.Num() > 0;
-	}
-
-	reticleComponent->m_isBlocked = anyFound;
+	reticleComponent->m_isBlocked = SpatialPartitioningSystems::AnyObstaclesOrEntitiesInCircle(reticleComponent->m_reticleLocation, reticleComponent->m_radius);
 }
 
 void UArgusInputManager::ProcessReticleAbilityForSelectedEntities(const ReticleComponent* reticleComponent)

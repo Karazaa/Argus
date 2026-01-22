@@ -5,6 +5,7 @@
 #include "SystemArgumentDefinitions/AbilitySystemsArgs.h"
 
 class UAbilityRecord;
+class UArgusEntityTemplate;
 struct FAbilityEffect;
 struct ReticleComponent;
 
@@ -15,6 +16,9 @@ public:
 
 	static void CastAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsArgs& components);
 	static void PrepReticle(const UAbilityRecord* abilityRecord, const AbilitySystemsArgs& components);
+
+	static const UArgusEntityTemplate* GetEntityTemplateForConstructionAbility(const UAbilityRecord* abilityRecord);
+	static float GetRaidusOfConstructionAbility(const UAbilityRecord* abilityRecord);
 
 private:
 	static void ProcessAbilityRefundRequests(const AbilitySystemsArgs& components);

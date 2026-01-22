@@ -75,7 +75,7 @@ void AArgusGameModeBase::Tick(float deltaTime)
 		return !m_argusSystemsThread.IsTicking() || m_argusSystemsThread.IsShutdown();
 	});
 
-	ArgusSystemsManager::RunPostThreadSystems();
+	ArgusSystemsManager::RunPostThreadSystems(worldPointer, deltaTime);
 }
 
 void AArgusGameModeBase::ManageActorStateForEntities(const UWorld* worldPointer, float deltaTime)

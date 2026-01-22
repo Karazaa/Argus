@@ -7,7 +7,10 @@
 #include "ArgusMath.h"
 #include "ArgusStaticData.h"
 #include "DataComponentDefinitions/ResourceComponentData.h"
+#include "Systems/AbilitySystems.h"
 #include "Systems/ResourceSystems.h"
+#include "Systems/SpatialPartitioningSystems.h"
+#include "Systems/TransformSystems.h"
 
 void TeamCommanderSystems::RunSystems(float deltaTime)
 {
@@ -518,50 +521,29 @@ bool TeamCommanderSystems::DoesAbilityConstructResourceSink(const UAbilityRecord
 		return false;
 	}
 
-	for (int32 i = 0; i < abilityRecord->m_abilityEffects.Num(); ++i)
+	const UArgusEntityTemplate* entityTemplate = AbilitySystems::GetEntityTemplateForConstructionAbility(abilityRecord);
+	if (!entityTemplate)
 	{
-		if (abilityRecord->m_abilityEffects[i].m_abilityType != EAbilityTypes::Construct)
-		{
-			continue;
-		}
-
-		const UArgusActorRecord* actorRecord = ArgusStaticData::GetRecord<UArgusActorRecord>(abilityRecord->m_abilityEffects[i].m_argusActorRecordId);
-		if (!actorRecord)
-		{
-			continue;
-		}
-
-		const UArgusEntityTemplate* entityTemplate = actorRecord->m_entityTemplate.LoadAndStorePtr();
-		if (!entityTemplate)
-		{
-			continue;
-		}
-
-		for (int32 j = 0; j < entityTemplate->m_componentData.Num(); ++j)
-		{
-			// TODO JAMES: Component data might not be loaded right now. How can we support async loading here? Should component data have a hard reference so it can never be garbage collected?
-
-			ARGUS_TRACE(TeamCommanderSystems::LoadComponentData);
-			const UResourceComponentData* resourceComponentData = Cast<UResourceComponentData>(entityTemplate->m_componentData[j].LoadSynchronous());
-			if (!resourceComponentData)
-			{
-				continue;
-			}
-
-			if (resourceComponentData->m_resourceComponentOwnerType == EResourceComponentOwnerType::Sink)
-			{
-				return true;
-			}
-		}
+		return false;
 	}
 
-	return false;
+	const UResourceComponentData* resourceComponentData = entityTemplate->GetComponentFromTemplate<UResourceComponentData>();
+	if (resourceComponentData->m_resourceComponentOwnerType != EResourceComponentOwnerType::Sink)
+	{
+		return false;
+	}
+
+	return true;
 }
 
 void TeamCommanderSystems::FindTargetLocForConstructResourceSink(ArgusEntity entity, const UAbilityRecord* abilityRecord, TeamCommanderComponent* teamCommanderComponent)
 {
 	ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
 	ARGUS_RETURN_ON_NULL(abilityRecord, ArgusECSLog);
+
+	WorldReferenceComponent* worldReferenceComponent = ArgusEntity::GetSingletonEntity().GetComponent<WorldReferenceComponent>();
+	ARGUS_RETURN_ON_NULL(worldReferenceComponent, ArgusECSLog);
+	ARGUS_RETURN_ON_NULL(worldReferenceComponent->m_worldPointer, ArgusECSLog);
 
 	ArgusEntity nearestResourceSource = GetNearestSeenResourceSourceToEntity(entity, teamCommanderComponent);
 	if (!nearestResourceSource)
@@ -574,18 +556,23 @@ void TeamCommanderSystems::FindTargetLocForConstructResourceSink(ArgusEntity ent
 	ARGUS_RETURN_ON_NULL(resourceSourceTransformComponent, ArgusECSLog);
 	ARGUS_RETURN_ON_NULL(transformComponent, ArgusECSLog);
 
-	const FVector2D fromSinkToEntity = FVector2D((transformComponent->m_location - resourceSourceTransformComponent->m_location).GetSafeNormal());
+	const FVector fromSinkToEntity = (transformComponent->m_location - resourceSourceTransformComponent->m_location).GetSafeNormal();
 
 	// TODO JAMES: We may want to establish a "safe zone" around resource sinks where you cannot construct an entity;
-	const float safeZoneDistance = 150.0f;
+	const float safeZoneDistance = 75.0f;
 
-	// TODO JAMES: Look at AbilitySystems::PrepReticleForConstructAbility for examples of how to get relevant radius from ability record.
-	const float radiusDistance = 50.0f;
+	const float radiusDistance = AbilitySystems::GetRaidusOfConstructionAbility(abilityRecord);
 
-	// TODO JAMES: We probably need some method of projecting down to the ground to determine spawn location.
-	const FVector2D candidatePoint = (fromSinkToEntity * (safeZoneDistance + radiusDistance)) + FVector2D(resourceSourceTransformComponent->m_location);
+	FVector candidatePoint = TransformSystems::ProjectLocationOntoNavigationData(worldReferenceComponent->m_worldPointer, radiusDistance, (fromSinkToEntity * (safeZoneDistance + radiusDistance)) + resourceSourceTransformComponent->m_location);
 
-	// TODO JAMES: Look at UArgusInputManager::SetReticleState for examples of spatial queries for determining if anything is beneath the target point. 
+	const bool isBlockedAtLocation = SpatialPartitioningSystems::AnyObstaclesOrEntitiesInCircle(candidatePoint, radiusDistance);
+	if (isBlockedAtLocation)
+	{
+		// TODO JAMES: Find another location somehow.
+		return;
+	}
+
+
 }
 
 ArgusEntity TeamCommanderSystems::GetNearestSeenResourceSourceToEntity(ArgusEntity entity, TeamCommanderComponent* teamCommanderComponent)

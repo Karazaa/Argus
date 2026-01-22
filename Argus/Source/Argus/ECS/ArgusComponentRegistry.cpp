@@ -116,6 +116,9 @@ ArgusMap<uint16, SpatialPartitioningComponent*, ArgusSetAllocator<1> > ArgusComp
 #pragma region TeamCommanderComponent
 ArgusMap<uint16, TeamCommanderComponent*, ArgusSetAllocator<1> > ArgusComponentRegistry::s_TeamCommanderComponents;
 #pragma endregion
+#pragma region WorldReferenceComponent
+ArgusMap<uint16, WorldReferenceComponent*, ArgusSetAllocator<1> > ArgusComponentRegistry::s_WorldReferenceComponents;
+#pragma endregion
 
 void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 {
@@ -360,6 +363,10 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 	if (s_TeamCommanderComponents.Contains(entityId))
 	{
 		s_TeamCommanderComponents.Remove(entityId);
+	}
+	if (s_WorldReferenceComponents.Contains(entityId))
+	{
+		s_WorldReferenceComponents.Remove(entityId);
 	}
 }
 
@@ -790,6 +797,18 @@ void ArgusComponentRegistry::FlushAllComponents()
 		}
 	);
  
+	s_WorldReferenceComponents.RemoveAll([](const uint16& entityId, WorldReferenceComponent*& component)
+		{
+			if (ArgusEntity::IsReservedEntityId(entityId) && component)
+			{
+				component->Reset();
+				return false;
+			}
+
+			return true;
+		}
+	);
+ 
 }
 
 uint16 ArgusComponentRegistry::GetOwningEntityIdForComponentMember(const void* memberAddress)
@@ -1031,6 +1050,10 @@ void ArgusComponentRegistry::DrawComponentsDebug(uint16 entityId)
 	if (const TeamCommanderComponent* TeamCommanderComponentPtr = GetComponent<TeamCommanderComponent>(entityId))
 	{
 		TeamCommanderComponentPtr->DrawComponentDebug();
+	}
+	if (const WorldReferenceComponent* WorldReferenceComponentPtr = GetComponent<WorldReferenceComponent>(entityId))
+	{
+		WorldReferenceComponentPtr->DrawComponentDebug();
 	}
 }
 #endif //!UE_BUILD_SHIPPING

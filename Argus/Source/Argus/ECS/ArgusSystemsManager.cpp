@@ -48,6 +48,7 @@ void ArgusSystemsManager::RunSystems(UWorld* worldPointer, float deltaTime)
 
 	bool didEntityPositionChangeThisFrame = false;
 
+	UpdateSingletonComponents(worldPointer);
 	TimerSystems::RunSystems(deltaTime);
 	TaskSystems::RunSystems(deltaTime);
 	TeamCommanderSystems::RunSystems(deltaTime);
@@ -68,7 +69,7 @@ void ArgusSystemsManager::RunSystems(UWorld* worldPointer, float deltaTime)
 #endif //!UE_BUILD_SHIPPING
 }
 
-void ArgusSystemsManager::RunPostThreadSystems()
+void ArgusSystemsManager::RunPostThreadSystems(UWorld* worldPointer, float deltaTime)
 {
 	ARGUS_TRACE(ArgusSystemsManager::RunPostThreadSystems);
 	FogOfWarSystems::RunSystems();
@@ -110,7 +111,7 @@ void ArgusSystemsManager::PopulateSingletonComponents(UWorld* worldPointer, cons
 
 void ArgusSystemsManager::SetInitialSingletonState(UWorld* worldPointer, ETeam activePlayerTeam)
 {
-	ArgusEntity singletonEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId);
+	ArgusEntity singletonEntity = ArgusEntity::GetSingletonEntity();
 	if (!singletonEntity)
 	{
 		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] There is no singleton %s when it should have already been made."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity));
@@ -163,4 +164,15 @@ void ArgusSystemsManager::PopulateTeamComponents(const UArgusEntityTemplate* tea
 		teamCommanderComponent->m_teamToCommand = static_cast<ETeam>(1u << (i - 1u));
 		TeamCommanderSystems::InitializeRevealedAreas(teamCommanderComponent);
 	}
+}
+
+void ArgusSystemsManager::UpdateSingletonComponents(UWorld* worldPointer)
+{
+	ARGUS_RETURN_ON_NULL(worldPointer, ArgusECSLog);
+
+	ArgusEntity singletonEntity = ArgusEntity::GetSingletonEntity();
+	WorldReferenceComponent* worldReferenceComponent = singletonEntity.GetComponent<WorldReferenceComponent>();
+	ARGUS_RETURN_ON_NULL(worldReferenceComponent, ArgusECSLog);
+
+	worldReferenceComponent->m_worldPointer = worldPointer;
 }

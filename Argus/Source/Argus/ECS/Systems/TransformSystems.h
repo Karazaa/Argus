@@ -16,6 +16,7 @@ public:
 		uint16  m_navigationIndexOfPredictedLocation;
 	};
 	static void MoveAlongNavigationPath(UWorld* worldPointer, float deltaTime, const TransformSystemsArgs& components);
+	static FVector ProjectLocationOntoNavigationData(UWorld* worldPointer, float navAgentRadius, const FVector& location);
 
 private:
 	static bool ProcessMovementTaskCommands(UWorld* worldPointer, float deltaTime, const TransformSystemsArgs& components);
@@ -27,7 +28,6 @@ private:
 	static void FaceTowardsLocationXY(TransformComponent* transformComponent, FVector vectorFromTransformToTarget);
 	static void OnWithinRangeOfTargetEntity(const TransformSystemsArgs& components);
 	static void OnCompleteNavigationPath(const TransformSystemsArgs& components, const FVector& moverLocation);
-	static FVector ProjectLocationOntoNavigationData(UWorld* worldPointer, const TransformComponent* transformComponent, const FVector& location);
 	static float GetEndMoveRange(const TransformSystemsArgs& components);
 	static void UpdatePassengerLocations(const TransformSystemsArgs& components);
 	static void ShowTraceForFlyingEntity(UWorld* worldPointer, const TransformSystemsArgs& components);
