@@ -345,6 +345,14 @@ bool ArgusEntity::IsOnSameTeamAsOtherEntity(ArgusEntity otherEntity) const
 	return IsOnTeam(otherIdentityComponent->m_team);
 }
 
+bool ArgusEntity::IsOnPlayerTeam() const
+{
+	const InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::GetSingletonEntity().GetComponent<InputInterfaceComponent>();
+	ARGUS_RETURN_ON_NULL_BOOL(inputInterfaceComponent, ArgusECSLog);
+
+	return IsOnTeam(inputInterfaceComponent->m_activePlayerTeam);
+}
+
 bool ArgusEntity::IsFlying() const
 {
 	const TaskComponent* taskComponent = GetComponent<TaskComponent>();

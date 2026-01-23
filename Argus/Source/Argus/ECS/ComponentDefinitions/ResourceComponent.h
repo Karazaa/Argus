@@ -27,4 +27,6 @@ struct ResourceComponent
 	uint32 m_resourceCapacityRecordId = 0u;
 
 	EResourceComponentOwnerType m_resourceComponentOwnerType = EResourceComponentOwnerType::TeamPool;
+
+	float m_bufferRegionRadius = 150.0f;
 };

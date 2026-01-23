@@ -12,10 +12,11 @@ bool AbilitySystemsArgs::PopulateArguments(const ArgusEntity& entity)
 	}
 
 	m_entity = entity;
-	m_taskComponent = entity.GetComponent<TaskComponent>();
 	m_abilityComponent = entity.GetComponent<AbilityComponent>();
+	m_taskComponent = entity.GetComponent<TaskComponent>();
+	m_targetingComponent = entity.GetComponent<TargetingComponent>();
 
-	if (!m_entity || !m_taskComponent || !m_abilityComponent)
+	if (!m_entity || !m_abilityComponent || !m_taskComponent || !m_targetingComponent)
 	{
 		return false;
 	}
@@ -25,7 +26,7 @@ bool AbilitySystemsArgs::PopulateArguments(const ArgusEntity& entity)
 
 bool AbilitySystemsArgs::AreComponentsValidCheck(const WIDECHAR* functionName) const
 {
-	if (UNLIKELY(!m_entity || !m_taskComponent || !m_abilityComponent || !m_reticleComponent))
+	if (UNLIKELY(!m_entity || !m_abilityComponent || !m_taskComponent || !m_targetingComponent || !m_reticleComponent))
 	{
 		ArgusLogging::LogInvalidComponentReferences(functionName, ARGUS_NAMEOF(AbilitySystemsArgs));
 		return false;

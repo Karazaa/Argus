@@ -611,16 +611,16 @@ void UArgusInputManager::ProcessInputEvent(AArgusCameraActor* argusCamera, const
 			ProcessZoomInputEvent(argusCamera, inputType.m_value);
 			break;
 		case InputType::Ability0:
-			ProcessAbilityInputEvent(0u);
+			ProcessAbilityInputEvent(EAbilityIndex::Ability0);
 			break;
 		case InputType::Ability1:
-			ProcessAbilityInputEvent(1u);
+			ProcessAbilityInputEvent(EAbilityIndex::Ability1);
 			break;
 		case InputType::Ability2:
-			ProcessAbilityInputEvent(2u);
+			ProcessAbilityInputEvent(EAbilityIndex::Ability2);
 			break;
 		case InputType::Ability3:
-			ProcessAbilityInputEvent(3u);
+			ProcessAbilityInputEvent(EAbilityIndex::Ability3);
 			break;
 		case InputType::Escape:
 			InputInterfaceSystems::InterruptReticle();
@@ -1068,7 +1068,7 @@ void UArgusInputManager::ProcessZoomInputEvent(AArgusCameraActor* argusCamera, c
 	argusCamera->UpdateCameraZoom(zoomValue);
 }
 
-void UArgusInputManager::ProcessAbilityInputEvent(uint8 abilityIndex)
+void UArgusInputManager::ProcessAbilityInputEvent(EAbilityIndex abilityIndex)
 {
 	if (CVarEnableVerboseArgusInputLogging.GetValueOnGameThread())
 	{
@@ -1171,7 +1171,7 @@ void UArgusInputManager::SetReticleState()
 	}
 
 	reticleComponent->m_reticleLocation = hitResult.Location;
-	reticleComponent->m_isBlocked = SpatialPartitioningSystems::AnyObstaclesOrEntitiesInCircle(reticleComponent->m_reticleLocation, reticleComponent->m_radius);
+	reticleComponent->m_isBlocked = SpatialPartitioningSystems::AnyObstaclesOrStaticEntitiesInCircle(reticleComponent->m_reticleLocation, reticleComponent->m_radius);
 }
 
 void UArgusInputManager::ProcessReticleAbilityForSelectedEntities(const ReticleComponent* reticleComponent)

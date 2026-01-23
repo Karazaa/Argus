@@ -57,7 +57,7 @@ void AbilitySystems::CastAbility(const UAbilityRecord* abilityRecord, const Abil
 		return;
 	}
 
-	if (abilityRecord->GetRequiresReticle())
+	if (abilityRecord->GetRequiresReticle() && components.m_entity.IsOnPlayerTeam())
 	{
 		if (components.m_reticleComponent->m_isBlocked || 
 			(abilityRecord->GetSingleCastPerReticle() && components.m_reticleComponent->m_wasAbilityCast))
@@ -200,6 +200,25 @@ float AbilitySystems::GetRaidusOfConstructionAbility(const UAbilityRecord* abili
 	return transformComponent->m_radius;
 }
 
+EAbilityState AbilitySystems::GetProcessAbilityStateForAbilityIndex(EAbilityIndex index)
+{
+	switch (index)
+	{
+		case EAbilityIndex::Ability0:
+			return EAbilityState::ProcessCastAbility0Command;
+		case EAbilityIndex::Ability1:
+			return EAbilityState::ProcessCastAbility1Command;
+		case EAbilityIndex::Ability2:
+			return EAbilityState::ProcessCastAbility2Command;
+		case EAbilityIndex::Ability3:
+			return EAbilityState::ProcessCastAbility3Command;
+		default:
+			break;
+	}
+
+	return EAbilityState::None;
+}
+
 void AbilitySystems::ProcessAbilityRefundRequests(const AbilitySystemsArgs& components)
 {
 	ARGUS_TRACE(AbilitySystems::ProcessAbilityRefundRequests);
@@ -256,6 +275,7 @@ void AbilitySystems::ProcessAbilityTaskCommands(const AbilitySystemsArgs& compon
 				components.m_taskComponent->m_abilityState = EAbilityState::None;
 				return;
 			}
+			components.m_targetingComponent->SetLocationTarget(components.m_reticleComponent->m_reticleLocation);
 			break;
 
 		default:
@@ -275,7 +295,7 @@ void AbilitySystems::ProcessAbilityTaskCommands(const AbilitySystemsArgs& compon
 		return;
 	}
 
-	if (abilityRecord->GetRequiresReticle() && components.m_taskComponent->m_abilityState != EAbilityState::ProcessCastReticleAbility)
+	if (abilityRecord->GetRequiresReticle() && components.m_entity.IsOnPlayerTeam() && components.m_taskComponent->m_abilityState != EAbilityState::ProcessCastReticleAbility)
 	{
 		PrepReticle(abilityRecord, components);
 		return;
@@ -284,7 +304,7 @@ void AbilitySystems::ProcessAbilityTaskCommands(const AbilitySystemsArgs& compon
 	CastAbility(abilityRecord, components);
 }
 
-bool AbilitySystems::CastSpawnAbility(const UAbilityRecord* abilityRecord, const FAbilityEffect& abilityEffect, const AbilitySystemsArgs& components, bool needsConstruction, bool atReticle)
+bool AbilitySystems::CastSpawnAbility(const UAbilityRecord* abilityRecord, const FAbilityEffect& abilityEffect, const AbilitySystemsArgs& components, bool needsConstruction, bool atTargetLocation)
 {
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
@@ -315,9 +335,9 @@ bool AbilitySystems::CastSpawnAbility(const UAbilityRecord* abilityRecord, const
 	spawnInfo.m_spawningAbilityRecordId = abilityRecord->m_id;
 	spawnInfo.m_timeToCastSeconds = abilityRecord->m_timeToCastSeconds;
 	spawnInfo.m_needsConstruction = needsConstruction;
-	if (atReticle)
+	if (atTargetLocation)
 	{
-		spawnInfo.m_spawnLocationOverride = components.m_reticleComponent->m_reticleLocation;
+		spawnInfo.m_spawnLocationOverride = components.m_targetingComponent->m_targetLocation;
 	}
 	spawningComponent->m_spawnQueue.PushLast(spawnInfo);
 

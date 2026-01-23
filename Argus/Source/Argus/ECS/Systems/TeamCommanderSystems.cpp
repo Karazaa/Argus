@@ -283,6 +283,7 @@ bool TeamCommanderSystems::AssignEntityToConstructResourceSinkIfAble(ArgusEntity
 	FindTargetLocForConstructResourceSink(entity, constructionAbility, teamCommanderComponent);
 	if (TaskComponent* taskComponent = entity.GetComponent<TaskComponent>())
 	{
+		taskComponent->m_abilityState = AbilitySystems::GetProcessAbilityStateForAbilityIndex(abilityIndex);
 		taskComponent->m_directiveFromTeamCommander = priority.m_directive;
 	}
 	priority.m_weight = 0.0f;
@@ -545,34 +546,39 @@ void TeamCommanderSystems::FindTargetLocForConstructResourceSink(ArgusEntity ent
 	ARGUS_RETURN_ON_NULL(worldReferenceComponent, ArgusECSLog);
 	ARGUS_RETURN_ON_NULL(worldReferenceComponent->m_worldPointer, ArgusECSLog);
 
+	TargetingComponent* targetingComponent = entity.GetComponent<TargetingComponent>();
+	if (!targetingComponent)
+	{
+		return;
+	}
+
 	ArgusEntity nearestResourceSource = GetNearestSeenResourceSourceToEntity(entity, teamCommanderComponent);
 	if (!nearestResourceSource)
 	{
 		return;
 	}
 
+	ResourceComponent* resourceSourceResourceComponent = nearestResourceSource.GetComponent<ResourceComponent>();
 	TransformComponent* resourceSourceTransformComponent = nearestResourceSource.GetComponent<TransformComponent>();
 	TransformComponent* transformComponent = entity.GetComponent<TransformComponent>();
+	ARGUS_RETURN_ON_NULL(resourceSourceResourceComponent, ArgusECSLog);
 	ARGUS_RETURN_ON_NULL(resourceSourceTransformComponent, ArgusECSLog);
 	ARGUS_RETURN_ON_NULL(transformComponent, ArgusECSLog);
 
 	const FVector fromSinkToEntity = (transformComponent->m_location - resourceSourceTransformComponent->m_location).GetSafeNormal();
 
-	// TODO JAMES: We may want to establish a "safe zone" around resource sinks where you cannot construct an entity;
-	const float safeZoneDistance = 75.0f;
-
+	const float safeZoneDistance = resourceSourceResourceComponent->m_bufferRegionRadius;
 	const float radiusDistance = AbilitySystems::GetRaidusOfConstructionAbility(abilityRecord);
-
 	FVector candidatePoint = TransformSystems::ProjectLocationOntoNavigationData(worldReferenceComponent->m_worldPointer, radiusDistance, (fromSinkToEntity * (safeZoneDistance + radiusDistance)) + resourceSourceTransformComponent->m_location);
 
-	const bool isBlockedAtLocation = SpatialPartitioningSystems::AnyObstaclesOrEntitiesInCircle(candidatePoint, radiusDistance);
+	const bool isBlockedAtLocation = SpatialPartitioningSystems::AnyObstaclesOrStaticEntitiesInCircle(candidatePoint, radiusDistance);
 	if (isBlockedAtLocation)
 	{
 		// TODO JAMES: Find another location somehow.
 		return;
 	}
 
-
+	targetingComponent->SetLocationTarget(candidatePoint);
 }
 
 ArgusEntity TeamCommanderSystems::GetNearestSeenResourceSourceToEntity(ArgusEntity entity, TeamCommanderComponent* teamCommanderComponent)

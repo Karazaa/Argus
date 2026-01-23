@@ -18,6 +18,8 @@ public:
 	TSoftObjectPtr<UResourceSetRecord> m_resourceCapacityRecordId;
 	UPROPERTY(EditAnywhere)
 	EResourceComponentOwnerType m_resourceComponentOwnerType = EResourceComponentOwnerType::TeamPool;
+	UPROPERTY(EditAnywhere)
+	float m_bufferRegionRadius = 150.0f;
 
 	void InstantiateComponentForEntity(const ArgusEntity& entity) const override;
 	bool MatchesType(UComponentData* other) const override;

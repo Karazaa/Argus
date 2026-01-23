@@ -21,7 +21,7 @@ public:
 	static void AddMultipleSelectedEntitiesExclusive(TArray<uint16>& selectedEntityIds, const UArgusActorRecord* moveToLocationDecalActorRecord);
 	static void RemoveNoLongerSelectableEntities();
 	static bool RemoveAllSelectedEntities(ArgusEntity excludedEntity);
-	static void SetAbilityStateForCastIndex(uint8 abilityIndex);
+	static void SetAbilityStateForCastIndex(EAbilityIndex abilityIndex);
 	static void SetAbilityStateForReticleAbility(const ReticleComponent* reticleComponent);
 	static void ChangeActiveAbilityGroup();
 

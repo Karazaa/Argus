@@ -375,22 +375,36 @@ bool SpatialPartitioningSystems::IsPointInLineOfSightOfEntity(ArgusEntity source
 	return true;
 }
 
-bool SpatialPartitioningSystems::AnyObstaclesOrEntitiesInCircle(const FVector& center, float radius)
+bool SpatialPartitioningSystems::AnyObstaclesOrStaticEntitiesInCircle(const FVector& center, float radius)
 {
 	SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::GetSingletonEntity().GetComponent<SpatialPartitioningComponent>();
 	ARGUS_RETURN_ON_NULL_BOOL(spatialPartitioningComponent, ArgusInputLog);
 
-	TArray<uint16> nearbyArgusEntityIds;
-	spatialPartitioningComponent->m_argusEntityKDTree.FindArgusEntityIdsWithinRangeOfLocation(nearbyArgusEntityIds, center, radius);
-	bool anyFound = nearbyArgusEntityIds.Num() > 0;
+	TArray<ObstacleIndicies> obstacleIndicies;
+	FVector location = ArgusMath::ToCartesianVector(center);
+	location.Z = 0.0f;
+	spatialPartitioningComponent->m_obstaclePointKDTree.FindObstacleIndiciesWithinRangeOfLocation(obstacleIndicies, location, radius);
+	bool anyFound = obstacleIndicies.Num() > 0;
 
 	if (!anyFound)
 	{
-		TArray<ObstacleIndicies> obstacleIndicies;
-		FVector location = ArgusMath::ToCartesianVector(center);
-		location.Z = 0.0f;
-		spatialPartitioningComponent->m_obstaclePointKDTree.FindObstacleIndiciesWithinRangeOfLocation(obstacleIndicies, location, radius);
-		anyFound = obstacleIndicies.Num() > 0;
+		TArray<uint16> nearbyArgusEntityIds;
+		spatialPartitioningComponent->m_argusEntityKDTree.FindArgusEntityIdsWithinRangeOfLocation(nearbyArgusEntityIds, center, radius, [](const ArgusEntityKDTreeNode* node)
+		{
+			if (!node)
+			{
+				return false;
+			}
+
+			ArgusEntity entity = ArgusEntity::RetrieveEntity(node->m_entityId);
+			if (!entity)
+			{
+				return false;
+			}
+
+			return !entity.IsMoveable();
+		});
+		anyFound = nearbyArgusEntityIds.Num() > 0;
 	}
 
 	return anyFound;

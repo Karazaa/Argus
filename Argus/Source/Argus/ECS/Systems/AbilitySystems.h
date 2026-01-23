@@ -20,10 +20,12 @@ public:
 	static const UArgusEntityTemplate* GetEntityTemplateForConstructionAbility(const UAbilityRecord* abilityRecord);
 	static float GetRaidusOfConstructionAbility(const UAbilityRecord* abilityRecord);
 
+	static EAbilityState GetProcessAbilityStateForAbilityIndex(EAbilityIndex index);
+
 private:
 	static void ProcessAbilityRefundRequests(const AbilitySystemsArgs& components);
 	static void ProcessAbilityTaskCommands(const AbilitySystemsArgs& components);
-	static bool CastSpawnAbility(const UAbilityRecord* abilityRecord, const FAbilityEffect& abilityEffect, const AbilitySystemsArgs& components, bool needsConstruction, bool atReticle);
+	static bool CastSpawnAbility(const UAbilityRecord* abilityRecord, const FAbilityEffect& abilityEffect, const AbilitySystemsArgs& components, bool needsConstruction, bool atTargetLocation);
 	static bool CastHealAbility(const UAbilityRecord* abilityRecord, const FAbilityEffect& abilityEffect, const AbilitySystemsArgs& components);
 	static bool CastAttackAbility(const UAbilityRecord* abilityRecord, const FAbilityEffect& abilityEffect, const AbilitySystemsArgs& components);
 	static bool CastVacateAbility(const UAbilityRecord* abilityRecord, const FAbilityEffect& abilityEffect, const AbilitySystemsArgs& components);

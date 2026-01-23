@@ -22,6 +22,7 @@ void ResourceComponent::Reset()
 	m_currentResources.Reset();
 	m_resourceCapacityRecordId = 0u;
 	m_resourceComponentOwnerType = EResourceComponentOwnerType::TeamPool;
+	m_bufferRegionRadius = 150.0f;
 }
 
 void ResourceComponent::DrawComponentDebug() const
@@ -65,6 +66,11 @@ void ResourceComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		const char* valueName_m_resourceComponentOwnerType = ARGUS_FSTRING_TO_CHAR(StaticEnum<EResourceComponentOwnerType>()->GetNameStringByValue(static_cast<uint8>(m_resourceComponentOwnerType)))
 		ImGui::Text(valueName_m_resourceComponentOwnerType);
+		ImGui::NewLine();
+		ImGui::TableNextColumn();
+		ImGui::Text("m_bufferRegionRadius");
+		ImGui::TableNextColumn();
+		ImGui::Text("%.2f", m_bufferRegionRadius);
 		ImGui::NewLine();
 		ImGui::EndTable();
 	}

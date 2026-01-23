@@ -149,7 +149,7 @@ private:
 	void ProcessMoveToInputEvent(bool onAttackMove = false);
 	void ProcessSetWaypointInputEvent();
 	void ProcessZoomInputEvent(AArgusCameraActor* argusCamera, const FInputActionValue& value);
-	void ProcessAbilityInputEvent(uint8 abilityIndex);
+	void ProcessAbilityInputEvent(EAbilityIndex abilityIndex);
 	void ProcessEscapeInputEvent();
 	void ProcessRotateCameraInputEvent(AArgusCameraActor* argusCamera, const FInputActionValue& value);
 	void ProcessControlGroup(uint8 controlGroupIndex, AArgusCameraActor* argusCamera);

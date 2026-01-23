@@ -13,6 +13,7 @@ void UResourceComponentData::InstantiateComponentForEntity(const ArgusEntity& en
 	ResourceComponentRef->m_currentResources = m_currentResources;
 	ResourceComponentRef->m_resourceCapacityRecordId = m_resourceCapacityRecordId.LoadSynchronous() ? m_resourceCapacityRecordId.LoadSynchronous()->m_id : 0u;
 	ResourceComponentRef->m_resourceComponentOwnerType = m_resourceComponentOwnerType;
+	ResourceComponentRef->m_bufferRegionRadius = m_bufferRegionRadius;
 }
 
 bool UResourceComponentData::MatchesType(UComponentData* other) const

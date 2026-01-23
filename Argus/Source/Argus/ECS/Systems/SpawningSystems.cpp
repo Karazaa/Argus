@@ -122,7 +122,7 @@ void SpawningSystems::SpawnEntityInternal(const SpawningSystemsArgs& components,
 			{
 				constructionComponent->m_automaticConstructionTimerHandle.StartTimer(spawnedEntity, constructionComponent->m_requiredWorkSeconds);
 			}
-			else if (constructionComponent->m_constructionType == EConstructionType::Manual)
+			else if (constructionComponent->m_constructionType == EConstructionType::Manual && spawnedEntity.IsOnPlayerTeam())
 			{
 				CommandMoveSelectedEntitiesToSpawnedEntity(spawnedEntity, true);
 			}

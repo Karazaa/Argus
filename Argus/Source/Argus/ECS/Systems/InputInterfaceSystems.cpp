@@ -4,7 +4,7 @@
 #include "ArgusActor.h"
 #include "ArgusGameInstance.h"
 #include "ArgusLogging.h"
-#include "ArgusMacros.h"
+#include "Systems/AbilitySystems.h"
 #include "Systems/AvoidanceSystems.h"
 #include "Systems/DecalSystems.h"
 
@@ -167,7 +167,7 @@ bool InputInterfaceSystems::RemoveAllSelectedEntities(ArgusEntity excludedEntity
 	return wasExcludedEntityPresent;
 }
 
-void InputInterfaceSystems::SetAbilityStateForCastIndex(uint8 abilityIndex)
+void InputInterfaceSystems::SetAbilityStateForCastIndex(EAbilityIndex abilityIndex)
 {
 	IterateActiveAbilityGroupEntities([abilityIndex](ArgusEntity selectedEntity)
 	{
@@ -177,23 +177,7 @@ void InputInterfaceSystems::SetAbilityStateForCastIndex(uint8 abilityIndex)
 			return;
 		}
 
-		switch (abilityIndex)
-		{
-			case 0u:
-				taskComponent->m_abilityState = EAbilityState::ProcessCastAbility0Command;
-				break;
-			case 1u:
-				taskComponent->m_abilityState = EAbilityState::ProcessCastAbility1Command;
-				break;
-			case 2u:
-				taskComponent->m_abilityState = EAbilityState::ProcessCastAbility2Command;
-				break;
-			case 3u:
-				taskComponent->m_abilityState = EAbilityState::ProcessCastAbility3Command;
-				break;
-			default:
-				break;
-		}
+		taskComponent->m_abilityState = AbilitySystems::GetProcessAbilityStateForAbilityIndex(abilityIndex);
 	});
 }
 
