@@ -558,20 +558,18 @@ void TeamCommanderSystems::FindTargetLocForConstructResourceSink(ArgusEntity ent
 		return;
 	}
 
-	ResourceComponent* resourceSourceResourceComponent = nearestResourceSource.GetComponent<ResourceComponent>();
 	TransformComponent* resourceSourceTransformComponent = nearestResourceSource.GetComponent<TransformComponent>();
 	TransformComponent* transformComponent = entity.GetComponent<TransformComponent>();
-	ARGUS_RETURN_ON_NULL(resourceSourceResourceComponent, ArgusECSLog);
 	ARGUS_RETURN_ON_NULL(resourceSourceTransformComponent, ArgusECSLog);
 	ARGUS_RETURN_ON_NULL(transformComponent, ArgusECSLog);
 
 	const FVector fromSinkToEntity = (transformComponent->m_location - resourceSourceTransformComponent->m_location).GetSafeNormal();
 
-	const float safeZoneDistance = resourceSourceResourceComponent->m_bufferRegionRadius;
+	const float safeZoneDistance = AbilitySystems::GetResourceBufferRadiusOfConstructionAbility(abilityRecord);
 	const float radiusDistance = AbilitySystems::GetRaidusOfConstructionAbility(abilityRecord);
-	FVector candidatePoint = TransformSystems::ProjectLocationOntoNavigationData(worldReferenceComponent->m_worldPointer, radiusDistance, (fromSinkToEntity * (safeZoneDistance + radiusDistance)) + resourceSourceTransformComponent->m_location);
+	FVector candidatePoint = TransformSystems::ProjectLocationOntoNavigationData(worldReferenceComponent->m_worldPointer, radiusDistance, (fromSinkToEntity * (safeZoneDistance + ArgusECSConstants::k_resourceSinkBufferDistanceAdjustment)) + resourceSourceTransformComponent->m_location);
 
-	const bool isBlockedAtLocation = SpatialPartitioningSystems::AnyObstaclesOrStaticEntitiesInCircle(candidatePoint, radiusDistance);
+	const bool isBlockedAtLocation = SpatialPartitioningSystems::AnyObstaclesOrStaticEntitiesInCircle(candidatePoint, radiusDistance, safeZoneDistance);
 	if (isBlockedAtLocation)
 	{
 		// TODO JAMES: Find another location somehow.

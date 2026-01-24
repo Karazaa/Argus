@@ -17,7 +17,7 @@ public:
 	static float FindAreaOfObstacleCartesian(const ObstaclePointArray& obstaclePoints);
 	static bool IsEntityInLineOfSightOfOther(ArgusEntity sourceEntity, ArgusEntity targetEntity);
 	static bool IsPointInLineOfSightOfEntity(ArgusEntity sourceEntity, const FVector& targetLocation);
-	static bool AnyObstaclesOrStaticEntitiesInCircle(const FVector& center, float radius);
+	static bool AnyObstaclesOrStaticEntitiesInCircle(const FVector& center, float radius, float resourceSourceBufferRadius);
 
 private:
 	static void ClearSeenByStatus();

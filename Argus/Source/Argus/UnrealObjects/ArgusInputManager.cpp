@@ -11,6 +11,7 @@
 #include "ArgusTesting.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedPlayerInput.h"
+#include "Systems/AbilitySystems.h"
 #include "Systems/DecalSystems.h"
 #include "Systems/InputInterfaceSystems.h"
 #include "Systems/SpatialPartitioningSystems.h"
@@ -1150,18 +1151,18 @@ void UArgusInputManager::SetReticleState()
 		return;
 	}
 
+	const UAbilityRecord* abilityRecord = ArgusStaticData::GetRecord<UAbilityRecord>(reticleComponent->m_abilityRecordId);
+	ARGUS_RETURN_ON_NULL(abilityRecord, ArgusInputLog);
+
 	if (reticleComponent->m_wasAbilityCast)
 	{
-		if (const UAbilityRecord* abilityRecord = ArgusStaticData::GetRecord<UAbilityRecord>(reticleComponent->m_abilityRecordId))
+		if (abilityRecord->GetDisableReticleAfterCast())
 		{
-			if (abilityRecord->GetDisableReticleAfterCast())
-			{
-				reticleComponent->DisableReticle();
-				return;
-			}
-			
-			reticleComponent->m_wasAbilityCast = false;
+			reticleComponent->DisableReticle();
+			return;
 		}
+
+		reticleComponent->m_wasAbilityCast = false;
 	}
 
 	FHitResult hitResult;
@@ -1171,7 +1172,7 @@ void UArgusInputManager::SetReticleState()
 	}
 
 	reticleComponent->m_reticleLocation = hitResult.Location;
-	reticleComponent->m_isBlocked = SpatialPartitioningSystems::AnyObstaclesOrStaticEntitiesInCircle(reticleComponent->m_reticleLocation, reticleComponent->m_radius);
+	reticleComponent->m_isBlocked = SpatialPartitioningSystems::AnyObstaclesOrStaticEntitiesInCircle(reticleComponent->m_reticleLocation, reticleComponent->m_radius, AbilitySystems::GetResourceBufferRadiusOfConstructionAbility(abilityRecord));
 }
 
 void UArgusInputManager::ProcessReticleAbilityForSelectedEntities(const ReticleComponent* reticleComponent)

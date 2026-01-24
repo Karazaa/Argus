@@ -4,6 +4,7 @@
 #include "ArgusLogging.h"
 #include "ArgusStaticData.h"
 #include "ComponentDependencies/SpawnEntityInfo.h"
+#include "DataComponentDefinitions/ResourceComponentData.h"
 #include "DataComponentDefinitions/TransformComponentData.h"
 #include "Systems/ResourceSystems.h"
 
@@ -198,6 +199,20 @@ float AbilitySystems::GetRaidusOfConstructionAbility(const UAbilityRecord* abili
 	ARGUS_RETURN_ON_NULL_VALUE(transformComponent, ArgusECSLog, 0.0f);
 
 	return transformComponent->m_radius;
+}
+
+float AbilitySystems::GetResourceBufferRadiusOfConstructionAbility(const UAbilityRecord* abilityRecord)
+{
+	const UArgusEntityTemplate* entityTemplate = GetEntityTemplateForConstructionAbility(abilityRecord);
+	ARGUS_RETURN_ON_NULL_VALUE(entityTemplate, ArgusECSLog, 0.0f);
+
+	const UResourceComponentData* resourceComponent = entityTemplate->GetComponentFromTemplate<UResourceComponentData>();
+	if (!resourceComponent)
+	{
+		return 0.0f;
+	}
+
+	return resourceComponent->m_bufferRegionRadius;
 }
 
 EAbilityState AbilitySystems::GetProcessAbilityStateForAbilityIndex(EAbilityIndex index)

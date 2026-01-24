@@ -19,6 +19,7 @@ public:
 
 	static const UArgusEntityTemplate* GetEntityTemplateForConstructionAbility(const UAbilityRecord* abilityRecord);
 	static float GetRaidusOfConstructionAbility(const UAbilityRecord* abilityRecord);
+	static float GetResourceBufferRadiusOfConstructionAbility(const UAbilityRecord* abilityRecord);
 
 	static EAbilityState GetProcessAbilityStateForAbilityIndex(EAbilityIndex index);
 

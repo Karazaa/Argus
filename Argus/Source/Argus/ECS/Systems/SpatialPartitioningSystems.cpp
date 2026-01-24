@@ -375,7 +375,7 @@ bool SpatialPartitioningSystems::IsPointInLineOfSightOfEntity(ArgusEntity source
 	return true;
 }
 
-bool SpatialPartitioningSystems::AnyObstaclesOrStaticEntitiesInCircle(const FVector& center, float radius)
+bool SpatialPartitioningSystems::AnyObstaclesOrStaticEntitiesInCircle(const FVector& center, float radius, float resourceSourceBufferRadius)
 {
 	SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::GetSingletonEntity().GetComponent<SpatialPartitioningComponent>();
 	ARGUS_RETURN_ON_NULL_BOOL(spatialPartitioningComponent, ArgusInputLog);
@@ -389,7 +389,7 @@ bool SpatialPartitioningSystems::AnyObstaclesOrStaticEntitiesInCircle(const FVec
 	if (!anyFound)
 	{
 		TArray<uint16> nearbyArgusEntityIds;
-		spatialPartitioningComponent->m_argusEntityKDTree.FindArgusEntityIdsWithinRangeOfLocation(nearbyArgusEntityIds, center, radius, [](const ArgusEntityKDTreeNode* node)
+		spatialPartitioningComponent->m_argusEntityKDTree.FindArgusEntityIdsWithinRangeOfLocation(nearbyArgusEntityIds, center, radius + resourceSourceBufferRadius, [&center, radius, resourceSourceBufferRadius](const ArgusEntityKDTreeNode* node)
 		{
 			if (!node)
 			{
@@ -402,7 +402,24 @@ bool SpatialPartitioningSystems::AnyObstaclesOrStaticEntitiesInCircle(const FVec
 				return false;
 			}
 
-			return !entity.IsMoveable();
+			if (entity.IsMoveable())
+			{
+				return false;
+			}
+
+			const float distSquared = FVector::DistSquared2D(node->m_worldSpaceLocation, center);
+			if (distSquared < FMath::Square(radius))
+			{
+				return true;
+			}
+
+			ResourceComponent* resourceComponent = entity.GetComponent<ResourceComponent>();
+			if (!resourceComponent)
+			{
+				return false;
+			}
+
+			return (resourceComponent->m_resourceComponentOwnerType == EResourceComponentOwnerType::Source) && (distSquared < FMath::Square(resourceSourceBufferRadius));
 		});
 		anyFound = nearbyArgusEntityIds.Num() > 0;
 	}
