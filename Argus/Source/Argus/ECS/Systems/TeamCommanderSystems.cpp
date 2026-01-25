@@ -274,18 +274,19 @@ bool TeamCommanderSystems::AssignEntityToConstructResourceSinkIfAble(ArgusEntity
 
 	EAbilityIndex abilityIndex = EAbilityIndex::None;
 	const UAbilityRecord* constructionAbility = GetConstructResourceSinkAbility(entity, abilityIndex);
-	if (!constructionAbility || abilityIndex == EAbilityIndex::None || !ResourceSystems::CanEntityAffordTeamResourceChange(entity, constructionAbility->m_requiredResourceChangeToCast))
+	TaskComponent* taskComponent = entity.GetComponent<TaskComponent>();
+	if (!constructionAbility || abilityIndex == EAbilityIndex::None || !ResourceSystems::CanEntityAffordTeamResourceChange(entity, constructionAbility->m_requiredResourceChangeToCast) || !taskComponent)
 	{
 		return false;
 	}
 
-	// TODO JAMES: For now, temporarily nuking construction priority so that only one entity is assigned to construction at a time. This will stay in place until the actual construction logic is authored.
-	FindTargetLocForConstructResourceSink(entity, constructionAbility, teamCommanderComponent);
-	if (TaskComponent* taskComponent = entity.GetComponent<TaskComponent>())
+	if (!FindTargetLocForConstructResourceSink(entity, constructionAbility, teamCommanderComponent))
 	{
-		taskComponent->m_abilityState = AbilitySystems::GetProcessAbilityStateForAbilityIndex(abilityIndex);
-		taskComponent->m_directiveFromTeamCommander = priority.m_directive;
+		return false;
 	}
+
+	taskComponent->m_abilityState = AbilitySystems::GetProcessAbilityStateForAbilityIndex(abilityIndex);
+	taskComponent->m_directiveFromTeamCommander = priority.m_directive;
 	priority.m_weight = 0.0f;
 	teamCommanderComponent->m_priorities.Sort();
 
@@ -537,46 +538,67 @@ bool TeamCommanderSystems::DoesAbilityConstructResourceSink(const UAbilityRecord
 	return true;
 }
 
-void TeamCommanderSystems::FindTargetLocForConstructResourceSink(ArgusEntity entity, const UAbilityRecord* abilityRecord, TeamCommanderComponent* teamCommanderComponent)
+bool TeamCommanderSystems::FindTargetLocForConstructResourceSink(ArgusEntity entity, const UAbilityRecord* abilityRecord, TeamCommanderComponent* teamCommanderComponent)
 {
-	ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
-	ARGUS_RETURN_ON_NULL(abilityRecord, ArgusECSLog);
+	ARGUS_RETURN_ON_NULL_BOOL(teamCommanderComponent, ArgusECSLog);
+	ARGUS_RETURN_ON_NULL_BOOL(abilityRecord, ArgusECSLog);
 
 	WorldReferenceComponent* worldReferenceComponent = ArgusEntity::GetSingletonEntity().GetComponent<WorldReferenceComponent>();
-	ARGUS_RETURN_ON_NULL(worldReferenceComponent, ArgusECSLog);
-	ARGUS_RETURN_ON_NULL(worldReferenceComponent->m_worldPointer, ArgusECSLog);
+	ARGUS_RETURN_ON_NULL_BOOL(worldReferenceComponent, ArgusECSLog);
+	ARGUS_RETURN_ON_NULL_BOOL(worldReferenceComponent->m_worldPointer, ArgusECSLog);
 
 	TargetingComponent* targetingComponent = entity.GetComponent<TargetingComponent>();
 	if (!targetingComponent)
 	{
-		return;
+		return false;
 	}
 
 	ArgusEntity nearestResourceSource = GetNearestSeenResourceSourceToEntity(entity, teamCommanderComponent);
 	if (!nearestResourceSource)
 	{
-		return;
+		return false;
 	}
 
 	TransformComponent* resourceSourceTransformComponent = nearestResourceSource.GetComponent<TransformComponent>();
 	TransformComponent* transformComponent = entity.GetComponent<TransformComponent>();
-	ARGUS_RETURN_ON_NULL(resourceSourceTransformComponent, ArgusECSLog);
-	ARGUS_RETURN_ON_NULL(transformComponent, ArgusECSLog);
+	ARGUS_RETURN_ON_NULL_BOOL(resourceSourceTransformComponent, ArgusECSLog);
+	ARGUS_RETURN_ON_NULL_BOOL(transformComponent, ArgusECSLog);
 
-	const FVector fromSinkToEntity = (transformComponent->m_location - resourceSourceTransformComponent->m_location).GetSafeNormal();
+	FVector fromSinkToEntity = (transformComponent->m_location - resourceSourceTransformComponent->m_location).GetSafeNormal();
 
 	const float safeZoneDistance = AbilitySystems::GetResourceBufferRadiusOfConstructionAbility(abilityRecord);
 	const float radiusDistance = AbilitySystems::GetRaidusOfConstructionAbility(abilityRecord);
-	FVector candidatePoint = TransformSystems::ProjectLocationOntoNavigationData(worldReferenceComponent->m_worldPointer, radiusDistance, (fromSinkToEntity * (safeZoneDistance + ArgusECSConstants::k_resourceSinkBufferDistanceAdjustment)) + resourceSourceTransformComponent->m_location);
 
-	const bool isBlockedAtLocation = SpatialPartitioningSystems::AnyObstaclesOrStaticEntitiesInCircle(candidatePoint, radiusDistance, safeZoneDistance);
-	if (isBlockedAtLocation)
+	FVector candidatePoint = (fromSinkToEntity * (safeZoneDistance + ArgusECSConstants::k_resourceSinkBufferDistanceAdjustment)) +   resourceSourceTransformComponent->m_location;
+	bool isBlocked = SpatialPartitioningSystems::AnyObstaclesOrStaticEntitiesInCircle(candidatePoint, radiusDistance, safeZoneDistance);
+
+	if (isBlocked)
 	{
-		// TODO JAMES: Find another location somehow.
-		return;
+		FVector2D candidate2D = FVector2D(candidatePoint);
+		const int32 numIterations = 16;
+		const float angleOffset = ArgusMath::SafeDivide(UE_TWO_PI, static_cast<float>(numIterations));
+
+		for (int32 i = 0; i < numIterations; ++i)
+		{
+			candidate2D = candidate2D.GetRotated(angleOffset);
+			candidatePoint.X = candidate2D.X;
+			candidatePoint.Y = candidate2D.Y;
+
+			if (!SpatialPartitioningSystems::AnyObstaclesOrStaticEntitiesInCircle(candidatePoint, radiusDistance, safeZoneDistance))
+			{
+				isBlocked = false;
+				break;
+			}
+		}
 	}
 
-	targetingComponent->SetLocationTarget(candidatePoint);
+	if (isBlocked)
+	{
+		return false;
+	}
+
+	targetingComponent->SetLocationTarget(TransformSystems::ProjectLocationOntoNavigationData(worldReferenceComponent->m_worldPointer, radiusDistance, candidatePoint));
+	return true;
 }
 
 ArgusEntity TeamCommanderSystems::GetNearestSeenResourceSourceToEntity(ArgusEntity entity, TeamCommanderComponent* teamCommanderComponent)
