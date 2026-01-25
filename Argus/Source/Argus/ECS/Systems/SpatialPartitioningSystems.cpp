@@ -79,7 +79,7 @@ void SpatialPartitioningSystems::CacheAdjacentEntityIds(const SpatialPartitionin
 		float adjacentEntityRange = transformComponent->m_radius;
 		if (const VelocityComponent* velocityComponent = entity.GetComponent<VelocityComponent>())
 		{
-			adjacentEntityRange += velocityComponent->m_desiredSpeedUnitsPerSecond;
+			adjacentEntityRange += velocityComponent->m_desiredSpeedUnitsPerSecond * ArgusECSConstants::k_avoidanceEntityDetectionPredictionTime;
 		}
 
 		const TFunction<bool(const ArgusEntityKDTreeNode*)> queryFilter = [entity](const ArgusEntityKDTreeNode* entityNode)
@@ -407,8 +407,8 @@ bool SpatialPartitioningSystems::AnyObstaclesOrStaticEntitiesInCircle(const FVec
 				return false;
 			}
 
-			const float distSquared = FVector::DistSquared2D(node->m_worldSpaceLocation, center);
-			if (distSquared < FMath::Square(radius))
+			const float distance = FVector::Dist2D(node->m_worldSpaceLocation, center) - node->m_radius;
+			if (distance < radius)
 			{
 				return true;
 			}
@@ -419,7 +419,7 @@ bool SpatialPartitioningSystems::AnyObstaclesOrStaticEntitiesInCircle(const FVec
 				return false;
 			}
 
-			return (resourceComponent->m_resourceComponentOwnerType == EResourceComponentOwnerType::Source) && (distSquared < FMath::Square(resourceSourceBufferRadius));
+			return (resourceComponent->m_resourceComponentOwnerType == EResourceComponentOwnerType::Source) && (distance < resourceSourceBufferRadius);
 		});
 		anyFound = nearbyArgusEntityIds.Num() > 0;
 	}

@@ -715,7 +715,8 @@ float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems
 	if (ShouldReturnCombatEffortCoefficient(sourceEntityComponents, foundEntityTaskComponent, effortCoefficient) ||
 		ShouldReturnConstructionEffortCoefficient(sourceEntityComponents, foundEntityTaskComponent, effortCoefficient) ||
 		ShouldReturnResourceExtractionEffortCoefficient(sourceEntityComponents, foundEntityTaskComponent, effortCoefficient) ||
-		ShouldReturnCarrierEffortCoefficient(sourceEntityComponents, foundEntity, foundEntityTaskComponent, effortCoefficient) || 
+		ShouldReturnCarrierEffortCoefficient(sourceEntityComponents, foundEntity, foundEntityTaskComponent, effortCoefficient) ||
+		ShouldReturnTargetEffortCoefficient(sourceEntityComponents, foundEntity, effortCoefficient) ||
 		ShouldReturnStaticFlockingEffortCoefficient(sourceEntityComponents, foundEntity, effortCoefficient) ||
 		ShouldReturnAvoidancePriorityEffortCoefficient(sourceEntityAvoidanceGroupingComponent, foundEntityAvoidanceGroupingComponent, effortCoefficient) ||
 		ShouldReturnMovementTaskEffortCoefficient(sourceEntityComponents, foundEntity, foundEntityTaskComponent, inSameAvoidanceGroup, effortCoefficient))
@@ -822,17 +823,15 @@ bool AvoidanceSystems::ShouldReturnCarrierEffortCoefficient(const TransformSyste
 		return false;
 	}
 
-	const TargetingComponent* sourceEntityTargetingComponent = sourceEntityComponents.m_entity.GetComponent<TargetingComponent>();
 	const TargetingComponent* foundEntityTargetingComponent = foundEntity.GetComponent<TargetingComponent>();
 	const PassengerComponent* sourceEntityPassengerComponent = sourceEntityComponents.m_entity.GetComponent<PassengerComponent>();
 	const CarrierComponent* sourceEntityCarrierComponent = sourceEntityComponents.m_entity.GetComponent<CarrierComponent>();
 	const PassengerComponent* foundEntityPassengerComponent = foundEntity.GetComponent<PassengerComponent>();
 	const CarrierComponent* foundEntityCarrierComponent = foundEntity.GetComponent<CarrierComponent>();
-	if (sourceEntityTargetingComponent &&
-		sourceEntityPassengerComponent &&
+	if (sourceEntityPassengerComponent &&
 		foundEntityCarrierComponent &&
-		sourceEntityTargetingComponent->HasEntityTarget() &&
-		sourceEntityTargetingComponent->m_targetEntityId == foundEntity.GetId() &&
+		sourceEntityComponents.m_targetingComponent->HasEntityTarget() &&
+		sourceEntityComponents.m_targetingComponent->m_targetEntityId == foundEntity.GetId() &&
 		sourceEntityComponents.m_taskComponent->m_movementState == EMovementState::MoveToEntity)
 	{
 		coefficient = 0.0f;
@@ -845,6 +844,24 @@ bool AvoidanceSystems::ShouldReturnCarrierEffortCoefficient(const TransformSyste
 		foundEntityTargetingComponent->HasEntityTarget() &&
 		foundEntityTargetingComponent->m_targetEntityId == sourceEntityComponents.m_entity.GetId() &&
 		foundEntityTaskComponent->m_movementState == EMovementState::MoveToEntity)
+	{
+		coefficient = 0.0f;
+		return true;
+	}
+
+	return false;
+}
+
+bool AvoidanceSystems::ShouldReturnTargetEffortCoefficient(const TransformSystemsArgs& sourceEntityComponents, const ArgusEntity& foundEntity, float& coefficient)
+{
+	if (!sourceEntityComponents.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return false;
+	}
+
+	if (sourceEntityComponents.m_targetingComponent->HasEntityTarget() &&
+		sourceEntityComponents.m_targetingComponent->m_targetEntityId == foundEntity.GetId() &&
+		(sourceEntityComponents.m_taskComponent->m_movementState == EMovementState::MoveToEntity || sourceEntityComponents.m_taskComponent->m_movementState == EMovementState::InRangeOfTargetEntity))
 	{
 		coefficient = 0.0f;
 		return true;

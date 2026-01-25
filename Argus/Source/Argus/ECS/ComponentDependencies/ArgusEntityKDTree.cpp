@@ -57,7 +57,7 @@ bool ArgusEntityKDTreeNode::ShouldSkipNode(TFunction<bool(const ArgusEntityKDTre
 
 bool ArgusEntityKDTreeNode::PassesRangeCheck(const FVector& targetLocation, float rangeSquared, float& nodeRangeSquared) const
 {
-	nodeRangeSquared = FVector::DistSquared2D(GetLocation(), targetLocation) - (m_radius * m_radius);
+	nodeRangeSquared = FMath::Square(FVector::Dist2D(GetLocation(), targetLocation) - m_radius);
 	return nodeRangeSquared < rangeSquared;
 }
 
