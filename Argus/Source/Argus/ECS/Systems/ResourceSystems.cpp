@@ -130,7 +130,7 @@ void ResourceSystems::ProcessResourceDepositing(const ResourceSystemsArgs& compo
 		return;
 	}
 
-	DepositResources(components);
+	DepositResources(components, targetEntity);
 }
 
 bool ResourceSystems::ExtractResources(const ResourceSystemsArgs& components)
@@ -166,26 +166,30 @@ bool ResourceSystems::ExtractResources(const ResourceSystemsArgs& components)
 
 	if (resourceCapacityRecord)
 	{
-		return components.m_resourceComponent->m_currentResources < resourceCapacityRecord->m_resourceSet;
+		return !components.m_resourceComponent->m_currentResources.IsEntirelyAtCap(resourceCapacityRecord->m_resourceSet.MaskResourceSet(extractionTargetResourceComponent->m_currentResources));
 	}
 
 	return true;
 }
 
-void ResourceSystems::DepositResources(const ResourceSystemsArgs& components)
+void ResourceSystems::DepositResources(const ResourceSystemsArgs& components, ArgusEntity targetEntity)
 {
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return;
 	}
 
-	ResourceComponent* teamResourceComponent = GetTeamResourceComponentForEntity(components.m_entity);
-	if (!teamResourceComponent)
+	const ResourceComponent* resourceComponent = targetEntity.GetComponent<ResourceComponent>();
+	if (!resourceComponent || resourceComponent->m_resourceComponentOwnerType != EResourceComponentOwnerType::Sink)
 	{
+		ClearResourceGatheringForEntity(components);
 		return;
 	}
 
-	TransferResourcesBetweenComponents(components.m_resourceComponent, teamResourceComponent, components.m_resourceComponent->m_currentResources);
+	ResourceComponent* teamResourceComponent = GetTeamResourceComponentForEntity(components.m_entity);
+	ARGUS_RETURN_ON_NULL(teamResourceComponent, ArgusECSLog);
+
+	TransferResourcesBetweenComponents(components.m_resourceComponent, teamResourceComponent, components.m_resourceComponent->m_currentResources.MaskResourceSet(resourceComponent->m_currentResources));
 	MoveToLastExtractionSource(components);
 }
 
@@ -202,32 +206,15 @@ void ResourceSystems::MoveToNearestDepositSink(const ResourceSystemsArgs& compon
 		return;
 	}
 
-	const uint16 entityId = components.m_entity.GetId();
-	TFunction<bool(const ArgusEntityKDTreeNode*)> queryFilter = [entityId](const ArgusEntityKDTreeNode* entityNode)
+	TFunction<bool(const ArgusEntityKDTreeNode*)> queryFilter = [&components](const ArgusEntityKDTreeNode* entityNode)
 	{
 		ARGUS_RETURN_ON_NULL_BOOL(entityNode, ArgusECSLog);
-		if (entityNode->m_entityId == entityId)
+		if (entityNode->m_entityId == components.m_entity.GetId())
 		{
 			return false;
 		}
 
-		const ArgusEntity nodeEntity = ArgusEntity::RetrieveEntity(entityNode->m_entityId);
-		if (!nodeEntity.IsAlive())
-		{
-			return false;
-		}
-
-		const ArgusEntity entity = ArgusEntity::RetrieveEntity(entityId);
-		const IdentityComponent* identityComponent = entity.GetComponent<IdentityComponent>();
-		const IdentityComponent* nodeIdentityComponent = nodeEntity.GetComponent<IdentityComponent>();
-		const ResourceComponent* nodeResourceComponent = nodeEntity.GetComponent<ResourceComponent>();
-		if (!identityComponent || !nodeIdentityComponent || !nodeResourceComponent)
-		{
-			return false;
-		}
-
-		return (identityComponent->m_team == nodeIdentityComponent->m_team) && 
-				nodeResourceComponent->m_resourceComponentOwnerType == EResourceComponentOwnerType::Sink;
+		return CanEntityDepositResourcesToOtherEntity(components.m_entity, ArgusEntity::RetrieveEntity(entityNode->m_entityId));
 	};
 
 	const uint16 targetDepositEntityId = spatialPartitioningComponent->m_argusEntityKDTree.FindOtherArgusEntityIdClosestToArgusEntity(components.m_entity, queryFilter);
@@ -318,6 +305,11 @@ bool ResourceSystems::CanEntityDepositResourcesToOtherEntity(const ArgusEntity& 
 		return false;
 	}
 
+	if (!entity.IsOnSameTeamAsOtherEntity(otherEntity))
+	{
+		return false;
+	}
+
 	const ResourceComponent* resourceComponent = entity.GetComponent<ResourceComponent>();
 	if (!resourceComponent || resourceComponent->m_resourceComponentOwnerType != EResourceComponentOwnerType::Carrier)
 	{
@@ -338,15 +330,15 @@ bool ResourceSystems::CanEntityDepositResourcesToOtherEntity(const ArgusEntity& 
 		}
 	}
 
-	const IdentityComponent* identityComponent = entity.GetComponent<IdentityComponent>();
-	const IdentityComponent* otherIdentityComponent = otherEntity.GetComponent<IdentityComponent>();
-
-	if (!identityComponent || !otherIdentityComponent)
+	for (int32 i = 0; i < static_cast<int32>(EResourceType::Count); ++i)
 	{
-		return false;
+		if (resourceComponent->m_currentResources.m_resourceQuantities[i] > 0 && otherEntityResourceComponent->m_currentResources.m_resourceQuantities[i] > 0)
+		{
+			return true;
+		}
 	}
 
-	return identityComponent->m_team == otherIdentityComponent->m_team;
+	return false;
 }
 
 bool ResourceSystems::CanEntityAffordTeamResourceChange(const ArgusEntity& entity, const FResourceSet& resourceChange)

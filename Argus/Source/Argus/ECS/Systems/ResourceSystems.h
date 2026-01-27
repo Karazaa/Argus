@@ -21,7 +21,7 @@ public:
 	static void ProcessResourceExtractionTiming(const ResourceSystemsArgs& components);
 	static void ProcessResourceDepositing(const ResourceSystemsArgs& components);
 	static bool ExtractResources(const ResourceSystemsArgs& components);
-	static void DepositResources(const ResourceSystemsArgs& components);
+	static void DepositResources(const ResourceSystemsArgs& components, ArgusEntity targetEntity);
 	static void MoveToNearestDepositSink(const ResourceSystemsArgs& components);
 	static void MoveToLastExtractionSource(const ResourceSystemsArgs& components);
 

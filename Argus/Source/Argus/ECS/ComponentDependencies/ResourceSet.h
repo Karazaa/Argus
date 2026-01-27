@@ -29,13 +29,14 @@ struct FResourceSet
 	void Reset();
 	bool CanAffordResourceChange(const FResourceSet& otherResourceSetRepresentingChange) const;
 	void ApplyResourceChange(const FResourceSet& otherResourceSetRepresentingChange);
+	bool IsEntirelyAtCap(const FResourceSet& capacityResrouceSet) const;
+	FResourceSet MaskResourceSet(const FResourceSet& maskSet) const;
 	FResourceSet CalculateResourceChangeAffordable(const FResourceSet& otherResourceSetRepresentingChange, const FResourceSet* maximumResources = nullptr) const;
 	bool IsEmpty() const;
 
 	friend bool operator>(const FResourceSet& left, const FResourceSet& right)
 	{
-		const uint8 numResources = static_cast<uint8>(EResourceType::Count);
-		for (uint8 i = 0u; i < numResources; ++i)
+		for (int32 i = 0; i < static_cast<int32>(EResourceType::Count); ++i)
 		{
 			if (left.m_resourceQuantities[i] > right.m_resourceQuantities[i])
 			{
@@ -48,8 +49,7 @@ struct FResourceSet
 
 	friend bool operator>=(const FResourceSet& left, const FResourceSet& right)
 	{
-		const uint8 numResources = static_cast<uint8>(EResourceType::Count);
-		for (uint8 i = 0u; i < numResources; ++i)
+		for (int32 i = 0; i < static_cast<int32>(EResourceType::Count); ++i)
 		{
 			if (left.m_resourceQuantities[i] >= right.m_resourceQuantities[i])
 			{
@@ -62,8 +62,7 @@ struct FResourceSet
 
 	friend bool operator<(const FResourceSet& left, const FResourceSet& right)
 	{
-		const uint8 numResources = static_cast<uint8>(EResourceType::Count);
-		for (uint8 i = 0u; i < numResources; ++i)
+		for (int32 i = 0; i < static_cast<int32>(EResourceType::Count); ++i)
 		{
 			if (left.m_resourceQuantities[i] >= right.m_resourceQuantities[i])
 			{
@@ -76,8 +75,7 @@ struct FResourceSet
 
 	friend bool operator<=(const FResourceSet& left, const FResourceSet& right)
 	{
-		const uint8 numResources = static_cast<uint8>(EResourceType::Count);
-		for (uint8 i = 0u; i < numResources; ++i)
+		for (int32 i = 0; i < static_cast<int32>(EResourceType::Count); ++i)
 		{
 			if (left.m_resourceQuantities[i] > right.m_resourceQuantities[i])
 			{
@@ -85,6 +83,6 @@ struct FResourceSet
 			}
 		}
 
-		return false;
+		return true;
 	}
 };

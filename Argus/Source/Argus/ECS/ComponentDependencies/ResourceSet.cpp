@@ -5,8 +5,7 @@
 FResourceSet FResourceSet::operator-() const
 {
 	FResourceSet outResources;
-	const uint8 numResources = static_cast<uint8>(EResourceType::Count);
-	for (uint8 i = 0u; i < numResources; ++i)
+	for (int32 i = 0; i < static_cast<int32>(EResourceType::Count); ++i)
 	{
 		outResources.m_resourceQuantities[i] = -m_resourceQuantities[i];
 	}
@@ -17,8 +16,7 @@ FResourceSet FResourceSet::operator-() const
 FResourceSet FResourceSet::operator-(const FResourceSet& right) const
 {
 	FResourceSet outResources;
-	const uint8 numResources = static_cast<uint8>(EResourceType::Count);
-	for (uint8 i = 0u; i < numResources; ++i)
+	for (int32 i = 0; i < static_cast<int32>(EResourceType::Count); ++i)
 	{
 		outResources.m_resourceQuantities[i] = m_resourceQuantities[i] - right.m_resourceQuantities[i];
 	}
@@ -36,8 +34,7 @@ void FResourceSet::Reset()
 
 bool FResourceSet::CanAffordResourceChange(const FResourceSet& otherResourceSetRepresentingChange) const
 {
-	const uint8 numResources = static_cast<uint8>(EResourceType::Count);
-	for (uint8 i = 0u; i < numResources; ++i)
+	for (int32 i = 0; i < static_cast<int32>(EResourceType::Count); ++i)
 	{
 		if (otherResourceSetRepresentingChange.m_resourceQuantities[i] < 0 &&
 			otherResourceSetRepresentingChange.m_resourceQuantities[i] < -m_resourceQuantities[i])
@@ -50,18 +47,42 @@ bool FResourceSet::CanAffordResourceChange(const FResourceSet& otherResourceSetR
 
 void FResourceSet::ApplyResourceChange(const FResourceSet& otherResourceSetRepresentingChange)
 {
-	const uint8 numResources = static_cast<uint8>(EResourceType::Count);
-	for (uint8 i = 0u; i < numResources; ++i)
+	for (int32 i = 0; i < static_cast<int32>(EResourceType::Count); ++i)
 	{
 		m_resourceQuantities[i] += otherResourceSetRepresentingChange.m_resourceQuantities[i];
 	}
 }
 
+bool FResourceSet::IsEntirelyAtCap(const FResourceSet& capacityResrouceSet) const 
+{
+	for (int32 i = 0; i < static_cast<int32>(EResourceType::Count); ++i)
+	{
+		if (m_resourceQuantities[i] < capacityResrouceSet.m_resourceQuantities[i])
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+FResourceSet FResourceSet::MaskResourceSet(const FResourceSet& maskSet) const
+{
+	FResourceSet output = *this;
+	for (int32 i = 0; i < static_cast<int32>(EResourceType::Count); ++i)
+	{
+		if (maskSet.m_resourceQuantities[i] == 0)
+		{
+			output.m_resourceQuantities[i] = 0;
+		}
+	}
+	return output;
+}
+
 FResourceSet FResourceSet::CalculateResourceChangeAffordable(const FResourceSet& otherResourceSetRepresentingChange, const FResourceSet* maximumResources) const
 {
 	FResourceSet changeApplied;
-	const uint8 numResources = static_cast<uint8>(EResourceType::Count);
-	for (uint8 i = 0u; i < numResources; ++i)
+	for (int32 i = 0; i < static_cast<int32>(EResourceType::Count); ++i)
 	{
 		const int32 potentialChange = m_resourceQuantities[i] + otherResourceSetRepresentingChange.m_resourceQuantities[i];
 		if (maximumResources && potentialChange >= maximumResources->m_resourceQuantities[i])
@@ -83,8 +104,7 @@ FResourceSet FResourceSet::CalculateResourceChangeAffordable(const FResourceSet&
 
 bool FResourceSet::IsEmpty() const
 {
-	const uint8 numResources = static_cast<uint8>(EResourceType::Count);
-	for (uint8 i = 0u; i < numResources; ++i)
+	for (int32 i = 0; i < static_cast<int32>(EResourceType::Count); ++i)
 	{
 		if (m_resourceQuantities[i] != 0)
 		{
