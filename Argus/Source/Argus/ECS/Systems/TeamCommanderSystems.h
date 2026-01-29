@@ -38,8 +38,8 @@ private:
 	static void ConvertAreaIndexToAreaCoordinates(int32 areaIndex, int32 areasPerDimension, int32& xCoordinate, int32& yCoordinate);
 	static void ConvertAreaCoordinatesToAreaIndex(int32 xCoordinate, int32 yCoordinate, int32 areasPerDimension, int32& areaIndex);
 
-	static const UAbilityRecord* GetConstructResourceSinkAbility(ArgusEntity entity, EAbilityIndex& abilityIndex);
+	static bool GetConstructResourceSinkAbilities(ArgusEntity entity, TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& outAbilityIndexPairs);
 	static bool DoesAbilityConstructResourceSink(const UAbilityRecord* abilityRecord);
-	static bool FindTargetLocForConstructResourceSink(ArgusEntity entity, const UAbilityRecord* abilityRecord, TeamCommanderComponent* teamCommanderComponent);
-	static ArgusEntity GetNearestSeenResourceSourceToEntity(ArgusEntity entity, TeamCommanderComponent* teamCommanderComponent);
+	static bool FindTargetLocForConstructResourceSink(ArgusEntity entity, const TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& abilityIndexPairs, TeamCommanderComponent* teamCommanderComponent);
+	static ArgusEntity GetNearestSeenResourceSourceToEntity(ArgusEntity entity, const TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& abilityIndexPairs, TeamCommanderComponent* teamCommanderComponent, int32& outPairIndex);
 };

@@ -26,6 +26,7 @@ public:
 	static void MoveToLastExtractionSource(const ResourceSystemsArgs& components);
 
 
+	static bool CanEntityActAsSinkToAnotherEntitySource(const ArgusEntity& entity, const ArgusEntity& otherEntity);
 	static bool CanEntityExtractResourcesFromOtherEntity(const ArgusEntity& entity, const ArgusEntity& otherEntity);
 	static bool CanEntityDepositResourcesToOtherEntity(const ArgusEntity& entity, const ArgusEntity& otherEntity);
 	static bool CanEntityAffordTeamResourceChange(const ArgusEntity& entity, const FResourceSet& resourceChange);

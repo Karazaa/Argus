@@ -254,6 +254,23 @@ void ResourceSystems::MoveToLastExtractionSource(const ResourceSystemsArgs& comp
 	components.m_targetingComponent->m_targetEntityId = components.m_resourceExtractionComponent->m_lastExtractionSourceEntityId;
 }
 
+bool ResourceSystems::CanEntityActAsSinkToAnotherEntitySource(const ArgusEntity& entity, const ArgusEntity& otherEntity)
+{
+	if (!entity || !otherEntity || !entity.IsAlive() || !otherEntity.IsAlive())
+	{
+		return false;
+	}
+
+	const ResourceComponent* resourceComponent = entity.GetComponent<ResourceComponent>();
+	const ResourceComponent* otherResourceComponent = otherEntity.GetComponent<ResourceComponent>();
+	if (!resourceComponent || !otherResourceComponent || resourceComponent->m_resourceComponentOwnerType != EResourceComponentOwnerType::Sink || otherResourceComponent->m_resourceComponentOwnerType != EResourceComponentOwnerType::Source)
+	{
+		return false;
+	}
+
+	return otherResourceComponent->m_currentResources.MaskResourceSet(resourceComponent->m_currentResources).IsEmpty();
+}
+
 bool ResourceSystems::CanEntityExtractResourcesFromOtherEntity(const ArgusEntity& entity, const ArgusEntity& otherEntity)
 {
 	if (!entity || !otherEntity)

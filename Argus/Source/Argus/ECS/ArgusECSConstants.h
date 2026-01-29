@@ -42,6 +42,8 @@ namespace ArgusECSConstants
 
 	static constexpr float k_resourceSinkBufferDistanceAdjustment = 5.0f;
 
+	static constexpr int32 k_numEntityAbilities = 4;
+
 #if !UE_BUILD_SHIPPING
 	static constexpr float k_debugDrawLineWidth = 3.0f;
 	static constexpr float k_debugDrawHeightAdjustment = 5.0f;

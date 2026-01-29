@@ -81,12 +81,13 @@ void TeamCommanderSystems::UpdateTeamCommanderPerEntityOnTeam(const TeamCommande
 		return;
 	}
 
-	if (components.m_entity.IsIdle() && !components.m_entity.IsPassenger())
+	const bool isAlive = components.m_entity.IsAlive();
+	if (isAlive && components.m_entity.IsIdle() && !components.m_entity.IsPassenger())
 	{
 		teamCommanderComponent->m_idleEntityIdsForTeam.Add(components.m_entity.GetId());
 	}
 
-	if (components.m_resourceComponent && components.m_resourceComponent->m_resourceComponentOwnerType == EResourceComponentOwnerType::Sink)
+	if (isAlive && components.m_resourceComponent && components.m_resourceComponent->m_resourceComponentOwnerType == EResourceComponentOwnerType::Sink)
 	{
 		teamCommanderComponent->m_resourceSinkEntityIds.Add(components.m_entity.GetId());
 	}
@@ -272,20 +273,24 @@ bool TeamCommanderSystems::AssignEntityToConstructResourceSinkIfAble(ArgusEntity
 	ARGUS_TRACE(TeamCommanderSystems::AssignEntityToResourceExtractionIfAble);
 	ARGUS_RETURN_ON_NULL_BOOL(teamCommanderComponent, ArgusECSLog);
 
-	EAbilityIndex abilityIndex = EAbilityIndex::None;
-	const UAbilityRecord* constructionAbility = GetConstructResourceSinkAbility(entity, abilityIndex);
 	TaskComponent* taskComponent = entity.GetComponent<TaskComponent>();
-	if (!constructionAbility || abilityIndex == EAbilityIndex::None || !ResourceSystems::CanEntityAffordTeamResourceChange(entity, constructionAbility->m_requiredResourceChangeToCast) || !taskComponent)
+	if (!taskComponent)
 	{
 		return false;
 	}
 
-	if (!FindTargetLocForConstructResourceSink(entity, constructionAbility, teamCommanderComponent))
+	TArray<TPair<const UAbilityRecord*, EAbilityIndex>> abilityIndexPairs;
+	if (!GetConstructResourceSinkAbilities(entity, abilityIndexPairs))
 	{
 		return false;
 	}
 
-	taskComponent->m_abilityState = AbilitySystems::GetProcessAbilityStateForAbilityIndex(abilityIndex);
+	if (!FindTargetLocForConstructResourceSink(entity, abilityIndexPairs, teamCommanderComponent))
+	{
+		return false;
+	}
+
+	taskComponent->m_abilityState = AbilitySystems::GetProcessAbilityStateForAbilityIndex(abilityIndexPairs[0].Value);
 	taskComponent->m_directiveFromTeamCommander = priority.m_directive;
 	priority.m_weight = 0.0f;
 	teamCommanderComponent->m_priorities.Sort();
@@ -486,19 +491,19 @@ void TeamCommanderSystems::ConvertAreaCoordinatesToAreaIndex(int32 xCoordinate, 
 	areaIndex = (yCoordinate * areasPerDimension) + xCoordinate;
 }
 
-const UAbilityRecord* TeamCommanderSystems::GetConstructResourceSinkAbility(ArgusEntity entity, EAbilityIndex& abilityIndex)
+bool TeamCommanderSystems::GetConstructResourceSinkAbilities(ArgusEntity entity, TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& outAbilityIndexPairs)
 {
 	ARGUS_TRACE(TeamCommanderSystems::GetConstructResourceSinkAbility);
 
-	abilityIndex = EAbilityIndex::None;
+	outAbilityIndexPairs.Reset();
+	outAbilityIndexPairs.Reserve(ArgusECSConstants::k_numEntityAbilities);
 	AbilityComponent* abilityComponent = entity.GetComponent<AbilityComponent>();
 	if (!abilityComponent)
 	{
-		return nullptr;
+		return false;
 	}
 
-	const UAbilityRecord* constructionRecord = nullptr;
-	abilityComponent->IterateActiveAbilityIds([&constructionRecord, &abilityIndex](uint32 abilityRecordId, EAbilityIndex iteratedAbilityIndex)
+	abilityComponent->IterateActiveAbilityIds([&outAbilityIndexPairs](uint32 abilityRecordId, EAbilityIndex iteratedAbilityIndex)
 	{
 		const UAbilityRecord* record = ArgusStaticData::GetRecord<UAbilityRecord>(abilityRecordId);
 		if (!record)
@@ -508,12 +513,11 @@ const UAbilityRecord* TeamCommanderSystems::GetConstructResourceSinkAbility(Argu
 
 		if (DoesAbilityConstructResourceSink(record))
 		{
-			abilityIndex = iteratedAbilityIndex;
-			constructionRecord = record;
+			outAbilityIndexPairs.Add(TPair<const UAbilityRecord*, EAbilityIndex>(record, iteratedAbilityIndex));
 		}
 	});
 
-	return constructionRecord;
+	return outAbilityIndexPairs.Num() > 0;
 }
 
 bool TeamCommanderSystems::DoesAbilityConstructResourceSink(const UAbilityRecord* abilityRecord)
@@ -538,10 +542,9 @@ bool TeamCommanderSystems::DoesAbilityConstructResourceSink(const UAbilityRecord
 	return true;
 }
 
-bool TeamCommanderSystems::FindTargetLocForConstructResourceSink(ArgusEntity entity, const UAbilityRecord* abilityRecord, TeamCommanderComponent* teamCommanderComponent)
+bool TeamCommanderSystems::FindTargetLocForConstructResourceSink(ArgusEntity entity, const TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& abilityIndexPairs, TeamCommanderComponent* teamCommanderComponent)
 {
 	ARGUS_RETURN_ON_NULL_BOOL(teamCommanderComponent, ArgusECSLog);
-	ARGUS_RETURN_ON_NULL_BOOL(abilityRecord, ArgusECSLog);
 
 	WorldReferenceComponent* worldReferenceComponent = ArgusEntity::GetSingletonEntity().GetComponent<WorldReferenceComponent>();
 	ARGUS_RETURN_ON_NULL_BOOL(worldReferenceComponent, ArgusECSLog);
@@ -553,8 +556,9 @@ bool TeamCommanderSystems::FindTargetLocForConstructResourceSink(ArgusEntity ent
 		return false;
 	}
 
-	ArgusEntity nearestResourceSource = GetNearestSeenResourceSourceToEntity(entity, teamCommanderComponent);
-	if (!nearestResourceSource)
+	int32 index = -1;
+	ArgusEntity nearestResourceSource = GetNearestSeenResourceSourceToEntity(entity, abilityIndexPairs, teamCommanderComponent, index);
+	if (!nearestResourceSource || index < 0)
 	{
 		return false;
 	}
@@ -566,8 +570,8 @@ bool TeamCommanderSystems::FindTargetLocForConstructResourceSink(ArgusEntity ent
 
 	FVector fromSinkToEntity = (transformComponent->m_location - resourceSourceTransformComponent->m_location).GetSafeNormal();
 
-	const float safeZoneDistance = AbilitySystems::GetResourceBufferRadiusOfConstructionAbility(abilityRecord);
-	const float radiusDistance = AbilitySystems::GetRaidusOfConstructionAbility(abilityRecord);
+	const float safeZoneDistance = AbilitySystems::GetResourceBufferRadiusOfConstructionAbility(abilityIndexPairs[index].Key);
+	const float radiusDistance = AbilitySystems::GetRaidusOfConstructionAbility(abilityIndexPairs[index].Key);
 
 	FVector candidatePoint = (fromSinkToEntity * (safeZoneDistance + ArgusECSConstants::k_resourceSinkBufferDistanceAdjustment)) +   resourceSourceTransformComponent->m_location;
 	bool isBlocked = SpatialPartitioningSystems::AnyObstaclesOrStaticEntitiesInCircle(candidatePoint, radiusDistance, safeZoneDistance);
@@ -601,9 +605,12 @@ bool TeamCommanderSystems::FindTargetLocForConstructResourceSink(ArgusEntity ent
 	return true;
 }
 
-ArgusEntity TeamCommanderSystems::GetNearestSeenResourceSourceToEntity(ArgusEntity entity, TeamCommanderComponent* teamCommanderComponent)
+ArgusEntity TeamCommanderSystems::GetNearestSeenResourceSourceToEntity(ArgusEntity entity, const TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& abilityIndexPairs, TeamCommanderComponent* teamCommanderComponent, int32& outPairIndex)
 {
 	ARGUS_RETURN_ON_NULL_VALUE(teamCommanderComponent, ArgusECSLog, ArgusEntity::k_emptyEntity);
+
+	// TODO JAMES: See if any of our ability index pairs pass CanEntityActAsSinkToAnotherEntitySource (but with consideration for the component data of the sink and if that can serve as a source for a given seen source)
+	outPairIndex = 0;
 
 	const TransformComponent* transformComponent = entity.GetComponent<TransformComponent>();
 	if (!transformComponent)
