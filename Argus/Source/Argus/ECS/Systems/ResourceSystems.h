@@ -8,6 +8,7 @@
 #include "SystemArgumentDefinitions/ResourceSystemsArgs.h"
 
 class ArgusEntity;
+class UArgusEntityTemplate;
 class UResourceSetRecord;
 struct FResourceSet;
 struct ResourceComponent;
@@ -26,14 +27,15 @@ public:
 	static void MoveToLastExtractionSource(const ResourceSystemsArgs& components);
 
 
-	static bool CanEntityActAsSinkToAnotherEntitySource(const ArgusEntity& entity, const ArgusEntity& otherEntity);
-	static bool CanEntityExtractResourcesFromOtherEntity(const ArgusEntity& entity, const ArgusEntity& otherEntity);
-	static bool CanEntityDepositResourcesToOtherEntity(const ArgusEntity& entity, const ArgusEntity& otherEntity);
-	static bool CanEntityAffordTeamResourceChange(const ArgusEntity& entity, const FResourceSet& resourceChange);
-	static bool ApplyTeamResourceChangeIfAffordable(const ArgusEntity& entity, const FResourceSet& resourceChange);
+	static bool CanEntityActAsSinkToAnotherEntitySource(ArgusEntity entity, ArgusEntity otherEntity);
+	static bool CanEntityTemplateActAsSinkToEntitySource(const UArgusEntityTemplate* entityTemplate, ArgusEntity otherEntity);
+	static bool CanEntityExtractResourcesFromOtherEntity(ArgusEntity entity, ArgusEntity otherEntity);
+	static bool CanEntityDepositResourcesToOtherEntity(ArgusEntity entity, ArgusEntity otherEntity);
+	static bool CanEntityAffordTeamResourceChange(ArgusEntity entity, const FResourceSet& resourceChange);
+	static bool ApplyTeamResourceChangeIfAffordable(ArgusEntity entity, const FResourceSet& resourceChange);
 	static bool ApplyTeamResourceChangeIfAffordable(ETeam team, const FResourceSet& resourceChange);
 
-	static ResourceComponent* GetTeamResourceComponentForEntity(const ArgusEntity& entity);
+	static ResourceComponent* GetTeamResourceComponentForEntity(ArgusEntity entity);
 	static ResourceComponent* GetTeamResourceComponentForTeam(ETeam team);
 
 private:

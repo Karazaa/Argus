@@ -3,6 +3,7 @@
 #include "ResourceSystems.h"
 #include "ArgusLogging.h"
 #include "ArgusStaticData.h"
+#include "DataComponentDefinitions/ResourceComponentData.h"
 #include "Systems/TargetingSystems.h"
 
 void ResourceSystems::RunSystems(float deltaTime)
@@ -254,7 +255,7 @@ void ResourceSystems::MoveToLastExtractionSource(const ResourceSystemsArgs& comp
 	components.m_targetingComponent->m_targetEntityId = components.m_resourceExtractionComponent->m_lastExtractionSourceEntityId;
 }
 
-bool ResourceSystems::CanEntityActAsSinkToAnotherEntitySource(const ArgusEntity& entity, const ArgusEntity& otherEntity)
+bool ResourceSystems::CanEntityActAsSinkToAnotherEntitySource(ArgusEntity entity, ArgusEntity otherEntity)
 {
 	if (!entity || !otherEntity || !entity.IsAlive() || !otherEntity.IsAlive())
 	{
@@ -268,10 +269,27 @@ bool ResourceSystems::CanEntityActAsSinkToAnotherEntitySource(const ArgusEntity&
 		return false;
 	}
 
-	return otherResourceComponent->m_currentResources.MaskResourceSet(resourceComponent->m_currentResources).IsEmpty();
+	return !otherResourceComponent->m_currentResources.MaskResourceSet(resourceComponent->m_currentResources).IsEmpty();
 }
 
-bool ResourceSystems::CanEntityExtractResourcesFromOtherEntity(const ArgusEntity& entity, const ArgusEntity& otherEntity)
+bool ResourceSystems::CanEntityTemplateActAsSinkToEntitySource(const UArgusEntityTemplate* entityTemplate, ArgusEntity otherEntity)
+{
+	if (!entityTemplate || !otherEntity)
+	{
+		return false;
+	}
+
+	const UResourceComponentData* resourceComponentData = entityTemplate->GetComponentFromTemplate<UResourceComponentData>();
+	const ResourceComponent* otherResourceComponent = otherEntity.GetComponent<ResourceComponent>();
+	if (!resourceComponentData || !otherResourceComponent || resourceComponentData->m_resourceComponentOwnerType != EResourceComponentOwnerType::Sink || otherResourceComponent->m_resourceComponentOwnerType != EResourceComponentOwnerType::Source)
+	{
+		return false;
+	}
+
+	return !otherResourceComponent->m_currentResources.MaskResourceSet(resourceComponentData->m_currentResources).IsEmpty();
+}
+
+bool ResourceSystems::CanEntityExtractResourcesFromOtherEntity(ArgusEntity entity, ArgusEntity otherEntity)
 {
 	if (!entity || !otherEntity)
 	{
@@ -310,7 +328,7 @@ bool ResourceSystems::CanEntityExtractResourcesFromOtherEntity(const ArgusEntity
 	return otherEntityResourceComponent->m_currentResources.CanAffordResourceChange(extractionResourceRecord->m_resourceSet);
 }
 
-bool ResourceSystems::CanEntityDepositResourcesToOtherEntity(const ArgusEntity& entity, const ArgusEntity& otherEntity)
+bool ResourceSystems::CanEntityDepositResourcesToOtherEntity(ArgusEntity entity, ArgusEntity otherEntity)
 {
 	if (!entity || !otherEntity)
 	{
@@ -358,7 +376,7 @@ bool ResourceSystems::CanEntityDepositResourcesToOtherEntity(const ArgusEntity& 
 	return false;
 }
 
-bool ResourceSystems::CanEntityAffordTeamResourceChange(const ArgusEntity& entity, const FResourceSet& resourceChange)
+bool ResourceSystems::CanEntityAffordTeamResourceChange(ArgusEntity entity, const FResourceSet& resourceChange)
 {
 	ResourceComponent* teamResourceComponent = GetTeamResourceComponentForEntity(entity);
 	if (!teamResourceComponent)
@@ -369,7 +387,7 @@ bool ResourceSystems::CanEntityAffordTeamResourceChange(const ArgusEntity& entit
 	return teamResourceComponent->m_currentResources.CanAffordResourceChange(resourceChange);
 }
 
-bool ResourceSystems::ApplyTeamResourceChangeIfAffordable(const ArgusEntity& entity, const FResourceSet& resourceChange)
+bool ResourceSystems::ApplyTeamResourceChangeIfAffordable(ArgusEntity entity, const FResourceSet& resourceChange)
 {
 	ResourceComponent* teamResourceComponent = GetTeamResourceComponentForEntity(entity);
 	if (!teamResourceComponent)
@@ -403,7 +421,7 @@ bool ResourceSystems::ApplyTeamResourceChangeIfAffordable(ETeam team, const FRes
 	return true;
 }
 
-ResourceComponent* ResourceSystems::GetTeamResourceComponentForEntity(const ArgusEntity& entity)
+ResourceComponent* ResourceSystems::GetTeamResourceComponentForEntity(ArgusEntity entity)
 {
 	if (!entity)
 	{

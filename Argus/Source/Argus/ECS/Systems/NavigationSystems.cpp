@@ -141,6 +141,7 @@ void NavigationSystems::ProcessNavigationTaskCommands(UWorld* worldPointer, cons
 			components.m_taskComponent->m_movementState = EMovementState::MoveToLocation;
 			NavigateFromEntityToLocation(worldPointer, components.m_targetingComponent->m_targetLocation.GetValue(), components);
 			ChangeFlockingStateOnNavigatingToLocation(components);
+			ChangeTasksOnNavigatingToLocation(components);
 			break;
 
 		case EMovementState::ProcessMoveToEntityCommand:
@@ -241,6 +242,11 @@ void NavigationSystems::ChangeTasksOnNavigatingToEntity(ArgusEntity targetEntity
 	{
 		components.m_taskComponent->m_resourceExtractionState = EResourceExtractionState::None;
 	}
+}
+
+void NavigationSystems::ChangeTasksOnNavigatingToLocation(const NavigationSystemsArgs& components)
+{
+	components.m_taskComponent->m_resourceExtractionState = EResourceExtractionState::None;
 }
 
 void NavigationSystems::ChangeFlockingStateOnNavigatingToLocation(const NavigationSystemsArgs& components)

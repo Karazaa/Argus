@@ -609,7 +609,6 @@ ArgusEntity TeamCommanderSystems::GetNearestSeenResourceSourceToEntity(ArgusEnti
 {
 	ARGUS_RETURN_ON_NULL_VALUE(teamCommanderComponent, ArgusECSLog, ArgusEntity::k_emptyEntity);
 
-	// TODO JAMES: See if any of our ability index pairs pass CanEntityActAsSinkToAnotherEntitySource (but with consideration for the component data of the sink and if that can serve as a source for a given seen source)
 	outPairIndex = 0;
 
 	const TransformComponent* transformComponent = entity.GetComponent<TransformComponent>();
@@ -629,11 +628,28 @@ ArgusEntity TeamCommanderSystems::GetNearestSeenResourceSourceToEntity(ArgusEnti
 			continue;
 		}
 
+		bool anyValidAbilities = false;
+		int32 j;
+		for (j = 0; j < abilityIndexPairs.Num(); ++j)
+		{
+			if (ResourceSystems::CanEntityTemplateActAsSinkToEntitySource(AbilitySystems::GetEntityTemplateForConstructionAbility(abilityIndexPairs[j].Key), resourceSourceEntity))
+			{
+				anyValidAbilities = true;
+				break;
+			}
+		}
+
+		if (!anyValidAbilities)
+		{
+			continue;
+		}
+
 		const float distanceSquared = FVector::DistSquared2D(transformComponent->m_location, resourceSinkSourceTransformComponent->m_location);
 		if (distanceSquared < minDistanceSquared)
 		{
 			minDistanceSquared = distanceSquared;
 			nearestResourceSource = resourceSourceEntity;
+			outPairIndex = j;
 		}
 	}
 
