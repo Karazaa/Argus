@@ -54,10 +54,10 @@ void ArgusSystemsManager::RunSystems(UWorld* worldPointer, float deltaTime)
 	TeamCommanderSystems::RunSystems(deltaTime);
 	AbilitySystems::RunSystems(deltaTime);
 	CombatSystems::RunSystems(deltaTime);
-	ResourceSystems::RunSystems(deltaTime);
-	ConstructionSystems::RunSystems(deltaTime);
 	NavigationSystems::RunSystems(worldPointer);
 	AvoidanceSystems::RunSystems(worldPointer, deltaTime);
+	ResourceSystems::RunSystems(deltaTime);
+	ConstructionSystems::RunSystems(deltaTime);
 	didEntityPositionChangeThisFrame |= TransformSystems::RunSystems(worldPointer, deltaTime);
 	FlockingSystems::RunSystems(deltaTime);
 	didEntityPositionChangeThisFrame |= SpawningSystems::RunSystems(deltaTime);

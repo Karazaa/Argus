@@ -5,6 +5,8 @@
 #include "ArgusStaticData.h"
 #include "HAL/UnrealMemory.h"
 #include "Systems/ConstructionSystems.h"
+#include "Systems/DecalSystems.h"
+#include "Systems/InputInterfaceSystems.h"
 
 bool SpawningSystems::RunSystems(float deltaTime)
 {
@@ -340,7 +342,7 @@ void SpawningSystems::GetSpawnLocationAndNavigationState(const SpawningSystemsAr
 	outMovementState = EMovementState::ProcessMoveToEntityCommand;
 }
 
-void SpawningSystems::CommandMoveSelectedEntitiesToSpawnedEntity(const ArgusEntity& spawnedEntity, bool requireConstructionTarget)
+void SpawningSystems::CommandMoveSelectedEntitiesToSpawnedEntity(ArgusEntity spawnedEntity, bool requireConstructionTarget)
 {
 	if (!spawnedEntity)
 	{
@@ -352,55 +354,27 @@ void SpawningSystems::CommandMoveSelectedEntitiesToSpawnedEntity(const ArgusEnti
 		return;
 	}
 
-	ArgusEntity singletonEntity = ArgusEntity::GetSingletonEntity();
-	if (!singletonEntity)
+	InputInterfaceSystems::IterateSelectedEntities([spawnedEntity, requireConstructionTarget](ArgusEntity selectedEntity)
 	{
-		ARGUS_LOG
-		(
-			ArgusECSLog, Error, TEXT("[%s] Could not retrieve a valid reference to %s."),
-			ARGUS_FUNCNAME, ARGUS_NAMEOF(singletonEntity)
-		);
-		return;
-	}
-
-	InputInterfaceComponent* inputInterfaceComponent = singletonEntity.GetComponent<InputInterfaceComponent>();
-	if (!inputInterfaceComponent)
-	{
-		ARGUS_LOG
-		(
-			ArgusECSLog, Error, TEXT("[%s] Could not retrieve a valid reference to %s."),
-			ARGUS_FUNCNAME, ARGUS_NAMEOF(InputInterfaceComponent)
-		);
-		return;
-	}
-
-	for (int32 i = 0; i < inputInterfaceComponent->m_selectedArgusEntityIds.Num(); ++i)
-	{
-		ArgusEntity selectedEntity = ArgusEntity::RetrieveEntity(inputInterfaceComponent->m_selectedArgusEntityIds[i]);
-		if (!selectedEntity)
-		{
-			continue;
-		}
-
 		TaskComponent* selectedEntityTaskComponent = selectedEntity.GetComponent<TaskComponent>();
 		if (!selectedEntityTaskComponent)
 		{
-			continue;
+			return;
 		}
 
 		TargetingComponent* selectedEntityTargetingComonent = selectedEntity.GetComponent<TargetingComponent>();
 		if (!selectedEntityTargetingComonent)
 		{
-			continue;
+			return;
 		}
 
 		if (requireConstructionTarget && !ConstructionSystems::CanEntityConstructOtherEntity(selectedEntity, spawnedEntity))
 		{
-			continue;
+			return;
 		}
 
 		selectedEntityTaskComponent->m_movementState = EMovementState::ProcessMoveToEntityCommand;
-		selectedEntityTargetingComonent->m_targetEntityId = spawnedEntity.GetId();
-		selectedEntityTargetingComonent->m_targetLocation.Reset();
-	}
+		DecalSystems::ClearMoveToLocationDecalPerEntity(selectedEntity, true);
+		selectedEntityTargetingComonent->SetEntityTarget(spawnedEntity.GetId());
+	});
 }
