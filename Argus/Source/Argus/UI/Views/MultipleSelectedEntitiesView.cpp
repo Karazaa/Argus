@@ -33,7 +33,7 @@ void UMultipleSelectedEntitiesView::UpdateDisplay(const UpdateDisplayParameters&
 	}
 }
 
-void UMultipleSelectedEntitiesView::OnUpdateSelectedArgusActors(const ArgusEntity& templateEntity)
+void UMultipleSelectedEntitiesView::OnUpdateSelectedArgusActors(ArgusEntity templateEntity)
 {
 	ARGUS_RETURN_ON_NULL(m_uniformGridPanel, ArgusUILog);
 	ARGUS_RETURN_ON_NULL(m_entityIconWidgetClass, ArgusUILog);

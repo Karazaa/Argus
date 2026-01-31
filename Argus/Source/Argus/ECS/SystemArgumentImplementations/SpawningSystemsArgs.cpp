@@ -4,7 +4,7 @@
 #include "SystemArgumentDefinitions\SpawningSystemsArgs.h"
 #include "ArgusLogging.h"
 
-bool SpawningSystemsArgs::PopulateArguments(const ArgusEntity& entity)
+bool SpawningSystemsArgs::PopulateArguments(ArgusEntity entity)
 {
 	if (UNLIKELY(!entity))
 	{

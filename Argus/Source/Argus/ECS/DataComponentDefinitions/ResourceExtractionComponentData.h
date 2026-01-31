@@ -17,6 +17,6 @@ public:
 	UPROPERTY(EditAnywhere)
 	float m_extractionLengthSeconds = 1.0f;
 
-	void InstantiateComponentForEntity(const ArgusEntity& entity) const override;
+	void InstantiateComponentForEntity(ArgusEntity entity) const override;
 	bool MatchesType(UComponentData* other) const override;
 };

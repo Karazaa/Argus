@@ -5,7 +5,7 @@
 #include "ArgusLogging.h"
 #include "ArgusStaticData.h"
 
-void UFogOfWarLocationComponentData::InstantiateComponentForEntity(const ArgusEntity& entity) const
+void UFogOfWarLocationComponentData::InstantiateComponentForEntity(ArgusEntity entity) const
 {
 	FogOfWarLocationComponent* FogOfWarLocationComponentRef = entity.GetOrAddComponent<FogOfWarLocationComponent>();
 	ARGUS_RETURN_ON_NULL(FogOfWarLocationComponentRef, ArgusECSLog);

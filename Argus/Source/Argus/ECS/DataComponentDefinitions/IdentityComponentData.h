@@ -15,6 +15,6 @@ public:
 	UPROPERTY(EditAnywhere)
 	TSoftObjectPtr<UFactionRecord> m_factionId;
 
-	void InstantiateComponentForEntity(const ArgusEntity& entity) const override;
+	void InstantiateComponentForEntity(ArgusEntity entity) const override;
 	bool MatchesType(UComponentData* other) const override;
 };

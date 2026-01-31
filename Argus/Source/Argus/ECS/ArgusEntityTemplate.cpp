@@ -52,7 +52,7 @@ ArgusEntity UArgusEntityTemplate::MakeEntityAsync(const TFunction<void(ArgusEnti
 	return entity;
 }
 
-void UArgusEntityTemplate::PopulateEntity(const ArgusEntity& entity) const
+void UArgusEntityTemplate::PopulateEntity(ArgusEntity entity) const
 {
 	ARGUS_MEMORY_TRACE(ArgusComponentData);
 
@@ -70,7 +70,7 @@ void UArgusEntityTemplate::PopulateEntity(const ArgusEntity& entity) const
 	SetInitialStateFromData(entity);
 }
 
-void UArgusEntityTemplate::SetInitialStateFromData(const ArgusEntity& entity) const
+void UArgusEntityTemplate::SetInitialStateFromData(ArgusEntity entity) const
 {
 	TaskComponent* taskComponent = entity.GetComponent<TaskComponent>();
 	if (!taskComponent)

@@ -9,7 +9,7 @@
 #include "Components/UniformGridSlot.h"
 #include "Widgets/IconWidget.h"
 
-void UIconQueueWidget::RefreshDisplay(const ArgusEntity& selectedEntity)
+void UIconQueueWidget::RefreshDisplay(ArgusEntity selectedEntity)
 {
 	m_trackedEntity = selectedEntity;
 	switch (m_iconQueueDataSource)
@@ -28,7 +28,7 @@ void UIconQueueWidget::RefreshDisplay(const ArgusEntity& selectedEntity)
 	}
 }
 
-void UIconQueueWidget::SetIconQueueDataSource(EIconQueueDataSource dataSource, const ArgusEntity& selectedEntity)
+void UIconQueueWidget::SetIconQueueDataSource(EIconQueueDataSource dataSource, ArgusEntity selectedEntity)
 {
 	if (dataSource == m_iconQueueDataSource)
 	{

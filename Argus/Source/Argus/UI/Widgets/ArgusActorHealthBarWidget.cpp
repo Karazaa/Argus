@@ -5,7 +5,7 @@
 #include "ArgusMath.h"
 #include "Components/ProgressBar.h"
 
-void UArgusActorHealthBarWidget::SetInitialDisplay(const ArgusEntity& argusEntity)
+void UArgusActorHealthBarWidget::SetInitialDisplay(ArgusEntity argusEntity)
 {
 	Super::SetInitialDisplay(argusEntity);
 
@@ -22,13 +22,13 @@ void UArgusActorHealthBarWidget::SetInitialDisplay(const ArgusEntity& argusEntit
 	}
 }
 
-void UArgusActorHealthBarWidget::RefreshDisplay(const ArgusEntity& argusEntity)
+void UArgusActorHealthBarWidget::RefreshDisplay(ArgusEntity argusEntity)
 {
 	Super::RefreshDisplay(argusEntity);
 	SetHealthBarPercentForEntity(argusEntity);
 }
 
-void UArgusActorHealthBarWidget::SetHealthBarPercentForEntity(const ArgusEntity& argusEntity)
+void UArgusActorHealthBarWidget::SetHealthBarPercentForEntity(ArgusEntity argusEntity)
 {
 	ARGUS_RETURN_ON_NULL(m_progressBar, ArgusUILog);
 

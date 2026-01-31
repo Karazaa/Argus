@@ -4,7 +4,7 @@
 #include "SystemArgumentDefinitions\TeamCommanderSystemsArgs.h"
 #include "ArgusLogging.h"
 
-bool TeamCommanderSystemsArgs::PopulateArguments(const ArgusEntity& entity)
+bool TeamCommanderSystemsArgs::PopulateArguments(ArgusEntity entity)
 {
 	if (UNLIKELY(!entity))
 	{

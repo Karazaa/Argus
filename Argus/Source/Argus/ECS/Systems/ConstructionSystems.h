@@ -9,7 +9,7 @@ class ConstructionSystems
 public:
 	static void RunSystems(float deltaTime);
 
-	static bool CanEntityConstructOtherEntity(const ArgusEntity& potentialConstructor, const ArgusEntity& potentialConstructee);
+	static bool CanEntityConstructOtherEntity(ArgusEntity potentialConstructor, ArgusEntity potentialConstructee);
 
 private:
 	static void ProcessConstructionTaskCommands(float deltaTime, const ConstructionSystemsArgs& components);

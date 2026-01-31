@@ -17,7 +17,7 @@ class UMultipleSelectedEntitiesView : public UArgusUIElement
 
 public:
 	virtual void UpdateDisplay(const UpdateDisplayParameters& updateDisplayParams) override;
-	virtual void OnUpdateSelectedArgusActors(const ArgusEntity& templateEntity) override;
+	virtual void OnUpdateSelectedArgusActors(ArgusEntity templateEntity) override;
 
 protected:
 	UPROPERTY(BlueprintReadWrite, Transient)

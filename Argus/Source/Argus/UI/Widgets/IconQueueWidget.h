@@ -27,8 +27,8 @@ class UIconQueueWidget : public UArgusUIElement
 	GENERATED_BODY()
 
 public:
-	void RefreshDisplay(const ArgusEntity& selectedEntity);
-	void SetIconQueueDataSource(EIconQueueDataSource dataSource, const ArgusEntity& selectedEntity);
+	void RefreshDisplay(ArgusEntity selectedEntity);
+	void SetIconQueueDataSource(EIconQueueDataSource dataSource, ArgusEntity selectedEntity);
 	void OnIconClicked(uint16 identifier);
 
 protected:

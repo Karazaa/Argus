@@ -39,7 +39,7 @@ void USingleSelectedEntityView::UpdateDisplay(const UpdateDisplayParameters& upd
 	m_iconQueue->RefreshDisplay(m_selectedEntity);
 }
 
-void USingleSelectedEntityView::OnUpdateSelectedArgusActors(const ArgusEntity& templateEntity)
+void USingleSelectedEntityView::OnUpdateSelectedArgusActors(ArgusEntity templateEntity)
 {
 	ARGUS_RETURN_ON_NULL(m_entityIcon, ArgusUILog);
 	ARGUS_RETURN_ON_NULL(m_entityName, ArgusUILog);

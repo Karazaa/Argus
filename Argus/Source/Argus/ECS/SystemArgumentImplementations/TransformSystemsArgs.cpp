@@ -4,7 +4,7 @@
 #include "SystemArgumentDefinitions\TransformSystemsArgs.h"
 #include "ArgusLogging.h"
 
-bool TransformSystemsArgs::PopulateArguments(const ArgusEntity& entity)
+bool TransformSystemsArgs::PopulateArguments(ArgusEntity entity)
 {
 	if (UNLIKELY(!entity))
 	{

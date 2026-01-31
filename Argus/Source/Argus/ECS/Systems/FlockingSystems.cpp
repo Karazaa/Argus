@@ -114,7 +114,7 @@ void FlockingSystems::ChooseFlockingRootEntityIfGroupLeader(const TransformSyste
 	flockingRootFlockingComponent->m_flockingState = EFlockingState::Stable;
 }
 
-ArgusEntity FlockingSystems::GetFlockingRootEntity(const ArgusEntity& entity)
+ArgusEntity FlockingSystems::GetFlockingRootEntity(ArgusEntity entity)
 {
 	if (!entity)
 	{

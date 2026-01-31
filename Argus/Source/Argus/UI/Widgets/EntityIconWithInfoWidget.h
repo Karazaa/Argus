@@ -16,7 +16,7 @@ class UEntityIconWithInfoWidget : public UArgusActorInfoView
 	GENERATED_BODY()
 
 public:
-	void Populate(const ArgusEntity& entity, const FSlateBrush& brush, UArgusInputManager* inputManager);
+	void Populate(ArgusEntity entity, const FSlateBrush& brush, UArgusInputManager* inputManager);
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& inGeometry, const FPointerEvent& inMouseEvent) override;
 
 protected:

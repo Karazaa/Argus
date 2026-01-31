@@ -93,7 +93,7 @@ AArgusActor* AArgusPlayerController::GetArgusActorForArgusEntityId(uint16 entity
 	return GetArgusActorForArgusEntity(ArgusEntity::RetrieveEntity(entityId));
 }
 
-AArgusActor* AArgusPlayerController::GetArgusActorForArgusEntity(const ArgusEntity& entity) const
+AArgusActor* AArgusPlayerController::GetArgusActorForArgusEntity(ArgusEntity entity) const
 {
 	ARGUS_RETURN_ON_NULL_POINTER(entity, ArgusUnrealObjectsLog);
 

@@ -18,7 +18,7 @@ void CombatSystems::RunSystems(float deltaTime)
 	});
 }
 
-bool CombatSystems::CanEntityAttackOtherEntity(const ArgusEntity& potentialAttacker, const ArgusEntity& potentialVictim)
+bool CombatSystems::CanEntityAttackOtherEntity(ArgusEntity potentialAttacker, ArgusEntity potentialVictim)
 {
 	if (!potentialVictim.IsAlive())
 	{
@@ -170,7 +170,7 @@ void CombatSystems::ProcessAttackMoveCommand(float deltaTime, const CombatSystem
 	});
 }
 
-void CombatSystems::PerformTimerAttack(const ArgusEntity& targetEntity, const CombatSystemsArgs& components)
+void CombatSystems::PerformTimerAttack(ArgusEntity targetEntity, const CombatSystemsArgs& components)
 {
 	if (components.m_combatComponent->m_attackTimerHandle.IsTimerTicking(components.m_entity))
 	{
@@ -192,14 +192,14 @@ void CombatSystems::PerformTimerAttack(const ArgusEntity& targetEntity, const Co
 	components.m_combatComponent->m_attackTimerHandle.StartTimer(components.m_entity, components.m_combatComponent->m_intervalDurationSeconds);
 }
 
-void CombatSystems::PerformContinuousAttack(float deltaTime, const ArgusEntity& targetEntity, const CombatSystemsArgs& components)
+void CombatSystems::PerformContinuousAttack(float deltaTime, ArgusEntity targetEntity, const CombatSystemsArgs& components)
 {
 	float amountPerTick = components.m_combatComponent->m_baseDamagePerIntervalOrPerSecond * deltaTime;
 	uint32 damage = FMath::FloorToInt32(amountPerTick);
 	ApplyDamage(damage, targetEntity, components);
 }
 
-void CombatSystems::ApplyDamage(uint32 damageAmount, const ArgusEntity& targetEntity, const CombatSystemsArgs& components)
+void CombatSystems::ApplyDamage(uint32 damageAmount, ArgusEntity targetEntity, const CombatSystemsArgs& components)
 {
 	HealthComponent* targetHealthComponent = targetEntity.GetComponent<HealthComponent>();
 	if (!targetHealthComponent)
@@ -219,7 +219,7 @@ void CombatSystems::ApplyDamage(uint32 damageAmount, const ArgusEntity& targetEn
 	}
 }
 
-void CombatSystems::KillEntity(const ArgusEntity& targetEntity, HealthComponent* targetHealthComponent)
+void CombatSystems::KillEntity(ArgusEntity targetEntity, HealthComponent* targetHealthComponent)
 {
 	if (!targetHealthComponent)
 	{

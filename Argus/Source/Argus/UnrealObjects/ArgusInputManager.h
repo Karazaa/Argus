@@ -89,8 +89,8 @@ public:
 	void OnStartPanningLockout(const FInputActionValue& value);
 	void OnStopPanningLockout(const FInputActionValue& value);
 	void OnUserInterfaceButtonClicked(InputType inputEvent);
-	void OnUserInterfaceEntityClicked(const ArgusEntity& clickedEntity);
-	void OnUserInterfaceFocusEntityClicked(const ArgusEntity& clickedEntity);
+	void OnUserInterfaceEntityClicked(ArgusEntity clickedEntity);
+	void OnUserInterfaceFocusEntityClicked(ArgusEntity clickedEntity);
 	void OnControlGroup0(const FInputActionValue& value);
 	void OnControlGroup1(const FInputActionValue& value);
 	void OnControlGroup2(const FInputActionValue& value);
@@ -131,7 +131,7 @@ private:
 		const FInputActionValue m_value;
 
 		InputCache(const InputType type, const FInputActionValue value) : m_type(type), m_entity(ArgusEntity::k_emptyEntity), m_value(value) {}
-		InputCache(const InputType type, const ArgusEntity& entity) : m_type(type), m_entity(entity), m_value(FInputActionValue()) {}
+		InputCache(const InputType type, ArgusEntity entity) : m_type(type), m_entity(entity), m_value(FInputActionValue()) {}
 	};
 
 	TWeakObjectPtr<AArgusPlayerController> m_owningPlayerController = nullptr;
@@ -155,7 +155,7 @@ private:
 	void ProcessControlGroup(uint8 controlGroupIndex, AArgusCameraActor* argusCamera);
 	void ProcessSetControlGroup(uint8 controlGroupIndex);
 	void ProcessChangeActiveAbilityGroup();
-	void ProcessUserInterfaceEntityClicked(const ArgusEntity& entity);
+	void ProcessUserInterfaceEntityClicked(ArgusEntity entity);
 
 	void SetReticleState();
 	void ProcessReticleAbilityForSelectedEntities(const ReticleComponent* reticleComponent);

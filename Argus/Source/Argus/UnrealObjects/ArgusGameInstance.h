@@ -24,7 +24,7 @@ public:
 
 	void RegisterArgusEntityActor(const TWeakObjectPtr<AArgusActor> argusActor);
 	void DeregisterArgusEntityActor(const TWeakObjectPtr<AArgusActor> argusActor);
-	AArgusActor* GetArgusActorFromArgusEntity(const ArgusEntity& argusEntity) const;
+	AArgusActor* GetArgusActorFromArgusEntity(ArgusEntity argusEntity) const;
 
 protected:
 	UPROPERTY(EditAnywhere)

@@ -82,7 +82,7 @@ bool TaskSystems::ProcessDispatchingForEntityPair(const TaskSystemsArgs& compone
 	return false;
 }
 
-bool TaskSystems::DispatchToConstructionIfAble(const TaskSystemsArgs& components, const ArgusEntity& potentialTargetEntity)
+bool TaskSystems::DispatchToConstructionIfAble(const TaskSystemsArgs& components, ArgusEntity potentialTargetEntity)
 {
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
@@ -101,7 +101,7 @@ bool TaskSystems::DispatchToConstructionIfAble(const TaskSystemsArgs& components
 	return true;
 }
 
-bool TaskSystems::DispatchToCombatIfAble(const TaskSystemsArgs& components, const ArgusEntity& potentialTargetEntity)
+bool TaskSystems::DispatchToCombatIfAble(const TaskSystemsArgs& components, ArgusEntity potentialTargetEntity)
 {
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{

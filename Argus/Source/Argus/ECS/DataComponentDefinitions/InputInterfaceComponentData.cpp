@@ -5,7 +5,7 @@
 #include "ArgusLogging.h"
 #include "ArgusStaticData.h"
 
-void UInputInterfaceComponentData::InstantiateComponentForEntity(const ArgusEntity& entity) const
+void UInputInterfaceComponentData::InstantiateComponentForEntity(ArgusEntity entity) const
 {
 	InputInterfaceComponent* InputInterfaceComponentRef = entity.GetOrAddComponent<InputInterfaceComponent>();
 	ARGUS_RETURN_ON_NULL(InputInterfaceComponentRef, ArgusECSLog);

@@ -51,7 +51,7 @@ void AArgusCameraActor::ForceSetCameraLocationWithoutZoom(const FVector& locatio
 	SetActorLocation(location);
 }
 
-void AArgusCameraActor::FocusOnArgusEntity(const ArgusEntity& entity)
+void AArgusCameraActor::FocusOnArgusEntity(ArgusEntity entity)
 {
 	if (!entity)
 	{

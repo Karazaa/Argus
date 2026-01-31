@@ -21,6 +21,6 @@ public:
 	UPROPERTY(EditAnywhere)
 	EConstructionType m_constructionType = EConstructionType::Automatic;
 
-	void InstantiateComponentForEntity(const ArgusEntity& entity) const override;
+	void InstantiateComponentForEntity(ArgusEntity entity) const override;
 	bool MatchesType(UComponentData* other) const override;
 };

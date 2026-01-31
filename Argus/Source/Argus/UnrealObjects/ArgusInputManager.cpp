@@ -168,12 +168,12 @@ void UArgusInputManager::OnUserInterfaceButtonClicked(InputType inputEvent)
 	m_inputEventsThisFrame.Emplace(InputCache(inputEvent, FInputActionValue()));
 }
 
-void UArgusInputManager::OnUserInterfaceEntityClicked(const ArgusEntity& clickedEntity)
+void UArgusInputManager::OnUserInterfaceEntityClicked(ArgusEntity clickedEntity)
 {
 	m_inputEventsThisFrame.Emplace(InputCache(InputType::UserInterfaceEntityClicked, clickedEntity));
 }
 
-void UArgusInputManager::OnUserInterfaceFocusEntityClicked(const ArgusEntity& clickedEntity)
+void UArgusInputManager::OnUserInterfaceFocusEntityClicked(ArgusEntity clickedEntity)
 {
 	if (!ValidateOwningPlayerController())
 	{
@@ -1125,7 +1125,7 @@ void UArgusInputManager::ProcessChangeActiveAbilityGroup()
 	InputInterfaceSystems::ChangeActiveAbilityGroup();
 }
 
-void UArgusInputManager::ProcessUserInterfaceEntityClicked(const ArgusEntity& entity)
+void UArgusInputManager::ProcessUserInterfaceEntityClicked(ArgusEntity entity)
 {
 	ARGUS_RETURN_ON_NULL(entity, ArgusInputLog);
 	if (!ValidateOwningPlayerController())

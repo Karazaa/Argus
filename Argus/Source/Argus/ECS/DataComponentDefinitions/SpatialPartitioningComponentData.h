@@ -19,6 +19,6 @@ public:
 	UPROPERTY(EditAnywhere)
 	float m_elevatedObstaclePointHeightThreshold = 10.0f;
 
-	void InstantiateComponentForEntity(const ArgusEntity& entity) const override;
+	void InstantiateComponentForEntity(ArgusEntity entity) const override;
 	bool MatchesType(UComponentData* other) const override;
 };

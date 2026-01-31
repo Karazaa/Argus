@@ -5,7 +5,7 @@
 #include "ArgusLogging.h"
 #include "ArgusStaticData.h"
 
-void UHealthComponentData::InstantiateComponentForEntity(const ArgusEntity& entity) const
+void UHealthComponentData::InstantiateComponentForEntity(ArgusEntity entity) const
 {
 	HealthComponent* HealthComponentRef = entity.GetOrAddComponent<HealthComponent>();
 	ARGUS_RETURN_ON_NULL(HealthComponentRef, ArgusECSLog);

@@ -4,7 +4,7 @@
 #include "SystemArgumentDefinitions\FlockingSystemsArgs.h"
 #include "ArgusLogging.h"
 
-bool FlockingSystemsArgs::PopulateArguments(const ArgusEntity& entity)
+bool FlockingSystemsArgs::PopulateArguments(ArgusEntity entity)
 {
 	if (UNLIKELY(!entity))
 	{

@@ -5,7 +5,7 @@
 #include "ArgusLogging.h"
 #include "ArgusStaticData.h"
 
-void UResourceExtractionComponentData::InstantiateComponentForEntity(const ArgusEntity& entity) const
+void UResourceExtractionComponentData::InstantiateComponentForEntity(ArgusEntity entity) const
 {
 	ResourceExtractionComponent* ResourceExtractionComponentRef = entity.GetOrAddComponent<ResourceExtractionComponent>();
 	ARGUS_RETURN_ON_NULL(ResourceExtractionComponentRef, ArgusECSLog);

@@ -5,7 +5,7 @@
 #include "ArgusLogging.h"
 #include "ArgusStaticData.h"
 
-void UFlockingComponentData::InstantiateComponentForEntity(const ArgusEntity& entity) const
+void UFlockingComponentData::InstantiateComponentForEntity(ArgusEntity entity) const
 {
 	FlockingComponent* FlockingComponentRef = entity.GetOrAddComponent<FlockingComponent>();
 	ARGUS_RETURN_ON_NULL(FlockingComponentRef, ArgusECSLog);

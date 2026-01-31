@@ -5,7 +5,7 @@
 #include "ArgusLogging.h"
 #include "ArgusStaticData.h"
 
-void UNearbyEntitiesComponentData::InstantiateComponentForEntity(const ArgusEntity& entity) const
+void UNearbyEntitiesComponentData::InstantiateComponentForEntity(ArgusEntity entity) const
 {
 	NearbyEntitiesComponent* NearbyEntitiesComponentRef = entity.GetOrAddComponent<NearbyEntitiesComponent>();
 	ARGUS_RETURN_ON_NULL(NearbyEntitiesComponentRef, ArgusECSLog);

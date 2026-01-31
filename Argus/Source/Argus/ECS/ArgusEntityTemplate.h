@@ -22,8 +22,8 @@ public:
 	ArgusEntity MakeEntity() const;
 	ArgusEntity MakeEntity(uint16 entityId) const;
 	ArgusEntity MakeEntityAsync(const TFunction<void(ArgusEntity)> onCompleteCallback = nullptr) const;
-	void PopulateEntity(const ArgusEntity& entity) const;
-	void SetInitialStateFromData(const ArgusEntity& entity) const;
+	void PopulateEntity(ArgusEntity entity) const;
+	void SetInitialStateFromData(ArgusEntity entity) const;
 
 	template <typename ComponentType>
 	const ComponentType* GetComponentFromTemplate() const

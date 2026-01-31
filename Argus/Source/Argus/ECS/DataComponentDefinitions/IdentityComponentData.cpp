@@ -5,7 +5,7 @@
 #include "ArgusLogging.h"
 #include "ArgusStaticData.h"
 
-void UIdentityComponentData::InstantiateComponentForEntity(const ArgusEntity& entity) const
+void UIdentityComponentData::InstantiateComponentForEntity(ArgusEntity entity) const
 {
 	IdentityComponent* IdentityComponentRef = entity.GetOrAddComponent<IdentityComponent>();
 	ARGUS_RETURN_ON_NULL(IdentityComponentRef, ArgusECSLog);

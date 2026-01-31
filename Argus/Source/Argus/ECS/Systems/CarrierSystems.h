@@ -7,5 +7,5 @@
 class CarrierSystems
 {
 public:
-	static bool CanEntityCarryOtherEntity(const ArgusEntity& entity, const ArgusEntity& otherEntity);
+	static bool CanEntityCarryOtherEntity(ArgusEntity entity, ArgusEntity otherEntity);
 };

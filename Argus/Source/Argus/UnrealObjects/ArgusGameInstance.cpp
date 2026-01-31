@@ -63,7 +63,7 @@ void UArgusGameInstance::DeregisterArgusEntityActor(const TWeakObjectPtr<AArgusA
 	m_argusEntityActorMap.Remove(entityId);
 }
 
-AArgusActor* UArgusGameInstance::GetArgusActorFromArgusEntity(const ArgusEntity& argusEntity) const
+AArgusActor* UArgusGameInstance::GetArgusActorFromArgusEntity(ArgusEntity argusEntity) const
 {
 	const uint16 entityId = argusEntity.GetId();
 	if (!m_argusEntityActorMap.Contains(entityId))

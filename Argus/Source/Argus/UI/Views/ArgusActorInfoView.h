@@ -13,8 +13,8 @@ class UArgusActorInfoView : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	virtual void SetInitialDisplay(const ArgusEntity& argusEntity);
-	virtual void RefreshDisplay(const ArgusEntity& argusEntity);
+	virtual void SetInitialDisplay(ArgusEntity argusEntity);
+	virtual void RefreshDisplay(ArgusEntity argusEntity);
 
 protected:
 	UPROPERTY(BlueprintReadWrite, Transient)

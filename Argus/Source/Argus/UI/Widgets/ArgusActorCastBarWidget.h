@@ -14,8 +14,8 @@ class UArgusActorCastBarWidget : public UArgusActorInfoView
 	GENERATED_BODY()
 
 public:
-	virtual void SetInitialDisplay(const ArgusEntity& argusEntity) override;
-	virtual void RefreshDisplay(const ArgusEntity& argusEntity) override;
+	virtual void SetInitialDisplay(ArgusEntity argusEntity) override;
+	virtual void RefreshDisplay(ArgusEntity argusEntity) override;
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

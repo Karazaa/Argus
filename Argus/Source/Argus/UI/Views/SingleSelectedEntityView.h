@@ -21,7 +21,7 @@ class USingleSelectedEntityView : public UArgusUIElement
 public:
 	virtual void NativeConstruct() override;
 	virtual void UpdateDisplay(const UpdateDisplayParameters& updateDisplayParams) override;
-	virtual void OnUpdateSelectedArgusActors(const ArgusEntity& templateEntity) override;
+	virtual void OnUpdateSelectedArgusActors(ArgusEntity templateEntity) override;
 	void OnEntityIconClicked();
 
 protected:

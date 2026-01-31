@@ -11,7 +11,7 @@ void TimerHandle::StartTimer(float seconds)
 	StartTimer(entity, seconds);
 }
 
-void TimerHandle::StartTimer(const ArgusEntity& entityWithTimer, float seconds)
+void TimerHandle::StartTimer(ArgusEntity entityWithTimer, float seconds)
 {
 	ARGUS_MEMORY_TRACE(ArgusTimerSystems);
 
@@ -60,7 +60,7 @@ void TimerHandle::FinishTimerHandling()
 	FinishTimerHandling(entity);
 }
 
-void TimerHandle::FinishTimerHandling(const ArgusEntity& entityWithTimer)
+void TimerHandle::FinishTimerHandling(ArgusEntity entityWithTimer)
 {
 	Timer* timer = GetTimerForEntity(entityWithTimer, ARGUS_FUNCNAME);
 	if (!timer)
@@ -84,7 +84,7 @@ void TimerHandle::CancelTimer()
 	CancelTimer(ArgusEntity::RetrieveEntity(ArgusComponentRegistry::GetOwningEntityIdForComponentMember(this)));
 }
 
-void TimerHandle::CancelTimer(const ArgusEntity& entityWithTimer)
+void TimerHandle::CancelTimer(ArgusEntity entityWithTimer)
 {
 	Timer* timer = GetTimerForEntity(entityWithTimer, ARGUS_FUNCNAME);
 	if (!timer)
@@ -104,7 +104,7 @@ float TimerHandle::GetTimeRemaining() const
 	return GetTimeRemaining(ArgusEntity::RetrieveEntity(ArgusComponentRegistry::GetOwningEntityIdForComponentMember(this)));
 }
 
-float TimerHandle::GetTimeRemaining(const ArgusEntity& entityWithTimer) const
+float TimerHandle::GetTimeRemaining(ArgusEntity entityWithTimer) const
 {
 	if (m_timerIndex == UINT8_MAX)
 	{
@@ -130,7 +130,7 @@ float TimerHandle::GetTimeElapsedProportion() const
 	return GetTimeElapsedProportion(ArgusEntity::RetrieveEntity(ArgusComponentRegistry::GetOwningEntityIdForComponentMember(this)));
 }
 
-float TimerHandle::GetTimeElapsedProportion(const ArgusEntity& entityWithTimer) const
+float TimerHandle::GetTimeElapsedProportion(ArgusEntity entityWithTimer) const
 {
 	if (m_timerIndex == UINT8_MAX)
 	{
@@ -156,7 +156,7 @@ bool TimerHandle::IsTimerTicking() const
 	return IsTimerTicking(ArgusEntity::RetrieveEntity(ArgusComponentRegistry::GetOwningEntityIdForComponentMember(this)));
 }
 
-bool TimerHandle::IsTimerTicking(const ArgusEntity& entityWithTimer) const
+bool TimerHandle::IsTimerTicking(ArgusEntity entityWithTimer) const
 {
 	if (m_timerIndex == UINT8_MAX)
 	{
@@ -172,7 +172,7 @@ bool TimerHandle::IsTimerTicking(const ArgusEntity& entityWithTimer) const
 	return timer->m_timerState == TimerState::Ticking;
 }
 
-bool TimerHandle::IsTimerComplete(const ArgusEntity& entityWithTimer) const
+bool TimerHandle::IsTimerComplete(ArgusEntity entityWithTimer) const
 {
 	if (m_timerIndex == UINT8_MAX)
 	{
@@ -198,7 +198,7 @@ bool TimerHandle::WasTimerSet() const
 	return WasTimerSet(ArgusEntity::RetrieveEntity(ArgusComponentRegistry::GetOwningEntityIdForComponentMember(this)));
 }
 
-bool TimerHandle::WasTimerSet(const ArgusEntity& entityWithTimer) const
+bool TimerHandle::WasTimerSet(ArgusEntity entityWithTimer) const
 {
 	if (m_timerIndex == UINT8_MAX)
 	{
@@ -214,7 +214,7 @@ bool TimerHandle::WasTimerSet(const ArgusEntity& entityWithTimer) const
 	return timer->m_timerState != TimerState::NotSet;
 }
 
-TimerComponent* TimerHandle::GetTimerComponentForEntity(const ArgusEntity& entityWithTimer, const WIDECHAR* functionName) const
+TimerComponent* TimerHandle::GetTimerComponentForEntity(ArgusEntity entityWithTimer, const WIDECHAR* functionName) const
 {
 	if (!entityWithTimer)
 	{
@@ -249,7 +249,7 @@ TimerComponent* TimerHandle::GetTimerComponentForEntity(const ArgusEntity& entit
 	return timerComponent;
 }
 
-Timer* TimerHandle::GetTimerForEntity(const ArgusEntity& entityWithTimer, const WIDECHAR* functionName) const
+Timer* TimerHandle::GetTimerForEntity(ArgusEntity entityWithTimer, const WIDECHAR* functionName) const
 {
 	TimerComponent* timerComponent = GetTimerComponentForEntity(entityWithTimer, functionName);
 	if (!timerComponent)

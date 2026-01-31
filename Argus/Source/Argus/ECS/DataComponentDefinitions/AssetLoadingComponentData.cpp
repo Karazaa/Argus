@@ -5,7 +5,7 @@
 #include "ArgusLogging.h"
 #include "ArgusStaticData.h"
 
-void UAssetLoadingComponentData::InstantiateComponentForEntity(const ArgusEntity& entity) const
+void UAssetLoadingComponentData::InstantiateComponentForEntity(ArgusEntity entity) const
 {
 	AssetLoadingComponent* AssetLoadingComponentRef = entity.GetOrAddComponent<AssetLoadingComponent>();
 	ARGUS_RETURN_ON_NULL(AssetLoadingComponentRef, ArgusECSLog);

@@ -51,7 +51,7 @@ void USelectedArgusEntitiesView::UpdateDisplay(const UpdateDisplayParameters& up
 	}
 }
 
-void USelectedArgusEntitiesView::OnUpdateSelectedArgusActors(const ArgusEntity& templateEntity)
+void USelectedArgusEntitiesView::OnUpdateSelectedArgusActors(ArgusEntity templateEntity)
 {
 	Super::OnUpdateSelectedArgusActors(templateEntity);
 

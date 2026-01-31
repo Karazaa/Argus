@@ -16,8 +16,8 @@ class UArgusActorCarrierBarWidget : public UArgusActorInfoView
 	GENERATED_BODY()
 
 public:
-	virtual void SetInitialDisplay(const ArgusEntity& argusEntity) override;
-	virtual void RefreshDisplay(const ArgusEntity& argusEntity) override;
+	virtual void SetInitialDisplay(ArgusEntity argusEntity) override;
+	virtual void RefreshDisplay(ArgusEntity argusEntity) override;
 
 protected:
 	UPROPERTY(BlueprintReadWrite, Transient)
@@ -26,7 +26,7 @@ protected:
 	UPROPERTY(Transient)
 	TArray<UImage*> m_slotImages;
 
-	void PopulateCarrierSlots(const ArgusEntity& entity);
+	void PopulateCarrierSlots(ArgusEntity entity);
 	void SetImageColors(const CarrierComponent* carrierComponent);
 
 	int32 m_currentPassengerCount = 0;

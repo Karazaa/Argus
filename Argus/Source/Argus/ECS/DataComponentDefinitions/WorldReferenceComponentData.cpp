@@ -5,7 +5,7 @@
 #include "ArgusLogging.h"
 #include "ArgusStaticData.h"
 
-void UWorldReferenceComponentData::InstantiateComponentForEntity(const ArgusEntity& entity) const
+void UWorldReferenceComponentData::InstantiateComponentForEntity(ArgusEntity entity) const
 {
 	WorldReferenceComponent* WorldReferenceComponentRef = entity.GetOrAddComponent<WorldReferenceComponent>();
 	ARGUS_RETURN_ON_NULL(WorldReferenceComponentRef, ArgusECSLog);

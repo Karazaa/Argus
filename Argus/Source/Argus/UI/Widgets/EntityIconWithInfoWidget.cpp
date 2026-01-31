@@ -5,7 +5,7 @@
 #include "ArgusLogging.h"
 #include "Components/Image.h"
 
-void UEntityIconWithInfoWidget::Populate(const ArgusEntity& entity, const FSlateBrush& brush, UArgusInputManager* inputManager)
+void UEntityIconWithInfoWidget::Populate(ArgusEntity entity, const FSlateBrush& brush, UArgusInputManager* inputManager)
 {
 	ARGUS_RETURN_ON_NULL(m_entityIcon, ArgusUILog);
 

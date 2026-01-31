@@ -11,9 +11,9 @@ public:
 	static void RunSystems(UWorld* worldPointer, float deltaTime);
 
 	static void					ProcessORCAvoidance(UWorld* worldPointer, float deltaTime, const TransformSystemsArgs& components, const NearbyEntitiesComponent* nearbyEntitiesComponent);
-	static ArgusEntity			GetAvoidanceGroupLeader(const ArgusEntity& entity);
-	static bool					AreInSameAvoidanceGroup(const ArgusEntity& entity, const ArgusEntity& otherEntity);
-	static void					DecrementIdleEntitiesInGroup(const ArgusEntity& entity);
+	static ArgusEntity			GetAvoidanceGroupLeader(ArgusEntity entity);
+	static bool					AreInSameAvoidanceGroup(ArgusEntity entity, ArgusEntity otherEntity);
+	static void					DecrementIdleEntitiesInGroup(ArgusEntity entity);
 	static TOptional<FVector>	GetAvoidanceGroupDestinationLocation(const TransformSystemsArgs& components);
 	static TOptional<FVector>	GetAvoidanceGroupSourceLocation(const TransformSystemsArgs& components);
 	static FVector2D			GetFlockingVelocity(const TransformSystemsArgs& components);
@@ -52,16 +52,16 @@ private:
 	static void			ThreeDimensionalLinearProgram(const TArray<ORCALine>& orcaLines, const float radius, const int32 lineIndex, const int numStaticObstacleORCALines, FVector2D& resultingVelocity);
 	static FVector2D	GetDesiredVelocity(const TransformSystemsArgs& components);
 
-	static float		GetEffortCoefficientForEntityPair(const TransformSystemsArgs& sourceEntityComponents, const ArgusEntity& foundEntity);
-	static float		GetEffortCoefficientForAvoidanceGroupPair(const TransformSystemsArgs& sourceEntityComponents, const ArgusEntity& foundEntity, const AvoidanceGroupingComponent* sourceGroupComponent, const AvoidanceGroupingComponent* foundGroupComponent);
+	static float		GetEffortCoefficientForEntityPair(const TransformSystemsArgs& sourceEntityComponents, ArgusEntity foundEntity);
+	static float		GetEffortCoefficientForAvoidanceGroupPair(const TransformSystemsArgs& sourceEntityComponents, ArgusEntity foundEntity, const AvoidanceGroupingComponent* sourceGroupComponent, const AvoidanceGroupingComponent* foundGroupComponent);
 	static bool			ShouldReturnCombatEffortCoefficient(const TransformSystemsArgs& sourceEntityComponents, const TaskComponent* foundEntityTaskComponent, float& coefficient);
 	static bool			ShouldReturnConstructionEffortCoefficient(const TransformSystemsArgs& sourceEntityComponents, const TaskComponent* foundEntityTaskComponent, float& coefficient);
-	static bool			ShouldReturnCarrierEffortCoefficient(const TransformSystemsArgs& sourceEntityComponents, const ArgusEntity& foundEntity, const TaskComponent* foundEntityTaskComponent, float& coefficient);
-	static bool			ShouldReturnTargetEffortCoefficient(const TransformSystemsArgs& sourceEntityComponents, const ArgusEntity& foundEntity, float& coefficient);
+	static bool			ShouldReturnCarrierEffortCoefficient(const TransformSystemsArgs& sourceEntityComponents, ArgusEntity foundEntity, const TaskComponent* foundEntityTaskComponent, float& coefficient);
+	static bool			ShouldReturnTargetEffortCoefficient(const TransformSystemsArgs& sourceEntityComponents, ArgusEntity foundEntity, float& coefficient);
 	static bool			ShouldReturnAvoidancePriorityEffortCoefficient(const AvoidanceGroupingComponent* sourceEntityAvoidanceGroupingComponent, const AvoidanceGroupingComponent* foundEntityAvoidanceGroupingComponent, float& coefficient);
-	static bool			ShouldReturnMovementTaskEffortCoefficient(const TransformSystemsArgs& sourceEntityComponents, const ArgusEntity& foundEntity, const TaskComponent* foundEntityTaskComponent, bool inSameAvoidanceGroup, float& coefficient);
+	static bool			ShouldReturnMovementTaskEffortCoefficient(const TransformSystemsArgs& sourceEntityComponents, ArgusEntity foundEntity, const TaskComponent* foundEntityTaskComponent, bool inSameAvoidanceGroup, float& coefficient);
 	static bool			ShouldReturnResourceExtractionEffortCoefficient(const TransformSystemsArgs& sourceEntityComponents, const TaskComponent* foundEntityTaskComponent, float& coefficient);
-	static bool			ShouldReturnStaticFlockingEffortCoefficient(const TransformSystemsArgs& sourceEntityComponents, const ArgusEntity& foundEntity, float& coefficient);
+	static bool			ShouldReturnStaticFlockingEffortCoefficient(const TransformSystemsArgs& sourceEntityComponents, ArgusEntity foundEntity, float& coefficient);
 	static float		FindAreaOfObstacleCartesian(const TArray<ObstaclePoint>& obstaclePoints);
 	
 	static void			CalculateORCALineForObstacleSegment(const CreateEntityORCALinesParams& params, ObstaclePoint obstaclePoint0, ObstaclePoint obstaclePoint1, const FVector2D& previousObstaclePointDir, TArray<ORCALine>& outORCALines);

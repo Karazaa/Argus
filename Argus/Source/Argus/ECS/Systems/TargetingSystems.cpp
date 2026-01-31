@@ -3,7 +3,7 @@
 #include "TargetingSystems.h"
 #include "Systems/CombatSystems.h"
 
-TOptional<FVector> TargetingSystems::GetCurrentTargetLocationForEntity(const ArgusEntity& entity)
+TOptional<FVector> TargetingSystems::GetCurrentTargetLocationForEntity(ArgusEntity entity)
 {
 	const TargetingComponent* targetingComponent = entity.GetComponent<TargetingComponent>();
 	if (!targetingComponent)
@@ -36,7 +36,7 @@ TOptional<FVector> TargetingSystems::GetCurrentTargetLocationForEntity(const Arg
 	return output;
 }
 
-bool TargetingSystems::IsInMeleeRangeOfOtherEntity(const ArgusEntity& entity, const ArgusEntity& otherEntity)
+bool TargetingSystems::IsInMeleeRangeOfOtherEntity(ArgusEntity entity, ArgusEntity otherEntity)
 {
 	if (!entity || !otherEntity)
 	{
@@ -52,7 +52,7 @@ bool TargetingSystems::IsInMeleeRangeOfOtherEntity(const ArgusEntity& entity, co
 	return entity.IsInRangeOfOtherEntity(otherEntity, targetingComponent->m_meleeRange);
 }
 
-bool TargetingSystems::IsInRangedRangeOfOtherEntity(const ArgusEntity& entity, const ArgusEntity& otherEntity)
+bool TargetingSystems::IsInRangedRangeOfOtherEntity(ArgusEntity entity, ArgusEntity otherEntity)
 {
 	if (!entity || !otherEntity)
 	{
@@ -68,7 +68,7 @@ bool TargetingSystems::IsInRangedRangeOfOtherEntity(const ArgusEntity& entity, c
 	return entity.IsInRangeOfOtherEntity(otherEntity, targetingComponent->m_rangedRange);
 }
 
-float TargetingSystems::GetRangeToUseForOtherEntity(const ArgusEntity& entity, const ArgusEntity& otherEntity)
+float TargetingSystems::GetRangeToUseForOtherEntity(ArgusEntity entity, ArgusEntity otherEntity)
 {
 	const TargetingComponent* targetingComponent = entity.GetComponent<TargetingComponent>();
 	if (!targetingComponent)

@@ -7,7 +7,7 @@
 #include "Components/HorizontalBoxSlot.h"
 #include "Components/Image.h"
 
-void UArgusActorCarrierBarWidget::SetInitialDisplay(const ArgusEntity& entity)
+void UArgusActorCarrierBarWidget::SetInitialDisplay(ArgusEntity entity)
 {
 	Super::SetInitialDisplay(entity);
 
@@ -15,7 +15,7 @@ void UArgusActorCarrierBarWidget::SetInitialDisplay(const ArgusEntity& entity)
 	SetVisibility(ESlateVisibility::Collapsed);
 }
 
-void UArgusActorCarrierBarWidget::RefreshDisplay(const ArgusEntity& entity)
+void UArgusActorCarrierBarWidget::RefreshDisplay(ArgusEntity entity)
 {
 	Super::RefreshDisplay(entity);
 
@@ -57,7 +57,7 @@ void UArgusActorCarrierBarWidget::RefreshDisplay(const ArgusEntity& entity)
 	}
 }
 
-void UArgusActorCarrierBarWidget::PopulateCarrierSlots(const ArgusEntity& entity)
+void UArgusActorCarrierBarWidget::PopulateCarrierSlots(ArgusEntity entity)
 {
 	const CarrierComponent* carrierComponent = entity.GetComponent<CarrierComponent>();
 	if (!carrierComponent || !m_horizontalBox)

@@ -11,7 +11,7 @@ void ArgusEntityKDTreeNode::Populate(const FVector& worldSpaceLocation)
 	m_worldSpaceLocation = worldSpaceLocation;
 }
 
-void ArgusEntityKDTreeNode::Populate(const ArgusEntity& entityToRepresent)
+void ArgusEntityKDTreeNode::Populate(ArgusEntity entityToRepresent)
 {
 	if (!entityToRepresent)
 	{
@@ -239,7 +239,7 @@ void ArgusEntityKDTree::RebuildKDTreeForAllArgusEntities()
 	}
 }
 
-void ArgusEntityKDTree::InsertArgusEntityIntoKDTree(const ArgusEntity& entityToRepresent)
+void ArgusEntityKDTree::InsertArgusEntityIntoKDTree(ArgusEntity entityToRepresent)
 {
 	ARGUS_MEMORY_TRACE(ArgusKDTree);
 	ARGUS_TRACE(ArgusKDTree::InsertArgusEntityIntoKDTree);
@@ -264,7 +264,7 @@ void ArgusEntityKDTree::InsertArgusEntityIntoKDTree(const ArgusEntity& entityToR
 	InsertNodeIntoKDTreeRecursive(m_rootNode, nodeToInsert, 0u);
 }
 
-bool ArgusEntityKDTree::RemoveArgusEntityFromKDTree(const ArgusEntity& entityToRemove)
+bool ArgusEntityKDTree::RemoveArgusEntityFromKDTree(ArgusEntity entityToRemove)
 {
 	if (UNLIKELY(!entityToRemove))
 	{
@@ -301,7 +301,7 @@ uint16 ArgusEntityKDTree::FindArgusEntityIdClosestToLocation(const FVector& loca
 	return FindArgusEntityIdClosestToLocation(location, ArgusEntity::k_emptyEntity);
 }
 
-uint16 ArgusEntityKDTree::FindArgusEntityIdClosestToLocation(const FVector& location, const ArgusEntity& entityToIgnore) const
+uint16 ArgusEntityKDTree::FindArgusEntityIdClosestToLocation(const FVector& location, ArgusEntity entityToIgnore) const
 {
 	const uint16 entityIdToIgnore = entityToIgnore.GetId();
 	TFunction<bool(const ArgusEntityKDTreeNode*)> predicate = nullptr;
@@ -344,7 +344,7 @@ uint16 ArgusEntityKDTree::FindArgusEntityIdClosestToLocation(const FVector& loca
 	return foundNode->m_entityId;
 }
 
-uint16 ArgusEntityKDTree::FindOtherArgusEntityIdClosestToArgusEntity(const ArgusEntity& entityToSearchAround, const TFunction<bool(const ArgusEntityKDTreeNode*)> queryFilterOverride) const
+uint16 ArgusEntityKDTree::FindOtherArgusEntityIdClosestToArgusEntity(ArgusEntity entityToSearchAround, const TFunction<bool(const ArgusEntityKDTreeNode*)> queryFilterOverride) const
 {
 	if (!entityToSearchAround)
 	{
@@ -372,7 +372,7 @@ bool ArgusEntityKDTree::FindArgusEntityIdsWithinRangeOfLocation(TArray<uint16>& 
 	return FindArgusEntityIdsWithinRangeOfLocation(outNearbyArgusEntityIds, location, range, ArgusEntity::k_emptyEntity);
 }
 
-bool ArgusEntityKDTree::FindArgusEntityIdsWithinRangeOfLocation(TArray<uint16>& outNearbyArgusEntityIds, const FVector& location, const float range, const ArgusEntity& entityToIgnore)
+bool ArgusEntityKDTree::FindArgusEntityIdsWithinRangeOfLocation(TArray<uint16>& outNearbyArgusEntityIds, const FVector& location, const float range, ArgusEntity entityToIgnore)
 {
 	m_queryScratchData.ResetAll();
 	FindArgusEntityIdsWithinRangeOfLocation(m_queryScratchData, ArgusEntityKDTreeQueryRangeThresholds(0.0f, 0.0f, range, ArgusECSConstants::k_maxEntities), location, range, entityToIgnore);
@@ -381,7 +381,7 @@ bool ArgusEntityKDTree::FindArgusEntityIdsWithinRangeOfLocation(TArray<uint16>& 
 	return outNearbyArgusEntityIds.Num() > 0u;
 }
 
-bool ArgusEntityKDTree::FindArgusEntityIdsWithinRangeOfLocation(ArgusEntityKDTreeRangeOutput& output, const ArgusEntityKDTreeQueryRangeThresholds& thresholds, const FVector& location, const float range, const ArgusEntity& entityToIgnore) const
+bool ArgusEntityKDTree::FindArgusEntityIdsWithinRangeOfLocation(ArgusEntityKDTreeRangeOutput& output, const ArgusEntityKDTreeQueryRangeThresholds& thresholds, const FVector& location, const float range, ArgusEntity entityToIgnore) const
 {
 	uint16 entityIdToIgnore = entityToIgnore.GetId();
 	TFunction<bool(const ArgusEntityKDTreeNode*)> predicate = nullptr;
@@ -431,7 +431,7 @@ bool ArgusEntityKDTree::FindArgusEntityIdsWithinRangeOfLocation(ArgusEntityKDTre
 	return output.FoundAny();
 }
 
-bool ArgusEntityKDTree::FindOtherArgusEntityIdsWithinRangeOfArgusEntity(TArray<uint16>& outNearbyArgusEntityIds, const ArgusEntity& entityToSearchAround, const float range, const TFunction<bool(const ArgusEntityKDTreeNode*)> queryFilterOverride)
+bool ArgusEntityKDTree::FindOtherArgusEntityIdsWithinRangeOfArgusEntity(TArray<uint16>& outNearbyArgusEntityIds, ArgusEntity entityToSearchAround, const float range, const TFunction<bool(const ArgusEntityKDTreeNode*)> queryFilterOverride)
 {
 	m_queryScratchData.ResetAll();
 	FindOtherArgusEntityIdsWithinRangeOfArgusEntity(m_queryScratchData, ArgusEntityKDTreeQueryRangeThresholds(0.0f, 0.0f, range, ArgusECSConstants::k_maxEntities), entityToSearchAround, range, queryFilterOverride);
@@ -440,7 +440,7 @@ bool ArgusEntityKDTree::FindOtherArgusEntityIdsWithinRangeOfArgusEntity(TArray<u
 	return outNearbyArgusEntityIds.Num() > 0u;
 }
 
-bool ArgusEntityKDTree::FindOtherArgusEntityIdsWithinRangeOfArgusEntity(ArgusEntityKDTreeRangeOutput& output, const ArgusEntityKDTreeQueryRangeThresholds& thresholds, const ArgusEntity& entityToSearchAround, const float range, const TFunction<bool(const ArgusEntityKDTreeNode*)> queryFilterOverride) const
+bool ArgusEntityKDTree::FindOtherArgusEntityIdsWithinRangeOfArgusEntity(ArgusEntityKDTreeRangeOutput& output, const ArgusEntityKDTreeQueryRangeThresholds& thresholds, ArgusEntity entityToSearchAround, const float range, const TFunction<bool(const ArgusEntityKDTreeNode*)> queryFilterOverride) const
 {
 	if (!entityToSearchAround)
 	{
@@ -490,7 +490,7 @@ bool ArgusEntityKDTree::FindArgusEntityIdsWithinConvexPoly(TArray<uint16>& outNe
 	return FindArgusEntityIdsWithinConvexPoly(outNearbyArgusEntityIds, convexPolyPoints3D);
 }
 
-bool ArgusEntityKDTree::DoesArgusEntityExistInKDTree(const ArgusEntity& entityToRepresent) const
+bool ArgusEntityKDTree::DoesArgusEntityExistInKDTree(ArgusEntity entityToRepresent) const
 {
 	if (!entityToRepresent)
 	{
@@ -506,12 +506,12 @@ bool ArgusEntityKDTree::DoesArgusEntityExistInKDTree(const ArgusEntity& entityTo
 	return SearchForEntityIdRecursive(m_rootNode, entityToRepresent.GetId());
 }
 
-void ArgusEntityKDTree::RequestInsertArgusEntityIntoKDTree(const ArgusEntity& entityToInsert)
+void ArgusEntityKDTree::RequestInsertArgusEntityIntoKDTree(ArgusEntity entityToInsert)
 {
 	m_entityIdsToInsert.Add(entityToInsert.GetId());
 }
 
-void ArgusEntityKDTree::RequestRemoveArgusEntityIntoKDTree(const ArgusEntity& entityToRemove)
+void ArgusEntityKDTree::RequestRemoveArgusEntityIntoKDTree(ArgusEntity entityToRemove)
 {
 	m_entityIdsToRemove.Add(entityToRemove.GetId());
 }

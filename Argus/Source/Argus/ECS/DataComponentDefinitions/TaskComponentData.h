@@ -16,6 +16,6 @@ public:
 	UPROPERTY(EditAnywhere)
 	EFlightState m_flightState = EFlightState::Grounded;
 
-	void InstantiateComponentForEntity(const ArgusEntity& entity) const override;
+	void InstantiateComponentForEntity(ArgusEntity entity) const override;
 	bool MatchesType(UComponentData* other) const override;
 };

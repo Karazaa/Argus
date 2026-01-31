@@ -7,8 +7,8 @@
 class TargetingSystems
 {
 public:
-	static TOptional<FVector> GetCurrentTargetLocationForEntity(const ArgusEntity& entity);
-	static bool IsInMeleeRangeOfOtherEntity(const ArgusEntity& entity, const ArgusEntity& otherEntity);
-	static bool IsInRangedRangeOfOtherEntity(const ArgusEntity& entity, const ArgusEntity& otherEntity);
-	static float GetRangeToUseForOtherEntity(const ArgusEntity& entity, const ArgusEntity& otherEntity);
+	static TOptional<FVector> GetCurrentTargetLocationForEntity(ArgusEntity entity);
+	static bool IsInMeleeRangeOfOtherEntity(ArgusEntity entity, ArgusEntity otherEntity);
+	static bool IsInRangedRangeOfOtherEntity(ArgusEntity entity, ArgusEntity otherEntity);
+	static float GetRangeToUseForOtherEntity(ArgusEntity entity, ArgusEntity otherEntity);
 };

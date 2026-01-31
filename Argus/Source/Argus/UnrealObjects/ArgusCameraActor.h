@@ -30,7 +30,7 @@ public:
 	};
 
 	void ForceSetCameraLocationWithoutZoom(const FVector& location, bool resetZoomSmoothing = true);
-	void FocusOnArgusEntity(const ArgusEntity& entity);
+	void FocusOnArgusEntity(ArgusEntity entity);
 	void UpdateCamera(const UpdateCameraPanningParameters& cameraParameters, const float deltaTime);
 	void UpdateCameraOrbit(const float inputOrbitValue);
 	void UpdateCameraZoom(const float inputZoomValue);

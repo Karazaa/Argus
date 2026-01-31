@@ -19,7 +19,7 @@ void ConstructionSystems::RunSystems(float deltaTime)
 	});
 }
 
-bool ConstructionSystems::CanEntityConstructOtherEntity(const ArgusEntity& potentialConstructor, const ArgusEntity& potentialConstructee)
+bool ConstructionSystems::CanEntityConstructOtherEntity(ArgusEntity potentialConstructor, ArgusEntity potentialConstructee)
 {
 	const ConstructionComponent* constructionComponent = potentialConstructee.GetComponent<ConstructionComponent>();
 	if (!constructionComponent)

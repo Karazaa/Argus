@@ -5,7 +5,7 @@
 #include "ArgusLogging.h"
 #include "ArgusStaticData.h"
 
-void UAvoidanceGroupingComponentData::InstantiateComponentForEntity(const ArgusEntity& entity) const
+void UAvoidanceGroupingComponentData::InstantiateComponentForEntity(ArgusEntity entity) const
 {
 	AvoidanceGroupingComponent* AvoidanceGroupingComponentRef = entity.GetOrAddComponent<AvoidanceGroupingComponent>();
 	ARGUS_RETURN_ON_NULL(AvoidanceGroupingComponentRef, ArgusECSLog);

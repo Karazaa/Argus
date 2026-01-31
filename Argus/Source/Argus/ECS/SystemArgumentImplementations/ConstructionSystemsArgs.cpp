@@ -4,7 +4,7 @@
 #include "SystemArgumentDefinitions\ConstructionSystemsArgs.h"
 #include "ArgusLogging.h"
 
-bool ConstructionSystemsArgs::PopulateArguments(const ArgusEntity& entity)
+bool ConstructionSystemsArgs::PopulateArguments(ArgusEntity entity)
 {
 	if (UNLIKELY(!entity))
 	{

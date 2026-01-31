@@ -4,7 +4,7 @@
 #include "SystemArgumentDefinitions\TaskSystemsArgs.h"
 #include "ArgusLogging.h"
 
-bool TaskSystemsArgs::PopulateArguments(const ArgusEntity& entity)
+bool TaskSystemsArgs::PopulateArguments(ArgusEntity entity)
 {
 	if (UNLIKELY(!entity))
 	{

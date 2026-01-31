@@ -4,7 +4,7 @@
 #include "SystemArgumentDefinitions\NavigationSystemsArgs.h"
 #include "ArgusLogging.h"
 
-bool NavigationSystemsArgs::PopulateArguments(const ArgusEntity& entity)
+bool NavigationSystemsArgs::PopulateArguments(ArgusEntity entity)
 {
 	if (UNLIKELY(!entity))
 	{

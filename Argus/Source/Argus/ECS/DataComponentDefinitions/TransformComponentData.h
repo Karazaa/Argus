@@ -21,6 +21,6 @@ float m_smoothedTransitionAltitudeDecayConstant = 1.0f;
 	UPROPERTY(EditAnywhere)
 	EFlightCapability m_flightCapability;
 
-	void InstantiateComponentForEntity(const ArgusEntity& entity) const override;
+	void InstantiateComponentForEntity(ArgusEntity entity) const override;
 	bool MatchesType(UComponentData* other) const override;
 };

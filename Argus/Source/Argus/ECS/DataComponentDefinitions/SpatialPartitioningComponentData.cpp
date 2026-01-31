@@ -5,7 +5,7 @@
 #include "ArgusLogging.h"
 #include "ArgusStaticData.h"
 
-void USpatialPartitioningComponentData::InstantiateComponentForEntity(const ArgusEntity& entity) const
+void USpatialPartitioningComponentData::InstantiateComponentForEntity(ArgusEntity entity) const
 {
 	SpatialPartitioningComponent* SpatialPartitioningComponentRef = entity.GetOrAddComponent<SpatialPartitioningComponent>();
 	ARGUS_RETURN_ON_NULL(SpatialPartitioningComponentRef, ArgusECSLog);

@@ -14,6 +14,6 @@ class ARGUS_API UPassengerComponentData : public UComponentData
 public:
 	uint16 m_carrierEntityId = ArgusECSConstants::k_maxEntities;
 
-	void InstantiateComponentForEntity(const ArgusEntity& entity) const override;
+	void InstantiateComponentForEntity(ArgusEntity entity) const override;
 	bool MatchesType(UComponentData* other) const override;
 };

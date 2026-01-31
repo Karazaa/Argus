@@ -5,7 +5,7 @@
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
 
-bool CarrierSystems::CanEntityCarryOtherEntity(const ArgusEntity& entity, const ArgusEntity& otherEntity)
+bool CarrierSystems::CanEntityCarryOtherEntity(ArgusEntity entity, ArgusEntity otherEntity)
 {
 	if (!entity.IsAlive() || !otherEntity.IsAlive())
 	{

@@ -26,7 +26,7 @@ struct ArgusEntityKDTreeNode
 	float   GetValueForDimension(uint16 dimension) const;
 	float	GetRadius() const { return m_radius; }
 
-	void Populate(const ArgusEntity& entityToRepresent);
+	void Populate(ArgusEntity entityToRepresent);
 };
 
 struct ArgusEntityKDTreeQueryRangeThresholds
@@ -71,29 +71,29 @@ public:
 	void SeedTreeWithAverageEntityLocation(bool forFlyingEntities);
 	void InsertAllArgusEntitiesIntoKDTree(bool forFlyingEntities);
 	void RebuildKDTreeForAllArgusEntities();
-	void InsertArgusEntityIntoKDTree(const ArgusEntity& entityToRepresent);
-	bool RemoveArgusEntityFromKDTree(const ArgusEntity& entityToRemove);
+	void InsertArgusEntityIntoKDTree(ArgusEntity entityToRepresent);
+	bool RemoveArgusEntityFromKDTree(ArgusEntity entityToRemove);
 
 	uint16 FindArgusEntityIdClosestToLocation(const FVector& location) const;
-	uint16 FindArgusEntityIdClosestToLocation(const FVector& location, const ArgusEntity& entityToIgnore) const;
+	uint16 FindArgusEntityIdClosestToLocation(const FVector& location, ArgusEntity entityToIgnore) const;
 	uint16 FindArgusEntityIdClosestToLocation(const FVector& location, const TFunction<bool(const ArgusEntityKDTreeNode*)> queryFilter) const;
-	uint16 FindOtherArgusEntityIdClosestToArgusEntity(const ArgusEntity& entityToSearchAround, const TFunction<bool(const ArgusEntityKDTreeNode*)> queryFilterOverride = nullptr) const;
+	uint16 FindOtherArgusEntityIdClosestToArgusEntity(ArgusEntity entityToSearchAround, const TFunction<bool(const ArgusEntityKDTreeNode*)> queryFilterOverride = nullptr) const;
 
 	bool FindArgusEntityIdsWithinRangeOfLocation(TArray<uint16>& outNearbyArgusEntityIds, const FVector& location, const float range);
-	bool FindArgusEntityIdsWithinRangeOfLocation(TArray<uint16>& outNearbyArgusEntityIds, const FVector& location, const float range, const ArgusEntity& entityToIgnore);	
-	bool FindArgusEntityIdsWithinRangeOfLocation(ArgusEntityKDTreeRangeOutput& output, const ArgusEntityKDTreeQueryRangeThresholds& thresholds, const FVector& location, const float range, const ArgusEntity& entityToIgnore) const;
+	bool FindArgusEntityIdsWithinRangeOfLocation(TArray<uint16>& outNearbyArgusEntityIds, const FVector& location, const float range, ArgusEntity entityToIgnore);
+	bool FindArgusEntityIdsWithinRangeOfLocation(ArgusEntityKDTreeRangeOutput& output, const ArgusEntityKDTreeQueryRangeThresholds& thresholds, const FVector& location, const float range, ArgusEntity entityToIgnore) const;
 	bool FindArgusEntityIdsWithinRangeOfLocation(TArray<uint16>& outNearbyArgusEntityIds, const FVector& location, const float range, const TFunction<bool(const ArgusEntityKDTreeNode*)> queryFilterOverride);
 	bool FindArgusEntityIdsWithinRangeOfLocation(ArgusEntityKDTreeRangeOutput& output, const ArgusEntityKDTreeQueryRangeThresholds& thresholds, const FVector& location, const float range, const TFunction<bool(const ArgusEntityKDTreeNode*)> queryFilterOverride) const;
-	bool FindOtherArgusEntityIdsWithinRangeOfArgusEntity(TArray<uint16>& outNearbyArgusEntityIds, const ArgusEntity& entityToSearchAround, const float range, const TFunction<bool(const ArgusEntityKDTreeNode*)> queryFilterOverride = nullptr);
-	bool FindOtherArgusEntityIdsWithinRangeOfArgusEntity(ArgusEntityKDTreeRangeOutput& output, const ArgusEntityKDTreeQueryRangeThresholds& thresholds, const ArgusEntity& entityToSearchAround, const float range, const TFunction<bool(const ArgusEntityKDTreeNode*)> queryFilterOverride = nullptr) const;
+	bool FindOtherArgusEntityIdsWithinRangeOfArgusEntity(TArray<uint16>& outNearbyArgusEntityIds, ArgusEntity entityToSearchAround, const float range, const TFunction<bool(const ArgusEntityKDTreeNode*)> queryFilterOverride = nullptr);
+	bool FindOtherArgusEntityIdsWithinRangeOfArgusEntity(ArgusEntityKDTreeRangeOutput& output, const ArgusEntityKDTreeQueryRangeThresholds& thresholds, ArgusEntity entityToSearchAround, const float range, const TFunction<bool(const ArgusEntityKDTreeNode*)> queryFilterOverride = nullptr) const;
 
 	bool FindArgusEntityIdsWithinConvexPoly(TArray<uint16>& outNearbyArgusEntityIds, const TArray<FVector>& convexPolygonPoints);
 	bool FindArgusEntityIdsWithinConvexPoly(TArray<uint16>& outNearbyArgusEntityIds, const TArray<FVector2D>& convexPolygonPoints);
 
-	bool DoesArgusEntityExistInKDTree(const ArgusEntity& entityToRepresent) const;
+	bool DoesArgusEntityExistInKDTree(ArgusEntity entityToRepresent) const;
 
-	void RequestInsertArgusEntityIntoKDTree(const ArgusEntity& entityToInsert);
-	void RequestRemoveArgusEntityIntoKDTree(const ArgusEntity& entityToRemove);
+	void RequestInsertArgusEntityIntoKDTree(ArgusEntity entityToInsert);
+	void RequestRemoveArgusEntityIntoKDTree(ArgusEntity entityToRemove);
 	void ProcessDeferredStateChanges();
 
 protected:

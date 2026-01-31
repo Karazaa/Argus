@@ -4,7 +4,7 @@
 #include "SystemArgumentDefinitions\DecalSystemsArgs.h"
 #include "ArgusLogging.h"
 
-bool DecalSystemsArgs::PopulateArguments(const ArgusEntity& entity)
+bool DecalSystemsArgs::PopulateArguments(ArgusEntity entity)
 {
 	if (UNLIKELY(!entity))
 	{

@@ -4,7 +4,7 @@
 #include "SystemArgumentDefinitions\FogOfWarSystemsArgs.h"
 #include "ArgusLogging.h"
 
-bool FogOfWarSystemsArgs::PopulateArguments(const ArgusEntity& entity)
+bool FogOfWarSystemsArgs::PopulateArguments(ArgusEntity entity)
 {
 	if (UNLIKELY(!entity))
 	{

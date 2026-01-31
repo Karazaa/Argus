@@ -25,7 +25,7 @@ public:
 	~USelectedArgusEntitiesView();
 	virtual void NativeConstruct() override;
 	virtual void UpdateDisplay(const UpdateDisplayParameters& updateDisplayParams) override;
-	virtual void OnUpdateSelectedArgusActors(const ArgusEntity& templateEntity) override;
+	virtual void OnUpdateSelectedArgusActors(ArgusEntity templateEntity) override;
 	virtual void OnChanged_m_abilityOverrideBitmask(uint8 oldValue, uint8 newValue) override;
 
 protected:

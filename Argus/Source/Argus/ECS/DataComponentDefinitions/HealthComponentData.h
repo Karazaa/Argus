@@ -17,6 +17,6 @@ public:
 	UPROPERTY(EditAnywhere)
 	uint32 m_maximumHealth = 1000u;
 
-	void InstantiateComponentForEntity(const ArgusEntity& entity) const override;
+	void InstantiateComponentForEntity(ArgusEntity entity) const override;
 	bool MatchesType(UComponentData* other) const override;
 };

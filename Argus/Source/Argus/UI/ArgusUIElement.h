@@ -2,11 +2,11 @@
 
 #pragma once
 
+#include "ArgusEntity.h"
 #include "Blueprint/UserWidget.h"
 #include "ComponentDefinitions/IdentityComponent.h"
 #include "ArgusUIElement.generated.h"
 
-class ArgusEntity;
 class UArgusInputManager;
 
 UCLASS()
@@ -24,7 +24,7 @@ public:
 	};
 
 	virtual void UpdateDisplay(const UpdateDisplayParameters& updateDisplayParams);
-	virtual void OnUpdateSelectedArgusActors(const ArgusEntity& templateEntity) {};
+	virtual void OnUpdateSelectedArgusActors(ArgusEntity templateEntity) {};
 
 	void SetInputManager(UArgusInputManager* inputManager);
 
