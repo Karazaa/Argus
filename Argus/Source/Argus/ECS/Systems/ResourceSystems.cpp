@@ -477,7 +477,7 @@ void ResourceSystems::ClearResourceGatheringForEntity(const ResourceSystemsArgs&
 		return;
 	}
 
-	components.m_targetingComponent->Reset();
+	components.m_targetingComponent->ClearTargets();
 	components.m_taskComponent->m_movementState = EMovementState::None;
 	components.m_taskComponent->m_resourceExtractionState = EResourceExtractionState::None;
 }

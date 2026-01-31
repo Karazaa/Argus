@@ -69,4 +69,10 @@ struct TargetingComponent
 
 		return false;
 	}
+
+	void ClearTargets()
+	{
+		m_targetLocation.Reset();
+		m_targetEntityId = ArgusECSConstants::k_maxEntities;
+	}
 };
