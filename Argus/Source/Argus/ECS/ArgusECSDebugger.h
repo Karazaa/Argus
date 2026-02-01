@@ -4,6 +4,7 @@
 
 #if !UE_BUILD_SHIPPING
 #include "ArgusECSConstants.h"
+#include "ComponentDependencies/Teams.h"
 #include "CoreMinimal.h"
 #include <string>
 
@@ -26,6 +27,7 @@ private:
 	static bool s_entityShowAvoidanceDebug[ArgusECSConstants::k_maxEntities];
 	static bool s_entityShowNavigationDebug[ArgusECSConstants::k_maxEntities];
 	static bool s_entityShowFlockingDebug[ArgusECSConstants::k_maxEntities];
+	static bool s_teamEntityShowRevealedAreaDebug[sizeof(ETeam) * 8];
 	static int	s_teamToApplyResourcesTo;
 	static TArray<std::string> s_resourceToAddStrings;
 

@@ -42,4 +42,9 @@ private:
 	static bool DoesAbilityConstructResourceSink(const UAbilityRecord* abilityRecord, EResourceType type);
 	static bool FindTargetLocForConstructResourceSink(ArgusEntity entity, const TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& abilityIndexPairs, TeamCommanderComponent* teamCommanderComponent, EResourceType type);
 	static ArgusEntity GetNearestSeenResourceSourceToEntity(ArgusEntity entity, const TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& abilityIndexPairs, TeamCommanderComponent* teamCommanderComponent, EResourceType type, int32& outPairIndex);
+
+public:
+#if !UE_BUILD_SHIPPING
+	static void DebugRevealedAreasForTeamEntityId(uint16 teamEntityId);
+#endif //  !UE_BUILD_SHIPPING
 };

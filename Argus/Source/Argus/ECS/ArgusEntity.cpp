@@ -168,10 +168,14 @@ uint16 ArgusEntity::GetNextLowestUntakenId(uint16 lowestId)
 	return lowestId;
 }
 
+uint16 ArgusEntity::GetTeamOffset(ETeam team)
+{
+	return static_cast<uint16>(FMath::FloorLog2(static_cast<uint32>(team)));
+}
+
 uint16 ArgusEntity::GetTeamEntityId(ETeam team)
 {
-	uint32 logValue = FMath::FloorLog2(static_cast<uint32>(team));
-	return ArgusECSConstants::k_singletonEntityId - 1 - logValue;
+	return ArgusECSConstants::k_singletonEntityId - 1u - GetTeamOffset(team);
 }
 
 ArgusEntity ArgusEntity::GetTeamEntity(ETeam team)

@@ -690,3 +690,14 @@ ArgusEntity TeamCommanderSystems::GetNearestSeenResourceSourceToEntity(ArgusEnti
 
 	return nearestResourceSource;
 }
+
+#if !UE_BUILD_SHIPPING
+void TeamCommanderSystems::DebugRevealedAreasForTeamEntityId(uint16 teamEntityId)
+{
+	const TeamCommanderComponent* teamCommanderComponent = ArgusEntity::RetrieveEntity(teamEntityId).GetComponent<TeamCommanderComponent>();
+	ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
+
+	const WorldReferenceComponent* worldReferenceComponent = ArgusEntity::GetSingletonEntity().GetComponent<WorldReferenceComponent>();
+	ARGUS_RETURN_ON_NULL(worldReferenceComponent, ArgusECSLog);
+}
+#endif // !UE_BUILD_SHIPPING

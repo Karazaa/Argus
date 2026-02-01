@@ -6,6 +6,7 @@
 #include "ComponentDependencies/ResourceSet.h"
 #include "imgui.h"
 #include "Systems/ResourceSystems.h"
+#include "Systems/TeamCommanderSystems.h"
 
 #if !UE_BUILD_SHIPPING
 
@@ -17,6 +18,7 @@ bool ArgusECSDebugger::s_entityDebugToggles[ArgusECSConstants::k_maxEntities];
 bool ArgusECSDebugger::s_entityShowAvoidanceDebug[ArgusECSConstants::k_maxEntities];
 bool ArgusECSDebugger::s_entityShowNavigationDebug[ArgusECSConstants::k_maxEntities];
 bool ArgusECSDebugger::s_entityShowFlockingDebug[ArgusECSConstants::k_maxEntities];
+bool ArgusECSDebugger::s_teamEntityShowRevealedAreaDebug[sizeof(ETeam) * 8];
 int  ArgusECSDebugger::s_teamToApplyResourcesTo = 0;
 TArray<std::string> ArgusECSDebugger::s_resourceToAddStrings = TArray<std::string>();
 
@@ -238,11 +240,13 @@ void ArgusECSDebugger::DrawEntityDockSpace()
 
 void ArgusECSDebugger::DrawWindowForEntity(uint16 entityId)
 {
-
 	ImGui::SetNextWindowSize(ImVec2(260, 260), ImGuiCond_FirstUseEver);
 
 	const char* name = nullptr;
 	char buf[32];
+	bool isSelectableEntity = false;
+	bool hasRevealedAreas = false;
+	uint16 offset = 0u;
 	if (entityId == ArgusECSConstants::k_singletonEntityId)
 	{
 		name = "Singleton";
@@ -253,6 +257,8 @@ void ArgusECSDebugger::DrawWindowForEntity(uint16 entityId)
 		if (teamCommanderComponent)
 		{
 			name = ARGUS_FSTRING_TO_CHAR(StaticEnum<ETeam>()->GetNameStringByValue(static_cast<uint8>(teamCommanderComponent->m_teamToCommand)));
+			offset = ArgusEntity::GetTeamOffset(teamCommanderComponent->m_teamToCommand);
+			hasRevealedAreas = true;
 		}
 		else
 		{
@@ -264,6 +270,7 @@ void ArgusECSDebugger::DrawWindowForEntity(uint16 entityId)
 	{
 		sprintf_s(buf, "%d", entityId);
 		name = buf;
+		isSelectableEntity = true;
 	}
 
 	if (!ImGui::Begin(name))
@@ -272,11 +279,23 @@ void ArgusECSDebugger::DrawWindowForEntity(uint16 entityId)
 		return;
 	}
 
-	ImGui::Checkbox("Show Avoidance debug", &s_entityShowAvoidanceDebug[entityId]);
-	ImGui::SameLine();
-	ImGui::Checkbox("Show Navigation debug", &s_entityShowNavigationDebug[entityId]);
-	ImGui::SameLine();
-	ImGui::Checkbox("Show Flocking debug", &s_entityShowFlockingDebug[entityId]);
+	if (isSelectableEntity)
+	{
+		ImGui::Checkbox("Show Avoidance debug", &s_entityShowAvoidanceDebug[entityId]);
+		ImGui::SameLine();
+		ImGui::Checkbox("Show Navigation debug", &s_entityShowNavigationDebug[entityId]);
+		ImGui::SameLine();
+		ImGui::Checkbox("Show Flocking debug", &s_entityShowFlockingDebug[entityId]);
+	}
+
+	if (hasRevealedAreas)
+	{
+		ImGui::Checkbox("Show Revealed Areas debug", &s_teamEntityShowRevealedAreaDebug[offset]);
+		if (s_teamEntityShowRevealedAreaDebug[offset])
+		{
+			TeamCommanderSystems::DebugRevealedAreasForTeamEntityId(entityId);
+		}
+	}
 
 	ImGui::SeparatorText("Components");
 	ArgusComponentRegistry::DrawComponentsDebug(entityId);
