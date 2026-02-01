@@ -173,11 +173,6 @@ ArgusEntity ArgusEntity::GetTeamEntity(ETeam team)
 	return RetrieveEntity(GetTeamEntityId(team));
 }
 
-ArgusEntity::ArgusEntity(const ArgusEntity& other)
-{
-	m_id = other.GetId();
-}
-
 ArgusEntity& ArgusEntity::operator=(const ArgusEntity& other)
 {
 	m_id = other.GetId();
@@ -200,11 +195,6 @@ ArgusEntity::ArgusEntity() : m_id(ArgusECSConstants::k_maxEntities)
 
 ArgusEntity::ArgusEntity(uint16 id) : m_id(id)
 {
-}
-
-uint16 ArgusEntity::GetId() const
-{
-	return m_id;
 }
 
 bool ArgusEntity::IsKillable() const

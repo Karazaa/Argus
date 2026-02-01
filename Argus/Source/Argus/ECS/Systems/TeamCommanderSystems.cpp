@@ -41,10 +41,7 @@ void TeamCommanderSystems::ClearUpdatesPerCommanderEntity(ArgusEntity teamEntity
 	TeamCommanderComponent* teamCommanderComponent = teamEntity.GetComponent<TeamCommanderComponent>();
 	ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
 
-	teamCommanderComponent->m_idleEntityIdsForTeam.Reset();
-	teamCommanderComponent->m_seenResourceSourceEntityIds.Reset();
-	teamCommanderComponent->m_resourceSinkEntityIds.Reset();
-	teamCommanderComponent->m_priorities.Reset();
+	teamCommanderComponent->ResetUpdateArrays();
 }
 
 void TeamCommanderSystems::UpdateTeamCommanderPerEntity(const TeamCommanderSystemsArgs& components)
@@ -89,7 +86,14 @@ void TeamCommanderSystems::UpdateTeamCommanderPerEntityOnTeam(const TeamCommande
 
 	if (isAlive && components.m_resourceComponent && components.m_resourceComponent->m_resourceComponentOwnerType == EResourceComponentOwnerType::Sink)
 	{
-		teamCommanderComponent->m_resourceSinkEntityIds.Add(components.m_entity.GetId());
+		for (uint8 i = 0u; i < static_cast<uint8>(EResourceType::Count); ++i)
+		{
+			EResourceType type = static_cast<EResourceType>(i);
+			if (components.m_resourceComponent->m_currentResources.HasResourceType(type))
+			{
+				teamCommanderComponent->GetSinkEntityIdsForResourceType(type).Add(components.m_entity.GetId());
+			}
+		}
 	}
 
 	UpdateRevealedAreasPerEntityOnTeam(components, teamCommanderComponent);
@@ -110,7 +114,14 @@ void TeamCommanderSystems::UpdateTeamCommanderPerNeutralEntity(const TeamCommand
 	{
 		if (resourceComponent->m_resourceComponentOwnerType == EResourceComponentOwnerType::Source && components.m_identityComponent->WasEverSeenBy(teamCommanderComponent->m_teamToCommand))
 		{
-			teamCommanderComponent->m_seenResourceSourceEntityIds.Add(components.m_entity.GetId());
+			for (uint8 i = 0u; i < static_cast<uint8>(EResourceType::Count); ++i)
+			{
+				EResourceType type = static_cast<EResourceType>(i);
+				if (components.m_resourceComponent->m_currentResources.HasResourceType(type))
+				{
+					teamCommanderComponent->GetSeenSourceEntityIdsForResourceType(type).Add(components.m_entity.GetId());
+				}
+			}
 		}
 	}
 }
@@ -142,19 +153,33 @@ void TeamCommanderSystems::UpdateTeamCommanderPriorities(ArgusEntity teamEntity)
 	for (uint8 i = 0u; i < static_cast<uint8>(ETeamCommanderDirective::Count); ++i)
 	{
 		const ETeamCommanderDirective directiveToEvaluate = static_cast<ETeamCommanderDirective>(i);
-		TeamCommanderPriority& priority = teamCommanderComponent->m_priorities.Emplace_GetRef();
-		priority.m_directive = directiveToEvaluate;
-		switch (priority.m_directive)
+		switch (directiveToEvaluate)
 		{
 			case ETeamCommanderDirective::ConstructResourceSink:
-				UpdateConstructResourceSinkTeamPriority(teamCommanderComponent, priority);
+				for (uint8 j = 0u; j < static_cast<uint8>(EResourceType::Count); ++j)
+				{
+					TeamCommanderPriority& priority = teamCommanderComponent->m_priorities.Emplace_GetRef();
+					priority.m_directive = directiveToEvaluate;
+					priority.m_resourceType = static_cast<EResourceType>(j);
+					UpdateConstructResourceSinkTeamPriority(teamCommanderComponent, priority);
+				}
 				continue;
 			case ETeamCommanderDirective::ExtractResources:
-				UpdateResourceExtractionTeamPriority(teamCommanderComponent, priority);
+				for (uint8 j = 0u; j < static_cast<uint8>(EResourceType::Count); ++j)
+				{
+					TeamCommanderPriority& priority = teamCommanderComponent->m_priorities.Emplace_GetRef();
+					priority.m_directive = directiveToEvaluate;
+					priority.m_resourceType = static_cast<EResourceType>(j);
+					UpdateResourceExtractionTeamPriority(teamCommanderComponent, priority);
+				}
 				continue;
 			case ETeamCommanderDirective::Scout:
+			{
+				TeamCommanderPriority& priority = teamCommanderComponent->m_priorities.Emplace_GetRef();
+				priority.m_directive = directiveToEvaluate;
 				UpdateScoutingTeamPriority(teamCommanderComponent, priority);
 				continue;
+			}
 			default:
 				continue;
 		}
@@ -167,19 +192,21 @@ void TeamCommanderSystems::UpdateConstructResourceSinkTeamPriority(TeamCommander
 {
 	ARGUS_TRACE(TeamCommanderSystems::UpdateConstructResourceSinkTeamPriority);
 	ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
-	if (priority.m_directive != ETeamCommanderDirective::ConstructResourceSink)
+	if (priority.m_directive != ETeamCommanderDirective::ConstructResourceSink || priority.m_resourceType == EResourceType::Count)
 	{
 		return;
 	}
 
-	if (teamCommanderComponent->m_resourceSinkEntityIds.Num() == 0 && teamCommanderComponent->m_seenResourceSourceEntityIds.Num() > 0)
+	TArray<uint16, ArgusContainerAllocator<10u> >& seenSourceEntityIds = teamCommanderComponent->GetSeenSourceEntityIdsForResourceType(priority.m_resourceType);
+	TArray<uint16, ArgusContainerAllocator<10u> >& sinkEntityIds = teamCommanderComponent->GetSinkEntityIdsForResourceType(priority.m_resourceType);
+	if (sinkEntityIds.Num() == 0 && seenSourceEntityIds.Num() > 0)
 	{
 		priority.m_weight = 2.0f;
 		return;
 	}
 
 	// TODO JAMES: (Design question) What is the right proportion of resource sinks to resource sources? Do we need to define acceptable ranges from source to sink?
-	if (teamCommanderComponent->m_resourceSinkEntityIds.Num() < teamCommanderComponent->m_seenResourceSourceEntityIds.Num())
+	if (sinkEntityIds.Num() < seenSourceEntityIds.Num())
 	{
 		priority.m_weight = 1.0f;
 		return;
@@ -197,7 +224,9 @@ void TeamCommanderSystems::UpdateResourceExtractionTeamPriority(TeamCommanderCom
 		return;
 	}
 
-	priority.m_weight = (teamCommanderComponent->m_seenResourceSourceEntityIds.Num() > 0 && teamCommanderComponent->m_resourceSinkEntityIds.Num() > 0) ? 1.0f : 0.0f;
+	TArray<uint16, ArgusContainerAllocator<10u> >& seenSourceEntityIds = teamCommanderComponent->GetSeenSourceEntityIdsForResourceType(priority.m_resourceType);
+	TArray<uint16, ArgusContainerAllocator<10u> >& sinkEntityIds = teamCommanderComponent->GetSinkEntityIdsForResourceType(priority.m_resourceType);
+	priority.m_weight = (seenSourceEntityIds.Num() > 0 && sinkEntityIds.Num() > 0) ? 1.0f : 0.0f;
 }
 
 void TeamCommanderSystems::UpdateScoutingTeamPriority(TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority)
@@ -272,6 +301,10 @@ bool TeamCommanderSystems::AssignEntityToConstructResourceSinkIfAble(ArgusEntity
 {
 	ARGUS_TRACE(TeamCommanderSystems::AssignEntityToResourceExtractionIfAble);
 	ARGUS_RETURN_ON_NULL_BOOL(teamCommanderComponent, ArgusECSLog);
+	if (priority.m_resourceType == EResourceType::Count)
+	{
+		return false;
+	}
 
 	TaskComponent* taskComponent = entity.GetComponent<TaskComponent>();
 	if (!taskComponent)
@@ -280,12 +313,12 @@ bool TeamCommanderSystems::AssignEntityToConstructResourceSinkIfAble(ArgusEntity
 	}
 
 	TArray<TPair<const UAbilityRecord*, EAbilityIndex>> abilityIndexPairs;
-	if (!GetConstructResourceSinkAbilities(entity, abilityIndexPairs))
+	if (!GetConstructResourceSinkAbilities(entity, abilityIndexPairs, priority.m_resourceType))
 	{
 		return false;
 	}
 
-	if (!FindTargetLocForConstructResourceSink(entity, abilityIndexPairs, teamCommanderComponent))
+	if (!FindTargetLocForConstructResourceSink(entity, abilityIndexPairs, teamCommanderComponent, priority.m_resourceType))
 	{
 		return false;
 	}
@@ -312,12 +345,13 @@ bool TeamCommanderSystems::AssignEntityToResourceExtractionIfAble(ArgusEntity en
 
 	ArgusEntity closestEntity = ArgusEntity::k_emptyEntity;
 	float closestDistanceSquared = FLT_MAX;
-	for (int32 i = 0; i < teamCommanderComponent->m_seenResourceSourceEntityIds.Num(); ++i)
+
+	teamCommanderComponent->IterateAllSeenResourceSources([entity, &closestEntity, &closestDistanceSquared](uint16 entityId)
 	{
-		ArgusEntity resourceSourceEntity = ArgusEntity::RetrieveEntity(teamCommanderComponent->m_seenResourceSourceEntityIds[i]);
+		ArgusEntity resourceSourceEntity = ArgusEntity::RetrieveEntity(entityId);
 		if (!ResourceSystems::CanEntityExtractResourcesFromOtherEntity(entity, resourceSourceEntity))
 		{
-			continue;
+			return;
 		}
 
 		const float distanceSquared = entity.GetDistanceSquaredToOtherEntity(resourceSourceEntity);
@@ -326,7 +360,7 @@ bool TeamCommanderSystems::AssignEntityToResourceExtractionIfAble(ArgusEntity en
 			closestDistanceSquared = distanceSquared;
 			closestEntity = resourceSourceEntity;
 		}
-	}
+	});
 
 	if (!closestEntity)
 	{
@@ -491,7 +525,7 @@ void TeamCommanderSystems::ConvertAreaCoordinatesToAreaIndex(int32 xCoordinate, 
 	areaIndex = (yCoordinate * areasPerDimension) + xCoordinate;
 }
 
-bool TeamCommanderSystems::GetConstructResourceSinkAbilities(ArgusEntity entity, TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& outAbilityIndexPairs)
+bool TeamCommanderSystems::GetConstructResourceSinkAbilities(ArgusEntity entity, TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& outAbilityIndexPairs, EResourceType type)
 {
 	ARGUS_TRACE(TeamCommanderSystems::GetConstructResourceSinkAbility);
 
@@ -503,7 +537,7 @@ bool TeamCommanderSystems::GetConstructResourceSinkAbilities(ArgusEntity entity,
 		return false;
 	}
 
-	abilityComponent->IterateActiveAbilityIds([&outAbilityIndexPairs](uint32 abilityRecordId, EAbilityIndex iteratedAbilityIndex)
+	abilityComponent->IterateActiveAbilityIds([&outAbilityIndexPairs, type](uint32 abilityRecordId, EAbilityIndex iteratedAbilityIndex)
 	{
 		const UAbilityRecord* record = ArgusStaticData::GetRecord<UAbilityRecord>(abilityRecordId);
 		if (!record)
@@ -511,7 +545,7 @@ bool TeamCommanderSystems::GetConstructResourceSinkAbilities(ArgusEntity entity,
 			return;
 		}
 
-		if (DoesAbilityConstructResourceSink(record))
+		if (DoesAbilityConstructResourceSink(record, type))
 		{
 			outAbilityIndexPairs.Add(TPair<const UAbilityRecord*, EAbilityIndex>(record, iteratedAbilityIndex));
 		}
@@ -520,7 +554,7 @@ bool TeamCommanderSystems::GetConstructResourceSinkAbilities(ArgusEntity entity,
 	return outAbilityIndexPairs.Num() > 0;
 }
 
-bool TeamCommanderSystems::DoesAbilityConstructResourceSink(const UAbilityRecord* abilityRecord)
+bool TeamCommanderSystems::DoesAbilityConstructResourceSink(const UAbilityRecord* abilityRecord, EResourceType type)
 {
 	if (!abilityRecord)
 	{
@@ -539,10 +573,10 @@ bool TeamCommanderSystems::DoesAbilityConstructResourceSink(const UAbilityRecord
 		return false;
 	}
 
-	return true;
+	return resourceComponentData->m_currentResources.HasResourceType(type);
 }
 
-bool TeamCommanderSystems::FindTargetLocForConstructResourceSink(ArgusEntity entity, const TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& abilityIndexPairs, TeamCommanderComponent* teamCommanderComponent)
+bool TeamCommanderSystems::FindTargetLocForConstructResourceSink(ArgusEntity entity, const TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& abilityIndexPairs, TeamCommanderComponent* teamCommanderComponent, EResourceType type)
 {
 	ARGUS_RETURN_ON_NULL_BOOL(teamCommanderComponent, ArgusECSLog);
 
@@ -557,7 +591,7 @@ bool TeamCommanderSystems::FindTargetLocForConstructResourceSink(ArgusEntity ent
 	}
 
 	int32 index = -1;
-	ArgusEntity nearestResourceSource = GetNearestSeenResourceSourceToEntity(entity, abilityIndexPairs, teamCommanderComponent, index);
+	ArgusEntity nearestResourceSource = GetNearestSeenResourceSourceToEntity(entity, abilityIndexPairs, teamCommanderComponent, type, index);
 	if (!nearestResourceSource || index < 0)
 	{
 		return false;
@@ -605,7 +639,7 @@ bool TeamCommanderSystems::FindTargetLocForConstructResourceSink(ArgusEntity ent
 	return true;
 }
 
-ArgusEntity TeamCommanderSystems::GetNearestSeenResourceSourceToEntity(ArgusEntity entity, const TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& abilityIndexPairs, TeamCommanderComponent* teamCommanderComponent, int32& outPairIndex)
+ArgusEntity TeamCommanderSystems::GetNearestSeenResourceSourceToEntity(ArgusEntity entity, const TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& abilityIndexPairs, TeamCommanderComponent* teamCommanderComponent, EResourceType type, int32& outPairIndex)
 {
 	ARGUS_RETURN_ON_NULL_VALUE(teamCommanderComponent, ArgusECSLog, ArgusEntity::k_emptyEntity);
 
@@ -617,15 +651,16 @@ ArgusEntity TeamCommanderSystems::GetNearestSeenResourceSourceToEntity(ArgusEnti
 		return ArgusEntity::k_emptyEntity;
 	}
 
-	float minDistanceSquared = FLT_MAX;
 	ArgusEntity nearestResourceSource = ArgusEntity::k_emptyEntity;
-	for (int32 i = 0; i < teamCommanderComponent->m_seenResourceSourceEntityIds.Num(); ++i)
+	float minDistanceSquared = FLT_MAX;
+
+	teamCommanderComponent->IterateSeenResourceSourcesOfType(type, [transformComponent, &abilityIndexPairs, &nearestResourceSource, &minDistanceSquared, &outPairIndex](uint16 entityId)
 	{
-		ArgusEntity resourceSourceEntity = ArgusEntity::RetrieveEntity(teamCommanderComponent->m_seenResourceSourceEntityIds[i]);
+		ArgusEntity resourceSourceEntity = ArgusEntity::RetrieveEntity(entityId);
 		TransformComponent* resourceSinkSourceTransformComponent = resourceSourceEntity.GetComponent<TransformComponent>();
 		if (!resourceSinkSourceTransformComponent)
 		{
-			continue;
+			return;
 		}
 
 		bool anyValidAbilities = false;
@@ -641,7 +676,7 @@ ArgusEntity TeamCommanderSystems::GetNearestSeenResourceSourceToEntity(ArgusEnti
 
 		if (!anyValidAbilities)
 		{
-			continue;
+			return;
 		}
 
 		const float distanceSquared = FVector::DistSquared2D(transformComponent->m_location, resourceSinkSourceTransformComponent->m_location);
@@ -651,7 +686,7 @@ ArgusEntity TeamCommanderSystems::GetNearestSeenResourceSourceToEntity(ArgusEnti
 			nearestResourceSource = resourceSourceEntity;
 			outPairIndex = j;
 		}
-	}
+	});
 
 	return nearestResourceSource;
 }

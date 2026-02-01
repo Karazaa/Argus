@@ -38,8 +38,8 @@ private:
 	static void ConvertAreaIndexToAreaCoordinates(int32 areaIndex, int32 areasPerDimension, int32& xCoordinate, int32& yCoordinate);
 	static void ConvertAreaCoordinatesToAreaIndex(int32 xCoordinate, int32 yCoordinate, int32 areasPerDimension, int32& areaIndex);
 
-	static bool GetConstructResourceSinkAbilities(ArgusEntity entity, TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& outAbilityIndexPairs);
-	static bool DoesAbilityConstructResourceSink(const UAbilityRecord* abilityRecord);
-	static bool FindTargetLocForConstructResourceSink(ArgusEntity entity, const TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& abilityIndexPairs, TeamCommanderComponent* teamCommanderComponent);
-	static ArgusEntity GetNearestSeenResourceSourceToEntity(ArgusEntity entity, const TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& abilityIndexPairs, TeamCommanderComponent* teamCommanderComponent, int32& outPairIndex);
+	static bool GetConstructResourceSinkAbilities(ArgusEntity entity, TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& outAbilityIndexPairs, EResourceType type);
+	static bool DoesAbilityConstructResourceSink(const UAbilityRecord* abilityRecord, EResourceType type);
+	static bool FindTargetLocForConstructResourceSink(ArgusEntity entity, const TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& abilityIndexPairs, TeamCommanderComponent* teamCommanderComponent, EResourceType type);
+	static ArgusEntity GetNearestSeenResourceSourceToEntity(ArgusEntity entity, const TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& abilityIndexPairs, TeamCommanderComponent* teamCommanderComponent, EResourceType type, int32& outPairIndex);
 };

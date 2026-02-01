@@ -27,6 +27,7 @@ struct FResourceSet
 	FResourceSet operator-(const FResourceSet& right) const;
 
 	void Reset();
+	bool HasResourceType(EResourceType type) const;
 	bool CanAffordResourceChange(const FResourceSet& otherResourceSetRepresentingChange) const;
 	void ApplyResourceChange(const FResourceSet& otherResourceSetRepresentingChange);
 	bool IsEntirelyAtCap(const FResourceSet& capacityResrouceSet) const;

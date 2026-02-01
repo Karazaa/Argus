@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ComponentDependencies/ResourceSet.h"
 
 UENUM()
 enum class ETeamCommanderDirective : uint8
@@ -17,6 +18,7 @@ enum class ETeamCommanderDirective : uint8
 struct TeamCommanderPriority
 {
 	ETeamCommanderDirective m_directive = ETeamCommanderDirective::Scout;
+	EResourceType m_resourceType = EResourceType::Count;
 	float m_weight = 0.0f;
 };
 

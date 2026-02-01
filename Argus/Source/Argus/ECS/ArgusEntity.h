@@ -89,28 +89,28 @@ private:
 	static uint16 s_highestTakenEntityId;
 	
 public:
-	ArgusEntity(const ArgusEntity& other);
+	FORCEINLINE ArgusEntity(const ArgusEntity& other) { m_id = other.GetId(); };
 	ArgusEntity& operator=(const ArgusEntity& other);
 	bool operator==(const ArgusEntity& other) const;
 	operator bool() const;
 
-	uint16			GetId() const;
-	bool			IsKillable() const;
-	bool			IsAlive() const;
-	bool			IsMoveable() const;
-	bool			IsSelected() const;
-	bool			IsIdle() const;
-	bool			IsInRangeOfOtherEntity(ArgusEntity otherEntity, float range) const;
-	bool			IsPassenger() const;
-	bool			IsCarryingPassengers() const;
-	bool			IsOnTeam(ETeam team) const;
-	bool			IsOnSameTeamAsOtherEntity(ArgusEntity otherEntity) const;
-	bool			IsOnPlayerTeam() const;
-	bool			IsFlying() const;
-	bool			CanFly() const;
-	FVector			GetCurrentTargetLocation() const;
-	float			GetDistanceSquaredToOtherEntity(ArgusEntity otherEntity) const;
-	float			GetDistanceToOtherEntity(ArgusEntity otherEntity) const;
+	FORCEINLINE uint16	GetId() const { return m_id; };
+	bool				IsKillable() const;
+	bool				IsAlive() const;
+	bool				IsMoveable() const;
+	bool				IsSelected() const;
+	bool				IsIdle() const;
+	bool				IsInRangeOfOtherEntity(ArgusEntity otherEntity, float range) const;
+	bool				IsPassenger() const;
+	bool				IsCarryingPassengers() const;
+	bool				IsOnTeam(ETeam team) const;
+	bool				IsOnSameTeamAsOtherEntity(ArgusEntity otherEntity) const;
+	bool				IsOnPlayerTeam() const;
+	bool				IsFlying() const;
+	bool				CanFly() const;
+	FVector				GetCurrentTargetLocation() const;
+	float				GetDistanceSquaredToOtherEntity(ArgusEntity otherEntity) const;
+	float				GetDistanceToOtherEntity(ArgusEntity otherEntity) const;
 
 	const UArgusActorRecord* GetAssociatedActorRecord() const;
 
