@@ -30,6 +30,10 @@ private:
 	static TArray<std::string> s_resourceToAddStrings;
 
 	static void DrawEntityScrollRegion();
+	static void DrawSelectableEntityScrollRegion(int windowFlags, int childFlags, int tableWidth);
+	static void DrawTeamEntityScrollRegion(int windowFlags, int childFlags, int tableWidth);
+	static void DrawSingletonEntityScrollRegion(int windowFlags, int childFlags);
+
 	static void DrawEntityScrollRegionMenuItems();
 	static void DrawCurrentlySelectedEntities();
 	static void DrawEntityDockSpace();

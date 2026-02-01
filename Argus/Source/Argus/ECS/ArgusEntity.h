@@ -18,6 +18,7 @@ public:
 	static void				FlushAllEntities();
 	static bool				DoesEntityExist(uint16 id);
 	static bool				IsReservedEntityId(uint16 id);
+	static uint16			GetHighestNonReservedEntityId();
 	static ArgusEntity		CreateEntity(uint16 lowestId = 0u);
 	static void				DestroyEntity(ArgusEntity& entityToDestroy);
 	static void				DestroyEntity(uint16 entityIdToDestroy);

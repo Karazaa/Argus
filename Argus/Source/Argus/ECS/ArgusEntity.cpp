@@ -41,6 +41,12 @@ bool ArgusEntity::IsReservedEntityId(uint16 id)
 	return id >= (ArgusECSConstants::k_singletonEntityId - sizeOfTeamEnum);
 }
 
+uint16 ArgusEntity::GetHighestNonReservedEntityId()
+{
+	uint16 sizeOfTeamEnum = sizeof(ETeam) * 8;
+	return (ArgusECSConstants::k_singletonEntityId - (sizeOfTeamEnum + 1));
+}
+
 ArgusEntity ArgusEntity::CreateEntity(uint16 lowestId)
 {
 	const uint16 id = GetNextLowestUntakenId(lowestId);

@@ -79,9 +79,21 @@ void ArgusECSDebugger::DrawEntityScrollRegion()
 	ImGui::SameLine();
 	ImGui::Checkbox("Ignore team requirements for selection", &s_ignoreTeamRequirementsForSelectingEntities);
 
-	ImGuiWindowFlags window_flags = ImGuiWindowFlags_None | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_MenuBar;
+	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_None | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_MenuBar;
+	int childFlags = ImGuiChildFlags_Borders | ImGuiChildFlags_AutoResizeY;
+	int tableWidth = 8;
 	ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 5.0f);
-	ImGui::BeginChild("EntitiesScrollRegion", ImVec2(0, 0), ImGuiChildFlags_Borders, window_flags);
+
+	DrawSelectableEntityScrollRegion(windowFlags, childFlags, tableWidth);
+	DrawTeamEntityScrollRegion(windowFlags, childFlags, tableWidth);
+	DrawSingletonEntityScrollRegion(windowFlags, childFlags);
+
+	ImGui::PopStyleVar();
+}
+
+void ArgusECSDebugger::DrawSelectableEntityScrollRegion(int windowFlags, int childFlags, int tableWidth)
+{
+	ImGui::BeginChild("EntitiesScrollRegion", ImVec2(0, 0), childFlags, windowFlags);
 	if (ImGui::BeginMenuBar())
 	{
 		if (ImGui::BeginMenu("Entities"))
@@ -91,9 +103,9 @@ void ArgusECSDebugger::DrawEntityScrollRegion()
 		}
 		ImGui::EndMenuBar();
 	}
-	if (ImGui::BeginTable("EntitiesTable", 4, ImGuiTableFlags_NoSavedSettings))
+	if (ImGui::BeginTable("EntitiesTable", tableWidth, ImGuiTableFlags_NoSavedSettings))
 	{
-		for (uint16 i = 0u; i < ArgusECSConstants::k_maxEntities; ++i)
+		for (uint16 i = 0u; i <= ArgusEntity::GetHighestNonReservedEntityId(); ++i)
 		{
 			ArgusEntity entity = ArgusEntity::RetrieveEntity(i);
 			if (!entity)
@@ -115,7 +127,51 @@ void ArgusECSDebugger::DrawEntityScrollRegion()
 		ImGui::EndTable();
 	}
 	ImGui::EndChild();
-	ImGui::PopStyleVar();
+}
+
+void ArgusECSDebugger::DrawTeamEntityScrollRegion(int windowFlags, int childFlags, int tableWidth)
+{
+	ImGui::BeginChild("TeamEntitiesScrollRegion", ImVec2(0, 0), childFlags, windowFlags);
+	if (ImGui::BeginMenuBar())
+	{
+		if (ImGui::BeginMenu("Team Entities"))
+		{
+			ImGui::EndMenu();
+		}
+		ImGui::EndMenuBar();
+	}
+	if (ImGui::BeginTable("TeamEntitiesTable", tableWidth, ImGuiTableFlags_NoSavedSettings))
+	{
+		ArgusEntity::IterateTeamEntities([](ArgusEntity teamEntity)
+			{
+				const TeamCommanderComponent* teamCommanderComponent = teamEntity.GetComponent<TeamCommanderComponent>();
+				if (!teamCommanderComponent)
+				{
+					return;
+				}
+
+				const char* teamName = ARGUS_FSTRING_TO_CHAR(StaticEnum<ETeam>()->GetNameStringByValue(static_cast<uint8>(teamCommanderComponent->m_teamToCommand)));
+				ImGui::TableNextColumn();
+				ImGui::Selectable(teamName, &s_entityDebugToggles[teamEntity.GetId()], ImGuiSelectableFlags_None);
+			});
+		ImGui::EndTable();
+	}
+	ImGui::EndChild();
+}
+
+void ArgusECSDebugger::DrawSingletonEntityScrollRegion(int windowFlags, int childFlags)
+{
+	ImGui::BeginChild("SingletonEntityScrollRegion", ImVec2(0, 0), childFlags, windowFlags);
+	if (ImGui::BeginMenuBar())
+	{
+		if (ImGui::BeginMenu("Singleton Entity"))
+		{
+			ImGui::EndMenu();
+		}
+		ImGui::EndMenuBar();
+	}
+	ImGui::Selectable("Singleton Entity", &s_entityDebugToggles[ArgusECSConstants::k_singletonEntityId], ImGuiSelectableFlags_None);
+	ImGui::EndChild();
 }
 
 void ArgusECSDebugger::DrawEntityScrollRegionMenuItems()
@@ -182,11 +238,35 @@ void ArgusECSDebugger::DrawEntityDockSpace()
 
 void ArgusECSDebugger::DrawWindowForEntity(uint16 entityId)
 {
-	char buf[32];
-	sprintf_s(buf, "%d", entityId);
 
 	ImGui::SetNextWindowSize(ImVec2(260, 260), ImGuiCond_FirstUseEver);
-	if (!ImGui::Begin(buf))
+
+	const char* name = nullptr;
+	char buf[32];
+	if (entityId == ArgusECSConstants::k_singletonEntityId)
+	{
+		name = "Singleton";
+	}
+	else if (ArgusEntity::IsReservedEntityId(entityId))
+	{
+		const TeamCommanderComponent* teamCommanderComponent = ArgusEntity::RetrieveEntity(entityId).GetComponent<TeamCommanderComponent>();
+		if (teamCommanderComponent)
+		{
+			name = ARGUS_FSTRING_TO_CHAR(StaticEnum<ETeam>()->GetNameStringByValue(static_cast<uint8>(teamCommanderComponent->m_teamToCommand)));
+		}
+		else
+		{
+			sprintf_s(buf, "%d", entityId);
+			name = buf;
+		}
+	}
+	else
+	{
+		sprintf_s(buf, "%d", entityId);
+		name = buf;
+	}
+
+	if (!ImGui::Begin(name))
 	{
 		ImGui::End();
 		return;
