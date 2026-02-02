@@ -477,27 +477,27 @@ int32 TeamCommanderSystems::GetClosestUnrevealedAreaToEntity(const TeamCommander
 		TArray<int32> validAreasNearby;
 		for (int32 j = -i; j <= i; ++j)
 		{
-			const int32 xBoundY = FMath::Min(FMath::Max(entityYCoordinate + i, 0), (areasPerDimension - 1));
-			const int32 yBoundX = FMath::Min(FMath::Max(entityXCoordinate + i, 0), (areasPerDimension - 1));
+			const int32 xBoundY = FMath::Min(FMath::Max(entityYCoordinate + j, 0), (areasPerDimension - 1));
+			const int32 yBoundX = FMath::Min(FMath::Max(entityXCoordinate + j, 0), (areasPerDimension - 1));
 
 			int32 indexToCheck;
 			ConvertAreaCoordinatesToAreaIndex(leftBoundX, xBoundY, areasPerDimension, indexToCheck);
-			if (indexToCheck > 0 && !teamCommanderComponent->m_revealedAreas[indexToCheck])
+			if (indexToCheck >= 0 && !teamCommanderComponent->m_revealedAreas[indexToCheck])
 			{
 				validAreasNearby.Add(indexToCheck);
 			}
 			ConvertAreaCoordinatesToAreaIndex(rightBoundX, xBoundY, areasPerDimension, indexToCheck);
-			if (indexToCheck > 0 && !teamCommanderComponent->m_revealedAreas[indexToCheck])
+			if (indexToCheck >= 0 && !teamCommanderComponent->m_revealedAreas[indexToCheck])
 			{
 				validAreasNearby.Add(indexToCheck);
 			}
 			ConvertAreaCoordinatesToAreaIndex(yBoundX, upperBoundY, areasPerDimension, indexToCheck);
-			if (indexToCheck > 0 && !teamCommanderComponent->m_revealedAreas[indexToCheck])
+			if (indexToCheck >= 0 && !teamCommanderComponent->m_revealedAreas[indexToCheck])
 			{
 				validAreasNearby.Add(indexToCheck);
 			}
 			ConvertAreaCoordinatesToAreaIndex(yBoundX, lowerBoundY, areasPerDimension, indexToCheck);
-			if (indexToCheck > 0 && !teamCommanderComponent->m_revealedAreas[indexToCheck])
+			if (indexToCheck >= 0 && !teamCommanderComponent->m_revealedAreas[indexToCheck])
 			{
 				validAreasNearby.Add(indexToCheck);
 			}
