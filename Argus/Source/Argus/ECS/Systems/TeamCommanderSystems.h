@@ -32,9 +32,9 @@ private:
 	static bool AssignEntityToResourceExtractionIfAble(ArgusEntity entity, TeamCommanderComponent* teamCommanderComponent);
 	static bool AssignEntityToScoutingIfAble(ArgusEntity entity, TeamCommanderComponent* teamCommanderComponent);
 
-	static int32 GetAreaIndexFromWorldSpaceLocation(const TeamCommanderSystemsArgs& components, TeamCommanderComponent* teamCommanderComponent);
-	static FVector GetWorldSpaceLocationFromAreaIndex(int32 areaIndex, TeamCommanderComponent* teamCommanderComponent);
-	static int32 GetClosestUnrevealedAreaToEntity(const TeamCommanderSystemsArgs& components, TeamCommanderComponent* teamCommanderComponent);
+	static int32 GetAreaIndexFromWorldSpaceLocation(const TeamCommanderSystemsArgs& components, const TeamCommanderComponent* teamCommanderComponent);
+	static FVector GetWorldSpaceLocationFromAreaIndex(int32 areaIndex, const TeamCommanderComponent* teamCommanderComponent);
+	static int32 GetClosestUnrevealedAreaToEntity(const TeamCommanderSystemsArgs& components, const TeamCommanderComponent* teamCommanderComponent);
 	static void ConvertAreaIndexToAreaCoordinates(int32 areaIndex, int32 areasPerDimension, int32& xCoordinate, int32& yCoordinate);
 	static void ConvertAreaCoordinatesToAreaIndex(int32 xCoordinate, int32 yCoordinate, int32 areasPerDimension, int32& areaIndex);
 

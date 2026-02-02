@@ -22,6 +22,7 @@ void TeamCommanderComponent::Reset()
 	m_resourceBSinkEntityIds.Reset();
 	m_resourceCSinkEntityIds.Reset();
 	m_priorities.Reset();
+	m_revealedAreas.Reset();
 	m_revealedAreaDimensionLength = 800.0f;
 	m_teamToCommand = ETeam::None;
 }

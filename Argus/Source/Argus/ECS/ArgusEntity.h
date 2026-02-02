@@ -37,14 +37,11 @@ public:
 		int32 currentIndex = GetLowestTakenEntityId();
 		while (currentIndex <= GetHighestTakenEntityId() && currentIndex >= 0)
 		{
-			ArgusEntity entity = RetrieveEntity(currentIndex);
-			if (!entity)
+			if (ArgusEntity entity = RetrieveEntity(currentIndex))
 			{
-				currentIndex = s_takenEntityIds.FindFrom(true, currentIndex + 1);
-				continue;
+				perEntityFunction(entity);
 			}
 
-			perEntityFunction(entity);
 			currentIndex = s_takenEntityIds.FindFrom(true, currentIndex + 1);
 		}
 	}
@@ -54,13 +51,10 @@ public:
 	{
 		for (uint8 i = 1u; i <= (sizeof(ETeam) * 8u); ++i)
 		{
-			ArgusEntity entity = RetrieveEntity(ArgusECSConstants::k_singletonEntityId - i);
-			if (!entity)
+			if (ArgusEntity entity = RetrieveEntity(ArgusECSConstants::k_singletonEntityId - i))
 			{
-				continue;
+				perEntityFunction(entity);
 			}
-
-			perEntityFunction(entity);
 		}
 	}
 
@@ -72,13 +66,11 @@ public:
 
 		while (currentIndex <= GetHighestTakenEntityId() && currentIndex >= 0)
 		{
-			if (!systemsArgs.PopulateArguments(RetrieveEntity(currentIndex)))
+			if (systemsArgs.PopulateArguments(RetrieveEntity(currentIndex)))
 			{
-				currentIndex = s_takenEntityIds.FindFrom(true, currentIndex + 1);
-				continue;
+				perSystemsArgsFunction(systemsArgs);
 			}
 
-			perSystemsArgsFunction(systemsArgs);
 			currentIndex = s_takenEntityIds.FindFrom(true, currentIndex + 1);
 		}
 	}

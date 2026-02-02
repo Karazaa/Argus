@@ -2,7 +2,6 @@
 
 #include "NavigationSystems.h"
 #include "AI/Navigation/NavigationTypes.h"
-#include "DrawDebugHelpers.h"
 #include "NavigationData.h"
 #include "NavigationSystem.h"
 #include "NavigationSystemTypes.h"
@@ -13,6 +12,7 @@
 
 #if !UE_BUILD_SHIPPING
 #include "ArgusECSDebugger.h"
+#include "DrawDebugHelpers.h"
 #endif //!UE_BUILD_SHIPPING
 
 void NavigationSystems::RunSystems(UWorld* worldPointer)

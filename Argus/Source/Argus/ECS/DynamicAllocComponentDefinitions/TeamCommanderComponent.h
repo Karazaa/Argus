@@ -112,7 +112,7 @@ struct TeamCommanderComponent
 	}
 
 	template <typename Function>
-	void IterateAllSeenResourceSources(Function&& function)
+	void IterateAllSeenResourceSources(Function&& function) const 
 	{
 		for (int32 i = 0; i < m_seenResourceASourceEntityIds.Num(); ++i)
 		{
@@ -129,7 +129,7 @@ struct TeamCommanderComponent
 	}
 
 	template <typename Function>
-	void IterateAllResourceSinks(Function&& function)
+	void IterateAllResourceSinks(Function&& function) const 
 	{
 		for (int32 i = 0; i < m_resourceASinkEntityIds.Num(); ++i)
 		{
@@ -142,6 +142,21 @@ struct TeamCommanderComponent
 		for (int32 i = 0; i < m_resourceCSinkEntityIds.Num(); ++i)
 		{
 			function(m_resourceCSinkEntityIds[i]);
+		}
+	}
+
+	template <typename Function>
+	void IterateRevealedAreas(bool searchForRevealed, Function&& function) const
+	{
+		int32 currentIndex = 0u;
+		while (currentIndex < m_revealedAreas.Num() && currentIndex >= 0)
+		{
+			if (m_revealedAreas[currentIndex] == searchForRevealed)
+			{
+				function(currentIndex);
+			}
+
+			currentIndex = m_revealedAreas.FindFrom(searchForRevealed, currentIndex + 1);
 		}
 	}
 };

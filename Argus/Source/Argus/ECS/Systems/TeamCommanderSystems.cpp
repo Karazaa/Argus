@@ -12,6 +12,10 @@
 #include "Systems/SpatialPartitioningSystems.h"
 #include "Systems/TransformSystems.h"
 
+#if !UE_BUILD_SHIPPING
+#include "DrawDebugHelpers.h"
+#endif // !UE_BUILD_SHIPPING
+
 void TeamCommanderSystems::RunSystems(float deltaTime)
 {
 	ARGUS_TRACE(TeamCommanderSystems::RunSystems);
@@ -397,7 +401,7 @@ bool TeamCommanderSystems::AssignEntityToScoutingIfAble(ArgusEntity entity, Team
 	return true;
 }
 
-int32 TeamCommanderSystems::GetAreaIndexFromWorldSpaceLocation(const TeamCommanderSystemsArgs& components, TeamCommanderComponent* teamCommanderComponent)
+int32 TeamCommanderSystems::GetAreaIndexFromWorldSpaceLocation(const TeamCommanderSystemsArgs& components, const TeamCommanderComponent* teamCommanderComponent)
 {
 	ARGUS_RETURN_ON_NULL_VALUE(teamCommanderComponent, ArgusECSLog, -1);
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME) || !components.m_transformComponent || !components.m_targetingComponent)
@@ -420,7 +424,7 @@ int32 TeamCommanderSystems::GetAreaIndexFromWorldSpaceLocation(const TeamCommand
 	return (yValue32 * FMath::FloorToInt32(areasPerDimension)) + xValue32;
 }
 
-FVector TeamCommanderSystems::GetWorldSpaceLocationFromAreaIndex(int32 areaIndex, TeamCommanderComponent* teamCommanderComponent)
+FVector TeamCommanderSystems::GetWorldSpaceLocationFromAreaIndex(int32 areaIndex, const TeamCommanderComponent* teamCommanderComponent)
 {
 	ARGUS_RETURN_ON_NULL_VALUE(teamCommanderComponent, ArgusECSLog, FVector::ZeroVector);
 	if (areaIndex < 0)
@@ -446,7 +450,7 @@ FVector TeamCommanderSystems::GetWorldSpaceLocationFromAreaIndex(int32 areaIndex
 	return output;
 }
 
-int32 TeamCommanderSystems::GetClosestUnrevealedAreaToEntity(const TeamCommanderSystemsArgs& components, TeamCommanderComponent* teamCommanderComponent)
+int32 TeamCommanderSystems::GetClosestUnrevealedAreaToEntity(const TeamCommanderSystemsArgs& components, const TeamCommanderComponent* teamCommanderComponent)
 {
 	ARGUS_RETURN_ON_NULL_VALUE(teamCommanderComponent, ArgusECSLog, -1);
 
@@ -699,5 +703,14 @@ void TeamCommanderSystems::DebugRevealedAreasForTeamEntityId(uint16 teamEntityId
 
 	const WorldReferenceComponent* worldReferenceComponent = ArgusEntity::GetSingletonEntity().GetComponent<WorldReferenceComponent>();
 	ARGUS_RETURN_ON_NULL(worldReferenceComponent, ArgusECSLog);
+	ARGUS_RETURN_ON_NULL(worldReferenceComponent->m_worldPointer, ArgusECSLog);
+
+	const float halfDimension = ArgusMath::SafeDivide(teamCommanderComponent->m_revealedAreaDimensionLength, 2.0f);
+	const FVector bounds = FVector(halfDimension, halfDimension, 0.0f);
+	const FVector heightAdjust = FVector(0.0f, 0.0f, 5.0f);
+	teamCommanderComponent->IterateRevealedAreas(true, [worldReferenceComponent, teamCommanderComponent, &bounds, &heightAdjust](int32 areaIndex)
+	{
+		DrawDebugBox(worldReferenceComponent->m_worldPointer, GetWorldSpaceLocationFromAreaIndex(areaIndex, teamCommanderComponent) + heightAdjust, bounds, FColor::Green);
+	});
 }
 #endif // !UE_BUILD_SHIPPING
