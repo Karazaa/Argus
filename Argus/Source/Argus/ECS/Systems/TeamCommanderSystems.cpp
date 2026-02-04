@@ -48,22 +48,54 @@ void TeamCommanderSystems::ClearUpdatesPerCommanderEntity(ArgusEntity teamEntity
 
 	teamCommanderComponent->IterateAllSeenResourceSources([](ResourceSourceExtractionData& data)
 	{
-		ArgusEntity sinkEntity = ArgusEntity::RetrieveEntity(data.m_resourceSinkEntityId);
-		ArgusEntity extractorEntity = ArgusEntity::RetrieveEntity(data.m_resourceExtractorEntityId);
-
-		if (sinkEntity && !sinkEntity.IsAlive())
-		{
-			data.m_resourceSinkEntityId = ArgusECSConstants::k_maxEntities;
-		}
-
-		if (extractorEntity && !extractorEntity.IsAlive())
-		{
-			data.m_resourceExtractorEntityId = ArgusECSConstants::k_maxEntities;
-		}
-
+		ClearResourceSinkFromExtractionDataIfNeeded(ArgusEntity::RetrieveEntity(data.m_resourceSinkEntityId), data);
+		ClearResourceExtractorFromExtractionDataIfNeeded(ArgusEntity::RetrieveEntity(data.m_resourceExtractorEntityId), data);
 		return false;
 	});
 	teamCommanderComponent->ResetUpdateArrays();
+}
+
+void TeamCommanderSystems::ClearResourceSinkFromExtractionDataIfNeeded(ArgusEntity existingResourceSinkEntity, ResourceSourceExtractionData& data)
+{
+	if (!existingResourceSinkEntity)
+	{
+		data.m_resourceSinkEntityId = ArgusECSConstants::k_maxEntities;
+		return;
+	}
+
+	if (!existingResourceSinkEntity.IsAlive())
+	{
+		data.m_resourceSinkEntityId = ArgusECSConstants::k_maxEntities;
+		return;
+	}
+}
+
+void TeamCommanderSystems::ClearResourceExtractorFromExtractionDataIfNeeded(ArgusEntity existingResourceExtractorEntity, ResourceSourceExtractionData& data)
+{
+	if (!existingResourceExtractorEntity)
+	{
+		data.m_resourceExtractorEntityId = ArgusECSConstants::k_maxEntities;
+		return;
+	}
+
+	if (!existingResourceExtractorEntity.IsAlive())
+	{
+		data.m_resourceExtractorEntityId = ArgusECSConstants::k_maxEntities;
+		return;
+	}
+
+	TaskComponent* extractorTaskComponent = existingResourceExtractorEntity.GetComponent<TaskComponent>();
+	if (!extractorTaskComponent)
+	{
+		data.m_resourceExtractorEntityId = ArgusECSConstants::k_maxEntities;
+		return;
+	}
+
+	if (extractorTaskComponent->m_directiveFromTeamCommander != ETeamCommanderDirective::ExtractResources)
+	{
+		data.m_resourceExtractorEntityId = ArgusECSConstants::k_maxEntities;
+		return;
+	}
 }
 
 void TeamCommanderSystems::UpdateTeamCommanderPerEntity(const TeamCommanderSystemsArgs& components)
@@ -682,30 +714,36 @@ bool TeamCommanderSystems::FindTargetLocForConstructResourceSink(ArgusEntity ent
 	ARGUS_RETURN_ON_NULL_BOOL(resourceSourceTransformComponent, ArgusECSLog);
 	ARGUS_RETURN_ON_NULL_BOOL(transformComponent, ArgusECSLog);
 
-	FVector fromSinkToEntity = (transformComponent->m_location - resourceSourceTransformComponent->m_location).GetSafeNormal();
+	FVector2D fromSinkToEntity = FVector2D(transformComponent->m_location - resourceSourceTransformComponent->m_location).GetSafeNormal();
 
 	const float safeZoneDistance = AbilitySystems::GetResourceBufferRadiusOfConstructionAbility(abilityIndexPairs[index].Key);
 	const float radiusDistance = AbilitySystems::GetRaidusOfConstructionAbility(abilityIndexPairs[index].Key);
 
-	FVector candidatePoint = (fromSinkToEntity * (safeZoneDistance + ArgusECSConstants::k_resourceSinkBufferDistanceAdjustment)) +   resourceSourceTransformComponent->m_location;
+	FVector2D candidateOffset = (fromSinkToEntity * (safeZoneDistance + resourceSourceTransformComponent->m_radius + ArgusECSConstants::k_resourceSinkBufferDistanceAdjustment));
+	FVector candidatePoint = FVector(candidateOffset, 0.0f) + resourceSourceTransformComponent->m_location;
 	bool isBlocked = SpatialPartitioningSystems::AnyObstaclesOrStaticEntitiesInCircle(candidatePoint, radiusDistance, safeZoneDistance);
-
 	if (isBlocked)
 	{
-		FVector2D candidate2D = FVector2D(candidatePoint);
 		const int32 numIterations = 16;
-		const float angleOffset = ArgusMath::SafeDivide(UE_TWO_PI, static_cast<float>(numIterations));
+		const float angleOffset = ArgusMath::SafeDivide(360.0f, static_cast<float>(numIterations));
+
+		DrawDebugSphere(worldReferenceComponent->m_worldPointer, candidatePoint, 5.0f, 10, FColor::Red, false, 10.0f);
 
 		for (int32 i = 0; i < numIterations; ++i)
 		{
-			candidate2D = candidate2D.GetRotated(angleOffset);
-			candidatePoint.X = candidate2D.X;
-			candidatePoint.Y = candidate2D.Y;
+			candidateOffset = candidateOffset.GetRotated(angleOffset);
+			candidatePoint.X = resourceSourceTransformComponent->m_location.X + candidateOffset.X;
+			candidatePoint.Y = resourceSourceTransformComponent->m_location.Y + candidateOffset.Y;
 
 			if (!SpatialPartitioningSystems::AnyObstaclesOrStaticEntitiesInCircle(candidatePoint, radiusDistance, safeZoneDistance))
 			{
+				DrawDebugSphere(worldReferenceComponent->m_worldPointer, candidatePoint, 5.0f, 10, FColor::Green, false, 10.0f);
 				isBlocked = false;
 				break;
+			}
+			else
+			{
+				DrawDebugSphere(worldReferenceComponent->m_worldPointer, candidatePoint, 5.0f, 10, FColor::Red, false, 10.0f);
 			}
 		}
 	}
