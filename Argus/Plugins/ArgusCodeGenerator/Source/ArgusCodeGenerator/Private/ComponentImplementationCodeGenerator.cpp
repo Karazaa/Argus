@@ -297,6 +297,7 @@ void ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 		const bool isControlGroup = parsedVariableData[i].m_typeName.find("ControlGroup") != std::string::npos;
 		const bool isBitmask = parsedVariableData[i].m_typeName.find("BITMASK") != std::string::npos;
 		const bool isTeamCommanderPriority = parsedVariableData[i].m_typeName.find("TeamCommanderPriority") != std::string::npos;
+		const bool isResourceSourceExtractionData = parsedVariableData[i].m_typeName.find("ResourceSourceExtractionData") != std::string::npos;
 
 		std::string cleanTypeName = parsedVariableData[i].m_typeName.substr(1, parsedVariableData[i].m_typeName.length() - 1);
 
@@ -419,6 +420,10 @@ void ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 		else if (isTeamCommanderPriority)
 		{
 			atomicFieldFormattingFunction = FormatImGuiTeamCommanderPriorityField;
+		}
+		else if (isResourceSourceExtractionData)
+		{
+			atomicFieldFormattingFunction = FormatImGuiResourceSourceExtractionDataField;
 		}
 
 		if (isQueue)
@@ -706,4 +711,18 @@ void ComponentImplementationGenerator::FormatImGuiTeamCommanderPriorityField(con
 	floatVarName.append(".m_weight");
 
 	FormatImGuiFloatField(floatVarName, extraData, prefix, outParsedVariableContents);
+}
+
+void ComponentImplementationGenerator::FormatImGuiResourceSourceExtractionDataField(const std::string& variableName, const std::string& extraData, const std::string& prefix, std::vector<std::string>& outParsedVariableContents)
+{
+	std::string resourceSourceIdName = variableName;
+	std::string resourceSinkIdName = variableName;
+	std::string resourceExtractorIdName = variableName;
+	resourceSourceIdName.append(".m_resourceSourceEntityId");
+	resourceSinkIdName.append(".m_resourceSinkEntityId");
+	resourceExtractorIdName.append(".m_resourceExtractorEntityId");
+
+	FormatImGuiIntField(resourceSourceIdName, extraData, prefix, outParsedVariableContents);
+	FormatImGuiIntField(resourceSinkIdName, extraData, prefix, outParsedVariableContents);
+	FormatImGuiIntField(resourceExtractorIdName, extraData, prefix, outParsedVariableContents);
 }

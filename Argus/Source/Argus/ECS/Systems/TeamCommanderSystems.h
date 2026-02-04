@@ -18,6 +18,7 @@ private:
 	static void UpdateTeamCommanderPerEntity(const TeamCommanderSystemsArgs& components);
 	static void UpdateTeamCommanderPerEntityOnTeam(const TeamCommanderSystemsArgs& components, TeamCommanderComponent* teamCommanderComponent);
 	static void UpdateTeamCommanderPerNeutralEntity(const TeamCommanderSystemsArgs& components, ArgusEntity teamCommanderEntity);
+	static void UpdateResourceExtractionDataPerSink(const TeamCommanderSystemsArgs& components, TeamCommanderComponent* teamCommanderComponent);
 	static void UpdateRevealedAreasPerEntityOnTeam(const TeamCommanderSystemsArgs& components, TeamCommanderComponent* teamCommanderComponent);
 
 	static void UpdateTeamCommanderPriorities(ArgusEntity teamCommmanderEntity);

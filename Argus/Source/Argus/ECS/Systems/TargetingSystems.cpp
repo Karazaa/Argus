@@ -68,6 +68,22 @@ bool TargetingSystems::IsInRangedRangeOfOtherEntity(ArgusEntity entity, ArgusEnt
 	return entity.IsInRangeOfOtherEntity(otherEntity, targetingComponent->m_rangedRange);
 }
 
+bool TargetingSystems::IsInSightRangeOfOtherEntity(ArgusEntity entity, ArgusEntity otherEntity)
+{
+	if (!entity || !otherEntity)
+	{
+		return false;
+	}
+
+	const TargetingComponent* targetingComponent = entity.GetComponent<TargetingComponent>();
+	if (!targetingComponent)
+	{
+		return false;
+	}
+
+	return entity.IsInRangeOfOtherEntity(otherEntity, targetingComponent->m_sightRange);
+}
+
 float TargetingSystems::GetRangeToUseForOtherEntity(ArgusEntity entity, ArgusEntity otherEntity)
 {
 	const TargetingComponent* targetingComponent = entity.GetComponent<TargetingComponent>();

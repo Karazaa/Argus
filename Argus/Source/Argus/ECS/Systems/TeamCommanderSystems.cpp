@@ -10,6 +10,7 @@
 #include "Systems/AbilitySystems.h"
 #include "Systems/ResourceSystems.h"
 #include "Systems/SpatialPartitioningSystems.h"
+#include "Systems/TargetingSystems.h"
 #include "Systems/TransformSystems.h"
 
 #if !UE_BUILD_SHIPPING
@@ -45,6 +46,23 @@ void TeamCommanderSystems::ClearUpdatesPerCommanderEntity(ArgusEntity teamEntity
 	TeamCommanderComponent* teamCommanderComponent = teamEntity.GetComponent<TeamCommanderComponent>();
 	ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
 
+	teamCommanderComponent->IterateAllSeenResourceSources([](ResourceSourceExtractionData& data)
+	{
+		ArgusEntity sinkEntity = ArgusEntity::RetrieveEntity(data.m_resourceSinkEntityId);
+		ArgusEntity extractorEntity = ArgusEntity::RetrieveEntity(data.m_resourceExtractorEntityId);
+
+		if (sinkEntity && !sinkEntity.IsAlive())
+		{
+			data.m_resourceSinkEntityId = ArgusECSConstants::k_maxEntities;
+		}
+
+		if (extractorEntity && !extractorEntity.IsAlive())
+		{
+			data.m_resourceExtractorEntityId = ArgusECSConstants::k_maxEntities;
+		}
+
+		return false;
+	});
 	teamCommanderComponent->ResetUpdateArrays();
 }
 
@@ -88,18 +106,7 @@ void TeamCommanderSystems::UpdateTeamCommanderPerEntityOnTeam(const TeamCommande
 		teamCommanderComponent->m_idleEntityIdsForTeam.Add(components.m_entity.GetId());
 	}
 
-	if (isAlive && components.m_resourceComponent && components.m_resourceComponent->m_resourceComponentOwnerType == EResourceComponentOwnerType::Sink)
-	{
-		for (uint8 i = 0u; i < static_cast<uint8>(EResourceType::Count); ++i)
-		{
-			EResourceType type = static_cast<EResourceType>(i);
-			if (components.m_resourceComponent->m_currentResources.HasResourceType(type))
-			{
-				teamCommanderComponent->GetSinkEntityIdsForResourceType(type).Add(components.m_entity.GetId());
-			}
-		}
-	}
-
+	UpdateResourceExtractionDataPerSink(components, teamCommanderComponent);
 	UpdateRevealedAreasPerEntityOnTeam(components, teamCommanderComponent);
 }
 
@@ -123,10 +130,55 @@ void TeamCommanderSystems::UpdateTeamCommanderPerNeutralEntity(const TeamCommand
 				EResourceType type = static_cast<EResourceType>(i);
 				if (components.m_resourceComponent->m_currentResources.HasResourceType(type))
 				{
-					teamCommanderComponent->GetSeenSourceEntityIdsForResourceType(type).Add(components.m_entity.GetId());
+					teamCommanderComponent->AddSeenResourceSourceIfNotPresent(type, components.m_entity.GetId());
 				}
 			}
 		}
+	}
+}
+
+void TeamCommanderSystems::UpdateResourceExtractionDataPerSink(const TeamCommanderSystemsArgs& components, TeamCommanderComponent* teamCommanderComponent)
+{
+	ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+
+	if (!components.m_entity.IsAlive() || !components.m_resourceComponent || components.m_resourceComponent->m_resourceComponentOwnerType != EResourceComponentOwnerType::Sink)
+	{
+		return;
+	}
+
+	for (uint8 i = 0u; i < static_cast<uint8>(EResourceType::Count); ++i)
+	{
+		EResourceType type = static_cast<EResourceType>(i);
+		if (!components.m_resourceComponent->m_currentResources.HasResourceType(type))
+		{
+			continue;
+		}
+
+		teamCommanderComponent->IterateSeenResourceSourcesOfType(type, [&components](ResourceSourceExtractionData& data)
+		{
+			if (data.m_resourceSourceEntityId == ArgusECSConstants::k_maxEntities)
+			{
+				return false;
+			}
+
+			if (data.m_resourceSinkEntityId == components.m_entity.GetId())
+			{
+				return true;
+			}
+
+			ArgusEntity sourceEntity = ArgusEntity::RetrieveEntity(data.m_resourceSourceEntityId);
+			if (TargetingSystems::IsInSightRangeOfOtherEntity(components.m_entity, sourceEntity))
+			{
+				data.m_resourceSinkEntityId = components.m_entity.GetId();
+				return true;
+			}
+
+			return false;
+		});
 	}
 }
 
@@ -201,18 +253,19 @@ void TeamCommanderSystems::UpdateConstructResourceSinkTeamPriority(TeamCommander
 		return;
 	}
 
-	TArray<uint16, ArgusContainerAllocator<10u> >& seenSourceEntityIds = teamCommanderComponent->GetSeenSourceEntityIdsForResourceType(priority.m_resourceType);
-	TArray<uint16, ArgusContainerAllocator<10u> >& sinkEntityIds = teamCommanderComponent->GetSinkEntityIdsForResourceType(priority.m_resourceType);
-	if (sinkEntityIds.Num() == 0 && seenSourceEntityIds.Num() > 0)
+	bool updated = teamCommanderComponent->IterateSeenResourceSourcesOfType(priority.m_resourceType, [&priority](const ResourceSourceExtractionData& data)
 	{
-		priority.m_weight = 2.0f;
-		return;
-	}
+		if (data.m_resourceSourceEntityId != ArgusECSConstants::k_maxEntities && data.m_resourceSinkEntityId == ArgusECSConstants::k_maxEntities)
+		{
+			priority.m_weight = 2.0f;
+			return true;
+		}
 
-	// TODO JAMES: (Design question) What is the right proportion of resource sinks to resource sources? Do we need to define acceptable ranges from source to sink?
-	if (sinkEntityIds.Num() < seenSourceEntityIds.Num())
+		return false;
+	});
+
+	if (updated)
 	{
-		priority.m_weight = 1.0f;
 		return;
 	}
 
@@ -228,9 +281,23 @@ void TeamCommanderSystems::UpdateResourceExtractionTeamPriority(TeamCommanderCom
 		return;
 	}
 
-	TArray<uint16, ArgusContainerAllocator<10u> >& seenSourceEntityIds = teamCommanderComponent->GetSeenSourceEntityIdsForResourceType(priority.m_resourceType);
-	TArray<uint16, ArgusContainerAllocator<10u> >& sinkEntityIds = teamCommanderComponent->GetSinkEntityIdsForResourceType(priority.m_resourceType);
-	priority.m_weight = (seenSourceEntityIds.Num() > 0 && sinkEntityIds.Num() > 0) ? 1.0f : 0.0f;
+	bool updated = teamCommanderComponent->IterateSeenResourceSourcesOfType(priority.m_resourceType, [&priority](const ResourceSourceExtractionData& data)
+	{
+		if (data.m_resourceSourceEntityId != ArgusECSConstants::k_maxEntities && data.m_resourceExtractorEntityId == ArgusECSConstants::k_maxEntities)
+		{
+			priority.m_weight = 1.0f;
+			return true;
+		}
+
+		return false;
+	});
+
+	if (updated)
+	{
+		return;
+	}
+
+	priority.m_weight = 0.0f;
 }
 
 void TeamCommanderSystems::UpdateScoutingTeamPriority(TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority)
@@ -349,13 +416,18 @@ bool TeamCommanderSystems::AssignEntityToResourceExtractionIfAble(ArgusEntity en
 
 	ArgusEntity closestEntity = ArgusEntity::k_emptyEntity;
 	float closestDistanceSquared = FLT_MAX;
-
-	teamCommanderComponent->IterateAllSeenResourceSources([entity, &closestEntity, &closestDistanceSquared](uint16 entityId)
+	ResourceSourceExtractionData* pointerToClosestExtractionData = nullptr;
+	teamCommanderComponent->IterateAllSeenResourceSources([entity, &closestEntity, &closestDistanceSquared, &pointerToClosestExtractionData](ResourceSourceExtractionData& data)
 	{
-		ArgusEntity resourceSourceEntity = ArgusEntity::RetrieveEntity(entityId);
+		if (data.m_resourceSourceEntityId == ArgusECSConstants::k_maxEntities || data.m_resourceExtractorEntityId != ArgusECSConstants::k_maxEntities)
+		{
+			return false;
+		}
+
+		ArgusEntity resourceSourceEntity = ArgusEntity::RetrieveEntity(data.m_resourceSourceEntityId);
 		if (!ResourceSystems::CanEntityExtractResourcesFromOtherEntity(entity, resourceSourceEntity))
 		{
-			return;
+			return false;
 		}
 
 		const float distanceSquared = entity.GetDistanceSquaredToOtherEntity(resourceSourceEntity);
@@ -363,10 +435,13 @@ bool TeamCommanderSystems::AssignEntityToResourceExtractionIfAble(ArgusEntity en
 		{
 			closestDistanceSquared = distanceSquared;
 			closestEntity = resourceSourceEntity;
+			pointerToClosestExtractionData = &data;
 		}
+
+		return false;
 	});
 
-	if (!closestEntity)
+	if (!closestEntity || !pointerToClosestExtractionData)
 	{
 		return false;
 	}
@@ -375,6 +450,7 @@ bool TeamCommanderSystems::AssignEntityToResourceExtractionIfAble(ArgusEntity en
 	taskComponent->m_resourceExtractionState = EResourceExtractionState::DispatchedToExtract;
 	taskComponent->m_movementState = EMovementState::ProcessMoveToEntityCommand;
 	taskComponent->m_directiveFromTeamCommander = ETeamCommanderDirective::ExtractResources;
+	pointerToClosestExtractionData->m_resourceExtractorEntityId = entity.GetId();
 	return true;
 }
 
@@ -658,13 +734,18 @@ ArgusEntity TeamCommanderSystems::GetNearestSeenResourceSourceToEntity(ArgusEnti
 	ArgusEntity nearestResourceSource = ArgusEntity::k_emptyEntity;
 	float minDistanceSquared = FLT_MAX;
 
-	teamCommanderComponent->IterateSeenResourceSourcesOfType(type, [transformComponent, &abilityIndexPairs, &nearestResourceSource, &minDistanceSquared, &outPairIndex](uint16 entityId)
+	teamCommanderComponent->IterateSeenResourceSourcesOfType(type, [transformComponent, &abilityIndexPairs, &nearestResourceSource, &minDistanceSquared, &outPairIndex](const ResourceSourceExtractionData& data)
 	{
-		ArgusEntity resourceSourceEntity = ArgusEntity::RetrieveEntity(entityId);
+		if (data.m_resourceSinkEntityId != ArgusECSConstants::k_maxEntities)
+		{
+			return false;
+		}
+
+		ArgusEntity resourceSourceEntity = ArgusEntity::RetrieveEntity(data.m_resourceSourceEntityId);
 		TransformComponent* resourceSinkSourceTransformComponent = resourceSourceEntity.GetComponent<TransformComponent>();
 		if (!resourceSinkSourceTransformComponent)
 		{
-			return;
+			return false;
 		}
 
 		bool anyValidAbilities = false;
@@ -680,7 +761,7 @@ ArgusEntity TeamCommanderSystems::GetNearestSeenResourceSourceToEntity(ArgusEnti
 
 		if (!anyValidAbilities)
 		{
-			return;
+			return false;
 		}
 
 		const float distanceSquared = FVector::DistSquared2D(transformComponent->m_location, resourceSinkSourceTransformComponent->m_location);
@@ -690,6 +771,8 @@ ArgusEntity TeamCommanderSystems::GetNearestSeenResourceSourceToEntity(ArgusEnti
 			nearestResourceSource = resourceSourceEntity;
 			outPairIndex = j;
 		}
+
+		return false;
 	});
 
 	return nearestResourceSource;

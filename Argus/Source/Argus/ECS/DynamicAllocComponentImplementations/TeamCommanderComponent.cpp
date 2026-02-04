@@ -15,12 +15,9 @@
 void TeamCommanderComponent::Reset()
 {
 	m_idleEntityIdsForTeam.Reset();
-	m_seenResourceASourceEntityIds.Reset();
-	m_seenResourceBSourceEntityIds.Reset();
-	m_seenResourceCSourceEntityIds.Reset();
-	m_resourceASinkEntityIds.Reset();
-	m_resourceBSinkEntityIds.Reset();
-	m_resourceCSinkEntityIds.Reset();
+	m_seenResourceASourceExtractionData.Reset();
+	m_seenResourceBSourceExtractionData.Reset();
+	m_seenResourceCSourceExtractionData.Reset();
 	m_priorities.Reset();
 	m_revealedAreas.Reset();
 	m_revealedAreaDimensionLength = 800.0f;
@@ -57,115 +54,64 @@ void TeamCommanderComponent::DrawComponentDebug() const
 		}
 		ImGui::NewLine();
 		ImGui::TableNextColumn();
-		ImGui::Text("m_seenResourceASourceEntityIds");
+		ImGui::Text("m_seenResourceASourceExtractionData");
 		ImGui::TableNextColumn();
-		ImGui::Text("Array max is currently = %d", m_seenResourceASourceEntityIds.Max());
-		if (m_seenResourceASourceEntityIds.Num() == 0)
+		ImGui::Text("Array max is currently = %d", m_seenResourceASourceExtractionData.Max());
+		if (m_seenResourceASourceExtractionData.Num() == 0)
 		{
 			ImGui::Text("Array is empty");
 		}
 		else
 		{
-			ImGui::Text("Size of array = %d", m_seenResourceASourceEntityIds.Num());
+			ImGui::Text("Size of array = %d", m_seenResourceASourceExtractionData.Num());
 			ImGui::Indent();
-			for (int32 i = 0; i < m_seenResourceASourceEntityIds.Num(); ++i)
+			for (int32 i = 0; i < m_seenResourceASourceExtractionData.Num(); ++i)
 			{
-				ImGui::Text("%d", m_seenResourceASourceEntityIds[i]);
+				ImGui::Text("%d", m_seenResourceASourceExtractionData[i].m_resourceSourceEntityId);
+				ImGui::Text("%d", m_seenResourceASourceExtractionData[i].m_resourceSinkEntityId);
+				ImGui::Text("%d", m_seenResourceASourceExtractionData[i].m_resourceExtractorEntityId);
 			}
 			ImGui::Unindent();
 		}
 		ImGui::NewLine();
 		ImGui::TableNextColumn();
-		ImGui::Text("m_seenResourceBSourceEntityIds");
+		ImGui::Text("m_seenResourceBSourceExtractionData");
 		ImGui::TableNextColumn();
-		ImGui::Text("Array max is currently = %d", m_seenResourceBSourceEntityIds.Max());
-		if (m_seenResourceBSourceEntityIds.Num() == 0)
+		ImGui::Text("Array max is currently = %d", m_seenResourceBSourceExtractionData.Max());
+		if (m_seenResourceBSourceExtractionData.Num() == 0)
 		{
 			ImGui::Text("Array is empty");
 		}
 		else
 		{
-			ImGui::Text("Size of array = %d", m_seenResourceBSourceEntityIds.Num());
+			ImGui::Text("Size of array = %d", m_seenResourceBSourceExtractionData.Num());
 			ImGui::Indent();
-			for (int32 i = 0; i < m_seenResourceBSourceEntityIds.Num(); ++i)
+			for (int32 i = 0; i < m_seenResourceBSourceExtractionData.Num(); ++i)
 			{
-				ImGui::Text("%d", m_seenResourceBSourceEntityIds[i]);
+				ImGui::Text("%d", m_seenResourceBSourceExtractionData[i].m_resourceSourceEntityId);
+				ImGui::Text("%d", m_seenResourceBSourceExtractionData[i].m_resourceSinkEntityId);
+				ImGui::Text("%d", m_seenResourceBSourceExtractionData[i].m_resourceExtractorEntityId);
 			}
 			ImGui::Unindent();
 		}
 		ImGui::NewLine();
 		ImGui::TableNextColumn();
-		ImGui::Text("m_seenResourceCSourceEntityIds");
+		ImGui::Text("m_seenResourceCSourceExtractionData");
 		ImGui::TableNextColumn();
-		ImGui::Text("Array max is currently = %d", m_seenResourceCSourceEntityIds.Max());
-		if (m_seenResourceCSourceEntityIds.Num() == 0)
+		ImGui::Text("Array max is currently = %d", m_seenResourceCSourceExtractionData.Max());
+		if (m_seenResourceCSourceExtractionData.Num() == 0)
 		{
 			ImGui::Text("Array is empty");
 		}
 		else
 		{
-			ImGui::Text("Size of array = %d", m_seenResourceCSourceEntityIds.Num());
+			ImGui::Text("Size of array = %d", m_seenResourceCSourceExtractionData.Num());
 			ImGui::Indent();
-			for (int32 i = 0; i < m_seenResourceCSourceEntityIds.Num(); ++i)
+			for (int32 i = 0; i < m_seenResourceCSourceExtractionData.Num(); ++i)
 			{
-				ImGui::Text("%d", m_seenResourceCSourceEntityIds[i]);
-			}
-			ImGui::Unindent();
-		}
-		ImGui::NewLine();
-		ImGui::TableNextColumn();
-		ImGui::Text("m_resourceASinkEntityIds");
-		ImGui::TableNextColumn();
-		ImGui::Text("Array max is currently = %d", m_resourceASinkEntityIds.Max());
-		if (m_resourceASinkEntityIds.Num() == 0)
-		{
-			ImGui::Text("Array is empty");
-		}
-		else
-		{
-			ImGui::Text("Size of array = %d", m_resourceASinkEntityIds.Num());
-			ImGui::Indent();
-			for (int32 i = 0; i < m_resourceASinkEntityIds.Num(); ++i)
-			{
-				ImGui::Text("%d", m_resourceASinkEntityIds[i]);
-			}
-			ImGui::Unindent();
-		}
-		ImGui::NewLine();
-		ImGui::TableNextColumn();
-		ImGui::Text("m_resourceBSinkEntityIds");
-		ImGui::TableNextColumn();
-		ImGui::Text("Array max is currently = %d", m_resourceBSinkEntityIds.Max());
-		if (m_resourceBSinkEntityIds.Num() == 0)
-		{
-			ImGui::Text("Array is empty");
-		}
-		else
-		{
-			ImGui::Text("Size of array = %d", m_resourceBSinkEntityIds.Num());
-			ImGui::Indent();
-			for (int32 i = 0; i < m_resourceBSinkEntityIds.Num(); ++i)
-			{
-				ImGui::Text("%d", m_resourceBSinkEntityIds[i]);
-			}
-			ImGui::Unindent();
-		}
-		ImGui::NewLine();
-		ImGui::TableNextColumn();
-		ImGui::Text("m_resourceCSinkEntityIds");
-		ImGui::TableNextColumn();
-		ImGui::Text("Array max is currently = %d", m_resourceCSinkEntityIds.Max());
-		if (m_resourceCSinkEntityIds.Num() == 0)
-		{
-			ImGui::Text("Array is empty");
-		}
-		else
-		{
-			ImGui::Text("Size of array = %d", m_resourceCSinkEntityIds.Num());
-			ImGui::Indent();
-			for (int32 i = 0; i < m_resourceCSinkEntityIds.Num(); ++i)
-			{
-				ImGui::Text("%d", m_resourceCSinkEntityIds[i]);
+				ImGui::Text("%d", m_seenResourceCSourceExtractionData[i].m_resourceSourceEntityId);
+				ImGui::Text("%d", m_seenResourceCSourceExtractionData[i].m_resourceSinkEntityId);
+				ImGui::Text("%d", m_seenResourceCSourceExtractionData[i].m_resourceExtractorEntityId);
 			}
 			ImGui::Unindent();
 		}

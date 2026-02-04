@@ -17,22 +17,13 @@ struct TeamCommanderComponent
 	TArray<uint16, ArgusContainerAllocator<10u> > m_idleEntityIdsForTeam;
 
 	ARGUS_IGNORE()
-	TArray<uint16, ArgusContainerAllocator<10u> > m_seenResourceASourceEntityIds;
+	TArray<ResourceSourceExtractionData, ArgusContainerAllocator<10u> > m_seenResourceASourceExtractionData;
 
 	ARGUS_IGNORE()
-	TArray<uint16, ArgusContainerAllocator<10u> > m_seenResourceBSourceEntityIds;
+	TArray<ResourceSourceExtractionData, ArgusContainerAllocator<10u> > m_seenResourceBSourceExtractionData;
 
 	ARGUS_IGNORE()
-	TArray<uint16, ArgusContainerAllocator<10u> > m_seenResourceCSourceEntityIds;
-
-	ARGUS_IGNORE()
-	TArray<uint16, ArgusContainerAllocator<10u> > m_resourceASinkEntityIds;
-
-	ARGUS_IGNORE()
-	TArray<uint16, ArgusContainerAllocator<10u> > m_resourceBSinkEntityIds;
-
-	ARGUS_IGNORE()
-	TArray<uint16, ArgusContainerAllocator<10u> > m_resourceCSinkEntityIds;
+	TArray<ResourceSourceExtractionData, ArgusContainerAllocator<10u> > m_seenResourceCSourceExtractionData;
 
 	ARGUS_IGNORE()
 	TArray<TeamCommanderPriority, ArgusContainerAllocator<7u> > m_priorities;
@@ -48,101 +39,82 @@ struct TeamCommanderComponent
 	void ResetUpdateArrays()
 	{
 		m_idleEntityIdsForTeam.Reset();
-		m_seenResourceASourceEntityIds.Reset();
-		m_seenResourceBSourceEntityIds.Reset();
-		m_seenResourceCSourceEntityIds.Reset();
-		m_resourceASinkEntityIds.Reset();
-		m_resourceBSinkEntityIds.Reset();
-		m_resourceCSinkEntityIds.Reset();
 		m_priorities.Reset();
 	}
 
-	TArray<uint16, ArgusContainerAllocator<10u> >& GetSeenSourceEntityIdsForResourceType(EResourceType type)
+	TArray<ResourceSourceExtractionData, ArgusContainerAllocator<10u> >& GetSeenSourceExtractionDataForResourceType(EResourceType type)
 	{
 		switch (type)
 		{
 			case EResourceType::ResourceA:
-				return m_seenResourceASourceEntityIds;
+				return m_seenResourceASourceExtractionData;
 			case EResourceType::ResourceB:
-				return m_seenResourceBSourceEntityIds;
+				return m_seenResourceBSourceExtractionData;
 			case EResourceType::ResourceC:
-				return m_seenResourceCSourceEntityIds;
+				return m_seenResourceCSourceExtractionData;
 			default:
 				break;
 		}
 
-		return m_seenResourceASourceEntityIds;
-	}
-
-	TArray<uint16, ArgusContainerAllocator<10u> >& GetSinkEntityIdsForResourceType(EResourceType type)
-	{
-		switch (type)
-		{
-			case EResourceType::ResourceA:
-				return m_resourceASinkEntityIds;
-			case EResourceType::ResourceB:
-				return m_resourceBSinkEntityIds;
-			case EResourceType::ResourceC:
-				return m_resourceCSinkEntityIds;
-			default:
-				break;
-		}
-
-		return m_resourceASinkEntityIds;
+		return m_seenResourceASourceExtractionData;
 	}
 
 	template <typename Function>
-	void IterateSeenResourceSourcesOfType(EResourceType type, Function&& function)
+	bool IterateSeenResourceSourcesOfType(EResourceType type, Function&& function)
 	{
-		TArray<uint16, ArgusContainerAllocator<10u> >& sources = GetSeenSourceEntityIdsForResourceType(type);
+		TArray<ResourceSourceExtractionData, ArgusContainerAllocator<10u> >& sources = GetSeenSourceExtractionDataForResourceType(type);
 		for (int32 i = 0; i < sources.Num(); ++i)
 		{
-			function(sources[i]);
+			if (function(sources[i]))
+			{
+				return true;
+			}
 		}
+
+		return false;
 	}
 
 	template <typename Function>
-	void IterateResourceSinksOfType(EResourceType type, Function&& function)
+	bool IterateAllSeenResourceSources(Function&& function) 
 	{
-		TArray<uint16, ArgusContainerAllocator<10u> >& sinks = GetSinkEntityIdsForResourceType(type);
-		for (int32 i = 0; i < sinks.Num(); ++i)
+		for (int32 i = 0; i < m_seenResourceASourceExtractionData.Num(); ++i)
 		{
-			function(sinks[i]);
+			if (function(m_seenResourceASourceExtractionData[i]))
+			{
+				return true;
+			}
 		}
+		for (int32 i = 0; i < m_seenResourceBSourceExtractionData.Num(); ++i)
+		{
+			if (function(m_seenResourceBSourceExtractionData[i]))
+			{
+				return true;
+			}
+		}
+		for (int32 i = 0; i < m_seenResourceCSourceExtractionData.Num(); ++i)
+		{
+			if (function(m_seenResourceCSourceExtractionData[i]))
+			{
+				return true;
+			}
+		}
+
+		return false;
 	}
 
-	template <typename Function>
-	void IterateAllSeenResourceSources(Function&& function) const 
+	void AddSeenResourceSourceIfNotPresent(EResourceType type, uint16 entityId)
 	{
-		for (int32 i = 0; i < m_seenResourceASourceEntityIds.Num(); ++i)
+		TArray<ResourceSourceExtractionData, ArgusContainerAllocator<10u> >& sources = GetSeenSourceExtractionDataForResourceType(type);
+		for (int32 i = 0; i < sources.Num(); ++i)
 		{
-			function(m_seenResourceASourceEntityIds[i]);
+			if (sources[i].HasSourceEntityId(entityId))
+			{
+				return;
+			}
 		}
-		for (int32 i = 0; i < m_seenResourceBSourceEntityIds.Num(); ++i)
-		{
-			function(m_seenResourceBSourceEntityIds[i]);
-		}
-		for (int32 i = 0; i < m_seenResourceCSourceEntityIds.Num(); ++i)
-		{
-			function(m_seenResourceCSourceEntityIds[i]);
-		}
-	}
 
-	template <typename Function>
-	void IterateAllResourceSinks(Function&& function) const 
-	{
-		for (int32 i = 0; i < m_resourceASinkEntityIds.Num(); ++i)
-		{
-			function(m_resourceASinkEntityIds[i]);
-		}
-		for (int32 i = 0; i < m_resourceBSinkEntityIds.Num(); ++i)
-		{
-			function(m_resourceBSinkEntityIds[i]);
-		}
-		for (int32 i = 0; i < m_resourceCSinkEntityIds.Num(); ++i)
-		{
-			function(m_resourceCSinkEntityIds[i]);
-		}
+		ResourceSourceExtractionData& emplacedData = sources.Emplace_GetRef();
+		emplacedData.SetSourceEntityId(entityId);
 	}
 
 	template <typename Function>
