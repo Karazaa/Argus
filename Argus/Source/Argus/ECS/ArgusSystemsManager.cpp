@@ -39,6 +39,7 @@ void ArgusSystemsManager::OnStartPlay(UWorld* worldPointer, ETeam activePlayerTe
 
 	SetInitialSingletonState(worldPointer, activePlayerTeam);
 	SpatialPartitioningSystems::RunSystems();
+	InitializeTeamComponents();
 }
 
 void ArgusSystemsManager::RunSystems(UWorld* worldPointer, float deltaTime)
@@ -156,14 +157,25 @@ void ArgusSystemsManager::PopulateTeamComponents(const UArgusEntityTemplate* tea
 
 		ResourceComponent* teamResourceComponent = teamEntity.GetOrAddComponent<ResourceComponent>();
 		TeamCommanderComponent* teamCommanderComponent = teamEntity.GetOrAddComponent<TeamCommanderComponent>();
-		if (!teamResourceComponent || !teamCommanderComponent)
-		{
-			continue;
-		}
+		ARGUS_RETURN_ON_NULL(teamResourceComponent, ArgusECSLog);
+		ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
 
 		teamCommanderComponent->m_teamToCommand = static_cast<ETeam>(1u << (i - 1u));
+	}
+}
+
+void ArgusSystemsManager::InitializeTeamComponents()
+{
+	for (uint8 i = 1u; i <= (sizeof(ETeam) * 8u); ++i)
+	{
+		ArgusEntity teamEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId - i);
+		TeamCommanderComponent* teamCommanderComponent = teamEntity.GetOrAddComponent<TeamCommanderComponent>();
+		ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
+
 		TeamCommanderSystems::InitializeRevealedAreas(teamCommanderComponent);
 	}
+
+	TeamCommanderSystems::PerformInitialUpdate();
 }
 
 void ArgusSystemsManager::UpdateSingletonComponents(UWorld* worldPointer)

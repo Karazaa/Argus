@@ -11,6 +11,7 @@ class TeamCommanderSystems
 public:
 	static void RunSystems(float deltaTime);
 	static void InitializeRevealedAreas(TeamCommanderComponent* teamCommanderComponent);
+	static void PerformInitialUpdate();
 
 private:
 	static void ClearUpdatesPerCommanderEntity(ArgusEntity teamCommmanderEntity);

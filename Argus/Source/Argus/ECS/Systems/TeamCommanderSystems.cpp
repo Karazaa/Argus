@@ -39,6 +39,11 @@ void TeamCommanderSystems::InitializeRevealedAreas(TeamCommanderComponent* teamC
 	teamCommanderComponent->m_revealedAreas.SetNum(numAreas, false);
 }
 
+void TeamCommanderSystems::PerformInitialUpdate()
+{
+	ArgusEntity::IterateSystemsArgs<TeamCommanderSystemsArgs>(TeamCommanderSystems::UpdateTeamCommanderPerEntity);
+}
+
 void TeamCommanderSystems::ClearUpdatesPerCommanderEntity(ArgusEntity teamEntity)
 {
 	ARGUS_TRACE(TeamCommanderSystems::ClearUpdatesPerCommanderEntity);
@@ -197,9 +202,9 @@ void TeamCommanderSystems::UpdateResourceExtractionDataPerSink(const TeamCommand
 				return false;
 			}
 
-			if (data.m_resourceSinkEntityId == components.m_entity.GetId())
+			if (data.m_resourceSinkEntityId != ArgusECSConstants::k_maxEntities)
 			{
-				return true;
+				return false;
 			}
 
 			ArgusEntity sourceEntity = ArgusEntity::RetrieveEntity(data.m_resourceSourceEntityId);
@@ -491,6 +496,11 @@ bool TeamCommanderSystems::AssignEntityToScoutingIfAble(ArgusEntity entity, Team
 	ARGUS_TRACE(TeamCommanderSystems::AssignEntityToScoutingIfAble);
 	ARGUS_RETURN_ON_NULL_BOOL(teamCommanderComponent, ArgusECSLog);
 
+	if (!entity.IsMoveable())
+	{
+		return false;
+	}
+
 	TeamCommanderSystemsArgs components;
 	if (!components.PopulateArguments(entity) || !components.m_transformComponent || !components.m_targetingComponent)
 	{
@@ -639,7 +649,7 @@ void TeamCommanderSystems::ConvertAreaCoordinatesToAreaIndex(int32 xCoordinate, 
 
 bool TeamCommanderSystems::GetConstructResourceSinkAbilities(ArgusEntity entity, TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& outAbilityIndexPairs, EResourceType type)
 {
-	ARGUS_TRACE(TeamCommanderSystems::GetConstructResourceSinkAbility);
+	ARGUS_TRACE(TeamCommanderSystems::GetConstructResourceSinkAbilities);
 
 	outAbilityIndexPairs.Reset();
 	outAbilityIndexPairs.Reserve(ArgusECSConstants::k_numEntityAbilities);
@@ -649,7 +659,7 @@ bool TeamCommanderSystems::GetConstructResourceSinkAbilities(ArgusEntity entity,
 		return false;
 	}
 
-	abilityComponent->IterateActiveAbilityIds([&outAbilityIndexPairs, type](uint32 abilityRecordId, EAbilityIndex iteratedAbilityIndex)
+	abilityComponent->IterateActiveAbilityIds([entity, &outAbilityIndexPairs, type](uint32 abilityRecordId, EAbilityIndex iteratedAbilityIndex)
 	{
 		const UAbilityRecord* record = ArgusStaticData::GetRecord<UAbilityRecord>(abilityRecordId);
 		if (!record)
@@ -657,7 +667,7 @@ bool TeamCommanderSystems::GetConstructResourceSinkAbilities(ArgusEntity entity,
 			return;
 		}
 
-		if (DoesAbilityConstructResourceSink(record, type))
+		if (ResourceSystems::CanEntityAffordTeamResourceChange(entity, record->m_requiredResourceChangeToCast) && DoesAbilityConstructResourceSink(record, type))
 		{
 			outAbilityIndexPairs.Add(TPair<const UAbilityRecord*, EAbilityIndex>(record, iteratedAbilityIndex));
 		}

@@ -80,10 +80,7 @@ void ResourceSystems::ProcessResourceExtractionTiming(const ResourceSystemsArgs&
 		return;
 	}
 
-	if (components.m_resourceExtractionComponent->m_lastExtractionSourceEntityId == ArgusECSConstants::k_maxEntities)
-	{
-		components.m_resourceExtractionComponent->m_lastExtractionSourceEntityId = components.m_targetingComponent->m_targetEntityId;
-	}
+	components.m_resourceExtractionComponent->m_lastExtractionSourceEntityId = components.m_targetingComponent->m_targetEntityId;
 
 	if (components.m_resourceExtractionComponent->m_resourceExtractionTimer.IsTimerComplete(components.m_entity))
 	{

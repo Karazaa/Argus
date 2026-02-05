@@ -107,9 +107,7 @@ void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float delta
 	const FVector2D moverLocation2D = FVector2D(moverLocation);
 	const FVector2D targetLocation2D = FVector2D(targetLocation);
 	const float distanceToTarget = FVector2D::Distance(moverLocation2D, targetLocation2D);
-	const bool isWithinRangeOfTargetEntity	=	components.m_navigationComponent->m_lastPointIndex == numNavigationPoints - 2u &&
-												components.m_taskComponent->m_movementState == EMovementState::MoveToEntity &&
-												GetEndMoveRange(components) > distanceToTarget;
+	const bool isWithinRangeOfTargetEntity = components.m_taskComponent->m_movementState == EMovementState::MoveToEntity && GetEndMoveRange(components) > distanceToTarget;
 
 	if (isWithinRangeOfTargetEntity && !isAtEndOfNavigationPath)
 	{
