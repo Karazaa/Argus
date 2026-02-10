@@ -124,9 +124,16 @@ void SpawningSystems::SpawnEntityInternal(const SpawningSystemsArgs& components,
 			{
 				constructionComponent->m_automaticConstructionTimerHandle.StartTimer(spawnedEntity, constructionComponent->m_requiredWorkSeconds);
 			}
-			else if (constructionComponent->m_constructionType == EConstructionType::Manual && spawnedEntity.IsOnPlayerTeam())
+			else if (constructionComponent->m_constructionType == EConstructionType::Manual)
 			{
-				CommandMoveSelectedEntitiesToSpawnedEntity(spawnedEntity, true);
+				if (spawnedEntity.IsOnPlayerTeam())
+				{
+					CommandMoveSelectedEntitiesToSpawnedEntity(spawnedEntity, true);
+				}
+				else
+				{
+					CommandMoveEntityToSpawnedEntity(ArgusEntity::RetrieveEntity(spawnInfo.m_initiatingEntityId), spawnedEntity, true);
+				}
 			}
 		}
 	}
@@ -344,37 +351,35 @@ void SpawningSystems::GetSpawnLocationAndNavigationState(const SpawningSystemsAr
 
 void SpawningSystems::CommandMoveSelectedEntitiesToSpawnedEntity(ArgusEntity spawnedEntity, bool requireConstructionTarget)
 {
-	if (!spawnedEntity)
+	InputInterfaceSystems::IterateSelectedEntities([spawnedEntity, requireConstructionTarget](ArgusEntity selectedEntity)
 	{
-		ARGUS_LOG
-		(
-			ArgusECSLog, Error, TEXT("[%s] Move to %s. It is invalid."),
-			ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity)
-		);
+		CommandMoveEntityToSpawnedEntity(selectedEntity, spawnedEntity, requireConstructionTarget, true);
+	});
+}
+
+void SpawningSystems::CommandMoveEntityToSpawnedEntity(ArgusEntity entity, ArgusEntity spawnedEntity, bool requireConstructionTarget, bool clearDecal)
+{
+	TaskComponent* entityTaskComponent = entity.GetComponent<TaskComponent>();
+	if (!entityTaskComponent)
+	{
 		return;
 	}
 
-	InputInterfaceSystems::IterateSelectedEntities([spawnedEntity, requireConstructionTarget](ArgusEntity selectedEntity)
+	TargetingComponent* entityTargetingComonent = entity.GetComponent<TargetingComponent>();
+	if (!entityTargetingComonent)
 	{
-		TaskComponent* selectedEntityTaskComponent = selectedEntity.GetComponent<TaskComponent>();
-		if (!selectedEntityTaskComponent)
-		{
-			return;
-		}
+		return;
+	}
 
-		TargetingComponent* selectedEntityTargetingComonent = selectedEntity.GetComponent<TargetingComponent>();
-		if (!selectedEntityTargetingComonent)
-		{
-			return;
-		}
+	if (requireConstructionTarget && !ConstructionSystems::CanEntityConstructOtherEntity(entity, spawnedEntity))
+	{
+		return;
+	}
 
-		if (requireConstructionTarget && !ConstructionSystems::CanEntityConstructOtherEntity(selectedEntity, spawnedEntity))
-		{
-			return;
-		}
-
-		selectedEntityTaskComponent->m_movementState = EMovementState::ProcessMoveToEntityCommand;
-		DecalSystems::ClearMoveToLocationDecalPerEntity(selectedEntity, true);
-		selectedEntityTargetingComonent->SetEntityTarget(spawnedEntity.GetId());
-	});
+	entityTaskComponent->m_movementState = EMovementState::ProcessMoveToEntityCommand;
+	if (clearDecal)
+	{
+		DecalSystems::ClearMoveToLocationDecalPerEntity(entity, true);
+	}
+	entityTargetingComonent->SetEntityTarget(spawnedEntity.GetId());
 }

@@ -90,6 +90,7 @@ void TeamCommanderSystems::ClearResourceExtractorFromExtractionDataIfNeeded(Argu
 	}
 
 	TaskComponent* extractorTaskComponent = existingResourceExtractorEntity.GetComponent<TaskComponent>();
+	TargetingComponent* extractorTargetingComponent = existingResourceExtractorEntity.GetComponent<TargetingComponent>();
 	if (!extractorTaskComponent)
 	{
 		data.m_resourceExtractorEntityId = ArgusECSConstants::k_maxEntities;
@@ -97,6 +98,18 @@ void TeamCommanderSystems::ClearResourceExtractorFromExtractionDataIfNeeded(Argu
 	}
 
 	if (extractorTaskComponent->m_directiveFromTeamCommander != ETeamCommanderDirective::ExtractResources)
+	{
+		data.m_resourceExtractorEntityId = ArgusECSConstants::k_maxEntities;
+		return;
+	}
+
+	if (!extractorTargetingComponent->HasEntityTarget())
+	{
+		data.m_resourceExtractorEntityId = ArgusECSConstants::k_maxEntities;
+		return;
+	}
+
+	if (extractorTargetingComponent->m_targetEntityId != data.m_resourceSourceEntityId && extractorTargetingComponent->m_targetEntityId != data.m_resourceSinkEntityId)
 	{
 		data.m_resourceExtractorEntityId = ArgusECSConstants::k_maxEntities;
 		return;
@@ -373,7 +386,21 @@ void TeamCommanderSystems::UpdateSpawnUnitTeamPriority(TeamCommanderComponent* t
 	if (priority.m_unitType == ESpawnUnitType::Carrier)
 	{
 		priority.m_weight = 0.5f;
+		return;
 	}
+
+	float numUnassignedResourceSources = 0.0f;
+	teamCommanderComponent->IterateSeenResourceSourcesOfType(priority.m_resourceType, [&priority, &numUnassignedResourceSources](const ResourceSourceExtractionData& data)
+	{
+		if (data.m_resourceSourceEntityId != ArgusECSConstants::k_maxEntities && data.m_resourceExtractorEntityId == ArgusECSConstants::k_maxEntities)
+		{
+			numUnassignedResourceSources += 1.0f;
+		}
+
+		return false;
+	});
+
+	priority.m_weight = numUnassignedResourceSources;
 }
 
 void TeamCommanderSystems::UpdateScoutingTeamPriority(TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority)

@@ -349,6 +349,7 @@ bool AbilitySystems::CastSpawnAbility(const UAbilityRecord* abilityRecord, const
 	spawnInfo.m_argusActorRecordId = abilityEffect.m_argusActorRecordId;
 	spawnInfo.m_spawningAbilityRecordId = abilityRecord->m_id;
 	spawnInfo.m_timeToCastSeconds = abilityRecord->m_timeToCastSeconds;
+	spawnInfo.m_initiatingEntityId = components.m_entity.GetId();
 	spawnInfo.m_needsConstruction = needsConstruction;
 	if (atTargetLocation)
 	{
