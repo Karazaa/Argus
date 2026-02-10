@@ -708,18 +708,34 @@ void ComponentImplementationGenerator::FormatImGuiTeamCommanderPriorityField(con
 	resourceVarName.append(".m_resourceType");
 	std::string resourceTypeName = "EResourceType";
 
-	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::BeginTable(\"{}\", 3, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_SizingStretchProp);", std::make_format_args(prefix, variableName)));
+	std::string unitVarName = variableName;
+	unitVarName.append(".m_unitType");
+	std::string unitTypeName = "ESpawnUnitType";
 
-	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::TableNextColumn();", std::make_format_args(prefix)));
-	FormatImGuiEnumField(enumVarName, enumTypeName, prefix, outParsedVariableContents);
+	std::string indentPrefix = prefix;
+	indentPrefix.append("\t");
 
-	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::TableNextColumn();", std::make_format_args(prefix)));
-	FormatImGuiEnumField(resourceVarName, resourceTypeName, prefix, outParsedVariableContents);
+	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::BeginTable(\"{}\", 4, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_SizingStretchProp);", std::make_format_args(prefix, variableName)));
 
 	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::TableNextColumn();", std::make_format_args(prefix)));
 	std::string floatVarName = variableName;
 	floatVarName.append(".m_weight");
 	FormatImGuiFloatField(floatVarName, extraData, prefix, outParsedVariableContents);
+
+	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::TableNextColumn();", std::make_format_args(prefix)));
+	FormatImGuiEnumField(enumVarName, enumTypeName, prefix, outParsedVariableContents);
+
+	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::TableNextColumn();", std::make_format_args(prefix)));
+	outParsedVariableContents.push_back(std::vformat("{}\t\tif ({} != EResourceType::Count)", std::make_format_args(prefix, resourceVarName)));
+	outParsedVariableContents.push_back(std::vformat("{}\t\t{{", std::make_format_args(prefix)));
+	FormatImGuiEnumField(resourceVarName, resourceTypeName, indentPrefix, outParsedVariableContents);
+	outParsedVariableContents.push_back(std::vformat("{}\t\t}}", std::make_format_args(prefix)));
+
+	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::TableNextColumn();", std::make_format_args(prefix)));
+	outParsedVariableContents.push_back(std::vformat("{}\t\tif ({} != ESpawnUnitType::Count)", std::make_format_args(prefix, unitVarName)));
+	outParsedVariableContents.push_back(std::vformat("{}\t\t{{", std::make_format_args(prefix)));
+	FormatImGuiEnumField(unitVarName, unitTypeName, indentPrefix, outParsedVariableContents);
+	outParsedVariableContents.push_back(std::vformat("{}\t\t}}", std::make_format_args(prefix)));
 
 	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::EndTable();", std::make_format_args(prefix)));
 }

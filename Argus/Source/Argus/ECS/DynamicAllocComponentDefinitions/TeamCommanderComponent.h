@@ -26,7 +26,7 @@ struct TeamCommanderComponent
 	TArray<ResourceSourceExtractionData, ArgusContainerAllocator<10u> > m_seenResourceCSourceExtractionData;
 
 	ARGUS_IGNORE()
-	TArray<TeamCommanderPriority, ArgusContainerAllocator<7u> > m_priorities;
+	TArray<TeamCommanderPriority, ArgusContainerAllocator<11u> > m_priorities;
 
 	ARGUS_IGNORE()
 	TBitArray<ArgusContainerAllocator<0u> > m_revealedAreas;

@@ -10,7 +10,17 @@ enum class ETeamCommanderDirective : uint8
 {
 	ConstructResourceSink,
 	ExtractResources,
+	SpawnUnit,
 	Scout,
+
+	Count
+};
+
+UENUM()
+enum class ESpawnUnitType : uint8
+{
+	Extractor,
+	Carrier,
 
 	Count
 };
@@ -19,6 +29,7 @@ struct TeamCommanderPriority
 {
 	ETeamCommanderDirective m_directive = ETeamCommanderDirective::Scout;
 	EResourceType m_resourceType = EResourceType::Count;
+	ESpawnUnitType m_unitType = ESpawnUnitType::Count;
 	float m_weight = 0.0f;
 };
 

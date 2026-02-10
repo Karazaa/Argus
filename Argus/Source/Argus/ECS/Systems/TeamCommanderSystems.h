@@ -27,6 +27,7 @@ private:
 	static void UpdateTeamCommanderPriorities(ArgusEntity teamCommmanderEntity);
 	static void UpdateConstructResourceSinkTeamPriority(TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority);
 	static void UpdateResourceExtractionTeamPriority(TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority);
+	static void UpdateSpawnUnitTeamPriority(TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority);
 	static void UpdateScoutingTeamPriority(TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority);
 
 	static void ActUponUpdatesPerCommanderEntity(ArgusEntity teamCommmanderEntity);
@@ -34,6 +35,7 @@ private:
 	static bool AssignIdleEntityToDirectiveIfAble(ArgusEntity idleEntity, TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority);
 	static bool AssignEntityToConstructResourceSinkIfAble(ArgusEntity entity, TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority);
 	static bool AssignEntityToResourceExtractionIfAble(ArgusEntity entity, TeamCommanderComponent* teamCommanderComponent);
+	static bool AssignEntityToSpawnUnitIfAble(ArgusEntity entity, TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority);
 	static bool AssignEntityToScoutingIfAble(ArgusEntity entity, TeamCommanderComponent* teamCommanderComponent);
 
 	static int32 GetAreaIndexFromWorldSpaceLocation(const TeamCommanderSystemsArgs& components, const TeamCommanderComponent* teamCommanderComponent);

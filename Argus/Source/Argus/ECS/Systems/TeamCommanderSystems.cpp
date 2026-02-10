@@ -266,6 +266,30 @@ void TeamCommanderSystems::UpdateTeamCommanderPriorities(ArgusEntity teamEntity)
 					UpdateResourceExtractionTeamPriority(teamCommanderComponent, priority);
 				}
 				continue;
+			case ETeamCommanderDirective::SpawnUnit:
+				for (uint8 j = 0u; j < static_cast<uint8>(ESpawnUnitType::Count); ++j)
+				{
+					ESpawnUnitType unitType = static_cast<ESpawnUnitType>(j);
+					if (unitType == ESpawnUnitType::Extractor)
+					{
+						for (uint8 k = 0u; k < static_cast<uint8>(EResourceType::Count); ++k)
+						{
+							TeamCommanderPriority& priority = teamCommanderComponent->m_priorities.Emplace_GetRef();
+							priority.m_directive = directiveToEvaluate;
+							priority.m_unitType = unitType;
+							priority.m_resourceType = static_cast<EResourceType>(k);
+							UpdateSpawnUnitTeamPriority(teamCommanderComponent, priority);
+						}
+					}
+					else
+					{
+						TeamCommanderPriority& priority = teamCommanderComponent->m_priorities.Emplace_GetRef();
+						priority.m_directive = directiveToEvaluate;
+						priority.m_unitType = unitType;
+						UpdateSpawnUnitTeamPriority(teamCommanderComponent, priority);
+					}
+				}
+				continue;
 			case ETeamCommanderDirective::Scout:
 			{
 				TeamCommanderPriority& priority = teamCommanderComponent->m_priorities.Emplace_GetRef();
@@ -337,6 +361,21 @@ void TeamCommanderSystems::UpdateResourceExtractionTeamPriority(TeamCommanderCom
 	priority.m_weight = 0.0f;
 }
 
+void TeamCommanderSystems::UpdateSpawnUnitTeamPriority(TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority)
+{
+	ARGUS_TRACE(TeamCommanderSystems::UpdateSpawnUnitTeamPriority);
+	ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
+	if (priority.m_directive != ETeamCommanderDirective::SpawnUnit)
+	{
+		return;
+	}
+
+	if (priority.m_unitType == ESpawnUnitType::Carrier)
+	{
+		priority.m_weight = 0.5f;
+	}
+}
+
 void TeamCommanderSystems::UpdateScoutingTeamPriority(TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority)
 {
 	ARGUS_TRACE(TeamCommanderSystems::UpdateScoutingTeamPriority);
@@ -396,6 +435,8 @@ bool TeamCommanderSystems::AssignIdleEntityToDirectiveIfAble(ArgusEntity idleEnt
 			return AssignEntityToConstructResourceSinkIfAble(idleEntity, teamCommanderComponent, priority);
 		case ETeamCommanderDirective::ExtractResources:
 			return AssignEntityToResourceExtractionIfAble(idleEntity, teamCommanderComponent);
+		case ETeamCommanderDirective::SpawnUnit:
+			return AssignEntityToSpawnUnitIfAble(idleEntity, teamCommanderComponent, priority);
 		case ETeamCommanderDirective::Scout:
 			return AssignEntityToScoutingIfAble(idleEntity, teamCommanderComponent);
 		default:
@@ -489,6 +530,14 @@ bool TeamCommanderSystems::AssignEntityToResourceExtractionIfAble(ArgusEntity en
 	taskComponent->m_directiveFromTeamCommander = ETeamCommanderDirective::ExtractResources;
 	pointerToClosestExtractionData->m_resourceExtractorEntityId = entity.GetId();
 	return true;
+}
+
+bool TeamCommanderSystems::AssignEntityToSpawnUnitIfAble(ArgusEntity entity, TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority)
+{
+	ARGUS_TRACE(TeamCommanderSystems::AssignEntityToSpawnUnitIfAble);
+	ARGUS_RETURN_ON_NULL_BOOL(teamCommanderComponent, ArgusECSLog);
+
+	return false;
 }
 
 bool TeamCommanderSystems::AssignEntityToScoutingIfAble(ArgusEntity entity, TeamCommanderComponent* teamCommanderComponent)

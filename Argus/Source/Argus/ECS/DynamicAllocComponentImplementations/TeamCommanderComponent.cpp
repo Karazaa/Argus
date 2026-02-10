@@ -164,15 +164,24 @@ void TeamCommanderComponent::DrawComponentDebug() const
 			for (int32 i = 0; i < m_priorities.Num(); ++i)
 			{
 				if (i != 0) ImGui::Separator();
-				ImGui::BeginTable("m_priorities[i]", 3, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_SizingStretchProp);
+				ImGui::BeginTable("m_priorities[i]", 4, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_SizingStretchProp);
+				ImGui::TableNextColumn();
+				ImGui::Text("%.2f", m_priorities[i].m_weight);
 				ImGui::TableNextColumn();
 				const char* valueName_m_priorities_m_directive = ARGUS_FSTRING_TO_CHAR(StaticEnum<ETeamCommanderDirective>()->GetNameStringByValue(static_cast<uint8>(m_priorities[i].m_directive)))
 				ImGui::Text(valueName_m_priorities_m_directive);
 				ImGui::TableNextColumn();
-				const char* valueName_m_priorities_m_resourceType = ARGUS_FSTRING_TO_CHAR(StaticEnum<EResourceType>()->GetNameStringByValue(static_cast<uint8>(m_priorities[i].m_resourceType)))
-				ImGui::Text(valueName_m_priorities_m_resourceType);
+				if (m_priorities[i].m_resourceType != EResourceType::Count)
+				{
+					const char* valueName_m_priorities_m_resourceType = ARGUS_FSTRING_TO_CHAR(StaticEnum<EResourceType>()->GetNameStringByValue(static_cast<uint8>(m_priorities[i].m_resourceType)))
+					ImGui::Text(valueName_m_priorities_m_resourceType);
+				}
 				ImGui::TableNextColumn();
-				ImGui::Text("%.2f", m_priorities[i].m_weight);
+				if (m_priorities[i].m_unitType != ESpawnUnitType::Count)
+				{
+					const char* valueName_m_priorities_m_unitType = ARGUS_FSTRING_TO_CHAR(StaticEnum<ESpawnUnitType>()->GetNameStringByValue(static_cast<uint8>(m_priorities[i].m_unitType)))
+					ImGui::Text(valueName_m_priorities_m_unitType);
+				}
 				ImGui::EndTable();
 			}
 			ImGui::Unindent();
