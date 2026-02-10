@@ -118,7 +118,7 @@ bool ComponentImplementationGenerator::ParseComponentImplementationCppFileTempla
 				{
 					if (rawLines[j].find("$$$$$") != std::string::npos)
 					{
-						outParsedFileContents[i].m_lines.push_back("\tif (ImGui::BeginTable(\"ComponentValues\", 2, ImGuiTableFlags_NoSavedSettings))");
+						outParsedFileContents[i].m_lines.push_back("\tif (ImGui::BeginTable(\"ComponentValues\", 2, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_BordersInner))");
 						outParsedFileContents[i].m_lines.push_back("\t{");
 						GeneratePerVariableImGuiText(parsedComponentData.m_componentVariableData[i], outParsedFileContents[i].m_lines);
 						outParsedFileContents[i].m_lines.push_back("\t\tImGui::EndTable();");
@@ -197,7 +197,7 @@ bool ComponentImplementationGenerator::ParseDynamicAllocComponentImplementationC
 		{
 			for (int i = 0; i < parsedComponentData.m_dynamicAllocComponentNames.size(); ++i)
 			{
-				outParsedFileContents[i].m_lines.push_back("\tif (ImGui::BeginTable(\"ComponentValues\", 2, ImGuiTableFlags_NoSavedSettings))");
+				outParsedFileContents[i].m_lines.push_back("\tif (ImGui::BeginTable(\"ComponentValues\", 2, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_BordersInner))");
 				outParsedFileContents[i].m_lines.push_back("\t{");
 				GeneratePerVariableImGuiText(parsedComponentData.m_dynamicAllocComponentVariableData[i], outParsedFileContents[i].m_lines);
 				outParsedFileContents[i].m_lines.push_back("\t\tImGui::EndTable();");
@@ -312,9 +312,6 @@ void ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 		}
 		else
 		{
-			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
-			outParsedVariableContents.push_back("\t\tImGui::Text(\"===============\");");
-			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
 			std::string avoidanceRangeName = std::vformat("{}.GetEntityIdsInAvoidanceRange()", std::make_format_args(parsedVariableData[i].m_varName));
 			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
 			outParsedVariableContents.push_back(std::vformat("\t\tImGui::Text(\"{}\");", std::make_format_args(avoidanceRangeName)));
@@ -338,9 +335,6 @@ void ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 			outParsedVariableContents.push_back(std::vformat("\t\tImGui::Text(\"{}\");", std::make_format_args(meleeRangeName)));
 			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
 			FormatImGuiArrayField(meleeRangeName, "", false, outParsedVariableContents, FormatImGuiIntField);
-			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
-			outParsedVariableContents.push_back("\t\tImGui::Text(\"===============\");");
-			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
 
 			continue;
 		}
@@ -447,8 +441,6 @@ void ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 			}
 			atomicFieldFormattingFunction(variableName, extraData, "", outParsedVariableContents);
 		}
-
-		outParsedVariableContents.push_back("\t\tImGui::NewLine();");
 	}
 }
 
@@ -465,6 +457,7 @@ void ComponentImplementationGenerator::FormatImGuiArrayField(const std::string& 
 	outParsedVariableContents.push_back("\t\t\tImGui::Indent();");
 	outParsedVariableContents.push_back(std::vformat("\t\t\tfor (int32 i = 0; i < {}.Num(); ++i)", std::make_format_args(variableName)));
 	outParsedVariableContents.push_back("\t\t\t{");
+	outParsedVariableContents.push_back("\t\t\t\tif (i != 0) ImGui::Separator();");
 	std::string subVariableName = std::vformat("{}[i]", std::make_format_args(variableName));
 	std::string prefix = "\t\t";
 	if (elementFormattingFunction)
@@ -605,6 +598,12 @@ void ComponentImplementationGenerator::FormatImGuiEnumField(const std::string& v
 	if (bracket != std::string::npos)
 	{
 		newVariableName.append(variableName.substr(0, bracket));
+		const size_t dot = variableName.find(".");
+		if (dot != std::string::npos)
+		{
+			newVariableName.append("_");
+			newVariableName.append(variableName.substr(dot + 1, variableName.length() - (dot + 1)));
+		}
 	}
 	else
 	{
@@ -705,12 +704,24 @@ void ComponentImplementationGenerator::FormatImGuiTeamCommanderPriorityField(con
 	enumVarName.append(".m_directive");
 	std::string enumTypeName = "ETeamCommanderDirective";
 
+	std::string resourceVarName = variableName;
+	resourceVarName.append(".m_resourceType");
+	std::string resourceTypeName = "EResourceType";
+
+	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::BeginTable(\"{}\", 3, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_SizingStretchProp);", std::make_format_args(prefix, variableName)));
+
+	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::TableNextColumn();", std::make_format_args(prefix)));
 	FormatImGuiEnumField(enumVarName, enumTypeName, prefix, outParsedVariableContents);
 
+	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::TableNextColumn();", std::make_format_args(prefix)));
+	FormatImGuiEnumField(resourceVarName, resourceTypeName, prefix, outParsedVariableContents);
+
+	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::TableNextColumn();", std::make_format_args(prefix)));
 	std::string floatVarName = variableName;
 	floatVarName.append(".m_weight");
-
 	FormatImGuiFloatField(floatVarName, extraData, prefix, outParsedVariableContents);
+
+	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::EndTable();", std::make_format_args(prefix)));
 }
 
 void ComponentImplementationGenerator::FormatImGuiResourceSourceExtractionDataField(const std::string& variableName, const std::string& extraData, const std::string& prefix, std::vector<std::string>& outParsedVariableContents)
@@ -722,7 +733,22 @@ void ComponentImplementationGenerator::FormatImGuiResourceSourceExtractionDataFi
 	resourceSinkIdName.append(".m_resourceSinkEntityId");
 	resourceExtractorIdName.append(".m_resourceExtractorEntityId");
 
-	FormatImGuiIntField(resourceSourceIdName, extraData, prefix, outParsedVariableContents);
-	FormatImGuiIntField(resourceSinkIdName, extraData, prefix, outParsedVariableContents);
-	FormatImGuiIntField(resourceExtractorIdName, extraData, prefix, outParsedVariableContents);
+	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::BeginTable(\"{}\", 2, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_SizingStretchProp);", std::make_format_args(prefix, variableName)));
+
+	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::TableNextColumn();", std::make_format_args(prefix)));
+	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::Text(\"Source Entity Id\");", std::make_format_args(prefix)));
+	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::TableNextColumn();", std::make_format_args(prefix)));
+	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::Text(\"%d\", {});", std::make_format_args(prefix, resourceSourceIdName)));
+
+	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::TableNextColumn();", std::make_format_args(prefix)));
+	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::Text(\"Sink Entity Id\");", std::make_format_args(prefix)));
+	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::TableNextColumn();", std::make_format_args(prefix)));
+	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::Text(\"%d\", {});", std::make_format_args(prefix, resourceSinkIdName)));
+
+	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::TableNextColumn();", std::make_format_args(prefix)));
+	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::Text(\"Extractor Entity Id\");", std::make_format_args(prefix, resourceExtractorIdName)));
+	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::TableNextColumn();", std::make_format_args(prefix)));
+	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::Text(\"%d\", {});", std::make_format_args(prefix, resourceExtractorIdName)));
+
+	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::EndTable();", std::make_format_args(prefix)));
 }

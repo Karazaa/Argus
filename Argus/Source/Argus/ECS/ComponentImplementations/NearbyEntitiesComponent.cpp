@@ -31,11 +31,8 @@ void NearbyEntitiesComponent::DrawComponentDebug() const
 		return;
 	}
 
-	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings))
+	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_BordersInner))
 	{
-		ImGui::TableNextColumn();
-		ImGui::Text("===============");
-		ImGui::TableNextColumn();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_nearbyEntities.GetEntityIdsInAvoidanceRange()");
 		ImGui::TableNextColumn();
@@ -50,6 +47,7 @@ void NearbyEntitiesComponent::DrawComponentDebug() const
 			ImGui::Indent();
 			for (int32 i = 0; i < m_nearbyEntities.GetEntityIdsInAvoidanceRange().Num(); ++i)
 			{
+				if (i != 0) ImGui::Separator();
 				ImGui::Text("%d", m_nearbyEntities.GetEntityIdsInAvoidanceRange()[i]);
 			}
 			ImGui::Unindent();
@@ -68,6 +66,7 @@ void NearbyEntitiesComponent::DrawComponentDebug() const
 			ImGui::Indent();
 			for (int32 i = 0; i < m_nearbyEntities.GetEntityIdsInSightRange().Num(); ++i)
 			{
+				if (i != 0) ImGui::Separator();
 				ImGui::Text("%d", m_nearbyEntities.GetEntityIdsInSightRange()[i]);
 			}
 			ImGui::Unindent();
@@ -86,6 +85,7 @@ void NearbyEntitiesComponent::DrawComponentDebug() const
 			ImGui::Indent();
 			for (int32 i = 0; i < m_nearbyEntities.GetEntityIdsInRangedRange().Num(); ++i)
 			{
+				if (i != 0) ImGui::Separator();
 				ImGui::Text("%d", m_nearbyEntities.GetEntityIdsInRangedRange()[i]);
 			}
 			ImGui::Unindent();
@@ -104,16 +104,11 @@ void NearbyEntitiesComponent::DrawComponentDebug() const
 			ImGui::Indent();
 			for (int32 i = 0; i < m_nearbyEntities.GetEntityIdsInMeleeRange().Num(); ++i)
 			{
+				if (i != 0) ImGui::Separator();
 				ImGui::Text("%d", m_nearbyEntities.GetEntityIdsInMeleeRange()[i]);
 			}
 			ImGui::Unindent();
 		}
-		ImGui::TableNextColumn();
-		ImGui::Text("===============");
-		ImGui::TableNextColumn();
-		ImGui::TableNextColumn();
-		ImGui::Text("===============");
-		ImGui::TableNextColumn();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_nearbyFlyingEntities.GetEntityIdsInAvoidanceRange()");
 		ImGui::TableNextColumn();
@@ -128,6 +123,7 @@ void NearbyEntitiesComponent::DrawComponentDebug() const
 			ImGui::Indent();
 			for (int32 i = 0; i < m_nearbyFlyingEntities.GetEntityIdsInAvoidanceRange().Num(); ++i)
 			{
+				if (i != 0) ImGui::Separator();
 				ImGui::Text("%d", m_nearbyFlyingEntities.GetEntityIdsInAvoidanceRange()[i]);
 			}
 			ImGui::Unindent();
@@ -146,6 +142,7 @@ void NearbyEntitiesComponent::DrawComponentDebug() const
 			ImGui::Indent();
 			for (int32 i = 0; i < m_nearbyFlyingEntities.GetEntityIdsInSightRange().Num(); ++i)
 			{
+				if (i != 0) ImGui::Separator();
 				ImGui::Text("%d", m_nearbyFlyingEntities.GetEntityIdsInSightRange()[i]);
 			}
 			ImGui::Unindent();
@@ -164,6 +161,7 @@ void NearbyEntitiesComponent::DrawComponentDebug() const
 			ImGui::Indent();
 			for (int32 i = 0; i < m_nearbyFlyingEntities.GetEntityIdsInRangedRange().Num(); ++i)
 			{
+				if (i != 0) ImGui::Separator();
 				ImGui::Text("%d", m_nearbyFlyingEntities.GetEntityIdsInRangedRange()[i]);
 			}
 			ImGui::Unindent();
@@ -182,13 +180,11 @@ void NearbyEntitiesComponent::DrawComponentDebug() const
 			ImGui::Indent();
 			for (int32 i = 0; i < m_nearbyFlyingEntities.GetEntityIdsInMeleeRange().Num(); ++i)
 			{
+				if (i != 0) ImGui::Separator();
 				ImGui::Text("%d", m_nearbyFlyingEntities.GetEntityIdsInMeleeRange()[i]);
 			}
 			ImGui::Unindent();
 		}
-		ImGui::TableNextColumn();
-		ImGui::Text("===============");
-		ImGui::TableNextColumn();
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

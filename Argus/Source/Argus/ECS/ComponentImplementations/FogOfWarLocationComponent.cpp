@@ -30,13 +30,12 @@ void FogOfWarLocationComponent::DrawComponentDebug() const
 		return;
 	}
 
-	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings))
+	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_BordersInner))
 	{
 		ImGui::TableNextColumn();
 		ImGui::Text("m_fogOfWarPixel");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_fogOfWarPixel);
-		ImGui::NewLine();
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

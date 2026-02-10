@@ -35,7 +35,7 @@ void IdentityComponent::DrawComponentDebug() const
 		return;
 	}
 
-	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings))
+	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_BordersInner))
 	{
 		ImGui::TableNextColumn();
 		ImGui::Text("m_factionId");
@@ -52,13 +52,11 @@ void IdentityComponent::DrawComponentDebug() const
 		{
 			ImGui::Text("None");
 		}
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_team");
 		ImGui::TableNextColumn();
 		const char* valueName_m_team = ARGUS_FSTRING_TO_CHAR(StaticEnum<ETeam>()->GetNameStringByValue(static_cast<uint8>(m_team)))
 		ImGui::Text(valueName_m_team);
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_allies");
 		ImGui::TableNextColumn();
@@ -78,7 +76,6 @@ void IdentityComponent::DrawComponentDebug() const
 				triggered_m_allies = true;
 			}
 		}
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_enemies");
 		ImGui::TableNextColumn();
@@ -98,7 +95,6 @@ void IdentityComponent::DrawComponentDebug() const
 				triggered_m_enemies = true;
 			}
 		}
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_seenBy");
 		ImGui::TableNextColumn();
@@ -118,7 +114,6 @@ void IdentityComponent::DrawComponentDebug() const
 				triggered_m_seenBy = true;
 			}
 		}
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_everSeenBy");
 		ImGui::TableNextColumn();
@@ -138,7 +133,6 @@ void IdentityComponent::DrawComponentDebug() const
 				triggered_m_everSeenBy = true;
 			}
 		}
-		ImGui::NewLine();
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

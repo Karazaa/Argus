@@ -40,7 +40,7 @@ void AbilityComponent::DrawComponentDebug() const
 		return;
 	}
 
-	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings))
+	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_BordersInner))
 	{
 		ImGui::TableNextColumn();
 		ImGui::Text("m_ability0Id");
@@ -57,7 +57,6 @@ void AbilityComponent::DrawComponentDebug() const
 		{
 			ImGui::Text("None");
 		}
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_ability1Id");
 		ImGui::TableNextColumn();
@@ -73,7 +72,6 @@ void AbilityComponent::DrawComponentDebug() const
 		{
 			ImGui::Text("None");
 		}
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_ability2Id");
 		ImGui::TableNextColumn();
@@ -89,7 +87,6 @@ void AbilityComponent::DrawComponentDebug() const
 		{
 			ImGui::Text("None");
 		}
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_ability3Id");
 		ImGui::TableNextColumn();
@@ -105,42 +102,34 @@ void AbilityComponent::DrawComponentDebug() const
 		{
 			ImGui::Text("None");
 		}
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_ability0OverrideId");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_ability0OverrideId);
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_ability1OverrideId");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_ability1OverrideId);
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_ability2OverrideId");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_ability2OverrideId);
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_ability3OverrideId");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_ability3OverrideId);
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_abilityToRefundId");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_abilityToRefundId);
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_abilityOverrideBitmask");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_abilityOverrideBitmask);
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_abilityCasterPriority");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_abilityCasterPriority);
-		ImGui::NewLine();
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

@@ -33,7 +33,7 @@ void ResourceComponent::DrawComponentDebug() const
 		return;
 	}
 
-	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings))
+	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_BordersInner))
 	{
 		ImGui::TableNextColumn();
 		ImGui::Text("m_currentResources");
@@ -44,7 +44,6 @@ void ResourceComponent::DrawComponentDebug() const
 			ImGui::SameLine();
 			ImGui::Text("%d ", m_currentResources.m_resourceQuantities[i]);
 		}
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_resourceCapacityRecordId");
 		ImGui::TableNextColumn();
@@ -60,18 +59,15 @@ void ResourceComponent::DrawComponentDebug() const
 		{
 			ImGui::Text("None");
 		}
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_resourceComponentOwnerType");
 		ImGui::TableNextColumn();
 		const char* valueName_m_resourceComponentOwnerType = ARGUS_FSTRING_TO_CHAR(StaticEnum<EResourceComponentOwnerType>()->GetNameStringByValue(static_cast<uint8>(m_resourceComponentOwnerType)))
 		ImGui::Text(valueName_m_resourceComponentOwnerType);
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_bufferRegionRadius");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_bufferRegionRadius);
-		ImGui::NewLine();
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

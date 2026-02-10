@@ -40,28 +40,23 @@ void FogOfWarComponent::DrawComponentDebug() const
 		return;
 	}
 
-	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings))
+	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_BordersInner))
 	{
 		ImGui::TableNextColumn();
 		ImGui::Text("m_fogOfWarTexture");
 		ImGui::TableNextColumn();
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_gaussianWeightsTexture");
 		ImGui::TableNextColumn();
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_dynamicMaterialInstance");
 		ImGui::TableNextColumn();
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_textureRegion");
 		ImGui::TableNextColumn();
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_textureRegionsUpdateData");
 		ImGui::TableNextColumn();
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_textureData");
 		ImGui::TableNextColumn();
@@ -76,11 +71,11 @@ void FogOfWarComponent::DrawComponentDebug() const
 			ImGui::Indent();
 			for (int32 i = 0; i < m_textureData.Num(); ++i)
 			{
+				if (i != 0) ImGui::Separator();
 				ImGui::Text("%d", m_textureData[i]);
 			}
 			ImGui::Unindent();
 		}
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_smoothedTextureData");
 		ImGui::TableNextColumn();
@@ -95,11 +90,11 @@ void FogOfWarComponent::DrawComponentDebug() const
 			ImGui::Indent();
 			for (int32 i = 0; i < m_smoothedTextureData.Num(); ++i)
 			{
+				if (i != 0) ImGui::Separator();
 				ImGui::Text("%d", m_smoothedTextureData[i]);
 			}
 			ImGui::Unindent();
 		}
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_intermediarySmoothingData");
 		ImGui::TableNextColumn();
@@ -114,11 +109,11 @@ void FogOfWarComponent::DrawComponentDebug() const
 			ImGui::Indent();
 			for (int32 i = 0; i < m_intermediarySmoothingData.Num(); ++i)
 			{
+				if (i != 0) ImGui::Separator();
 				ImGui::Text("%.2f", m_intermediarySmoothingData[i]);
 			}
 			ImGui::Unindent();
 		}
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_gaussianFilter");
 		ImGui::TableNextColumn();
@@ -133,11 +128,11 @@ void FogOfWarComponent::DrawComponentDebug() const
 			ImGui::Indent();
 			for (int32 i = 0; i < m_gaussianFilter.Num(); ++i)
 			{
+				if (i != 0) ImGui::Separator();
 				ImGui::Text("%.2f", m_gaussianFilter[i]);
 			}
 			ImGui::Unindent();
 		}
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_asyncTasks");
 		ImGui::TableNextColumn();
@@ -152,50 +147,42 @@ void FogOfWarComponent::DrawComponentDebug() const
 			ImGui::Indent();
 			for (int32 i = 0; i < m_asyncTasks.Num(); ++i)
 			{
+				if (i != 0) ImGui::Separator();
 			}
 			ImGui::Unindent();
 		}
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_gaussianDimension");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_gaussianDimension);
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_revealedOnceAlpha");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_revealedOnceAlpha);
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_textureSize");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_textureSize);
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_smoothingDecayConstant");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_smoothingDecayConstant);
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_shouldUseSmoothing");
 		ImGui::TableNextColumn();
 		ImGui::Text(m_shouldUseSmoothing ? "true" : "false");
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_triangleRasterizeModulo");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_triangleRasterizeModulo);
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_numberSmoothingChunks");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_numberSmoothingChunks);
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_visionObstacleAdjustDistance");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_visionObstacleAdjustDistance);
-		ImGui::NewLine();
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

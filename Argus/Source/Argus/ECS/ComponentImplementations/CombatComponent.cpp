@@ -34,30 +34,26 @@ void CombatComponent::DrawComponentDebug() const
 		return;
 	}
 
-	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings))
+	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_BordersInner))
 	{
 		ImGui::TableNextColumn();
 		ImGui::Text("m_baseDamagePerIntervalOrPerSecond");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_baseDamagePerIntervalOrPerSecond);
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_intervalDurationSeconds");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_intervalDurationSeconds);
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_attackType");
 		ImGui::TableNextColumn();
 		const char* valueName_m_attackType = ARGUS_FSTRING_TO_CHAR(StaticEnum<EAttackType>()->GetNameStringByValue(static_cast<uint8>(m_attackType)))
 		ImGui::Text(valueName_m_attackType);
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_rangedAttackCapability");
 		ImGui::TableNextColumn();
 		const char* valueName_m_rangedAttackCapability = ARGUS_FSTRING_TO_CHAR(StaticEnum<ERangedAttackCapability>()->GetNameStringByValue(static_cast<uint8>(m_rangedAttackCapability)))
 		ImGui::Text(valueName_m_rangedAttackCapability);
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_attackTimerHandle");
 		ImGui::TableNextColumn();
@@ -76,7 +72,6 @@ void CombatComponent::DrawComponentDebug() const
 		{
 			ImGui::Text("Not set");
 		}
-		ImGui::NewLine();
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

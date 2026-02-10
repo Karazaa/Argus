@@ -30,39 +30,32 @@ void SpatialPartitioningComponent::DrawComponentDebug() const
 		return;
 	}
 
-	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings))
+	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_BordersInner))
 	{
 		ImGui::TableNextColumn();
 		ImGui::Text("m_argusEntityKDTree");
 		ImGui::TableNextColumn();
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_flyingArgusEntityKDTree");
 		ImGui::TableNextColumn();
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_obstaclePointKDTree");
 		ImGui::TableNextColumn();
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_obstacles");
 		ImGui::TableNextColumn();
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_validSpaceExtent");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_validSpaceExtent);
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_flyingPlaneHeight");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_flyingPlaneHeight);
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_elevatedObstaclePointHeightThreshold");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_elevatedObstaclePointHeightThreshold);
-		ImGui::NewLine();
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

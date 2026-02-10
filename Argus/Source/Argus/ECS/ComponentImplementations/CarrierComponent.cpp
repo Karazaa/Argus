@@ -31,7 +31,7 @@ void CarrierComponent::DrawComponentDebug() const
 		return;
 	}
 
-	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings))
+	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_BordersInner))
 	{
 		ImGui::TableNextColumn();
 		ImGui::Text("m_passengerEntityIds");
@@ -47,16 +47,15 @@ void CarrierComponent::DrawComponentDebug() const
 			ImGui::Indent();
 			for (int32 i = 0; i < m_passengerEntityIds.Num(); ++i)
 			{
+				if (i != 0) ImGui::Separator();
 				ImGui::Text("%d", m_passengerEntityIds[i]);
 			}
 			ImGui::Unindent();
 		}
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_carrierCapacity");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_carrierCapacity);
-		ImGui::NewLine();
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

@@ -37,49 +37,41 @@ void FlockingComponent::DrawComponentDebug() const
 		return;
 	}
 
-	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings))
+	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_BordersInner))
 	{
 		ImGui::TableNextColumn();
 		ImGui::Text("m_minDistanceFromFlockingPoint");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_minDistanceFromFlockingPoint);
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_timeAtMinFlockingDistance");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_timeAtMinFlockingDistance);
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_maxShrinkingDurationTimeoutSeconds");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_maxShrinkingDurationTimeoutSeconds);
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_flockingRootRadiusIncrement");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_flockingRootRadiusIncrement);
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_flockingRootId");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_flockingRootId);
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_numEntitiesInStableRange");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_numEntitiesInStableRange);
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_concentricFlockingTier");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_concentricFlockingTier);
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_flockingState");
 		ImGui::TableNextColumn();
 		const char* valueName_m_flockingState = ARGUS_FSTRING_TO_CHAR(StaticEnum<EFlockingState>()->GetNameStringByValue(static_cast<uint8>(m_flockingState)))
 		ImGui::Text(valueName_m_flockingState);
-		ImGui::NewLine();
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

@@ -33,7 +33,7 @@ void SpawningComponent::DrawComponentDebug() const
 		return;
 	}
 
-	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings))
+	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_BordersInner))
 	{
 		ImGui::TableNextColumn();
 		ImGui::Text("m_spawnQueue");
@@ -60,17 +60,14 @@ void SpawningComponent::DrawComponentDebug() const
 				}
 			}
 		}
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_spawningRadius");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_spawningRadius);
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_maximumQueueSize");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_maximumQueueSize);
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_spawnQueueIndexToCancel");
 		ImGui::TableNextColumn();
@@ -81,7 +78,6 @@ void SpawningComponent::DrawComponentDebug() const
 		{
 			ImGui::Text("Optional not set");
 		}
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_spawnTimerHandle");
 		ImGui::TableNextColumn();
@@ -100,7 +96,6 @@ void SpawningComponent::DrawComponentDebug() const
 		{
 			ImGui::Text("Not set");
 		}
-		ImGui::NewLine();
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

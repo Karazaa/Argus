@@ -35,7 +35,7 @@ void InputInterfaceComponent::DrawComponentDebug() const
 		return;
 	}
 
-	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings))
+	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_BordersInner))
 	{
 		ImGui::TableNextColumn();
 		ImGui::Text("m_selectedArgusEntityIds");
@@ -51,11 +51,11 @@ void InputInterfaceComponent::DrawComponentDebug() const
 			ImGui::Indent();
 			for (int32 i = 0; i < m_selectedArgusEntityIds.Num(); ++i)
 			{
+				if (i != 0) ImGui::Separator();
 				ImGui::Text("%d", m_selectedArgusEntityIds[i]);
 			}
 			ImGui::Unindent();
 		}
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_activeAbilityGroupArgusEntityIds");
 		ImGui::TableNextColumn();
@@ -70,11 +70,11 @@ void InputInterfaceComponent::DrawComponentDebug() const
 			ImGui::Indent();
 			for (int32 i = 0; i < m_activeAbilityGroupArgusEntityIds.Num(); ++i)
 			{
+				if (i != 0) ImGui::Separator();
 				ImGui::Text("%d", m_activeAbilityGroupArgusEntityIds[i]);
 			}
 			ImGui::Unindent();
 		}
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_controlGroups");
 		ImGui::TableNextColumn();
@@ -89,6 +89,7 @@ void InputInterfaceComponent::DrawComponentDebug() const
 			ImGui::Indent();
 			for (int32 i = 0; i < m_controlGroups.Num(); ++i)
 			{
+				if (i != 0) ImGui::Separator();
 				ImGui::Text("Array max is currently = %d", m_controlGroups[i].Max());
 				if (m_controlGroups[i].Num() == 0)
 				{
@@ -105,24 +106,20 @@ void InputInterfaceComponent::DrawComponentDebug() const
 			}
 			ImGui::Unindent();
 		}
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_selectedActorsDisplayState");
 		ImGui::TableNextColumn();
 		const char* valueName_m_selectedActorsDisplayState = ARGUS_FSTRING_TO_CHAR(StaticEnum<ESelectedActorsDisplayState>()->GetNameStringByValue(static_cast<uint8>(m_selectedActorsDisplayState)))
 		ImGui::Text(valueName_m_selectedActorsDisplayState);
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_indexOfActiveAbilityGroup");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_indexOfActiveAbilityGroup);
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_activePlayerTeam");
 		ImGui::TableNextColumn();
 		const char* valueName_m_activePlayerTeam = ARGUS_FSTRING_TO_CHAR(StaticEnum<ETeam>()->GetNameStringByValue(static_cast<uint8>(m_activePlayerTeam)))
 		ImGui::Text(valueName_m_activePlayerTeam);
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_doubleClickTimer");
 		ImGui::TableNextColumn();
@@ -141,27 +138,22 @@ void InputInterfaceComponent::DrawComponentDebug() const
 		{
 			ImGui::Text("Not set");
 		}
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_doubleClickThresholdSeconds");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_doubleClickThresholdSeconds);
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_doubleClickQueryRange");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_doubleClickQueryRange);
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_lastSelectedEntityId");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_lastSelectedEntityId);
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_numControlGroups");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_numControlGroups);
-		ImGui::NewLine();
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

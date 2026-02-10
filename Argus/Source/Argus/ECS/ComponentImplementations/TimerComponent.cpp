@@ -30,7 +30,7 @@ void TimerComponent::DrawComponentDebug() const
 		return;
 	}
 
-	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings))
+	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_BordersInner))
 	{
 		ImGui::TableNextColumn();
 		ImGui::Text("m_timers");
@@ -46,10 +46,10 @@ void TimerComponent::DrawComponentDebug() const
 			ImGui::Indent();
 			for (int32 i = 0; i < m_timers.Num(); ++i)
 			{
+				if (i != 0) ImGui::Separator();
 			}
 			ImGui::Unindent();
 		}
-		ImGui::NewLine();
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

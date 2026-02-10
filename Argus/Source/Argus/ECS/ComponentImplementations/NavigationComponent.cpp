@@ -32,7 +32,7 @@ void NavigationComponent::DrawComponentDebug() const
 		return;
 	}
 
-	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings))
+	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_BordersInner))
 	{
 		ImGui::TableNextColumn();
 		ImGui::Text("m_navigationPoints");
@@ -48,11 +48,11 @@ void NavigationComponent::DrawComponentDebug() const
 			ImGui::Indent();
 			for (int32 i = 0; i < m_navigationPoints.Num(); ++i)
 			{
+				if (i != 0) ImGui::Separator();
 				ImGui::Text("(%.2f, %.2f, %.2f)", m_navigationPoints[i].X, m_navigationPoints[i].Y, m_navigationPoints[i].Z);
 			}
 			ImGui::Unindent();
 		}
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_queuedWaypoints");
 		ImGui::TableNextColumn();
@@ -66,12 +66,10 @@ void NavigationComponent::DrawComponentDebug() const
 			{
 			}
 		}
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_lastPointIndex");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_lastPointIndex);
-		ImGui::NewLine();
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

@@ -32,7 +32,7 @@ void TeamCommanderComponent::DrawComponentDebug() const
 		return;
 	}
 
-	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings))
+	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_BordersInner))
 	{
 		ImGui::TableNextColumn();
 		ImGui::Text("m_idleEntityIdsForTeam");
@@ -48,11 +48,11 @@ void TeamCommanderComponent::DrawComponentDebug() const
 			ImGui::Indent();
 			for (int32 i = 0; i < m_idleEntityIdsForTeam.Num(); ++i)
 			{
+				if (i != 0) ImGui::Separator();
 				ImGui::Text("%d", m_idleEntityIdsForTeam[i]);
 			}
 			ImGui::Unindent();
 		}
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_seenResourceASourceExtractionData");
 		ImGui::TableNextColumn();
@@ -67,13 +67,24 @@ void TeamCommanderComponent::DrawComponentDebug() const
 			ImGui::Indent();
 			for (int32 i = 0; i < m_seenResourceASourceExtractionData.Num(); ++i)
 			{
+				if (i != 0) ImGui::Separator();
+				ImGui::BeginTable("m_seenResourceASourceExtractionData[i]", 2, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_SizingStretchProp);
+				ImGui::TableNextColumn();
+				ImGui::Text("Source Entity Id");
+				ImGui::TableNextColumn();
 				ImGui::Text("%d", m_seenResourceASourceExtractionData[i].m_resourceSourceEntityId);
+				ImGui::TableNextColumn();
+				ImGui::Text("Sink Entity Id");
+				ImGui::TableNextColumn();
 				ImGui::Text("%d", m_seenResourceASourceExtractionData[i].m_resourceSinkEntityId);
+				ImGui::TableNextColumn();
+				ImGui::Text("Extractor Entity Id");
+				ImGui::TableNextColumn();
 				ImGui::Text("%d", m_seenResourceASourceExtractionData[i].m_resourceExtractorEntityId);
+				ImGui::EndTable();
 			}
 			ImGui::Unindent();
 		}
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_seenResourceBSourceExtractionData");
 		ImGui::TableNextColumn();
@@ -88,13 +99,24 @@ void TeamCommanderComponent::DrawComponentDebug() const
 			ImGui::Indent();
 			for (int32 i = 0; i < m_seenResourceBSourceExtractionData.Num(); ++i)
 			{
+				if (i != 0) ImGui::Separator();
+				ImGui::BeginTable("m_seenResourceBSourceExtractionData[i]", 2, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_SizingStretchProp);
+				ImGui::TableNextColumn();
+				ImGui::Text("Source Entity Id");
+				ImGui::TableNextColumn();
 				ImGui::Text("%d", m_seenResourceBSourceExtractionData[i].m_resourceSourceEntityId);
+				ImGui::TableNextColumn();
+				ImGui::Text("Sink Entity Id");
+				ImGui::TableNextColumn();
 				ImGui::Text("%d", m_seenResourceBSourceExtractionData[i].m_resourceSinkEntityId);
+				ImGui::TableNextColumn();
+				ImGui::Text("Extractor Entity Id");
+				ImGui::TableNextColumn();
 				ImGui::Text("%d", m_seenResourceBSourceExtractionData[i].m_resourceExtractorEntityId);
+				ImGui::EndTable();
 			}
 			ImGui::Unindent();
 		}
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_seenResourceCSourceExtractionData");
 		ImGui::TableNextColumn();
@@ -109,13 +131,24 @@ void TeamCommanderComponent::DrawComponentDebug() const
 			ImGui::Indent();
 			for (int32 i = 0; i < m_seenResourceCSourceExtractionData.Num(); ++i)
 			{
+				if (i != 0) ImGui::Separator();
+				ImGui::BeginTable("m_seenResourceCSourceExtractionData[i]", 2, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_SizingStretchProp);
+				ImGui::TableNextColumn();
+				ImGui::Text("Source Entity Id");
+				ImGui::TableNextColumn();
 				ImGui::Text("%d", m_seenResourceCSourceExtractionData[i].m_resourceSourceEntityId);
+				ImGui::TableNextColumn();
+				ImGui::Text("Sink Entity Id");
+				ImGui::TableNextColumn();
 				ImGui::Text("%d", m_seenResourceCSourceExtractionData[i].m_resourceSinkEntityId);
+				ImGui::TableNextColumn();
+				ImGui::Text("Extractor Entity Id");
+				ImGui::TableNextColumn();
 				ImGui::Text("%d", m_seenResourceCSourceExtractionData[i].m_resourceExtractorEntityId);
+				ImGui::EndTable();
 			}
 			ImGui::Unindent();
 		}
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_priorities");
 		ImGui::TableNextColumn();
@@ -130,28 +163,32 @@ void TeamCommanderComponent::DrawComponentDebug() const
 			ImGui::Indent();
 			for (int32 i = 0; i < m_priorities.Num(); ++i)
 			{
-				const char* valueName_m_priorities = ARGUS_FSTRING_TO_CHAR(StaticEnum<ETeamCommanderDirective>()->GetNameStringByValue(static_cast<uint8>(m_priorities[i].m_directive)))
-				ImGui::Text(valueName_m_priorities);
+				if (i != 0) ImGui::Separator();
+				ImGui::BeginTable("m_priorities[i]", 3, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_SizingStretchProp);
+				ImGui::TableNextColumn();
+				const char* valueName_m_priorities_m_directive = ARGUS_FSTRING_TO_CHAR(StaticEnum<ETeamCommanderDirective>()->GetNameStringByValue(static_cast<uint8>(m_priorities[i].m_directive)))
+				ImGui::Text(valueName_m_priorities_m_directive);
+				ImGui::TableNextColumn();
+				const char* valueName_m_priorities_m_resourceType = ARGUS_FSTRING_TO_CHAR(StaticEnum<EResourceType>()->GetNameStringByValue(static_cast<uint8>(m_priorities[i].m_resourceType)))
+				ImGui::Text(valueName_m_priorities_m_resourceType);
+				ImGui::TableNextColumn();
 				ImGui::Text("%.2f", m_priorities[i].m_weight);
+				ImGui::EndTable();
 			}
 			ImGui::Unindent();
 		}
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_revealedAreas");
 		ImGui::TableNextColumn();
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_revealedAreaDimensionLength");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_revealedAreaDimensionLength);
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_teamToCommand");
 		ImGui::TableNextColumn();
 		const char* valueName_m_teamToCommand = ARGUS_FSTRING_TO_CHAR(StaticEnum<ETeam>()->GetNameStringByValue(static_cast<uint8>(m_teamToCommand)))
 		ImGui::Text(valueName_m_teamToCommand);
-		ImGui::NewLine();
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

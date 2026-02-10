@@ -31,18 +31,16 @@ void HealthComponent::DrawComponentDebug() const
 		return;
 	}
 
-	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings))
+	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_BordersInner))
 	{
 		ImGui::TableNextColumn();
 		ImGui::Text("m_currentHealth");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_currentHealth);
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_maximumHealth");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_maximumHealth);
-		ImGui::NewLine();
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

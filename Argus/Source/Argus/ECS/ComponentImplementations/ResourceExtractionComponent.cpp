@@ -33,7 +33,7 @@ void ResourceExtractionComponent::DrawComponentDebug() const
 		return;
 	}
 
-	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings))
+	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_BordersInner))
 	{
 		ImGui::TableNextColumn();
 		ImGui::Text("m_resourcesToExtractRecordId");
@@ -50,17 +50,14 @@ void ResourceExtractionComponent::DrawComponentDebug() const
 		{
 			ImGui::Text("None");
 		}
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_extractionLengthSeconds");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_extractionLengthSeconds);
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_lastExtractionSourceEntityId");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_lastExtractionSourceEntityId);
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_resourceExtractionTimer");
 		ImGui::TableNextColumn();
@@ -79,7 +76,6 @@ void ResourceExtractionComponent::DrawComponentDebug() const
 		{
 			ImGui::Text("Not set");
 		}
-		ImGui::NewLine();
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

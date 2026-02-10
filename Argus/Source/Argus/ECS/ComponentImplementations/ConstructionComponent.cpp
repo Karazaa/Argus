@@ -34,18 +34,16 @@ void ConstructionComponent::DrawComponentDebug() const
 		return;
 	}
 
-	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings))
+	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_BordersInner))
 	{
 		ImGui::TableNextColumn();
 		ImGui::Text("m_requiredWorkSeconds");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_requiredWorkSeconds);
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_currentWorkSeconds");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_currentWorkSeconds);
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_constructionAbilityRecordId");
 		ImGui::TableNextColumn();
@@ -61,13 +59,11 @@ void ConstructionComponent::DrawComponentDebug() const
 		{
 			ImGui::Text("None");
 		}
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_constructionType");
 		ImGui::TableNextColumn();
 		const char* valueName_m_constructionType = ARGUS_FSTRING_TO_CHAR(StaticEnum<EConstructionType>()->GetNameStringByValue(static_cast<uint8>(m_constructionType)))
 		ImGui::Text(valueName_m_constructionType);
-		ImGui::NewLine();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_automaticConstructionTimerHandle");
 		ImGui::TableNextColumn();
@@ -86,7 +82,6 @@ void ConstructionComponent::DrawComponentDebug() const
 		{
 			ImGui::Text("Not set");
 		}
-		ImGui::NewLine();
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING
