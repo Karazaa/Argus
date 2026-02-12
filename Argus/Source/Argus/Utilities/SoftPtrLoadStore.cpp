@@ -32,13 +32,17 @@
 		return m_hardPtr.Get();
 	}
 
-	bool FSoftObjectLoadStore_UArgusEntityTemplate::AsyncPreLoadAndStorePtr() const
+	bool FSoftObjectLoadStore_UArgusEntityTemplate::AsyncPreLoadAndStorePtr(TFunction<void(const UArgusEntityTemplate*)> callback) const
 	{
 		ARGUS_TRACE(FSoftPtrLoadStore_UArgusEntityTemplate::AsyncPreLoadAndStorePtr);
 
 		if (m_hardPtr || m_softPtr.IsNull())
 		{
 			return true;
+			if (callback)
+			{
+				callback(m_hardPtr);
+			}
 		}
 
 		AssetLoadingComponent* assetLoadingComponent = ArgusEntity::GetSingletonEntity().GetComponent<AssetLoadingComponent>();
@@ -46,9 +50,13 @@
 
 		assetLoadingComponent->m_streamableManager.RequestAsyncLoad(m_softPtr.ToSoftObjectPath(), FStreamableDelegate::CreateLambda
 		(
-			[this]()
+			[this, callback]()
 			{
 				m_hardPtr = m_softPtr.Get();
+				if (callback)
+				{
+					callback(m_hardPtr);
+				}
 			})
 		);
 

@@ -6,6 +6,8 @@
 void UArgusActorRecord::OnAsyncLoaded() const
 {
 	m_argusActorClass.AsyncPreLoadAndStorePtr();
-	m_entityTemplate.AsyncPreLoadAndStorePtr();
+	m_entityTemplate.AsyncPreLoadAndStorePtr([this](const UArgusEntityTemplate* loadedTemplate)
+	{
+	});
 	m_actorInfoIcon.AsyncPreLoadAndStorePtr();
 }

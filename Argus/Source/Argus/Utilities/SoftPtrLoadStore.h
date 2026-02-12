@@ -20,7 +20,7 @@ struct FSoftObjectLoadStore_UArgusEntityTemplate
 
 public:
 	UArgusEntityTemplate* LoadAndStorePtr() const;
-	bool AsyncPreLoadAndStorePtr() const;
+	bool AsyncPreLoadAndStorePtr(TFunction<void(const UArgusEntityTemplate*)> callback = nullptr) const;
 	void SetHardPtr(UArgusEntityTemplate* pointer);
 	operator bool() const { return m_hardPtr || !m_softPtr.IsNull(); }
 
