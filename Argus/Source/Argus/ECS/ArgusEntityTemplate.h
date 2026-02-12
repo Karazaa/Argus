@@ -28,6 +28,8 @@ public:
 	template <typename ComponentType>
 	const ComponentType* GetComponentFromTemplate() const
 	{
+		ARGUS_TRACE(UArgusEntityTemplate::GetComponentFromTemplate);
+
 		for (int32 i = 0; i < m_componentData.Num(); ++i)
 		{
 			const ComponentType* component = Cast<ComponentType>(m_componentData[i].LoadSynchronous());
@@ -37,7 +39,6 @@ public:
 			}
 		}
 
-		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Could not retrieve desired component reference from %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(UArgusEntityTemplate));
 		return nullptr;
 	}
 

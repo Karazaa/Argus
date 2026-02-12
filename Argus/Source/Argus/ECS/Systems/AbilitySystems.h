@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "RecordDependencies/AbilityTypes.h"
 #include "SystemArgumentDefinitions/AbilitySystemsArgs.h"
 
 class UAbilityRecord;
@@ -17,7 +18,7 @@ public:
 	static void CastAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsArgs& components);
 	static void PrepReticle(const UAbilityRecord* abilityRecord, const AbilitySystemsArgs& components);
 
-	static const UArgusEntityTemplate* GetEntityTemplateForConstructionAbility(const UAbilityRecord* abilityRecord);
+	static const UArgusEntityTemplate* GetEntityTemplateForAbility(const UAbilityRecord* abilityRecord, EAbilityTypes abilityType);
 	static float GetRaidusOfConstructionAbility(const UAbilityRecord* abilityRecord);
 	static float GetResourceBufferRadiusOfConstructionAbility(const UAbilityRecord* abilityRecord);
 

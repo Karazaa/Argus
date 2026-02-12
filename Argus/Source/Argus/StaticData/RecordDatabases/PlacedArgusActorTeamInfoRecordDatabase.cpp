@@ -19,6 +19,11 @@ const UPlacedArgusActorTeamInfoRecord* UPlacedArgusActorTeamInfoRecordDatabase::
 	ARGUS_TRACE(UPlacedArgusActorTeamInfoRecordDatabase::GetRecord)
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
+	if (id == 0u)
+	{
+		return nullptr;
+	}
+
 	bool resized = false;
 	if (static_cast<uint32>(m_UPlacedArgusActorTeamInfoRecordsPersistent.Num()) <= id)
 	{
@@ -29,19 +34,14 @@ const UPlacedArgusActorTeamInfoRecord* UPlacedArgusActorTeamInfoRecordDatabase::
 		resized = true;
 	}
 
-	if (id == 0u)
-	{
-		return nullptr;
-	}
-
 	if (resized || !m_UPlacedArgusActorTeamInfoRecordsPersistent[id])
 	{
 		m_UPlacedArgusActorTeamInfoRecordsPersistent[id] = m_UPlacedArgusActorTeamInfoRecords[id].LoadSynchronous();
-	}
-
-	if (m_UPlacedArgusActorTeamInfoRecordsPersistent[id])
-	{
-		m_UPlacedArgusActorTeamInfoRecordsPersistent[id]->m_id = id;
+		if (m_UPlacedArgusActorTeamInfoRecordsPersistent[id])
+		{
+			m_UPlacedArgusActorTeamInfoRecordsPersistent[id]->OnAsyncLoaded();
+			m_UPlacedArgusActorTeamInfoRecordsPersistent[id]->m_id = id;
+		}
 	}
 
 	return m_UPlacedArgusActorTeamInfoRecordsPersistent[id];
@@ -82,10 +82,11 @@ const bool UPlacedArgusActorTeamInfoRecordDatabase::AsyncPreLoadRecord(uint32 id
 				return;
 			}
 
-			m_UPlacedArgusActorTeamInfoRecordsPersistent[id] = m_UPlacedArgusActorTeamInfoRecords[id].Get();\
+			m_UPlacedArgusActorTeamInfoRecordsPersistent[id] = m_UPlacedArgusActorTeamInfoRecords[id].Get();
 			if (m_UPlacedArgusActorTeamInfoRecordsPersistent[id])
 			{
 				m_UPlacedArgusActorTeamInfoRecordsPersistent[id]->OnAsyncLoaded();
+				m_UPlacedArgusActorTeamInfoRecordsPersistent[id]->m_id = id;
 			}
 		})
 	);

@@ -164,15 +164,17 @@ void AbilitySystems::PrepReticle(const UAbilityRecord* abilityRecord, const Abil
 	components.m_taskComponent->m_abilityState = EAbilityState::None;
 }
 
-const UArgusEntityTemplate* AbilitySystems::GetEntityTemplateForConstructionAbility(const UAbilityRecord* abilityRecord)
+const UArgusEntityTemplate* AbilitySystems::GetEntityTemplateForAbility(const UAbilityRecord* abilityRecord, EAbilityTypes abilityType)
 {
+	ARGUS_TRACE(AbilitySystems::GetEntityTemplateForAbility);
+
 	ARGUS_RETURN_ON_NULL_POINTER(abilityRecord, ArgusECSLog);
 
 	bool hasConstruction = false;
 	int32 index = 0;
 	for (index; index < abilityRecord->m_abilityEffects.Num(); ++index)
 	{
-		if (abilityRecord->m_abilityEffects[index].m_abilityType == EAbilityTypes::Construct)
+		if (abilityRecord->m_abilityEffects[index].m_abilityType == abilityType)
 		{
 			hasConstruction = true;
 			break;
@@ -192,7 +194,7 @@ const UArgusEntityTemplate* AbilitySystems::GetEntityTemplateForConstructionAbil
 
 float AbilitySystems::GetRaidusOfConstructionAbility(const UAbilityRecord* abilityRecord)
 {
-	const UArgusEntityTemplate* entityTemplate = GetEntityTemplateForConstructionAbility(abilityRecord);
+	const UArgusEntityTemplate* entityTemplate = GetEntityTemplateForAbility(abilityRecord, EAbilityTypes::Construct);
 	ARGUS_RETURN_ON_NULL_VALUE(entityTemplate, ArgusECSLog, 0.0f);
 
 	const UTransformComponentData* transformComponent = entityTemplate->GetComponentFromTemplate<UTransformComponentData>();
@@ -203,7 +205,7 @@ float AbilitySystems::GetRaidusOfConstructionAbility(const UAbilityRecord* abili
 
 float AbilitySystems::GetResourceBufferRadiusOfConstructionAbility(const UAbilityRecord* abilityRecord)
 {
-	const UArgusEntityTemplate* entityTemplate = GetEntityTemplateForConstructionAbility(abilityRecord);
+	const UArgusEntityTemplate* entityTemplate = GetEntityTemplateForAbility(abilityRecord, EAbilityTypes::Construct);
 	ARGUS_RETURN_ON_NULL_VALUE(entityTemplate, ArgusECSLog, 0.0f);
 
 	const UResourceComponentData* resourceComponent = entityTemplate->GetComponentFromTemplate<UResourceComponentData>();

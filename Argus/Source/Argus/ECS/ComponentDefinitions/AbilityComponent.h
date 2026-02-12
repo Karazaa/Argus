@@ -180,7 +180,7 @@ struct AbilityComponent
 	}
 
 	template <typename Function>
-	void IterateActiveAbilityIds(Function&& function)
+	void IterateActiveAbilityIds(Function&& function) const
 	{
 		function(GetActiveAbilityId(EAbilityIndex::Ability0), EAbilityIndex::Ability0);
 		function(GetActiveAbilityId(EAbilityIndex::Ability1), EAbilityIndex::Ability1);

@@ -19,6 +19,11 @@ const UResourceSetRecord* UResourceSetRecordDatabase::GetRecord(uint32 id)
 	ARGUS_TRACE(UResourceSetRecordDatabase::GetRecord)
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
+	if (id == 0u)
+	{
+		return nullptr;
+	}
+
 	bool resized = false;
 	if (static_cast<uint32>(m_UResourceSetRecordsPersistent.Num()) <= id)
 	{
@@ -29,19 +34,14 @@ const UResourceSetRecord* UResourceSetRecordDatabase::GetRecord(uint32 id)
 		resized = true;
 	}
 
-	if (id == 0u)
-	{
-		return nullptr;
-	}
-
 	if (resized || !m_UResourceSetRecordsPersistent[id])
 	{
 		m_UResourceSetRecordsPersistent[id] = m_UResourceSetRecords[id].LoadSynchronous();
-	}
-
-	if (m_UResourceSetRecordsPersistent[id])
-	{
-		m_UResourceSetRecordsPersistent[id]->m_id = id;
+		if (m_UResourceSetRecordsPersistent[id])
+		{
+			m_UResourceSetRecordsPersistent[id]->OnAsyncLoaded();
+			m_UResourceSetRecordsPersistent[id]->m_id = id;
+		}
 	}
 
 	return m_UResourceSetRecordsPersistent[id];
@@ -82,10 +82,11 @@ const bool UResourceSetRecordDatabase::AsyncPreLoadRecord(uint32 id)
 				return;
 			}
 
-			m_UResourceSetRecordsPersistent[id] = m_UResourceSetRecords[id].Get();\
+			m_UResourceSetRecordsPersistent[id] = m_UResourceSetRecords[id].Get();
 			if (m_UResourceSetRecordsPersistent[id])
 			{
 				m_UResourceSetRecordsPersistent[id]->OnAsyncLoaded();
+				m_UResourceSetRecordsPersistent[id]->m_id = id;
 			}
 		})
 	);

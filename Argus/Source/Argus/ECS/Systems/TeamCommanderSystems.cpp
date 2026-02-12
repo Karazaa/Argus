@@ -6,7 +6,9 @@
 #include "ArgusMacros.h"
 #include "ArgusMath.h"
 #include "ArgusStaticData.h"
+#include "DataComponentDefinitions/CarrierComponentData.h"
 #include "DataComponentDefinitions/ResourceComponentData.h"
+#include "DataComponentDefinitions/ResourceExtractionComponentData.h"
 #include "Systems/AbilitySystems.h"
 #include "Systems/ResourceSystems.h"
 #include "Systems/SpatialPartitioningSystems.h"
@@ -489,7 +491,7 @@ bool TeamCommanderSystems::AssignEntityToConstructResourceSinkIfAble(ArgusEntity
 	}
 
 	TArray<TPair<const UAbilityRecord*, EAbilityIndex>> abilityIndexPairs;
-	if (!GetConstructResourceSinkAbilities(entity, abilityIndexPairs, priority.m_resourceType))
+	if (!GetConstructResourceSinkAbilities(entity, priority.m_resourceType, abilityIndexPairs))
 	{
 		return false;
 	}
@@ -563,6 +565,18 @@ bool TeamCommanderSystems::AssignEntityToSpawnUnitIfAble(ArgusEntity entity, Tea
 {
 	ARGUS_TRACE(TeamCommanderSystems::AssignEntityToSpawnUnitIfAble);
 	ARGUS_RETURN_ON_NULL_BOOL(teamCommanderComponent, ArgusECSLog);
+
+	const SpawningComponent* spawningComponent = entity.GetComponent<SpawningComponent>();
+	if (!spawningComponent)
+	{
+		return false;
+	}
+
+	TArray<TPair<const UAbilityRecord*, EAbilityIndex>> abilityIndexPairs;
+	if (!GetSpawnUnitAbilities(entity, priority.m_unitType, priority.m_resourceType, abilityIndexPairs))
+	{
+		return false;
+	}
 
 	return false;
 }
@@ -723,7 +737,7 @@ void TeamCommanderSystems::ConvertAreaCoordinatesToAreaIndex(int32 xCoordinate, 
 	areaIndex = (yCoordinate * areasPerDimension) + xCoordinate;
 }
 
-bool TeamCommanderSystems::GetConstructResourceSinkAbilities(ArgusEntity entity, TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& outAbilityIndexPairs, EResourceType type)
+bool TeamCommanderSystems::GetConstructResourceSinkAbilities(ArgusEntity entity, EResourceType type, TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& outAbilityIndexPairs)
 {
 	ARGUS_TRACE(TeamCommanderSystems::GetConstructResourceSinkAbilities);
 
@@ -735,7 +749,7 @@ bool TeamCommanderSystems::GetConstructResourceSinkAbilities(ArgusEntity entity,
 		return false;
 	}
 
-	abilityComponent->IterateActiveAbilityIds([entity, &outAbilityIndexPairs, type](uint32 abilityRecordId, EAbilityIndex iteratedAbilityIndex)
+	abilityComponent->IterateActiveAbilityIds([entity, type, &outAbilityIndexPairs](uint32 abilityRecordId, EAbilityIndex iteratedAbilityIndex)
 	{
 		const UAbilityRecord* record = ArgusStaticData::GetRecord<UAbilityRecord>(abilityRecordId);
 		if (!record)
@@ -752,14 +766,42 @@ bool TeamCommanderSystems::GetConstructResourceSinkAbilities(ArgusEntity entity,
 	return outAbilityIndexPairs.Num() > 0;
 }
 
-bool TeamCommanderSystems::DoesAbilityConstructResourceSink(const UAbilityRecord* abilityRecord, EResourceType type)
+bool TeamCommanderSystems::GetSpawnUnitAbilities(ArgusEntity entity, ESpawnUnitType unitType, EResourceType resourceType, TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& outAbilityIndexPairs)
 {
-	if (!abilityRecord)
+	ARGUS_TRACE(TeamCommanderSystems::GetSpawnUnitAbilities);
+
+	outAbilityIndexPairs.Reset();
+	outAbilityIndexPairs.Reserve(ArgusECSConstants::k_numEntityAbilities);
+	AbilityComponent* abilityComponent = entity.GetComponent<AbilityComponent>();
+	if (!abilityComponent)
 	{
 		return false;
 	}
 
-	const UArgusEntityTemplate* entityTemplate = AbilitySystems::GetEntityTemplateForConstructionAbility(abilityRecord);
+	abilityComponent->IterateActiveAbilityIds([entity, unitType, resourceType, &outAbilityIndexPairs](uint32 abilityRecordId, EAbilityIndex iteratedAbilityIndex)
+	{
+		const UAbilityRecord* record = ArgusStaticData::GetRecord<UAbilityRecord>(abilityRecordId);
+		if (!record)
+		{
+			return;
+		}
+
+		if (ResourceSystems::CanEntityAffordTeamResourceChange(entity, record->m_requiredResourceChangeToCast) && DoesAbilitySpawnUnitType(record, unitType, resourceType))
+		{
+			outAbilityIndexPairs.Add(TPair<const UAbilityRecord*, EAbilityIndex>(record, iteratedAbilityIndex));
+		}
+	});
+
+	return outAbilityIndexPairs.Num() > 0;
+}
+
+bool TeamCommanderSystems::DoesAbilityConstructResourceSink(const UAbilityRecord* abilityRecord, EResourceType type)
+{
+	ARGUS_TRACE(TeamCommanderSystems::DoesAbilityConstructResourceSink);
+
+	ARGUS_RETURN_ON_NULL_BOOL(abilityRecord, ArgusECSLog);
+
+	const UArgusEntityTemplate* entityTemplate = AbilitySystems::GetEntityTemplateForAbility(abilityRecord, EAbilityTypes::Construct);
 	if (!entityTemplate)
 	{
 		return false;
@@ -772,6 +814,40 @@ bool TeamCommanderSystems::DoesAbilityConstructResourceSink(const UAbilityRecord
 	}
 
 	return resourceComponentData->m_currentResources.HasResourceType(type);
+}
+
+bool TeamCommanderSystems::DoesAbilitySpawnUnitType(const UAbilityRecord* abilityRecord, ESpawnUnitType unitType, EResourceType resourceType)
+{
+	ARGUS_TRACE(TeamCommanderSystems::DoesAbilitySpawnUnitType);
+
+	ARGUS_RETURN_ON_NULL_BOOL(abilityRecord, ArgusECSLog);
+
+	const UArgusEntityTemplate* entityTemplate = AbilitySystems::GetEntityTemplateForAbility(abilityRecord, EAbilityTypes::Spawn);
+	if (!entityTemplate)
+	{
+		return false;
+	}
+
+	switch (unitType)
+	{
+		case ESpawnUnitType::Carrier:
+			if (const UCarrierComponentData* carrierComponentData = entityTemplate->GetComponentFromTemplate<UCarrierComponentData>())
+			{
+				return true;
+			}
+			return false;
+		case ESpawnUnitType::Extractor:
+			if (const UResourceExtractionComponentData* resourceExtractionComponentData = entityTemplate->GetComponentFromTemplate<UResourceExtractionComponentData>())
+			{
+				if (const UResourceSetRecord* resourceSetRecord = resourceExtractionComponentData->m_resourcesToExtractRecordId.LoadSynchronous())
+				{
+					return resourceSetRecord->m_resourceSet.HasResourceType(resourceType);
+				}
+			}
+			return false;
+		default:
+			return false;
+	}
 }
 
 bool TeamCommanderSystems::FindTargetLocForConstructResourceSink(ArgusEntity entity, const TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& abilityIndexPairs, TeamCommanderComponent* teamCommanderComponent, EResourceType type)
@@ -876,7 +952,7 @@ ArgusEntity TeamCommanderSystems::GetNearestSeenResourceSourceToEntity(ArgusEnti
 		int32 j;
 		for (j = 0; j < abilityIndexPairs.Num(); ++j)
 		{
-			if (ResourceSystems::CanEntityTemplateActAsSinkToEntitySource(AbilitySystems::GetEntityTemplateForConstructionAbility(abilityIndexPairs[j].Key), resourceSourceEntity))
+			if (ResourceSystems::CanEntityTemplateActAsSinkToEntitySource(AbilitySystems::GetEntityTemplateForAbility(abilityIndexPairs[j].Key, EAbilityTypes::Construct), resourceSourceEntity))
 			{
 				anyValidAbilities = true;
 				break;

@@ -19,6 +19,11 @@ const UFactionRecord* UFactionRecordDatabase::GetRecord(uint32 id)
 	ARGUS_TRACE(UFactionRecordDatabase::GetRecord)
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
+	if (id == 0u)
+	{
+		return nullptr;
+	}
+
 	bool resized = false;
 	if (static_cast<uint32>(m_UFactionRecordsPersistent.Num()) <= id)
 	{
@@ -29,19 +34,14 @@ const UFactionRecord* UFactionRecordDatabase::GetRecord(uint32 id)
 		resized = true;
 	}
 
-	if (id == 0u)
-	{
-		return nullptr;
-	}
-
 	if (resized || !m_UFactionRecordsPersistent[id])
 	{
 		m_UFactionRecordsPersistent[id] = m_UFactionRecords[id].LoadSynchronous();
-	}
-
-	if (m_UFactionRecordsPersistent[id])
-	{
-		m_UFactionRecordsPersistent[id]->m_id = id;
+		if (m_UFactionRecordsPersistent[id])
+		{
+			m_UFactionRecordsPersistent[id]->OnAsyncLoaded();
+			m_UFactionRecordsPersistent[id]->m_id = id;
+		}
 	}
 
 	return m_UFactionRecordsPersistent[id];
@@ -82,10 +82,11 @@ const bool UFactionRecordDatabase::AsyncPreLoadRecord(uint32 id)
 				return;
 			}
 
-			m_UFactionRecordsPersistent[id] = m_UFactionRecords[id].Get();\
+			m_UFactionRecordsPersistent[id] = m_UFactionRecords[id].Get();
 			if (m_UFactionRecordsPersistent[id])
 			{
 				m_UFactionRecordsPersistent[id]->OnAsyncLoaded();
+				m_UFactionRecordsPersistent[id]->m_id = id;
 			}
 		})
 	);

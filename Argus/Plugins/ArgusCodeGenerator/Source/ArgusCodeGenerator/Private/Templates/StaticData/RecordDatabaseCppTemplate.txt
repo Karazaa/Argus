@@ -19,6 +19,11 @@ const #####* #####Database::GetRecord(uint32 id)
 	ARGUS_TRACE(#####Database::GetRecord)
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
+	if (id == 0u)
+	{
+		return nullptr;
+	}
+
 	bool resized = false;
 	if (static_cast<uint32>(m_#####sPersistent.Num()) <= id)
 	{
@@ -29,19 +34,14 @@ const #####* #####Database::GetRecord(uint32 id)
 		resized = true;
 	}
 
-	if (id == 0u)
-	{
-		return nullptr;
-	}
-
 	if (resized || !m_#####sPersistent[id])
 	{
 		m_#####sPersistent[id] = m_#####s[id].LoadSynchronous();
-	}
-
-	if (m_#####sPersistent[id])
-	{
-		m_#####sPersistent[id]->m_id = id;
+		if (m_#####sPersistent[id])
+		{
+			m_#####sPersistent[id]->OnAsyncLoaded();
+			m_#####sPersistent[id]->m_id = id;
+		}
 	}
 
 	return m_#####sPersistent[id];
@@ -82,10 +82,11 @@ const bool #####Database::AsyncPreLoadRecord(uint32 id)
 				return;
 			}
 
-			m_#####sPersistent[id] = m_#####s[id].Get();\
+			m_#####sPersistent[id] = m_#####s[id].Get();
 			if (m_#####sPersistent[id])
 			{
 				m_#####sPersistent[id]->OnAsyncLoaded();
+				m_#####sPersistent[id]->m_id = id;
 			}
 		})
 	);

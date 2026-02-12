@@ -19,6 +19,11 @@ const UAbilityRecord* UAbilityRecordDatabase::GetRecord(uint32 id)
 	ARGUS_TRACE(UAbilityRecordDatabase::GetRecord)
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
+	if (id == 0u)
+	{
+		return nullptr;
+	}
+
 	bool resized = false;
 	if (static_cast<uint32>(m_UAbilityRecordsPersistent.Num()) <= id)
 	{
@@ -29,19 +34,14 @@ const UAbilityRecord* UAbilityRecordDatabase::GetRecord(uint32 id)
 		resized = true;
 	}
 
-	if (id == 0u)
-	{
-		return nullptr;
-	}
-
 	if (resized || !m_UAbilityRecordsPersistent[id])
 	{
 		m_UAbilityRecordsPersistent[id] = m_UAbilityRecords[id].LoadSynchronous();
-	}
-
-	if (m_UAbilityRecordsPersistent[id])
-	{
-		m_UAbilityRecordsPersistent[id]->m_id = id;
+		if (m_UAbilityRecordsPersistent[id])
+		{
+			m_UAbilityRecordsPersistent[id]->OnAsyncLoaded();
+			m_UAbilityRecordsPersistent[id]->m_id = id;
+		}
 	}
 
 	return m_UAbilityRecordsPersistent[id];
@@ -82,10 +82,11 @@ const bool UAbilityRecordDatabase::AsyncPreLoadRecord(uint32 id)
 				return;
 			}
 
-			m_UAbilityRecordsPersistent[id] = m_UAbilityRecords[id].Get();\
+			m_UAbilityRecordsPersistent[id] = m_UAbilityRecords[id].Get();
 			if (m_UAbilityRecordsPersistent[id])
 			{
 				m_UAbilityRecordsPersistent[id]->OnAsyncLoaded();
+				m_UAbilityRecordsPersistent[id]->m_id = id;
 			}
 		})
 	);

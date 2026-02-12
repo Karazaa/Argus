@@ -19,6 +19,11 @@ const UTeamColorRecord* UTeamColorRecordDatabase::GetRecord(uint32 id)
 	ARGUS_TRACE(UTeamColorRecordDatabase::GetRecord)
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
+	if (id == 0u)
+	{
+		return nullptr;
+	}
+
 	bool resized = false;
 	if (static_cast<uint32>(m_UTeamColorRecordsPersistent.Num()) <= id)
 	{
@@ -29,19 +34,14 @@ const UTeamColorRecord* UTeamColorRecordDatabase::GetRecord(uint32 id)
 		resized = true;
 	}
 
-	if (id == 0u)
-	{
-		return nullptr;
-	}
-
 	if (resized || !m_UTeamColorRecordsPersistent[id])
 	{
 		m_UTeamColorRecordsPersistent[id] = m_UTeamColorRecords[id].LoadSynchronous();
-	}
-
-	if (m_UTeamColorRecordsPersistent[id])
-	{
-		m_UTeamColorRecordsPersistent[id]->m_id = id;
+		if (m_UTeamColorRecordsPersistent[id])
+		{
+			m_UTeamColorRecordsPersistent[id]->OnAsyncLoaded();
+			m_UTeamColorRecordsPersistent[id]->m_id = id;
+		}
 	}
 
 	return m_UTeamColorRecordsPersistent[id];
@@ -82,10 +82,11 @@ const bool UTeamColorRecordDatabase::AsyncPreLoadRecord(uint32 id)
 				return;
 			}
 
-			m_UTeamColorRecordsPersistent[id] = m_UTeamColorRecords[id].Get();\
+			m_UTeamColorRecordsPersistent[id] = m_UTeamColorRecords[id].Get();
 			if (m_UTeamColorRecordsPersistent[id])
 			{
 				m_UTeamColorRecordsPersistent[id]->OnAsyncLoaded();
+				m_UTeamColorRecordsPersistent[id]->m_id = id;
 			}
 		})
 	);
