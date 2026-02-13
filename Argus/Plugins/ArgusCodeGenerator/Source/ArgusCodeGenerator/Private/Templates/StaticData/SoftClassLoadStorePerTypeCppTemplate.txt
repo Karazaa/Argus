@@ -18,12 +18,21 @@
 		return m_hardPtr.Get();
 	}
 
-	bool FSoftClassLoadStore_#####::AsyncPreLoadAndStorePtr() const
+	bool FSoftClassLoadStore_#####::AsyncPreLoadAndStorePtr(TFunction<void(UClass*)> callback) const
 	{
 		ARGUS_TRACE(FSoftClassLoadStore_#####::AsyncPreLoadAndStorePtr);
 
-		if (m_hardPtr || m_softPtr.IsNull())
+		if (m_softPtr.IsNull())
 		{
+			return false;
+		}
+
+		if (m_hardPtr)
+		{
+			if (callback)
+			{
+				callback(m_hardPtr);
+			}
 			return true;
 		}
 
@@ -32,9 +41,13 @@
 
 		assetLoadingComponent->m_streamableManager.RequestAsyncLoad(m_softPtr.ToSoftObjectPath(), FStreamableDelegate::CreateLambda
 		(
-			[this]()
+			[this, callback]()
 			{
 				m_hardPtr = m_softPtr.Get();
+				if (callback)
+				{
+					callback(m_hardPtr);
+				}
 			})
 		);
 

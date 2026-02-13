@@ -14,7 +14,7 @@ class UAbilityRecordDatabase : public UDataAsset
 
 public:
 	const UAbilityRecord* GetRecord(uint32 id);
-	const bool AsyncPreLoadRecord(uint32 id);
+	const bool AsyncPreLoadRecord(uint32 id, TFunction<void(const UAbilityRecord*)> callback = nullptr);
 	bool ResizePersistentObjectPointerArrayToFitRecord(uint32 id);
 
 protected:

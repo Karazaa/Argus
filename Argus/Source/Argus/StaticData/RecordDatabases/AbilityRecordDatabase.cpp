@@ -47,7 +47,7 @@ const UAbilityRecord* UAbilityRecordDatabase::GetRecord(uint32 id)
 	return m_UAbilityRecordsPersistent[id];
 }
 
-const bool UAbilityRecordDatabase::AsyncPreLoadRecord(uint32 id)
+const bool UAbilityRecordDatabase::AsyncPreLoadRecord(uint32 id, TFunction<void(const UAbilityRecord*)> callback)
 {
 	ARGUS_TRACE(UAbilityRecordDatabase::AsyncPreLoadRecord);
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
@@ -75,7 +75,7 @@ const bool UAbilityRecordDatabase::AsyncPreLoadRecord(uint32 id)
 
 	assetLoadingComponent->m_streamableManager.RequestAsyncLoad(m_UAbilityRecords[id].ToSoftObjectPath(), FStreamableDelegate::CreateLambda
 	(
-		[this, id]()
+		[this, id, callback]()
 		{
 			if (static_cast<uint32>(m_UAbilityRecordsPersistent.Num()) <= id || static_cast<uint32>(m_UAbilityRecords.Num()) <= id)
 			{
@@ -87,6 +87,10 @@ const bool UAbilityRecordDatabase::AsyncPreLoadRecord(uint32 id)
 			{
 				m_UAbilityRecordsPersistent[id]->OnAsyncLoaded();
 				m_UAbilityRecordsPersistent[id]->m_id = id;
+				if (callback)
+				{
+					callback(m_UAbilityRecordsPersistent[id]);
+				}
 			}
 		})
 	);

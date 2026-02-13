@@ -20,7 +20,7 @@ struct FSoftObjectLoadStore_UArgusEntityTemplate
 
 public:
 	UArgusEntityTemplate* LoadAndStorePtr() const;
-	bool AsyncPreLoadAndStorePtr(TFunction<void(const UArgusEntityTemplate*)> callback = nullptr) const;
+	bool AsyncPreLoadAndStorePtr(TFunction<void(UArgusEntityTemplate*)> callback = nullptr) const;
 	void SetHardPtr(UArgusEntityTemplate* pointer);
 	operator bool() const { return m_hardPtr || !m_softPtr.IsNull(); }
 
@@ -43,7 +43,7 @@ struct FSoftObjectLoadStore_UTexture
 
 public:
 	UTexture* LoadAndStorePtr() const;
-	bool AsyncPreLoadAndStorePtr() const;
+	bool AsyncPreLoadAndStorePtr(TFunction<void(UTexture*)> callback = nullptr) const;
 	void SetHardPtr(UTexture* pointer);
 	operator bool() const { return m_hardPtr || !m_softPtr.IsNull(); }
 
@@ -66,7 +66,7 @@ struct FSoftObjectLoadStore_UMaterialInterface
 
 public:
 	UMaterialInterface* LoadAndStorePtr() const;
-	bool AsyncPreLoadAndStorePtr() const;
+	bool AsyncPreLoadAndStorePtr(TFunction<void(UMaterialInterface*)> callback = nullptr) const;
 	void SetHardPtr(UMaterialInterface* pointer);
 	operator bool() const { return m_hardPtr || !m_softPtr.IsNull(); }
 
@@ -93,7 +93,7 @@ struct FSoftClassLoadStore_AArgusActor
 
 public:
 	UClass* LoadAndStorePtr() const;
-	bool AsyncPreLoadAndStorePtr() const;
+	bool AsyncPreLoadAndStorePtr(TFunction<void(UClass*)> callback = nullptr) const;
 	void SetHardPtr(UClass* pointer);
 	operator bool() const { return m_hardPtr || !m_softPtr.IsNull(); }
 

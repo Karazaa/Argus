@@ -9,11 +9,11 @@
 	}
 
 	template<>
-	inline const bool AsyncPreLoadRecord<#####>(uint32 id)
+	inline const bool AsyncPreLoadRecord<#####>(uint32 id, TFunction<void(const #####*)> callback)
 	{
 		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
 		ARGUS_RETURN_ON_NULL_BOOL(staticDatabase, ArgusStaticDataLog);
-		return staticDatabase->AsyncPreLoad#####(id);
+		return staticDatabase->AsyncPreLoad#####(id, callback);
 	}
 
 #if WITH_EDITOR && !IS_PACKAGING_ARGUS

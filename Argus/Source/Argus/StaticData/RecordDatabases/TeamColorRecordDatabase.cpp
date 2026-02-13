@@ -47,7 +47,7 @@ const UTeamColorRecord* UTeamColorRecordDatabase::GetRecord(uint32 id)
 	return m_UTeamColorRecordsPersistent[id];
 }
 
-const bool UTeamColorRecordDatabase::AsyncPreLoadRecord(uint32 id)
+const bool UTeamColorRecordDatabase::AsyncPreLoadRecord(uint32 id, TFunction<void(const UTeamColorRecord*)> callback)
 {
 	ARGUS_TRACE(UTeamColorRecordDatabase::AsyncPreLoadRecord);
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
@@ -75,7 +75,7 @@ const bool UTeamColorRecordDatabase::AsyncPreLoadRecord(uint32 id)
 
 	assetLoadingComponent->m_streamableManager.RequestAsyncLoad(m_UTeamColorRecords[id].ToSoftObjectPath(), FStreamableDelegate::CreateLambda
 	(
-		[this, id]()
+		[this, id, callback]()
 		{
 			if (static_cast<uint32>(m_UTeamColorRecordsPersistent.Num()) <= id || static_cast<uint32>(m_UTeamColorRecords.Num()) <= id)
 			{
@@ -87,6 +87,10 @@ const bool UTeamColorRecordDatabase::AsyncPreLoadRecord(uint32 id)
 			{
 				m_UTeamColorRecordsPersistent[id]->OnAsyncLoaded();
 				m_UTeamColorRecordsPersistent[id]->m_id = id;
+				if (callback)
+				{
+					callback(m_UTeamColorRecordsPersistent[id]);
+				}
 			}
 		})
 	);

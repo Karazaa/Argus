@@ -9,7 +9,7 @@ struct FSoftObjectLoadStore_#####
 
 public:
 	#####* LoadAndStorePtr() const;
-	bool AsyncPreLoadAndStorePtr() const;
+	bool AsyncPreLoadAndStorePtr(TFunction<void(#####*)> callback = nullptr) const;
 	void SetHardPtr(#####* pointer);
 	operator bool() const { return m_hardPtr || !m_softPtr.IsNull(); }
 

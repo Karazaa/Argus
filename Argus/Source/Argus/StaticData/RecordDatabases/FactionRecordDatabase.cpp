@@ -47,7 +47,7 @@ const UFactionRecord* UFactionRecordDatabase::GetRecord(uint32 id)
 	return m_UFactionRecordsPersistent[id];
 }
 
-const bool UFactionRecordDatabase::AsyncPreLoadRecord(uint32 id)
+const bool UFactionRecordDatabase::AsyncPreLoadRecord(uint32 id, TFunction<void(const UFactionRecord*)> callback)
 {
 	ARGUS_TRACE(UFactionRecordDatabase::AsyncPreLoadRecord);
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
@@ -75,7 +75,7 @@ const bool UFactionRecordDatabase::AsyncPreLoadRecord(uint32 id)
 
 	assetLoadingComponent->m_streamableManager.RequestAsyncLoad(m_UFactionRecords[id].ToSoftObjectPath(), FStreamableDelegate::CreateLambda
 	(
-		[this, id]()
+		[this, id, callback]()
 		{
 			if (static_cast<uint32>(m_UFactionRecordsPersistent.Num()) <= id || static_cast<uint32>(m_UFactionRecords.Num()) <= id)
 			{
@@ -87,6 +87,10 @@ const bool UFactionRecordDatabase::AsyncPreLoadRecord(uint32 id)
 			{
 				m_UFactionRecordsPersistent[id]->OnAsyncLoaded();
 				m_UFactionRecordsPersistent[id]->m_id = id;
+				if (callback)
+				{
+					callback(m_UFactionRecordsPersistent[id]);
+				}
 			}
 		})
 	);

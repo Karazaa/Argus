@@ -14,7 +14,7 @@ class UPlacedArgusActorTeamInfoRecordDatabase : public UDataAsset
 
 public:
 	const UPlacedArgusActorTeamInfoRecord* GetRecord(uint32 id);
-	const bool AsyncPreLoadRecord(uint32 id);
+	const bool AsyncPreLoadRecord(uint32 id, TFunction<void(const UPlacedArgusActorTeamInfoRecord*)> callback = nullptr);
 	bool ResizePersistentObjectPointerArrayToFitRecord(uint32 id);
 
 protected:

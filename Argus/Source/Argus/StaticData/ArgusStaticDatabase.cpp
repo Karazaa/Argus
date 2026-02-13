@@ -23,7 +23,7 @@ const UAbilityRecord* UArgusStaticDatabase::GetUAbilityRecord(uint32 id)
 	return m_UAbilityRecordDatabasePersistent->GetRecord(id);
 }
 
-const bool UArgusStaticDatabase::AsyncPreLoadUAbilityRecord(uint32 id)
+const bool UArgusStaticDatabase::AsyncPreLoadUAbilityRecord(uint32 id, TFunction<void(const UAbilityRecord*)> callback)
 {
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
@@ -120,7 +120,7 @@ const UArgusActorRecord* UArgusStaticDatabase::GetUArgusActorRecord(uint32 id)
 	return m_UArgusActorRecordDatabasePersistent->GetRecord(id);
 }
 
-const bool UArgusStaticDatabase::AsyncPreLoadUArgusActorRecord(uint32 id)
+const bool UArgusStaticDatabase::AsyncPreLoadUArgusActorRecord(uint32 id, TFunction<void(const UArgusActorRecord*)> callback)
 {
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
@@ -217,7 +217,7 @@ const UFactionRecord* UArgusStaticDatabase::GetUFactionRecord(uint32 id)
 	return m_UFactionRecordDatabasePersistent->GetRecord(id);
 }
 
-const bool UArgusStaticDatabase::AsyncPreLoadUFactionRecord(uint32 id)
+const bool UArgusStaticDatabase::AsyncPreLoadUFactionRecord(uint32 id, TFunction<void(const UFactionRecord*)> callback)
 {
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
@@ -314,7 +314,7 @@ const UPlacedArgusActorTeamInfoRecord* UArgusStaticDatabase::GetUPlacedArgusActo
 	return m_UPlacedArgusActorTeamInfoRecordDatabasePersistent->GetRecord(id);
 }
 
-const bool UArgusStaticDatabase::AsyncPreLoadUPlacedArgusActorTeamInfoRecord(uint32 id)
+const bool UArgusStaticDatabase::AsyncPreLoadUPlacedArgusActorTeamInfoRecord(uint32 id, TFunction<void(const UPlacedArgusActorTeamInfoRecord*)> callback)
 {
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
@@ -411,7 +411,7 @@ const UResourceSetRecord* UArgusStaticDatabase::GetUResourceSetRecord(uint32 id)
 	return m_UResourceSetRecordDatabasePersistent->GetRecord(id);
 }
 
-const bool UArgusStaticDatabase::AsyncPreLoadUResourceSetRecord(uint32 id)
+const bool UArgusStaticDatabase::AsyncPreLoadUResourceSetRecord(uint32 id, TFunction<void(const UResourceSetRecord*)> callback)
 {
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
@@ -508,7 +508,7 @@ const UTeamColorRecord* UArgusStaticDatabase::GetUTeamColorRecord(uint32 id)
 	return m_UTeamColorRecordDatabasePersistent->GetRecord(id);
 }
 
-const bool UArgusStaticDatabase::AsyncPreLoadUTeamColorRecord(uint32 id)
+const bool UArgusStaticDatabase::AsyncPreLoadUTeamColorRecord(uint32 id, TFunction<void(const UTeamColorRecord*)> callback)
 {
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 

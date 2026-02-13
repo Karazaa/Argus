@@ -32,17 +32,22 @@
 		return m_hardPtr.Get();
 	}
 
-	bool FSoftObjectLoadStore_UArgusEntityTemplate::AsyncPreLoadAndStorePtr(TFunction<void(const UArgusEntityTemplate*)> callback) const
+	bool FSoftObjectLoadStore_UArgusEntityTemplate::AsyncPreLoadAndStorePtr(TFunction<void(UArgusEntityTemplate*)> callback) const
 	{
 		ARGUS_TRACE(FSoftPtrLoadStore_UArgusEntityTemplate::AsyncPreLoadAndStorePtr);
 
-		if (m_hardPtr || m_softPtr.IsNull())
+		if (m_softPtr.IsNull())
 		{
-			return true;
+			return false;
+		}
+
+		if (m_hardPtr)
+		{
 			if (callback)
 			{
 				callback(m_hardPtr);
 			}
+			return true;
 		}
 
 		AssetLoadingComponent* assetLoadingComponent = ArgusEntity::GetSingletonEntity().GetComponent<AssetLoadingComponent>();
@@ -88,12 +93,21 @@
 		return m_hardPtr.Get();
 	}
 
-	bool FSoftObjectLoadStore_UTexture::AsyncPreLoadAndStorePtr() const
+	bool FSoftObjectLoadStore_UTexture::AsyncPreLoadAndStorePtr(TFunction<void(UTexture*)> callback) const
 	{
 		ARGUS_TRACE(FSoftPtrLoadStore_UTexture::AsyncPreLoadAndStorePtr);
 
-		if (m_hardPtr || m_softPtr.IsNull())
+		if (m_softPtr.IsNull())
 		{
+			return false;
+		}
+
+		if (m_hardPtr)
+		{
+			if (callback)
+			{
+				callback(m_hardPtr);
+			}
 			return true;
 		}
 
@@ -102,9 +116,13 @@
 
 		assetLoadingComponent->m_streamableManager.RequestAsyncLoad(m_softPtr.ToSoftObjectPath(), FStreamableDelegate::CreateLambda
 		(
-			[this]()
+			[this, callback]()
 			{
 				m_hardPtr = m_softPtr.Get();
+				if (callback)
+				{
+					callback(m_hardPtr);
+				}
 			})
 		);
 
@@ -136,12 +154,21 @@
 		return m_hardPtr.Get();
 	}
 
-	bool FSoftObjectLoadStore_UMaterialInterface::AsyncPreLoadAndStorePtr() const
+	bool FSoftObjectLoadStore_UMaterialInterface::AsyncPreLoadAndStorePtr(TFunction<void(UMaterialInterface*)> callback) const
 	{
 		ARGUS_TRACE(FSoftPtrLoadStore_UMaterialInterface::AsyncPreLoadAndStorePtr);
 
-		if (m_hardPtr || m_softPtr.IsNull())
+		if (m_softPtr.IsNull())
 		{
+			return false;
+		}
+
+		if (m_hardPtr)
+		{
+			if (callback)
+			{
+				callback(m_hardPtr);
+			}
 			return true;
 		}
 
@@ -150,9 +177,13 @@
 
 		assetLoadingComponent->m_streamableManager.RequestAsyncLoad(m_softPtr.ToSoftObjectPath(), FStreamableDelegate::CreateLambda
 		(
-			[this]()
+			[this, callback]()
 			{
 				m_hardPtr = m_softPtr.Get();
+				if (callback)
+				{
+					callback(m_hardPtr);
+				}
 			})
 		);
 
@@ -188,12 +219,21 @@
 		return m_hardPtr.Get();
 	}
 
-	bool FSoftClassLoadStore_AArgusActor::AsyncPreLoadAndStorePtr() const
+	bool FSoftClassLoadStore_AArgusActor::AsyncPreLoadAndStorePtr(TFunction<void(UClass*)> callback) const
 	{
 		ARGUS_TRACE(FSoftClassLoadStore_AArgusActor::AsyncPreLoadAndStorePtr);
 
-		if (m_hardPtr || m_softPtr.IsNull())
+		if (m_softPtr.IsNull())
 		{
+			return false;
+		}
+
+		if (m_hardPtr)
+		{
+			if (callback)
+			{
+				callback(m_hardPtr);
+			}
 			return true;
 		}
 
@@ -202,9 +242,13 @@
 
 		assetLoadingComponent->m_streamableManager.RequestAsyncLoad(m_softPtr.ToSoftObjectPath(), FStreamableDelegate::CreateLambda
 		(
-			[this]()
+			[this, callback]()
 			{
 				m_hardPtr = m_softPtr.Get();
+				if (callback)
+				{
+					callback(m_hardPtr);
+				}
 			})
 		);
 

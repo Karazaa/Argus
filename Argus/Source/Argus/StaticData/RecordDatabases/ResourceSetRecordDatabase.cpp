@@ -47,7 +47,7 @@ const UResourceSetRecord* UResourceSetRecordDatabase::GetRecord(uint32 id)
 	return m_UResourceSetRecordsPersistent[id];
 }
 
-const bool UResourceSetRecordDatabase::AsyncPreLoadRecord(uint32 id)
+const bool UResourceSetRecordDatabase::AsyncPreLoadRecord(uint32 id, TFunction<void(const UResourceSetRecord*)> callback)
 {
 	ARGUS_TRACE(UResourceSetRecordDatabase::AsyncPreLoadRecord);
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
@@ -75,7 +75,7 @@ const bool UResourceSetRecordDatabase::AsyncPreLoadRecord(uint32 id)
 
 	assetLoadingComponent->m_streamableManager.RequestAsyncLoad(m_UResourceSetRecords[id].ToSoftObjectPath(), FStreamableDelegate::CreateLambda
 	(
-		[this, id]()
+		[this, id, callback]()
 		{
 			if (static_cast<uint32>(m_UResourceSetRecordsPersistent.Num()) <= id || static_cast<uint32>(m_UResourceSetRecords.Num()) <= id)
 			{
@@ -87,6 +87,10 @@ const bool UResourceSetRecordDatabase::AsyncPreLoadRecord(uint32 id)
 			{
 				m_UResourceSetRecordsPersistent[id]->OnAsyncLoaded();
 				m_UResourceSetRecordsPersistent[id]->m_id = id;
+				if (callback)
+				{
+					callback(m_UResourceSetRecordsPersistent[id]);
+				}
 			}
 		})
 	);

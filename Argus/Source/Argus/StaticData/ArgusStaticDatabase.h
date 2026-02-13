@@ -20,7 +20,7 @@ class UArgusStaticDatabase : public UDataAsset
 #pragma region UAbilityRecord
 public:
 	const UAbilityRecord* GetUAbilityRecord(uint32 id);
-	const bool AsyncPreLoadUAbilityRecord(uint32 id);
+	const bool AsyncPreLoadUAbilityRecord(uint32 id, TFunction<void(const UAbilityRecord*)> callback = nullptr);
 #if WITH_EDITOR && !IS_PACKAGING_ARGUS
 	uint32 AddUAbilityRecordToDatabase(UAbilityRecord* record);
 	void RegisterNewUAbilityRecordDatabase(UAbilityRecordDatabase* database);
@@ -37,7 +37,7 @@ protected:
 #pragma region UArgusActorRecord
 public:
 	const UArgusActorRecord* GetUArgusActorRecord(uint32 id);
-	const bool AsyncPreLoadUArgusActorRecord(uint32 id);
+	const bool AsyncPreLoadUArgusActorRecord(uint32 id, TFunction<void(const UArgusActorRecord*)> callback = nullptr);
 #if WITH_EDITOR && !IS_PACKAGING_ARGUS
 	uint32 AddUArgusActorRecordToDatabase(UArgusActorRecord* record);
 	void RegisterNewUArgusActorRecordDatabase(UArgusActorRecordDatabase* database);
@@ -54,7 +54,7 @@ protected:
 #pragma region UFactionRecord
 public:
 	const UFactionRecord* GetUFactionRecord(uint32 id);
-	const bool AsyncPreLoadUFactionRecord(uint32 id);
+	const bool AsyncPreLoadUFactionRecord(uint32 id, TFunction<void(const UFactionRecord*)> callback = nullptr);
 #if WITH_EDITOR && !IS_PACKAGING_ARGUS
 	uint32 AddUFactionRecordToDatabase(UFactionRecord* record);
 	void RegisterNewUFactionRecordDatabase(UFactionRecordDatabase* database);
@@ -71,7 +71,7 @@ protected:
 #pragma region UPlacedArgusActorTeamInfoRecord
 public:
 	const UPlacedArgusActorTeamInfoRecord* GetUPlacedArgusActorTeamInfoRecord(uint32 id);
-	const bool AsyncPreLoadUPlacedArgusActorTeamInfoRecord(uint32 id);
+	const bool AsyncPreLoadUPlacedArgusActorTeamInfoRecord(uint32 id, TFunction<void(const UPlacedArgusActorTeamInfoRecord*)> callback = nullptr);
 #if WITH_EDITOR && !IS_PACKAGING_ARGUS
 	uint32 AddUPlacedArgusActorTeamInfoRecordToDatabase(UPlacedArgusActorTeamInfoRecord* record);
 	void RegisterNewUPlacedArgusActorTeamInfoRecordDatabase(UPlacedArgusActorTeamInfoRecordDatabase* database);
@@ -88,7 +88,7 @@ protected:
 #pragma region UResourceSetRecord
 public:
 	const UResourceSetRecord* GetUResourceSetRecord(uint32 id);
-	const bool AsyncPreLoadUResourceSetRecord(uint32 id);
+	const bool AsyncPreLoadUResourceSetRecord(uint32 id, TFunction<void(const UResourceSetRecord*)> callback = nullptr);
 #if WITH_EDITOR && !IS_PACKAGING_ARGUS
 	uint32 AddUResourceSetRecordToDatabase(UResourceSetRecord* record);
 	void RegisterNewUResourceSetRecordDatabase(UResourceSetRecordDatabase* database);
@@ -105,7 +105,7 @@ protected:
 #pragma region UTeamColorRecord
 public:
 	const UTeamColorRecord* GetUTeamColorRecord(uint32 id);
-	const bool AsyncPreLoadUTeamColorRecord(uint32 id);
+	const bool AsyncPreLoadUTeamColorRecord(uint32 id, TFunction<void(const UTeamColorRecord*)> callback = nullptr);
 #if WITH_EDITOR && !IS_PACKAGING_ARGUS
 	uint32 AddUTeamColorRecordToDatabase(UTeamColorRecord* record);
 	void RegisterNewUTeamColorRecordDatabase(UTeamColorRecordDatabase* database);

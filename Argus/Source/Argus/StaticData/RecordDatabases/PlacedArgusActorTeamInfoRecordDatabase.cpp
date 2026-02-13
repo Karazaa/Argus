@@ -47,7 +47,7 @@ const UPlacedArgusActorTeamInfoRecord* UPlacedArgusActorTeamInfoRecordDatabase::
 	return m_UPlacedArgusActorTeamInfoRecordsPersistent[id];
 }
 
-const bool UPlacedArgusActorTeamInfoRecordDatabase::AsyncPreLoadRecord(uint32 id)
+const bool UPlacedArgusActorTeamInfoRecordDatabase::AsyncPreLoadRecord(uint32 id, TFunction<void(const UPlacedArgusActorTeamInfoRecord*)> callback)
 {
 	ARGUS_TRACE(UPlacedArgusActorTeamInfoRecordDatabase::AsyncPreLoadRecord);
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
@@ -75,7 +75,7 @@ const bool UPlacedArgusActorTeamInfoRecordDatabase::AsyncPreLoadRecord(uint32 id
 
 	assetLoadingComponent->m_streamableManager.RequestAsyncLoad(m_UPlacedArgusActorTeamInfoRecords[id].ToSoftObjectPath(), FStreamableDelegate::CreateLambda
 	(
-		[this, id]()
+		[this, id, callback]()
 		{
 			if (static_cast<uint32>(m_UPlacedArgusActorTeamInfoRecordsPersistent.Num()) <= id || static_cast<uint32>(m_UPlacedArgusActorTeamInfoRecords.Num()) <= id)
 			{
@@ -87,6 +87,10 @@ const bool UPlacedArgusActorTeamInfoRecordDatabase::AsyncPreLoadRecord(uint32 id
 			{
 				m_UPlacedArgusActorTeamInfoRecordsPersistent[id]->OnAsyncLoaded();
 				m_UPlacedArgusActorTeamInfoRecordsPersistent[id]->m_id = id;
+				if (callback)
+				{
+					callback(m_UPlacedArgusActorTeamInfoRecordsPersistent[id]);
+				}
 			}
 		})
 	);

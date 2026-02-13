@@ -47,7 +47,7 @@ const #####* #####Database::GetRecord(uint32 id)
 	return m_#####sPersistent[id];
 }
 
-const bool #####Database::AsyncPreLoadRecord(uint32 id)
+const bool #####Database::AsyncPreLoadRecord(uint32 id, TFunction<void(const #####*)> callback)
 {
 	ARGUS_TRACE(#####Database::AsyncPreLoadRecord);
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
@@ -75,7 +75,7 @@ const bool #####Database::AsyncPreLoadRecord(uint32 id)
 
 	assetLoadingComponent->m_streamableManager.RequestAsyncLoad(m_#####s[id].ToSoftObjectPath(), FStreamableDelegate::CreateLambda
 	(
-		[this, id]()
+		[this, id, callback]()
 		{
 			if (static_cast<uint32>(m_#####sPersistent.Num()) <= id || static_cast<uint32>(m_#####s.Num()) <= id)
 			{
@@ -87,6 +87,10 @@ const bool #####Database::AsyncPreLoadRecord(uint32 id)
 			{
 				m_#####sPersistent[id]->OnAsyncLoaded();
 				m_#####sPersistent[id]->m_id = id;
+				if (callback)
+				{
+					callback(m_#####sPersistent[id]);
+				}
 			}
 		})
 	);

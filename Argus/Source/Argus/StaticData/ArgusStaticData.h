@@ -21,7 +21,7 @@ public:
 	}
 
 	template<typename ArgusStaticRecord>
-	static const bool AsyncPreLoadRecord(uint32 id)
+	static const bool AsyncPreLoadRecord(uint32 id, TFunction<void(const ArgusStaticRecord*)> callback = nullptr)
 	{
 		return false;
 	}
@@ -82,11 +82,11 @@ public:
 	}
 
 	template<>
-	inline const bool AsyncPreLoadRecord<UAbilityRecord>(uint32 id)
+	inline const bool AsyncPreLoadRecord<UAbilityRecord>(uint32 id, TFunction<void(const UAbilityRecord*)> callback)
 	{
 		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
 		ARGUS_RETURN_ON_NULL_BOOL(staticDatabase, ArgusStaticDataLog);
-		return staticDatabase->AsyncPreLoadUAbilityRecord(id);
+		return staticDatabase->AsyncPreLoadUAbilityRecord(id, callback);
 	}
 
 #if WITH_EDITOR && !IS_PACKAGING_ARGUS
@@ -109,11 +109,11 @@ public:
 	}
 
 	template<>
-	inline const bool AsyncPreLoadRecord<UArgusActorRecord>(uint32 id)
+	inline const bool AsyncPreLoadRecord<UArgusActorRecord>(uint32 id, TFunction<void(const UArgusActorRecord*)> callback)
 	{
 		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
 		ARGUS_RETURN_ON_NULL_BOOL(staticDatabase, ArgusStaticDataLog);
-		return staticDatabase->AsyncPreLoadUArgusActorRecord(id);
+		return staticDatabase->AsyncPreLoadUArgusActorRecord(id, callback);
 	}
 
 #if WITH_EDITOR && !IS_PACKAGING_ARGUS
@@ -136,11 +136,11 @@ public:
 	}
 
 	template<>
-	inline const bool AsyncPreLoadRecord<UFactionRecord>(uint32 id)
+	inline const bool AsyncPreLoadRecord<UFactionRecord>(uint32 id, TFunction<void(const UFactionRecord*)> callback)
 	{
 		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
 		ARGUS_RETURN_ON_NULL_BOOL(staticDatabase, ArgusStaticDataLog);
-		return staticDatabase->AsyncPreLoadUFactionRecord(id);
+		return staticDatabase->AsyncPreLoadUFactionRecord(id, callback);
 	}
 
 #if WITH_EDITOR && !IS_PACKAGING_ARGUS
@@ -163,11 +163,11 @@ public:
 	}
 
 	template<>
-	inline const bool AsyncPreLoadRecord<UPlacedArgusActorTeamInfoRecord>(uint32 id)
+	inline const bool AsyncPreLoadRecord<UPlacedArgusActorTeamInfoRecord>(uint32 id, TFunction<void(const UPlacedArgusActorTeamInfoRecord*)> callback)
 	{
 		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
 		ARGUS_RETURN_ON_NULL_BOOL(staticDatabase, ArgusStaticDataLog);
-		return staticDatabase->AsyncPreLoadUPlacedArgusActorTeamInfoRecord(id);
+		return staticDatabase->AsyncPreLoadUPlacedArgusActorTeamInfoRecord(id, callback);
 	}
 
 #if WITH_EDITOR && !IS_PACKAGING_ARGUS
@@ -190,11 +190,11 @@ public:
 	}
 
 	template<>
-	inline const bool AsyncPreLoadRecord<UResourceSetRecord>(uint32 id)
+	inline const bool AsyncPreLoadRecord<UResourceSetRecord>(uint32 id, TFunction<void(const UResourceSetRecord*)> callback)
 	{
 		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
 		ARGUS_RETURN_ON_NULL_BOOL(staticDatabase, ArgusStaticDataLog);
-		return staticDatabase->AsyncPreLoadUResourceSetRecord(id);
+		return staticDatabase->AsyncPreLoadUResourceSetRecord(id, callback);
 	}
 
 #if WITH_EDITOR && !IS_PACKAGING_ARGUS
@@ -217,11 +217,11 @@ public:
 	}
 
 	template<>
-	inline const bool AsyncPreLoadRecord<UTeamColorRecord>(uint32 id)
+	inline const bool AsyncPreLoadRecord<UTeamColorRecord>(uint32 id, TFunction<void(const UTeamColorRecord*)> callback)
 	{
 		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
 		ARGUS_RETURN_ON_NULL_BOOL(staticDatabase, ArgusStaticDataLog);
-		return staticDatabase->AsyncPreLoadUTeamColorRecord(id);
+		return staticDatabase->AsyncPreLoadUTeamColorRecord(id, callback);
 	}
 
 #if WITH_EDITOR && !IS_PACKAGING_ARGUS

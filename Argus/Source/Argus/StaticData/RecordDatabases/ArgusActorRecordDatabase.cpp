@@ -47,7 +47,7 @@ const UArgusActorRecord* UArgusActorRecordDatabase::GetRecord(uint32 id)
 	return m_UArgusActorRecordsPersistent[id];
 }
 
-const bool UArgusActorRecordDatabase::AsyncPreLoadRecord(uint32 id)
+const bool UArgusActorRecordDatabase::AsyncPreLoadRecord(uint32 id, TFunction<void(const UArgusActorRecord*)> callback)
 {
 	ARGUS_TRACE(UArgusActorRecordDatabase::AsyncPreLoadRecord);
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
@@ -75,7 +75,7 @@ const bool UArgusActorRecordDatabase::AsyncPreLoadRecord(uint32 id)
 
 	assetLoadingComponent->m_streamableManager.RequestAsyncLoad(m_UArgusActorRecords[id].ToSoftObjectPath(), FStreamableDelegate::CreateLambda
 	(
-		[this, id]()
+		[this, id, callback]()
 		{
 			if (static_cast<uint32>(m_UArgusActorRecordsPersistent.Num()) <= id || static_cast<uint32>(m_UArgusActorRecords.Num()) <= id)
 			{
@@ -87,6 +87,10 @@ const bool UArgusActorRecordDatabase::AsyncPreLoadRecord(uint32 id)
 			{
 				m_UArgusActorRecordsPersistent[id]->OnAsyncLoaded();
 				m_UArgusActorRecordsPersistent[id]->m_id = id;
+				if (callback)
+				{
+					callback(m_UArgusActorRecordsPersistent[id]);
+				}
 			}
 		})
 	);

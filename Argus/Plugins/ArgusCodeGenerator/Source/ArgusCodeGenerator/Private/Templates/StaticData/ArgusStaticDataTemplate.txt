@@ -21,7 +21,7 @@ public:
 	}
 
 	template<typename ArgusStaticRecord>
-	static const bool AsyncPreLoadRecord(uint32 id)
+	static const bool AsyncPreLoadRecord(uint32 id, TFunction<void(const ArgusStaticRecord*)> callback = nullptr)
 	{
 		return false;
 	}

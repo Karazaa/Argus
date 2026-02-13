@@ -9,7 +9,7 @@ struct FSoftClassLoadStore_#####
 
 public:
 	UClass* LoadAndStorePtr() const;
-	bool AsyncPreLoadAndStorePtr() const;
+	bool AsyncPreLoadAndStorePtr(TFunction<void(UClass*)> callback = nullptr) const;
 	void SetHardPtr(UClass* pointer);
 	operator bool() const { return m_hardPtr || !m_softPtr.IsNull(); }
 
