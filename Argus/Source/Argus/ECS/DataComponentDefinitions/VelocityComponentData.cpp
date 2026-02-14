@@ -14,18 +14,12 @@ void UVelocityComponentData::InstantiateComponentForEntity(ArgusEntity entity) c
 	VelocityComponentRef->m_desiredFlightSpeedUnitsPerSecond = m_desiredFlightSpeedUnitsPerSecond;
 }
 
-bool UVelocityComponentData::MatchesType(UComponentData* other) const
+bool UVelocityComponentData::MatchesType(const UComponentData* other) const
 {
 	if (!other)
 	{
 		return false;
 	}
 
-	const UVelocityComponentData* otherComponentData = Cast<UVelocityComponentData>(other);
-	if (!otherComponentData)
-	{
-		return false;
-	}
-
-	return true;
+	return other->IsA<UVelocityComponentData>();
 }

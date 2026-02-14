@@ -18,18 +18,12 @@ void UAbilityComponentData::InstantiateComponentForEntity(ArgusEntity entity) co
 	AbilityComponentRef->m_abilityCasterPriority = m_abilityCasterPriority;
 }
 
-bool UAbilityComponentData::MatchesType(UComponentData* other) const
+bool UAbilityComponentData::MatchesType(const UComponentData* other) const
 {
 	if (!other)
 	{
 		return false;
 	}
 
-	const UAbilityComponentData* otherComponentData = Cast<UAbilityComponentData>(other);
-	if (!otherComponentData)
-	{
-		return false;
-	}
-
-	return true;
+	return other->IsA<UAbilityComponentData>();
 }

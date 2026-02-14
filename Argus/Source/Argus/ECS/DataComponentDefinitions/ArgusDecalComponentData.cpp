@@ -13,18 +13,12 @@ void UArgusDecalComponentData::InstantiateComponentForEntity(ArgusEntity entity)
 	ArgusDecalComponentRef->m_lifetimeSeconds = m_lifetimeSeconds;
 }
 
-bool UArgusDecalComponentData::MatchesType(UComponentData* other) const
+bool UArgusDecalComponentData::MatchesType(const UComponentData* other) const
 {
 	if (!other)
 	{
 		return false;
 	}
 
-	const UArgusDecalComponentData* otherComponentData = Cast<UArgusDecalComponentData>(other);
-	if (!otherComponentData)
-	{
-		return false;
-	}
-
-	return true;
+	return other->IsA<UArgusDecalComponentData>();
 }

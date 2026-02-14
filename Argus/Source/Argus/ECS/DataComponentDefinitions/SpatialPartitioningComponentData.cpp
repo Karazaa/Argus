@@ -15,18 +15,12 @@ void USpatialPartitioningComponentData::InstantiateComponentForEntity(ArgusEntit
 	SpatialPartitioningComponentRef->m_elevatedObstaclePointHeightThreshold = m_elevatedObstaclePointHeightThreshold;
 }
 
-bool USpatialPartitioningComponentData::MatchesType(UComponentData* other) const
+bool USpatialPartitioningComponentData::MatchesType(const UComponentData* other) const
 {
 	if (!other)
 	{
 		return false;
 	}
 
-	const USpatialPartitioningComponentData* otherComponentData = Cast<USpatialPartitioningComponentData>(other);
-	if (!otherComponentData)
-	{
-		return false;
-	}
-
-	return true;
+	return other->IsA<USpatialPartitioningComponentData>();
 }

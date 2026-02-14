@@ -20,5 +20,5 @@ public:
 	float m_sightRange = 1200.0f;
 
 	void InstantiateComponentForEntity(ArgusEntity entity) const override;
-	bool MatchesType(UComponentData* other) const override;
+	bool MatchesType(const UComponentData* other) const override;
 };

@@ -14,18 +14,12 @@ void UResourceExtractionComponentData::InstantiateComponentForEntity(ArgusEntity
 	ResourceExtractionComponentRef->m_extractionLengthSeconds = m_extractionLengthSeconds;
 }
 
-bool UResourceExtractionComponentData::MatchesType(UComponentData* other) const
+bool UResourceExtractionComponentData::MatchesType(const UComponentData* other) const
 {
 	if (!other)
 	{
 		return false;
 	}
 
-	const UResourceExtractionComponentData* otherComponentData = Cast<UResourceExtractionComponentData>(other);
-	if (!otherComponentData)
-	{
-		return false;
-	}
-
-	return true;
+	return other->IsA<UResourceExtractionComponentData>();
 }

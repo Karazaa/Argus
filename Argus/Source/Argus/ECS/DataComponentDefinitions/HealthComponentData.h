@@ -18,5 +18,5 @@ public:
 	uint32 m_maximumHealth = 1000u;
 
 	void InstantiateComponentForEntity(ArgusEntity entity) const override;
-	bool MatchesType(UComponentData* other) const override;
+	bool MatchesType(const UComponentData* other) const override;
 };

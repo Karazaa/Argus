@@ -12,18 +12,12 @@ void UFogOfWarLocationComponentData::InstantiateComponentForEntity(ArgusEntity e
 
 }
 
-bool UFogOfWarLocationComponentData::MatchesType(UComponentData* other) const
+bool UFogOfWarLocationComponentData::MatchesType(const UComponentData* other) const
 {
 	if (!other)
 	{
 		return false;
 	}
 
-	const UFogOfWarLocationComponentData* otherComponentData = Cast<UFogOfWarLocationComponentData>(other);
-	if (!otherComponentData)
-	{
-		return false;
-	}
-
-	return true;
+	return other->IsA<UFogOfWarLocationComponentData>();
 }

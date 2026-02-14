@@ -16,18 +16,12 @@ void UConstructionComponentData::InstantiateComponentForEntity(ArgusEntity entit
 	ConstructionComponentRef->m_constructionType = m_constructionType;
 }
 
-bool UConstructionComponentData::MatchesType(UComponentData* other) const
+bool UConstructionComponentData::MatchesType(const UComponentData* other) const
 {
 	if (!other)
 	{
 		return false;
 	}
 
-	const UConstructionComponentData* otherComponentData = Cast<UConstructionComponentData>(other);
-	if (!otherComponentData)
-	{
-		return false;
-	}
-
-	return true;
+	return other->IsA<UConstructionComponentData>();
 }

@@ -13,18 +13,12 @@ void UAvoidanceGroupingComponentData::InstantiateComponentForEntity(ArgusEntity 
 	AvoidanceGroupingComponentRef->m_avoidancePriority = m_avoidancePriority;
 }
 
-bool UAvoidanceGroupingComponentData::MatchesType(UComponentData* other) const
+bool UAvoidanceGroupingComponentData::MatchesType(const UComponentData* other) const
 {
 	if (!other)
 	{
 		return false;
 	}
 
-	const UAvoidanceGroupingComponentData* otherComponentData = Cast<UAvoidanceGroupingComponentData>(other);
-	if (!otherComponentData)
-	{
-		return false;
-	}
-
-	return true;
+	return other->IsA<UAvoidanceGroupingComponentData>();
 }

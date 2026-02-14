@@ -12,18 +12,12 @@ void UNearbyObstaclesComponentData::InstantiateComponentForEntity(ArgusEntity en
 
 }
 
-bool UNearbyObstaclesComponentData::MatchesType(UComponentData* other) const
+bool UNearbyObstaclesComponentData::MatchesType(const UComponentData* other) const
 {
 	if (!other)
 	{
 		return false;
 	}
 
-	const UNearbyObstaclesComponentData* otherComponentData = Cast<UNearbyObstaclesComponentData>(other);
-	if (!otherComponentData)
-	{
-		return false;
-	}
-
-	return true;
+	return other->IsA<UNearbyObstaclesComponentData>();
 }

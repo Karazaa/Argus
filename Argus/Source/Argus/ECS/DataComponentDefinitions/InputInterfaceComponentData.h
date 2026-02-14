@@ -20,5 +20,5 @@ public:
 	uint8 m_numControlGroups = 12u;
 
 	void InstantiateComponentForEntity(ArgusEntity entity) const override;
-	bool MatchesType(UComponentData* other) const override;
+	bool MatchesType(const UComponentData* other) const override;
 };

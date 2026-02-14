@@ -12,18 +12,12 @@ void UAssetLoadingComponentData::InstantiateComponentForEntity(ArgusEntity entit
 
 }
 
-bool UAssetLoadingComponentData::MatchesType(UComponentData* other) const
+bool UAssetLoadingComponentData::MatchesType(const UComponentData* other) const
 {
 	if (!other)
 	{
 		return false;
 	}
 
-	const UAssetLoadingComponentData* otherComponentData = Cast<UAssetLoadingComponentData>(other);
-	if (!otherComponentData)
-	{
-		return false;
-	}
-
-	return true;
+	return other->IsA<UAssetLoadingComponentData>();
 }

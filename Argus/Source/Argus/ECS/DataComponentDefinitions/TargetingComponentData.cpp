@@ -15,18 +15,12 @@ void UTargetingComponentData::InstantiateComponentForEntity(ArgusEntity entity) 
 	TargetingComponentRef->m_sightRange = m_sightRange;
 }
 
-bool UTargetingComponentData::MatchesType(UComponentData* other) const
+bool UTargetingComponentData::MatchesType(const UComponentData* other) const
 {
 	if (!other)
 	{
 		return false;
 	}
 
-	const UTargetingComponentData* otherComponentData = Cast<UTargetingComponentData>(other);
-	if (!otherComponentData)
-	{
-		return false;
-	}
-
-	return true;
+	return other->IsA<UTargetingComponentData>();
 }

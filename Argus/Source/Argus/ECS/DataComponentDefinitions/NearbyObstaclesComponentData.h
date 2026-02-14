@@ -14,5 +14,5 @@ class ARGUS_API UNearbyObstaclesComponentData : public UComponentData
 public:
 
 	void InstantiateComponentForEntity(ArgusEntity entity) const override;
-	bool MatchesType(UComponentData* other) const override;
+	bool MatchesType(const UComponentData* other) const override;
 };

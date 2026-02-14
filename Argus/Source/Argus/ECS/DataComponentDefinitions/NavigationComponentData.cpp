@@ -12,18 +12,12 @@ void UNavigationComponentData::InstantiateComponentForEntity(ArgusEntity entity)
 
 }
 
-bool UNavigationComponentData::MatchesType(UComponentData* other) const
+bool UNavigationComponentData::MatchesType(const UComponentData* other) const
 {
 	if (!other)
 	{
 		return false;
 	}
 
-	const UNavigationComponentData* otherComponentData = Cast<UNavigationComponentData>(other);
-	if (!otherComponentData)
-	{
-		return false;
-	}
-
-	return true;
+	return other->IsA<UNavigationComponentData>();
 }

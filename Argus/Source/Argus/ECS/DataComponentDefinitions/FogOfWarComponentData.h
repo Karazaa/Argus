@@ -36,5 +36,5 @@ public:
 	float m_visionObstacleAdjustDistance = 100.0f;
 
 	void InstantiateComponentForEntity(ArgusEntity entity) const override;
-	bool MatchesType(UComponentData* other) const override;
+	bool MatchesType(const UComponentData* other) const override;
 };

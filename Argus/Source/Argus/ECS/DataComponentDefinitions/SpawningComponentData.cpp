@@ -14,18 +14,12 @@ void USpawningComponentData::InstantiateComponentForEntity(ArgusEntity entity) c
 	SpawningComponentRef->m_maximumQueueSize = m_maximumQueueSize;
 }
 
-bool USpawningComponentData::MatchesType(UComponentData* other) const
+bool USpawningComponentData::MatchesType(const UComponentData* other) const
 {
 	if (!other)
 	{
 		return false;
 	}
 
-	const USpawningComponentData* otherComponentData = Cast<USpawningComponentData>(other);
-	if (!otherComponentData)
-	{
-		return false;
-	}
-
-	return true;
+	return other->IsA<USpawningComponentData>();
 }

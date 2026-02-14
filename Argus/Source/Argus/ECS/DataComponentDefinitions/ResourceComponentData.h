@@ -22,5 +22,5 @@ public:
 	float m_bufferRegionRadius = 150.0f;
 
 	void InstantiateComponentForEntity(ArgusEntity entity) const override;
-	bool MatchesType(UComponentData* other) const override;
+	bool MatchesType(const UComponentData* other) const override;
 };

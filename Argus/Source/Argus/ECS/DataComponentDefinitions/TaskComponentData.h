@@ -17,5 +17,5 @@ public:
 	EFlightState m_flightState = EFlightState::Grounded;
 
 	void InstantiateComponentForEntity(ArgusEntity entity) const override;
-	bool MatchesType(UComponentData* other) const override;
+	bool MatchesType(const UComponentData* other) const override;
 };

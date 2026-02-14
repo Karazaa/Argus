@@ -808,7 +808,7 @@ bool TeamCommanderSystems::DoesAbilityConstructResourceSink(const UAbilityRecord
 	}
 
 	const UResourceComponentData* resourceComponentData = entityTemplate->GetComponentFromTemplate<UResourceComponentData>();
-	if (resourceComponentData->m_resourceComponentOwnerType != EResourceComponentOwnerType::Sink)
+	if (!resourceComponentData || resourceComponentData->m_resourceComponentOwnerType != EResourceComponentOwnerType::Sink)
 	{
 		return false;
 	}

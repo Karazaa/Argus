@@ -12,18 +12,12 @@ void UWorldReferenceComponentData::InstantiateComponentForEntity(ArgusEntity ent
 
 }
 
-bool UWorldReferenceComponentData::MatchesType(UComponentData* other) const
+bool UWorldReferenceComponentData::MatchesType(const UComponentData* other) const
 {
 	if (!other)
 	{
 		return false;
 	}
 
-	const UWorldReferenceComponentData* otherComponentData = Cast<UWorldReferenceComponentData>(other);
-	if (!otherComponentData)
-	{
-		return false;
-	}
-
-	return true;
+	return other->IsA<UWorldReferenceComponentData>();
 }

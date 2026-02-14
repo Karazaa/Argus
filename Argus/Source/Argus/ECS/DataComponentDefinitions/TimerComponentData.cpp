@@ -12,18 +12,12 @@ void UTimerComponentData::InstantiateComponentForEntity(ArgusEntity entity) cons
 
 }
 
-bool UTimerComponentData::MatchesType(UComponentData* other) const
+bool UTimerComponentData::MatchesType(const UComponentData* other) const
 {
 	if (!other)
 	{
 		return false;
 	}
 
-	const UTimerComponentData* otherComponentData = Cast<UTimerComponentData>(other);
-	if (!otherComponentData)
-	{
-		return false;
-	}
-
-	return true;
+	return other->IsA<UTimerComponentData>();
 }

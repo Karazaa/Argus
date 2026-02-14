@@ -5,9 +5,35 @@
 #include "ArgusStaticData.h"
 #include "DataComponentDefinitions/ComponentData.h"
 
+void UArgusEntityTemplate::AsyncLoadComponents(const TFunction<void()> onCompleteCallback) const
+{
+	AssetLoadingComponent* assetLoadingComponent = ArgusEntity::GetSingletonEntity().GetComponent<AssetLoadingComponent>();
+	ARGUS_RETURN_ON_NULL(assetLoadingComponent, ArgusECSLog);
+
+	TArray<FSoftObjectPath> pathsToLoad;
+	pathsToLoad.Reserve(m_componentData.Num());
+	for (int32 i = 0; i < m_componentData.Num(); ++i)
+	{
+		pathsToLoad.Add(m_componentData[i].ToSoftObjectPath());
+	}
+
+	assetLoadingComponent->m_streamableManager.RequestAsyncLoad(pathsToLoad, FStreamableDelegate::CreateLambda
+	(
+		[this, onCompleteCallback]()
+		{
+			this->CacheComponents();
+			if (onCompleteCallback)
+			{
+				onCompleteCallback();
+			}
+		})
+	);
+}
+
 ArgusEntity UArgusEntityTemplate::MakeEntity() const
 {
 	ArgusEntity entity = ArgusEntity::CreateEntity(static_cast<uint16>(m_entityPriority));
+	CacheComponents();
 	PopulateEntity(entity);
 	return entity;
 }
@@ -15,39 +41,23 @@ ArgusEntity UArgusEntityTemplate::MakeEntity() const
 ArgusEntity UArgusEntityTemplate::MakeEntity(uint16 entityId) const
 {
 	ArgusEntity entity = ArgusEntity::CreateEntity(entityId);
+	CacheComponents();
 	PopulateEntity(entity);
 	return entity;
 }
 
 ArgusEntity UArgusEntityTemplate::MakeEntityAsync(const TFunction<void(ArgusEntity)> onCompleteCallback) const
 {
-	AssetLoadingComponent* assetLoadingComponent = ArgusEntity::GetSingletonEntity().GetComponent<AssetLoadingComponent>();
-	if (!assetLoadingComponent)
-	{
-		ARGUS_ERROR_NULL(ArgusECSLog, assetLoadingComponent);
-		return ArgusEntity::k_emptyEntity;
-	}
-
 	ArgusEntity entity = ArgusEntity::CreateEntity(static_cast<uint16>(m_entityPriority));
 
-	TArray<FSoftObjectPath> pathsToLoad;
-	pathsToLoad.Reserve(m_componentData.Num());
-	for (TSoftObjectPtr<UComponentData> componentDataSoftObjectPtr : m_componentData)
+	AsyncLoadComponents([this, entity, onCompleteCallback]()
 	{
-		pathsToLoad.Add(componentDataSoftObjectPtr.ToSoftObjectPath());
-	}
-
-	assetLoadingComponent->m_streamableManager.RequestAsyncLoad(pathsToLoad, FStreamableDelegate::CreateLambda
-	(
-		[this, entity, onCompleteCallback]()
+		this->PopulateEntity(entity);
+		if (onCompleteCallback)
 		{
-			this->PopulateEntity(entity);
-			if (onCompleteCallback)
-			{
-				onCompleteCallback(entity);
-			}
-		})
-	);
+			onCompleteCallback(entity);
+		}
+	});
 
 	return entity;
 }
@@ -56,11 +66,12 @@ void UArgusEntityTemplate::PopulateEntity(ArgusEntity entity) const
 {
 	ARGUS_MEMORY_TRACE(ArgusComponentData);
 
-	for (TSoftObjectPtr<UComponentData> componentDataSoftObjectPtr : m_componentData)
+	for (int32 i = 0; i < m_loadedComponentData.Num(); ++i)
 	{
-		UComponentData* componentData = componentDataSoftObjectPtr.LoadSynchronous();
+		const UComponentData* componentData = m_loadedComponentData[i];
 		if (!componentData)
 		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Attempting to populate an entity from a template that has a deleted component."), ARGUS_FUNCNAME);
 			continue;
 		}
 
@@ -118,6 +129,31 @@ void UArgusEntityTemplate::SetInitialStateFromData(ArgusEntity entity) const
 	if (const ResourceExtractionComponent* resourceExtractionComponent = entity.GetComponent<ResourceExtractionComponent>())
 	{
 		ArgusStaticData::AsyncPreLoadRecord<UResourceSetRecord>(resourceExtractionComponent->m_resourcesToExtractRecordId);
+	}
+}
+
+void UArgusEntityTemplate::CacheComponents() const
+{
+	const int32 initialLoadedSize = m_loadedComponentData.Num();
+	m_loadedComponentData.Reserve(m_componentData.Num());
+	for (int32 i = 0; i < m_componentData.Num(); ++i)
+	{
+		if (i < initialLoadedSize)
+		{
+			if (!m_loadedComponentData[i])
+			{
+				m_loadedComponentData[i] = m_componentData[i].LoadSynchronous();
+			}	
+		}
+		else
+		{
+			m_loadedComponentData.Add(m_componentData[i].LoadSynchronous());
+		}
+
+		if (!m_loadedComponentData[i])
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Did not successfully load component data from soft pointers when loading all components."), ARGUS_FUNCNAME);
+		}
 	}
 }
 

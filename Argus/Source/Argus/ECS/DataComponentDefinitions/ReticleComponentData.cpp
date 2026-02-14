@@ -12,18 +12,12 @@ void UReticleComponentData::InstantiateComponentForEntity(ArgusEntity entity) co
 
 }
 
-bool UReticleComponentData::MatchesType(UComponentData* other) const
+bool UReticleComponentData::MatchesType(const UComponentData* other) const
 {
 	if (!other)
 	{
 		return false;
 	}
 
-	const UReticleComponentData* otherComponentData = Cast<UReticleComponentData>(other);
-	if (!otherComponentData)
-	{
-		return false;
-	}
-
-	return true;
+	return other->IsA<UReticleComponentData>();
 }

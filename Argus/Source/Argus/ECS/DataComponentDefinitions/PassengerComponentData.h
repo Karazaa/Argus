@@ -15,5 +15,5 @@ public:
 	uint16 m_carrierEntityId = ArgusECSConstants::k_maxEntities;
 
 	void InstantiateComponentForEntity(ArgusEntity entity) const override;
-	bool MatchesType(UComponentData* other) const override;
+	bool MatchesType(const UComponentData* other) const override;
 };

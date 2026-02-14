@@ -13,18 +13,12 @@ void UIdentityComponentData::InstantiateComponentForEntity(ArgusEntity entity) c
 	IdentityComponentRef->m_factionId = m_factionId.LoadSynchronous() ? m_factionId.LoadSynchronous()->m_id : 0u;
 }
 
-bool UIdentityComponentData::MatchesType(UComponentData* other) const
+bool UIdentityComponentData::MatchesType(const UComponentData* other) const
 {
 	if (!other)
 	{
 		return false;
 	}
 
-	const UIdentityComponentData* otherComponentData = Cast<UIdentityComponentData>(other);
-	if (!otherComponentData)
-	{
-		return false;
-	}
-
-	return true;
+	return other->IsA<UIdentityComponentData>();
 }

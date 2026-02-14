@@ -16,5 +16,5 @@ public:
 	uint8 m_carrierCapacity = 0u;
 
 	void InstantiateComponentForEntity(ArgusEntity entity) const override;
-	bool MatchesType(UComponentData* other) const override;
+	bool MatchesType(const UComponentData* other) const override;
 };

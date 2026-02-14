@@ -16,18 +16,12 @@ void UCombatComponentData::InstantiateComponentForEntity(ArgusEntity entity) con
 	CombatComponentRef->m_rangedAttackCapability = m_rangedAttackCapability;
 }
 
-bool UCombatComponentData::MatchesType(UComponentData* other) const
+bool UCombatComponentData::MatchesType(const UComponentData* other) const
 {
 	if (!other)
 	{
 		return false;
 	}
 
-	const UCombatComponentData* otherComponentData = Cast<UCombatComponentData>(other);
-	if (!otherComponentData)
-	{
-		return false;
-	}
-
-	return true;
+	return other->IsA<UCombatComponentData>();
 }

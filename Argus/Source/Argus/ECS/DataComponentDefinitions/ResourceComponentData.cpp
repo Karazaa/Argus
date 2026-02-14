@@ -16,18 +16,12 @@ void UResourceComponentData::InstantiateComponentForEntity(ArgusEntity entity) c
 	ResourceComponentRef->m_bufferRegionRadius = m_bufferRegionRadius;
 }
 
-bool UResourceComponentData::MatchesType(UComponentData* other) const
+bool UResourceComponentData::MatchesType(const UComponentData* other) const
 {
 	if (!other)
 	{
 		return false;
 	}
 
-	const UResourceComponentData* otherComponentData = Cast<UResourceComponentData>(other);
-	if (!otherComponentData)
-	{
-		return false;
-	}
-
-	return true;
+	return other->IsA<UResourceComponentData>();
 }
