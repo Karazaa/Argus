@@ -23,6 +23,10 @@ void UFogOfWarComponentData::InstantiateComponentForEntity(ArgusEntity entity) c
 	FogOfWarComponentRef->m_visionObstacleAdjustDistance = m_visionObstacleAdjustDistance;
 }
 
+void UFogOfWarComponentData::OnComponentDataLoaded() const
+{
+}
+
 bool UFogOfWarComponentData::MatchesType(const UComponentData* other) const
 {
 	if (!other)

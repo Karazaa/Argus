@@ -15,6 +15,10 @@ void UTargetingComponentData::InstantiateComponentForEntity(ArgusEntity entity) 
 	TargetingComponentRef->m_sightRange = m_sightRange;
 }
 
+void UTargetingComponentData::OnComponentDataLoaded() const
+{
+}
+
 bool UTargetingComponentData::MatchesType(const UComponentData* other) const
 {
 	if (!other)

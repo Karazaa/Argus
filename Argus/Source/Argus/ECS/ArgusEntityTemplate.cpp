@@ -153,7 +153,10 @@ void UArgusEntityTemplate::CacheComponents() const
 		if (!m_loadedComponentData[i])
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Did not successfully load component data from soft pointers when loading all components."), ARGUS_FUNCNAME);
+			continue;
 		}
+
+		m_loadedComponentData[i]->OnComponentDataLoaded();
 	}
 }
 

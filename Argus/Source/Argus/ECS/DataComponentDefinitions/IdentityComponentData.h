@@ -14,7 +14,13 @@ class ARGUS_API UIdentityComponentData : public UComponentData
 public:
 	UPROPERTY(EditAnywhere)
 	TSoftObjectPtr<UFactionRecord> m_factionId;
+private:
+	mutable uint32 m_factionIdLoaded = 0u;
+public:
+	uint32 Get_m_factionId() const { return m_factionIdLoaded; }
+
 
 	void InstantiateComponentForEntity(ArgusEntity entity) const override;
+	void OnComponentDataLoaded() const override;
 	bool MatchesType(const UComponentData* other) const override;
 };

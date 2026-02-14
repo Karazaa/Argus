@@ -15,6 +15,8 @@ public:
 	UPROPERTY(EditAnywhere)
 	uint8 m_carrierCapacity = 0u;
 
+
 	void InstantiateComponentForEntity(ArgusEntity entity) const override;
+	void OnComponentDataLoaded() const override;
 	bool MatchesType(const UComponentData* other) const override;
 };

@@ -14,9 +14,12 @@ class ARGUS_API USpawningComponentData : public UComponentData
 public:
 	UPROPERTY(EditAnywhere)
 	float m_spawningRadius = 100.0f;
+
 	UPROPERTY(EditAnywhere)
 	uint8 m_maximumQueueSize = 10u;
 
+
 	void InstantiateComponentForEntity(ArgusEntity entity) const override;
+	void OnComponentDataLoaded() const override;
 	bool MatchesType(const UComponentData* other) const override;
 };

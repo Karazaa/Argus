@@ -14,6 +14,10 @@ void UHealthComponentData::InstantiateComponentForEntity(ArgusEntity entity) con
 	HealthComponentRef->m_maximumHealth = m_maximumHealth;
 }
 
+void UHealthComponentData::OnComponentDataLoaded() const
+{
+}
+
 bool UHealthComponentData::MatchesType(const UComponentData* other) const
 {
 	if (!other)

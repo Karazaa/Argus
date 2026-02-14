@@ -14,6 +14,10 @@ void UTaskComponentData::InstantiateComponentForEntity(ArgusEntity entity) const
 	TaskComponentRef->m_flightState = m_flightState;
 }
 
+void UTaskComponentData::OnComponentDataLoaded() const
+{
+}
+
 bool UTaskComponentData::MatchesType(const UComponentData* other) const
 {
 	if (!other)

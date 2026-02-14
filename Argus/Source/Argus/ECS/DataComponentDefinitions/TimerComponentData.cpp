@@ -12,6 +12,10 @@ void UTimerComponentData::InstantiateComponentForEntity(ArgusEntity entity) cons
 
 }
 
+void UTimerComponentData::OnComponentDataLoaded() const
+{
+}
+
 bool UTimerComponentData::MatchesType(const UComponentData* other) const
 {
 	if (!other)

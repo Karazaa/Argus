@@ -14,13 +14,18 @@ class ARGUS_API UTransformComponentData : public UComponentData
 public:
 	UPROPERTY(EditAnywhere)
 float m_smoothedYawDecayConstant = 1.0f;
+
 	UPROPERTY(EditAnywhere)
 float m_smoothedTransitionAltitudeDecayConstant = 1.0f;
+
 	UPROPERTY(EditAnywhere)
 	float m_radius = 45.0f;
+
 	UPROPERTY(EditAnywhere)
 	EFlightCapability m_flightCapability;
 
+
 	void InstantiateComponentForEntity(ArgusEntity entity) const override;
+	void OnComponentDataLoaded() const override;
 	bool MatchesType(const UComponentData* other) const override;
 };

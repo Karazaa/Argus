@@ -12,6 +12,10 @@ void UNearbyEntitiesComponentData::InstantiateComponentForEntity(ArgusEntity ent
 
 }
 
+void UNearbyEntitiesComponentData::OnComponentDataLoaded() const
+{
+}
+
 bool UNearbyEntitiesComponentData::MatchesType(const UComponentData* other) const
 {
 	if (!other)

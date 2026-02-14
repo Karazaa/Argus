@@ -12,6 +12,10 @@ void UNavigationComponentData::InstantiateComponentForEntity(ArgusEntity entity)
 
 }
 
+void UNavigationComponentData::OnComponentDataLoaded() const
+{
+}
+
 bool UNavigationComponentData::MatchesType(const UComponentData* other) const
 {
 	if (!other)

@@ -14,9 +14,12 @@ class ARGUS_API UVelocityComponentData : public UComponentData
 public:
 	UPROPERTY(EditAnywhere)
 	float m_desiredSpeedUnitsPerSecond = 100.0f;
+
 	UPROPERTY(EditAnywhere)
 	float m_desiredFlightSpeedUnitsPerSecond = 100.0f;
 
+
 	void InstantiateComponentForEntity(ArgusEntity entity) const override;
+	void OnComponentDataLoaded() const override;
 	bool MatchesType(const UComponentData* other) const override;
 };

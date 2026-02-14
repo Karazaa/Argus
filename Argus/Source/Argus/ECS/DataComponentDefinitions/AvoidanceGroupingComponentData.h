@@ -15,6 +15,8 @@ public:
 	UPROPERTY(EditAnywhere)
 	EAvoidancePriority m_avoidancePriority = EAvoidancePriority::Lowest;
 
+
 	void InstantiateComponentForEntity(ArgusEntity entity) const override;
+	void OnComponentDataLoaded() const override;
 	bool MatchesType(const UComponentData* other) const override;
 };

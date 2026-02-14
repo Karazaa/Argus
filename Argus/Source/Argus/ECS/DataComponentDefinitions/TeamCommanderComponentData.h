@@ -15,6 +15,8 @@ public:
 	UPROPERTY(EditAnywhere)
 	float m_revealedAreaDimensionLength = 800.0f;
 
+
 	void InstantiateComponentForEntity(ArgusEntity entity) const override;
+	void OnComponentDataLoaded() const override;
 	bool MatchesType(const UComponentData* other) const override;
 };

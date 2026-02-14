@@ -13,5 +13,6 @@ class UComponentData : public UDataAsset
 
 public:
 	virtual void InstantiateComponentForEntity(ArgusEntity entity) const {};
+	virtual void OnComponentDataLoaded() const {};
 	virtual bool MatchesType(const UComponentData* other) const { return false; }
 };

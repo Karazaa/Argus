@@ -12,6 +12,10 @@ void UFogOfWarLocationComponentData::InstantiateComponentForEntity(ArgusEntity e
 
 }
 
+void UFogOfWarLocationComponentData::OnComponentDataLoaded() const
+{
+}
+
 bool UFogOfWarLocationComponentData::MatchesType(const UComponentData* other) const
 {
 	if (!other)

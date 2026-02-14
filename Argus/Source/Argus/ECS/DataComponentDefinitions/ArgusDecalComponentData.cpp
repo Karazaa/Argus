@@ -13,6 +13,10 @@ void UArgusDecalComponentData::InstantiateComponentForEntity(ArgusEntity entity)
 	ArgusDecalComponentRef->m_lifetimeSeconds = m_lifetimeSeconds;
 }
 
+void UArgusDecalComponentData::OnComponentDataLoaded() const
+{
+}
+
 bool UArgusDecalComponentData::MatchesType(const UComponentData* other) const
 {
 	if (!other)

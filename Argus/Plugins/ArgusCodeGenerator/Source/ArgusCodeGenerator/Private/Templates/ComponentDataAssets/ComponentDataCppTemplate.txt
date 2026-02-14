@@ -13,6 +13,10 @@ void U#####Data::InstantiateComponentForEntity(ArgusEntity entity) const
 	@@@@@
 }
 
+void U#####Data::OnComponentDataLoaded() const
+{
+}
+
 bool U#####Data::MatchesType(const UComponentData* other) const
 {
 	if (!other)

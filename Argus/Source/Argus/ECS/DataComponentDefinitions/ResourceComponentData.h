@@ -14,13 +14,22 @@ class ARGUS_API UResourceComponentData : public UComponentData
 public:
 	UPROPERTY(EditAnywhere)
 	FResourceSet m_currentResources;
+
 	UPROPERTY(EditAnywhere)
 	TSoftObjectPtr<UResourceSetRecord> m_resourceCapacityRecordId;
+private:
+	mutable uint32 m_resourceCapacityRecordIdLoaded = 0u;
+public:
+	uint32 Get_m_resourceCapacityRecordId() const { return m_resourceCapacityRecordIdLoaded; }
+
 	UPROPERTY(EditAnywhere)
 	EResourceComponentOwnerType m_resourceComponentOwnerType = EResourceComponentOwnerType::TeamPool;
+
 	UPROPERTY(EditAnywhere)
 	float m_bufferRegionRadius = 150.0f;
 
+
 	void InstantiateComponentForEntity(ArgusEntity entity) const override;
+	void OnComponentDataLoaded() const override;
 	bool MatchesType(const UComponentData* other) const override;
 };

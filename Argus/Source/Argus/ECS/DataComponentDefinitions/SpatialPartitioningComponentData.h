@@ -14,11 +14,15 @@ class ARGUS_API USpatialPartitioningComponentData : public UComponentData
 public:
 	UPROPERTY(EditAnywhere)
 	float m_validSpaceExtent = 3000.0f;
+
 	UPROPERTY(EditAnywhere)
 	float m_flyingPlaneHeight = 300.0f;
+
 	UPROPERTY(EditAnywhere)
 	float m_elevatedObstaclePointHeightThreshold = 10.0f;
 
+
 	void InstantiateComponentForEntity(ArgusEntity entity) const override;
+	void OnComponentDataLoaded() const override;
 	bool MatchesType(const UComponentData* other) const override;
 };

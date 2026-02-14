@@ -150,15 +150,22 @@ bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetHeaderFileTemplateWithR
 								variable.append(parsedComponentData.m_componentVariableData[i][j].m_defaultValue);
 							}
 						}
+						variable.append(";");
+						outParsedFileContents[i].m_lines.push_back(variable);
 					}
 					else
 					{
 						variable = std::regex_replace("\tTSoftObjectPtr<XXXXX>", std::regex("XXXXX"), variable);
 						variable.append(" ");
 						variable.append(parsedComponentData.m_componentVariableData[i][j].m_varName);
+						variable.append(";");
+						outParsedFileContents[i].m_lines.push_back(variable);
+						outParsedFileContents[i].m_lines.push_back("private:");
+						outParsedFileContents[i].m_lines.push_back(std::regex_replace("\tmutable uint32 XXXXXLoaded = 0u;", std::regex("XXXXX"), parsedComponentData.m_componentVariableData[i][j].m_varName));
+						outParsedFileContents[i].m_lines.push_back("public:");
+						outParsedFileContents[i].m_lines.push_back(std::regex_replace("\tuint32 Get_XXXXX() const { return XXXXXLoaded; }", std::regex("XXXXX"), parsedComponentData.m_componentVariableData[i][j].m_varName));
 					}
-					variable.append(";");
-					outParsedFileContents[i].m_lines.push_back(variable);
+					outParsedFileContents[i].m_lines.push_back("");
 				}
 			}
 		}
@@ -232,7 +239,13 @@ bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetCppFileTemplateWithRepl
 					const size_t exponentialDecaySmootherIndex = parsedComponentData.m_componentVariableData[i][j].m_typeName.find(s_exponentialDecaySmootherTypeName);
 					if (propertyStaticDataDelimiterIndex != std::string::npos)
 					{
-						std::string staticDataStatement = std::regex_replace("XXXXX.LoadSynchronous() ? XXXXX.LoadSynchronous()->m_id : 0u", std::regex("XXXXX"), parsedComponentData.m_componentVariableData[i][j].m_varName);
+						// TODO JAMES: Remove this once edit time ID caching is in place.
+						outParsedFileContents[i].m_lines.push_back(std::vformat("\tif (const UArgusStaticRecord* record = {}.LoadSynchronous())", std::make_format_args(parsedComponentData.m_componentVariableData[i][j].m_varName)));
+						outParsedFileContents[i].m_lines.push_back("\t{");
+						outParsedFileContents[i].m_lines.push_back(std::vformat("\t\t{}Loaded = record->m_id;", std::make_format_args(parsedComponentData.m_componentVariableData[i][j].m_varName)));
+						outParsedFileContents[i].m_lines.push_back("\t}");
+
+						std::string staticDataStatement = std::regex_replace("XXXXXLoaded", std::regex("XXXXX"), parsedComponentData.m_componentVariableData[i][j].m_varName);
 						variableAssignment.append(staticDataStatement);
 					}
 					else if (exponentialDecaySmootherIndex != std::string::npos)

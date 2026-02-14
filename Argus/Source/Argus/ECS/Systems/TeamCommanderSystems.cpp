@@ -726,6 +726,7 @@ void TeamCommanderSystems::ConvertAreaIndexToAreaCoordinates(int32 areaIndex, in
 	{
 		xCoordinate = -1;
 		yCoordinate = -1;
+		return;
 	}
 
 	yCoordinate = ArgusMath::SafeDivide(areaIndex, areasPerDimension);
@@ -839,7 +840,7 @@ bool TeamCommanderSystems::DoesAbilitySpawnUnitType(const UAbilityRecord* abilit
 		case ESpawnUnitType::Extractor:
 			if (const UResourceExtractionComponentData* resourceExtractionComponentData = entityTemplate->GetComponentFromTemplate<UResourceExtractionComponentData>())
 			{
-				if (const UResourceSetRecord* resourceSetRecord = resourceExtractionComponentData->m_resourcesToExtractRecordId.LoadSynchronous())
+				if (const UResourceSetRecord* resourceSetRecord = ArgusStaticData::GetRecord<UResourceSetRecord>(resourceExtractionComponentData->Get_m_resourcesToExtractRecordId()))
 				{
 					return resourceSetRecord->m_resourceSet.HasResourceType(resourceType);
 				}

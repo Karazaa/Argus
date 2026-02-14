@@ -14,6 +14,10 @@ void UVelocityComponentData::InstantiateComponentForEntity(ArgusEntity entity) c
 	VelocityComponentRef->m_desiredFlightSpeedUnitsPerSecond = m_desiredFlightSpeedUnitsPerSecond;
 }
 
+void UVelocityComponentData::OnComponentDataLoaded() const
+{
+}
+
 bool UVelocityComponentData::MatchesType(const UComponentData* other) const
 {
 	if (!other)

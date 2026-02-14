@@ -13,9 +13,12 @@ class ARGUS_API UTaskComponentData : public UComponentData
 
 public:
 	EBaseState m_baseState = EBaseState::Alive;
+
 	UPROPERTY(EditAnywhere)
 	EFlightState m_flightState = EFlightState::Grounded;
 
+
 	void InstantiateComponentForEntity(ArgusEntity entity) const override;
+	void OnComponentDataLoaded() const override;
 	bool MatchesType(const UComponentData* other) const override;
 };

@@ -15,6 +15,8 @@ public:
 	UPROPERTY(EditAnywhere)
 	float m_lifetimeSeconds = 1.0f;
 
+
 	void InstantiateComponentForEntity(ArgusEntity entity) const override;
+	void OnComponentDataLoaded() const override;
 	bool MatchesType(const UComponentData* other) const override;
 };

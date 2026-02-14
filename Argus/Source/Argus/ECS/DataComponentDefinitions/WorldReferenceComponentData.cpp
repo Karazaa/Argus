@@ -12,6 +12,10 @@ void UWorldReferenceComponentData::InstantiateComponentForEntity(ArgusEntity ent
 
 }
 
+void UWorldReferenceComponentData::OnComponentDataLoaded() const
+{
+}
+
 bool UWorldReferenceComponentData::MatchesType(const UComponentData* other) const
 {
 	if (!other)

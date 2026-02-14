@@ -15,6 +15,10 @@ void UInputInterfaceComponentData::InstantiateComponentForEntity(ArgusEntity ent
 	InputInterfaceComponentRef->m_numControlGroups = m_numControlGroups;
 }
 
+void UInputInterfaceComponentData::OnComponentDataLoaded() const
+{
+}
+
 bool UInputInterfaceComponentData::MatchesType(const UComponentData* other) const
 {
 	if (!other)

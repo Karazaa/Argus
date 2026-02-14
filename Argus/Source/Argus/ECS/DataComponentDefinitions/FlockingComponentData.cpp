@@ -14,6 +14,10 @@ void UFlockingComponentData::InstantiateComponentForEntity(ArgusEntity entity) c
 	FlockingComponentRef->m_flockingRootRadiusIncrement = m_flockingRootRadiusIncrement;
 }
 
+void UFlockingComponentData::OnComponentDataLoaded() const
+{
+}
+
 bool UFlockingComponentData::MatchesType(const UComponentData* other) const
 {
 	if (!other)

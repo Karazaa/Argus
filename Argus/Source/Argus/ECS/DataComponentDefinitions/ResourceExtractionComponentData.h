@@ -14,9 +14,16 @@ class ARGUS_API UResourceExtractionComponentData : public UComponentData
 public:
 	UPROPERTY(EditAnywhere)
 	TSoftObjectPtr<UResourceSetRecord> m_resourcesToExtractRecordId;
+private:
+	mutable uint32 m_resourcesToExtractRecordIdLoaded = 0u;
+public:
+	uint32 Get_m_resourcesToExtractRecordId() const { return m_resourcesToExtractRecordIdLoaded; }
+
 	UPROPERTY(EditAnywhere)
 	float m_extractionLengthSeconds = 1.0f;
 
+
 	void InstantiateComponentForEntity(ArgusEntity entity) const override;
+	void OnComponentDataLoaded() const override;
 	bool MatchesType(const UComponentData* other) const override;
 };

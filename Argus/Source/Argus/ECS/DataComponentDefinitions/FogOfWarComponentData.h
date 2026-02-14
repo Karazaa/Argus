@@ -14,27 +14,39 @@ class ARGUS_API UFogOfWarComponentData : public UComponentData
 public:
 	UPROPERTY(Transient)
 	TObjectPtr<UTexture2D> m_fogOfWarTexture = nullptr;
+
 	UPROPERTY(Transient)
 	TObjectPtr<UTexture2D> m_gaussianWeightsTexture = nullptr;
+
 	UPROPERTY(Transient)
 	TObjectPtr<UMaterialInstanceDynamic> m_dynamicMaterialInstance = nullptr;
+
 	UPROPERTY(EditAnywhere)
 	uint8 m_gaussianDimension = 5u;
+
 	UPROPERTY(EditAnywhere)
 	uint8 m_revealedOnceAlpha = 100u;
+
 	UPROPERTY(EditAnywhere)
 	uint16 m_textureSize = 1024u;
+
 	UPROPERTY(EditAnywhere)
 	float m_smoothingDecayConstant = 5.0f;
+
 	UPROPERTY(EditAnywhere)
 	bool m_shouldUseSmoothing = true;
+
 	UPROPERTY(EditAnywhere)
 	uint8 m_triangleRasterizeModulo = 4u;
+
 	UPROPERTY(EditAnywhere)
 	uint8 m_numberSmoothingChunks = 4u;
+
 	UPROPERTY(EditAnywhere)
 	float m_visionObstacleAdjustDistance = 100.0f;
 
+
 	void InstantiateComponentForEntity(ArgusEntity entity) const override;
+	void OnComponentDataLoaded() const override;
 	bool MatchesType(const UComponentData* other) const override;
 };

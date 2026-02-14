@@ -12,6 +12,10 @@ void UReticleComponentData::InstantiateComponentForEntity(ArgusEntity entity) co
 
 }
 
+void UReticleComponentData::OnComponentDataLoaded() const
+{
+}
+
 bool UReticleComponentData::MatchesType(const UComponentData* other) const
 {
 	if (!other)

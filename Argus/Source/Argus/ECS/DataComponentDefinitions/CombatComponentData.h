@@ -14,13 +14,18 @@ class ARGUS_API UCombatComponentData : public UComponentData
 public:
 	UPROPERTY(EditAnywhere)
 	uint32 m_baseDamagePerIntervalOrPerSecond = 100u;
+
 	UPROPERTY(EditAnywhere)
 	float m_intervalDurationSeconds = 1.0f;
+
 	UPROPERTY(EditAnywhere)
 	EAttackType m_attackType = EAttackType::Melee;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (EditCondition = "m_attackType == EAttackType::Ranged", EditConditionHides));
 	ERangedAttackCapability m_rangedAttackCapability = ERangedAttackCapability::GroundedAndFlying;
 
+
 	void InstantiateComponentForEntity(ArgusEntity entity) const override;
+	void OnComponentDataLoaded() const override;
 	bool MatchesType(const UComponentData* other) const override;
 };

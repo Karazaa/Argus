@@ -14,16 +14,39 @@ class ARGUS_API UAbilityComponentData : public UComponentData
 public:
 	UPROPERTY(EditAnywhere)
 	TSoftObjectPtr<UAbilityRecord> m_ability0Id;
+private:
+	mutable uint32 m_ability0IdLoaded = 0u;
+public:
+	uint32 Get_m_ability0Id() const { return m_ability0IdLoaded; }
+
 	UPROPERTY(EditAnywhere)
 	TSoftObjectPtr<UAbilityRecord> m_ability1Id;
+private:
+	mutable uint32 m_ability1IdLoaded = 0u;
+public:
+	uint32 Get_m_ability1Id() const { return m_ability1IdLoaded; }
+
 	UPROPERTY(EditAnywhere)
 	TSoftObjectPtr<UAbilityRecord> m_ability2Id;
+private:
+	mutable uint32 m_ability2IdLoaded = 0u;
+public:
+	uint32 Get_m_ability2Id() const { return m_ability2IdLoaded; }
+
 	UPROPERTY(EditAnywhere)
 	TSoftObjectPtr<UAbilityRecord> m_ability3Id;
+private:
+	mutable uint32 m_ability3IdLoaded = 0u;
+public:
+	uint32 Get_m_ability3Id() const { return m_ability3IdLoaded; }
+
 	uint8 m_abilityOverrideBitmask = 0u;
+
 	UPROPERTY(EditAnywhere)
 	uint8 m_abilityCasterPriority = 0u;
 
+
 	void InstantiateComponentForEntity(ArgusEntity entity) const override;
+	void OnComponentDataLoaded() const override;
 	bool MatchesType(const UComponentData* other) const override;
 };

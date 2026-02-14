@@ -16,6 +16,10 @@ void UTransformComponentData::InstantiateComponentForEntity(ArgusEntity entity) 
 	TransformComponentRef->m_flightCapability = m_flightCapability;
 }
 
+void UTransformComponentData::OnComponentDataLoaded() const
+{
+}
+
 bool UTransformComponentData::MatchesType(const UComponentData* other) const
 {
 	if (!other)

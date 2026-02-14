@@ -13,6 +13,10 @@ void UAvoidanceGroupingComponentData::InstantiateComponentForEntity(ArgusEntity 
 	AvoidanceGroupingComponentRef->m_avoidancePriority = m_avoidancePriority;
 }
 
+void UAvoidanceGroupingComponentData::OnComponentDataLoaded() const
+{
+}
+
 bool UAvoidanceGroupingComponentData::MatchesType(const UComponentData* other) const
 {
 	if (!other)

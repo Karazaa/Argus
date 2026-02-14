@@ -14,11 +14,15 @@ class ARGUS_API UTargetingComponentData : public UComponentData
 public:
 	UPROPERTY(EditAnywhere)
 	float m_meleeRange = 400.0f;
+
 	UPROPERTY(EditAnywhere)
 	float m_rangedRange = 400.0f;
+
 	UPROPERTY(EditAnywhere)
 	float m_sightRange = 1200.0f;
 
+
 	void InstantiateComponentForEntity(ArgusEntity entity) const override;
+	void OnComponentDataLoaded() const override;
 	bool MatchesType(const UComponentData* other) const override;
 };

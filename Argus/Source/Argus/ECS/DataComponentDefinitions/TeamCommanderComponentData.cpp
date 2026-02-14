@@ -13,6 +13,10 @@ void UTeamCommanderComponentData::InstantiateComponentForEntity(ArgusEntity enti
 	TeamCommanderComponentRef->m_revealedAreaDimensionLength = m_revealedAreaDimensionLength;
 }
 
+void UTeamCommanderComponentData::OnComponentDataLoaded() const
+{
+}
+
 bool UTeamCommanderComponentData::MatchesType(const UComponentData* other) const
 {
 	if (!other)

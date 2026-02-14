@@ -10,7 +10,15 @@ void UIdentityComponentData::InstantiateComponentForEntity(ArgusEntity entity) c
 	IdentityComponent* IdentityComponentRef = entity.GetOrAddComponent<IdentityComponent>();
 	ARGUS_RETURN_ON_NULL(IdentityComponentRef, ArgusECSLog);
 
-	IdentityComponentRef->m_factionId = m_factionId.LoadSynchronous() ? m_factionId.LoadSynchronous()->m_id : 0u;
+	if (const UArgusStaticRecord* record = m_factionId.LoadSynchronous())
+	{
+		m_factionIdLoaded = record->m_id;
+	}
+	IdentityComponentRef->m_factionId = m_factionIdLoaded;
+}
+
+void UIdentityComponentData::OnComponentDataLoaded() const
+{
 }
 
 bool UIdentityComponentData::MatchesType(const UComponentData* other) const

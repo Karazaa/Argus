@@ -10,8 +10,16 @@ void UResourceExtractionComponentData::InstantiateComponentForEntity(ArgusEntity
 	ResourceExtractionComponent* ResourceExtractionComponentRef = entity.GetOrAddComponent<ResourceExtractionComponent>();
 	ARGUS_RETURN_ON_NULL(ResourceExtractionComponentRef, ArgusECSLog);
 
-	ResourceExtractionComponentRef->m_resourcesToExtractRecordId = m_resourcesToExtractRecordId.LoadSynchronous() ? m_resourcesToExtractRecordId.LoadSynchronous()->m_id : 0u;
+	if (const UArgusStaticRecord* record = m_resourcesToExtractRecordId.LoadSynchronous())
+	{
+		m_resourcesToExtractRecordIdLoaded = record->m_id;
+	}
+	ResourceExtractionComponentRef->m_resourcesToExtractRecordId = m_resourcesToExtractRecordIdLoaded;
 	ResourceExtractionComponentRef->m_extractionLengthSeconds = m_extractionLengthSeconds;
+}
+
+void UResourceExtractionComponentData::OnComponentDataLoaded() const
+{
 }
 
 bool UResourceExtractionComponentData::MatchesType(const UComponentData* other) const

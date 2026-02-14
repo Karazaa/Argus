@@ -12,6 +12,10 @@ void UAssetLoadingComponentData::InstantiateComponentForEntity(ArgusEntity entit
 
 }
 
+void UAssetLoadingComponentData::OnComponentDataLoaded() const
+{
+}
+
 bool UAssetLoadingComponentData::MatchesType(const UComponentData* other) const
 {
 	if (!other)

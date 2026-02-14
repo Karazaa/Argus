@@ -10,12 +10,32 @@ void UAbilityComponentData::InstantiateComponentForEntity(ArgusEntity entity) co
 	AbilityComponent* AbilityComponentRef = entity.GetOrAddComponent<AbilityComponent>();
 	ARGUS_RETURN_ON_NULL(AbilityComponentRef, ArgusECSLog);
 
-	AbilityComponentRef->m_ability0Id = m_ability0Id.LoadSynchronous() ? m_ability0Id.LoadSynchronous()->m_id : 0u;
-	AbilityComponentRef->m_ability1Id = m_ability1Id.LoadSynchronous() ? m_ability1Id.LoadSynchronous()->m_id : 0u;
-	AbilityComponentRef->m_ability2Id = m_ability2Id.LoadSynchronous() ? m_ability2Id.LoadSynchronous()->m_id : 0u;
-	AbilityComponentRef->m_ability3Id = m_ability3Id.LoadSynchronous() ? m_ability3Id.LoadSynchronous()->m_id : 0u;
+	if (const UArgusStaticRecord* record = m_ability0Id.LoadSynchronous())
+	{
+		m_ability0IdLoaded = record->m_id;
+	}
+	AbilityComponentRef->m_ability0Id = m_ability0IdLoaded;
+	if (const UArgusStaticRecord* record = m_ability1Id.LoadSynchronous())
+	{
+		m_ability1IdLoaded = record->m_id;
+	}
+	AbilityComponentRef->m_ability1Id = m_ability1IdLoaded;
+	if (const UArgusStaticRecord* record = m_ability2Id.LoadSynchronous())
+	{
+		m_ability2IdLoaded = record->m_id;
+	}
+	AbilityComponentRef->m_ability2Id = m_ability2IdLoaded;
+	if (const UArgusStaticRecord* record = m_ability3Id.LoadSynchronous())
+	{
+		m_ability3IdLoaded = record->m_id;
+	}
+	AbilityComponentRef->m_ability3Id = m_ability3IdLoaded;
 	AbilityComponentRef->m_abilityOverrideBitmask = m_abilityOverrideBitmask;
 	AbilityComponentRef->m_abilityCasterPriority = m_abilityCasterPriority;
+}
+
+void UAbilityComponentData::OnComponentDataLoaded() const
+{
 }
 
 bool UAbilityComponentData::MatchesType(const UComponentData* other) const

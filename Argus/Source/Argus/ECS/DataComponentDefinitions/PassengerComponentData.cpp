@@ -13,6 +13,10 @@ void UPassengerComponentData::InstantiateComponentForEntity(ArgusEntity entity) 
 	PassengerComponentRef->m_carrierEntityId = m_carrierEntityId;
 }
 
+void UPassengerComponentData::OnComponentDataLoaded() const
+{
+}
+
 bool UPassengerComponentData::MatchesType(const UComponentData* other) const
 {
 	if (!other)
