@@ -147,37 +147,48 @@ void FogOfWarSystems::ClearActivelyRevealedPixelsForRange(FogOfWarComponent* fog
 
 	static constexpr int32 topIterationSize = 256;
 	static constexpr int32 midIterationSize = 32;
-	static constexpr int32 smallIterationSize = 8;
 
-	for (int32 i = fromInclusive; i < toExclusive; i += topIterationSize)
+	uint8* textureData = fogOfWarComponent->m_textureData.GetData();
+	const uint8 revealedOnceAlpha = fogOfWarComponent->m_revealedOnceAlpha;
+
+	const __m256i zeroedBytes = _mm256_setzero_si256();
+	const __m256i replacementAlphaBytes = _mm256_set1_epi8(static_cast<char>(revealedOnceAlpha));
+
+	// Ensure we don't exceed bounds
+	const int32 alignedEnd = fromInclusive + ((toExclusive - fromInclusive) / topIterationSize) * topIterationSize;
+	for (int32 i = fromInclusive; i < alignedEnd; i += topIterationSize)
 	{
-		if (!memchr(&fogOfWarComponent->m_textureData[i], 0, topIterationSize))
+		if (!memchr(&textureData[i], 0, topIterationSize))
 		{
 			continue;
 		}
 
 		for (int32 j = i; j < i + topIterationSize; j += midIterationSize)
 		{
-			if (!memchr(&fogOfWarComponent->m_textureData[j], 0, midIterationSize))
+			if (!memchr(&textureData[j], 0, midIterationSize))
 			{
 				continue;
 			}
 
-			for (int32 k = j; k < j + midIterationSize; k += smallIterationSize)
-			{
-				if (!memchr(&fogOfWarComponent->m_textureData[k], 0, smallIterationSize))
-				{
-					continue;
-				}
+			// SIMD: Load 32 bytes, find zeros, replace with revealedOnceAlpha
+			__m256i data = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(&textureData[j]));
 
-				for (int32 l = k; l < k + smallIterationSize; ++l)
-				{
-					if (fogOfWarComponent->m_textureData[l] == 0u)
-					{
-						fogOfWarComponent->m_textureData[l] = fogOfWarComponent->m_revealedOnceAlpha;
-					}
-				}
-			}
+			// Create mask where zeros are 0xFF
+			__m256i zeroMask = _mm256_cmpeq_epi8(data, zeroedBytes);
+
+			// Blend: keep original where not zero, use replacement where zero
+			__m256i result = _mm256_blendv_epi8(data, replacementAlphaBytes, zeroMask);
+
+			// Store result
+			_mm256_storeu_si256(reinterpret_cast<__m256i*>(&textureData[j]), result);
+		}
+	}
+
+	for (int32 i = alignedEnd; i < toExclusive; ++i)
+	{
+		if (textureData[i] == 0u)
+		{
+			textureData[i] = revealedOnceAlpha;
 		}
 	}
 }
@@ -240,43 +251,66 @@ void FogOfWarSystems::ApplyExponentialDecaySmoothingForRange(FogOfWarComponent* 
 	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
 
 	static constexpr int32 topIterationSize = 128;
-	static constexpr int32 midIterationSize = 32;
 	static constexpr int32 smallIterationSize = 8;
 	const uint8* sourceArray = fogOfWarComponent->m_textureData.GetData();
+	uint8* smoothedArray = fogOfWarComponent->m_smoothedTextureData.GetData();
+	float* intermediaryArray = fogOfWarComponent->m_intermediarySmoothingData.GetData();
 
 	// value = targetValue + ((value - targetValue) * FMath::Exp(-decayConstant * deltaTime));
-	for (int32 i = fromInclusive; i < toExclusive; i += topIterationSize)
+	const int32 alignedEnd = fromInclusive + ((toExclusive - fromInclusive) / topIterationSize) * topIterationSize;
+	for (int32 i = fromInclusive; i < alignedEnd; i += topIterationSize)
 	{
-		if (memcmp(&sourceArray[i], &fogOfWarComponent->m_smoothedTextureData[i], topIterationSize) == 0)
+		if (memcmp(&sourceArray[i], &smoothedArray[i], topIterationSize) == 0)
 		{
 			continue;
 		}
 
-		for (int32 j = i; j < i + topIterationSize; j += midIterationSize)
+		for (int32 j = i; j < i + topIterationSize; j += smallIterationSize)
 		{
-			if (memcmp(&sourceArray[j], &fogOfWarComponent->m_smoothedTextureData[j], midIterationSize) == 0)
+			if (*reinterpret_cast<const uint64*>(&sourceArray[j]) == *reinterpret_cast<const uint64*>(&smoothedArray[j]))
 			{
 				continue;
 			}
 
-			for (int32 k = j; k < j + midIterationSize; k += smallIterationSize)
-			{
-				if (memcmp(&sourceArray[k], &fogOfWarComponent->m_smoothedTextureData[k], smallIterationSize) == 0)
-				{
-					continue;
-				}
+			// Load values and do exponential decay smoothing.
+			const __m256 target32s = _mm256_cvtepi32_ps(_mm256_cvtepu8_epi32(_mm_loadl_epi64(reinterpret_cast<const __m128i*>(&sourceArray[j]))));
+			const __m256 smoothed32s = _mm256_load_ps(&intermediaryArray[j]);
+			const __m256 diff = _mm256_sub_ps(smoothed32s, target32s);
+			const __m256 resultFloats = _mm256_fmadd_ps(diff, exponentialDecayCoefficient, target32s);
 
-				// Load values and do exponential decay smoothing.
-				const __m256 target32s = _mm256_cvtepi32_ps(_mm256_cvtepu8_epi32(_mm_loadl_epi64(reinterpret_cast<const __m128i*>(&sourceArray[k]))));
-				const __m256 smoothed32s = _mm256_load_ps(&fogOfWarComponent->m_intermediarySmoothingData[k]);
-				const __m256 resultFloats = _mm256_add_ps(target32s, _mm256_mul_ps(_mm256_sub_ps(smoothed32s, target32s), exponentialDecayCoefficient));
+			// Store values back into intermediary smoothing array and final smoothed array.
+			_mm256_store_ps(&intermediaryArray[j], resultFloats);
 
-				// Store values back into intermediary smoothing array and final smoothed array.
-				_mm256_store_ps(&fogOfWarComponent->m_intermediarySmoothingData[k], resultFloats);
-				const __m256i packedInt8 = _mm256_permute4x64_epi64(_mm256_packs_epi32(_mm256_cvtps_epi32(resultFloats), _mm256_setzero_si256()), 0xD8);
-				_mm_storel_epi64(reinterpret_cast<__m128i*>(&fogOfWarComponent->m_smoothedTextureData[k]), _mm_packus_epi16(_mm256_castsi256_si128(packedInt8), _mm256_extracti128_si256(packedInt8, 1)));
-			}
+			// Convert floats to uint8 and store
+			// Step 1: float -> int32
+			const __m256i resultInt32 = _mm256_cvtps_epi32(resultFloats);
+
+			// Step 2: int32 -> int16 (pack with saturation)
+			const __m256i packed16 = _mm256_packs_epi32(resultInt32, _mm256_setzero_si256());
+
+			// Step 3: Reorder lanes and extract lower 64 bits as uint8
+			const __m256i reordered = _mm256_permute4x64_epi64(packed16, 0xD8);
+			const __m128i lower128 = _mm256_castsi256_si128(reordered);
+			const __m128i upper128 = _mm256_extracti128_si256(reordered, 1);
+			const __m128i packed8 = _mm_packus_epi16(lower128, upper128);
+
+			_mm_storel_epi64(reinterpret_cast<__m128i*>(&smoothedArray[j]), packed8);
 		}
+	}
+
+	for (int32 i = alignedEnd; i < toExclusive; ++i)
+	{
+		if (sourceArray[i] == smoothedArray[i])
+		{
+			continue;
+		}
+
+		const float target = static_cast<float>(sourceArray[i]);
+		const float smoothed = intermediaryArray[i];
+		const float result = target + ((smoothed - target) * FMath::Exp(-fogOfWarComponent->m_smoothingDecayConstant * deltaTime));
+
+		intermediaryArray[i] = result;
+		smoothedArray[i] = static_cast<uint8>(FMath::Clamp(FMath::RoundToInt32(result), 0, 255));
 	}
 }
 
@@ -535,21 +569,23 @@ void FogOfWarSystems::RasterizeTriangleForReveal(FogOfWarComponent* fogOfWarComp
 	ARGUS_TRACE(FogOfWarSystems::RasterizeTriangleForReveal);
 	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
 
-	TArray<TPair<int32, int32>, TInlineAllocator<3>> points;
-	points.SetNumUninitialized(3);
-	GetPixelCoordsFromWorldSpaceLocation(fogOfWarComponent, ArgusMath::ToUnrealVector2(point0), points[0]);
-	GetPixelCoordsFromWorldSpaceLocation(fogOfWarComponent, ArgusMath::ToUnrealVector2(point1), points[1]);
-	GetPixelCoordsFromWorldSpaceLocation(fogOfWarComponent, ArgusMath::ToUnrealVector2(point2), points[2]);
+	TPair<int32, int32> points[3];
+	const SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::GetSingletonEntity().GetComponent<SpatialPartitioningComponent>();
+	GetPixelCoordsFromWorldSpaceLocation(fogOfWarComponent, spatialPartitioningComponent,  ArgusMath::ToUnrealVector2(point0), points[0]);
+	GetPixelCoordsFromWorldSpaceLocation(fogOfWarComponent, spatialPartitioningComponent, ArgusMath::ToUnrealVector2(point1), points[1]);
+	GetPixelCoordsFromWorldSpaceLocation(fogOfWarComponent, spatialPartitioningComponent, ArgusMath::ToUnrealVector2(point2), points[2]);
 
-	points.Sort([](const TPair<int32, int32>& pointA, const TPair<int32, int32>& pointB)
+	auto CompareSwap = [](TPair<int32, int32>& pointA, TPair<int32, int32>& pointB) 
 	{
-		if (pointA.Value == pointB.Value)
+		if (pointA.Value < pointB.Value || (pointA.Value == pointB.Value && pointA.Key > pointB.Key))
 		{
-			return pointA.Key < pointB.Key;
+			Swap(pointA, pointB);
 		}
+	};
 
-		return pointA.Value > pointB.Value;
-	});
+	CompareSwap(points[0], points[1]);
+	CompareSwap(points[1], points[2]);
+	CompareSwap(points[0], points[1]);
 
 	if (points[1].Value == points[2].Value)
 	{
@@ -595,21 +631,33 @@ void FogOfWarSystems::FillFlatBottomTriangle(FogOfWarComponent* fogOfWarComponen
 		return;
 	}
 
-	const float inverseSlopeLeft = static_cast<float>(point1.Key - point0.Key) / static_cast<float>(point1.Value - point0.Value);
-	const float inverseSlopeRight = static_cast<float>(point2.Key - point0.Key) / static_cast<float>(point2.Value - point0.Value);
-
-	float leftEdgeX = point0.Key;
-	float rightEdgeX = point0.Key;
-
+	// Cache frequently accessed values
+	const int32 textureSize = fogOfWarComponent->m_textureSize;
+	uint8* textureData = fogOfWarComponent->m_textureData.GetData();
+	
+	// Use fixed-point arithmetic (16.16 format) to avoid float→int conversions
+	const int32 deltaY = point1.Value - point0.Value; // Negative for flat-bottom
+	const int32 fixedSlopeLeft = ((point1.Key - point0.Key) << 16) / deltaY;
+	const int32 fixedSlopeRight = ((point2.Key - point0.Key) << 16) / deltaY;
+	
+	int32 fixedLeftX = point0.Key << 16;
+	int32 fixedRightX = point0.Key << 16;
+	
 	for (int32 height = point0.Value; height >= point1.Value; --height)
 	{
-		const uint32 heightIndex = static_cast<uint32>(height) * static_cast<uint32>(fogOfWarComponent->m_textureSize);
-		const uint32 leftIndex = FMath::FloorToInt32(leftEdgeX);
-		const uint32 rightIndex = FMath::CeilToInt32(rightEdgeX);
-		SetAlphaForPixelRange(fogOfWarComponent, heightIndex + leftIndex, heightIndex + rightIndex);
-
-		leftEdgeX -= inverseSlopeLeft;
-		rightEdgeX -= inverseSlopeRight;
+		const int32 heightIndex = height * textureSize;
+		const int32 leftIndex = fixedLeftX >> 16;
+		const int32 rightIndex = (fixedRightX + 0xFFFF) >> 16; // Equivalent to ceil
+		
+		// Inline memset - avoid function call overhead
+		const int32 rowLength = (rightIndex - leftIndex) + 1;
+		if (rowLength > 0)
+		{
+			memset(&textureData[heightIndex + leftIndex], 0, rowLength);
+		}
+		
+		fixedLeftX -= fixedSlopeLeft;
+		fixedRightX -= fixedSlopeRight;
 	}
 }
 
@@ -622,21 +670,32 @@ void FogOfWarSystems::FillFlatTopTriangle(FogOfWarComponent* fogOfWarComponent, 
 		return;
 	}
 
-	const float inverseSlopeLeft = static_cast<float>(point2.Key - point0.Key) / static_cast<float>(point2.Value - point0.Value);
-	const float inverseSlopeRight = static_cast<float>(point2.Key - point1.Key) / static_cast<float>(point2.Value - point1.Value);
-
-	float leftEdgeX = point2.Key;
-	float rightEdgeX = point2.Key;
-
+	// Cache frequently accessed values
+	const int32 textureSize = fogOfWarComponent->m_textureSize;
+	uint8* textureData = fogOfWarComponent->m_textureData.GetData();
+	
+	// Use fixed-point arithmetic (16.16 format)
+	const int32 deltaY = point2.Value - point0.Value; // Negative for flat-top
+	const int32 fixedSlopeLeft = ((point2.Key - point0.Key) << 16) / deltaY;
+	const int32 fixedSlopeRight = ((point2.Key - point1.Key) << 16) / deltaY;
+	
+	int32 fixedLeftX = point2.Key << 16;
+	int32 fixedRightX = point2.Key << 16;
+	
 	for (int32 height = point2.Value; height <= point0.Value; ++height)
 	{
-		const uint32 heightIndex = static_cast<uint32>(height) * static_cast<uint32>(fogOfWarComponent->m_textureSize);
-		const uint32 leftIndex = FMath::FloorToInt32(leftEdgeX);
-		const uint32 rightIndex = FMath::CeilToInt32(rightEdgeX);
-		SetAlphaForPixelRange(fogOfWarComponent, heightIndex + leftIndex, heightIndex + rightIndex);
-
-		leftEdgeX += inverseSlopeLeft;
-		rightEdgeX += inverseSlopeRight;
+		const int32 heightIndex = height * textureSize;
+		const int32 leftIndex = fixedLeftX >> 16;
+		const int32 rightIndex = (fixedRightX + 0xFFFF) >> 16;
+		
+		const int32 rowLength = (rightIndex - leftIndex) + 1;
+		if (rowLength > 0)
+		{
+			memset(&textureData[heightIndex + leftIndex], 0, rowLength);
+		}
+		
+		fixedLeftX += fixedSlopeLeft;
+		fixedRightX += fixedSlopeRight;
 	}
 }
 
@@ -657,11 +716,14 @@ void FogOfWarSystems::RevealPixelRangeWithObstacles(FogOfWarComponent* fogOfWarC
 	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
 	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
 
-	const FVector2D cartesianFromLocation = ArgusMath::ToCartesianVector2(GetWorldSpaceLocationFromPixelNumber(fogOfWarComponent, fromPixelInclusive));
-	const FVector2D cartesianToLocation = ArgusMath::ToCartesianVector2(GetWorldSpaceLocationFromPixelNumber(fogOfWarComponent, toPixelInclusive));
+	const float visionAdjustDistance = fogOfWarComponent->m_visionObstacleAdjustDistance;
+	const FVector2D cartesianFromLocation = ArgusMath::ToCartesianVector2(GetWorldSpaceLocationFromPixelNumber(fogOfWarComponent, spatialPartitioningComponent, fromPixelInclusive));
+	const FVector2D cartesianToLocation = ArgusMath::ToCartesianVector2(GetWorldSpaceLocationFromPixelNumber(fogOfWarComponent, spatialPartitioningComponent, toPixelInclusive));
 
 	FVector2D currentFromIntersection = cartesianFromLocation;
 	FVector2D currentToIntersection = cartesianToLocation;
+	float currentFromDistanceSquared = FVector2D::DistSquared(cartesianEntityLocation, currentFromIntersection);
+	float currentToDistanceSquared = FVector2D::DistSquared(cartesianEntityLocation, currentToIntersection);
 	
 	const TArray<ObstacleIndicies, ArgusContainerAllocator<20u> >& inRangeObstacleIndicies = obstacleIndicies.GetInRangeObstacleIndicies();
 	for (int32 i = 0; i < inRangeObstacleIndicies.Num(); ++i)
@@ -680,30 +742,34 @@ void FogOfWarSystems::RevealPixelRangeWithObstacles(FogOfWarComponent* fogOfWarC
 		FVector2D nextPoint = nextObstaclePoint.m_point;
 		const FVector2D nextLeft = nextObstaclePoint.GetLeftVector();
 
-		currentPoint += (currentLeft * fogOfWarComponent->m_visionObstacleAdjustDistance);
-		nextPoint += (nextLeft * fogOfWarComponent->m_visionObstacleAdjustDistance);
-
-		FVector2D fromIntersection = cartesianFromLocation;
-		FVector2D toIntersection = cartesianToLocation;
+		currentPoint += (currentLeft * visionAdjustDistance);
+		nextPoint += (nextLeft * visionAdjustDistance);
 
 		if (ArgusMath::IsLeftOfCartesian(currentPoint, nextPoint, cartesianEntityLocation))
 		{
 			continue;
 		}
 
+		FVector2D fromIntersection = cartesianFromLocation;
+		FVector2D toIntersection = cartesianToLocation;
+
 		if (ArgusMath::GetLineSegmentIntersectionCartesian(cartesianEntityLocation, cartesianFromLocation, currentPoint, nextPoint, fromIntersection))
 		{
-			if (FVector2D::DistSquared(cartesianEntityLocation, fromIntersection) < FVector2D::DistSquared(cartesianEntityLocation, currentFromIntersection))
+			const float fromDistanceSquared = FVector2D::DistSquared(cartesianEntityLocation, fromIntersection);
+			if (fromDistanceSquared < currentFromDistanceSquared)
 			{
 				currentFromIntersection = fromIntersection;
+				currentFromDistanceSquared = fromDistanceSquared;
 			}
 		}
 
 		if (ArgusMath::GetLineSegmentIntersectionCartesian(cartesianEntityLocation, cartesianToLocation, currentPoint, nextPoint, toIntersection))
 		{
-			if (FVector2D::DistSquared(cartesianEntityLocation, toIntersection) < FVector2D::DistSquared(cartesianEntityLocation, currentToIntersection))
+			const float toDistanceSquared = FVector2D::DistSquared(cartesianEntityLocation, toIntersection);
+			if (toDistanceSquared < currentToDistanceSquared)
 			{
 				currentToIntersection = toIntersection;
+				currentToDistanceSquared = toDistanceSquared;
 			}
 		}
 	}
@@ -844,11 +910,9 @@ void FogOfWarSystems::UpdateDynamicMaterialInstance()
 	}
 }
 
-bool FogOfWarSystems::GetPixelCoordsFromWorldSpaceLocation(FogOfWarComponent* fogOfWarComponent, const FVector2D& worldSpaceLocation, TPair<int32, int32>& ouputPair)
+bool FogOfWarSystems::GetPixelCoordsFromWorldSpaceLocation(FogOfWarComponent* fogOfWarComponent, const SpatialPartitioningComponent* spatialPartitioningComponent, const FVector2D& worldSpaceLocation, TPair<int32, int32>& ouputPair)
 {
 	ARGUS_RETURN_ON_NULL_BOOL(fogOfWarComponent, ArgusECSLog);
-
-	SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId).GetComponent<SpatialPartitioningComponent>();
 	ARGUS_RETURN_ON_NULL_BOOL(spatialPartitioningComponent, ArgusECSLog);
 
 	const float textureSize = static_cast<float>(fogOfWarComponent->m_textureSize);
@@ -883,8 +947,12 @@ uint32 FogOfWarSystems::GetPixelNumberFromWorldSpaceLocation(FogOfWarComponent* 
 
 FVector2D FogOfWarSystems::GetWorldSpaceLocationFromPixelNumber(FogOfWarComponent* fogOfWarComponent, uint32 pixelNumber)
 {
+	return GetWorldSpaceLocationFromPixelNumber(fogOfWarComponent, ArgusEntity::GetSingletonEntity().GetComponent<SpatialPartitioningComponent>(), pixelNumber);
+}
+
+FVector2D FogOfWarSystems::GetWorldSpaceLocationFromPixelNumber(FogOfWarComponent* fogOfWarComponent, const SpatialPartitioningComponent* spatialPartitioningComponent, uint32 pixelNumber)
+{
 	ARGUS_RETURN_ON_NULL_VALUE(fogOfWarComponent, ArgusECSLog, FVector2D::ZeroVector);
-	SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId).GetComponent<SpatialPartitioningComponent>();
 	ARGUS_RETURN_ON_NULL_VALUE(spatialPartitioningComponent, ArgusECSLog, FVector2D::ZeroVector);
 
 	const float worldspaceWidth = spatialPartitioningComponent->m_validSpaceExtent * 2.0f;
