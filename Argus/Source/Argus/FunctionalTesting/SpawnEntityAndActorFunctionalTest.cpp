@@ -122,7 +122,7 @@ void ASpawnEntityAndActorFunctionalTest::StartSpawnArgusEntityTestStep()
 		return;
 	}
 
-	m_expectedSpawnedEntityId = static_cast<uint16>(loadedEntityTemplate->m_entityPriority);
+	m_expectedSpawnedEntityId = static_cast<uint16>(loadedEntityTemplate->GetEntityPriority());
 	SpawnEntityInfo spawnInfo;
 	if (UArgusActorRecord* loadedRecord = m_argusActorRecord.LoadSynchronous())
 	{

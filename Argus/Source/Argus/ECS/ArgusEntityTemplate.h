@@ -13,32 +13,22 @@ class UArgusEntityTemplate : public UDataAsset
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere)
-	UEntityPriority m_entityPriority;
-
-	UPROPERTY(EditAnywhere)
-	TArray<TSoftObjectPtr<const UComponentData>> m_componentData;
-
-	UPROPERTY(Transient)
-	mutable TArray<TObjectPtr<const UComponentData>> m_loadedComponentData;
-
 	void AsyncLoadComponents(const TFunction<void()> onCompleteCallback = nullptr) const;
 	ArgusEntity MakeEntity() const;
 	ArgusEntity MakeEntity(uint16 entityId) const;
 	ArgusEntity MakeEntityAsync(const TFunction<void(ArgusEntity)> onCompleteCallback = nullptr) const;
 	void PopulateEntity(ArgusEntity entity) const;
 	void SetInitialStateFromData(ArgusEntity entity) const;
+	UEntityPriority GetEntityPriority() const { return m_entityPriority; }
 
 	template <typename ComponentType>
 	const ComponentType* GetComponentFromTemplate() const
 	{
 		ARGUS_TRACE(UArgusEntityTemplate::GetComponentFromTemplate);
 
-		CacheComponents();
-		for (int32 i = 0; i < m_loadedComponentData.Num(); ++i)
+		if (const TObjectPtr<const UComponentData>* componentPointer = m_loadedComponentData.Find(ComponentType::StaticClass()))
 		{
-			const ComponentType* component = Cast<ComponentType>(m_loadedComponentData[i]);
-			if (component)
+			if (const ComponentType* component = Cast<ComponentType>(componentPointer->Get()))
 			{
 				return component;
 			}
@@ -52,5 +42,19 @@ public:
 #endif
 
 private:
+	UPROPERTY(EditAnywhere)
+	UEntityPriority m_entityPriority;
+
+	UPROPERTY(EditAnywhere)
+	TArray<TSoftObjectPtr<const UComponentData>> m_componentData;
+
+	UPROPERTY(Transient)
+	mutable TMap<UClass*, TObjectPtr<const UComponentData>> m_loadedComponentData;
+
 	void CacheComponents() const;
+
+#if WITH_AUTOMATION_TESTS
+	friend class ArgusEntityTemplateInstantiateEntityTest;
+	friend class SpawningSystemsSpawnEntityTest;
+#endif
 };

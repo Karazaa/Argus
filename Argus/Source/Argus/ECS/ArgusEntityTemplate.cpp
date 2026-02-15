@@ -66,9 +66,9 @@ void UArgusEntityTemplate::PopulateEntity(ArgusEntity entity) const
 {
 	ARGUS_MEMORY_TRACE(ArgusComponentData);
 
-	for (int32 i = 0; i < m_loadedComponentData.Num(); ++i)
+	for (const TPair<UClass*, TObjectPtr<const UComponentData>>& keyValuePair : m_loadedComponentData)
 	{
-		const UComponentData* componentData = m_loadedComponentData[i];
+		const UComponentData* componentData = keyValuePair.Value.Get();
 		if (!componentData)
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Attempting to populate an entity from a template that has a deleted component."), ARGUS_FUNCNAME);
@@ -134,29 +134,32 @@ void UArgusEntityTemplate::SetInitialStateFromData(ArgusEntity entity) const
 
 void UArgusEntityTemplate::CacheComponents() const
 {
-	const int32 initialLoadedSize = m_loadedComponentData.Num();
-	m_loadedComponentData.Reserve(m_componentData.Num());
+	bool needsUpdating = m_loadedComponentData.Num() != m_componentData.Num();
+	if (!needsUpdating)
+	{
+		for (const TPair<UClass*, TObjectPtr<const UComponentData>>& keyValuePair : m_loadedComponentData)
+		{
+			if (!keyValuePair.Value)
+			{
+				needsUpdating = true;
+				break;
+			}
+		}
+	}
+
+	if (!needsUpdating)
+	{
+		return;
+	}
+
 	for (int32 i = 0; i < m_componentData.Num(); ++i)
 	{
-		if (i < initialLoadedSize)
+		if (const UComponentData* loadedComponent = m_componentData[i].LoadSynchronous())
 		{
-			if (!m_loadedComponentData[i])
-			{
-				m_loadedComponentData[i] = m_componentData[i].LoadSynchronous();
-			}	
+			UClass* loadedComponentClass = loadedComponent->GetClass();
+			m_loadedComponentData.FindOrAdd(loadedComponentClass) = loadedComponent;
+			loadedComponent->OnComponentDataLoaded();
 		}
-		else
-		{
-			m_loadedComponentData.Add(m_componentData[i].LoadSynchronous());
-		}
-
-		if (!m_loadedComponentData[i])
-		{
-			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Did not successfully load component data from soft pointers when loading all components."), ARGUS_FUNCNAME);
-			continue;
-		}
-
-		m_loadedComponentData[i]->OnComponentDataLoaded();
 	}
 }
 
