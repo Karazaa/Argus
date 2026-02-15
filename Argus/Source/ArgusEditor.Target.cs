@@ -1,7 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
+using EpicGames.Core;
 using UnrealBuildTool;
-using System.Collections.Generic;
 
 public class ArgusEditorTarget : TargetRules
 {
@@ -9,7 +9,7 @@ public class ArgusEditorTarget : TargetRules
 	{
 		Type = TargetType.Editor;
 		DefaultBuildSettings = BuildSettingsVersion.V6;
-		ExtraModuleNames.Add("Argus");
+		ExtraModuleNames.AddAll("Argus", "ArgusEditor");
 
 		bAdaptiveUnityDisablesOptimizations = true;
 	}

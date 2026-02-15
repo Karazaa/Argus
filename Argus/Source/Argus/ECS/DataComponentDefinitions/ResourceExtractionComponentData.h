@@ -4,6 +4,7 @@
 #pragma once
 
 #include "ComponentData.h"
+#include "RecordReferences/ResourceSetRecordReference.h"
 #include "ResourceExtractionComponentData.generated.h"
 
 UCLASS()
@@ -22,6 +23,8 @@ public:
 	UPROPERTY(EditAnywhere)
 	float m_extractionLengthSeconds = 1.0f;
 
+	UPROPERTY(EditAnywhere)
+	FResourceSetRecordReference m_resourceSetRecordReference;
 
 	void InstantiateComponentForEntity(ArgusEntity entity) const override;
 	void OnComponentDataLoaded() const override;

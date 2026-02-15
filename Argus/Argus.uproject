@@ -12,6 +12,11 @@
 				"Engine",
 				"FunctionalTesting"
 			]
+		},
+		{
+			"Name": "ArgusEditor",
+			"Type": "Editor",
+			"LoadingPhase": "PostEngineInit"
 		}
 	],
 	"Plugins": [

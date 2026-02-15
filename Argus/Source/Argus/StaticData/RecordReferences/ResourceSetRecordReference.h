@@ -3,27 +3,22 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "ArgusStaticRecordReference.h"
 #include "ResourceSetRecordReference.generated.h"
 
 class UResourceSetRecord;
 
 USTRUCT()
-struct FResourceSetRecordReference
+struct FResourceSetRecordReference : public FArgusStaticRecordReference
 {
 	GENERATED_BODY();
 
 public:
-	uint32 GetId() const { return m_id; }
-
 #if WITH_EDITOR
-	void StoreId() const;
+	void StoreId() const override;
 #endif
 
 private:
 	UPROPERTY(EditAnywhere)
 	TSoftObjectPtr<UResourceSetRecord> m_softObjectPtr = nullptr;
-
-	UPROPERTY(VisibleAnywhere)
-	mutable uint32 m_id = 0;
 };
