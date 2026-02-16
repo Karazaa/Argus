@@ -4,8 +4,9 @@
 #pragma once
 
 #include "ArgusStaticRecordReference.h"
-#include "RecordDefinitions\TeamColorRecord.h"
 #include "TeamColorRecordReference.generated.h"
+
+class UTeamColorRecord;
 
 USTRUCT()
 struct FUTeamColorRecordReference : public FArgusStaticRecordReference

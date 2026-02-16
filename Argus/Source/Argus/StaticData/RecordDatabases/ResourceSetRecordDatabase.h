@@ -4,7 +4,7 @@
 #pragma once
 
 #include "ArgusMacros.h"
-#include "RecordDefinitions\ResourceSetRecord.h"
+#include "RecordDefinitions/ResourceSetRecord.h"
 #include "ResourceSetRecordDatabase.generated.h"
 
 UCLASS()

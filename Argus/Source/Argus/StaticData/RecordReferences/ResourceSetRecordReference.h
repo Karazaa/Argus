@@ -4,8 +4,9 @@
 #pragma once
 
 #include "ArgusStaticRecordReference.h"
-#include "RecordDefinitions\ResourceSetRecord.h"
 #include "ResourceSetRecordReference.generated.h"
+
+class UResourceSetRecord;
 
 USTRUCT()
 struct FUResourceSetRecordReference : public FArgusStaticRecordReference

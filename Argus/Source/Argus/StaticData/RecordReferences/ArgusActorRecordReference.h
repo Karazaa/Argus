@@ -4,8 +4,9 @@
 #pragma once
 
 #include "ArgusStaticRecordReference.h"
-#include "RecordDefinitions\ArgusActorRecord.h"
 #include "ArgusActorRecordReference.generated.h"
+
+class UArgusActorRecord;
 
 USTRUCT()
 struct FUArgusActorRecordReference : public FArgusStaticRecordReference

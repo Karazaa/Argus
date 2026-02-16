@@ -4,7 +4,7 @@
 #pragma once
 
 #include "ArgusMacros.h"
-#include "RecordDefinitions\TeamColorRecord.h"
+#include "RecordDefinitions/TeamColorRecord.h"
 #include "TeamColorRecordDatabase.generated.h"
 
 UCLASS()

@@ -266,6 +266,10 @@ bool ArgusStaticDataCodeGenerator::ParseRecordDependentCppTemplate(const ArgusCo
 				includeStatement.append(filePath).append("\"");
 				writeData.m_lines.push_back(includeStatement);
 			}
+			else if (fileContents[j].find("&&&&&") != std::string::npos)
+			{
+				writeData.m_lines.push_back(parsedStaticDataRecords.m_staticDataIncludeStatements[i]);
+			}
 			else if (fileContents[j].find("#####") != std::string::npos)
 			{
 				writeData.m_lines.push_back(std::regex_replace(fileContents[j], std::regex("#####"), parsedStaticDataRecords.m_staticDataRecordNames[i]));

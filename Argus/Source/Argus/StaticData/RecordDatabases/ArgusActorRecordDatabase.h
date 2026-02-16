@@ -4,7 +4,7 @@
 #pragma once
 
 #include "ArgusMacros.h"
-#include "RecordDefinitions\ArgusActorRecord.h"
+#include "RecordDefinitions/ArgusActorRecord.h"
 #include "ArgusActorRecordDatabase.generated.h"
 
 UCLASS()

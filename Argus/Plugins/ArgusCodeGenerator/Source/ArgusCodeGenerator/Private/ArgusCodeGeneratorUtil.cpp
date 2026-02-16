@@ -251,6 +251,14 @@ bool ArgusCodeGeneratorUtil::ParseStaticDataDataRecordsFromFile(const std::strin
 	std::string recordPath = filePath.substr(recordDefinitionIndex);
 	includeStatement.append(recordPath);
 	includeStatement.append("\"");
+	for (int i = 0; i < includeStatement.length(); ++i)
+	{
+		if (includeStatement[i] == '\\')
+		{
+			includeStatement[i] = '/';
+		}
+	}
+
 	output.m_staticDataIncludeStatements.push_back(includeStatement);
 
 	std::ifstream inStream = std::ifstream(filePath);

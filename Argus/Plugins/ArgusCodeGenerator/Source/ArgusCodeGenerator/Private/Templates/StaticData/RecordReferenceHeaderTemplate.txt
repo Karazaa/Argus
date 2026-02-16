@@ -4,8 +4,9 @@
 #pragma once
 
 #include "ArgusStaticRecordReference.h"
-$$$$$
 #include "%%%%%.generated.h"
+
+class #####;
 
 USTRUCT()
 struct F#####Reference : public FArgusStaticRecordReference

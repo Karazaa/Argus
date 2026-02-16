@@ -4,8 +4,9 @@
 #pragma once
 
 #include "ArgusStaticRecordReference.h"
-#include "RecordDefinitions\FactionRecord.h"
 #include "FactionRecordReference.generated.h"
+
+class UFactionRecord;
 
 USTRUCT()
 struct FUFactionRecordReference : public FArgusStaticRecordReference

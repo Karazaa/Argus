@@ -4,7 +4,7 @@
 #pragma once
 
 #include "ArgusMacros.h"
-#include "RecordDefinitions\FactionRecord.h"
+#include "RecordDefinitions/FactionRecord.h"
 #include "FactionRecordDatabase.generated.h"
 
 UCLASS()

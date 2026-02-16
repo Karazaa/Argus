@@ -487,7 +487,7 @@ bool AbilitySystems::CastAbilityOverrideAbility(const UAbilityRecord* abilityRec
 
 	if (adding)
 	{
-		components.m_abilityComponent->AddAbilityOverride(abilityEffect.m_abilityRecordId, abilityEffect.m_abilityIndex);
+		components.m_abilityComponent->AddAbilityOverride(abilityEffect.m_abilityRecordReference.GetId(), abilityEffect.m_abilityIndex);
 	}
 	else
 	{

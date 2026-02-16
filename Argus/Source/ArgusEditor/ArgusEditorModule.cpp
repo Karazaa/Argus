@@ -42,7 +42,7 @@ void ArgusEditorModule::ShutdownModule()
 void ArgusEditorModule::OnObjectPropertyChanged(UObject* object, FPropertyChangedEvent& propertyChangedEvent) const
 {
 	const FProperty* initialProperty = propertyChangedEvent.MemberProperty;
-	if (!object || !initialProperty)
+	if (!object || !initialProperty || !propertyChangedEvent.Property)
 	{
 		return;
 	}
@@ -52,17 +52,14 @@ void ArgusEditorModule::OnObjectPropertyChanged(UObject* object, FPropertyChange
 		return;
 	}
 
-	if (const FArgusStaticRecordReference* recordInstance = FindRecordReferenceRecursive(initialProperty->ContainerPtrToValuePtr<void>(object), initialProperty))
-	{
-		recordInstance->StoreId();
-	}
+	StoreRecordReferenceRecursive(initialProperty->ContainerPtrToValuePtr<void>(object), initialProperty, propertyChangedEvent.Property);
 }
 
-const FArgusStaticRecordReference* ArgusEditorModule::FindRecordReferenceRecursive(const void* container, const FProperty* currentProperty) const
+void ArgusEditorModule::StoreRecordReferenceRecursive(const void* container, const FProperty* currentProperty, const FProperty* targetProperty) const
 {
-	if (!container || !currentProperty)
+	if (!container || !currentProperty || !targetProperty)
 	{
-		return nullptr;
+		return;
 	}
 
 	if (const FArrayProperty* arrayProperty = CastField<FArrayProperty>(currentProperty))
@@ -70,42 +67,37 @@ const FArgusStaticRecordReference* ArgusEditorModule::FindRecordReferenceRecursi
 		FScriptArrayHelper arrayHelper = FScriptArrayHelper(arrayProperty, container);
 		for (int32 i = 0; i < arrayHelper.Num(); ++i)
 		{
-			void* innerValue = arrayHelper.GetRawPtr(i);
-			const FProperty* innerProperty = arrayProperty->Inner;
-			if (const FArgusStaticRecordReference* recordInstance = FindRecordReferenceRecursive(innerValue, innerProperty))
-			{
-				return recordInstance;
-			}
+			StoreRecordReferenceRecursive(arrayHelper.GetRawPtr(i), arrayProperty->Inner, targetProperty);
 		}
+		return;
 	}
 
-	if (const FStructProperty* structProperty = CastField<FStructProperty>(currentProperty))
+	const FStructProperty* structProperty = CastField<FStructProperty>(currentProperty);
+	if (!structProperty || !structProperty->Struct)
 	{
-		if (const FArgusStaticRecordReference* recordInstance = CastStructValue<FArgusStaticRecordReference>(structProperty, container))
-		{
-			return recordInstance;
-		}
-
-		if(structProperty->Struct)
-		{
-			const FField* childField = structProperty->Struct->ChildProperties;
-			while (childField)
-			{
-				if (const FProperty* childProperty = CastField<FProperty>(childField))
-				{
-					const void* childValue = childProperty->ContainerPtrToValuePtr<void>(container);
-					if (const FArgusStaticRecordReference* recordInstance = FindRecordReferenceRecursive(childValue, childProperty))
-					{
-						return recordInstance;
-					}
-				}
-				
-				childField = childField->Next;
-			}
-		}
+		return;
 	}
 
-	return nullptr;
+	const FField* childField = structProperty->Struct->ChildProperties;
+	while (childField)
+	{
+		if (const FProperty* childProperty = CastField<FProperty>(childField))
+		{
+			if (childProperty == targetProperty)
+			{
+				if (const FArgusStaticRecordReference* recordReference = CastStructValue<FArgusStaticRecordReference>(structProperty, container))
+				{
+					recordReference->StoreId();
+					return;
+				}
+			}
+
+			const void* childValue = childProperty->ContainerPtrToValuePtr<void>(container);
+			StoreRecordReferenceRecursive(childValue, childProperty, targetProperty);
+		}
+
+		childField = childField->Next;
+	}
 }
 
 #undef LOCTEXT_NAMESPACE

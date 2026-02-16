@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 
-class IPropertyHandle;
 struct FArgusStaticRecordReference;
 struct FPropertyChangedEvent;
 
@@ -21,7 +20,7 @@ public:
 
 private:
 	void OnObjectPropertyChanged(UObject* object, FPropertyChangedEvent& propertyChangedEvent) const;
-	const FArgusStaticRecordReference* FindRecordReferenceRecursive(const void* container, const FProperty* currentProperty) const;
+	void StoreRecordReferenceRecursive(const void* container, const FProperty* currentProperty, const FProperty* targetProperty) const;
 
 	FDelegateHandle m_propertyChangedHandle;
 };
