@@ -634,6 +634,13 @@ bool ArgusCodeGeneratorUtil::ParsePropertyMacro(std::string lineText, std::vecto
 	ParsedVariableData variableData;
 	variableData.m_propertyMacro = lineText;
 	variableData.m_isObservable = propertyObservableDelimiter != std::string::npos;
+	if (propertyStaticDataDelimiterIndex != std::string::npos)
+	{
+		const size_t lineSize = lineText.length();
+		const size_t startIndex = lineText.find('(') + 1;
+		variableData.m_staticDataTypeName = lineText.substr(startIndex, (lineSize - 1) - startIndex);
+	}
+
 	parsedVariableData.back().push_back(variableData);
 
 	return true;

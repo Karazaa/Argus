@@ -10,7 +10,6 @@ void UTaskComponentData::InstantiateComponentForEntity(ArgusEntity entity) const
 	TaskComponent* TaskComponentRef = entity.GetOrAddComponent<TaskComponent>();
 	ARGUS_RETURN_ON_NULL(TaskComponentRef, ArgusECSLog);
 
-	TaskComponentRef->m_baseState = m_baseState;
 	TaskComponentRef->m_flightState = m_flightState;
 }
 

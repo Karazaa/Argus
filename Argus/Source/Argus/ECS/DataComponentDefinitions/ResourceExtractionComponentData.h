@@ -4,6 +4,7 @@
 #pragma once
 
 #include "ComponentData.h"
+#include "RecordReferences/ResourceSetRecordReference.h"
 #include "ResourceExtractionComponentData.generated.h"
 
 UCLASS()
@@ -13,11 +14,7 @@ class ARGUS_API UResourceExtractionComponentData : public UComponentData
 
 public:
 	UPROPERTY(EditAnywhere)
-	TSoftObjectPtr<UResourceSetRecord> m_resourcesToExtractRecordId;
-private:
-	mutable uint32 m_resourcesToExtractRecordIdLoaded = 0u;
-public:
-	uint32 Get_m_resourcesToExtractRecordId() const { return m_resourcesToExtractRecordIdLoaded; }
+	FUResourceSetRecordReference m_resourcesToExtractRecordIdReference;
 
 	UPROPERTY(EditAnywhere)
 	float m_extractionLengthSeconds = 1.0f;

@@ -4,6 +4,7 @@
 #pragma once
 
 #include "ComponentData.h"
+#include "RecordReferences/FactionRecordReference.h"
 #include "IdentityComponentData.generated.h"
 
 UCLASS()
@@ -13,11 +14,7 @@ class ARGUS_API UIdentityComponentData : public UComponentData
 
 public:
 	UPROPERTY(EditAnywhere)
-	TSoftObjectPtr<UFactionRecord> m_factionId;
-private:
-	mutable uint32 m_factionIdLoaded = 0u;
-public:
-	uint32 Get_m_factionId() const { return m_factionIdLoaded; }
+	FUFactionRecordReference m_factionIdReference;
 
 
 	void InstantiateComponentForEntity(ArgusEntity entity) const override;

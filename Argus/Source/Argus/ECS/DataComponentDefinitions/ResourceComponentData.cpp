@@ -11,17 +11,14 @@ void UResourceComponentData::InstantiateComponentForEntity(ArgusEntity entity) c
 	ARGUS_RETURN_ON_NULL(ResourceComponentRef, ArgusECSLog);
 
 	ResourceComponentRef->m_currentResources = m_currentResources;
-	if (const UArgusStaticRecord* record = m_resourceCapacityRecordId.LoadSynchronous())
-	{
-		m_resourceCapacityRecordIdLoaded = record->m_id;
-	}
-	ResourceComponentRef->m_resourceCapacityRecordId = m_resourceCapacityRecordIdLoaded;
+	ResourceComponentRef->m_resourceCapacityRecordId = m_resourceCapacityRecordIdReference.GetId();
 	ResourceComponentRef->m_resourceComponentOwnerType = m_resourceComponentOwnerType;
 	ResourceComponentRef->m_bufferRegionRadius = m_bufferRegionRadius;
 }
 
 void UResourceComponentData::OnComponentDataLoaded() const
 {
+	ArgusStaticData::AsyncPreLoadRecord<UResourceSetRecord>(m_resourceCapacityRecordIdReference.GetId());
 }
 
 bool UResourceComponentData::MatchesType(const UComponentData* other) const

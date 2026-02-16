@@ -12,8 +12,6 @@ class ARGUS_API UTaskComponentData : public UComponentData
 	GENERATED_BODY()
 
 public:
-	EBaseState m_baseState = EBaseState::Alive;
-
 	UPROPERTY(EditAnywhere)
 	EFlightState m_flightState = EFlightState::Grounded;
 

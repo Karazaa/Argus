@@ -12,16 +12,13 @@ void UConstructionComponentData::InstantiateComponentForEntity(ArgusEntity entit
 
 	ConstructionComponentRef->m_requiredWorkSeconds = m_requiredWorkSeconds;
 	ConstructionComponentRef->m_currentWorkSeconds = m_currentWorkSeconds;
-	if (const UArgusStaticRecord* record = m_constructionAbilityRecordId.LoadSynchronous())
-	{
-		m_constructionAbilityRecordIdLoaded = record->m_id;
-	}
-	ConstructionComponentRef->m_constructionAbilityRecordId = m_constructionAbilityRecordIdLoaded;
+	ConstructionComponentRef->m_constructionAbilityRecordId = m_constructionAbilityRecordIdReference.GetId();
 	ConstructionComponentRef->m_constructionType = m_constructionType;
 }
 
 void UConstructionComponentData::OnComponentDataLoaded() const
 {
+	ArgusStaticData::AsyncPreLoadRecord<UAbilityRecord>(m_constructionAbilityRecordIdReference.GetId());
 }
 
 bool UConstructionComponentData::MatchesType(const UComponentData* other) const

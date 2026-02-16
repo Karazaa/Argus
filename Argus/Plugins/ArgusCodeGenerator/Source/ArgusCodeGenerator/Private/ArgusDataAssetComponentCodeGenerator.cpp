@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <fstream>
 #include <regex>
+#include <unordered_set>
 
 const char* ArgusDataAssetComponentCodeGenerator::s_componentDataDirectorySuffix = "Source/Argus/ECS/DataComponentDefinitions/";
 const char* ArgusDataAssetComponentCodeGenerator::s_componentDataHeaderTemplateFilename = "ComponentDataHeaderTemplate.txt";
@@ -84,7 +85,26 @@ bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetHeaderFileTemplateWithR
 	std::string headerLineText;
 	while (std::getline(inHeaderStream, headerLineText))
 	{
-		if (headerLineText.find("@@@@@") != std::string::npos)
+		if (headerLineText.find("%%%%%") != std::string::npos)
+		{
+			for (int i = 0; i < parsedComponentData.m_componentNames.size(); ++i)
+			{
+				std::unordered_set<std::string> addedIncludes;
+				for (int j = 0; j < parsedComponentData.m_componentVariableData[i].size(); ++j)
+				{
+					if (parsedComponentData.m_componentVariableData[i][j].m_staticDataTypeName.empty() || addedIncludes.contains(parsedComponentData.m_componentVariableData[i][j].m_staticDataTypeName))
+					{
+						continue;
+					}
+
+					std::string staticDataName = parsedComponentData.m_componentVariableData[i][j].m_staticDataTypeName;
+					addedIncludes.insert(staticDataName);
+					staticDataName = staticDataName.substr(1, staticDataName.length() - 1);
+					outParsedFileContents[i].m_lines.push_back(std::vformat("#include \"RecordReferences/{}Reference.h\"", std::make_format_args(staticDataName)));
+				}
+			}
+		}
+		else if (headerLineText.find("@@@@@") != std::string::npos)
 		{
 			for (int i = 0; i < parsedComponentData.m_componentNames.size(); ++i)
 			{
@@ -99,9 +119,6 @@ bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetHeaderFileTemplateWithR
 
 						if (propertyStaticDataDelimiterIndex != std::string::npos)
 						{
-							const size_t lineSize = parsedComponentData.m_componentVariableData[i][j].m_propertyMacro.length();
-							const size_t startIndex = parsedComponentData.m_componentVariableData[i][j].m_propertyMacro.find('(') + 1;
-							variable = parsedComponentData.m_componentVariableData[i][j].m_propertyMacro.substr(startIndex, (lineSize - 1) - startIndex);
 							outParsedFileContents[i].m_lines.push_back(s_propertyMacro);
 						}
 						else if (propertyObservableDelimiterIndex != std::string::npos)
@@ -111,6 +128,10 @@ bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetHeaderFileTemplateWithR
 							if (propertyObservablePropertyDeclarationDelimiter != std::string::npos)
 							{
 								outParsedFileContents[i].m_lines.push_back(s_propertyMacro);
+							}
+							else
+							{
+								continue;
 							}
 						}
 						else if (propertyIgnoreDelimiterIndex != std::string::npos)
@@ -128,7 +149,11 @@ bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetHeaderFileTemplateWithR
 						outParsedFileContents[i].m_lines.push_back(s_propertyMacro);
 					}
 
-					if (variable.empty())
+					if (!parsedComponentData.m_componentVariableData[i][j].m_staticDataTypeName.empty())
+					{
+						outParsedFileContents[i].m_lines.push_back(std::vformat("\tF{}Reference {}Reference;", std::make_format_args(parsedComponentData.m_componentVariableData[i][j].m_staticDataTypeName, parsedComponentData.m_componentVariableData[i][j].m_varName)));
+					}
+					else
 					{
 						const size_t exponentialDecaySmootherIndex = parsedComponentData.m_componentVariableData[i][j].m_typeName.find(s_exponentialDecaySmootherTypeName);
 						if (exponentialDecaySmootherIndex != std::string::npos)
@@ -153,27 +178,9 @@ bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetHeaderFileTemplateWithR
 						variable.append(";");
 						outParsedFileContents[i].m_lines.push_back(variable);
 					}
-					else
-					{
-						variable = std::regex_replace("\tTSoftObjectPtr<XXXXX>", std::regex("XXXXX"), variable);
-						variable.append(" ");
-						variable.append(parsedComponentData.m_componentVariableData[i][j].m_varName);
-						variable.append(";");
-						outParsedFileContents[i].m_lines.push_back(variable);
-						outParsedFileContents[i].m_lines.push_back("private:");
-						outParsedFileContents[i].m_lines.push_back(std::regex_replace("\tmutable uint32 XXXXXLoaded = 0u;", std::regex("XXXXX"), parsedComponentData.m_componentVariableData[i][j].m_varName));
-						outParsedFileContents[i].m_lines.push_back("public:");
-						outParsedFileContents[i].m_lines.push_back(std::regex_replace("\tuint32 Get_XXXXX() const { return XXXXXLoaded; }", std::regex("XXXXX"), parsedComponentData.m_componentVariableData[i][j].m_varName));
-					}
+
 					outParsedFileContents[i].m_lines.push_back("");
 				}
-			}
-		}
-		else if (headerLineText.find("$$$$$") != std::string::npos)
-		{
-			for (int i = 0; i < parsedComponentData.m_componentDataAssetIncludeStatements.size(); ++i)
-			{
-				outParsedFileContents[i].m_lines.push_back(parsedComponentData.m_componentDataAssetIncludeStatements[i]);
 			}
 		}
 		else if (headerLineText.find("#####") != std::string::npos)
@@ -229,6 +236,12 @@ bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetCppFileTemplateWithRepl
 						continue;
 					}
 
+					if (parsedComponentData.m_componentVariableData[i][j].m_propertyMacro.find(ArgusCodeGeneratorUtil::s_propertyObservableDelimiter) != std::string::npos &&
+						parsedComponentData.m_componentVariableData[i][j].m_propertyMacro.find(ArgusCodeGeneratorUtil::s_propertyObservablePropertyDeclarationDelimiter) == std::string::npos)
+					{
+						continue;
+					}
+
 					std::string variableAssignment = "\t";
 					variableAssignment.append(parsedComponentData.m_componentNames[i]);
 					variableAssignment.append("Ref->");
@@ -239,14 +252,7 @@ bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetCppFileTemplateWithRepl
 					const size_t exponentialDecaySmootherIndex = parsedComponentData.m_componentVariableData[i][j].m_typeName.find(s_exponentialDecaySmootherTypeName);
 					if (propertyStaticDataDelimiterIndex != std::string::npos)
 					{
-						// TODO JAMES: Remove this once edit time ID caching is in place.
-						outParsedFileContents[i].m_lines.push_back(std::vformat("\tif (const UArgusStaticRecord* record = {}.LoadSynchronous())", std::make_format_args(parsedComponentData.m_componentVariableData[i][j].m_varName)));
-						outParsedFileContents[i].m_lines.push_back("\t{");
-						outParsedFileContents[i].m_lines.push_back(std::vformat("\t\t{}Loaded = record->m_id;", std::make_format_args(parsedComponentData.m_componentVariableData[i][j].m_varName)));
-						outParsedFileContents[i].m_lines.push_back("\t}");
-
-						std::string staticDataStatement = std::regex_replace("XXXXXLoaded", std::regex("XXXXX"), parsedComponentData.m_componentVariableData[i][j].m_varName);
-						variableAssignment.append(staticDataStatement);
+						variableAssignment.append(std::vformat("{}Reference.GetId()", std::make_format_args(parsedComponentData.m_componentVariableData[i][j].m_varName)));
 					}
 					else if (exponentialDecaySmootherIndex != std::string::npos)
 					{
@@ -273,6 +279,24 @@ bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetCppFileTemplateWithRepl
 			{
 				std::string perComponentCppLineText = cppLineText;
 				outParsedFileContents[i].m_lines.push_back(std::regex_replace(perComponentCppLineText, std::regex("#####"), parsedComponentData.m_componentNames[i]));
+			}
+		}
+		else if (cppLineText.find("%%%%%") != std::string::npos)
+		{
+			for (int i = 0; i < parsedComponentData.m_componentNames.size(); ++i)
+			{
+				for (int j = 0; j < parsedComponentData.m_componentVariableData[i].size(); ++j)
+				{
+					if (parsedComponentData.m_componentVariableData[i][j].m_staticDataTypeName.empty())
+					{
+						continue;
+					}
+
+					outParsedFileContents[i].m_lines.push_back
+					(
+						std::vformat("\tArgusStaticData::AsyncPreLoadRecord<{}>({}Reference.GetId());", std::make_format_args(parsedComponentData.m_componentVariableData[i][j].m_staticDataTypeName, parsedComponentData.m_componentVariableData[i][j].m_varName))
+					);
+				}
 			}
 		}
 		else

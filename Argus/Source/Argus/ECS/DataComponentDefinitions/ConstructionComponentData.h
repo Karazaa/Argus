@@ -4,6 +4,7 @@
 #pragma once
 
 #include "ComponentData.h"
+#include "RecordReferences/AbilityRecordReference.h"
 #include "ConstructionComponentData.generated.h"
 
 UCLASS()
@@ -19,11 +20,7 @@ public:
 	float m_currentWorkSeconds = 0.0f;
 
 	UPROPERTY(EditAnywhere)
-	TSoftObjectPtr<UAbilityRecord> m_constructionAbilityRecordId;
-private:
-	mutable uint32 m_constructionAbilityRecordIdLoaded = 0u;
-public:
-	uint32 Get_m_constructionAbilityRecordId() const { return m_constructionAbilityRecordIdLoaded; }
+	FUAbilityRecordReference m_constructionAbilityRecordIdReference;
 
 	UPROPERTY(EditAnywhere)
 	EConstructionType m_constructionType = EConstructionType::Automatic;

@@ -840,7 +840,7 @@ bool TeamCommanderSystems::DoesAbilitySpawnUnitType(const UAbilityRecord* abilit
 		case ESpawnUnitType::Extractor:
 			if (const UResourceExtractionComponentData* resourceExtractionComponentData = entityTemplate->GetComponentFromTemplate<UResourceExtractionComponentData>())
 			{
-				if (const UResourceSetRecord* resourceSetRecord = ArgusStaticData::GetRecord<UResourceSetRecord>(resourceExtractionComponentData->Get_m_resourcesToExtractRecordId()))
+				if (const UResourceSetRecord* resourceSetRecord = ArgusStaticData::GetRecord<UResourceSetRecord>(resourceExtractionComponentData->m_resourcesToExtractRecordIdReference.GetId()))
 				{
 					return resourceSetRecord->m_resourceSet.HasResourceType(resourceType);
 				}

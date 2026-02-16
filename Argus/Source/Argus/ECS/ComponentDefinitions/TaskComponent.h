@@ -4,7 +4,7 @@
 
 #include "ArgusMacros.h"
 #include "ComponentDependencies/TaskComponentStates.h"
-#include "ComponentDependencies//TeamCommanderPriorities.h"
+#include "ComponentDependencies/TeamCommanderPriorities.h"
 #include "ComponentObservers/TaskComponentObservers.h"
 #include "CoreMinimal.h"
 

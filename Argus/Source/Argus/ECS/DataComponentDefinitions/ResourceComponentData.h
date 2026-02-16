@@ -4,6 +4,7 @@
 #pragma once
 
 #include "ComponentData.h"
+#include "RecordReferences/ResourceSetRecordReference.h"
 #include "ResourceComponentData.generated.h"
 
 UCLASS()
@@ -16,11 +17,7 @@ public:
 	FResourceSet m_currentResources;
 
 	UPROPERTY(EditAnywhere)
-	TSoftObjectPtr<UResourceSetRecord> m_resourceCapacityRecordId;
-private:
-	mutable uint32 m_resourceCapacityRecordIdLoaded = 0u;
-public:
-	uint32 Get_m_resourceCapacityRecordId() const { return m_resourceCapacityRecordIdLoaded; }
+	FUResourceSetRecordReference m_resourceCapacityRecordIdReference;
 
 	UPROPERTY(EditAnywhere)
 	EResourceComponentOwnerType m_resourceComponentOwnerType = EResourceComponentOwnerType::TeamPool;

@@ -10,7 +10,6 @@ void UPassengerComponentData::InstantiateComponentForEntity(ArgusEntity entity) 
 	PassengerComponent* PassengerComponentRef = entity.GetOrAddComponent<PassengerComponent>();
 	ARGUS_RETURN_ON_NULL(PassengerComponentRef, ArgusECSLog);
 
-	PassengerComponentRef->m_carrierEntityId = m_carrierEntityId;
 }
 
 void UPassengerComponentData::OnComponentDataLoaded() const

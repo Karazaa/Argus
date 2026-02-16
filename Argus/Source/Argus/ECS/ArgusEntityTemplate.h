@@ -4,6 +4,7 @@
 
 #include "ArgusEntity.h"
 #include "DataComponentDefinitions/ComponentData.h"
+#include "Misc/AutomationTest.h"
 #include "UObject/SoftObjectPtr.h"
 #include "ArgusEntityTemplate.generated.h"
 

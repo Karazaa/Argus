@@ -4,6 +4,7 @@
 #pragma once
 
 #include "ComponentData.h"
+#include "RecordReferences/AbilityRecordReference.h"
 #include "AbilityComponentData.generated.h"
 
 UCLASS()
@@ -13,34 +14,16 @@ class ARGUS_API UAbilityComponentData : public UComponentData
 
 public:
 	UPROPERTY(EditAnywhere)
-	TSoftObjectPtr<UAbilityRecord> m_ability0Id;
-private:
-	mutable uint32 m_ability0IdLoaded = 0u;
-public:
-	uint32 Get_m_ability0Id() const { return m_ability0IdLoaded; }
+	FUAbilityRecordReference m_ability0IdReference;
 
 	UPROPERTY(EditAnywhere)
-	TSoftObjectPtr<UAbilityRecord> m_ability1Id;
-private:
-	mutable uint32 m_ability1IdLoaded = 0u;
-public:
-	uint32 Get_m_ability1Id() const { return m_ability1IdLoaded; }
+	FUAbilityRecordReference m_ability1IdReference;
 
 	UPROPERTY(EditAnywhere)
-	TSoftObjectPtr<UAbilityRecord> m_ability2Id;
-private:
-	mutable uint32 m_ability2IdLoaded = 0u;
-public:
-	uint32 Get_m_ability2Id() const { return m_ability2IdLoaded; }
+	FUAbilityRecordReference m_ability2IdReference;
 
 	UPROPERTY(EditAnywhere)
-	TSoftObjectPtr<UAbilityRecord> m_ability3Id;
-private:
-	mutable uint32 m_ability3IdLoaded = 0u;
-public:
-	uint32 Get_m_ability3Id() const { return m_ability3IdLoaded; }
-
-	uint8 m_abilityOverrideBitmask = 0u;
+	FUAbilityRecordReference m_ability3IdReference;
 
 	UPROPERTY(EditAnywhere)
 	uint8 m_abilityCasterPriority = 0u;
