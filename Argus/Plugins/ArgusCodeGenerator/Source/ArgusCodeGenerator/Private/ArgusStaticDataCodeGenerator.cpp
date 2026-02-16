@@ -1,7 +1,5 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
-#pragma once
-
 #include "ArgusStaticDataCodeGenerator.h"
 #include "Misc/Paths.h"
 #include <filesystem>
@@ -25,6 +23,10 @@ const char* ArgusStaticDataCodeGenerator::s_recordDatabaseDirectorySuffix = "Rec
 const char* ArgusStaticDataCodeGenerator::s_recordDatabaseHeaderTemplateFileName = "RecordDatabaseHeaderTemplate.txt";
 const char* ArgusStaticDataCodeGenerator::s_recordDatabaseCppTemplateFileName = "RecordDatabaseCppTemplate.txt";
 const char* ArgusStaticDataCodeGenerator::s_recordDatabaseFileNameSuffix = "Database";
+const char* ArgusStaticDataCodeGenerator::s_recordReferenceDirectorySuffix = "RecordReferences/";
+const char* ArgusStaticDataCodeGenerator::s_recordReferenceHeaderTemplateFileName = "RecordReferenceHeaderTemplate.txt";
+const char* ArgusStaticDataCodeGenerator::s_recordReferenceCppTemplateFileName = "RecordReferenceCppTemplate.txt";
+const char* ArgusStaticDataCodeGenerator::s_recordReferenceFileNameSuffix = "Reference";
 const char* ArgusStaticDataCodeGenerator::s_softPtrLoadStoreHeaderTemplateFileName = "SoftPtrLoadStoreHeaderTemplate.txt";
 const char* ArgusStaticDataCodeGenerator::s_softObjectLoadStorePerTypeHeaderTemplateFileName = "SoftObjectLoadStorePerTypeHeaderTemplate.txt";
 const char* ArgusStaticDataCodeGenerator::s_softClassLoadStorePerTypeHeaderTemplateFileName = "SoftClassLoadStorePerTypeHeaderTemplate.txt";
@@ -51,7 +53,7 @@ const char* ArgusStaticDataCodeGenerator::s_softPtrLoadStoreIncludes[ArgusStatic
 	"#include \"Materials/MaterialInterface.h\""
 };
 
-void ArgusStaticDataCodeGenerator::GenerateStaticDataCode(const ArgusCodeGeneratorUtil::ParseStaticDataRecordsOutput& parsedStaticDataRecords)
+bool ArgusStaticDataCodeGenerator::GenerateStaticDataCode(const ArgusCodeGeneratorUtil::ParseStaticDataRecordsOutput& parsedStaticDataRecords)
 {
 	UE_LOG(ArgusCodeGeneratorLog, Display, TEXT("[%s] Starting generation of Argus non-ECS Static Data code."), ARGUS_FUNCNAME)
 	bool didSucceed = true;
@@ -60,43 +62,56 @@ void ArgusStaticDataCodeGenerator::GenerateStaticDataCode(const ArgusCodeGenerat
 	const char* cStrTemplateDirectory = ARGUS_FSTRING_TO_CHAR(ArgusCodeGeneratorUtil::GetTemplateDirectory(s_staticDataTemplateDirectorySuffix));
 
 	ParseTemplateParams parseArgusStaticDataTemplateParams;
-	parseArgusStaticDataTemplateParams.templateFilePath = std::string(cStrTemplateDirectory).append(s_argusStaticDataTemplateFileName);
-	parseArgusStaticDataTemplateParams.perRecordTemplateFilePath = std::string(cStrTemplateDirectory).append(s_argusStaticDataPerRecordTemplateFileName);
-	parseArgusStaticDataTemplateParams.perRecordEditorTemplateFilePath = std::string(cStrTemplateDirectory).append(s_argusStaticDataPerRecordEditorTemplateFileName);
+	parseArgusStaticDataTemplateParams.m_templateFilePath = std::string(cStrTemplateDirectory).append(s_argusStaticDataTemplateFileName);
+	parseArgusStaticDataTemplateParams.m_perRecordTemplateFilePath = std::string(cStrTemplateDirectory).append(s_argusStaticDataPerRecordTemplateFileName);
+	parseArgusStaticDataTemplateParams.m_perRecordEditorTemplateFilePath = std::string(cStrTemplateDirectory).append(s_argusStaticDataPerRecordEditorTemplateFileName);
 
 	ParseTemplateParams parseRecordDatabaseHeaderTemplateParams;
-	parseRecordDatabaseHeaderTemplateParams.templateFilePath = std::string(cStrTemplateDirectory).append(s_recordDatabaseHeaderTemplateFileName);
+	parseRecordDatabaseHeaderTemplateParams.m_templateFilePath = std::string(cStrTemplateDirectory).append(s_recordDatabaseHeaderTemplateFileName);
+	parseRecordDatabaseHeaderTemplateParams.m_fileNameSuffix = s_recordDatabaseFileNameSuffix;
+	parseRecordDatabaseHeaderTemplateParams.m_directorySuffix = s_recordDatabaseDirectorySuffix;
 
 	ParseTemplateParams parseRecordDatabaseCppTemplateParams;
-	parseRecordDatabaseCppTemplateParams.templateFilePath = std::string(cStrTemplateDirectory).append(s_recordDatabaseCppTemplateFileName);
+	parseRecordDatabaseCppTemplateParams.m_templateFilePath = std::string(cStrTemplateDirectory).append(s_recordDatabaseCppTemplateFileName);
 
 	ParseTemplateParams parseArgusStaticDatabaseHeaderTemplateParams;
-	parseArgusStaticDatabaseHeaderTemplateParams.templateFilePath = std::string(cStrTemplateDirectory).append(s_argusStaticDatabaseHeaderTemplateFileName);
-	parseArgusStaticDatabaseHeaderTemplateParams.perRecordTemplateFilePath = std::string(cStrTemplateDirectory).append(s_argusStaticDatabaseHeaderPerRecordTemplateFileName);
+	parseArgusStaticDatabaseHeaderTemplateParams.m_templateFilePath = std::string(cStrTemplateDirectory).append(s_argusStaticDatabaseHeaderTemplateFileName);
+	parseArgusStaticDatabaseHeaderTemplateParams.m_perRecordTemplateFilePath = std::string(cStrTemplateDirectory).append(s_argusStaticDatabaseHeaderPerRecordTemplateFileName);
 
 	ParseTemplateParams parseArgusStaticDatabaseCppTemplateParams;
-	parseArgusStaticDatabaseCppTemplateParams.templateFilePath = std::string(cStrTemplateDirectory).append(s_argusStaticDatabaseCppTemplateFileName);
-	parseArgusStaticDatabaseCppTemplateParams.perRecordTemplateFilePath = std::string(cStrTemplateDirectory).append(s_argusStaticDatabaseCppPerRecordTemplateFileName);
+	parseArgusStaticDatabaseCppTemplateParams.m_templateFilePath = std::string(cStrTemplateDirectory).append(s_argusStaticDatabaseCppTemplateFileName);
+	parseArgusStaticDatabaseCppTemplateParams.m_perRecordTemplateFilePath = std::string(cStrTemplateDirectory).append(s_argusStaticDatabaseCppPerRecordTemplateFileName);
+
+	ParseTemplateParams parseRecordReferenceHeaderTemplateParams;
+	parseRecordReferenceHeaderTemplateParams.m_templateFilePath = std::string(cStrTemplateDirectory).append(s_recordReferenceHeaderTemplateFileName);
+	parseRecordReferenceHeaderTemplateParams.m_fileNameSuffix = s_recordReferenceFileNameSuffix;
+	parseRecordReferenceHeaderTemplateParams.m_directorySuffix = s_recordReferenceDirectorySuffix;
+
+	ParseTemplateParams parseRecordReferenceCppTemplateParams;
+	parseRecordReferenceCppTemplateParams.m_templateFilePath = std::string(cStrTemplateDirectory).append(s_recordReferenceCppTemplateFileName);
 
 	ParseTemplateParams parseSoftPtrLoadStoreHeaderTemplateParams;
-	parseSoftPtrLoadStoreHeaderTemplateParams.templateFilePath = std::string(cStrTemplateDirectory).append(s_softPtrLoadStoreHeaderTemplateFileName);
-	parseSoftPtrLoadStoreHeaderTemplateParams.perRecordTemplateFilePath = std::string(cStrTemplateDirectory).append(s_softObjectLoadStorePerTypeHeaderTemplateFileName);
-	parseSoftPtrLoadStoreHeaderTemplateParams.perRecordEditorTemplateFilePath = std::string(cStrTemplateDirectory).append(s_softClassLoadStorePerTypeHeaderTemplateFileName);
+	parseSoftPtrLoadStoreHeaderTemplateParams.m_templateFilePath = std::string(cStrTemplateDirectory).append(s_softPtrLoadStoreHeaderTemplateFileName);
+	parseSoftPtrLoadStoreHeaderTemplateParams.m_perRecordTemplateFilePath = std::string(cStrTemplateDirectory).append(s_softObjectLoadStorePerTypeHeaderTemplateFileName);
+	parseSoftPtrLoadStoreHeaderTemplateParams.m_perRecordEditorTemplateFilePath = std::string(cStrTemplateDirectory).append(s_softClassLoadStorePerTypeHeaderTemplateFileName);
 
 	ParseTemplateParams parseSoftPtrLoadStoreCppTemplateParams;
-	parseSoftPtrLoadStoreCppTemplateParams.templateFilePath = std::string(cStrTemplateDirectory).append(s_softPtrLoadStoreCppTemplateFileName);
-	parseSoftPtrLoadStoreCppTemplateParams.perRecordTemplateFilePath = std::string(cStrTemplateDirectory).append(s_softObjectLoadStorePerTypeCppTemplateFileName);
-	parseSoftPtrLoadStoreCppTemplateParams.perRecordEditorTemplateFilePath = std::string(cStrTemplateDirectory).append(s_softClassLoadStorePerTypeCppTemplateFileName);
+	parseSoftPtrLoadStoreCppTemplateParams.m_templateFilePath = std::string(cStrTemplateDirectory).append(s_softPtrLoadStoreCppTemplateFileName);
+	parseSoftPtrLoadStoreCppTemplateParams.m_perRecordTemplateFilePath = std::string(cStrTemplateDirectory).append(s_softObjectLoadStorePerTypeCppTemplateFileName);
+	parseSoftPtrLoadStoreCppTemplateParams.m_perRecordEditorTemplateFilePath = std::string(cStrTemplateDirectory).append(s_softClassLoadStorePerTypeCppTemplateFileName);
 
 	UE_LOG(ArgusCodeGeneratorLog, Display, TEXT("[%s] Parsing from template files to generate non-ECS Static Data code."), ARGUS_FUNCNAME)
 
 	std::vector<ArgusCodeGeneratorUtil::FileWriteData> outParsedArgusStaticDataContents = std::vector<ArgusCodeGeneratorUtil::FileWriteData>();
 	didSucceed &= ParseArgusStaticDataTemplate(parsedStaticDataRecords, parseArgusStaticDataTemplateParams, outParsedArgusStaticDataContents);
 	std::vector<std::string> headerFilePaths;
-	didSucceed &= ParseRecordDatabaseHeaderTemplate(parsedStaticDataRecords, parseRecordDatabaseHeaderTemplateParams, outParsedArgusStaticDataContents, headerFilePaths);
-	didSucceed &= ParseRecordDatabaseCppTemplate(parsedStaticDataRecords, parseRecordDatabaseCppTemplateParams, headerFilePaths, outParsedArgusStaticDataContents);
+	didSucceed &= ParseRecordDependentHeaderTemplate(parsedStaticDataRecords, parseRecordDatabaseHeaderTemplateParams, outParsedArgusStaticDataContents, headerFilePaths);
+	didSucceed &= ParseRecordDependentCppTemplate(parsedStaticDataRecords, parseRecordDatabaseCppTemplateParams, headerFilePaths, outParsedArgusStaticDataContents);
 	didSucceed &= ParseArgusStaticDatabaseHeaderTemplate(parsedStaticDataRecords, parseArgusStaticDatabaseHeaderTemplateParams, headerFilePaths, outParsedArgusStaticDataContents);
 	didSucceed &= ParseArgusStaticDatabaseCppTemplate(parsedStaticDataRecords, parseArgusStaticDatabaseCppTemplateParams, headerFilePaths, outParsedArgusStaticDataContents);
+	std::vector<std::string> recordReferenceHeaderFilePaths;
+	didSucceed &= ParseRecordDependentHeaderTemplate(parsedStaticDataRecords, parseRecordReferenceHeaderTemplateParams, outParsedArgusStaticDataContents, recordReferenceHeaderFilePaths);
+	didSucceed &= ParseRecordDependentCppTemplate(parsedStaticDataRecords, parseRecordReferenceCppTemplateParams, recordReferenceHeaderFilePaths, outParsedArgusStaticDataContents);
 
 	ArgusCodeGeneratorUtil::FileWriteData softPtrLoadStoreHeaderFileData;
 	softPtrLoadStoreHeaderFileData.m_filename = s_softPtrLoadStoreHeaderFileName;
@@ -106,13 +121,10 @@ void ArgusStaticDataCodeGenerator::GenerateStaticDataCode(const ArgusCodeGenerat
 	softPtrLoadStoreCppFileData.m_filename = s_softPtrLoadStoreCppFileName;
 	didSucceed &= ParseSoftPtrLoadStoreTemplate(parseSoftPtrLoadStoreCppTemplateParams, softPtrLoadStoreCppFileData);
 
-	FString staticDataDirectory = ArgusCodeGeneratorUtil::GetProjectDirectory();
-	FString utilitiesDirectory = staticDataDirectory;
-	staticDataDirectory.Append(s_staticDataDirectorySuffix);
-	FPaths::MakeStandardFilename(staticDataDirectory);
+	FString staticDataDirectory;
+	FString utilitiesDirectory;
+	PopulateDirectoryStrings(staticDataDirectory, utilitiesDirectory);
 	const char* cStrStaticDataDirectory = ARGUS_FSTRING_TO_CHAR(staticDataDirectory);
-	utilitiesDirectory.Append(s_utilitiesDirectorySuffix);
-	FPaths::MakeStandardFilename(utilitiesDirectory);
 	const char* cStrUtilitiesDirectory = ARGUS_FSTRING_TO_CHAR(utilitiesDirectory);
 
 	// Write out header and cpp files.
@@ -122,12 +134,19 @@ void ArgusStaticDataCodeGenerator::GenerateStaticDataCode(const ArgusCodeGenerat
 	}
 	didSucceed &= ArgusCodeGeneratorUtil::WriteOutFile(std::string(cStrUtilitiesDirectory).append(softPtrLoadStoreHeaderFileData.m_filename), softPtrLoadStoreHeaderFileData.m_lines);
 	didSucceed &= ArgusCodeGeneratorUtil::WriteOutFile(std::string(cStrUtilitiesDirectory).append(softPtrLoadStoreCppFileData.m_filename), softPtrLoadStoreCppFileData.m_lines);
+
+	if (!didSucceed)
+	{
+		UE_LOG(ArgusCodeGeneratorLog, Error, TEXT("[%s] Static Data code generation failed!"), ARGUS_FUNCNAME);
+	}
+
+	return didSucceed;
 }
 
 bool ArgusStaticDataCodeGenerator::ParseArgusStaticDataTemplate(const ArgusCodeGeneratorUtil::ParseStaticDataRecordsOutput& parsedStaticDataRecords, const ParseTemplateParams& templateParams, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents)
 {
-	std::ifstream inTemplateStream = std::ifstream(templateParams.templateFilePath);
-	const FString ueTemplateFilePath = FString(templateParams.templateFilePath.c_str());
+	std::ifstream inTemplateStream = std::ifstream(templateParams.m_templateFilePath);
+	const FString ueTemplateFilePath = FString(templateParams.m_templateFilePath.c_str());
 	if (!inTemplateStream.is_open())
 	{
 		UE_LOG(ArgusCodeGeneratorLog, Error, TEXT("[%s] Failed to read from template file: %s"), ARGUS_FUNCNAME, *ueTemplateFilePath);
@@ -159,10 +178,10 @@ bool ArgusStaticDataCodeGenerator::ParseArgusStaticDataTemplate(const ArgusCodeG
 	return true;
 }
 
-bool ArgusStaticDataCodeGenerator::ParseRecordDatabaseHeaderTemplate(const ArgusCodeGeneratorUtil::ParseStaticDataRecordsOutput& parsedStaticDataRecords, const ParseTemplateParams& templateParams, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents, std::vector<std::string>& outHeaderFilePaths)
+bool ArgusStaticDataCodeGenerator::ParseRecordDependentHeaderTemplate(const ArgusCodeGeneratorUtil::ParseStaticDataRecordsOutput& parsedStaticDataRecords, const ParseTemplateParams& templateParams, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents, std::vector<std::string>& outHeaderFilePaths)
 {
-	std::ifstream inTemplateStream = std::ifstream(templateParams.templateFilePath);
-	const FString ueTemplateFilePath = FString(templateParams.templateFilePath.c_str());
+	std::ifstream inTemplateStream = std::ifstream(templateParams.m_templateFilePath);
+	const FString ueTemplateFilePath = FString(templateParams.m_templateFilePath.c_str());
 	if (!inTemplateStream.is_open())
 	{
 		UE_LOG(ArgusCodeGeneratorLog, Error, TEXT("[%s] Failed to read from template file: %s"), ARGUS_FUNCNAME, *ueTemplateFilePath);
@@ -182,7 +201,7 @@ bool ArgusStaticDataCodeGenerator::ParseRecordDatabaseHeaderTemplate(const Argus
 		ArgusCodeGeneratorUtil::FileWriteData writeData;
 		std::string fileName = parsedStaticDataRecords.m_staticDataRecordNames[i];
 		fileName = fileName.substr(1, fileName.length() - 1);
-		fileName.append(s_recordDatabaseFileNameSuffix);
+		fileName.append(templateParams.m_fileNameSuffix);
 
 		for (int j = 0; j < fileContents.size(); ++j)
 		{
@@ -204,7 +223,7 @@ bool ArgusStaticDataCodeGenerator::ParseRecordDatabaseHeaderTemplate(const Argus
 			}
 		}
 
-		std::string filePath = s_recordDatabaseDirectorySuffix;
+		std::string filePath = templateParams.m_directorySuffix;
 		filePath.append(fileName);
 		outHeaderFilePaths.push_back(filePath);
 		filePath.append(".h");
@@ -215,10 +234,10 @@ bool ArgusStaticDataCodeGenerator::ParseRecordDatabaseHeaderTemplate(const Argus
 	return true;
 }
 
-bool ArgusStaticDataCodeGenerator::ParseRecordDatabaseCppTemplate(const ArgusCodeGeneratorUtil::ParseStaticDataRecordsOutput& parsedStaticDataRecords, const ParseTemplateParams& templateParams, const std::vector<std::string>& headerFilePaths, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents)
+bool ArgusStaticDataCodeGenerator::ParseRecordDependentCppTemplate(const ArgusCodeGeneratorUtil::ParseStaticDataRecordsOutput& parsedStaticDataRecords, const ParseTemplateParams& templateParams, const std::vector<std::string>& headerFilePaths, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents)
 {
-	std::ifstream inTemplateStream = std::ifstream(templateParams.templateFilePath);
-	const FString ueTemplateFilePath = FString(templateParams.templateFilePath.c_str());
+	std::ifstream inTemplateStream = std::ifstream(templateParams.m_templateFilePath);
+	const FString ueTemplateFilePath = FString(templateParams.m_templateFilePath.c_str());
 	if (!inTemplateStream.is_open())
 	{
 		UE_LOG(ArgusCodeGeneratorLog, Error, TEXT("[%s] Failed to read from template file: %s"), ARGUS_FUNCNAME, *ueTemplateFilePath);
@@ -267,8 +286,8 @@ bool ArgusStaticDataCodeGenerator::ParseRecordDatabaseCppTemplate(const ArgusCod
 
 bool ArgusStaticDataCodeGenerator::ParseArgusStaticDatabaseHeaderTemplate(const ArgusCodeGeneratorUtil::ParseStaticDataRecordsOutput& parsedStaticDataRecords, const ParseTemplateParams& templateParams, const std::vector<std::string>& headerFilePaths, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents)
 {
-	std::ifstream inTemplateStream = std::ifstream(templateParams.templateFilePath);
-	const FString ueTemplateFilePath = FString(templateParams.templateFilePath.c_str());
+	std::ifstream inTemplateStream = std::ifstream(templateParams.m_templateFilePath);
+	const FString ueTemplateFilePath = FString(templateParams.m_templateFilePath.c_str());
 	if (!inTemplateStream.is_open())
 	{
 		UE_LOG(ArgusCodeGeneratorLog, Error, TEXT("[%s] Failed to read from template file: %s"), ARGUS_FUNCNAME, *ueTemplateFilePath);
@@ -314,8 +333,8 @@ bool ArgusStaticDataCodeGenerator::ParseArgusStaticDatabaseHeaderTemplate(const 
 
 bool ArgusStaticDataCodeGenerator::ParseArgusStaticDatabaseCppTemplate(const ArgusCodeGeneratorUtil::ParseStaticDataRecordsOutput& parsedStaticDataRecords, const ParseTemplateParams& templateParams, const std::vector<std::string>& headerFilePaths, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents)
 {
-	std::ifstream inTemplateStream = std::ifstream(templateParams.templateFilePath);
-	const FString ueTemplateFilePath = FString(templateParams.templateFilePath.c_str());
+	std::ifstream inTemplateStream = std::ifstream(templateParams.m_templateFilePath);
+	const FString ueTemplateFilePath = FString(templateParams.m_templateFilePath.c_str());
 	if (!inTemplateStream.is_open())
 	{
 		UE_LOG(ArgusCodeGeneratorLog, Error, TEXT("[%s] Failed to read from template file: %s"), ARGUS_FUNCNAME, *ueTemplateFilePath);
@@ -350,8 +369,8 @@ bool ArgusStaticDataCodeGenerator::ParseArgusStaticDatabaseCppTemplate(const Arg
 
 bool ArgusStaticDataCodeGenerator::ParsePerRecordTemplate(const ArgusCodeGeneratorUtil::ParseStaticDataRecordsOutput& parsedStaticDataRecords, const ParseTemplateParams& templateParams, ArgusCodeGeneratorUtil::FileWriteData& outParsedFileContents)
 {
-	std::ifstream inPerRecordTemplateStream = std::ifstream(templateParams.perRecordTemplateFilePath);
-	const FString uePerRecordTemplateFilePath = FString(templateParams.perRecordTemplateFilePath.c_str());
+	std::ifstream inPerRecordTemplateStream = std::ifstream(templateParams.m_perRecordTemplateFilePath);
+	const FString uePerRecordTemplateFilePath = FString(templateParams.m_perRecordTemplateFilePath.c_str());
 	if (!inPerRecordTemplateStream.is_open())
 	{
 		UE_LOG(ArgusCodeGeneratorLog, Error, TEXT("[%s] Failed to read from template file: %s"), ARGUS_FUNCNAME, *uePerRecordTemplateFilePath);
@@ -388,8 +407,8 @@ bool ArgusStaticDataCodeGenerator::ParsePerRecordTemplate(const ArgusCodeGenerat
 
 bool ArgusStaticDataCodeGenerator::ParsePerRecordEditorTemplate(const ArgusCodeGeneratorUtil::ParseStaticDataRecordsOutput& parsedStaticDataRecords, const ParseTemplateParams& templateParams, ArgusCodeGeneratorUtil::FileWriteData& outParsedFileContents)
 {
-	std::ifstream inPerRecordEditorTemplateStream = std::ifstream(templateParams.perRecordEditorTemplateFilePath);
-	const FString uePerRecordEditorTemplateFilePath = FString(templateParams.perRecordTemplateFilePath.c_str());
+	std::ifstream inPerRecordEditorTemplateStream = std::ifstream(templateParams.m_perRecordEditorTemplateFilePath);
+	const FString uePerRecordEditorTemplateFilePath = FString(templateParams.m_perRecordEditorTemplateFilePath.c_str());
 	if (!inPerRecordEditorTemplateStream.is_open())
 	{
 		UE_LOG(ArgusCodeGeneratorLog, Error, TEXT("[%s] Failed to read from template file: %s"), ARGUS_FUNCNAME, *uePerRecordEditorTemplateFilePath);
@@ -426,8 +445,8 @@ bool ArgusStaticDataCodeGenerator::ParsePerRecordEditorTemplate(const ArgusCodeG
 
 bool ArgusStaticDataCodeGenerator::ParseSoftPtrLoadStoreTemplate(const ParseTemplateParams& templateParams, ArgusCodeGeneratorUtil::FileWriteData& outParsedFileContents)
 {
-	std::ifstream inTemplateStream = std::ifstream(templateParams.templateFilePath);
-	const FString ueTemplateFilePath = FString(templateParams.templateFilePath.c_str());
+	std::ifstream inTemplateStream = std::ifstream(templateParams.m_templateFilePath);
+	const FString ueTemplateFilePath = FString(templateParams.m_templateFilePath.c_str());
 	if (!inTemplateStream.is_open())
 	{
 		UE_LOG(ArgusCodeGeneratorLog, Error, TEXT("[%s] Failed to read from template file: %s"), ARGUS_FUNCNAME, *ueTemplateFilePath);
@@ -470,8 +489,8 @@ bool ArgusStaticDataCodeGenerator::ParseSoftPtrLoadStoreTemplate(const ParseTemp
 
 bool ArgusStaticDataCodeGenerator::ParseSoftPtrLoadStorePerTypeTemplate(const ParseTemplateParams& templateParams, bool generateSoftClasses, ArgusCodeGeneratorUtil::FileWriteData& outParsedFileContents)
 {
-	std::ifstream inPerTypeTemplateStream = std::ifstream(generateSoftClasses ? templateParams.perRecordEditorTemplateFilePath : templateParams.perRecordTemplateFilePath);
-	const FString uePerTypeTemplateFilePath = FString(generateSoftClasses ? templateParams.perRecordEditorTemplateFilePath.c_str() : templateParams.perRecordTemplateFilePath.c_str());
+	std::ifstream inPerTypeTemplateStream = std::ifstream(generateSoftClasses ? templateParams.m_perRecordEditorTemplateFilePath : templateParams.m_perRecordTemplateFilePath);
+	const FString uePerTypeTemplateFilePath = FString(generateSoftClasses ? templateParams.m_perRecordEditorTemplateFilePath.c_str() : templateParams.m_perRecordTemplateFilePath.c_str());
 	if (!inPerTypeTemplateStream.is_open())
 	{
 		UE_LOG(ArgusCodeGeneratorLog, Error, TEXT("[%s] Failed to read from template file: %s"), ARGUS_FUNCNAME, *uePerTypeTemplateFilePath);
@@ -507,4 +526,14 @@ bool ArgusStaticDataCodeGenerator::ParseSoftPtrLoadStorePerTypeTemplate(const Pa
 	}
 
 	return true;
+}
+
+void ArgusStaticDataCodeGenerator::PopulateDirectoryStrings(FString& staticDataDirectory, FString& utilitiesDirectory)
+{
+	staticDataDirectory = ArgusCodeGeneratorUtil::GetProjectDirectory();
+	utilitiesDirectory = staticDataDirectory;
+	staticDataDirectory.Append(s_staticDataDirectorySuffix);
+	FPaths::MakeStandardFilename(staticDataDirectory);
+	utilitiesDirectory.Append(s_utilitiesDirectorySuffix);
+	FPaths::MakeStandardFilename(utilitiesDirectory);
 }

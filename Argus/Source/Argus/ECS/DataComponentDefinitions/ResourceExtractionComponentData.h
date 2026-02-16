@@ -21,10 +21,11 @@ public:
 	uint32 Get_m_resourcesToExtractRecordId() const { return m_resourcesToExtractRecordIdLoaded; }
 
 	UPROPERTY(EditAnywhere)
-	float m_extractionLengthSeconds = 1.0f;
+	FUResourceSetRecordReference m_resourcesToExtractReference;
 
 	UPROPERTY(EditAnywhere)
-	FResourceSetRecordReference m_resourceSetRecordReference;
+	float m_extractionLengthSeconds = 1.0f;
+
 
 	void InstantiateComponentForEntity(ArgusEntity entity) const override;
 	void OnComponentDataLoaded() const override;

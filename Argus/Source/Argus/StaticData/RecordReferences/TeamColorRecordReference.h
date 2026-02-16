@@ -4,11 +4,11 @@
 #pragma once
 
 #include "ArgusStaticRecordReference.h"
-#include "RecordDefinitions\ResourceSetRecord.h"
-#include "ResourceSetRecordReference.generated.h"
+#include "RecordDefinitions\TeamColorRecord.h"
+#include "TeamColorRecordReference.generated.h"
 
 USTRUCT()
-struct FUResourceSetRecordReference : public FArgusStaticRecordReference
+struct FUTeamColorRecordReference : public FArgusStaticRecordReference
 {
 	GENERATED_BODY();
 
@@ -19,5 +19,5 @@ public:
 
 private:
 	UPROPERTY(EditAnywhere)
-	TSoftObjectPtr<UResourceSetRecord> m_softObjectPtr = nullptr;
+	TSoftObjectPtr<UTeamColorRecord> m_softObjectPtr = nullptr;
 };
