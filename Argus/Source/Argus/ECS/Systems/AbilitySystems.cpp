@@ -186,7 +186,7 @@ const UArgusEntityTemplate* AbilitySystems::GetEntityTemplateForAbility(const UA
 		return nullptr;
 	}
 
-	const UArgusActorRecord* argusActorRecord = ArgusStaticData::GetRecord<UArgusActorRecord>(abilityRecord->m_abilityEffects[index].m_argusActorRecordId);
+	const UArgusActorRecord* argusActorRecord = ArgusStaticData::GetRecord<UArgusActorRecord>(abilityRecord->m_abilityEffects[index].m_argusActorRecordReference.GetId());
 	ARGUS_RETURN_ON_NULL_POINTER(argusActorRecord, ArgusECSLog);
 
 	return argusActorRecord->m_entityTemplate.LoadAndStorePtr();
@@ -348,7 +348,7 @@ bool AbilitySystems::CastSpawnAbility(const UAbilityRecord* abilityRecord, const
 	}
 
 	SpawnEntityInfo spawnInfo;
-	spawnInfo.m_argusActorRecordId = abilityEffect.m_argusActorRecordId;
+	spawnInfo.m_argusActorRecordId = abilityEffect.m_argusActorRecordReference.GetId();
 	spawnInfo.m_spawningAbilityRecordId = abilityRecord->m_id;
 	spawnInfo.m_timeToCastSeconds = abilityRecord->m_timeToCastSeconds;
 	spawnInfo.m_initiatingEntityId = components.m_entity.GetId();

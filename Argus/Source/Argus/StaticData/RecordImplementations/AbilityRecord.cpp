@@ -19,7 +19,7 @@ void UAbilityRecord::OnAsyncLoaded() const
 		{
 			case EAbilityTypes::Spawn:
 			case EAbilityTypes::Construct:
-				ArgusStaticData::AsyncPreLoadRecord<UArgusActorRecord>(m_abilityEffects[i].m_argusActorRecordId);
+				ArgusStaticData::AsyncPreLoadRecord<UArgusActorRecord>(m_abilityEffects[i].m_argusActorRecordReference.GetId());
 				break;
 			case EAbilityTypes::AddAbilityOverride:
 				ArgusStaticData::AsyncPreLoadRecord<UAbilityRecord>(m_abilityEffects[i].m_abilityRecordId);
