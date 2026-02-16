@@ -4,7 +4,6 @@
 #pragma once
 
 #include "ComponentData.h"
-#include "RecordReferences/ResourceSetRecordReference.h"
 #include "ResourceExtractionComponentData.generated.h"
 
 UCLASS()
@@ -19,9 +18,6 @@ private:
 	mutable uint32 m_resourcesToExtractRecordIdLoaded = 0u;
 public:
 	uint32 Get_m_resourcesToExtractRecordId() const { return m_resourcesToExtractRecordIdLoaded; }
-
-	UPROPERTY(EditAnywhere)
-	FUResourceSetRecordReference m_resourcesToExtractReference;
 
 	UPROPERTY(EditAnywhere)
 	float m_extractionLengthSeconds = 1.0f;

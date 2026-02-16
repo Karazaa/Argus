@@ -4,7 +4,7 @@
 #include "RecordReferences/ResourceSetRecordReference.h"
 #include "ArgusLogging.h"
 
-#if WITH_EDITOR
+#if WITH_EDITOR && WITH_EDITORONLY_DATA
 void FUResourceSetRecordReference::StoreId() const
 {
 	if (m_softObjectPtr.IsNull())

@@ -4,7 +4,7 @@
 #include "RecordReferences/TeamColorRecordReference.h"
 #include "ArgusLogging.h"
 
-#if WITH_EDITOR
+#if WITH_EDITOR && WITH_EDITORONLY_DATA
 void FUTeamColorRecordReference::StoreId() const
 {
 	if (m_softObjectPtr.IsNull())

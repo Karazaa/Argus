@@ -13,11 +13,13 @@ struct FUPlacedArgusActorTeamInfoRecordReference : public FArgusStaticRecordRefe
 	GENERATED_BODY();
 
 public:
-#if WITH_EDITOR
+#if WITH_EDITOR && WITH_EDITORONLY_DATA
 	void StoreId() const override;
 #endif
 
 private:
+#if WITH_EDITORONLY_DATA
 	UPROPERTY(EditAnywhere)
 	TSoftObjectPtr<UPlacedArgusActorTeamInfoRecord> m_softObjectPtr = nullptr;
+#endif
 };

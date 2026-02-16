@@ -4,7 +4,7 @@
 #include "RecordReferences/PlacedArgusActorTeamInfoRecordReference.h"
 #include "ArgusLogging.h"
 
-#if WITH_EDITOR
+#if WITH_EDITOR && WITH_EDITORONLY_DATA
 void FUPlacedArgusActorTeamInfoRecordReference::StoreId() const
 {
 	if (m_softObjectPtr.IsNull())
