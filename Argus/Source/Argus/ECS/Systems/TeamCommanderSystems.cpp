@@ -157,11 +157,12 @@ void TeamCommanderSystems::UpdateTeamCommanderPerEntityOnTeam(const TeamCommande
 
 	UpdateResourceExtractionDataPerSink(components, teamCommanderComponent);
 	UpdateRevealedAreasPerEntityOnTeam(components, teamCommanderComponent);
+	UpdateSpawningUnitTypesPerSpawner(components, teamCommanderComponent);
 }
 
 void TeamCommanderSystems::UpdateTeamCommanderPerNeutralEntity(const TeamCommanderSystemsArgs& components, ArgusEntity teamCommanderEntity)
 {
-	ARGUS_TRACE(TeamCommanderSystems::UpdateTeamCommanderPerEntityOnOtherTeam);
+	ARGUS_TRACE(TeamCommanderSystems::UpdateTeamCommanderPerNeutralEntity);
 
 	TeamCommanderComponent* teamCommanderComponent = teamCommanderEntity.GetComponent<TeamCommanderComponent>();
 	ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
@@ -188,6 +189,8 @@ void TeamCommanderSystems::UpdateTeamCommanderPerNeutralEntity(const TeamCommand
 
 void TeamCommanderSystems::UpdateResourceExtractionDataPerSink(const TeamCommanderSystemsArgs& components, TeamCommanderComponent* teamCommanderComponent)
 {
+	ARGUS_TRACE(TeamCommanderSystems::UpdateResourceExtractionDataPerSink);
+
 	ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
@@ -492,12 +495,13 @@ void TeamCommanderSystems::AssignIdleEntityToWork(ArgusEntity idleEntity, TeamCo
 
 bool TeamCommanderSystems::AssignIdleEntityToDirectiveIfAble(ArgusEntity idleEntity, TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority)
 {
+	ARGUS_TRACE(TeamCommanderSystems::AssignIdleEntityToDirectiveIfAble);
+
 	if (priority.m_weight < 0.0f)
 	{
 		return false;
 	}
 
-	ARGUS_TRACE(TeamCommanderSystems::AssignIdleEntityToDirectiveIfAble);
 	switch (priority.m_directive)
 	{
 		case ETeamCommanderDirective::ConstructResourceSink:
@@ -517,7 +521,7 @@ bool TeamCommanderSystems::AssignIdleEntityToDirectiveIfAble(ArgusEntity idleEnt
 
 bool TeamCommanderSystems::AssignEntityToConstructResourceSinkIfAble(ArgusEntity entity, TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority)
 {
-	ARGUS_TRACE(TeamCommanderSystems::AssignEntityToResourceExtractionIfAble);
+	ARGUS_TRACE(TeamCommanderSystems::AssignEntityToConstructResourceSinkIfAble);
 	ARGUS_RETURN_ON_NULL_BOOL(teamCommanderComponent, ArgusECSLog);
 	if (priority.m_entityCategory.m_resourceType == EResourceType::Count)
 	{
