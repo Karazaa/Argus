@@ -46,6 +46,11 @@ bool ConstructionSystems::CanEntityConstructOtherEntity(ArgusEntity potentialCon
 		return false;
 	}
 
+	if (!potentialConstructor.IsOnSameTeamAsOtherEntity(potentialConstructee))
+	{
+		return false;
+	}
+
 	return (taskComponent->m_constructionState == EConstructionState::BeingConstructed) && (constructionComponent->m_constructionType == EConstructionType::Manual);
 }
 

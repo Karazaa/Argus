@@ -867,6 +867,21 @@ bool AvoidanceSystems::ShouldReturnTargetEffortCoefficient(const TransformSystem
 		return true;
 	}
 
+	const TargetingComponent* foundEntityTargetingComponent = foundEntity.GetComponent<TargetingComponent>();
+	const TaskComponent* foundEntityTaskComponent = foundEntity.GetComponent<TaskComponent>();
+	if (!foundEntityTargetingComponent || !foundEntityTaskComponent)
+	{
+		return false;
+	}
+
+	if (foundEntityTargetingComponent->HasEntityTarget() &&
+		foundEntityTargetingComponent->m_targetEntityId == sourceEntityComponents.m_entity.GetId() &&
+		(foundEntityTaskComponent->m_movementState == EMovementState::MoveToEntity || foundEntityTaskComponent->m_movementState == EMovementState::InRangeOfTargetEntity))
+	{
+		coefficient = 1.0f;
+		return true;
+	}
+
 	return false;
 }
 
