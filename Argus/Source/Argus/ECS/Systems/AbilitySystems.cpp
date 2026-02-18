@@ -278,10 +278,12 @@ bool AbilitySystems::DoesAbilitySpawnEntityOfCategory(const UAbilityRecord* abil
 			{
 				return resourceComponentData->m_resourceComponentOwnerType == EResourceComponentOwnerType::Sink && resourceComponentData->m_currentResources.HasResourceType(entityCategory.m_resourceType);
 			}
-			break;
+			return false;
 		default:
 			return false;
 	}
+
+	return false;
 }
 
 bool AbilitySystems::GetSpawnEntityCategoryAbilities(ArgusEntity entity, EntityCategory entityCategory, TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& outAbilityIndexPairs)
