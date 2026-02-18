@@ -226,7 +226,6 @@ void TeamCommanderSystems::UpdateResourceExtractionDataPerSink(const TeamCommand
 			if (TargetingSystems::IsInSightRangeOfOtherEntity(components.m_entity, sourceEntity))
 			{
 				data.m_resourceSinkEntityId = components.m_entity.GetId();
-				return true;
 			}
 
 			return false;
@@ -387,11 +386,11 @@ void TeamCommanderSystems::UpdateSpawnUnitTeamPriority(TeamCommanderComponent* t
 
 	if (priority.m_unitType == ESpawnUnitType::Carrier)
 	{
-		priority.m_weight = 0.5f;
+		priority.m_weight = -0.5f;
 		return;
 	}
 
-	float numUnassignedResourceSources = 0.0f;
+	float numUnassignedResourceSources = -0.5f;
 	teamCommanderComponent->IterateSeenResourceSourcesOfType(priority.m_resourceType, [&priority, &numUnassignedResourceSources](const ResourceSourceExtractionData& data)
 	{
 		if (data.m_resourceSourceEntityId != ArgusECSConstants::k_maxEntities && data.m_resourceExtractorEntityId == ArgusECSConstants::k_maxEntities)
@@ -457,6 +456,11 @@ void TeamCommanderSystems::AssignIdleEntityToWork(ArgusEntity idleEntity, TeamCo
 
 bool TeamCommanderSystems::AssignIdleEntityToDirectiveIfAble(ArgusEntity idleEntity, TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority)
 {
+	if (priority.m_weight < 0.0f)
+	{
+		return false;
+	}
+
 	ARGUS_TRACE(TeamCommanderSystems::AssignIdleEntityToDirectiveIfAble);
 	switch (priority.m_directive)
 	{
@@ -566,8 +570,9 @@ bool TeamCommanderSystems::AssignEntityToSpawnUnitIfAble(ArgusEntity entity, Tea
 	ARGUS_TRACE(TeamCommanderSystems::AssignEntityToSpawnUnitIfAble);
 	ARGUS_RETURN_ON_NULL_BOOL(teamCommanderComponent, ArgusECSLog);
 
+	TaskComponent* taskComponent = entity.GetComponent<TaskComponent>();
 	const SpawningComponent* spawningComponent = entity.GetComponent<SpawningComponent>();
-	if (!spawningComponent)
+	if (!taskComponent || !spawningComponent)
 	{
 		return false;
 	}
@@ -578,7 +583,11 @@ bool TeamCommanderSystems::AssignEntityToSpawnUnitIfAble(ArgusEntity entity, Tea
 		return false;
 	}
 
-	return false;
+	taskComponent->m_abilityState = AbilitySystems::GetProcessAbilityStateForAbilityIndex(abilityIndexPairs[0].Value);
+	taskComponent->m_directiveFromTeamCommander = priority.m_directive;
+	priority.m_weight -= 1.0f;
+	teamCommanderComponent->m_priorities.Sort();
+	return true;
 }
 
 bool TeamCommanderSystems::AssignEntityToScoutingIfAble(ArgusEntity entity, TeamCommanderComponent* teamCommanderComponent)
