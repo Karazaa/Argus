@@ -18,11 +18,14 @@ public:
 	static void CastAbility(const UAbilityRecord* abilityRecord, const AbilitySystemsArgs& components);
 	static void PrepReticle(const UAbilityRecord* abilityRecord, const AbilitySystemsArgs& components);
 
-	static const UArgusEntityTemplate* GetEntityTemplateForAbility(const UAbilityRecord* abilityRecord, EAbilityTypes abilityType);
-	static float GetRaidusOfConstructionAbility(const UAbilityRecord* abilityRecord);
+	static const UArgusEntityTemplate* GetEntityTemplateForAbility(const UAbilityRecord* abilityRecord);
+	static float GetRadiusOfConstructionAbility(const UAbilityRecord* abilityRecord);
 	static float GetResourceBufferRadiusOfConstructionAbility(const UAbilityRecord* abilityRecord);
 
 	static EAbilityState GetProcessAbilityStateForAbilityIndex(EAbilityIndex index);
+
+	static bool DoesAbilitySpawnEntityOfCategory(const UAbilityRecord* abilityRecord, EntityCategory entityCategory);
+	static bool GetSpawnEntityCategoryAbilities(ArgusEntity entity, EntityCategory entityCategory, TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& outAbilityIndexPairs);
 
 private:
 	static void ProcessAbilityRefundRequests(const AbilitySystemsArgs& components);

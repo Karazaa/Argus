@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ComponentDependencies/ResourceSet.h"
+#include "ComponentDependencies/EntityCategory.h"
 
 UENUM()
 enum class ETeamCommanderDirective : uint8
@@ -16,20 +16,10 @@ enum class ETeamCommanderDirective : uint8
 	Count
 };
 
-UENUM()
-enum class ESpawnUnitType : uint8
-{
-	Extractor,
-	Carrier,
-
-	Count
-};
-
 struct TeamCommanderPriority
 {
 	ETeamCommanderDirective m_directive = ETeamCommanderDirective::Scout;
-	EResourceType m_resourceType = EResourceType::Count;
-	ESpawnUnitType m_unitType = ESpawnUnitType::Count;
+	EntityCategory m_entityCategory;
 	float m_weight = 0.0f;
 };
 

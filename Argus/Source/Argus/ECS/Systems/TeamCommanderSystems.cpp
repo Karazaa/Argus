@@ -6,9 +6,6 @@
 #include "ArgusMacros.h"
 #include "ArgusMath.h"
 #include "ArgusStaticData.h"
-#include "DataComponentDefinitions/CarrierComponentData.h"
-#include "DataComponentDefinitions/ResourceComponentData.h"
-#include "DataComponentDefinitions/ResourceExtractionComponentData.h"
 #include "Systems/AbilitySystems.h"
 #include "Systems/ResourceSystems.h"
 #include "Systems/SpatialPartitioningSystems.h"
@@ -250,6 +247,37 @@ void TeamCommanderSystems::UpdateRevealedAreasPerEntityOnTeam(const TeamCommande
 	}
 }
 
+void TeamCommanderSystems::UpdateSpawningUnitTypesPerSpawner(const TeamCommanderSystemsArgs& components, TeamCommanderComponent* teamCommanderComponent)
+{
+	ARGUS_TRACE(TeamCommanderSystems::UpdateSpawningUnitTypesPerSpawner);
+
+	ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+
+	if (components.m_taskComponent->m_spawningState == ESpawningState::None)
+	{
+		return;
+	}
+
+	const SpawningComponent* spawningComponent = components.m_entity.GetComponent<SpawningComponent>();
+	if (!spawningComponent)
+	{
+		return;
+	}
+
+	const SpawnEntityInfo& spawnInfo = spawningComponent->m_spawnQueue.First();
+	const UArgusActorRecord* actorToSpawnRecord = ArgusStaticData::GetRecord<UArgusActorRecord>(spawnInfo.m_argusActorRecordId);
+	if (!actorToSpawnRecord)
+	{
+		return;
+	}
+
+	// TODO JAMES: Update number of spawning units based on UArgusActorRecord.
+}
+
 void TeamCommanderSystems::UpdateTeamCommanderPriorities(ArgusEntity teamEntity)
 {
 	ARGUS_TRACE(TeamCommanderSystems::UpdateTeamCommanderPriorities);
@@ -267,7 +295,8 @@ void TeamCommanderSystems::UpdateTeamCommanderPriorities(ArgusEntity teamEntity)
 				{
 					TeamCommanderPriority& priority = teamCommanderComponent->m_priorities.Emplace_GetRef();
 					priority.m_directive = directiveToEvaluate;
-					priority.m_resourceType = static_cast<EResourceType>(j);
+					priority.m_entityCategory.m_entityCategoryType = EEntityCategoryType::ResourceSink;
+					priority.m_entityCategory.m_resourceType = static_cast<EResourceType>(j);
 					UpdateConstructResourceSinkTeamPriority(teamCommanderComponent, priority);
 				}
 				continue;
@@ -276,22 +305,28 @@ void TeamCommanderSystems::UpdateTeamCommanderPriorities(ArgusEntity teamEntity)
 				{
 					TeamCommanderPriority& priority = teamCommanderComponent->m_priorities.Emplace_GetRef();
 					priority.m_directive = directiveToEvaluate;
-					priority.m_resourceType = static_cast<EResourceType>(j);
+					priority.m_entityCategory.m_entityCategoryType = EEntityCategoryType::ResourceSource;
+					priority.m_entityCategory.m_resourceType = static_cast<EResourceType>(j);
 					UpdateResourceExtractionTeamPriority(teamCommanderComponent, priority);
 				}
 				continue;
 			case ETeamCommanderDirective::SpawnUnit:
-				for (uint8 j = 0u; j < static_cast<uint8>(ESpawnUnitType::Count); ++j)
+				for (uint8 j = 0u; j < static_cast<uint8>(EEntityCategoryType::Count); ++j)
 				{
-					ESpawnUnitType unitType = static_cast<ESpawnUnitType>(j);
-					if (unitType == ESpawnUnitType::Extractor)
+					EEntityCategoryType unitCategoryType = static_cast<EEntityCategoryType>(j);
+					if (unitCategoryType == EEntityCategoryType::ResourceSink || unitCategoryType == EEntityCategoryType::ResourceSource)
+					{
+						continue;
+					}
+
+					if (unitCategoryType == EEntityCategoryType::Extractor)
 					{
 						for (uint8 k = 0u; k < static_cast<uint8>(EResourceType::Count); ++k)
 						{
 							TeamCommanderPriority& priority = teamCommanderComponent->m_priorities.Emplace_GetRef();
 							priority.m_directive = directiveToEvaluate;
-							priority.m_unitType = unitType;
-							priority.m_resourceType = static_cast<EResourceType>(k);
+							priority.m_entityCategory.m_entityCategoryType = unitCategoryType;
+							priority.m_entityCategory.m_resourceType = static_cast<EResourceType>(k);
 							UpdateSpawnUnitTeamPriority(teamCommanderComponent, priority);
 						}
 					}
@@ -299,7 +334,8 @@ void TeamCommanderSystems::UpdateTeamCommanderPriorities(ArgusEntity teamEntity)
 					{
 						TeamCommanderPriority& priority = teamCommanderComponent->m_priorities.Emplace_GetRef();
 						priority.m_directive = directiveToEvaluate;
-						priority.m_unitType = unitType;
+						priority.m_entityCategory.m_entityCategoryType = unitCategoryType;
+						priority.m_entityCategory.m_resourceType = EResourceType::Count;
 						UpdateSpawnUnitTeamPriority(teamCommanderComponent, priority);
 					}
 				}
@@ -323,12 +359,12 @@ void TeamCommanderSystems::UpdateConstructResourceSinkTeamPriority(TeamCommander
 {
 	ARGUS_TRACE(TeamCommanderSystems::UpdateConstructResourceSinkTeamPriority);
 	ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
-	if (priority.m_directive != ETeamCommanderDirective::ConstructResourceSink || priority.m_resourceType == EResourceType::Count)
+	if (priority.m_directive != ETeamCommanderDirective::ConstructResourceSink || priority.m_entityCategory.m_resourceType == EResourceType::Count)
 	{
 		return;
 	}
 
-	bool updated = teamCommanderComponent->IterateSeenResourceSourcesOfType(priority.m_resourceType, [&priority](const ResourceSourceExtractionData& data)
+	bool updated = teamCommanderComponent->IterateSeenResourceSourcesOfType(priority.m_entityCategory.m_resourceType, [&priority](const ResourceSourceExtractionData& data)
 	{
 		if (data.m_resourceSourceEntityId != ArgusECSConstants::k_maxEntities && data.m_resourceSinkEntityId == ArgusECSConstants::k_maxEntities)
 		{
@@ -356,7 +392,7 @@ void TeamCommanderSystems::UpdateResourceExtractionTeamPriority(TeamCommanderCom
 		return;
 	}
 
-	bool updated = teamCommanderComponent->IterateSeenResourceSourcesOfType(priority.m_resourceType, [&priority](const ResourceSourceExtractionData& data)
+	bool updated = teamCommanderComponent->IterateSeenResourceSourcesOfType(priority.m_entityCategory.m_resourceType, [&priority](const ResourceSourceExtractionData& data)
 	{
 		if (data.m_resourceSourceEntityId != ArgusECSConstants::k_maxEntities && data.m_resourceExtractorEntityId == ArgusECSConstants::k_maxEntities)
 		{
@@ -384,24 +420,24 @@ void TeamCommanderSystems::UpdateSpawnUnitTeamPriority(TeamCommanderComponent* t
 		return;
 	}
 
-	if (priority.m_unitType == ESpawnUnitType::Carrier)
+	if (priority.m_entityCategory.m_entityCategoryType == EEntityCategoryType::Carrier)
 	{
 		priority.m_weight = -0.5f;
 		return;
 	}
 
-	float numUnassignedResourceSources = -0.5f;
-	teamCommanderComponent->IterateSeenResourceSourcesOfType(priority.m_resourceType, [&priority, &numUnassignedResourceSources](const ResourceSourceExtractionData& data)
+	float extractorNeedWeight = -0.5f;
+	teamCommanderComponent->IterateSeenResourceSourcesOfType(priority.m_entityCategory.m_resourceType, [&priority, &extractorNeedWeight](const ResourceSourceExtractionData& data)
 	{
 		if (data.m_resourceSourceEntityId != ArgusECSConstants::k_maxEntities && data.m_resourceExtractorEntityId == ArgusECSConstants::k_maxEntities)
 		{
-			numUnassignedResourceSources += 1.0f;
+			extractorNeedWeight += 1.0f;
 		}
 
 		return false;
 	});
 
-	priority.m_weight = numUnassignedResourceSources;
+	priority.m_weight = extractorNeedWeight;
 }
 
 void TeamCommanderSystems::UpdateScoutingTeamPriority(TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority)
@@ -483,7 +519,7 @@ bool TeamCommanderSystems::AssignEntityToConstructResourceSinkIfAble(ArgusEntity
 {
 	ARGUS_TRACE(TeamCommanderSystems::AssignEntityToResourceExtractionIfAble);
 	ARGUS_RETURN_ON_NULL_BOOL(teamCommanderComponent, ArgusECSLog);
-	if (priority.m_resourceType == EResourceType::Count)
+	if (priority.m_entityCategory.m_resourceType == EResourceType::Count)
 	{
 		return false;
 	}
@@ -495,12 +531,12 @@ bool TeamCommanderSystems::AssignEntityToConstructResourceSinkIfAble(ArgusEntity
 	}
 
 	TArray<TPair<const UAbilityRecord*, EAbilityIndex>> abilityIndexPairs;
-	if (!GetConstructResourceSinkAbilities(entity, priority.m_resourceType, abilityIndexPairs))
+	if (!AbilitySystems::GetSpawnEntityCategoryAbilities(entity, priority.m_entityCategory, abilityIndexPairs))
 	{
 		return false;
 	}
 
-	if (!FindTargetLocForConstructResourceSink(entity, abilityIndexPairs, teamCommanderComponent, priority.m_resourceType))
+	if (!FindTargetLocForConstructResourceSink(entity, abilityIndexPairs, teamCommanderComponent, priority.m_entityCategory.m_resourceType))
 	{
 		return false;
 	}
@@ -578,7 +614,7 @@ bool TeamCommanderSystems::AssignEntityToSpawnUnitIfAble(ArgusEntity entity, Tea
 	}
 
 	TArray<TPair<const UAbilityRecord*, EAbilityIndex>> abilityIndexPairs;
-	if (!GetSpawnUnitAbilities(entity, priority.m_unitType, priority.m_resourceType, abilityIndexPairs))
+	if (!AbilitySystems::GetSpawnEntityCategoryAbilities(entity, priority.m_entityCategory, abilityIndexPairs))
 	{
 		return false;
 	}
@@ -747,119 +783,6 @@ void TeamCommanderSystems::ConvertAreaCoordinatesToAreaIndex(int32 xCoordinate, 
 	areaIndex = (yCoordinate * areasPerDimension) + xCoordinate;
 }
 
-bool TeamCommanderSystems::GetConstructResourceSinkAbilities(ArgusEntity entity, EResourceType type, TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& outAbilityIndexPairs)
-{
-	ARGUS_TRACE(TeamCommanderSystems::GetConstructResourceSinkAbilities);
-
-	outAbilityIndexPairs.Reset();
-	outAbilityIndexPairs.Reserve(ArgusECSConstants::k_numEntityAbilities);
-	AbilityComponent* abilityComponent = entity.GetComponent<AbilityComponent>();
-	if (!abilityComponent)
-	{
-		return false;
-	}
-
-	abilityComponent->IterateActiveAbilityIds([entity, type, &outAbilityIndexPairs](uint32 abilityRecordId, EAbilityIndex iteratedAbilityIndex)
-	{
-		const UAbilityRecord* record = ArgusStaticData::GetRecord<UAbilityRecord>(abilityRecordId);
-		if (!record)
-		{
-			return;
-		}
-
-		if (ResourceSystems::CanEntityAffordTeamResourceChange(entity, record->m_requiredResourceChangeToCast) && DoesAbilityConstructResourceSink(record, type))
-		{
-			outAbilityIndexPairs.Add(TPair<const UAbilityRecord*, EAbilityIndex>(record, iteratedAbilityIndex));
-		}
-	});
-
-	return outAbilityIndexPairs.Num() > 0;
-}
-
-bool TeamCommanderSystems::GetSpawnUnitAbilities(ArgusEntity entity, ESpawnUnitType unitType, EResourceType resourceType, TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& outAbilityIndexPairs)
-{
-	ARGUS_TRACE(TeamCommanderSystems::GetSpawnUnitAbilities);
-
-	outAbilityIndexPairs.Reset();
-	outAbilityIndexPairs.Reserve(ArgusECSConstants::k_numEntityAbilities);
-	AbilityComponent* abilityComponent = entity.GetComponent<AbilityComponent>();
-	if (!abilityComponent)
-	{
-		return false;
-	}
-
-	abilityComponent->IterateActiveAbilityIds([entity, unitType, resourceType, &outAbilityIndexPairs](uint32 abilityRecordId, EAbilityIndex iteratedAbilityIndex)
-	{
-		const UAbilityRecord* record = ArgusStaticData::GetRecord<UAbilityRecord>(abilityRecordId);
-		if (!record)
-		{
-			return;
-		}
-
-		if (ResourceSystems::CanEntityAffordTeamResourceChange(entity, record->m_requiredResourceChangeToCast) && DoesAbilitySpawnUnitType(record, unitType, resourceType))
-		{
-			outAbilityIndexPairs.Add(TPair<const UAbilityRecord*, EAbilityIndex>(record, iteratedAbilityIndex));
-		}
-	});
-
-	return outAbilityIndexPairs.Num() > 0;
-}
-
-bool TeamCommanderSystems::DoesAbilityConstructResourceSink(const UAbilityRecord* abilityRecord, EResourceType type)
-{
-	ARGUS_TRACE(TeamCommanderSystems::DoesAbilityConstructResourceSink);
-
-	ARGUS_RETURN_ON_NULL_BOOL(abilityRecord, ArgusECSLog);
-
-	const UArgusEntityTemplate* entityTemplate = AbilitySystems::GetEntityTemplateForAbility(abilityRecord, EAbilityTypes::Construct);
-	if (!entityTemplate)
-	{
-		return false;
-	}
-
-	const UResourceComponentData* resourceComponentData = entityTemplate->GetComponentFromTemplate<UResourceComponentData>();
-	if (!resourceComponentData || resourceComponentData->m_resourceComponentOwnerType != EResourceComponentOwnerType::Sink)
-	{
-		return false;
-	}
-
-	return resourceComponentData->m_currentResources.HasResourceType(type);
-}
-
-bool TeamCommanderSystems::DoesAbilitySpawnUnitType(const UAbilityRecord* abilityRecord, ESpawnUnitType unitType, EResourceType resourceType)
-{
-	ARGUS_TRACE(TeamCommanderSystems::DoesAbilitySpawnUnitType);
-
-	ARGUS_RETURN_ON_NULL_BOOL(abilityRecord, ArgusECSLog);
-
-	const UArgusEntityTemplate* entityTemplate = AbilitySystems::GetEntityTemplateForAbility(abilityRecord, EAbilityTypes::Spawn);
-	if (!entityTemplate)
-	{
-		return false;
-	}
-
-	switch (unitType)
-	{
-		case ESpawnUnitType::Carrier:
-			if (const UCarrierComponentData* carrierComponentData = entityTemplate->GetComponentFromTemplate<UCarrierComponentData>())
-			{
-				return true;
-			}
-			return false;
-		case ESpawnUnitType::Extractor:
-			if (const UResourceExtractionComponentData* resourceExtractionComponentData = entityTemplate->GetComponentFromTemplate<UResourceExtractionComponentData>())
-			{
-				if (const UResourceSetRecord* resourceSetRecord = ArgusStaticData::GetRecord<UResourceSetRecord>(resourceExtractionComponentData->m_resourcesToExtractRecordIdReference.GetId()))
-				{
-					return resourceSetRecord->m_resourceSet.HasResourceType(resourceType);
-				}
-			}
-			return false;
-		default:
-			return false;
-	}
-}
-
 bool TeamCommanderSystems::FindTargetLocForConstructResourceSink(ArgusEntity entity, const TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& abilityIndexPairs, TeamCommanderComponent* teamCommanderComponent, EResourceType type)
 {
 	ARGUS_RETURN_ON_NULL_BOOL(teamCommanderComponent, ArgusECSLog);
@@ -889,7 +812,7 @@ bool TeamCommanderSystems::FindTargetLocForConstructResourceSink(ArgusEntity ent
 	FVector2D fromSinkToEntity = FVector2D(transformComponent->m_location - resourceSourceTransformComponent->m_location).GetSafeNormal();
 
 	const float safeZoneDistance = AbilitySystems::GetResourceBufferRadiusOfConstructionAbility(abilityIndexPairs[index].Key);
-	const float radiusDistance = AbilitySystems::GetRaidusOfConstructionAbility(abilityIndexPairs[index].Key);
+	const float radiusDistance = AbilitySystems::GetRadiusOfConstructionAbility(abilityIndexPairs[index].Key);
 
 	FVector2D candidateOffset = (fromSinkToEntity * (safeZoneDistance + resourceSourceTransformComponent->m_radius + ArgusECSConstants::k_resourceSinkBufferDistanceAdjustment));
 	FVector candidatePoint = FVector(candidateOffset, 0.0f) + resourceSourceTransformComponent->m_location;
@@ -962,7 +885,7 @@ ArgusEntity TeamCommanderSystems::GetNearestSeenResourceSourceToEntity(ArgusEnti
 		int32 j;
 		for (j = 0; j < abilityIndexPairs.Num(); ++j)
 		{
-			if (ResourceSystems::CanEntityTemplateActAsSinkToEntitySource(AbilitySystems::GetEntityTemplateForAbility(abilityIndexPairs[j].Key, EAbilityTypes::Construct), resourceSourceEntity))
+			if (ResourceSystems::CanEntityTemplateActAsSinkToEntitySource(AbilitySystems::GetEntityTemplateForAbility(abilityIndexPairs[j].Key), resourceSourceEntity))
 			{
 				anyValidAbilities = true;
 				break;

@@ -23,6 +23,7 @@ private:
 	static void UpdateTeamCommanderPerNeutralEntity(const TeamCommanderSystemsArgs& components, ArgusEntity teamCommanderEntity);
 	static void UpdateResourceExtractionDataPerSink(const TeamCommanderSystemsArgs& components, TeamCommanderComponent* teamCommanderComponent);
 	static void UpdateRevealedAreasPerEntityOnTeam(const TeamCommanderSystemsArgs& components, TeamCommanderComponent* teamCommanderComponent);
+	static void UpdateSpawningUnitTypesPerSpawner(const TeamCommanderSystemsArgs& components, TeamCommanderComponent* teamCommanderComponent);
 
 	static void UpdateTeamCommanderPriorities(ArgusEntity teamCommmanderEntity);
 	static void UpdateConstructResourceSinkTeamPriority(TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority);
@@ -44,10 +45,6 @@ private:
 	static void ConvertAreaIndexToAreaCoordinates(int32 areaIndex, int32 areasPerDimension, int32& xCoordinate, int32& yCoordinate);
 	static void ConvertAreaCoordinatesToAreaIndex(int32 xCoordinate, int32 yCoordinate, int32 areasPerDimension, int32& areaIndex);
 
-	static bool GetConstructResourceSinkAbilities(ArgusEntity entity, EResourceType type, TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& outAbilityIndexPairs);
-	static bool GetSpawnUnitAbilities(ArgusEntity entity, ESpawnUnitType unitType, EResourceType resourceType, TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& outAbilityIndexPairs);
-	static bool DoesAbilityConstructResourceSink(const UAbilityRecord* abilityRecord, EResourceType type);
-	static bool DoesAbilitySpawnUnitType(const UAbilityRecord* abilityRecord, ESpawnUnitType unitType, EResourceType resourceType = EResourceType::Count);
 	static bool FindTargetLocForConstructResourceSink(ArgusEntity entity, const TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& abilityIndexPairs, TeamCommanderComponent* teamCommanderComponent, EResourceType type);
 	static ArgusEntity GetNearestSeenResourceSourceToEntity(ArgusEntity entity, const TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& abilityIndexPairs, TeamCommanderComponent* teamCommanderComponent, EResourceType type, int32& outPairIndex);
 

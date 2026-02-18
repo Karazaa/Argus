@@ -4,8 +4,11 @@
 #include "ArgusLogging.h"
 #include "ArgusStaticData.h"
 #include "ComponentDependencies/SpawnEntityInfo.h"
+#include "DataComponentDefinitions/CarrierComponentData.h"
 #include "DataComponentDefinitions/ResourceComponentData.h"
+#include "DataComponentDefinitions/ResourceExtractionComponentData.h"
 #include "DataComponentDefinitions/TransformComponentData.h"
+
 #include "Systems/ResourceSystems.h"
 
 void AbilitySystems::RunSystems(float deltaTime)
@@ -164,24 +167,25 @@ void AbilitySystems::PrepReticle(const UAbilityRecord* abilityRecord, const Abil
 	components.m_taskComponent->m_abilityState = EAbilityState::None;
 }
 
-const UArgusEntityTemplate* AbilitySystems::GetEntityTemplateForAbility(const UAbilityRecord* abilityRecord, EAbilityTypes abilityType)
+const UArgusEntityTemplate* AbilitySystems::GetEntityTemplateForAbility(const UAbilityRecord* abilityRecord)
 {
 	ARGUS_TRACE(AbilitySystems::GetEntityTemplateForAbility);
 
 	ARGUS_RETURN_ON_NULL_POINTER(abilityRecord, ArgusECSLog);
 
-	bool hasConstruction = false;
+	bool hasEntity = false;
 	int32 index = 0;
-	for (index; index < abilityRecord->m_abilityEffects.Num(); ++index)
+	for (; index < abilityRecord->m_abilityEffects.Num(); ++index)
 	{
-		if (abilityRecord->m_abilityEffects[index].m_abilityType == abilityType)
+		if (abilityRecord->m_abilityEffects[index].m_abilityType == EAbilityTypes::Construct ||
+			abilityRecord->m_abilityEffects[index].m_abilityType == EAbilityTypes::Spawn)
 		{
-			hasConstruction = true;
+			hasEntity = true;
 			break;
 		}
 	}
 
-	if (!hasConstruction)
+	if (!hasEntity)
 	{
 		return nullptr;
 	}
@@ -192,9 +196,11 @@ const UArgusEntityTemplate* AbilitySystems::GetEntityTemplateForAbility(const UA
 	return argusActorRecord->m_entityTemplate.LoadAndStorePtr();
 }
 
-float AbilitySystems::GetRaidusOfConstructionAbility(const UAbilityRecord* abilityRecord)
+float AbilitySystems::GetRadiusOfConstructionAbility(const UAbilityRecord* abilityRecord)
 {
-	const UArgusEntityTemplate* entityTemplate = GetEntityTemplateForAbility(abilityRecord, EAbilityTypes::Construct);
+	ARGUS_RETURN_ON_NULL_VALUE(abilityRecord, ArgusECSLog, 0.0f);
+
+	const UArgusEntityTemplate* entityTemplate = GetEntityTemplateForAbility(abilityRecord);
 	ARGUS_RETURN_ON_NULL_VALUE(entityTemplate, ArgusECSLog, 0.0f);
 
 	const UTransformComponentData* transformComponent = entityTemplate->GetComponentFromTemplate<UTransformComponentData>();
@@ -205,7 +211,9 @@ float AbilitySystems::GetRaidusOfConstructionAbility(const UAbilityRecord* abili
 
 float AbilitySystems::GetResourceBufferRadiusOfConstructionAbility(const UAbilityRecord* abilityRecord)
 {
-	const UArgusEntityTemplate* entityTemplate = GetEntityTemplateForAbility(abilityRecord, EAbilityTypes::Construct);
+	ARGUS_RETURN_ON_NULL_VALUE(abilityRecord, ArgusECSLog, 0.0f);
+
+	const UArgusEntityTemplate* entityTemplate = GetEntityTemplateForAbility(abilityRecord);
 	ARGUS_RETURN_ON_NULL_VALUE(entityTemplate, ArgusECSLog, 0.0f);
 
 	const UResourceComponentData* resourceComponent = entityTemplate->GetComponentFromTemplate<UResourceComponentData>();
@@ -234,6 +242,75 @@ EAbilityState AbilitySystems::GetProcessAbilityStateForAbilityIndex(EAbilityInde
 	}
 
 	return EAbilityState::None;
+}
+
+bool AbilitySystems::DoesAbilitySpawnEntityOfCategory(const UAbilityRecord* abilityRecord, EntityCategory entityCategory)
+{
+	ARGUS_TRACE(AbilitySystems::DoesAbilitySpawnEntityOfCategory);
+
+	ARGUS_RETURN_ON_NULL_BOOL(abilityRecord, ArgusECSLog);
+
+	const UArgusEntityTemplate* entityTemplate = AbilitySystems::GetEntityTemplateForAbility(abilityRecord);
+	if (!entityTemplate)
+	{
+		return false;
+	}
+
+	switch (entityCategory.m_entityCategoryType)
+	{
+		case EEntityCategoryType::Carrier:
+			if (const UCarrierComponentData* carrierComponentData = entityTemplate->GetComponentFromTemplate<UCarrierComponentData>())
+			{
+				return true;
+			}
+			return false;
+		case EEntityCategoryType::Extractor:
+			if (const UResourceExtractionComponentData* resourceExtractionComponentData = entityTemplate->GetComponentFromTemplate<UResourceExtractionComponentData>())
+			{
+				if (const UResourceSetRecord* resourceSetRecord = ArgusStaticData::GetRecord<UResourceSetRecord>(resourceExtractionComponentData->m_resourcesToExtractRecordIdReference.GetId()))
+				{
+					return resourceSetRecord->m_resourceSet.HasResourceType(entityCategory.m_resourceType);
+				}
+			}
+			return false;
+		case EEntityCategoryType::ResourceSink:
+			if (const UResourceComponentData* resourceComponentData = entityTemplate->GetComponentFromTemplate<UResourceComponentData>())
+			{
+				return resourceComponentData->m_resourceComponentOwnerType == EResourceComponentOwnerType::Sink && resourceComponentData->m_currentResources.HasResourceType(entityCategory.m_resourceType);
+			}
+			break;
+		default:
+			return false;
+	}
+}
+
+bool AbilitySystems::GetSpawnEntityCategoryAbilities(ArgusEntity entity, EntityCategory entityCategory, TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& outAbilityIndexPairs)
+{
+	ARGUS_TRACE(AbilitySystems::GetSpawnEntityCategoryAbilities);
+
+	outAbilityIndexPairs.Reset();
+	outAbilityIndexPairs.Reserve(ArgusECSConstants::k_numEntityAbilities);
+	const AbilityComponent* abilityComponent = entity.GetComponent<AbilityComponent>();
+	if (!abilityComponent)
+	{
+		return false;
+	}
+
+	abilityComponent->IterateActiveAbilityIds([entity, entityCategory, &outAbilityIndexPairs](uint32 abilityRecordId, EAbilityIndex iteratedAbilityIndex)
+	{
+		const UAbilityRecord* record = ArgusStaticData::GetRecord<UAbilityRecord>(abilityRecordId);
+		if (!record)
+		{
+			return;
+		}
+
+		if (ResourceSystems::CanEntityAffordTeamResourceChange(entity, record->m_requiredResourceChangeToCast) && DoesAbilitySpawnEntityOfCategory(record, entityCategory))
+		{
+			outAbilityIndexPairs.Add(TPair<const UAbilityRecord*, EAbilityIndex>(record, iteratedAbilityIndex));
+		}
+	});
+
+	return outAbilityIndexPairs.Num() > 0;
 }
 
 void AbilitySystems::ProcessAbilityRefundRequests(const AbilitySystemsArgs& components)
@@ -510,7 +587,7 @@ void AbilitySystems::PrepReticleForConstructAbility(const UAbilityRecord* abilit
 		return;
 	}
 
-	components.m_reticleComponent->m_radius = GetRaidusOfConstructionAbility(abilityRecord);
+	components.m_reticleComponent->m_radius = GetRadiusOfConstructionAbility(abilityRecord);
 }
 
 void AbilitySystems::LogAbilityRecordError(const WIDECHAR* functionName)

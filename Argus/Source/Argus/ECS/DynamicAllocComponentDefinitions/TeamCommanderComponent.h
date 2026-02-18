@@ -25,7 +25,8 @@ struct TeamCommanderComponent
 	ARGUS_IGNORE()
 	TArray<ResourceSourceExtractionData, ArgusContainerAllocator<10u> > m_seenResourceCSourceExtractionData;
 
-	// TODO JAMES: We need to maintain a list of currently spawning entities for our team. This is required to properly balance out our spawn unit priorities.
+	ARGUS_IGNORE()
+	TArray<EntityCategory, ArgusContainerAllocator<10u>> m_spawningEntityCategories; 
 
 	ARGUS_IGNORE()
 	TArray<TeamCommanderPriority, ArgusContainerAllocator<11u> > m_priorities;

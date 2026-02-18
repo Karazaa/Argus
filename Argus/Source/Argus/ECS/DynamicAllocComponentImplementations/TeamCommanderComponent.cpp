@@ -18,6 +18,7 @@ void TeamCommanderComponent::Reset()
 	m_seenResourceASourceExtractionData.Reset();
 	m_seenResourceBSourceExtractionData.Reset();
 	m_seenResourceCSourceExtractionData.Reset();
+	m_spawningEntityCategories.Reset();
 	m_priorities.Reset();
 	m_revealedAreas.Reset();
 	m_revealedAreaDimensionLength = 800.0f;
@@ -150,6 +151,24 @@ void TeamCommanderComponent::DrawComponentDebug() const
 			ImGui::Unindent();
 		}
 		ImGui::TableNextColumn();
+		ImGui::Text("m_spawningEntityCategories");
+		ImGui::TableNextColumn();
+		ImGui::Text("Array max is currently = %d", m_spawningEntityCategories.Max());
+		if (m_spawningEntityCategories.Num() == 0)
+		{
+			ImGui::Text("Array is empty");
+		}
+		else
+		{
+			ImGui::Text("Size of array = %d", m_spawningEntityCategories.Num());
+			ImGui::Indent();
+			for (int32 i = 0; i < m_spawningEntityCategories.Num(); ++i)
+			{
+				if (i != 0) ImGui::Separator();
+			}
+			ImGui::Unindent();
+		}
+		ImGui::TableNextColumn();
 		ImGui::Text("m_priorities");
 		ImGui::TableNextColumn();
 		ImGui::Text("Array max is currently = %d", m_priorities.Max());
@@ -171,16 +190,16 @@ void TeamCommanderComponent::DrawComponentDebug() const
 				const char* valueName_m_priorities_m_directive = ARGUS_FSTRING_TO_CHAR(StaticEnum<ETeamCommanderDirective>()->GetNameStringByValue(static_cast<uint8>(m_priorities[i].m_directive)))
 				ImGui::Text(valueName_m_priorities_m_directive);
 				ImGui::TableNextColumn();
-				if (m_priorities[i].m_resourceType != EResourceType::Count)
+				if (m_priorities[i].m_entityCategory.m_resourceType != EResourceType::Count)
 				{
-					const char* valueName_m_priorities_m_resourceType = ARGUS_FSTRING_TO_CHAR(StaticEnum<EResourceType>()->GetNameStringByValue(static_cast<uint8>(m_priorities[i].m_resourceType)))
-					ImGui::Text(valueName_m_priorities_m_resourceType);
+					const char* valueName_m_priorities_m_entityCategory_m_resourceType = ARGUS_FSTRING_TO_CHAR(StaticEnum<EResourceType>()->GetNameStringByValue(static_cast<uint8>(m_priorities[i].m_entityCategory.m_resourceType)))
+					ImGui::Text(valueName_m_priorities_m_entityCategory_m_resourceType);
 				}
 				ImGui::TableNextColumn();
-				if (m_priorities[i].m_unitType != ESpawnUnitType::Count)
+				if (m_priorities[i].m_entityCategory.m_entityCategoryType != EEntityCategoryType::Count)
 				{
-					const char* valueName_m_priorities_m_unitType = ARGUS_FSTRING_TO_CHAR(StaticEnum<ESpawnUnitType>()->GetNameStringByValue(static_cast<uint8>(m_priorities[i].m_unitType)))
-					ImGui::Text(valueName_m_priorities_m_unitType);
+					const char* valueName_m_priorities_m_entityCategory_m_entityCategoryType = ARGUS_FSTRING_TO_CHAR(StaticEnum<EEntityCategoryType>()->GetNameStringByValue(static_cast<uint8>(m_priorities[i].m_entityCategory.m_entityCategoryType)))
+					ImGui::Text(valueName_m_priorities_m_entityCategory_m_entityCategoryType);
 				}
 				ImGui::EndTable();
 			}
