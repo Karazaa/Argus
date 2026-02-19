@@ -18,7 +18,7 @@ void TeamCommanderComponent::Reset()
 	m_seenResourceASourceExtractionData.Reset();
 	m_seenResourceBSourceExtractionData.Reset();
 	m_seenResourceCSourceExtractionData.Reset();
-	m_spawningEntityCategories.Reset();
+	m_spawningEntityRecordIds.Reset();
 	m_priorities.Reset();
 	m_revealedAreas.Reset();
 	m_revealedAreaDimensionLength = 800.0f;
@@ -151,20 +151,21 @@ void TeamCommanderComponent::DrawComponentDebug() const
 			ImGui::Unindent();
 		}
 		ImGui::TableNextColumn();
-		ImGui::Text("m_spawningEntityCategories");
+		ImGui::Text("m_spawningEntityRecordIds");
 		ImGui::TableNextColumn();
-		ImGui::Text("Array max is currently = %d", m_spawningEntityCategories.Max());
-		if (m_spawningEntityCategories.Num() == 0)
+		ImGui::Text("Array max is currently = %d", m_spawningEntityRecordIds.Max());
+		if (m_spawningEntityRecordIds.Num() == 0)
 		{
 			ImGui::Text("Array is empty");
 		}
 		else
 		{
-			ImGui::Text("Size of array = %d", m_spawningEntityCategories.Num());
+			ImGui::Text("Size of array = %d", m_spawningEntityRecordIds.Num());
 			ImGui::Indent();
-			for (int32 i = 0; i < m_spawningEntityCategories.Num(); ++i)
+			for (int32 i = 0; i < m_spawningEntityRecordIds.Num(); ++i)
 			{
 				if (i != 0) ImGui::Separator();
+				ImGui::Text("%d", m_spawningEntityRecordIds[i]);
 			}
 			ImGui::Unindent();
 		}

@@ -102,6 +102,7 @@ public:
 	bool				IsOnPlayerTeam() const;
 	bool				IsFlying() const;
 	bool				CanFly() const;
+	bool				DoesEntitySatisfyEntityCategory(EntityCategory entityCategory) const;
 	FVector				GetCurrentTargetLocation() const;
 	float				GetDistanceSquaredToOtherEntity(ArgusEntity otherEntity) const;
 	float				GetDistanceToOtherEntity(ArgusEntity otherEntity) const;

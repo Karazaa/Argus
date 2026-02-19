@@ -3,7 +3,10 @@
 #include "ArgusEntityTemplate.h"
 #include "ArgusLogging.h"
 #include "ArgusStaticData.h"
+#include "DataComponentDefinitions/CarrierComponentData.h"
 #include "DataComponentDefinitions/ComponentData.h"
+#include "DataComponentDefinitions/ResourceComponentData.h"
+#include "DataComponentDefinitions/ResourceExtractionComponentData.h"
 
 void UArgusEntityTemplate::AsyncLoadComponents(const TFunction<void()> onCompleteCallback) const
 {
@@ -129,6 +132,36 @@ void UArgusEntityTemplate::SetInitialStateFromData(ArgusEntity entity) const
 	if (const ResourceExtractionComponent* resourceExtractionComponent = entity.GetComponent<ResourceExtractionComponent>())
 	{
 		ArgusStaticData::AsyncPreLoadRecord<UResourceSetRecord>(resourceExtractionComponent->m_resourcesToExtractRecordId);
+	}
+}
+
+bool UArgusEntityTemplate::DoesTemplateSatisfyEntityCategory(EntityCategory entityCategory) const
+{
+	switch (entityCategory.m_entityCategoryType)
+	{
+		case EEntityCategoryType::Carrier:
+			if (const UCarrierComponentData* carrierComponentData = GetComponentFromTemplate<UCarrierComponentData>())
+			{
+				return true;
+			}
+			return false;
+		case EEntityCategoryType::Extractor:
+			if (const UResourceExtractionComponentData* resourceExtractionComponentData = GetComponentFromTemplate<UResourceExtractionComponentData>())
+			{
+				if (const UResourceSetRecord* resourceSetRecord = ArgusStaticData::GetRecord<UResourceSetRecord>(resourceExtractionComponentData->m_resourcesToExtractRecordIdReference.GetId()))
+				{
+					return resourceSetRecord->m_resourceSet.HasResourceType(entityCategory.m_resourceType);
+				}
+			}
+			return false;
+		case EEntityCategoryType::ResourceSink:
+			if (const UResourceComponentData* resourceComponentData = GetComponentFromTemplate<UResourceComponentData>())
+			{
+				return resourceComponentData->m_resourceComponentOwnerType == EResourceComponentOwnerType::Sink && resourceComponentData->m_currentResources.HasResourceType(entityCategory.m_resourceType);
+			}
+			return false;
+		default:
+			return false;
 	}
 }
 

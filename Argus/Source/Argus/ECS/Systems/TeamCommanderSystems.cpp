@@ -272,13 +272,7 @@ void TeamCommanderSystems::UpdateSpawningUnitTypesPerSpawner(const TeamCommander
 	}
 
 	const SpawnEntityInfo& spawnInfo = spawningComponent->m_spawnQueue.First();
-	const UArgusActorRecord* actorToSpawnRecord = ArgusStaticData::GetRecord<UArgusActorRecord>(spawnInfo.m_argusActorRecordId);
-	if (!actorToSpawnRecord)
-	{
-		return;
-	}
-
-	// TODO JAMES: Update number of spawning units based on UArgusActorRecord.
+	teamCommanderComponent->m_spawningEntityRecordIds.Add(spawnInfo.m_argusActorRecordId);
 }
 
 void TeamCommanderSystems::UpdateTeamCommanderPriorities(ArgusEntity teamEntity)
@@ -439,6 +433,40 @@ void TeamCommanderSystems::UpdateSpawnUnitTeamPriority(TeamCommanderComponent* t
 
 		return false;
 	});
+
+	for (int32 i = 0; i < teamCommanderComponent->m_spawningEntityRecordIds.Num(); ++i)
+	{
+		const UArgusActorRecord* argusActorRecord = ArgusStaticData::GetRecord<UArgusActorRecord>(teamCommanderComponent->m_spawningEntityRecordIds[i]);
+		if (!argusActorRecord)
+		{
+			continue;
+		}
+
+		const UArgusEntityTemplate* entityTemplate = argusActorRecord->m_entityTemplate.LoadAndStorePtr();
+		if (!entityTemplate)
+		{
+			continue;
+		}
+
+		if (entityTemplate->DoesTemplateSatisfyEntityCategory(priority.m_entityCategory))
+		{
+			extractorNeedWeight -= 1.0f;
+		}
+	}
+
+	for (int32 i = 0; i < teamCommanderComponent->m_idleEntityIdsForTeam.Num(); ++i)
+	{
+		ArgusEntity entity = ArgusEntity::RetrieveEntity(teamCommanderComponent->m_idleEntityIdsForTeam[i]);
+		if (!entity)
+		{
+			continue;
+		}
+
+		if (entity.DoesEntitySatisfyEntityCategory(priority.m_entityCategory))
+		{
+			extractorNeedWeight -= 1.0f;
+		}
+	}
 
 	priority.m_weight = extractorNeedWeight;
 }

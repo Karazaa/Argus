@@ -4,9 +4,7 @@
 #include "ArgusLogging.h"
 #include "ArgusStaticData.h"
 #include "ComponentDependencies/SpawnEntityInfo.h"
-#include "DataComponentDefinitions/CarrierComponentData.h"
 #include "DataComponentDefinitions/ResourceComponentData.h"
-#include "DataComponentDefinitions/ResourceExtractionComponentData.h"
 #include "DataComponentDefinitions/TransformComponentData.h"
 
 #include "Systems/ResourceSystems.h"
@@ -256,34 +254,7 @@ bool AbilitySystems::DoesAbilitySpawnEntityOfCategory(const UAbilityRecord* abil
 		return false;
 	}
 
-	switch (entityCategory.m_entityCategoryType)
-	{
-		case EEntityCategoryType::Carrier:
-			if (const UCarrierComponentData* carrierComponentData = entityTemplate->GetComponentFromTemplate<UCarrierComponentData>())
-			{
-				return true;
-			}
-			return false;
-		case EEntityCategoryType::Extractor:
-			if (const UResourceExtractionComponentData* resourceExtractionComponentData = entityTemplate->GetComponentFromTemplate<UResourceExtractionComponentData>())
-			{
-				if (const UResourceSetRecord* resourceSetRecord = ArgusStaticData::GetRecord<UResourceSetRecord>(resourceExtractionComponentData->m_resourcesToExtractRecordIdReference.GetId()))
-				{
-					return resourceSetRecord->m_resourceSet.HasResourceType(entityCategory.m_resourceType);
-				}
-			}
-			return false;
-		case EEntityCategoryType::ResourceSink:
-			if (const UResourceComponentData* resourceComponentData = entityTemplate->GetComponentFromTemplate<UResourceComponentData>())
-			{
-				return resourceComponentData->m_resourceComponentOwnerType == EResourceComponentOwnerType::Sink && resourceComponentData->m_currentResources.HasResourceType(entityCategory.m_resourceType);
-			}
-			return false;
-		default:
-			return false;
-	}
-
-	return false;
+	return entityTemplate->DoesTemplateSatisfyEntityCategory(entityCategory);
 }
 
 bool AbilitySystems::GetSpawnEntityCategoryAbilities(ArgusEntity entity, EntityCategory entityCategory, TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& outAbilityIndexPairs)

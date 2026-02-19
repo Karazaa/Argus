@@ -375,6 +375,36 @@ bool ArgusEntity::CanFly() const
 	return transformComponent->m_flightCapability != EFlightCapability::OnlyGrounded;
 }
 
+bool ArgusEntity::DoesEntitySatisfyEntityCategory(EntityCategory entityCategory) const
+{
+	switch (entityCategory.m_entityCategoryType)
+	{
+		case EEntityCategoryType::Carrier:
+			if (const CarrierComponent* carrierComponent = GetComponent<CarrierComponent>())
+			{
+				return true;
+			}
+			return false;
+		case EEntityCategoryType::Extractor:
+			if (const ResourceExtractionComponent* resourceExtractionComponent = GetComponent<ResourceExtractionComponent>())
+			{
+				if (const UResourceSetRecord* resourceSetRecord = ArgusStaticData::GetRecord<UResourceSetRecord>(resourceExtractionComponent->m_resourcesToExtractRecordId))
+				{
+					return resourceSetRecord->m_resourceSet.HasResourceType(entityCategory.m_resourceType);
+				}
+			}
+			return false;
+		case EEntityCategoryType::ResourceSink:
+			if (const ResourceComponent* resourceComponent = GetComponent<ResourceComponent>())
+			{
+				return resourceComponent->m_resourceComponentOwnerType == EResourceComponentOwnerType::Sink && resourceComponent->m_currentResources.HasResourceType(entityCategory.m_resourceType);
+			}
+			return false;
+		default:
+			return false;
+	}
+}
+
 FVector ArgusEntity::GetCurrentTargetLocation() const
 {
 	const TargetingComponent* targetingComponent = GetComponent<TargetingComponent>();

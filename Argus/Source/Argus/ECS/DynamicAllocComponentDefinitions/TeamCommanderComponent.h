@@ -26,7 +26,7 @@ struct TeamCommanderComponent
 	TArray<ResourceSourceExtractionData, ArgusContainerAllocator<10u> > m_seenResourceCSourceExtractionData;
 
 	ARGUS_IGNORE()
-	TArray<EntityCategory, ArgusContainerAllocator<10u>> m_spawningEntityCategories; 
+	TArray<uint32, ArgusContainerAllocator<10u>> m_spawningEntityRecordIds; 
 
 	ARGUS_IGNORE()
 	TArray<TeamCommanderPriority, ArgusContainerAllocator<11u> > m_priorities;
@@ -42,6 +42,7 @@ struct TeamCommanderComponent
 	void ResetUpdateArrays()
 	{
 		m_idleEntityIdsForTeam.Reset();
+		m_spawningEntityRecordIds.Reset();
 		m_priorities.Reset();
 	}
 

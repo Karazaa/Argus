@@ -21,6 +21,7 @@ public:
 	void PopulateEntity(ArgusEntity entity) const;
 	void SetInitialStateFromData(ArgusEntity entity) const;
 	UEntityPriority GetEntityPriority() const { return m_entityPriority; }
+	bool DoesTemplateSatisfyEntityCategory(EntityCategory entityCategory) const;
 
 	template <typename ComponentType>
 	const ComponentType* GetComponentFromTemplate() const
