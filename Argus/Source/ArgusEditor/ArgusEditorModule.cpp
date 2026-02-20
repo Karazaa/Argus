@@ -47,7 +47,7 @@ void ArgusEditorModule::OnObjectPropertyChanged(UObject* object, FPropertyChange
 		return;
 	}
 
-	if (!CastField<FStructProperty>(initialProperty) && !CastField<FArrayProperty>(initialProperty))
+	if (!CastField<FSoftObjectProperty>(propertyChangedEvent.Property) || !CastField<FStructProperty>(initialProperty) && !CastField<FArrayProperty>(initialProperty))
 	{
 		return;
 	}

@@ -124,6 +124,12 @@ bool UResourceSetRecordDatabase::ResizePersistentObjectPointerArrayToFitRecord(u
 #if WITH_EDITOR && !IS_PACKAGING_ARGUS
 void UResourceSetRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
 {
+	Super::PreSave(saveContext);
+	if (saveContext.IsCooking() || saveContext.GetTargetPlatform())
+	{
+		return;
+	}
+
 	FString fullPath = FPaths::ConvertRelativePathToFull(saveContext.GetTargetFilename());
 	if (!std::filesystem::exists(TCHAR_TO_UTF8(*fullPath)))
 	{
