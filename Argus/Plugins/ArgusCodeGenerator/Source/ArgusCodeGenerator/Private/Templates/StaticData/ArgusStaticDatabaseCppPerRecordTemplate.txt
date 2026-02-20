@@ -27,7 +27,7 @@ const bool UArgusStaticDatabase::AsyncPreLoad#####(uint32 id, TFunction<void(con
 	return m_#####DatabasePersistent->AsyncPreLoadRecord(id);
 }
 
-#if WITH_EDITOR && !IS_PACKAGING_ARGUS
+#if WITH_EDITOR
 uint32 UArgusStaticDatabase::Add#####ToDatabase(#####* record)
 {
 	LazyLoad#####Database();
@@ -65,7 +65,7 @@ void UArgusStaticDatabase::RegisterNew#####Database(#####Database* database)
 	m_#####Database = database;
 	SaveDatabase();
 }
-#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
+#endif //WITH_EDITOR
 
 void UArgusStaticDatabase::LazyLoad#####Database()
 {

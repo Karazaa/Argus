@@ -37,7 +37,7 @@ const bool UArgusStaticDatabase::AsyncPreLoadUAbilityRecord(uint32 id, TFunction
 	return m_UAbilityRecordDatabasePersistent->AsyncPreLoadRecord(id);
 }
 
-#if WITH_EDITOR && !IS_PACKAGING_ARGUS
+#if WITH_EDITOR
 uint32 UArgusStaticDatabase::AddUAbilityRecordToDatabase(UAbilityRecord* record)
 {
 	LazyLoadUAbilityRecordDatabase();
@@ -75,7 +75,7 @@ void UArgusStaticDatabase::RegisterNewUAbilityRecordDatabase(UAbilityRecordDatab
 	m_UAbilityRecordDatabase = database;
 	SaveDatabase();
 }
-#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
+#endif //WITH_EDITOR
 
 void UArgusStaticDatabase::LazyLoadUAbilityRecordDatabase()
 {
@@ -134,7 +134,7 @@ const bool UArgusStaticDatabase::AsyncPreLoadUArgusActorRecord(uint32 id, TFunct
 	return m_UArgusActorRecordDatabasePersistent->AsyncPreLoadRecord(id);
 }
 
-#if WITH_EDITOR && !IS_PACKAGING_ARGUS
+#if WITH_EDITOR
 uint32 UArgusStaticDatabase::AddUArgusActorRecordToDatabase(UArgusActorRecord* record)
 {
 	LazyLoadUArgusActorRecordDatabase();
@@ -172,7 +172,7 @@ void UArgusStaticDatabase::RegisterNewUArgusActorRecordDatabase(UArgusActorRecor
 	m_UArgusActorRecordDatabase = database;
 	SaveDatabase();
 }
-#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
+#endif //WITH_EDITOR
 
 void UArgusStaticDatabase::LazyLoadUArgusActorRecordDatabase()
 {
@@ -231,7 +231,7 @@ const bool UArgusStaticDatabase::AsyncPreLoadUFactionRecord(uint32 id, TFunction
 	return m_UFactionRecordDatabasePersistent->AsyncPreLoadRecord(id);
 }
 
-#if WITH_EDITOR && !IS_PACKAGING_ARGUS
+#if WITH_EDITOR
 uint32 UArgusStaticDatabase::AddUFactionRecordToDatabase(UFactionRecord* record)
 {
 	LazyLoadUFactionRecordDatabase();
@@ -269,7 +269,7 @@ void UArgusStaticDatabase::RegisterNewUFactionRecordDatabase(UFactionRecordDatab
 	m_UFactionRecordDatabase = database;
 	SaveDatabase();
 }
-#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
+#endif //WITH_EDITOR
 
 void UArgusStaticDatabase::LazyLoadUFactionRecordDatabase()
 {
@@ -328,7 +328,7 @@ const bool UArgusStaticDatabase::AsyncPreLoadUPlacedArgusActorTeamInfoRecord(uin
 	return m_UPlacedArgusActorTeamInfoRecordDatabasePersistent->AsyncPreLoadRecord(id);
 }
 
-#if WITH_EDITOR && !IS_PACKAGING_ARGUS
+#if WITH_EDITOR
 uint32 UArgusStaticDatabase::AddUPlacedArgusActorTeamInfoRecordToDatabase(UPlacedArgusActorTeamInfoRecord* record)
 {
 	LazyLoadUPlacedArgusActorTeamInfoRecordDatabase();
@@ -366,7 +366,7 @@ void UArgusStaticDatabase::RegisterNewUPlacedArgusActorTeamInfoRecordDatabase(UP
 	m_UPlacedArgusActorTeamInfoRecordDatabase = database;
 	SaveDatabase();
 }
-#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
+#endif //WITH_EDITOR
 
 void UArgusStaticDatabase::LazyLoadUPlacedArgusActorTeamInfoRecordDatabase()
 {
@@ -425,7 +425,7 @@ const bool UArgusStaticDatabase::AsyncPreLoadUResourceSetRecord(uint32 id, TFunc
 	return m_UResourceSetRecordDatabasePersistent->AsyncPreLoadRecord(id);
 }
 
-#if WITH_EDITOR && !IS_PACKAGING_ARGUS
+#if WITH_EDITOR
 uint32 UArgusStaticDatabase::AddUResourceSetRecordToDatabase(UResourceSetRecord* record)
 {
 	LazyLoadUResourceSetRecordDatabase();
@@ -463,7 +463,7 @@ void UArgusStaticDatabase::RegisterNewUResourceSetRecordDatabase(UResourceSetRec
 	m_UResourceSetRecordDatabase = database;
 	SaveDatabase();
 }
-#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
+#endif //WITH_EDITOR
 
 void UArgusStaticDatabase::LazyLoadUResourceSetRecordDatabase()
 {
@@ -522,7 +522,7 @@ const bool UArgusStaticDatabase::AsyncPreLoadUTeamColorRecord(uint32 id, TFuncti
 	return m_UTeamColorRecordDatabasePersistent->AsyncPreLoadRecord(id);
 }
 
-#if WITH_EDITOR && !IS_PACKAGING_ARGUS
+#if WITH_EDITOR
 uint32 UArgusStaticDatabase::AddUTeamColorRecordToDatabase(UTeamColorRecord* record)
 {
 	LazyLoadUTeamColorRecordDatabase();
@@ -560,7 +560,7 @@ void UArgusStaticDatabase::RegisterNewUTeamColorRecordDatabase(UTeamColorRecordD
 	m_UTeamColorRecordDatabase = database;
 	SaveDatabase();
 }
-#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
+#endif //WITH_EDITOR
 
 void UArgusStaticDatabase::LazyLoadUTeamColorRecordDatabase()
 {
@@ -591,7 +591,7 @@ void UArgusStaticDatabase::LazyLoadUTeamColorRecordDatabase()
 }
 #pragma endregion
 
-#if WITH_EDITOR && !IS_PACKAGING_ARGUS
+#if WITH_EDITOR
 void UArgusStaticDatabase::SaveDatabase()
 {
 	if (!GEditor)
@@ -607,4 +607,4 @@ void UArgusStaticDatabase::SaveDatabase()
 
 	editorAssetSubsystem->SaveLoadedAsset(this, false);
 }
-#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
+#endif //WITH_EDITOR

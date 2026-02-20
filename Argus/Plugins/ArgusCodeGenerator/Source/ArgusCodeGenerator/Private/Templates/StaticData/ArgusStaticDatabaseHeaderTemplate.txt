@@ -14,8 +14,8 @@ class UArgusStaticDatabase : public UDataAsset
 
 @@@@@
 
-#if WITH_EDITOR && !IS_PACKAGING_ARGUS
+#if WITH_EDITOR
 private:
 	void SaveDatabase();
-#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
+#endif //WITH_EDITOR
 };

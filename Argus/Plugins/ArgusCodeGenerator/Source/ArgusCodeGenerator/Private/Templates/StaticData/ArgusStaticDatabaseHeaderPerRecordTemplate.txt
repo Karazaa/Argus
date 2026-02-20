@@ -2,10 +2,10 @@
 public:
 	const #####* Get#####(uint32 id);
 	const bool AsyncPreLoad#####(uint32 id, TFunction<void(const #####*)> callback = nullptr);
-#if WITH_EDITOR && !IS_PACKAGING_ARGUS
+#if WITH_EDITOR
 	uint32 Add#####ToDatabase(#####* record);
 	void RegisterNew#####Database(#####Database* database);
-#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
+#endif //WITH_EDITOR
 
 protected:
 	UPROPERTY(EditAnywhere)

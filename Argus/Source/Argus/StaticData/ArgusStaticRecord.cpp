@@ -3,7 +3,7 @@
 #include "ArgusStaticRecord.h"
 #include "ArgusMacros.h"
 
-#if WITH_EDITOR && !IS_PACKAGING_ARGUS
+#if WITH_EDITOR
 #include "ArgusStaticData.h"
 #include "Misc/Paths.h"
 #include "UObject/ObjectMacros.h"
@@ -33,4 +33,4 @@ void UArgusStaticRecord::PreSave(FObjectPreSaveContext saveContext)
 
 	Super::PreSave(saveContext);
 }
-#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
+#endif //WITH_EDITOR

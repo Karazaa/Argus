@@ -16,12 +16,12 @@
 		return staticDatabase->AsyncPreLoad#####(id, callback);
 	}
 
-#if WITH_EDITOR && !IS_PACKAGING_ARGUS
+#if WITH_EDITOR
 	static void RegisterNew#####Database(#####Database* database)
 	{
 		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
 		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
 		staticDatabase->RegisterNew#####Database(database);
 	}
-#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
+#endif //WITH_EDITOR
 #pragma endregion

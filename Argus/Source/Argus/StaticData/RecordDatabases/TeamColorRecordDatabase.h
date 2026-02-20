@@ -25,9 +25,9 @@ protected:
 	TArray<TObjectPtr<UTeamColorRecord>> m_UTeamColorRecordsPersistent;
 
 public:
-#if WITH_EDITOR && !IS_PACKAGING_ARGUS
+#if WITH_EDITOR
 	virtual void PreSave(FObjectPreSaveContext saveContext) override;
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent) override;
 	void AddUTeamColorRecordToDatabase(UTeamColorRecord* record);
-#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
+#endif //WITH_EDITOR
 };

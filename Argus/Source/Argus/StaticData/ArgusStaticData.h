@@ -6,10 +6,10 @@
 #include "ArgusGameInstance.h"
 #include "ArgusLogging.h"
 
-#if WITH_EDITOR && !IS_PACKAGING_ARGUS
+#if WITH_EDITOR
 #include "Editor.h"
 #include "Subsystems/EditorAssetSubsystem.h"
-#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
+#endif //WITH_EDITOR
 
 class ArgusStaticData
 {
@@ -26,7 +26,7 @@ public:
 		return false;
 	}
 
-#if WITH_EDITOR && !IS_PACKAGING_ARGUS
+#if WITH_EDITOR
 	static const uint32 AddRecordToDatabase(UArgusStaticRecord* record)
 	{
 		if (!GEditor)
@@ -70,7 +70,7 @@ public:
 
 		return 0u;
 	}
-#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
+#endif //WITH_EDITOR
 
 #pragma region UAbilityRecord
 	template<>
@@ -89,14 +89,14 @@ public:
 		return staticDatabase->AsyncPreLoadUAbilityRecord(id, callback);
 	}
 
-#if WITH_EDITOR && !IS_PACKAGING_ARGUS
+#if WITH_EDITOR
 	static void RegisterNewUAbilityRecordDatabase(UAbilityRecordDatabase* database)
 	{
 		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
 		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
 		staticDatabase->RegisterNewUAbilityRecordDatabase(database);
 	}
-#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
+#endif //WITH_EDITOR
 #pragma endregion
 
 #pragma region UArgusActorRecord
@@ -116,14 +116,14 @@ public:
 		return staticDatabase->AsyncPreLoadUArgusActorRecord(id, callback);
 	}
 
-#if WITH_EDITOR && !IS_PACKAGING_ARGUS
+#if WITH_EDITOR
 	static void RegisterNewUArgusActorRecordDatabase(UArgusActorRecordDatabase* database)
 	{
 		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
 		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
 		staticDatabase->RegisterNewUArgusActorRecordDatabase(database);
 	}
-#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
+#endif //WITH_EDITOR
 #pragma endregion
 
 #pragma region UFactionRecord
@@ -143,14 +143,14 @@ public:
 		return staticDatabase->AsyncPreLoadUFactionRecord(id, callback);
 	}
 
-#if WITH_EDITOR && !IS_PACKAGING_ARGUS
+#if WITH_EDITOR
 	static void RegisterNewUFactionRecordDatabase(UFactionRecordDatabase* database)
 	{
 		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
 		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
 		staticDatabase->RegisterNewUFactionRecordDatabase(database);
 	}
-#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
+#endif //WITH_EDITOR
 #pragma endregion
 
 #pragma region UPlacedArgusActorTeamInfoRecord
@@ -170,14 +170,14 @@ public:
 		return staticDatabase->AsyncPreLoadUPlacedArgusActorTeamInfoRecord(id, callback);
 	}
 
-#if WITH_EDITOR && !IS_PACKAGING_ARGUS
+#if WITH_EDITOR
 	static void RegisterNewUPlacedArgusActorTeamInfoRecordDatabase(UPlacedArgusActorTeamInfoRecordDatabase* database)
 	{
 		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
 		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
 		staticDatabase->RegisterNewUPlacedArgusActorTeamInfoRecordDatabase(database);
 	}
-#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
+#endif //WITH_EDITOR
 #pragma endregion
 
 #pragma region UResourceSetRecord
@@ -197,14 +197,14 @@ public:
 		return staticDatabase->AsyncPreLoadUResourceSetRecord(id, callback);
 	}
 
-#if WITH_EDITOR && !IS_PACKAGING_ARGUS
+#if WITH_EDITOR
 	static void RegisterNewUResourceSetRecordDatabase(UResourceSetRecordDatabase* database)
 	{
 		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
 		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
 		staticDatabase->RegisterNewUResourceSetRecordDatabase(database);
 	}
-#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
+#endif //WITH_EDITOR
 #pragma endregion
 
 #pragma region UTeamColorRecord
@@ -224,17 +224,17 @@ public:
 		return staticDatabase->AsyncPreLoadUTeamColorRecord(id, callback);
 	}
 
-#if WITH_EDITOR && !IS_PACKAGING_ARGUS
+#if WITH_EDITOR
 	static void RegisterNewUTeamColorRecordDatabase(UTeamColorRecordDatabase* database)
 	{
 		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
 		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
 		staticDatabase->RegisterNewUTeamColorRecordDatabase(database);
 	}
-#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
+#endif //WITH_EDITOR
 #pragma endregion
 
-#if WITH_EDITOR && !IS_PACKAGING_ARGUS
+#if WITH_EDITOR
 private:
 	static UArgusStaticDatabase* GetParentDatabase()
 	{
@@ -251,5 +251,5 @@ private:
 
 		return Cast<UArgusStaticDatabase>(editorAssetSubsystem->LoadAsset(FString("/Game/StaticData/ArgusStaticDatabase.ArgusStaticDatabase")));
 	}
-#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
+#endif //WITH_EDITOR
 };

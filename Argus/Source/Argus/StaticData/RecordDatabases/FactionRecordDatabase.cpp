@@ -5,14 +5,14 @@
 #include "ArgusEntity.h"
 #include "ArgusLogging.h"
 
-#if WITH_EDITOR && !IS_PACKAGING_ARGUS
+#if WITH_EDITOR
 #include "ArgusStaticData.h"
 #include "Editor.h"
 #include "Misc/Paths.h"
 #include "Subsystems/EditorAssetSubsystem.h"
 #include "UObject/ObjectSaveContext.h"
 #include <filesystem>
-#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
+#endif //WITH_EDITOR
 
 const UFactionRecord* UFactionRecordDatabase::GetRecord(uint32 id)
 {
@@ -121,7 +121,7 @@ bool UFactionRecordDatabase::ResizePersistentObjectPointerArrayToFitRecord(uint3
 	return true;
 }
 
-#if WITH_EDITOR && !IS_PACKAGING_ARGUS
+#if WITH_EDITOR
 void UFactionRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
 {
 	Super::PreSave(saveContext);
@@ -204,4 +204,4 @@ void UFactionRecordDatabase::AddUFactionRecordToDatabase(UFactionRecord* record)
 
 	editorAssetSubsystem->SaveLoadedAsset(this, false);
 }
-#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
+#endif //WITH_EDITOR

@@ -21,10 +21,10 @@ class UArgusStaticDatabase : public UDataAsset
 public:
 	const UAbilityRecord* GetUAbilityRecord(uint32 id);
 	const bool AsyncPreLoadUAbilityRecord(uint32 id, TFunction<void(const UAbilityRecord*)> callback = nullptr);
-#if WITH_EDITOR && !IS_PACKAGING_ARGUS
+#if WITH_EDITOR
 	uint32 AddUAbilityRecordToDatabase(UAbilityRecord* record);
 	void RegisterNewUAbilityRecordDatabase(UAbilityRecordDatabase* database);
-#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
+#endif //WITH_EDITOR
 
 protected:
 	UPROPERTY(EditAnywhere)
@@ -38,10 +38,10 @@ protected:
 public:
 	const UArgusActorRecord* GetUArgusActorRecord(uint32 id);
 	const bool AsyncPreLoadUArgusActorRecord(uint32 id, TFunction<void(const UArgusActorRecord*)> callback = nullptr);
-#if WITH_EDITOR && !IS_PACKAGING_ARGUS
+#if WITH_EDITOR
 	uint32 AddUArgusActorRecordToDatabase(UArgusActorRecord* record);
 	void RegisterNewUArgusActorRecordDatabase(UArgusActorRecordDatabase* database);
-#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
+#endif //WITH_EDITOR
 
 protected:
 	UPROPERTY(EditAnywhere)
@@ -55,10 +55,10 @@ protected:
 public:
 	const UFactionRecord* GetUFactionRecord(uint32 id);
 	const bool AsyncPreLoadUFactionRecord(uint32 id, TFunction<void(const UFactionRecord*)> callback = nullptr);
-#if WITH_EDITOR && !IS_PACKAGING_ARGUS
+#if WITH_EDITOR
 	uint32 AddUFactionRecordToDatabase(UFactionRecord* record);
 	void RegisterNewUFactionRecordDatabase(UFactionRecordDatabase* database);
-#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
+#endif //WITH_EDITOR
 
 protected:
 	UPROPERTY(EditAnywhere)
@@ -72,10 +72,10 @@ protected:
 public:
 	const UPlacedArgusActorTeamInfoRecord* GetUPlacedArgusActorTeamInfoRecord(uint32 id);
 	const bool AsyncPreLoadUPlacedArgusActorTeamInfoRecord(uint32 id, TFunction<void(const UPlacedArgusActorTeamInfoRecord*)> callback = nullptr);
-#if WITH_EDITOR && !IS_PACKAGING_ARGUS
+#if WITH_EDITOR
 	uint32 AddUPlacedArgusActorTeamInfoRecordToDatabase(UPlacedArgusActorTeamInfoRecord* record);
 	void RegisterNewUPlacedArgusActorTeamInfoRecordDatabase(UPlacedArgusActorTeamInfoRecordDatabase* database);
-#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
+#endif //WITH_EDITOR
 
 protected:
 	UPROPERTY(EditAnywhere)
@@ -89,10 +89,10 @@ protected:
 public:
 	const UResourceSetRecord* GetUResourceSetRecord(uint32 id);
 	const bool AsyncPreLoadUResourceSetRecord(uint32 id, TFunction<void(const UResourceSetRecord*)> callback = nullptr);
-#if WITH_EDITOR && !IS_PACKAGING_ARGUS
+#if WITH_EDITOR
 	uint32 AddUResourceSetRecordToDatabase(UResourceSetRecord* record);
 	void RegisterNewUResourceSetRecordDatabase(UResourceSetRecordDatabase* database);
-#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
+#endif //WITH_EDITOR
 
 protected:
 	UPROPERTY(EditAnywhere)
@@ -106,10 +106,10 @@ protected:
 public:
 	const UTeamColorRecord* GetUTeamColorRecord(uint32 id);
 	const bool AsyncPreLoadUTeamColorRecord(uint32 id, TFunction<void(const UTeamColorRecord*)> callback = nullptr);
-#if WITH_EDITOR && !IS_PACKAGING_ARGUS
+#if WITH_EDITOR
 	uint32 AddUTeamColorRecordToDatabase(UTeamColorRecord* record);
 	void RegisterNewUTeamColorRecordDatabase(UTeamColorRecordDatabase* database);
-#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
+#endif //WITH_EDITOR
 
 protected:
 	UPROPERTY(EditAnywhere)
@@ -120,8 +120,8 @@ protected:
 	void LazyLoadUTeamColorRecordDatabase();
 #pragma endregion
 
-#if WITH_EDITOR && !IS_PACKAGING_ARGUS
+#if WITH_EDITOR
 private:
 	void SaveDatabase();
-#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
+#endif //WITH_EDITOR
 };

@@ -18,7 +18,7 @@ public:
 
 	virtual void OnAsyncLoaded() const {}
 
-#if WITH_EDITOR && !IS_PACKAGING_ARGUS
+#if WITH_EDITOR
 	virtual void PreSave(FObjectPreSaveContext SaveContext) override;
-#endif //WITH_EDITOR && !IS_PACKAGING_ARGUS
+#endif //WITH_EDITOR
 };
