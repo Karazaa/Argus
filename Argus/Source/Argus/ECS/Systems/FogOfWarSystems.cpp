@@ -35,11 +35,11 @@ void FogOfWarSystems::InitializeSystems()
 	fogOfWarComponent->m_gaussianWeightsTexture->AddToRoot();
 	fogOfWarComponent->m_gaussianWeightsTexture->UpdateResource();
 
-	fogOfWarComponent->m_textureData.Init(255u, fogOfWarComponent->GetTotalPixels());
+	fogOfWarComponent->m_textureData.Init(MAX_uint8, fogOfWarComponent->GetTotalPixels());
 	if (fogOfWarComponent->m_shouldUseSmoothing)
 	{
-		fogOfWarComponent->m_smoothedTextureData.Init(255u, fogOfWarComponent->GetTotalPixels());
-		fogOfWarComponent->m_intermediarySmoothingData.Init(255.0f, fogOfWarComponent->GetTotalPixels());
+		fogOfWarComponent->m_smoothedTextureData.Init(MAX_uint8, fogOfWarComponent->GetTotalPixels());
+		fogOfWarComponent->m_intermediarySmoothingData.Init(static_cast<float>(MAX_uint8), fogOfWarComponent->GetTotalPixels());
 	}
 
 	InitializeGaussianFilter(fogOfWarComponent);
@@ -64,6 +64,22 @@ void FogOfWarSystems::RunThreadSystems(float deltaTime)
 	{
 		ApplyExponentialDecaySmoothing(fogOfWarComponent, deltaTime);
 	}
+}
+
+bool FogOfWarSystems::HasLocationEverBeenRevealed(const FVector& worldSpaceLocation)
+{
+	const FogOfWarComponent* fogOfWarComponent = ArgusEntity::GetSingletonEntity().GetComponent<FogOfWarComponent>();
+	ARGUS_RETURN_ON_NULL_BOOL(fogOfWarComponent, ArgusECSLog);
+
+	return GetAlphaAtWorldSpaceLocation(fogOfWarComponent, worldSpaceLocation) <= fogOfWarComponent->m_revealedOnceAlpha;
+}
+
+bool FogOfWarSystems::IsLocationCurrentlyRevealed(const FVector& worldSpaceLocation)
+{
+	const FogOfWarComponent* fogOfWarComponent = ArgusEntity::GetSingletonEntity().GetComponent<FogOfWarComponent>();
+	ARGUS_RETURN_ON_NULL_BOOL(fogOfWarComponent, ArgusECSLog);
+
+	return GetAlphaAtWorldSpaceLocation(fogOfWarComponent, worldSpaceLocation) == 0u;
 }
 
 void FogOfWarSystems::RunSystems()
@@ -910,7 +926,7 @@ void FogOfWarSystems::UpdateDynamicMaterialInstance()
 	}
 }
 
-bool FogOfWarSystems::GetPixelCoordsFromWorldSpaceLocation(FogOfWarComponent* fogOfWarComponent, const SpatialPartitioningComponent* spatialPartitioningComponent, const FVector2D& worldSpaceLocation, TPair<int32, int32>& ouputPair)
+bool FogOfWarSystems::GetPixelCoordsFromWorldSpaceLocation(const FogOfWarComponent* fogOfWarComponent, const SpatialPartitioningComponent* spatialPartitioningComponent, const FVector2D& worldSpaceLocation, TPair<int32, int32>& ouputPair)
 {
 	ARGUS_RETURN_ON_NULL_BOOL(fogOfWarComponent, ArgusECSLog);
 	ARGUS_RETURN_ON_NULL_BOOL(spatialPartitioningComponent, ArgusECSLog);
@@ -927,7 +943,7 @@ bool FogOfWarSystems::GetPixelCoordsFromWorldSpaceLocation(FogOfWarComponent* fo
 	return true;
 }
 
-uint32 FogOfWarSystems::GetPixelNumberFromWorldSpaceLocation(FogOfWarComponent* fogOfWarComponent, const FVector& worldSpaceLocation)
+uint32 FogOfWarSystems::GetPixelNumberFromWorldSpaceLocation(const FogOfWarComponent* fogOfWarComponent, const FVector& worldSpaceLocation)
 {
 	ARGUS_RETURN_ON_NULL_VALUE(fogOfWarComponent, ArgusECSLog, 0u);
 	SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId).GetComponent<SpatialPartitioningComponent>();
@@ -945,12 +961,12 @@ uint32 FogOfWarSystems::GetPixelNumberFromWorldSpaceLocation(FogOfWarComponent* 
 	return (yValue32 * static_cast<uint32>(fogOfWarComponent->m_textureSize)) + xValue32;
 }
 
-FVector2D FogOfWarSystems::GetWorldSpaceLocationFromPixelNumber(FogOfWarComponent* fogOfWarComponent, uint32 pixelNumber)
+FVector2D FogOfWarSystems::GetWorldSpaceLocationFromPixelNumber(const FogOfWarComponent* fogOfWarComponent, uint32 pixelNumber)
 {
 	return GetWorldSpaceLocationFromPixelNumber(fogOfWarComponent, ArgusEntity::GetSingletonEntity().GetComponent<SpatialPartitioningComponent>(), pixelNumber);
 }
 
-FVector2D FogOfWarSystems::GetWorldSpaceLocationFromPixelNumber(FogOfWarComponent* fogOfWarComponent, const SpatialPartitioningComponent* spatialPartitioningComponent, uint32 pixelNumber)
+FVector2D FogOfWarSystems::GetWorldSpaceLocationFromPixelNumber(const FogOfWarComponent* fogOfWarComponent, const SpatialPartitioningComponent* spatialPartitioningComponent, uint32 pixelNumber)
 {
 	ARGUS_RETURN_ON_NULL_VALUE(fogOfWarComponent, ArgusECSLog, FVector2D::ZeroVector);
 	ARGUS_RETURN_ON_NULL_VALUE(spatialPartitioningComponent, ArgusECSLog, FVector2D::ZeroVector);
@@ -966,7 +982,7 @@ FVector2D FogOfWarSystems::GetWorldSpaceLocationFromPixelNumber(FogOfWarComponen
 	return output;
 }
 
-uint32 FogOfWarSystems::GetPixelRadiusFromWorldSpaceRadius(FogOfWarComponent* fogOfWarComponent, float radius)
+uint32 FogOfWarSystems::GetPixelRadiusFromWorldSpaceRadius(const FogOfWarComponent* fogOfWarComponent, float radius)
 {
 	ARGUS_RETURN_ON_NULL_VALUE(fogOfWarComponent, ArgusECSLog, 0u);
 	SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId).GetComponent<SpatialPartitioningComponent>();
@@ -983,4 +999,9 @@ void FogOfWarSystems::ClampVectorToWorldBounds(FVector2D& vector)
 
 	vector.X = FMath::Clamp(vector.X, -spatialPartitioningComponent->m_validSpaceExtent, spatialPartitioningComponent->m_validSpaceExtent);
 	vector.Y = FMath::Clamp(vector.Y, -spatialPartitioningComponent->m_validSpaceExtent, spatialPartitioningComponent->m_validSpaceExtent);
+}
+
+uint8 FogOfWarSystems::GetAlphaAtWorldSpaceLocation(const FogOfWarComponent* fogOfWarComponent, const FVector& worldSpaceLocation)
+{
+	return fogOfWarComponent->m_textureData[GetPixelNumberFromWorldSpaceLocation(fogOfWarComponent, worldSpaceLocation)];
 }

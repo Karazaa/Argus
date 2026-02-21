@@ -13,6 +13,7 @@
 #include "EnhancedPlayerInput.h"
 #include "Systems/AbilitySystems.h"
 #include "Systems/DecalSystems.h"
+#include "Systems/FogOfWarSystems.h"
 #include "Systems/InputInterfaceSystems.h"
 #include "Systems/SpatialPartitioningSystems.h"
 
@@ -37,7 +38,7 @@ bool UArgusInputManager::ShouldUpdateSelectedActorDisplay(ArgusEntity& templateS
 
 	for (int32 i = 0; i < inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds.Num(); ++i)
 	{
-		ArgusEntity potentialTemplate = ArgusEntity::RetrieveEntity(inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds[0]);
+		ArgusEntity potentialTemplate = ArgusEntity::RetrieveEntity(inputInterfaceComponent->m_activeAbilityGroupArgusEntityIds[i]);
 		if (!potentialTemplate)
 		{
 			continue;
@@ -1172,7 +1173,11 @@ void UArgusInputManager::SetReticleState()
 	}
 
 	reticleComponent->m_reticleLocation = hitResult.Location;
-	reticleComponent->m_isBlocked = SpatialPartitioningSystems::AnyObstaclesOrStaticEntitiesInCircle(reticleComponent->m_reticleLocation, reticleComponent->m_radius, AbilitySystems::GetResourceBufferRadiusOfConstructionAbility(abilityRecord));
+	reticleComponent->m_isBlocked = !FogOfWarSystems::HasLocationEverBeenRevealed(reticleComponent->m_reticleLocation);
+	if (!reticleComponent->m_isBlocked)
+	{
+		reticleComponent->m_isBlocked = SpatialPartitioningSystems::AnyObstaclesOrStaticEntitiesInCircle(reticleComponent->m_reticleLocation, reticleComponent->m_radius, AbilitySystems::GetResourceBufferRadiusOfConstructionAbility(abilityRecord));
+	}
 }
 
 void UArgusInputManager::ProcessReticleAbilityForSelectedEntities(const ReticleComponent* reticleComponent)

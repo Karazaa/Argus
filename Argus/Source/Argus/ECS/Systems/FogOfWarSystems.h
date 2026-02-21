@@ -20,6 +20,9 @@ public:
 	static void RunSystems();
 	static void RunThreadSystems(float deltaTime);
 
+	static bool HasLocationEverBeenRevealed(const FVector& worldSpaceLocation);
+	static bool IsLocationCurrentlyRevealed(const FVector& worldSpaceLocation);
+
 private:
 	struct FogOfWarOffsets
 	{
@@ -115,10 +118,12 @@ private:
 	static void UpdateGaussianWeightsTexture();
 	static void UpdateDynamicMaterialInstance();
 
-	static bool GetPixelCoordsFromWorldSpaceLocation(FogOfWarComponent* fogOfWarComponent, const SpatialPartitioningComponent* spatialPartitioningComponent, const FVector2D& worldSpaceLocation, TPair<int32, int32>& ouputPair);
-	static uint32 GetPixelNumberFromWorldSpaceLocation(FogOfWarComponent* fogOfWarComponent, const FVector& worldSpaceLocation);
-	static FVector2D GetWorldSpaceLocationFromPixelNumber(FogOfWarComponent* fogOfWarComponent, uint32 pixelNumber);
-	static FVector2D GetWorldSpaceLocationFromPixelNumber(FogOfWarComponent* fogOfWarComponent, const SpatialPartitioningComponent* spatialPartitioningComponent, uint32 pixelNumber);
-	static uint32 GetPixelRadiusFromWorldSpaceRadius(FogOfWarComponent* fogOfWarComponent, float radius);
+	static bool GetPixelCoordsFromWorldSpaceLocation(const FogOfWarComponent* fogOfWarComponent, const SpatialPartitioningComponent* spatialPartitioningComponent, const FVector2D& worldSpaceLocation, TPair<int32, int32>& ouputPair);
+	static uint32 GetPixelNumberFromWorldSpaceLocation(const FogOfWarComponent* fogOfWarComponent, const FVector& worldSpaceLocation);
+	static FVector2D GetWorldSpaceLocationFromPixelNumber(const FogOfWarComponent* fogOfWarComponent, uint32 pixelNumber);
+	static FVector2D GetWorldSpaceLocationFromPixelNumber(const FogOfWarComponent* fogOfWarComponent, const SpatialPartitioningComponent* spatialPartitioningComponent, uint32 pixelNumber);
+	static uint32 GetPixelRadiusFromWorldSpaceRadius(const FogOfWarComponent* fogOfWarComponent, float radius);
 	static void ClampVectorToWorldBounds(FVector2D& vector);
+
+	static uint8 GetAlphaAtWorldSpaceLocation(const FogOfWarComponent* fogOfWarComponent, const FVector& worldSpaceLocation);
 };
