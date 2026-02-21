@@ -364,6 +364,17 @@ bool ArgusEntity::IsFlying() const
 	return taskComponent->m_flightState == EFlightState::Flying;
 }
 
+bool ArgusEntity::IsUnderConstruction() const
+{
+	const TaskComponent* taskComponent = GetComponent<TaskComponent>();
+	if (!taskComponent)
+	{
+		return false;
+	}
+
+	return taskComponent->m_constructionState == EConstructionState::BeingConstructed;
+}
+
 bool ArgusEntity::CanFly() const
 {
 	const TransformComponent* transformComponent = GetComponent<TransformComponent>();

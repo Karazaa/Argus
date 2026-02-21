@@ -206,7 +206,7 @@ void FogOfWarSystems::SetRevealedStatePerEntity(FogOfWarComponent* fogOfWarCompo
 	// Calculate new actively revealed pixels.
 	ArgusEntity::IterateSystemsArgs<FogOfWarSystemsArgs>([fogOfWarComponent, inputInterfaceComponent](FogOfWarSystemsArgs& components)
 	{
-		if (!components.m_entity.IsOnTeam(inputInterfaceComponent->m_activePlayerTeam) || !components.m_entity.IsAlive())
+		if (!components.m_entity.IsOnTeam(inputInterfaceComponent->m_activePlayerTeam) || !components.m_entity.IsAlive() || components.m_entity.IsUnderConstruction())
 		{
 			return;
 		}

@@ -101,6 +101,7 @@ public:
 	bool				IsOnSameTeamAsOtherEntity(ArgusEntity otherEntity) const;
 	bool				IsOnPlayerTeam() const;
 	bool				IsFlying() const;
+	bool				IsUnderConstruction() const;
 	bool				CanFly() const;
 	bool				DoesEntitySatisfyEntityCategory(EntityCategory entityCategory) const;
 	FVector				GetCurrentTargetLocation() const;
