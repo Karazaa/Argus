@@ -9,6 +9,11 @@
 #include "Rendering/Texture2DResource.h"
 #include "SystemArgumentDefinitions/FogOfWarSystemsArgs.h"
 
+#if !UE_BUILD_SHIPPING
+#include "ArgusECSDebugger.h"
+#endif //!UE_BUILD_SHIPPING
+
+
 void FogOfWarSystems::InitializeSystems()
 {
 	ARGUS_TRACE(FogOfWarSystems::InitializeSystems);
@@ -64,6 +69,15 @@ void FogOfWarSystems::RunThreadSystems(float deltaTime)
 	{
 		ApplyExponentialDecaySmoothing(fogOfWarComponent, deltaTime);
 	}
+}
+
+bool FogOfWarSystems::IsFogOfWarVisible()
+{
+	bool fogOfWarVisible = true;
+#if !UE_BUILD_SHIPPING
+	fogOfWarVisible = ArgusECSDebugger::ShouldDrawFogOfWar();
+#endif //!UE_BUILD_SHIPPING
+	return fogOfWarVisible;
 }
 
 bool FogOfWarSystems::HasLocationEverBeenRevealed(const FVector& worldSpaceLocation)

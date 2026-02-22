@@ -20,6 +20,7 @@ public:
 	static void RunSystems();
 	static void RunThreadSystems(float deltaTime);
 
+	static bool IsFogOfWarVisible();
 	static bool HasLocationEverBeenRevealed(const FVector& worldSpaceLocation);
 	static bool IsLocationCurrentlyRevealed(const FVector& worldSpaceLocation);
 

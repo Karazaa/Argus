@@ -9,6 +9,7 @@
 #include "Components/WidgetComponent.h"
 #include "DrawDebugHelpers.h"
 #include "Engine/World.h"
+#include "Systems/FogOfWarSystems.h"
 #include "Views/ArgusActorInfoView.h"
 
 #if !UE_BUILD_SHIPPING
@@ -282,12 +283,7 @@ void AArgusActor::Update(float deltaTime, ETeam activePlayerControllerTeam)
 	{
 		ARGUS_TRACE(AArgusActor::SeenBy);
 
-		bool fogOfWarVisible = true;
-#if !UE_BUILD_SHIPPING
-		fogOfWarVisible = ArgusECSDebugger::ShouldDrawFogOfWar();
-#endif //!UE_BUILD_SHIPPING
-
-		if (identityComponent->IsSeenBy(activePlayerControllerTeam) || (!m_entity.IsMoveable() && m_entity.IsAlive() && identityComponent->WasEverSeenBy(activePlayerControllerTeam)) || !fogOfWarVisible)
+		if (identityComponent->IsSeenBy(activePlayerControllerTeam) || (!m_entity.IsMoveable() && m_entity.IsAlive() && identityComponent->WasEverSeenBy(activePlayerControllerTeam)) || !FogOfWarSystems::IsFogOfWarVisible())
 		{
 			Show();
 		}

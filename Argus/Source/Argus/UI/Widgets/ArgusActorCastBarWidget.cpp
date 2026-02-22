@@ -4,6 +4,7 @@
 #include "ArgusEntity.h"
 #include "ArgusMath.h"
 #include "Components/ProgressBar.h"
+#include "Systems/FogOfWarSystems.h"
 
 void UArgusActorCastBarWidget::SetInitialDisplay(ArgusEntity argusEntity)
 {
@@ -20,7 +21,7 @@ void UArgusActorCastBarWidget::RefreshDisplay(ArgusEntity entity)
 	ARGUS_RETURN_ON_NULL(m_progressBar, ArgusUILog);
 
 	const bool isVisible = GetVisibility() != ESlateVisibility::Collapsed;
-	if (!entity.IsAlive() || !entity.IsOnPlayerTeam())
+	if (!entity.IsAlive() || (!entity.IsOnPlayerTeam() && FogOfWarSystems::IsFogOfWarVisible()))
 	{
 		if (isVisible)
 		{

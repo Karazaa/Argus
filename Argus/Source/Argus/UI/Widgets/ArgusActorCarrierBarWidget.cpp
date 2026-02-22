@@ -6,6 +6,7 @@
 #include "Components/HorizontalBox.h"
 #include "Components/HorizontalBoxSlot.h"
 #include "Components/Image.h"
+#include "Systems/FogOfWarSystems.h"
 
 void UArgusActorCarrierBarWidget::SetInitialDisplay(ArgusEntity entity)
 {
@@ -20,7 +21,7 @@ void UArgusActorCarrierBarWidget::RefreshDisplay(ArgusEntity entity)
 	Super::RefreshDisplay(entity);
 
 	const bool isVisible = GetVisibility() != ESlateVisibility::Collapsed;
-	if (!entity.IsAlive() || !entity.IsOnPlayerTeam())
+	if (!entity.IsAlive() || (!entity.IsOnPlayerTeam() && FogOfWarSystems::IsFogOfWarVisible()))
 	{
 		if (isVisible)
 		{
