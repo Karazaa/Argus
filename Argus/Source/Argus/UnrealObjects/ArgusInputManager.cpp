@@ -315,7 +315,7 @@ void UArgusInputManager::OnChangeActiveAbilityGroup(const FInputActionValue& val
 
 #pragma endregion
 
-void UArgusInputManager::ProcessPlayerInput(AArgusCameraActor* argusCamera, const AArgusCameraActor::UpdateCameraPanningParameters& updateCameraParameters, float deltaTime)
+void UArgusInputManager::ProcessPlayerInput(AArgusCameraActor* argusCamera, const AArgusCameraActor::UpdateCameraPanningParameters& updateCameraParameters, float unscaledDeltaTime)
 {
 	ARGUS_MEMORY_TRACE(ArgusInputManager);
 	ARGUS_TRACE(UArgusInputManager::ProcessPlayerInput);
@@ -340,7 +340,7 @@ void UArgusInputManager::ProcessPlayerInput(AArgusCameraActor* argusCamera, cons
 
 	ARGUS_RETURN_ON_NULL(argusCamera, ArgusInputLog);
 
-	argusCamera->UpdateCamera(updateCameraParameters, deltaTime);
+	argusCamera->UpdateCamera(updateCameraParameters, unscaledDeltaTime);
 }
 
 bool UArgusInputManager::ShouldDrawMarqueeBox() const

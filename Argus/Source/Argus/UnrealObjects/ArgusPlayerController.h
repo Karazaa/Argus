@@ -26,7 +26,7 @@ class AArgusPlayerController : public APlayerController
 	GENERATED_BODY()
 
 public:
-	void ProcessArgusPlayerInput(float deltaTime);
+	void ProcessArgusPlayerInput(float unscaledDeltaTime);
 
 	AArgusCameraActor::UpdateCameraPanningParameters GetScreenSpaceInputValues() const;
 

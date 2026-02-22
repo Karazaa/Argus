@@ -20,8 +20,7 @@ void UArgusActorCarrierBarWidget::RefreshDisplay(ArgusEntity entity)
 	Super::RefreshDisplay(entity);
 
 	const bool isVisible = GetVisibility() != ESlateVisibility::Collapsed;
-
-	if (!entity.IsAlive())
+	if (!entity.IsAlive() || !entity.IsOnPlayerTeam())
 	{
 		if (isVisible)
 		{

@@ -12,19 +12,30 @@ void UArgusActorCastBarWidget::SetInitialDisplay(ArgusEntity argusEntity)
 	SetVisibility(ESlateVisibility::Collapsed);
 }
 
-void UArgusActorCastBarWidget::RefreshDisplay(ArgusEntity argusEntity)
+void UArgusActorCastBarWidget::RefreshDisplay(ArgusEntity entity)
 {
-	Super::RefreshDisplay(argusEntity);
+	ARGUS_TRACE(UArgusActorCastBarWidget::RefreshDisplay);
 
+	Super::RefreshDisplay(entity);
 	ARGUS_RETURN_ON_NULL(m_progressBar, ArgusUILog);
+
+	const bool isVisible = GetVisibility() != ESlateVisibility::Collapsed;
+	if (!entity.IsAlive() || !entity.IsOnPlayerTeam())
+	{
+		if (isVisible)
+		{
+			SetVisibility(ESlateVisibility::Collapsed);
+		}
+		return;
+	}
 
 	FLinearColor fillColor = FColor::White;
 	float timeElapsedProportion = -1.0f;
 	bool shouldBeVisible = false;
 
-	if (const ConstructionComponent* constructionComponent = argusEntity.GetComponent<ConstructionComponent>())
+	if (const ConstructionComponent* constructionComponent = entity.GetComponent<ConstructionComponent>())
 	{
-		if (const TaskComponent* taskComponent = argusEntity.GetComponent<TaskComponent>())
+		if (const TaskComponent* taskComponent = entity.GetComponent<TaskComponent>())
 		{
 			shouldBeVisible = taskComponent->m_constructionState == EConstructionState::BeingConstructed;
 			fillColor = m_constructionProgressColor;
@@ -36,16 +47,13 @@ void UArgusActorCastBarWidget::RefreshDisplay(ArgusEntity argusEntity)
 		}
 	}
 
-	const SpawningComponent* spawningComponent = argusEntity.GetComponent<SpawningComponent>();
+	const SpawningComponent* spawningComponent = entity.GetComponent<SpawningComponent>();
 	if (spawningComponent && !shouldBeVisible)
 	{
-		timeElapsedProportion = spawningComponent->m_spawnTimerHandle.GetTimeElapsedProportion(argusEntity);
+		timeElapsedProportion = spawningComponent->m_spawnTimerHandle.GetTimeElapsedProportion(entity);
 		shouldBeVisible = spawningComponent->m_spawnQueue.Num() > 0 || timeElapsedProportion > 0.0f;
 		fillColor = m_abilityCastColor;
 	}
-
-	shouldBeVisible &= argusEntity.IsAlive();
-	const bool isVisible = GetVisibility() != ESlateVisibility::Collapsed;
 
 	if (isVisible)
 	{

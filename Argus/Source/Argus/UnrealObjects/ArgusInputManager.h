@@ -117,7 +117,7 @@ public:
 	void OnSetControlGroup11(const FInputActionValue& value);
 	void OnChangeActiveAbilityGroup(const FInputActionValue& value);
 
-	void ProcessPlayerInput(AArgusCameraActor* argusCamera, const AArgusCameraActor::UpdateCameraPanningParameters& updateCameraPanningParameters, float deltaTime);
+	void ProcessPlayerInput(AArgusCameraActor* argusCamera, const AArgusCameraActor::UpdateCameraPanningParameters& updateCameraPanningParameters, float unscaledDeltaTime);
 	bool ShouldDrawMarqueeBox() const;
 
 	const FVector& GetSelectionStartWorldSpaceLocation() const;

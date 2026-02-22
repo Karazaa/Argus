@@ -16,7 +16,7 @@
 #include "ReticleActor.h"
 #include "Slate/SceneViewport.h"
 
-void AArgusPlayerController::ProcessArgusPlayerInput(float deltaTime)
+void AArgusPlayerController::ProcessArgusPlayerInput(float unscaledDeltaTime)
 {
 	ARGUS_TRACE(AArgusPlayerController::ProcessArgusPlayerInput);
 
@@ -28,7 +28,7 @@ void AArgusPlayerController::ProcessArgusPlayerInput(float deltaTime)
 	const AArgusCameraActor::UpdateCameraPanningParameters cameraParams = GetScreenSpaceInputValues();
 	const FVector2D mouseScreenSpaceLocation = cameraParams.m_screenSpaceMouseLocation.IsSet() ? cameraParams.m_screenSpaceMouseLocation.GetValue() : FVector2D::ZeroVector;
 
-	m_argusInputManager->ProcessPlayerInput(m_argusCameraActor, cameraParams, deltaTime);
+	m_argusInputManager->ProcessPlayerInput(m_argusCameraActor, cameraParams, unscaledDeltaTime);
 	UpdateUIWidgetDisplay(mouseScreenSpaceLocation);
 
 	if (!m_reticleActor)

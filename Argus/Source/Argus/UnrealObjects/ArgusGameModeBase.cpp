@@ -5,6 +5,7 @@
 #include "ArgusGameStateBase.h"
 #include "ArgusPlayerController.h"
 #include "ArgusStaticData.h"
+#include "Misc/App.h"
 #include "EngineUtils.h"
 
 AArgusGameModeBase::AArgusGameModeBase()
@@ -53,6 +54,8 @@ void AArgusGameModeBase::Tick(float deltaTime)
 
 	Super::Tick(deltaTime);
 
+	const float unscaledDeltaTime = FApp::GetDeltaTime();
+
 	UWorld* worldPointer = GetWorld();
 	ARGUS_RETURN_ON_NULL(worldPointer, ArgusUnrealObjectsLog);
 	ARGUS_RETURN_ON_NULL(m_activePlayerController, ArgusUnrealObjectsLog);
@@ -61,7 +64,7 @@ void AArgusGameModeBase::Tick(float deltaTime)
 	m_argusSystemsThread.TickThread(deltaTime);
 
 	// Update camera and process player input
-	m_activePlayerController->ProcessArgusPlayerInput(deltaTime);
+	m_activePlayerController->ProcessArgusPlayerInput(unscaledDeltaTime);
 
 	// Run all ECS systems.
 	ArgusSystemsManager::RunSystems(worldPointer, deltaTime);
