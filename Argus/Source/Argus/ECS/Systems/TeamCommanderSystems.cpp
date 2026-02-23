@@ -598,7 +598,8 @@ bool TeamCommanderSystems::AssignEntityToResourceExtractionIfAble(ArgusEntity en
 	ResourceSourceExtractionData* pointerToClosestExtractionData = nullptr;
 	teamCommanderComponent->IterateAllSeenResourceSources([entity, &closestEntity, &closestDistanceSquared, &pointerToClosestExtractionData](ResourceSourceExtractionData& data)
 	{
-		if (data.m_resourceSourceEntityId == ArgusECSConstants::k_maxEntities || data.m_resourceExtractorEntityId != ArgusECSConstants::k_maxEntities)
+		const bool isCurrentEntity = data.m_resourceExtractorEntityId == entity.GetId();
+		if (data.m_resourceSourceEntityId == ArgusECSConstants::k_maxEntities || (data.m_resourceExtractorEntityId != ArgusECSConstants::k_maxEntities && !isCurrentEntity))
 		{
 			return false;
 		}
@@ -607,6 +608,13 @@ bool TeamCommanderSystems::AssignEntityToResourceExtractionIfAble(ArgusEntity en
 		if (!ResourceSystems::CanEntityExtractResourcesFromOtherEntity(entity, resourceSourceEntity))
 		{
 			return false;
+		}
+
+		if (isCurrentEntity)
+		{
+			closestEntity = resourceSourceEntity;
+			pointerToClosestExtractionData = &data;
+			return true;
 		}
 
 		const float distanceSquared = entity.GetDistanceSquaredToOtherEntity(resourceSourceEntity);
