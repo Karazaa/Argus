@@ -53,7 +53,7 @@ void TeamCommanderSystems::ClearUpdatesPerCommanderEntity(ArgusEntity teamEntity
 	teamCommanderComponent->IterateAllSeenResourceSources([](ResourceSourceExtractionData& data)
 	{
 		ClearResourceSinkFromExtractionDataIfNeeded(ArgusEntity::RetrieveEntity(data.m_resourceSinkEntityId), data);
-		ClearResourceExtractorFromExtractionDataIfNeeded(ArgusEntity::RetrieveEntity(data.m_resourceSinkConstructorEntityId), data);
+		ClearResourceSinkConstructorFromExtractionDataIfNeeded(ArgusEntity::RetrieveEntity(data.m_resourceSinkConstructorEntityId), data);
 		ClearResourceExtractorFromExtractionDataIfNeeded(ArgusEntity::RetrieveEntity(data.m_resourceExtractorEntityId), data);
 		return false;
 	});
