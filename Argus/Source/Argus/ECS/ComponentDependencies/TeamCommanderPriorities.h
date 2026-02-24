@@ -28,9 +28,10 @@ struct ResourceSourceExtractionData
 	uint16 m_resourceSourceEntityId = ArgusECSConstants::k_maxEntities;
 	uint16 m_resourceSinkEntityId = ArgusECSConstants::k_maxEntities;
 	uint16 m_resourceExtractorEntityId = ArgusECSConstants::k_maxEntities;
+	uint16 m_resourceSinkConstructorEntityId = ArgusECSConstants::k_maxEntities;
 
 	bool HasSourceEntityId(uint16 entityId) const { return m_resourceSourceEntityId == entityId; }
-	void SetSourceEntityId(uint16 entityId) { m_resourceSourceEntityId  = entityId; }
+	void SetSourceEntityId(uint16 entityId) { m_resourceSourceEntityId = entityId; }
 };
 
 FORCEINLINE static bool operator<(const TeamCommanderPriority& A, const TeamCommanderPriority& B)

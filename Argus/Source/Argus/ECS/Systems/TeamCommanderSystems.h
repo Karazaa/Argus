@@ -16,6 +16,7 @@ public:
 private:
 	static void ClearUpdatesPerCommanderEntity(ArgusEntity teamCommmanderEntity);
 	static void ClearResourceSinkFromExtractionDataIfNeeded(ArgusEntity existingResourceSinkEntity, ResourceSourceExtractionData& data);
+	static void ClearResourceSinkConstructorFromExtractionDataIfNeeded(ArgusEntity existingResourceSinkConstructorEntity, ResourceSourceExtractionData& data);
 	static void ClearResourceExtractorFromExtractionDataIfNeeded(ArgusEntity existingResourceExtractorEntity, ResourceSourceExtractionData& data);
 
 	static void UpdateTeamCommanderPerEntity(const TeamCommanderSystemsArgs& components);
@@ -46,7 +47,7 @@ private:
 	static void ConvertAreaCoordinatesToAreaIndex(int32 xCoordinate, int32 yCoordinate, int32 areasPerDimension, int32& areaIndex);
 
 	static bool FindTargetLocForConstructResourceSink(ArgusEntity entity, const TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& abilityIndexPairs, TeamCommanderComponent* teamCommanderComponent, EResourceType type);
-	static ArgusEntity GetNearestSeenResourceSourceToEntity(ArgusEntity entity, const TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& abilityIndexPairs, TeamCommanderComponent* teamCommanderComponent, EResourceType type, int32& outPairIndex);
+	static ArgusEntity GetNearestSeenResourceSourceToEntity(ArgusEntity entity, const TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& abilityIndexPairs, TeamCommanderComponent* teamCommanderComponent, EResourceType type, int32& outPairIndex, int32& outExtractionDataIndex);
 
 public:
 #if !UE_BUILD_SHIPPING
