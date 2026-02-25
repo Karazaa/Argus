@@ -88,6 +88,32 @@ void TeamCommanderSystems::ClearResourceSinkConstructorFromExtractionDataIfNeede
 		data.m_resourceSinkConstructorEntityId = ArgusECSConstants::k_maxEntities;
 		return;
 	}
+
+	const TaskComponent* constructorTaskComponent = existingResourceSinkConstructorEntity.GetComponent<TaskComponent>();
+	const TargetingComponent* constructorTargetingComponent = existingResourceSinkConstructorEntity.GetComponent<TargetingComponent>();
+	if (!constructorTaskComponent || !constructorTargetingComponent)
+	{
+		data.m_resourceSinkConstructorEntityId = ArgusECSConstants::k_maxEntities;
+		return;
+	}
+
+	if (constructorTaskComponent->m_constructionState != EConstructionState::DispatchedToConstructOther && constructorTaskComponent->m_constructionState != EConstructionState::ConstructingOther)
+	{
+		data.m_resourceSinkConstructorEntityId = ArgusECSConstants::k_maxEntities;
+		return;
+	}
+
+	if (!constructorTargetingComponent->HasEntityTarget())
+	{
+		data.m_resourceSinkConstructorEntityId = ArgusECSConstants::k_maxEntities;
+		return;
+	}
+
+	if (data.m_resourceSinkEntityId != ArgusECSConstants::k_maxEntities && constructorTargetingComponent->m_targetEntityId != data.m_resourceSinkEntityId)
+	{
+		data.m_resourceSinkConstructorEntityId = ArgusECSConstants::k_maxEntities;
+		return;
+	}
 }
 
 void TeamCommanderSystems::ClearResourceExtractorFromExtractionDataIfNeeded(ArgusEntity existingResourceExtractorEntity, ResourceSourceExtractionData& data)
@@ -104,9 +130,9 @@ void TeamCommanderSystems::ClearResourceExtractorFromExtractionDataIfNeeded(Argu
 		return;
 	}
 
-	TaskComponent* extractorTaskComponent = existingResourceExtractorEntity.GetComponent<TaskComponent>();
-	TargetingComponent* extractorTargetingComponent = existingResourceExtractorEntity.GetComponent<TargetingComponent>();
-	if (!extractorTaskComponent)
+	const TaskComponent* extractorTaskComponent = existingResourceExtractorEntity.GetComponent<TaskComponent>();
+	const TargetingComponent* extractorTargetingComponent = existingResourceExtractorEntity.GetComponent<TargetingComponent>();
+	if (!extractorTaskComponent || !extractorTargetingComponent)
 	{
 		data.m_resourceExtractorEntityId = ArgusECSConstants::k_maxEntities;
 		return;

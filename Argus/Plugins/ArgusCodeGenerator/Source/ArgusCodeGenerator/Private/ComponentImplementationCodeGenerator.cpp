@@ -751,9 +751,11 @@ void ComponentImplementationGenerator::FormatImGuiResourceSourceExtractionDataFi
 {
 	std::string resourceSourceIdName = variableName;
 	std::string resourceSinkIdName = variableName;
+	std::string resourceSinkConstructorIdName = variableName;
 	std::string resourceExtractorIdName = variableName;
 	resourceSourceIdName.append(".m_resourceSourceEntityId");
 	resourceSinkIdName.append(".m_resourceSinkEntityId");
+	resourceSinkConstructorIdName.append(".m_resourceSinkConstructorEntityId");
 	resourceExtractorIdName.append(".m_resourceExtractorEntityId");
 
 	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::BeginTable(\"{}\", 2, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_SizingStretchProp);", std::make_format_args(prefix, variableName)));
@@ -767,6 +769,11 @@ void ComponentImplementationGenerator::FormatImGuiResourceSourceExtractionDataFi
 	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::Text(\"Sink Entity Id\");", std::make_format_args(prefix)));
 	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::TableNextColumn();", std::make_format_args(prefix)));
 	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::Text(\"%d\", {});", std::make_format_args(prefix, resourceSinkIdName)));
+
+	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::TableNextColumn();", std::make_format_args(prefix)));
+	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::Text(\"Sink Constructor Entity Id\");", std::make_format_args(prefix)));
+	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::TableNextColumn();", std::make_format_args(prefix)));
+	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::Text(\"%d\", {});", std::make_format_args(prefix, resourceSinkConstructorIdName)));
 
 	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::TableNextColumn();", std::make_format_args(prefix)));
 	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::Text(\"Extractor Entity Id\");", std::make_format_args(prefix, resourceExtractorIdName)));

@@ -377,6 +377,7 @@ void SpawningSystems::CommandMoveEntityToSpawnedEntity(ArgusEntity entity, Argus
 	}
 
 	entityTaskComponent->m_movementState = EMovementState::ProcessMoveToEntityCommand;
+	entityTaskComponent->m_constructionState = EConstructionState::DispatchedToConstructOther;
 	if (clearDecal)
 	{
 		DecalSystems::ClearMoveToLocationDecalPerEntity(entity, true);

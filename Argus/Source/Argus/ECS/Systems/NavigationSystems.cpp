@@ -70,7 +70,6 @@ void NavigationSystems::NavigateFromEntityToLocation(UWorld* worldPointer, std::
 		return;
 	}
 
-	components.m_taskComponent->m_constructionState = EConstructionState::None;
 	components.m_navigationComponent->ResetPath();
 
 	if (components.m_taskComponent->m_flightState == EFlightState::Grounded)

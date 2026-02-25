@@ -79,6 +79,10 @@ void TeamCommanderComponent::DrawComponentDebug() const
 				ImGui::TableNextColumn();
 				ImGui::Text("%d", m_seenResourceASourceExtractionData[i].m_resourceSinkEntityId);
 				ImGui::TableNextColumn();
+				ImGui::Text("Sink Constructor Entity Id");
+				ImGui::TableNextColumn();
+				ImGui::Text("%d", m_seenResourceASourceExtractionData[i].m_resourceSinkConstructorEntityId);
+				ImGui::TableNextColumn();
 				ImGui::Text("Extractor Entity Id");
 				ImGui::TableNextColumn();
 				ImGui::Text("%d", m_seenResourceASourceExtractionData[i].m_resourceExtractorEntityId);
@@ -111,6 +115,10 @@ void TeamCommanderComponent::DrawComponentDebug() const
 				ImGui::TableNextColumn();
 				ImGui::Text("%d", m_seenResourceBSourceExtractionData[i].m_resourceSinkEntityId);
 				ImGui::TableNextColumn();
+				ImGui::Text("Sink Constructor Entity Id");
+				ImGui::TableNextColumn();
+				ImGui::Text("%d", m_seenResourceBSourceExtractionData[i].m_resourceSinkConstructorEntityId);
+				ImGui::TableNextColumn();
 				ImGui::Text("Extractor Entity Id");
 				ImGui::TableNextColumn();
 				ImGui::Text("%d", m_seenResourceBSourceExtractionData[i].m_resourceExtractorEntityId);
@@ -142,6 +150,10 @@ void TeamCommanderComponent::DrawComponentDebug() const
 				ImGui::Text("Sink Entity Id");
 				ImGui::TableNextColumn();
 				ImGui::Text("%d", m_seenResourceCSourceExtractionData[i].m_resourceSinkEntityId);
+				ImGui::TableNextColumn();
+				ImGui::Text("Sink Constructor Entity Id");
+				ImGui::TableNextColumn();
+				ImGui::Text("%d", m_seenResourceCSourceExtractionData[i].m_resourceSinkConstructorEntityId);
 				ImGui::TableNextColumn();
 				ImGui::Text("Extractor Entity Id");
 				ImGui::TableNextColumn();
