@@ -121,6 +121,11 @@ bool UFactionRecordDatabase::ResizePersistentObjectPointerArrayToFitRecord(uint3
 	return true;
 }
 
+void UFactionRecordDatabase::ResetPersistentObjectPointerArray()
+{
+	m_UFactionRecordsPersistent.Reset();
+}
+
 #if WITH_EDITOR
 void UFactionRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
 {

@@ -37,6 +37,16 @@ const bool UArgusStaticDatabase::AsyncPreLoadUAbilityRecord(uint32 id, TFunction
 	return m_UAbilityRecordDatabasePersistent->AsyncPreLoadRecord(id);
 }
 
+void UArgusStaticDatabase::ResetLoadedUAbilityRecordPointerArray()
+{
+	if (!m_UAbilityRecordDatabasePersistent)
+	{
+		return;
+	}
+
+	m_UAbilityRecordDatabasePersistent->ResetPersistentObjectPointerArray();
+}
+
 #if WITH_EDITOR
 uint32 UArgusStaticDatabase::AddUAbilityRecordToDatabase(UAbilityRecord* record)
 {
@@ -132,6 +142,16 @@ const bool UArgusStaticDatabase::AsyncPreLoadUArgusActorRecord(uint32 id, TFunct
 	}
 
 	return m_UArgusActorRecordDatabasePersistent->AsyncPreLoadRecord(id);
+}
+
+void UArgusStaticDatabase::ResetLoadedUArgusActorRecordPointerArray()
+{
+	if (!m_UArgusActorRecordDatabasePersistent)
+	{
+		return;
+	}
+
+	m_UArgusActorRecordDatabasePersistent->ResetPersistentObjectPointerArray();
 }
 
 #if WITH_EDITOR
@@ -231,6 +251,16 @@ const bool UArgusStaticDatabase::AsyncPreLoadUFactionRecord(uint32 id, TFunction
 	return m_UFactionRecordDatabasePersistent->AsyncPreLoadRecord(id);
 }
 
+void UArgusStaticDatabase::ResetLoadedUFactionRecordPointerArray()
+{
+	if (!m_UFactionRecordDatabasePersistent)
+	{
+		return;
+	}
+
+	m_UFactionRecordDatabasePersistent->ResetPersistentObjectPointerArray();
+}
+
 #if WITH_EDITOR
 uint32 UArgusStaticDatabase::AddUFactionRecordToDatabase(UFactionRecord* record)
 {
@@ -326,6 +356,16 @@ const bool UArgusStaticDatabase::AsyncPreLoadUPlacedArgusActorTeamInfoRecord(uin
 	}
 
 	return m_UPlacedArgusActorTeamInfoRecordDatabasePersistent->AsyncPreLoadRecord(id);
+}
+
+void UArgusStaticDatabase::ResetLoadedUPlacedArgusActorTeamInfoRecordPointerArray()
+{
+	if (!m_UPlacedArgusActorTeamInfoRecordDatabasePersistent)
+	{
+		return;
+	}
+
+	m_UPlacedArgusActorTeamInfoRecordDatabasePersistent->ResetPersistentObjectPointerArray();
 }
 
 #if WITH_EDITOR
@@ -425,6 +465,16 @@ const bool UArgusStaticDatabase::AsyncPreLoadUResourceSetRecord(uint32 id, TFunc
 	return m_UResourceSetRecordDatabasePersistent->AsyncPreLoadRecord(id);
 }
 
+void UArgusStaticDatabase::ResetLoadedUResourceSetRecordPointerArray()
+{
+	if (!m_UResourceSetRecordDatabasePersistent)
+	{
+		return;
+	}
+
+	m_UResourceSetRecordDatabasePersistent->ResetPersistentObjectPointerArray();
+}
+
 #if WITH_EDITOR
 uint32 UArgusStaticDatabase::AddUResourceSetRecordToDatabase(UResourceSetRecord* record)
 {
@@ -520,6 +570,16 @@ const bool UArgusStaticDatabase::AsyncPreLoadUTeamColorRecord(uint32 id, TFuncti
 	}
 
 	return m_UTeamColorRecordDatabasePersistent->AsyncPreLoadRecord(id);
+}
+
+void UArgusStaticDatabase::ResetLoadedUTeamColorRecordPointerArray()
+{
+	if (!m_UTeamColorRecordDatabasePersistent)
+	{
+		return;
+	}
+
+	m_UTeamColorRecordDatabasePersistent->ResetPersistentObjectPointerArray();
 }
 
 #if WITH_EDITOR

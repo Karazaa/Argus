@@ -21,6 +21,7 @@ class UArgusStaticDatabase : public UDataAsset
 public:
 	const UAbilityRecord* GetUAbilityRecord(uint32 id);
 	const bool AsyncPreLoadUAbilityRecord(uint32 id, TFunction<void(const UAbilityRecord*)> callback = nullptr);
+	void ResetLoadedUAbilityRecordPointerArray();
 #if WITH_EDITOR
 	uint32 AddUAbilityRecordToDatabase(UAbilityRecord* record);
 	void RegisterNewUAbilityRecordDatabase(UAbilityRecordDatabase* database);
@@ -38,6 +39,7 @@ protected:
 public:
 	const UArgusActorRecord* GetUArgusActorRecord(uint32 id);
 	const bool AsyncPreLoadUArgusActorRecord(uint32 id, TFunction<void(const UArgusActorRecord*)> callback = nullptr);
+	void ResetLoadedUArgusActorRecordPointerArray();
 #if WITH_EDITOR
 	uint32 AddUArgusActorRecordToDatabase(UArgusActorRecord* record);
 	void RegisterNewUArgusActorRecordDatabase(UArgusActorRecordDatabase* database);
@@ -55,6 +57,7 @@ protected:
 public:
 	const UFactionRecord* GetUFactionRecord(uint32 id);
 	const bool AsyncPreLoadUFactionRecord(uint32 id, TFunction<void(const UFactionRecord*)> callback = nullptr);
+	void ResetLoadedUFactionRecordPointerArray();
 #if WITH_EDITOR
 	uint32 AddUFactionRecordToDatabase(UFactionRecord* record);
 	void RegisterNewUFactionRecordDatabase(UFactionRecordDatabase* database);
@@ -72,6 +75,7 @@ protected:
 public:
 	const UPlacedArgusActorTeamInfoRecord* GetUPlacedArgusActorTeamInfoRecord(uint32 id);
 	const bool AsyncPreLoadUPlacedArgusActorTeamInfoRecord(uint32 id, TFunction<void(const UPlacedArgusActorTeamInfoRecord*)> callback = nullptr);
+	void ResetLoadedUPlacedArgusActorTeamInfoRecordPointerArray();
 #if WITH_EDITOR
 	uint32 AddUPlacedArgusActorTeamInfoRecordToDatabase(UPlacedArgusActorTeamInfoRecord* record);
 	void RegisterNewUPlacedArgusActorTeamInfoRecordDatabase(UPlacedArgusActorTeamInfoRecordDatabase* database);
@@ -89,6 +93,7 @@ protected:
 public:
 	const UResourceSetRecord* GetUResourceSetRecord(uint32 id);
 	const bool AsyncPreLoadUResourceSetRecord(uint32 id, TFunction<void(const UResourceSetRecord*)> callback = nullptr);
+	void ResetLoadedUResourceSetRecordPointerArray();
 #if WITH_EDITOR
 	uint32 AddUResourceSetRecordToDatabase(UResourceSetRecord* record);
 	void RegisterNewUResourceSetRecordDatabase(UResourceSetRecordDatabase* database);
@@ -106,6 +111,7 @@ protected:
 public:
 	const UTeamColorRecord* GetUTeamColorRecord(uint32 id);
 	const bool AsyncPreLoadUTeamColorRecord(uint32 id, TFunction<void(const UTeamColorRecord*)> callback = nullptr);
+	void ResetLoadedUTeamColorRecordPointerArray();
 #if WITH_EDITOR
 	uint32 AddUTeamColorRecordToDatabase(UTeamColorRecord* record);
 	void RegisterNewUTeamColorRecordDatabase(UTeamColorRecordDatabase* database);

@@ -27,6 +27,16 @@ const bool UArgusStaticDatabase::AsyncPreLoad#####(uint32 id, TFunction<void(con
 	return m_#####DatabasePersistent->AsyncPreLoadRecord(id);
 }
 
+void UArgusStaticDatabase::ResetLoaded#####PointerArray()
+{
+	if (!m_#####DatabasePersistent)
+	{
+		return;
+	}
+
+	m_#####DatabasePersistent->ResetPersistentObjectPointerArray();
+}
+
 #if WITH_EDITOR
 uint32 UArgusStaticDatabase::Add#####ToDatabase(#####* record)
 {

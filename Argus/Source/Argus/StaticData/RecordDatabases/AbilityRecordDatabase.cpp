@@ -121,6 +121,11 @@ bool UAbilityRecordDatabase::ResizePersistentObjectPointerArrayToFitRecord(uint3
 	return true;
 }
 
+void UAbilityRecordDatabase::ResetPersistentObjectPointerArray()
+{
+	m_UAbilityRecordsPersistent.Reset();
+}
+
 #if WITH_EDITOR
 void UAbilityRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
 {

@@ -121,6 +121,11 @@ bool #####Database::ResizePersistentObjectPointerArrayToFitRecord(uint32 id)
 	return true;
 }
 
+void #####Database::ResetPersistentObjectPointerArray()
+{
+	m_#####sPersistent.Reset();
+}
+
 #if WITH_EDITOR
 void #####Database::PreSave(FObjectPreSaveContext saveContext)
 {

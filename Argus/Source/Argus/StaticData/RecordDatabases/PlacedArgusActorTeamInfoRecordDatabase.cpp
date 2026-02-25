@@ -121,6 +121,11 @@ bool UPlacedArgusActorTeamInfoRecordDatabase::ResizePersistentObjectPointerArray
 	return true;
 }
 
+void UPlacedArgusActorTeamInfoRecordDatabase::ResetPersistentObjectPointerArray()
+{
+	m_UPlacedArgusActorTeamInfoRecordsPersistent.Reset();
+}
+
 #if WITH_EDITOR
 void UPlacedArgusActorTeamInfoRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
 {

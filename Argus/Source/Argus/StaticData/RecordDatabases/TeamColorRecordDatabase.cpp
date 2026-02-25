@@ -121,6 +121,11 @@ bool UTeamColorRecordDatabase::ResizePersistentObjectPointerArrayToFitRecord(uin
 	return true;
 }
 
+void UTeamColorRecordDatabase::ResetPersistentObjectPointerArray()
+{
+	m_UTeamColorRecordsPersistent.Reset();
+}
+
 #if WITH_EDITOR
 void UTeamColorRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
 {

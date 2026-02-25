@@ -121,6 +121,11 @@ bool UResourceSetRecordDatabase::ResizePersistentObjectPointerArrayToFitRecord(u
 	return true;
 }
 
+void UResourceSetRecordDatabase::ResetPersistentObjectPointerArray()
+{
+	m_UResourceSetRecordsPersistent.Reset();
+}
+
 #if WITH_EDITOR
 void UResourceSetRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
 {

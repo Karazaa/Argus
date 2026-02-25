@@ -16,6 +16,7 @@ public:
 	const UArgusActorRecord* GetRecord(uint32 id);
 	const bool AsyncPreLoadRecord(uint32 id, TFunction<void(const UArgusActorRecord*)> callback = nullptr);
 	bool ResizePersistentObjectPointerArrayToFitRecord(uint32 id);
+	void ResetPersistentObjectPointerArray();
 
 protected:
 	UPROPERTY(EditAnywhere)

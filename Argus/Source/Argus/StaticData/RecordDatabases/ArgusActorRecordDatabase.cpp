@@ -121,6 +121,11 @@ bool UArgusActorRecordDatabase::ResizePersistentObjectPointerArrayToFitRecord(ui
 	return true;
 }
 
+void UArgusActorRecordDatabase::ResetPersistentObjectPointerArray()
+{
+	m_UArgusActorRecordsPersistent.Reset();
+}
+
 #if WITH_EDITOR
 void UArgusActorRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
 {
