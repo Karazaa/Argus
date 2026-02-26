@@ -126,6 +126,9 @@ protected:
 	void LazyLoadUTeamColorRecordDatabase();
 #pragma endregion
 
+public:
+	void ResetLoadedPointerArrays();
+
 #if WITH_EDITOR
 private:
 	void SaveDatabase();

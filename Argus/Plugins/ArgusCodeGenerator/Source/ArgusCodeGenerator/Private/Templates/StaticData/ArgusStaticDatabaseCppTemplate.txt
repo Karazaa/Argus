@@ -10,6 +10,11 @@
 
 @@@@@
 
+void UArgusStaticDatabase::ResetLoadedPointerArrays()
+{
+	$$$$$
+}
+
 #if WITH_EDITOR
 void UArgusStaticDatabase::SaveDatabase()
 {

@@ -24,6 +24,7 @@ AArgusGameModeBase::~AArgusGameModeBase()
 
 void AArgusGameModeBase::StartPlay()
 {
+	ArgusStaticData::ResetLoadedPointerArrays();
 	ArgusEntity::FlushAllEntities();
 	UWorld* worldPointer = GetWorld();
 	ARGUS_RETURN_ON_NULL(worldPointer, ArgusUnrealObjectsLog);

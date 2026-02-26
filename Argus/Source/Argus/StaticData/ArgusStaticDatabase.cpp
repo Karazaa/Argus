@@ -651,6 +651,16 @@ void UArgusStaticDatabase::LazyLoadUTeamColorRecordDatabase()
 }
 #pragma endregion
 
+void UArgusStaticDatabase::ResetLoadedPointerArrays()
+{
+	ResetLoadedUAbilityRecordPointerArray();
+	ResetLoadedUArgusActorRecordPointerArray();
+	ResetLoadedUFactionRecordPointerArray();
+	ResetLoadedUPlacedArgusActorTeamInfoRecordPointerArray();
+	ResetLoadedUResourceSetRecordPointerArray();
+	ResetLoadedUTeamColorRecordPointerArray();
+}
+
 #if WITH_EDITOR
 void UArgusStaticDatabase::SaveDatabase()
 {
