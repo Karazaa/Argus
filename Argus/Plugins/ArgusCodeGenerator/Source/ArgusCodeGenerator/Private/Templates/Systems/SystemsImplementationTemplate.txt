@@ -9,7 +9,8 @@ void #####::RunSystems(float deltaTime)
 {
 	ARGUS_TRACE(#####::RunSystems);
 
-	for (uint16 i = ArgusEntity::GetLowestTakenEntityId(); i <= ArgusEntity::GetHighestTakenEntityId(); ++i)
+	ArgusEntity::IterateEntities([](ArgusEntity entity)
 	{
-	}
+
+	});
 }
