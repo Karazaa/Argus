@@ -16,11 +16,9 @@ public:
 
 private:
 	static void ProcessNavigationTaskCommands(UWorld* worldPointer, const NavigationSystemsArgs& components);
-	static void ResetAvoidanceGroupingComponent(const NavigationSystemsArgs& components);
 	static void RecalculateMoveToEntityPaths(UWorld* worldPointer, const NavigationSystemsArgs& components);
 	static void ChangeTasksOnNavigatingToEntity(ArgusEntity targetEntity, const NavigationSystemsArgs& components);
 	static void ChangeTasksOnNavigatingToLocation(const NavigationSystemsArgs& components);
-	static void ChangeFlockingStateOnNavigatingToLocation(const NavigationSystemsArgs& components);
 	static void GeneratePathPointsForGroundedEntity(UWorld* worldPointer, std::optional<FVector> targetLocation, const NavigationSystemsArgs& components);
 	static void GeneratePathPointsForFlyingEntity(UWorld* worldPointer, std::optional<FVector> targetLocation, const NavigationSystemsArgs& components);
 };

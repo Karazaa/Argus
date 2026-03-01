@@ -13,6 +13,7 @@ public:
 	static ArgusEntity GetFlockingRootEntity(ArgusEntity entity);
 
 private:
+	static void StartFlockingIfNecessary(const FlockingSystemsArgs& components);
 	static void EndFlockingIfNecessary(float deltaTime, const FlockingSystemsArgs& components);
 	static bool PackFlockingRoot(const FlockingSystemsArgs& components);
 	static float GetCurrentFlockingRootRadius(const FlockingComponent* flockingRootFlockingComponent);

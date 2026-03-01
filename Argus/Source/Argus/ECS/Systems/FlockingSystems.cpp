@@ -12,14 +12,15 @@ void FlockingSystems::RunSystems(float deltaTime)
 	ARGUS_TRACE(FlockingSystems::RunSystems);
 
 	ArgusEntity::IterateSystemsArgs<FlockingSystemsArgs>([deltaTime](FlockingSystemsArgs& components) 
-	{
-		// If executing move task or not shrinking, continue.
-		if (components.m_flockingComponent->m_flockingState != EFlockingState::Shrinking)
+	{	
+		if (components.m_flockingComponent->m_flockingState == EFlockingState::Shrinking)
 		{
-			return;
+			EndFlockingIfNecessary(deltaTime, components);
 		}
-
-		EndFlockingIfNecessary(deltaTime, components);
+		else if (components.m_taskComponent->IsExecutingMoveTask())
+		{
+			StartFlockingIfNecessary(components);
+		}
 	});
 } 
 
@@ -143,6 +144,35 @@ ArgusEntity FlockingSystems::GetFlockingRootEntity(ArgusEntity entity)
 	}
 
 	return ArgusEntity::RetrieveEntity(flockingComponent->m_flockingRootId);
+}
+
+void FlockingSystems::StartFlockingIfNecessary(const FlockingSystemsArgs& components)
+{
+	ARGUS_TRACE(FlockingSystems::StartFlockingIfNecessary);
+
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+
+	ArgusEntity flockingRootEntity = GetFlockingRootEntity(components.m_entity);
+	if (!flockingRootEntity)
+	{
+		return;
+	}
+
+	FlockingComponent* flockingRootFlockingComponent = flockingRootEntity.GetComponent<FlockingComponent>();
+	const TransformComponent* flockingRootTransformComponent = flockingRootEntity.GetComponent<TransformComponent>();
+	ARGUS_RETURN_ON_NULL(flockingRootFlockingComponent, ArgusECSLog);
+	ARGUS_RETURN_ON_NULL(flockingRootTransformComponent, ArgusECSLog);
+
+	const float distanceToRootSquared = FVector::DistSquared2D(flockingRootTransformComponent->m_location, components.m_transformComponent->m_location);
+	const float flockingRootRadiusSquared = FMath::Square(GetCurrentFlockingRootRadius(flockingRootFlockingComponent));
+
+	if (distanceToRootSquared > flockingRootRadiusSquared)
+	{
+		components.m_flockingComponent->m_flockingState = EFlockingState::Shrinking;
+	}
 }
 
 // Hex grid packing with a fallback timeout on shrinking duration.
