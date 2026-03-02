@@ -156,17 +156,19 @@ void FlockingSystems::StartFlockingIfNecessary(const FlockingSystemsArgs& compon
 	}
 
 	ArgusEntity flockingRootEntity = GetFlockingRootEntity(components.m_entity);
-	if (!flockingRootEntity)
+	if (!flockingRootEntity || flockingRootEntity.GetId() == components.m_entity.GetId())
 	{
 		return;
 	}
 
 	FlockingComponent* flockingRootFlockingComponent = flockingRootEntity.GetComponent<FlockingComponent>();
+	const AvoidanceGroupingComponent* flockingRootGroupingComponent = flockingRootEntity.GetComponent<AvoidanceGroupingComponent>();
 	const TransformComponent* flockingRootTransformComponent = flockingRootEntity.GetComponent<TransformComponent>();
 	ARGUS_RETURN_ON_NULL(flockingRootFlockingComponent, ArgusECSLog);
+	ARGUS_RETURN_ON_NULL(flockingRootGroupingComponent, ArgusECSLog);
 	ARGUS_RETURN_ON_NULL(flockingRootTransformComponent, ArgusECSLog);
-
-	const float distanceToRootSquared = FVector::DistSquared2D(flockingRootTransformComponent->m_location, components.m_transformComponent->m_location);
+	
+	const float distanceToRootSquared = FVector::DistSquared2D(flockingRootGroupingComponent->m_groupAverageLocation, components.m_transformComponent->m_location);
 	const float flockingRootRadiusSquared = FMath::Square(GetCurrentFlockingRootRadius(flockingRootFlockingComponent));
 
 	if (distanceToRootSquared > flockingRootRadiusSquared)
@@ -227,11 +229,14 @@ bool FlockingSystems::PackFlockingRoot(const FlockingSystemsArgs& components)
 	}
 
 	FlockingComponent* flockingRootFlockingComponent = flockingRootEntity.GetComponent<FlockingComponent>();
+	const AvoidanceGroupingComponent* flockingRootGroupingComponent = flockingRootEntity.GetComponent<AvoidanceGroupingComponent>();
 	const TransformComponent* flockingRootTransformComponent = flockingRootEntity.GetComponent<TransformComponent>();
 	ARGUS_RETURN_ON_NULL_BOOL(flockingRootFlockingComponent, ArgusECSLog);
+	ARGUS_RETURN_ON_NULL_BOOL(flockingRootGroupingComponent, ArgusECSLog);
 	ARGUS_RETURN_ON_NULL_BOOL(flockingRootTransformComponent, ArgusECSLog);
 
-	const float distanceToRootSquared = FVector::DistSquared2D(flockingRootTransformComponent->m_location, components.m_transformComponent->m_location);
+	const float distanceToRootSquared = FVector::DistSquared2D(	components.m_taskComponent->IsExecutingMoveTask() ? flockingRootGroupingComponent->m_groupAverageLocation : flockingRootTransformComponent->m_location, 
+																components.m_transformComponent->m_location);
 	const float flockingRootRadiusSquared = FMath::Square(GetCurrentFlockingRootRadius(flockingRootFlockingComponent));
 
 	if (distanceToRootSquared > flockingRootRadiusSquared)

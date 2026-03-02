@@ -25,7 +25,7 @@ void FlockingComponent::Reset()
 	m_flockingRootRadiusIncrement = 55.0f;
 	m_flockingRootId = ArgusECSConstants::k_maxEntities;
 	m_numEntitiesInStableRange = 0u;
-	m_concentricFlockingTier = 0u;
+	m_concentricFlockingTier = 1u;
 	m_flockingState = EFlockingState::Stable;
 }
 
