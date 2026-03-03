@@ -159,20 +159,10 @@ void AArgusGameModeBase::DespawnActorForEntity(ArgusEntity spawnedEntity)
 		return;
 	}
 
-	AArgusActor* argusActor = gameInstance->GetArgusActorFromArgusEntity(spawnedEntity);
-	if (!argusActor)
+	if (AArgusActor* argusActor = gameInstance->GetArgusActorFromArgusEntity(spawnedEntity))
 	{
-		return;
+		m_argusActorPool.Release(argusActor);
 	}
-
-	m_argusActorPool.Release(argusActor);
-
-	TaskComponent* taskComponent = spawnedEntity.GetComponent<TaskComponent>();
-	if (!taskComponent)
-	{
-		return;
-	}
-	taskComponent->m_baseState = EBaseState::Alive;
 
 	spawnedEntity.Destroy();
 }

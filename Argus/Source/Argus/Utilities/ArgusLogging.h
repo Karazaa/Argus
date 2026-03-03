@@ -18,6 +18,9 @@ while (0);
 #define ARGUS_ERROR_NULL(CategoryName, VariableName) \
 ARGUS_LOG(CategoryName, Error, TEXT("[%s] The variable, %s, is null!"), ARGUS_FUNCNAME, ARGUS_NAMEOF(VariableName));
 
+#define ARGUS_ERROR_ENTITY_DNE(CategoryName, VariableName) \
+ARGUS_LOG(CategoryName, Error, TEXT("[%s] The entity, %s, does not exist!"), ARGUS_FUNCNAME, ARGUS_NAMEOF(VariableName));
+
 #define ARGUS_RETURN_ON_NULL(VariableName, CategoryName) \
 if (UNLIKELY(!VariableName)) \
 { \
@@ -43,6 +46,20 @@ if (UNLIKELY(!VariableName)) \
 if (UNLIKELY(!VariableName)) \
 { \
 	ARGUS_ERROR_NULL(CategoryName, VariableName); \
+	return Value;\
+}
+
+#define ARGUS_RETURN_ON_INVALID_ENTITY(VariableName, CategoryName) \
+if (UNLIKELY(!ArgusEntity::DoesEntityExist(VariableName.GetId()))) \
+{ \
+	ARGUS_ERROR_ENTITY_DNE(CategoryName, VariableName); \
+	return;\
+}
+
+#define ARGUS_RETURN_ON_INVALID_ENTITY_VALUE(VariableName, CategoryName, Value) \
+if (UNLIKELY(!ArgusEntity::DoesEntityExist(VariableName.GetId()))) \
+{ \
+	ARGUS_ERROR_ENTITY_DNE(CategoryName, VariableName); \
 	return Value;\
 }
 

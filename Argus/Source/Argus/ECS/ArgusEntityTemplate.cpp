@@ -55,6 +55,11 @@ ArgusEntity UArgusEntityTemplate::MakeEntityAsync(const TFunction<void(ArgusEnti
 
 	AsyncLoadComponents([this, entity, onCompleteCallback]()
 	{
+		if (!entity)
+		{
+			return;
+		}
+
 		this->PopulateEntity(entity);
 		if (onCompleteCallback)
 		{
@@ -68,6 +73,8 @@ ArgusEntity UArgusEntityTemplate::MakeEntityAsync(const TFunction<void(ArgusEnti
 void UArgusEntityTemplate::PopulateEntity(ArgusEntity entity) const
 {
 	ARGUS_MEMORY_TRACE(ArgusComponentData);
+	
+	ARGUS_RETURN_ON_INVALID_ENTITY(entity, ArgusECSLog);
 
 	for (const TPair<UClass*, TObjectPtr<const UComponentData>>& keyValuePair : m_loadedComponentData)
 	{
