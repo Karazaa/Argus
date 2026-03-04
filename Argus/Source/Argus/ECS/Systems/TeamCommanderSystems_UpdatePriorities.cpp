@@ -6,7 +6,7 @@
 #include "ArgusMacros.h"
 #include "ArgusStaticData.h"
 
-void TeamCommanderSystems_UpdatePriorities::RunSystems(float deltaTime)
+void TeamCommanderSystems_UpdatePriorities::RunSystems()
 {
 	ARGUS_TRACE(TeamCommanderSystems_UpdatePriorities::RunSystems);
 
@@ -131,7 +131,9 @@ void TeamCommanderSystems_UpdatePriorities::UpdateResourceExtractionTeamPriority
 
 	bool updated = teamCommanderComponent->IterateSeenResourceSourcesOfType(priority.m_entityCategory.m_resourceType, [&priority](const ResourceSourceExtractionData& data)
 	{
-		if (data.m_resourceSourceEntityId != ArgusECSConstants::k_maxEntities && data.m_resourceExtractorEntityId == ArgusECSConstants::k_maxEntities)
+		if (data.m_resourceSourceEntityId != ArgusECSConstants::k_maxEntities && 
+			data.m_resourceExtractorEntityId == ArgusECSConstants::k_maxEntities &&
+			data.m_resourceSinkEntityId != ArgusECSConstants::k_maxEntities)
 		{
 			priority.m_weight = 1.0f;
 			return true;
@@ -165,7 +167,7 @@ void TeamCommanderSystems_UpdatePriorities::UpdateSpawnUnitTeamPriority(TeamComm
 	}
 
 	float extractorNeedWeight = -0.5f;
-	teamCommanderComponent->IterateSeenResourceSourcesOfType(priority.m_entityCategory.m_resourceType, [&priority, &extractorNeedWeight](const ResourceSourceExtractionData& data)
+	teamCommanderComponent->IterateSeenResourceSourcesOfType(priority.m_entityCategory.m_resourceType, [&extractorNeedWeight](const ResourceSourceExtractionData& data)
 	{
 		if (data.m_resourceSourceEntityId != ArgusECSConstants::k_maxEntities && data.m_resourceExtractorEntityId == ArgusECSConstants::k_maxEntities && data.m_resourceSinkConstructorEntityId == ArgusECSConstants::k_maxEntities)
 		{

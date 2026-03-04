@@ -7,7 +7,7 @@
 class TeamCommanderSystems_UpdatePriorities
 {
 public:
-	static void RunSystems(float deltaTime);
+	static void RunSystems();
 
 private:
 	static void UpdateTeamCommanderPriorities(ArgusEntity teamCommmanderEntity);

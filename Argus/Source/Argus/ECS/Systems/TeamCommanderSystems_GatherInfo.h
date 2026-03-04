@@ -7,7 +7,7 @@
 class TeamCommanderSystems_GatherInfo
 {
 public:
-	static void RunSystems(float deltaTime);
+	static void RunSystems();
 
 private:
 	static void ClearUpdatesPerCommanderEntity(ArgusEntity teamCommmanderEntity);

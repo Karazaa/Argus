@@ -13,13 +13,13 @@
 #include "DrawDebugHelpers.h"
 #endif // !UE_BUILD_SHIPPING
 
-void TeamCommanderSystems::RunSystems(float deltaTime)
+void TeamCommanderSystems::RunSystems(float)
 {
 	ARGUS_TRACE(TeamCommanderSystems::RunSystems);
 
-	TeamCommanderSystems_GatherInfo::RunSystems(deltaTime);
-	TeamCommanderSystems_UpdatePriorities::RunSystems(deltaTime);
-	TeamCommanderSystems_AssignEntities::RunSystems(deltaTime);
+	TeamCommanderSystems_GatherInfo::RunSystems();
+	TeamCommanderSystems_UpdatePriorities::RunSystems();
+	TeamCommanderSystems_AssignEntities::RunSystems();
 }
 
 void TeamCommanderSystems::InitializeRevealedAreas(TeamCommanderComponent* teamCommanderComponent)
@@ -36,7 +36,7 @@ void TeamCommanderSystems::InitializeRevealedAreas(TeamCommanderComponent* teamC
 
 void TeamCommanderSystems::PerformInitialUpdate()
 {
-	TeamCommanderSystems_GatherInfo::RunSystems(0.0f);
+	TeamCommanderSystems_GatherInfo::RunSystems();
 }
 
 int32 TeamCommanderSystems::GetAreaIndexFromWorldSpaceLocation(const TeamCommanderSystemsArgs& components, const TeamCommanderComponent* teamCommanderComponent)
