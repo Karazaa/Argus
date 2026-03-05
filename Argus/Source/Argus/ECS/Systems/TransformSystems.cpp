@@ -109,13 +109,16 @@ void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float delta
 	const float distanceToTarget = FVector2D::Distance(moverLocation2D, targetLocation2D);
 	const bool isWithinRangeOfTargetEntity = components.m_taskComponent->m_movementState == EMovementState::MoveToEntity && GetEndMoveRange(components) > distanceToTarget;
 
-	if (isWithinRangeOfTargetEntity && !isAtEndOfNavigationPath)
+	if (!isAtEndOfNavigationPath)
 	{
-		FaceTowardsLocationXY(components.m_transformComponent, components.m_navigationComponent->m_navigationPoints[components.m_navigationComponent->m_lastPointIndex + 1u] - moverLocation);
-	}
-	else
-	{
-		FaceTowardsLocationXY(components.m_transformComponent, FVector(components.m_velocityComponent->m_currentVelocity, 0.0f));
+		if (isWithinRangeOfTargetEntity)
+		{
+			FaceTowardsLocationXY(components.m_transformComponent, components.m_navigationComponent->m_navigationPoints[components.m_navigationComponent->m_lastPointIndex + 1u] - moverLocation);
+		}
+		else
+		{
+			FaceTowardsLocationXY(components.m_transformComponent, FVector(components.m_velocityComponent->m_currentVelocity, 0.0f));
+		}
 	}
 
 	if (components.m_taskComponent->m_flightState == EFlightState::Grounded)

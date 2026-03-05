@@ -33,7 +33,7 @@ namespace ArgusMath
 		return FVector::ZeroVector;
 	}
 
-	template <typename T>
+	template <typename T, uint8 SmoothingOrder = 1u>
 	class ExponentialDecaySmoother
 	{
 	public:
@@ -44,24 +44,25 @@ namespace ArgusMath
 
 		ExponentialDecaySmoother()
 		{
-			m_currentValue = GetZero<T>();
+			Reset(GetZero<T>());
 			m_decayConstant = GetDefaultDecayConstant();
 		}
 
 		ExponentialDecaySmoother(float decayConstant)
 		{
-			m_currentValue = GetZero<T>();
+			Reset(GetZero<T>());
 			m_decayConstant = FMath::Clamp(decayConstant, k_minDecayConstant, k_maxDecayConstant);
 		}
 
-		ExponentialDecaySmoother(T initialValue, float decayConstant) : m_currentValue(initialValue)
+		ExponentialDecaySmoother(T initialValue, float decayConstant)
 		{
+			Reset(initialValue);
 			m_decayConstant = FMath::Clamp(decayConstant, k_minDecayConstant, k_maxDecayConstant);
 		}
 
 		T GetValue() const
 		{
-			return m_currentValue;
+			return m_currentValues[SmoothingOrder - 1u];
 		}
 
 		float GetDecayConstant() const
@@ -71,17 +72,24 @@ namespace ArgusMath
 
 		void Reset(T initialValue)
 		{
-			m_currentValue = initialValue;
+			for (uint8 i = 0u; i < SmoothingOrder; ++i)
+			{
+				m_currentValues[i] = initialValue;
+			}
 		}
 
 		void ResetZero()
 		{
-			m_currentValue = GetZero<T>();
+			Reset(GetZero<T>());
 		}
 
 		void SmoothChase(const T& targetValue, float deltaTime)
 		{
-			SmoothChase(m_currentValue, targetValue, m_decayConstant, deltaTime);
+			SmoothChase(m_currentValues[0], targetValue, m_decayConstant, deltaTime);
+			for (uint8 i = 1u; i < SmoothingOrder; ++i)
+			{
+				SmoothChase(m_currentValues[i], m_currentValues[i - 1], m_decayConstant, deltaTime);
+			}
 		}
 
 		static void SmoothChase(T& value, const T& targetValue, float decayConstant, float deltaTime)
@@ -90,17 +98,11 @@ namespace ArgusMath
 			value = targetValue + ((value - targetValue) * FMath::Exp(-decayConstant * deltaTime));
 		}
 
-		static float FloatSmoothChase(float value, float targetValue, float decayConstant, float deltaTime)
-		{
-			decayConstant = FMath::Clamp(decayConstant, k_minDecayConstant, k_maxDecayConstant);
-			return targetValue + ((value - targetValue) * FMath::Exp(-decayConstant * deltaTime));
-		}
-
 	private:
 		static constexpr float k_minDecayConstant = 1.0f;
 		static constexpr float k_maxDecayConstant = 30.0f;
 
-		T m_currentValue;
+		T m_currentValues[SmoothingOrder];
 		float m_decayConstant = k_minDecayConstant;
 	};
 
