@@ -10,7 +10,7 @@
 #include "Systems/TeamCommanderSystems.h"
 #include "Systems/TransformSystems.h"
 
-void TeamCommanderSystems_AssignEntities::RunSystems(float deltaTime)
+void TeamCommanderSystems_AssignEntities::RunSystems()
 {
 	ARGUS_TRACE(TeamCommanderSystems_AssignEntities::RunSystems);
 
@@ -175,7 +175,7 @@ bool TeamCommanderSystems_AssignEntities::AssignEntityToResourceExtractionIfAble
 
 bool TeamCommanderSystems_AssignEntities::AssignEntityToSpawnUnitIfAble(ArgusEntity entity, TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority)
 {
-	ARGUS_TRACE(TeamCommanderSystems::AssignEntityToSpawnUnitIfAble);
+	ARGUS_TRACE(TeamCommanderSystems_AssignEntities::AssignEntityToSpawnUnitIfAble);
 	ARGUS_RETURN_ON_NULL_BOOL(teamCommanderComponent, ArgusECSLog);
 
 	TaskComponent* taskComponent = entity.GetComponent<TaskComponent>();
@@ -200,7 +200,7 @@ bool TeamCommanderSystems_AssignEntities::AssignEntityToSpawnUnitIfAble(ArgusEnt
 
 bool TeamCommanderSystems_AssignEntities::AssignEntityToScoutingIfAble(ArgusEntity entity, TeamCommanderComponent* teamCommanderComponent)
 {
-	ARGUS_TRACE(TeamCommanderSystems::AssignEntityToScoutingIfAble);
+	ARGUS_TRACE(TeamCommanderSystems_AssignEntities::AssignEntityToScoutingIfAble);
 	ARGUS_RETURN_ON_NULL_BOOL(teamCommanderComponent, ArgusECSLog);
 
 	if (!entity.IsMoveable())

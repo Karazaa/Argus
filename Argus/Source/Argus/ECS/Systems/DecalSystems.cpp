@@ -128,6 +128,7 @@ ArgusEntity DecalSystems::InstantiateMoveToLocationDecalEntity(const UArgusActor
 
 	ArgusEntity decalEntity = moveToLocationDecalTemplate->MakeEntityAsync(callback);
 	decalEntity.GetOrAddComponent<ArgusDecalComponent>();
+	decalEntity.GetOrAddComponent<TaskComponent>();
 	return decalEntity;
 }
 
@@ -203,6 +204,11 @@ void DecalSystems::ActivateCachedMoveToLocationDecalPerEntity(const UArgusActorR
 void DecalSystems::ClearMoveToLocationDecalPerEntity(ArgusEntity entity, bool clearQueuedWaypoints)
 {
 	ARGUS_TRACE(DecalSystems::ClearMoveToLocationDecalPerEntity);
+
+	if (!entity.IsOnPlayerTeam())
+	{
+		return;
+	}
 
 	TargetingComponent* targetingComponent = entity.GetComponent<TargetingComponent>();
 	if (!targetingComponent)
@@ -372,10 +378,14 @@ void DecalSystems::ClearMoveToLocationDecalEntity(uint16& decalEntityId)
 		return;
 	}
 
-	decalComponent->m_referencingEntityCount--;
-	if (decalComponent->m_referencingEntityCount == 0u)
+	if (decalComponent->m_referencingEntityCount <= 1u)
 	{
+		decalComponent->m_referencingEntityCount = 0u;
 		taskComponent->m_baseState = EBaseState::DestroyedWaitingForActorRelease;
+	}
+	else
+	{
+		decalComponent->m_referencingEntityCount--;
 	}
 }
 

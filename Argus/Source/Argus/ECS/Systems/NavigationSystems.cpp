@@ -137,16 +137,13 @@ void NavigationSystems::ProcessNavigationTaskCommands(UWorld* worldPointer, cons
 	switch (components.m_taskComponent->m_movementState)
 	{
 		case EMovementState::ProcessMoveToLocationCommand:
-			ResetAvoidanceGroupingComponent(components);
 			components.m_taskComponent->m_movementState = EMovementState::MoveToLocation;
 			NavigateFromEntityToLocation(worldPointer, components.m_targetingComponent->m_targetLocation.GetValue(), components);
-			ChangeFlockingStateOnNavigatingToLocation(components);
 			ChangeTasksOnNavigatingToLocation(components);
 			break;
 
 		case EMovementState::ProcessMoveToEntityCommand:
 		{
-			ResetAvoidanceGroupingComponent(components);
 			components.m_taskComponent->m_movementState = EMovementState::MoveToEntity;
 			ArgusEntity targetEntity = ArgusEntity::RetrieveEntity(components.m_targetingComponent->m_targetEntityId);
 			NavigateFromEntityToEntity(worldPointer, targetEntity, components);
@@ -156,18 +153,6 @@ void NavigationSystems::ProcessNavigationTaskCommands(UWorld* worldPointer, cons
 		default:
 			break;
 	}
-}
-
-void NavigationSystems::ResetAvoidanceGroupingComponent(const NavigationSystemsArgs& components)
-{
-	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME) || !components.m_avoidanceGroupingComponent)
-	{
-		return;
-	}
-
-	components.m_avoidanceGroupingComponent->m_groupId = components.m_entity.GetId();
-	components.m_avoidanceGroupingComponent->m_groupAverageLocation = components.m_transformComponent->m_location;
-	components.m_avoidanceGroupingComponent->m_numberOfIdleEntities = 0u;
 }
 
 void NavigationSystems::RecalculateMoveToEntityPaths(UWorld* worldPointer, const NavigationSystemsArgs& components)
@@ -247,25 +232,6 @@ void NavigationSystems::ChangeTasksOnNavigatingToEntity(ArgusEntity targetEntity
 void NavigationSystems::ChangeTasksOnNavigatingToLocation(const NavigationSystemsArgs& components)
 {
 	components.m_taskComponent->m_resourceExtractionState = EResourceExtractionState::None;
-}
-
-void NavigationSystems::ChangeFlockingStateOnNavigatingToLocation(const NavigationSystemsArgs& components)
-{
-	if (AvoidanceGroupingComponent* avoidanceGroupingComponent = components.m_entity.GetComponent<AvoidanceGroupingComponent>())
-	{
-		avoidanceGroupingComponent->m_groupId = components.m_entity.GetId();
-		avoidanceGroupingComponent->m_groupAverageLocation = components.m_transformComponent->m_location;
-		avoidanceGroupingComponent->m_numberOfIdleEntities = 0u;
-	}
-
-	FlockingComponent* flockingComponent = components.m_entity.GetComponent<FlockingComponent>();
-	if (!flockingComponent)
-	{
-		return;
-	}
-
-	flockingComponent->Reset();
-	flockingComponent->m_flockingState = EFlockingState::Shrinking;
 }
 
 void NavigationSystems::GeneratePathPointsForGroundedEntity(UWorld* worldPointer, std::optional<FVector> targetLocation, const NavigationSystemsArgs& components)

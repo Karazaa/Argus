@@ -7,7 +7,7 @@
 #include "Systems/TargetingSystems.h"
 #include "Systems/TeamCommanderSystems.h"
 
-void TeamCommanderSystems_GatherInfo::RunSystems(float deltaTime)
+void TeamCommanderSystems_GatherInfo::RunSystems()
 {
 	ARGUS_TRACE(TeamCommanderSystems_GatherInfo::RunSystems);
 
@@ -163,8 +163,7 @@ void TeamCommanderSystems_GatherInfo::UpdateTeamCommanderPerEntityOnTeam(const T
 		return;
 	}
 
-	const bool isAlive = components.m_entity.IsAlive();
-	if (isAlive && components.m_entity.IsIdle() && !components.m_entity.IsPassenger())
+	if (components.m_entity.IsAlive() && components.m_entity.IsIdle() && !components.m_entity.IsPassenger())
 	{
 		teamCommanderComponent->m_idleEntityIdsForTeam.Add(components.m_entity.GetId());
 	}
@@ -280,7 +279,7 @@ void TeamCommanderSystems_GatherInfo::UpdateSpawningUnitTypesPerSpawner(const Te
 	}
 
 	const SpawningComponent* spawningComponent = components.m_entity.GetComponent<SpawningComponent>();
-	if (!spawningComponent)
+	if (!spawningComponent || spawningComponent->m_spawnQueue.IsEmpty())
 	{
 		return;
 	}

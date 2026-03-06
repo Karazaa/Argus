@@ -7,7 +7,7 @@
 class TeamCommanderSystems_AssignEntities
 {
 public:
-	static void RunSystems(float deltaTime);
+	static void RunSystems();
 
 private:
 	static void ActUponUpdatesPerCommanderEntity(ArgusEntity teamCommmanderEntity);

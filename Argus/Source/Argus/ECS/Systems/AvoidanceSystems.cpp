@@ -646,7 +646,7 @@ FVector2D AvoidanceSystems::GetDesiredVelocity(const TransformSystemsArgs& compo
 
 	// If our group leader is stopped, we should come to a stop as well.
 	ArgusEntity groupLeader = GetAvoidanceGroupLeader(components.m_entity);
-	if (groupLeader)
+	if (groupLeader && groupLeader.GetId() != components.m_entity.GetId())
 	{
 		AvoidanceGroupingComponent* groupLeaderAvoidanceGroupingComponent = groupLeader.GetComponent<AvoidanceGroupingComponent>();
 		if (groupLeaderAvoidanceGroupingComponent && groupLeaderAvoidanceGroupingComponent->m_numberOfIdleEntities > 0u)
