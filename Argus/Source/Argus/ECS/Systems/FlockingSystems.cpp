@@ -11,109 +11,10 @@ void FlockingSystems::RunSystems(float deltaTime)
 {
 	ARGUS_TRACE(FlockingSystems::RunSystems);
 
-	ArgusEntity::IterateSystemsArgs<FlockingSystemsArgs>([deltaTime](FlockingSystemsArgs& components) 
-	{	
-		if (components.m_flockingComponent->m_flockingState == EFlockingState::Shrinking)
-		{
-			EndFlockingIfNecessary(deltaTime, components);
-		}
-		else if (components.m_taskComponent->IsExecutingMoveTask())
-		{
-			StartFlockingIfNecessary(components);
-		}
-	});
+	ClearPackingValues();
+	SetPackingValues();
+	SetFlockingState(deltaTime);
 } 
-
-void FlockingSystems::ChooseFlockingRootEntityIfGroupLeader(const TransformSystemsArgs& components)
-{
-	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
-	{
-		return;
-	}
-
-	AvoidanceGroupingComponent* groupingComponent = components.m_entity.GetComponent<AvoidanceGroupingComponent>();
-	FlockingComponent* flockingComponent = components.m_entity.GetComponent<FlockingComponent>();
-	if (!groupingComponent || !flockingComponent)
-	{
-		return;
-	}
-
-	flockingComponent->m_flockingState = EFlockingState::Shrinking;
-
-	if (groupingComponent->m_groupId != components.m_entity.GetId())
-	{
-		flockingComponent->m_flockingRootId = ArgusECSConstants::k_maxEntities;
-		return;
-	}
-
-	TOptional<FVector> targetLocation = TargetingSystems::GetCurrentTargetLocationForEntity(components.m_entity);
-	if (!targetLocation.IsSet())
-	{
-		flockingComponent->m_flockingRootId = ArgusECSConstants::k_maxEntities;
-		return;
-	}
-
-	SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::GetSingletonEntity().GetComponent<SpatialPartitioningComponent>();
-	if (!spatialPartitioningComponent)
-	{
-		return;
-	}
-
-	const TFunction<bool(const ArgusEntityKDTreeNode*)> queryFilter = [components](const ArgusEntityKDTreeNode* entityNode)
-	{
-		ARGUS_RETURN_ON_NULL_BOOL(entityNode, ArgusECSLog);
-		if (!components.AreComponentsValidCheck(ARGUS_NAMEOF(TransformSystems::ChooseFlockingRootEntityIfGroupLeader)))
-		{
-			return false;
-		}
-
-		if (entityNode->m_entityId == components.m_entity.GetId())
-		{
-			return true;
-		}
-
-		ArgusEntity otherEntity = ArgusEntity::RetrieveEntity(entityNode->m_entityId);
-		if (!otherEntity || otherEntity.IsPassenger())
-		{
-			return false;
-		}
-
-		if (!components.m_entity.IsOnSameTeamAsOtherEntity(otherEntity))
-		{
-			return false;
-		}
-
-		TargetingComponent* otherEntityTargetingComponent = otherEntity.GetComponent<TargetingComponent>();
-		if (!otherEntityTargetingComponent)
-		{
-			return false;
-		}
-
-		return components.m_targetingComponent->HasSameTarget(otherEntityTargetingComponent);
-	};
-
-	if (components.m_taskComponent->m_flightState == EFlightState::Grounded)
-	{
-		flockingComponent->m_flockingRootId = spatialPartitioningComponent->m_argusEntityKDTree.FindArgusEntityIdClosestToLocation(targetLocation.GetValue(), queryFilter);
-	}
-	else
-	{
-		flockingComponent->m_flockingRootId = spatialPartitioningComponent->m_flyingArgusEntityKDTree.FindArgusEntityIdClosestToLocation(targetLocation.GetValue(), queryFilter);
-	}
-	
-	if (flockingComponent->m_flockingRootId == ArgusECSConstants::k_maxEntities)
-	{
-		return;
-	}
-
-	ArgusEntity flockingRootEntity = ArgusEntity::RetrieveEntity(flockingComponent->m_flockingRootId);
-	FlockingComponent* flockingRootFlockingComponent = flockingRootEntity.GetComponent<FlockingComponent>();
-	ARGUS_RETURN_ON_NULL(flockingRootFlockingComponent, ArgusECSLog);
-
-	flockingRootFlockingComponent->m_concentricFlockingTier = 1u;
-	flockingRootFlockingComponent->m_numEntitiesInStableRange = 1u;
-	flockingRootFlockingComponent->m_flockingState = EFlockingState::Stable;
-}
 
 ArgusEntity FlockingSystems::GetFlockingRootEntity(ArgusEntity entity)
 {
@@ -134,16 +35,65 @@ ArgusEntity FlockingSystems::GetFlockingRootEntity(ArgusEntity entity)
 		return ArgusEntity::k_emptyEntity;
 	}
 
-	if (TaskComponent* taskComponent = entity.GetComponent<TaskComponent>())
+	return groupLeader;
+}
+
+FlockingComponent* FlockingSystems::GetFlockingRootComponent(ArgusEntity entity)
+{
+	if (ArgusEntity rootEntity = GetFlockingRootEntity(entity))
 	{
-		if (taskComponent->IsExecutingMoveTask())
-		{
-			flockingComponent->m_flockingRootId = groupLeader.GetId();
-			return groupLeader;
-		}
+		return rootEntity.GetComponent<FlockingComponent>();
 	}
 
-	return ArgusEntity::RetrieveEntity(flockingComponent->m_flockingRootId);
+	return nullptr;
+}
+
+void FlockingSystems::ClearPackingValues()
+{
+	ARGUS_TRACE(FlockingSystems::ClearPackingValues);
+
+	ArgusEntity::IterateEntities([](ArgusEntity entity)
+	{
+		if (FlockingComponent* flockingComponent = entity.GetComponent<FlockingComponent>())
+		{
+			flockingComponent->ResetPackingValues();
+		}
+	});
+}
+
+void FlockingSystems::SetPackingValues()
+{
+	ARGUS_TRACE(FlockingSystems::SetPackingValues);
+
+	ArgusEntity::IterateSystemsArgs<FlockingSystemsArgs>([](FlockingSystemsArgs& components)
+	{
+		if (components.m_flockingComponent->m_flockingState != EFlockingState::Stable)
+		{
+			return;
+		}
+
+		if (FlockingComponent* flockingRootComponent = GetFlockingRootComponent(components.m_entity))
+		{
+			IncrementStableEntitiesInRange(flockingRootComponent);
+		}
+	});
+}
+
+void FlockingSystems::SetFlockingState(float deltaTime)
+{
+	ARGUS_TRACE(FlockingSystems::SetFlockingState);
+
+	ArgusEntity::IterateSystemsArgs<FlockingSystemsArgs>([deltaTime](FlockingSystemsArgs& components)
+	{
+		if (components.m_flockingComponent->m_flockingState == EFlockingState::Shrinking)
+		{
+			EndFlockingIfNecessary(deltaTime, components);
+		}
+		else
+		{
+			StartFlockingIfNecessary(components);
+		}
+	});
 }
 
 void FlockingSystems::StartFlockingIfNecessary(const FlockingSystemsArgs& components)
@@ -156,19 +106,15 @@ void FlockingSystems::StartFlockingIfNecessary(const FlockingSystemsArgs& compon
 	}
 
 	ArgusEntity flockingRootEntity = GetFlockingRootEntity(components.m_entity);
-	if (!flockingRootEntity || flockingRootEntity.GetId() == components.m_entity.GetId())
+	if (!flockingRootEntity)
 	{
 		return;
 	}
 
 	FlockingComponent* flockingRootFlockingComponent = flockingRootEntity.GetComponent<FlockingComponent>();
-	const AvoidanceGroupingComponent* flockingRootGroupingComponent = flockingRootEntity.GetComponent<AvoidanceGroupingComponent>();
-	const TransformComponent* flockingRootTransformComponent = flockingRootEntity.GetComponent<TransformComponent>();
 	ARGUS_RETURN_ON_NULL(flockingRootFlockingComponent, ArgusECSLog);
-	ARGUS_RETURN_ON_NULL(flockingRootGroupingComponent, ArgusECSLog);
-	ARGUS_RETURN_ON_NULL(flockingRootTransformComponent, ArgusECSLog);
 	
-	const float distanceToRootSquared = FVector::DistSquared2D(flockingRootGroupingComponent->m_groupAverageLocation, components.m_transformComponent->m_location);
+	const float distanceToRootSquared = FVector::DistSquared2D(GetFlockingPoint(flockingRootEntity), components.m_transformComponent->m_location);
 	const float flockingRootRadiusSquared = FMath::Square(GetCurrentFlockingRootRadius(flockingRootFlockingComponent));
 
 	if (distanceToRootSquared > flockingRootRadiusSquared)
@@ -181,6 +127,7 @@ void FlockingSystems::StartFlockingIfNecessary(const FlockingSystemsArgs& compon
 void FlockingSystems::EndFlockingIfNecessary(float deltaTime, const FlockingSystemsArgs& components)
 {
 	ARGUS_TRACE(FlockingSystems::EndFlockingIfNecessary);
+
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return;
@@ -208,6 +155,7 @@ void FlockingSystems::EndFlockingIfNecessary(float deltaTime, const FlockingSyst
 
 	if (components.m_flockingComponent->m_timeAtMinFlockingDistance > components.m_flockingComponent->m_maxShrinkingDurationTimeoutSeconds)
 	{
+		components.m_flockingComponent->ResetTimingValues();
 		components.m_flockingComponent->m_flockingState = EFlockingState::Stable;
 		return;
 	}
@@ -229,14 +177,9 @@ bool FlockingSystems::PackFlockingRoot(const FlockingSystemsArgs& components)
 	}
 
 	FlockingComponent* flockingRootFlockingComponent = flockingRootEntity.GetComponent<FlockingComponent>();
-	const AvoidanceGroupingComponent* flockingRootGroupingComponent = flockingRootEntity.GetComponent<AvoidanceGroupingComponent>();
-	const TransformComponent* flockingRootTransformComponent = flockingRootEntity.GetComponent<TransformComponent>();
 	ARGUS_RETURN_ON_NULL_BOOL(flockingRootFlockingComponent, ArgusECSLog);
-	ARGUS_RETURN_ON_NULL_BOOL(flockingRootGroupingComponent, ArgusECSLog);
-	ARGUS_RETURN_ON_NULL_BOOL(flockingRootTransformComponent, ArgusECSLog);
 
-	const float distanceToRootSquared = FVector::DistSquared2D(	components.m_taskComponent->IsExecutingMoveTask() ? flockingRootGroupingComponent->m_groupAverageLocation : flockingRootTransformComponent->m_location, 
-																components.m_transformComponent->m_location);
+	const float distanceToRootSquared = FVector::DistSquared2D(GetFlockingPoint(flockingRootEntity), components.m_transformComponent->m_location);
 	const float flockingRootRadiusSquared = FMath::Square(GetCurrentFlockingRootRadius(flockingRootFlockingComponent));
 
 	if (distanceToRootSquared > flockingRootRadiusSquared)
@@ -244,15 +187,8 @@ bool FlockingSystems::PackFlockingRoot(const FlockingSystemsArgs& components)
 		return false;
 	}
 
-	const uint16 currentMaxCount = GetCurrentFlockingRootMaxCount(flockingRootFlockingComponent);
+	components.m_flockingComponent->ResetTimingValues();
 	components.m_flockingComponent->m_flockingState = EFlockingState::Stable;
-	flockingRootFlockingComponent->m_numEntitiesInStableRange++;
-
-	if (flockingRootFlockingComponent->m_numEntitiesInStableRange >= currentMaxCount)
-	{
-		flockingRootFlockingComponent->m_concentricFlockingTier++;
-	}
-
 	return true;
 }
 
@@ -272,16 +208,52 @@ uint16 FlockingSystems::GetCurrentFlockingRootMaxCount(const FlockingComponent* 
 {
 	ARGUS_RETURN_ON_NULL_VALUE(flockingRootFlockingComponent, ArgusECSLog, 1u);
 
-	if (flockingRootFlockingComponent->m_concentricFlockingTier == 0u)
-	{
-		return 1u;
-	}
+	return GetFlockingRootMaxCountForTier(flockingRootFlockingComponent->m_concentricFlockingTier);
+}
 
+uint16 FlockingSystems::GetFlockingRootMaxCountForTier(uint8 flockingTier)
+{
 	uint16 output = 1u;
-	for (uint16 i = 0u; i < flockingRootFlockingComponent->m_concentricFlockingTier; ++i)
+	for (uint8 i = 0u; i < flockingTier; ++i)
 	{
 		output += ((i + 1u) * 6u);
 	}
 
 	return output;
+}
+
+FVector FlockingSystems::GetFlockingPoint(ArgusEntity flockingRootEntity)
+{
+	const AvoidanceGroupingComponent* flockingRootGroupingComponent = flockingRootEntity.GetComponent<AvoidanceGroupingComponent>();
+	ARGUS_RETURN_ON_NULL_VALUE(flockingRootGroupingComponent, ArgusECSLog, FVector::ZeroVector);
+
+	if (flockingRootGroupingComponent->m_numberOfIdleEntities > 0)
+	{
+		const TargetingComponent* flockingRootTargetingComponent = flockingRootEntity.GetComponent<TargetingComponent>();
+		const TransformComponent* flockingRootTransformComponent = flockingRootEntity.GetComponent<TransformComponent>();
+		ARGUS_RETURN_ON_NULL_VALUE(flockingRootTargetingComponent, ArgusECSLog, flockingRootGroupingComponent->m_groupAverageLocation);
+		ARGUS_RETURN_ON_NULL_VALUE(flockingRootTransformComponent, ArgusECSLog, flockingRootGroupingComponent->m_groupAverageLocation);
+
+		if (flockingRootTargetingComponent->HasAnyTarget())
+		{
+			return flockingRootEntity.GetCurrentTargetLocation();
+		}
+
+		return flockingRootTransformComponent->m_location;
+	}
+
+	return flockingRootGroupingComponent->m_groupAverageLocation;
+}
+
+void FlockingSystems::IncrementStableEntitiesInRange(FlockingComponent* flockingRootFlockingComponent)
+{
+	ARGUS_RETURN_ON_NULL(flockingRootFlockingComponent, ArgusECSLog);
+
+	const uint16 currentMaxCount = GetCurrentFlockingRootMaxCount(flockingRootFlockingComponent);
+	flockingRootFlockingComponent->m_numEntitiesInStableRange++;
+
+	if (flockingRootFlockingComponent->m_numEntitiesInStableRange >= currentMaxCount)
+	{
+		flockingRootFlockingComponent->m_concentricFlockingTier++;
+	}
 }

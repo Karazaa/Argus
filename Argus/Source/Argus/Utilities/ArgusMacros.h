@@ -29,6 +29,9 @@
 
 #define ARGUS_FSTRING_TO_CHAR(fstring) (ANSICHAR*)StringCast<ANSICHAR, 256>(static_cast<const TCHAR*>(*fstring)).Get();
 
+#define ARGUS_MIN(x,y) x >= y ? y : x
+#define ARGUS_MAX(x,y) x >= y ? x : y
+
 #if LOGTRACE_ENABLED 
 #define ARGUS_TRACE(x) TRACE_CPUPROFILER_EVENT_SCOPE(x)
 #else

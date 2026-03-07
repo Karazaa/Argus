@@ -419,7 +419,6 @@ void TransformSystems::OnCompleteNavigationPath(const TransformSystemsArgs& comp
 		components.m_taskComponent->m_movementState = EMovementState::None;
 		components.m_navigationComponent->ResetPath();
 		components.m_velocityComponent->m_currentVelocity = FVector2D::ZeroVector;
-		FlockingSystems::ChooseFlockingRootEntityIfGroupLeader(components);
 	}
 	else
 	{

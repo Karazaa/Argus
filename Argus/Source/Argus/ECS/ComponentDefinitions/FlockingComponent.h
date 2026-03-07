@@ -30,9 +30,6 @@ struct FlockingComponent
 	float m_flockingRootRadiusIncrement = 55.0f;
 
 	ARGUS_IGNORE()
-	uint16 m_flockingRootId = ArgusECSConstants::k_maxEntities;
-
-	ARGUS_IGNORE()
 	uint16 m_numEntitiesInStableRange = 0u;
 
 	ARGUS_IGNORE()
@@ -40,4 +37,16 @@ struct FlockingComponent
 
 	ARGUS_IGNORE()
 	EFlockingState m_flockingState = EFlockingState::Stable;
+
+	void ResetPackingValues()
+	{
+		m_numEntitiesInStableRange = 0u;
+		m_concentricFlockingTier = 1u;
+	}
+
+	void ResetTimingValues()
+	{
+		m_minDistanceFromFlockingPoint = FLT_MAX;
+		m_timeAtMinFlockingDistance = 0.0f;
+	}
 };
