@@ -7,6 +7,7 @@
 #include "NavigationData.h"
 #include "NavigationSystem.h"
 #include "Systems/CombatSystems.h"
+#include "Systems/FlockingSystems.h"
 #include "Systems/TargetingSystems.h"
 #include "Systems/TransformSystems.h"
 #include <limits>
@@ -246,7 +247,7 @@ TOptional<FVector> AvoidanceSystems::GetAvoidanceGroupSourceLocation(const Trans
 
 FVector2D AvoidanceSystems::GetFlockingVelocity(const TransformSystemsArgs& components)
 {
-	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME) || !components.m_targetingComponent->HasAnyTarget())
 	{
 		return FVector2D::ZeroVector;
 	}
@@ -264,23 +265,7 @@ FVector2D AvoidanceSystems::GetFlockingVelocity(const TransformSystemsArgs& comp
 		return FVector2D::ZeroVector;
 	}
 
-	if (components.m_taskComponent->IsExecutingMoveTask())
-	{
-		if (entityAvoidanceGroupComponent->m_groupId == components.m_entity.GetId())
-		{
-			return FVector2D(entityAvoidanceGroupComponent->m_groupAverageLocation - components.m_transformComponent->m_location);
-		}
-
-		const AvoidanceGroupingComponent* groupLeaderAvoidanceGroupingComponent = ArgusEntity::RetrieveEntity(entityAvoidanceGroupComponent->m_groupId).GetComponent<AvoidanceGroupingComponent>();
-		if (!groupLeaderAvoidanceGroupingComponent)
-		{
-			return FVector2D::ZeroVector;
-		}
-
-		return FVector2D(groupLeaderAvoidanceGroupingComponent->m_groupAverageLocation - components.m_transformComponent->m_location);
-	}
-
-	return FVector2D(components.m_entity.GetCurrentTargetLocation() - components.m_transformComponent->m_location);
+	return FVector2D(FlockingSystems::GetFlockingPoint(ArgusEntity::RetrieveEntity(entityAvoidanceGroupComponent->m_groupId)) - components.m_transformComponent->m_location);
 }
 
 void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const CreateEntityORCALinesParams& params, const TransformSystemsArgs& components, TArray<ORCALine>& outORCALines)
@@ -336,9 +321,6 @@ void AvoidanceSystems::CreateEntityORCALines(const CreateEntityORCALinesParams& 
 	}
 	ARGUS_RETURN_ON_NULL(nearbyEntitiesComponent, ArgusECSLog);
 
-	const bool calculateAverageLocationOfOtherEntities = outDesiredVelocity.IsNearlyZero() && !params.m_sourceEntityVelocity.IsNearlyZero();
-	FVector2D averageLocationOfOtherEntities = FVector2D::ZeroVector;
-	float numberOfEntitiesInAverage = 0.0f;
 	const bool isGrounded = components.m_taskComponent->m_flightState == EFlightState::Grounded;
 	for (int32 i = 0; i < nearbyEntitiesComponent->GetNearbyEntities(!isGrounded).GetEntityIdsInAvoidanceRange().Num(); ++i)
 	{
@@ -379,16 +361,6 @@ void AvoidanceSystems::CreateEntityORCALines(const CreateEntityORCALinesParams& 
 		
 		perEntityParams.m_entityRadius = foundTransformComponent->m_radius;
 
-		if (calculateAverageLocationOfOtherEntities)
-		{
-			const float bufferRadius = ArgusECSConstants::k_avoidanceAgentAdditionalBufferRadius + components.m_transformComponent->m_radius + perEntityParams.m_entityRadius;
-			if (!AreInSameAvoidanceGroup(components.m_entity, foundEntity) && FVector2D::DistSquared(params.m_sourceEntityLocation, perEntityParams.m_foundEntityLocation) < FMath::Square(bufferRadius))
-			{
-				numberOfEntitiesInAverage += 1.0f;
-				averageLocationOfOtherEntities += perEntityParams.m_foundEntityLocation + (perEntityParams.m_foundEntityVelocity * ArgusECSConstants::k_avoidanceEntityDetectionPredictionTime);
-			}
-		}
-
 		FVector2D velocityToBoundaryOfVO = FVector2D::ZeroVector;
 		ORCALine calculatedORCALine;
 		FindORCALineAndVelocityToBoundaryPerEntity(params, perEntityParams, velocityToBoundaryOfVO, calculatedORCALine);
@@ -396,14 +368,6 @@ void AvoidanceSystems::CreateEntityORCALines(const CreateEntityORCALinesParams& 
 		calculatedORCALine.m_point = params.m_sourceEntityVelocity + (velocityToBoundaryOfVO * effortCoefficient);
 		outORCALines.Add(calculatedORCALine);
 	}
-
-	if (!calculateAverageLocationOfOtherEntities || numberOfEntitiesInAverage == 0.0f)
-	{
-		return;
-	}
-
-	averageLocationOfOtherEntities /= numberOfEntitiesInAverage;
-	outDesiredVelocity = (params.m_sourceEntityLocation - averageLocationOfOtherEntities).GetSafeNormal() * components.m_velocityComponent->m_desiredSpeedUnitsPerSecond;
 }
 
 void AvoidanceSystems::FindORCALineAndVelocityToBoundaryPerEntity(const CreateEntityORCALinesParams& params, const CreateEntityORCALinesParamsPerEntity& perEntityParams, FVector2D& velocityToBoundaryOfVO, ORCALine& calculatedORCALine)

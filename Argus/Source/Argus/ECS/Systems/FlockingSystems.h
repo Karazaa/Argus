@@ -10,6 +10,7 @@ public:
 	static void RunSystems(float deltaTime);
 	static ArgusEntity GetFlockingRootEntity(ArgusEntity entity);
 	static FlockingComponent* GetFlockingRootComponent(ArgusEntity entity);
+	static FVector GetFlockingPoint(ArgusEntity flockingRootEntity);
 
 private:
 	static void ClearPackingValues();
@@ -22,7 +23,6 @@ private:
 	static float GetCurrentFlockingRootRadius(const FlockingComponent* flockingRootFlockingComponent);
 	static uint16 GetCurrentFlockingRootMaxCount(const FlockingComponent* flockingRootFlockingComponent);
 	static uint16 GetFlockingRootMaxCountForTier(uint8 flockingTier);
-	static FVector GetFlockingPoint(ArgusEntity flockingRootEntity);
 
 	static void IncrementStableEntitiesInRange(FlockingComponent* flockingRootFlockingComponent);
 };

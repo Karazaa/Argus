@@ -48,6 +48,30 @@ FlockingComponent* FlockingSystems::GetFlockingRootComponent(ArgusEntity entity)
 	return nullptr;
 }
 
+FVector FlockingSystems::GetFlockingPoint(ArgusEntity flockingRootEntity)
+{
+	const AvoidanceGroupingComponent* flockingRootGroupingComponent = flockingRootEntity.GetComponent<AvoidanceGroupingComponent>();
+	ARGUS_RETURN_ON_NULL_VALUE(flockingRootGroupingComponent, ArgusECSLog, FVector::ZeroVector);
+
+	if (flockingRootGroupingComponent->m_numberOfIdleEntities > 0)
+	{
+		const TargetingComponent* flockingRootTargetingComponent = flockingRootEntity.GetComponent<TargetingComponent>();
+		const TransformComponent* flockingRootTransformComponent = flockingRootEntity.GetComponent<TransformComponent>();
+		ARGUS_RETURN_ON_NULL_VALUE(flockingRootTargetingComponent, ArgusECSLog, flockingRootGroupingComponent->m_groupAverageLocation);
+		ARGUS_RETURN_ON_NULL_VALUE(flockingRootTransformComponent, ArgusECSLog, flockingRootGroupingComponent->m_groupAverageLocation);
+
+		if (flockingRootTargetingComponent->HasAnyTarget())
+		{
+			return flockingRootEntity.GetCurrentTargetLocation();
+		}
+
+		return flockingRootTransformComponent->m_location;
+	}
+
+	return flockingRootGroupingComponent->m_groupAverageLocation;
+}
+
+
 void FlockingSystems::ClearPackingValues()
 {
 	ARGUS_TRACE(FlockingSystems::ClearPackingValues);
@@ -227,29 +251,6 @@ uint16 FlockingSystems::GetFlockingRootMaxCountForTier(uint8 flockingTier)
 	}
 
 	return output;
-}
-
-FVector FlockingSystems::GetFlockingPoint(ArgusEntity flockingRootEntity)
-{
-	const AvoidanceGroupingComponent* flockingRootGroupingComponent = flockingRootEntity.GetComponent<AvoidanceGroupingComponent>();
-	ARGUS_RETURN_ON_NULL_VALUE(flockingRootGroupingComponent, ArgusECSLog, FVector::ZeroVector);
-
-	if (flockingRootGroupingComponent->m_numberOfIdleEntities > 0)
-	{
-		const TargetingComponent* flockingRootTargetingComponent = flockingRootEntity.GetComponent<TargetingComponent>();
-		const TransformComponent* flockingRootTransformComponent = flockingRootEntity.GetComponent<TransformComponent>();
-		ARGUS_RETURN_ON_NULL_VALUE(flockingRootTargetingComponent, ArgusECSLog, flockingRootGroupingComponent->m_groupAverageLocation);
-		ARGUS_RETURN_ON_NULL_VALUE(flockingRootTransformComponent, ArgusECSLog, flockingRootGroupingComponent->m_groupAverageLocation);
-
-		if (flockingRootTargetingComponent->HasAnyTarget())
-		{
-			return flockingRootEntity.GetCurrentTargetLocation();
-		}
-
-		return flockingRootTransformComponent->m_location;
-	}
-
-	return flockingRootGroupingComponent->m_groupAverageLocation;
 }
 
 void FlockingSystems::IncrementStableEntitiesInRange(FlockingComponent* flockingRootFlockingComponent)

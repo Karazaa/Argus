@@ -91,14 +91,14 @@ void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float delta
 	const float segmentLength = segment.Length();
 
 	bool isAtEndOfNavigationPath = false;
-	if ((actual.Dot(segment) / segmentLength) > segmentLength)
+	if (FMath::Abs(actual.Dot(segment) / segmentLength) > segmentLength)
 	{
-		components.m_navigationComponent->m_lastPointIndex++;
 		isAtEndOfNavigationPath = isLastPoint;
 
 		// Need to set velocity when starting pathing segment so that avoidance systems can properly consider desired velocity when proposing movement velocity.
 		if (!isLastPoint)
 		{
+			components.m_navigationComponent->m_lastPointIndex++;
 			targetLocation = components.m_navigationComponent->m_navigationPoints[components.m_navigationComponent->m_lastPointIndex + 1];
 			components.m_velocityComponent->m_currentVelocity = FVector2D((targetLocation - moverLocation).GetSafeNormal() * components.m_velocityComponent->m_desiredSpeedUnitsPerSecond);
 		}
@@ -109,24 +109,11 @@ void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float delta
 	const float distanceToTarget = FVector2D::Distance(moverLocation2D, targetLocation2D);
 	const bool isWithinRangeOfTargetEntity = components.m_taskComponent->m_movementState == EMovementState::MoveToEntity && GetEndMoveRange(components) > distanceToTarget;
 
-	if (!isAtEndOfNavigationPath)
-	{
-		if (isWithinRangeOfTargetEntity)
-		{
-			FaceTowardsLocationXY(components.m_transformComponent, components.m_navigationComponent->m_navigationPoints[components.m_navigationComponent->m_lastPointIndex + 1u] - moverLocation);
-		}
-		else
-		{
-			FaceTowardsLocationXY(components.m_transformComponent, FVector(components.m_velocityComponent->m_currentVelocity, 0.0f));
-		}
-	}
-
 	if (components.m_taskComponent->m_flightState == EFlightState::Grounded)
 	{
 		moverLocation = ProjectLocationOntoNavigationData(worldPointer, components.m_transformComponent->m_radius, moverLocation);
 	}
 	components.m_transformComponent->m_location = moverLocation;
-	components.m_transformComponent->m_smoothedYaw.SmoothChase(components.m_transformComponent->m_targetYaw, deltaTime);
 	
 	if (isWithinRangeOfTargetEntity)
 	{
@@ -199,38 +186,48 @@ bool TransformSystems::ProcessMovementTaskCommands(UWorld* worldPointer, float d
 			break;
 	}
 
+	components.m_velocityComponent->m_currentVelocity = components.m_velocityComponent->m_proposedAvoidanceVelocity;
+
+	bool movedThisFrame = false;
 	switch (components.m_taskComponent->m_movementState)
 	{
 		case EMovementState::MoveToLocation:
 		case EMovementState::MoveToEntity:
 			MoveAlongNavigationPath(worldPointer, deltaTime, components);
-			return true;
+			FaceVelocity(components);
+			movedThisFrame = true;
+			break;
 
 		case EMovementState::InRangeOfTargetEntity:
 			FaceTargetEntity(components);
-			components.m_transformComponent->m_smoothedYaw.SmoothChase(components.m_transformComponent->m_targetYaw, deltaTime);
-			return false;
+			if (!components.m_velocityComponent->m_currentVelocity.IsNearlyZero())
+			{
+				components.m_transformComponent->m_location += (FVector(components.m_velocityComponent->m_currentVelocity, 0.0f) * deltaTime);
+				movedThisFrame = true;
+			}
+			break;
 
 		case EMovementState::AwaitingFinish:
 			OnCompleteNavigationPath(components, components.m_transformComponent->m_location);
-			return true;
+			movedThisFrame = true;
+			break;
 
 		case EMovementState::None:
-			components.m_velocityComponent->m_currentVelocity = components.m_velocityComponent->m_proposedAvoidanceVelocity;
 			if (!components.m_velocityComponent->m_currentVelocity.IsNearlyZero())
 			{
-				const FVector velocity = FVector(components.m_velocityComponent->m_currentVelocity, 0.0f);
-				const FVector velocityScaled = velocity * deltaTime;
-				FaceTowardsLocationXY(components.m_transformComponent, velocity);
-				components.m_transformComponent->m_location = components.m_transformComponent->m_location + velocityScaled;
-				components.m_transformComponent->m_smoothedYaw.SmoothChase(components.m_transformComponent->m_targetYaw, deltaTime);
-				return true;
+				components.m_transformComponent->m_location += (FVector(components.m_velocityComponent->m_currentVelocity, 0.0f) * deltaTime);
+				FaceVelocity(components);
+				movedThisFrame = true;
 			}
-			return false;
+			break;
 
 		default:
 			return false;
 	}
+
+	components.m_transformComponent->m_smoothedYaw.SmoothChase(components.m_transformComponent->m_targetYaw, deltaTime);
+
+	return movedThisFrame;
 }
 
 void TransformSystems::ProcessTakeOffCommand(UWorld* worldPointer, float deltaTime, const TransformSystemsArgs& components)
@@ -345,6 +342,20 @@ void TransformSystems::FaceTargetEntity(const TransformSystemsArgs& components)
 	ARGUS_RETURN_ON_NULL(targetEntityTransformComponent, ArgusECSLog);
 
 	FaceTowardsLocationXY(components.m_transformComponent, targetEntityTransformComponent->m_location - components.m_transformComponent->m_location);
+}
+
+void TransformSystems::FaceVelocity(const TransformSystemsArgs& components)
+{
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+
+	const float desiredSpeed = components.m_taskComponent->m_flightState == EFlightState::Flying ? components.m_velocityComponent->m_desiredFlightSpeedUnitsPerSecond : components.m_velocityComponent->m_desiredSpeedUnitsPerSecond;
+	if (components.m_velocityComponent->m_currentVelocity.SquaredLength() > (desiredSpeed * 0.8f))
+	{
+		FaceTowardsLocationXY(components.m_transformComponent, FVector(components.m_velocityComponent->m_currentVelocity, 0.0f));
+	}	
 }
 
 void TransformSystems::FaceTowardsLocationXY(TransformComponent* transformComponent, FVector vectorFromTransformToTarget)
