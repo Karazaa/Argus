@@ -8,6 +8,7 @@
 #include "Logging/LogVerbosity.h"
 
 #define ARGUS_LOG(CategoryName, Verbosity, Format, ...) \
+ArgusLogging::EnsureOnErrorIfNeeded(ELogVerbosity::Verbosity); \
 do \
 { \
 	UE_LOG(CategoryName, Verbosity, Format, ##__VA_ARGS__); \
@@ -77,6 +78,7 @@ static TAutoConsoleVariable<bool> CVarEnableVerboseTestLogging(TEXT("Argus.Input
 
 namespace ArgusLogging
 {
+	void EnsureOnErrorIfNeeded(ELogVerbosity::Type logVerbosity);
 	void ShowEditorNotification(const FString& text, const FString& subText = FString{}, ELogVerbosity::Type logVerbosity = ELogVerbosity::Error, float durationSeconds = 5.0f);
 	void LogInvalidComponentReferences(const WIDECHAR* functionName, const WIDECHAR* objectName);
 }

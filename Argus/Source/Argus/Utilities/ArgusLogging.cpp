@@ -15,6 +15,18 @@ DEFINE_LOG_CATEGORY(ArgusUILog);
 DEFINE_LOG_CATEGORY(ArgusUnrealObjectsLog);
 DEFINE_LOG_CATEGORY(ArgusUtilitiesLog);
 
+void ArgusLogging::EnsureOnErrorIfNeeded(ELogVerbosity::Type logVerbosity)
+{
+#if WITH_AUTOMATION_TESTS
+	if (ArgusTesting::IsInTestingContext())
+	{
+		return;
+	}
+#endif //WITH_AUTOMATION_TESTS
+
+	ensure(logVerbosity != ELogVerbosity::Error);
+}
+
 void ArgusLogging::ShowEditorNotification(const FString& text, const FString& subText, ELogVerbosity::Type logVerbosity, float durationSeconds)
 {
 #if WITH_AUTOMATION_TESTS
