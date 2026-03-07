@@ -138,6 +138,13 @@ void FlockingSystems::EndFlockingIfNecessary(float deltaTime, const FlockingSyst
 		return;
 	}
 
+	if (!components.m_targetingComponent->HasAnyTarget())
+	{
+		components.m_flockingComponent->ResetTimingValues();
+		components.m_flockingComponent->m_flockingState = EFlockingState::Stable;
+		return;
+	}
+
 	// Timing based flocking
 	const FVector targetLocation = components.m_entity.GetCurrentTargetLocation();
 	const FVector currentLocation = components.m_transformComponent->m_location;
