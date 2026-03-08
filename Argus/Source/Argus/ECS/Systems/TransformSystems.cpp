@@ -192,8 +192,27 @@ bool TransformSystems::ProcessMovementTaskCommands(UWorld* worldPointer, float d
 	switch (components.m_taskComponent->m_movementState)
 	{
 		case EMovementState::MoveToLocation:
+			if (CheckFlockCompletedNavigation(components))
+			{
+				OnCompleteNavigationPath(components, components.m_transformComponent->m_location);
+			}
+			else
+			{
+				MoveAlongNavigationPath(worldPointer, deltaTime, components);
+			}
+			FaceVelocity(components);
+			movedThisFrame = true;
+			break;
+
 		case EMovementState::MoveToEntity:
-			MoveAlongNavigationPath(worldPointer, deltaTime, components);
+			if (CheckFlockCompletedNavigation(components))
+			{
+				OnWithinRangeOfTargetEntity(components);
+			}
+			else
+			{
+				MoveAlongNavigationPath(worldPointer, deltaTime, components);
+			}
 			FaceVelocity(components);
 			movedThisFrame = true;
 			break;
@@ -222,7 +241,7 @@ bool TransformSystems::ProcessMovementTaskCommands(UWorld* worldPointer, float d
 			break;
 
 		default:
-			return false;
+			break;
 	}
 
 	components.m_transformComponent->m_smoothedYaw.SmoothChase(components.m_transformComponent->m_targetYaw, deltaTime);
@@ -378,6 +397,29 @@ void TransformSystems::FaceTowardsLocationXY(TransformComponent* transformCompon
 	const float angleDifference = FMath::Acos(vectorFromTransformToTarget.Dot(currentDirection));
 
 	transformComponent->m_targetYaw += (angleDifference * FMath::Sign(crossProduct.Z));
+}
+
+bool TransformSystems::CheckFlockCompletedNavigation(const TransformSystemsArgs& components)
+{
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return false;
+	}
+
+	const FlockingComponent* flockingComponent = components.m_entity.GetComponent<FlockingComponent>();
+	ArgusEntity groupLeaderEntity = AvoidanceSystems::GetAvoidanceGroupLeader(components.m_entity);
+	if (!flockingComponent || !groupLeaderEntity)
+	{
+		return false;
+	}
+
+	const AvoidanceGroupingComponent* groupLeaderGroupComponent = groupLeaderEntity.GetComponent<AvoidanceGroupingComponent>();
+	if (!groupLeaderGroupComponent)
+	{
+		return false;
+	}
+
+	return flockingComponent->m_flockingState == EFlockingState::Stable && groupLeaderGroupComponent->m_numberOfIdleEntities > 0;
 }
 
 void TransformSystems::OnWithinRangeOfTargetEntity(const TransformSystemsArgs& components)

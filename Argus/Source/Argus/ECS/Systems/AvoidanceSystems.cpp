@@ -608,19 +608,6 @@ FVector2D AvoidanceSystems::GetDesiredVelocity(const TransformSystemsArgs& compo
 		return flockingVelocity.IsNearlyZero() ? FVector2D::ZeroVector : ArgusMath::ToCartesianVector2(flockingVelocity.GetSafeNormal() * components.m_velocityComponent->m_desiredSpeedUnitsPerSecond);
 	}
 
-	// If our group leader is stopped, we should come to a stop as well.
-	ArgusEntity groupLeader = GetAvoidanceGroupLeader(components.m_entity);
-	if (groupLeader && groupLeader.GetId() != components.m_entity.GetId())
-	{
-		AvoidanceGroupingComponent* groupLeaderAvoidanceGroupingComponent = groupLeader.GetComponent<AvoidanceGroupingComponent>();
-		if (groupLeaderAvoidanceGroupingComponent && groupLeaderAvoidanceGroupingComponent->m_numberOfIdleEntities > 0u)
-		{
-			components.m_taskComponent->m_movementState = EMovementState::AwaitingFinish;
-			components.m_velocityComponent->m_currentVelocity = FVector2D::ZeroVector;
-			return flockingVelocity.IsNearlyZero() ? FVector2D::ZeroVector : ArgusMath::ToCartesianVector2(flockingVelocity.GetSafeNormal() * components.m_velocityComponent->m_desiredSpeedUnitsPerSecond);
-		}
-	}
-
 	// If we are moving, we need to get our desired velocity as the velocity that points towards the nearest pathing point at the desired speed.
 	const int32 futureIndex = components.m_navigationComponent->m_lastPointIndex + 1;
 	const int32 numNavigationPoints = components.m_navigationComponent->m_navigationPoints.Num();
@@ -676,9 +663,10 @@ float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems
 	}
 	
 	float effortCoefficient = 0.5f;
-	if (ShouldReturnCombatEffortCoefficient(sourceEntityComponents, foundEntityTaskComponent, effortCoefficient) ||
+	if (ShouldReturnMovabilityEffortCoefficient(sourceEntityComponents, foundEntity, effortCoefficient) ||
+		ShouldReturnCombatEffortCoefficient(sourceEntityComponents, foundEntityTaskComponent, inSameAvoidanceGroup, effortCoefficient) ||
 		ShouldReturnConstructionEffortCoefficient(sourceEntityComponents, foundEntityTaskComponent, effortCoefficient) ||
-		ShouldReturnResourceExtractionEffortCoefficient(sourceEntityComponents, foundEntityTaskComponent, effortCoefficient) ||
+		ShouldReturnResourceExtractionEffortCoefficient(sourceEntityComponents, foundEntityTaskComponent, inSameAvoidanceGroup, effortCoefficient) ||
 		ShouldReturnCarrierEffortCoefficient(sourceEntityComponents, foundEntity, foundEntityTaskComponent, effortCoefficient) ||
 		ShouldReturnTargetEffortCoefficient(sourceEntityComponents, foundEntity, effortCoefficient) ||
 		ShouldReturnStaticFlockingEffortCoefficient(sourceEntityComponents, foundEntity, effortCoefficient) ||
@@ -735,7 +723,18 @@ float AvoidanceSystems::GetEffortCoefficientForAvoidanceGroupPair(const Transfor
 	return 0.5f;
 }
 
-bool AvoidanceSystems::ShouldReturnCombatEffortCoefficient(const TransformSystemsArgs& sourceEntityComponents, const TaskComponent* foundEntityTaskComponent, float& coefficient)
+bool AvoidanceSystems::ShouldReturnMovabilityEffortCoefficient(const TransformSystemsArgs& sourceEntityComponents, ArgusEntity foundEntity, float& coefficient)
+{
+	if (!foundEntity.IsMoveable())
+	{
+		coefficient = 1.0f;
+		return true;
+	}
+
+	return false;
+}
+
+bool AvoidanceSystems::ShouldReturnCombatEffortCoefficient(const TransformSystemsArgs& sourceEntityComponents, const TaskComponent* foundEntityTaskComponent, bool inSameAvoidanceGroup, float& coefficient)
 {
 	ARGUS_RETURN_ON_NULL_BOOL(foundEntityTaskComponent, ArgusECSLog);
 	if (!sourceEntityComponents.AreComponentsValidCheck(ARGUS_FUNCNAME))
@@ -745,12 +744,12 @@ bool AvoidanceSystems::ShouldReturnCombatEffortCoefficient(const TransformSystem
 
 	if (sourceEntityComponents.m_taskComponent->m_combatState == ECombatState::Attacking && foundEntityTaskComponent->m_combatState != ECombatState::Attacking)
 	{
-		coefficient = 0.0f;
+		coefficient = inSameAvoidanceGroup ? 0.33f : 0.0f;
 		return true;
 	}
 	if (sourceEntityComponents.m_taskComponent->m_combatState != ECombatState::Attacking && foundEntityTaskComponent->m_combatState == ECombatState::Attacking)
 	{
-		coefficient = 1.0f;
+		coefficient = inSameAvoidanceGroup ? 0.67f : 1.0f;
 		return true;
 	}
 
@@ -879,32 +878,20 @@ bool AvoidanceSystems::ShouldReturnMovementTaskEffortCoefficient(const Transform
 
 	if (sourceEntityComponents.m_taskComponent->IsExecutingMoveTask() && (!foundEntityTaskComponent->IsExecutingMoveTask()))
 	{
-		if (foundEntity.IsMoveable())
-		{
-			coefficient = inSameAvoidanceGroup ? 1.0f : 0.0f;
-			return true;
-		}
-
-		coefficient = 1.0f;
+		coefficient = inSameAvoidanceGroup ? 1.0f : 0.0f;
 		return true;
 	}
 
 	if (!sourceEntityComponents.m_taskComponent->IsExecutingMoveTask() && foundEntityTaskComponent->IsExecutingMoveTask())
 	{
-		if (sourceEntityComponents.m_entity.IsMoveable())
-		{
-			coefficient = inSameAvoidanceGroup ? 0.0f : 1.0f;
-			return true;
-		}
-
-		coefficient = 0.0f;
+		coefficient = inSameAvoidanceGroup ? 0.0f : 1.0f;
 		return true;
 	}
 
 	return false;
 }
 
-bool AvoidanceSystems::ShouldReturnResourceExtractionEffortCoefficient(const TransformSystemsArgs& sourceEntityComponents, const TaskComponent* foundEntityTaskComponent, float& coefficient)
+bool AvoidanceSystems::ShouldReturnResourceExtractionEffortCoefficient(const TransformSystemsArgs& sourceEntityComponents, const TaskComponent* foundEntityTaskComponent, bool inSameAvoidanceGroup, float& coefficient)
 {
 	ARGUS_RETURN_ON_NULL_BOOL(foundEntityTaskComponent, ArgusECSLog);
 	if (!sourceEntityComponents.AreComponentsValidCheck(ARGUS_FUNCNAME))
@@ -914,12 +901,12 @@ bool AvoidanceSystems::ShouldReturnResourceExtractionEffortCoefficient(const Tra
 
 	if (sourceEntityComponents.m_taskComponent->m_resourceExtractionState == EResourceExtractionState::Extracting && foundEntityTaskComponent->m_resourceExtractionState != EResourceExtractionState::Extracting)
 	{
-		coefficient = 0.0f;
+		coefficient = inSameAvoidanceGroup ? 0.33f : 0.0f;
 		return true;
 	}
 	if (sourceEntityComponents.m_taskComponent->m_resourceExtractionState != EResourceExtractionState::Extracting && foundEntityTaskComponent->m_resourceExtractionState == EResourceExtractionState::Extracting)
 	{
-		coefficient = 1.0f;
+		coefficient = inSameAvoidanceGroup ? 0.67f : 1.0f;
 		return true;
 	}
 

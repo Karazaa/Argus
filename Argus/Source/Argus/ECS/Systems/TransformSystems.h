@@ -27,6 +27,7 @@ private:
 	static void FaceTargetEntity(const TransformSystemsArgs& components);
 	static void FaceVelocity(const TransformSystemsArgs& components);
 	static void FaceTowardsLocationXY(TransformComponent* transformComponent, FVector vectorFromTransformToTarget);
+	static bool CheckFlockCompletedNavigation(const TransformSystemsArgs& components);
 	static void OnWithinRangeOfTargetEntity(const TransformSystemsArgs& components);
 	static void OnCompleteNavigationPath(const TransformSystemsArgs& components, const FVector& moverLocation);
 	static float GetEndMoveRange(const TransformSystemsArgs& components);
