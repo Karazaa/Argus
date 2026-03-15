@@ -26,7 +26,7 @@ public:
 	static uint16			GetNextLowestUntakenId(uint16 lowestId);
 	static uint16			GetLowestTakenEntityId() { return s_lowestTakenEntityId; }
 	static uint16			GetHighestTakenEntityId() { return s_highestTakenEntityId; }
-	static ArgusEntity		GetSingletonEntity() { return RetrieveEntity(ArgusECSConstants::k_singletonEntityId); }
+	static ArgusEntity		GetSingletonEntity();
 	static uint16			GetTeamOffset(ETeam team);
 	static uint16			GetTeamEntityId(ETeam team);
 	static ArgusEntity		GetTeamEntity(ETeam team);

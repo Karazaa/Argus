@@ -168,6 +168,13 @@ uint16 ArgusEntity::GetNextLowestUntakenId(uint16 lowestId)
 	return lowestId;
 }
 
+ArgusEntity ArgusEntity::GetSingletonEntity()
+{
+	ArgusEntity singletonEntity = RetrieveEntity(ArgusECSConstants::k_singletonEntityId);
+	ARGUS_RETURN_ON_INVALID_ENTITY_VALUE(singletonEntity, ArgusECSLog, singletonEntity);
+	return singletonEntity;
+}
+
 uint16 ArgusEntity::GetTeamOffset(ETeam team)
 {
 	return static_cast<uint16>(FMath::FloorLog2(static_cast<uint32>(team)));

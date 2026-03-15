@@ -66,6 +66,9 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 	SpatialPartitioningComponent* spatialPartitioningComponent = singletonEntity.GetComponent<SpatialPartitioningComponent>();
 	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
 
+	const GlobalSettingsComponent* settings = singletonEntity.GetComponent<GlobalSettingsComponent>();
+	ARGUS_RETURN_ON_NULL(settings, ArgusECSLog);
+
 	FVector2D desiredVelocity = GetDesiredVelocity(components);
 
 	CreateEntityORCALinesParams params;
@@ -75,8 +78,9 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 	params.m_sourceEntityVelocity = desiredVelocity.IsNearlyZero() ? ArgusMath::ToCartesianVector2(desiredVelocity) : ArgusMath::ToCartesianVector2(components.m_velocityComponent->m_currentVelocity);
 	params.m_deltaTime = deltaTime;
 	params.m_entityRadius = components.m_transformComponent->m_radius;
-	params.m_defaultInverseEntityPredictionTime = 1.0f / ArgusECSConstants::k_avoidanceEntityDetectionPredictionTime;
-	params.m_inverseObstaclePredictionTime = 1.0f / ArgusECSConstants::k_avoidanceObstacleDetectionPredictionTime;
+	// TODO JAMES: We really do not need to calculate the inverse times per entity. We should pass in the float values per entity.
+	params.m_defaultInverseEntityPredictionTime = 1.0f / settings->m_avoidanceEntityDetectionPredictionTime;
+	params.m_inverseObstaclePredictionTime = 1.0f / settings->m_avoidanceObstacleDetectionPredictionTime;
 	params.m_spatialPartitioningComponent = spatialPartitioningComponent;
 
 	// If no entities nearby, then nothing can effect our navigation, so we should just early out with a desired velocity.
@@ -626,7 +630,10 @@ FVector2D AvoidanceSystems::GetDesiredVelocity(const TransformSystemsArgs& compo
 	}
 	desiredDirection = (components.m_navigationComponent->m_navigationPoints[futureIndex] - sourceLocation.GetValue());
 
-	FVector2D desiredDirection2D = (FVector2D(desiredDirection).GetSafeNormal() * (1.0f - ArgusECSConstants::k_flockingVelocityInfluence)) + (flockingVelocity.GetSafeNormal() * ArgusECSConstants::k_flockingVelocityInfluence);
+	const GlobalSettingsComponent* settings = GlobalSettingsComponent::Get();
+	ARGUS_RETURN_ON_NULL_VALUE(settings, ArgusECSLog, FVector2D::ZeroVector);
+
+	FVector2D desiredDirection2D = (FVector2D(desiredDirection).GetSafeNormal() * (1.0f - settings->m_flockingVelocityInfluence)) + (flockingVelocity.GetSafeNormal() * settings->m_flockingVelocityInfluence);
 	desiredDirection2D.Normalize();
 
 	return ArgusMath::ToCartesianVector2(desiredDirection2D * components.m_velocityComponent->m_desiredSpeedUnitsPerSecond);

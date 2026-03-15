@@ -38,6 +38,7 @@
 // Begin dynamically allocated component specific includes.
 #include "DynamicAllocComponentDefinitions\AssetLoadingComponent.h"
 #include "DynamicAllocComponentDefinitions\FogOfWarComponent.h"
+#include "DynamicAllocComponentDefinitions\GlobalSettingsComponent.h"
 #include "DynamicAllocComponentDefinitions\InputInterfaceComponent.h"
 #include "DynamicAllocComponentDefinitions\ReticleComponent.h"
 #include "DynamicAllocComponentDefinitions\SpatialPartitioningComponent.h"
@@ -75,7 +76,7 @@ public:
 	static void DrawComponentsDebug(uint16 entityId);
 #endif //!UE_BUILD_SHIPPING
 
-	static constexpr uint32 k_numComponentTypes = 30;
+	static constexpr uint32 k_numComponentTypes = 31;
 
 	// Begin component specific template specifiers.
 	
@@ -2385,6 +2386,66 @@ public:
 		}
 
 		return s_FogOfWarComponents[entityId];
+	}
+#pragma endregion
+#pragma region GlobalSettingsComponent
+private:
+	static ArgusMap<uint16, GlobalSettingsComponent*, ArgusSetAllocator<1> > s_GlobalSettingsComponents;
+public:
+	template<>
+	inline GlobalSettingsComponent* GetComponent<GlobalSettingsComponent>(uint16 entityId)
+	{
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(GlobalSettingsComponent));
+			return nullptr;
+		}
+
+		if (!s_GlobalSettingsComponents.Contains(entityId))
+		{
+			return nullptr;
+		}
+
+		return s_GlobalSettingsComponents[entityId];
+	}
+
+	template<>
+	inline GlobalSettingsComponent* AddComponent<GlobalSettingsComponent>(uint16 entityId)
+	{
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(GlobalSettingsComponent));
+			return nullptr;
+		}
+
+		if (UNLIKELY(s_GlobalSettingsComponents.Contains(entityId)))
+		{
+			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(GlobalSettingsComponent), entityId);
+			return s_GlobalSettingsComponents[entityId];
+		}
+
+		GlobalSettingsComponent* output = new (ArgusMemorySource::Allocate<GlobalSettingsComponent>()) GlobalSettingsComponent();
+		s_GlobalSettingsComponents.Emplace(entityId, output);
+		return output;
+	}
+
+	template<>
+	inline GlobalSettingsComponent* GetOrAddComponent<GlobalSettingsComponent>(uint16 entityId)
+	{
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(GlobalSettingsComponent));
+			return nullptr;
+		}
+
+		if (!s_GlobalSettingsComponents.Contains(entityId))
+		{
+			GlobalSettingsComponent* output = new (ArgusMemorySource::Allocate<GlobalSettingsComponent>()) GlobalSettingsComponent();
+			s_GlobalSettingsComponents.Emplace(entityId, output);
+			return output;
+		}
+
+		return s_GlobalSettingsComponents[entityId];
 	}
 #pragma endregion
 #pragma region InputInterfaceComponent

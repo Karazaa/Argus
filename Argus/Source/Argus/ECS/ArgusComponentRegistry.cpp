@@ -104,6 +104,9 @@ ArgusMap<uint16, AssetLoadingComponent*, ArgusSetAllocator<1> > ArgusComponentRe
 #pragma region FogOfWarComponent
 ArgusMap<uint16, FogOfWarComponent*, ArgusSetAllocator<1> > ArgusComponentRegistry::s_FogOfWarComponents;
 #pragma endregion
+#pragma region GlobalSettingsComponent
+ArgusMap<uint16, GlobalSettingsComponent*, ArgusSetAllocator<1> > ArgusComponentRegistry::s_GlobalSettingsComponents;
+#pragma endregion
 #pragma region InputInterfaceComponent
 ArgusMap<uint16, InputInterfaceComponent*, ArgusSetAllocator<1> > ArgusComponentRegistry::s_InputInterfaceComponents;
 #pragma endregion
@@ -347,6 +350,10 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 	if (s_FogOfWarComponents.Contains(entityId))
 	{
 		s_FogOfWarComponents.Remove(entityId);
+	}
+	if (s_GlobalSettingsComponents.Contains(entityId))
+	{
+		s_GlobalSettingsComponents.Remove(entityId);
 	}
 	if (s_InputInterfaceComponents.Contains(entityId))
 	{
@@ -749,6 +756,18 @@ void ArgusComponentRegistry::FlushAllComponents()
 		}
 	);
  
+	s_GlobalSettingsComponents.RemoveAll([](const uint16& entityId, GlobalSettingsComponent*& component)
+		{
+			if (ArgusEntity::IsReservedEntityId(entityId) && component)
+			{
+				component->Reset();
+				return false;
+			}
+
+			return true;
+		}
+	);
+ 
 	s_InputInterfaceComponents.RemoveAll([](const uint16& entityId, InputInterfaceComponent*& component)
 		{
 			if (ArgusEntity::IsReservedEntityId(entityId) && component)
@@ -1034,6 +1053,10 @@ void ArgusComponentRegistry::DrawComponentsDebug(uint16 entityId)
 	if (const FogOfWarComponent* FogOfWarComponentPtr = GetComponent<FogOfWarComponent>(entityId))
 	{
 		FogOfWarComponentPtr->DrawComponentDebug();
+	}
+	if (const GlobalSettingsComponent* GlobalSettingsComponentPtr = GetComponent<GlobalSettingsComponent>(entityId))
+	{
+		GlobalSettingsComponentPtr->DrawComponentDebug();
 	}
 	if (const InputInterfaceComponent* InputInterfaceComponentPtr = GetComponent<InputInterfaceComponent>(entityId))
 	{
