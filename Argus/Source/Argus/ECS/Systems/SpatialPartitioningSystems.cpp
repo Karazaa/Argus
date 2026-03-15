@@ -56,8 +56,12 @@ void SpatialPartitioningSystems::ClearSeenByStatus()
 void SpatialPartitioningSystems::CacheAdjacentEntityIds(const SpatialPartitioningComponent* spatialPartitioningComponent)
 {
 	ARGUS_TRACE(SpatialPartitioningSystems::CacheAdjacentEntityIds);
+	
+	const GlobalSettingsComponent* settings = GlobalSettingsComponent::Get();
+	ARGUS_RETURN_ON_NULL(settings, ArgusECSLog);
+	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
 
-	ArgusEntity::IterateEntities([spatialPartitioningComponent](ArgusEntity entity) 
+	ArgusEntity::IterateEntities([settings, spatialPartitioningComponent](ArgusEntity entity)
 	{
 		NearbyEntitiesComponent* nearbyEntitiesComponent = entity.GetComponent<NearbyEntitiesComponent>();
 		const TransformComponent* transformComponent = entity.GetComponent<TransformComponent>();
@@ -79,25 +83,25 @@ void SpatialPartitioningSystems::CacheAdjacentEntityIds(const SpatialPartitionin
 		float adjacentEntityRange = transformComponent->m_radius;
 		if (const VelocityComponent* velocityComponent = entity.GetComponent<VelocityComponent>())
 		{
-			adjacentEntityRange += velocityComponent->m_desiredSpeedUnitsPerSecond * ArgusECSConstants::k_avoidanceEntityDetectionPredictionTime;
+			adjacentEntityRange = velocityComponent->m_desiredSpeedUnitsPerSecond * settings->m_avoidanceEntityDetectionPredictionTime;
 		}
 
 		const TFunction<bool(const ArgusEntityKDTreeNode*)> queryFilter = [entity](const ArgusEntityKDTreeNode* entityNode)
+		{
+			ARGUS_RETURN_ON_NULL_BOOL(entityNode, ArgusECSLog);
+			if (entityNode->m_entityId == entity.GetId())
 			{
-				ARGUS_RETURN_ON_NULL_BOOL(entityNode, ArgusECSLog);
-				if (entityNode->m_entityId == entity.GetId())
-				{
-					return false;
-				}
+				return false;
+			}
 
-				ArgusEntity otherEntity = ArgusEntity::RetrieveEntity(entityNode->m_entityId);
-				if (!otherEntity || otherEntity.IsPassenger())
-				{
-					return false;
-				}
+			ArgusEntity otherEntity = ArgusEntity::RetrieveEntity(entityNode->m_entityId);
+			if (!otherEntity || otherEntity.IsPassenger())
+			{
+				return false;
+			}
 
-				return true;
-			};
+			return true;
+		};
 
 		float meleeRange = 0.0f;
 		float rangedRange = 0.0f;
