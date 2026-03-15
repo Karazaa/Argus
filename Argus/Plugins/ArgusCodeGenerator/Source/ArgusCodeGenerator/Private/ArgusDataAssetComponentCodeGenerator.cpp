@@ -158,11 +158,19 @@ bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetHeaderFileTemplateWithR
 						const size_t exponentialDecaySmootherIndex = parsedComponentData.m_componentVariableData[i][j].m_typeName.find(s_exponentialDecaySmootherTypeName);
 						if (exponentialDecaySmootherIndex != std::string::npos)
 						{
-							variable = "float";
+							variable = "\tfloat";
 							variable.append(" ");
 							variable.append(parsedComponentData.m_componentVariableData[i][j].m_varName);
 							variable.append("DecayConstant");
-							variable.append(" = 1.0f");
+							variable.append(" = 1.0f;");
+							outParsedFileContents[i].m_lines.push_back(variable);
+							outParsedFileContents[i].m_lines.push_back("");
+							outParsedFileContents[i].m_lines.push_back(s_propertyMacro);
+							variable = "\tfloat";
+							variable.append(" ");
+							variable.append(parsedComponentData.m_componentVariableData[i][j].m_varName);
+							variable.append("SmoothingSpeedMod");
+							variable.append(" = 0.0f");
 						}
 						else
 						{
@@ -257,11 +265,10 @@ bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetCppFileTemplateWithRepl
 					else if (exponentialDecaySmootherIndex != std::string::npos)
 					{
 						const size_t lengthTypeName = parsedComponentData.m_componentVariableData[i][j].m_typeName.length();
-						variableAssignment.append(parsedComponentData.m_componentVariableData[i][j].m_typeName.substr(1, (lengthTypeName - 1)));
-						variableAssignment.append("(");
-						variableAssignment.append(parsedComponentData.m_componentVariableData[i][j].m_varName);
-						variableAssignment.append("DecayConstant");
-						variableAssignment.append(")");
+
+						std::string typeName = parsedComponentData.m_componentVariableData[i][j].m_typeName.substr(1, (lengthTypeName - 1));
+						std::string varName = parsedComponentData.m_componentVariableData[i][j].m_varName;
+						variableAssignment.append(std::vformat("{}({}DecayConstant, {}SmoothingSpeedMod)", std::make_format_args(typeName, varName, varName)));
 					}
 					else
 					{

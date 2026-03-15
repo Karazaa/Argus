@@ -52,12 +52,21 @@ namespace ArgusMath
 		{
 			Reset(GetZero<T>());
 			m_decayConstant = FMath::Clamp(decayConstant, k_minDecayConstant, k_maxDecayConstant);
+			m_smoothingSpeedMod = 0.0f;
 		}
 
-		ExponentialDecaySmoother(T initialValue, float decayConstant)
+		ExponentialDecaySmoother(float decayConstant, float smoothingSpeedMod)
+		{
+			Reset(GetZero<T>());
+			m_decayConstant = FMath::Clamp(decayConstant, k_minDecayConstant, k_maxDecayConstant);
+			m_smoothingSpeedMod = smoothingSpeedMod;
+		}
+
+		ExponentialDecaySmoother(T initialValue, float decayConstant, float smoothingSpeedMod)
 		{
 			Reset(initialValue);
 			m_decayConstant = FMath::Clamp(decayConstant, k_minDecayConstant, k_maxDecayConstant);
+			m_smoothingSpeedMod = smoothingSpeedMod;
 		}
 
 		T GetValue() const
@@ -85,17 +94,18 @@ namespace ArgusMath
 
 		void SmoothChase(const T& targetValue, float deltaTime)
 		{
-			SmoothChase(m_currentValues[0], targetValue, m_decayConstant, deltaTime);
+			const float smoothingSpeed = 1.0f + (m_smoothingSpeedMod / 200.0f);
+			SmoothChase(m_currentValues[0], targetValue, m_decayConstant, smoothingSpeed, deltaTime);
 			for (uint8 i = 1u; i < SmoothingOrder; ++i)
 			{
-				SmoothChase(m_currentValues[i], m_currentValues[i - 1], m_decayConstant, deltaTime);
+				SmoothChase(m_currentValues[i], m_currentValues[i - 1], m_decayConstant, smoothingSpeed, deltaTime);
 			}
 		}
 
-		static void SmoothChase(T& value, const T& targetValue, float decayConstant, float deltaTime)
+		static void SmoothChase(T& value, const T& targetValue, float decayConstant, float smoothingSpeed, float deltaTime)
 		{
 			decayConstant = FMath::Clamp(decayConstant, k_minDecayConstant, k_maxDecayConstant);
-			value = targetValue + ((value - targetValue) * FMath::Exp(-decayConstant * deltaTime));
+			value = targetValue + ((value - targetValue) * FMath::Exp(-decayConstant * deltaTime) * smoothingSpeed);
 		}
 
 	private:
@@ -104,6 +114,7 @@ namespace ArgusMath
 
 		T m_currentValues[SmoothingOrder];
 		float m_decayConstant = k_minDecayConstant;
+		float m_smoothingSpeedMod = 0.0f;
 	};
 
 	template <typename T>

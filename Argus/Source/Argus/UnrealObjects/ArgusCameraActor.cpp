@@ -98,10 +98,10 @@ void AArgusCameraActor::UpdateCameraZoom(const float inputZoomValue)
 void AArgusCameraActor::BeginPlay()
 {
 	Super::BeginPlay();
-	m_currentVerticalVelocity = ArgusMath::ExponentialDecaySmoother<float>(0.0f, m_verticalVelocitySmoothingDecayConstant);
-	m_currentHorizontalVelocity = ArgusMath::ExponentialDecaySmoother<float>(0.0f, m_horizontalVelocitySmoothingDecayConstant);
-	m_currentZoomTranslationAmount = ArgusMath::ExponentialDecaySmoother<float>(0.0f, m_zoomLocationSmoothingDecayConstant);
-	m_currentOrbitThetaAmount = ArgusMath::ExponentialDecaySmoother<float>(UE_PI, m_orbitThetaSmoothingDecayConstant);
+	m_currentVerticalVelocity = ArgusMath::ExponentialDecaySmoother<float>(m_verticalVelocitySmoothingDecayConstant);
+	m_currentHorizontalVelocity = ArgusMath::ExponentialDecaySmoother<float>(m_horizontalVelocitySmoothingDecayConstant);
+	m_currentZoomTranslationAmount = ArgusMath::ExponentialDecaySmoother<float>(m_zoomLocationSmoothingDecayConstant);
+	m_currentOrbitThetaAmount = ArgusMath::ExponentialDecaySmoother<float>(UE_PI, m_orbitThetaSmoothingDecayConstant, 1.0f);
 
 	ForceSetCameraLocationWithoutZoom(GetActorLocation());
 

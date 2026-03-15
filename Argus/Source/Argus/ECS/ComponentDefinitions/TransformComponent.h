@@ -21,7 +21,7 @@ struct TransformComponent
 	ARGUS_IGNORE()
 	FVector m_location = FVector::ZeroVector;
 
-	ArgusMath::ExponentialDecaySmoother<float, 2u> m_smoothedYaw;
+	ArgusMath::ExponentialDecaySmoother<float> m_smoothedYaw;
 
 	ArgusMath::ExponentialDecaySmoother<float> m_smoothedTransitionAltitude;
 

@@ -234,7 +234,7 @@ bool ArgusUtilitiesArgusMathExponentialDecaySmootherFVectorTest::RunTest(const F
 	);
 #pragma endregion
 
-	testValue = ArgusMath::ExponentialDecaySmoother<FVector>(vector0, decayConstant);
+	testValue = ArgusMath::ExponentialDecaySmoother<FVector>(vector0, decayConstant, 1.0f);
 
 #pragma region Test that the ExponentialDecaySmoother has the correct initial value after calling verbose constructor.
 	TestEqual

@@ -10,8 +10,8 @@ void UTransformComponentData::InstantiateComponentForEntity(ArgusEntity entity) 
 	TransformComponent* TransformComponentRef = entity.GetOrAddComponent<TransformComponent>();
 	ARGUS_RETURN_ON_NULL(TransformComponentRef, ArgusECSLog);
 
-	TransformComponentRef->m_smoothedYaw = ArgusMath::ExponentialDecaySmoother<float,2u>(m_smoothedYawDecayConstant);
-	TransformComponentRef->m_smoothedTransitionAltitude = ArgusMath::ExponentialDecaySmoother<float>(m_smoothedTransitionAltitudeDecayConstant);
+	TransformComponentRef->m_smoothedYaw = ArgusMath::ExponentialDecaySmoother<float>(m_smoothedYawDecayConstant, m_smoothedYawSmoothingSpeedMod);
+	TransformComponentRef->m_smoothedTransitionAltitude = ArgusMath::ExponentialDecaySmoother<float>(m_smoothedTransitionAltitudeDecayConstant, m_smoothedTransitionAltitudeSmoothingSpeedMod);
 	TransformComponentRef->m_radius = m_radius;
 	TransformComponentRef->m_flightCapability = m_flightCapability;
 }
