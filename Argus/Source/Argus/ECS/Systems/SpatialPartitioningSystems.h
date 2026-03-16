@@ -23,7 +23,7 @@ private:
 	static void ClearSeenByStatus();
 	static void CacheAdjacentEntityIds(const SpatialPartitioningComponent* spatialPartitioningComponent);
 	static void CalculateAdjacentEntityGroups();
-	static bool FloodFillGroupRecursive(uint16 groupId, uint16 argusEntityId, FVector& currentPositionSum, float& numberOfEntitiesInGroup, uint16& numberOfStoppedEntities, TArray<ArgusEntity>& entitiesInGroup);
+	static bool FloodFillGroupRecursive(uint16 groupId, AvoidanceGroupingComponent* groupLeaderComponent, uint16 argusEntityId, FVector& currentPositionSum, float& numberOfEntitiesInGroup, uint16& numberOfStoppedEntities);
 	static bool GetNavMeshWalls(const SpatialPartitioningComponent* spatialPartitioningComponent, const ARecastNavMesh* navMesh, const FNavLocation& originLocation, TArray<FVector>& outNavWalls);
 	static void ConvertWallsIntoObstacles(const TArray<FVector>& navEdges, ObstaclesContainer& outObstacles);
 	static void CalculateDirectionAndConvexForObstacles(ObstaclePointArray& outObstacle);

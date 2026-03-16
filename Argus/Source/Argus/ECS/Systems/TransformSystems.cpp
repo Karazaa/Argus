@@ -121,7 +121,7 @@ void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float delta
 	}
 	else if (isAtEndOfNavigationPath)
 	{
-		OnCompleteNavigationPath(components, moverLocation);
+		OnCompleteNavigationPath(components);
 	}
 }
 
@@ -194,7 +194,7 @@ bool TransformSystems::ProcessMovementTaskCommands(UWorld* worldPointer, float d
 		case EMovementState::MoveToLocation:
 			if (CheckFlockCompletedNavigation(components))
 			{
-				OnCompleteNavigationPath(components, components.m_transformComponent->m_location);
+				OnCompleteNavigationPath(components);
 			}
 			else
 			{
@@ -227,7 +227,7 @@ bool TransformSystems::ProcessMovementTaskCommands(UWorld* worldPointer, float d
 			break;
 
 		case EMovementState::AwaitingFinish:
-			OnCompleteNavigationPath(components, components.m_transformComponent->m_location);
+			OnCompleteNavigationPath(components);
 			movedThisFrame = true;
 			break;
 
@@ -453,9 +453,20 @@ void TransformSystems::OnWithinRangeOfTargetEntity(const TransformSystemsArgs& c
 	components.m_velocityComponent->m_currentVelocity = FVector2D::ZeroVector;
 }
 
-void TransformSystems::OnCompleteNavigationPath(const TransformSystemsArgs& components, const FVector& moverLocation)
+void TransformSystems::OnCompleteNavigationPath(const TransformSystemsArgs& components)
 {
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+
+	AvoidanceSystems::IterateEntitiesInAvoidanceGroup(components.m_entity, TransformSystems::CompleteNavigationPathPerGroupEntity);
+}
+
+void TransformSystems::CompleteNavigationPathPerGroupEntity(ArgusEntity entity)
+{
+	TransformSystemsArgs components;
+	if (!components.PopulateArguments(entity))
 	{
 		return;
 	}

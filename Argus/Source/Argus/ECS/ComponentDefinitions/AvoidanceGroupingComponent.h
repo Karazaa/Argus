@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ArgusContainerAllocator.h"
 #include "ArgusECSConstants.h"
 #include "ArgusMacros.h"
 
@@ -22,6 +23,9 @@ struct AvoidanceGroupingComponent
 
 	ARGUS_IGNORE()
 	FVector m_groupAverageLocation = FVector::ZeroVector;
+
+	ARGUS_IGNORE()
+	TArray<uint16, ArgusContainerAllocator<10u> > m_entityIdsInGroup;
 
 	ARGUS_IGNORE()
 	uint16 m_groupId = ArgusECSConstants::k_maxEntities;

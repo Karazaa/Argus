@@ -78,6 +78,7 @@ void SpatialPartitioningSystems::CacheAdjacentEntityIds(const SpatialPartitionin
 			avoidanceGroupingComponent->m_groupId = ArgusECSConstants::k_maxEntities;
 			avoidanceGroupingComponent->m_groupAverageLocation = FVector::ZeroVector;
 			avoidanceGroupingComponent->m_numberOfIdleEntities = 0u;
+			avoidanceGroupingComponent->m_entityIdsInGroup.Reset();
 		}
 
 		float adjacentEntityRange = transformComponent->m_radius;
@@ -133,8 +134,13 @@ void SpatialPartitioningSystems::CalculateAdjacentEntityGroups()
 		FVector averageLocation = FVector::ZeroVector;
 		float numberOfEntitiesInGroup = 0.0f;
 		uint16 numberOfStoppedEntities = 0u;
-		TArray<ArgusEntity> entitiesInGroup;
-		if (!FloodFillGroupRecursive(entity.GetId(), entity.GetId(), averageLocation, numberOfEntitiesInGroup, numberOfStoppedEntities, entitiesInGroup))
+		AvoidanceGroupingComponent* groupLeaderComponent = entity.GetComponent<AvoidanceGroupingComponent>();
+		if (!groupLeaderComponent)
+		{
+			return;
+		}
+
+		if (!FloodFillGroupRecursive(entity.GetId(), groupLeaderComponent, entity.GetId(), averageLocation, numberOfEntitiesInGroup, numberOfStoppedEntities))
 		{
 			return;
 		}
@@ -147,26 +153,15 @@ void SpatialPartitioningSystems::CalculateAdjacentEntityGroups()
 
 		avoidanceGroupingComponent->m_groupAverageLocation = ArgusMath::SafeDivide(averageLocation, numberOfEntitiesInGroup);
 		avoidanceGroupingComponent->m_numberOfIdleEntities = numberOfStoppedEntities;
-
-		for (int32 j = 0; j < entitiesInGroup.Num(); ++j)
-		{
-			const TaskComponent* taskComponent = entitiesInGroup[j].GetComponent<TaskComponent>();
-			if (!taskComponent)
-			{
-				continue;
-			}
-
-			const TransformComponent* transformComponent = entitiesInGroup[j].GetComponent<TransformComponent>();
-			if (!transformComponent)
-			{
-				continue;
-			}
-		}
 	});
 }
 
-bool SpatialPartitioningSystems::FloodFillGroupRecursive(uint16 groupId, uint16 entityId, FVector& averageLocation, float& numberOfEntitiesInGroup, uint16& numberOfStoppedEntities, TArray<ArgusEntity>& entitiesInGroup)
+bool SpatialPartitioningSystems::FloodFillGroupRecursive(uint16 groupId, AvoidanceGroupingComponent* groupLeaderComponent, uint16 entityId, FVector& averageLocation, float& numberOfEntitiesInGroup, uint16& numberOfStoppedEntities)
 {
+	ARGUS_TRACE(SpatialPartitioningSystems::FloodFillGroupRecursive);
+
+	ARGUS_RETURN_ON_NULL_BOOL(groupLeaderComponent, ArgusECSLog);
+
 	ArgusEntity entity = ArgusEntity::RetrieveEntity(entityId);
 	ArgusEntity groupLeaderEntity = ArgusEntity::RetrieveEntity(groupId);
 	if (!entity || !groupLeaderEntity || !entity.IsMoveable())
@@ -205,7 +200,7 @@ bool SpatialPartitioningSystems::FloodFillGroupRecursive(uint16 groupId, uint16 
 	avoidanceGroupingComponent->m_groupId = groupId;
 	averageLocation += transformComponent->m_location;
 	numberOfEntitiesInGroup += 1.0f;
-	entitiesInGroup.Add(entity);
+	groupLeaderComponent->m_entityIdsInGroup.Add(entity.GetId());
 	if (entity.IsIdle())
 	{
 		numberOfStoppedEntities++;
@@ -214,7 +209,7 @@ bool SpatialPartitioningSystems::FloodFillGroupRecursive(uint16 groupId, uint16 
 	const bool isGrounded = taskComponent->m_flightState == EFlightState::Grounded;
 	for (int32 i = 0; i < nearbyEntitiesComponent->GetNearbyEntities(!isGrounded).GetEntityIdsInAvoidanceRange().Num(); ++i)
 	{
-		FloodFillGroupRecursive(groupId, nearbyEntitiesComponent->GetNearbyEntities(!isGrounded).GetEntityIdsInAvoidanceRange()[i], averageLocation, numberOfEntitiesInGroup, numberOfStoppedEntities, entitiesInGroup);
+		FloodFillGroupRecursive(groupId, groupLeaderComponent, nearbyEntitiesComponent->GetNearbyEntities(!isGrounded).GetEntityIdsInAvoidanceRange()[i], averageLocation, numberOfEntitiesInGroup, numberOfStoppedEntities);
 	}
 
 	return groupId == entityId;

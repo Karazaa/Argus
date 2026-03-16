@@ -18,6 +18,33 @@ public:
 	static TOptional<FVector>	GetAvoidanceGroupSourceLocation(const TransformSystemsArgs& components);
 	static FVector2D			GetFlockingVelocity(const TransformSystemsArgs& components);
 
+	template<typename Function>
+	static void IterateEntitiesInAvoidanceGroup(ArgusEntity entity, Function&& function)
+	{
+		ARGUS_RETURN_ON_INVALID_ENTITY(entity, ArgusECSLog);
+
+		ArgusEntity groupLeader = GetAvoidanceGroupLeader(entity);
+		if (!groupLeader)
+		{
+			function(entity);
+			return;
+		}
+
+		const AvoidanceGroupingComponent* groupLeaderComponent = groupLeader.GetComponent<AvoidanceGroupingComponent>();
+		ARGUS_RETURN_ON_NULL(groupLeaderComponent, ArgusECSLog);
+
+		for (int32 i = 0; i < groupLeaderComponent->m_entityIdsInGroup.Num(); ++i)
+		{
+			ArgusEntity memberEntity = ArgusEntity::RetrieveEntity(groupLeaderComponent->m_entityIdsInGroup[i]);
+			if (!memberEntity)
+			{
+				continue;
+			}
+
+			function(memberEntity);
+		}
+	}
+
 private:
 	struct ORCALine
 	{

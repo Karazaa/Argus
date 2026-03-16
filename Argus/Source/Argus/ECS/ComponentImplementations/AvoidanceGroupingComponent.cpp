@@ -20,6 +20,7 @@ uint16 AvoidanceGroupingComponent::GetOwningEntityId() const
 void AvoidanceGroupingComponent::Reset()
 {
 	m_groupAverageLocation = FVector::ZeroVector;
+	m_entityIdsInGroup.Reset();
 	m_groupId = ArgusECSConstants::k_maxEntities;
 	m_numberOfIdleEntities = 0u;
 	m_avoidancePriority = EAvoidancePriority::Lowest;
@@ -39,6 +40,25 @@ void AvoidanceGroupingComponent::DrawComponentDebug() const
 		ImGui::Text("m_groupAverageLocation");
 		ImGui::TableNextColumn();
 		ImGui::Text("(%.2f, %.2f, %.2f)", m_groupAverageLocation.X, m_groupAverageLocation.Y, m_groupAverageLocation.Z);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_entityIdsInGroup");
+		ImGui::TableNextColumn();
+		ImGui::Text("Array max is currently = %d", m_entityIdsInGroup.Max());
+		if (m_entityIdsInGroup.Num() == 0)
+		{
+			ImGui::Text("Array is empty");
+		}
+		else
+		{
+			ImGui::Text("Size of array = %d", m_entityIdsInGroup.Num());
+			ImGui::Indent();
+			for (int32 i = 0; i < m_entityIdsInGroup.Num(); ++i)
+			{
+				if (i != 0) ImGui::Separator();
+				ImGui::Text("%d", m_entityIdsInGroup[i]);
+			}
+			ImGui::Unindent();
+		}
 		ImGui::TableNextColumn();
 		ImGui::Text("m_groupId");
 		ImGui::TableNextColumn();

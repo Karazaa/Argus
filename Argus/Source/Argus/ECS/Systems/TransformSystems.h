@@ -29,7 +29,8 @@ private:
 	static void FaceTowardsLocationXY(TransformComponent* transformComponent, FVector vectorFromTransformToTarget);
 	static bool CheckFlockCompletedNavigation(const TransformSystemsArgs& components);
 	static void OnWithinRangeOfTargetEntity(const TransformSystemsArgs& components);
-	static void OnCompleteNavigationPath(const TransformSystemsArgs& components, const FVector& moverLocation);
+	static void OnCompleteNavigationPath(const TransformSystemsArgs& components);
+	static void CompleteNavigationPathPerGroupEntity(ArgusEntity entity);
 	static float GetEndMoveRange(const TransformSystemsArgs& components);
 	static void UpdatePassengerLocations(const TransformSystemsArgs& components);
 	static void ShowTraceForFlyingEntity(UWorld* worldPointer, const TransformSystemsArgs& components);
