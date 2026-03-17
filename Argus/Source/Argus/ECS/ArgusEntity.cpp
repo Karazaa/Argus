@@ -486,14 +486,6 @@ void ArgusEntity::Destroy()
 #if !UE_BUILD_SHIPPING
 const FString ArgusEntity::GetDebugString() const
 {
-	if (ArgusECSDebugger::ShouldShowFlockingDebugForEntity(m_id))
-	{
-		ArgusEntity flockingRoot = FlockingSystems::GetFlockingRootEntity(*this);
-		return FString::Printf(TEXT("(%s: %d) \n (%s: %d)"), ARGUS_NAMEOF(m_id), m_id, ARGUS_NAMEOF(flockingRoot), flockingRoot.GetId());
-	}
-	else
-	{
-		return FString::Printf(TEXT("(%s: %d)"), ARGUS_NAMEOF(m_id), m_id);
-	}
+	return FString::Printf(TEXT("(%s: %d)"), ARGUS_NAMEOF(m_id), m_id);
 }
 #endif //!UE_BUILD_SHIPPING

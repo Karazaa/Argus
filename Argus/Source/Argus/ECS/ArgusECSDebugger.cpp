@@ -5,6 +5,7 @@
 #include "ArgusMacros.h"
 #include "ComponentDependencies/ResourceSet.h"
 #include "imgui.h"
+#include "Systems/AvoidanceSystems.h"
 #include "Systems/ResourceSystems.h"
 #include "Systems/TeamCommanderSystems.h"
 
@@ -20,7 +21,8 @@ bool ArgusECSDebugger::s_entityShowNavigationDebug[ArgusECSConstants::k_maxEntit
 bool ArgusECSDebugger::s_entityShowFlockingDebug[ArgusECSConstants::k_maxEntities];
 bool ArgusECSDebugger::s_teamEntityShowRevealedAreaDebug[sizeof(ETeam) * 8];
 int  ArgusECSDebugger::s_teamToApplyResourcesTo = 0;
-TArray<std::string> ArgusECSDebugger::s_resourceToAddStrings = TArray<std::string>();
+TArray<std::string> ArgusECSDebugger::s_resourceToAddStrings;
+TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets>> ArgusECSDebugger::s_groupLeaderFlockingDisplay;
 
 void ArgusECSDebugger::DrawECSDebugger()
 {
@@ -69,7 +71,13 @@ bool ArgusECSDebugger::ShouldShowNavigationDebugForEntity(uint16 entityId)
 
 bool ArgusECSDebugger::ShouldShowFlockingDebugForEntity(uint16 entityId)
 {
-	return s_entityShowFlockingDebug[entityId];
+	const int32 index = entityId;
+	if (!s_groupLeaderFlockingDisplay.IsValidIndex(index))
+	{
+		return false;
+	}
+
+	return s_groupLeaderFlockingDisplay[index];
 }
 
 void ArgusECSDebugger::DrawEntityScrollRegion()
@@ -221,6 +229,7 @@ void ArgusECSDebugger::DrawEntityDockSpace()
 	ImGuiID dockspaceId = ImGui::GetID("Entity Dock Space");
 	ImGui::DockSpace(dockspaceId, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
 
+	s_groupLeaderFlockingDisplay.Init(false, ArgusECSConstants::k_maxEntities);
 	for (uint16 i = 0u; i < ArgusECSConstants::k_maxEntities; ++i)
 	{
 		if (!ArgusEntity::DoesEntityExist(i) || !s_entityDebugToggles[i])
@@ -247,13 +256,15 @@ void ArgusECSDebugger::DrawWindowForEntity(uint16 entityId)
 	bool isSelectableEntity = false;
 	bool hasRevealedAreas = false;
 	uint16 offset = 0u;
+
+	ArgusEntity entity = ArgusEntity::RetrieveEntity(entityId);
 	if (entityId == ArgusECSConstants::k_singletonEntityId)
 	{
 		name = "Singleton";
 	}
 	else if (ArgusEntity::IsReservedEntityId(entityId))
 	{
-		const TeamCommanderComponent* teamCommanderComponent = ArgusEntity::RetrieveEntity(entityId).GetComponent<TeamCommanderComponent>();
+		const TeamCommanderComponent* teamCommanderComponent = entity.GetComponent<TeamCommanderComponent>();
 		if (teamCommanderComponent)
 		{
 			name = ARGUS_FSTRING_TO_CHAR(StaticEnum<ETeam>()->GetNameStringByValue(static_cast<uint8>(teamCommanderComponent->m_teamToCommand)));
@@ -286,6 +297,16 @@ void ArgusECSDebugger::DrawWindowForEntity(uint16 entityId)
 		ImGui::Checkbox("Show Navigation debug", &s_entityShowNavigationDebug[entityId]);
 		ImGui::SameLine();
 		ImGui::Checkbox("Show Flocking debug", &s_entityShowFlockingDebug[entityId]);
+	}
+
+	if (s_entityShowFlockingDebug[entityId])
+	{
+		ArgusEntity groupLeaderEntity = AvoidanceSystems::GetAvoidanceGroupLeader(entity);
+		const int32 index = groupLeaderEntity.GetId();
+		if (groupLeaderEntity && s_groupLeaderFlockingDisplay.IsValidIndex(index))
+		{
+			s_groupLeaderFlockingDisplay[index] = true;
+		}
 	}
 
 	if (hasRevealedAreas)

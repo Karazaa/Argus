@@ -4,6 +4,8 @@
 
 #if !UE_BUILD_SHIPPING
 #include "ArgusECSConstants.h"
+#include "ArgusSetAllocator.h"
+#include "Containers/BitArray.h"
 #include "ComponentDependencies/Teams.h"
 #include "CoreMinimal.h"
 #include <string>
@@ -30,6 +32,7 @@ private:
 	static bool s_teamEntityShowRevealedAreaDebug[sizeof(ETeam) * 8];
 	static int	s_teamToApplyResourcesTo;
 	static TArray<std::string> s_resourceToAddStrings;
+	static TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets>> s_groupLeaderFlockingDisplay;
 
 	static void DrawEntityScrollRegion();
 	static void DrawSelectableEntityScrollRegion(int windowFlags, int childFlags, int tableWidth);
