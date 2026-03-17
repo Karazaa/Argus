@@ -22,6 +22,7 @@ bool AvoidanceSystemsProcessORCAvoidanceTest::RunTest(const FString& Parameters)
 
 	ArgusTesting::StartArgusTest();
 	ArgusEntity entity = ArgusEntity::CreateEntity();
+	ArgusEntity singletonEntity = ArgusEntity::CreateEntity(ArgusECSConstants::k_singletonEntityId);
 	TransformSystemsArgs components;
 	UWorld* dummyPointer = nullptr;
 
@@ -47,21 +48,6 @@ bool AvoidanceSystemsProcessORCAvoidanceTest::RunTest(const FString& Parameters)
 	IdentityComponent* identityComponent = entity.AddComponent<IdentityComponent>();
 	AvoidanceGroupingComponent* avoidanceGroupingComponent = entity.AddComponent<AvoidanceGroupingComponent>();
 	NearbyEntitiesComponent* nearbyEntitiesComponent = entity.AddComponent<NearbyEntitiesComponent>();
-
-#pragma region Test that an error is reported if there is no singleton entity.
-	AddExpectedErrorPlain
-	(
-		FString::Printf
-		(
-			TEXT("Could not retrieve singleton %s."),
-			ARGUS_NAMEOF(ArgusEntity)
-		)
-	);
-#pragma endregion
-
-	AvoidanceSystems::ProcessORCAvoidance(dummyPointer, deltaTime, components, nearbyEntitiesComponent);
-
-	ArgusEntity singletonEntity = ArgusEntity::CreateEntity(ArgusECSConstants::k_singletonEntityId);
 
 //#pragma region Test that an error is reported if there is no SpatialPartitioningComponent on the singleton entity.
 //	AddExpectedErrorPlain

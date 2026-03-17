@@ -84,7 +84,7 @@ bool ArgusUtilitiesArgusMathExponentialDecaySmootherFloatTest::RunTest(const FSt
 	);
 #pragma endregion
 
-	testValue = ArgusMath::ExponentialDecaySmoother<float>(0.0f, decayConstant);
+	testValue = ArgusMath::ExponentialDecaySmoother<float>(0.0f, decayConstant, 0.0f);
 
 #pragma region Test that the ExponentialDecaySmoother has the correct initial value after using verbose constructor.
 	TestEqual

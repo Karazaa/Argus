@@ -16,7 +16,7 @@ bool ConstructionSystemsBeingConstructedAutomaticTest::RunTest(const FString& Pa
 	const float expectedElapsedTimerProportion = 0.5f;
 
 	ArgusTesting::StartArgusTest();
-
+	ArgusEntity singletonEntity = ArgusEntity::CreateEntity(ArgusECSConstants::k_singletonEntityId);
 	ArgusEntity entityToConstruct = ArgusEntity::CreateEntity();
 	if (!entityToConstruct)
 	{
@@ -116,14 +116,16 @@ bool ConstructionSystemsBeingConstructedManualTest::RunTest(const FString& Param
 	TaskComponent* constructedTaskComponent = entityToConstruct.AddComponent<TaskComponent>();
 	ConstructionComponent* constructedConstructionComponent = entityToConstruct.AddComponent<ConstructionComponent>();
 	TransformComponent* constructedTransformComponent = entityToConstruct.AddComponent<TransformComponent>();
+	IdentityComponent* constructedIdentityComponent = entityToConstruct.AddComponent<IdentityComponent>();
 
 	AbilityComponent* constructingAbilityComponent = constructingEntity.AddComponent<AbilityComponent>();
 	TaskComponent* constructingTaskComponent = constructingEntity.AddComponent<TaskComponent>();
 	TargetingComponent* constructingTargetingComponent = constructingEntity.AddComponent<TargetingComponent>();
 	TransformComponent* constructingTransformComponent = constructingEntity.AddComponent<TransformComponent>();
+	IdentityComponent* constructingIdentityComponent = constructingEntity.AddComponent<IdentityComponent>();
 
 	if (!constructedTaskComponent || !constructedConstructionComponent || !constructedTransformComponent || !constructingAbilityComponent || 
-		!constructingTaskComponent || !constructingTargetingComponent || !constructingTransformComponent)
+		!constructingTaskComponent || !constructingTargetingComponent || !constructingTransformComponent || !constructedIdentityComponent || !constructingIdentityComponent)
 	{
 		return false;
 	}
@@ -133,12 +135,14 @@ bool ConstructionSystemsBeingConstructedManualTest::RunTest(const FString& Param
 	constructedConstructionComponent->m_requiredWorkSeconds = constructionTimeSeconds;
 	constructedConstructionComponent->m_constructionAbilityRecordId = abilityRecordId;
 	constructedTransformComponent->m_location = constructedLocation;
+	constructedIdentityComponent->m_team = ETeam::TeamA;
 
 	constructingAbilityComponent->m_ability0Id = abilityRecordId;
 	constructingTaskComponent->m_constructionState = EConstructionState::DispatchedToConstructOther;
 	constructingTargetingComponent->m_targetEntityId = entityToConstruct.GetId();
 	constructingTargetingComponent->m_meleeRange = constructionRange;
 	constructingTransformComponent->m_location = initialConstructingLocation;
+	constructingIdentityComponent->m_team = ETeam::TeamA;
 
 	ConstructionSystems::RunSystems(timestep);
 

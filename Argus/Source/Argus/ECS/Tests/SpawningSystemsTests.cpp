@@ -19,6 +19,7 @@ bool SpawningSystemsSpawnEntityTest::RunTest(const FString& Parameters)
 	const UEntityPriority	dummyEntityPriority = UEntityPriority::HighPriority;
 
 	ArgusTesting::StartArgusTest();
+	ArgusEntity singletonEntity = ArgusEntity::CreateEntity(ArgusECSConstants::k_singletonEntityId);
 	UTransformComponentData* transformComponentData = NewObject<UTransformComponentData>();
 	UArgusEntityTemplate* entityTemplate = NewObject<UArgusEntityTemplate>();
 	UArgusActorRecord* argusActorRecord = NewObject<UArgusActorRecord>();
