@@ -284,6 +284,16 @@ void ArgusECSDebugger::DrawWindowForEntity(uint16 entityId)
 		isSelectableEntity = true;
 	}
 
+	if (isSelectableEntity && s_entityShowFlockingDebug[entityId])
+	{
+		ArgusEntity groupLeaderEntity = AvoidanceSystems::GetAvoidanceGroupLeader(entity);
+		const int32 index = groupLeaderEntity.GetId();
+		if (groupLeaderEntity && s_groupLeaderFlockingDisplay.IsValidIndex(index))
+		{
+			s_groupLeaderFlockingDisplay[index] = true;
+		}
+	}
+
 	if (!ImGui::Begin(name))
 	{
 		ImGui::End();
@@ -297,16 +307,6 @@ void ArgusECSDebugger::DrawWindowForEntity(uint16 entityId)
 		ImGui::Checkbox("Show Navigation debug", &s_entityShowNavigationDebug[entityId]);
 		ImGui::SameLine();
 		ImGui::Checkbox("Show Flocking debug", &s_entityShowFlockingDebug[entityId]);
-	}
-
-	if (s_entityShowFlockingDebug[entityId])
-	{
-		ArgusEntity groupLeaderEntity = AvoidanceSystems::GetAvoidanceGroupLeader(entity);
-		const int32 index = groupLeaderEntity.GetId();
-		if (groupLeaderEntity && s_groupLeaderFlockingDisplay.IsValidIndex(index))
-		{
-			s_groupLeaderFlockingDisplay[index] = true;
-		}
 	}
 
 	if (hasRevealedAreas)

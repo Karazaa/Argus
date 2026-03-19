@@ -7,6 +7,10 @@
 #include "Systems/AvoidanceSystems.h"
 #include "Systems/TargetingSystems.h"
 
+#if !UE_BUILD_SHIPPING
+#include "ArgusECSDebugger.h"
+#endif //!UE_BUILD_SHIPPING
+
 void FlockingSystems::RunSystems(float deltaTime)
 {
 	ARGUS_TRACE(FlockingSystems::RunSystems);
@@ -14,6 +18,10 @@ void FlockingSystems::RunSystems(float deltaTime)
 	ClearPackingValues();
 	SetPackingValues();
 	SetFlockingState(deltaTime);
+
+#if !UE_BUILD_SHIPPING
+	DrawFlockingDebug(deltaTime);
+#endif //!UE_BUILD_SHIPPING
 } 
 
 ArgusEntity FlockingSystems::GetFlockingRootEntity(ArgusEntity entity)
@@ -265,3 +273,44 @@ void FlockingSystems::IncrementStableEntitiesInRange(FlockingComponent* flocking
 		flockingRootFlockingComponent->m_concentricFlockingTier++;
 	}
 }
+
+#if !UE_BUILD_SHIPPING
+void FlockingSystems::DrawFlockingDebug(float deltaTime)
+{
+	ARGUS_TRACE(FlockingSystems::DrawFlockingDebug);
+
+	const WorldReferenceComponent* worldReference = ArgusEntity::GetSingletonEntity().GetComponent<WorldReferenceComponent>();
+	ARGUS_RETURN_ON_NULL(worldReference, ArgusECSLog);
+
+	ArgusEntity::IterateSystemsArgs<FlockingSystemsArgs>([deltaTime, worldReference](FlockingSystemsArgs& components)
+	{
+		if (ArgusECSDebugger::ShouldShowFlockingDebugForEntity(components.m_entity.GetId()))
+		{
+			DrawFlockingDebugPerEntity(worldReference->m_worldPointer, deltaTime, components);
+		}
+	});
+}
+
+void FlockingSystems::DrawFlockingDebugPerEntity(const UWorld* worldPointer, float deltaTime, const FlockingSystemsArgs& components)
+{
+	ARGUS_TRACE(FlockingSystems::DrawFlockingDebugPerEntity);
+
+	ARGUS_RETURN_ON_NULL(worldPointer, ArgusECSLog);
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+
+	static FVector heightAdjustment = FVector(0.0f, 0.0f, 5.0f);
+	const FVector flockingCenter = GetFlockingPoint(components.m_entity) + heightAdjustment;
+	const float flockingRadius = GetCurrentFlockingRootRadius(components.m_flockingComponent);
+	const FString debugString = FString::Printf(TEXT("Root Entity Id: %d \nEntities In Stable Range: %d \nCurrent Tier: %d"), 
+													components.m_entity.GetId(), 
+													components.m_flockingComponent->m_numEntitiesInStableRange, 
+													components.m_flockingComponent->m_concentricFlockingTier);
+
+	DrawDebugCircle(worldPointer, flockingCenter, flockingRadius, 32, FColor::Red, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth, FVector::RightVector, FVector::ForwardVector, false);
+	DrawDebugString(worldPointer, flockingCenter, debugString, nullptr, FColor::Red, 0.0f, true, 1.0f);
+}
+
+#endif //!UE_BUILD_SHIPPING	

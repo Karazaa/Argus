@@ -267,7 +267,8 @@ void AArgusActor::Update(float deltaTime, ETeam activePlayerControllerTeam)
 #if !UE_BUILD_SHIPPING
 		if (ArgusECSDebugger::IsEntityBeingDebugged(m_entity.GetId()))
 		{
-			DrawDebugString(GetWorld(), transformComponent->m_location, m_entity.GetDebugString(), nullptr, FColor::Yellow, 0.0f, true, 0.75f);
+			// TODO JAMES: uhhh what do we want to do here? It is too visually cluttered to show ID at the moment.
+			// DrawDebugString(GetWorld(), transformComponent->m_location, m_entity.GetDebugString(), nullptr, FColor::Yellow, 0.0f, true, 0.75f);
 		}
 #endif //!UE_BUILD_SHIPPING
 	}

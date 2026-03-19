@@ -25,4 +25,9 @@ private:
 	static uint16 GetFlockingRootMaxCountForTier(uint8 flockingTier);
 
 	static void IncrementStableEntitiesInRange(FlockingComponent* flockingRootFlockingComponent);
+
+#if !UE_BUILD_SHIPPING
+	static void DrawFlockingDebug(float deltaTime);
+	static void DrawFlockingDebugPerEntity(const UWorld* worldPointer, float deltaTime, const FlockingSystemsArgs& components);
+#endif //!UE_BUILD_SHIPPING
 };
