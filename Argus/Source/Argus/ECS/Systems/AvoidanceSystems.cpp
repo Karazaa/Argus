@@ -22,7 +22,12 @@ void AvoidanceSystems::RunSystems(UWorld* worldPointer, float deltaTime)
 
 	TransformSystemsArgs components;
 
-	ArgusEntity::IterateSystemsArgs<TransformSystemsArgs>([worldPointer, deltaTime](TransformSystemsArgs& components)
+	const GlobalSettingsComponent* settings = ArgusEntity::GetSingletonEntity().GetComponent<GlobalSettingsComponent>();
+	ARGUS_RETURN_ON_NULL(settings, ArgusECSLog);
+	const float inverseEntityPredictionTime = ArgusMath::SafeDivide(1.0f, settings->m_avoidanceEntityDetectionPredictionTime);
+	const float inverseObstaclePredictionTime = ArgusMath::SafeDivide(1.0f, settings->m_avoidanceObstacleDetectionPredictionTime);
+
+	ArgusEntity::IterateSystemsArgs<TransformSystemsArgs>([worldPointer, deltaTime, inverseEntityPredictionTime, inverseObstaclePredictionTime](TransformSystemsArgs& components)
 	{
 		if (components.m_entity.IsKillable() && !components.m_entity.IsAlive())
 		{
@@ -40,12 +45,12 @@ void AvoidanceSystems::RunSystems(UWorld* worldPointer, float deltaTime)
 			return;
 		}
 
-		ProcessORCAvoidance(worldPointer, deltaTime, components, nearbyEntitiesComponent);
+		ProcessORCAvoidance(worldPointer, deltaTime, components, nearbyEntitiesComponent, inverseEntityPredictionTime, inverseObstaclePredictionTime);
 	});
 }
 
 #pragma region Optimal Reciprocal Collision Avoidance
-void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime, const TransformSystemsArgs& components, const NearbyEntitiesComponent* nearbyEntitiesComponent)
+void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime, const TransformSystemsArgs& components, const NearbyEntitiesComponent* nearbyEntitiesComponent, float inverseEntityPredictionTime, float inverseObstaclePredictionTime)
 {
 	ARGUS_MEMORY_TRACE(ArgusAvoidanceSystems);
 	ARGUS_TRACE(AvoidanceSystems::ProcessORCAvoidance);
@@ -66,9 +71,6 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 	SpatialPartitioningComponent* spatialPartitioningComponent = singletonEntity.GetComponent<SpatialPartitioningComponent>();
 	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
 
-	const GlobalSettingsComponent* settings = singletonEntity.GetComponent<GlobalSettingsComponent>();
-	ARGUS_RETURN_ON_NULL(settings, ArgusECSLog);
-
 	FVector2D desiredVelocity = GetDesiredVelocity(components);
 
 	CreateEntityORCALinesParams params;
@@ -78,9 +80,8 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 	params.m_sourceEntityVelocity = desiredVelocity.IsNearlyZero() ? ArgusMath::ToCartesianVector2(desiredVelocity) : ArgusMath::ToCartesianVector2(components.m_velocityComponent->m_currentVelocity);
 	params.m_deltaTime = deltaTime;
 	params.m_entityRadius = components.m_transformComponent->m_radius;
-	// TODO JAMES: We really do not need to calculate the inverse times per entity. We should pass in the float values per entity.
-	params.m_defaultInverseEntityPredictionTime = 1.0f / settings->m_avoidanceEntityDetectionPredictionTime;
-	params.m_inverseObstaclePredictionTime = 1.0f / settings->m_avoidanceObstacleDetectionPredictionTime;
+	params.m_defaultInverseEntityPredictionTime = inverseEntityPredictionTime;
+	params.m_inverseObstaclePredictionTime = inverseObstaclePredictionTime;
 	params.m_spatialPartitioningComponent = spatialPartitioningComponent;
 
 	// If no entities nearby, then nothing can effect our navigation, so we should just early out with a desired velocity.

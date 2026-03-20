@@ -10,7 +10,7 @@ class AvoidanceSystems
 public:
 	static void RunSystems(UWorld* worldPointer, float deltaTime);
 
-	static void					ProcessORCAvoidance(UWorld* worldPointer, float deltaTime, const TransformSystemsArgs& components, const NearbyEntitiesComponent* nearbyEntitiesComponent);
+	static void					ProcessORCAvoidance(UWorld* worldPointer, float deltaTime, const TransformSystemsArgs& components, const NearbyEntitiesComponent* nearbyEntitiesComponent, float inverseEntityPredictionTime = 1.0f, float inverseObstaclePredictionTime = 1.0f);
 	static ArgusEntity			GetAvoidanceGroupLeader(ArgusEntity entity);
 	static bool					AreInSameAvoidanceGroup(ArgusEntity entity, ArgusEntity otherEntity);
 	static void					DecrementIdleEntitiesInGroup(ArgusEntity entity);
