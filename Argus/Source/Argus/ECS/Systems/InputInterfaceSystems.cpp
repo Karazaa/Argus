@@ -396,18 +396,15 @@ void InputInterfaceSystems::MoveEntityToTarget(ArgusEntity entity, EMovementStat
 		{
 			taskComponent->m_movementState = EMovementState::None;
 		}
-		else
+		else if (navigationComponent)
 		{
-			if (navigationComponent)
-			{
-				AvoidanceSystems::DecrementIdleEntitiesInGroup(entity);
-				taskComponent->m_movementState = inputMovementState;
-			}
-
-			targetingComponent->m_targetEntityId = targetEntity.GetId();
-			targetingComponent->m_targetLocation.Reset();
+			AvoidanceSystems::DecrementIdleEntitiesInGroup(entity);
+			taskComponent->m_movementState = inputMovementState;
 		}
 
+		targetingComponent->m_targetEntityId = targetEntity.GetId();
+		targetingComponent->m_targetLocation.Reset();
+		
 		DecalSystems::ClearMoveToLocationDecalPerEntity(entity, true);
 	}
 	else if (inputMovementState == EMovementState::ProcessMoveToLocationCommand)
