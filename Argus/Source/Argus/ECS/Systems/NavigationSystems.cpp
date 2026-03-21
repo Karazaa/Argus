@@ -35,6 +35,10 @@ void NavigationSystems::RunSystems(UWorld* worldPointer)
 
 		ProcessNavigationTaskCommands(worldPointer, components);
 		RecalculateMoveToEntityPaths(worldPointer, components);
+
+#if !UE_BUILD_SHIPPING
+		DrawNavigationDebugPerEntity(worldPointer, components);
+#endif //!UE_BUILD_SHIPPING
 	});
 }
 
@@ -262,31 +266,18 @@ void NavigationSystems::GeneratePathPointsForGroundedEntity(UWorld* worldPointer
 	}
 
 	TArray<FNavPathPoint>& pathPoints = pathFindingResult.Path->GetPathPoints();
-	const int numPathPoints = pathPoints.Num();
+	const int32 numPathPoints = pathPoints.Num();
 
-	if (numPathPoints <= 1u)
+	if (numPathPoints <= 1)
 	{
 		components.m_taskComponent->m_movementState = EMovementState::None;
 		return;
 	}
 
 	components.m_navigationComponent->m_navigationPoints.Reserve(numPathPoints);
-	for (int i = 0; i < numPathPoints; ++i)
+	for (int32 i = 0; i < numPathPoints; ++i)
 	{
 		components.m_navigationComponent->m_navigationPoints.Add(pathPoints[i].Location);
-
-#if !UE_BUILD_SHIPPING
-		if (!ArgusECSDebugger::ShouldShowNavigationDebugForEntity(components.m_entity.GetId()))
-		{
-			continue;
-		}
-
-		DrawDebugSphere(worldPointer, components.m_navigationComponent->m_navigationPoints[i], 20.0f, 20, FColor::Magenta, false, 3.0f, 0, 5.0f);
-		if ((i + 1) < numPathPoints)
-		{
-			DrawDebugLine(worldPointer, components.m_navigationComponent->m_navigationPoints[i], pathPoints[i + 1].Location, FColor::Magenta, false, 3.0f, 0, 5.0f);
-		}
-#endif //!UE_BUILD_SHIPPING
 	}
 }
 
@@ -304,15 +295,39 @@ void NavigationSystems::GeneratePathPointsForFlyingEntity(UWorld* worldPointer, 
 	FVector raisedTarget = targetLocation.value();
 	raisedTarget.Z = components.m_transformComponent->m_location.Z;
 	components.m_navigationComponent->m_navigationPoints.Add(raisedTarget);
+}
 
 #if !UE_BUILD_SHIPPING
-	if (!ArgusECSDebugger::ShouldShowNavigationDebugForEntity(components.m_entity.GetId()))
+void NavigationSystems::DrawNavigationDebugPerEntity(const UWorld* worldPointer, const NavigationSystemsArgs& components)
+{	
+	ARGUS_TRACE(NavigationSystems::DrawNavigationDebugPerEntity);
+
+	ARGUS_RETURN_ON_NULL(worldPointer, ArgusECSLog);
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME) || !ArgusECSDebugger::ShouldShowNavigationDebugForEntity(components.m_entity.GetId()))
 	{
 		return;
 	}
 
-	DrawDebugSphere(worldPointer, components.m_navigationComponent->m_navigationPoints[0], 20.0f, 20, FColor::Magenta, false, 3.0f, 0, 5.0f);
-	DrawDebugLine(worldPointer, components.m_navigationComponent->m_navigationPoints[0], components.m_navigationComponent->m_navigationPoints[1], FColor::Magenta, false, 3.0f, 0, 5.0f);
-	DrawDebugSphere(worldPointer, components.m_navigationComponent->m_navigationPoints[1], 20.0f, 20, FColor::Magenta, false, 3.0f, 0, 5.0f);
-#endif //!UE_BUILD_SHIPPING
+	if (!components.m_taskComponent->IsExecutingMoveTask())
+	{
+		return;
+	}
+
+	const int32 drawIndex = components.m_navigationComponent->m_lastPointIndex + 1;
+	const int32 numPathPoints = components.m_navigationComponent->m_navigationPoints.Num();
+	if (drawIndex >= numPathPoints)
+	{
+		return;
+	}
+
+	DrawDebugLine(worldPointer, components.m_transformComponent->m_location, components.m_navigationComponent->m_navigationPoints[drawIndex], FColor::Magenta, false, -1.0f);
+	for (int32 i = drawIndex; i < numPathPoints; ++i)
+	{
+		DrawDebugSphere(worldPointer, components.m_navigationComponent->m_navigationPoints[i], 10.0f, 10, FColor::Magenta, false, -1.0f);
+		if ((i + 1) < numPathPoints)
+		{
+			DrawDebugLine(worldPointer, components.m_navigationComponent->m_navigationPoints[i], components.m_navigationComponent->m_navigationPoints[i + 1], FColor::Magenta, false, -1.0f);
+		}
+	}
 }
+#endif //!UE_BUILD_SHIPPING

@@ -21,4 +21,8 @@ private:
 	static void ChangeTasksOnNavigatingToLocation(const NavigationSystemsArgs& components);
 	static void GeneratePathPointsForGroundedEntity(UWorld* worldPointer, std::optional<FVector> targetLocation, const NavigationSystemsArgs& components);
 	static void GeneratePathPointsForFlyingEntity(UWorld* worldPointer, std::optional<FVector> targetLocation, const NavigationSystemsArgs& components);
+
+#if !UE_BUILD_SHIPPING
+	static void DrawNavigationDebugPerEntity(const UWorld* worldPointer, const NavigationSystemsArgs& components);
+#endif //!UE_BUILD_SHIPPING
 };
