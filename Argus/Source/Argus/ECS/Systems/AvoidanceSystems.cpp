@@ -71,12 +71,26 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 	SpatialPartitioningComponent* spatialPartitioningComponent = singletonEntity.GetComponent<SpatialPartitioningComponent>();
 	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
 
-	FVector2D desiredVelocity = GetDesiredVelocity(components);
-
 	CreateEntityORCALinesParams params;
 	params.m_sourceEntityLocation3D = components.m_transformComponent->m_location;
 	params.m_sourceEntityLocation3D.Z += ArgusECSConstants::k_debugDrawHeightAdjustment;
 	params.m_sourceEntityLocation = ArgusMath::ToCartesianVector2(FVector2D(params.m_sourceEntityLocation3D));
+
+	PopulateAvoidanceRanges(components.m_entity, params.m_adjacentEntityRange, params.m_adjacentObstacleRange);
+
+	TArray<ObstacleIndicies> obstacleIndicies;
+	if (components.m_taskComponent->m_flightState == EFlightState::Grounded)
+	{
+		spatialPartitioningComponent->m_obstaclePointKDTree.FindObstacleIndiciesWithinRangeOfLocation
+		(
+			obstacleIndicies,
+			FVector(params.m_sourceEntityLocation, components.m_transformComponent->m_location.Z),
+			params.m_adjacentObstacleRange
+		);
+	}
+
+	FVector2D desiredVelocity = GetDesiredVelocity(components, !obstacleIndicies.IsEmpty());
+
 	params.m_sourceEntityVelocity = desiredVelocity.IsNearlyZero() ? ArgusMath::ToCartesianVector2(desiredVelocity) : ArgusMath::ToCartesianVector2(components.m_velocityComponent->m_currentVelocity);
 	params.m_deltaTime = deltaTime;
 	params.m_entityRadius = components.m_transformComponent->m_radius;
@@ -99,9 +113,9 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 
 	// Generate ORCA lines for grounded entities.
 	TArray<ORCALine> calculatedORCALines;
-	if (components.m_taskComponent->m_flightState == EFlightState::Grounded)
+	if (!obstacleIndicies.IsEmpty())
 	{
-		CreateObstacleORCALines(worldPointer, params, components, calculatedORCALines);
+		CreateObstacleORCALines(worldPointer, params, components, obstacleIndicies, calculatedORCALines);
 #if !UE_BUILD_SHIPPING
 		if (worldPointer && ArgusECSDebugger::ShouldShowAvoidanceDebugForEntity(components.m_entity.GetId()))
 		{
@@ -273,31 +287,36 @@ FVector2D AvoidanceSystems::GetFlockingVelocity(const TransformSystemsArgs& comp
 	return FVector2D(FlockingSystems::GetFlockingPoint(ArgusEntity::RetrieveEntity(entityAvoidanceGroupComponent->m_groupId)) - components.m_transformComponent->m_location);
 }
 
-void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const CreateEntityORCALinesParams& params, const TransformSystemsArgs& components, TArray<ORCALine>& outORCALines)
+float AvoidanceSystems::GetEntityAvoidanceRange(ArgusEntity entity)
+{
+	float output;
+	float otherValue;
+	PopulateAvoidanceRanges(entity, output, otherValue);
+	return output;
+}
+
+float AvoidanceSystems::GetObstacleAvoidanceRange(ArgusEntity entity)
+{
+	float output;
+	float otherValue;
+	PopulateAvoidanceRanges(entity, otherValue, output);
+	return output;
+}
+
+void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const CreateEntityORCALinesParams& params, const TransformSystemsArgs& components, const TArray<ObstacleIndicies>& obstacleIndicies,  TArray<ORCALine>& outORCALines)
 {
 	if (!worldPointer || !params.m_spatialPartitioningComponent)
 	{
 		return;
 	}
 
-	const float adjacentEntityRange = components.m_velocityComponent->m_desiredSpeedUnitsPerSecond + components.m_transformComponent->m_radius;
-	const float obstacleQueryRange = components.m_transformComponent->m_radius * ArgusECSConstants::k_avoidanceObstacleQueryRadiusMultiplier;
-
 #if !UE_BUILD_SHIPPING
 	if (ArgusECSDebugger::ShouldShowAvoidanceDebugForEntity(components.m_entity.GetId()))
 	{
-		DrawDebugCircle(worldPointer, params.m_sourceEntityLocation3D, (2.0f * components.m_transformComponent->m_radius), 20, FColor::Orange, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth, FVector::RightVector, FVector::ForwardVector, false);
-		DrawDebugCircle(worldPointer, params.m_sourceEntityLocation3D, adjacentEntityRange, 20, FColor::Yellow, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth, FVector::RightVector, FVector::ForwardVector, false);
+		DrawDebugCircle(worldPointer, params.m_sourceEntityLocation3D, params.m_adjacentObstacleRange, 20, FColor::Orange, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth, FVector::RightVector, FVector::ForwardVector, false);
+		DrawDebugCircle(worldPointer, params.m_sourceEntityLocation3D, params.m_adjacentEntityRange, 20, FColor::Yellow, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth, FVector::RightVector, FVector::ForwardVector, false);
 	}
 #endif //!UE_BUILD_SHIPPING
-	
-	TArray<ObstacleIndicies> obstacleIndicies;
-	params.m_spatialPartitioningComponent->m_obstaclePointKDTree.FindObstacleIndiciesWithinRangeOfLocation
-	(
-		obstacleIndicies,
-		FVector(params.m_sourceEntityLocation, components.m_transformComponent->m_location.Z),
-		obstacleQueryRange
-	);
 
 	for (int32 i = 0; i < obstacleIndicies.Num(); ++i)
 	{
@@ -603,8 +622,13 @@ void AvoidanceSystems::ThreeDimensionalLinearProgram(const TArray<ORCALine>& orc
 	}
 }
 
-FVector2D AvoidanceSystems::GetDesiredVelocity(const TransformSystemsArgs& components)
+FVector2D AvoidanceSystems::GetDesiredVelocity(const TransformSystemsArgs& components, bool isInRangeOfObstacles)
 {
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return FVector2D::ZeroVector;
+	}
+
 	const FVector2D flockingVelocity = GetFlockingVelocity(components);
 
 	// If we are not executing a move task, we would like to early out with zero velocity as our desired velocity (this may change as we define more functionality for AvoidanceGroups)
@@ -624,12 +648,11 @@ FVector2D AvoidanceSystems::GetDesiredVelocity(const TransformSystemsArgs& compo
 		return FVector2D::ZeroVector;
 	}
 
-	TOptional<FVector> sourceLocation = GetAvoidanceGroupSourceLocation(components);
-	if (!sourceLocation.IsSet())
+	desiredDirection = GetDesiredDirection(components, isInRangeOfObstacles);
+	if (desiredDirection.IsNearlyZero())
 	{
-		sourceLocation = components.m_transformComponent->m_location;
+		return FVector2D::ZeroVector;
 	}
-	desiredDirection = (components.m_navigationComponent->m_navigationPoints[futureIndex] - sourceLocation.GetValue());
 
 	const GlobalSettingsComponent* settings = GlobalSettingsComponent::Get();
 	ARGUS_RETURN_ON_NULL_VALUE(settings, ArgusECSLog, FVector2D::ZeroVector);
@@ -638,6 +661,37 @@ FVector2D AvoidanceSystems::GetDesiredVelocity(const TransformSystemsArgs& compo
 	desiredDirection2D.Normalize();
 
 	return ArgusMath::ToCartesianVector2(desiredDirection2D * components.m_velocityComponent->m_desiredSpeedUnitsPerSecond);
+}
+
+FVector AvoidanceSystems::GetDesiredDirection(const TransformSystemsArgs& components, bool isInRangeOfObstacles)
+{
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return FVector::ZeroVector;
+	}
+
+	ArgusEntity groupLeaderEntity = GetAvoidanceGroupLeader(components.m_entity);
+	if (!groupLeaderEntity || isInRangeOfObstacles)
+	{
+		if (!components.m_navigationComponent->HasValidNextIndex())
+		{
+			return FVector::ZeroVector;
+		}
+
+		return components.m_navigationComponent->m_navigationPoints[components.m_navigationComponent->m_lastPointIndex + 1] - components.m_transformComponent->m_location;		
+	}
+
+	const AvoidanceGroupingComponent* groupLeaderGroupingComponent = groupLeaderEntity.GetComponent<AvoidanceGroupingComponent>();
+	const NavigationComponent* groupLeaderNavigationComponent = groupLeaderEntity.GetComponent<NavigationComponent>();
+	ARGUS_RETURN_ON_NULL_VALUE(groupLeaderGroupingComponent, ArgusECSLog, FVector::ZeroVector);
+	ARGUS_RETURN_ON_NULL_VALUE(groupLeaderNavigationComponent, ArgusECSLog, FVector::ZeroVector);
+
+	if (!groupLeaderNavigationComponent->HasValidNextIndex())
+	{
+		return FVector::ZeroVector;
+	}
+
+	return groupLeaderNavigationComponent->m_navigationPoints[groupLeaderNavigationComponent->m_lastPointIndex + 1] - groupLeaderGroupingComponent->m_groupAverageLocation;
 }
 
 float AvoidanceSystems::FindAreaOfObstacleCartesian(const TArray<ObstaclePoint>& obstaclePoints)
@@ -890,6 +944,24 @@ void AvoidanceSystems::CalculateORCALineForObstacleSegment(const CreateEntityORC
 	line.m_direction = -rightLegDirection;
 	line.m_point = rightCutoff + (params.m_entityRadius * params.m_inverseObstaclePredictionTime * FVector2D(-line.m_direction.Y, line.m_direction.X));
 	outORCALines.Add(line);
+}
+
+void AvoidanceSystems::PopulateAvoidanceRanges(ArgusEntity entity, float& outEntityRange, float& outObstacleRange)
+{
+	outEntityRange = 0.0f;
+	outObstacleRange = 0.0f;
+	const GlobalSettingsComponent* settings = GlobalSettingsComponent::Get();
+	const TransformComponent* transformComponent = entity.GetComponent<TransformComponent>();
+	ARGUS_RETURN_ON_NULL(settings, ArgusECSLog);
+	ARGUS_RETURN_ON_NULL(transformComponent, ArgusECSLog);
+
+	outEntityRange = transformComponent->m_radius;
+	outObstacleRange = outEntityRange;
+	if (const VelocityComponent* velocityComponent = entity.GetComponent<VelocityComponent>())
+	{
+		outEntityRange = velocityComponent->m_desiredSpeedUnitsPerSecond * settings->m_avoidanceEntityDetectionPredictionTime;
+		outObstacleRange = velocityComponent->m_desiredSpeedUnitsPerSecond * settings->m_avoidanceObstacleDetectionPredictionTime;
+	}
 }
 
 void AvoidanceSystems::DrawORCADebugLines(UWorld* worldPointer, const CreateEntityORCALinesParams& params, const TArray<ORCALine>& orcaLines, bool areObstacleLines, int32 startingLine)

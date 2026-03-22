@@ -29,4 +29,9 @@ struct NavigationComponent
 	{
 		m_queuedWaypoints.Reset();
 	}
+
+	bool HasValidNextIndex() const 
+	{
+		return m_navigationPoints.IsValidIndex(m_lastPointIndex + 1);
+	}
 };

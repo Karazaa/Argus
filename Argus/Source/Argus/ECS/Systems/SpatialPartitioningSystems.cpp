@@ -11,6 +11,7 @@
 #include "NavMesh/RecastHelpers.h"
 #include "NavMesh/RecastNavMesh.h"
 #include "NavMesh/RecastQueryFilter.h"
+#include "Systems/AvoidanceSystems.h"
 
 static TAutoConsoleVariable<bool> CVarShowObstacleDebug(TEXT("Argus.SpatialPartitioning.ShowAvoidanceObstacleDebug"), false, TEXT(""));
 
@@ -56,12 +57,10 @@ void SpatialPartitioningSystems::ClearSeenByStatus()
 void SpatialPartitioningSystems::CacheAdjacentEntityIds(const SpatialPartitioningComponent* spatialPartitioningComponent)
 {
 	ARGUS_TRACE(SpatialPartitioningSystems::CacheAdjacentEntityIds);
-	
-	const GlobalSettingsComponent* settings = GlobalSettingsComponent::Get();
-	ARGUS_RETURN_ON_NULL(settings, ArgusECSLog);
+
 	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
 
-	ArgusEntity::IterateEntities([settings, spatialPartitioningComponent](ArgusEntity entity)
+	ArgusEntity::IterateEntities([spatialPartitioningComponent](ArgusEntity entity)
 	{
 		NearbyEntitiesComponent* nearbyEntitiesComponent = entity.GetComponent<NearbyEntitiesComponent>();
 		const TransformComponent* transformComponent = entity.GetComponent<TransformComponent>();
@@ -81,11 +80,7 @@ void SpatialPartitioningSystems::CacheAdjacentEntityIds(const SpatialPartitionin
 			avoidanceGroupingComponent->m_entityIdsInGroup.Reset();
 		}
 
-		float adjacentEntityRange = transformComponent->m_radius;
-		if (const VelocityComponent* velocityComponent = entity.GetComponent<VelocityComponent>())
-		{
-			adjacentEntityRange = velocityComponent->m_desiredSpeedUnitsPerSecond * settings->m_avoidanceEntityDetectionPredictionTime;
-		}
+		const float adjacentEntityRange = AvoidanceSystems::GetEntityAvoidanceRange(entity);
 
 		const TFunction<bool(const ArgusEntityKDTreeNode*)> queryFilter = [entity](const ArgusEntityKDTreeNode* entityNode)
 		{
