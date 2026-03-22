@@ -101,5 +101,7 @@ private:
 	
 	static void			PopulateAvoidanceRanges(ArgusEntity entity, float& outEntityRange, float& outObstacleRange);
 	
+#if !UE_BUILD_SHIPPING
 	static void			DrawORCADebugLines(UWorld* worldPointer, const CreateEntityORCALinesParams& params, const TArray<ORCALine>& orcaLines, bool areObstacleLines, int32 startingLine);
+#endif //!UE_BUILD_SHIPPING
 };

@@ -3,7 +3,6 @@
 #include "AvoidanceSystems.h"
 #include "ArgusMath.h"
 #include "ArgusSystemsManager.h"
-#include "DrawDebugHelpers.h"
 #include "NavigationData.h"
 #include "NavigationSystem.h"
 #include "Systems/CombatSystems.h"
@@ -14,6 +13,7 @@
 
 #if !UE_BUILD_SHIPPING
 #include "ArgusECSDebugger.h"
+#include "DrawDebugHelpers.h"
 #endif //!UE_BUILD_SHIPPING
 
 void AvoidanceSystems::RunSystems(UWorld* worldPointer, float deltaTime)
@@ -116,12 +116,6 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 	if (!obstacleIndicies.IsEmpty())
 	{
 		CreateObstacleORCALines(worldPointer, params, components, obstacleIndicies, calculatedORCALines);
-#if !UE_BUILD_SHIPPING
-		if (worldPointer && ArgusECSDebugger::ShouldShowAvoidanceDebugForEntity(components.m_entity.GetId()))
-		{
-			DrawORCADebugLines(worldPointer, params, calculatedORCALines, true, 0);
-		}
-#endif //!UE_BUILD_SHIPPING
 	}
 	const int32 numStaticObstacles = calculatedORCALines.Num();
 
@@ -143,6 +137,8 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 #if !UE_BUILD_SHIPPING
 	if (worldPointer && ArgusECSDebugger::ShouldShowAvoidanceDebugForEntity(components.m_entity.GetId()))
 	{
+		DrawDebugCircle(worldPointer, params.m_sourceEntityLocation3D, params.m_adjacentObstacleRange, 20, FColor::Orange, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth, FVector::RightVector, FVector::ForwardVector, false);
+		DrawDebugCircle(worldPointer, params.m_sourceEntityLocation3D, params.m_adjacentEntityRange, 20, FColor::Yellow, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth, FVector::RightVector, FVector::ForwardVector, false);
 		DrawORCADebugLines(worldPointer, params, calculatedORCALines, false, numStaticObstacles);
 		DrawDebugLine(worldPointer, params.m_sourceEntityLocation3D, params.m_sourceEntityLocation3D + FVector(ArgusMath::ToUnrealVector2(resultingVelocity), 0.0f), FColor::Magenta, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth);
 		DrawDebugLine(worldPointer, params.m_sourceEntityLocation3D, params.m_sourceEntityLocation3D + FVector(ArgusMath::ToUnrealVector2(desiredVelocity), 0.0f), FColor::Turquoise, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth);
@@ -310,14 +306,6 @@ void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const Creat
 		return;
 	}
 
-#if !UE_BUILD_SHIPPING
-	if (ArgusECSDebugger::ShouldShowAvoidanceDebugForEntity(components.m_entity.GetId()))
-	{
-		DrawDebugCircle(worldPointer, params.m_sourceEntityLocation3D, params.m_adjacentObstacleRange, 20, FColor::Orange, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth, FVector::RightVector, FVector::ForwardVector, false);
-		DrawDebugCircle(worldPointer, params.m_sourceEntityLocation3D, params.m_adjacentEntityRange, 20, FColor::Yellow, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth, FVector::RightVector, FVector::ForwardVector, false);
-	}
-#endif //!UE_BUILD_SHIPPING
-
 	for (int32 i = 0; i < obstacleIndicies.Num(); ++i)
 	{
 		const ObstaclePoint& previous = params.m_spatialPartitioningComponent->m_obstacles[obstacleIndicies[i].m_obstacleIndex].GetPrevious(obstacleIndicies[i].m_obstaclePointIndex);
@@ -335,6 +323,13 @@ void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const Creat
 		}
 #endif //!UE_BUILD_SHIPPING
 	}
+
+#if !UE_BUILD_SHIPPING
+	if (worldPointer && ArgusECSDebugger::ShouldShowAvoidanceDebugForEntity(components.m_entity.GetId()))
+	{
+		DrawORCADebugLines(worldPointer, params, outORCALines, true, 0);
+	}
+#endif //!UE_BUILD_SHIPPING
 }
 
 void AvoidanceSystems::CreateEntityORCALines(const CreateEntityORCALinesParams& params, const TransformSystemsArgs& components, const NearbyEntitiesComponent* nearbyEntitiesComponent, TArray<ORCALine>& outORCALines, FVector2D& outDesiredVelocity)
@@ -642,7 +637,7 @@ FVector2D AvoidanceSystems::GetDesiredVelocity(const TransformSystemsArgs& compo
 	const int32 numNavigationPoints = components.m_navigationComponent->m_navigationPoints.Num();
 	FVector desiredDirection = FVector::ZeroVector;
 
-	if (numNavigationPoints == 0u || futureIndex >= numNavigationPoints)
+	if (numNavigationPoints == 0u || !components.m_navigationComponent->HasValidNextIndex())
 	{
 		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Attempting to process ORCA, but the source %s's %s is in an invalid state."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(NavigationComponent));
 		return FVector2D::ZeroVector;
@@ -964,6 +959,7 @@ void AvoidanceSystems::PopulateAvoidanceRanges(ArgusEntity entity, float& outEnt
 	}
 }
 
+#if !UE_BUILD_SHIPPING
 void AvoidanceSystems::DrawORCADebugLines(UWorld* worldPointer, const CreateEntityORCALinesParams& params, const TArray<ORCALine>& orcaLines, bool areObstacleLines, int32 startingLine)
 {
 	if (!worldPointer)
@@ -975,7 +971,7 @@ void AvoidanceSystems::DrawORCADebugLines(UWorld* worldPointer, const CreateEnti
 	const FQuat relativeVelocityBasisRotation = FRotationMatrix::MakeFromXZ(FVector::ForwardVector, FVector::UpVector).ToQuat();
 	const FTransform basisTransform = FTransform(relativeVelocityBasisRotation, relativeVelocityBasisTranslation);
 
-	FColor debugColor = areObstacleLines ? FColor::Purple : FColor::Cyan;
+	const FColor debugColor = areObstacleLines ? FColor::Purple : FColor::Cyan;
 
 	for (int32 i = startingLine; i < orcaLines.Num(); ++i)
 	{
@@ -989,5 +985,6 @@ void AvoidanceSystems::DrawORCADebugLines(UWorld* worldPointer, const CreateEnti
 		DrawDebugLine(worldPointer, worldspacePoint - worldspaceOrthogonalDirectionScaled, worldspacePoint + worldspaceOrthogonalDirectionScaled, debugColor, false, -1.0f, 0u, ArgusECSConstants::k_debugDrawLineWidth);
 	}
 }
+#endif //!UE_BUILD_SHIPPING
 
 #pragma endregion
