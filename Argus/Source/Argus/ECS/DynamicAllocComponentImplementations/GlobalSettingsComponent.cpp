@@ -17,6 +17,7 @@ void GlobalSettingsComponent::Reset()
 	m_avoidanceEntityDetectionPredictionTime = 0.75f;
 	m_avoidanceObstacleDetectionPredictionTime = 0.75f;
 	m_flockingVelocityInfluence = 0.3f;
+	m_obstacleShrinkFixupDistance = 25.0f;
 }
 
 void GlobalSettingsComponent::DrawComponentDebug() const
@@ -41,6 +42,10 @@ void GlobalSettingsComponent::DrawComponentDebug() const
 		ImGui::Text("m_flockingVelocityInfluence");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_flockingVelocityInfluence);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_obstacleShrinkFixupDistance");
+		ImGui::TableNextColumn();
+		ImGui::Text("%.2f", m_obstacleShrinkFixupDistance);
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

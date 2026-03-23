@@ -26,6 +26,11 @@ private:
 	static bool FloodFillGroupRecursive(uint16 groupId, AvoidanceGroupingComponent* groupLeaderComponent, uint16 argusEntityId, FVector& currentPositionSum, float& numberOfEntitiesInGroup, uint16& numberOfStoppedEntities);
 	static bool GetNavMeshWalls(const SpatialPartitioningComponent* spatialPartitioningComponent, const ARecastNavMesh* navMesh, const FNavLocation& originLocation, TArray<FVector>& outNavWalls);
 	static void ConvertWallsIntoObstacles(const TArray<FVector>& navEdges, ObstaclesContainer& outObstacles);
+	static void CalculateFixupDirectionForObstacles(ObstaclePointArray& outObstacle);
+	static void ApplyFixupDirectionForObstacles(ObstaclePointArray& outObstacle);
 	static void CalculateDirectionAndConvexForObstacles(ObstaclePointArray& outObstacle);
+
+#if !UE_BUILD_SHIPPING
 	static void DrawDebugObstacles(UWorld* worldPointer, const ObstaclesContainer& obstacles);
+#endif //!UE_BUILD_SHIPPING
 };

@@ -18,5 +18,8 @@ struct GlobalSettingsComponent
 	ARGUS_PROPERTY(EditDefaultsOnly, meta = (Category = "Flocking"))
 	float m_flockingVelocityInfluence = 0.3f;
 
+	ARGUS_PROPERTY(EditDefaultsOnly, meta = (Category = "Obstacles"))
+	float m_obstacleShrinkFixupDistance = 25.0f;
+
 	static const GlobalSettingsComponent* Get();
 };

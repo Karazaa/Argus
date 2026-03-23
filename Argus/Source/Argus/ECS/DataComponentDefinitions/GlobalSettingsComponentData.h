@@ -21,6 +21,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, meta = (Category = "Flocking"))
 	float m_flockingVelocityInfluence = 0.3f;
 
+	UPROPERTY(EditDefaultsOnly, meta = (Category = "Obstacles"))
+	float m_obstacleShrinkFixupDistance = 25.0f;
+
 
 	void InstantiateComponentForEntity(ArgusEntity entity) const override;
 	void OnComponentDataLoaded() const override;

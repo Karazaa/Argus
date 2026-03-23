@@ -36,6 +36,7 @@ public:
 	bool IsNextPointElevated(int32 index) const;
 
 	float m_floorHeight = 0.0f;
+	TArray<FVector2D> m_fixupDirections;
 };
 
 class ObstaclesContainer : public TArray<ObstaclePointArray, ArgusContainerAllocator<25u> > {};
