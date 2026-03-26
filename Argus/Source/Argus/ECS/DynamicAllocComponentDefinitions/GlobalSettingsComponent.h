@@ -21,5 +21,8 @@ struct GlobalSettingsComponent
 	ARGUS_PROPERTY(EditDefaultsOnly, meta = (Category = "Obstacles"))
 	float m_obstacleShrinkFixupDistance = 25.0f;
 
+	ARGUS_PROPERTY(EditDefaultsOnly, meta = (Category = "Obstacles"))
+	float m_maxObstaclePointDistance = 150.0f;
+
 	static const GlobalSettingsComponent* Get();
 };

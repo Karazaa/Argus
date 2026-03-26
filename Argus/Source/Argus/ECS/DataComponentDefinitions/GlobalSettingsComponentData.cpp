@@ -14,6 +14,7 @@ void UGlobalSettingsComponentData::InstantiateComponentForEntity(ArgusEntity ent
 	GlobalSettingsComponentRef->m_avoidanceObstacleDetectionPredictionTime = m_avoidanceObstacleDetectionPredictionTime;
 	GlobalSettingsComponentRef->m_flockingVelocityInfluence = m_flockingVelocityInfluence;
 	GlobalSettingsComponentRef->m_obstacleShrinkFixupDistance = m_obstacleShrinkFixupDistance;
+	GlobalSettingsComponentRef->m_maxObstaclePointDistance = m_maxObstaclePointDistance;
 }
 
 void UGlobalSettingsComponentData::OnComponentDataLoaded() const

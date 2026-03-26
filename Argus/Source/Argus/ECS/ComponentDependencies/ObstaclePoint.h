@@ -16,7 +16,10 @@ struct ObstaclePoint
 
 	FVector2D GetLeftVector() const { return FVector2D(-m_direction.Y, m_direction.X); }
 	FVector2D GetRightVector() const { return FVector2D(m_direction.Y, -m_direction.X); }
+
+#if !UE_BUILD_SHIPPING
 	void DrawDebugObstaclePoint(UWorld* worldPointer) const;
+#endif //!UE_BUILD_SHIPPING
 };
 
 class ObstaclePointArray : public TArray<ObstaclePoint, ArgusContainerAllocator<100u> >

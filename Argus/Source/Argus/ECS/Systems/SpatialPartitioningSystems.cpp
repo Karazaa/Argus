@@ -660,7 +660,7 @@ void SpatialPartitioningSystems::ConvertWallsIntoObstacles(const TArray<FVector>
 		CalculateFixupDirectionForObstacles(outObstacles[i]);
 		ApplyFixupDirectionForObstacles(outObstacles[i]);
 		CalculateDirectionAndConvexForObstacles(outObstacles[i]);
-		// TODO JAMES: Apply fixup directions and then clear fixup direction array.
+		outObstacles[i].m_fixupDirections.Empty();
 	}
 }
 
@@ -747,17 +747,6 @@ void SpatialPartitioningSystems::DrawDebugObstacles(UWorld* worldPointer, const 
 				FVector(ArgusMath::ToUnrealVector2(obstacles[i][j].m_point), debugHeight),
 				FVector(ArgusMath::ToUnrealVector2(obstacles[i][j].m_point + (obstacles[i][j].m_direction * 100.0f)), debugHeight),
 				obstacles[i].IsPointElevated(j) ? FColor::Magenta : FColor::Purple,
-				true,
-				60.0f,
-				0u,
-				ArgusECSConstants::k_debugDrawLineWidth
-			);
-			DrawDebugLine
-			(
-				worldPointer,
-				FVector(ArgusMath::ToUnrealVector2(obstacles[i][j].m_point), debugHeight),
-				FVector(ArgusMath::ToUnrealVector2(obstacles[i][j].m_point + (obstacles[i].m_fixupDirections[j] * settings->m_obstacleShrinkFixupDistance * -1.0f)), debugHeight),
-				FColor::Yellow,
 				true,
 				60.0f,
 				0u,

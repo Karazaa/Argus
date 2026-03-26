@@ -18,6 +18,7 @@ void GlobalSettingsComponent::Reset()
 	m_avoidanceObstacleDetectionPredictionTime = 0.75f;
 	m_flockingVelocityInfluence = 0.3f;
 	m_obstacleShrinkFixupDistance = 25.0f;
+	m_maxObstaclePointDistance = 150.0f;
 }
 
 void GlobalSettingsComponent::DrawComponentDebug() const
@@ -46,6 +47,10 @@ void GlobalSettingsComponent::DrawComponentDebug() const
 		ImGui::Text("m_obstacleShrinkFixupDistance");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_obstacleShrinkFixupDistance);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_maxObstaclePointDistance");
+		ImGui::TableNextColumn();
+		ImGui::Text("%.2f", m_maxObstaclePointDistance);
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

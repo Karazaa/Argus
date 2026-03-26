@@ -4,6 +4,9 @@
 #include "ArgusECSConstants.h"
 #include "ArgusLogging.h"
 #include "ArgusMath.h"
+#include "DynamicAllocComponentDefinitions/GlobalSettingsComponent.h"
+
+#if !UE_BUILD_SHIPPING
 #include "DrawDebugHelpers.h"
 
 void ObstaclePoint::DrawDebugObstaclePoint(UWorld* worldPointer) const
@@ -47,6 +50,7 @@ void ObstaclePoint::DrawDebugObstaclePoint(UWorld* worldPointer) const
 		ArgusECSConstants::k_debugDrawLineWidth
 	);
 }
+#endif //#!UE_BUILD_SHIPPING
 
 const ObstaclePoint& ObstaclePointArray::GetHead() const
 {
@@ -94,27 +98,31 @@ const ObstaclePoint& ObstaclePointArray::GetNext(int32 index) const
 
 void ObstaclePointArray::FillInBetweenObstaclePoints(const ObstaclePoint& fromPoint, const ObstaclePoint& toPoint, TArray<ObstaclePoint>& outPoints)
 {
-	// TODO JAMES: Approach this in a way that won't lead to duplicate nodes too close to each other.
+	const GlobalSettingsComponent* settings = GlobalSettingsComponent::Get();
+	ARGUS_RETURN_ON_NULL(settings, ArgusECSLog);
 
-	//const float deltaHeight = toPoint.m_height - fromPoint.m_height;
-	//const FVector2D betweenObstaclePoints = toPoint.m_point - fromPoint.m_point;
-	//float distanceBetweenObstaclePoints = betweenObstaclePoints.Length();
+	const float deltaHeight = toPoint.m_height - fromPoint.m_height;
+	const FVector2D betweenObstaclePoints = toPoint.m_point - fromPoint.m_point;
+	const float distanceBetweenObstaclePoints = betweenObstaclePoints.Length();
+	if (distanceBetweenObstaclePoints < settings->m_maxObstaclePointDistance)
+	{
+		return;
+	}
 
-	//const FVector2D directionBetweenObstaclePoints = ArgusMath::SafeDivide(betweenObstaclePoints, distanceBetweenObstaclePoints);
-	//const float slopeBetweenObstaclePoints = ArgusMath::SafeDivide(deltaHeight, distanceBetweenObstaclePoints);
+	const FVector2D directionBetweenObstaclePoints = ArgusMath::SafeDivide(betweenObstaclePoints, distanceBetweenObstaclePoints);
+	const float slopeBetweenObstaclePoints = ArgusMath::SafeDivide(deltaHeight, distanceBetweenObstaclePoints);
 
-	//outPoints.Reserve(2 + FMath::FloorToInt32(distanceBetweenObstaclePoints / ArgusECSConstants::k_avoidanceObstacleSplitDistance));
+	const int32 numAddedPoints = FMath::FloorToInt32(ArgusMath::SafeDivide(distanceBetweenObstaclePoints, settings->m_maxObstaclePointDistance));
+	const float distanceIncrement = ArgusMath::SafeDivide(distanceBetweenObstaclePoints, (numAddedPoints + 1));
+	outPoints.Reserve(2 + numAddedPoints);
 
-	//float iterations = 0.0f;
-	//while (distanceBetweenObstaclePoints > ArgusECSConstants::k_avoidanceObstacleSplitDistance)
-	//{
-	//	iterations += 1.0f;
-	//	distanceBetweenObstaclePoints -= ArgusECSConstants::k_avoidanceObstacleSplitDistance;
-
-	//	ObstaclePoint& pointToInsert = outPoints.Emplace_GetRef();
-	//	pointToInsert.m_point = fromPoint.m_point + ((iterations * ArgusECSConstants::k_avoidanceObstacleSplitDistance) * directionBetweenObstaclePoints);
-	//	pointToInsert.m_height = fromPoint.m_height + ((iterations * ArgusECSConstants::k_avoidanceObstacleSplitDistance) * slopeBetweenObstaclePoints);
-	//}
+	for (int32 i = 1; i <= numAddedPoints; ++i)
+	{
+		const float distanceThisIteration = static_cast<float>(i) * distanceIncrement;
+		ObstaclePoint& pointToInsert = outPoints.Emplace_GetRef();
+		pointToInsert.m_point = fromPoint.m_point + (distanceThisIteration * directionBetweenObstaclePoints);
+		pointToInsert.m_height = fromPoint.m_height + (distanceThisIteration * slopeBetweenObstaclePoints);
+	}
 }
 
 void ObstaclePointArray::AddObstaclePointsWithFillIn(const ObstaclePoint& instigatingObstacle, bool addToHead)
