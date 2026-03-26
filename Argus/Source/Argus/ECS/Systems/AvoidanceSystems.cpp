@@ -340,6 +340,10 @@ void AvoidanceSystems::CreateEntityORCALines(const CreateEntityORCALinesParams& 
 	}
 	ARGUS_RETURN_ON_NULL(nearbyEntitiesComponent, ArgusECSLog);
 
+	const GlobalSettingsComponent* settings = GlobalSettingsComponent::Get();
+	ARGUS_RETURN_ON_NULL(settings, ArgusECSLog);
+	const AvoidanceGroupingComponent* sourceGroupingComponent = components.m_entity.GetComponent<AvoidanceGroupingComponent>();
+	
 	const bool isGrounded = components.m_taskComponent->m_flightState == EFlightState::Grounded;
 	for (int32 i = 0; i < nearbyEntitiesComponent->GetNearbyEntities(!isGrounded).GetEntityIdsInAvoidanceRange().Num(); ++i)
 	{
@@ -360,15 +364,22 @@ void AvoidanceSystems::CreateEntityORCALines(const CreateEntityORCALinesParams& 
 			continue;
 		}
 
-		const float effortCoefficient = GetEffortCoefficientForEntityPair(components, foundEntity);
+		CreateEntityORCALinesParamsPerEntity perEntityParams;
+		const AvoidanceGroupingComponent* foundGroupingComponent = foundEntity.GetComponent<AvoidanceGroupingComponent>();
+		if (sourceGroupingComponent && foundGroupingComponent && sourceGroupingComponent->m_groupId == foundGroupingComponent->m_groupId)
+		{
+			perEntityParams.m_inSameAvoidanceGroup = true;
+		}
+
+		const float effortCoefficient = GetEffortCoefficientForEntityPair(components, foundEntity, sourceGroupingComponent, foundGroupingComponent, perEntityParams.m_inSameAvoidanceGroup);
 		if (effortCoefficient == 0.0f)
 		{
 			continue;
 		}
 
-		CreateEntityORCALinesParamsPerEntity perEntityParams;
 		perEntityParams.m_foundEntityLocation = ArgusMath::ToCartesianVector2(FVector2D(foundTransformComponent->m_location));
 		perEntityParams.m_inverseEntityPredictionTime = params.m_defaultInverseEntityPredictionTime;
+
 		if (const VelocityComponent* foundVelocityComponent = foundEntity.GetComponent<VelocityComponent>())
 		{
 			perEntityParams.m_foundEntityVelocity = ArgusMath::ToCartesianVector2(foundVelocityComponent->m_currentVelocity);
@@ -382,14 +393,18 @@ void AvoidanceSystems::CreateEntityORCALines(const CreateEntityORCALinesParams& 
 
 		FVector2D velocityToBoundaryOfVO = FVector2D::ZeroVector;
 		ORCALine calculatedORCALine;
-		FindORCALineAndVelocityToBoundaryPerEntity(params, perEntityParams, velocityToBoundaryOfVO, calculatedORCALine);
 
+		if (!FindORCALineAndVelocityToBoundaryPerEntity(params, perEntityParams, velocityToBoundaryOfVO, calculatedORCALine))
+		{
+			continue;
+		}
+		
 		calculatedORCALine.m_point = params.m_sourceEntityVelocity + (velocityToBoundaryOfVO * effortCoefficient);
 		outORCALines.Add(calculatedORCALine);
 	}
 }
 
-void AvoidanceSystems::FindORCALineAndVelocityToBoundaryPerEntity(const CreateEntityORCALinesParams& params, const CreateEntityORCALinesParamsPerEntity& perEntityParams, FVector2D& velocityToBoundaryOfVO, ORCALine& calculatedORCALine)
+bool AvoidanceSystems::FindORCALineAndVelocityToBoundaryPerEntity(const CreateEntityORCALinesParams& params, const CreateEntityORCALinesParamsPerEntity& perEntityParams, FVector2D& velocityToBoundaryOfVO, ORCALine& calculatedORCALine)
 {
 	ARGUS_TRACE(AvoidanceSystems::FindORCALineAndVelocityToBoundaryPerEntity);
 
@@ -452,6 +467,8 @@ void AvoidanceSystems::FindORCALineAndVelocityToBoundaryPerEntity(const CreateEn
 			velocityToBoundaryOfVO = ((combinedRadius * inverseDeltaTime) - lengthCutoffCenterToRelativeVelocity) * normalizedCutoffCenterToRelativeVelocity;
 		}
 	}
+
+	return true;
 }
 
 bool AvoidanceSystems::OneDimensionalLinearProgram(const TArray<ORCALine>& orcaLines, const float radius, const FVector2D& preferredVelocity, bool shouldOptimizeDirection, const int32 lineIndex, FVector2D& resultingVelocity)

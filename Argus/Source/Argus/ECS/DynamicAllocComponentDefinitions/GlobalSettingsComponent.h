@@ -13,6 +13,9 @@ struct GlobalSettingsComponent
 	float m_avoidanceEntityDetectionPredictionTime = 0.75f;
 
 	ARGUS_PROPERTY(EditDefaultsOnly, meta = (Category = "Avoidance"))
+	float m_avoidanceSameGroupEntityDetectionPredictionTime = 0.75f;
+
+	ARGUS_PROPERTY(EditDefaultsOnly, meta = (Category = "Avoidance"))
 	float m_avoidanceObstacleDetectionPredictionTime = 0.75f;
 
 	ARGUS_PROPERTY(EditDefaultsOnly, meta = (Category = "Flocking"))

@@ -2,7 +2,7 @@
 
 #include "AvoidanceSystems.h"
 
-float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystemsArgs& sourceEntityComponents, ArgusEntity foundEntity)
+float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystemsArgs& sourceEntityComponents, ArgusEntity foundEntity, const AvoidanceGroupingComponent* sourceGroupingComponent, const AvoidanceGroupingComponent* foundGroupingComponent, bool inSameAvoidanceGroup)
 {
 	ARGUS_TRACE(AvoidanceSystems::GetEffortCoefficientForEntityPair);
 
@@ -24,14 +24,6 @@ float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems
 		return sourceEntityComponents.m_taskComponent->IsExecutingMoveTask() ? 1.0f : 0.0f;
 	}
 
-	const AvoidanceGroupingComponent* sourceEntityAvoidanceGroupingComponent = sourceEntityComponents.m_entity.GetComponent<AvoidanceGroupingComponent>();
-	const AvoidanceGroupingComponent* foundEntityAvoidanceGroupingComponent = foundEntity.GetComponent<AvoidanceGroupingComponent>();
-	bool inSameAvoidanceGroup = false;
-	if (sourceEntityAvoidanceGroupingComponent && foundEntityAvoidanceGroupingComponent)
-	{
-		inSameAvoidanceGroup = sourceEntityAvoidanceGroupingComponent->m_groupId == foundEntityAvoidanceGroupingComponent->m_groupId;
-	}
-
 	float effortCoefficient = 0.5f;
 	if (ShouldReturnMovabilityEffortCoefficient(sourceEntityComponents, foundEntity, effortCoefficient) ||
 		ShouldReturnCombatEffortCoefficient(sourceEntityComponents, foundEntityTaskComponent, inSameAvoidanceGroup, effortCoefficient) ||
@@ -40,7 +32,7 @@ float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems
 		ShouldReturnCarrierEffortCoefficient(sourceEntityComponents, foundEntity, foundEntityTaskComponent, effortCoefficient) ||
 		ShouldReturnTargetEffortCoefficient(sourceEntityComponents, foundEntity, inSameAvoidanceGroup, effortCoefficient) ||
 		ShouldReturnStaticFlockingEffortCoefficient(sourceEntityComponents, foundEntity, effortCoefficient) ||
-		ShouldReturnAvoidancePriorityEffortCoefficient(sourceEntityAvoidanceGroupingComponent, foundEntityAvoidanceGroupingComponent, effortCoefficient) ||
+		ShouldReturnAvoidancePriorityEffortCoefficient(sourceGroupingComponent, foundGroupingComponent, effortCoefficient) ||
 		ShouldReturnMovementTaskEffortCoefficient(sourceEntityComponents, foundEntity, foundEntityTaskComponent, inSameAvoidanceGroup, effortCoefficient))
 	{
 		return effortCoefficient;
@@ -48,7 +40,7 @@ float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems
 
 	if (inSameAvoidanceGroup)
 	{
-		return GetEffortCoefficientForAvoidanceGroupPair(sourceEntityComponents, foundEntity, sourceEntityAvoidanceGroupingComponent, foundEntityAvoidanceGroupingComponent);
+		return GetEffortCoefficientForAvoidanceGroupPair(sourceEntityComponents, foundEntity, sourceGroupingComponent, foundGroupingComponent);
 	}
 
 	return 0.5f;
