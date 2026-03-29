@@ -71,6 +71,12 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 	SpatialPartitioningComponent* spatialPartitioningComponent = singletonEntity.GetComponent<SpatialPartitioningComponent>();
 	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
 
+	bool shouldShowAvoidanceDebug = false;
+
+#if !UE_BUILD_SHIPPING
+	shouldShowAvoidanceDebug = ArgusECSDebugger::ShouldShowAvoidanceDebugForEntity(components.m_entity.GetId());
+#endif //!UE_BUILD_SHIPPING
+
 	CreateEntityORCALinesParams params;
 	params.m_sourceEntityLocation3D = components.m_transformComponent->m_location;
 	params.m_sourceEntityLocation3D.Z += ArgusECSConstants::k_debugDrawHeightAdjustment;
@@ -99,15 +105,9 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 	params.m_spatialPartitioningComponent = spatialPartitioningComponent;
 
 	// If no entities nearby, then nothing can effect our navigation, so we should just early out with a desired velocity.
-	if (nearbyEntitiesComponent->GetNearbyEntities(components.m_taskComponent->m_flightState != EFlightState::Grounded).GetEntityIdsInAvoidanceRange().IsEmpty())
+	if (!shouldShowAvoidanceDebug && nearbyEntitiesComponent->GetNearbyEntities(components.m_taskComponent->m_flightState != EFlightState::Grounded).GetEntityIdsInAvoidanceRange().IsEmpty())
 	{
 		components.m_velocityComponent->m_proposedAvoidanceVelocity = ArgusMath::ToUnrealVector2(desiredVelocity);
-#if !UE_BUILD_SHIPPING
-		if (worldPointer && ArgusECSDebugger::ShouldShowAvoidanceDebugForEntity(components.m_entity.GetId()))
-		{
-			DrawDebugLine(worldPointer, params.m_sourceEntityLocation3D, params.m_sourceEntityLocation3D + FVector(components.m_velocityComponent->m_proposedAvoidanceVelocity, 0.0f), FColor::Orange, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth);
-		}
-#endif //!UE_BUILD_SHIPPING
 		return;
 	}
 
@@ -135,7 +135,7 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 	}
 
 #if !UE_BUILD_SHIPPING
-	if (worldPointer && ArgusECSDebugger::ShouldShowAvoidanceDebugForEntity(components.m_entity.GetId()))
+	if (worldPointer && shouldShowAvoidanceDebug)
 	{
 		DrawDebugCircle(worldPointer, params.m_sourceEntityLocation3D, params.m_adjacentObstacleRange, 20, FColor::Orange, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth, FVector::RightVector, FVector::ForwardVector, false);
 		DrawDebugCircle(worldPointer, params.m_sourceEntityLocation3D, params.m_adjacentEntityRange, 20, FColor::Yellow, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth, FVector::RightVector, FVector::ForwardVector, false);
