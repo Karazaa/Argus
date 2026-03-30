@@ -8,7 +8,7 @@ public class ArgusTarget : TargetRules
 	public ArgusTarget(TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Game;
-		DefaultBuildSettings = BuildSettingsVersion.V4;
+		DefaultBuildSettings = BuildSettingsVersion.V6;
 		ExtraModuleNames.Add("Argus");
 	}
 }
