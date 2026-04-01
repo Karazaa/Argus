@@ -84,18 +84,14 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 
 	PopulateAvoidanceRanges(components.m_entity, params.m_adjacentEntityRange, params.m_adjacentObstacleRange);
 
-	TArray<ObstacleIndicies> obstacleIndicies;
-	if (components.m_taskComponent->m_flightState == EFlightState::Grounded)
+	bool hasObstacles = false;
+	const NearbyObstaclesComponent* nearbyObstaclesComponent = components.m_entity.GetComponent<NearbyObstaclesComponent>();
+	if (nearbyObstaclesComponent)
 	{
-		spatialPartitioningComponent->m_obstaclePointKDTree.FindObstacleIndiciesWithinRangeOfLocation
-		(
-			obstacleIndicies,
-			FVector(params.m_sourceEntityLocation, components.m_transformComponent->m_location.Z),
-			params.m_adjacentObstacleRange
-		);
+		hasObstacles = !nearbyObstaclesComponent->m_obstacleIndicies.IsEmpty();
 	}
 
-	FVector2D desiredVelocity = GetDesiredVelocity(components, !obstacleIndicies.IsEmpty());
+	FVector2D desiredVelocity = GetDesiredVelocity(components, hasObstacles);
 
 	params.m_sourceEntityVelocity = desiredVelocity.IsNearlyZero() ? ArgusMath::ToCartesianVector2(desiredVelocity) : ArgusMath::ToCartesianVector2(components.m_velocityComponent->m_currentVelocity);
 	params.m_deltaTime = deltaTime;
@@ -113,9 +109,9 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 
 	// Generate ORCA lines for grounded entities.
 	TArray<ORCALine> calculatedORCALines;
-	if (!obstacleIndicies.IsEmpty())
+	if (hasObstacles)
 	{
-		CreateObstacleORCALines(worldPointer, params, components, obstacleIndicies, calculatedORCALines);
+		CreateObstacleORCALines(worldPointer, params, components, nearbyObstaclesComponent, calculatedORCALines);
 	}
 	const int32 numStaticObstacles = calculatedORCALines.Num();
 
@@ -299,9 +295,9 @@ float AvoidanceSystems::GetObstacleAvoidanceRange(ArgusEntity entity)
 	return output;
 }
 
-void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const CreateEntityORCALinesParams& params, const TransformSystemsArgs& components, const TArray<ObstacleIndicies>& obstacleIndicies,  TArray<ORCALine>& outORCALines)
+void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const CreateEntityORCALinesParams& params, const TransformSystemsArgs& components, const NearbyObstaclesComponent* nearbyObstaclesComponent,  TArray<ORCALine>& outORCALines)
 {
-	if (!worldPointer || !params.m_spatialPartitioningComponent)
+	if (!worldPointer || !params.m_spatialPartitioningComponent || !nearbyObstaclesComponent)
 	{
 		return;
 	}
@@ -314,6 +310,7 @@ void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const Creat
 	const FVector2D leftTerminus = leftSource + scaledVelocity;
 	const FVector2D rightTerminus = rightSource + scaledVelocity;
 
+	const TArray<ObstacleIndicies, ArgusContainerAllocator<20u> >& obstacleIndicies = nearbyObstaclesComponent->m_obstacleIndicies.GetInRangeObstacleIndicies();
 	for (int32 i = 0; i < obstacleIndicies.Num(); ++i)
 	{
 		const ObstaclePoint& previous = params.m_spatialPartitioningComponent->m_obstacles[obstacleIndicies[i].m_obstacleIndex].GetPrevious(obstacleIndicies[i].m_obstaclePointIndex);

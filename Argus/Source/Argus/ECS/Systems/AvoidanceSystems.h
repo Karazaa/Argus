@@ -77,7 +77,7 @@ private:
 		bool  m_inSameAvoidanceGroup = false;
 	};
 
-	static void			CreateObstacleORCALines(UWorld* worldPointer, const CreateEntityORCALinesParams& params, const TransformSystemsArgs& components, const TArray<ObstacleIndicies>& obstacleIndicies, TArray<ORCALine>& outORCALines);
+	static void			CreateObstacleORCALines(UWorld* worldPointer, const CreateEntityORCALinesParams& params, const TransformSystemsArgs& components, const NearbyObstaclesComponent* nearbyObstaclesComponent, TArray<ORCALine>& outORCALines);
 	static void			CreateEntityORCALines(const CreateEntityORCALinesParams& params, const TransformSystemsArgs& components, const NearbyEntitiesComponent* nearbyEntitiesComponent, TArray<ORCALine>& outORCALines, FVector2D& outDesiredVelocity);
 	static bool			FindORCALineAndVelocityToBoundaryPerEntity(const CreateEntityORCALinesParams& params, const CreateEntityORCALinesParamsPerEntity& perEntityParams, FVector2D& velocityToBoundaryOfVO, ORCALine& orcaLine);
 	static bool			OneDimensionalLinearProgram(const TArray<ORCALine>& orcaLines, const float radius, const FVector2D& preferredVelocity, bool shouldOptimizeDirection, const int32 lineIndex, FVector2D& resultingVelocity);

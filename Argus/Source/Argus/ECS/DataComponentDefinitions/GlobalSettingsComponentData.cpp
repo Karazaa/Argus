@@ -11,7 +11,6 @@ void UGlobalSettingsComponentData::InstantiateComponentForEntity(ArgusEntity ent
 	ARGUS_RETURN_ON_NULL(GlobalSettingsComponentRef, ArgusECSLog);
 
 	GlobalSettingsComponentRef->m_avoidanceEntityDetectionPredictionTime = m_avoidanceEntityDetectionPredictionTime;
-	GlobalSettingsComponentRef->m_avoidanceSameGroupEntityDetectionPredictionTime = m_avoidanceSameGroupEntityDetectionPredictionTime;
 	GlobalSettingsComponentRef->m_avoidanceObstacleDetectionPredictionTime = m_avoidanceObstacleDetectionPredictionTime;
 	GlobalSettingsComponentRef->m_flockingVelocityInfluence = m_flockingVelocityInfluence;
 	GlobalSettingsComponentRef->m_obstacleShrinkFixupDistance = m_obstacleShrinkFixupDistance;

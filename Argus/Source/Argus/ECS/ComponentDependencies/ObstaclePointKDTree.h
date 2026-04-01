@@ -39,6 +39,7 @@ struct ObstaclePointKDTreeQueryRangeThresholds
 class ObstaclePointKDTreeRangeOutput
 {
 public:
+	bool IsEmpty() const { return m_inRangeObstacleIndicies.IsEmpty(); }
 	void Add(const ObstaclePointKDTreeNode* nodeToAdd, const ObstaclePointKDTreeQueryRangeThresholds& thresholds, float distFromTargetSquared);
 	void ResetAll();
 	const TArray<ObstacleIndicies, ArgusContainerAllocator<20u> >& GetInRangeObstacleIndicies() const { return m_inRangeObstacleIndicies; }
