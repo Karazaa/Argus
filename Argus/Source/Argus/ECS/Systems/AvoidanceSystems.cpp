@@ -84,14 +84,13 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 
 	PopulateAvoidanceRanges(components.m_entity, params.m_adjacentEntityRange, params.m_adjacentObstacleRange);
 
-	bool hasObstacles = false;
 	const NearbyObstaclesComponent* nearbyObstaclesComponent = components.m_entity.GetComponent<NearbyObstaclesComponent>();
 	if (nearbyObstaclesComponent)
 	{
-		hasObstacles = nearbyObstaclesComponent->m_obstacleIndicies.AnyObstacleInidiciesInAvoidanceRange();
+		params.m_hasObstacles = nearbyObstaclesComponent->m_obstacleIndicies.AnyObstacleInidiciesInAvoidanceRange();
 	}
 
-	FVector2D desiredVelocity = GetDesiredVelocity(components, hasObstacles);
+	FVector2D desiredVelocity = GetDesiredVelocity(components, params.m_hasObstacles);
 
 	params.m_sourceEntityVelocity = desiredVelocity.IsNearlyZero() ? ArgusMath::ToCartesianVector2(desiredVelocity) : ArgusMath::ToCartesianVector2(components.m_velocityComponent->m_currentVelocity);
 	params.m_deltaTime = deltaTime;
@@ -109,7 +108,7 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 
 	// Generate ORCA lines for grounded entities.
 	TArray<ORCALine> calculatedORCALines;
-	if (hasObstacles)
+	if (params.m_hasObstacles)
 	{
 		CreateObstacleORCALines(worldPointer, params, components, nearbyObstaclesComponent, calculatedORCALines);
 	}
@@ -302,13 +301,14 @@ void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const Creat
 		return;
 	}
 
-	const FVector2D leftVector = (FVector2D(-params.m_sourceEntityVelocity.Y, params.m_sourceEntityVelocity.X).GetSafeNormal() * params.m_entityRadius);
-	const FVector2D leftSource = params.m_sourceEntityLocation + leftVector;
-	const FVector2D rightSource = params.m_sourceEntityLocation - leftVector;
+	// TODO JAMES: Related to obstacle detection below. Might remove.
+	//const FVector2D leftVector = (FVector2D(-params.m_sourceEntityVelocity.Y, params.m_sourceEntityVelocity.X).GetSafeNormal() * params.m_entityRadius);
+	//const FVector2D leftSource = params.m_sourceEntityLocation + leftVector;
+	//const FVector2D rightSource = params.m_sourceEntityLocation - leftVector;
 
-	const FVector2D scaledVelocity = ArgusMath::SafeDivide(params.m_sourceEntityVelocity, params.m_inverseObstaclePredictionTime);
-	const FVector2D leftTerminus = leftSource + scaledVelocity;
-	const FVector2D rightTerminus = rightSource + scaledVelocity;
+	//const FVector2D scaledVelocity = ArgusMath::SafeDivide(params.m_sourceEntityVelocity, params.m_inverseObstaclePredictionTime);
+	//const FVector2D leftTerminus = leftSource + scaledVelocity;
+	//const FVector2D rightTerminus = rightSource + scaledVelocity;
 
 	const TArray<ObstacleIndicies, ArgusContainerAllocator<20u> >& obstacleIndicies = nearbyObstaclesComponent->m_obstacleIndicies.GetObstacleIndiciesInAvoidanceRange();
 	for (int32 i = 0; i < obstacleIndicies.Num(); ++i)
@@ -383,7 +383,7 @@ void AvoidanceSystems::CreateEntityORCALines(const CreateEntityORCALinesParams& 
 			perEntityParams.m_inSameAvoidanceGroup = true;
 		}
 
-		const float effortCoefficient = GetEffortCoefficientForEntityPair(components, foundEntity, sourceGroupingComponent, foundGroupingComponent, perEntityParams.m_inSameAvoidanceGroup);
+		const float effortCoefficient = GetEffortCoefficientForEntityPair(components, foundEntity, sourceGroupingComponent, foundGroupingComponent, params.m_hasObstacles, perEntityParams.m_inSameAvoidanceGroup);
 		if (effortCoefficient == 0.0f)
 		{
 			continue;

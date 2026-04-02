@@ -2,7 +2,7 @@
 
 #include "AvoidanceSystems.h"
 
-float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystemsArgs& sourceEntityComponents, ArgusEntity foundEntity, const AvoidanceGroupingComponent* sourceGroupingComponent, const AvoidanceGroupingComponent* foundGroupingComponent, bool inSameAvoidanceGroup)
+float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystemsArgs& sourceEntityComponents, ArgusEntity foundEntity, const AvoidanceGroupingComponent* sourceGroupingComponent, const AvoidanceGroupingComponent* foundGroupingComponent, bool sourceHasObstacles, bool inSameAvoidanceGroup)
 {
 	ARGUS_TRACE(AvoidanceSystems::GetEffortCoefficientForEntityPair);
 
@@ -40,13 +40,13 @@ float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems
 
 	if (inSameAvoidanceGroup)
 	{
-		return GetEffortCoefficientForAvoidanceGroupPair(sourceEntityComponents, foundEntity, sourceGroupingComponent, foundGroupingComponent);
+		return GetEffortCoefficientForAvoidanceGroupPair(sourceEntityComponents, foundEntity, sourceGroupingComponent, foundGroupingComponent, sourceHasObstacles);
 	}
 
 	return 0.5f;
 }
 
-float AvoidanceSystems::GetEffortCoefficientForAvoidanceGroupPair(const TransformSystemsArgs& sourceEntityComponents, ArgusEntity foundEntity, const AvoidanceGroupingComponent* sourceGroupComponent, const AvoidanceGroupingComponent* foundGroupComponent)
+float AvoidanceSystems::GetEffortCoefficientForAvoidanceGroupPair(const TransformSystemsArgs& sourceEntityComponents, ArgusEntity foundEntity, const AvoidanceGroupingComponent* sourceGroupComponent, const AvoidanceGroupingComponent* foundGroupComponent, bool sourceHasObstacles)
 {
 	if (!sourceEntityComponents.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
@@ -80,6 +80,26 @@ float AvoidanceSystems::GetEffortCoefficientForAvoidanceGroupPair(const Transfor
 	if (squaredDistance > FMath::Square(sourceEntityComponents.m_transformComponent->m_radius * 2.0f))
 	{
 		return 0.0f;
+	}
+
+	if (const NearbyObstaclesComponent* foundNearbyObstacles = foundEntity.GetComponent<NearbyObstaclesComponent>())
+	{
+		const bool foundHasObstacles = foundNearbyObstacles->m_obstacleIndicies.AnyObstacleInidiciesInAvoidanceRange();
+		if (sourceHasObstacles)
+		{
+			if (foundHasObstacles)
+			{
+				return 0.3f;
+			}
+			else
+			{
+				return 0.0f;
+			}
+		}
+		else if (foundHasObstacles)
+		{
+			return 0.75f;
+		}
 	}
 
 	return 0.5f;

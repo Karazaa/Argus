@@ -66,6 +66,7 @@ private:
 		float m_adjacentEntityRange = 150.0f;
 		float m_adjacentObstacleRange = 150.0f;
 		SpatialPartitioningComponent* m_spatialPartitioningComponent = nullptr;
+		bool m_hasObstacles = false;
 	};
 	struct CreateEntityORCALinesParamsPerEntity
 	{
@@ -73,7 +74,6 @@ private:
 		FVector2D m_foundEntityVelocity = FVector2D::ZeroVector;
 		float m_entityRadius = 45.0f;
 		float m_inverseEntityPredictionTime = 0.0f;
-		float m_sameAvoidanceGroupDistanceThreshold = 0.0f;
 		bool  m_inSameAvoidanceGroup = false;
 	};
 
@@ -86,8 +86,8 @@ private:
 	static FVector2D	GetDesiredVelocity(const TransformSystemsArgs& components, bool isInRangeOfObstacles);
 	static FVector		GetDesiredDirection(const TransformSystemsArgs& components, bool isInRangeOfObstacles);
 
-	static float		GetEffortCoefficientForEntityPair(const TransformSystemsArgs& sourceEntityComponents, ArgusEntity foundEntity, const AvoidanceGroupingComponent* sourceGroupingComponent, const AvoidanceGroupingComponent* foundGroupingComponent, bool inSameAvoidanceGroup);
-	static float		GetEffortCoefficientForAvoidanceGroupPair(const TransformSystemsArgs& sourceEntityComponents, ArgusEntity foundEntity, const AvoidanceGroupingComponent* sourceGroupComponent, const AvoidanceGroupingComponent* foundGroupComponent);
+	static float		GetEffortCoefficientForEntityPair(const TransformSystemsArgs& sourceEntityComponents, ArgusEntity foundEntity, const AvoidanceGroupingComponent* sourceGroupingComponent, const AvoidanceGroupingComponent* foundGroupingComponent, bool sourceHasObstacles, bool inSameAvoidanceGroup);
+	static float		GetEffortCoefficientForAvoidanceGroupPair(const TransformSystemsArgs& sourceEntityComponents, ArgusEntity foundEntity, const AvoidanceGroupingComponent* sourceGroupComponent, const AvoidanceGroupingComponent* foundGroupComponent, bool sourceHasObstacles);
 	static bool			ShouldReturnMovabilityEffortCoefficient(const TransformSystemsArgs& sourceEntityComponents, ArgusEntity foundEntity, float& coefficient);
 	static bool			ShouldReturnCombatEffortCoefficient(const TransformSystemsArgs& sourceEntityComponents, const TaskComponent* foundEntityTaskComponent, bool inSameAvoidanceGroup, float& coefficient);
 	static bool			ShouldReturnConstructionEffortCoefficient(const TransformSystemsArgs& sourceEntityComponents, const TaskComponent* foundEntityTaskComponent, float& coefficient);
