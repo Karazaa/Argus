@@ -118,7 +118,8 @@ void SpatialPartitioningSystems::CacheAdjacentEntityIds(const SpatialPartitionin
 		{
 			// TODO JAMES: Gate updates by whether or not the entity is capable of moving?
 			nearbyObstaclesComponent->m_obstacleIndicies.ResetAll();
-			spatialPartitioningComponent->m_obstaclePointKDTree.FindObstacleIndiciesWithinRangeOfLocation(nearbyObstaclesComponent->m_obstacleIndicies, ArgusMath::ToCartesianVector(transformComponent->m_location), sightRange);
+			ObstaclePointKDTreeQueryRangeThresholds obstacleQueryThresholds = ObstaclePointKDTreeQueryRangeThresholds(AvoidanceSystems::GetObstacleAvoidanceRange(entity));
+			spatialPartitioningComponent->m_obstaclePointKDTree.FindObstacleIndiciesWithinRangeOfLocation(nearbyObstaclesComponent->m_obstacleIndicies, obstacleQueryThresholds, ArgusMath::ToCartesianVector(transformComponent->m_location), sightRange);
 		}
 	});
 }
@@ -273,7 +274,8 @@ void SpatialPartitioningSystems::CalculateAvoidanceObstacles(SpatialPartitioning
 		}
 
 		nearbyObstaclesComponent->m_obstacleIndicies.ResetAll();
-		spatialPartitioningComponent->m_obstaclePointKDTree.FindObstacleIndiciesWithinRangeOfLocation(nearbyObstaclesComponent->m_obstacleIndicies, ArgusMath::ToCartesianVector(transformComponent->m_location), targetingComponent->m_sightRange);
+		ObstaclePointKDTreeQueryRangeThresholds thresholds = ObstaclePointKDTreeQueryRangeThresholds(AvoidanceSystems::GetObstacleAvoidanceRange(entity));
+		spatialPartitioningComponent->m_obstaclePointKDTree.FindObstacleIndiciesWithinRangeOfLocation(nearbyObstaclesComponent->m_obstacleIndicies, thresholds, ArgusMath::ToCartesianVector(transformComponent->m_location), targetingComponent->m_sightRange);
 	});
 }
 
@@ -339,18 +341,17 @@ bool SpatialPartitioningSystems::IsPointInLineOfSightOfEntity(ArgusEntity source
 
 	const FVector2D cartesianSourceLocation = FVector2D(ArgusMath::ToCartesianVector(transformComponent->m_location));
 	const FVector2D cartesianTargetLocation = FVector2D(ArgusMath::ToCartesianVector(targetLocation));
-	const TArray<ObstacleIndicies, ArgusContainerAllocator<20u> >& inRangeObstacleIndicies = nearbyObstaclesComponent->m_obstacleIndicies.GetInRangeObstacleIndicies();
 
-	for (int32 i = 0; i < inRangeObstacleIndicies.Num(); ++i)
+	bool returnValue = true;
+	nearbyObstaclesComponent->m_obstacleIndicies.IterateObstacleIndiciesInSightRange([spatialPartitioningComponent, fogOfWarComponent, &cartesianSourceLocation, &cartesianTargetLocation, &returnValue](ObstacleIndicies indicies)
 	{
-		const ObstacleIndicies& obstacleIndicies = inRangeObstacleIndicies[i];
-		if (spatialPartitioningComponent->IsPointElevated(obstacleIndicies) || spatialPartitioningComponent->IsNextPointElevated(obstacleIndicies))
+		if (spatialPartitioningComponent->IsPointElevated(indicies) || spatialPartitioningComponent->IsNextPointElevated(indicies))
 		{
-			continue;
+			return;
 		}
 
-		const ObstaclePoint& currentObstaclePoint = spatialPartitioningComponent->GetObstaclePointFromIndicies(obstacleIndicies);
-		const ObstaclePoint& nextObstaclePoint = spatialPartitioningComponent->GetNextObstaclePointFromIndicies(obstacleIndicies);
+		const ObstaclePoint& currentObstaclePoint = spatialPartitioningComponent->GetObstaclePointFromIndicies(indicies);
+		const ObstaclePoint& nextObstaclePoint = spatialPartitioningComponent->GetNextObstaclePointFromIndicies(indicies);
 
 		FVector2D currentPoint = currentObstaclePoint.m_point;
 		const FVector2D currentLeft = currentObstaclePoint.GetLeftVector();
@@ -362,16 +363,17 @@ bool SpatialPartitioningSystems::IsPointInLineOfSightOfEntity(ArgusEntity source
 
 		if (ArgusMath::IsLeftOfCartesian(cartesianSourceLocation, currentPoint, nextPoint))
 		{
-			continue;
+			return;
 		}
 
 		if (ArgusMath::DoLineSegmentsIntersectCartesian(cartesianSourceLocation, cartesianTargetLocation, currentPoint, nextPoint))
 		{
-			return false;
+			returnValue = false;
+			return;
 		}
-	}
+	});
 
-	return true;
+	return returnValue;
 }
 
 bool SpatialPartitioningSystems::AnyObstaclesOrStaticEntitiesInCircle(const FVector& center, float radius, float resourceSourceBufferRadius)

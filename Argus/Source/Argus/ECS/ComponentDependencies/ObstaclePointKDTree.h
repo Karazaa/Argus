@@ -34,18 +34,42 @@ struct ObstaclePointKDTreeNode
 struct ObstaclePointKDTreeQueryRangeThresholds
 {
 	float m_avoidanceRangeThresholdSquared = 0.0f;
+
+	ObstaclePointKDTreeQueryRangeThresholds() {};
+	ObstaclePointKDTreeQueryRangeThresholds(float avoidanceRangeThreshold) { m_avoidanceRangeThresholdSquared = avoidanceRangeThreshold * avoidanceRangeThreshold; }
 };
 
 class ObstaclePointKDTreeRangeOutput
 {
 public:
-	bool IsEmpty() const { return m_inRangeObstacleIndicies.IsEmpty(); }
+	bool AnyObstacleInidiciesInAvoidanceRange() const { return !m_obstacleIndiciesInAvoidanceRange.IsEmpty(); }
+	bool AnyObstacleIndiciesInSightRange() const { return !m_obstacleIndiciesInSightRange.IsEmpty() || !m_obstacleIndiciesInAvoidanceRange.IsEmpty(); }
+	int32 GetNumObstaclesInAvoidanceRange() const { return m_obstacleIndiciesInAvoidanceRange.Num(); }
+	int32 GetNumObstacleInidciesInSightRange() const { return m_obstacleIndiciesInSightRange.Num() + m_obstacleIndiciesInAvoidanceRange.Num(); }
 	void Add(const ObstaclePointKDTreeNode* nodeToAdd, const ObstaclePointKDTreeQueryRangeThresholds& thresholds, float distFromTargetSquared);
 	void ResetAll();
-	const TArray<ObstacleIndicies, ArgusContainerAllocator<20u> >& GetInRangeObstacleIndicies() const { return m_inRangeObstacleIndicies; }
+	void PopulateArrayWithObstacleIndiciesInSightRange(TArray<ObstacleIndicies, ArgusContainerAllocator<0u> >& arrayToPopulate) const;
+
+	const TArray<ObstacleIndicies, ArgusContainerAllocator<20u> >& GetObstacleIndiciesInSightRange() const { return m_obstacleIndiciesInSightRange; }
+	const TArray<ObstacleIndicies, ArgusContainerAllocator<20u> >& GetObstacleIndiciesInAvoidanceRange() const { return m_obstacleIndiciesInAvoidanceRange; }
+
+
+	template<typename Function>
+	void IterateObstacleIndiciesInSightRange(Function&& function) const
+	{
+		for (int32 i = 0; i < m_obstacleIndiciesInAvoidanceRange.Num(); ++i)
+		{
+			function(m_obstacleIndiciesInAvoidanceRange[i]);
+		}
+		for (int32 i = 0; i < m_obstacleIndiciesInSightRange.Num(); ++i)
+		{
+			function(m_obstacleIndiciesInSightRange[i]);
+		}
+	}
 
 private:
-	TArray<ObstacleIndicies, ArgusContainerAllocator<20u> > m_inRangeObstacleIndicies;
+	TArray<ObstacleIndicies, ArgusContainerAllocator<20u> > m_obstacleIndiciesInSightRange;
+	TArray<ObstacleIndicies, ArgusContainerAllocator<20u> > m_obstacleIndiciesInAvoidanceRange;
 };
 
 class ObstaclePointKDTree : public ArgusKDTree<	ObstaclePointKDTreeNode, ObstaclePointKDTreeRangeOutput, 
@@ -54,7 +78,7 @@ class ObstaclePointKDTree : public ArgusKDTree<	ObstaclePointKDTreeNode, Obstacl
 public:
 	void InsertObstaclesIntoKDTree(const ObstaclesContainer& obstacles);
 	bool FindObstacleIndiciesWithinRangeOfLocation(TArray<ObstacleIndicies>& obstacleIndicies, const FVector& location, const float range);
-	bool FindObstacleIndiciesWithinRangeOfLocation(ObstaclePointKDTreeRangeOutput& obstacleIndicies, const FVector& location, const float range) const;
+	bool FindObstacleIndiciesWithinRangeOfLocation(ObstaclePointKDTreeRangeOutput& obstacleIndicies, ObstaclePointKDTreeQueryRangeThresholds& thresholds, const FVector& location, const float range) const;
 
 private:
 	ObstaclePointKDTreeRangeOutput m_queryScratchData;

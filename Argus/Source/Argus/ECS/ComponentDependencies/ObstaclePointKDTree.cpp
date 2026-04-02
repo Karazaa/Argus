@@ -92,19 +92,36 @@ float ObstaclePointKDTreeNode::GetValueForDimension(uint16 dimension) const
 	}
 }
 
-void ObstaclePointKDTreeRangeOutput::Add(const ObstaclePointKDTreeNode* nodeToAdd, const ObstaclePointKDTreeQueryRangeThresholds&, float)
+void ObstaclePointKDTreeRangeOutput::Add(const ObstaclePointKDTreeNode* nodeToAdd, const ObstaclePointKDTreeQueryRangeThresholds& thresholds, float distFromTargetSquared)
 {
 	if (!nodeToAdd)
 	{
 		return;
 	}
 
-	m_inRangeObstacleIndicies.Add(nodeToAdd->m_indicies);
+	if (distFromTargetSquared <= thresholds.m_avoidanceRangeThresholdSquared)
+	{
+		m_obstacleIndiciesInAvoidanceRange.Add(nodeToAdd->m_indicies);
+	}
+	else
+	{
+		m_obstacleIndiciesInSightRange.Add(nodeToAdd->m_indicies);
+	}
 }
 
 void ObstaclePointKDTreeRangeOutput::ResetAll()
 {
-	m_inRangeObstacleIndicies.Reset();
+	m_obstacleIndiciesInAvoidanceRange.Reset();
+	m_obstacleIndiciesInSightRange.Reset();
+}
+
+void ObstaclePointKDTreeRangeOutput::PopulateArrayWithObstacleIndiciesInSightRange(TArray<ObstacleIndicies, ArgusContainerAllocator<0u> >& arrayToPopulate) const
+{
+	arrayToPopulate.Reserve(GetNumObstacleInidciesInSightRange());
+	IterateObstacleIndiciesInSightRange([&arrayToPopulate](ObstacleIndicies indicies)
+	{
+		arrayToPopulate.Add(indicies);
+	});
 }
 
 void ObstaclePointKDTree::InsertObstaclesIntoKDTree(const ObstaclesContainer& obstacles)
@@ -150,16 +167,16 @@ bool ObstaclePointKDTree::FindObstacleIndiciesWithinRangeOfLocation(TArray<Obsta
 
 	m_queryScratchData.ResetAll();
 	FindNodesWithinRangeOfLocationRecursive(m_queryScratchData, ObstaclePointKDTreeQueryRangeThresholds(), m_rootNode, location, FMath::Square(range), nullptr, 0u);
-	obstacleIndicies.Reserve(m_queryScratchData.GetInRangeObstacleIndicies().Num());
-	for (int32 i = 0; i < m_queryScratchData.GetInRangeObstacleIndicies().Num(); ++i)
+	obstacleIndicies.Reserve(m_queryScratchData.GetNumObstacleInidciesInSightRange());
+	m_queryScratchData.IterateObstacleIndiciesInSightRange([&obstacleIndicies](ObstacleIndicies indicies)
 	{
-		obstacleIndicies.Add(m_queryScratchData.GetInRangeObstacleIndicies()[i]);
-	}
+		obstacleIndicies.Add(indicies);
+	});
 
 	return obstacleIndicies.Num() > 0;
 }
 
-bool ObstaclePointKDTree::FindObstacleIndiciesWithinRangeOfLocation(ObstaclePointKDTreeRangeOutput& obstacleIndicies, const FVector& location, const float range) const
+bool ObstaclePointKDTree::FindObstacleIndiciesWithinRangeOfLocation(ObstaclePointKDTreeRangeOutput& obstacleIndicies, ObstaclePointKDTreeQueryRangeThresholds& thresholds, const FVector& location, const float range) const
 {
 	ARGUS_TRACE(ObstaclePointKDTree::FindObstacleIndiciesWithinRangeOfLocation);
 
@@ -174,7 +191,7 @@ bool ObstaclePointKDTree::FindObstacleIndiciesWithinRangeOfLocation(ObstaclePoin
 		return false;
 	}
 
-	FindNodesWithinRangeOfLocationRecursive(obstacleIndicies, ObstaclePointKDTreeQueryRangeThresholds(), m_rootNode, location, FMath::Square(range), nullptr, 0u);
+	FindNodesWithinRangeOfLocationRecursive(obstacleIndicies, thresholds, m_rootNode, location, FMath::Square(range), nullptr, 0u);
 
-	return obstacleIndicies.GetInRangeObstacleIndicies().Num() > 0;
+	return obstacleIndicies.AnyObstacleIndiciesInSightRange();
 }

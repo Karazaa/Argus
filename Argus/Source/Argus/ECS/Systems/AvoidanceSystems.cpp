@@ -88,7 +88,7 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 	const NearbyObstaclesComponent* nearbyObstaclesComponent = components.m_entity.GetComponent<NearbyObstaclesComponent>();
 	if (nearbyObstaclesComponent)
 	{
-		hasObstacles = !nearbyObstaclesComponent->m_obstacleIndicies.IsEmpty();
+		hasObstacles = nearbyObstaclesComponent->m_obstacleIndicies.AnyObstacleInidiciesInAvoidanceRange();
 	}
 
 	FVector2D desiredVelocity = GetDesiredVelocity(components, hasObstacles);
@@ -310,7 +310,7 @@ void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const Creat
 	const FVector2D leftTerminus = leftSource + scaledVelocity;
 	const FVector2D rightTerminus = rightSource + scaledVelocity;
 
-	const TArray<ObstacleIndicies, ArgusContainerAllocator<20u> >& obstacleIndicies = nearbyObstaclesComponent->m_obstacleIndicies.GetInRangeObstacleIndicies();
+	const TArray<ObstacleIndicies, ArgusContainerAllocator<20u> >& obstacleIndicies = nearbyObstaclesComponent->m_obstacleIndicies.GetObstacleIndiciesInAvoidanceRange();
 	for (int32 i = 0; i < obstacleIndicies.Num(); ++i)
 	{
 		const ObstaclePoint& previous = params.m_spatialPartitioningComponent->m_obstacles[obstacleIndicies[i].m_obstacleIndex].GetPrevious(obstacleIndicies[i].m_obstaclePointIndex);
@@ -318,11 +318,11 @@ void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const Creat
 		const ObstaclePoint& next = params.m_spatialPartitioningComponent->m_obstacles[obstacleIndicies[i].m_obstacleIndex].GetNext(obstacleIndicies[i].m_obstaclePointIndex);
 
 		// TODO JAMES: Evaluate if this is something we want to do. Also, expand to consider stopping case.
-		if (!ArgusMath::DoLineSegmentsIntersectCartesian(leftSource, leftTerminus, current.m_point, next.m_point) && 
-			!ArgusMath::DoLineSegmentsIntersectCartesian(rightSource, rightTerminus, current.m_point, next.m_point))
-		{
-			continue;
-		}
+		//if (!ArgusMath::DoLineSegmentsIntersectCartesian(leftSource, leftTerminus, current.m_point, next.m_point) &&
+		//	!ArgusMath::DoLineSegmentsIntersectCartesian(rightSource, rightTerminus, current.m_point, next.m_point))
+		//{
+		//	continue;
+		//}
 
 		CalculateORCALineForObstacleSegment(params, current, next, previous.m_direction, outORCALines);
 

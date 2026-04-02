@@ -451,7 +451,7 @@ void FogOfWarSystems::RevealPixelAlphaForEntity(FogOfWarComponent* fogOfWarCompo
 
 		bool nearObstacles = false;
 		uint32 modifiedRadius = radius;
-		if (components.m_taskComponent->m_flightState == EFlightState::Grounded && components.m_nearbyObstaclesComponent && components.m_nearbyObstaclesComponent->m_obstacleIndicies.GetInRangeObstacleIndicies().Num())
+		if (components.m_taskComponent->m_flightState == EFlightState::Grounded && components.m_nearbyObstaclesComponent && components.m_nearbyObstaclesComponent->m_obstacleIndicies.GetNumObstacleInidciesInSightRange())
 		{
 			nearObstacles = true;
 			modifiedRadius--;
@@ -483,7 +483,7 @@ void FogOfWarSystems::RevealPixelAlphaForEntity(FogOfWarComponent* fogOfWarCompo
 
 		bool nearObstacles = false;
 		uint32 modifiedRadius = radius;
-		if (components.m_taskComponent->m_flightState == EFlightState::Grounded && components.m_nearbyObstaclesComponent && components.m_nearbyObstaclesComponent->m_obstacleIndicies.GetInRangeObstacleIndicies().Num())
+		if (components.m_taskComponent->m_flightState == EFlightState::Grounded && components.m_nearbyObstaclesComponent && components.m_nearbyObstaclesComponent->m_obstacleIndicies.GetNumObstacleInidciesInSightRange())
 		{
 			nearObstacles = true;
 			modifiedRadius--;
@@ -515,7 +515,7 @@ void FogOfWarSystems::RevealPixelAlphaForEntity(FogOfWarComponent* fogOfWarCompo
 
 		bool nearObstacles = false;
 		uint32 modifiedRadius = radius;
-		if (components.m_taskComponent->m_flightState == EFlightState::Grounded && components.m_nearbyObstaclesComponent && components.m_nearbyObstaclesComponent->m_obstacleIndicies.GetInRangeObstacleIndicies().Num())
+		if (components.m_taskComponent->m_flightState == EFlightState::Grounded && components.m_nearbyObstaclesComponent && components.m_nearbyObstaclesComponent->m_obstacleIndicies.GetNumObstacleInidciesInSightRange())
 		{
 			nearObstacles = true;
 			modifiedRadius--;
@@ -547,7 +547,7 @@ void FogOfWarSystems::RevealPixelAlphaForEntity(FogOfWarComponent* fogOfWarCompo
 
 		bool nearObstacles = false;
 		uint32 modifiedRadius = radius;
-		if (components.m_taskComponent->m_flightState == EFlightState::Grounded && components.m_nearbyObstaclesComponent && components.m_nearbyObstaclesComponent->m_obstacleIndicies.GetInRangeObstacleIndicies().Num())
+		if (components.m_taskComponent->m_flightState == EFlightState::Grounded && components.m_nearbyObstaclesComponent && components.m_nearbyObstaclesComponent->m_obstacleIndicies.GetNumObstacleInidciesInSightRange())
 		{
 			nearObstacles = true;
 			modifiedRadius--;
@@ -758,17 +758,17 @@ void FogOfWarSystems::RevealPixelRangeWithObstacles(FogOfWarComponent* fogOfWarC
 	float currentFromDistanceSquared = FVector2D::DistSquared(cartesianEntityLocation, currentFromIntersection);
 	float currentToDistanceSquared = FVector2D::DistSquared(cartesianEntityLocation, currentToIntersection);
 	
-	const TArray<ObstacleIndicies, ArgusContainerAllocator<20u> >& inRangeObstacleIndicies = obstacleIndicies.GetInRangeObstacleIndicies();
-	for (int32 i = 0; i < inRangeObstacleIndicies.Num(); ++i)
+	obstacleIndicies.IterateObstacleIndiciesInSightRange(
+	[spatialPartitioningComponent, visionAdjustDistance, &currentFromDistanceSquared, &currentToDistanceSquared, &cartesianEntityLocation, &cartesianFromLocation, &cartesianToLocation, &currentFromIntersection, &currentToIntersection]
+	(ObstacleIndicies indicies)
 	{
-		const ObstacleIndicies& indexPair = inRangeObstacleIndicies[i];
-		if (spatialPartitioningComponent->IsPointElevated(indexPair) || spatialPartitioningComponent->IsNextPointElevated(indexPair))
+		if (spatialPartitioningComponent->IsPointElevated(indicies) || spatialPartitioningComponent->IsNextPointElevated(indicies))
 		{
-			continue;
+			return;
 		}
 
-		const ObstaclePoint& currentObstaclePoint = spatialPartitioningComponent->GetObstaclePointFromIndicies(indexPair);
-		const ObstaclePoint& nextObstaclePoint = spatialPartitioningComponent->GetNextObstaclePointFromIndicies(indexPair);
+		const ObstaclePoint& currentObstaclePoint = spatialPartitioningComponent->GetObstaclePointFromIndicies(indicies);
+		const ObstaclePoint& nextObstaclePoint = spatialPartitioningComponent->GetNextObstaclePointFromIndicies(indicies);
 
 		FVector2D currentPoint = currentObstaclePoint.m_point;
 		const FVector2D currentLeft = currentObstaclePoint.GetLeftVector();
@@ -780,7 +780,7 @@ void FogOfWarSystems::RevealPixelRangeWithObstacles(FogOfWarComponent* fogOfWarC
 
 		if (ArgusMath::IsLeftOfCartesian(currentPoint, nextPoint, cartesianEntityLocation))
 		{
-			continue;
+			return;
 		}
 
 		FVector2D fromIntersection = cartesianFromLocation;
@@ -805,7 +805,7 @@ void FogOfWarSystems::RevealPixelRangeWithObstacles(FogOfWarComponent* fogOfWarC
 				currentToDistanceSquared = toDistanceSquared;
 			}
 		}
-	}
+	});
 
 	if (prevFrom != cartesianEntityLocation)
 	{
