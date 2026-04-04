@@ -353,9 +353,11 @@ void AvoidanceSystems::CreateEntityORCALines(const CreateEntityORCALinesParams& 
 	ARGUS_RETURN_ON_NULL(nearbyEntitiesComponent, ArgusECSLog);
 
 	const GlobalSettingsComponent* settings = GlobalSettingsComponent::Get();
+	const EffortCoefficientSettingsComponent* effortSettings = EffortCoefficientSettingsComponent::Get();
 	ARGUS_RETURN_ON_NULL(settings, ArgusECSLog);
+	ARGUS_RETURN_ON_NULL(effortSettings, ArgusECSLog);
+
 	const AvoidanceGroupingComponent* sourceGroupingComponent = components.m_entity.GetComponent<AvoidanceGroupingComponent>();
-	
 	const bool isGrounded = components.m_taskComponent->m_flightState == EFlightState::Grounded;
 	for (int32 i = 0; i < nearbyEntitiesComponent->GetNearbyEntities(!isGrounded).GetEntityIdsInAvoidanceRange().Num(); ++i)
 	{
@@ -383,7 +385,7 @@ void AvoidanceSystems::CreateEntityORCALines(const CreateEntityORCALinesParams& 
 			perEntityParams.m_inSameAvoidanceGroup = true;
 		}
 
-		const float effortCoefficient = GetEffortCoefficientForEntityPair(components, foundEntity, sourceGroupingComponent, foundGroupingComponent, params.m_hasObstacles, perEntityParams.m_inSameAvoidanceGroup);
+		const float effortCoefficient = GetEffortCoefficientForEntityPair(effortSettings, components, foundEntity, sourceGroupingComponent, foundGroupingComponent, params.m_hasObstacles, perEntityParams.m_inSameAvoidanceGroup);
 		if (effortCoefficient == 0.0f)
 		{
 			continue;

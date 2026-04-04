@@ -2,10 +2,11 @@
 
 #include "AvoidanceSystems.h"
 
-float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystemsArgs& sourceEntityComponents, ArgusEntity foundEntity, const AvoidanceGroupingComponent* sourceGroupingComponent, const AvoidanceGroupingComponent* foundGroupingComponent, bool sourceHasObstacles, bool inSameAvoidanceGroup)
+float AvoidanceSystems::GetEffortCoefficientForEntityPair(const EffortCoefficientSettingsComponent* settings, const TransformSystemsArgs& sourceEntityComponents, ArgusEntity foundEntity, const AvoidanceGroupingComponent* sourceGroupingComponent, const AvoidanceGroupingComponent* foundGroupingComponent, bool sourceHasObstacles, bool inSameAvoidanceGroup)
 {
 	ARGUS_TRACE(AvoidanceSystems::GetEffortCoefficientForEntityPair);
 
+	ARGUS_RETURN_ON_NULL_BOOL(settings, ArgusECSLog);
 	if (!sourceEntityComponents.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return 0.0f;
@@ -25,29 +26,30 @@ float AvoidanceSystems::GetEffortCoefficientForEntityPair(const TransformSystems
 	}
 
 	float effortCoefficient = 0.5f;
-	if (ShouldReturnMovabilityEffortCoefficient(sourceEntityComponents, foundEntity, effortCoefficient) ||
-		ShouldReturnCombatEffortCoefficient(sourceEntityComponents, foundEntityTaskComponent, inSameAvoidanceGroup, effortCoefficient) ||
-		ShouldReturnConstructionEffortCoefficient(sourceEntityComponents, foundEntityTaskComponent, effortCoefficient) ||
-		ShouldReturnResourceExtractionEffortCoefficient(sourceEntityComponents, foundEntityTaskComponent, inSameAvoidanceGroup, effortCoefficient) ||
-		ShouldReturnCarrierEffortCoefficient(sourceEntityComponents, foundEntity, foundEntityTaskComponent, effortCoefficient) ||
-		ShouldReturnTargetEffortCoefficient(sourceEntityComponents, foundEntity, inSameAvoidanceGroup, effortCoefficient) ||
-		ShouldReturnStaticFlockingEffortCoefficient(sourceEntityComponents, foundEntity, effortCoefficient) ||
-		ShouldReturnAvoidancePriorityEffortCoefficient(sourceGroupingComponent, foundGroupingComponent, effortCoefficient) ||
-		ShouldReturnMovementTaskEffortCoefficient(sourceEntityComponents, foundEntity, foundEntityTaskComponent, inSameAvoidanceGroup, effortCoefficient))
+	if (ShouldReturnMovabilityEffortCoefficient(settings, sourceEntityComponents, foundEntity, effortCoefficient) ||
+		ShouldReturnCombatEffortCoefficient(settings, sourceEntityComponents, foundEntityTaskComponent, inSameAvoidanceGroup, effortCoefficient) ||
+		ShouldReturnConstructionEffortCoefficient(settings, sourceEntityComponents, foundEntityTaskComponent, effortCoefficient) ||
+		ShouldReturnResourceExtractionEffortCoefficient(settings, sourceEntityComponents, foundEntityTaskComponent, inSameAvoidanceGroup, effortCoefficient) ||
+		ShouldReturnCarrierEffortCoefficient(settings, sourceEntityComponents, foundEntity, foundEntityTaskComponent, effortCoefficient) ||
+		ShouldReturnTargetEffortCoefficient(settings, sourceEntityComponents, foundEntity, inSameAvoidanceGroup, effortCoefficient) ||
+		ShouldReturnStaticFlockingEffortCoefficient(settings, sourceEntityComponents, foundEntity, effortCoefficient) ||
+		ShouldReturnAvoidancePriorityEffortCoefficient(settings, sourceGroupingComponent, foundGroupingComponent, effortCoefficient) ||
+		ShouldReturnMovementTaskEffortCoefficient(settings, sourceEntityComponents, foundEntity, foundEntityTaskComponent, inSameAvoidanceGroup, effortCoefficient))
 	{
 		return effortCoefficient;
 	}
 
 	if (inSameAvoidanceGroup)
 	{
-		return GetEffortCoefficientForAvoidanceGroupPair(sourceEntityComponents, foundEntity, sourceGroupingComponent, foundGroupingComponent, sourceHasObstacles);
+		return GetEffortCoefficientForAvoidanceGroupPair(settings, sourceEntityComponents, foundEntity, sourceGroupingComponent, foundGroupingComponent, sourceHasObstacles);
 	}
 
 	return 0.5f;
 }
 
-float AvoidanceSystems::GetEffortCoefficientForAvoidanceGroupPair(const TransformSystemsArgs& sourceEntityComponents, ArgusEntity foundEntity, const AvoidanceGroupingComponent* sourceGroupComponent, const AvoidanceGroupingComponent* foundGroupComponent, bool sourceHasObstacles)
+float AvoidanceSystems::GetEffortCoefficientForAvoidanceGroupPair(const EffortCoefficientSettingsComponent* settings, const TransformSystemsArgs& sourceEntityComponents, ArgusEntity foundEntity, const AvoidanceGroupingComponent* sourceGroupComponent, const AvoidanceGroupingComponent* foundGroupComponent, bool sourceHasObstacles)
 {
+	ARGUS_RETURN_ON_NULL_BOOL(settings, ArgusECSLog);
 	if (!sourceEntityComponents.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return 0.0f;
@@ -89,24 +91,23 @@ float AvoidanceSystems::GetEffortCoefficientForAvoidanceGroupPair(const Transfor
 		{
 			if (foundHasObstacles)
 			{
-				return 0.3f;
+				return settings->m_sameAvoidanceGroupBothObstacle;
 			}
-			else
-			{
-				return 0.0f;
-			}
+			return settings->m_sameAvoidanceGroupHasObstacle;
 		}
-		else if (foundHasObstacles)
+
+		if (foundHasObstacles)
 		{
-			return 0.75f;
+			return settings->m_sameAvoidanceGroupOtherHasObstacle;
 		}
 	}
 
-	return 0.5f;
+	return settings->m_sameAvoidanceGroupBase;
 }
 
-bool AvoidanceSystems::ShouldReturnMovabilityEffortCoefficient(const TransformSystemsArgs& sourceEntityComponents, ArgusEntity foundEntity, float& coefficient)
+bool AvoidanceSystems::ShouldReturnMovabilityEffortCoefficient(const EffortCoefficientSettingsComponent* settings, const TransformSystemsArgs& sourceEntityComponents, ArgusEntity foundEntity, float& coefficient)
 {
+	ARGUS_RETURN_ON_NULL_BOOL(settings, ArgusECSLog);
 	if (!foundEntity.IsMoveable())
 	{
 		coefficient = 1.0f;
@@ -116,8 +117,9 @@ bool AvoidanceSystems::ShouldReturnMovabilityEffortCoefficient(const TransformSy
 	return false;
 }
 
-bool AvoidanceSystems::ShouldReturnCombatEffortCoefficient(const TransformSystemsArgs& sourceEntityComponents, const TaskComponent* foundEntityTaskComponent, bool inSameAvoidanceGroup, float& coefficient)
+bool AvoidanceSystems::ShouldReturnCombatEffortCoefficient(const EffortCoefficientSettingsComponent* settings, const TransformSystemsArgs& sourceEntityComponents, const TaskComponent* foundEntityTaskComponent, bool inSameAvoidanceGroup, float& coefficient)
 {
+	ARGUS_RETURN_ON_NULL_BOOL(settings, ArgusECSLog);
 	ARGUS_RETURN_ON_NULL_BOOL(foundEntityTaskComponent, ArgusECSLog);
 	if (!sourceEntityComponents.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
@@ -138,8 +140,9 @@ bool AvoidanceSystems::ShouldReturnCombatEffortCoefficient(const TransformSystem
 	return false;
 }
 
-bool AvoidanceSystems::ShouldReturnConstructionEffortCoefficient(const TransformSystemsArgs& sourceEntityComponents, const TaskComponent* foundEntityTaskComponent, float& coefficient)
+bool AvoidanceSystems::ShouldReturnConstructionEffortCoefficient(const EffortCoefficientSettingsComponent* settings, const TransformSystemsArgs& sourceEntityComponents, const TaskComponent* foundEntityTaskComponent, float& coefficient)
 {
+	ARGUS_RETURN_ON_NULL_BOOL(settings, ArgusECSLog);
 	ARGUS_RETURN_ON_NULL_BOOL(foundEntityTaskComponent, ArgusECSLog);
 	if (!sourceEntityComponents.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
@@ -160,8 +163,9 @@ bool AvoidanceSystems::ShouldReturnConstructionEffortCoefficient(const Transform
 	return false;
 }
 
-bool AvoidanceSystems::ShouldReturnCarrierEffortCoefficient(const TransformSystemsArgs& sourceEntityComponents, ArgusEntity foundEntity, const TaskComponent* foundEntityTaskComponent, float& coefficient)
+bool AvoidanceSystems::ShouldReturnCarrierEffortCoefficient(const EffortCoefficientSettingsComponent* settings, const TransformSystemsArgs& sourceEntityComponents, ArgusEntity foundEntity, const TaskComponent* foundEntityTaskComponent, float& coefficient)
 {
+	ARGUS_RETURN_ON_NULL_BOOL(settings, ArgusECSLog);
 	ARGUS_RETURN_ON_NULL_BOOL(foundEntityTaskComponent, ArgusECSLog);
 	if (!sourceEntityComponents.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
@@ -197,8 +201,9 @@ bool AvoidanceSystems::ShouldReturnCarrierEffortCoefficient(const TransformSyste
 	return false;
 }
 
-bool AvoidanceSystems::ShouldReturnTargetEffortCoefficient(const TransformSystemsArgs& sourceEntityComponents, ArgusEntity foundEntity, bool inSameAvoidanceGroup, float& coefficient)
+bool AvoidanceSystems::ShouldReturnTargetEffortCoefficient(const EffortCoefficientSettingsComponent* settings, const TransformSystemsArgs& sourceEntityComponents, ArgusEntity foundEntity, bool inSameAvoidanceGroup, float& coefficient)
 {
+	ARGUS_RETURN_ON_NULL_BOOL(settings, ArgusECSLog);
 	if (!sourceEntityComponents.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return false;
@@ -230,8 +235,9 @@ bool AvoidanceSystems::ShouldReturnTargetEffortCoefficient(const TransformSystem
 	return false;
 }
 
-bool AvoidanceSystems::ShouldReturnAvoidancePriorityEffortCoefficient(const AvoidanceGroupingComponent* sourceEntityAvoidanceGroupingComponent, const AvoidanceGroupingComponent* foundEntityAvoidanceGroupingComponent, float& coefficient)
+bool AvoidanceSystems::ShouldReturnAvoidancePriorityEffortCoefficient(const EffortCoefficientSettingsComponent* settings, const AvoidanceGroupingComponent* sourceEntityAvoidanceGroupingComponent, const AvoidanceGroupingComponent* foundEntityAvoidanceGroupingComponent, float& coefficient)
 {
+	ARGUS_RETURN_ON_NULL_BOOL(settings, ArgusECSLog);
 	if (sourceEntityAvoidanceGroupingComponent && foundEntityAvoidanceGroupingComponent)
 	{
 		if (sourceEntityAvoidanceGroupingComponent->m_avoidancePriority > foundEntityAvoidanceGroupingComponent->m_avoidancePriority)
@@ -250,8 +256,9 @@ bool AvoidanceSystems::ShouldReturnAvoidancePriorityEffortCoefficient(const Avoi
 	return false;
 }
 
-bool AvoidanceSystems::ShouldReturnMovementTaskEffortCoefficient(const TransformSystemsArgs& sourceEntityComponents, ArgusEntity foundEntity, const TaskComponent* foundEntityTaskComponent, bool inSameAvoidanceGroup, float& coefficient)
+bool AvoidanceSystems::ShouldReturnMovementTaskEffortCoefficient(const EffortCoefficientSettingsComponent* settings, const TransformSystemsArgs& sourceEntityComponents, ArgusEntity foundEntity, const TaskComponent* foundEntityTaskComponent, bool inSameAvoidanceGroup, float& coefficient)
 {
+	ARGUS_RETURN_ON_NULL_BOOL(settings, ArgusECSLog);
 	ARGUS_RETURN_ON_NULL_BOOL(foundEntityTaskComponent, ArgusECSLog);
 	if (!sourceEntityComponents.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
@@ -273,8 +280,9 @@ bool AvoidanceSystems::ShouldReturnMovementTaskEffortCoefficient(const Transform
 	return false;
 }
 
-bool AvoidanceSystems::ShouldReturnResourceExtractionEffortCoefficient(const TransformSystemsArgs& sourceEntityComponents, const TaskComponent* foundEntityTaskComponent, bool inSameAvoidanceGroup, float& coefficient)
+bool AvoidanceSystems::ShouldReturnResourceExtractionEffortCoefficient(const EffortCoefficientSettingsComponent* settings, const TransformSystemsArgs& sourceEntityComponents, const TaskComponent* foundEntityTaskComponent, bool inSameAvoidanceGroup, float& coefficient)
 {
+	ARGUS_RETURN_ON_NULL_BOOL(settings, ArgusECSLog);
 	ARGUS_RETURN_ON_NULL_BOOL(foundEntityTaskComponent, ArgusECSLog);
 	if (!sourceEntityComponents.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
@@ -295,8 +303,9 @@ bool AvoidanceSystems::ShouldReturnResourceExtractionEffortCoefficient(const Tra
 	return false;
 }
 
-bool AvoidanceSystems::ShouldReturnStaticFlockingEffortCoefficient(const TransformSystemsArgs& sourceEntityComponents, ArgusEntity foundEntity, float& coefficient)
+bool AvoidanceSystems::ShouldReturnStaticFlockingEffortCoefficient(const EffortCoefficientSettingsComponent* settings, const TransformSystemsArgs& sourceEntityComponents, ArgusEntity foundEntity, float& coefficient)
 {
+	ARGUS_RETURN_ON_NULL_BOOL(settings, ArgusECSLog);
 	if (!sourceEntityComponents.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return false;

@@ -101,6 +101,9 @@ TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > ArgusCom
 #pragma region AssetLoadingComponent
 ArgusMap<uint16, AssetLoadingComponent*, ArgusSetAllocator<1> > ArgusComponentRegistry::s_AssetLoadingComponents;
 #pragma endregion
+#pragma region EffortCoefficientSettingsComponent
+ArgusMap<uint16, EffortCoefficientSettingsComponent*, ArgusSetAllocator<1> > ArgusComponentRegistry::s_EffortCoefficientSettingsComponents;
+#pragma endregion
 #pragma region FogOfWarComponent
 ArgusMap<uint16, FogOfWarComponent*, ArgusSetAllocator<1> > ArgusComponentRegistry::s_FogOfWarComponents;
 #pragma endregion
@@ -346,6 +349,10 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 	if (s_AssetLoadingComponents.Contains(entityId))
 	{
 		s_AssetLoadingComponents.Remove(entityId);
+	}
+	if (s_EffortCoefficientSettingsComponents.Contains(entityId))
+	{
+		s_EffortCoefficientSettingsComponents.Remove(entityId);
 	}
 	if (s_FogOfWarComponents.Contains(entityId))
 	{
@@ -744,6 +751,18 @@ void ArgusComponentRegistry::FlushAllComponents()
 		}
 	);
  
+	s_EffortCoefficientSettingsComponents.RemoveAll([](const uint16& entityId, EffortCoefficientSettingsComponent*& component)
+		{
+			if (ArgusEntity::IsReservedEntityId(entityId) && component)
+			{
+				component->Reset();
+				return false;
+			}
+
+			return true;
+		}
+	);
+ 
 	s_FogOfWarComponents.RemoveAll([](const uint16& entityId, FogOfWarComponent*& component)
 		{
 			if (ArgusEntity::IsReservedEntityId(entityId) && component)
@@ -1049,6 +1068,10 @@ void ArgusComponentRegistry::DrawComponentsDebug(uint16 entityId)
 	if (const AssetLoadingComponent* AssetLoadingComponentPtr = GetComponent<AssetLoadingComponent>(entityId))
 	{
 		AssetLoadingComponentPtr->DrawComponentDebug();
+	}
+	if (const EffortCoefficientSettingsComponent* EffortCoefficientSettingsComponentPtr = GetComponent<EffortCoefficientSettingsComponent>(entityId))
+	{
+		EffortCoefficientSettingsComponentPtr->DrawComponentDebug();
 	}
 	if (const FogOfWarComponent* FogOfWarComponentPtr = GetComponent<FogOfWarComponent>(entityId))
 	{

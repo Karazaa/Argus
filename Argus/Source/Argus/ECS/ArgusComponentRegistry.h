@@ -37,6 +37,7 @@
 
 // Begin dynamically allocated component specific includes.
 #include "DynamicAllocComponentDefinitions\AssetLoadingComponent.h"
+#include "DynamicAllocComponentDefinitions\EffortCoefficientSettingsComponent.h"
 #include "DynamicAllocComponentDefinitions\FogOfWarComponent.h"
 #include "DynamicAllocComponentDefinitions\GlobalSettingsComponent.h"
 #include "DynamicAllocComponentDefinitions\InputInterfaceComponent.h"
@@ -76,7 +77,7 @@ public:
 	static void DrawComponentsDebug(uint16 entityId);
 #endif //!UE_BUILD_SHIPPING
 
-	static constexpr uint32 k_numComponentTypes = 31;
+	static constexpr uint32 k_numComponentTypes = 32;
 
 	// Begin component specific template specifiers.
 	
@@ -2326,6 +2327,66 @@ public:
 		}
 
 		return s_AssetLoadingComponents[entityId];
+	}
+#pragma endregion
+#pragma region EffortCoefficientSettingsComponent
+private:
+	static ArgusMap<uint16, EffortCoefficientSettingsComponent*, ArgusSetAllocator<1> > s_EffortCoefficientSettingsComponents;
+public:
+	template<>
+	inline EffortCoefficientSettingsComponent* GetComponent<EffortCoefficientSettingsComponent>(uint16 entityId)
+	{
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(EffortCoefficientSettingsComponent));
+			return nullptr;
+		}
+
+		if (!s_EffortCoefficientSettingsComponents.Contains(entityId))
+		{
+			return nullptr;
+		}
+
+		return s_EffortCoefficientSettingsComponents[entityId];
+	}
+
+	template<>
+	inline EffortCoefficientSettingsComponent* AddComponent<EffortCoefficientSettingsComponent>(uint16 entityId)
+	{
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(EffortCoefficientSettingsComponent));
+			return nullptr;
+		}
+
+		if (UNLIKELY(s_EffortCoefficientSettingsComponents.Contains(entityId)))
+		{
+			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(EffortCoefficientSettingsComponent), entityId);
+			return s_EffortCoefficientSettingsComponents[entityId];
+		}
+
+		EffortCoefficientSettingsComponent* output = new (ArgusMemorySource::Allocate<EffortCoefficientSettingsComponent>()) EffortCoefficientSettingsComponent();
+		s_EffortCoefficientSettingsComponents.Emplace(entityId, output);
+		return output;
+	}
+
+	template<>
+	inline EffortCoefficientSettingsComponent* GetOrAddComponent<EffortCoefficientSettingsComponent>(uint16 entityId)
+	{
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(EffortCoefficientSettingsComponent));
+			return nullptr;
+		}
+
+		if (!s_EffortCoefficientSettingsComponents.Contains(entityId))
+		{
+			EffortCoefficientSettingsComponent* output = new (ArgusMemorySource::Allocate<EffortCoefficientSettingsComponent>()) EffortCoefficientSettingsComponent();
+			s_EffortCoefficientSettingsComponents.Emplace(entityId, output);
+			return output;
+		}
+
+		return s_EffortCoefficientSettingsComponents[entityId];
 	}
 #pragma endregion
 #pragma region FogOfWarComponent
