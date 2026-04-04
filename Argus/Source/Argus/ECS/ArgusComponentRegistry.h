@@ -37,6 +37,7 @@
 
 // Begin dynamically allocated component specific includes.
 #include "DynamicAllocComponentDefinitions\AssetLoadingComponent.h"
+#include "DynamicAllocComponentDefinitions\DecalSystemsSettingsComponent.h"
 #include "DynamicAllocComponentDefinitions\EffortCoefficientSettingsComponent.h"
 #include "DynamicAllocComponentDefinitions\FogOfWarComponent.h"
 #include "DynamicAllocComponentDefinitions\GlobalSettingsComponent.h"
@@ -77,7 +78,7 @@ public:
 	static void DrawComponentsDebug(uint16 entityId);
 #endif //!UE_BUILD_SHIPPING
 
-	static constexpr uint32 k_numComponentTypes = 32;
+	static constexpr uint32 k_numComponentTypes = 33;
 
 	// Begin component specific template specifiers.
 	
@@ -2327,6 +2328,66 @@ public:
 		}
 
 		return s_AssetLoadingComponents[entityId];
+	}
+#pragma endregion
+#pragma region DecalSystemsSettingsComponent
+private:
+	static ArgusMap<uint16, DecalSystemsSettingsComponent*, ArgusSetAllocator<1> > s_DecalSystemsSettingsComponents;
+public:
+	template<>
+	inline DecalSystemsSettingsComponent* GetComponent<DecalSystemsSettingsComponent>(uint16 entityId)
+	{
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(DecalSystemsSettingsComponent));
+			return nullptr;
+		}
+
+		if (!s_DecalSystemsSettingsComponents.Contains(entityId))
+		{
+			return nullptr;
+		}
+
+		return s_DecalSystemsSettingsComponents[entityId];
+	}
+
+	template<>
+	inline DecalSystemsSettingsComponent* AddComponent<DecalSystemsSettingsComponent>(uint16 entityId)
+	{
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(DecalSystemsSettingsComponent));
+			return nullptr;
+		}
+
+		if (UNLIKELY(s_DecalSystemsSettingsComponents.Contains(entityId)))
+		{
+			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(DecalSystemsSettingsComponent), entityId);
+			return s_DecalSystemsSettingsComponents[entityId];
+		}
+
+		DecalSystemsSettingsComponent* output = new (ArgusMemorySource::Allocate<DecalSystemsSettingsComponent>()) DecalSystemsSettingsComponent();
+		s_DecalSystemsSettingsComponents.Emplace(entityId, output);
+		return output;
+	}
+
+	template<>
+	inline DecalSystemsSettingsComponent* GetOrAddComponent<DecalSystemsSettingsComponent>(uint16 entityId)
+	{
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(DecalSystemsSettingsComponent));
+			return nullptr;
+		}
+
+		if (!s_DecalSystemsSettingsComponents.Contains(entityId))
+		{
+			DecalSystemsSettingsComponent* output = new (ArgusMemorySource::Allocate<DecalSystemsSettingsComponent>()) DecalSystemsSettingsComponent();
+			s_DecalSystemsSettingsComponents.Emplace(entityId, output);
+			return output;
+		}
+
+		return s_DecalSystemsSettingsComponents[entityId];
 	}
 #pragma endregion
 #pragma region EffortCoefficientSettingsComponent

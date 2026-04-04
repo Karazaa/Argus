@@ -55,16 +55,8 @@ float AvoidanceSystems::GetEffortCoefficientForAvoidanceGroupPair(const EffortCo
 		return 0.0f;
 	}
 
-	if (!sourceGroupComponent)
-	{
-		ARGUS_ERROR_NULL(ArgusECSLog, sourceGroupComponent);
-		return 1.0f;
-	}
-	if (!foundGroupComponent)
-	{
-		ARGUS_ERROR_NULL(ArgusECSLog, foundGroupComponent);
-		return 0.0f;
-	}
+	ARGUS_RETURN_ON_NULL_VALUE(sourceGroupComponent, ArgusECSLog, 1.0f);
+	ARGUS_RETURN_ON_NULL_VALUE(foundGroupComponent, ArgusECSLog, 0.0f);
 
 	if (sourceGroupComponent->m_groupId != foundGroupComponent->m_groupId || sourceGroupComponent->m_groupId == ArgusECSConstants::k_maxEntities)
 	{

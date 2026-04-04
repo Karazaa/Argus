@@ -5,7 +5,7 @@
 #include "ArgusEntityTemplate.h"
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
-#include "ArgusMaterialCache.h"
+#include "ArgusStaticData.h"
 #include "DrawDebugHelpers.h"
 #include "Engine/World.h"
 #include "RecordDefinitions/ArgusActorRecord.h"
@@ -77,20 +77,6 @@ ArgusEntity DecalSystems::InstantiateMoveToLocationDecalEntity(const UArgusActor
 	if (!moveToLocationDecalTemplate)
 	{
 		return ArgusEntity::k_emptyEntity;
-	}
-
-	FArgusMaterialCache* materialCache = FArgusMaterialCache::Get();
-	ARGUS_RETURN_ON_NULL_VALUE(materialCache, ArgusECSLog, ArgusEntity::k_emptyEntity);
-	switch (attackMovePolicy)
-	{
-		case EDecalTypePolicy::PopulateMoveToLocation:
-			materialCache->m_moveToLocationDecalMaterial.AsyncPreLoadAndStorePtr();
-			break;
-		case EDecalTypePolicy::PopulateAttackMove:
-			materialCache->m_attackMoveToLocationDecalMaterial.AsyncPreLoadAndStorePtr();
-			break;
-		default:
-			break;
 	}
 
 	const uint32 recordId = moveToLocationDecalRecord->m_id;
@@ -412,7 +398,8 @@ void DecalSystems::ChangeToAttackMoveDecalIfNeeded(ArgusEntity selectedEntity, A
 	}
 
 	decalComponent->m_decalType = EDecalType::AttackMoveToLocation;
-	FArgusMaterialCache* materialCache = FArgusMaterialCache::Get();
-	ARGUS_RETURN_ON_NULL(materialCache, ArgusECSLog);
-	materialCache->m_attackMoveToLocationDecalMaterial.AsyncPreLoadAndStorePtr();
+
+	const DecalSystemsSettingsComponent* settings = DecalSystemsSettingsComponent::Get();
+	ARGUS_RETURN_ON_NULL(settings, ArgusECSLog);
+	ArgusStaticData::AsyncPreLoadRecord<UMaterialRecord>(settings->m_attackMoveToLocationDecalMaterial.GetId());
 }

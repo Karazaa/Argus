@@ -1,7 +1,7 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusDecalActor.h"
-#include "ArgusMaterialCache.h"
+#include "ArgusStaticData.h"
 #include "Components/DecalComponent.h"
 
 void AArgusDecalActor::SetEntity(ArgusEntity entity)
@@ -14,16 +14,22 @@ void AArgusDecalActor::SetEntity(ArgusEntity entity)
 	UDecalComponent* unrealDecalComponent = GetComponentByClass<UDecalComponent>();
 	ARGUS_RETURN_ON_NULL(unrealDecalComponent, ArgusUnrealObjectsLog);
 
-	FArgusMaterialCache* materialCache = FArgusMaterialCache::Get();
-	ARGUS_RETURN_ON_NULL(materialCache, ArgusUnrealObjectsLog);
+	const DecalSystemsSettingsComponent* settings = DecalSystemsSettingsComponent::Get();
+	ARGUS_RETURN_ON_NULL(settings, ArgusECSLog);
 
 	switch (decalComponent->m_decalType)
 	{
 		case EDecalType::MoveToLocation:
-			unrealDecalComponent->SetDecalMaterial(materialCache->m_moveToLocationDecalMaterial.LoadAndStorePtr());
+			if (const UMaterialRecord* moveMaterialRecord = ArgusStaticData::GetRecord<UMaterialRecord>(settings->m_moveToLocationDecalMaterial.GetId()))
+			{
+				unrealDecalComponent->SetDecalMaterial(moveMaterialRecord->m_material.LoadAndStorePtr());
+			}
 			break;
 		case EDecalType::AttackMoveToLocation:
-			unrealDecalComponent->SetDecalMaterial(materialCache->m_attackMoveToLocationDecalMaterial.LoadAndStorePtr());
+			if (const UMaterialRecord* attackMoveMaterialRecord = ArgusStaticData::GetRecord<UMaterialRecord>(settings->m_attackMoveToLocationDecalMaterial.GetId()))
+			{
+				unrealDecalComponent->SetDecalMaterial(attackMoveMaterialRecord->m_material.LoadAndStorePtr());
+			}
 			break;
 	}
 }

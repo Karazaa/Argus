@@ -2,10 +2,10 @@
 
 #pragma once
 
+#include "ArgusStaticRecord.h"
 #include "ComponentDependencies/ResourceSet.h"
-#include "Materials/MaterialInterface.h"
-#include "RecordDefinitions/ArgusActorRecord.h"
 #include "RecordDependencies/AbilityEffect.h"
+#include "RecordReferences/MaterialRecordReference.h"
 #include "SoftPtrLoadStore.h"
 #include "AbilityRecord.generated.h"
 
@@ -42,8 +42,8 @@ public:
 	UPROPERTY(EditAnywhere, meta = (Bitmask, BitmaskEnum = "/Script/Argus.EReticleFlags"))
 	uint8 m_reticleFlags = 0u;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FSoftObjectLoadStore_UMaterialInterface m_reticleMaterial;
+	UPROPERTY(EditAnywhere)
+	FUMaterialRecordReference m_reticleMaterial;
 
 	bool GetRequiresReticle() const
 	{
@@ -60,5 +60,5 @@ public:
 		return static_cast<bool>(m_reticleFlags & static_cast<uint8>(EReticleFlags::DisableReticleAfterCast));
 	}
 
-	virtual void OnAsyncLoaded() const override;
+	void OnAsyncLoaded() const override;
 };

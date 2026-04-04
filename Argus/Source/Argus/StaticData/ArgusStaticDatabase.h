@@ -7,6 +7,7 @@
 #include "RecordDatabases/AbilityRecordDatabase.h"
 #include "RecordDatabases/ArgusActorRecordDatabase.h"
 #include "RecordDatabases/FactionRecordDatabase.h"
+#include "RecordDatabases/MaterialRecordDatabase.h"
 #include "RecordDatabases/PlacedArgusActorTeamInfoRecordDatabase.h"
 #include "RecordDatabases/ResourceSetRecordDatabase.h"
 #include "RecordDatabases/TeamColorRecordDatabase.h"
@@ -70,6 +71,24 @@ protected:
 	TObjectPtr<UFactionRecordDatabase> m_UFactionRecordDatabasePersistent;
 
 	void LazyLoadUFactionRecordDatabase();
+#pragma endregion
+#pragma region UMaterialRecord
+public:
+	const UMaterialRecord* GetUMaterialRecord(uint32 id);
+	const bool AsyncPreLoadUMaterialRecord(uint32 id, TFunction<void(const UMaterialRecord*)> callback = nullptr);
+	void ResetLoadedUMaterialRecordPointerArray();
+#if WITH_EDITOR
+	uint32 AddUMaterialRecordToDatabase(UMaterialRecord* record);
+	void RegisterNewUMaterialRecordDatabase(UMaterialRecordDatabase* database);
+#endif //WITH_EDITOR
+
+protected:
+	UPROPERTY(EditAnywhere)
+	TSoftObjectPtr<UMaterialRecordDatabase> m_UMaterialRecordDatabase;
+	UPROPERTY(Transient)
+	TObjectPtr<UMaterialRecordDatabase> m_UMaterialRecordDatabasePersistent;
+
+	void LazyLoadUMaterialRecordDatabase();
 #pragma endregion
 #pragma region UPlacedArgusActorTeamInfoRecord
 public:

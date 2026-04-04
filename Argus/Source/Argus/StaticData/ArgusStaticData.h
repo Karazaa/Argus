@@ -62,6 +62,10 @@ public:
 		{
 			return staticDatabase->AddUFactionRecordToDatabase(UFactionRecordInstance);
 		}
+		if (UMaterialRecord* UMaterialRecordInstance = dynamic_cast<UMaterialRecord*>(record))
+		{
+			return staticDatabase->AddUMaterialRecordToDatabase(UMaterialRecordInstance);
+		}
 		if (UPlacedArgusActorTeamInfoRecord* UPlacedArgusActorTeamInfoRecordInstance = dynamic_cast<UPlacedArgusActorTeamInfoRecord*>(record))
 		{
 			return staticDatabase->AddUPlacedArgusActorTeamInfoRecordToDatabase(UPlacedArgusActorTeamInfoRecordInstance);
@@ -156,6 +160,33 @@ public:
 		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
 		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
 		staticDatabase->RegisterNewUFactionRecordDatabase(database);
+	}
+#endif //WITH_EDITOR
+#pragma endregion
+
+#pragma region UMaterialRecord
+	template<>
+	inline const UMaterialRecord* GetRecord(uint32 id)
+	{
+		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
+		ARGUS_RETURN_ON_NULL_POINTER(staticDatabase, ArgusStaticDataLog);
+		return staticDatabase->GetUMaterialRecord(id);
+	}
+
+	template<>
+	inline const bool AsyncPreLoadRecord<UMaterialRecord>(uint32 id, TFunction<void(const UMaterialRecord*)> callback)
+	{
+		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
+		ARGUS_RETURN_ON_NULL_BOOL(staticDatabase, ArgusStaticDataLog);
+		return staticDatabase->AsyncPreLoadUMaterialRecord(id, callback);
+	}
+
+#if WITH_EDITOR
+	static void RegisterNewUMaterialRecordDatabase(UMaterialRecordDatabase* database)
+	{
+		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
+		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
+		staticDatabase->RegisterNewUMaterialRecordDatabase(database);
 	}
 #endif //WITH_EDITOR
 #pragma endregion

@@ -249,7 +249,7 @@ void SpatialPartitioningSystems::CalculateAvoidanceObstacles(SpatialPartitioning
 		return;
 	}
 
-	spatialPartitioningComponent->m_obstacles.Empty();
+	spatialPartitioningComponent->m_obstacles.Reset();
 	spatialPartitioningComponent->m_obstaclePointKDTree.ResetKDTreeWithAverageLocation();
 
 	TArray<FVector> navWalls;

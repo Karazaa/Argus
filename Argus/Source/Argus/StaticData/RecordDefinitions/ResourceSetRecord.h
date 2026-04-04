@@ -2,8 +2,8 @@
 
 #pragma once
 
+#include "ArgusStaticRecord.h"
 #include "ComponentDependencies/ResourceSet.h"
-#include "RecordDefinitions/ArgusActorRecord.h"
 #include "ResourceSetRecord.generated.h"
 
 UCLASS(BlueprintType)

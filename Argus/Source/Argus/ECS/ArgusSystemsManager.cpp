@@ -3,6 +3,7 @@
 #include "ArgusSystemsManager.h"
 #include "ArgusEntityTemplate.h"
 #include "ArgusLogging.h"
+#include "ArgusStaticData.h"
 #include "Engine/World.h"
 #include "Systems/AbilitySystems.h"
 #include "Systems/AvoidanceSystems.h"
@@ -134,6 +135,12 @@ void ArgusSystemsManager::SetInitialSingletonState(UWorld* worldPointer, ETeam a
 	inputInterfaceComponent->m_activePlayerTeam = activePlayerTeam;
 	inputInterfaceComponent->m_controlGroups.SetNumZeroed(inputInterfaceComponent->m_numControlGroups);
 	FogOfWarSystems::InitializeSystems();
+
+	const DecalSystemsSettingsComponent* decalSystemsSettings = DecalSystemsSettingsComponent::Get();
+	ARGUS_RETURN_ON_NULL(decalSystemsSettings, ArgusECSLog);
+
+	ArgusStaticData::AsyncPreLoadRecord<UMaterialRecord>(decalSystemsSettings->m_moveToLocationDecalMaterial.GetId());
+	ArgusStaticData::AsyncPreLoadRecord<UMaterialRecord>(decalSystemsSettings->m_attackMoveToLocationDecalMaterial.GetId());
 }
 
 void ArgusSystemsManager::PopulateTeamComponents(const UArgusEntityTemplate* teamEntityTemplate)

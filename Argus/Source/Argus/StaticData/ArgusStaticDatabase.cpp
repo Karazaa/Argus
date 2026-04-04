@@ -329,6 +329,113 @@ void UArgusStaticDatabase::LazyLoadUFactionRecordDatabase()
 	}
 }
 #pragma endregion
+#pragma region UMaterialRecord
+const UMaterialRecord* UArgusStaticDatabase::GetUMaterialRecord(uint32 id)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUMaterialRecordDatabase();
+
+	if (!m_UMaterialRecordDatabasePersistent)
+	{
+		return nullptr;
+	}
+
+	return m_UMaterialRecordDatabasePersistent->GetRecord(id);
+}
+
+const bool UArgusStaticDatabase::AsyncPreLoadUMaterialRecord(uint32 id, TFunction<void(const UMaterialRecord*)> callback)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUMaterialRecordDatabase();
+
+	if (!m_UMaterialRecordDatabasePersistent)
+	{
+		return false;
+	}
+
+	return m_UMaterialRecordDatabasePersistent->AsyncPreLoadRecord(id);
+}
+
+void UArgusStaticDatabase::ResetLoadedUMaterialRecordPointerArray()
+{
+	if (!m_UMaterialRecordDatabasePersistent)
+	{
+		return;
+	}
+
+	m_UMaterialRecordDatabasePersistent->ResetPersistentObjectPointerArray();
+}
+
+#if WITH_EDITOR
+uint32 UArgusStaticDatabase::AddUMaterialRecordToDatabase(UMaterialRecord* record)
+{
+	LazyLoadUMaterialRecordDatabase();
+
+	if (!m_UMaterialRecordDatabasePersistent)
+	{
+		return 0u;
+	}
+
+	m_UMaterialRecordDatabasePersistent->AddUMaterialRecordToDatabase(record);
+	
+	return record->m_id;
+}
+
+void UArgusStaticDatabase::RegisterNewUMaterialRecordDatabase(UMaterialRecordDatabase* database)
+{
+	if (!database)
+	{
+		return;
+	}
+
+	if (!m_UMaterialRecordDatabase.IsNull())
+	{
+		ARGUS_LOG
+		(
+			ArgusStaticDataLog,
+			Error,
+			TEXT("[%s] Trying to assign to %s. Potential duplicate databases."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(m_UMaterialRecordDatabase)
+		);
+		return;
+	}
+
+	m_UMaterialRecordDatabase = database;
+	SaveDatabase();
+}
+#endif //WITH_EDITOR
+
+void UArgusStaticDatabase::LazyLoadUMaterialRecordDatabase()
+{
+	if (!m_UMaterialRecordDatabasePersistent)
+	{
+		m_UMaterialRecordDatabasePersistent = m_UMaterialRecordDatabase.LoadSynchronous();
+		if (!m_UMaterialRecordDatabasePersistent)
+		{
+			ARGUS_LOG(ArgusStaticDataLog, Error, TEXT("[%s] Could not find %s reference. Need to set reference in %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(m_UMaterialRecordDatabase), ARGUS_NAMEOF(UArgusStaticDatabase));
+			return;
+		}
+
+		m_UMaterialRecordDatabasePersistent->ResizePersistentObjectPointerArrayToFitRecord(0u);
+	}
+
+	if (!m_UMaterialRecordDatabasePersistent)
+	{
+		ARGUS_LOG
+		(
+			ArgusStaticDataLog, Error,
+			TEXT("[%s] Could not retrieve %s. %s might not be properly assigned."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(m_UMaterialRecordDatabasePersistent),
+			ARGUS_NAMEOF(m_UMaterialRecordDatabase)
+		);
+		return;
+	}
+}
+#pragma endregion
 #pragma region UPlacedArgusActorTeamInfoRecord
 const UPlacedArgusActorTeamInfoRecord* UArgusStaticDatabase::GetUPlacedArgusActorTeamInfoRecord(uint32 id)
 {
@@ -656,6 +763,7 @@ void UArgusStaticDatabase::ResetLoadedPointerArrays()
 	ResetLoadedUAbilityRecordPointerArray();
 	ResetLoadedUArgusActorRecordPointerArray();
 	ResetLoadedUFactionRecordPointerArray();
+	ResetLoadedUMaterialRecordPointerArray();
 	ResetLoadedUPlacedArgusActorTeamInfoRecordPointerArray();
 	ResetLoadedUResourceSetRecordPointerArray();
 	ResetLoadedUTeamColorRecordPointerArray();

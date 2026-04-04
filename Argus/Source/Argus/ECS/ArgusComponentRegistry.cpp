@@ -101,6 +101,9 @@ TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > ArgusCom
 #pragma region AssetLoadingComponent
 ArgusMap<uint16, AssetLoadingComponent*, ArgusSetAllocator<1> > ArgusComponentRegistry::s_AssetLoadingComponents;
 #pragma endregion
+#pragma region DecalSystemsSettingsComponent
+ArgusMap<uint16, DecalSystemsSettingsComponent*, ArgusSetAllocator<1> > ArgusComponentRegistry::s_DecalSystemsSettingsComponents;
+#pragma endregion
 #pragma region EffortCoefficientSettingsComponent
 ArgusMap<uint16, EffortCoefficientSettingsComponent*, ArgusSetAllocator<1> > ArgusComponentRegistry::s_EffortCoefficientSettingsComponents;
 #pragma endregion
@@ -349,6 +352,10 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 	if (s_AssetLoadingComponents.Contains(entityId))
 	{
 		s_AssetLoadingComponents.Remove(entityId);
+	}
+	if (s_DecalSystemsSettingsComponents.Contains(entityId))
+	{
+		s_DecalSystemsSettingsComponents.Remove(entityId);
 	}
 	if (s_EffortCoefficientSettingsComponents.Contains(entityId))
 	{
@@ -751,6 +758,18 @@ void ArgusComponentRegistry::FlushAllComponents()
 		}
 	);
  
+	s_DecalSystemsSettingsComponents.RemoveAll([](const uint16& entityId, DecalSystemsSettingsComponent*& component)
+		{
+			if (ArgusEntity::IsReservedEntityId(entityId) && component)
+			{
+				component->Reset();
+				return false;
+			}
+
+			return true;
+		}
+	);
+ 
 	s_EffortCoefficientSettingsComponents.RemoveAll([](const uint16& entityId, EffortCoefficientSettingsComponent*& component)
 		{
 			if (ArgusEntity::IsReservedEntityId(entityId) && component)
@@ -1068,6 +1087,10 @@ void ArgusComponentRegistry::DrawComponentsDebug(uint16 entityId)
 	if (const AssetLoadingComponent* AssetLoadingComponentPtr = GetComponent<AssetLoadingComponent>(entityId))
 	{
 		AssetLoadingComponentPtr->DrawComponentDebug();
+	}
+	if (const DecalSystemsSettingsComponent* DecalSystemsSettingsComponentPtr = GetComponent<DecalSystemsSettingsComponent>(entityId))
+	{
+		DecalSystemsSettingsComponentPtr->DrawComponentDebug();
 	}
 	if (const EffortCoefficientSettingsComponent* EffortCoefficientSettingsComponentPtr = GetComponent<EffortCoefficientSettingsComponent>(entityId))
 	{

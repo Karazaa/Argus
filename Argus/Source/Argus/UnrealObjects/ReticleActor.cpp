@@ -85,9 +85,13 @@ void AReticleActor::EnableReticleDecalComponent(const ReticleComponent* reticleC
 	currentDecalSize.Z = reticleComponent->m_radius;
 	m_decalComponent->DecalSize = currentDecalSize;
 
-	if (UMaterialInterface* reticleMaterial = abilityRecord->m_reticleMaterial.LoadAndStorePtr())
+	const uint32 materialRecordID = abilityRecord->m_reticleMaterial.GetId();
+	if (materialRecordID > 0)
 	{
-		m_decalComponent->SetDecalMaterial(reticleMaterial);
+		if (const UMaterialRecord* materialRecord = ArgusStaticData::GetRecord<UMaterialRecord>(materialRecordID))
+		{
+			m_decalComponent->SetDecalMaterial(materialRecord->m_material.LoadAndStorePtr());
+		}
 	}
 
 	m_decalComponent->SetHiddenInGame(false);

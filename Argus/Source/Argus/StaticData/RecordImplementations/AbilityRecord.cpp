@@ -9,10 +9,13 @@ void UAbilityRecord::OnAsyncLoaded() const
 	{
 		m_abilityIcon.AsyncPreLoadAndStorePtr();
 	}
-	if (m_reticleMaterial)
+
+	uint32 materialRecordId = m_reticleMaterial.GetId();
+	if (materialRecordId > 0)
 	{
-		m_reticleMaterial.AsyncPreLoadAndStorePtr();
+		ArgusStaticData::AsyncPreLoadRecord<UMaterialRecord>(materialRecordId);
 	}
+
 	for (int32 i = 0; i < m_abilityEffects.Num(); ++i)
 	{
 		switch (m_abilityEffects[i].m_abilityType)

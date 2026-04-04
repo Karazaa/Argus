@@ -28,5 +28,5 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FText m_actorInfoName;
 
-	virtual void OnAsyncLoaded() const override;
+	void OnAsyncLoaded() const override;
 };
