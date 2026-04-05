@@ -1,5 +1,7 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
+#if !UE_BUILD_SHIPPING
+
 #include "ArgusECSDebugger.h"
 #include "ArgusEntity.h"
 #include "ArgusMacros.h"
@@ -9,9 +11,8 @@
 #include "Systems/ResourceSystems.h"
 #include "Systems/TeamCommanderSystems.h"
 
-#if !UE_BUILD_SHIPPING
-
 static TAutoConsoleVariable<bool> CVarDrawECSDebugger(TEXT("Argus.Debug.ECS"), false, TEXT("Whether or not the ECS ImGui debugger should be drawn."));
+
 bool ArgusECSDebugger::s_shouldDrawFogOfWar = true;
 bool ArgusECSDebugger::s_onlyDebugSelectedEntities = false;
 bool ArgusECSDebugger::s_ignoreTeamRequirementsForSelectingEntities = false;

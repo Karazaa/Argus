@@ -85,7 +85,10 @@ void AArgusGameModeBase::Tick(float deltaTime)
 	ArgusSystemsManager::RunPostThreadSystems(worldPointer, deltaTime);
 
 #if !UE_BUILD_SHIPPING
-	// TODO JAMES: Draw Save Manager debugger.
+	if (m_saveManager)
+	{
+		m_saveManager->DrawDebugger();
+	}
 #endif //!UE_BUILD_SHIPPING
 }
 

@@ -15,6 +15,10 @@ class UArgusSaveManager : public UObject
 public:
 	UArgusSaveManager();
 
+#if !UE_BUILD_SHIPPING
+	void DrawDebugger();
+#endif //!UE_BUILD_SHIPPING
+
 private:
 	struct SaveLock
 	{

@@ -49,7 +49,7 @@ void UArgusSaveManager::DoesSaveExistInternal(const FString& saveSlotName, const
 	}
 
 	ISaveGameSystem* saveSystem = IPlatformFeaturesModule::Get().GetSaveGameSystem();
-	ARGUS_RETURN_ON_NULL(saveSystem, ArgusECSLog);
+	ARGUS_RETURN_ON_NULL(saveSystem, ArgusPersistenceLog);
 
 	saveSystem->DoesSaveGameExistAsync(*saveSlotName, m_userId, [completedDelegate](const FString& saveSlotName, FPlatformUserId userId, ISaveGameSystem::ESaveExistsResult result)
 	{
@@ -79,7 +79,7 @@ void UArgusSaveManager::SaveInternal(const FString& saveSlotName, USaveGame* sav
 
 	saveSystem->SaveGameAsync(false, *saveSlotName, m_userId, saveBytes, [completedDelegate](const FString& saveSlotName, FPlatformUserId userId, bool didSucceed)
 	{
-		if (!completedDelegate)
+		if (completedDelegate)
 		{
 			completedDelegate(didSucceed);
 		}
@@ -88,11 +88,11 @@ void UArgusSaveManager::SaveInternal(const FString& saveSlotName, USaveGame* sav
 
 void UArgusSaveManager::LoadInternal(const FString& saveSlotName, const TFunction<void(USaveGame*)>& completedDelegate)
 {
-	ARGUS_RETURN_ON_NULL(completedDelegate, ArgusPersistenceLog)
-		if (!ensure(!saveSlotName.IsEmpty()))
-		{
-			return;
-		}
+	ARGUS_RETURN_ON_NULL(completedDelegate, ArgusPersistenceLog);
+	if (!ensure(!saveSlotName.IsEmpty()))
+	{
+		return;
+	}
 
 	ISaveGameSystem* saveSystem = IPlatformFeaturesModule::Get().GetSaveGameSystem();
 	ARGUS_RETURN_ON_NULL(saveSystem, ArgusPersistenceLog);
