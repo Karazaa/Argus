@@ -107,7 +107,6 @@ void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float delta
 	const FVector2D moverLocation2D = FVector2D(moverLocation);
 	const FVector2D targetLocation2D = FVector2D(targetLocation);
 	const float distanceToTarget = FVector2D::Distance(moverLocation2D, targetLocation2D);
-	const bool isWithinRangeOfTargetEntity = components.m_taskComponent->m_movementState == EMovementState::MoveToEntity && GetEndMoveRange(components) > distanceToTarget;
 
 	if (components.m_taskComponent->m_flightState == EFlightState::Grounded)
 	{
@@ -115,6 +114,14 @@ void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float delta
 	}
 	components.m_transformComponent->m_location = moverLocation;
 	
+	bool isWithinRangeOfTargetEntity = false;
+	if (components.m_taskComponent->m_movementState == EMovementState::MoveToEntity)
+	{
+		const float rangeSquared = FMath::Square(GetEndMoveRange(components));
+		const float distanceToTargetSquared =  FVector::DistSquared2D(moverLocation, components.m_entity.GetCurrentTargetLocation());
+		isWithinRangeOfTargetEntity = rangeSquared > distanceToTargetSquared;
+	}
+
 	if (isWithinRangeOfTargetEntity)
 	{
 		OnWithinRangeOfTargetEntity(components);
