@@ -8,6 +8,7 @@ class ComponentImplementationGenerator
 {
 public:
 	static void GenerateComponentImplementationCode(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData);
+	static const char* s_componentImplementationsTemplateDirectorySuffix;
 
 private:
 	static const char* s_componentImplementationsDirectorySuffix;
@@ -17,7 +18,7 @@ private:
 	static const char* s_perObservableTemplateFilename;
 	static const char* s_sharedFunctionalityTemplateFilename;
 	static const char* s_componentCppSuffix;
-	static const char* s_componentImplementationsTemplateDirectorySuffix;
+	
 
 	static bool ParseComponentImplementationCppFileTemplateWithReplacements(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents);
 	static bool ParseDynamicAllocComponentImplementationCppFileTemplateWithReplacements(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents);

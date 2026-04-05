@@ -2,10 +2,10 @@
 
 #include "ArgusECSObjectAdder.h"
 #include "ArgusComponentRegistryCodeGenerator.h"
+#include "ComponentImplementationCodeGenerator.h"
 #include "ArgusSystemArgsImplementationCodeGenerator.h"
 #include "Widgets/Docking/SDockTab.h"
 #include "Widgets/Input/SButton.h"
-#include "Widgets/Input/SCheckBox.h"
 #include "Widgets/Input/SComboButton.h"
 #include "Widgets/Input/SEditableText.h"
 
@@ -14,35 +14,25 @@
 TSharedRef<SDockTab> ArgusECSObjectAdder::OnSpawnPluginTab(const FSpawnTabArgs& spawnTabArgs)
 {
 	m_inputFieldText = FText::FromString(TEXT(""));
-	m_isDynamicallyAllocated = false;
 
 	m_currentMessageText = SNew(STextBlock).Text(FText::FromString(TEXT("")));
-	m_currentDropDownText = SNew(STextBlock).Text(m_nameArray[static_cast<uint8>(m_ecsType)]);
+	m_ecsTypeDropDownText = SNew(STextBlock).Text(m_ecsTypeNameArray[static_cast<uint8>(m_ecsType)]);
+	m_componentTypeDropDownText = SNew(STextBlock).Text(m_componentTypeNameArray[static_cast<uint8>(m_componentType)]);
 	m_currentLabelText = SNew(STextBlock).Text(FText::FromString(TEXT("Component Name: ")));
 	m_currentHintText = SNew(SEditableText).HintText(FText::FromString(TEXT("Enter component to add name here."))).ColorAndOpacity(FColor::Green)
 						.OnTextChanged(FOnTextChanged::CreateRaw(this, &ArgusECSObjectAdder::OnTextChanged));
 
-	m_dynamicAllocBox = SNew(SHorizontalBox)
+	m_componentTypeBox = SNew(SHorizontalBox)
 		+ SHorizontalBox::Slot()
 		.VAlign(VAlign_Top)
 		.HAlign(HAlign_Left)
-		.FillContentWidth(1.0f)
-		.Padding(FMargin(0, 0, 2, 0))
 		[
-			SNew(SBox).VAlign(VAlign_Top).HAlign(HAlign_Right)
+			SNew(SComboButton)
+				.OnGetMenuContent(FOnGetContent::CreateRaw(this, &ArgusECSObjectAdder::OnGetComponentTypeContent))
+				.ContentPadding(FMargin(2.0f, 2.0f))
+				.ButtonContent()
 				[
-					SNew(STextBlock).Text(FText::FromString(TEXT("Is Dynamically Allocated? ")))
-				]
-		]
-		+ SHorizontalBox::Slot()
-		.VAlign(VAlign_Top)
-		.HAlign(HAlign_Left)
-		.FillContentWidth(1.0f)
-		.Padding(FMargin(2, 0, 0, 0))
-		[
-			SNew(SBox).VAlign(VAlign_Top).HAlign(HAlign_Left)
-				[
-					SNew(SCheckBox).OnCheckStateChanged(FOnCheckStateChanged::CreateRaw(this, &ArgusECSObjectAdder::OnCheckBoxChecked))
+					m_componentTypeDropDownText.ToSharedRef()
 				]
 		];
 
@@ -65,7 +55,7 @@ TSharedRef<SDockTab> ArgusECSObjectAdder::OnSpawnPluginTab(const FSpawnTabArgs& 
 								.ContentPadding(FMargin(2.0f, 2.0f))
 								.ButtonContent()
 								[
-									m_currentDropDownText.ToSharedRef()
+									m_ecsTypeDropDownText.ToSharedRef()
 								]
 						]
 						+ SVerticalBox::Slot()
@@ -104,7 +94,7 @@ TSharedRef<SDockTab> ArgusECSObjectAdder::OnSpawnPluginTab(const FSpawnTabArgs& 
 						.FillContentHeight(1.0f)
 						.Padding(FMargin(10, 10, 10, 10))
 						[
-							m_dynamicAllocBox.ToSharedRef()
+							m_componentTypeBox.ToSharedRef()
 						]
 						+ SVerticalBox::Slot()
 						.VAlign(VAlign_Top)
@@ -135,7 +125,7 @@ TSharedRef<SWidget> ArgusECSObjectAdder::OnGetECSTypeContent()
 	for (uint8 i = 0u; i < 3; i++)
 	{
 		FUIAction itemAction = FUIAction(FExecuteAction::CreateRaw(this, &ArgusECSObjectAdder::OnECSTypeChange, static_cast<int32>(i)));
-		MenuBuilder.AddMenuEntry(m_nameArray[i], TAttribute<FText>(), FSlateIcon(), itemAction);
+		MenuBuilder.AddMenuEntry(m_ecsTypeNameArray[i], TAttribute<FText>(), FSlateIcon(), itemAction);
 	}
 
 	return MenuBuilder.MakeWidget();
@@ -147,35 +137,51 @@ void ArgusECSObjectAdder::OnECSTypeChange(int32 Index)
 	m_ecsType = static_cast<ECSType>(enumValue);
 
 	ClearMessage();
-	m_currentDropDownText->SetText(m_nameArray[static_cast<uint8>(m_ecsType)]);
+	m_ecsTypeDropDownText->SetText(m_ecsTypeNameArray[static_cast<uint8>(m_ecsType)]);
 	switch (m_ecsType)
 	{
 		case ECSType::Component:
 			m_currentLabelText->SetText(FText::FromString(TEXT("Component Name: ")));
 			m_currentHintText->SetHintText(FText::FromString(TEXT("Enter component to add name here.")));
-			m_dynamicAllocBox->SetVisibility(EVisibility::Visible);
+			m_componentTypeBox->SetVisibility(EVisibility::Visible);
 			break;
 		case ECSType::System:
 			m_currentLabelText->SetText(FText::FromString(TEXT("System Name: ")));
 			m_currentHintText->SetHintText(FText::FromString(TEXT("Enter system to add name here.")));
-			m_dynamicAllocBox->SetVisibility(EVisibility::Collapsed);
+			m_componentTypeBox->SetVisibility(EVisibility::Collapsed);
 			break;
 		case ECSType::SystemArguments:
 			m_currentLabelText->SetText(FText::FromString(TEXT("System Arguments Name: ")));
 			m_currentHintText->SetHintText(FText::FromString(TEXT("Enter system arguments to add name here.")));
-			m_dynamicAllocBox->SetVisibility(EVisibility::Collapsed);
+			m_componentTypeBox->SetVisibility(EVisibility::Collapsed);
 			break;
 	}
+}
+
+TSharedRef<SWidget> ArgusECSObjectAdder::OnGetComponentTypeContent()
+{
+	FMenuBuilder MenuBuilder(true, NULL);
+	for (uint8 i = 0u; i < 3; i++)
+	{
+		FUIAction itemAction = FUIAction(FExecuteAction::CreateRaw(this, &ArgusECSObjectAdder::OnComponentTypeChange, static_cast<int32>(i)));
+		MenuBuilder.AddMenuEntry(m_componentTypeNameArray[i], TAttribute<FText>(), FSlateIcon(), itemAction);
+	}
+
+	return MenuBuilder.MakeWidget();
+}
+
+void ArgusECSObjectAdder::OnComponentTypeChange(int32 Index)
+{
+	const uint8 enumValue = IntCastChecked<uint8>(Index);
+	m_componentType = static_cast<ComponentType>(enumValue);
+
+	ClearMessage();
+	m_componentTypeDropDownText->SetText(m_componentTypeNameArray[static_cast<uint8>(m_componentType)]);
 }
 
 void ArgusECSObjectAdder::OnTextChanged(const FText& text)
 {
 	m_inputFieldText = text;
-}
-
-void ArgusECSObjectAdder::OnCheckBoxChecked(ECheckBoxState checkBoxState)
-{
-	m_isDynamicallyAllocated = checkBoxState == ECheckBoxState::Checked;
 }
 
 FReply ArgusECSObjectAdder::OnClicked()
@@ -226,18 +232,57 @@ FReply ArgusECSObjectAdder::OnClicked_Component()
 	std::vector<std::string> componentNames = std::vector<std::string>();
 	componentNames.push_back(inputString);
 
-	std::string templateFileName = m_isDynamicallyAllocated ? "DynamicAllocComponentAdderTemplate.txt" : "ComponentAdderTemplate.txt";
+	std::string templateFileName, directorySuffix;
+	bool isSettingsComponent = false;
+	switch (m_componentType)
+	{
+		case ComponentType::StaticAllocated:
+			templateFileName = "ComponentAdderTemplate.txt";
+			directorySuffix = "Source/Argus/ECS/ComponentDefinitions/";
+			break;
+		case ComponentType::DynamicAllocated:
+			templateFileName = "DynamicAllocComponentAdderTemplate.txt";
+			directorySuffix = "Source/Argus/ECS/DynamicAllocComponentDefinitions/";
+			break;
+		case ComponentType::Settings:
+			templateFileName = "SettingsComponentAdderTemplate.txt";
+			directorySuffix = "Source/Argus/ECS/DynamicAllocComponentDefinitions/";
+			isSettingsComponent = true;
+			break;
+		default:
+			break;
+	}
+
 	ArgusCodeGeneratorUtil::ParseComponentSpecificTemplate(std::string(cStrTemplateDirectory).append(templateFileName), componentNames, parsedLines);
 
 	// Construct a directory path to component definition location
 	FString definitionsDirectory = ArgusCodeGeneratorUtil::GetProjectDirectory();
-	std::string directorySuffix = m_isDynamicallyAllocated ? "Source/Argus/ECS/DynamicAllocComponentDefinitions/" : "Source/Argus/ECS/ComponentDefinitions/";
 	definitionsDirectory.Append(directorySuffix.c_str());
 	FPaths::MakeStandardFilename(definitionsDirectory);
 	const char* cStrDefinitionsDirectory = ARGUS_FSTRING_TO_CHAR(definitionsDirectory);
 
 	// Write out newly defined component
 	ArgusCodeGeneratorUtil::WriteOutFile(std::string(cStrDefinitionsDirectory).append(inputString.append(".h")), parsedLines);
+
+	if (isSettingsComponent)
+	{
+		parsedLines.clear();
+		cStrTemplateDirectory = ARGUS_FSTRING_TO_CHAR(ArgusCodeGeneratorUtil::GetTemplateDirectory(ComponentImplementationGenerator::s_componentImplementationsTemplateDirectorySuffix));
+		templateFileName = "SettingsComponentManualTemplate.txt";
+		directorySuffix = "Source/Argus/ECS/ManualDynamicAllocComponentImplementations/";
+
+		ArgusCodeGeneratorUtil::ParseComponentSpecificTemplate(std::string(cStrTemplateDirectory).append(templateFileName), componentNames, parsedLines);
+
+		// Construct a directory path to component manual implementation location
+		FString implementationsDirectory = ArgusCodeGeneratorUtil::GetProjectDirectory();
+		implementationsDirectory.Append(directorySuffix.c_str());
+		FPaths::MakeStandardFilename(implementationsDirectory);
+		const char* cStrImplementationsDirectory = ARGUS_FSTRING_TO_CHAR(implementationsDirectory);
+
+		// Write out newly defined component
+		inputString = std::string(TCHAR_TO_UTF8(*m_inputFieldText.ToString()));
+		ArgusCodeGeneratorUtil::WriteOutFile(std::string(cStrImplementationsDirectory).append(inputString.append("Manual.cpp")), parsedLines);
+	}
 
 	MessageSuccess(FText::FromString(TEXT("Succesfully added Component!")));
 	return FReply::Handled();
