@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "ArgusActorPool.h"
+#include "ArgusSaveManager.h"
 #include "ArgusSystemsManager.h"
 #include "ArgusSystemsThread.h"
 #include "ComponentDefinitions/IdentityComponent.h"
@@ -42,7 +43,10 @@ protected:
 	TMap<ETeam, TObjectPtr<UTeamColorRecord>> m_teamColorMap;
 
 	UPROPERTY(Transient)
-	TObjectPtr<AArgusPlayerController> m_activePlayerController;
+	TObjectPtr<AArgusPlayerController> m_activePlayerController = nullptr;
+
+	UPROPERTY(Transient)
+	TObjectPtr<UArgusSaveManager> m_saveManager = nullptr;
 
 	virtual void Tick(float deltaTime) override;
 

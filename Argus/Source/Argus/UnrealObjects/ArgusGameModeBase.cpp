@@ -26,6 +26,9 @@ void AArgusGameModeBase::StartPlay()
 {
 	ArgusStaticData::ResetLoadedPointerArrays();
 	ArgusEntity::FlushAllEntities();
+
+	m_saveManager = NewObject<UArgusSaveManager>(this, FName(TEXT("SaveManager")));
+
 	UWorld* worldPointer = GetWorld();
 	ARGUS_RETURN_ON_NULL(worldPointer, ArgusUnrealObjectsLog);
 	ArgusSystemsManager::Initialize(worldPointer, m_singletonEntityTemplate.LoadSynchronous(), m_teamEntityTemplate.LoadSynchronous());
@@ -80,6 +83,10 @@ void AArgusGameModeBase::Tick(float deltaTime)
 	});
 
 	ArgusSystemsManager::RunPostThreadSystems(worldPointer, deltaTime);
+
+#if !UE_BUILD_SHIPPING
+	// TODO JAMES: Draw Save Manager debugger.
+#endif //!UE_BUILD_SHIPPING
 }
 
 void AArgusGameModeBase::ManageActorStateForEntities(const UWorld* worldPointer, float deltaTime)
