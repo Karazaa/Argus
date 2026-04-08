@@ -24,6 +24,19 @@ void UArgusSaveManager::Initialize()
 	});
 }
 
+void UArgusSaveManager::Save(const TFunction<void(const FString&, bool)>& completedDelegate)
+{
+	if (m_saveLockReferenceCount > 0)
+	{
+		// TODO JAMES: Save request queuing
+		return;
+	}
+	const SaveLock saveLock = SaveLock(this);
+
+	// TODO JAMES: Populate SaveGame 
+	// TODO JAMES: SaveInternal
+}
+
 UArgusSaveManager::SaveLock::SaveLock(UArgusSaveManager* saveManager)
 {
 	ARGUS_RETURN_ON_NULL(saveManager, ArgusPersistenceLog);
@@ -146,4 +159,31 @@ void UArgusSaveManager::OnMetadataLoaded(USaveGame* saveGame)
 	ARGUS_RETURN_ON_NULL(metadataSaveGame, ArgusPersistenceLog);
 
 	m_saveMetadata = metadataSaveGame;
+}
+
+void UArgusSaveManager::OnSaveComplete(const FString& saveSlotName, const SaveLock& saveLock, bool didSucceed)
+{
+	if (!didSucceed)
+	{
+		return;
+	}
+
+	SaveMetadata(saveSlotName, saveLock);
+}
+
+void UArgusSaveManager::SaveMetadata(const FString& mostRecentSaveSlotName, const SaveLock& saveLock)
+{
+	PopulateMetadata(mostRecentSaveSlotName);
+
+	SaveInternal(k_metadataSaveSlotName, m_saveMetadata, [saveLock](bool didSucceed)
+	{
+		// TODO JAMES: Error here if needed.
+	});
+}
+
+void UArgusSaveManager::PopulateMetadata(const FString& mostRecentSaveSlotName)
+{
+	ARGUS_RETURN_ON_NULL(m_saveMetadata, ArgusPersistenceLog);
+
+	m_saveMetadata->m_mostRecentSaveName = mostRecentSaveSlotName;
 }

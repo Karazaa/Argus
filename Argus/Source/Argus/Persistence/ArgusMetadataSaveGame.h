@@ -26,4 +26,6 @@ private:
 
 	UPROPERTY(SaveGame)
 	FString m_mostRecentSaveName;
+
+	friend class UArgusSaveManager;
 };

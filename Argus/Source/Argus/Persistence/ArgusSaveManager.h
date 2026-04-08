@@ -17,6 +17,7 @@ public:
 	UArgusSaveManager();
 
 	void Initialize();
+	void Save(const TFunction<void(const FString&, bool)>& completedDelegate);
 
 #if !UE_BUILD_SHIPPING
 	void DrawDebugger();
@@ -49,6 +50,10 @@ private:
 
 	void OnCheckIfMetadataExists(bool doesExist);
 	void OnMetadataLoaded(USaveGame* saveGame);
+
+	void OnSaveComplete(const FString& saveSlotName, const SaveLock& saveLock, bool didSucceed);
+	void SaveMetadata(const FString& mostRecentSaveSlotName, const SaveLock& saveLock);
+	void PopulateMetadata(const FString& mostRecentSaveSlotName);
 
 	uint8 m_saveLockReferenceCount = 0u;
 	FPlatformUserId m_userId;
