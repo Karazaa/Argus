@@ -28,6 +28,10 @@ void AArgusGameModeBase::StartPlay()
 	ArgusEntity::FlushAllEntities();
 
 	m_saveManager = NewObject<UArgusSaveManager>(this, FName(TEXT("SaveManager")));
+	if (m_saveManager)
+	{
+		m_saveManager->Initialize();
+	}
 
 	UWorld* worldPointer = GetWorld();
 	ARGUS_RETURN_ON_NULL(worldPointer, ArgusUnrealObjectsLog);

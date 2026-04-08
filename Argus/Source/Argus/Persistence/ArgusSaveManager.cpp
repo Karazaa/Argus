@@ -1,14 +1,27 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusSaveManager.h"
+#include "ArgusMetadataSaveGame.h"
 #include "ArgusLogging.h"
 #include "Kismet/GameplayStatics.h"
 #include "PlatformFeatures.h"
 #include "SaveGameSystem.h"
 
+const FString UArgusSaveManager::k_metadataSaveSlotName = TEXT("ArgusSaveMetadata");
+
 UArgusSaveManager::UArgusSaveManager()
 {
 	m_userId = FPlatformMisc::GetPlatformUserForUserIndex(0);
+}
+
+void UArgusSaveManager::Initialize()
+{
+	DoesSaveExistInternal(k_metadataSaveSlotName, [saveManager = TWeakObjectPtr<UArgusSaveManager>(this)](const FString& slotName, bool doesExist)
+	{
+		UArgusSaveManager* rawSaveManager = saveManager.Get();
+		ARGUS_RETURN_ON_NULL(rawSaveManager, ArgusPersistenceLog);
+		rawSaveManager->OnCheckIfMetadataExists(doesExist);
+	});
 }
 
 UArgusSaveManager::SaveLock::SaveLock(UArgusSaveManager* saveManager)
@@ -40,7 +53,7 @@ UArgusSaveManager::SaveLock::~SaveLock()
 	m_saveManager->m_saveLockReferenceCount--;
 }
 
-void UArgusSaveManager::DoesSaveExistInternal(const FString& saveSlotName, const TFunction<void(const FString&, bool)> completedDelegate)
+void UArgusSaveManager::DoesSaveExistInternal(const FString& saveSlotName, const TFunction<void(const FString&, bool)>& completedDelegate)
 {
 	ARGUS_RETURN_ON_NULL(completedDelegate, ArgusPersistenceLog);
 	if (!ensure(!saveSlotName.IsEmpty()))
@@ -109,4 +122,28 @@ void UArgusSaveManager::LoadInternal(const FString& saveSlotName, const TFunctio
 			completedDelegate(loadedSaveGame);
 		}
 	});
+}
+
+void UArgusSaveManager::OnCheckIfMetadataExists(bool doesExist)
+{
+	if (!doesExist)
+	{
+		m_saveMetadata = NewObject<UArgusMetadataSaveGame>(this);
+		return;
+	}
+
+	LoadInternal(k_metadataSaveSlotName, [saveManager = TWeakObjectPtr<UArgusSaveManager>(this)](USaveGame* saveGame)
+	{
+		UArgusSaveManager* rawSaveManager = saveManager.Get();
+		ARGUS_RETURN_ON_NULL(rawSaveManager, ArgusPersistenceLog);
+		rawSaveManager->OnMetadataLoaded(saveGame);
+	});
+}
+
+void UArgusSaveManager::OnMetadataLoaded(USaveGame* saveGame)
+{
+	UArgusMetadataSaveGame* metadataSaveGame = Cast<UArgusMetadataSaveGame>(saveGame);
+	ARGUS_RETURN_ON_NULL(metadataSaveGame, ArgusPersistenceLog);
+
+	m_saveMetadata = metadataSaveGame;
 }

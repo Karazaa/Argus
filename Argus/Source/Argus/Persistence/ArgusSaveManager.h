@@ -6,6 +6,7 @@
 #include "ArgusSaveManager.generated.h"
 
 class USaveGame;
+class UArgusMetadataSaveGame;
 
 UCLASS()
 class UArgusSaveManager : public UObject 
@@ -14,6 +15,8 @@ class UArgusSaveManager : public UObject
 
 public:
 	UArgusSaveManager();
+
+	void Initialize();
 
 #if !UE_BUILD_SHIPPING
 	void DrawDebugger();
@@ -35,9 +38,17 @@ private:
 		TWeakObjectPtr<UArgusSaveManager> m_saveManager = nullptr;
 	};
 
-	void DoesSaveExistInternal(const FString& saveSlotName, const TFunction<void(const FString&, bool)> completedDelegate);
+	static const FString k_metadataSaveSlotName;
+
+	UPROPERTY(Transient)
+	TObjectPtr<UArgusMetadataSaveGame> m_saveMetadata = nullptr;
+
+	void DoesSaveExistInternal(const FString& saveSlotName, const TFunction<void(const FString&, bool)>& completedDelegate);
 	void SaveInternal(const FString& saveSlotName, USaveGame* saveGame, const TFunction<void(bool)>& completedDelegate);
 	void LoadInternal(const FString& saveSlotName, const TFunction<void(USaveGame*)>& completedDelegate);
+
+	void OnCheckIfMetadataExists(bool doesExist);
+	void OnMetadataLoaded(USaveGame* saveGame);
 
 	uint8 m_saveLockReferenceCount = 0u;
 	FPlatformUserId m_userId;
