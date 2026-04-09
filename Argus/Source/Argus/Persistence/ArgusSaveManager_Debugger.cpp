@@ -38,7 +38,10 @@ void UArgusSaveManager::DrawDebugger()
 
 	if (ImGui::Button("Load"))
 	{
-		// TODO JAMES: Do something
+		LoadMostRecent([](UArgusSaveGame* saveGame) 
+		{
+			// TODO JAMES: Do something
+		});
 	}
 
 	ImGui::End();

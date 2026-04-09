@@ -12,6 +12,9 @@ struct FSaveSlotMetadata
 	GENERATED_BODY()
 
 	UPROPERTY(SaveGame)
+	FString m_slotName;
+
+	UPROPERTY(SaveGame)
 	FDateTime m_saveTimestamp;
 };
 

@@ -55,6 +55,29 @@ void UArgusSaveManager::Save(const TFunction<void(const FString&, bool)>& comple
 	});
 }
 
+void UArgusSaveManager::Load(const FString& saveSlotName, const TFunction<void(UArgusSaveGame*)>& completedDelegate)
+{
+	ARGUS_RETURN_ON_NULL(completedDelegate, ArgusPersistenceLog);
+	if (saveSlotName.IsEmpty())
+	{
+		completedDelegate(nullptr);
+		return;
+	}
+
+	DoesSaveExistInternal(saveSlotName, [saveManager = TWeakObjectPtr<UArgusSaveManager>(this), completedDelegate](const FString& slotName, bool doesExist)
+	{
+		UArgusSaveManager* rawSaveManager = saveManager.Get();
+		ARGUS_RETURN_ON_NULL(rawSaveManager, ArgusPersistenceLog);
+		rawSaveManager->OnCheckIfSaveExists(slotName, doesExist, completedDelegate);
+	});
+}
+
+void UArgusSaveManager::LoadMostRecent(const TFunction<void(UArgusSaveGame*)>& completedDelegate)
+{
+	ARGUS_RETURN_ON_NULL(m_saveMetadata, ArgusPersistenceLog);
+	Load(m_saveMetadata->m_mostRecentSaveName, completedDelegate);
+}
+
 UArgusSaveManager::SaveLock::SaveLock(UArgusSaveManager* saveManager)
 {
 	ARGUS_RETURN_ON_NULL(saveManager, ArgusPersistenceLog);
@@ -199,12 +222,33 @@ void UArgusSaveManager::SaveMetadata(const FString& mostRecentSaveSlotName, cons
 	});
 }
 
+void UArgusSaveManager::OnCheckIfSaveExists(const FString& saveSlotName, bool doesExist, const TFunction<void(UArgusSaveGame*)>& completedDelegate)
+{
+	ARGUS_RETURN_ON_NULL(completedDelegate, ArgusPersistenceLog);
+	if (!doesExist)
+	{
+		// TODO JAMES: Error here.
+		completedDelegate(nullptr);
+		return;
+	}
+
+	LoadInternal(saveSlotName, [saveManager = TWeakObjectPtr<UArgusSaveManager>(this), completedDelegate](USaveGame* saveGame)
+	{
+		UArgusSaveManager* rawSaveManager = saveManager.Get();
+		ARGUS_RETURN_ON_NULL(rawSaveManager, ArgusPersistenceLog);
+		UArgusSaveGame* argusSaveGame = Cast<UArgusSaveGame>(saveGame);
+		ARGUS_RETURN_ON_NULL(argusSaveGame, ArgusPersistenceLog);
+		completedDelegate(argusSaveGame);
+	});
+}
+
 void UArgusSaveManager::PopulateMetadata(const FString& mostRecentSaveSlotName)
 {
 	ARGUS_RETURN_ON_NULL(m_saveMetadata, ArgusPersistenceLog);
 
 	m_saveMetadata->m_mostRecentSaveName = mostRecentSaveSlotName;
 	FSaveSlotMetadata& slotMetadata = m_saveMetadata->m_saveSlotMetadata.Emplace_GetRef();
+	slotMetadata.m_slotName = mostRecentSaveSlotName;
 	slotMetadata.m_saveTimestamp = FDateTime::Now();
 }
 

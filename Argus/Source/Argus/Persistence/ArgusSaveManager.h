@@ -19,6 +19,8 @@ public:
 
 	void Initialize();
 	void Save(const TFunction<void(const FString&, bool)>& completedDelegate = nullptr);
+	void Load(const FString& saveSlotName, const TFunction<void(UArgusSaveGame*)>& completedDelegate);
+	void LoadMostRecent(const TFunction<void(UArgusSaveGame*)>& completedDelegate);
 
 #if !UE_BUILD_SHIPPING
 	void DrawDebugger();
@@ -55,6 +57,8 @@ private:
 
 	void OnSaveComplete(const FString& saveSlotName, const SaveLock& saveLock, bool didSucceed);
 	void SaveMetadata(const FString& mostRecentSaveSlotName, const SaveLock& saveLock);
+
+	void OnCheckIfSaveExists(const FString& saveSlotName, bool doesExist, const TFunction<void(UArgusSaveGame*)>& completedDelegate);
 
 	void PopulateMetadata(const FString& mostRecentSaveSlotName);
 	void PopulateSaveGame(UArgusSaveGame* argusSaveGame) const;
