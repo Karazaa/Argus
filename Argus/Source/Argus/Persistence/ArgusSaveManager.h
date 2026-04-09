@@ -6,6 +6,7 @@
 #include "ArgusSaveManager.generated.h"
 
 class USaveGame;
+class UArgusSaveGame;
 class UArgusMetadataSaveGame;
 
 UCLASS()
@@ -17,7 +18,7 @@ public:
 	UArgusSaveManager();
 
 	void Initialize();
-	void Save(const TFunction<void(const FString&, bool)>& completedDelegate);
+	void Save(const TFunction<void(const FString&, bool)>& completedDelegate = nullptr);
 
 #if !UE_BUILD_SHIPPING
 	void DrawDebugger();
@@ -40,6 +41,7 @@ private:
 	};
 
 	static const FString k_metadataSaveSlotName;
+	static const FString k_saveSlotPrefix;
 
 	UPROPERTY(Transient)
 	TObjectPtr<UArgusMetadataSaveGame> m_saveMetadata = nullptr;
@@ -53,7 +55,11 @@ private:
 
 	void OnSaveComplete(const FString& saveSlotName, const SaveLock& saveLock, bool didSucceed);
 	void SaveMetadata(const FString& mostRecentSaveSlotName, const SaveLock& saveLock);
+
 	void PopulateMetadata(const FString& mostRecentSaveSlotName);
+	void PopulateSaveGame(UArgusSaveGame* argusSaveGame) const;
+
+	FString GetNextSaveSlotName() const;
 
 	uint8 m_saveLockReferenceCount = 0u;
 	FPlatformUserId m_userId;

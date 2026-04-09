@@ -31,7 +31,7 @@ void UArgusSaveManager::DrawDebugger()
 
 	if (ImGui::Button("Save"))
 	{
-		// TODO JAMES: Do something
+		Save();
 	}
 
 	ImGui::SameLine();

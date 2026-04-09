@@ -3,11 +3,13 @@
 #include "ArgusSaveManager.h"
 #include "ArgusMetadataSaveGame.h"
 #include "ArgusLogging.h"
+#include "ArgusSaveGame.h"
 #include "Kismet/GameplayStatics.h"
 #include "PlatformFeatures.h"
 #include "SaveGameSystem.h"
 
 const FString UArgusSaveManager::k_metadataSaveSlotName = TEXT("ArgusSaveMetadata");
+const FString UArgusSaveManager::k_saveSlotPrefix = TEXT("ArgusSave");
 
 UArgusSaveManager::UArgusSaveManager()
 {
@@ -33,8 +35,24 @@ void UArgusSaveManager::Save(const TFunction<void(const FString&, bool)>& comple
 	}
 	const SaveLock saveLock = SaveLock(this);
 
-	// TODO JAMES: Populate SaveGame 
-	// TODO JAMES: SaveInternal
+	UArgusSaveGame* argusSaveGame = NewObject<UArgusSaveGame>(this);
+	ARGUS_RETURN_ON_NULL(argusSaveGame, ArgusPersistenceLog);
+
+	PopulateSaveGame(argusSaveGame);
+	const FString saveSlotName = GetNextSaveSlotName();
+
+	SaveInternal(saveSlotName, argusSaveGame, [saveManager = TWeakObjectPtr<UArgusSaveManager>(this), saveSlotName, saveLock, completedDelegate](bool didSucceed)
+	{
+		UArgusSaveManager* rawSaveManager = saveManager.Get();
+		ARGUS_RETURN_ON_NULL(rawSaveManager, ArgusPersistenceLog);
+
+		if (completedDelegate)
+		{
+			completedDelegate(saveSlotName, didSucceed);
+		}
+
+		rawSaveManager->OnSaveComplete(saveSlotName, saveLock, didSucceed);
+	});
 }
 
 UArgusSaveManager::SaveLock::SaveLock(UArgusSaveManager* saveManager)
@@ -186,4 +204,18 @@ void UArgusSaveManager::PopulateMetadata(const FString& mostRecentSaveSlotName)
 	ARGUS_RETURN_ON_NULL(m_saveMetadata, ArgusPersistenceLog);
 
 	m_saveMetadata->m_mostRecentSaveName = mostRecentSaveSlotName;
+	FSaveSlotMetadata& slotMetadata = m_saveMetadata->m_saveSlotMetadata.Emplace_GetRef();
+	slotMetadata.m_saveTimestamp = FDateTime::Now();
+}
+
+void UArgusSaveManager::PopulateSaveGame(UArgusSaveGame* argusSaveGame) const
+{
+	ARGUS_RETURN_ON_NULL(argusSaveGame, ArgusPersistenceLog);
+}
+
+FString UArgusSaveManager::GetNextSaveSlotName() const
+{
+	ARGUS_RETURN_ON_NULL_VALUE(m_saveMetadata, ArgusPersistenceLog, TEXT("Invalid"));
+
+	return FString::Printf(TEXT("%s_%d"), *k_saveSlotPrefix, m_saveMetadata->m_saveSlotMetadata.Num());
 }
