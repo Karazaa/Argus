@@ -994,29 +994,169 @@ void ArgusComponentRegistry::Serialize(FArchive& archive)
 {
 	ARGUS_TRACE(ArgusComponentRegistry::Serialize);
 
+	int32 currentIndex = 0;
+
 	s_isAbilityComponentActive.Serialize(archive);
+	currentIndex = s_isAbilityComponentActive.FindFrom(true, 0);
+	while (s_isAbilityComponentActive.IsValidIndex(currentIndex))
+	{
+		s_AbilityComponents[currentIndex].Serialize(archive);
+		currentIndex = s_isAbilityComponentActive.FindFrom(true, currentIndex + 1);
+	}
 	s_isArgusDecalComponentActive.Serialize(archive);
+	currentIndex = s_isArgusDecalComponentActive.FindFrom(true, 0);
+	while (s_isArgusDecalComponentActive.IsValidIndex(currentIndex))
+	{
+		s_ArgusDecalComponents[currentIndex].Serialize(archive);
+		currentIndex = s_isArgusDecalComponentActive.FindFrom(true, currentIndex + 1);
+	}
 	s_isAvoidanceGroupingComponentActive.Serialize(archive);
+	currentIndex = s_isAvoidanceGroupingComponentActive.FindFrom(true, 0);
+	while (s_isAvoidanceGroupingComponentActive.IsValidIndex(currentIndex))
+	{
+		s_AvoidanceGroupingComponents[currentIndex].Serialize(archive);
+		currentIndex = s_isAvoidanceGroupingComponentActive.FindFrom(true, currentIndex + 1);
+	}
 	s_isCarrierComponentActive.Serialize(archive);
+	currentIndex = s_isCarrierComponentActive.FindFrom(true, 0);
+	while (s_isCarrierComponentActive.IsValidIndex(currentIndex))
+	{
+		s_CarrierComponents[currentIndex].Serialize(archive);
+		currentIndex = s_isCarrierComponentActive.FindFrom(true, currentIndex + 1);
+	}
 	s_isCombatComponentActive.Serialize(archive);
+	currentIndex = s_isCombatComponentActive.FindFrom(true, 0);
+	while (s_isCombatComponentActive.IsValidIndex(currentIndex))
+	{
+		s_CombatComponents[currentIndex].Serialize(archive);
+		currentIndex = s_isCombatComponentActive.FindFrom(true, currentIndex + 1);
+	}
 	s_isConstructionComponentActive.Serialize(archive);
+	currentIndex = s_isConstructionComponentActive.FindFrom(true, 0);
+	while (s_isConstructionComponentActive.IsValidIndex(currentIndex))
+	{
+		s_ConstructionComponents[currentIndex].Serialize(archive);
+		currentIndex = s_isConstructionComponentActive.FindFrom(true, currentIndex + 1);
+	}
 	s_isFlockingComponentActive.Serialize(archive);
+	currentIndex = s_isFlockingComponentActive.FindFrom(true, 0);
+	while (s_isFlockingComponentActive.IsValidIndex(currentIndex))
+	{
+		s_FlockingComponents[currentIndex].Serialize(archive);
+		currentIndex = s_isFlockingComponentActive.FindFrom(true, currentIndex + 1);
+	}
 	s_isFogOfWarLocationComponentActive.Serialize(archive);
+	currentIndex = s_isFogOfWarLocationComponentActive.FindFrom(true, 0);
+	while (s_isFogOfWarLocationComponentActive.IsValidIndex(currentIndex))
+	{
+		s_FogOfWarLocationComponents[currentIndex].Serialize(archive);
+		currentIndex = s_isFogOfWarLocationComponentActive.FindFrom(true, currentIndex + 1);
+	}
 	s_isHealthComponentActive.Serialize(archive);
+	currentIndex = s_isHealthComponentActive.FindFrom(true, 0);
+	while (s_isHealthComponentActive.IsValidIndex(currentIndex))
+	{
+		s_HealthComponents[currentIndex].Serialize(archive);
+		currentIndex = s_isHealthComponentActive.FindFrom(true, currentIndex + 1);
+	}
 	s_isIdentityComponentActive.Serialize(archive);
+	currentIndex = s_isIdentityComponentActive.FindFrom(true, 0);
+	while (s_isIdentityComponentActive.IsValidIndex(currentIndex))
+	{
+		s_IdentityComponents[currentIndex].Serialize(archive);
+		currentIndex = s_isIdentityComponentActive.FindFrom(true, currentIndex + 1);
+	}
 	s_isNavigationComponentActive.Serialize(archive);
+	currentIndex = s_isNavigationComponentActive.FindFrom(true, 0);
+	while (s_isNavigationComponentActive.IsValidIndex(currentIndex))
+	{
+		s_NavigationComponents[currentIndex].Serialize(archive);
+		currentIndex = s_isNavigationComponentActive.FindFrom(true, currentIndex + 1);
+	}
 	s_isNearbyEntitiesComponentActive.Serialize(archive);
+	currentIndex = s_isNearbyEntitiesComponentActive.FindFrom(true, 0);
+	while (s_isNearbyEntitiesComponentActive.IsValidIndex(currentIndex))
+	{
+		s_NearbyEntitiesComponents[currentIndex].Serialize(archive);
+		currentIndex = s_isNearbyEntitiesComponentActive.FindFrom(true, currentIndex + 1);
+	}
 	s_isNearbyObstaclesComponentActive.Serialize(archive);
+	currentIndex = s_isNearbyObstaclesComponentActive.FindFrom(true, 0);
+	while (s_isNearbyObstaclesComponentActive.IsValidIndex(currentIndex))
+	{
+		s_NearbyObstaclesComponents[currentIndex].Serialize(archive);
+		currentIndex = s_isNearbyObstaclesComponentActive.FindFrom(true, currentIndex + 1);
+	}
 	s_isObserversComponentActive.Serialize(archive);
+	currentIndex = s_isObserversComponentActive.FindFrom(true, 0);
+	while (s_isObserversComponentActive.IsValidIndex(currentIndex))
+	{
+		s_ObserversComponents[currentIndex].Serialize(archive);
+		currentIndex = s_isObserversComponentActive.FindFrom(true, currentIndex + 1);
+	}
 	s_isPassengerComponentActive.Serialize(archive);
+	currentIndex = s_isPassengerComponentActive.FindFrom(true, 0);
+	while (s_isPassengerComponentActive.IsValidIndex(currentIndex))
+	{
+		s_PassengerComponents[currentIndex].Serialize(archive);
+		currentIndex = s_isPassengerComponentActive.FindFrom(true, currentIndex + 1);
+	}
 	s_isResourceComponentActive.Serialize(archive);
+	currentIndex = s_isResourceComponentActive.FindFrom(true, 0);
+	while (s_isResourceComponentActive.IsValidIndex(currentIndex))
+	{
+		s_ResourceComponents[currentIndex].Serialize(archive);
+		currentIndex = s_isResourceComponentActive.FindFrom(true, currentIndex + 1);
+	}
 	s_isResourceExtractionComponentActive.Serialize(archive);
+	currentIndex = s_isResourceExtractionComponentActive.FindFrom(true, 0);
+	while (s_isResourceExtractionComponentActive.IsValidIndex(currentIndex))
+	{
+		s_ResourceExtractionComponents[currentIndex].Serialize(archive);
+		currentIndex = s_isResourceExtractionComponentActive.FindFrom(true, currentIndex + 1);
+	}
 	s_isSpawningComponentActive.Serialize(archive);
+	currentIndex = s_isSpawningComponentActive.FindFrom(true, 0);
+	while (s_isSpawningComponentActive.IsValidIndex(currentIndex))
+	{
+		s_SpawningComponents[currentIndex].Serialize(archive);
+		currentIndex = s_isSpawningComponentActive.FindFrom(true, currentIndex + 1);
+	}
 	s_isTargetingComponentActive.Serialize(archive);
+	currentIndex = s_isTargetingComponentActive.FindFrom(true, 0);
+	while (s_isTargetingComponentActive.IsValidIndex(currentIndex))
+	{
+		s_TargetingComponents[currentIndex].Serialize(archive);
+		currentIndex = s_isTargetingComponentActive.FindFrom(true, currentIndex + 1);
+	}
 	s_isTaskComponentActive.Serialize(archive);
+	currentIndex = s_isTaskComponentActive.FindFrom(true, 0);
+	while (s_isTaskComponentActive.IsValidIndex(currentIndex))
+	{
+		s_TaskComponents[currentIndex].Serialize(archive);
+		currentIndex = s_isTaskComponentActive.FindFrom(true, currentIndex + 1);
+	}
 	s_isTimerComponentActive.Serialize(archive);
+	currentIndex = s_isTimerComponentActive.FindFrom(true, 0);
+	while (s_isTimerComponentActive.IsValidIndex(currentIndex))
+	{
+		s_TimerComponents[currentIndex].Serialize(archive);
+		currentIndex = s_isTimerComponentActive.FindFrom(true, currentIndex + 1);
+	}
 	s_isTransformComponentActive.Serialize(archive);
+	currentIndex = s_isTransformComponentActive.FindFrom(true, 0);
+	while (s_isTransformComponentActive.IsValidIndex(currentIndex))
+	{
+		s_TransformComponents[currentIndex].Serialize(archive);
+		currentIndex = s_isTransformComponentActive.FindFrom(true, currentIndex + 1);
+	}
 	s_isVelocityComponentActive.Serialize(archive);
+	currentIndex = s_isVelocityComponentActive.FindFrom(true, 0);
+	while (s_isVelocityComponentActive.IsValidIndex(currentIndex))
+	{
+		s_VelocityComponents[currentIndex].Serialize(archive);
+		currentIndex = s_isVelocityComponentActive.FindFrom(true, currentIndex + 1);
+	}
 }
 
 #if !UE_BUILD_SHIPPING

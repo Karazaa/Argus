@@ -54,6 +54,8 @@ void ArgusComponentRegistry::Serialize(FArchive& archive)
 {
 	ARGUS_TRACE(ArgusComponentRegistry::Serialize);
 
+	int32 currentIndex = 0;
+
 	&&&##
 }
 

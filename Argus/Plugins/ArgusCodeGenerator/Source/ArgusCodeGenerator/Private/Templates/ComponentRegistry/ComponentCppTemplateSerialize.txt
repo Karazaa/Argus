@@ -1,1 +1,7 @@
 	s_is#####Active.Serialize(archive);
+	currentIndex = s_is#####Active.FindFrom(true, 0);
+	while (s_is#####Active.IsValidIndex(currentIndex))
+	{
+		s_#####s[currentIndex].Serialize(archive);
+		currentIndex = s_is#####Active.FindFrom(true, currentIndex + 1);
+	}
