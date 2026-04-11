@@ -79,12 +79,9 @@ void UArgusSaveManager::DrawDebugger()
 			for (int32 i = 0; i < m_saveMetadata->m_saveSlotMetadata.Num(); ++i)
 			{
 				bool selected = i == static_cast<int32>(m_debugSelectedIndex);
+				const char* slotName = ARGUS_FSTRING_TO_CHAR(m_saveMetadata->m_saveSlotMetadata[i].m_slotName);
+				const char* timestamp = ARGUS_FSTRING_TO_CHAR(m_saveMetadata->m_saveSlotMetadata[i].m_saveTimestamp.ToFormattedString(TEXT("%Y-%m-%d-%I:%M")));
 
-				FString stringSlotName = m_saveMetadata->m_saveSlotMetadata[i].m_slotName;
-				FString stringTimestamp = m_saveMetadata->m_saveSlotMetadata[i].m_saveTimestamp.ToFormattedString(TEXT("%Y-%m-%d-%I:%M"));
-				// const char* slotName = ARGUS_FSTRING_TO_CHAR(FString::Printf(TEXT("%s          %s"), *stringSlotName, *stringTimestamp));
-				const char* slotName = ARGUS_FSTRING_TO_CHAR(stringSlotName);
-				const char* timestamp = ARGUS_FSTRING_TO_CHAR(stringTimestamp);
 				ImGui::TableNextColumn();
 				if (ImGui::Selectable(slotName, &selected, ImGuiSelectableFlags_SpanAllColumns))
 				{
