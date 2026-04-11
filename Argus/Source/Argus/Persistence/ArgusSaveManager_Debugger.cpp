@@ -3,6 +3,7 @@
 #if !UE_BUILD_SHIPPING
 #include "ArgusSaveManager.h"
 #include "ArgusMacros.h"
+#include "ArgusMetadataSaveGame.h"
 #include "imgui.h"
 
 static TAutoConsoleVariable<bool> CVarDrawSaveManagerDebugger(TEXT("Argus.Debug.SaveManager"), false, TEXT("Whether or not the SaveManager ImGui debugger should be drawn."));
@@ -22,6 +23,9 @@ void UArgusSaveManager::DrawDebugger()
 		return;
 	}
 
+	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_None | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_MenuBar;
+	int childFlags = ImGuiChildFlags_Borders | ImGuiChildFlags_AutoResizeY;
+
 	ImGui::SetNextWindowSize(ImVec2(260, 260), ImGuiCond_FirstUseEver);
 	if (!ImGui::Begin("SaveManager"))
 	{
@@ -36,13 +40,65 @@ void UArgusSaveManager::DrawDebugger()
 
 	ImGui::SameLine();
 
-	if (ImGui::Button("Load"))
+	if (ImGui::Button("Load Most Recent"))
 	{
-		LoadMostRecent([](UArgusSaveGame* saveGame) 
+		LoadMostRecent([](UArgusSaveGame* saveGame)
 		{
 			// TODO JAMES: Do something
 		});
 	}
+
+	ImGui::SameLine();
+
+	if (ImGui::Button("Load"))
+	{
+		if (m_saveMetadata && m_saveMetadata->m_saveSlotMetadata.IsValidIndex(m_debugSelectedIndex))
+		{
+			Load(m_saveMetadata->m_saveSlotMetadata[m_debugSelectedIndex].m_slotName, [](UArgusSaveGame* saveGame)
+			{
+				// TODO JAMES: Do something
+			});
+		}
+	}
+
+	ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 5.0f);
+
+	ImGui::BeginChild("CurrentSaveRegion", ImVec2(0, 0), childFlags, windowFlags);
+	if (ImGui::BeginMenuBar())
+	{
+		if (ImGui::BeginMenu("Current Saves"))
+		{
+			ImGui::EndMenu();
+		}
+		ImGui::EndMenuBar();
+	}
+	if (ImGui::BeginTable("CurrentSaveTable", 2, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_SizingStretchProp))
+	{
+		if (m_saveMetadata)
+		{
+			for (int32 i = 0; i < m_saveMetadata->m_saveSlotMetadata.Num(); ++i)
+			{
+				bool selected = i == static_cast<int32>(m_debugSelectedIndex);
+
+				FString stringSlotName = m_saveMetadata->m_saveSlotMetadata[i].m_slotName;
+				FString stringTimestamp = m_saveMetadata->m_saveSlotMetadata[i].m_saveTimestamp.ToFormattedString(TEXT("%Y-%m-%d-%I:%M"));
+				// const char* slotName = ARGUS_FSTRING_TO_CHAR(FString::Printf(TEXT("%s          %s"), *stringSlotName, *stringTimestamp));
+				const char* slotName = ARGUS_FSTRING_TO_CHAR(stringSlotName);
+				const char* timestamp = ARGUS_FSTRING_TO_CHAR(stringTimestamp);
+				ImGui::TableNextColumn();
+				if (ImGui::Selectable(slotName, &selected, ImGuiSelectableFlags_SpanAllColumns))
+				{
+					m_debugSelectedIndex = i;
+				}
+				ImGui::TableNextColumn();
+				ImGui::Text(timestamp);
+			}
+		}
+		ImGui::EndTable();
+	}
+	ImGui::EndChild();
+
+	ImGui::PopStyleVar();
 
 	ImGui::End();
 }

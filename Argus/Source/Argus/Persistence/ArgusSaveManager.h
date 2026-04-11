@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Containers/Queue.h"
 #include "ArgusSaveManager.generated.h"
 
 class USaveGame;
@@ -45,9 +46,6 @@ private:
 	static const FString k_metadataSaveSlotName;
 	static const FString k_saveSlotPrefix;
 
-	UPROPERTY(Transient)
-	TObjectPtr<UArgusMetadataSaveGame> m_saveMetadata = nullptr;
-
 	void DoesSaveExistInternal(const FString& saveSlotName, const TFunction<void(const FString&, bool)>& completedDelegate);
 	void SaveInternal(const FString& saveSlotName, USaveGame* saveGame, const TFunction<void(bool)>& completedDelegate);
 	void LoadInternal(const FString& saveSlotName, const TFunction<void(USaveGame*)>& completedDelegate);
@@ -65,6 +63,15 @@ private:
 
 	FString GetNextSaveSlotName() const;
 
-	uint8 m_saveLockReferenceCount = 0u;
+	TQueue<TFunction<void(const FString&, bool)>> m_saveRequestQueue;
+
+	UPROPERTY(Transient)
+	TObjectPtr<UArgusMetadataSaveGame> m_saveMetadata = nullptr;
+
 	FPlatformUserId m_userId;
+	uint8 m_saveLockReferenceCount = 0u;
+
+#if !UE_BUILD_SHIPPING
+	int16 m_debugSelectedIndex = -1;
+#endif //!UE_BUILD_SHIPPING
 };

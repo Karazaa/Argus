@@ -30,7 +30,7 @@ void UArgusSaveManager::Save(const TFunction<void(const FString&, bool)>& comple
 {
 	if (m_saveLockReferenceCount > 0)
 	{
-		// TODO JAMES: Save request queuing
+		m_saveRequestQueue.Enqueue(completedDelegate);
 		return;
 	}
 	const SaveLock saveLock = SaveLock(this);
@@ -105,6 +105,16 @@ UArgusSaveManager::SaveLock::~SaveLock()
 	}
 
 	m_saveManager->m_saveLockReferenceCount--;
+	if (m_saveManager->m_saveLockReferenceCount > 0u)
+	{
+		return;
+	}
+
+	TFunction<void(const FString&, bool)> cachedDelegate;
+	if (m_saveManager->m_saveRequestQueue.Dequeue(cachedDelegate))
+	{
+		m_saveManager->Save(cachedDelegate);
+	}
 }
 
 void UArgusSaveManager::DoesSaveExistInternal(const FString& saveSlotName, const TFunction<void(const FString&, bool)>& completedDelegate)
