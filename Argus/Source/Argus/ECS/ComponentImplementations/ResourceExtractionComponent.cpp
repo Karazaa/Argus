@@ -4,6 +4,7 @@
 #include "ComponentDefinitions/ResourceExtractionComponent.h"
 #include "ArgusEntity.h"
 #include "ArgusLogging.h"
+#include "Serialization/Archive.h"
 
 #if !UE_BUILD_SHIPPING
 #include "ArgusStaticData.h"
@@ -23,6 +24,11 @@ void ResourceExtractionComponent::Reset()
 	m_extractionLengthSeconds = 1.0f;
 	m_lastExtractionSourceEntityId = ArgusECSConstants::k_maxEntities;
 	m_resourceExtractionTimer.Reset();
+}
+
+void ResourceExtractionComponent::Serialize(FArchive& archive)
+{
+
 }
 
 void ResourceExtractionComponent::DrawComponentDebug() const

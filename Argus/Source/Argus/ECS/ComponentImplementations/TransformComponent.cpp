@@ -4,6 +4,7 @@
 #include "ComponentDefinitions/TransformComponent.h"
 #include "ArgusEntity.h"
 #include "ArgusLogging.h"
+#include "Serialization/Archive.h"
 
 #if !UE_BUILD_SHIPPING
 #include "ArgusStaticData.h"
@@ -25,6 +26,11 @@ void TransformComponent::Reset()
 	m_targetYaw = 0.0f;
 	m_targetTransitionAltitude = 0.0f;
 	m_radius = 45.0f;
+}
+
+void TransformComponent::Serialize(FArchive& archive)
+{
+
 }
 
 void TransformComponent::DrawComponentDebug() const

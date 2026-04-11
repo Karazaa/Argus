@@ -38,7 +38,6 @@ void UArgusSaveManager::Save(const TFunction<void(const FString&, bool)>& comple
 	UArgusSaveGame* argusSaveGame = NewObject<UArgusSaveGame>(this);
 	ARGUS_RETURN_ON_NULL(argusSaveGame, ArgusPersistenceLog);
 
-	PopulateSaveGame(argusSaveGame);
 	const FString saveSlotName = GetNextSaveSlotName();
 
 	SaveInternal(saveSlotName, argusSaveGame, [saveManager = TWeakObjectPtr<UArgusSaveManager>(this), saveSlotName, saveLock, completedDelegate](bool didSucceed)
@@ -260,11 +259,6 @@ void UArgusSaveManager::PopulateMetadata(const FString& mostRecentSaveSlotName)
 	FSaveSlotMetadata& slotMetadata = m_saveMetadata->m_saveSlotMetadata.Emplace_GetRef();
 	slotMetadata.m_slotName = mostRecentSaveSlotName;
 	slotMetadata.m_saveTimestamp = FDateTime::Now();
-}
-
-void UArgusSaveManager::PopulateSaveGame(UArgusSaveGame* argusSaveGame) const
-{
-	ARGUS_RETURN_ON_NULL(argusSaveGame, ArgusPersistenceLog);
 }
 
 FString UArgusSaveManager::GetNextSaveSlotName() const

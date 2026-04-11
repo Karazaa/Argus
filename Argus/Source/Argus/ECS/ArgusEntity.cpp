@@ -25,6 +25,17 @@ void ArgusEntity::FlushAllEntities()
 	s_highestTakenEntityId = 0u;
 }
 
+void ArgusEntity::Serialize(FArchive& archive)
+{
+	ARGUS_TRACE(ArgusEntity::Serialize);
+
+	archive << s_lowestTakenEntityId;
+	archive << s_highestTakenEntityId;
+	s_takenEntityIds.Serialize(archive);
+
+	ArgusComponentRegistry::Serialize(archive);
+}
+
 bool ArgusEntity::DoesEntityExist(uint16 id)
 {
 	if (id >= ArgusECSConstants::k_maxEntities)

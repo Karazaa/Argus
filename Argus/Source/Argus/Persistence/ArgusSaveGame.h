@@ -9,4 +9,7 @@ UCLASS()
 class UArgusSaveGame : public USaveGame
 {
 	GENERATED_BODY()
+
+public:
+	virtual void Serialize(FArchive& archive) override;
 };

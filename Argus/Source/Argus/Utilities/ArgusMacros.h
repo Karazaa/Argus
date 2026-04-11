@@ -11,9 +11,11 @@
 
 #define ARGUS_COMPONENT_SHARED	uint16 GetOwningEntityId() const; \
 								void Reset(); \
+								void Serialize(FArchive& archive); \
 								void DrawComponentDebug() const;
 
 #define ARGUS_DYNAMIC_COMPONENT_SHARED	void Reset(); \
+										void Serialize(FArchive& archive); \
 										void DrawComponentDebug() const;
 
 #define ARGUS_SYSTEM_ARGS_SHARED bool PopulateArguments(ArgusEntity entity); \

@@ -4,6 +4,7 @@
 #include "ComponentDefinitions/NavigationComponent.h"
 #include "ArgusEntity.h"
 #include "ArgusLogging.h"
+#include "Serialization/Archive.h"
 
 #if !UE_BUILD_SHIPPING
 #include "ArgusStaticData.h"
@@ -22,6 +23,11 @@ void NavigationComponent::Reset()
 	m_navigationPoints.Reset();
 	m_queuedWaypoints.Reset();
 	m_lastPointIndex = 0;
+}
+
+void NavigationComponent::Serialize(FArchive& archive)
+{
+
 }
 
 void NavigationComponent::DrawComponentDebug() const

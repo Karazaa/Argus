@@ -4,6 +4,7 @@
 #include "ComponentDefinitions/SpawningComponent.h"
 #include "ArgusEntity.h"
 #include "ArgusLogging.h"
+#include "Serialization/Archive.h"
 
 #if !UE_BUILD_SHIPPING
 #include "ArgusStaticData.h"
@@ -23,6 +24,11 @@ void SpawningComponent::Reset()
 	m_spawningRadius = 100.0f;
 	m_maximumQueueSize = 10u;
 	m_spawnTimerHandle.Reset();
+}
+
+void SpawningComponent::Serialize(FArchive& archive)
+{
+
 }
 
 void SpawningComponent::DrawComponentDebug() const

@@ -7,6 +7,7 @@
 #include "CoreMinimal.h"
 #include <bitset>
 
+class FArchive;
 class UArgusActorRecord;
 
 class ArgusEntity
@@ -16,6 +17,7 @@ private:
 
 public:
 	static void				FlushAllEntities();
+	static void				Serialize(FArchive& archive);
 	static bool				DoesEntityExist(uint16 id);
 	static bool				IsReservedEntityId(uint16 id);
 	static uint16			GetHighestNonReservedEntityId();

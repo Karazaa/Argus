@@ -4,6 +4,7 @@
 #include "ComponentDefinitions/AbilityComponent.h"
 #include "ArgusEntity.h"
 #include "ArgusLogging.h"
+#include "Serialization/Archive.h"
 
 #if !UE_BUILD_SHIPPING
 #include "ArgusStaticData.h"
@@ -30,6 +31,11 @@ void AbilityComponent::Reset()
 	m_abilityToRefundId = 0u;
 	m_abilityOverrideBitmask = 0u;
 	m_abilityCasterPriority = 0u;
+}
+
+void AbilityComponent::Serialize(FArchive& archive)
+{
+
 }
 
 void AbilityComponent::DrawComponentDebug() const

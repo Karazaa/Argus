@@ -4,6 +4,7 @@
 #include "ComponentDefinitions/CombatComponent.h"
 #include "ArgusEntity.h"
 #include "ArgusLogging.h"
+#include "Serialization/Archive.h"
 
 #if !UE_BUILD_SHIPPING
 #include "ArgusStaticData.h"
@@ -24,6 +25,11 @@ void CombatComponent::Reset()
 	m_attackType = EAttackType::Melee;
 	m_rangedAttackCapability = ERangedAttackCapability::GroundedAndFlying;
 	m_attackTimerHandle.Reset();
+}
+
+void CombatComponent::Serialize(FArchive& archive)
+{
+
 }
 
 void CombatComponent::DrawComponentDebug() const

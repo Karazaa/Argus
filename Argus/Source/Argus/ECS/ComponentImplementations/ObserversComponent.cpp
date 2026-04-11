@@ -4,6 +4,7 @@
 #include "ComponentDefinitions/ObserversComponent.h"
 #include "ArgusEntity.h"
 #include "ArgusLogging.h"
+#include "Serialization/Archive.h"
 
 #if !UE_BUILD_SHIPPING
 #include "ArgusStaticData.h"
@@ -22,6 +23,11 @@ void ObserversComponent::Reset()
 	m_AbilityComponentObservers.Reset();
 	m_PassengerComponentObservers.Reset();
 	m_TaskComponentObservers.Reset();
+}
+
+void ObserversComponent::Serialize(FArchive& archive)
+{
+
 }
 
 void ObserversComponent::DrawComponentDebug() const

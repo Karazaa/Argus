@@ -4,6 +4,7 @@
 #include "ComponentDefinitions/TargetingComponent.h"
 #include "ArgusEntity.h"
 #include "ArgusLogging.h"
+#include "Serialization/Archive.h"
 
 #if !UE_BUILD_SHIPPING
 #include "ArgusStaticData.h"
@@ -25,6 +26,11 @@ void TargetingComponent::Reset()
 	m_sightRange = 1200.0f;
 	m_targetEntityId = ArgusECSConstants::k_maxEntities;
 	m_decalEntityId = ArgusECSConstants::k_maxEntities;
+}
+
+void TargetingComponent::Serialize(FArchive& archive)
+{
+
 }
 
 void TargetingComponent::DrawComponentDebug() const

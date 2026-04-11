@@ -4,6 +4,7 @@
 #include "ComponentDefinitions/NearbyEntitiesComponent.h"
 #include "ArgusEntity.h"
 #include "ArgusLogging.h"
+#include "Serialization/Archive.h"
 
 #if !UE_BUILD_SHIPPING
 #include "ArgusStaticData.h"
@@ -21,6 +22,11 @@ void NearbyEntitiesComponent::Reset()
 {
 	m_nearbyEntities.ResetAll();
 	m_nearbyFlyingEntities.ResetAll();
+}
+
+void NearbyEntitiesComponent::Serialize(FArchive& archive)
+{
+
 }
 
 void NearbyEntitiesComponent::DrawComponentDebug() const

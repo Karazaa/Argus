@@ -4,6 +4,7 @@
 #include "ArgusComponentRegistry.h"
 #include "ArgusEntity.h"
 #include "ArgusMemorySource.h"
+#include "Serialization/Archive.h"
 
 // Begin component specific definitions
 #pragma region AbilityComponent
@@ -987,6 +988,35 @@ uint16 ArgusComponentRegistry::GetOwningEntityIdForComponentMember(const void* m
 	}
 
 	return ArgusECSConstants::k_maxEntities;
+}
+
+void ArgusComponentRegistry::Serialize(FArchive& archive)
+{
+	ARGUS_TRACE(ArgusComponentRegistry::Serialize);
+
+	s_isAbilityComponentActive.Serialize(archive);
+	s_isArgusDecalComponentActive.Serialize(archive);
+	s_isAvoidanceGroupingComponentActive.Serialize(archive);
+	s_isCarrierComponentActive.Serialize(archive);
+	s_isCombatComponentActive.Serialize(archive);
+	s_isConstructionComponentActive.Serialize(archive);
+	s_isFlockingComponentActive.Serialize(archive);
+	s_isFogOfWarLocationComponentActive.Serialize(archive);
+	s_isHealthComponentActive.Serialize(archive);
+	s_isIdentityComponentActive.Serialize(archive);
+	s_isNavigationComponentActive.Serialize(archive);
+	s_isNearbyEntitiesComponentActive.Serialize(archive);
+	s_isNearbyObstaclesComponentActive.Serialize(archive);
+	s_isObserversComponentActive.Serialize(archive);
+	s_isPassengerComponentActive.Serialize(archive);
+	s_isResourceComponentActive.Serialize(archive);
+	s_isResourceExtractionComponentActive.Serialize(archive);
+	s_isSpawningComponentActive.Serialize(archive);
+	s_isTargetingComponentActive.Serialize(archive);
+	s_isTaskComponentActive.Serialize(archive);
+	s_isTimerComponentActive.Serialize(archive);
+	s_isTransformComponentActive.Serialize(archive);
+	s_isVelocityComponentActive.Serialize(archive);
 }
 
 #if !UE_BUILD_SHIPPING

@@ -4,6 +4,7 @@
 #include "ComponentDefinitions/PassengerComponent.h"
 #include "ArgusEntity.h"
 #include "ArgusLogging.h"
+#include "Serialization/Archive.h"
 
 #if !UE_BUILD_SHIPPING
 #include "ArgusStaticData.h"
@@ -20,6 +21,11 @@ uint16 PassengerComponent::GetOwningEntityId() const
 void PassengerComponent::Reset()
 {
 	m_carrierEntityId = ArgusECSConstants::k_maxEntities;
+}
+
+void PassengerComponent::Serialize(FArchive& archive)
+{
+
 }
 
 void PassengerComponent::DrawComponentDebug() const

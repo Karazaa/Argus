@@ -59,7 +59,6 @@ private:
 	void OnCheckIfSaveExists(const FString& saveSlotName, bool doesExist, const TFunction<void(UArgusSaveGame*)>& completedDelegate);
 
 	void PopulateMetadata(const FString& mostRecentSaveSlotName);
-	void PopulateSaveGame(UArgusSaveGame* argusSaveGame) const;
 
 	FString GetNextSaveSlotName() const;
 

@@ -4,6 +4,7 @@
 #include "ComponentDefinitions/CarrierComponent.h"
 #include "ArgusEntity.h"
 #include "ArgusLogging.h"
+#include "Serialization/Archive.h"
 
 #if !UE_BUILD_SHIPPING
 #include "ArgusStaticData.h"
@@ -21,6 +22,11 @@ void CarrierComponent::Reset()
 {
 	m_passengerEntityIds.Reset();
 	m_carrierCapacity = 0u;
+}
+
+void CarrierComponent::Serialize(FArchive& archive)
+{
+
 }
 
 void CarrierComponent::DrawComponentDebug() const

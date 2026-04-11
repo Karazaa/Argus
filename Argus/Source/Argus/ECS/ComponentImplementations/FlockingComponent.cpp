@@ -4,6 +4,7 @@
 #include "ComponentDefinitions/FlockingComponent.h"
 #include "ArgusEntity.h"
 #include "ArgusLogging.h"
+#include "Serialization/Archive.h"
 
 #if !UE_BUILD_SHIPPING
 #include "ArgusStaticData.h"
@@ -26,6 +27,11 @@ void FlockingComponent::Reset()
 	m_numEntitiesInStableRange = 0u;
 	m_concentricFlockingTier = 1u;
 	m_flockingState = EFlockingState::Stable;
+}
+
+void FlockingComponent::Serialize(FArchive& archive)
+{
+
 }
 
 void FlockingComponent::DrawComponentDebug() const

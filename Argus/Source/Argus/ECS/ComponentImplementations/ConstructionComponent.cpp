@@ -4,6 +4,7 @@
 #include "ComponentDefinitions/ConstructionComponent.h"
 #include "ArgusEntity.h"
 #include "ArgusLogging.h"
+#include "Serialization/Archive.h"
 
 #if !UE_BUILD_SHIPPING
 #include "ArgusStaticData.h"
@@ -24,6 +25,11 @@ void ConstructionComponent::Reset()
 	m_constructionAbilityRecordId = 0u;
 	m_constructionType = EConstructionType::Automatic;
 	m_automaticConstructionTimerHandle.Reset();
+}
+
+void ConstructionComponent::Serialize(FArchive& archive)
+{
+
 }
 
 void ConstructionComponent::DrawComponentDebug() const

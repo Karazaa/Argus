@@ -4,6 +4,7 @@
 #include "ComponentDefinitions/VelocityComponent.h"
 #include "ArgusEntity.h"
 #include "ArgusLogging.h"
+#include "Serialization/Archive.h"
 
 #if !UE_BUILD_SHIPPING
 #include "ArgusStaticData.h"
@@ -23,6 +24,11 @@ void VelocityComponent::Reset()
 	m_proposedAvoidanceVelocity = FVector2D::ZeroVector;
 	m_desiredSpeedUnitsPerSecond = 100.0f;
 	m_desiredFlightSpeedUnitsPerSecond = 100.0f;
+}
+
+void VelocityComponent::Serialize(FArchive& archive)
+{
+
 }
 
 void VelocityComponent::DrawComponentDebug() const

@@ -4,6 +4,7 @@
 #include "ComponentDefinitions/ArgusDecalComponent.h"
 #include "ArgusEntity.h"
 #include "ArgusLogging.h"
+#include "Serialization/Archive.h"
 
 #if !UE_BUILD_SHIPPING
 #include "ArgusStaticData.h"
@@ -24,6 +25,11 @@ void ArgusDecalComponent::Reset()
 	m_connectedEntityId = ArgusECSConstants::k_maxEntities;
 	m_lifetimeTimer.Reset();
 	m_decalType = EDecalType::MoveToLocation;
+}
+
+void ArgusDecalComponent::Serialize(FArchive& archive)
+{
+
 }
 
 void ArgusDecalComponent::DrawComponentDebug() const

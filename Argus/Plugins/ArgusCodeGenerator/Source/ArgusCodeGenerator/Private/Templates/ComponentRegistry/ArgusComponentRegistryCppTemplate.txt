@@ -4,6 +4,7 @@
 #include "ArgusComponentRegistry.h"
 #include "ArgusEntity.h"
 #include "ArgusMemorySource.h"
+#include "Serialization/Archive.h"
 
 // Begin component specific definitions
 @@@@@
@@ -47,6 +48,13 @@ uint16 ArgusComponentRegistry::GetOwningEntityIdForComponentMember(const void* m
 	#&#&#
 
 	return ArgusECSConstants::k_maxEntities;
+}
+
+void ArgusComponentRegistry::Serialize(FArchive& archive)
+{
+	ARGUS_TRACE(ArgusComponentRegistry::Serialize);
+
+	&&&##
 }
 
 #if !UE_BUILD_SHIPPING

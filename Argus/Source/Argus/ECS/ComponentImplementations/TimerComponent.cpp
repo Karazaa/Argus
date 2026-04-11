@@ -4,6 +4,7 @@
 #include "ComponentDefinitions/TimerComponent.h"
 #include "ArgusEntity.h"
 #include "ArgusLogging.h"
+#include "Serialization/Archive.h"
 
 #if !UE_BUILD_SHIPPING
 #include "ArgusStaticData.h"
@@ -20,6 +21,11 @@ uint16 TimerComponent::GetOwningEntityId() const
 void TimerComponent::Reset()
 {
 	m_timers.Reset();
+}
+
+void TimerComponent::Serialize(FArchive& archive)
+{
+
 }
 
 void TimerComponent::DrawComponentDebug() const

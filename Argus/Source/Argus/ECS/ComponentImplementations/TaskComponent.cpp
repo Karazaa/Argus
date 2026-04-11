@@ -4,6 +4,7 @@
 #include "ComponentDefinitions/TaskComponent.h"
 #include "ArgusEntity.h"
 #include "ArgusLogging.h"
+#include "Serialization/Archive.h"
 
 #if !UE_BUILD_SHIPPING
 #include "ArgusStaticData.h"
@@ -29,6 +30,11 @@ void TaskComponent::Reset()
 	m_resourceExtractionState = EResourceExtractionState::None;
 	m_flightState = EFlightState::Grounded;
 	m_directiveFromTeamCommander = ETeamCommanderDirective::Count;
+}
+
+void TaskComponent::Serialize(FArchive& archive)
+{
+
 }
 
 void TaskComponent::DrawComponentDebug() const

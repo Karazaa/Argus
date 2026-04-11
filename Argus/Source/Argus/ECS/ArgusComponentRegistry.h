@@ -47,6 +47,8 @@
 #include "DynamicAllocComponentDefinitions\TeamCommanderComponent.h"
 #include "DynamicAllocComponentDefinitions\WorldReferenceComponent.h"
 
+class FArchive;
+
 class ArgusComponentRegistry
 {
 public:
@@ -71,8 +73,8 @@ public:
 	static void RemoveComponentsForEntity(uint16 entityId);
 	static void FlushAllComponents();
 	static uint16 GetOwningEntityIdForComponentMember(const void* memberAddress);
-
-	static void AppendComponentDebugStrings(uint16 entityId, FString& debugStringToAppendTo);
+	
+	static void Serialize(FArchive& archive);
 
 #if !UE_BUILD_SHIPPING
 	static void DrawComponentsDebug(uint16 entityId);

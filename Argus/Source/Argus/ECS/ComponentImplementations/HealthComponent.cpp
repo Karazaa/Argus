@@ -4,6 +4,7 @@
 #include "ComponentDefinitions/HealthComponent.h"
 #include "ArgusEntity.h"
 #include "ArgusLogging.h"
+#include "Serialization/Archive.h"
 
 #if !UE_BUILD_SHIPPING
 #include "ArgusStaticData.h"
@@ -21,6 +22,11 @@ void HealthComponent::Reset()
 {
 	m_currentHealth = 1000u;
 	m_maximumHealth = 1000u;
+}
+
+void HealthComponent::Serialize(FArchive& archive)
+{
+
 }
 
 void HealthComponent::DrawComponentDebug() const

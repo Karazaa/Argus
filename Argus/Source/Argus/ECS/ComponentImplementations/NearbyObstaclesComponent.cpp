@@ -4,6 +4,7 @@
 #include "ComponentDefinitions/NearbyObstaclesComponent.h"
 #include "ArgusEntity.h"
 #include "ArgusLogging.h"
+#include "Serialization/Archive.h"
 
 #if !UE_BUILD_SHIPPING
 #include "ArgusStaticData.h"
@@ -20,6 +21,11 @@ uint16 NearbyObstaclesComponent::GetOwningEntityId() const
 void NearbyObstaclesComponent::Reset()
 {
 	m_obstacleIndicies.ResetAll();
+}
+
+void NearbyObstaclesComponent::Serialize(FArchive& archive)
+{
+
 }
 
 void NearbyObstaclesComponent::DrawComponentDebug() const

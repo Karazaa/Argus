@@ -4,6 +4,7 @@
 #include "ComponentDefinitions/ResourceComponent.h"
 #include "ArgusEntity.h"
 #include "ArgusLogging.h"
+#include "Serialization/Archive.h"
 
 #if !UE_BUILD_SHIPPING
 #include "ArgusStaticData.h"
@@ -23,6 +24,11 @@ void ResourceComponent::Reset()
 	m_resourceCapacityRecordId = 0u;
 	m_resourceComponentOwnerType = EResourceComponentOwnerType::TeamPool;
 	m_bufferRegionRadius = 150.0f;
+}
+
+void ResourceComponent::Serialize(FArchive& archive)
+{
+
 }
 
 void ResourceComponent::DrawComponentDebug() const

@@ -4,6 +4,7 @@
 #include "ComponentDefinitions/FogOfWarLocationComponent.h"
 #include "ArgusEntity.h"
 #include "ArgusLogging.h"
+#include "Serialization/Archive.h"
 
 #if !UE_BUILD_SHIPPING
 #include "ArgusStaticData.h"
@@ -20,6 +21,11 @@ uint16 FogOfWarLocationComponent::GetOwningEntityId() const
 void FogOfWarLocationComponent::Reset()
 {
 	m_fogOfWarPixel = MAX_uint32;
+}
+
+void FogOfWarLocationComponent::Serialize(FArchive& archive)
+{
+
 }
 
 void FogOfWarLocationComponent::DrawComponentDebug() const

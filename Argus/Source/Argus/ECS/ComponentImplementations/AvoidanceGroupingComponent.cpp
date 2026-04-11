@@ -4,6 +4,7 @@
 #include "ComponentDefinitions/AvoidanceGroupingComponent.h"
 #include "ArgusEntity.h"
 #include "ArgusLogging.h"
+#include "Serialization/Archive.h"
 
 #if !UE_BUILD_SHIPPING
 #include "ArgusStaticData.h"
@@ -24,6 +25,11 @@ void AvoidanceGroupingComponent::Reset()
 	m_groupId = ArgusECSConstants::k_maxEntities;
 	m_numberOfIdleEntities = 0u;
 	m_avoidancePriority = EAvoidancePriority::Lowest;
+}
+
+void AvoidanceGroupingComponent::Serialize(FArchive& archive)
+{
+
 }
 
 void AvoidanceGroupingComponent::DrawComponentDebug() const

@@ -4,6 +4,7 @@
 #include "ComponentDefinitions/IdentityComponent.h"
 #include "ArgusEntity.h"
 #include "ArgusLogging.h"
+#include "Serialization/Archive.h"
 
 #if !UE_BUILD_SHIPPING
 #include "ArgusStaticData.h"
@@ -25,6 +26,11 @@ void IdentityComponent::Reset()
 	m_enemies = 0u;
 	m_seenBy = 0u;
 	m_everSeenBy = 0u;
+}
+
+void IdentityComponent::Serialize(FArchive& archive)
+{
+
 }
 
 void IdentityComponent::DrawComponentDebug() const
