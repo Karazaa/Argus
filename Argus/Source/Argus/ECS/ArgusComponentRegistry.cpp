@@ -325,29 +325,98 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 	}
 
 	// Begin set component values
-	s_AbilityComponents[entityId].Reset();
-	s_ArgusDecalComponents[entityId].Reset();
-	s_AvoidanceGroupingComponents[entityId].Reset();
-	s_CarrierComponents[entityId].Reset();
-	s_CombatComponents[entityId].Reset();
-	s_ConstructionComponents[entityId].Reset();
-	s_FlockingComponents[entityId].Reset();
-	s_FogOfWarLocationComponents[entityId].Reset();
-	s_HealthComponents[entityId].Reset();
-	s_IdentityComponents[entityId].Reset();
-	s_NavigationComponents[entityId].Reset();
-	s_NearbyEntitiesComponents[entityId].Reset();
-	s_NearbyObstaclesComponents[entityId].Reset();
-	s_ObserversComponents[entityId].Reset();
-	s_PassengerComponents[entityId].Reset();
-	s_ResourceComponents[entityId].Reset();
-	s_ResourceExtractionComponents[entityId].Reset();
-	s_SpawningComponents[entityId].Reset();
-	s_TargetingComponents[entityId].Reset();
-	s_TaskComponents[entityId].Reset();
-	s_TimerComponents[entityId].Reset();
-	s_TransformComponents[entityId].Reset();
-	s_VelocityComponents[entityId].Reset();
+	if (LIKELY(s_AbilityComponents))
+	{
+		s_AbilityComponents[entityId].Reset();
+	}
+	if (LIKELY(s_ArgusDecalComponents))
+	{
+		s_ArgusDecalComponents[entityId].Reset();
+	}
+	if (LIKELY(s_AvoidanceGroupingComponents))
+	{
+		s_AvoidanceGroupingComponents[entityId].Reset();
+	}
+	if (LIKELY(s_CarrierComponents))
+	{
+		s_CarrierComponents[entityId].Reset();
+	}
+	if (LIKELY(s_CombatComponents))
+	{
+		s_CombatComponents[entityId].Reset();
+	}
+	if (LIKELY(s_ConstructionComponents))
+	{
+		s_ConstructionComponents[entityId].Reset();
+	}
+	if (LIKELY(s_FlockingComponents))
+	{
+		s_FlockingComponents[entityId].Reset();
+	}
+	if (LIKELY(s_FogOfWarLocationComponents))
+	{
+		s_FogOfWarLocationComponents[entityId].Reset();
+	}
+	if (LIKELY(s_HealthComponents))
+	{
+		s_HealthComponents[entityId].Reset();
+	}
+	if (LIKELY(s_IdentityComponents))
+	{
+		s_IdentityComponents[entityId].Reset();
+	}
+	if (LIKELY(s_NavigationComponents))
+	{
+		s_NavigationComponents[entityId].Reset();
+	}
+	if (LIKELY(s_NearbyEntitiesComponents))
+	{
+		s_NearbyEntitiesComponents[entityId].Reset();
+	}
+	if (LIKELY(s_NearbyObstaclesComponents))
+	{
+		s_NearbyObstaclesComponents[entityId].Reset();
+	}
+	if (LIKELY(s_ObserversComponents))
+	{
+		s_ObserversComponents[entityId].Reset();
+	}
+	if (LIKELY(s_PassengerComponents))
+	{
+		s_PassengerComponents[entityId].Reset();
+	}
+	if (LIKELY(s_ResourceComponents))
+	{
+		s_ResourceComponents[entityId].Reset();
+	}
+	if (LIKELY(s_ResourceExtractionComponents))
+	{
+		s_ResourceExtractionComponents[entityId].Reset();
+	}
+	if (LIKELY(s_SpawningComponents))
+	{
+		s_SpawningComponents[entityId].Reset();
+	}
+	if (LIKELY(s_TargetingComponents))
+	{
+		s_TargetingComponents[entityId].Reset();
+	}
+	if (LIKELY(s_TaskComponents))
+	{
+		s_TaskComponents[entityId].Reset();
+	}
+	if (LIKELY(s_TimerComponents))
+	{
+		s_TimerComponents[entityId].Reset();
+	}
+	if (LIKELY(s_TransformComponents))
+	{
+		s_TransformComponents[entityId].Reset();
+	}
+	if (LIKELY(s_VelocityComponents))
+	{
+		s_VelocityComponents[entityId].Reset();
+	}
 
 	// Begin remove dynamically allocated components
 	if (s_AssetLoadingComponents.Contains(entityId))

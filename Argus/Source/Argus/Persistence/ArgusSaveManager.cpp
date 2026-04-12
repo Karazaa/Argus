@@ -36,14 +36,13 @@ void UArgusSaveManager::Save(const TFunction<void(const FString&, bool)>& comple
 	const SaveLock saveLock = SaveLock(this);
 
 	UArgusSaveGame* argusSaveGame = NewObject<UArgusSaveGame>(this);
-	ARGUS_RETURN_ON_NULL(argusSaveGame, ArgusPersistenceLog);
-
 	const FString saveSlotName = GetNextSaveSlotName();
+	ARGUS_RETURN_ON_NULL_INVOKE(argusSaveGame, ArgusPersistenceLog, completedDelegate, saveSlotName, false);
 
 	SaveInternal(saveSlotName, argusSaveGame, [saveManager = TWeakObjectPtr<UArgusSaveManager>(this), saveSlotName, saveLock, completedDelegate](bool didSucceed)
 	{
 		UArgusSaveManager* rawSaveManager = saveManager.Get();
-		ARGUS_RETURN_ON_NULL(rawSaveManager, ArgusPersistenceLog);
+		ARGUS_RETURN_ON_NULL_INVOKE(rawSaveManager, ArgusPersistenceLog, completedDelegate, saveSlotName, didSucceed);
 
 		if (completedDelegate)
 		{
@@ -66,7 +65,7 @@ void UArgusSaveManager::Load(const FString& saveSlotName, const TFunction<void(U
 	DoesSaveExistInternal(saveSlotName, [saveManager = TWeakObjectPtr<UArgusSaveManager>(this), completedDelegate](const FString& slotName, bool doesExist)
 	{
 		UArgusSaveManager* rawSaveManager = saveManager.Get();
-		ARGUS_RETURN_ON_NULL(rawSaveManager, ArgusPersistenceLog);
+		ARGUS_RETURN_ON_NULL_INVOKE(rawSaveManager, ArgusPersistenceLog, completedDelegate, nullptr);
 		rawSaveManager->OnCheckIfSaveExists(slotName, doesExist, completedDelegate);
 	});
 }
@@ -227,7 +226,10 @@ void UArgusSaveManager::SaveMetadata(const FString& mostRecentSaveSlotName, cons
 
 	SaveInternal(k_metadataSaveSlotName, m_saveMetadata, [saveLock](bool didSucceed)
 	{
-		// TODO JAMES: Error here if needed.
+		if (!didSucceed)
+		{
+			ARGUS_LOG(ArgusPersistenceLog, Error, TEXT("[%s] Failed to save metadata!"), ARGUS_FUNCNAME);
+		}
 	});
 }
 
@@ -236,17 +238,14 @@ void UArgusSaveManager::OnCheckIfSaveExists(const FString& saveSlotName, bool do
 	ARGUS_RETURN_ON_NULL(completedDelegate, ArgusPersistenceLog);
 	if (!doesExist)
 	{
-		// TODO JAMES: Error here.
 		completedDelegate(nullptr);
 		return;
 	}
 
-	LoadInternal(saveSlotName, [saveManager = TWeakObjectPtr<UArgusSaveManager>(this), completedDelegate](USaveGame* saveGame)
+	LoadInternal(saveSlotName, [completedDelegate](USaveGame* saveGame)
 	{
-		UArgusSaveManager* rawSaveManager = saveManager.Get();
-		ARGUS_RETURN_ON_NULL(rawSaveManager, ArgusPersistenceLog);
 		UArgusSaveGame* argusSaveGame = Cast<UArgusSaveGame>(saveGame);
-		ARGUS_RETURN_ON_NULL(argusSaveGame, ArgusPersistenceLog);
+		ARGUS_RETURN_ON_NULL_INVOKE(argusSaveGame, ArgusPersistenceLog, completedDelegate, argusSaveGame);
 		completedDelegate(argusSaveGame);
 	});
 }
@@ -263,7 +262,7 @@ void UArgusSaveManager::PopulateMetadata(const FString& mostRecentSaveSlotName)
 
 FString UArgusSaveManager::GetNextSaveSlotName() const
 {
-	ARGUS_RETURN_ON_NULL_VALUE(m_saveMetadata, ArgusPersistenceLog, TEXT("Invalid"));
+	ARGUS_RETURN_ON_NULL_VALUE(m_saveMetadata, ArgusPersistenceLog, FString());
 
 	return FString::Printf(TEXT("%s_%d"), *k_saveSlotPrefix, m_saveMetadata->m_saveSlotMetadata.Num());
 }

@@ -50,6 +50,17 @@ if (UNLIKELY(!VariableName)) \
 	return Value;\
 }
 
+#define ARGUS_RETURN_ON_NULL_INVOKE(VariableName, CategoryName, Callback, ...) \
+if (UNLIKELY(!VariableName)) \
+{ \
+	ARGUS_ERROR_NULL(CategoryName, VariableName); \
+	if (Callback) \
+	{ \
+		Callback(##__VA_ARGS__); \
+	} \
+	return;\
+}
+
 #define ARGUS_RETURN_ON_INVALID_ENTITY(VariableName, CategoryName) \
 if (UNLIKELY(!ArgusEntity::DoesEntityExist(VariableName.GetId()))) \
 { \

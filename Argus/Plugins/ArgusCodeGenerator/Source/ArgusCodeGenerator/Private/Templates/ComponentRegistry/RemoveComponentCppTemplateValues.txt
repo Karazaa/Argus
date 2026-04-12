@@ -1,1 +1,4 @@
-	s_#####s[entityId].Reset();
+	if (LIKELY(s_#####s))
+	{
+		s_#####s[entityId].Reset();
+	}
