@@ -55,8 +55,13 @@ void ArgusComponentRegistry::Serialize(FArchive& archive)
 	ARGUS_TRACE(ArgusComponentRegistry::Serialize);
 
 	int32 currentIndex = 0;
-
+	
+	// Serialize statically allocated components
 	&&&##
+
+	// Serialize dynamically allocated components
+	int32 numComponents = 0;
+	##&&&
 }
 
 #if !UE_BUILD_SHIPPING

@@ -1064,7 +1064,8 @@ void ArgusComponentRegistry::Serialize(FArchive& archive)
 	ARGUS_TRACE(ArgusComponentRegistry::Serialize);
 
 	int32 currentIndex = 0;
-
+	
+	// Serialize statically allocated components
 	s_isAbilityComponentActive.Serialize(archive);
 	currentIndex = s_isAbilityComponentActive.FindFrom(true, 0);
 	while (s_isAbilityComponentActive.IsValidIndex(currentIndex))
@@ -1225,6 +1226,279 @@ void ArgusComponentRegistry::Serialize(FArchive& archive)
 	{
 		s_VelocityComponents[currentIndex].Serialize(archive);
 		currentIndex = s_isVelocityComponentActive.FindFrom(true, currentIndex + 1);
+	}
+
+	// Serialize dynamically allocated components
+	int32 numComponents = 0;
+	numComponents = s_AssetLoadingComponents.Num();
+	archive << numComponents;
+	if (archive.IsLoading())
+	{
+		for (int32 i = 0; i < numComponents; ++i)
+		{
+			uint16 entityId = 0;
+			archive << entityId;
+
+			AssetLoadingComponent* component = GetOrAddComponent<AssetLoadingComponent>(entityId);
+			if (component)
+			{
+				component->Serialize(archive);
+			}
+		}
+	}
+	else
+	{
+		for (TPair<uint16, AssetLoadingComponent*>& pair : s_AssetLoadingComponents)
+		{
+			archive << pair.Key;
+			if (pair.Value)
+			{
+				pair.Value->Serialize(archive);
+			}
+		}
+	}
+	numComponents = s_DecalSystemsSettingsComponents.Num();
+	archive << numComponents;
+	if (archive.IsLoading())
+	{
+		for (int32 i = 0; i < numComponents; ++i)
+		{
+			uint16 entityId = 0;
+			archive << entityId;
+
+			DecalSystemsSettingsComponent* component = GetOrAddComponent<DecalSystemsSettingsComponent>(entityId);
+			if (component)
+			{
+				component->Serialize(archive);
+			}
+		}
+	}
+	else
+	{
+		for (TPair<uint16, DecalSystemsSettingsComponent*>& pair : s_DecalSystemsSettingsComponents)
+		{
+			archive << pair.Key;
+			if (pair.Value)
+			{
+				pair.Value->Serialize(archive);
+			}
+		}
+	}
+	numComponents = s_EffortCoefficientSettingsComponents.Num();
+	archive << numComponents;
+	if (archive.IsLoading())
+	{
+		for (int32 i = 0; i < numComponents; ++i)
+		{
+			uint16 entityId = 0;
+			archive << entityId;
+
+			EffortCoefficientSettingsComponent* component = GetOrAddComponent<EffortCoefficientSettingsComponent>(entityId);
+			if (component)
+			{
+				component->Serialize(archive);
+			}
+		}
+	}
+	else
+	{
+		for (TPair<uint16, EffortCoefficientSettingsComponent*>& pair : s_EffortCoefficientSettingsComponents)
+		{
+			archive << pair.Key;
+			if (pair.Value)
+			{
+				pair.Value->Serialize(archive);
+			}
+		}
+	}
+	numComponents = s_FogOfWarComponents.Num();
+	archive << numComponents;
+	if (archive.IsLoading())
+	{
+		for (int32 i = 0; i < numComponents; ++i)
+		{
+			uint16 entityId = 0;
+			archive << entityId;
+
+			FogOfWarComponent* component = GetOrAddComponent<FogOfWarComponent>(entityId);
+			if (component)
+			{
+				component->Serialize(archive);
+			}
+		}
+	}
+	else
+	{
+		for (TPair<uint16, FogOfWarComponent*>& pair : s_FogOfWarComponents)
+		{
+			archive << pair.Key;
+			if (pair.Value)
+			{
+				pair.Value->Serialize(archive);
+			}
+		}
+	}
+	numComponents = s_GlobalSettingsComponents.Num();
+	archive << numComponents;
+	if (archive.IsLoading())
+	{
+		for (int32 i = 0; i < numComponents; ++i)
+		{
+			uint16 entityId = 0;
+			archive << entityId;
+
+			GlobalSettingsComponent* component = GetOrAddComponent<GlobalSettingsComponent>(entityId);
+			if (component)
+			{
+				component->Serialize(archive);
+			}
+		}
+	}
+	else
+	{
+		for (TPair<uint16, GlobalSettingsComponent*>& pair : s_GlobalSettingsComponents)
+		{
+			archive << pair.Key;
+			if (pair.Value)
+			{
+				pair.Value->Serialize(archive);
+			}
+		}
+	}
+	numComponents = s_InputInterfaceComponents.Num();
+	archive << numComponents;
+	if (archive.IsLoading())
+	{
+		for (int32 i = 0; i < numComponents; ++i)
+		{
+			uint16 entityId = 0;
+			archive << entityId;
+
+			InputInterfaceComponent* component = GetOrAddComponent<InputInterfaceComponent>(entityId);
+			if (component)
+			{
+				component->Serialize(archive);
+			}
+		}
+	}
+	else
+	{
+		for (TPair<uint16, InputInterfaceComponent*>& pair : s_InputInterfaceComponents)
+		{
+			archive << pair.Key;
+			if (pair.Value)
+			{
+				pair.Value->Serialize(archive);
+			}
+		}
+	}
+	numComponents = s_ReticleComponents.Num();
+	archive << numComponents;
+	if (archive.IsLoading())
+	{
+		for (int32 i = 0; i < numComponents; ++i)
+		{
+			uint16 entityId = 0;
+			archive << entityId;
+
+			ReticleComponent* component = GetOrAddComponent<ReticleComponent>(entityId);
+			if (component)
+			{
+				component->Serialize(archive);
+			}
+		}
+	}
+	else
+	{
+		for (TPair<uint16, ReticleComponent*>& pair : s_ReticleComponents)
+		{
+			archive << pair.Key;
+			if (pair.Value)
+			{
+				pair.Value->Serialize(archive);
+			}
+		}
+	}
+	numComponents = s_SpatialPartitioningComponents.Num();
+	archive << numComponents;
+	if (archive.IsLoading())
+	{
+		for (int32 i = 0; i < numComponents; ++i)
+		{
+			uint16 entityId = 0;
+			archive << entityId;
+
+			SpatialPartitioningComponent* component = GetOrAddComponent<SpatialPartitioningComponent>(entityId);
+			if (component)
+			{
+				component->Serialize(archive);
+			}
+		}
+	}
+	else
+	{
+		for (TPair<uint16, SpatialPartitioningComponent*>& pair : s_SpatialPartitioningComponents)
+		{
+			archive << pair.Key;
+			if (pair.Value)
+			{
+				pair.Value->Serialize(archive);
+			}
+		}
+	}
+	numComponents = s_TeamCommanderComponents.Num();
+	archive << numComponents;
+	if (archive.IsLoading())
+	{
+		for (int32 i = 0; i < numComponents; ++i)
+		{
+			uint16 entityId = 0;
+			archive << entityId;
+
+			TeamCommanderComponent* component = GetOrAddComponent<TeamCommanderComponent>(entityId);
+			if (component)
+			{
+				component->Serialize(archive);
+			}
+		}
+	}
+	else
+	{
+		for (TPair<uint16, TeamCommanderComponent*>& pair : s_TeamCommanderComponents)
+		{
+			archive << pair.Key;
+			if (pair.Value)
+			{
+				pair.Value->Serialize(archive);
+			}
+		}
+	}
+	numComponents = s_WorldReferenceComponents.Num();
+	archive << numComponents;
+	if (archive.IsLoading())
+	{
+		for (int32 i = 0; i < numComponents; ++i)
+		{
+			uint16 entityId = 0;
+			archive << entityId;
+
+			WorldReferenceComponent* component = GetOrAddComponent<WorldReferenceComponent>(entityId);
+			if (component)
+			{
+				component->Serialize(archive);
+			}
+		}
+	}
+	else
+	{
+		for (TPair<uint16, WorldReferenceComponent*>& pair : s_WorldReferenceComponents)
+		{
+			archive << pair.Key;
+			if (pair.Value)
+			{
+				pair.Value->Serialize(archive);
+			}
+		}
 	}
 }
 

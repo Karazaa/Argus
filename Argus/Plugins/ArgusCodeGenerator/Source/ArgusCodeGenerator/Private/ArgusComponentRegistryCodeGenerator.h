@@ -27,6 +27,7 @@ public:
 	static const char* s_componentCppTemplateFlushFilename;
 	static const char* s_componentCppTemplateResetFilename;
 	static const char* s_componentCppTemplateSerializeFilename;
+	static const char* s_dynamicAllocComponentCppTemplateSerializeFilename;
 	static const char* s_dynamicAllocComponentCppTemplateResetFilename;
 	static const char* s_debugStringLinesTemplateFilename;	
 	static const char* s_debugDrawLinesTemplateFilename;
@@ -53,6 +54,7 @@ private:
 		std::string componentCppTemplateFlushFilePath = "";
 		std::string componentCppTemplateResetFilePath = "";
 		std::string componentCppTemplateSerializeFilePath = "";
+		std::string dynamicAllocComponentCppTemplateSerializeFilePath = "";
 		std::string dynamicAllocComponentCppTemplateResetFilePath = "";
 		std::string debugStringLinesTemplateFilePath = "";
 		std::string debugDrawLinesTemplateFilePath = "";

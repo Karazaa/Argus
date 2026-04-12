@@ -2271,7 +2271,6 @@ public:
 #pragma endregion
 	
 	// Begin dynamically allocated component specific template specifiers.
-
 #pragma region AssetLoadingComponent
 private:
 	static ArgusMap<uint16, AssetLoadingComponent*, ArgusSetAllocator<1> > s_AssetLoadingComponents;

@@ -56,7 +56,7 @@ if (UNLIKELY(!VariableName)) \
 	ARGUS_ERROR_NULL(CategoryName, VariableName); \
 	if (Callback) \
 	{ \
-		Callback(##__VA_ARGS__); \
+		Callback(__VA_ARGS__); \
 	} \
 	return;\
 }

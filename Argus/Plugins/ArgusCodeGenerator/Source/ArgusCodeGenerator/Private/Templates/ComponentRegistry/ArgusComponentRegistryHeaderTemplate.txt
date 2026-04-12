@@ -56,6 +56,5 @@ public:
 	#####
 	
 	// Begin dynamically allocated component specific template specifiers.
-
 	&&&&&
 };
