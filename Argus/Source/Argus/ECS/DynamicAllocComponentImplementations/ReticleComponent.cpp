@@ -21,6 +21,11 @@ void ReticleComponent::Reset()
 	m_wasAbilityCast = false;
 }
 
+void ReticleComponent::Serialize(FArchive& archive)
+{
+
+}
+
 void ReticleComponent::DrawComponentDebug() const
 {
 #if !UE_BUILD_SHIPPING

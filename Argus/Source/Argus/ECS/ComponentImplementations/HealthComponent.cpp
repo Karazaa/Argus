@@ -26,7 +26,6 @@ void HealthComponent::Reset()
 
 void HealthComponent::Serialize(FArchive& archive)
 {
-
 }
 
 void HealthComponent::DrawComponentDebug() const

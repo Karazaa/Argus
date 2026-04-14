@@ -29,7 +29,6 @@ void CombatComponent::Reset()
 
 void CombatComponent::Serialize(FArchive& archive)
 {
-
 }
 
 void CombatComponent::DrawComponentDebug() const

@@ -17,6 +17,11 @@ void #####::Reset()
 	%%%%%
 }
 
+void #####::Serialize(FArchive& archive)
+{
+
+}
+
 void #####::DrawComponentDebug() const
 {
 #if !UE_BUILD_SHIPPING

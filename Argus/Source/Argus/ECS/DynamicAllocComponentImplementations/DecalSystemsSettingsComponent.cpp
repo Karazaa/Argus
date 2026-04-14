@@ -16,6 +16,11 @@ void DecalSystemsSettingsComponent::Reset()
 {
 }
 
+void DecalSystemsSettingsComponent::Serialize(FArchive& archive)
+{
+
+}
+
 void DecalSystemsSettingsComponent::DrawComponentDebug() const
 {
 #if !UE_BUILD_SHIPPING

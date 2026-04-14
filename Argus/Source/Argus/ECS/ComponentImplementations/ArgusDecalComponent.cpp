@@ -29,7 +29,6 @@ void ArgusDecalComponent::Reset()
 
 void ArgusDecalComponent::Serialize(FArchive& archive)
 {
-
 }
 
 void ArgusDecalComponent::DrawComponentDebug() const

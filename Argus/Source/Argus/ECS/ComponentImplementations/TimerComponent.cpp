@@ -25,7 +25,6 @@ void TimerComponent::Reset()
 
 void TimerComponent::Serialize(FArchive& archive)
 {
-
 }
 
 void TimerComponent::DrawComponentDebug() const

@@ -26,7 +26,6 @@ void NearbyEntitiesComponent::Reset()
 
 void NearbyEntitiesComponent::Serialize(FArchive& archive)
 {
-
 }
 
 void NearbyEntitiesComponent::DrawComponentDebug() const

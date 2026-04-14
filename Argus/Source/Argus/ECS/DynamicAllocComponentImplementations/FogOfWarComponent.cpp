@@ -32,6 +32,11 @@ void FogOfWarComponent::Reset()
 	m_visionObstacleAdjustDistance = 100.0f;
 }
 
+void FogOfWarComponent::Serialize(FArchive& archive)
+{
+
+}
+
 void FogOfWarComponent::DrawComponentDebug() const
 {
 #if !UE_BUILD_SHIPPING

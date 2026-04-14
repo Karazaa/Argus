@@ -27,7 +27,6 @@ void ObserversComponent::Reset()
 
 void ObserversComponent::Serialize(FArchive& archive)
 {
-
 }
 
 void ObserversComponent::DrawComponentDebug() const

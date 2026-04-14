@@ -25,7 +25,6 @@ void FogOfWarLocationComponent::Reset()
 
 void FogOfWarLocationComponent::Serialize(FArchive& archive)
 {
-
 }
 
 void FogOfWarLocationComponent::DrawComponentDebug() const

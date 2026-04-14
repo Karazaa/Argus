@@ -129,6 +129,10 @@ bool ComponentImplementationGenerator::ParseComponentImplementationCppFileTempla
 					{
 						GeneratePerVariableResetText(parsedComponentData.m_componentVariableData[i], outParsedFileContents[i].m_lines);
 					}
+					else if (rawLines[j].find("&&&&&") != std::string::npos)
+					{
+						GeneratePerVariableSerializeText(parsedComponentData.m_componentVariableData[i], outParsedFileContents[i].m_lines);
+					}
 					else
 					{
 						outParsedFileContents[i].m_lines.push_back(std::regex_replace(rawLines[j], std::regex("#####"), parsedComponentData.m_componentNames[i]));
@@ -261,6 +265,11 @@ void ComponentImplementationGenerator::GeneratePerVariableResetText(const std::v
 			continue;
 		}
 	}
+}
+
+void ComponentImplementationGenerator::GeneratePerVariableSerializeText(const std::vector<ArgusCodeGeneratorUtil::ParsedVariableData>& parsedVariableData, std::vector<std::string>& outParsedVariableContents)
+{
+	// TODO JAMES: Implement this!
 }
 
 void ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::vector<ArgusCodeGeneratorUtil::ParsedVariableData>& parsedVariableData, std::vector<std::string>& outParsedVariableContents)

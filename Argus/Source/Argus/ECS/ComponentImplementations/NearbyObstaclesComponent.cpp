@@ -25,7 +25,6 @@ void NearbyObstaclesComponent::Reset()
 
 void NearbyObstaclesComponent::Serialize(FArchive& archive)
 {
-
 }
 
 void NearbyObstaclesComponent::DrawComponentDebug() const

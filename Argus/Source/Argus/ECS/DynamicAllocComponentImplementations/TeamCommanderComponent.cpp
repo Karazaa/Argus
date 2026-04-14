@@ -25,6 +25,11 @@ void TeamCommanderComponent::Reset()
 	m_teamToCommand = ETeam::None;
 }
 
+void TeamCommanderComponent::Serialize(FArchive& archive)
+{
+
+}
+
 void TeamCommanderComponent::DrawComponentDebug() const
 {
 #if !UE_BUILD_SHIPPING

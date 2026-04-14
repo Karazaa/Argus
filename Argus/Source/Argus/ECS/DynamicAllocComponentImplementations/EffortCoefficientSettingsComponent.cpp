@@ -20,6 +20,11 @@ void EffortCoefficientSettingsComponent::Reset()
 	m_sameAvoidanceGroupOtherHasObstacle = 0.75f;
 }
 
+void EffortCoefficientSettingsComponent::Serialize(FArchive& archive)
+{
+
+}
+
 void EffortCoefficientSettingsComponent::DrawComponentDebug() const
 {
 #if !UE_BUILD_SHIPPING

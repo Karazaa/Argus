@@ -30,7 +30,6 @@ void TargetingComponent::Reset()
 
 void TargetingComponent::Serialize(FArchive& archive)
 {
-
 }
 
 void TargetingComponent::DrawComponentDebug() const

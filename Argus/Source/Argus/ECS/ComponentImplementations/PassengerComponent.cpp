@@ -25,7 +25,6 @@ void PassengerComponent::Reset()
 
 void PassengerComponent::Serialize(FArchive& archive)
 {
-
 }
 
 void PassengerComponent::DrawComponentDebug() const

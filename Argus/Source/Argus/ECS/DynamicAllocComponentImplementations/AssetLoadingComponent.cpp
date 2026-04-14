@@ -16,6 +16,11 @@ void AssetLoadingComponent::Reset()
 {
 }
 
+void AssetLoadingComponent::Serialize(FArchive& archive)
+{
+
+}
+
 void AssetLoadingComponent::DrawComponentDebug() const
 {
 #if !UE_BUILD_SHIPPING

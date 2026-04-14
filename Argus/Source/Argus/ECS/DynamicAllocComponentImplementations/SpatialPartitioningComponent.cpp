@@ -22,6 +22,11 @@ void SpatialPartitioningComponent::Reset()
 	m_elevatedObstaclePointHeightThreshold = 10.0f;
 }
 
+void SpatialPartitioningComponent::Serialize(FArchive& archive)
+{
+
+}
+
 void SpatialPartitioningComponent::DrawComponentDebug() const
 {
 #if !UE_BUILD_SHIPPING

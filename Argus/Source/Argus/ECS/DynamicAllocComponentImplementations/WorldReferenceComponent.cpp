@@ -17,6 +17,11 @@ void WorldReferenceComponent::Reset()
 	m_worldPointer = nullptr;
 }
 
+void WorldReferenceComponent::Serialize(FArchive& archive)
+{
+
+}
+
 void WorldReferenceComponent::DrawComponentDebug() const
 {
 #if !UE_BUILD_SHIPPING

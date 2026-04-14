@@ -26,7 +26,6 @@ void CarrierComponent::Reset()
 
 void CarrierComponent::Serialize(FArchive& archive)
 {
-
 }
 
 void CarrierComponent::DrawComponentDebug() const

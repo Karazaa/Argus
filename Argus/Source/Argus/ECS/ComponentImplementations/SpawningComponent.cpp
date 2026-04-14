@@ -28,7 +28,6 @@ void SpawningComponent::Reset()
 
 void SpawningComponent::Serialize(FArchive& archive)
 {
-
 }
 
 void SpawningComponent::DrawComponentDebug() const

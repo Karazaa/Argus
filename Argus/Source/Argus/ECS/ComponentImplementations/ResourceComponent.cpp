@@ -28,7 +28,6 @@ void ResourceComponent::Reset()
 
 void ResourceComponent::Serialize(FArchive& archive)
 {
-
 }
 
 void ResourceComponent::DrawComponentDebug() const

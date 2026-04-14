@@ -35,7 +35,6 @@ void AbilityComponent::Reset()
 
 void AbilityComponent::Serialize(FArchive& archive)
 {
-
 }
 
 void AbilityComponent::DrawComponentDebug() const

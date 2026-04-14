@@ -21,6 +21,11 @@ void GlobalSettingsComponent::Reset()
 	m_maxObstaclePointDistance = 150.0f;
 }
 
+void GlobalSettingsComponent::Serialize(FArchive& archive)
+{
+
+}
+
 void GlobalSettingsComponent::DrawComponentDebug() const
 {
 #if !UE_BUILD_SHIPPING

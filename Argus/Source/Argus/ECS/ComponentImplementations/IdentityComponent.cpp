@@ -30,7 +30,6 @@ void IdentityComponent::Reset()
 
 void IdentityComponent::Serialize(FArchive& archive)
 {
-
 }
 
 void IdentityComponent::DrawComponentDebug() const

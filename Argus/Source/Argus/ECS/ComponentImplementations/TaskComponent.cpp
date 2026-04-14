@@ -34,7 +34,6 @@ void TaskComponent::Reset()
 
 void TaskComponent::Serialize(FArchive& archive)
 {
-
 }
 
 void TaskComponent::DrawComponentDebug() const

@@ -31,7 +31,6 @@ void FlockingComponent::Reset()
 
 void FlockingComponent::Serialize(FArchive& archive)
 {
-
 }
 
 void FlockingComponent::DrawComponentDebug() const

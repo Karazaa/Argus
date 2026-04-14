@@ -28,7 +28,6 @@ void VelocityComponent::Reset()
 
 void VelocityComponent::Serialize(FArchive& archive)
 {
-
 }
 
 void VelocityComponent::DrawComponentDebug() const

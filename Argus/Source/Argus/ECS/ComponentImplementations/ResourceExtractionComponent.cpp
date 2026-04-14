@@ -28,7 +28,6 @@ void ResourceExtractionComponent::Reset()
 
 void ResourceExtractionComponent::Serialize(FArchive& archive)
 {
-
 }
 
 void ResourceExtractionComponent::DrawComponentDebug() const

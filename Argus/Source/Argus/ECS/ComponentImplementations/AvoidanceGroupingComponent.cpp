@@ -29,7 +29,6 @@ void AvoidanceGroupingComponent::Reset()
 
 void AvoidanceGroupingComponent::Serialize(FArchive& archive)
 {
-
 }
 
 void AvoidanceGroupingComponent::DrawComponentDebug() const

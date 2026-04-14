@@ -30,7 +30,6 @@ void TransformComponent::Reset()
 
 void TransformComponent::Serialize(FArchive& archive)
 {
-
 }
 
 void TransformComponent::DrawComponentDebug() const

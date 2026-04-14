@@ -27,7 +27,6 @@ void NavigationComponent::Reset()
 
 void NavigationComponent::Serialize(FArchive& archive)
 {
-
 }
 
 void NavigationComponent::DrawComponentDebug() const

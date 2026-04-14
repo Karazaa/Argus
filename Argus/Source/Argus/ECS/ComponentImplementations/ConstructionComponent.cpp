@@ -29,7 +29,6 @@ void ConstructionComponent::Reset()
 
 void ConstructionComponent::Serialize(FArchive& archive)
 {
-
 }
 
 void ConstructionComponent::DrawComponentDebug() const

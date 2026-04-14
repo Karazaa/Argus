@@ -27,6 +27,11 @@ void InputInterfaceComponent::Reset()
 	m_numControlGroups = 12u;
 }
 
+void InputInterfaceComponent::Serialize(FArchive& archive)
+{
+
+}
+
 void InputInterfaceComponent::DrawComponentDebug() const
 {
 #if !UE_BUILD_SHIPPING
