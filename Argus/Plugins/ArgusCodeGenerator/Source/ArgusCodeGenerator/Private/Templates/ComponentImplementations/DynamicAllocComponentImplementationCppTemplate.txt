@@ -19,7 +19,7 @@ void #####::Reset()
 
 void #####::Serialize(FArchive& archive)
 {
-
+	&&&&&
 }
 
 void #####::DrawComponentDebug() const

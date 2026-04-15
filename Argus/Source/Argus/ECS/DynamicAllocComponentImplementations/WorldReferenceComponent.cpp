@@ -19,7 +19,6 @@ void WorldReferenceComponent::Reset()
 
 void WorldReferenceComponent::Serialize(FArchive& archive)
 {
-
 }
 
 void WorldReferenceComponent::DrawComponentDebug() const

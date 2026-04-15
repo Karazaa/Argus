@@ -34,7 +34,6 @@ void FogOfWarComponent::Reset()
 
 void FogOfWarComponent::Serialize(FArchive& archive)
 {
-
 }
 
 void FogOfWarComponent::DrawComponentDebug() const

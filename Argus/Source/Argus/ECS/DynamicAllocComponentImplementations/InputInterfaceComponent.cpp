@@ -29,7 +29,6 @@ void InputInterfaceComponent::Reset()
 
 void InputInterfaceComponent::Serialize(FArchive& archive)
 {
-
 }
 
 void InputInterfaceComponent::DrawComponentDebug() const

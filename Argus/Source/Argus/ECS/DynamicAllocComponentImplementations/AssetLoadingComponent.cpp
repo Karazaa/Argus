@@ -18,7 +18,6 @@ void AssetLoadingComponent::Reset()
 
 void AssetLoadingComponent::Serialize(FArchive& archive)
 {
-
 }
 
 void AssetLoadingComponent::DrawComponentDebug() const

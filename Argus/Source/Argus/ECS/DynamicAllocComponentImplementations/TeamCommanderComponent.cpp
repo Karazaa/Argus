@@ -27,7 +27,6 @@ void TeamCommanderComponent::Reset()
 
 void TeamCommanderComponent::Serialize(FArchive& archive)
 {
-
 }
 
 void TeamCommanderComponent::DrawComponentDebug() const

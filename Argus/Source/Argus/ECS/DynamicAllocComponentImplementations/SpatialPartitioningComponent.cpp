@@ -24,7 +24,6 @@ void SpatialPartitioningComponent::Reset()
 
 void SpatialPartitioningComponent::Serialize(FArchive& archive)
 {
-
 }
 
 void SpatialPartitioningComponent::DrawComponentDebug() const

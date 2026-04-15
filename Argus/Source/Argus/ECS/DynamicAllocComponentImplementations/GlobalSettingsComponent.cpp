@@ -23,7 +23,6 @@ void GlobalSettingsComponent::Reset()
 
 void GlobalSettingsComponent::Serialize(FArchive& archive)
 {
-
 }
 
 void GlobalSettingsComponent::DrawComponentDebug() const

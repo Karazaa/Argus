@@ -18,7 +18,6 @@ void DecalSystemsSettingsComponent::Reset()
 
 void DecalSystemsSettingsComponent::Serialize(FArchive& archive)
 {
-
 }
 
 void DecalSystemsSettingsComponent::DrawComponentDebug() const

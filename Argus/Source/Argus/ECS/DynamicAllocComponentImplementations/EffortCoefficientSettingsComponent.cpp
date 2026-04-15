@@ -22,7 +22,6 @@ void EffortCoefficientSettingsComponent::Reset()
 
 void EffortCoefficientSettingsComponent::Serialize(FArchive& archive)
 {
-
 }
 
 void EffortCoefficientSettingsComponent::DrawComponentDebug() const

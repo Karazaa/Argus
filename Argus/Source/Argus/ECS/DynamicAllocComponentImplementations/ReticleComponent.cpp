@@ -23,7 +23,6 @@ void ReticleComponent::Reset()
 
 void ReticleComponent::Serialize(FArchive& archive)
 {
-
 }
 
 void ReticleComponent::DrawComponentDebug() const

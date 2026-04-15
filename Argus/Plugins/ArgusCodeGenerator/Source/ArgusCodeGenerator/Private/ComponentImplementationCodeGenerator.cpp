@@ -208,6 +208,13 @@ bool ComponentImplementationGenerator::ParseDynamicAllocComponentImplementationC
 				outParsedFileContents[i].m_lines.push_back("\t}");
 			}
 		}
+		else if (lineText.find("&&&&&") != std::string::npos)
+		{
+			for (int i = 0; i < parsedComponentData.m_dynamicAllocComponentNames.size(); ++i)
+			{
+				GeneratePerVariableSerializeText(parsedComponentData.m_dynamicAllocComponentVariableData[i], outParsedFileContents[i].m_lines);
+			}
+		}
 		else
 		{
 			for (int i = 0; i < parsedComponentData.m_dynamicAllocComponentNames.size(); ++i)
