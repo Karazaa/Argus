@@ -140,21 +140,6 @@ void FogOfWarComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_asyncTasks");
 		ImGui::TableNextColumn();
-		ImGui::Text("Array max is currently = %d", m_asyncTasks.Max());
-		if (m_asyncTasks.Num() == 0)
-		{
-			ImGui::Text("Array is empty");
-		}
-		else
-		{
-			ImGui::Text("Size of array = %d", m_asyncTasks.Num());
-			ImGui::Indent();
-			for (int32 i = 0; i < m_asyncTasks.Num(); ++i)
-			{
-				if (i != 0) ImGui::Separator();
-			}
-			ImGui::Unindent();
-		}
 		ImGui::TableNextColumn();
 		ImGui::Text("m_gaussianDimension");
 		ImGui::TableNextColumn();

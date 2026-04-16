@@ -61,16 +61,6 @@ void NavigationComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_queuedWaypoints");
 		ImGui::TableNextColumn();
-		if (m_queuedWaypoints.IsEmpty())
-		{
-			ImGui::Text("Deque is empty");
-		}
-		else
-		{
-			for (auto element : m_queuedWaypoints)
-			{
-			}
-		}
 		ImGui::TableNextColumn();
 		ImGui::Text("m_lastPointIndex");
 		ImGui::TableNextColumn();

@@ -388,7 +388,8 @@ void ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 					atomicFieldFormattingFunction = FormatImGuiResourceSourceExtractionDataField;
 					break;
 				default:
-					break;
+					// TODO JAMES: Set some breakpoints here and capture any data types we don't currently have represented.
+					continue;
 			}
 		}
 
@@ -786,13 +787,13 @@ ComponentImplementationGenerator::TypeInfo::TypeInfo(const std::string& typeName
 	{
 		m_underlyingType = UnderlyingType::Float;
 	}
-	else if (typeName.find("FVector") != std::string::npos)
-	{
-		m_underlyingType = UnderlyingType::Vector;
-	}
 	else if (typeName.find("FVector2D") != std::string::npos)
 	{
 		m_underlyingType = UnderlyingType::Vector2;
+	}
+	else if (typeName.find("FVector") != std::string::npos)
+	{
+		m_underlyingType = UnderlyingType::Vector;
 	}
 	else if (typeName.find("TimerHandle") != std::string::npos)
 	{
