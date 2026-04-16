@@ -283,184 +283,141 @@ void ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 {
 	for (int i = 0; i < parsedVariableData.size(); ++i)
 	{
-		const size_t unsignedInteger8Token = parsedVariableData[i].m_typeName.find("uint8");
-		const size_t unsignedInteger16Token = parsedVariableData[i].m_typeName.find("uint16");
-		const size_t unsignedInteger32Token = parsedVariableData[i].m_typeName.find("uint32");
-		const size_t signedInteger8Token = parsedVariableData[i].m_typeName.find("int8");
-		const size_t signedInteger16Token = parsedVariableData[i].m_typeName.find("int16");
-		const size_t signedInteger32Token = parsedVariableData[i].m_typeName.find("int32");
-		const bool isInteger =	unsignedInteger8Token != std::string::npos ||
-								unsignedInteger16Token != std::string::npos ||
-								unsignedInteger32Token != std::string::npos ||
-								signedInteger8Token != std::string::npos ||
-								signedInteger16Token != std::string::npos ||
-								signedInteger32Token != std::string::npos;
+		const TypeInfo typeInfo = TypeInfo(parsedVariableData[i].m_typeName, parsedVariableData[i].m_propertyMacro);
 
-		const bool isFloat = parsedVariableData[i].m_typeName.find("float") != std::string::npos;
-		const bool isSmoothed = parsedVariableData[i].m_typeName.find("ExponentialDecaySmoother") != std::string::npos;
-		const bool isOptional = parsedVariableData[i].m_typeName.find("TOptional") != std::string::npos;
-		const bool isArray = parsedVariableData[i].m_typeName.find("TArray") != std::string::npos;
-		const bool isQueue = parsedVariableData[i].m_typeName.find("ArgusQueue") != std::string::npos;
-		const bool isDeque = parsedVariableData[i].m_typeName.find("ArgusDeque") != std::string::npos;
-		const bool isVector2 = parsedVariableData[i].m_typeName.find("FVector2D") != std::string::npos;
-		const bool isVector = parsedVariableData[i].m_typeName.find("FVector") != std::string::npos;
-		const bool isTimer = parsedVariableData[i].m_typeName.find("TimerHandle") != std::string::npos;
-		const bool isResourceSet = parsedVariableData[i].m_typeName.find("FResourceSet") != std::string::npos;
-		const bool isStaticData = parsedVariableData[i].m_propertyMacro.find(ArgusCodeGeneratorUtil::s_propertyStaticDataDelimiter) != std::string::npos;
-		const bool isKDTreeOutput = parsedVariableData[i].m_typeName.find("ArgusEntityKDTreeRangeOutput") != std::string::npos;
-		const bool isSpawnEntityInfo = parsedVariableData[i].m_typeName.find("SpawnEntityInfo") != std::string::npos; 
-		const bool isBool = parsedVariableData[i].m_typeName.find("bool") != std::string::npos;
-		const bool isControlGroup = parsedVariableData[i].m_typeName.find("ControlGroup") != std::string::npos;
-		const bool isBitmask = parsedVariableData[i].m_typeName.find("BITMASK") != std::string::npos;
-		const bool isTeamCommanderPriority = parsedVariableData[i].m_typeName.find("TeamCommanderPriority") != std::string::npos;
-		const bool isResourceSourceExtractionData = parsedVariableData[i].m_typeName.find("ResourceSourceExtractionData") != std::string::npos;
-
-		std::string cleanTypeName = parsedVariableData[i].m_typeName.substr(1, parsedVariableData[i].m_typeName.length() - 1);
-
-		// BRUH REALLY? Yes. Until I find a better way to differentiate enum types... here we are.
-		const bool isEnum = cleanTypeName.at(0) == 'E';
-
-		if (!isKDTreeOutput)
-		{
-			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
-			outParsedVariableContents.push_back(std::vformat("\t\tImGui::Text(\"{}\");", std::make_format_args(parsedVariableData[i].m_varName)));
-			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
-		}
-		else
+		if (typeInfo.m_underlyingType == UnderlyingType::EntityKDTreeOutput)
 		{
 			std::string avoidanceRangeName = std::vformat("{}.GetEntityIdsInAvoidanceRange()", std::make_format_args(parsedVariableData[i].m_varName));
 			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
 			outParsedVariableContents.push_back(std::vformat("\t\tImGui::Text(\"{}\");", std::make_format_args(avoidanceRangeName)));
 			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
-			FormatImGuiArrayField(avoidanceRangeName, "", false, outParsedVariableContents, FormatImGuiIntField);
+			FormatImGuiArrayField(avoidanceRangeName, "", outParsedVariableContents, FormatImGuiIntField);
 
 			std::string sightRangeName = std::vformat("{}.GetEntityIdsInSightRange()", std::make_format_args(parsedVariableData[i].m_varName));
 			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
 			outParsedVariableContents.push_back(std::vformat("\t\tImGui::Text(\"{}\");", std::make_format_args(sightRangeName)));
 			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
-			FormatImGuiArrayField(sightRangeName, "", false, outParsedVariableContents, FormatImGuiIntField);
+			FormatImGuiArrayField(sightRangeName, "", outParsedVariableContents, FormatImGuiIntField);
 
 			std::string rangedRangeName = std::vformat("{}.GetEntityIdsInRangedRange()", std::make_format_args(parsedVariableData[i].m_varName));
 			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
 			outParsedVariableContents.push_back(std::vformat("\t\tImGui::Text(\"{}\");", std::make_format_args(rangedRangeName)));
 			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
-			FormatImGuiArrayField(rangedRangeName, "", false, outParsedVariableContents, FormatImGuiIntField);
+			FormatImGuiArrayField(rangedRangeName, "", outParsedVariableContents, FormatImGuiIntField);
 
 			std::string meleeRangeName = std::vformat("{}.GetEntityIdsInMeleeRange()", std::make_format_args(parsedVariableData[i].m_varName));
 			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
 			outParsedVariableContents.push_back(std::vformat("\t\tImGui::Text(\"{}\");", std::make_format_args(meleeRangeName)));
 			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
-			FormatImGuiArrayField(meleeRangeName, "", false, outParsedVariableContents, FormatImGuiIntField);
+			FormatImGuiArrayField(meleeRangeName, "", outParsedVariableContents, FormatImGuiIntField);
 
 			continue;
 		}
 
+		outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
+		outParsedVariableContents.push_back(std::vformat("\t\tImGui::Text(\"{}\");", std::make_format_args(parsedVariableData[i].m_varName)));
+		outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
+
 		std::string extraData = "";
 		TFunction<void(const std::string&, const std::string&, const std::string&, std::vector<std::string>&)> atomicFieldFormattingFunction;
-		if (isOptional)
+		if (typeInfo.m_containerType == ContainerType::Optional)
 		{
 			atomicFieldFormattingFunction = FormatImGuiOptionalField;
-			if (isFloat)
+			switch (typeInfo.m_underlyingType)
 			{
-				extraData = "float";
-			}
-			else if (isVector)
-			{
-				extraData = "FVector";
-			}
-			else if (isVector2)
-			{
-				extraData = "FVector2D";
-			}
-		}
-		else if (isBitmask)
-		{
-			extraData = cleanTypeName;
-			atomicFieldFormattingFunction = FormatImGuiBitmaskField;
-		}
-		else if (isInteger)
-		{
-			if (isStaticData)
-			{
-				extraData = parsedVariableData[i].m_propertyMacro;
-				atomicFieldFormattingFunction = FormatImGuiRecordField;
-			}
-			else
-			{
-				atomicFieldFormattingFunction = FormatImGuiIntField;
+				case UnderlyingType::Float:
+					extraData = "float";
+					break;
+				case UnderlyingType::Vector:
+					extraData = "FVector";
+					break;
+				case UnderlyingType::Vector2:
+					extraData = "FVector2D";
+					break;
+				default:
+					break;
 			}
 		}
-		else if (isBool)
+		else
 		{
-			atomicFieldFormattingFunction = FormatImGuiBoolField;
-		}
-		else if (isFloat)
-		{
-			atomicFieldFormattingFunction = FormatImGuiFloatField;
-		}
-		else if (isVector2)
-		{
-			atomicFieldFormattingFunction = FormatImGuiFVector2DField;
-		}
-		else if (isVector)
-		{
-			atomicFieldFormattingFunction = FormatImGuiFVectorField;
-		}
-		else if (isEnum)
-		{
-			extraData = cleanTypeName;
-			atomicFieldFormattingFunction = FormatImGuiEnumField;
-		}
-		else if (isTimer)
-		{
-			atomicFieldFormattingFunction = FormatImGuiTimerField;
-		}
-		else if (isResourceSet)
-		{
-			atomicFieldFormattingFunction = FormatImGuiResourceSetField;
-		}
-		else if (isSpawnEntityInfo)
-		{
-			atomicFieldFormattingFunction = FormatImGuiSpawnEntityInfoField;
-		}
-		else if (isControlGroup)
-		{
-			atomicFieldFormattingFunction = FormatImGuiControlGroupField;
-		}
-		else if (isTeamCommanderPriority)
-		{
-			atomicFieldFormattingFunction = FormatImGuiTeamCommanderPriorityField;
-		}
-		else if (isResourceSourceExtractionData)
-		{
-			atomicFieldFormattingFunction = FormatImGuiResourceSourceExtractionDataField;
+			switch (typeInfo.m_underlyingType)
+			{
+				case UnderlyingType::Bitmask:
+					extraData = typeInfo.m_cleanTypeName;
+					atomicFieldFormattingFunction = FormatImGuiBitmaskField;
+					break;
+				case UnderlyingType::StaticData:
+					extraData = parsedVariableData[i].m_propertyMacro;
+					atomicFieldFormattingFunction = FormatImGuiRecordField;
+					break;
+				case UnderlyingType::Integer:
+					atomicFieldFormattingFunction = FormatImGuiIntField;
+					break;
+				case UnderlyingType::Bool:
+					atomicFieldFormattingFunction = FormatImGuiBoolField;
+					break;
+				case UnderlyingType::Float:
+					atomicFieldFormattingFunction = FormatImGuiFloatField;
+					break;
+				case UnderlyingType::Vector2:
+					atomicFieldFormattingFunction = FormatImGuiFVector2DField;
+					break;
+				case UnderlyingType::Vector:
+					atomicFieldFormattingFunction = FormatImGuiFVectorField;
+					break;
+				case UnderlyingType::Enum:
+					extraData = typeInfo.m_cleanTypeName;
+					atomicFieldFormattingFunction = FormatImGuiEnumField;
+					break;
+				case UnderlyingType::Timer:
+					atomicFieldFormattingFunction = FormatImGuiTimerField;
+					break;
+				case UnderlyingType::ResourceSet:
+					atomicFieldFormattingFunction = FormatImGuiResourceSetField;
+					break;
+				case UnderlyingType::SpawnEntityInfo:
+					atomicFieldFormattingFunction = FormatImGuiSpawnEntityInfoField;
+					break;
+				case UnderlyingType::ControlGroup:
+					atomicFieldFormattingFunction = FormatImGuiControlGroupField;
+					break;
+				case UnderlyingType::TeamCommanderPriority:
+					atomicFieldFormattingFunction = FormatImGuiTeamCommanderPriorityField;
+					break;
+				case UnderlyingType::ResourceExtractionData:
+					atomicFieldFormattingFunction = FormatImGuiResourceSourceExtractionDataField;
+					break;
+				default:
+					break;
+			}
 		}
 
-		if (isQueue)
+		switch (typeInfo.m_containerType)
 		{
-			FormatImGuiQueueField(parsedVariableData[i].m_varName, outParsedVariableContents);
-		}
-		else if (isArray)
-		{
-			FormatImGuiArrayField(parsedVariableData[i].m_varName, extraData, isSmoothed, outParsedVariableContents, atomicFieldFormattingFunction);
-		}
-		else if (isDeque)
-		{
-			FormatImGuiDequeField(parsedVariableData[i].m_varName, extraData, isSmoothed, outParsedVariableContents, atomicFieldFormattingFunction);
-		}
-		else if (atomicFieldFormattingFunction)
-		{
-			std::string variableName = parsedVariableData[i].m_varName;
-			if (isSmoothed)
-			{
-				variableName.append(".GetValue()");
-			}
-			atomicFieldFormattingFunction(variableName, extraData, "", outParsedVariableContents);
+			case ContainerType::Queue:
+				FormatImGuiQueueField(parsedVariableData[i].m_varName, outParsedVariableContents);
+				break;
+			case ContainerType::Array:
+				FormatImGuiArrayField(parsedVariableData[i].m_varName, extraData, outParsedVariableContents, atomicFieldFormattingFunction);
+				break;
+			case ContainerType::Deque:
+				FormatImGuiDequeField(parsedVariableData[i].m_varName, extraData, outParsedVariableContents, atomicFieldFormattingFunction);
+				break;
+			default:
+				{
+					std::string variableName = parsedVariableData[i].m_varName;
+					if (typeInfo.m_containerType == ContainerType::Smoother)
+					{
+						variableName.append(".GetValue()");
+					}
+					atomicFieldFormattingFunction(variableName, extraData, "", outParsedVariableContents);
+				}
+				break;
 		}
 	}
 }
 
-void ComponentImplementationGenerator::FormatImGuiArrayField(const std::string& variableName, const std::string& extraData, bool isSmoothed, std::vector<std::string>& outParsedVariableContents, TFunction<void(const std::string&, const std::string&, const std::string&, std::vector<std::string>&)> elementFormattingFunction)
+void ComponentImplementationGenerator::FormatImGuiArrayField(const std::string& variableName, const std::string& extraData, std::vector<std::string>& outParsedVariableContents, TFunction<void(const std::string&, const std::string&, const std::string&, std::vector<std::string>&)> elementFormattingFunction)
 {
 	outParsedVariableContents.push_back(std::vformat("\t\tImGui::Text(\"Array max is currently = %d\", {}.Max());", std::make_format_args(variableName)));
 	outParsedVariableContents.push_back(std::vformat("\t\tif ({}.Num() == 0)", std::make_format_args(variableName)));
@@ -497,7 +454,7 @@ void ComponentImplementationGenerator::FormatImGuiQueueField(const std::string& 
 	outParsedVariableContents.push_back("\t\t}");
 }
 
-void ComponentImplementationGenerator::FormatImGuiDequeField(const std::string& variableName, const std::string& extraData, bool isSmoothed, std::vector<std::string>& outParsedVariableContents, TFunction<void(const std::string&, const std::string&, const std::string&, std::vector<std::string>&)> elementFormattingFunction)
+void ComponentImplementationGenerator::FormatImGuiDequeField(const std::string& variableName, const std::string& extraData, std::vector<std::string>& outParsedVariableContents, TFunction<void(const std::string&, const std::string&, const std::string&, std::vector<std::string>&)> elementFormattingFunction)
 {
 	outParsedVariableContents.push_back(std::vformat("\t\tif ({}.IsEmpty())", std::make_format_args(variableName)));
 	outParsedVariableContents.push_back("\t\t{");
@@ -797,4 +754,97 @@ void ComponentImplementationGenerator::FormatImGuiResourceSourceExtractionDataFi
 	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::Text(\"%d\", {});", std::make_format_args(prefix, resourceExtractorIdName)));
 
 	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::EndTable();", std::make_format_args(prefix)));
+}
+
+ComponentImplementationGenerator::TypeInfo::TypeInfo(const std::string& typeName, const std::string& macro)
+{
+	m_cleanTypeName = typeName.substr(1, typeName.length() - 1);
+
+	// BRUH REALLY? Yes. Until I find a better way to differentiate enum types... here we are.
+	if (m_cleanTypeName.at(0) == 'E')
+	{
+		m_underlyingType = UnderlyingType::Enum;
+	}
+	else if (typeName.find("BITMASK") != std::string::npos)
+	{
+		m_underlyingType = UnderlyingType::Bitmask;
+	}
+	else if (macro.find(ArgusCodeGeneratorUtil::s_propertyStaticDataDelimiter) != std::string::npos)
+	{
+		m_underlyingType = UnderlyingType::StaticData;
+	}
+	else if (typeName.find("uint8") != std::string::npos ||
+		typeName.find("uint16") != std::string::npos ||
+		typeName.find("uint32") != std::string::npos ||
+		typeName.find("int8") != std::string::npos ||
+		typeName.find("int16") != std::string::npos ||
+		typeName.find("int32") != std::string::npos)
+	{
+		m_underlyingType = UnderlyingType::Integer;
+	}
+	else if (typeName.find("float") != std::string::npos)
+	{
+		m_underlyingType = UnderlyingType::Float;
+	}
+	else if (typeName.find("FVector") != std::string::npos)
+	{
+		m_underlyingType = UnderlyingType::Vector;
+	}
+	else if (typeName.find("FVector2D") != std::string::npos)
+	{
+		m_underlyingType = UnderlyingType::Vector2;
+	}
+	else if (typeName.find("TimerHandle") != std::string::npos)
+	{
+		m_underlyingType = UnderlyingType::Timer;
+	}
+	else if (typeName.find("FResourceSet") != std::string::npos)
+	{
+		m_underlyingType = UnderlyingType::ResourceSet;
+	}
+	else if (typeName.find("ArgusEntityKDTreeRangeOutput") != std::string::npos)
+	{
+		m_underlyingType = UnderlyingType::EntityKDTreeOutput;
+	}
+	else if (typeName.find("SpawnEntityInfo") != std::string::npos)
+	{
+		m_underlyingType = UnderlyingType::SpawnEntityInfo;
+	}
+	else if (typeName.find("bool") != std::string::npos)
+	{
+		m_underlyingType = UnderlyingType::Bool;
+	}
+	else if (typeName.find("ControlGroup") != std::string::npos)
+	{
+		m_underlyingType = UnderlyingType::ControlGroup;
+	}
+	else if (typeName.find("TeamCommanderPriority") != std::string::npos)
+	{
+		m_underlyingType = UnderlyingType::TeamCommanderPriority;
+	}
+	else if (typeName.find("ResourceSourceExtractionData") != std::string::npos)
+	{
+		m_underlyingType = UnderlyingType::ResourceExtractionData;
+	}
+
+	if (typeName.find("ExponentialDecaySmoother") != std::string::npos)
+	{
+		m_containerType = ContainerType::Smoother;
+	}
+	else if (typeName.find("TOptional") != std::string::npos)
+	{
+		m_containerType = ContainerType::Optional;
+	}
+	else if (typeName.find("TArray") != std::string::npos)
+	{
+		m_containerType = ContainerType::Array;
+	}
+	else if (typeName.find("ArgusQueue") != std::string::npos)
+	{
+		m_containerType = ContainerType::Queue;
+	}
+	else if (typeName.find("ArgusDeque") != std::string::npos)
+	{
+		m_containerType = ContainerType::Deque;
+	}
 }

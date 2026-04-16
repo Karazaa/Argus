@@ -18,6 +18,45 @@ private:
 	static const char* s_perObservableTemplateFilename;
 	static const char* s_sharedFunctionalityTemplateFilename;
 	static const char* s_componentCppSuffix;
+
+	enum UnderlyingType : uint8
+	{
+		None,
+		Integer,
+		Float,
+		Vector,
+		Vector2,
+		Timer,
+		ResourceSet,
+		EntityKDTreeOutput,
+		SpawnEntityInfo,
+		Bool,
+		ControlGroup,
+		TeamCommanderPriority,
+		ResourceExtractionData,
+		Bitmask,
+		StaticData,
+		Enum
+	};
+
+	enum ContainerType : uint8
+	{
+		NoContainer,
+		Array,
+		Queue,
+		Deque,
+		Smoother,
+		Optional
+	};
+
+	struct TypeInfo
+	{
+		std::string m_cleanTypeName;
+		UnderlyingType m_underlyingType = UnderlyingType::None;
+		ContainerType m_containerType = ContainerType::NoContainer;
+
+		TypeInfo(const std::string& typeName, const std::string& macro);
+	};
 	
 
 	static bool ParseComponentImplementationCppFileTemplateWithReplacements(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents);
@@ -25,9 +64,10 @@ private:
 	static void GeneratePerVariableResetText(const std::vector<ArgusCodeGeneratorUtil::ParsedVariableData>& parsedVariableData, std::vector<std::string>& outParsedVariableContents);
 	static void GeneratePerVariableSerializeText(const std::vector<ArgusCodeGeneratorUtil::ParsedVariableData>& parsedVariableData, std::vector<std::string>& outParsedVariableContents);
 	static void GeneratePerVariableImGuiText(const std::vector<ArgusCodeGeneratorUtil::ParsedVariableData>& parsedVariableData, std::vector<std::string>& outParsedVariableContents);
-	static void FormatImGuiArrayField(const std::string& variableName, const std::string& extraData, bool isSmoothed, std::vector<std::string>& outParsedVariableContents, TFunction<void(const std::string&, const std::string&, const std::string&, std::vector<std::string>&)> elementFormattingFunction);
+	
+	static void FormatImGuiArrayField(const std::string& variableName, const std::string& extraData, std::vector<std::string>& outParsedVariableContents, TFunction<void(const std::string&, const std::string&, const std::string&, std::vector<std::string>&)> elementFormattingFunction);
 	static void FormatImGuiQueueField(const std::string& variableName, std::vector<std::string>& outParsedVariableContents);
-	static void FormatImGuiDequeField(const std::string& variableName, const std::string& extraData, bool isSmoothed, std::vector<std::string>& outParsedVariableContents, TFunction<void(const std::string&, const std::string&, const std::string&, std::vector<std::string>&)> elementFormattingFunction);
+	static void FormatImGuiDequeField(const std::string& variableName, const std::string& extraData, std::vector<std::string>& outParsedVariableContents, TFunction<void(const std::string&, const std::string&, const std::string&, std::vector<std::string>&)> elementFormattingFunction);
 	static void FormatImGuiFloatField(const std::string& variableName, const std::string& extraData, const std::string& prefix, std::vector<std::string>& outParsedVariableContents);
 	static void FormatImGuiIntField(const std::string& variableName, const std::string& extraData, const std::string& prefix, std::vector<std::string>& outParsedVariableContents);
 	static void FormatImGuiBitmaskField(const std::string& variableName, const std::string& extraData, const std::string& prefix, std::vector<std::string>& outParsedVariableContents);
