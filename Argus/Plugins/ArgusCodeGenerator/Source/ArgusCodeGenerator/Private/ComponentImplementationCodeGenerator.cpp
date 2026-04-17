@@ -795,14 +795,6 @@ ComponentImplementationGenerator::TypeInfo::TypeInfo(const std::string& typeName
 	{
 		m_underlyingType = UnderlyingType::ResourceSet;
 	}
-	else if (typeName.find("ArgusEntityKDTree") != std::string::npos)
-	{
-		m_underlyingType = UnderlyingType::EntityKDTree;
-	}
-	else if (typeName.find("ObstaclePointKDTree") != std::string::npos)
-	{
-		m_underlyingType = UnderlyingType::ObstacleKDTree;
-	}
 	else if (typeName.find("ArgusEntityKDTreeRangeOutput") != std::string::npos)
 	{
 		m_underlyingType = UnderlyingType::EntityKDTreeOutput;
@@ -810,6 +802,14 @@ ComponentImplementationGenerator::TypeInfo::TypeInfo(const std::string& typeName
 	else if (typeName.find("ObstaclePointKDTreeRangeOutput") != std::string::npos)
 	{
 		m_underlyingType = UnderlyingType::ObstacleKDTreeOutput;
+	}
+	else if (typeName.find("ArgusEntityKDTree") != std::string::npos)
+	{
+		m_underlyingType = UnderlyingType::EntityKDTree;
+	}
+	else if (typeName.find("ObstaclePointKDTree") != std::string::npos)
+	{
+		m_underlyingType = UnderlyingType::ObstacleKDTree;
 	}
 	else if (typeName.find("SpawnEntityInfo") != std::string::npos)
 	{
