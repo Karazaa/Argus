@@ -237,36 +237,28 @@ void ComponentImplementationGenerator::GeneratePerVariableResetText(const std::v
 			continue;
 		}
 
-		const bool isArray = parsedVariableData[i].m_typeName.find("TArray") != std::string::npos;
-		const bool isBitArray = parsedVariableData[i].m_typeName.find("TBitArray") != std::string::npos;
-		const bool isDeque = parsedVariableData[i].m_typeName.find("ArgusDeque") != std::string::npos;
-		const bool isResourceSet = parsedVariableData[i].m_typeName.find("FResourceSet") != std::string::npos;
-		const bool isTimer = parsedVariableData[i].m_typeName.find("TimerHandle") != std::string::npos;
-		const bool areObservers = parsedVariableData[i].m_typeName.find("Observers") != std::string::npos;
-		if (isArray || isBitArray || isDeque || isResourceSet || isTimer || areObservers)
+		const TypeInfo typeInfo = TypeInfo(parsedVariableData[i].m_typeName, parsedVariableData[i].m_propertyMacro);
+
+		if (typeInfo.m_containerType == ContainerType::Array || typeInfo.m_containerType == ContainerType::BitArray || typeInfo.m_containerType == ContainerType::Deque ||
+			typeInfo.m_underlyingType == UnderlyingType::ResourceSet || typeInfo.m_underlyingType == UnderlyingType::Timer || typeInfo.m_underlyingType == UnderlyingType::Observers)
 		{
 			outParsedVariableContents.push_back(std::vformat("\t{}.Reset();", std::make_format_args(parsedVariableData[i].m_varName)));
 			continue;
 		}
 
-		bool isKDTreeOutput = parsedVariableData[i].m_typeName.find("ArgusEntityKDTreeRangeOutput") != std::string::npos;
-		isKDTreeOutput |= parsedVariableData[i].m_typeName.find("ObstaclePointKDTreeRangeOutput") != std::string::npos;
-		if (isKDTreeOutput)
+		if (typeInfo.m_underlyingType == UnderlyingType::EntityKDTreeOutput || typeInfo.m_underlyingType == UnderlyingType::ObstacleKDTreeOutput)
 		{
 			outParsedVariableContents.push_back(std::vformat("\t{}.ResetAll();", std::make_format_args(parsedVariableData[i].m_varName)));
 			continue;
 		}
 
-		const bool isEntityKDTree = parsedVariableData[i].m_typeName.find("ArgusEntityKDTree") != std::string::npos;
-		const bool isObstacleKDTree = parsedVariableData[i].m_typeName.find("ObstaclePointKDTree") != std::string::npos;
-		if (isEntityKDTree || isObstacleKDTree)
+		if (typeInfo.m_underlyingType == UnderlyingType::EntityKDTree || typeInfo.m_underlyingType == UnderlyingType::ObstacleKDTree)
 		{
 			outParsedVariableContents.push_back(std::vformat("\t{}.FlushAllNodes();", std::make_format_args(parsedVariableData[i].m_varName)));
 			continue;
 		}
 
-		const bool isSmoothed = parsedVariableData[i].m_typeName.find("ExponentialDecaySmoother") != std::string::npos;
-		if (isSmoothed)
+		if (typeInfo.m_containerType == ContainerType::Smoother)
 		{
 			outParsedVariableContents.push_back(std::vformat("\t{}.ResetZero();", std::make_format_args(parsedVariableData[i].m_varName)));
 			continue;
@@ -803,9 +795,21 @@ ComponentImplementationGenerator::TypeInfo::TypeInfo(const std::string& typeName
 	{
 		m_underlyingType = UnderlyingType::ResourceSet;
 	}
+	else if (typeName.find("ArgusEntityKDTree") != std::string::npos)
+	{
+		m_underlyingType = UnderlyingType::EntityKDTree;
+	}
+	else if (typeName.find("ObstaclePointKDTree") != std::string::npos)
+	{
+		m_underlyingType = UnderlyingType::ObstacleKDTree;
+	}
 	else if (typeName.find("ArgusEntityKDTreeRangeOutput") != std::string::npos)
 	{
 		m_underlyingType = UnderlyingType::EntityKDTreeOutput;
+	}
+	else if (typeName.find("ObstaclePointKDTreeRangeOutput") != std::string::npos)
+	{
+		m_underlyingType = UnderlyingType::ObstacleKDTreeOutput;
 	}
 	else if (typeName.find("SpawnEntityInfo") != std::string::npos)
 	{
@@ -827,6 +831,10 @@ ComponentImplementationGenerator::TypeInfo::TypeInfo(const std::string& typeName
 	{
 		m_underlyingType = UnderlyingType::ResourceExtractionData;
 	}
+	else if (typeName.find("Observers") != std::string::npos)
+	{
+		m_underlyingType = UnderlyingType::Observers;
+	}
 
 	if (typeName.find("ExponentialDecaySmoother") != std::string::npos)
 	{
@@ -847,5 +855,9 @@ ComponentImplementationGenerator::TypeInfo::TypeInfo(const std::string& typeName
 	else if (typeName.find("ArgusDeque") != std::string::npos)
 	{
 		m_containerType = ContainerType::Deque;
+	}
+	else if (typeName.find("TBitArray") != std::string::npos)
+	{
+		m_containerType = ContainerType::BitArray;
 	}
 }

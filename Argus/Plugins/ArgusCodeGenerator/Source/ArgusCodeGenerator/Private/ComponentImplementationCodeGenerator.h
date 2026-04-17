@@ -28,7 +28,10 @@ private:
 		Vector2,
 		Timer,
 		ResourceSet,
+		EntityKDTree,
+		ObstacleKDTree,
 		EntityKDTreeOutput,
+		ObstacleKDTreeOutput,
 		SpawnEntityInfo,
 		Bool,
 		ControlGroup,
@@ -36,7 +39,8 @@ private:
 		ResourceExtractionData,
 		Bitmask,
 		StaticData,
-		Enum
+		Enum,
+		Observers
 	};
 
 	enum ContainerType : uint8
@@ -46,7 +50,8 @@ private:
 		Queue,
 		Deque,
 		Smoother,
-		Optional
+		Optional,
+		BitArray
 	};
 
 	struct TypeInfo
