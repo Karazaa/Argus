@@ -29,6 +29,10 @@ void ArgusDecalComponent::Reset()
 
 void ArgusDecalComponent::Serialize(FArchive& archive)
 {
+	archive << m_lifetimeSeconds;
+	archive << m_referencingEntityCount;
+	archive << m_connectedEntityId;
+	archive << m_decalType;
 }
 
 void ArgusDecalComponent::DrawComponentDebug() const

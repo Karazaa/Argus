@@ -30,6 +30,11 @@ void TargetingComponent::Reset()
 
 void TargetingComponent::Serialize(FArchive& archive)
 {
+	archive << m_meleeRange;
+	archive << m_rangedRange;
+	archive << m_sightRange;
+	archive << m_targetEntityId;
+	archive << m_decalEntityId;
 }
 
 void TargetingComponent::DrawComponentDebug() const

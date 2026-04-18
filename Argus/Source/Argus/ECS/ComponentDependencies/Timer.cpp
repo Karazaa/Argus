@@ -4,6 +4,7 @@
 #include "ArgusEntity.h"
 #include "ArgusLogging.h"
 #include "ComponentDefinitions/TimerComponent.h"
+#include "Serialization/Archive.h"
 
 void TimerHandle::StartTimer(float seconds)
 {
@@ -258,4 +259,13 @@ Timer* TimerHandle::GetTimerForEntity(ArgusEntity entityWithTimer, const WIDECHA
 	}
 
 	return timerComponent->GetTimerFromHandle(this);
+}
+
+FArchive& operator<<(FArchive& archive, Timer& timer)
+{
+	archive << timer.m_timeRemainingSeconds;
+	archive << timer.m_initialDurationSeconds;
+	archive << timer.m_timerState;
+
+	return archive;
 }

@@ -25,6 +25,7 @@ void PassengerComponent::Reset()
 
 void PassengerComponent::Serialize(FArchive& archive)
 {
+	archive << m_carrierEntityId;
 }
 
 void PassengerComponent::DrawComponentDebug() const

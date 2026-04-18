@@ -34,6 +34,16 @@ void TaskComponent::Reset()
 
 void TaskComponent::Serialize(FArchive& archive)
 {
+	archive << m_spawnedFromArgusActorRecordId;
+	archive << m_baseState;
+	archive << m_movementState;
+	archive << m_spawningState;
+	archive << m_abilityState;
+	archive << m_constructionState;
+	archive << m_combatState;
+	archive << m_resourceExtractionState;
+	archive << m_flightState;
+	archive << m_directiveFromTeamCommander;
 }
 
 void TaskComponent::DrawComponentDebug() const

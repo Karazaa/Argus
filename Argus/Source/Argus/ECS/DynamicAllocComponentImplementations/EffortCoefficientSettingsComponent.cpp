@@ -22,6 +22,10 @@ void EffortCoefficientSettingsComponent::Reset()
 
 void EffortCoefficientSettingsComponent::Serialize(FArchive& archive)
 {
+	archive << m_sameAvoidanceGroupBase;
+	archive << m_sameAvoidanceGroupBothObstacle;
+	archive << m_sameAvoidanceGroupHasObstacle;
+	archive << m_sameAvoidanceGroupOtherHasObstacle;
 }
 
 void EffortCoefficientSettingsComponent::DrawComponentDebug() const

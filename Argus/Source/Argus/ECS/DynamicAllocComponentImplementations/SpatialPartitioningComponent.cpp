@@ -24,6 +24,9 @@ void SpatialPartitioningComponent::Reset()
 
 void SpatialPartitioningComponent::Serialize(FArchive& archive)
 {
+	archive << m_validSpaceExtent;
+	archive << m_flyingPlaneHeight;
+	archive << m_elevatedObstaclePointHeightThreshold;
 }
 
 void SpatialPartitioningComponent::DrawComponentDebug() const

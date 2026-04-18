@@ -29,6 +29,13 @@ void InputInterfaceComponent::Reset()
 
 void InputInterfaceComponent::Serialize(FArchive& archive)
 {
+	archive << m_selectedActorsDisplayState;
+	archive << m_indexOfActiveAbilityGroup;
+	archive << m_activePlayerTeam;
+	archive << m_doubleClickThresholdSeconds;
+	archive << m_doubleClickQueryRange;
+	archive << m_lastSelectedEntityId;
+	archive << m_numControlGroups;
 }
 
 void InputInterfaceComponent::DrawComponentDebug() const

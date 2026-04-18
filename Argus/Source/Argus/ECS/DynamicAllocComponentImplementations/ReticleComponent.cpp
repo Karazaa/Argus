@@ -23,6 +23,11 @@ void ReticleComponent::Reset()
 
 void ReticleComponent::Serialize(FArchive& archive)
 {
+	archive << m_reticleLocation;
+	archive << m_abilityRecordId;
+	archive << m_radius;
+	archive << m_isBlocked;
+	archive << m_wasAbilityCast;
 }
 
 void ReticleComponent::DrawComponentDebug() const

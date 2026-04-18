@@ -282,11 +282,26 @@ void ComponentImplementationGenerator::GeneratePerVariableSerializeText(const st
 				case UnderlyingType::Vector:
 				case UnderlyingType::Vector2:
 				case UnderlyingType::Enum:
+				case UnderlyingType::Bitmask:
 					outParsedVariableContents.push_back(std::vformat("\tarchive << {};", std::make_format_args(parsedVariableData[i].m_varName)));
 					break;
 				default:
 					break;
 			}
+
+			continue;
+		}
+
+		switch (typeInfo.m_containerType)
+		{
+			case ContainerType::Smoother:
+			case ContainerType::BitArray:
+				outParsedVariableContents.push_back(std::vformat("\t{}.Serialize(archive);", std::make_format_args(parsedVariableData[i].m_varName)));
+				break;
+			case ContainerType::Array:
+				// TODO JAMES: Need to support serialization on more types before pursuing array serialization.
+				// outParsedVariableContents.push_back(std::vformat("\t{}.BulkSerialize(archive);", std::make_format_args(parsedVariableData[i].m_varName)));
+				break;	
 		}
 	}
 }

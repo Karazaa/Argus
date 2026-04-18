@@ -28,6 +28,8 @@ void ResourceComponent::Reset()
 
 void ResourceComponent::Serialize(FArchive& archive)
 {
+	archive << m_resourceComponentOwnerType;
+	archive << m_bufferRegionRadius;
 }
 
 void ResourceComponent::DrawComponentDebug() const

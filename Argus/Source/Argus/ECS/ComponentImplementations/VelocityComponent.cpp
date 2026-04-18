@@ -28,6 +28,10 @@ void VelocityComponent::Reset()
 
 void VelocityComponent::Serialize(FArchive& archive)
 {
+	archive << m_currentVelocity;
+	archive << m_proposedAvoidanceVelocity;
+	archive << m_desiredSpeedUnitsPerSecond;
+	archive << m_desiredFlightSpeedUnitsPerSecond;
 }
 
 void VelocityComponent::DrawComponentDebug() const

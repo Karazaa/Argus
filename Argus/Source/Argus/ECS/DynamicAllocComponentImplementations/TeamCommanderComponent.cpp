@@ -27,6 +27,9 @@ void TeamCommanderComponent::Reset()
 
 void TeamCommanderComponent::Serialize(FArchive& archive)
 {
+	m_revealedAreas.Serialize(archive);
+	archive << m_revealedAreaDimensionLength;
+	archive << m_teamToCommand;
 }
 
 void TeamCommanderComponent::DrawComponentDebug() const

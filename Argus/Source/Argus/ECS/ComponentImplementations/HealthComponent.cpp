@@ -26,6 +26,8 @@ void HealthComponent::Reset()
 
 void HealthComponent::Serialize(FArchive& archive)
 {
+	archive << m_currentHealth;
+	archive << m_maximumHealth;
 }
 
 void HealthComponent::DrawComponentDebug() const

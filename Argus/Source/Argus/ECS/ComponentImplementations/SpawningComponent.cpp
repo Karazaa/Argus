@@ -28,6 +28,8 @@ void SpawningComponent::Reset()
 
 void SpawningComponent::Serialize(FArchive& archive)
 {
+	archive << m_spawningRadius;
+	archive << m_maximumQueueSize;
 }
 
 void SpawningComponent::DrawComponentDebug() const

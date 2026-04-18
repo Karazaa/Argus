@@ -31,6 +31,13 @@ void FlockingComponent::Reset()
 
 void FlockingComponent::Serialize(FArchive& archive)
 {
+	archive << m_minDistanceFromFlockingPoint;
+	archive << m_timeAtMinFlockingDistance;
+	archive << m_maxShrinkingDurationTimeoutSeconds;
+	archive << m_flockingRootRadiusIncrement;
+	archive << m_numEntitiesInStableRange;
+	archive << m_concentricFlockingTier;
+	archive << m_flockingState;
 }
 
 void FlockingComponent::DrawComponentDebug() const

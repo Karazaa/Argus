@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 
 class ArgusEntity;
+class FArchive;
 struct TimerComponent;
 
 enum class TimerState : uint8
@@ -20,6 +21,7 @@ struct Timer
 	float m_initialDurationSeconds = 0.0f;
 	TimerState m_timerState = TimerState::NotSet;
 };
+FArchive& operator<<(FArchive& archive, Timer& timer);
 
 class TimerHandle
 {

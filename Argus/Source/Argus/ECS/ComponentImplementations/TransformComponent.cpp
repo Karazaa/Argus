@@ -30,6 +30,13 @@ void TransformComponent::Reset()
 
 void TransformComponent::Serialize(FArchive& archive)
 {
+	archive << m_location;
+	m_smoothedYaw.Serialize(archive);
+	m_smoothedTransitionAltitude.Serialize(archive);
+	archive << m_targetYaw;
+	archive << m_targetTransitionAltitude;
+	archive << m_radius;
+	archive << m_flightCapability;
 }
 
 void TransformComponent::DrawComponentDebug() const

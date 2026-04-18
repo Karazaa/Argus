@@ -35,6 +35,13 @@ void AbilityComponent::Reset()
 
 void AbilityComponent::Serialize(FArchive& archive)
 {
+	archive << m_ability0OverrideId;
+	archive << m_ability1OverrideId;
+	archive << m_ability2OverrideId;
+	archive << m_ability3OverrideId;
+	archive << m_abilityToRefundId;
+	archive << m_abilityOverrideBitmask;
+	archive << m_abilityCasterPriority;
 }
 
 void AbilityComponent::DrawComponentDebug() const

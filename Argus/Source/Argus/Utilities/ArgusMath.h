@@ -5,7 +5,9 @@
 #include "ArgusLogging.h"
 #include "CoreMinimal.h"
 #include "Math/UnrealMathUtility.h"
-#include <algorithm>
+#include "Serialization/Archive.h"
+
+class FArchive;
 
 namespace ArgusMath
 {
@@ -106,6 +108,16 @@ namespace ArgusMath
 		{
 			decayConstant = FMath::Clamp(decayConstant, k_minDecayConstant, k_maxDecayConstant);
 			value = targetValue + ((value - targetValue) * FMath::Exp(-decayConstant * deltaTime) * smoothingSpeed);
+		}
+
+		void Serialize(FArchive& archive)
+		{
+			for (uint8 i = 0; i < SmoothingOrder; ++i)
+			{
+				archive << m_currentValues[i];
+			}
+			archive << m_decayConstant;
+			archive << m_smoothingSpeedMod;
 		}
 
 	private:

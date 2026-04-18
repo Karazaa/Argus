@@ -30,6 +30,11 @@ void IdentityComponent::Reset()
 
 void IdentityComponent::Serialize(FArchive& archive)
 {
+	archive << m_team;
+	archive << m_allies;
+	archive << m_enemies;
+	archive << m_seenBy;
+	archive << m_everSeenBy;
 }
 
 void IdentityComponent::DrawComponentDebug() const

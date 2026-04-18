@@ -34,6 +34,14 @@ void FogOfWarComponent::Reset()
 
 void FogOfWarComponent::Serialize(FArchive& archive)
 {
+	archive << m_gaussianDimension;
+	archive << m_revealedOnceAlpha;
+	archive << m_textureSize;
+	archive << m_smoothingDecayConstant;
+	archive << m_shouldUseSmoothing;
+	archive << m_triangleRasterizeModulo;
+	archive << m_numberSmoothingChunks;
+	archive << m_visionObstacleAdjustDistance;
 }
 
 void FogOfWarComponent::DrawComponentDebug() const

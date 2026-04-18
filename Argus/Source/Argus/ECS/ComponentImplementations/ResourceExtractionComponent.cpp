@@ -28,6 +28,8 @@ void ResourceExtractionComponent::Reset()
 
 void ResourceExtractionComponent::Serialize(FArchive& archive)
 {
+	archive << m_extractionLengthSeconds;
+	archive << m_lastExtractionSourceEntityId;
 }
 
 void ResourceExtractionComponent::DrawComponentDebug() const

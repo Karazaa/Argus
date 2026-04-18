@@ -29,6 +29,10 @@ void CombatComponent::Reset()
 
 void CombatComponent::Serialize(FArchive& archive)
 {
+	archive << m_baseDamagePerIntervalOrPerSecond;
+	archive << m_intervalDurationSeconds;
+	archive << m_attackType;
+	archive << m_rangedAttackCapability;
 }
 
 void CombatComponent::DrawComponentDebug() const

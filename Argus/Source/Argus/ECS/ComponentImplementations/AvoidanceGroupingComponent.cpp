@@ -29,6 +29,10 @@ void AvoidanceGroupingComponent::Reset()
 
 void AvoidanceGroupingComponent::Serialize(FArchive& archive)
 {
+	archive << m_groupAverageLocation;
+	archive << m_groupId;
+	archive << m_numberOfIdleEntities;
+	archive << m_avoidancePriority;
 }
 
 void AvoidanceGroupingComponent::DrawComponentDebug() const
