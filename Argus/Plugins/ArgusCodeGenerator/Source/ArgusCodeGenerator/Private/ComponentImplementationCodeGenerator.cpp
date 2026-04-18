@@ -268,7 +268,27 @@ void ComponentImplementationGenerator::GeneratePerVariableResetText(const std::v
 
 void ComponentImplementationGenerator::GeneratePerVariableSerializeText(const std::vector<ArgusCodeGeneratorUtil::ParsedVariableData>& parsedVariableData, std::vector<std::string>& outParsedVariableContents)
 {
-	// TODO JAMES: Implement this!
+	for (int i = 0; i < parsedVariableData.size(); ++i)
+	{
+		const TypeInfo typeInfo = TypeInfo(parsedVariableData[i].m_typeName, parsedVariableData[i].m_propertyMacro);
+
+		if (typeInfo.m_containerType == NoContainer)
+		{
+			switch (typeInfo.m_underlyingType)
+			{
+				case UnderlyingType::Bool:
+				case UnderlyingType::Float:
+				case UnderlyingType::Integer:
+				case UnderlyingType::Vector:
+				case UnderlyingType::Vector2:
+				case UnderlyingType::Enum:
+					outParsedVariableContents.push_back(std::vformat("\tarchive << {};", std::make_format_args(parsedVariableData[i].m_varName)));
+					break;
+				default:
+					break;
+			}
+		}
+	}
 }
 
 void ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::vector<ArgusCodeGeneratorUtil::ParsedVariableData>& parsedVariableData, std::vector<std::string>& outParsedVariableContents)
