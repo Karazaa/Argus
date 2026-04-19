@@ -23,11 +23,6 @@ void GlobalSettingsComponent::Reset()
 
 void GlobalSettingsComponent::Serialize(FArchive& archive)
 {
-	archive << m_avoidanceEntityDetectionPredictionTime;
-	archive << m_avoidanceObstacleDetectionPredictionTime;
-	archive << m_flockingVelocityInfluence;
-	archive << m_obstacleShrinkFixupDistance;
-	archive << m_maxObstaclePointDistance;
 }
 
 void GlobalSettingsComponent::DrawComponentDebug() const

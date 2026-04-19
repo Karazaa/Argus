@@ -9,7 +9,10 @@ struct DecalSystemsSettingsComponent
 {
 	ARGUS_DYNAMIC_COMPONENT_SHARED;
 
+	ARGUS_COMP_TRANSIENT
 	FUMaterialRecordReference m_moveToLocationDecalMaterial;
+
+	ARGUS_COMP_TRANSIENT
 	FUMaterialRecordReference m_attackMoveToLocationDecalMaterial;
 
 	static const DecalSystemsSettingsComponent* Get();

@@ -15,21 +15,21 @@ struct FogOfWarComponent
 {
 	ARGUS_DYNAMIC_COMPONENT_SHARED;
 
-	ARGUS_COMP_PROPERTY(Transient)
+	ARGUS_COMP_PROPERTY(Transient) ARGUS_COMP_TRANSIENT
 	TObjectPtr<UTexture2D> m_fogOfWarTexture = nullptr;
 
 	// The purpose for this texture is to function as a simple way to pass floats calculated on the CPU to the GPU so that
 	// our FogOfWar material can do a gaussian blur of arbitrary dimension.
-	ARGUS_COMP_PROPERTY(Transient)
+	ARGUS_COMP_PROPERTY(Transient) ARGUS_COMP_TRANSIENT
 	TObjectPtr<UTexture2D> m_gaussianWeightsTexture = nullptr;
 
-	ARGUS_COMP_PROPERTY(Transient)
+	ARGUS_COMP_PROPERTY(Transient) ARGUS_COMP_TRANSIENT
 	TObjectPtr<UMaterialInstanceDynamic> m_dynamicMaterialInstance = nullptr;
 
-	ARGUS_COMP_NO_DATA
+	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT
 	FUpdateTextureRegion2D m_textureRegion;
 
-	ARGUS_COMP_NO_DATA
+	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT
 	TextureRegionsUpdateData m_textureRegionsUpdateData;
 
 	ARGUS_COMP_NO_DATA
@@ -38,13 +38,13 @@ struct FogOfWarComponent
 	ARGUS_COMP_NO_DATA
 	TArray<uint8, ArgusContainerAllocator<0u> > m_smoothedTextureData;
 
-	ARGUS_COMP_NO_DATA
+	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT
 	TArray<float, ArgusContainerAllocator<0u> > m_intermediarySmoothingData;
 
-	ARGUS_COMP_NO_DATA
+	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT
 	TArray<float, ArgusContainerAllocator<0u> > m_gaussianFilter;
 
-	ARGUS_COMP_NO_DATA
+	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT
 	TArray<UE::Tasks::FTask, ArgusContainerAllocator<0u> > m_asyncTasks;
 
 	uint8 m_gaussianDimension = 5u;

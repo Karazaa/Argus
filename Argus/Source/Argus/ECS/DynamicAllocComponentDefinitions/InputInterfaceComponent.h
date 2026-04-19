@@ -29,7 +29,7 @@ struct InputInterfaceComponent
 	ARGUS_COMP_NO_DATA
 	TArray<ControlGroup, ArgusContainerAllocator<12u> > m_controlGroups;
 
-	ARGUS_COMP_NO_DATA
+	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT
 	ESelectedActorsDisplayState m_selectedActorsDisplayState = ESelectedActorsDisplayState::NotChanged;
 
 	ARGUS_COMP_NO_DATA
@@ -38,7 +38,7 @@ struct InputInterfaceComponent
 	ARGUS_COMP_NO_DATA
 	ETeam m_activePlayerTeam = ETeam::TeamA;
 
-	ARGUS_COMP_NO_DATA
+	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT
 	TimerHandle m_doubleClickTimer;
 
 	float m_doubleClickThresholdSeconds = 1.0f;

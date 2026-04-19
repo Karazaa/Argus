@@ -12,13 +12,13 @@ class ARGUS_API UFogOfWarComponentData : public UComponentData
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(Transient)
+	UPROPERTY(Transient) ARGUS_COMP_TRANSIENT
 	TObjectPtr<UTexture2D> m_fogOfWarTexture = nullptr;
 
-	UPROPERTY(Transient)
+	UPROPERTY(Transient) ARGUS_COMP_TRANSIENT
 	TObjectPtr<UTexture2D> m_gaussianWeightsTexture = nullptr;
 
-	UPROPERTY(Transient)
+	UPROPERTY(Transient) ARGUS_COMP_TRANSIENT
 	TObjectPtr<UMaterialInstanceDynamic> m_dynamicMaterialInstance = nullptr;
 
 	UPROPERTY(EditAnywhere)

@@ -13,7 +13,7 @@ struct TeamCommanderComponent
 {
 	ARGUS_DYNAMIC_COMPONENT_SHARED;
 
-	ARGUS_COMP_NO_DATA
+	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT
 	TArray<uint16, ArgusContainerAllocator<10u> > m_idleEntityIdsForTeam;
 
 	ARGUS_COMP_NO_DATA
@@ -25,10 +25,10 @@ struct TeamCommanderComponent
 	ARGUS_COMP_NO_DATA
 	TArray<ResourceSourceExtractionData, ArgusContainerAllocator<10u> > m_seenResourceCSourceExtractionData;
 
-	ARGUS_COMP_NO_DATA
+	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT
 	TArray<uint32, ArgusContainerAllocator<10u>> m_spawningEntityRecordIds; 
 
-	ARGUS_COMP_NO_DATA
+	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT
 	TArray<TeamCommanderPriority, ArgusContainerAllocator<11u> > m_priorities;
 
 	ARGUS_COMP_NO_DATA
