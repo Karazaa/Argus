@@ -23,7 +23,7 @@ struct ResourceComponent
 
 	FResourceSet m_currentResources;
 
-	ARGUS_STATIC_DATA(UResourceSetRecord)
+	ARGUS_COMP_STATIC_DATA(UResourceSetRecord)
 	uint32 m_resourceCapacityRecordId = 0u;
 
 	EResourceComponentOwnerType m_resourceComponentOwnerType = EResourceComponentOwnerType::TeamPool;

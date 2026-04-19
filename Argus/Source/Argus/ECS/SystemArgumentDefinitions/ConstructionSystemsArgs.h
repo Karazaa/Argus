@@ -10,9 +10,9 @@ struct ConstructionSystemsArgs
 
 	TaskComponent* m_taskComponent = nullptr;
 
-	ARGUS_GET_BUT_SKIP()
+	ARGUS_SYSARG_UNCHECKED_GET
 	TargetingComponent* m_targetingComponent = nullptr;
 
-	ARGUS_GET_BUT_SKIP()
+	ARGUS_SYSARG_UNCHECKED_GET
 	ConstructionComponent* m_constructionComponent = nullptr;
 };

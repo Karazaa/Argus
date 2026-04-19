@@ -684,7 +684,7 @@ void ComponentImplementationGenerator::FormatImGuiSpawnEntityInfoField(const std
 {
 	std::string modifiedVariableName = variableName;
 	modifiedVariableName.append(".m_argusActorRecordId");
-	FormatImGuiRecordField(modifiedVariableName, "ARGUS_STATIC_DATA(UArgusActorRecord)", prefix, outParsedVariableContents);
+	FormatImGuiRecordField(modifiedVariableName, "ARGUS_COMP_STATIC_DATA(UArgusActorRecord)", prefix, outParsedVariableContents);
 }
 
 void ComponentImplementationGenerator::FormatImGuiControlGroupField(const std::string& variableName, const std::string& extraData, const std::string& prefix, std::vector<std::string>& outParsedVariableContents)

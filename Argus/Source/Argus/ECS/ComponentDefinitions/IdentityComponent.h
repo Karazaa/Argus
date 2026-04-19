@@ -11,22 +11,22 @@ struct IdentityComponent
 {
 	ARGUS_COMPONENT_SHARED;
 
-	ARGUS_STATIC_DATA(UFactionRecord)
+	ARGUS_COMP_STATIC_DATA(UFactionRecord)
 	uint32 m_factionId = 0u;
 
-	ARGUS_NO_DATA
+	ARGUS_COMP_NO_DATA
 	ETeam m_team = ETeam::None;
 
-	ARGUS_NO_DATA
+	ARGUS_COMP_NO_DATA
 	BITMASK_ETeam m_allies = 0u;
 
-	ARGUS_NO_DATA
+	ARGUS_COMP_NO_DATA
 	BITMASK_ETeam m_enemies = 0u;
 
-	ARGUS_NO_DATA
+	ARGUS_COMP_NO_DATA
 	BITMASK_ETeam m_seenBy = 0u;
 
-	ARGUS_NO_DATA
+	ARGUS_COMP_NO_DATA
 	BITMASK_ETeam m_everSeenBy = 0u;
 
 	void AddEnemyTeam(ETeam enemyTeam)

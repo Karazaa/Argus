@@ -7,13 +7,14 @@
 
 DEFINE_LOG_CATEGORY(ArgusCodeGeneratorLog);
 
-const char* ArgusCodeGeneratorUtil::s_propertyDelimiter = "ARGUS_PROPERTY";
-const char* ArgusCodeGeneratorUtil::s_propertyIgnoreDelimiter = "ARGUS_NO_DATA";
-const char* ArgusCodeGeneratorUtil::s_propertyStaticDataDelimiter = "ARGUS_STATIC_DATA";
+const char* ArgusCodeGeneratorUtil::s_propertyDelimiter = "ARGUS_COMP_PROPERTY";
+const char* ArgusCodeGeneratorUtil::s_propertyIgnoreDelimiter = "ARGUS_COMP_NO_DATA";
+const char* ArgusCodeGeneratorUtil::s_propertyStaticDataDelimiter = "ARGUS_COMP_STATIC_DATA";
 const char* ArgusCodeGeneratorUtil::s_propertyObservableDelimiter = "ARGUS_OBSERVABLE";
 const char* ArgusCodeGeneratorUtil::s_propertyObservableDeclarationDelimiter = "ARGUS_OBSERVABLE_DECLARATION";
 const char* ArgusCodeGeneratorUtil::s_propertyObservablePropertyDeclarationDelimiter = "ARGUS_OBSERVABLE_PROPERTY_DECLARATION";
-const char* ArgusCodeGeneratorUtil::s_propertyGetButSkipDelimiter = "ARGUS_GET_BUT_SKIP";
+const char* ArgusCodeGeneratorUtil::s_propertyGetButSkipDelimiter = "ARGUS_SYSARG_UNCHECKED_GET";
+const char* ArgusCodeGeneratorUtil::s_propertyFromSingletonDelimiter = "ARGUS_SYSARG_FROM_SINGLETON";
 const char* ArgusCodeGeneratorUtil::s_uePropertyDelimiter = "UPROPERTY";
 const char* ArgusCodeGeneratorUtil::s_systemsDirectoryName = "Systems";
 const char* ArgusCodeGeneratorUtil::s_systemsDirectorySuffix = "Source/Argus/ECS/Systems";

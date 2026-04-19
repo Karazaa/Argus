@@ -9,10 +9,10 @@ struct NearbyEntitiesComponent
 {
 	ARGUS_COMPONENT_SHARED;
 
-	ARGUS_NO_DATA
+	ARGUS_COMP_NO_DATA
 	ArgusEntityKDTreeRangeOutput m_nearbyEntities;
 
-	ARGUS_NO_DATA
+	ARGUS_COMP_NO_DATA
 	ArgusEntityKDTreeRangeOutput m_nearbyFlyingEntities;
 
 	const ArgusEntityKDTreeRangeOutput& GetNearbyEntities(bool shouldGetFlying) const

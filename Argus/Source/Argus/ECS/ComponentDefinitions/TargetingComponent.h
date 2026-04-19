@@ -10,17 +10,17 @@ struct TargetingComponent
 {
 	ARGUS_COMPONENT_SHARED;
 
-	ARGUS_NO_DATA
+	ARGUS_COMP_NO_DATA
 	TOptional<FVector> m_targetLocation = TOptional<FVector>();
 
 	float m_meleeRange = 400.0f;
 	float m_rangedRange = 400.0f;
 	float m_sightRange = 1200.0f;
 
-	ARGUS_NO_DATA
+	ARGUS_COMP_NO_DATA
 	uint16 m_targetEntityId = ArgusECSConstants::k_maxEntities;
 
-	ARGUS_NO_DATA
+	ARGUS_COMP_NO_DATA
 	uint16 m_decalEntityId = ArgusECSConstants::k_maxEntities;
 
 	void SetLocationTarget(const FVector& targetLocation)

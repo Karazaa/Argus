@@ -14,16 +14,16 @@ struct SpawningComponent
 {
 	ARGUS_COMPONENT_SHARED
 
-	ARGUS_NO_DATA
+	ARGUS_COMP_NO_DATA
 	ArgusDeque<SpawnEntityInfo, ArgusContainerAllocator<10> > m_spawnQueue;
 
 	float m_spawningRadius = 100.0f;
 
 	uint8 m_maximumQueueSize = 10u;
 
-	ARGUS_NO_DATA
+	ARGUS_COMP_NO_DATA
 	TOptional<uint8> m_spawnQueueIndexToCancel;
 
-	ARGUS_NO_DATA
+	ARGUS_COMP_NO_DATA
 	TimerHandle m_spawnTimerHandle;
 };

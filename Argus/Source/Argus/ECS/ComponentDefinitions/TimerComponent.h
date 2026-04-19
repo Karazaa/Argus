@@ -12,7 +12,7 @@ struct TimerComponent
 {
 	ARGUS_COMPONENT_SHARED;
 
-	ARGUS_NO_DATA
+	ARGUS_COMP_NO_DATA
 	TArray<Timer, ArgusContainerAllocator<4u> > m_timers;
 
 	Timer* GetTimerFromHandle(const TimerHandle* timerHandle)

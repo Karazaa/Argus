@@ -12,12 +12,12 @@ struct ObserversComponent
 {
 	ARGUS_COMPONENT_SHARED;
 
-	ARGUS_NO_DATA
+	ARGUS_COMP_NO_DATA
 	AbilityComponentObservers m_AbilityComponentObservers;
 
-	ARGUS_NO_DATA
+	ARGUS_COMP_NO_DATA
 	PassengerComponentObservers m_PassengerComponentObservers;
 
-	ARGUS_NO_DATA
+	ARGUS_COMP_NO_DATA
 	TaskComponentObservers m_TaskComponentObservers;
 };

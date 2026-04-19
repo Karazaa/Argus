@@ -18,10 +18,10 @@ struct FlockingComponent
 	ARGUS_COMPONENT_SHARED;
 
 	// TIMING RELATED
-	ARGUS_NO_DATA
+	ARGUS_COMP_NO_DATA
 	float m_minDistanceFromFlockingPoint = FLT_MAX;
 
-	ARGUS_NO_DATA
+	ARGUS_COMP_NO_DATA
 	float m_timeAtMinFlockingDistance = 0.0f;
 
 	float m_maxShrinkingDurationTimeoutSeconds = 3.0f;
@@ -29,13 +29,13 @@ struct FlockingComponent
 	// RADIUS RELATED
 	float m_flockingRootRadiusIncrement = 55.0f;
 
-	ARGUS_NO_DATA
+	ARGUS_COMP_NO_DATA
 	uint16 m_numEntitiesInStableRange = 0u;
 
-	ARGUS_NO_DATA
+	ARGUS_COMP_NO_DATA
 	uint8 m_concentricFlockingTier = 1u;
 
-	ARGUS_NO_DATA
+	ARGUS_COMP_NO_DATA
 	EFlockingState m_flockingState = EFlockingState::Stable;
 
 	void ResetPackingValues()

@@ -14,6 +14,6 @@ struct FogOfWarSystemsArgs
 	TaskComponent* m_taskComponent = nullptr;
 	TransformComponent* m_transformComponent = nullptr;
 
-	ARGUS_GET_BUT_SKIP()
+	ARGUS_SYSARG_UNCHECKED_GET
 	NearbyObstaclesComponent* m_nearbyObstaclesComponent = nullptr;
 };

@@ -11,6 +11,6 @@ struct WorldReferenceComponent
 {
 	ARGUS_DYNAMIC_COMPONENT_SHARED;
 
-	ARGUS_NO_DATA
+	ARGUS_COMP_NO_DATA
 	UWorld* m_worldPointer = nullptr;
 };

@@ -24,11 +24,11 @@ struct ConstructionComponent
 
 	float m_currentWorkSeconds = 0.0f;
 
-	ARGUS_STATIC_DATA(UAbilityRecord)
+	ARGUS_COMP_STATIC_DATA(UAbilityRecord)
 	uint32 m_constructionAbilityRecordId = 0u;
 
 	EConstructionType m_constructionType = EConstructionType::Automatic;
 
-	ARGUS_NO_DATA
+	ARGUS_COMP_NO_DATA
 	TimerHandle m_automaticConstructionTimerHandle;
 };

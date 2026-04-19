@@ -12,12 +12,12 @@ struct TeamCommanderSystemsArgs
 	IdentityComponent* m_identityComponent = nullptr;
 	TaskComponent* m_taskComponent = nullptr;
 	
-	ARGUS_GET_BUT_SKIP()
+	ARGUS_SYSARG_UNCHECKED_GET
 	ResourceComponent* m_resourceComponent = nullptr;
 
-	ARGUS_GET_BUT_SKIP()
+	ARGUS_SYSARG_UNCHECKED_GET
 	TargetingComponent* m_targetingComponent = nullptr;
 
-	ARGUS_GET_BUT_SKIP()
+	ARGUS_SYSARG_UNCHECKED_GET
 	TransformComponent* m_transformComponent = nullptr;
 };

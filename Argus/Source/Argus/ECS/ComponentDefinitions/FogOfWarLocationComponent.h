@@ -9,6 +9,6 @@ struct FogOfWarLocationComponent
 {
 	ARGUS_COMPONENT_SHARED;
 
-	ARGUS_NO_DATA
+	ARGUS_COMP_NO_DATA
 	uint32 m_fogOfWarPixel = MAX_uint32;
 };

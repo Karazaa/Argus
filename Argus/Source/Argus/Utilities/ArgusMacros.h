@@ -58,19 +58,16 @@ LLM_DECLARE_TAG(ArgusTimerSystems);
 #endif
 
 // Code generation macro that allows Component Data to pass through UPROPERTY values to the associated data asset.
-#define ARGUS_PROPERTY(...)
+#define ARGUS_COMP_PROPERTY(...)
 
-// Code generation macro that prevents Component Data from generating a UPROPERTY for this field, or prevents getting/error checking around System Args.
-#define ARGUS_NO_DATA
-
-// Code generation macro that allows getting a component but skips error checking around System Args.
-#define ARGUS_GET_BUT_SKIP()
+// Code generation macro that prevents Component Data from generating a UPROPERTY for this field.
+#define ARGUS_COMP_NO_DATA
 
 // Code generation macro that allows Component Data fields to swap out a uint ID field for an object pointer to the record type.
-#define ARGUS_STATIC_DATA(x)
+#define ARGUS_COMP_STATIC_DATA(x)
+
+// Code generation macro that allows getting a component but skips error checking around System Args.
+#define ARGUS_SYSARG_UNCHECKED_GET
 
 // Code Generation Macro that allows System Arguments to not retrieve a given component from the passed in entity since it will instead be provided from the singleton entity.
-#define ARGUS_FROM_SINGLETON
-
-// Code Generation Macro that excludes certain component references from being considered in AreComponentsValidCheck.
-#define ARGUS_NOT_REQUIRED()
+#define ARGUS_SYSARG_FROM_SINGLETON

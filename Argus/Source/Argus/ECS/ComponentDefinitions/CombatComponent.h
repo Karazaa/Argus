@@ -32,9 +32,9 @@ struct CombatComponent
 
 	EAttackType m_attackType = EAttackType::Melee;
 
-	ARGUS_PROPERTY(EditAnywhere, BlueprintReadOnly, meta = (EditCondition = "m_attackType == EAttackType::Ranged", EditConditionHides));
+	ARGUS_COMP_PROPERTY(EditAnywhere, BlueprintReadOnly, meta = (EditCondition = "m_attackType == EAttackType::Ranged", EditConditionHides));
 	ERangedAttackCapability m_rangedAttackCapability = ERangedAttackCapability::GroundedAndFlying;
 
-	ARGUS_NO_DATA
+	ARGUS_COMP_NO_DATA
 	TimerHandle m_attackTimerHandle;
 };

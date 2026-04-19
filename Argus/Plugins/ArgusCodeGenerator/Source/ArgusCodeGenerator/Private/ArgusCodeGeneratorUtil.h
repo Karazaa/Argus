@@ -24,6 +24,7 @@ public:
 	static const char* s_propertyObservableDeclarationDelimiter;
 	static const char* s_propertyObservablePropertyDeclarationDelimiter;
 	static const char* s_propertyGetButSkipDelimiter;
+	static const char* s_propertyFromSingletonDelimiter;
 	static const char* s_uePropertyDelimiter;
 	static const char* s_sharedFunctionDeclarationDelimiter;
 	static const char* s_systemsDirectoryName;
