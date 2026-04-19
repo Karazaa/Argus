@@ -32,6 +32,7 @@ void ArgusDecalComponent::Serialize(FArchive& archive)
 	archive << m_lifetimeSeconds;
 	archive << m_referencingEntityCount;
 	archive << m_connectedEntityId;
+	m_lifetimeTimer.Serialize(archive);
 	archive << m_decalType;
 }
 

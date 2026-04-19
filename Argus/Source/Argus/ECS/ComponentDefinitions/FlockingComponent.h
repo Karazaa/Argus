@@ -15,7 +15,7 @@ enum class EFlockingState : uint8
 
 struct FlockingComponent
 {
-	ARGUS_COMPONENT_SHARED;
+	ARGUS_COMPONENT_SHARED
 
 	// TIMING RELATED
 	ARGUS_COMP_NO_DATA

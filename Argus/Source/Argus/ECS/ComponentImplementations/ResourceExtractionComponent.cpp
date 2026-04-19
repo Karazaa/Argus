@@ -28,8 +28,10 @@ void ResourceExtractionComponent::Reset()
 
 void ResourceExtractionComponent::Serialize(FArchive& archive)
 {
+	archive << m_resourcesToExtractRecordId;
 	archive << m_extractionLengthSeconds;
 	archive << m_lastExtractionSourceEntityId;
+	m_resourceExtractionTimer.Serialize(archive);
 }
 
 void ResourceExtractionComponent::DrawComponentDebug() const

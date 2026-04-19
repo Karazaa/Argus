@@ -16,7 +16,7 @@ enum class EFlightCapability : uint8
 
 struct TransformComponent
 {
-	ARGUS_COMPONENT_SHARED;
+	ARGUS_COMPONENT_SHARED
 
 	ARGUS_COMP_NO_DATA
 	FVector m_location = FVector::ZeroVector;

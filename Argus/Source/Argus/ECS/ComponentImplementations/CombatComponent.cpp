@@ -33,6 +33,7 @@ void CombatComponent::Serialize(FArchive& archive)
 	archive << m_intervalDurationSeconds;
 	archive << m_attackType;
 	archive << m_rangedAttackCapability;
+	m_attackTimerHandle.Serialize(archive);
 }
 
 void CombatComponent::DrawComponentDebug() const

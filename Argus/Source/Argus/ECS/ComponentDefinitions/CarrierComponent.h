@@ -8,7 +8,7 @@
 
 struct CarrierComponent
 {
-	ARGUS_COMPONENT_SHARED;
+	ARGUS_COMPONENT_SHARED
 
 	ARGUS_COMP_NO_DATA
 	TArray<uint16, ArgusContainerAllocator<4u> > m_passengerEntityIds;

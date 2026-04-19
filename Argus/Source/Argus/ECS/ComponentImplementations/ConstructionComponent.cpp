@@ -31,7 +31,9 @@ void ConstructionComponent::Serialize(FArchive& archive)
 {
 	archive << m_requiredWorkSeconds;
 	archive << m_currentWorkSeconds;
+	archive << m_constructionAbilityRecordId;
 	archive << m_constructionType;
+	m_automaticConstructionTimerHandle.Serialize(archive);
 }
 
 void ConstructionComponent::DrawComponentDebug() const

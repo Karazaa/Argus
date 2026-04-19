@@ -9,7 +9,7 @@ class UFactionRecord;
 
 struct IdentityComponent
 {
-	ARGUS_COMPONENT_SHARED;
+	ARGUS_COMPONENT_SHARED
 
 	ARGUS_COMP_STATIC_DATA(UFactionRecord)
 	uint32 m_factionId = 0u;

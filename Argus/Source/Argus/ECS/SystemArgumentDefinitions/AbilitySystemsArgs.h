@@ -13,6 +13,6 @@ struct AbilitySystemsArgs
 	TaskComponent* m_taskComponent = nullptr;
 	TargetingComponent* m_targetingComponent = nullptr;
 
-	ARGUS_COMP_NO_DATA
+	ARGUS_SYSARG_FROM_SINGLETON
 	ReticleComponent* m_reticleComponent = nullptr;
 };

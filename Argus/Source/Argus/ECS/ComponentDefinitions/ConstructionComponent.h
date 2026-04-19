@@ -18,7 +18,7 @@ enum class EConstructionType : uint8
 
 struct ConstructionComponent
 {
-	ARGUS_COMPONENT_SHARED;
+	ARGUS_COMPONENT_SHARED
 
 	float m_requiredWorkSeconds = 0.0f;
 

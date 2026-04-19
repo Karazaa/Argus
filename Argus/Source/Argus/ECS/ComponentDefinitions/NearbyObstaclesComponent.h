@@ -8,8 +8,8 @@
 
 struct NearbyObstaclesComponent
 {
-	ARGUS_COMPONENT_SHARED;
+	ARGUS_COMPONENT_SHARED
 
-	ARGUS_COMP_NO_DATA
+	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT
 	ObstaclePointKDTreeRangeOutput m_obstacleIndicies;
 };

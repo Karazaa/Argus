@@ -69,15 +69,14 @@ bool ArgusSystemArgsImplementationCodeGenerator::ParseSystemArgumentImplementati
 			{
 				for (int j = 1; j < parsedSystemArgs.m_systemArgsVariableData[i].size(); ++j)
 				{
+					if (parsedSystemArgs.m_systemArgsVariableData[i][j].m_propertyMacro.find(ArgusCodeGeneratorUtil::s_propertyFromSingletonDelimiter) != std::string::npos)
+					{
+						continue;
+					}
 					std::string line = parsedSystemArgs.m_systemArgsVariableData[i][j].m_varName;
 					std::string typeName = parsedSystemArgs.m_systemArgsVariableData[i][j].m_typeName;
 					TrimTypeName(typeName);
 
-					if (parsedSystemArgs.m_systemArgsVariableData[i][j].m_propertyMacro.find(ArgusCodeGeneratorUtil::s_propertyFromSingletonDelimiter) != std::string::npos)
-					{
-						outParsedFileContents[i].m_lines.push_back(std::vformat("\t{} = ArgusEntity::GetSingletonEntity().GetComponent<{}>();", std::make_format_args(parsedSystemArgs.m_systemArgsVariableData[i][j].m_varName, typeName)));
-						continue;
-					}
 					outParsedFileContents[i].m_lines.push_back(std::vformat("\t{} = entity.GetComponent<{}>();", std::make_format_args(parsedSystemArgs.m_systemArgsVariableData[i][j].m_varName, typeName)));
 				}
 			}
@@ -108,7 +107,8 @@ bool ArgusSystemArgsImplementationCodeGenerator::ParseSystemArgumentImplementati
 				std::string condition = std::vformat("!{}", std::make_format_args(parsedSystemArgs.m_systemArgsVariableData[i][0].m_varName));
 				for (int j = 1; j < parsedSystemArgs.m_systemArgsVariableData[i].size(); ++j)
 				{
-					if (parsedSystemArgs.m_systemArgsVariableData[i][j].m_propertyMacro.find(ArgusCodeGeneratorUtil::s_propertyGetButSkipDelimiter) != std::string::npos)
+					if (parsedSystemArgs.m_systemArgsVariableData[i][j].m_propertyMacro.find(ArgusCodeGeneratorUtil::s_propertyGetButSkipDelimiter) != std::string::npos ||
+						parsedSystemArgs.m_systemArgsVariableData[i][j].m_propertyMacro.find(ArgusCodeGeneratorUtil::s_propertyFromSingletonDelimiter) != std::string::npos)
 					{
 						continue;
 					}

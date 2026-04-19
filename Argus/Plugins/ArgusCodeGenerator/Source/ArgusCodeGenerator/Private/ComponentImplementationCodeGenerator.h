@@ -26,7 +26,7 @@ private:
 		Float,
 		Vector,
 		Vector2,
-		Timer,
+		TimerHandle,
 		ResourceSet,
 		EntityKDTree,
 		ObstacleKDTree,

@@ -215,6 +215,11 @@ bool TimerHandle::WasTimerSet(ArgusEntity entityWithTimer) const
 	return timer->m_timerState != TimerState::NotSet;
 }
 
+void TimerHandle::Serialize(FArchive& archive)
+{
+	archive << m_timerIndex;
+}
+
 TimerComponent* TimerHandle::GetTimerComponentForEntity(ArgusEntity entityWithTimer, const WIDECHAR* functionName) const
 {
 	if (!entityWithTimer)

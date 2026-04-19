@@ -10,7 +10,7 @@
 
 struct TimerComponent
 {
-	ARGUS_COMPONENT_SHARED;
+	ARGUS_COMPONENT_SHARED
 
 	ARGUS_COMP_NO_DATA
 	TArray<Timer, ArgusContainerAllocator<4u> > m_timers;

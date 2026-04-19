@@ -240,7 +240,7 @@ void ComponentImplementationGenerator::GeneratePerVariableResetText(const std::v
 		const TypeInfo typeInfo = TypeInfo(parsedVariableData[i].m_typeName, parsedVariableData[i].m_propertyMacro);
 
 		if (typeInfo.m_containerType == ContainerType::Array || typeInfo.m_containerType == ContainerType::BitArray || typeInfo.m_containerType == ContainerType::Deque ||
-			typeInfo.m_underlyingType == UnderlyingType::ResourceSet || typeInfo.m_underlyingType == UnderlyingType::Timer || typeInfo.m_underlyingType == UnderlyingType::Observers)
+			typeInfo.m_underlyingType == UnderlyingType::ResourceSet || typeInfo.m_underlyingType == UnderlyingType::TimerHandle || typeInfo.m_underlyingType == UnderlyingType::Observers)
 		{
 			outParsedVariableContents.push_back(std::vformat("\t{}.Reset();", std::make_format_args(parsedVariableData[i].m_varName)));
 			continue;
@@ -270,6 +270,11 @@ void ComponentImplementationGenerator::GeneratePerVariableSerializeText(const st
 {
 	for (int i = 0; i < parsedVariableData.size(); ++i)
 	{
+		if (parsedVariableData[i].m_propertyMacro.find(ArgusCodeGeneratorUtil::s_propertyTransientDelimiter) != std::string::npos)
+		{
+			continue;
+		}
+
 		const TypeInfo typeInfo = TypeInfo(parsedVariableData[i].m_typeName, parsedVariableData[i].m_propertyMacro);
 
 		if (typeInfo.m_containerType == NoContainer)
@@ -283,7 +288,11 @@ void ComponentImplementationGenerator::GeneratePerVariableSerializeText(const st
 				case UnderlyingType::Vector2:
 				case UnderlyingType::Enum:
 				case UnderlyingType::Bitmask:
+				case UnderlyingType::StaticData:
 					outParsedVariableContents.push_back(std::vformat("\tarchive << {};", std::make_format_args(parsedVariableData[i].m_varName)));
+					break;
+				case UnderlyingType::TimerHandle:
+					outParsedVariableContents.push_back(std::vformat("\t{}.Serialize(archive);", std::make_format_args(parsedVariableData[i].m_varName)));
 					break;
 				default:
 					break;
@@ -396,7 +405,7 @@ void ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 					extraData = typeInfo.m_cleanTypeName;
 					atomicFieldFormattingFunction = FormatImGuiEnumField;
 					break;
-				case UnderlyingType::Timer:
+				case UnderlyingType::TimerHandle:
 					atomicFieldFormattingFunction = FormatImGuiTimerField;
 					break;
 				case UnderlyingType::ResourceSet:
@@ -824,7 +833,7 @@ ComponentImplementationGenerator::TypeInfo::TypeInfo(const std::string& typeName
 	}
 	else if (typeName.find("TimerHandle") != std::string::npos)
 	{
-		m_underlyingType = UnderlyingType::Timer;
+		m_underlyingType = UnderlyingType::TimerHandle;
 	}
 	else if (typeName.find("FResourceSet") != std::string::npos)
 	{

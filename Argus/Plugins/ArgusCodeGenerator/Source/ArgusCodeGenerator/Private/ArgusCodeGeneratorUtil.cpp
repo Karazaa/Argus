@@ -15,6 +15,7 @@ const char* ArgusCodeGeneratorUtil::s_propertyObservableDeclarationDelimiter = "
 const char* ArgusCodeGeneratorUtil::s_propertyObservablePropertyDeclarationDelimiter = "ARGUS_OBSERVABLE_PROPERTY_DECLARATION";
 const char* ArgusCodeGeneratorUtil::s_propertyGetButSkipDelimiter = "ARGUS_SYSARG_UNCHECKED_GET";
 const char* ArgusCodeGeneratorUtil::s_propertyFromSingletonDelimiter = "ARGUS_SYSARG_FROM_SINGLETON";
+const char* ArgusCodeGeneratorUtil::s_propertyTransientDelimiter = "ARGUS_COMP_TRANSIENT";
 const char* ArgusCodeGeneratorUtil::s_uePropertyDelimiter = "UPROPERTY";
 const char* ArgusCodeGeneratorUtil::s_systemsDirectoryName = "Systems";
 const char* ArgusCodeGeneratorUtil::s_systemsDirectorySuffix = "Source/Argus/ECS/Systems";
@@ -629,12 +630,14 @@ bool ArgusCodeGeneratorUtil::ParsePropertyMacro(std::string lineText, std::vecto
 	const size_t propertyGetButSkipDeclarationDelimiter = lineText.find(s_propertyGetButSkipDelimiter);
 	const size_t propertyStaticDataDelimiterIndex = lineText.find(s_propertyStaticDataDelimiter);
 	const size_t propertyObservableDelimiter = lineText.find(s_propertyObservableDelimiter);
+	const size_t propertyFromSingletonDelimiter = lineText.find(s_propertyFromSingletonDelimiter);
 	const size_t uePropertyDelimiterIndex = lineText.find(s_uePropertyDelimiter);
 	if (propertyDelimiterIndex == std::string::npos && 
 		propertyIgnoreDelimiterIndex == std::string::npos &&
 		propertyGetButSkipDeclarationDelimiter == std::string::npos &&
 		propertyStaticDataDelimiterIndex == std::string::npos &&
 		propertyObservableDelimiter == std::string::npos &&
+		propertyFromSingletonDelimiter == std::string::npos &&
 		uePropertyDelimiterIndex == std::string::npos)
 	{
 		return false;

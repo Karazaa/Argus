@@ -19,18 +19,18 @@ enum class EAvoidancePriority : uint8
 
 struct AvoidanceGroupingComponent
 {
-	ARGUS_COMPONENT_SHARED;
+	ARGUS_COMPONENT_SHARED
 
-	ARGUS_COMP_NO_DATA
+	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT
 	FVector m_groupAverageLocation = FVector::ZeroVector;
 
-	ARGUS_COMP_NO_DATA
+	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT
 	TArray<uint16, ArgusContainerAllocator<10u> > m_entityIdsInGroup;
 
-	ARGUS_COMP_NO_DATA
+	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT
 	uint16 m_groupId = ArgusECSConstants::k_maxEntities;
 
-	ARGUS_COMP_NO_DATA
+	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT
 	uint16 m_numberOfIdleEntities = 0u;
 
 	EAvoidancePriority m_avoidancePriority = EAvoidancePriority::Lowest;

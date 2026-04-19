@@ -7,7 +7,7 @@
 
 struct VelocityComponent
 {
-	ARGUS_COMPONENT_SHARED;
+	ARGUS_COMPONENT_SHARED
 
 	ARGUS_COMP_NO_DATA
 	FVector2D m_currentVelocity = FVector2D::ZeroVector;

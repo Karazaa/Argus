@@ -30,6 +30,7 @@ void SpawningComponent::Serialize(FArchive& archive)
 {
 	archive << m_spawningRadius;
 	archive << m_maximumQueueSize;
+	m_spawnTimerHandle.Serialize(archive);
 }
 
 void SpawningComponent::DrawComponentDebug() const

@@ -24,7 +24,7 @@ enum class ERangedAttackCapability : uint8
 
 struct CombatComponent
 {
-	ARGUS_COMPONENT_SHARED;
+	ARGUS_COMPONENT_SHARED
 
 	uint32 m_baseDamagePerIntervalOrPerSecond = 100u;
 

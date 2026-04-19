@@ -15,7 +15,7 @@ enum class EDecalType : uint8
 
 struct ArgusDecalComponent
 {
-	ARGUS_COMPONENT_SHARED;
+	ARGUS_COMPONENT_SHARED
 
 	float m_lifetimeSeconds = 1.0f;
 

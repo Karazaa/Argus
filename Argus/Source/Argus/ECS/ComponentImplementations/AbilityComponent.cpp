@@ -35,6 +35,10 @@ void AbilityComponent::Reset()
 
 void AbilityComponent::Serialize(FArchive& archive)
 {
+	archive << m_ability0Id;
+	archive << m_ability1Id;
+	archive << m_ability2Id;
+	archive << m_ability3Id;
 	archive << m_ability0OverrideId;
 	archive << m_ability1OverrideId;
 	archive << m_ability2OverrideId;

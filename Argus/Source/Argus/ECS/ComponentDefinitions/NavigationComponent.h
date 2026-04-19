@@ -8,7 +8,7 @@
 
 struct NavigationComponent
 {
-	ARGUS_COMPONENT_SHARED;
+	ARGUS_COMPONENT_SHARED
 
 	ARGUS_COMP_NO_DATA
 	TArray<FVector, ArgusContainerAllocator<15u> > m_navigationPoints;

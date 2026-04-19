@@ -49,6 +49,8 @@ public:
 
 	void Reset() { m_timerIndex = UINT8_MAX; }
 
+	void Serialize(FArchive& archive);
+
 private:
 	TimerComponent* GetTimerComponentForEntity(ArgusEntity entityWithTimer, const WIDECHAR* functionName) const;
 	Timer* GetTimerForEntity(ArgusEntity entityWithTimer, const WIDECHAR* functionName) const;

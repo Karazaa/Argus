@@ -21,7 +21,7 @@ struct SpawningComponent
 
 	uint8 m_maximumQueueSize = 10u;
 
-	ARGUS_COMP_NO_DATA
+	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT
 	TOptional<uint8> m_spawnQueueIndexToCancel;
 
 	ARGUS_COMP_NO_DATA

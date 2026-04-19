@@ -30,6 +30,7 @@ void IdentityComponent::Reset()
 
 void IdentityComponent::Serialize(FArchive& archive)
 {
+	archive << m_factionId;
 	archive << m_team;
 	archive << m_allies;
 	archive << m_enemies;
