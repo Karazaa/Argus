@@ -19,15 +19,15 @@ struct ArgusDecalComponent
 
 	float m_lifetimeSeconds = 1.0f;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	uint16 m_referencingEntityCount = 0u;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	uint16 m_connectedEntityId = ArgusECSConstants::k_maxEntities;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	TimerHandle m_lifetimeTimer;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	EDecalType m_decalType = EDecalType::MoveToLocation;
 };

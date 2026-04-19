@@ -10,7 +10,7 @@ struct AssetLoadingComponent
 {
 	ARGUS_DYNAMIC_COMPONENT_SHARED;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	FStreamableManager m_streamableManager;
 
 	AssetLoadingComponent() {}

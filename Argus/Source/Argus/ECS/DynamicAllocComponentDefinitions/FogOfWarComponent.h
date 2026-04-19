@@ -26,25 +26,25 @@ struct FogOfWarComponent
 	ARGUS_PROPERTY(Transient)
 	TObjectPtr<UMaterialInstanceDynamic> m_dynamicMaterialInstance = nullptr;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	FUpdateTextureRegion2D m_textureRegion;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	TextureRegionsUpdateData m_textureRegionsUpdateData;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	TArray<uint8, ArgusContainerAllocator<0u> > m_textureData;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	TArray<uint8, ArgusContainerAllocator<0u> > m_smoothedTextureData;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	TArray<float, ArgusContainerAllocator<0u> > m_intermediarySmoothingData;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	TArray<float, ArgusContainerAllocator<0u> > m_gaussianFilter;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	TArray<UE::Tasks::FTask, ArgusContainerAllocator<0u> > m_asyncTasks;
 
 	uint8 m_gaussianDimension = 5u;

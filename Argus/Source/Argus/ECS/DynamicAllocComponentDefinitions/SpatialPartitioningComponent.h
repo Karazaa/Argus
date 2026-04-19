@@ -11,16 +11,16 @@ struct SpatialPartitioningComponent
 {
 	ARGUS_DYNAMIC_COMPONENT_SHARED;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	ArgusEntityKDTree m_argusEntityKDTree;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	ArgusEntityKDTree m_flyingArgusEntityKDTree;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	ObstaclePointKDTree m_obstaclePointKDTree;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	ObstaclesContainer m_obstacles;
 
 	float m_validSpaceExtent = 3000.0f;

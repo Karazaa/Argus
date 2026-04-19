@@ -9,19 +9,19 @@ struct ReticleComponent
 {
 	ARGUS_DYNAMIC_COMPONENT_SHARED;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	FVector m_reticleLocation = FVector::ZeroVector;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	uint32 m_abilityRecordId = 0u;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	float m_radius = 100.0f;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	bool m_isBlocked = false;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	bool m_wasAbilityCast = false;
 
 	void DisableReticle() 

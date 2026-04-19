@@ -16,9 +16,9 @@ struct ResourceExtractionComponent
 
 	float m_extractionLengthSeconds = 1.0f;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	uint16 m_lastExtractionSourceEntityId = ArgusECSConstants::k_maxEntities;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	TimerHandle m_resourceExtractionTimer;
 };

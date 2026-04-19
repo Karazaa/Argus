@@ -35,6 +35,6 @@ struct CombatComponent
 	ARGUS_PROPERTY(EditAnywhere, BlueprintReadOnly, meta = (EditCondition = "m_attackType == EAttackType::Ranged", EditConditionHides));
 	ERangedAttackCapability m_rangedAttackCapability = ERangedAttackCapability::GroundedAndFlying;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	TimerHandle m_attackTimerHandle;
 };

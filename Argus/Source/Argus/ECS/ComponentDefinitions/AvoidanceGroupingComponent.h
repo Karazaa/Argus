@@ -21,16 +21,16 @@ struct AvoidanceGroupingComponent
 {
 	ARGUS_COMPONENT_SHARED;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	FVector m_groupAverageLocation = FVector::ZeroVector;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	TArray<uint16, ArgusContainerAllocator<10u> > m_entityIdsInGroup;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	uint16 m_groupId = ArgusECSConstants::k_maxEntities;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	uint16 m_numberOfIdleEntities = 0u;
 
 	EAvoidancePriority m_avoidancePriority = EAvoidancePriority::Lowest;

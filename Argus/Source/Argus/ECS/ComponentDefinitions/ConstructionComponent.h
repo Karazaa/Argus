@@ -29,6 +29,6 @@ struct ConstructionComponent
 
 	EConstructionType m_constructionType = EConstructionType::Automatic;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	TimerHandle m_automaticConstructionTimerHandle;
 };

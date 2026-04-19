@@ -20,32 +20,32 @@ struct InputInterfaceComponent
 {
 	ARGUS_DYNAMIC_COMPONENT_SHARED;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	TArray<uint16, ArgusContainerAllocator<100u> > m_selectedArgusEntityIds;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	TArray<uint16, ArgusContainerAllocator<100u> > m_activeAbilityGroupArgusEntityIds;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	TArray<ControlGroup, ArgusContainerAllocator<12u> > m_controlGroups;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	ESelectedActorsDisplayState m_selectedActorsDisplayState = ESelectedActorsDisplayState::NotChanged;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	int8 m_indexOfActiveAbilityGroup = 0;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	ETeam m_activePlayerTeam = ETeam::TeamA;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	TimerHandle m_doubleClickTimer;
 
 	float m_doubleClickThresholdSeconds = 1.0f;
 
 	float m_doubleClickQueryRange = 1000.0f;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	uint16 m_lastSelectedEntityId = ArgusECSConstants::k_maxEntities;
 
 	uint8 m_numControlGroups = 12u;

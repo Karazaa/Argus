@@ -13,30 +13,30 @@ struct TeamCommanderComponent
 {
 	ARGUS_DYNAMIC_COMPONENT_SHARED;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	TArray<uint16, ArgusContainerAllocator<10u> > m_idleEntityIdsForTeam;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	TArray<ResourceSourceExtractionData, ArgusContainerAllocator<10u> > m_seenResourceASourceExtractionData;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	TArray<ResourceSourceExtractionData, ArgusContainerAllocator<10u> > m_seenResourceBSourceExtractionData;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	TArray<ResourceSourceExtractionData, ArgusContainerAllocator<10u> > m_seenResourceCSourceExtractionData;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	TArray<uint32, ArgusContainerAllocator<10u>> m_spawningEntityRecordIds; 
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	TArray<TeamCommanderPriority, ArgusContainerAllocator<11u> > m_priorities;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	TBitArray<ArgusContainerAllocator<0u> > m_revealedAreas;
 
 	float m_revealedAreaDimensionLength = 800.0f;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	ETeam m_teamToCommand = ETeam::None;
 
 	void ResetUpdateArrays()

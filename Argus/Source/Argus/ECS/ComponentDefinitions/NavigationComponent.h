@@ -10,13 +10,13 @@ struct NavigationComponent
 {
 	ARGUS_COMPONENT_SHARED;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	TArray<FVector, ArgusContainerAllocator<15u> > m_navigationPoints;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	ArgusDeque<NavigationWaypoint, ArgusContainerAllocator<5u> > m_queuedWaypoints;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	int32 m_lastPointIndex = 0;
 
 	void ResetPath()

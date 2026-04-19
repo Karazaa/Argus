@@ -61,7 +61,7 @@ LLM_DECLARE_TAG(ArgusTimerSystems);
 #define ARGUS_PROPERTY(...)
 
 // Code generation macro that prevents Component Data from generating a UPROPERTY for this field, or prevents getting/error checking around System Args.
-#define ARGUS_IGNORE()
+#define ARGUS_NO_DATA
 
 // Code generation macro that allows getting a component but skips error checking around System Args.
 #define ARGUS_GET_BUT_SKIP()
@@ -70,7 +70,7 @@ LLM_DECLARE_TAG(ArgusTimerSystems);
 #define ARGUS_STATIC_DATA(x)
 
 // Code Generation Macro that allows System Arguments to not retrieve a given component from the passed in entity since it will instead be provided from the singleton entity.
-#define ARGUS_FROM_SINGLETON()
+#define ARGUS_FROM_SINGLETON
 
 // Code Generation Macro that excludes certain component references from being considered in AreComponentsValidCheck.
 #define ARGUS_NOT_REQUIRED()

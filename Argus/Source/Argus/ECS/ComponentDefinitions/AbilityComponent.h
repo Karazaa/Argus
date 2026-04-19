@@ -33,19 +33,19 @@ struct AbilityComponent
 	ARGUS_STATIC_DATA(UAbilityRecord)
 	uint32 m_ability3Id = 0u;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	uint32 m_ability0OverrideId = 0u;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	uint32 m_ability1OverrideId = 0u;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	uint32 m_ability2OverrideId = 0u;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	uint32 m_ability3OverrideId = 0u;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	uint32 m_abilityToRefundId = 0u;
 
 	ARGUS_OBSERVABLE_DECLARATION(uint8, m_abilityOverrideBitmask, 0u)

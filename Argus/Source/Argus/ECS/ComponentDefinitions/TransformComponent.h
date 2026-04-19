@@ -18,17 +18,17 @@ struct TransformComponent
 {
 	ARGUS_COMPONENT_SHARED;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	FVector m_location = FVector::ZeroVector;
 
 	ArgusMath::ExponentialDecaySmoother<float> m_smoothedYaw;
 
 	ArgusMath::ExponentialDecaySmoother<float> m_smoothedTransitionAltitude;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	float m_targetYaw = 0.0f;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	float m_targetTransitionAltitude = 0.0f;
 
 	float m_radius = 45.0f;

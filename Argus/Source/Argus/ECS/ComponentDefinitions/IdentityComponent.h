@@ -14,19 +14,19 @@ struct IdentityComponent
 	ARGUS_STATIC_DATA(UFactionRecord)
 	uint32 m_factionId = 0u;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	ETeam m_team = ETeam::None;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	BITMASK_ETeam m_allies = 0u;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	BITMASK_ETeam m_enemies = 0u;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	BITMASK_ETeam m_seenBy = 0u;
 
-	ARGUS_IGNORE()
+	ARGUS_NO_DATA
 	BITMASK_ETeam m_everSeenBy = 0u;
 
 	void AddEnemyTeam(ETeam enemyTeam)
