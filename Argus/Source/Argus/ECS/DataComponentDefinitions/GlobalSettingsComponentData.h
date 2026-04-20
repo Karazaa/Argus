@@ -12,19 +12,19 @@ class ARGUS_API UGlobalSettingsComponentData : public UComponentData
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditDefaultsOnly, meta = (Category = "Avoidance")) ARGUS_COMP_TRANSIENT
+	UPROPERTY(EditDefaultsOnly, meta = (Category = "Avoidance"))
 	float m_avoidanceEntityDetectionPredictionTime = 0.75f;
 
-	UPROPERTY(EditDefaultsOnly, meta = (Category = "Avoidance")) ARGUS_COMP_TRANSIENT
+	UPROPERTY(EditDefaultsOnly, meta = (Category = "Avoidance"))
 	float m_avoidanceObstacleDetectionPredictionTime = 0.75f;
 
-	UPROPERTY(EditDefaultsOnly, meta = (Category = "Flocking")) ARGUS_COMP_TRANSIENT
+	UPROPERTY(EditDefaultsOnly, meta = (Category = "Flocking"))
 	float m_flockingVelocityInfluence = 0.3f;
 
-	UPROPERTY(EditDefaultsOnly, meta = (Category = "Obstacles")) ARGUS_COMP_TRANSIENT
+	UPROPERTY(EditDefaultsOnly, meta = (Category = "Obstacles"))
 	float m_obstacleShrinkFixupDistance = 25.0f;
 
-	UPROPERTY(EditDefaultsOnly, meta = (Category = "Obstacles")) ARGUS_COMP_TRANSIENT
+	UPROPERTY(EditDefaultsOnly, meta = (Category = "Obstacles"))
 	float m_maxObstaclePointDistance = 150.0f;
 
 
