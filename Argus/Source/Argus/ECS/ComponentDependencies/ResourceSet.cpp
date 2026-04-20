@@ -1,6 +1,7 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ResourceSet.h"
+#include "Serialization/Archive.h"
 
 FResourceSet FResourceSet::operator-() const
 {
@@ -117,4 +118,12 @@ bool FResourceSet::IsEmpty() const
 		}
 	}
 	return true;
+}
+
+void FResourceSet::Serialize(FArchive& archive)
+{
+	for (uint8 i = 0u; i < static_cast<uint8>(EResourceType::Count); ++i)
+	{
+		archive << m_resourceQuantities[i];
+	}
 }

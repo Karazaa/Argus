@@ -6,6 +6,8 @@
 #include "CoreMinimal.h"
 #include "ResourceSet.generated.h"
 
+class FArchive;
+
 UENUM(BlueprintType)
 enum class EResourceType : uint8
 {
@@ -34,10 +36,11 @@ struct FResourceSet
 	FResourceSet MaskResourceSet(const FResourceSet& maskSet) const;
 	FResourceSet CalculateResourceChangeAffordable(const FResourceSet& otherResourceSetRepresentingChange, const FResourceSet* maximumResources = nullptr) const;
 	bool IsEmpty() const;
+	void Serialize(FArchive& archive);
 
 	friend bool operator>(const FResourceSet& left, const FResourceSet& right)
 	{
-		for (int32 i = 0; i < static_cast<int32>(EResourceType::Count); ++i)
+		for (uint8 i = 0u; i < static_cast<uint8>(EResourceType::Count); ++i)
 		{
 			if (left.m_resourceQuantities[i] > right.m_resourceQuantities[i])
 			{
@@ -50,7 +53,7 @@ struct FResourceSet
 
 	friend bool operator>=(const FResourceSet& left, const FResourceSet& right)
 	{
-		for (int32 i = 0; i < static_cast<int32>(EResourceType::Count); ++i)
+		for (uint8 i = 0u; i < static_cast<uint8>(EResourceType::Count); ++i)
 		{
 			if (left.m_resourceQuantities[i] >= right.m_resourceQuantities[i])
 			{
@@ -63,7 +66,7 @@ struct FResourceSet
 
 	friend bool operator<(const FResourceSet& left, const FResourceSet& right)
 	{
-		for (int32 i = 0; i < static_cast<int32>(EResourceType::Count); ++i)
+		for (uint8 i = 0u; i < static_cast<uint8>(EResourceType::Count); ++i)
 		{
 			if (left.m_resourceQuantities[i] >= right.m_resourceQuantities[i])
 			{
@@ -76,7 +79,7 @@ struct FResourceSet
 
 	friend bool operator<=(const FResourceSet& left, const FResourceSet& right)
 	{
-		for (int32 i = 0; i < static_cast<int32>(EResourceType::Count); ++i)
+		for (uint8 i = 0u; i < static_cast<uint8>(EResourceType::Count); ++i)
 		{
 			if (left.m_resourceQuantities[i] > right.m_resourceQuantities[i])
 			{

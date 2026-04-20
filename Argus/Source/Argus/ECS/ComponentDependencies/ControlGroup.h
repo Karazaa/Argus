@@ -4,6 +4,8 @@
 
 #include "ArgusContainerAllocator.h"
 
+class FArchive;
+
 struct ControlGroup
 {
 	TArray<uint16, ArgusContainerAllocator<100u> > m_entityIds;
@@ -16,3 +18,4 @@ struct ControlGroup
 	uint16& operator[](int32 index) { return m_entityIds[index]; }
 	const uint16& operator[](int32 index) const { return m_entityIds[index]; }
 };
+FArchive& operator<<(FArchive& archive, ControlGroup& controlGroup);
