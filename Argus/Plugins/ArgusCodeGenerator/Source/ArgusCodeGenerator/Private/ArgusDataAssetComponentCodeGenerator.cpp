@@ -141,6 +141,12 @@ bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetHeaderFileTemplateWithR
 						else
 						{
 							std::string overridePropertyText = std::regex_replace(parsedComponentData.m_componentVariableData[i][j].m_propertyMacro, std::regex(ArgusCodeGeneratorUtil::s_propertyDelimiter), s_upropertyPrefix);
+							const size_t transientIndex = overridePropertyText.find(ArgusCodeGeneratorUtil::s_propertyTransientDelimiter);
+							if (transientIndex != std::string::npos)
+							{
+								overridePropertyText = overridePropertyText.substr(0, transientIndex);
+							}
+							
 							outParsedFileContents[i].m_lines.push_back(overridePropertyText);
 						}
 					}

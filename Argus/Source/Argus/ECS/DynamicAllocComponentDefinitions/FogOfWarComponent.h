@@ -15,15 +15,15 @@ struct FogOfWarComponent
 {
 	ARGUS_DYNAMIC_COMPONENT_SHARED;
 
-	ARGUS_COMP_PROPERTY(Transient)
+	ARGUS_COMP_PROPERTY(Transient) ARGUS_COMP_TRANSIENT
 	TObjectPtr<UTexture2D> m_fogOfWarTexture = nullptr;
 
 	// The purpose for this texture is to function as a simple way to pass floats calculated on the CPU to the GPU so that
 	// our FogOfWar material can do a gaussian blur of arbitrary dimension.
-	ARGUS_COMP_PROPERTY(Transient)
+	ARGUS_COMP_PROPERTY(Transient) ARGUS_COMP_TRANSIENT
 	TObjectPtr<UTexture2D> m_gaussianWeightsTexture = nullptr;
 
-	ARGUS_COMP_PROPERTY(Transient)
+	ARGUS_COMP_PROPERTY(Transient) ARGUS_COMP_TRANSIENT
 	TObjectPtr<UMaterialInstanceDynamic> m_dynamicMaterialInstance = nullptr;
 
 	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT

@@ -12,16 +12,16 @@ class ARGUS_API UEffortCoefficientSettingsComponentData : public UComponentData
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, meta = (Category = "Same Avoidance Group"))
+	UPROPERTY(EditAnywhere, meta = (Category = "Same Avoidance Group")) 
 	float m_sameAvoidanceGroupBase = 0.5f;
 
-	UPROPERTY(EditAnywhere, meta = (Category = "Same Avoidance Group"))
+	UPROPERTY(EditAnywhere, meta = (Category = "Same Avoidance Group")) 
 	float m_sameAvoidanceGroupBothObstacle = 0.3f;
 
-	UPROPERTY(EditAnywhere, meta = (Category = "Same Avoidance Group"))
+	UPROPERTY(EditAnywhere, meta = (Category = "Same Avoidance Group")) 
 	float m_sameAvoidanceGroupHasObstacle = 0.0f;
 
-	UPROPERTY(EditAnywhere, meta = (Category = "Same Avoidance Group"))
+	UPROPERTY(EditAnywhere, meta = (Category = "Same Avoidance Group")) 
 	float m_sameAvoidanceGroupOtherHasObstacle = 0.75f;
 
 
