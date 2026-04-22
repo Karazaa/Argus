@@ -291,6 +291,7 @@ void ComponentImplementationGenerator::GeneratePerVariableSerializeText(const st
 				case UnderlyingType::StaticData:
 					outParsedVariableContents.push_back(std::vformat("\tarchive << {};", std::make_format_args(parsedVariableData[i].m_varName)));
 					break;
+				case UnderlyingType::ResourceSet:
 				case UnderlyingType::TimerHandle:
 					outParsedVariableContents.push_back(std::vformat("\t{}.Serialize(archive);", std::make_format_args(parsedVariableData[i].m_varName)));
 					break;
@@ -308,8 +309,7 @@ void ComponentImplementationGenerator::GeneratePerVariableSerializeText(const st
 				outParsedVariableContents.push_back(std::vformat("\t{}.Serialize(archive);", std::make_format_args(parsedVariableData[i].m_varName)));
 				break;
 			case ContainerType::Array:
-				// TODO JAMES: Need to support serialization on more types before pursuing array serialization.
-				// outParsedVariableContents.push_back(std::vformat("\t{}.BulkSerialize(archive);", std::make_format_args(parsedVariableData[i].m_varName)));
+				outParsedVariableContents.push_back(std::vformat("\tarchive << {};", std::make_format_args(parsedVariableData[i].m_varName)));
 				break;	
 		}
 	}

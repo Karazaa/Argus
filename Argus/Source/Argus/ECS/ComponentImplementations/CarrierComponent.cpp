@@ -26,6 +26,7 @@ void CarrierComponent::Reset()
 
 void CarrierComponent::Serialize(FArchive& archive)
 {
+	archive << m_passengerEntityIds;
 	archive << m_carrierCapacity;
 }
 

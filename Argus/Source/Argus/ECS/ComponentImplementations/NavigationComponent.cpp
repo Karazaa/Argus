@@ -27,6 +27,7 @@ void NavigationComponent::Reset()
 
 void NavigationComponent::Serialize(FArchive& archive)
 {
+	archive << m_navigationPoints;
 	archive << m_lastPointIndex;
 }
 

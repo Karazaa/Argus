@@ -34,6 +34,8 @@ void FogOfWarComponent::Reset()
 
 void FogOfWarComponent::Serialize(FArchive& archive)
 {
+	archive << m_textureData;
+	archive << m_smoothedTextureData;
 	archive << m_gaussianDimension;
 	archive << m_revealedOnceAlpha;
 	archive << m_textureSize;

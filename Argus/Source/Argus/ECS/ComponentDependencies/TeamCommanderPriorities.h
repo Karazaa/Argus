@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "ComponentDependencies/EntityCategory.h"
 
+class FArchive;
+
 UENUM()
 enum class ETeamCommanderDirective : uint8
 {
@@ -33,6 +35,8 @@ struct ResourceSourceExtractionData
 	bool HasSourceEntityId(uint16 entityId) const { return m_resourceSourceEntityId == entityId; }
 	void SetSourceEntityId(uint16 entityId) { m_resourceSourceEntityId = entityId; }
 };
+FArchive& operator<<(FArchive& archive, ResourceSourceExtractionData& controlGroup);
+
 
 FORCEINLINE static bool operator<(const TeamCommanderPriority& A, const TeamCommanderPriority& B)
 {

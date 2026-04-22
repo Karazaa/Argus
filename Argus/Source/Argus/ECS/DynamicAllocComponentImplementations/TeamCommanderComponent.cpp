@@ -27,6 +27,9 @@ void TeamCommanderComponent::Reset()
 
 void TeamCommanderComponent::Serialize(FArchive& archive)
 {
+	archive << m_seenResourceASourceExtractionData;
+	archive << m_seenResourceBSourceExtractionData;
+	archive << m_seenResourceCSourceExtractionData;
 	m_revealedAreas.Serialize(archive);
 	archive << m_revealedAreaDimensionLength;
 	archive << m_teamToCommand;

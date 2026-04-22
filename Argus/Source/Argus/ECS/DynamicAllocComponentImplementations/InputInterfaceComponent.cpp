@@ -29,6 +29,9 @@ void InputInterfaceComponent::Reset()
 
 void InputInterfaceComponent::Serialize(FArchive& archive)
 {
+	archive << m_selectedArgusEntityIds;
+	archive << m_activeAbilityGroupArgusEntityIds;
+	archive << m_controlGroups;
 	archive << m_indexOfActiveAbilityGroup;
 	archive << m_activePlayerTeam;
 	archive << m_doubleClickThresholdSeconds;

@@ -28,6 +28,7 @@ void ResourceComponent::Reset()
 
 void ResourceComponent::Serialize(FArchive& archive)
 {
+	m_currentResources.Serialize(archive);
 	archive << m_resourceCapacityRecordId;
 	archive << m_resourceComponentOwnerType;
 	archive << m_bufferRegionRadius;
