@@ -33,6 +33,12 @@ void UArgusSaveManager::DrawDebugger()
 		return;
 	}
 
+	bool isSaving = IsSaving();
+	bool isLoading = IsLoading();
+	ImGui::Checkbox("Is Saving?", &isSaving);
+	ImGui::SameLine();
+	ImGui::Checkbox("Is Loading?", &isLoading);
+
 	if (ImGui::Button("Save"))
 	{
 		Save();

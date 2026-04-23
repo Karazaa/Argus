@@ -18,6 +18,9 @@ class UArgusSaveManager : public UObject
 public:
 	UArgusSaveManager();
 
+	bool IsSaving() const { return m_saveLockReferenceCount > 0; }
+	bool IsLoading() const { return m_loadLockReferenceCount > 0; }
+
 	void Initialize();
 	void Save(const TFunction<void(const FString&, bool)>& completedDelegate = nullptr);
 	void Load(const FString& saveSlotName, const TFunction<void(UArgusSaveGame*)>& completedDelegate);
@@ -28,19 +31,28 @@ public:
 #endif //!UE_BUILD_SHIPPING
 
 private:
-	struct SaveLock
+	enum SaveLoadLockType : uint8
 	{
-		SaveLock() = default;
-		SaveLock(SaveLock&& otherSaveLock) = delete;
-		SaveLock(UArgusSaveManager* saveManager);
-		SaveLock(const SaveLock& otherSaveLock);
-		~SaveLock();
+		SaveLock,
+		LoadLock
+	};
 
-		SaveLock& operator=(const SaveLock& otherLock) = delete;
-		SaveLock& operator=(SaveLock&& otherLock) = delete;
+	struct SaveLoadLock
+	{
+		SaveLoadLock() = default;
+		SaveLoadLock(SaveLoadLock&& otherSaveLoadLock) = delete;
+		SaveLoadLock(UArgusSaveManager* saveManager, SaveLoadLockType lockType);
+		SaveLoadLock(const SaveLoadLock& otherSaveLoadLock);
+		~SaveLoadLock();
+
+		SaveLoadLock& operator=(const SaveLoadLock& otherLock) = delete;
+		SaveLoadLock& operator=(SaveLoadLock&& otherLock) = delete;
 
 	private:
+		void IncrementLock();
+
 		TWeakObjectPtr<UArgusSaveManager> m_saveManager = nullptr;
+		SaveLoadLockType m_lockType = SaveLoadLockType::SaveLock;
 	};
 
 	static const FString k_metadataSaveSlotName;
@@ -53,10 +65,10 @@ private:
 	void OnCheckIfMetadataExists(bool doesExist);
 	void OnMetadataLoaded(USaveGame* saveGame);
 
-	void OnSaveComplete(const FString& saveSlotName, const SaveLock& saveLock, bool didSucceed);
-	void SaveMetadata(const FString& mostRecentSaveSlotName, const SaveLock& saveLock);
+	void OnSaveComplete(const FString& saveSlotName, const SaveLoadLock& SaveLoadLock, bool didSucceed);
+	void SaveMetadata(const FString& mostRecentSaveSlotName, const SaveLoadLock& SaveLoadLock);
 
-	void OnCheckIfSaveExists(const FString& saveSlotName, bool doesExist, const TFunction<void(UArgusSaveGame*)>& completedDelegate);
+	void OnCheckIfSaveExists(const FString& saveSlotName, bool doesExist, const TFunction<void(UArgusSaveGame*)>& completedDelegate, const SaveLoadLock& loadLock);
 
 	void PopulateMetadata(const FString& mostRecentSaveSlotName);
 
@@ -69,6 +81,7 @@ private:
 
 	FPlatformUserId m_userId;
 	uint8 m_saveLockReferenceCount = 0u;
+	uint8 m_loadLockReferenceCount = 0u;
 
 #if !UE_BUILD_SHIPPING
 	int16 m_debugSelectedIndex = -1;
