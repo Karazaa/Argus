@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "ArgusECSConstants.h"
 
+class FArchive;
+
 struct NavigationWaypoint
 {
 	FVector m_location = FVector::ZeroVector;
@@ -14,3 +16,4 @@ struct NavigationWaypoint
 	NavigationWaypoint(FVector location) : m_location(location), m_decalEntityId(ArgusECSConstants::k_maxEntities) {}
 	NavigationWaypoint(FVector location, uint16 decalEntityId) : m_location(location), m_decalEntityId(decalEntityId) {}
 };
+FArchive& operator<<(FArchive& archive, NavigationWaypoint& waypoint);

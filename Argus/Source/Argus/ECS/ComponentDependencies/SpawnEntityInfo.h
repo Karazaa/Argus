@@ -6,6 +6,8 @@
 #include "CoreMinimal.h"
 #include "Misc/Optional.h"
 
+class FArchive;
+
 struct SpawnEntityInfo
 {
 	TOptional<FVector> m_spawnLocationOverride = NullOpt;
@@ -15,3 +17,4 @@ struct SpawnEntityInfo
 	uint16 m_initiatingEntityId = ArgusECSConstants::k_maxEntities;
 	bool m_needsConstruction = false;
 };
+FArchive& operator<<(FArchive& archive, SpawnEntityInfo& spawnEntityInfo);

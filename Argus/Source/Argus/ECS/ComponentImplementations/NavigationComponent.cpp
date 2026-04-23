@@ -28,6 +28,7 @@ void NavigationComponent::Reset()
 void NavigationComponent::Serialize(FArchive& archive)
 {
 	archive << m_navigationPoints;
+	m_queuedWaypoints.Serialize(archive);
 	archive << m_lastPointIndex;
 }
 

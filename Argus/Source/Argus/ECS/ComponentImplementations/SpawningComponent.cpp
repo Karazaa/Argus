@@ -28,6 +28,7 @@ void SpawningComponent::Reset()
 
 void SpawningComponent::Serialize(FArchive& archive)
 {
+	m_spawnQueue.Serialize(archive);
 	archive << m_spawningRadius;
 	archive << m_maximumQueueSize;
 	m_spawnTimerHandle.Serialize(archive);

@@ -30,6 +30,7 @@ void TargetingComponent::Reset()
 
 void TargetingComponent::Serialize(FArchive& archive)
 {
+	m_targetLocation.Serialize(archive);
 	archive << m_meleeRange;
 	archive << m_rangedRange;
 	archive << m_sightRange;

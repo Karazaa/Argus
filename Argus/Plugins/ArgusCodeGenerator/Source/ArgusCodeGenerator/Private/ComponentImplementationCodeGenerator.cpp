@@ -306,6 +306,8 @@ void ComponentImplementationGenerator::GeneratePerVariableSerializeText(const st
 		{
 			case ContainerType::Smoother:
 			case ContainerType::BitArray:
+			case ContainerType::Optional:
+			case ContainerType::Deque:
 				outParsedVariableContents.push_back(std::vformat("\t{}.Serialize(archive);", std::make_format_args(parsedVariableData[i].m_varName)));
 				break;
 			case ContainerType::Array:
