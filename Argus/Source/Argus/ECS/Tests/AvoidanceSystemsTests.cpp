@@ -23,6 +23,8 @@ bool AvoidanceSystemsProcessORCAvoidanceTest::RunTest(const FString& Parameters)
 	ArgusTesting::StartArgusTest();
 	ArgusEntity entity = ArgusEntity::CreateEntity();
 	ArgusEntity singletonEntity = ArgusEntity::CreateEntity(ArgusECSConstants::k_singletonEntityId);
+	singletonEntity.GetOrAddComponent<GlobalSettingsComponent>();
+	singletonEntity.GetOrAddComponent<EffortCoefficientSettingsComponent>();
 	TransformSystemsArgs components;
 	UWorld* dummyPointer = nullptr;
 

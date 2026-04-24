@@ -201,7 +201,7 @@ bool ArgusUtilitiesArgusObjectPoolReleaseTest::RunTest(const FString& Parameters
 	);
 #pragma endregion
 
-	delete testPoolable;
+	objectPool.Release(testPoolable);
 
 	ArgusTesting::EndArgusTest();
 	return true;

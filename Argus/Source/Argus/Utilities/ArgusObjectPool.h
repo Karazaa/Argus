@@ -67,7 +67,7 @@ PoolableType* ArgusObjectPool<PoolableType, Allocator>::Take()
 	if (UNLIKELY(m_allocatedIndex >= m_capacity))
 	{
 		// TODO JAMES: Logwarn? Error?
-		return new (ArgusMemorySource::Allocate<PoolableType>()) PoolableType();
+		return new (FMemory::Malloc(sizeof(PoolableType), alignof(PoolableType))) PoolableType();
 	}
 
 	PoolableType* output = new (&(m_storage.GetAllocation()[m_allocatedIndex])) PoolableType();
