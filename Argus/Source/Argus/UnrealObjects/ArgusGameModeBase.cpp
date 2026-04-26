@@ -62,9 +62,17 @@ void AArgusGameModeBase::Tick(float deltaTime)
 
 	Super::Tick(deltaTime);
 
-	if (m_saveManager && m_saveManager->IsLoading())
+	if (m_saveManager)
 	{
-		return;
+		if (m_saveManager->HasLoadRequest())
+		{
+			m_saveManager->ExecuteLoadRequest();
+			return;
+		}
+		else if (m_saveManager->IsLoading())
+		{
+			return;
+		}
 	}
 
 	const float unscaledDeltaTime = FApp::GetDeltaTime();

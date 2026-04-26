@@ -68,7 +68,7 @@ void UArgusSaveManager::Save(const TFunction<void(const FString&, bool)>& comple
 
 void UArgusSaveManager::Load(const FString& saveSlotName, const TFunction<void(UArgusSaveGame*)>& completedDelegate)
 {
-	if (IsLoading())
+	if (IsLoading() || HasLoadRequest())
 	{
 		return;
 	}
@@ -79,15 +79,8 @@ void UArgusSaveManager::Load(const FString& saveSlotName, const TFunction<void(U
 		return;
 	}
 
-	// ArgusEntity::FlushAllEntities();
-
-	const SaveLoadLock loadLock = SaveLoadLock(this, SaveLoadLockType::LoadLock);
-	DoesSaveExistInternal(saveSlotName, [saveManager = TWeakObjectPtr<UArgusSaveManager>(this), completedDelegate, loadLock](const FString& slotName, bool doesExist)
-	{
-		UArgusSaveManager* rawSaveManager = saveManager.Get();
-		ARGUS_RETURN_ON_NULL_INVOKE(rawSaveManager, ArgusPersistenceLog, completedDelegate, nullptr);
-		rawSaveManager->OnCheckIfSaveExists(slotName, doesExist, completedDelegate, loadLock);
-	});
+	m_loadRequest.Key = saveSlotName;
+	m_loadRequest.Value = completedDelegate;
 }
 
 void UArgusSaveManager::LoadMostRecent(const TFunction<void(UArgusSaveGame*)>& completedDelegate)
@@ -213,6 +206,30 @@ void UArgusSaveManager::SaveInternal(const FString& saveSlotName, USaveGame* sav
 			completedDelegate(didSucceed);
 		}
 	});
+}
+
+void UArgusSaveManager::ExecuteLoadRequest()
+{
+	if (!HasLoadRequest())
+	{
+		return;
+	}
+
+	// ArgusEntity::FlushAllEntities();
+
+	const SaveLoadLock loadLock = SaveLoadLock(this, SaveLoadLockType::LoadLock);
+	const FString saveSlotName = m_loadRequest.Key;
+	const TFunction<void(UArgusSaveGame*)> completedDelegate = m_loadRequest.Value;
+
+	DoesSaveExistInternal(saveSlotName, [saveManager = TWeakObjectPtr<UArgusSaveManager>(this), completedDelegate, loadLock](const FString& slotName, bool doesExist)
+	{
+		UArgusSaveManager* rawSaveManager = saveManager.Get();
+		ARGUS_RETURN_ON_NULL_INVOKE(rawSaveManager, ArgusPersistenceLog, completedDelegate, nullptr);
+		rawSaveManager->OnCheckIfSaveExists(slotName, doesExist, completedDelegate, loadLock);
+	});
+
+	m_loadRequest.Key.Empty();
+	m_loadRequest.Value = nullptr;
 }
 
 void UArgusSaveManager::LoadInternal(const FString& saveSlotName, const TFunction<void(USaveGame*)>& completedDelegate)

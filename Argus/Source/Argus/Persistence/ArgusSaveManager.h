@@ -24,6 +24,7 @@ public:
 	
 	bool IsSaving() const { return m_saveLockReferenceCount > 0; }
 	bool IsLoading() const { return m_loadLockReferenceCount > 0; }
+	bool HasLoadRequest() const { return !m_loadRequest.Key.IsEmpty(); }
 
 	void Initialize(const AArgusGameModeBase* gameMode);
 	void Save(const TFunction<void(const FString&, bool)>& completedDelegate = nullptr);
@@ -65,6 +66,7 @@ private:
 
 	void DoesSaveExistInternal(const FString& saveSlotName, const TFunction<void(const FString&, bool)>& completedDelegate);
 	void SaveInternal(const FString& saveSlotName, USaveGame* saveGame, const TFunction<void(bool)>& completedDelegate);
+	void ExecuteLoadRequest();
 	void LoadInternal(const FString& saveSlotName, const TFunction<void(USaveGame*)>& completedDelegate);
 	void OnLoadComplete() const;
 
@@ -81,6 +83,7 @@ private:
 	FString GetNextSaveSlotName() const;
 
 	TQueue<TFunction<void(const FString&, bool)>> m_saveRequestQueue;
+	TPair<FString, TFunction<void(UArgusSaveGame*)>> m_loadRequest;
 
 	UPROPERTY(Transient)
 	TObjectPtr<UArgusMetadataSaveGame> m_saveMetadata = nullptr;
@@ -95,4 +98,6 @@ private:
 #if !UE_BUILD_SHIPPING
 	int16 m_debugSelectedIndex = -1;
 #endif //!UE_BUILD_SHIPPING
+
+	friend class AArgusGameModeBase;
 };
