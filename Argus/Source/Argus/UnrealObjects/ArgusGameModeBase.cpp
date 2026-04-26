@@ -30,7 +30,7 @@ void AArgusGameModeBase::StartPlay()
 	m_saveManager = NewObject<UArgusSaveManager>(this, FName(TEXT("SaveManager")));
 	if (m_saveManager)
 	{
-		m_saveManager->Initialize();
+		m_saveManager->Initialize(this);
 	}
 
 	UWorld* worldPointer = GetWorld();
@@ -62,12 +62,17 @@ void AArgusGameModeBase::Tick(float deltaTime)
 
 	Super::Tick(deltaTime);
 
+	if (m_saveManager && m_saveManager->IsLoading())
+	{
+		return;
+	}
+
 	const float unscaledDeltaTime = FApp::GetDeltaTime();
 
 	UWorld* worldPointer = GetWorld();
 	ARGUS_RETURN_ON_NULL(worldPointer, ArgusUnrealObjectsLog);
 	ARGUS_RETURN_ON_NULL(m_activePlayerController, ArgusUnrealObjectsLog);
-	
+
 	// Tick the systems thread. Logic here should be relatively resilient to mid execution ECS changes
 	m_argusSystemsThread.TickThread(deltaTime);
 
@@ -215,4 +220,9 @@ FColor AArgusGameModeBase::GetTeamColor(ETeam team)
 	}
 	
 	return (*pointerToTeamColorRecordObjectPointer)->m_teamColor;
+}
+
+void AArgusGameModeBase::OnLoadComplete() const
+{
+	// TODO JAMES: Populate this.
 }

@@ -1,6 +1,8 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusSaveManager.h"
+#include "ArgusEntity.h"
+#include "ArgusGameModeBase.h"
 #include "ArgusMetadataSaveGame.h"
 #include "ArgusLogging.h"
 #include "ArgusSaveGame.h"
@@ -8,6 +10,7 @@
 #include "PlatformFeatures.h"
 #include "SaveGameSystem.h"
 
+UArgusSaveManager* UArgusSaveManager::k_instance = nullptr;
 const FString UArgusSaveManager::k_metadataSaveSlotName = TEXT("ArgusSaveMetadata");
 const FString UArgusSaveManager::k_saveSlotPrefix = TEXT("ArgusSave");
 
@@ -16,8 +19,18 @@ UArgusSaveManager::UArgusSaveManager()
 	m_userId = FPlatformMisc::GetPlatformUserForUserIndex(0);
 }
 
-void UArgusSaveManager::Initialize()
+void UArgusSaveManager::BeginDestroy()
 {
+	k_instance = nullptr;
+	Super::BeginDestroy();
+}
+
+void UArgusSaveManager::Initialize(const AArgusGameModeBase* gameMode)
+{
+	ARGUS_RETURN_ON_NULL(gameMode, ArgusPersistenceLog);
+	k_instance = this;
+	m_gameMode = gameMode;
+
 	DoesSaveExistInternal(k_metadataSaveSlotName, [saveManager = TWeakObjectPtr<UArgusSaveManager>(this)](const FString& slotName, bool doesExist)
 	{
 		UArgusSaveManager* rawSaveManager = saveManager.Get();
@@ -65,6 +78,8 @@ void UArgusSaveManager::Load(const FString& saveSlotName, const TFunction<void(U
 		completedDelegate(nullptr);
 		return;
 	}
+
+	// ArgusEntity::FlushAllEntities();
 
 	const SaveLoadLock loadLock = SaveLoadLock(this, SaveLoadLockType::LoadLock);
 	DoesSaveExistInternal(saveSlotName, [saveManager = TWeakObjectPtr<UArgusSaveManager>(this), completedDelegate, loadLock](const FString& slotName, bool doesExist)
@@ -211,8 +226,12 @@ void UArgusSaveManager::LoadInternal(const FString& saveSlotName, const TFunctio
 	ISaveGameSystem* saveSystem = IPlatformFeaturesModule::Get().GetSaveGameSystem();
 	ARGUS_RETURN_ON_NULL(saveSystem, ArgusPersistenceLog);
 
-	saveSystem->LoadGameAsync(false, *saveSlotName, m_userId, [completedDelegate](const FString& saveSlotName, FPlatformUserId userId, bool didSucceed, const TArray<uint8>& data)
+	saveSystem->LoadGameAsync(false, *saveSlotName, m_userId, [saveManager = TWeakObjectPtr<UArgusSaveManager>(this), completedDelegate](const FString& saveSlotName, FPlatformUserId userId, bool didSucceed, const TArray<uint8>& data)
 	{
+		UArgusSaveManager* rawSaveManager = saveManager.Get();
+		ARGUS_RETURN_ON_NULL_INVOKE(rawSaveManager, ArgusPersistenceLog, completedDelegate, nullptr);
+		rawSaveManager->OnLoadComplete();
+
 		USaveGame* loadedSaveGame = nullptr;
 		if (didSucceed)
 		{
@@ -223,6 +242,13 @@ void UArgusSaveManager::LoadInternal(const FString& saveSlotName, const TFunctio
 			completedDelegate(loadedSaveGame);
 		}
 	});
+}
+
+void UArgusSaveManager::OnLoadComplete() const
+{
+	const AArgusGameModeBase* gameMode = m_gameMode.Get();
+	ARGUS_RETURN_ON_NULL(gameMode, ArgusPersistenceLog);
+	gameMode->OnLoadComplete();
 }
 
 void UArgusSaveManager::OnCheckIfMetadataExists(bool doesExist)

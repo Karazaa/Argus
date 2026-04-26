@@ -6,6 +6,7 @@
 #include "Containers/Queue.h"
 #include "ArgusSaveManager.generated.h"
 
+class AArgusGameModeBase;
 class USaveGame;
 class UArgusSaveGame;
 class UArgusMetadataSaveGame;
@@ -16,12 +17,15 @@ class UArgusSaveManager : public UObject
 	GENERATED_BODY()
 
 public:
-	UArgusSaveManager();
+	static UArgusSaveManager* Get() { return k_instance; }
 
+	UArgusSaveManager();
+	void BeginDestroy() override;
+	
 	bool IsSaving() const { return m_saveLockReferenceCount > 0; }
 	bool IsLoading() const { return m_loadLockReferenceCount > 0; }
 
-	void Initialize();
+	void Initialize(const AArgusGameModeBase* gameMode);
 	void Save(const TFunction<void(const FString&, bool)>& completedDelegate = nullptr);
 	void Load(const FString& saveSlotName, const TFunction<void(UArgusSaveGame*)>& completedDelegate);
 	void LoadMostRecent(const TFunction<void(UArgusSaveGame*)>& completedDelegate);
@@ -55,12 +59,14 @@ private:
 		SaveLoadLockType m_lockType = SaveLoadLockType::SaveLock;
 	};
 
+	static UArgusSaveManager* k_instance;
 	static const FString k_metadataSaveSlotName;
 	static const FString k_saveSlotPrefix;
 
 	void DoesSaveExistInternal(const FString& saveSlotName, const TFunction<void(const FString&, bool)>& completedDelegate);
 	void SaveInternal(const FString& saveSlotName, USaveGame* saveGame, const TFunction<void(bool)>& completedDelegate);
 	void LoadInternal(const FString& saveSlotName, const TFunction<void(USaveGame*)>& completedDelegate);
+	void OnLoadComplete() const;
 
 	void OnCheckIfMetadataExists(bool doesExist);
 	void OnMetadataLoaded(USaveGame* saveGame);
@@ -78,6 +84,9 @@ private:
 
 	UPROPERTY(Transient)
 	TObjectPtr<UArgusMetadataSaveGame> m_saveMetadata = nullptr;
+
+	UPROPERTY(Transient)
+	TWeakObjectPtr<const AArgusGameModeBase> m_gameMode = nullptr;
 
 	FPlatformUserId m_userId;
 	uint8 m_saveLockReferenceCount = 0u;

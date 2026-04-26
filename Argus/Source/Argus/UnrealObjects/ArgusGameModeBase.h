@@ -54,7 +54,10 @@ private:
 	void ManageActorStateForEntities(const UWorld* worldPointer, float deltaTime);
 	void SpawnActorForEntity(ArgusEntity spawnedEntity);
 	void DespawnActorForEntity(ArgusEntity despawnedEntity);
+	void OnLoadComplete() const;
 
 	ArgusActorPool m_argusActorPool = ArgusActorPool();
 	ArgusSystemsThread m_argusSystemsThread = ArgusSystemsThread();
+
+	friend class UArgusSaveManager;
 };
