@@ -236,7 +236,7 @@ void AArgusGameModeBase::OnLoadStart()
 
 	ArgusEntity::IterateEntities([this](ArgusEntity entity)
 	{
-		// DespawnActorForEntity(entity);
+		DespawnActorForEntity(entity);
 	});
 }
 
@@ -246,7 +246,7 @@ void AArgusGameModeBase::OnLoadComplete()
 
 	ArgusEntity::IterateEntities([this](ArgusEntity entity)
 	{
-		// SpawnActorForEntity(entity);
+		SpawnActorForEntity(entity);
 	});
 
 	ArgusSystemsManager::InitializePostLoad(GetWorld());

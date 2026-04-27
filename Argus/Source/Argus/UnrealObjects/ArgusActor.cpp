@@ -58,6 +58,7 @@ void AArgusActor::Reset()
 	m_initialTeamInfoRecord = nullptr;
 	m_isSelected = false;
 	m_entity = ArgusEntity::k_emptyEntity;
+	m_shouldActorSpawnLocationSetEntityLocation = false;
 
 	Hide();
 }
