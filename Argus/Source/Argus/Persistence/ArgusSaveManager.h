@@ -28,7 +28,7 @@ public:
 	bool IsLoading() const { return m_loadLockReferenceCount > 0; }
 	bool HasLoadRequest() const { return !m_loadRequest.Key.IsEmpty(); }
 
-	void Initialize(const AArgusGameModeBase* gameMode);
+	void Initialize(AArgusGameModeBase* gameMode);
 	void Save(const TFunction<void(const FString&, bool)>& completedDelegate = nullptr);
 	void Load(const FString& saveSlotName, const TFunction<void(UArgusSaveGame*)>& completedDelegate);
 	void LoadMostRecent(const TFunction<void(UArgusSaveGame*)>& completedDelegate);
@@ -88,7 +88,7 @@ private:
 	TObjectPtr<UArgusMetadataSaveGame> m_saveMetadata = nullptr;
 
 	UPROPERTY(Transient)
-	TWeakObjectPtr<const AArgusGameModeBase> m_gameMode = nullptr;
+	TWeakObjectPtr<AArgusGameModeBase> m_gameMode = nullptr;
 
 	TQueue<TFunction<void(const FString&, bool)>> m_saveRequestQueue;
 	TPair<FString, TFunction<void(UArgusSaveGame*)>> m_loadRequest;

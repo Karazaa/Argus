@@ -44,6 +44,7 @@ void FogOfWarSystems::InitializeSystemsPostLoad()
 	InitializeTextures(fogOfWarComponent);
 	InitializeGaussianFilter(fogOfWarComponent);
 	UpdateDynamicMaterialInstance();
+	UpdateTexture();
 }
 
 void FogOfWarSystems::RunThreadSystems(float deltaTime)

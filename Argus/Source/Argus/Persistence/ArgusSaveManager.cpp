@@ -25,7 +25,7 @@ void UArgusSaveManager::BeginDestroy()
 	Super::BeginDestroy();
 }
 
-void UArgusSaveManager::Initialize(const AArgusGameModeBase* gameMode)
+void UArgusSaveManager::Initialize(AArgusGameModeBase* gameMode)
 {
 	ARGUS_RETURN_ON_NULL(gameMode, ArgusPersistenceLog);
 	k_instance = this;
@@ -215,6 +215,10 @@ void UArgusSaveManager::ExecuteLoadRequest()
 		return;
 	}
 
+	AArgusGameModeBase* gameMode = m_gameMode.Get();
+	ARGUS_RETURN_ON_NULL(gameMode, ArgusPersistenceLog);
+	gameMode->OnLoadStart();
+
 	ArgusEntity::FlushAllEntities();
 
 	const SaveLoadLock loadLock = SaveLoadLock(this, SaveLoadLockType::LoadLock);
@@ -259,7 +263,7 @@ void UArgusSaveManager::LoadInternal(const FString& saveSlotName, const TFunctio
 
 void UArgusSaveManager::OnLoadComplete() const
 {
-	const AArgusGameModeBase* gameMode = m_gameMode.Get();
+	AArgusGameModeBase* gameMode = m_gameMode.Get();
 	ARGUS_RETURN_ON_NULL(gameMode, ArgusPersistenceLog);
 	m_loadCompleted.Broadcast();
 	gameMode->OnLoadComplete();

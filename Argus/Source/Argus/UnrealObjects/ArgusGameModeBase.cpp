@@ -230,7 +230,24 @@ FColor AArgusGameModeBase::GetTeamColor(ETeam team)
 	return (*pointerToTeamColorRecordObjectPointer)->m_teamColor;
 }
 
-void AArgusGameModeBase::OnLoadComplete() const
+void AArgusGameModeBase::OnLoadStart()
 {
+	ARGUS_TRACE(AArgusGameModeBase::OnLoadStart)
+
+	ArgusEntity::IterateEntities([this](ArgusEntity entity)
+	{
+		// DespawnActorForEntity(entity);
+	});
+}
+
+void AArgusGameModeBase::OnLoadComplete()
+{
+	ARGUS_TRACE(AArgusGameModeBase::OnLoadComplete)
+
+	ArgusEntity::IterateEntities([this](ArgusEntity entity)
+	{
+		// SpawnActorForEntity(entity);
+	});
+
 	ArgusSystemsManager::InitializePostLoad(GetWorld());
 }
