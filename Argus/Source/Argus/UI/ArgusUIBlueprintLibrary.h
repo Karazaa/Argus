@@ -8,6 +8,8 @@
 class UArgusInputManager;
 class UMaterialInstanceDynamic;
 
+DECLARE_DYNAMIC_DELEGATE(FOnLoadCompleteBP);
+
 UCLASS()
 class UArgusUIBlueprintLibrary : public UBlueprintFunctionLibrary
 {
@@ -18,6 +20,9 @@ public:
 	// This will likely get used/expanded on at some point.
 	UFUNCTION(BlueprintCallable)
 	static void SetFogOfWarDynamicMaterialInstance(UMaterialInstanceDynamic* dynamicMaterialInstance);
+
+	UFUNCTION(BlueprintCallable)
+	static void BindOnLoadComplete(const FOnLoadCompleteBP& delegate);
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (DevelopmentOnly))
 	static bool ShouldDrawFogOfWar();

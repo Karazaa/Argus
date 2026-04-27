@@ -11,6 +11,8 @@ class USaveGame;
 class UArgusSaveGame;
 class UArgusMetadataSaveGame;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLoadComplete);
+
 UCLASS()
 class UArgusSaveManager : public UObject 
 {
@@ -82,14 +84,16 @@ private:
 
 	FString GetNextSaveSlotName() const;
 
-	TQueue<TFunction<void(const FString&, bool)>> m_saveRequestQueue;
-	TPair<FString, TFunction<void(UArgusSaveGame*)>> m_loadRequest;
-
 	UPROPERTY(Transient)
 	TObjectPtr<UArgusMetadataSaveGame> m_saveMetadata = nullptr;
 
 	UPROPERTY(Transient)
 	TWeakObjectPtr<const AArgusGameModeBase> m_gameMode = nullptr;
+
+	TQueue<TFunction<void(const FString&, bool)>> m_saveRequestQueue;
+	TPair<FString, TFunction<void(UArgusSaveGame*)>> m_loadRequest;
+
+	FOnLoadComplete m_loadCompleted;
 
 	FPlatformUserId m_userId;
 	uint8 m_saveLockReferenceCount = 0u;
@@ -100,4 +104,5 @@ private:
 #endif //!UE_BUILD_SHIPPING
 
 	friend class AArgusGameModeBase;
+	friend class UArgusUIBlueprintLibrary;
 };

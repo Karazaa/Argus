@@ -215,7 +215,7 @@ void UArgusSaveManager::ExecuteLoadRequest()
 		return;
 	}
 
-	// ArgusEntity::FlushAllEntities();
+	ArgusEntity::FlushAllEntities();
 
 	const SaveLoadLock loadLock = SaveLoadLock(this, SaveLoadLockType::LoadLock);
 	const FString saveSlotName = m_loadRequest.Key;
@@ -243,12 +243,8 @@ void UArgusSaveManager::LoadInternal(const FString& saveSlotName, const TFunctio
 	ISaveGameSystem* saveSystem = IPlatformFeaturesModule::Get().GetSaveGameSystem();
 	ARGUS_RETURN_ON_NULL(saveSystem, ArgusPersistenceLog);
 
-	saveSystem->LoadGameAsync(false, *saveSlotName, m_userId, [saveManager = TWeakObjectPtr<UArgusSaveManager>(this), completedDelegate](const FString& saveSlotName, FPlatformUserId userId, bool didSucceed, const TArray<uint8>& data)
+	saveSystem->LoadGameAsync(false, *saveSlotName, m_userId, [completedDelegate](const FString& saveSlotName, FPlatformUserId userId, bool didSucceed, const TArray<uint8>& data)
 	{
-		UArgusSaveManager* rawSaveManager = saveManager.Get();
-		ARGUS_RETURN_ON_NULL_INVOKE(rawSaveManager, ArgusPersistenceLog, completedDelegate, nullptr);
-		rawSaveManager->OnLoadComplete();
-
 		USaveGame* loadedSaveGame = nullptr;
 		if (didSucceed)
 		{
@@ -265,6 +261,7 @@ void UArgusSaveManager::OnLoadComplete() const
 {
 	const AArgusGameModeBase* gameMode = m_gameMode.Get();
 	ARGUS_RETURN_ON_NULL(gameMode, ArgusPersistenceLog);
+	m_loadCompleted.Broadcast();
 	gameMode->OnLoadComplete();
 }
 
@@ -324,10 +321,15 @@ void UArgusSaveManager::OnCheckIfSaveExists(const FString& saveSlotName, bool do
 		return;
 	}
 
-	LoadInternal(saveSlotName, [completedDelegate, loadLock](USaveGame* saveGame)
+	LoadInternal(saveSlotName, [saveManager = TWeakObjectPtr<UArgusSaveManager>(this), completedDelegate, loadLock](USaveGame* saveGame)
 	{
 		UArgusSaveGame* argusSaveGame = Cast<UArgusSaveGame>(saveGame);
 		ARGUS_RETURN_ON_NULL_INVOKE(argusSaveGame, ArgusPersistenceLog, completedDelegate, argusSaveGame);
+		
+		UArgusSaveManager* rawSaveManager = saveManager.Get();
+		ARGUS_RETURN_ON_NULL_INVOKE(rawSaveManager, ArgusPersistenceLog, completedDelegate, nullptr);
+		rawSaveManager->OnLoadComplete();
+		
 		completedDelegate(argusSaveGame);
 	});
 }

@@ -232,5 +232,5 @@ FColor AArgusGameModeBase::GetTeamColor(ETeam team)
 
 void AArgusGameModeBase::OnLoadComplete() const
 {
-	// TODO JAMES: Populate this.
+	ArgusSystemsManager::InitializePostLoad(GetWorld());
 }

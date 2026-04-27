@@ -13,6 +13,7 @@ class ArgusSystemsManager
 {
 public:
 	static void Initialize(UWorld* worldPointer, const UArgusEntityTemplate* singletonEntityTemplate, const UArgusEntityTemplate* teamEntityTemplate);
+	static void InitializePostLoad(UWorld* worldPointer);
 	static void OnStartPlay(UWorld* worldPointer, ETeam activePlayerTeam);
 	static void RunSystems(UWorld* worldPointer, float deltaTime);
 	static void RunPostThreadSystems(UWorld* worldPointer, float deltaTime);

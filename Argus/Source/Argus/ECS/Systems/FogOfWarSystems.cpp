@@ -21,24 +21,7 @@ void FogOfWarSystems::InitializeSystems()
 	FogOfWarComponent* fogOfWarComponent = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId).GetComponent<FogOfWarComponent>();
 	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
 
-	fogOfWarComponent->m_fogOfWarTexture = UTexture2D::CreateTransient(fogOfWarComponent->m_textureSize, fogOfWarComponent->m_textureSize, PF_A8);
-	ARGUS_RETURN_ON_NULL(fogOfWarComponent->m_fogOfWarTexture, ArgusECSLog);
-
-	fogOfWarComponent->m_gaussianWeightsTexture = UTexture2D::CreateTransient(fogOfWarComponent->m_gaussianDimension, fogOfWarComponent->m_gaussianDimension, PF_R32_FLOAT);
-	ARGUS_RETURN_ON_NULL(fogOfWarComponent->m_gaussianWeightsTexture, ArgusECSLog);
-
-	fogOfWarComponent->m_fogOfWarTexture->CompressionSettings = TextureCompressionSettings::TC_VectorDisplacementmap;
-	fogOfWarComponent->m_fogOfWarTexture->SRGB = 0;
-	fogOfWarComponent->m_fogOfWarTexture->Filter = TextureFilter::TF_Nearest;
-	fogOfWarComponent->m_fogOfWarTexture->AddToRoot();
-	fogOfWarComponent->m_fogOfWarTexture->UpdateResource();
-	fogOfWarComponent->m_textureRegion = FUpdateTextureRegion2D(0, 0, 0, 0, fogOfWarComponent->m_textureSize, fogOfWarComponent->m_textureSize);
-
-	fogOfWarComponent->m_gaussianWeightsTexture->CompressionSettings = TextureCompressionSettings::TC_VectorDisplacementmap;
-	fogOfWarComponent->m_gaussianWeightsTexture->SRGB = 0;
-	fogOfWarComponent->m_gaussianWeightsTexture->Filter = TextureFilter::TF_Nearest;
-	fogOfWarComponent->m_gaussianWeightsTexture->AddToRoot();
-	fogOfWarComponent->m_gaussianWeightsTexture->UpdateResource();
+	InitializeTextures(fogOfWarComponent);
 
 	fogOfWarComponent->m_textureData.Init(MAX_uint8, fogOfWarComponent->GetTotalPixels());
 	if (fogOfWarComponent->m_shouldUseSmoothing)
@@ -47,6 +30,18 @@ void FogOfWarSystems::InitializeSystems()
 		fogOfWarComponent->m_intermediarySmoothingData.Init(static_cast<float>(MAX_uint8), fogOfWarComponent->GetTotalPixels());
 	}
 
+	InitializeGaussianFilter(fogOfWarComponent);
+	UpdateDynamicMaterialInstance();
+}
+
+void FogOfWarSystems::InitializeSystemsPostLoad()
+{
+	ARGUS_TRACE(FogOfWarSystems::InitializeSystemsPostLoad);
+
+	FogOfWarComponent* fogOfWarComponent = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId).GetComponent<FogOfWarComponent>();
+	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
+
+	InitializeTextures(fogOfWarComponent);
 	InitializeGaussianFilter(fogOfWarComponent);
 	UpdateDynamicMaterialInstance();
 }
@@ -101,6 +96,30 @@ void FogOfWarSystems::RunSystems()
 	ARGUS_TRACE(FogOfWarSystems::RunSystems);
 
 	UpdateTexture();
+}
+
+void FogOfWarSystems::InitializeTextures(FogOfWarComponent* fogOfWarComponent)
+{
+	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusECSLog);
+
+	fogOfWarComponent->m_fogOfWarTexture = UTexture2D::CreateTransient(fogOfWarComponent->m_textureSize, fogOfWarComponent->m_textureSize, PF_A8);
+	ARGUS_RETURN_ON_NULL(fogOfWarComponent->m_fogOfWarTexture, ArgusECSLog);
+
+	fogOfWarComponent->m_gaussianWeightsTexture = UTexture2D::CreateTransient(fogOfWarComponent->m_gaussianDimension, fogOfWarComponent->m_gaussianDimension, PF_R32_FLOAT);
+	ARGUS_RETURN_ON_NULL(fogOfWarComponent->m_gaussianWeightsTexture, ArgusECSLog);
+
+	fogOfWarComponent->m_fogOfWarTexture->CompressionSettings = TextureCompressionSettings::TC_VectorDisplacementmap;
+	fogOfWarComponent->m_fogOfWarTexture->SRGB = 0;
+	fogOfWarComponent->m_fogOfWarTexture->Filter = TextureFilter::TF_Nearest;
+	fogOfWarComponent->m_fogOfWarTexture->AddToRoot();
+	fogOfWarComponent->m_fogOfWarTexture->UpdateResource();
+	fogOfWarComponent->m_textureRegion = FUpdateTextureRegion2D(0, 0, 0, 0, fogOfWarComponent->m_textureSize, fogOfWarComponent->m_textureSize);
+
+	fogOfWarComponent->m_gaussianWeightsTexture->CompressionSettings = TextureCompressionSettings::TC_VectorDisplacementmap;
+	fogOfWarComponent->m_gaussianWeightsTexture->SRGB = 0;
+	fogOfWarComponent->m_gaussianWeightsTexture->Filter = TextureFilter::TF_Nearest;
+	fogOfWarComponent->m_gaussianWeightsTexture->AddToRoot();
+	fogOfWarComponent->m_gaussianWeightsTexture->UpdateResource();
 }
 
 void FogOfWarSystems::InitializeGaussianFilter(FogOfWarComponent* fogOfWarComponent)

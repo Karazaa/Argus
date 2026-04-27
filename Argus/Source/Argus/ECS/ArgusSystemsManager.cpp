@@ -34,6 +34,24 @@ void ArgusSystemsManager::Initialize(UWorld* worldPointer, const UArgusEntityTem
 	PopulateTeamComponents(teamEntityTemplate);
 }
 
+void ArgusSystemsManager::InitializePostLoad(UWorld* worldPointer)
+{
+	ARGUS_RETURN_ON_NULL(worldPointer, ArgusECSLog);
+
+	FogOfWarSystems::InitializeSystemsPostLoad();
+
+	SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::GetSingletonEntity().GetComponent<SpatialPartitioningComponent>();
+	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
+
+	spatialPartitioningComponent->m_argusEntityKDTree.SeedTreeWithAverageEntityLocation(false);
+	spatialPartitioningComponent->m_argusEntityKDTree.InsertAllArgusEntitiesIntoKDTree(false);
+	spatialPartitioningComponent->m_flyingArgusEntityKDTree.SeedTreeWithAverageEntityLocation(true);
+	spatialPartitioningComponent->m_flyingArgusEntityKDTree.InsertAllArgusEntitiesIntoKDTree(true);
+	SpatialPartitioningSystems::CalculateAvoidanceObstacles(spatialPartitioningComponent, worldPointer);
+
+	SpatialPartitioningSystems::RunSystems();
+}
+
 void ArgusSystemsManager::OnStartPlay(UWorld* worldPointer, ETeam activePlayerTeam)
 {
 	ARGUS_RETURN_ON_NULL(worldPointer, ArgusECSLog);

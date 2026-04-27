@@ -17,6 +17,7 @@ class FogOfWarSystems
 {
 public:
 	static void InitializeSystems();
+	static void InitializeSystemsPostLoad();
 	static void RunSystems();
 	static void RunThreadSystems(float deltaTime);
 
@@ -99,6 +100,7 @@ private:
 		{}
 	};
 
+	static void InitializeTextures(FogOfWarComponent* fogOfWarComponent);
 	static void InitializeGaussianFilter(FogOfWarComponent* fogOfWarComponent);
 	static void ClearActivelyRevealedPixels(FogOfWarComponent* fogOfWarComponent);
 	static void ClearActivelyRevealedPixelsForRange(FogOfWarComponent* fogOfWarComponent, int32 fromInclusive, int32 toExclusive);

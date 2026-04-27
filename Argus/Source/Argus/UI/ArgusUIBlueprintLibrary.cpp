@@ -6,6 +6,7 @@
 #include "ArgusInputManager.h"
 #include "ArgusLogging.h"
 #include "ArgusPlayerController.h"
+#include "ArgusSaveManager.h"
 #include "Engine/World.h"
 
 #if !UE_BUILD_SHIPPING
@@ -20,6 +21,14 @@ void UArgusUIBlueprintLibrary::SetFogOfWarDynamicMaterialInstance(UMaterialInsta
 	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusUnrealObjectsLog);
 
 	fogOfWarComponent->m_dynamicMaterialInstance = dynamicMaterialInstance;
+}
+
+void UArgusUIBlueprintLibrary::BindOnLoadComplete(const FOnLoadCompleteBP& delegate)
+{
+	UArgusSaveManager* saveManager = UArgusSaveManager::Get();
+	ARGUS_RETURN_ON_NULL(saveManager, ArgusUnrealObjectsLog);
+
+	saveManager->m_loadCompleted.AddUnique(delegate);
 }
 
 bool UArgusUIBlueprintLibrary::ShouldDrawFogOfWar()
