@@ -129,6 +129,7 @@ void AArgusGameModeBase::ManageActorStateForEntities(const UWorld* worldPointer,
 		if (taskComponent->m_baseState == EBaseState::SpawnedWaitingForActorTake)
 		{
 			SpawnActorForEntity(entity);
+			taskComponent->m_baseState = EBaseState::Alive;
 		}
 		else if (taskComponent->m_baseState == EBaseState::DestroyedWaitingForActorRelease)
 		{
@@ -169,7 +170,6 @@ void AArgusGameModeBase::SpawnActorForEntity(ArgusEntity spawnedEntity)
 	}
 
 	spawnedActor->SetEntity(spawnedEntity);
-	taskComponent->m_baseState = EBaseState::Alive;
 }
 
 void AArgusGameModeBase::DespawnActorForEntity(ArgusEntity spawnedEntity)

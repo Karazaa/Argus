@@ -136,6 +136,7 @@ void AArgusActor::SetEntity(ArgusEntity entity)
 	}
 
 	InitializeWidgets();
+	CallEventsForInitialState();
 }
 
 void AArgusActor::SetSelectionState(bool isSelected)
@@ -379,4 +380,34 @@ void AArgusActor::FixupTransformForFlying()
 
 	transformComponent->m_location.Z = spatialPartitioningComponent->m_flyingPlaneHeight;
 	SetActorLocationAndRotation(transformComponent->m_location, FRotator(0.0f, ArgusMath::GetUEYawDegreesFromYaw(transformComponent->GetCurrentYaw()), 0.0f));
+}
+
+void AArgusActor::CallEventsForInitialState()
+{
+	const TaskComponent* taskComponent = m_entity.GetComponent<TaskComponent>();
+	ARGUS_RETURN_ON_NULL(taskComponent, ArgusUnrealObjectsLog);
+
+	if (taskComponent->m_baseState == EBaseState::Dead)
+	{
+		OnArgusEntityDeath();
+	}
+
+	bool isPassenger = false;
+	if (const PassengerComponent* passengerComponent = m_entity.GetComponent<PassengerComponent>())
+	{
+		if (passengerComponent->m_carrierEntityId != ArgusECSConstants::k_maxEntities)
+		{
+			isPassenger = true;
+		}
+	}
+	OnArgusEntityPassengerStateChanged(isPassenger);
+
+	if (taskComponent->m_flightState == EFlightState::Grounded)
+	{
+		OnLand();
+	}
+	else
+	{
+		OnTakeOff();
+	}
 }

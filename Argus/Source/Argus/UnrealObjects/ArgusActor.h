@@ -82,6 +82,7 @@ protected:
 	void InitializeWidgets();
 	void UpdateUIWidgetComponentLocation();
 	void FixupTransformForFlying();
+	void CallEventsForInitialState();
 
 protected:
 	ArgusEntity m_entity = ArgusEntity::k_emptyEntity;
