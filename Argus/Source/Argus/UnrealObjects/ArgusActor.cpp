@@ -56,7 +56,7 @@ void AArgusActor::Reset()
 
 	m_argusActorRecord = nullptr;
 	m_initialTeamInfoRecord = nullptr;
-	m_isSelected = false;
+	SetSelectionState(false);
 	m_entity = ArgusEntity::k_emptyEntity;
 	m_shouldActorSpawnLocationSetEntityLocation = false;
 
@@ -410,4 +410,7 @@ void AArgusActor::CallEventsForInitialState()
 	{
 		OnTakeOff();
 	}
+
+	m_isSelected = m_entity.IsSelected();
+	m_isSelected ? OnSelected() : OnDeselected();
 }

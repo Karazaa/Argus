@@ -42,6 +42,8 @@ void ArgusSystemsManager::InitializePostLoad(UWorld* worldPointer)
 
 	SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::GetSingletonEntity().GetComponent<SpatialPartitioningComponent>();
 	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
+	InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::GetSingletonEntity().GetComponent<InputInterfaceComponent>();
+	ARGUS_RETURN_ON_NULL(inputInterfaceComponent, ArgusECSLog);
 
 	spatialPartitioningComponent->m_argusEntityKDTree.SeedTreeWithAverageEntityLocation(false);
 	spatialPartitioningComponent->m_argusEntityKDTree.InsertAllArgusEntitiesIntoKDTree(false);
@@ -50,6 +52,8 @@ void ArgusSystemsManager::InitializePostLoad(UWorld* worldPointer)
 	SpatialPartitioningSystems::CalculateAvoidanceObstacles(spatialPartitioningComponent, worldPointer);
 
 	SpatialPartitioningSystems::RunSystems();
+
+	inputInterfaceComponent->m_selectedActorsDisplayState = ESelectedActorsDisplayState::ChangedThisFrame;
 }
 
 void ArgusSystemsManager::OnStartPlay(UWorld* worldPointer, ETeam activePlayerTeam)
@@ -152,6 +156,7 @@ void ArgusSystemsManager::SetInitialSingletonState(UWorld* worldPointer, ETeam a
 
 	inputInterfaceComponent->m_activePlayerTeam = activePlayerTeam;
 	inputInterfaceComponent->m_controlGroups.SetNumZeroed(inputInterfaceComponent->m_numControlGroups);
+	inputInterfaceComponent->m_selectedActorsDisplayState = ESelectedActorsDisplayState::ChangedThisFrame;
 	FogOfWarSystems::InitializeSystems();
 
 	const DecalSystemsSettingsComponent* decalSystemsSettings = DecalSystemsSettingsComponent::Get();

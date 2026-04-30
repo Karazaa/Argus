@@ -118,6 +118,7 @@ public:
 	void OnChangeActiveAbilityGroup(const FInputActionValue& value);
 
 	void ProcessPlayerInput(AArgusCameraActor* argusCamera, const AArgusCameraActor::UpdateCameraPanningParameters& updateCameraPanningParameters, float unscaledDeltaTime);
+	void CleanUpInputState() const;
 	bool ShouldDrawMarqueeBox() const;
 
 	const FVector& GetSelectionStartWorldSpaceLocation() const;
@@ -141,7 +142,6 @@ private:
 	void BindActions(TSoftObjectPtr<UArgusInputActionSet>& argusInputActionSet, UEnhancedInputComponent* enhancedInputComponent, UEnhancedPlayerInput* enhancedInput);
 	bool ValidateOwningPlayerController();
 
-	void PrepareToProcessInputEvents();
 	void ProcessInputEvent(AArgusCameraActor* argusCamera, const InputCache& inputEvent);
 	void ProcessSelectInputEvent(bool isAdditive);
 	void ProcessMarqueeSelectInputEvent(const AArgusCameraActor* argusCamera, bool isAdditive);

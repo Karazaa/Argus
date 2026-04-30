@@ -328,7 +328,6 @@ void UArgusInputManager::ProcessPlayerInput(AArgusCameraActor* argusCamera, cons
 	}
 #endif // WITH_AUTOMATION_TESTS
 
-	PrepareToProcessInputEvents();
 	SetReticleState();
 
 	const int inputsEventsThisFrameCount = m_inputEventsThisFrame.Num();
@@ -341,6 +340,15 @@ void UArgusInputManager::ProcessPlayerInput(AArgusCameraActor* argusCamera, cons
 	ARGUS_RETURN_ON_NULL(argusCamera, ArgusInputLog);
 
 	argusCamera->UpdateCamera(updateCameraParameters, unscaledDeltaTime);
+}
+
+void UArgusInputManager::CleanUpInputState() const
+{
+	InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::GetSingletonEntity().GetComponent<InputInterfaceComponent>();
+	ARGUS_RETURN_ON_NULL(inputInterfaceComponent, ArgusInputLog);
+
+	inputInterfaceComponent->m_selectedActorsDisplayState = ESelectedActorsDisplayState::NotChanged;
+	InputInterfaceSystems::RemoveNoLongerSelectableEntities();
 }
 
 bool UArgusInputManager::ShouldDrawMarqueeBox() const
@@ -568,15 +576,6 @@ bool UArgusInputManager::ValidateOwningPlayerController()
 	}
 
 	return true;
-}
-
-void UArgusInputManager::PrepareToProcessInputEvents()
-{
-	InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::GetSingletonEntity().GetComponent<InputInterfaceComponent>();
-	ARGUS_RETURN_ON_NULL(inputInterfaceComponent, ArgusInputLog);
-
-	inputInterfaceComponent->m_selectedActorsDisplayState = ESelectedActorsDisplayState::NotChanged;
-	InputInterfaceSystems::RemoveNoLongerSelectableEntities();
 }
 
 void UArgusInputManager::ProcessInputEvent(AArgusCameraActor* argusCamera, const InputCache& inputType)

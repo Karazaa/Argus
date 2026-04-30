@@ -27,6 +27,7 @@ class AArgusPlayerController : public APlayerController
 
 public:
 	void ProcessArgusPlayerInput(float unscaledDeltaTime);
+	void CleanUpArgusPlayerInput() const;
 
 	AArgusCameraActor::UpdateCameraPanningParameters GetScreenSpaceInputValues() const;
 

@@ -39,6 +39,16 @@ void AArgusPlayerController::ProcessArgusPlayerInput(float unscaledDeltaTime)
 	m_reticleActor->UpdateReticle();
 }
 
+void AArgusPlayerController::CleanUpArgusPlayerInput() const
+{
+	if (!m_argusInputManager)
+	{
+		return;
+	}
+
+	m_argusInputManager->CleanUpInputState();
+}
+
 AArgusCameraActor::UpdateCameraPanningParameters AArgusPlayerController::GetScreenSpaceInputValues() const
 {
 	AArgusCameraActor::UpdateCameraPanningParameters output;

@@ -101,6 +101,8 @@ void AArgusGameModeBase::Tick(float deltaTime)
 
 	ArgusSystemsManager::RunPostThreadSystems(worldPointer, deltaTime);
 
+	m_activePlayerController->CleanUpArgusPlayerInput();
+
 #if !UE_BUILD_SHIPPING
 	if (m_saveManager)
 	{
