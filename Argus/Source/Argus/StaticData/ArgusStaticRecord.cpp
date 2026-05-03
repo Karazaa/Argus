@@ -13,7 +13,7 @@
 void UArgusStaticRecord::PreSave(FObjectPreSaveContext saveContext)
 {
 	Super::PreSave(saveContext);
-	if (saveContext.IsCooking() || saveContext.GetTargetPlatform())
+	if (saveContext.IsCooking() || saveContext.GetTargetPlatform() || m_id != 0u)
 	{
 		return;
 	}

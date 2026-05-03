@@ -13,7 +13,7 @@ class UArgusStaticRecord : public UDataAsset
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, NonPIEDuplicateTransient)
 	uint32 m_id;
 
 	virtual void OnAsyncLoaded() const {}
