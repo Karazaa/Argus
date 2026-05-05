@@ -32,3 +32,8 @@ void UAbilityRecord::OnAsyncLoaded() const
 		}
 	}
 }
+
+void UAbilityRecord::ResetSoftPtrLoadStores()
+{
+	m_abilityIcon.ResetHardPtr();
+}

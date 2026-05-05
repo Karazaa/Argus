@@ -61,4 +61,5 @@ public:
 	}
 
 	void OnAsyncLoaded() const override;
+	void ResetSoftPtrLoadStores() override;
 };

@@ -7,3 +7,8 @@ void UMaterialRecord::OnAsyncLoaded() const
 {
 	m_material.AsyncPreLoadAndStorePtr();
 }
+
+void UMaterialRecord::ResetSoftPtrLoadStores()
+{
+	m_material.ResetHardPtr();
+}

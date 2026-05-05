@@ -123,6 +123,14 @@ bool #####Database::ResizePersistentObjectPointerArrayToFitRecord(uint32 id)
 
 void #####Database::ResetPersistentObjectPointerArray()
 {
+	for (int32 i = 0; i < m_#####sPersistent.Num(); ++i)
+	{
+		if (m_#####sPersistent[i])
+		{
+			m_#####sPersistent[i]->ResetSoftPtrLoadStores();
+		}
+	}
+
 	m_#####sPersistent.Reset();
 }
 

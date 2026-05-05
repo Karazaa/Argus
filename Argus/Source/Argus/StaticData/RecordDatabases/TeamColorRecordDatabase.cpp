@@ -123,6 +123,14 @@ bool UTeamColorRecordDatabase::ResizePersistentObjectPointerArrayToFitRecord(uin
 
 void UTeamColorRecordDatabase::ResetPersistentObjectPointerArray()
 {
+	for (int32 i = 0; i < m_UTeamColorRecordsPersistent.Num(); ++i)
+	{
+		if (m_UTeamColorRecordsPersistent[i])
+		{
+			m_UTeamColorRecordsPersistent[i]->ResetSoftPtrLoadStores();
+		}
+	}
+
 	m_UTeamColorRecordsPersistent.Reset();
 }
 

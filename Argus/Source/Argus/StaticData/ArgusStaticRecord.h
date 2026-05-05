@@ -17,6 +17,7 @@ public:
 	uint32 m_id;
 
 	virtual void OnAsyncLoaded() const {}
+	virtual void ResetSoftPtrLoadStores() {}
 
 #if WITH_EDITOR
 	virtual void PreSave(FObjectPreSaveContext SaveContext) override;

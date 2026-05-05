@@ -22,6 +22,7 @@ public:
 	UArgusEntityTemplate* LoadAndStorePtr() const;
 	bool AsyncPreLoadAndStorePtr(TFunction<void(UArgusEntityTemplate*)> callback = nullptr) const;
 	void SetHardPtr(UArgusEntityTemplate* pointer);
+	void ResetHardPtr();
 	operator bool() const { return m_hardPtr || !m_softPtr.IsNull(); }
 
 protected:
@@ -45,6 +46,7 @@ public:
 	UTexture* LoadAndStorePtr() const;
 	bool AsyncPreLoadAndStorePtr(TFunction<void(UTexture*)> callback = nullptr) const;
 	void SetHardPtr(UTexture* pointer);
+	void ResetHardPtr();
 	operator bool() const { return m_hardPtr || !m_softPtr.IsNull(); }
 
 protected:
@@ -68,6 +70,7 @@ public:
 	UMaterialInterface* LoadAndStorePtr() const;
 	bool AsyncPreLoadAndStorePtr(TFunction<void(UMaterialInterface*)> callback = nullptr) const;
 	void SetHardPtr(UMaterialInterface* pointer);
+	void ResetHardPtr();
 	operator bool() const { return m_hardPtr || !m_softPtr.IsNull(); }
 
 protected:
@@ -95,6 +98,7 @@ public:
 	UClass* LoadAndStorePtr() const;
 	bool AsyncPreLoadAndStorePtr(TFunction<void(UClass*)> callback = nullptr) const;
 	void SetHardPtr(UClass* pointer);
+	void ResetHardPtr();
 	operator bool() const { return m_hardPtr || !m_softPtr.IsNull(); }
 
 protected:

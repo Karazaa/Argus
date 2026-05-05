@@ -58,4 +58,9 @@
 	{
 		m_hardPtr = pointer;
 	};
+
+	void FSoftClassLoadStore_#####::ResetHardPtr()
+	{
+		m_hardPtr = nullptr;
+	};
 #pragma endregion

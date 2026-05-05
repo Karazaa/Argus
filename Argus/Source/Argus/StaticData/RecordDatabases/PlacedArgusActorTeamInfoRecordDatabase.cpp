@@ -123,6 +123,14 @@ bool UPlacedArgusActorTeamInfoRecordDatabase::ResizePersistentObjectPointerArray
 
 void UPlacedArgusActorTeamInfoRecordDatabase::ResetPersistentObjectPointerArray()
 {
+	for (int32 i = 0; i < m_UPlacedArgusActorTeamInfoRecordsPersistent.Num(); ++i)
+	{
+		if (m_UPlacedArgusActorTeamInfoRecordsPersistent[i])
+		{
+			m_UPlacedArgusActorTeamInfoRecordsPersistent[i]->ResetSoftPtrLoadStores();
+		}
+	}
+
 	m_UPlacedArgusActorTeamInfoRecordsPersistent.Reset();
 }
 

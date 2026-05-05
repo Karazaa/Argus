@@ -123,6 +123,14 @@ bool UAbilityRecordDatabase::ResizePersistentObjectPointerArrayToFitRecord(uint3
 
 void UAbilityRecordDatabase::ResetPersistentObjectPointerArray()
 {
+	for (int32 i = 0; i < m_UAbilityRecordsPersistent.Num(); ++i)
+	{
+		if (m_UAbilityRecordsPersistent[i])
+		{
+			m_UAbilityRecordsPersistent[i]->ResetSoftPtrLoadStores();
+		}
+	}
+
 	m_UAbilityRecordsPersistent.Reset();
 }
 

@@ -17,4 +17,5 @@ public:
 	FSoftObjectLoadStore_UMaterialInterface m_material;
 
 	void OnAsyncLoaded() const override;
+	void ResetSoftPtrLoadStores() override;
 };

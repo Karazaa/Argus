@@ -18,6 +18,7 @@ uint16 ArgusEntity::s_highestTakenEntityId = 0u;
 
 void ArgusEntity::FlushAllEntities()
 {
+	ArgusStaticData::ResetLoadedPointerArrays();
 	ArgusComponentRegistry::FlushAllComponents();
 	s_takenEntityIds.Reset();
 	s_takenEntityIds.SetNum(ArgusECSConstants::k_maxEntities, false);

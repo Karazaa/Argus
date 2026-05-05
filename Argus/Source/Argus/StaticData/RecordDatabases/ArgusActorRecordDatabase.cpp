@@ -123,6 +123,14 @@ bool UArgusActorRecordDatabase::ResizePersistentObjectPointerArrayToFitRecord(ui
 
 void UArgusActorRecordDatabase::ResetPersistentObjectPointerArray()
 {
+	for (int32 i = 0; i < m_UArgusActorRecordsPersistent.Num(); ++i)
+	{
+		if (m_UArgusActorRecordsPersistent[i])
+		{
+			m_UArgusActorRecordsPersistent[i]->ResetSoftPtrLoadStores();
+		}
+	}
+
 	m_UArgusActorRecordsPersistent.Reset();
 }
 

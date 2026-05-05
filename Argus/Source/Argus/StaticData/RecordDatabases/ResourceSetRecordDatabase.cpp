@@ -123,6 +123,14 @@ bool UResourceSetRecordDatabase::ResizePersistentObjectPointerArrayToFitRecord(u
 
 void UResourceSetRecordDatabase::ResetPersistentObjectPointerArray()
 {
+	for (int32 i = 0; i < m_UResourceSetRecordsPersistent.Num(); ++i)
+	{
+		if (m_UResourceSetRecordsPersistent[i])
+		{
+			m_UResourceSetRecordsPersistent[i]->ResetSoftPtrLoadStores();
+		}
+	}
+
 	m_UResourceSetRecordsPersistent.Reset();
 }
 

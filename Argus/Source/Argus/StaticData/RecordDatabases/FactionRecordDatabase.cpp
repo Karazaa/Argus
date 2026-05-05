@@ -123,6 +123,14 @@ bool UFactionRecordDatabase::ResizePersistentObjectPointerArrayToFitRecord(uint3
 
 void UFactionRecordDatabase::ResetPersistentObjectPointerArray()
 {
+	for (int32 i = 0; i < m_UFactionRecordsPersistent.Num(); ++i)
+	{
+		if (m_UFactionRecordsPersistent[i])
+		{
+			m_UFactionRecordsPersistent[i]->ResetSoftPtrLoadStores();
+		}
+	}
+
 	m_UFactionRecordsPersistent.Reset();
 }
 

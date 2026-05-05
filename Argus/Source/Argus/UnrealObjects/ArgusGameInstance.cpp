@@ -9,7 +9,6 @@ UArgusGameInstance* UArgusGameInstance::s_gameInstance = nullptr;
 
 UArgusStaticDatabase* UArgusGameInstance::GetStaticDatabase()
 {
-	ARGUS_RETURN_ON_NULL_POINTER(s_staticDatabaseLoadedReference, ArgusStaticDataLog);
 	return s_staticDatabaseLoadedReference;
 }
 

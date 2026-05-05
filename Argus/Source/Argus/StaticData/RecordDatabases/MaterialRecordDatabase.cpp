@@ -123,6 +123,14 @@ bool UMaterialRecordDatabase::ResizePersistentObjectPointerArrayToFitRecord(uint
 
 void UMaterialRecordDatabase::ResetPersistentObjectPointerArray()
 {
+	for (int32 i = 0; i < m_UMaterialRecordsPersistent.Num(); ++i)
+	{
+		if (m_UMaterialRecordsPersistent[i])
+		{
+			m_UMaterialRecordsPersistent[i]->ResetSoftPtrLoadStores();
+		}
+	}
+
 	m_UMaterialRecordsPersistent.Reset();
 }
 

@@ -16,9 +16,10 @@ class ArgusStaticData
 public:
 	static void ResetLoadedPointerArrays() 
 	{		
-		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
-		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
-		staticDatabase->ResetLoadedPointerArrays();
+		if (UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase())
+		{
+			staticDatabase->ResetLoadedPointerArrays();
+		}		
 	}
 
 	template<typename ArgusStaticRecord>

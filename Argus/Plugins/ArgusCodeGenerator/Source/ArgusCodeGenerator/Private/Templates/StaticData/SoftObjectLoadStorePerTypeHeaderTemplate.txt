@@ -11,6 +11,7 @@ public:
 	#####* LoadAndStorePtr() const;
 	bool AsyncPreLoadAndStorePtr(TFunction<void(#####*)> callback = nullptr) const;
 	void SetHardPtr(#####* pointer);
+	void ResetHardPtr();
 	operator bool() const { return m_hardPtr || !m_softPtr.IsNull(); }
 
 protected:

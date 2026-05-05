@@ -72,6 +72,11 @@
 	{
 		m_hardPtr = pointer;
 	};
+
+	void FSoftObjectLoadStore_UArgusEntityTemplate::ResetHardPtr()
+	{
+		m_hardPtr = nullptr;
+	};
 #pragma endregion
 
 #pragma region UTexture
@@ -133,6 +138,11 @@
 	{
 		m_hardPtr = pointer;
 	};
+
+	void FSoftObjectLoadStore_UTexture::ResetHardPtr()
+	{
+		m_hardPtr = nullptr;
+	};
 #pragma endregion
 
 #pragma region UMaterialInterface
@@ -193,6 +203,11 @@
 	void FSoftObjectLoadStore_UMaterialInterface::SetHardPtr(UMaterialInterface* pointer)
 	{
 		m_hardPtr = pointer;
+	};
+
+	void FSoftObjectLoadStore_UMaterialInterface::ResetHardPtr()
+	{
+		m_hardPtr = nullptr;
 	};
 #pragma endregion
 
@@ -258,6 +273,11 @@
 	void FSoftClassLoadStore_AArgusActor::SetHardPtr(UClass* pointer)
 	{
 		m_hardPtr = pointer;
+	};
+
+	void FSoftClassLoadStore_AArgusActor::ResetHardPtr()
+	{
+		m_hardPtr = nullptr;
 	};
 #pragma endregion
 

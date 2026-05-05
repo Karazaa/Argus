@@ -15,3 +15,10 @@ void UArgusActorRecord::OnAsyncLoaded() const
 	});
 	m_actorInfoIcon.AsyncPreLoadAndStorePtr();
 }
+
+void UArgusActorRecord::ResetSoftPtrLoadStores()
+{
+	m_argusActorClass.ResetHardPtr();
+	m_entityTemplate.ResetHardPtr();
+	m_actorInfoIcon.ResetHardPtr();
+}
