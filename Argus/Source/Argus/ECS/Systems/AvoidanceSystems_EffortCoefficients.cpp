@@ -28,7 +28,7 @@ float AvoidanceSystems::GetEffortCoefficientForEntityPair(const EffortCoefficien
 	float effortCoefficient = 0.5f;
 	if (ShouldReturnMovabilityEffortCoefficient(settings, sourceEntityComponents, foundEntity, effortCoefficient) ||
 		ShouldReturnCombatEffortCoefficient(settings, sourceEntityComponents, foundEntityTaskComponent, inSameAvoidanceGroup, effortCoefficient) ||
-		ShouldReturnConstructionEffortCoefficient(settings, sourceEntityComponents, foundEntityTaskComponent, effortCoefficient) ||
+		ShouldReturnConstructionEffortCoefficient(settings, sourceEntityComponents, foundEntityTaskComponent, inSameAvoidanceGroup, effortCoefficient) ||
 		ShouldReturnResourceExtractionEffortCoefficient(settings, sourceEntityComponents, foundEntityTaskComponent, inSameAvoidanceGroup, effortCoefficient) ||
 		ShouldReturnCarrierEffortCoefficient(settings, sourceEntityComponents, foundEntity, foundEntityTaskComponent, effortCoefficient) ||
 		ShouldReturnTargetEffortCoefficient(settings, sourceEntityComponents, foundEntity, inSameAvoidanceGroup, effortCoefficient) ||
@@ -120,19 +120,19 @@ bool AvoidanceSystems::ShouldReturnCombatEffortCoefficient(const EffortCoefficie
 
 	if (sourceEntityComponents.m_taskComponent->m_combatState == ECombatState::Attacking && foundEntityTaskComponent->m_combatState != ECombatState::Attacking)
 	{
-		coefficient = inSameAvoidanceGroup ? 0.33f : 0.0f;
+		coefficient = inSameAvoidanceGroup ? settings->m_sameAvoidanceGroupIsAttacking : 0.0f;
 		return true;
 	}
 	if (sourceEntityComponents.m_taskComponent->m_combatState != ECombatState::Attacking && foundEntityTaskComponent->m_combatState == ECombatState::Attacking)
 	{
-		coefficient = inSameAvoidanceGroup ? 0.67f : 1.0f;
+		coefficient = inSameAvoidanceGroup ? (1.0f - settings->m_sameAvoidanceGroupIsAttacking) : 1.0f;
 		return true;
 	}
 
 	return false;
 }
 
-bool AvoidanceSystems::ShouldReturnConstructionEffortCoefficient(const EffortCoefficientSettingsComponent* settings, const TransformSystemsArgs& sourceEntityComponents, const TaskComponent* foundEntityTaskComponent, float& coefficient)
+bool AvoidanceSystems::ShouldReturnConstructionEffortCoefficient(const EffortCoefficientSettingsComponent* settings, const TransformSystemsArgs& sourceEntityComponents, const TaskComponent* foundEntityTaskComponent, bool inSameAvoidanceGroup, float& coefficient)
 {
 	ARGUS_RETURN_ON_NULL_BOOL(settings, ArgusECSLog);
 	ARGUS_RETURN_ON_NULL_BOOL(foundEntityTaskComponent, ArgusECSLog);
@@ -143,12 +143,12 @@ bool AvoidanceSystems::ShouldReturnConstructionEffortCoefficient(const EffortCoe
 
 	if (sourceEntityComponents.m_taskComponent->m_constructionState == EConstructionState::ConstructingOther && foundEntityTaskComponent->m_constructionState != EConstructionState::ConstructingOther)
 	{
-		coefficient = 0.0f;
+		coefficient = inSameAvoidanceGroup ? settings->m_sameAvoidanceGroupIsConstructing : 0.0f;
 		return true;
 	}
 	if (sourceEntityComponents.m_taskComponent->m_constructionState != EConstructionState::ConstructingOther && foundEntityTaskComponent->m_constructionState == EConstructionState::ConstructingOther)
 	{
-		coefficient = 1.0f;
+		coefficient = inSameAvoidanceGroup ? (1.0f - settings->m_sameAvoidanceGroupIsConstructing) : 1.0f;
 		return true;
 	}
 

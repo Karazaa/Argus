@@ -24,6 +24,12 @@ public:
 	UPROPERTY(EditAnywhere, meta = (Category = "Same Avoidance Group")) 
 	float m_sameAvoidanceGroupOtherHasObstacle = 0.75f;
 
+	UPROPERTY(EditAnywhere, meta = (Category = "Same Avoidance Group")) 
+	float m_sameAvoidanceGroupIsAttacking = 0.33f;
+
+	UPROPERTY(EditAnywhere, meta = (Category = "Same Avoidance Group")) 
+	float m_sameAvoidanceGroupIsConstructing = 0.33f;
+
 
 	void InstantiateComponentForEntity(ArgusEntity entity) const override;
 	void OnComponentDataLoaded() const override;

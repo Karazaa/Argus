@@ -14,6 +14,8 @@ void UEffortCoefficientSettingsComponentData::InstantiateComponentForEntity(Argu
 	EffortCoefficientSettingsComponentRef->m_sameAvoidanceGroupBothObstacle = m_sameAvoidanceGroupBothObstacle;
 	EffortCoefficientSettingsComponentRef->m_sameAvoidanceGroupHasObstacle = m_sameAvoidanceGroupHasObstacle;
 	EffortCoefficientSettingsComponentRef->m_sameAvoidanceGroupOtherHasObstacle = m_sameAvoidanceGroupOtherHasObstacle;
+	EffortCoefficientSettingsComponentRef->m_sameAvoidanceGroupIsAttacking = m_sameAvoidanceGroupIsAttacking;
+	EffortCoefficientSettingsComponentRef->m_sameAvoidanceGroupIsConstructing = m_sameAvoidanceGroupIsConstructing;
 }
 
 void UEffortCoefficientSettingsComponentData::OnComponentDataLoaded() const

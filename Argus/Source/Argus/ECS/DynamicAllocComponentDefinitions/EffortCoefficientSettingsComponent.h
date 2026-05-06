@@ -21,5 +21,11 @@ struct EffortCoefficientSettingsComponent
 	ARGUS_COMP_PROPERTY(EditAnywhere, meta = (Category = "Same Avoidance Group")) ARGUS_COMP_TRANSIENT
 	float m_sameAvoidanceGroupOtherHasObstacle = 0.75f;
 
+	ARGUS_COMP_PROPERTY(EditAnywhere, meta = (Category = "Same Avoidance Group")) ARGUS_COMP_TRANSIENT
+	float m_sameAvoidanceGroupIsAttacking = 0.33f;
+
+	ARGUS_COMP_PROPERTY(EditAnywhere, meta = (Category = "Same Avoidance Group")) ARGUS_COMP_TRANSIENT
+	float m_sameAvoidanceGroupIsConstructing = 0.33f;
+
 	static const EffortCoefficientSettingsComponent* Get();
 };

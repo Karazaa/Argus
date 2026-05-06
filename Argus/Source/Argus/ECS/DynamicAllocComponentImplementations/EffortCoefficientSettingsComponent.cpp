@@ -18,6 +18,8 @@ void EffortCoefficientSettingsComponent::Reset()
 	m_sameAvoidanceGroupBothObstacle = 0.3f;
 	m_sameAvoidanceGroupHasObstacle = 0.0f;
 	m_sameAvoidanceGroupOtherHasObstacle = 0.75f;
+	m_sameAvoidanceGroupIsAttacking = 0.33f;
+	m_sameAvoidanceGroupIsConstructing = 0.33f;
 }
 
 void EffortCoefficientSettingsComponent::Serialize(FArchive& archive)
@@ -50,6 +52,14 @@ void EffortCoefficientSettingsComponent::DrawComponentDebug() const
 		ImGui::Text("m_sameAvoidanceGroupOtherHasObstacle");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_sameAvoidanceGroupOtherHasObstacle);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_sameAvoidanceGroupIsAttacking");
+		ImGui::TableNextColumn();
+		ImGui::Text("%.2f", m_sameAvoidanceGroupIsAttacking);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_sameAvoidanceGroupIsConstructing");
+		ImGui::TableNextColumn();
+		ImGui::Text("%.2f", m_sameAvoidanceGroupIsConstructing);
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING
