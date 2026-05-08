@@ -21,4 +21,5 @@ private:
 	static void UpdateResourceExtractionDataPerSink(const TeamCommanderSystemsArgs& components, TeamCommanderComponent* teamCommanderComponent);
 	static void UpdateRevealedAreasPerEntityOnTeam(const TeamCommanderSystemsArgs& components, TeamCommanderComponent* teamCommanderComponent);
 	static void UpdateSpawningUnitTypesPerSpawner(const TeamCommanderSystemsArgs& components, TeamCommanderComponent* teamCommanderComponent);
+	static void UpdateConstructionDataPerConstructee(const TeamCommanderSystemsArgs& components, TeamCommanderComponent* teamCommanderComponent);
 };

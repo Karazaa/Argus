@@ -287,3 +287,16 @@ void TeamCommanderSystems_GatherInfo::UpdateSpawningUnitTypesPerSpawner(const Te
 	const SpawnEntityInfo& spawnInfo = spawningComponent->m_spawnQueue.First();
 	teamCommanderComponent->m_spawningEntityRecordIds.Add(spawnInfo.m_argusActorRecordId);
 }
+
+void TeamCommanderSystems_GatherInfo::UpdateConstructionDataPerConstructee(const TeamCommanderSystemsArgs& components, TeamCommanderComponent* teamCommanderComponent)
+{
+	ARGUS_TRACE(TeamCommanderSystems_GatherInfo::UpdateConstructionDataPerConstructee);
+
+	ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+
+	// TODO JAMES: Check construction state and check if present in map. If so, update. Else, emplace
+}

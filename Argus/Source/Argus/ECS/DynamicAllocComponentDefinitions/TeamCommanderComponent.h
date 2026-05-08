@@ -4,6 +4,8 @@
 
 #include "ArgusContainerAllocator.h"
 #include "ArgusMacros.h"
+#include "ArgusMap.h"
+#include "ArgusSetAllocator.h"
 #include "ComponentDependencies/ResourceSet.h"
 #include "ComponentDependencies/TeamCommanderPriorities.h"
 #include "ComponentDependencies/Teams.h"
@@ -25,6 +27,9 @@ struct TeamCommanderComponent
 	ARGUS_COMP_NO_DATA
 	TArray<ResourceSourceExtractionData, ArgusContainerAllocator<10u> > m_seenResourceCSourceExtractionData;
 
+	ARGUS_COMP_NO_DATA
+	ArgusMap<uint16, ConstructionData, ArgusSetAllocator<10> > m_inProgressConstructionData;
+
 	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT
 	TArray<uint32, ArgusContainerAllocator<10u>> m_spawningEntityRecordIds; 
 
@@ -42,6 +47,7 @@ struct TeamCommanderComponent
 	void ResetUpdateArrays()
 	{
 		m_idleEntityIdsForTeam.Reset();
+		m_inProgressConstructionData.Reset();
 		m_spawningEntityRecordIds.Reset();
 		m_priorities.Reset();
 	}

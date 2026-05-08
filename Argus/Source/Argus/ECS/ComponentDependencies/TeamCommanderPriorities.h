@@ -35,6 +35,12 @@ struct ResourceSourceExtractionData
 	bool HasSourceEntityId(uint16 entityId) const { return m_resourceSourceEntityId == entityId; }
 	void SetSourceEntityId(uint16 entityId) { m_resourceSourceEntityId = entityId; }
 };
+
+struct ConstructionData
+{
+	uint16 m_beingConstructedEntityId = ArgusECSConstants::k_maxEntities;
+	uint16 m_constructingOtherEntityId = ArgusECSConstants::k_maxEntities;
+};
 FArchive& operator<<(FArchive& archive, ResourceSourceExtractionData& controlGroup);
 
 
