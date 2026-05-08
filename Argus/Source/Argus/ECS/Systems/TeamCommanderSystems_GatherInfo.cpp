@@ -171,6 +171,7 @@ void TeamCommanderSystems_GatherInfo::UpdateTeamCommanderPerEntityOnTeam(const T
 	UpdateResourceExtractionDataPerSink(components, teamCommanderComponent);
 	UpdateRevealedAreasPerEntityOnTeam(components, teamCommanderComponent);
 	UpdateSpawningUnitTypesPerSpawner(components, teamCommanderComponent);
+	UpdateConstructionDataPerConstructee(components, teamCommanderComponent);
 }
 
 void TeamCommanderSystems_GatherInfo::UpdateTeamCommanderPerNeutralEntity(const TeamCommanderSystemsArgs& components, ArgusEntity teamCommanderEntity)
@@ -298,5 +299,34 @@ void TeamCommanderSystems_GatherInfo::UpdateConstructionDataPerConstructee(const
 		return;
 	}
 
-	// TODO JAMES: Check construction state and check if present in map. If so, update. Else, emplace
+	const uint16 entityId = components.m_entity.GetId();
+	if (components.m_taskComponent->m_constructionState == EConstructionState::BeingConstructed && !teamCommanderComponent->m_inProgressConstructionData.Contains(entityId))
+	{
+		ConstructionData& newConstructionData = teamCommanderComponent->m_inProgressConstructionData.Emplace(entityId);
+		newConstructionData.m_beingConstructedEntityId = entityId;
+		return;
+	}
+
+	if (components.m_taskComponent->m_constructionState != EConstructionState::DispatchedToConstructOther && components.m_taskComponent->m_constructionState != EConstructionState::ConstructingOther)
+	{
+		return;
+	}
+
+	if (!components.m_targetingComponent->HasEntityTarget())
+	{
+		return;
+	}
+
+	const uint16 targetEntityId = components.m_targetingComponent->m_targetEntityId;
+	ConstructionData* existingConstructionData = teamCommanderComponent->m_inProgressConstructionData.Find(targetEntityId);
+	if (existingConstructionData)
+	{
+		existingConstructionData->m_constructingOtherEntityId = entityId;
+	}
+	else
+	{
+		ConstructionData& newConstructionData = teamCommanderComponent->m_inProgressConstructionData.Emplace(targetEntityId);
+		newConstructionData.m_beingConstructedEntityId = targetEntityId;
+		newConstructionData.m_constructingOtherEntityId = entityId;
+	}
 }
