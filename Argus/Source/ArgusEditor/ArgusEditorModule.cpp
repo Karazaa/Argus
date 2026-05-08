@@ -2,6 +2,9 @@
 
 #include "ArgusEditorModule.h"
 #include "Argus/StaticData/ArgusStaticRecordReference.h"
+#include "AssetFactories/ArgusEntityTemplateFactory.h"
+#include "AssetToolsModule.h"
+#include "IAssetTools.h"
 #include "UObject/UObjectGlobals.h"
 
 #define LOCTEXT_NAMESPACE "ArgusEditor"
@@ -32,6 +35,16 @@ ArgusEditorModule& ArgusEditorModule::Get()
 void ArgusEditorModule::StartupModule()
 {
 	m_propertyChangedHandle = FCoreUObjectDelegates::OnObjectPropertyChanged.AddRaw(this, &ArgusEditorModule::OnObjectPropertyChanged);
+
+	IAssetTools& assetTools = FModuleManager::LoadModuleChecked<FAssetToolsModule>("AssetTools").Get();
+
+	EAssetTypeCategories::Type argusCategory = assetTools.RegisterAdvancedAssetCategory(FName(TEXT("Argus")), LOCTEXT("Argus", "Argus"));
+	{
+		// TODO JAMES: Register factories here.
+
+		//TSharedRef<IAssetTypeActions> actions = MakeShareable(new Factory);
+		//assetTools.RegisterAssetTypeActions(actions);
+	}
 }
 
 void ArgusEditorModule::ShutdownModule()
