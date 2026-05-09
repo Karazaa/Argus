@@ -3,6 +3,7 @@
 #pragma once
 
 #include "AssetTypeCategories.h"
+#include "ArgusEditorGeneratedLogic.h"
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 
@@ -25,8 +26,9 @@ private:
 
 	void OnObjectPropertyChanged(UObject* object, FPropertyChangedEvent& propertyChangedEvent) const;
 	void StoreRecordReferenceRecursive(const void* container, const FProperty* currentProperty, const FProperty* targetProperty) const;
+	void RegisterAssetActions(class IAssetTools& assetTools) const;
 
 	FDelegateHandle m_propertyChangedHandle;
 
-	friend class FAssetTypeActions_ArgusEntityTemplate;
+	EDITOR_MODULE_FRIENDS
 };

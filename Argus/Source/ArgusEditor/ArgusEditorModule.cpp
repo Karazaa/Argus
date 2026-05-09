@@ -2,7 +2,6 @@
 
 #include "ArgusEditorModule.h"
 #include "ArgusStaticRecordReference.h"
-#include "AssetFactories/ArgusEntityTemplateFactory.h"
 #include "AssetToolsModule.h"
 #include "IAssetTools.h"
 #include "UObject/UObjectGlobals.h"
@@ -46,10 +45,7 @@ void ArgusEditorModule::StartupModule()
 	IAssetTools& assetTools = FModuleManager::LoadModuleChecked<FAssetToolsModule>("AssetTools").Get();
 
 	s_argusAssetCategory = assetTools.RegisterAdvancedAssetCategory(FName(TEXT("Argus")), LOCTEXT("Argus", "Argus"));
-	{
-		TSharedRef<IAssetTypeActions> actions = MakeShareable(new FAssetTypeActions_ArgusEntityTemplate);
-		assetTools.RegisterAssetTypeActions(actions);
-	}
+	RegisterAssetActions(assetTools);
 }
 
 void ArgusEditorModule::ShutdownModule()

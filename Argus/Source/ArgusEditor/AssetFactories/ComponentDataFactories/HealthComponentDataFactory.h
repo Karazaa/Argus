@@ -1,0 +1,48 @@
+// Copyright Karazaa. This is a part of an RTS project called Argus.
+
+#pragma once
+
+#include "DataComponentDefinitions/HealthComponentData.h"
+#include "Developer/AssetTools/Public/AssetTypeActions_Base.h"
+#include "Editor/UnrealEd/Classes/Factories/Factory.h"
+#include "UObject/ObjectMacros.h"
+#include "UObject/Object.h"
+#include "HealthComponentDataFactory.generated.h"
+
+#define LOCTEXT_NAMESPACE "HealthComponentDataFactory"
+
+UCLASS()
+class UHealthComponentDataFactory : public UFactory
+{
+	GENERATED_BODY()
+
+public:
+	UHealthComponentDataFactory(const FObjectInitializer& objectInitializer);
+	virtual UObject* FactoryCreateNew(UClass* classDefinition, UObject* parentObject, FName name, EObjectFlags objectFlags, UObject* context, FFeedbackContext* warning) override;
+
+protected:
+	virtual bool IsMacroFactory() const { return false; }
+};
+
+class FAssetTypeActions_HealthComponentData : public FAssetTypeActions_Base
+{
+public:
+	virtual FText GetName() const override { return LOCTEXT("HealthComponentData", "Health Component Data"); }
+	virtual uint32 GetCategories() override;
+	virtual FColor GetTypeColor() const override { return FColor(239, 144, 58); }
+
+	// COLOR SUGGESTIONS
+	// 151, 88, 194 (Archon Purple)
+	// 239, 144, 58 (Orange)
+	// 79, 239, 174 (Mint)
+
+	virtual FText GetAssetDescription(const FAssetData& assetData) const override { return LOCTEXT("HealthComponentDataDesc", "Data Asset that defines the contents of a HealthComponent."); }
+	virtual UClass* GetSupportedClass() const override { return UHealthComponentData::StaticClass(); }
+	virtual const TArray<FText>& GetSubMenus() const override { return m_subMenus; };
+
+private:
+	TArray<FText> m_subMenus{ LOCTEXT("ComponentSubmenu", "Component Data") };
+};
+
+
+#undef LOCTEXT_NAMESPACE
