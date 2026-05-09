@@ -1,7 +1,7 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusEditorModule.h"
-#include "Argus/StaticData/ArgusStaticRecordReference.h"
+#include "ArgusStaticRecordReference.h"
 #include "AssetFactories/ArgusEntityTemplateFactory.h"
 #include "AssetToolsModule.h"
 #include "IAssetTools.h"
@@ -27,9 +27,16 @@ namespace
 	}
 }
 
+EAssetTypeCategories::Type ArgusEditorModule::s_argusAssetCategory = EAssetTypeCategories::Type::Misc;
+
 ArgusEditorModule& ArgusEditorModule::Get()
 {
 	return FModuleManager::GetModuleChecked<ArgusEditorModule>("ArgusEditor");
+}
+
+EAssetTypeCategories::Type ArgusEditorModule::GetAssetTypeCategory()
+{
+	return s_argusAssetCategory;
 }
 
 void ArgusEditorModule::StartupModule()
@@ -38,12 +45,10 @@ void ArgusEditorModule::StartupModule()
 
 	IAssetTools& assetTools = FModuleManager::LoadModuleChecked<FAssetToolsModule>("AssetTools").Get();
 
-	EAssetTypeCategories::Type argusCategory = assetTools.RegisterAdvancedAssetCategory(FName(TEXT("Argus")), LOCTEXT("Argus", "Argus"));
+	s_argusAssetCategory = assetTools.RegisterAdvancedAssetCategory(FName(TEXT("Argus")), LOCTEXT("Argus", "Argus"));
 	{
-		// TODO JAMES: Register factories here.
-
-		//TSharedRef<IAssetTypeActions> actions = MakeShareable(new Factory);
-		//assetTools.RegisterAssetTypeActions(actions);
+		TSharedRef<IAssetTypeActions> actions = MakeShareable(new FAssetTypeActions_ArgusEntityTemplate);
+		assetTools.RegisterAssetTypeActions(actions);
 	}
 }
 

@@ -9,7 +9,7 @@
 #include "ArgusEntityTemplate.generated.h"
 
 UCLASS()
-class UArgusEntityTemplate : public UDataAsset 
+class ARGUS_API UArgusEntityTemplate : public UDataAsset 
 {
 	GENERATED_BODY()
 

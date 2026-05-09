@@ -17,10 +17,10 @@ public class ArgusEditor : ModuleRules
 			"Engine",
 			"InputCore",
 			"UnrealEd",
-           		"Slate",
-            		"SlateCore",
-            		"PropertyEditor",
-            		"Argus"
+           	"Slate",
+            "SlateCore",
+            "PropertyEditor",
+            "Argus"
 		);
 
 		PrivateDependencyModuleNames.AddAll();

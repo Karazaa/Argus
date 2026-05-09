@@ -18,11 +18,6 @@ public class Argus : ModuleRules
             PrivateDependencyModuleNames.AddRange(new string[] { "UnrealEd" });
         }
 
-        PrivateIncludePaths.AddRange(new string[] { "Argus/ECS/", "Argus/FunctionalTesting/", "Argus/Memory/", "Argus/Persistence/", "Argus/StaticData/", "Argus/UI/", "Argus/UnrealObjects/", "Argus/Utilities/", });
-
-        // Uncomment if you are using online features
-        // PrivateDependencyModuleNames.Add("OnlineSubsystem");
-
-        // To include OnlineSubsystemSteam, add it to the plugins section in your uproject file with the Enabled attribute set to true
+        PublicIncludePaths.AddRange(new string[] { "Argus/ECS/", "Argus/FunctionalTesting/", "Argus/Memory/", "Argus/Persistence/", "Argus/StaticData/", "Argus/UI/", "Argus/UnrealObjects/", "Argus/Utilities/", });
     }
 }
