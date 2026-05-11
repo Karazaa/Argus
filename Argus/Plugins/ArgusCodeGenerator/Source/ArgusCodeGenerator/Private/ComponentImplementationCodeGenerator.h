@@ -51,7 +51,8 @@ private:
 		Deque,
 		Smoother,
 		Optional,
-		BitArray
+		BitArray,
+		Map
 	};
 
 	struct TypeInfo

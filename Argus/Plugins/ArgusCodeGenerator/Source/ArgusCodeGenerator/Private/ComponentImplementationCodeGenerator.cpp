@@ -263,6 +263,12 @@ void ComponentImplementationGenerator::GeneratePerVariableResetText(const std::v
 			outParsedVariableContents.push_back(std::vformat("\t{}.ResetZero();", std::make_format_args(parsedVariableData[i].m_varName)));
 			continue;
 		}
+
+		if (typeInfo.m_containerType == ContainerType::Map)
+		{
+			outParsedVariableContents.push_back(std::vformat("\t{}.Empty();", std::make_format_args(parsedVariableData[i].m_varName)));
+			continue;
+		}
 	}
 }
 
@@ -312,7 +318,9 @@ void ComponentImplementationGenerator::GeneratePerVariableSerializeText(const st
 				break;
 			case ContainerType::Array:
 				outParsedVariableContents.push_back(std::vformat("\tarchive << {};", std::make_format_args(parsedVariableData[i].m_varName)));
-				break;	
+				break;
+			default:
+				break;
 		}
 	}
 }
@@ -441,6 +449,8 @@ void ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 				break;
 			case ContainerType::Deque:
 				FormatImGuiDequeField(parsedVariableData[i].m_varName, extraData, outParsedVariableContents, atomicFieldFormattingFunction);
+				break;
+			case ContainerType::Map:
 				break;
 			default:
 				{
@@ -905,5 +915,9 @@ ComponentImplementationGenerator::TypeInfo::TypeInfo(const std::string& typeName
 	else if (typeName.find("TBitArray") != std::string::npos)
 	{
 		m_containerType = ContainerType::BitArray;
+	}
+	else if (typeName.find("ArgusMap") != std::string::npos)
+	{
+		m_containerType = ContainerType::Map;
 	}
 }
