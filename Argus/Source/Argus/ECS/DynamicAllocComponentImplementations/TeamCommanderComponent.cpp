@@ -30,6 +30,7 @@ void TeamCommanderComponent::Serialize(FArchive& archive)
 	archive << m_seenResourceASourceExtractionData;
 	archive << m_seenResourceBSourceExtractionData;
 	archive << m_seenResourceCSourceExtractionData;
+	// archive << m_inProgressConstructionData;
 	m_revealedAreas.Serialize(archive);
 	archive << m_revealedAreaDimensionLength;
 	archive << m_teamToCommand;
@@ -173,6 +174,10 @@ void TeamCommanderComponent::DrawComponentDebug() const
 			ImGui::Unindent();
 		}
 		ImGui::TableNextColumn();
+		ImGui::Text("m_inProgressConstructionData");
+		ImGui::TableNextColumn();
+		//ImGui::Text("%d", m_inProgressConstructionData);
+		//ImGui::TableNextColumn();
 		ImGui::Text("m_spawningEntityRecordIds");
 		ImGui::TableNextColumn();
 		ImGui::Text("Array max is currently = %d", m_spawningEntityRecordIds.Max());

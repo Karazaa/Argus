@@ -8,6 +8,7 @@
 #include "ArgusECSObjectAdder.h"
 #include "ArgusStaticDataCodeGenerator.h"
 #include "ArgusSystemArgsImplementationCodeGenerator.h"
+#include "AssetFactoryGenerator.h"
 #include "ComponentImplementationCodeGenerator.h"
 #include "ComponentObserversCodeGenerator.h"
 #include "Framework/Docking/TabManager.h"
@@ -115,6 +116,7 @@ void FArgusCodeGeneratorModule::GenerateCode()
 	ComponentObserversGenerator::GenerateComponentObserversCode(parsedComponentData);
 	ArgusStaticDataCodeGenerator::GenerateStaticDataCode(parsedStaticDataRecords);
 	ArgusSystemArgsImplementationCodeGenerator::GenerateSystemArgsImplementation(parsedSystemArgDefinitions);
+	AssetFactoryGenerator::GenerateAssetFactories(parsedComponentData, parsedStaticDataRecords);
 }
 
 void FArgusCodeGeneratorModule::OpenECSObjectAdder()
