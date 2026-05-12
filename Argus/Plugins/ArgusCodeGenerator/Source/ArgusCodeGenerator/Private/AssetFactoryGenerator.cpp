@@ -8,10 +8,15 @@
 
 const char* AssetFactoryGenerator::s_componentAssetFactoriesDirectorySuffix = "Source/ArgusEditor/AssetFactories/ComponentDataFactories/";
 const char* AssetFactoryGenerator::s_recordAssetFactoriesDirectorySuffix = "Source/ArgusEditor/AssetFactories/StaticRecordFactories/";
+const char* AssetFactoryGenerator::s_argusEditorDirectorySuffix = "Source/ArgusEditor/";
 const char* AssetFactoryGenerator::s_componentAssetFactoriesHeaderTemplateFilename = "ComponentAssetFactoryHeaderTemplate.txt";
 const char* AssetFactoryGenerator::s_recordAssetFactoriesHeaderTemplateFilename = "RecordAssetFactoryHeaderTemplate.txt";
 const char* AssetFactoryGenerator::s_componentAssetFactoriesCppTemplateFilename = "ComponentAssetFactoryCppTemplate.txt";
 const char* AssetFactoryGenerator::s_recordAssetFactoriesCppTemplateFilename = "RecordAssetFactoryCppTemplate.txt";
+const char* AssetFactoryGenerator::s_argusEditorGeneratedHeaderTemplateFilename = "ArgusEditorGeneratedLogicHeaderTemplate.txt";
+const char* AssetFactoryGenerator::s_argusEditorGeneratedCppTemplateFilename = "ArgusEditorGeneratedLogicCppTemplate.txt";
+const char* AssetFactoryGenerator::s_assetActionsPerComponentTemplateFilename = "AssetActionsPerComponentFactoryTemplate.txt";
+const char* AssetFactoryGenerator::s_assetActionsPerRecordTemplateFilename = "AssetActionsPerRecordTemplate.txt";
 const char* AssetFactoryGenerator::s_assetFactoriesTemplateDirectorySuffix = "AssetFactories/";
 
 void AssetFactoryGenerator::GenerateAssetFactories(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData, const ArgusCodeGeneratorUtil::ParseStaticDataRecordsOutput& parsedStaticDataRecords)
@@ -50,25 +55,30 @@ void AssetFactoryGenerator::GenerateAssetFactories(const ArgusCodeGeneratorUtil:
 	recordAssetFactoriesDirectory.Append(s_recordAssetFactoriesDirectorySuffix);
 	FPaths::MakeStandardFilename(recordAssetFactoriesDirectory);
 
-	const char* cStrComponentAssetFactoriesDirectoryDirectory = ARGUS_FSTRING_TO_CHAR(componentAssetFactoriesDirectory);
-	const char* cStrRecordAssetFactoriesDirectoryDirectory = ARGUS_FSTRING_TO_CHAR(recordAssetFactoriesDirectory);
+	FString argusEditorDirectory = ArgusCodeGeneratorUtil::GetProjectDirectory();
+	argusEditorDirectory.Append(s_argusEditorDirectorySuffix);
+	FPaths::MakeStandardFilename(argusEditorDirectory);
+
+	const char* cStrComponentAssetFactoriesDirectory = ARGUS_FSTRING_TO_CHAR(componentAssetFactoriesDirectory);
+	const char* cStrRecordAssetFactoriesDirectory = ARGUS_FSTRING_TO_CHAR(recordAssetFactoriesDirectory);
+	const char* cStrArgusEditorDirectory = ARGUS_FSTRING_TO_CHAR(argusEditorDirectory);
 
 	// Write out cpp files.
 	for (int i = 0; i < componentAssetFactoryHeaders.size(); ++i)
 	{
-		didSucceed &= ArgusCodeGeneratorUtil::WriteOutFile(std::string(cStrComponentAssetFactoriesDirectoryDirectory).append(componentAssetFactoryHeaders[i].m_filename), componentAssetFactoryHeaders[i].m_lines);
+		didSucceed &= ArgusCodeGeneratorUtil::WriteOutFile(std::string(cStrComponentAssetFactoriesDirectory).append(componentAssetFactoryHeaders[i].m_filename), componentAssetFactoryHeaders[i].m_lines);
 	}
 	for (int i = 0; i < componentAssetFactoryCpps.size(); ++i)
 	{
-		didSucceed &= ArgusCodeGeneratorUtil::WriteOutFile(std::string(cStrComponentAssetFactoriesDirectoryDirectory).append(componentAssetFactoryCpps[i].m_filename), componentAssetFactoryCpps[i].m_lines);
+		didSucceed &= ArgusCodeGeneratorUtil::WriteOutFile(std::string(cStrComponentAssetFactoriesDirectory).append(componentAssetFactoryCpps[i].m_filename), componentAssetFactoryCpps[i].m_lines);
 	}
 	for (int i = 0; i < recordAssetFactoryHeaders.size(); ++i)
 	{
-		didSucceed &= ArgusCodeGeneratorUtil::WriteOutFile(std::string(cStrRecordAssetFactoriesDirectoryDirectory).append(recordAssetFactoryHeaders[i].m_filename), recordAssetFactoryHeaders[i].m_lines);
+		didSucceed &= ArgusCodeGeneratorUtil::WriteOutFile(std::string(cStrRecordAssetFactoriesDirectory).append(recordAssetFactoryHeaders[i].m_filename), recordAssetFactoryHeaders[i].m_lines);
 	}
 	for (int i = 0; i < recordAssetFactoryCpps.size(); ++i)
 	{
-		didSucceed &= ArgusCodeGeneratorUtil::WriteOutFile(std::string(cStrRecordAssetFactoriesDirectoryDirectory).append(recordAssetFactoryCpps[i].m_filename), recordAssetFactoryCpps[i].m_lines);
+		didSucceed &= ArgusCodeGeneratorUtil::WriteOutFile(std::string(cStrRecordAssetFactoriesDirectory).append(recordAssetFactoryCpps[i].m_filename), recordAssetFactoryCpps[i].m_lines);
 	}
 
 	if (didSucceed)

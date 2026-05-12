@@ -1,0 +1,2 @@
+	TSharedRef<IAssetTypeActions> actions##### = MakeShareable(new FAssetTypeActions_#####);
+	assetTools.RegisterAssetTypeActions(actions#####);

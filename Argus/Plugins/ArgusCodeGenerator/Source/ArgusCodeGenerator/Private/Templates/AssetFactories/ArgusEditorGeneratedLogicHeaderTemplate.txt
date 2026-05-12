@@ -4,6 +4,6 @@
 #pragma once
 
 #define EDITOR_MODULE_FRIENDS \
-friend class FAssetTypeActions_HealthComponentData; \
-friend class FAssetTypeActions_AbilityRecord; \
+&&&&&
+%%%%%
 friend class FAssetTypeActions_ArgusEntityTemplate;
