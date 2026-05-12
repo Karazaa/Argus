@@ -33,6 +33,11 @@ void ArgusSystemArgsImplementationCodeGenerator::GenerateSystemArgsImplementatio
 	{
 		didSucceed &= ArgusCodeGeneratorUtil::WriteOutFile(std::string(cStrSystemArgsImplementationDirectory).append(outParsedSystemArgImplementations[i].m_filename), outParsedSystemArgImplementations[i].m_lines);
 	}
+
+	if (didSucceed)
+	{
+		UE_LOG(ArgusCodeGeneratorLog, Display, TEXT("[%s] Successfully wrote out system arg implementation code."), ARGUS_FUNCNAME)
+	}
 }
 
 bool ArgusSystemArgsImplementationCodeGenerator::ParseSystemArgumentImplementationTemplate(const ArgusCodeGeneratorUtil::ParseSystemArgDefinitionsOutput& parsedSystemArgs, const std::string& templateFilePath, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents)

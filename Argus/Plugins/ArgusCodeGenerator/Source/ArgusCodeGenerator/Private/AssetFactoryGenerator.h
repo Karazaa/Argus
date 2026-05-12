@@ -19,6 +19,6 @@ private:
 	static const char* s_recordAssetFactoriesCppTemplateFilename;
 	static const char* s_assetFactoriesTemplateDirectorySuffix;
 
-	static bool ParseComponentAssetFactoryTemplateFile(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData, const std::string& templateFilePath, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents);
-	static bool ParseRecordAssetFactoryTemplateFile(const ArgusCodeGeneratorUtil::ParseStaticDataRecordsOutput& parsedStaticDataRecords, const std::string& templateFilePath, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents);
+	static bool ParseComponentAssetFactoryTemplateFile(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData, const std::string& templateFilePath, bool isHeader, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents);
+	static bool ParseRecordAssetFactoryTemplateFile(const ArgusCodeGeneratorUtil::ParseStaticDataRecordsOutput& parsedStaticDataRecords, const std::string& templateFilePath, bool isHeader, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents);
 };

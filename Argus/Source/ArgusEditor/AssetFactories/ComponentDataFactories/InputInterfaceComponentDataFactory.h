@@ -3,37 +3,37 @@
 
 #pragma once
 
-#include "DataComponentDefinitions/HealthComponentData.h"
+#include "DataComponentDefinitions/InputInterfaceComponentData.h"
 #include "Developer/AssetTools/Public/AssetTypeActions_Base.h"
 #include "Editor/UnrealEd/Classes/Factories/Factory.h"
 #include "UObject/ObjectMacros.h"
 #include "UObject/Object.h"
-#include "HealthComponentDataFactory.generated.h"
+#include "InputInterfaceComponentDataFactory.generated.h"
 
-#define LOCTEXT_NAMESPACE "HealthComponentDataFactory"
+#define LOCTEXT_NAMESPACE "InputInterfaceComponentDataFactory"
 
 UCLASS()
-class UHealthComponentDataFactory : public UFactory
+class UInputInterfaceComponentDataFactory : public UFactory
 {
 	GENERATED_BODY()
 
 public:
-	UHealthComponentDataFactory(const FObjectInitializer& objectInitializer);
+	UInputInterfaceComponentDataFactory(const FObjectInitializer& objectInitializer);
 	virtual UObject* FactoryCreateNew(UClass* classDefinition, UObject* parentObject, FName name, EObjectFlags objectFlags, UObject* context, FFeedbackContext* warning) override;
 
 protected:
 	virtual bool IsMacroFactory() const { return false; }
 };
 
-class FAssetTypeActions_HealthComponentData : public FAssetTypeActions_Base
+class FAssetTypeActions_InputInterfaceComponentData : public FAssetTypeActions_Base
 {
 public:
-	virtual FText GetName() const override { return LOCTEXT("HealthComponentData", "HealthComponent Data"); }
+	virtual FText GetName() const override { return LOCTEXT("InputInterfaceComponentData", "InputInterfaceComponent Data"); }
 	virtual uint32 GetCategories() override;
 	virtual FColor GetTypeColor() const override { return FColor(239, 144, 58); }
 
-	virtual FText GetAssetDescription(const FAssetData& assetData) const override { return LOCTEXT("HealthComponentDataDesc", "Data Asset that defines the contents of a HealthComponent."); }
-	virtual UClass* GetSupportedClass() const override { return UHealthComponentData::StaticClass(); }
+	virtual FText GetAssetDescription(const FAssetData& assetData) const override { return LOCTEXT("InputInterfaceComponentDataDesc", "Data Asset that defines the contents of a InputInterfaceComponent."); }
+	virtual UClass* GetSupportedClass() const override { return UInputInterfaceComponentData::StaticClass(); }
 	virtual const TArray<FText>& GetSubMenus() const override { return m_subMenus; };
 
 private:

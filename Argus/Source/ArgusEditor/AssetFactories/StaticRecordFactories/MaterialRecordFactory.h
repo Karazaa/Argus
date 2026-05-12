@@ -2,37 +2,37 @@
 
 #pragma once
 
-#include "RecordDefinitions/AbilityRecord.h"
+#include "RecordDefinitions/MaterialRecord.h"
 #include "Developer/AssetTools/Public/AssetTypeActions_Base.h"
 #include "Editor/UnrealEd/Classes/Factories/Factory.h"
 #include "UObject/ObjectMacros.h"
 #include "UObject/Object.h"
-#include "AbilityRecordFactory.generated.h"
+#include "MaterialRecordFactory.generated.h"
 
-#define LOCTEXT_NAMESPACE "AbilityRecordFactory"
+#define LOCTEXT_NAMESPACE "MaterialRecordFactory"
 
 UCLASS()
-class UAbilityRecordFactory : public UFactory
+class UMaterialRecordFactory : public UFactory
 {
 	GENERATED_BODY()
 
 public:
-	UAbilityRecordFactory(const FObjectInitializer& objectInitializer);
+	UMaterialRecordFactory(const FObjectInitializer& objectInitializer);
 	virtual UObject* FactoryCreateNew(UClass* classDefinition, UObject* parentObject, FName name, EObjectFlags objectFlags, UObject* context, FFeedbackContext* warning) override;
 
 protected:
 	virtual bool IsMacroFactory() const { return false; }
 };
 
-class FAssetTypeActions_AbilityRecord : public FAssetTypeActions_Base
+class FAssetTypeActions_MaterialRecord : public FAssetTypeActions_Base
 {
 public:
-	virtual FText GetName() const override { return LOCTEXT("AbilityRecord", "AbilityRecord"); }
+	virtual FText GetName() const override { return LOCTEXT("MaterialRecord", "MaterialRecord"); }
 	virtual uint32 GetCategories() override;
 	virtual FColor GetTypeColor() const override { return FColor(79, 239, 174); }
 
-	virtual FText GetAssetDescription(const FAssetData& assetData) const override { return LOCTEXT("AbilityRecordDesc", "An AbilityRecord for the AbilityRecord Static Database."); }
-	virtual UClass* GetSupportedClass() const override { return UAbilityRecord::StaticClass(); }
+	virtual FText GetAssetDescription(const FAssetData& assetData) const override { return LOCTEXT("MaterialRecordDesc", "An MaterialRecord for the MaterialRecord Static Database."); }
+	virtual UClass* GetSupportedClass() const override { return UMaterialRecord::StaticClass(); }
 	virtual const TArray<FText>& GetSubMenus() const override { return m_subMenus; };
 
 private:
