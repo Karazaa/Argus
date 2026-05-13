@@ -13,7 +13,6 @@ const char* AssetFactoryGenerator::s_componentAssetFactoriesHeaderTemplateFilena
 const char* AssetFactoryGenerator::s_recordAssetFactoriesHeaderTemplateFilename = "RecordAssetFactoryHeaderTemplate.txt";
 const char* AssetFactoryGenerator::s_componentAssetFactoriesCppTemplateFilename = "ComponentAssetFactoryCppTemplate.txt";
 const char* AssetFactoryGenerator::s_recordAssetFactoriesCppTemplateFilename = "RecordAssetFactoryCppTemplate.txt";
-const char* AssetFactoryGenerator::s_argusEditorGeneratedHeaderTemplateFilename = "ArgusEditorGeneratedLogicHeaderTemplate.txt";
 const char* AssetFactoryGenerator::s_argusEditorGeneratedCppTemplateFilename = "ArgusEditorGeneratedLogicCppTemplate.txt";
 const char* AssetFactoryGenerator::s_assetActionsPerComponentTemplateFilename = "AssetActionsPerComponentFactoryTemplate.txt";
 const char* AssetFactoryGenerator::s_assetActionsPerRecordTemplateFilename = "AssetActionsPerRecordTemplate.txt";

@@ -18,7 +18,6 @@ private:
 	static const char* s_recordAssetFactoriesHeaderTemplateFilename;
 	static const char* s_componentAssetFactoriesCppTemplateFilename;
 	static const char* s_recordAssetFactoriesCppTemplateFilename;
-	static const char* s_argusEditorGeneratedHeaderTemplateFilename;
 	static const char* s_argusEditorGeneratedCppTemplateFilename;
 	static const char* s_assetActionsPerComponentTemplateFilename;
 	static const char* s_assetActionsPerRecordTemplateFilename;
