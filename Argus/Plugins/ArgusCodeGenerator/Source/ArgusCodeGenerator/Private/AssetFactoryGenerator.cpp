@@ -15,7 +15,7 @@ const char* AssetFactoryGenerator::s_componentAssetFactoriesCppTemplateFilename 
 const char* AssetFactoryGenerator::s_recordAssetFactoriesCppTemplateFilename = "RecordAssetFactoryCppTemplate.txt";
 const char* AssetFactoryGenerator::s_argusEditorGeneratedCppTemplateFilename = "ArgusEditorGeneratedLogicCppTemplate.txt";
 const char* AssetFactoryGenerator::s_assetActionsPerComponentTemplateFilename = "AssetActionsPerComponentFactoryTemplate.txt";
-const char* AssetFactoryGenerator::s_assetActionsPerRecordTemplateFilename = "AssetActionsPerRecordTemplate.txt";
+const char* AssetFactoryGenerator::s_assetActionsPerRecordTemplateFilename = "AssetActionsPerRecordFactoryTemplate.txt";
 const char* AssetFactoryGenerator::s_assetFactoriesTemplateDirectorySuffix = "AssetFactories/";
 
 void AssetFactoryGenerator::GenerateAssetFactories(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData, const ArgusCodeGeneratorUtil::ParseStaticDataRecordsOutput& parsedStaticDataRecords)
@@ -33,6 +33,11 @@ void AssetFactoryGenerator::GenerateAssetFactories(const ArgusCodeGeneratorUtil:
 	std::string recordHeaderTemplateFilePath = std::string(cStrTemplateDirectory).append(s_recordAssetFactoriesHeaderTemplateFilename);
 	std::string recordCppTemplateFilePath = std::string(cStrTemplateDirectory).append(s_recordAssetFactoriesCppTemplateFilename);
 
+	EditorGeneratedLogicTemplates params;
+	params.m_argusEditorGeneratedCppTemplateFilePath = std::string(cStrTemplateDirectory).append(s_argusEditorGeneratedCppTemplateFilename);
+	params.m_assetActionsPerComponentTemplateFilePath = std::string(cStrTemplateDirectory).append(s_assetActionsPerComponentTemplateFilename);
+	params.m_assetActionsPerRecordTemplateFilePath = std::string(cStrTemplateDirectory).append(s_assetActionsPerRecordTemplateFilename);
+
 	std::vector<ArgusCodeGeneratorUtil::FileWriteData> componentAssetFactoryHeaders, componentAssetFactoryCpps, recordAssetFactoryHeaders, recordAssetFactoryCpps;
 	int numComponents = parsedComponentData.m_componentNames.size() + parsedComponentData.m_dynamicAllocComponentNames.size();
 	int numRecords = parsedStaticDataRecords.m_staticDataRecordNames.size();
@@ -45,6 +50,8 @@ void AssetFactoryGenerator::GenerateAssetFactories(const ArgusCodeGeneratorUtil:
 	didSucceed &= ParseComponentAssetFactoryTemplateFile(parsedComponentData, componentCppTemplateFilePath, false, componentAssetFactoryCpps);
 	didSucceed &= ParseRecordAssetFactoryTemplateFile(parsedStaticDataRecords, recordHeaderTemplateFilePath, true, recordAssetFactoryHeaders);
 	didSucceed &= ParseRecordAssetFactoryTemplateFile(parsedStaticDataRecords, recordCppTemplateFilePath, false, recordAssetFactoryCpps);
+	ArgusCodeGeneratorUtil::FileWriteData editorGeneratedLogicCpp;
+	didSucceed &= ParseEditorGeneratedLogicCppTemplateFile(params, parsedComponentData, parsedStaticDataRecords, editorGeneratedLogicCpp);
 
 	FString componentAssetFactoriesDirectory = ArgusCodeGeneratorUtil::GetProjectDirectory();
 	componentAssetFactoriesDirectory.Append(s_componentAssetFactoriesDirectorySuffix);
@@ -79,10 +86,11 @@ void AssetFactoryGenerator::GenerateAssetFactories(const ArgusCodeGeneratorUtil:
 	{
 		didSucceed &= ArgusCodeGeneratorUtil::WriteOutFile(std::string(cStrRecordAssetFactoriesDirectory).append(recordAssetFactoryCpps[i].m_filename), recordAssetFactoryCpps[i].m_lines);
 	}
+	didSucceed &= ArgusCodeGeneratorUtil::WriteOutFile(std::string(cStrArgusEditorDirectory).append(editorGeneratedLogicCpp.m_filename), editorGeneratedLogicCpp.m_lines);
 
 	if (didSucceed)
 	{
-		UE_LOG(ArgusCodeGeneratorLog, Display, TEXT("[%s] Successfully wrote out asset factory code."), ARGUS_FUNCNAME)
+		UE_LOG(ArgusCodeGeneratorLog, Display, TEXT("[%s] Successfully wrote out asset factory code."), ARGUS_FUNCNAME);
 	}
 }
 
@@ -157,10 +165,10 @@ bool AssetFactoryGenerator::ParseRecordAssetFactoryTemplateFile(const ArgusCodeG
 		return false;
 	}
 
-	for (int i = 0; i < parsedStaticDataRecords.m_staticDataRecordNames.size(); ++i)
+	for (int i = 0; i < parsedStaticDataRecords.m_trimmedStaticDataRecordNames.size(); ++i)
 	{
 		ArgusCodeGeneratorUtil::FileWriteData fileWriteData;
-		fileWriteData.m_filename = parsedStaticDataRecords.m_staticDataRecordNames[i].substr(1, parsedStaticDataRecords.m_staticDataRecordNames[i].length() - 1);
+		fileWriteData.m_filename = parsedStaticDataRecords.m_trimmedStaticDataRecordNames[i];
 		fileWriteData.m_filename.append("Factory");
 		fileWriteData.m_filename.append(isHeader ? ".h" : ".cpp");
 		outParsedFileContents.push_back(fileWriteData);
@@ -171,15 +179,15 @@ bool AssetFactoryGenerator::ParseRecordAssetFactoryTemplateFile(const ArgusCodeG
 	{
 		if (templateLineText.find("#####") != std::string::npos)
 		{
-			for (int i = 0; i < parsedStaticDataRecords.m_staticDataRecordNames.size(); ++i)
+			for (int i = 0; i < parsedStaticDataRecords.m_trimmedStaticDataRecordNames.size(); ++i)
 			{
 				std::string perArgLineText = templateLineText;
-				outParsedFileContents[i].m_lines.push_back(std::regex_replace(perArgLineText, std::regex("#####"), parsedStaticDataRecords.m_staticDataRecordNames[i].substr(1, parsedStaticDataRecords.m_staticDataRecordNames[i].length() - 1)));
+				outParsedFileContents[i].m_lines.push_back(std::regex_replace(perArgLineText, std::regex("#####"), parsedStaticDataRecords.m_trimmedStaticDataRecordNames[i]));
 			}
 		}
 		else
 		{
-			for (int i = 0; i < parsedStaticDataRecords.m_staticDataRecordNames.size(); ++i)
+			for (int i = 0; i < parsedStaticDataRecords.m_trimmedStaticDataRecordNames.size(); ++i)
 			{
 				outParsedFileContents[i].m_lines.push_back(templateLineText);
 			}
@@ -187,5 +195,71 @@ bool AssetFactoryGenerator::ParseRecordAssetFactoryTemplateFile(const ArgusCodeG
 	}
 
 	inTemplateStream.close();
+	return true;
+}
+
+bool AssetFactoryGenerator::ParseEditorGeneratedLogicCppTemplateFile(const EditorGeneratedLogicTemplates& params, const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData, const ArgusCodeGeneratorUtil::ParseStaticDataRecordsOutput& parsedStaticDataRecords, ArgusCodeGeneratorUtil::FileWriteData& outParsedFileContents)
+{
+	bool didSucceed = true;
+	outParsedFileContents.m_filename = "ArgusEditorGeneratedLogic.cpp";
+
+	std::vector<std::string> parsedComponentLines = std::vector<std::string>();
+	didSucceed &= ArgusCodeGeneratorUtil::ParseComponentSpecificTemplate(params.m_assetActionsPerComponentTemplateFilePath, parsedComponentData.m_componentNames, parsedComponentLines);
+	didSucceed &= ArgusCodeGeneratorUtil::ParseComponentSpecificTemplate(params.m_assetActionsPerComponentTemplateFilePath, parsedComponentData.m_dynamicAllocComponentNames, parsedComponentLines);
+
+	std::vector<std::string> parsedRecordLines = std::vector<std::string>();
+	didSucceed &= ArgusCodeGeneratorUtil::ParseComponentSpecificTemplate(params.m_assetActionsPerRecordTemplateFilePath, parsedStaticDataRecords.m_trimmedStaticDataRecordNames, parsedRecordLines);
+
+	std::ifstream inFileStream = std::ifstream(params.m_argusEditorGeneratedCppTemplateFilePath);
+	const FString ueFilePath = FString(params.m_argusEditorGeneratedCppTemplateFilePath.c_str());
+	if (!inFileStream.is_open())
+	{
+		UE_LOG(ArgusCodeGeneratorLog, Error, TEXT("[%s] Failed to read from template file: %s"), ARGUS_FUNCNAME, *ueFilePath);
+		return false;
+	}
+
+	std::string lineText;
+	while (std::getline(inFileStream, lineText))
+	{
+		if (lineText.find("&&&&&") != std::string::npos)
+		{
+			std::string includeStatment = "#include \"AssetFactories/ComponentDataFactories/";
+			for (int i = 0; i < parsedComponentData.m_componentNames.size(); ++i)
+			{
+				outParsedFileContents.m_lines.push_back(includeStatment + parsedComponentData.m_componentNames[i] + "DataFactory.h\"");
+			}
+			for (int i = 0; i < parsedComponentData.m_dynamicAllocComponentNames.size(); ++i)
+			{
+				outParsedFileContents.m_lines.push_back(includeStatment + parsedComponentData.m_dynamicAllocComponentNames[i] + "DataFactory.h\"");
+			}
+		}
+		else if (lineText.find("%%%%%") != std::string::npos)
+		{
+			std::string includeStatment = "#include \"AssetFactories/StaticRecordFactories/";
+			for (int i = 0; i < parsedStaticDataRecords.m_trimmedStaticDataRecordNames.size(); ++i)
+			{
+				outParsedFileContents.m_lines.push_back(includeStatment + parsedStaticDataRecords.m_trimmedStaticDataRecordNames[i] + "Factory.h\"");
+			}
+		}
+		else if (lineText.find("&%&%&") != std::string::npos)
+		{
+			for (std::string parsedLine : parsedComponentLines)
+			{
+				outParsedFileContents.m_lines.push_back(parsedLine);
+			}
+		}
+		else if (lineText.find("%&%&%") != std::string::npos)
+		{
+			for (std::string parsedLine : parsedRecordLines)
+			{
+				outParsedFileContents.m_lines.push_back(parsedLine);
+			}
+		}
+		else
+		{
+			outParsedFileContents.m_lines.push_back(lineText);
+		}
+	}
+
 	return true;
 }

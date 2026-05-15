@@ -83,6 +83,7 @@ public:
 	{
 		std::vector<std::string> m_staticDataIncludeStatements;
 		std::vector<std::string> m_staticDataRecordNames;
+		std::vector<std::string> m_trimmedStaticDataRecordNames;
 		std::vector< std::vector<ParsedVariableData> > m_staticDataRecordVariableData;
 	};
 	struct ParseSystemArgDefinitionsOutput

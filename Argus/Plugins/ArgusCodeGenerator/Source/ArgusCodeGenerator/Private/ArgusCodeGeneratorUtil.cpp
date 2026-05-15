@@ -794,6 +794,7 @@ bool ArgusCodeGeneratorUtil::ParseRecordClassDeclarations(std::string lineText, 
 
 	std::erase(lineText, ' ');
 	output.m_staticDataRecordNames.push_back(lineText);
+	output.m_trimmedStaticDataRecordNames.push_back(lineText.substr(1, lineText.length() - 1));
 	output.m_staticDataRecordVariableData.push_back(std::vector<ParsedVariableData>());
 	return true;
 }

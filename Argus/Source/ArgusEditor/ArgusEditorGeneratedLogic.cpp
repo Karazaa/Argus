@@ -6,10 +6,48 @@
 #include "AssetFactories/ArgusEntityTemplateFactory.h"
 
 // Component Data Includes
+#include "AssetFactories/ComponentDataFactories/AbilityComponentDataFactory.h"
+#include "AssetFactories/ComponentDataFactories/ArgusDecalComponentDataFactory.h"
+#include "AssetFactories/ComponentDataFactories/AvoidanceGroupingComponentDataFactory.h"
+#include "AssetFactories/ComponentDataFactories/CarrierComponentDataFactory.h"
+#include "AssetFactories/ComponentDataFactories/CombatComponentDataFactory.h"
+#include "AssetFactories/ComponentDataFactories/ConstructionComponentDataFactory.h"
+#include "AssetFactories/ComponentDataFactories/FlockingComponentDataFactory.h"
+#include "AssetFactories/ComponentDataFactories/FogOfWarLocationComponentDataFactory.h"
 #include "AssetFactories/ComponentDataFactories/HealthComponentDataFactory.h"
+#include "AssetFactories/ComponentDataFactories/IdentityComponentDataFactory.h"
+#include "AssetFactories/ComponentDataFactories/NavigationComponentDataFactory.h"
+#include "AssetFactories/ComponentDataFactories/NearbyEntitiesComponentDataFactory.h"
+#include "AssetFactories/ComponentDataFactories/NearbyObstaclesComponentDataFactory.h"
+#include "AssetFactories/ComponentDataFactories/ObserversComponentDataFactory.h"
+#include "AssetFactories/ComponentDataFactories/PassengerComponentDataFactory.h"
+#include "AssetFactories/ComponentDataFactories/ResourceComponentDataFactory.h"
+#include "AssetFactories/ComponentDataFactories/ResourceExtractionComponentDataFactory.h"
+#include "AssetFactories/ComponentDataFactories/SpawningComponentDataFactory.h"
+#include "AssetFactories/ComponentDataFactories/TargetingComponentDataFactory.h"
+#include "AssetFactories/ComponentDataFactories/TaskComponentDataFactory.h"
+#include "AssetFactories/ComponentDataFactories/TimerComponentDataFactory.h"
+#include "AssetFactories/ComponentDataFactories/TransformComponentDataFactory.h"
+#include "AssetFactories/ComponentDataFactories/VelocityComponentDataFactory.h"
+#include "AssetFactories/ComponentDataFactories/AssetLoadingComponentDataFactory.h"
+#include "AssetFactories/ComponentDataFactories/DecalSystemsSettingsComponentDataFactory.h"
+#include "AssetFactories/ComponentDataFactories/EffortCoefficientSettingsComponentDataFactory.h"
+#include "AssetFactories/ComponentDataFactories/FogOfWarComponentDataFactory.h"
+#include "AssetFactories/ComponentDataFactories/GlobalSettingsComponentDataFactory.h"
+#include "AssetFactories/ComponentDataFactories/InputInterfaceComponentDataFactory.h"
+#include "AssetFactories/ComponentDataFactories/ReticleComponentDataFactory.h"
+#include "AssetFactories/ComponentDataFactories/SpatialPartitioningComponentDataFactory.h"
+#include "AssetFactories/ComponentDataFactories/TeamCommanderComponentDataFactory.h"
+#include "AssetFactories/ComponentDataFactories/WorldReferenceComponentDataFactory.h"
 
 // Static Record Includes
 #include "AssetFactories/StaticRecordFactories/AbilityRecordFactory.h"
+#include "AssetFactories/StaticRecordFactories/ArgusActorRecordFactory.h"
+#include "AssetFactories/StaticRecordFactories/FactionRecordFactory.h"
+#include "AssetFactories/StaticRecordFactories/MaterialRecordFactory.h"
+#include "AssetFactories/StaticRecordFactories/PlacedArgusActorTeamInfoRecordFactory.h"
+#include "AssetFactories/StaticRecordFactories/ResourceSetRecordFactory.h"
+#include "AssetFactories/StaticRecordFactories/TeamColorRecordFactory.h"
 
 void ArgusEditorModule::RegisterAssetActions(IAssetTools& assetTools) const 
 {
@@ -17,10 +55,86 @@ void ArgusEditorModule::RegisterAssetActions(IAssetTools& assetTools) const
 	assetTools.RegisterAssetTypeActions(actionsArgusEntityTemplate);
 
 	// Component Data Actions
+	TSharedRef<IAssetTypeActions> actionsAbilityComponentData = MakeShareable(new FAssetTypeActions_AbilityComponentData);
+	assetTools.RegisterAssetTypeActions(actionsAbilityComponentData);
+	TSharedRef<IAssetTypeActions> actionsArgusDecalComponentData = MakeShareable(new FAssetTypeActions_ArgusDecalComponentData);
+	assetTools.RegisterAssetTypeActions(actionsArgusDecalComponentData);
+	TSharedRef<IAssetTypeActions> actionsAvoidanceGroupingComponentData = MakeShareable(new FAssetTypeActions_AvoidanceGroupingComponentData);
+	assetTools.RegisterAssetTypeActions(actionsAvoidanceGroupingComponentData);
+	TSharedRef<IAssetTypeActions> actionsCarrierComponentData = MakeShareable(new FAssetTypeActions_CarrierComponentData);
+	assetTools.RegisterAssetTypeActions(actionsCarrierComponentData);
+	TSharedRef<IAssetTypeActions> actionsCombatComponentData = MakeShareable(new FAssetTypeActions_CombatComponentData);
+	assetTools.RegisterAssetTypeActions(actionsCombatComponentData);
+	TSharedRef<IAssetTypeActions> actionsConstructionComponentData = MakeShareable(new FAssetTypeActions_ConstructionComponentData);
+	assetTools.RegisterAssetTypeActions(actionsConstructionComponentData);
+	TSharedRef<IAssetTypeActions> actionsFlockingComponentData = MakeShareable(new FAssetTypeActions_FlockingComponentData);
+	assetTools.RegisterAssetTypeActions(actionsFlockingComponentData);
+	TSharedRef<IAssetTypeActions> actionsFogOfWarLocationComponentData = MakeShareable(new FAssetTypeActions_FogOfWarLocationComponentData);
+	assetTools.RegisterAssetTypeActions(actionsFogOfWarLocationComponentData);
 	TSharedRef<IAssetTypeActions> actionsHealthComponentData = MakeShareable(new FAssetTypeActions_HealthComponentData);
 	assetTools.RegisterAssetTypeActions(actionsHealthComponentData);
+	TSharedRef<IAssetTypeActions> actionsIdentityComponentData = MakeShareable(new FAssetTypeActions_IdentityComponentData);
+	assetTools.RegisterAssetTypeActions(actionsIdentityComponentData);
+	TSharedRef<IAssetTypeActions> actionsNavigationComponentData = MakeShareable(new FAssetTypeActions_NavigationComponentData);
+	assetTools.RegisterAssetTypeActions(actionsNavigationComponentData);
+	TSharedRef<IAssetTypeActions> actionsNearbyEntitiesComponentData = MakeShareable(new FAssetTypeActions_NearbyEntitiesComponentData);
+	assetTools.RegisterAssetTypeActions(actionsNearbyEntitiesComponentData);
+	TSharedRef<IAssetTypeActions> actionsNearbyObstaclesComponentData = MakeShareable(new FAssetTypeActions_NearbyObstaclesComponentData);
+	assetTools.RegisterAssetTypeActions(actionsNearbyObstaclesComponentData);
+	TSharedRef<IAssetTypeActions> actionsObserversComponentData = MakeShareable(new FAssetTypeActions_ObserversComponentData);
+	assetTools.RegisterAssetTypeActions(actionsObserversComponentData);
+	TSharedRef<IAssetTypeActions> actionsPassengerComponentData = MakeShareable(new FAssetTypeActions_PassengerComponentData);
+	assetTools.RegisterAssetTypeActions(actionsPassengerComponentData);
+	TSharedRef<IAssetTypeActions> actionsResourceComponentData = MakeShareable(new FAssetTypeActions_ResourceComponentData);
+	assetTools.RegisterAssetTypeActions(actionsResourceComponentData);
+	TSharedRef<IAssetTypeActions> actionsResourceExtractionComponentData = MakeShareable(new FAssetTypeActions_ResourceExtractionComponentData);
+	assetTools.RegisterAssetTypeActions(actionsResourceExtractionComponentData);
+	TSharedRef<IAssetTypeActions> actionsSpawningComponentData = MakeShareable(new FAssetTypeActions_SpawningComponentData);
+	assetTools.RegisterAssetTypeActions(actionsSpawningComponentData);
+	TSharedRef<IAssetTypeActions> actionsTargetingComponentData = MakeShareable(new FAssetTypeActions_TargetingComponentData);
+	assetTools.RegisterAssetTypeActions(actionsTargetingComponentData);
+	TSharedRef<IAssetTypeActions> actionsTaskComponentData = MakeShareable(new FAssetTypeActions_TaskComponentData);
+	assetTools.RegisterAssetTypeActions(actionsTaskComponentData);
+	TSharedRef<IAssetTypeActions> actionsTimerComponentData = MakeShareable(new FAssetTypeActions_TimerComponentData);
+	assetTools.RegisterAssetTypeActions(actionsTimerComponentData);
+	TSharedRef<IAssetTypeActions> actionsTransformComponentData = MakeShareable(new FAssetTypeActions_TransformComponentData);
+	assetTools.RegisterAssetTypeActions(actionsTransformComponentData);
+	TSharedRef<IAssetTypeActions> actionsVelocityComponentData = MakeShareable(new FAssetTypeActions_VelocityComponentData);
+	assetTools.RegisterAssetTypeActions(actionsVelocityComponentData);
+	TSharedRef<IAssetTypeActions> actionsAssetLoadingComponentData = MakeShareable(new FAssetTypeActions_AssetLoadingComponentData);
+	assetTools.RegisterAssetTypeActions(actionsAssetLoadingComponentData);
+	TSharedRef<IAssetTypeActions> actionsDecalSystemsSettingsComponentData = MakeShareable(new FAssetTypeActions_DecalSystemsSettingsComponentData);
+	assetTools.RegisterAssetTypeActions(actionsDecalSystemsSettingsComponentData);
+	TSharedRef<IAssetTypeActions> actionsEffortCoefficientSettingsComponentData = MakeShareable(new FAssetTypeActions_EffortCoefficientSettingsComponentData);
+	assetTools.RegisterAssetTypeActions(actionsEffortCoefficientSettingsComponentData);
+	TSharedRef<IAssetTypeActions> actionsFogOfWarComponentData = MakeShareable(new FAssetTypeActions_FogOfWarComponentData);
+	assetTools.RegisterAssetTypeActions(actionsFogOfWarComponentData);
+	TSharedRef<IAssetTypeActions> actionsGlobalSettingsComponentData = MakeShareable(new FAssetTypeActions_GlobalSettingsComponentData);
+	assetTools.RegisterAssetTypeActions(actionsGlobalSettingsComponentData);
+	TSharedRef<IAssetTypeActions> actionsInputInterfaceComponentData = MakeShareable(new FAssetTypeActions_InputInterfaceComponentData);
+	assetTools.RegisterAssetTypeActions(actionsInputInterfaceComponentData);
+	TSharedRef<IAssetTypeActions> actionsReticleComponentData = MakeShareable(new FAssetTypeActions_ReticleComponentData);
+	assetTools.RegisterAssetTypeActions(actionsReticleComponentData);
+	TSharedRef<IAssetTypeActions> actionsSpatialPartitioningComponentData = MakeShareable(new FAssetTypeActions_SpatialPartitioningComponentData);
+	assetTools.RegisterAssetTypeActions(actionsSpatialPartitioningComponentData);
+	TSharedRef<IAssetTypeActions> actionsTeamCommanderComponentData = MakeShareable(new FAssetTypeActions_TeamCommanderComponentData);
+	assetTools.RegisterAssetTypeActions(actionsTeamCommanderComponentData);
+	TSharedRef<IAssetTypeActions> actionsWorldReferenceComponentData = MakeShareable(new FAssetTypeActions_WorldReferenceComponentData);
+	assetTools.RegisterAssetTypeActions(actionsWorldReferenceComponentData);
 
 	// Static Record Actions
 	TSharedRef<IAssetTypeActions> actionsAbilityRecord = MakeShareable(new FAssetTypeActions_AbilityRecord);
 	assetTools.RegisterAssetTypeActions(actionsAbilityRecord);
+	TSharedRef<IAssetTypeActions> actionsArgusActorRecord = MakeShareable(new FAssetTypeActions_ArgusActorRecord);
+	assetTools.RegisterAssetTypeActions(actionsArgusActorRecord);
+	TSharedRef<IAssetTypeActions> actionsFactionRecord = MakeShareable(new FAssetTypeActions_FactionRecord);
+	assetTools.RegisterAssetTypeActions(actionsFactionRecord);
+	TSharedRef<IAssetTypeActions> actionsMaterialRecord = MakeShareable(new FAssetTypeActions_MaterialRecord);
+	assetTools.RegisterAssetTypeActions(actionsMaterialRecord);
+	TSharedRef<IAssetTypeActions> actionsPlacedArgusActorTeamInfoRecord = MakeShareable(new FAssetTypeActions_PlacedArgusActorTeamInfoRecord);
+	assetTools.RegisterAssetTypeActions(actionsPlacedArgusActorTeamInfoRecord);
+	TSharedRef<IAssetTypeActions> actionsResourceSetRecord = MakeShareable(new FAssetTypeActions_ResourceSetRecord);
+	assetTools.RegisterAssetTypeActions(actionsResourceSetRecord);
+	TSharedRef<IAssetTypeActions> actionsTeamColorRecord = MakeShareable(new FAssetTypeActions_TeamColorRecord);
+	assetTools.RegisterAssetTypeActions(actionsTeamColorRecord);
 }

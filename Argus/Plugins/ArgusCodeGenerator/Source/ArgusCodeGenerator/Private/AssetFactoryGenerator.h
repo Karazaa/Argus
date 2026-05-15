@@ -10,6 +10,12 @@ public:
 	static void GenerateAssetFactories(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData, const ArgusCodeGeneratorUtil::ParseStaticDataRecordsOutput& parsedStaticDataRecords);
 
 private:
+	struct EditorGeneratedLogicTemplates
+	{
+		std::string m_argusEditorGeneratedCppTemplateFilePath;
+		std::string m_assetActionsPerComponentTemplateFilePath;
+		std::string m_assetActionsPerRecordTemplateFilePath;
+	};
 
 	static const char* s_componentAssetFactoriesDirectorySuffix;
 	static const char* s_recordAssetFactoriesDirectorySuffix;
@@ -25,4 +31,5 @@ private:
 
 	static bool ParseComponentAssetFactoryTemplateFile(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData, const std::string& templateFilePath, bool isHeader, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents);
 	static bool ParseRecordAssetFactoryTemplateFile(const ArgusCodeGeneratorUtil::ParseStaticDataRecordsOutput& parsedStaticDataRecords, const std::string& templateFilePath, bool isHeader, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents);
+	static bool ParseEditorGeneratedLogicCppTemplateFile(const EditorGeneratedLogicTemplates& params, const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData, const ArgusCodeGeneratorUtil::ParseStaticDataRecordsOutput& parsedStaticDataRecords, ArgusCodeGeneratorUtil::FileWriteData& outParsedFileContents);
 };
