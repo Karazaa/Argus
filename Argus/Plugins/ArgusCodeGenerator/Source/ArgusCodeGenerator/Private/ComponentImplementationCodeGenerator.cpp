@@ -805,119 +805,159 @@ void ComponentImplementationGenerator::FormatImGuiResourceSourceExtractionDataFi
 	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::EndTable();", std::make_format_args(prefix)));
 }
 
-ComponentImplementationGenerator::TypeInfo::TypeInfo(const std::string& typeName, const std::string& macro)
+ComponentImplementationGenerator::TypeInfo::TypeInfo(const std::string& typeString, const std::string& macroString)
 {
-	m_cleanTypeName = typeName.substr(1, typeName.length() - 1);
+	m_underlyingType = DetermineType(typeString, macroString, m_cleanTypeName);
 
-	// BRUH REALLY? Yes. Until I find a better way to differentiate enum types... here we are.
-	if (m_cleanTypeName.at(0) == 'E')
-	{
-		m_underlyingType = UnderlyingType::Enum;
-	}
-	else if (typeName.find("BITMASK") != std::string::npos)
-	{
-		m_underlyingType = UnderlyingType::Bitmask;
-	}
-	else if (macro.find(ArgusCodeGeneratorUtil::s_propertyStaticDataDelimiter) != std::string::npos)
-	{
-		m_underlyingType = UnderlyingType::StaticData;
-	}
-	else if (typeName.find("uint8") != std::string::npos ||
-		typeName.find("uint16") != std::string::npos ||
-		typeName.find("uint32") != std::string::npos ||
-		typeName.find("int8") != std::string::npos ||
-		typeName.find("int16") != std::string::npos ||
-		typeName.find("int32") != std::string::npos)
-	{
-		m_underlyingType = UnderlyingType::Integer;
-	}
-	else if (typeName.find("float") != std::string::npos)
-	{
-		m_underlyingType = UnderlyingType::Float;
-	}
-	else if (typeName.find("FVector2D") != std::string::npos)
-	{
-		m_underlyingType = UnderlyingType::Vector2;
-	}
-	else if (typeName.find("FVector") != std::string::npos)
-	{
-		m_underlyingType = UnderlyingType::Vector;
-	}
-	else if (typeName.find("TimerHandle") != std::string::npos)
-	{
-		m_underlyingType = UnderlyingType::TimerHandle;
-	}
-	else if (typeName.find("FResourceSet") != std::string::npos)
-	{
-		m_underlyingType = UnderlyingType::ResourceSet;
-	}
-	else if (typeName.find("ArgusEntityKDTreeRangeOutput") != std::string::npos)
-	{
-		m_underlyingType = UnderlyingType::EntityKDTreeOutput;
-	}
-	else if (typeName.find("ObstaclePointKDTreeRangeOutput") != std::string::npos)
-	{
-		m_underlyingType = UnderlyingType::ObstacleKDTreeOutput;
-	}
-	else if (typeName.find("ArgusEntityKDTree") != std::string::npos)
-	{
-		m_underlyingType = UnderlyingType::EntityKDTree;
-	}
-	else if (typeName.find("ObstaclePointKDTree") != std::string::npos)
-	{
-		m_underlyingType = UnderlyingType::ObstacleKDTree;
-	}
-	else if (typeName.find("SpawnEntityInfo") != std::string::npos)
-	{
-		m_underlyingType = UnderlyingType::SpawnEntityInfo;
-	}
-	else if (typeName.find("bool") != std::string::npos)
-	{
-		m_underlyingType = UnderlyingType::Bool;
-	}
-	else if (typeName.find("ControlGroup") != std::string::npos)
-	{
-		m_underlyingType = UnderlyingType::ControlGroup;
-	}
-	else if (typeName.find("TeamCommanderPriority") != std::string::npos)
-	{
-		m_underlyingType = UnderlyingType::TeamCommanderPriority;
-	}
-	else if (typeName.find("ResourceSourceExtractionData") != std::string::npos)
-	{
-		m_underlyingType = UnderlyingType::ResourceExtractionData;
-	}
-	else if (typeName.find("Observers") != std::string::npos)
-	{
-		m_underlyingType = UnderlyingType::Observers;
-	}
-
-	if (typeName.find("ExponentialDecaySmoother") != std::string::npos)
+	if (typeString.find("ExponentialDecaySmoother") != std::string::npos)
 	{
 		m_containerType = ContainerType::Smoother;
+		ExtractTemplateParameters(typeString, m_templateTypes);
 	}
-	else if (typeName.find("TOptional") != std::string::npos)
+	else if (typeString.find("TOptional") != std::string::npos)
 	{
 		m_containerType = ContainerType::Optional;
+		ExtractTemplateParameters(typeString, m_templateTypes);
 	}
-	else if (typeName.find("TArray") != std::string::npos)
+	else if (typeString.find("TArray") != std::string::npos)
 	{
 		m_containerType = ContainerType::Array;
+		ExtractTemplateParameters(typeString, m_templateTypes);
 	}
-	else if (typeName.find("ArgusQueue") != std::string::npos)
+	else if (typeString.find("ArgusQueue") != std::string::npos)
 	{
 		m_containerType = ContainerType::Queue;
+		ExtractTemplateParameters(typeString, m_templateTypes);
 	}
-	else if (typeName.find("ArgusDeque") != std::string::npos)
+	else if (typeString.find("ArgusDeque") != std::string::npos)
 	{
 		m_containerType = ContainerType::Deque;
+		ExtractTemplateParameters(typeString, m_templateTypes);
 	}
-	else if (typeName.find("TBitArray") != std::string::npos)
+	else if (typeString.find("TBitArray") != std::string::npos)
 	{
 		m_containerType = ContainerType::BitArray;
 	}
-	else if (typeName.find("ArgusMap") != std::string::npos)
+	else if (typeString.find("ArgusMap") != std::string::npos)
 	{
 		m_containerType = ContainerType::Map;
+		ExtractTemplateParameters(typeString, m_templateTypes);
+	}
+}
+
+ComponentImplementationGenerator::UnderlyingType ComponentImplementationGenerator::TypeInfo::DetermineType(const std::string& typeString, const std::string& macroString, std::string& outCleanTypeName)
+{
+	outCleanTypeName = typeString.substr(1, typeString.length() - 1);
+	UnderlyingType output = UnderlyingType::None;
+
+	// BRUH REALLY? Yes. Until I find a better way to differentiate enum types... here we are.
+	if (outCleanTypeName.at(0) == 'E')
+	{
+		output = UnderlyingType::Enum;
+	}
+	else if (typeString.find("BITMASK") != std::string::npos)
+	{
+		output = UnderlyingType::Bitmask;
+	}
+	else if (macroString.find(ArgusCodeGeneratorUtil::s_propertyStaticDataDelimiter) != std::string::npos)
+	{
+		output = UnderlyingType::StaticData;
+	}
+	else if (typeString.find("uint8") != std::string::npos ||
+		typeString.find("uint16") != std::string::npos ||
+		typeString.find("uint32") != std::string::npos ||
+		typeString.find("int8") != std::string::npos ||
+		typeString.find("int16") != std::string::npos ||
+		typeString.find("int32") != std::string::npos)
+	{
+		output = UnderlyingType::Integer;
+	}
+	else if (typeString.find("float") != std::string::npos)
+	{
+		output = UnderlyingType::Float;
+	}
+	else if (typeString.find("FVector2D") != std::string::npos)
+	{
+		output = UnderlyingType::Vector2;
+	}
+	else if (typeString.find("FVector") != std::string::npos)
+	{
+		output = UnderlyingType::Vector;
+	}
+	else if (typeString.find("TimerHandle") != std::string::npos)
+	{
+		output = UnderlyingType::TimerHandle;
+	}
+	else if (typeString.find("FResourceSet") != std::string::npos)
+	{
+		output = UnderlyingType::ResourceSet;
+	}
+	else if (typeString.find("ArgusEntityKDTreeRangeOutput") != std::string::npos)
+	{
+		output = UnderlyingType::EntityKDTreeOutput;
+	}
+	else if (typeString.find("ObstaclePointKDTreeRangeOutput") != std::string::npos)
+	{
+		output = UnderlyingType::ObstacleKDTreeOutput;
+	}
+	else if (typeString.find("ArgusEntityKDTree") != std::string::npos)
+	{
+		output = UnderlyingType::EntityKDTree;
+	}
+	else if (typeString.find("ObstaclePointKDTree") != std::string::npos)
+	{
+		output = UnderlyingType::ObstacleKDTree;
+	}
+	else if (typeString.find("SpawnEntityInfo") != std::string::npos)
+	{
+		output = UnderlyingType::SpawnEntityInfo;
+	}
+	else if (typeString.find("bool") != std::string::npos)
+	{
+		output = UnderlyingType::Bool;
+	}
+	else if (typeString.find("ControlGroup") != std::string::npos)
+	{
+		output = UnderlyingType::ControlGroup;
+	}
+	else if (typeString.find("TeamCommanderPriority") != std::string::npos)
+	{
+		output = UnderlyingType::TeamCommanderPriority;
+	}
+	else if (typeString.find("ResourceSourceExtractionData") != std::string::npos)
+	{
+		output = UnderlyingType::ResourceExtractionData;
+	}
+	else if (typeString.find("Observers") != std::string::npos)
+	{
+		output = UnderlyingType::Observers;
+	}
+
+	return output;
+}
+
+void ComponentImplementationGenerator::TypeInfo::ExtractTemplateParameters(const std::string& typeString, std::vector<UnderlyingType>& outPopulatedTemplateParameters)
+{
+	const size_t indexOfTemplateParamStart = typeString.find_first_of('<');
+	const size_t indexOfTemplateParamEnd = typeString.find_first_of('>');
+
+	std::string templateParamString = typeString.substr(indexOfTemplateParamStart + 1, indexOfTemplateParamEnd - indexOfTemplateParamStart);
+	
+	size_t currentParseIndex = 0;
+	while (currentParseIndex != std::string::npos)
+	{
+		size_t previousParseIndex = currentParseIndex;
+		currentParseIndex = templateParamString.find(',', currentParseIndex + 1);
+		if (currentParseIndex != std::string::npos)
+		{
+			currentParseIndex++;
+		}
+
+		std::string underlyingTypeString = templateParamString.substr(previousParseIndex, currentParseIndex - (previousParseIndex + (currentParseIndex == std::string::npos ? 0 : 1)));
+		if (underlyingTypeString.find("ArgusContainerAllocator") == std::string::npos && underlyingTypeString.find("ArgusSetAllocator") == std::string::npos)
+		{
+			std::string unusedCleanTypeName;
+			outPopulatedTemplateParameters.push_back(DetermineType(underlyingTypeString, "", unusedCleanTypeName));
+		}
 	}
 }

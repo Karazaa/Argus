@@ -58,10 +58,15 @@ private:
 	struct TypeInfo
 	{
 		std::string m_cleanTypeName;
+		std::vector<UnderlyingType> m_templateTypes;
 		UnderlyingType m_underlyingType = UnderlyingType::None;
 		ContainerType m_containerType = ContainerType::NoContainer;
 
-		TypeInfo(const std::string& typeName, const std::string& macro);
+		TypeInfo(const std::string& typeString, const std::string& macroString);
+
+	private:
+		UnderlyingType DetermineType(const std::string& typeString, const std::string& macroString, std::string& outCleanTypeName);
+		void ExtractTemplateParameters(const std::string& typeString, std::vector<UnderlyingType>& outPopulatedTemplateParameters);
 	};
 	
 
