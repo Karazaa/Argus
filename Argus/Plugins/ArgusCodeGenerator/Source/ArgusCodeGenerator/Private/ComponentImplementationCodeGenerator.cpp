@@ -486,6 +486,9 @@ bool ComponentImplementationGenerator::PopulateAtomicFormattingFunction(Underlyi
 		case UnderlyingType::ResourceExtractionData:
 			functionToPopulate = FormatImGuiResourceSourceExtractionDataField;
 			break;
+		case UnderlyingType::ConstructionData:
+			functionToPopulate = FormatImGuiConstructionDataField;
+			break;
 		default:
 			// TODO JAMES: Set some breakpoints here and capture any data types we don't currently have represented.
 			return false;
@@ -554,7 +557,27 @@ void ComponentImplementationGenerator::FormatImGuiMapField(	const std::string& v
 															const TFunction<void(const std::string&, const std::string&, const std::string&, std::vector<std::string>&)>& element0FormattingFunction,
 															const TFunction<void(const std::string&, const std::string&, const std::string&, std::vector<std::string>&)>& element1FormattingFunction)
 {
-
+	std::string prefix = "\t";
+	std::string keyName = "mapPair.Key";
+	std::string valueName = "mapPair.Value";
+	outParsedVariableContents.push_back(std::vformat("\t\tImGui::Text(\"Size of map = %d\", {}.Num());", std::make_format_args(variableName)));
+	outParsedVariableContents.push_back("\t\tImGui::Indent();");
+	outParsedVariableContents.push_back(std::vformat("\t\tImGui::BeginTable(\"{}\", 2, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_SizingStretchProp | ImGuiTableFlags_BordersInner);", std::make_format_args(variableName)));
+	outParsedVariableContents.push_back(std::vformat("\t\tfor (const auto& mapPair : {})", std::make_format_args(variableName)));
+	outParsedVariableContents.push_back("\t\t{");
+	outParsedVariableContents.push_back("\t\t\tImGui::TableNextColumn();");
+	if (element0FormattingFunction)
+	{
+		element0FormattingFunction(keyName, extraData, prefix, outParsedVariableContents);
+	}
+	outParsedVariableContents.push_back("\t\t\tImGui::TableNextColumn();");
+	if (element1FormattingFunction)
+	{
+		element1FormattingFunction(valueName, secondExtraData, prefix, outParsedVariableContents);
+	}
+	outParsedVariableContents.push_back("\t\t}");
+	outParsedVariableContents.push_back("\t\tImGui::EndTable();");
+	outParsedVariableContents.push_back("\t\tImGui::Unindent();");
 }
 
 void ComponentImplementationGenerator::FormatImGuiFloatField(const std::string& variableName, const std::string& extraData, const std::string& prefix, std::vector<std::string>& outParsedVariableContents)
@@ -704,6 +727,12 @@ void ComponentImplementationGenerator::FormatImGuiResourceSetField(const std::st
 	outParsedVariableContents.push_back(std::string(prefix).append("\t\t\tImGui::SameLine();"));
 	outParsedVariableContents.push_back(std::vformat("{}\t\t\tImGui::Text(\"%d \", {}.m_resourceQuantities[i]);", std::make_format_args(prefix, variableName)));
 	outParsedVariableContents.push_back(std::string(prefix).append("\t\t}"));
+}
+
+void ComponentImplementationGenerator::FormatImGuiConstructionDataField(const std::string& variableName, const std::string& extraData, const std::string& prefix, std::vector<std::string>& outParsedVariableContents)
+{
+	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::Text(\"Entity Being Constructed Id %d\", {}.m_beingConstructedEntityId);", std::make_format_args(prefix, variableName)));
+	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::Text(\"Entity Constructing Other Id %d\", {}.m_constructingOtherEntityId);", std::make_format_args(prefix, variableName)));
 }
 
 void ComponentImplementationGenerator::FormatImGuiOptionalField(const std::string& variableName, const std::string& extraData, const std::string& prefix, std::vector<std::string>& outParsedVariableContents)
@@ -982,6 +1011,10 @@ ComponentImplementationGenerator::UnderlyingType ComponentImplementationGenerato
 	else if (typeString.find("Observers") != std::string::npos)
 	{
 		output = UnderlyingType::Observers;
+	}
+	else if (typeString.find("ConstructionData") != std::string::npos)
+	{
+		output = UnderlyingType::ConstructionData;
 	}
 
 	return output;

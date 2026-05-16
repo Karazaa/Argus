@@ -176,6 +176,19 @@ void TeamCommanderComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_inProgressConstructionData");
 		ImGui::TableNextColumn();
+		ImGui::Text("Size of map = %d", m_inProgressConstructionData.Num());
+		ImGui::Indent();
+		ImGui::BeginTable("m_inProgressConstructionData", 2, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_SizingStretchProp);
+		for (const auto& mapPair : m_inProgressConstructionData)
+		{
+			ImGui::TableNextColumn();
+			ImGui::Text("%d", mapPair.Key);
+			ImGui::TableNextColumn();
+			ImGui::Text("Entity Being Constructed Id %d", mapPair.Value.m_beingConstructedEntityId);
+			ImGui::Text("Entity Constructing Other Id %d", mapPair.Value.m_constructingOtherEntityId);
+		}
+		ImGui::EndTable();
+		ImGui::Unindent();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_spawningEntityRecordIds");
 		ImGui::TableNextColumn();
