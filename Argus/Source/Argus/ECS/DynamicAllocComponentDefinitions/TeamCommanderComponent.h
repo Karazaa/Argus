@@ -27,7 +27,7 @@ struct TeamCommanderComponent
 	ARGUS_COMP_NO_DATA
 	TArray<ResourceSourceExtractionData, ArgusContainerAllocator<10u> > m_seenResourceCSourceExtractionData;
 
-	ARGUS_COMP_NO_DATA
+	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT
 	ArgusMap<uint16, ConstructionData, ArgusSetAllocator<10> > m_inProgressConstructionData;
 
 	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT

@@ -64,6 +64,7 @@ private:
 
 		TypeInfo(const std::string& typeString, const std::string& macroString);
 
+		UnderlyingType GetTemplateParameter(int index) const;
 	private:
 		UnderlyingType DetermineType(const std::string& typeString, const std::string& macroString, std::string& outCleanTypeName);
 		void ExtractTemplateParameters(const std::string& typeString, std::vector<UnderlyingType>& outPopulatedTemplateParameters);
@@ -76,9 +77,11 @@ private:
 	static void GeneratePerVariableSerializeText(const std::vector<ArgusCodeGeneratorUtil::ParsedVariableData>& parsedVariableData, std::vector<std::string>& outParsedVariableContents);
 	static void GeneratePerVariableImGuiText(const std::vector<ArgusCodeGeneratorUtil::ParsedVariableData>& parsedVariableData, std::vector<std::string>& outParsedVariableContents);
 	
-	static void FormatImGuiArrayField(const std::string& variableName, const std::string& extraData, std::vector<std::string>& outParsedVariableContents, TFunction<void(const std::string&, const std::string&, const std::string&, std::vector<std::string>&)> elementFormattingFunction);
+	static bool PopulateAtomicFormattingFunction(UnderlyingType variableType, const std::string& cleanType, const std::string& macro, TFunction<void(const std::string&, const std::string&, const std::string&, std::vector<std::string>&)>& functionToPopulate, std::string& extraDataToPopulate);
+	static void FormatImGuiArrayField(const std::string& variableName, const std::string& extraData, std::vector<std::string>& outParsedVariableContents, const TFunction<void(const std::string&, const std::string&, const std::string&, std::vector<std::string>&)>& elementFormattingFunction);
 	static void FormatImGuiQueueField(const std::string& variableName, std::vector<std::string>& outParsedVariableContents);
-	static void FormatImGuiDequeField(const std::string& variableName, const std::string& extraData, std::vector<std::string>& outParsedVariableContents, TFunction<void(const std::string&, const std::string&, const std::string&, std::vector<std::string>&)> elementFormattingFunction);
+	static void FormatImGuiDequeField(const std::string& variableName, const std::string& extraData, std::vector<std::string>& outParsedVariableContents, const TFunction<void(const std::string&, const std::string&, const std::string&, std::vector<std::string>&)>& elementFormattingFunction);
+	static void FormatImGuiMapField(const std::string& variableName, const std::string& extraData, const std::string& secondExtraData,  std::vector<std::string>& outParsedVariableContents, const TFunction<void(const std::string&, const std::string&, const std::string&, std::vector<std::string>&)>& element0FormattingFunction, const TFunction<void(const std::string&, const std::string&, const std::string&, std::vector<std::string>&)>& element1FormattingFunction);
 	static void FormatImGuiFloatField(const std::string& variableName, const std::string& extraData, const std::string& prefix, std::vector<std::string>& outParsedVariableContents);
 	static void FormatImGuiIntField(const std::string& variableName, const std::string& extraData, const std::string& prefix, std::vector<std::string>& outParsedVariableContents);
 	static void FormatImGuiBitmaskField(const std::string& variableName, const std::string& extraData, const std::string& prefix, std::vector<std::string>& outParsedVariableContents);

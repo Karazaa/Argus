@@ -317,6 +317,7 @@ void ComponentImplementationGenerator::GeneratePerVariableSerializeText(const st
 				outParsedVariableContents.push_back(std::vformat("\t{}.Serialize(archive);", std::make_format_args(parsedVariableData[i].m_varName)));
 				break;
 			case ContainerType::Array:
+			case ContainerType::Map:
 				outParsedVariableContents.push_back(std::vformat("\tarchive << {};", std::make_format_args(parsedVariableData[i].m_varName)));
 				break;
 			default:
@@ -365,12 +366,45 @@ void ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 		outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
 
 		std::string extraData = "";
-		TFunction<void(const std::string&, const std::string&, const std::string&, std::vector<std::string>&)> atomicFieldFormattingFunction;
-		if (typeInfo.m_containerType == ContainerType::Optional)
+		TFunction<void(const std::string&, const std::string&, const std::string&, std::vector<std::string>&)> atomicFieldFormattingFunction = nullptr;
+		std::string secondExtraData = "";
+		TFunction<void(const std::string&, const std::string&, const std::string&, std::vector<std::string>&)> secondAtomicFieldFormattingFunction = nullptr;
+
+		switch (typeInfo.m_containerType)
 		{
-			atomicFieldFormattingFunction = FormatImGuiOptionalField;
-			switch (typeInfo.m_underlyingType)
-			{
+			case ContainerType::Queue:
+				if (!PopulateAtomicFormattingFunction(typeInfo.GetTemplateParameter(0), typeInfo.m_cleanTypeName, parsedVariableData[i].m_propertyMacro, atomicFieldFormattingFunction, extraData))
+				{
+					continue;
+				}
+				FormatImGuiQueueField(parsedVariableData[i].m_varName, outParsedVariableContents);
+				break;
+			case ContainerType::Array:
+				if (!PopulateAtomicFormattingFunction(typeInfo.GetTemplateParameter(0), typeInfo.m_cleanTypeName, parsedVariableData[i].m_propertyMacro, atomicFieldFormattingFunction, extraData))
+				{
+					continue;
+				}
+				FormatImGuiArrayField(parsedVariableData[i].m_varName, extraData, outParsedVariableContents, atomicFieldFormattingFunction);
+				break;
+			case ContainerType::Deque:
+				if (!PopulateAtomicFormattingFunction(typeInfo.GetTemplateParameter(0), typeInfo.m_cleanTypeName, parsedVariableData[i].m_propertyMacro, atomicFieldFormattingFunction, extraData))
+				{
+					continue;
+				}
+				FormatImGuiDequeField(parsedVariableData[i].m_varName, extraData, outParsedVariableContents, atomicFieldFormattingFunction);
+				break;
+			case ContainerType::Map:
+				if (!PopulateAtomicFormattingFunction(typeInfo.GetTemplateParameter(0), typeInfo.m_cleanTypeName, parsedVariableData[i].m_propertyMacro, atomicFieldFormattingFunction, extraData) ||
+					!PopulateAtomicFormattingFunction(typeInfo.GetTemplateParameter(1), typeInfo.m_cleanTypeName, parsedVariableData[i].m_propertyMacro, secondAtomicFieldFormattingFunction, secondExtraData))
+				{
+					continue;
+				}
+				FormatImGuiMapField(parsedVariableData[i].m_varName, extraData, secondExtraData, outParsedVariableContents, atomicFieldFormattingFunction, secondAtomicFieldFormattingFunction);
+				break;
+			case ContainerType::Optional:
+				atomicFieldFormattingFunction = FormatImGuiOptionalField;
+				switch (typeInfo.m_underlyingType)
+				{
 				case UnderlyingType::Float:
 					extraData = "float";
 					break;
@@ -382,75 +416,8 @@ void ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 					break;
 				default:
 					break;
-			}
-		}
-		else
-		{
-			switch (typeInfo.m_underlyingType)
-			{
-				case UnderlyingType::Bitmask:
-					extraData = typeInfo.m_cleanTypeName;
-					atomicFieldFormattingFunction = FormatImGuiBitmaskField;
-					break;
-				case UnderlyingType::StaticData:
-					extraData = parsedVariableData[i].m_propertyMacro;
-					atomicFieldFormattingFunction = FormatImGuiRecordField;
-					break;
-				case UnderlyingType::Integer:
-					atomicFieldFormattingFunction = FormatImGuiIntField;
-					break;
-				case UnderlyingType::Bool:
-					atomicFieldFormattingFunction = FormatImGuiBoolField;
-					break;
-				case UnderlyingType::Float:
-					atomicFieldFormattingFunction = FormatImGuiFloatField;
-					break;
-				case UnderlyingType::Vector2:
-					atomicFieldFormattingFunction = FormatImGuiFVector2DField;
-					break;
-				case UnderlyingType::Vector:
-					atomicFieldFormattingFunction = FormatImGuiFVectorField;
-					break;
-				case UnderlyingType::Enum:
-					extraData = typeInfo.m_cleanTypeName;
-					atomicFieldFormattingFunction = FormatImGuiEnumField;
-					break;
-				case UnderlyingType::TimerHandle:
-					atomicFieldFormattingFunction = FormatImGuiTimerField;
-					break;
-				case UnderlyingType::ResourceSet:
-					atomicFieldFormattingFunction = FormatImGuiResourceSetField;
-					break;
-				case UnderlyingType::SpawnEntityInfo:
-					atomicFieldFormattingFunction = FormatImGuiSpawnEntityInfoField;
-					break;
-				case UnderlyingType::ControlGroup:
-					atomicFieldFormattingFunction = FormatImGuiControlGroupField;
-					break;
-				case UnderlyingType::TeamCommanderPriority:
-					atomicFieldFormattingFunction = FormatImGuiTeamCommanderPriorityField;
-					break;
-				case UnderlyingType::ResourceExtractionData:
-					atomicFieldFormattingFunction = FormatImGuiResourceSourceExtractionDataField;
-					break;
-				default:
-					// TODO JAMES: Set some breakpoints here and capture any data types we don't currently have represented.
-					continue;
-			}
-		}
-
-		switch (typeInfo.m_containerType)
-		{
-			case ContainerType::Queue:
-				FormatImGuiQueueField(parsedVariableData[i].m_varName, outParsedVariableContents);
-				break;
-			case ContainerType::Array:
-				FormatImGuiArrayField(parsedVariableData[i].m_varName, extraData, outParsedVariableContents, atomicFieldFormattingFunction);
-				break;
-			case ContainerType::Deque:
-				FormatImGuiDequeField(parsedVariableData[i].m_varName, extraData, outParsedVariableContents, atomicFieldFormattingFunction);
-				break;
-			case ContainerType::Map:
+				}
+				atomicFieldFormattingFunction(parsedVariableData[i].m_varName, extraData, "", outParsedVariableContents);
 				break;
 			default:
 				{
@@ -459,6 +426,10 @@ void ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 					{
 						variableName.append(".GetValue()");
 					}
+					if (!PopulateAtomicFormattingFunction(typeInfo.m_underlyingType, typeInfo.m_cleanTypeName, parsedVariableData[i].m_propertyMacro, atomicFieldFormattingFunction, extraData))
+					{
+						continue;
+					}
 					atomicFieldFormattingFunction(variableName, extraData, "", outParsedVariableContents);
 				}
 				break;
@@ -466,7 +437,63 @@ void ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 	}
 }
 
-void ComponentImplementationGenerator::FormatImGuiArrayField(const std::string& variableName, const std::string& extraData, std::vector<std::string>& outParsedVariableContents, TFunction<void(const std::string&, const std::string&, const std::string&, std::vector<std::string>&)> elementFormattingFunction)
+bool ComponentImplementationGenerator::PopulateAtomicFormattingFunction(UnderlyingType variableType, const std::string& cleanType, const std::string& macro,  TFunction<void(const std::string&, const std::string&, const std::string&, std::vector<std::string>&)>& functionToPopulate, std::string& extraDataToPopulate)
+{
+	switch (variableType)
+	{
+		case UnderlyingType::Bitmask:
+			extraDataToPopulate = cleanType;
+			functionToPopulate = FormatImGuiBitmaskField;
+			break;
+		case UnderlyingType::StaticData:
+			extraDataToPopulate = macro;
+			functionToPopulate = FormatImGuiRecordField;
+			break;
+		case UnderlyingType::Integer:
+			functionToPopulate = FormatImGuiIntField;
+			break;
+		case UnderlyingType::Bool:
+			functionToPopulate = FormatImGuiBoolField;
+			break;
+		case UnderlyingType::Float:
+			functionToPopulate = FormatImGuiFloatField;
+			break;
+		case UnderlyingType::Vector2:
+			functionToPopulate = FormatImGuiFVector2DField;
+			break;
+		case UnderlyingType::Vector:
+			functionToPopulate = FormatImGuiFVectorField;
+			break;
+		case UnderlyingType::Enum:
+			extraDataToPopulate = cleanType;
+			functionToPopulate = FormatImGuiEnumField;
+			break;
+		case UnderlyingType::TimerHandle:
+			functionToPopulate = FormatImGuiTimerField;
+			break;
+		case UnderlyingType::ResourceSet:
+			functionToPopulate = FormatImGuiResourceSetField;
+			break;
+		case UnderlyingType::SpawnEntityInfo:
+			functionToPopulate = FormatImGuiSpawnEntityInfoField;
+			break;
+		case UnderlyingType::ControlGroup:
+			functionToPopulate = FormatImGuiControlGroupField;
+			break;
+		case UnderlyingType::TeamCommanderPriority:
+			functionToPopulate = FormatImGuiTeamCommanderPriorityField;
+			break;
+		case UnderlyingType::ResourceExtractionData:
+			functionToPopulate = FormatImGuiResourceSourceExtractionDataField;
+			break;
+		default:
+			// TODO JAMES: Set some breakpoints here and capture any data types we don't currently have represented.
+			return false;
+	}
+	return true;
+}
+
+void ComponentImplementationGenerator::FormatImGuiArrayField(const std::string& variableName, const std::string& extraData, std::vector<std::string>& outParsedVariableContents, const TFunction<void(const std::string&, const std::string&, const std::string&, std::vector<std::string>&)>& elementFormattingFunction)
 {
 	outParsedVariableContents.push_back(std::vformat("\t\tImGui::Text(\"Array max is currently = %d\", {}.Max());", std::make_format_args(variableName)));
 	outParsedVariableContents.push_back(std::vformat("\t\tif ({}.Num() == 0)", std::make_format_args(variableName)));
@@ -503,7 +530,7 @@ void ComponentImplementationGenerator::FormatImGuiQueueField(const std::string& 
 	outParsedVariableContents.push_back("\t\t}");
 }
 
-void ComponentImplementationGenerator::FormatImGuiDequeField(const std::string& variableName, const std::string& extraData, std::vector<std::string>& outParsedVariableContents, TFunction<void(const std::string&, const std::string&, const std::string&, std::vector<std::string>&)> elementFormattingFunction)
+void ComponentImplementationGenerator::FormatImGuiDequeField(const std::string& variableName, const std::string& extraData, std::vector<std::string>& outParsedVariableContents, const TFunction<void(const std::string&, const std::string&, const std::string&, std::vector<std::string>&)>& elementFormattingFunction)
 {
 	outParsedVariableContents.push_back(std::vformat("\t\tif ({}.IsEmpty())", std::make_format_args(variableName)));
 	outParsedVariableContents.push_back("\t\t{");
@@ -521,6 +548,13 @@ void ComponentImplementationGenerator::FormatImGuiDequeField(const std::string& 
 	}
 	outParsedVariableContents.push_back("\t\t\t}");
 	outParsedVariableContents.push_back("\t\t}");
+}
+
+void ComponentImplementationGenerator::FormatImGuiMapField(	const std::string& variableName, const std::string& extraData, const std::string& secondExtraData, std::vector<std::string>& outParsedVariableContents, 
+															const TFunction<void(const std::string&, const std::string&, const std::string&, std::vector<std::string>&)>& element0FormattingFunction,
+															const TFunction<void(const std::string&, const std::string&, const std::string&, std::vector<std::string>&)>& element1FormattingFunction)
+{
+
 }
 
 void ComponentImplementationGenerator::FormatImGuiFloatField(const std::string& variableName, const std::string& extraData, const std::string& prefix, std::vector<std::string>& outParsedVariableContents)
@@ -845,9 +879,26 @@ ComponentImplementationGenerator::TypeInfo::TypeInfo(const std::string& typeStri
 	}
 }
 
+ComponentImplementationGenerator::UnderlyingType ComponentImplementationGenerator::TypeInfo::GetTemplateParameter(int index) const
+{
+	if (index >= 0 && index < m_templateTypes.size())
+	{
+		return m_templateTypes[index];
+	}
+
+	return UnderlyingType::None;
+}
+
 ComponentImplementationGenerator::UnderlyingType ComponentImplementationGenerator::TypeInfo::DetermineType(const std::string& typeString, const std::string& macroString, std::string& outCleanTypeName)
 {
-	outCleanTypeName = typeString.substr(1, typeString.length() - 1);
+	if (typeString.at(0) == '\t')
+	{
+		outCleanTypeName = typeString.substr(1, typeString.length() - 1);
+	}
+	else
+	{
+		outCleanTypeName = typeString;
+	}
 	UnderlyingType output = UnderlyingType::None;
 
 	// BRUH REALLY? Yes. Until I find a better way to differentiate enum types... here we are.
