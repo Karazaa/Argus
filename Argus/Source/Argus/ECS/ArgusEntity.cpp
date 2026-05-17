@@ -2,13 +2,7 @@
 
 #include "ArgusEntity.h"
 #include "ArgusLogging.h"
-#include "ArgusMemorySource.h"
 #include "ArgusStaticData.h"
-#include "Systems/FlockingSystems.h"
-
-#if !UE_BUILD_SHIPPING
-#include "ArgusECSDebugger.h"
-#endif //!UE_BUILD_SHIPPING
 
 const ArgusEntity ArgusEntity::k_emptyEntity = ArgusEntity();
 TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > ArgusEntity::s_takenEntityIds;

@@ -1,8 +1,8 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
-#if !UE_BUILD_SHIPPING
-
 #include "ArgusECSDebugger.h"
+
+#if !UE_BUILD_SHIPPING
 #include "ArgusEntity.h"
 #include "ArgusMacros.h"
 #include "ComponentDependencies/ResourceSet.h"
@@ -16,6 +16,7 @@ static TAutoConsoleVariable<bool> CVarDrawECSDebugger(TEXT("Argus.Debug.ECS"), f
 bool ArgusECSDebugger::s_shouldDrawFogOfWar = true;
 bool ArgusECSDebugger::s_onlyDebugSelectedEntities = false;
 bool ArgusECSDebugger::s_ignoreTeamRequirementsForSelectingEntities = false;
+bool ArgusECSDebugger::s_isTeamAIEnabled = true;
 bool ArgusECSDebugger::s_entityDebugToggles[ArgusECSConstants::k_maxEntities];
 bool ArgusECSDebugger::s_entityShowAvoidanceDebug[ArgusECSConstants::k_maxEntities];
 bool ArgusECSDebugger::s_entityShowNavigationDebug[ArgusECSConstants::k_maxEntities];
@@ -81,11 +82,28 @@ bool ArgusECSDebugger::ShouldShowFlockingDebugForEntity(uint16 entityId)
 	return s_groupLeaderFlockingDisplay[index];
 }
 
+void ArgusECSDebugger::Serialize(FArchive& archive)
+{
+	archive << s_shouldDrawFogOfWar;
+	archive << s_onlyDebugSelectedEntities;
+	archive << s_ignoreTeamRequirementsForSelectingEntities;
+	archive << s_isTeamAIEnabled;
+	for (uint16 i = 0; i < ArgusECSConstants::k_maxEntities; ++i)
+	{
+		archive << s_entityDebugToggles[i];
+		archive << s_entityShowAvoidanceDebug[i];
+		archive << s_entityShowNavigationDebug[i];
+		archive << s_entityShowFlockingDebug[i];
+	}
+}
+
 void ArgusECSDebugger::DrawEntityScrollRegion()
 {
 	DrawResourceRegion();
 
 	ImGui::Checkbox("Draw fog of war", &s_shouldDrawFogOfWar);
+	ImGui::SameLine();
+	ImGui::Checkbox("Is team AI enabled", &s_isTeamAIEnabled);
 	ImGui::Checkbox("Only debug selected entities", &s_onlyDebugSelectedEntities);
 	ImGui::SameLine();
 	ImGui::Checkbox("Ignore team requirements for selection", &s_ignoreTeamRequirementsForSelectingEntities);

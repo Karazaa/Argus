@@ -10,12 +10,20 @@
 #include "Systems/TeamCommanderSystems_AssignEntities.h"
 
 #if !UE_BUILD_SHIPPING
+#include "ArgusECSDebugger.h"
 #include "DrawDebugHelpers.h"
 #endif // !UE_BUILD_SHIPPING
 
 void TeamCommanderSystems::RunSystems(float)
 {
 	ARGUS_TRACE(TeamCommanderSystems::RunSystems);
+
+#if !UE_BUILD_SHIPPING
+	if (!ArgusECSDebugger::IsTeamAIEnabled())
+	{
+		return;
+	}
+#endif
 
 	TeamCommanderSystems_GatherInfo::RunSystems();
 	TeamCommanderSystems_UpdatePriorities::RunSystems();

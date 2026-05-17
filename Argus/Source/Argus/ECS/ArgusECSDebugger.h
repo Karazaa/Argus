@@ -2,13 +2,16 @@
 
 #pragma once
 
+#include "CoreMinimal.h"
+
 #if !UE_BUILD_SHIPPING
 #include "ArgusECSConstants.h"
 #include "ArgusSetAllocator.h"
 #include "Containers/BitArray.h"
 #include "ComponentDependencies/Teams.h"
-#include "CoreMinimal.h"
 #include <string>
+
+class FArchive;
 
 class ArgusECSDebugger
 {
@@ -20,11 +23,15 @@ public:
 	static bool ShouldShowFlockingDebugForEntity(uint16 entityId);
 	static bool ShouldIgnoreTeamRequirementsForSelectingEntities() { return s_ignoreTeamRequirementsForSelectingEntities; };
 	static bool ShouldDrawFogOfWar() { return s_shouldDrawFogOfWar; }
+	static bool IsTeamAIEnabled() { return s_isTeamAIEnabled; }
+
+	static void Serialize(FArchive& archive);
 
 private:
 	static bool s_shouldDrawFogOfWar;
 	static bool s_onlyDebugSelectedEntities;
 	static bool s_ignoreTeamRequirementsForSelectingEntities;
+	static bool s_isTeamAIEnabled;
 	static bool s_entityDebugToggles[ArgusECSConstants::k_maxEntities];
 	static bool s_entityShowAvoidanceDebug[ArgusECSConstants::k_maxEntities];
 	static bool s_entityShowNavigationDebug[ArgusECSConstants::k_maxEntities];
