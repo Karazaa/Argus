@@ -19,6 +19,7 @@ void GlobalSettingsComponent::Reset()
 	m_flockingVelocityInfluence = 0.3f;
 	m_obstacleShrinkFixupDistance = 25.0f;
 	m_maxObstaclePointDistance = 150.0f;
+	m_minObstaclePointDistance = 75.0f;
 }
 
 void GlobalSettingsComponent::Serialize(FArchive& archive)
@@ -55,6 +56,10 @@ void GlobalSettingsComponent::DrawComponentDebug() const
 		ImGui::Text("m_maxObstaclePointDistance");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_maxObstaclePointDistance);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_minObstaclePointDistance");
+		ImGui::TableNextColumn();
+		ImGui::Text("%.2f", m_minObstaclePointDistance);
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

@@ -190,6 +190,39 @@ void ObstaclePointArray::CloseLoop()
 	}
 }
 
+void ObstaclePointArray::ConsolidateNearbyPoints()
+{
+	const GlobalSettingsComponent* settings = GlobalSettingsComponent::Get();
+	ARGUS_RETURN_ON_NULL(settings, ArgusECSLog);
+
+	const float thresholdSquared = FMath::Square(settings->m_minObstaclePointDistance);
+	TArray<ObstaclePoint> finalObstaclePoints;
+	finalObstaclePoints.Reserve(Num());
+	finalObstaclePoints.Add(GetTail());
+
+	int32 j = 0;
+	for (int32 i = 0; i < Num() - 1; ++i)
+	{
+		const float distSquared = FVector2D::DistSquared(finalObstaclePoints[j].m_point, GetData()[i].m_point);
+		if (distSquared < thresholdSquared)
+		{
+			finalObstaclePoints[j].m_point = ArgusMath::Average(finalObstaclePoints[j].m_point, GetData()[i].m_point);
+		}
+		else
+		{
+			finalObstaclePoints.Add(GetData()[i]);
+			++j;
+		}
+	}
+
+	Reset();
+
+	for (int32 i = 0; i < finalObstaclePoints.Num(); ++i)
+	{
+		Add(finalObstaclePoints[i]);
+	}
+}
+
 bool ObstaclePointArray::IsPointElevated(int32 index) const
 {
 	if (index < 0 || index >= Num())

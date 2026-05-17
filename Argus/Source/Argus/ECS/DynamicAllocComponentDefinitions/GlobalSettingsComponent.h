@@ -24,5 +24,8 @@ struct GlobalSettingsComponent
 	ARGUS_COMP_PROPERTY(EditDefaultsOnly, meta = (Category = "Obstacles")) ARGUS_COMP_TRANSIENT
 	float m_maxObstaclePointDistance = 150.0f;
 
+	ARGUS_COMP_PROPERTY(EditDefaultsOnly, meta = (Category = "Obstacles")) ARGUS_COMP_TRANSIENT
+	float m_minObstaclePointDistance = 75.0f;
+
 	static const GlobalSettingsComponent* Get();
 };

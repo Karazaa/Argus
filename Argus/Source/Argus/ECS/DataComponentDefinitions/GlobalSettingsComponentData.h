@@ -27,6 +27,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, meta = (Category = "Obstacles")) 
 	float m_maxObstaclePointDistance = 150.0f;
 
+	UPROPERTY(EditDefaultsOnly, meta = (Category = "Obstacles")) 
+	float m_minObstaclePointDistance = 75.0f;
+
 
 	void InstantiateComponentForEntity(ArgusEntity entity) const override;
 	void OnComponentDataLoaded() const override;

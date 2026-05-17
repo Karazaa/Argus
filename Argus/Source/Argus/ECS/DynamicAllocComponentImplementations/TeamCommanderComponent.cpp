@@ -178,7 +178,7 @@ void TeamCommanderComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("Size of map = %d", m_inProgressConstructionData.Num());
 		ImGui::Indent();
-		ImGui::BeginTable("m_inProgressConstructionData", 2, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_SizingStretchProp);
+		ImGui::BeginTable("m_inProgressConstructionData", 2, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_SizingStretchProp | ImGuiTableFlags_BordersInner);
 		for (const auto& mapPair : m_inProgressConstructionData)
 		{
 			ImGui::TableNextColumn();

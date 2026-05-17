@@ -657,6 +657,7 @@ void SpatialPartitioningSystems::ConvertWallsIntoObstacles(const TArray<FVector>
 	for (int32 i = 0; i < outObstacles.Num(); ++i)
 	{
 		outObstacles[i].CloseLoop();
+		outObstacles[i].ConsolidateNearbyPoints();
 		outObstacles[i].Shrink();
 		outObstacles[i].m_fixupDirections.Reserve(outObstacles[i].Num());
 		CalculateFixupDirectionForObstacles(outObstacles[i]);

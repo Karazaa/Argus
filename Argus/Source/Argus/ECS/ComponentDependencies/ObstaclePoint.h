@@ -35,6 +35,7 @@ public:
 	void Reverse();
 	void AppendOtherToThis(ObstaclePointArray& other);
 	void CloseLoop();
+	void ConsolidateNearbyPoints();
 	bool IsPointElevated(int32 index) const;
 	bool IsNextPointElevated(int32 index) const;
 
