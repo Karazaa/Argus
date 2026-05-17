@@ -304,18 +304,19 @@ void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const Creat
 	const TArray<ObstacleIndicies, ArgusContainerAllocator<20u> >& obstacleIndicies = nearbyObstaclesComponent->m_obstacleIndicies.GetObstacleIndiciesInAvoidanceRange();
 	for (int32 i = 0; i < obstacleIndicies.Num(); ++i)
 	{
-		const ObstaclePoint& previous = params.m_spatialPartitioningComponent->m_obstacles[obstacleIndicies[i].m_obstacleIndex].GetPrevious(obstacleIndicies[i].m_obstaclePointIndex);
-		const ObstaclePoint& current = params.m_spatialPartitioningComponent->m_obstacles[obstacleIndicies[i].m_obstacleIndex][obstacleIndicies[i].m_obstaclePointIndex];
-		const ObstaclePoint& next = params.m_spatialPartitioningComponent->m_obstacles[obstacleIndicies[i].m_obstacleIndex].GetNext(obstacleIndicies[i].m_obstaclePointIndex);
+		const ObstaclePointArray& obstaclesArray = params.m_spatialPartitioningComponent->m_obstacles[obstacleIndicies[i].m_obstacleIndex];
+		const ObstaclePoint& previous = obstaclesArray.GetPrevious(obstacleIndicies[i].m_obstaclePointIndex);
+		const ObstaclePoint& current = obstaclesArray[obstacleIndicies[i].m_obstaclePointIndex];
+		const ObstaclePoint& next = obstaclesArray.GetNext(obstacleIndicies[i].m_obstaclePointIndex);
 
 		CalculateORCALineForObstacleSegment(params, current, next, previous.m_direction, outORCALines);
 
 #if !UE_BUILD_SHIPPING
 		if (ArgusECSDebugger::ShouldShowAvoidanceDebugForEntity(components.m_entity.GetId()))
 		{
-			previous.DrawDebugObstaclePoint(worldPointer);
-			current.DrawDebugObstaclePoint(worldPointer);
-			next.DrawDebugObstaclePoint(worldPointer);
+			previous.DrawDebugObstaclePoint(worldPointer, 0.1f, true, false);
+			current.DrawDebugObstaclePoint(worldPointer, 0.1f, true, false);
+			next.DrawDebugObstaclePoint(worldPointer, 0.1f, true, false);
 		}
 #endif //!UE_BUILD_SHIPPING
 	}

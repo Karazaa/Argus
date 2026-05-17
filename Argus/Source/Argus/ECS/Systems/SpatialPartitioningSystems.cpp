@@ -743,30 +743,7 @@ void SpatialPartitioningSystems::DrawDebugObstacles(UWorld* worldPointer, const 
 	{
 		for (int32 j = 0; j < obstacles[i].Num(); ++j)
 		{
-			const float debugHeight = obstacles[i][j].m_height + ArgusECSConstants::k_debugDrawHeightAdjustment;
-			DrawDebugLine
-			(
-				worldPointer,
-				FVector(ArgusMath::ToUnrealVector2(obstacles[i][j].m_point), debugHeight),
-				FVector(ArgusMath::ToUnrealVector2(obstacles[i][j].m_point + (obstacles[i][j].m_direction * 100.0f)), debugHeight),
-				obstacles[i].IsPointElevated(j) ? FColor::Magenta : FColor::Purple,
-				true,
-				60.0f,
-				0u,
-				ArgusECSConstants::k_debugDrawLineWidth
-			);
-			DrawDebugSphere
-			(
-				worldPointer,
-				FVector(ArgusMath::ToUnrealVector2(obstacles[i][j].m_point), debugHeight),
-				10.0f,
-				4u,
-				obstacles[i].IsPointElevated(j) ? FColor::Magenta : FColor::Purple,
-				true,
-				60.0f,
-				0u,
-				ArgusECSConstants::k_debugDrawLineWidth
-			);
+			obstacles[i][j].DrawDebugObstaclePoint(worldPointer, 120.0f, false, obstacles[i].IsPointElevated(j));
 		}
 	}
 }

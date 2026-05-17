@@ -13,12 +13,13 @@ struct ObstaclePoint
 	FVector2D m_direction = FVector2D::ZeroVector;
 	float m_height = 0.0f;
 	bool m_isConvex = false;
+	bool m_isAlias = false;
 
 	FVector2D GetLeftVector() const { return FVector2D(-m_direction.Y, m_direction.X); }
 	FVector2D GetRightVector() const { return FVector2D(m_direction.Y, -m_direction.X); }
 
 #if !UE_BUILD_SHIPPING
-	void DrawDebugObstaclePoint(UWorld* worldPointer) const;
+	void DrawDebugObstaclePoint(UWorld* worldPointer, float duration, bool shouldShowText, bool isPointElevated) const;
 #endif //!UE_BUILD_SHIPPING
 };
 
@@ -27,8 +28,16 @@ class ObstaclePointArray : public TArray<ObstaclePoint, ArgusContainerAllocator<
 public:
 	const ObstaclePoint& GetHead() const;
 	const ObstaclePoint& GetTail() const;
+	const int32 GetPreviousIndex(int32 index) const;
 	const ObstaclePoint& GetPrevious(int32 index) const;
+	const int32 GetPreviousNonAliasIndex(int32 index) const;
+	const int32 GetCurrentNonAliasIndex(int32 index) const;
+	const ObstaclePoint& GetPreviousNonAlias(int32 index) const;
+	const int32 GetNextIndex(int32 index) const;
 	const ObstaclePoint& GetNext(int32 index) const;
+	const int32 GetNextNonAliasIndex(int32 index) const;
+	const ObstaclePoint& GetNextNonAlias(int32 index) const;
+
 
 	void FillInBetweenObstaclePoints(const ObstaclePoint& fromPoint, const ObstaclePoint& toPoint, TArray<ObstaclePoint>& outPoints);
 	void AddObstaclePointsWithFillIn(const ObstaclePoint& instigatingObstacle, bool addToHead);

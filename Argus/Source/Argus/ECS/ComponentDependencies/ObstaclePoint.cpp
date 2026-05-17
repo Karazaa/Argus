@@ -9,46 +9,68 @@
 #if !UE_BUILD_SHIPPING
 #include "DrawDebugHelpers.h"
 
-void ObstaclePoint::DrawDebugObstaclePoint(UWorld* worldPointer) const
+void ObstaclePoint::DrawDebugObstaclePoint(UWorld* worldPointer, float duration, bool shouldShowText, bool isPointElevated) const
 {
-	DrawDebugString
-	(
-		worldPointer,
-		FVector(ArgusMath::ToUnrealVector2(m_point), ArgusECSConstants::k_debugDrawHeightAdjustment),
-		FString::Printf
+	const FColor color = isPointElevated ? FColor::Magenta : FColor::Purple;
+	if (shouldShowText)
+	{
+		DrawDebugString
 		(
-			TEXT("IsConvex: %s"),
-			m_isConvex ? TEXT("true") : TEXT("false")
-		),
-		nullptr,
-		FColor::Purple,
-		0.1f,
-		true,
-		0.75f
-	);
+			worldPointer,
+			FVector(ArgusMath::ToUnrealVector2(m_point), ArgusECSConstants::k_debugDrawHeightAdjustment + m_height),
+			FString::Printf
+			(
+				TEXT("IsConvex: %s"),
+				m_isConvex ? TEXT("true") : TEXT("false")
+			),
+			nullptr,
+			color,
+			duration,
+			true,
+			0.75f
+		);
+	}
 	DrawDebugLine
 	(
 		worldPointer,
-		FVector(ArgusMath::ToUnrealVector2(m_point), ArgusECSConstants::k_debugDrawHeightAdjustment),
-		FVector(ArgusMath::ToUnrealVector2(m_point + (m_direction * 100.0f)), ArgusECSConstants::k_debugDrawHeightAdjustment),
-		FColor::Purple,
+		FVector(ArgusMath::ToUnrealVector2(m_point), ArgusECSConstants::k_debugDrawHeightAdjustment + m_height),
+		FVector(ArgusMath::ToUnrealVector2(m_point + (m_direction * 100.0f)), ArgusECSConstants::k_debugDrawHeightAdjustment + m_height),
+		color,
 		false,
-		0.1f,
+		duration,
 		0u,
 		ArgusECSConstants::k_debugDrawLineWidth
 	);
-	DrawDebugSphere
-	(
-		worldPointer,
-		FVector(ArgusMath::ToUnrealVector2(m_point), ArgusECSConstants::k_debugDrawHeightAdjustment),
-		10.0f,
-		4u,
-		FColor::Purple,
-		false,
-		0.1f,
-		0u,
-		ArgusECSConstants::k_debugDrawLineWidth
-	);
+	if (m_isAlias)
+	{
+		DrawDebugBox
+		(
+			worldPointer,
+			FVector(ArgusMath::ToUnrealVector2(m_point), ArgusECSConstants::k_debugDrawHeightAdjustment + m_height),
+			FVector(10.0f, 10.0f, 10.0f),
+			FQuat::Identity,
+			color,
+			false,
+			duration,
+			0u,
+			ArgusECSConstants::k_debugDrawLineWidth
+		);
+	}
+	else
+	{
+		DrawDebugSphere
+		(
+			worldPointer,
+			FVector(ArgusMath::ToUnrealVector2(m_point), ArgusECSConstants::k_debugDrawHeightAdjustment + m_height),
+			10.0f,
+			4u,
+			color,
+			false,
+			duration,
+			0u,
+			ArgusECSConstants::k_debugDrawLineWidth
+		);
+	}
 }
 #endif //#!UE_BUILD_SHIPPING
 
@@ -74,7 +96,7 @@ const ObstaclePoint& ObstaclePointArray::GetTail() const
 	return (GetData()[Num() - 1]);
 }
 
-const ObstaclePoint& ObstaclePointArray::GetPrevious(int32 index) const
+const int32 ObstaclePointArray::GetPreviousIndex(int32 index) const
 {
 	if (index >= Num() || index < 0)
 	{
@@ -82,18 +104,86 @@ const ObstaclePoint& ObstaclePointArray::GetPrevious(int32 index) const
 		verify(false);
 	}
 
-	return (GetData()[(index - 1 + Num()) % Num()]);
+	return (index - 1 + Num()) % Num();
+}
+
+const ObstaclePoint& ObstaclePointArray::GetPrevious(int32 index) const
+{
+	return (GetData()[GetPreviousIndex(index)]);
+}
+
+const int32 ObstaclePointArray::GetPreviousNonAliasIndex(int32 index) const
+{
+	int32 iterations = 0;
+	index = GetPreviousIndex(index);
+	const ObstaclePoint* newPoint = &GetData()[index];
+
+	while (newPoint->m_isAlias && iterations < Num())
+	{
+		index = GetPreviousIndex(index);
+		newPoint = &GetData()[index];
+		iterations++;
+	}
+
+	return index;
+}
+
+const int32 ObstaclePointArray::GetCurrentNonAliasIndex(int32 index) const
+{
+	if (index >= Num() || index < 0)
+	{
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Attempting to access invalid index(%d) of %s."), ARGUS_FUNCNAME, index, ARGUS_NAMEOF(ObstaclePointArray));
+		verify(false);
+	}
+
+	if (GetData()[index].m_isAlias)
+	{
+		return GetPreviousNonAliasIndex(index);
+	}
+
+	return index;
+}
+
+const ObstaclePoint& ObstaclePointArray::GetPreviousNonAlias(int32 index) const
+{
+	return GetData()[GetPreviousNonAliasIndex(index)];
+}
+
+const int32 ObstaclePointArray::GetNextIndex(int32 index) const
+{
+	if (index >= Num() || index < 0)
+	{
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Attempting to access invalid index(%d) of %s."), ARGUS_FUNCNAME, index, ARGUS_NAMEOF(ObstaclePointArray));
+		verify(false);
+	}
+
+	return (index + 1) % Num();
 }
 
 const ObstaclePoint& ObstaclePointArray::GetNext(int32 index) const
 {
-	if (index >= Num() || index < 0)
+	return (GetData()[GetNextIndex(index)]);
+}
+
+const int32 ObstaclePointArray::GetNextNonAliasIndex(int32 index) const
+{
+	int32 iterations = 0;
+	index = GetNextIndex(index);
+	const ObstaclePoint* newPoint = &GetData()[index];
+
+	while (newPoint->m_isAlias && iterations < Num())
 	{
-		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Attempting to access invalid index(%d) of %s."), ARGUS_FUNCNAME, index, ARGUS_NAMEOF(ObstaclePointArray));
-		verify(false);
+		index = GetNextIndex(index);
+		newPoint = &GetData()[index];
+		iterations++;
 	}
 
-	return (GetData()[(index + 1) % Num()]);
+	return index;
+}
+
+const ObstaclePoint& ObstaclePointArray::GetNextNonAlias(int32 index) const
+{
+	return GetData()[GetNextNonAliasIndex(index)];
 }
 
 void ObstaclePointArray::FillInBetweenObstaclePoints(const ObstaclePoint& fromPoint, const ObstaclePoint& toPoint, TArray<ObstaclePoint>& outPoints)
@@ -122,6 +212,7 @@ void ObstaclePointArray::FillInBetweenObstaclePoints(const ObstaclePoint& fromPo
 		ObstaclePoint& pointToInsert = outPoints.Emplace_GetRef();
 		pointToInsert.m_point = fromPoint.m_point + (distanceThisIteration * directionBetweenObstaclePoints);
 		pointToInsert.m_height = fromPoint.m_height + (distanceThisIteration * slopeBetweenObstaclePoints);
+		pointToInsert.m_isAlias = true;
 	}
 }
 
@@ -207,6 +298,7 @@ void ObstaclePointArray::ConsolidateNearbyPoints()
 		if (distSquared < thresholdSquared)
 		{
 			finalObstaclePoints[j].m_point = ArgusMath::Average(finalObstaclePoints[j].m_point, GetData()[i].m_point);
+			finalObstaclePoints[j].m_isAlias = false;
 		}
 		else
 		{
