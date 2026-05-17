@@ -297,4 +297,14 @@ namespace ArgusMath
 
 		return output;
 	}
+
+	static bool IsNearlyEqual(const FVector2D& vector0, const FVector2D& vector1)
+	{
+		return FMath::IsNearlyEqual(vector0.X, vector1.X) && FMath::IsNearlyEqual(vector0.Y, vector1.Y);
+	}
+
+	static FVector2D Average(const FVector2D& vector0, const FVector2D& vector1)
+	{
+		return (vector0 + vector1) * 0.5f;
+	}
 }

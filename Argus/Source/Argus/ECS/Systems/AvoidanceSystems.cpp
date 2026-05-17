@@ -301,28 +301,12 @@ void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const Creat
 		return;
 	}
 
-	// TODO JAMES: Related to obstacle detection below. Might remove.
-	//const FVector2D leftVector = (FVector2D(-params.m_sourceEntityVelocity.Y, params.m_sourceEntityVelocity.X).GetSafeNormal() * params.m_entityRadius);
-	//const FVector2D leftSource = params.m_sourceEntityLocation + leftVector;
-	//const FVector2D rightSource = params.m_sourceEntityLocation - leftVector;
-
-	//const FVector2D scaledVelocity = ArgusMath::SafeDivide(params.m_sourceEntityVelocity, params.m_inverseObstaclePredictionTime);
-	//const FVector2D leftTerminus = leftSource + scaledVelocity;
-	//const FVector2D rightTerminus = rightSource + scaledVelocity;
-
 	const TArray<ObstacleIndicies, ArgusContainerAllocator<20u> >& obstacleIndicies = nearbyObstaclesComponent->m_obstacleIndicies.GetObstacleIndiciesInAvoidanceRange();
 	for (int32 i = 0; i < obstacleIndicies.Num(); ++i)
 	{
 		const ObstaclePoint& previous = params.m_spatialPartitioningComponent->m_obstacles[obstacleIndicies[i].m_obstacleIndex].GetPrevious(obstacleIndicies[i].m_obstaclePointIndex);
 		const ObstaclePoint& current = params.m_spatialPartitioningComponent->m_obstacles[obstacleIndicies[i].m_obstacleIndex][obstacleIndicies[i].m_obstaclePointIndex];
 		const ObstaclePoint& next = params.m_spatialPartitioningComponent->m_obstacles[obstacleIndicies[i].m_obstacleIndex].GetNext(obstacleIndicies[i].m_obstaclePointIndex);
-
-		// TODO JAMES: Evaluate if this is something we want to do. Also, expand to consider stopping case.
-		//if (!ArgusMath::DoLineSegmentsIntersectCartesian(leftSource, leftTerminus, current.m_point, next.m_point) &&
-		//	!ArgusMath::DoLineSegmentsIntersectCartesian(rightSource, rightTerminus, current.m_point, next.m_point))
-		//{
-		//	continue;
-		//}
 
 		CalculateORCALineForObstacleSegment(params, current, next, previous.m_direction, outORCALines);
 
@@ -746,8 +730,8 @@ void AvoidanceSystems::CalculateORCALineForObstacleSegment(const CreateEntityORC
 	// Check if the velocity obstacle of the obstacle is already covered by existing ORCA lines.
 	for (int32 i = 0; i < outORCALines.Num(); ++i)
 	{
-		const float determinant0 = ArgusMath::Determinant(params.m_inverseObstaclePredictionTime * (relativeLocation0 - outORCALines[i].m_point), outORCALines[i].m_direction);
-		const float determinant1 = ArgusMath::Determinant(params.m_inverseObstaclePredictionTime * (relativeLocation1 - outORCALines[i].m_point), outORCALines[i].m_direction);
+		const float determinant0 = ArgusMath::Determinant((params.m_inverseObstaclePredictionTime * relativeLocation0) - outORCALines[i].m_point, outORCALines[i].m_direction);
+		const float determinant1 = ArgusMath::Determinant((params.m_inverseObstaclePredictionTime * relativeLocation1) - outORCALines[i].m_point, outORCALines[i].m_direction);
 		const float scaledRadius = params.m_inverseObstaclePredictionTime * params.m_entityRadius;
 		const bool point0Check = (determinant0 - scaledRadius) >= -ArgusECSConstants::k_avoidanceEpsilonValue;
 		const bool point1Check = (determinant1 - scaledRadius) >= -ArgusECSConstants::k_avoidanceEpsilonValue;
@@ -905,8 +889,8 @@ void AvoidanceSystems::CalculateORCALineForObstacleSegment(const CreateEntityORC
 	// Project current velocity onto velocity obstacle
 	
 	// Check if current velocity is projected on cutoff circles
-	const bool areObstaclesEqual =	obstaclePoint0.m_point == obstaclePoint1.m_point && 
-									obstaclePoint0.m_direction == obstaclePoint1.m_direction && 
+	const bool areObstaclesEqual =	ArgusMath::IsNearlyEqual(obstaclePoint0.m_point, obstaclePoint1.m_point) &&
+									ArgusMath::IsNearlyEqual(obstaclePoint0.m_direction, obstaclePoint1.m_direction) &&
 									obstaclePoint0.m_isConvex == obstaclePoint1.m_isConvex;
 	const float tValue = areObstaclesEqual ? 0.5f : (params.m_sourceEntityVelocity - leftCutoff).Dot(cutoffVector) / cutoffVector.SquaredLength();
 	const float tLeft = (params.m_sourceEntityVelocity - leftCutoff).Dot(leftLegDirection);
