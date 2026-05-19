@@ -305,18 +305,22 @@ void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const Creat
 	for (int32 i = 0; i < obstacleIndicies.Num(); ++i)
 	{
 		const ObstaclePointArray& obstaclesArray = params.m_spatialPartitioningComponent->m_obstacles[obstacleIndicies[i].m_obstacleIndex];
-		const ObstaclePoint& previous = obstaclesArray.GetPrevious(obstacleIndicies[i].m_obstaclePointIndex);
-		const ObstaclePoint& current = obstaclesArray[obstacleIndicies[i].m_obstaclePointIndex];
-		const ObstaclePoint& next = obstaclesArray.GetNext(obstacleIndicies[i].m_obstaclePointIndex);
+		const int32 currentObstacleIndex = obstaclesArray.GetCurrentNonAliasIndex(obstacleIndicies[i].m_obstaclePointIndex);
+		const int32 previousObstacleIndex = obstaclesArray.GetPreviousNonAliasIndex(currentObstacleIndex);
+		const int32 nextObstacleIndex = obstaclesArray.GetNextNonAliasIndex(currentObstacleIndex);
+
+		const ObstaclePoint& previous = obstaclesArray[previousObstacleIndex];
+		const ObstaclePoint& current = obstaclesArray[currentObstacleIndex];
+		const ObstaclePoint& next = obstaclesArray[nextObstacleIndex];
 
 		CalculateORCALineForObstacleSegment(params, current, next, previous.m_direction, outORCALines);
 
 #if !UE_BUILD_SHIPPING
 		if (ArgusECSDebugger::ShouldShowAvoidanceDebugForEntity(components.m_entity.GetId()))
 		{
-			previous.DrawDebugObstaclePoint(worldPointer, 0.1f, true, false);
-			current.DrawDebugObstaclePoint(worldPointer, 0.1f, true, false);
-			next.DrawDebugObstaclePoint(worldPointer, 0.1f, true, false);
+			previous.DrawDebugObstaclePoint(worldPointer, 0.1f, true, obstaclesArray.IsPointElevated(previousObstacleIndex));
+			current.DrawDebugObstaclePoint(worldPointer, 0.1f, true, obstaclesArray.IsPointElevated(currentObstacleIndex));
+			next.DrawDebugObstaclePoint(worldPointer, 0.1f, true, obstaclesArray.IsPointElevated(nextObstacleIndex));
 		}
 #endif //!UE_BUILD_SHIPPING
 	}
@@ -919,9 +923,11 @@ void AvoidanceSystems::CalculateORCALineForObstacleSegment(const CreateEntityORC
 
 	// Project on left leg, right leg, or cut - off line, whichever is closest to velocity
 	const float squaredDistanceCutoff = (tValue < 0.0f || tValue > 1.0f || areObstaclesEqual) ? 
-		std::numeric_limits<float>::infinity() : (params.m_sourceEntityVelocity - (leftCutoff + (tValue * cutoffVector))).SquaredLength();
+		std::numeric_limits<float>::infinity() : (params.m_sourceEntityVelocity - (leftCutoff + (tValue * cutoffVector))).SquaredLength() * ArgusECSConstants::k_avoidanceObstacleCutoffBias;
+
 	const float squaredDistanceLeft = tLeft < 0.0f ?
 		std::numeric_limits<float>::infinity() : (params.m_sourceEntityVelocity - (leftCutoff + (tLeft * leftLegDirection))).SquaredLength();
+
 	const float squaredDistanceRight= tRight < 0.0f ?
 		std::numeric_limits<float>::infinity() : (params.m_sourceEntityVelocity - (rightCutoff + (tRight * rightLegDirection))).SquaredLength();
 

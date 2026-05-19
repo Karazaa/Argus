@@ -15,6 +15,7 @@ namespace ArgusECSConstants
 
 	static constexpr uint16 k_avoidanceObstaclePreAllocatedAmount = 500u;
 	static constexpr float k_avoidanceObstacleQueryRadiusMultiplier = 1.5f;
+	static constexpr float k_avoidanceObstacleCutoffBias = 0.99f;
 
 	static constexpr float k_navigationAgentDefaultHeight = 100.0f;
 	static constexpr float k_avoidanceEpsilonValue = 0.00001f;
