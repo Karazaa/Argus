@@ -79,7 +79,6 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 
 	CreateEntityORCALinesParams params;
 	params.m_sourceEntityLocation3D = components.m_transformComponent->m_location;
-	params.m_sourceEntityLocation3D.Z += ArgusECSConstants::k_debugDrawHeightAdjustment;
 	params.m_sourceEntityLocation = ArgusMath::ToCartesianVector2(FVector2D(params.m_sourceEntityLocation3D));
 
 	PopulateAvoidanceRanges(components.m_entity, params.m_adjacentEntityRange, params.m_adjacentObstacleRange);
@@ -132,6 +131,7 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 #if !UE_BUILD_SHIPPING
 	if (worldPointer && shouldShowAvoidanceDebug)
 	{
+		params.m_sourceEntityLocation3D.Z += ArgusECSConstants::k_debugDrawHeightAdjustment;
 		DrawDebugCircle(worldPointer, params.m_sourceEntityLocation3D, params.m_adjacentObstacleRange, 20, FColor::Orange, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth, FVector::RightVector, FVector::ForwardVector, false);
 		DrawDebugCircle(worldPointer, params.m_sourceEntityLocation3D, params.m_adjacentEntityRange, 20, FColor::Yellow, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth, FVector::RightVector, FVector::ForwardVector, false);
 		DrawORCADebugLines(worldPointer, params, calculatedORCALines, false, numStaticObstacles);
@@ -296,6 +296,8 @@ float AvoidanceSystems::GetObstacleAvoidanceRange(ArgusEntity entity)
 
 void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const CreateEntityORCALinesParams& params, const TransformSystemsArgs& components, const NearbyObstaclesComponent* nearbyObstaclesComponent,  TArray<ORCALine>& outORCALines)
 {
+	const GlobalSettingsComponent* settings = ArgusEntity::GetSingletonEntity().GetComponent<GlobalSettingsComponent>();
+	ARGUS_RETURN_ON_NULL(settings, ArgusECSLog);
 	if (!worldPointer || !params.m_spatialPartitioningComponent || !nearbyObstaclesComponent)
 	{
 		return;
@@ -312,6 +314,11 @@ void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const Creat
 		const ObstaclePoint& previous = obstaclesArray[previousObstacleIndex];
 		const ObstaclePoint& current = obstaclesArray[currentObstacleIndex];
 		const ObstaclePoint& next = obstaclesArray[nextObstacleIndex];
+
+		if (FMath::Abs(current.m_height - params.m_sourceEntityLocation3D.Z) > settings->m_maxAvoidanceObstaclePointHeightDifference)
+		{
+			continue;
+		}
 
 		CalculateORCALineForObstacleSegment(params, current, next, previous.m_direction, outORCALines);
 

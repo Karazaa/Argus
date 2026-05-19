@@ -16,6 +16,7 @@ void GlobalSettingsComponent::Reset()
 {
 	m_avoidanceEntityDetectionPredictionTime = 0.75f;
 	m_avoidanceObstacleDetectionPredictionTime = 0.75f;
+	m_maxAvoidanceObstaclePointHeightDifference = 50.0f;
 	m_flockingVelocityInfluence = 0.3f;
 	m_obstacleShrinkFixupDistance = 25.0f;
 	m_maxObstaclePointDistance = 150.0f;
@@ -44,6 +45,10 @@ void GlobalSettingsComponent::DrawComponentDebug() const
 		ImGui::Text("m_avoidanceObstacleDetectionPredictionTime");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_avoidanceObstacleDetectionPredictionTime);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_maxAvoidanceObstaclePointHeightDifference");
+		ImGui::TableNextColumn();
+		ImGui::Text("%.2f", m_maxAvoidanceObstaclePointHeightDifference);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_flockingVelocityInfluence");
 		ImGui::TableNextColumn();
