@@ -30,5 +30,8 @@ struct GlobalSettingsComponent
 	ARGUS_COMP_PROPERTY(EditDefaultsOnly, meta = (Category = "Obstacles")) ARGUS_COMP_TRANSIENT
 	float m_minObstaclePointDistance = 75.0f;
 
+	ARGUS_COMP_PROPERTY(EditDefaultsOnly, meta = (Category = "Translation")) ARGUS_COMP_TRANSIENT
+	float m_progressNavPathDistThreshold = 5.0f;
+
 	static const GlobalSettingsComponent* Get();
 };

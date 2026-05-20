@@ -53,6 +53,8 @@ void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float delta
 {
 	ARGUS_TRACE(TransformSystems::MoveAlongNavigationPath);
 
+	const GlobalSettingsComponent* settings = GlobalSettingsComponent::Get();
+	ARGUS_RETURN_ON_NULL(settings, ArgusECSLog);
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return;
@@ -68,7 +70,6 @@ void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float delta
 		return;
 	}
 
-	const bool isLastPoint = components.m_navigationComponent->m_lastPointIndex == numNavigationPoints - 2u;
 	FVector moverLocation = components.m_transformComponent->m_location;
 	const FVector velocity = FVector((components.m_velocityComponent->m_currentVelocity * deltaTime), 0.0f);
 	moverLocation += velocity;
@@ -83,7 +84,7 @@ void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float delta
 		groupSourceLocation = moverLocation;
 	}
 
-	const FVector evaluationPoint = isLastPoint ? groupSourceLocation.GetValue() : moverLocation;
+	const FVector evaluationPoint = groupSourceLocation.GetValue();
 	const FVector sourceLocation = components.m_navigationComponent->m_navigationPoints[lastPointIndex];
 	FVector targetLocation = components.m_navigationComponent->m_navigationPoints[lastPointIndex + 1u];
 	const FVector segment = targetLocation - sourceLocation;
@@ -91,12 +92,14 @@ void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float delta
 	const float segmentLength = segment.Length();
 
 	bool isAtEndOfNavigationPath = false;
-	if (FMath::Abs(actual.Dot(segment) / segmentLength) > segmentLength)
+	const float projectionDistance = FMath::Abs(actual.Dot(segment) / segmentLength);
+	const float scaledSegmentDistance = (segmentLength - settings->m_progressNavPathDistThreshold);
+	if (projectionDistance >= scaledSegmentDistance)
 	{
-		isAtEndOfNavigationPath = isLastPoint;
+		isAtEndOfNavigationPath = components.m_navigationComponent->m_lastPointIndex == numNavigationPoints - 2u;
 
 		// Need to set velocity when starting pathing segment so that avoidance systems can properly consider desired velocity when proposing movement velocity.
-		if (!isLastPoint)
+		if (!isAtEndOfNavigationPath)
 		{
 			components.m_navigationComponent->m_lastPointIndex++;
 			targetLocation = components.m_navigationComponent->m_navigationPoints[components.m_navigationComponent->m_lastPointIndex + 1];
