@@ -431,7 +431,7 @@ bool AvoidanceSystems::FindORCALineAndVelocityToBoundaryPerEntity(const CreateEn
 		const float cutoffCenterToRelativeVelocityLengthSqared = cutoffCenterToRelativeVelocity.SquaredLength();
 		const float dotProduct = cutoffCenterToRelativeVelocity.Dot(relativeLocation);
 
-		if ((dotProduct < 0.0f) && (FMath::Square(dotProduct) > (combinedRadiusSquared * cutoffCenterToRelativeVelocityLengthSqared)))
+		if ((dotProduct < 0.0f) && (cutoffCenterToRelativeVelocityLengthSqared > FMath::Square(ArgusECSConstants::k_avoidanceEpsilonValue)) && (FMath::Square(dotProduct) > (combinedRadiusSquared * cutoffCenterToRelativeVelocityLengthSqared)))
 		{
 			const float cutoffCenterToRelativeVelocityLength = FMath::Sqrt(cutoffCenterToRelativeVelocityLengthSqared);
 			const FVector2D unitCutoffCenterToRelativeVelocity = cutoffCenterToRelativeVelocity / cutoffCenterToRelativeVelocityLength;
@@ -441,7 +441,8 @@ bool AvoidanceSystems::FindORCALineAndVelocityToBoundaryPerEntity(const CreateEn
 		else
 		{
 			const float leg = FMath::Sqrt(relativeLocationDistanceSquared - combinedRadiusSquared);
-			if (ArgusMath::Determinant(relativeLocation, cutoffCenterToRelativeVelocity) > 0.0f)
+			const float legDeterminant = ArgusMath::Determinant(relativeLocation, cutoffCenterToRelativeVelocity);
+			if (legDeterminant > ArgusECSConstants::k_avoidanceEpsilonValue)
 			{
 				calculatedORCALine.m_direction = FVector2D((relativeLocation.X * leg) - (relativeLocation.Y * combinedRadius),
 					(relativeLocation.X * combinedRadius) + (relativeLocation.Y * leg));

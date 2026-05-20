@@ -19,6 +19,9 @@ struct NavigationComponent
 	ARGUS_COMP_NO_DATA
 	int32 m_lastPointIndex = 0;
 
+	ARGUS_COMP_NO_DATA
+	float m_navigationClearance = 45.0f;
+
 	void ResetPath()
 	{
 		m_navigationPoints.Reset();

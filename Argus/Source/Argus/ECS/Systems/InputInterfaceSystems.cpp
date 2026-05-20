@@ -18,9 +18,24 @@ bool InputInterfaceSystems::HasAnySelectedEntities()
 
 void InputInterfaceSystems::MoveSelectedEntitiesToTarget(EMovementState inputMovementState, ArgusEntity targetEntity, const FVector& targetLocation, ArgusEntity decalEntity, bool onAttackMove)
 {
-	IterateSelectedEntities([inputMovementState, targetEntity, targetLocation, decalEntity, onAttackMove](ArgusEntity selectedEntity)
+	InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::GetSingletonEntity().GetComponent<InputInterfaceComponent>();
+	ARGUS_RETURN_ON_NULL(inputInterfaceComponent, ArgusECSLog);
+	
+	// TODO JAMES: Clean this up.
+	int32 numEntitiesMoving = inputInterfaceComponent->m_selectedArgusEntityIds.Num();
+	float clearance = 45.0f;
+	if (numEntitiesMoving > 6)
 	{
-		MoveEntityToTarget(selectedEntity, inputMovementState, targetEntity, targetLocation, decalEntity, onAttackMove);
+		clearance = 270.0f;
+	}
+	else if (numEntitiesMoving > 1)
+	{
+		clearance = 135.0f;
+	}
+
+	IterateSelectedEntities([inputMovementState, targetEntity, targetLocation, decalEntity, onAttackMove, clearance](ArgusEntity selectedEntity)
+	{
+		MoveEntityToTarget(selectedEntity, inputMovementState, targetEntity, targetLocation, decalEntity, onAttackMove, clearance);
 	});
 }
 
@@ -359,7 +374,7 @@ void InputInterfaceSystems::InterruptReticle()
 	reticleComponent->DisableReticle();
 }
 
-void InputInterfaceSystems::MoveEntityToTarget(ArgusEntity entity, EMovementState inputMovementState, ArgusEntity targetEntity, const FVector& targetLocation, ArgusEntity decalEntity, bool onAttackMove)
+void InputInterfaceSystems::MoveEntityToTarget(ArgusEntity entity, EMovementState inputMovementState, ArgusEntity targetEntity, const FVector& targetLocation, ArgusEntity decalEntity, bool onAttackMove, float clearance)
 {
 	if (!entity)
 	{
@@ -388,6 +403,7 @@ void InputInterfaceSystems::MoveEntityToTarget(ArgusEntity entity, EMovementStat
 	if (navigationComponent)
 	{
 		navigationComponent->ResetQueuedWaypoints();
+		navigationComponent->m_navigationClearance = clearance;
 	}
 
 	if (inputMovementState == EMovementState::ProcessMoveToEntityCommand)
