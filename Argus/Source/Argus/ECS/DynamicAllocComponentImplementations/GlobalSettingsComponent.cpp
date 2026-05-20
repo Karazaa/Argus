@@ -21,6 +21,7 @@ void GlobalSettingsComponent::Reset()
 	m_obstacleShrinkFixupDistance = 25.0f;
 	m_maxObstaclePointDistance = 150.0f;
 	m_minObstaclePointDistance = 75.0f;
+	m_progressNavPathDistThreshold = 5.0f;
 }
 
 void GlobalSettingsComponent::Serialize(FArchive& archive)
@@ -65,6 +66,10 @@ void GlobalSettingsComponent::DrawComponentDebug() const
 		ImGui::Text("m_minObstaclePointDistance");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_minObstaclePointDistance);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_progressNavPathDistThreshold");
+		ImGui::TableNextColumn();
+		ImGui::Text("%.2f", m_progressNavPathDistThreshold);
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING
