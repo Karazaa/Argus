@@ -20,17 +20,19 @@ void InputInterfaceSystems::MoveSelectedEntitiesToTarget(EMovementState inputMov
 {
 	InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::GetSingletonEntity().GetComponent<InputInterfaceComponent>();
 	ARGUS_RETURN_ON_NULL(inputInterfaceComponent, ArgusECSLog);
+
+	const GlobalSettingsComponent* settings = GlobalSettingsComponent::Get();
+	ARGUS_RETURN_ON_NULL(settings, ArgusECSLog);
 	
-	// TODO JAMES: Clean this up.
-	int32 numEntitiesMoving = inputInterfaceComponent->m_selectedArgusEntityIds.Num();
+	// TODO JAMES: Gotta make sure the arraay is sorted
 	float clearance = 45.0f;
-	if (numEntitiesMoving > 6)
+	int32 numEntitiesMoving = inputInterfaceComponent->m_selectedArgusEntityIds.Num();
+	for (int32 i = settings->m_groupSizeRadiusPair.Num() - 1; i >= 0; --i)
 	{
-		clearance = 270.0f;
-	}
-	else if (numEntitiesMoving > 1)
-	{
-		clearance = 135.0f;
+		if (numEntitiesMoving > settings->m_groupSizeRadiusPair[i].m_groupSizeLowerBound)
+		{
+			clearance = settings->m_groupSizeRadiusPair[i].m_radius;
+		}
 	}
 
 	IterateSelectedEntities([inputMovementState, targetEntity, targetLocation, decalEntity, onAttackMove, clearance](ArgusEntity selectedEntity)

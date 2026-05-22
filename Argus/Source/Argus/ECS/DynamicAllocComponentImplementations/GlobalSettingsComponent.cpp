@@ -22,6 +22,7 @@ void GlobalSettingsComponent::Reset()
 	m_maxObstaclePointDistance = 150.0f;
 	m_minObstaclePointDistance = 75.0f;
 	m_progressNavPathDistThreshold = 5.0f;
+	m_groupSizeRadiusPair.Reset();
 }
 
 void GlobalSettingsComponent::Serialize(FArchive& archive)
@@ -70,6 +71,9 @@ void GlobalSettingsComponent::DrawComponentDebug() const
 		ImGui::Text("m_progressNavPathDistThreshold");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_progressNavPathDistThreshold);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_groupSizeRadiusPair");
+		ImGui::TableNextColumn();
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

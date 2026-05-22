@@ -18,6 +18,7 @@ void UGlobalSettingsComponentData::InstantiateComponentForEntity(ArgusEntity ent
 	GlobalSettingsComponentRef->m_maxObstaclePointDistance = m_maxObstaclePointDistance;
 	GlobalSettingsComponentRef->m_minObstaclePointDistance = m_minObstaclePointDistance;
 	GlobalSettingsComponentRef->m_progressNavPathDistThreshold = m_progressNavPathDistThreshold;
+	GlobalSettingsComponentRef->m_groupSizeRadiusPair = m_groupSizeRadiusPair;
 }
 
 void UGlobalSettingsComponentData::OnComponentDataLoaded() const

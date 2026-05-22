@@ -3,6 +3,7 @@
 #pragma once
 
 #include "ArgusMacros.h"
+#include "ComponentDependencies/SettingsStructures.h"
 #include "CoreMinimal.h"
 
 struct GlobalSettingsComponent
@@ -32,6 +33,9 @@ struct GlobalSettingsComponent
 
 	ARGUS_COMP_PROPERTY(EditDefaultsOnly, meta = (Category = "Translation")) ARGUS_COMP_TRANSIENT
 	float m_progressNavPathDistThreshold = 5.0f;
+
+	ARGUS_COMP_PROPERTY(EditDefaultsOnly, meta = (Category = "Navigation")) ARGUS_COMP_TRANSIENT
+	TArray<FGroupSizeRadiusPair> m_groupSizeRadiusPair;
 
 	static const GlobalSettingsComponent* Get();
 };

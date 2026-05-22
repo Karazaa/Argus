@@ -36,6 +36,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, meta = (Category = "Translation")) 
 	float m_progressNavPathDistThreshold = 5.0f;
 
+	UPROPERTY(EditDefaultsOnly, meta = (Category = "Navigation")) 
+	TArray<FGroupSizeRadiusPair> m_groupSizeRadiusPair;
+
 
 	void InstantiateComponentForEntity(ArgusEntity entity) const override;
 	void OnComponentDataLoaded() const override;
