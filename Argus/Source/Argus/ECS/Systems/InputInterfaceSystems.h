@@ -93,7 +93,7 @@ public:
 	}
 
 private:
-	static void MoveEntityToTarget(ArgusEntity entity, EMovementState inputMovementState, ArgusEntity targetEntity, const FVector& targetLocation, ArgusEntity decalEntity, bool onAttackMove, float clearance);
+	static void MoveEntityToTarget(ArgusEntity entity, EMovementState inputMovementState, ArgusEntity targetEntity, const FVector& targetLocation, ArgusEntity decalEntity, bool onAttackMove, FNavAgentSelector navAgentToUse);
 	static void SetWaypointForEntity(ArgusEntity entity, const FVector& targetLocation, ArgusEntity decalEntity);
 	static void RemoveSelectionStateForEntity(ArgusEntity entity);
 	static void AddAdjacentLikeEntitiesAsSelected(ArgusEntity entity, InputInterfaceComponent* inputInterfaceComponent, const UArgusActorRecord* moveToLocationDecalActorRecord);

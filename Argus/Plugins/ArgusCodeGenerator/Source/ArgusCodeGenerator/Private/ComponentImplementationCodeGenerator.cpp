@@ -231,6 +231,11 @@ void ComponentImplementationGenerator::GeneratePerVariableResetText(const std::v
 {
 	for (int i = 0; i < parsedVariableData.size(); ++i)
 	{
+		if (parsedVariableData[i].m_propertyMacro.find(ArgusCodeGeneratorUtil::s_propertyNoResetDelimiter) != std::string::npos)
+		{
+			continue;
+		}
+
 		if (!parsedVariableData[i].m_defaultValue.empty())
 		{
 			outParsedVariableContents.push_back(std::vformat("\t{} = {};", std::make_format_args(parsedVariableData[i].m_varName, parsedVariableData[i].m_defaultValue)));

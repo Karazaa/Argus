@@ -24,20 +24,20 @@ void InputInterfaceSystems::MoveSelectedEntitiesToTarget(EMovementState inputMov
 	const GlobalSettingsComponent* settings = GlobalSettingsComponent::Get();
 	ARGUS_RETURN_ON_NULL(settings, ArgusECSLog);
 	
-	// TODO JAMES: Gotta make sure the arraay is sorted
-	float clearance = 45.0f;
+	FNavAgentSelector agentToUse = FNavAgentSelector(1u);
 	int32 numEntitiesMoving = inputInterfaceComponent->m_selectedArgusEntityIds.Num();
 	for (int32 i = settings->m_groupSizeRadiusPair.Num() - 1; i >= 0; --i)
 	{
 		if (numEntitiesMoving > settings->m_groupSizeRadiusPair[i].m_groupSizeLowerBound)
 		{
-			clearance = settings->m_groupSizeRadiusPair[i].m_radius;
+			agentToUse = settings->m_groupSizeRadiusPair[i].m_navAgentSelection;
+			break;
 		}
 	}
 
-	IterateSelectedEntities([inputMovementState, targetEntity, targetLocation, decalEntity, onAttackMove, clearance](ArgusEntity selectedEntity)
+	IterateSelectedEntities([inputMovementState, targetEntity, targetLocation, decalEntity, onAttackMove, agentToUse](ArgusEntity selectedEntity)
 	{
-		MoveEntityToTarget(selectedEntity, inputMovementState, targetEntity, targetLocation, decalEntity, onAttackMove, clearance);
+		MoveEntityToTarget(selectedEntity, inputMovementState, targetEntity, targetLocation, decalEntity, onAttackMove, agentToUse);
 	});
 }
 
@@ -376,7 +376,7 @@ void InputInterfaceSystems::InterruptReticle()
 	reticleComponent->DisableReticle();
 }
 
-void InputInterfaceSystems::MoveEntityToTarget(ArgusEntity entity, EMovementState inputMovementState, ArgusEntity targetEntity, const FVector& targetLocation, ArgusEntity decalEntity, bool onAttackMove, float clearance)
+void InputInterfaceSystems::MoveEntityToTarget(ArgusEntity entity, EMovementState inputMovementState, ArgusEntity targetEntity, const FVector& targetLocation, ArgusEntity decalEntity, bool onAttackMove, FNavAgentSelector navAgentToUse)
 {
 	if (!entity)
 	{
@@ -405,7 +405,7 @@ void InputInterfaceSystems::MoveEntityToTarget(ArgusEntity entity, EMovementStat
 	if (navigationComponent)
 	{
 		navigationComponent->ResetQueuedWaypoints();
-		navigationComponent->m_navigationClearance = clearance;
+		navigationComponent->m_navAgentToUse = navAgentToUse;
 	}
 
 	if (inputMovementState == EMovementState::ProcessMoveToEntityCommand)

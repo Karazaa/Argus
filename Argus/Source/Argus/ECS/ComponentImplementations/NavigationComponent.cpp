@@ -23,7 +23,7 @@ void NavigationComponent::Reset()
 	m_navigationPoints.Reset();
 	m_queuedWaypoints.Reset();
 	m_lastPointIndex = 0;
-	m_navigationClearance = 45.0f;
+	m_navAgentToUse = FNavAgentSelector(1u);
 }
 
 void NavigationComponent::Serialize(FArchive& archive)
@@ -31,7 +31,6 @@ void NavigationComponent::Serialize(FArchive& archive)
 	archive << m_navigationPoints;
 	m_queuedWaypoints.Serialize(archive);
 	archive << m_lastPointIndex;
-	archive << m_navigationClearance;
 }
 
 void NavigationComponent::DrawComponentDebug() const
@@ -71,9 +70,8 @@ void NavigationComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_lastPointIndex);
 		ImGui::TableNextColumn();
-		ImGui::Text("m_navigationClearance");
+		ImGui::Text("m_navAgentToUse");
 		ImGui::TableNextColumn();
-		ImGui::Text("%.2f", m_navigationClearance);
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

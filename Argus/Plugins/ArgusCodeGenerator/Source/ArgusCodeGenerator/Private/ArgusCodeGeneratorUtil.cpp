@@ -16,6 +16,7 @@ const char* ArgusCodeGeneratorUtil::s_propertyObservablePropertyDeclarationDelim
 const char* ArgusCodeGeneratorUtil::s_propertyGetButSkipDelimiter = "ARGUS_SYSARG_UNCHECKED_GET";
 const char* ArgusCodeGeneratorUtil::s_propertyFromSingletonDelimiter = "ARGUS_SYSARG_FROM_SINGLETON";
 const char* ArgusCodeGeneratorUtil::s_propertyTransientDelimiter = "ARGUS_COMP_TRANSIENT";
+const char* ArgusCodeGeneratorUtil::s_propertyNoResetDelimiter = "ARGUS_COMP_NO_RESET";
 const char* ArgusCodeGeneratorUtil::s_uePropertyDelimiter = "UPROPERTY";
 const char* ArgusCodeGeneratorUtil::s_systemsDirectoryName = "Systems";
 const char* ArgusCodeGeneratorUtil::s_systemsDirectorySuffix = "Source/Argus/ECS/Systems";

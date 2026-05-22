@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "AI/Navigation/NavAgentSelector.h"
 #include "ArgusMacros.h"
 #include "ComponentDependencies/ArgusDeque.h"
 #include "ComponentDependencies/NavigationWaypoint.h"
@@ -20,7 +21,7 @@ struct NavigationComponent
 	int32 m_lastPointIndex = 0;
 
 	ARGUS_COMP_NO_DATA
-	float m_navigationClearance = 45.0f;
+	FNavAgentSelector m_navAgentToUse = FNavAgentSelector(1u);
 
 	void ResetPath()
 	{

@@ -34,7 +34,7 @@ struct GlobalSettingsComponent
 	ARGUS_COMP_PROPERTY(EditDefaultsOnly, meta = (Category = "Translation")) ARGUS_COMP_TRANSIENT
 	float m_progressNavPathDistThreshold = 5.0f;
 
-	ARGUS_COMP_PROPERTY(EditDefaultsOnly, meta = (Category = "Navigation")) ARGUS_COMP_TRANSIENT
+	ARGUS_COMP_PROPERTY(EditDefaultsOnly, meta = (Category = "Navigation")) ARGUS_COMP_TRANSIENT ARGUS_COMP_NO_RESET
 	TArray<FGroupSizeRadiusPair> m_groupSizeRadiusPair;
 
 	static const GlobalSettingsComponent* Get();

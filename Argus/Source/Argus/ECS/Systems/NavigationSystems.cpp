@@ -249,14 +249,28 @@ void NavigationSystems::GeneratePathPointsForGroundedEntity(UWorld* worldPointer
 	UNavigationSystemV1* unrealNavigationSystem = UNavigationSystemV1::GetCurrent(worldPointer);
 	ARGUS_RETURN_ON_NULL(unrealNavigationSystem, ArgusECSLog);
 
-	// Use the clearance value to select appropriate nav data with built-in edge offset.
-	const FNavAgentProperties agentProperties = FNavAgentProperties(components.m_navigationComponent->m_navigationClearance, ArgusECSConstants::k_navigationAgentDefaultHeight);
-	ANavigationData* navData = unrealNavigationSystem->GetNavDataForProps(agentProperties);
+	const TArray<FNavDataConfig>& allNavAgents = unrealNavigationSystem->GetSupportedAgents();
+	if (allNavAgents.IsEmpty())
+	{
+		return;
+	}
+
+	int32 propertyIndex = 0;
+	for (int32 i = 0; i < allNavAgents.Num(); ++i)
+	{
+		// For whatever reason in Unreal's internals, allNavAgentProperties is returned fully inverted.
+		if (components.m_navigationComponent->m_navAgentToUse.Contains(i))
+		{
+			propertyIndex = i;
+			break;
+		}
+	}
+
+	ANavigationData* navData = unrealNavigationSystem->GetNavDataForProps(allNavAgents[propertyIndex]);
 	if (!navData)
 	{
 		navData = unrealNavigationSystem->MainNavData;
 	}
-	
 
 	FPathFindingQuery pathFindingQuery = FPathFindingQuery
 	(
@@ -265,7 +279,7 @@ void NavigationSystems::GeneratePathPointsForGroundedEntity(UWorld* worldPointer
 		components.m_transformComponent->m_location,
 		targetLocation.value()
 	);
-	pathFindingQuery.SetNavAgentProperties(agentProperties);
+	pathFindingQuery.SetNavAgentProperties(allNavAgents[propertyIndex]);
 	FPathFindingResult pathFindingResult = unrealNavigationSystem->FindPathSync(pathFindingQuery);
 
 	if (!pathFindingResult.IsSuccessful() || !pathFindingResult.Path)

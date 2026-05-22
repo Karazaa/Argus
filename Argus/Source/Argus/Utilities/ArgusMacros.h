@@ -66,6 +66,9 @@ LLM_DECLARE_TAG(ArgusTimerSystems);
 // Code generation macro that prevents a component member from being included in SaveGame serialization.
 #define ARGUS_COMP_TRANSIENT
 
+// Code generation macro that prevents a component member from having reset called on it.
+#define ARGUS_COMP_NO_RESET
+
 // Code generation macro that allows Component Data fields to swap out a uint ID field for an object pointer to the record type.
 #define ARGUS_COMP_STATIC_DATA(x)
 
