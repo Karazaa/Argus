@@ -15,6 +15,7 @@ public:
 	static void StartNavigatingToQueuedWaypoint(TaskComponent* taskComponent, TargetingComponent* targetingComponent, NavigationComponent* navigationComponent);
 
 private:
+	static void ClearAvoidanceGroupsForUpcomingPathing(const NavigationSystemsArgs& components);
 	static void ProcessNavigationTaskCommands(UWorld* worldPointer, const NavigationSystemsArgs& components);
 	static void RecalculateMoveToEntityPaths(UWorld* worldPointer, const NavigationSystemsArgs& components);
 	static void ChangeTasksOnNavigatingToEntity(ArgusEntity targetEntity, const NavigationSystemsArgs& components);

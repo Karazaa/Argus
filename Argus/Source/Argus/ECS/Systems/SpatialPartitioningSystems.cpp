@@ -130,28 +130,7 @@ void SpatialPartitioningSystems::CalculateAdjacentEntityGroups()
 
 	ArgusEntity::IterateEntities([](ArgusEntity entity) 
 	{
-		FVector averageLocation = FVector::ZeroVector;
-		float numberOfEntitiesInGroup = 0.0f;
-		uint16 numberOfStoppedEntities = 0u;
-		AvoidanceGroupingComponent* groupLeaderComponent = entity.GetComponent<AvoidanceGroupingComponent>();
-		if (!groupLeaderComponent)
-		{
-			return;
-		}
-
-		if (!FloodFillGroupRecursive(entity.GetId(), groupLeaderComponent, entity.GetId(), averageLocation, numberOfEntitiesInGroup, numberOfStoppedEntities))
-		{
-			return;
-		}
-
-		AvoidanceGroupingComponent* avoidanceGroupingComponent = entity.GetComponent<AvoidanceGroupingComponent>();
-		if (!avoidanceGroupingComponent)
-		{
-			return;
-		}
-
-		avoidanceGroupingComponent->m_groupAverageLocation = ArgusMath::SafeDivide(averageLocation, numberOfEntitiesInGroup);
-		avoidanceGroupingComponent->m_numberOfIdleEntities = numberOfStoppedEntities;
+		CalculateAdjacentEntityGroupsForEntity(entity, true);
 	});
 }
 
@@ -426,6 +405,55 @@ bool SpatialPartitioningSystems::AnyObstaclesOrStaticEntitiesInCircle(const FVec
 	}
 
 	return anyFound;
+}
+
+void SpatialPartitioningSystems::CalculateAdjacentEntityGroupsForEntity(ArgusEntity entity, bool allowNavigationRecalculation)
+{
+	ARGUS_TRACE(SpatialPartitioningSystems::CalculateAdjacentEntityGroupsForEntity);
+	ARGUS_RETURN_ON_INVALID_ENTITY(entity, ArgusECSLog);
+
+	FVector averageLocation = FVector::ZeroVector;
+	float numberOfEntitiesInGroup = 0.0f;
+	uint16 numberOfStoppedEntities = 0u;
+	AvoidanceGroupingComponent* groupLeaderComponent = entity.GetComponent<AvoidanceGroupingComponent>();
+	if (!groupLeaderComponent)
+	{
+		return;
+	}
+
+	if (FloodFillGroupRecursive(entity.GetId(), groupLeaderComponent, entity.GetId(), averageLocation, numberOfEntitiesInGroup, numberOfStoppedEntities))
+	{
+		groupLeaderComponent->m_groupAverageLocation = ArgusMath::SafeDivide(averageLocation, numberOfEntitiesInGroup);
+		groupLeaderComponent->m_numberOfIdleEntities = numberOfStoppedEntities;
+	}
+
+	if (!allowNavigationRecalculation)
+	{
+		groupLeaderComponent->m_previousGroupId = groupLeaderComponent->m_groupId;
+		return;
+	}
+
+	if (groupLeaderComponent->m_previousGroupId == groupLeaderComponent->m_groupId)
+	{
+		return;
+	}
+
+	if (groupLeaderComponent->m_previousGroupId == ArgusECSConstants::k_maxEntities)
+	{
+		groupLeaderComponent->m_previousGroupId = groupLeaderComponent->m_groupId;
+		return;
+	}
+
+	if (groupLeaderComponent->m_groupId == entity.GetId())
+	{
+		// TODO JAMES: Entity went from being a follower of an avoidance group to the leader of an avoidance group. Need to re-calculate navigation path.
+	}
+	else
+	{
+		// TODO JAMES: Entity changed which avoidance group they were following. Need to update navigation index to other group's index.
+	}
+
+	groupLeaderComponent->m_previousGroupId = groupLeaderComponent->m_groupId;
 }
 
 bool SpatialPartitioningSystems::GetNavMeshWalls(const SpatialPartitioningComponent* spatialPartitioningComponent, const ARecastNavMesh* navMesh, const FNavLocation& originLocation, TArray<FVector>& outNavWalls)

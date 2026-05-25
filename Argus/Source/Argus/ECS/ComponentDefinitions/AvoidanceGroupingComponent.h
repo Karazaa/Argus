@@ -30,6 +30,9 @@ struct AvoidanceGroupingComponent
 	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT
 	uint16 m_groupId = ArgusECSConstants::k_maxEntities;
 
+	ARGUS_COMP_NO_DATA
+	uint16 m_previousGroupId = ArgusECSConstants::k_maxEntities;
+
 	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT
 	uint16 m_numberOfIdleEntities = 0u;
 

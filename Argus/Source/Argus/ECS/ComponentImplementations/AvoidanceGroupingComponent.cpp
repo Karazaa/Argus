@@ -23,12 +23,14 @@ void AvoidanceGroupingComponent::Reset()
 	m_groupAverageLocation = FVector::ZeroVector;
 	m_entityIdsInGroup.Reset();
 	m_groupId = ArgusECSConstants::k_maxEntities;
+	m_previousGroupId = ArgusECSConstants::k_maxEntities;
 	m_numberOfIdleEntities = 0u;
 	m_avoidancePriority = EAvoidancePriority::Lowest;
 }
 
 void AvoidanceGroupingComponent::Serialize(FArchive& archive)
 {
+	archive << m_previousGroupId;
 	archive << m_avoidancePriority;
 }
 
@@ -69,6 +71,10 @@ void AvoidanceGroupingComponent::DrawComponentDebug() const
 		ImGui::Text("m_groupId");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_groupId);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_previousGroupId");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_previousGroupId);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_numberOfIdleEntities");
 		ImGui::TableNextColumn();

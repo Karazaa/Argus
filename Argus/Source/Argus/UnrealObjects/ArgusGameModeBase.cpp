@@ -69,7 +69,8 @@ void AArgusGameModeBase::Tick(float deltaTime)
 			m_saveManager->ExecuteLoadRequest();
 			return;
 		}
-		else if (m_saveManager->IsLoading())
+		
+		if (m_saveManager->IsLoading())
 		{
 			return;
 		}

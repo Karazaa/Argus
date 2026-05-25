@@ -5,10 +5,10 @@
 #include "NavigationData.h"
 #include "NavigationSystem.h"
 #include "NavigationSystemTypes.h"
-#include "Systems/AvoidanceSystems.h"
 #include "Systems/CombatSystems.h"
 #include "Systems/ConstructionSystems.h"
 #include "Systems/ResourceSystems.h"
+#include "Systems/SpatialPartitioningSystems.h"
 
 #if !UE_BUILD_SHIPPING
 #include "ArgusECSDebugger.h"
@@ -20,6 +20,21 @@ void NavigationSystems::RunSystems(UWorld* worldPointer)
 	ARGUS_TRACE(NavigationSystems::RunSystems);
 
 	ARGUS_RETURN_ON_NULL(worldPointer, ArgusECSLog);
+
+	ArgusEntity::IterateSystemsArgs<NavigationSystemsArgs>([](NavigationSystemsArgs& components)
+	{
+		if ((components.m_entity.IsKillable() && !components.m_entity.IsAlive()) || components.m_entity.IsPassenger())
+		{
+			return;
+		}
+
+		if (components.m_taskComponent->m_constructionState == EConstructionState::BeingConstructed)
+		{
+			return;
+		}
+
+		ClearAvoidanceGroupsForUpcomingPathing(components);
+	});
 
 	ArgusEntity::IterateSystemsArgs<NavigationSystemsArgs>([worldPointer](NavigationSystemsArgs& components) 
 	{
@@ -128,6 +143,31 @@ void NavigationSystems::StartNavigatingToQueuedWaypoint(TaskComponent* taskCompo
 	}
 }
 
+void NavigationSystems::ClearAvoidanceGroupsForUpcomingPathing(const NavigationSystemsArgs& components)
+{
+	ARGUS_TRACE(NavigationSystems::ClearAvoidanceGroupsForUpcomingPathing);
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+
+	switch (components.m_taskComponent->m_movementState)
+	{
+		case EMovementState::ProcessMoveToLocationCommand:
+		case EMovementState::ProcessMoveToEntityCommand:
+			if (AvoidanceGroupingComponent* avoidanceGroupingComponent = components.m_entity.GetComponent<AvoidanceGroupingComponent>())
+			{
+				avoidanceGroupingComponent->m_groupId = ArgusECSConstants::k_maxEntities;
+				avoidanceGroupingComponent->m_groupAverageLocation = FVector::ZeroVector;
+				avoidanceGroupingComponent->m_numberOfIdleEntities = 0u;
+				avoidanceGroupingComponent->m_entityIdsInGroup.Reset();
+			}
+			break;
+		default:
+			break;
+	}
+}
+
 void NavigationSystems::ProcessNavigationTaskCommands(UWorld* worldPointer, const NavigationSystemsArgs& components)
 {
 	ARGUS_TRACE(NavigationSystems::ProcessNavigationTaskCommands);
@@ -144,6 +184,7 @@ void NavigationSystems::ProcessNavigationTaskCommands(UWorld* worldPointer, cons
 			components.m_taskComponent->m_movementState = EMovementState::MoveToLocation;
 			NavigateFromEntityToLocation(worldPointer, components.m_targetingComponent->m_targetLocation.GetValue(), components);
 			ChangeTasksOnNavigatingToLocation(components);
+			SpatialPartitioningSystems::CalculateAdjacentEntityGroupsForEntity(components.m_entity, false);
 			break;
 
 		case EMovementState::ProcessMoveToEntityCommand:
@@ -152,6 +193,7 @@ void NavigationSystems::ProcessNavigationTaskCommands(UWorld* worldPointer, cons
 			ArgusEntity targetEntity = ArgusEntity::RetrieveEntity(components.m_targetingComponent->m_targetEntityId);
 			NavigateFromEntityToEntity(worldPointer, targetEntity, components);
 			ChangeTasksOnNavigatingToEntity(targetEntity, components);
+			SpatialPartitioningSystems::CalculateAdjacentEntityGroupsForEntity(components.m_entity, false);
 			break;
 		}
 		default:

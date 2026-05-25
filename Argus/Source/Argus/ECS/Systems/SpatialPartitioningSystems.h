@@ -18,6 +18,7 @@ public:
 	static bool IsEntityInLineOfSightOfOther(ArgusEntity sourceEntity, ArgusEntity targetEntity);
 	static bool IsPointInLineOfSightOfEntity(ArgusEntity sourceEntity, const FVector& targetLocation);
 	static bool AnyObstaclesOrStaticEntitiesInCircle(const FVector& center, float radius, float resourceSourceBufferRadius);
+	static void CalculateAdjacentEntityGroupsForEntity(ArgusEntity entity, bool allowNavigationRecalculation);
 
 private:
 	static void ClearSeenByStatus();
