@@ -29,6 +29,9 @@ private:
 	static void FaceTowardsLocationXY(TransformComponent* transformComponent, FVector vectorFromTransformToTarget);
 	static bool CheckFlockCompletedNavigation(const TransformSystemsArgs& components);
 	static void OnWithinRangeOfTargetEntity(const TransformSystemsArgs& components);
+	static bool ShouldAdvanceSegment(const FVector& evaluationPoint, const FVector& segmentStart, const FVector& segmentEnd);
+	static bool UpdateGroupIndex(const TransformSystemsArgs& components, const FVector& velocity);
+	static bool IsGroupNearCompletion(ArgusEntity groupLeader, const FVector& velocity);
 	static void OnCompleteNavigationPath(const TransformSystemsArgs& components);
 	static void CompleteNavigationPathPerGroupEntity(ArgusEntity entity);
 	static float GetEndMoveRange(const TransformSystemsArgs& components);

@@ -660,18 +660,7 @@ FVector2D AvoidanceSystems::GetDesiredVelocity(const TransformSystemsArgs& compo
 		return flockingVelocity.IsNearlyZero() ? FVector2D::ZeroVector : ArgusMath::ToCartesianVector2(flockingVelocity.GetSafeNormal() * components.m_velocityComponent->m_desiredSpeedUnitsPerSecond);
 	}
 
-	// If we are moving, we need to get our desired velocity as the velocity that points towards the nearest pathing point at the desired speed.
-	const int32 futureIndex = components.m_navigationComponent->m_lastPointIndex + 1;
-	const int32 numNavigationPoints = components.m_navigationComponent->m_navigationPoints.Num();
-	FVector desiredDirection = FVector::ZeroVector;
-
-	if (numNavigationPoints == 0u || !components.m_navigationComponent->HasValidNextIndex())
-	{
-		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Attempting to process ORCA, but the source %s's %s is in an invalid state."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ArgusEntity), ARGUS_NAMEOF(NavigationComponent));
-		return FVector2D::ZeroVector;
-	}
-
-	desiredDirection = GetDesiredDirection(components, isInRangeOfObstacles);
+	FVector desiredDirection = GetDesiredDirection(components, isInRangeOfObstacles);
 	if (desiredDirection.IsNearlyZero())
 	{
 		return FVector2D::ZeroVector;
@@ -696,12 +685,14 @@ FVector AvoidanceSystems::GetDesiredDirection(const TransformSystemsArgs& compon
 	ArgusEntity groupLeaderEntity = GetAvoidanceGroupLeader(components.m_entity);
 	if (!groupLeaderEntity || isInRangeOfObstacles)
 	{
-		if (!components.m_navigationComponent->HasValidNextIndex())
+		if (components.m_navigationComponent->m_navigationPoints.Num() == 0u || !components.m_navigationComponent->HasValidNextIndex())
 		{
 			return FVector::ZeroVector;
 		}
 
-		return components.m_navigationComponent->m_navigationPoints[components.m_navigationComponent->m_lastPointIndex + 1] - components.m_transformComponent->m_location;		
+		const int32 lastPointIndex = components.m_navigationComponent->m_lastPointIndex;
+		const FVector sourceLocation = isInRangeOfObstacles ? components.m_navigationComponent->m_navigationPoints[lastPointIndex] : components.m_transformComponent->m_location;
+		return components.m_navigationComponent->m_navigationPoints[lastPointIndex + 1] - sourceLocation;
 	}
 
 	const AvoidanceGroupingComponent* groupLeaderGroupingComponent = groupLeaderEntity.GetComponent<AvoidanceGroupingComponent>();
@@ -709,12 +700,12 @@ FVector AvoidanceSystems::GetDesiredDirection(const TransformSystemsArgs& compon
 	ARGUS_RETURN_ON_NULL_VALUE(groupLeaderGroupingComponent, ArgusECSLog, FVector::ZeroVector);
 	ARGUS_RETURN_ON_NULL_VALUE(groupLeaderNavigationComponent, ArgusECSLog, FVector::ZeroVector);
 
-	if (!groupLeaderNavigationComponent->HasValidNextIndex())
+	if (groupLeaderNavigationComponent->m_navigationPoints.Num() == 0u || !groupLeaderNavigationComponent->HasValidNextGroupIndex())
 	{
 		return FVector::ZeroVector;
 	}
 
-	return groupLeaderNavigationComponent->m_navigationPoints[groupLeaderNavigationComponent->m_lastPointIndex + 1] - groupLeaderGroupingComponent->m_groupAverageLocation;
+	return groupLeaderNavigationComponent->m_navigationPoints[groupLeaderNavigationComponent->m_groupLastPointIndex + 1] - groupLeaderGroupingComponent->m_groupAverageLocation;
 }
 
 float AvoidanceSystems::FindAreaOfObstacleCartesian(const TArray<ObstaclePoint>& obstaclePoints)

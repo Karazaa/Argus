@@ -3,13 +3,10 @@
 #include "TransformSystems.h"
 #include "ArgusEntity.h"
 #include "ArgusMath.h"
-#include "ArgusSystemsManager.h"
 #include "NavigationSystem.h"
 #include "Systems/AvoidanceSystems.h"
 #include "Systems/CarrierSystems.h"
-#include "Systems/CombatSystems.h"
 #include "Systems/DecalSystems.h"
-#include "Systems/FlockingSystems.h"
 #include "Systems/NavigationSystems.h"
 #include "Systems/TargetingSystems.h"
 
@@ -53,63 +50,37 @@ void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float delta
 {
 	ARGUS_TRACE(TransformSystems::MoveAlongNavigationPath);
 
-	const GlobalSettingsComponent* settings = GlobalSettingsComponent::Get();
-	ARGUS_RETURN_ON_NULL(settings, ArgusECSLog);
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return;
 	}
 
 	components.m_velocityComponent->m_currentVelocity = components.m_velocityComponent->m_proposedAvoidanceVelocity;
-	const int32 lastPointIndex = components.m_navigationComponent->m_lastPointIndex;
-	const int32 numNavigationPoints = components.m_navigationComponent->m_navigationPoints.Num();
 
-	if (numNavigationPoints == 0 || lastPointIndex >= numNavigationPoints - 1)
-	{
-		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] %s exceeded %s putting pathfinding in an invalid state."), ARGUS_FUNCNAME, ARGUS_NAMEOF(lastPointIndex), ARGUS_NAMEOF(numNavigationPoints));
-		return;
-	}
-
-	FVector moverLocation = components.m_transformComponent->m_location;
 	const FVector velocity = FVector((components.m_velocityComponent->m_currentVelocity * deltaTime), 0.0f);
-	moverLocation += velocity;
+	FVector moverLocation = components.m_transformComponent->m_location + velocity;
 
-	TOptional<FVector> groupSourceLocation = AvoidanceSystems::GetAvoidanceGroupSourceLocation(components);
-	if (groupSourceLocation.IsSet())
+	bool isAtEndOfNavigationPath = false;
+	ArgusEntity groupLeader = AvoidanceSystems::GetAvoidanceGroupLeader(components.m_entity);
+	if (groupLeader == components.m_entity)
 	{
-		groupSourceLocation = groupSourceLocation.GetValue() + velocity;
+		isAtEndOfNavigationPath = UpdateGroupIndex(components, velocity);
 	}
 	else
 	{
-		groupSourceLocation = moverLocation;
+		isAtEndOfNavigationPath = IsGroupNearCompletion(groupLeader, velocity);
 	}
 
-	const FVector evaluationPoint = groupSourceLocation.GetValue();
-	const FVector sourceLocation = components.m_navigationComponent->m_navigationPoints[lastPointIndex];
-	FVector targetLocation = components.m_navigationComponent->m_navigationPoints[lastPointIndex + 1u];
-	const FVector segment = targetLocation - sourceLocation;
-	const FVector actual = evaluationPoint - sourceLocation;
-	const float segmentLength = segment.Length();
-
-	bool isAtEndOfNavigationPath = false;
-	const float projectionDistance = FMath::Abs(actual.Dot(segment) / segmentLength);
-	const float scaledSegmentDistance = (segmentLength - settings->m_progressNavPathDistThreshold);
-	if (projectionDistance >= scaledSegmentDistance)
+	if (!isAtEndOfNavigationPath && components.m_navigationComponent->m_navigationPoints.Num() != 0 && components.m_navigationComponent->HasValidNextIndex())
 	{
-		isAtEndOfNavigationPath = components.m_navigationComponent->m_lastPointIndex == numNavigationPoints - 2u;
-
-		// Need to set velocity when starting pathing segment so that avoidance systems can properly consider desired velocity when proposing movement velocity.
-		if (!isAtEndOfNavigationPath)
+		const int32 lastPointIndex = components.m_navigationComponent->m_lastPointIndex;
+		const FVector sourceLocation = components.m_navigationComponent->m_navigationPoints[lastPointIndex];
+		FVector targetLocation = components.m_navigationComponent->m_navigationPoints[lastPointIndex + 1];
+		if (ShouldAdvanceSegment(moverLocation, sourceLocation, targetLocation))
 		{
 			components.m_navigationComponent->m_lastPointIndex++;
-			targetLocation = components.m_navigationComponent->m_navigationPoints[components.m_navigationComponent->m_lastPointIndex + 1];
-			components.m_velocityComponent->m_currentVelocity = FVector2D((targetLocation - moverLocation).GetSafeNormal() * components.m_velocityComponent->m_desiredSpeedUnitsPerSecond);
-		}
+		}		
 	}
-
-	const FVector2D moverLocation2D = FVector2D(moverLocation);
-	const FVector2D targetLocation2D = FVector2D(targetLocation);
-	const float distanceToTarget = FVector2D::Distance(moverLocation2D, targetLocation2D);
 
 	if (components.m_taskComponent->m_flightState == EFlightState::Grounded)
 	{
@@ -461,6 +432,87 @@ void TransformSystems::OnWithinRangeOfTargetEntity(const TransformSystemsArgs& c
 
 	components.m_taskComponent->m_movementState = EMovementState::InRangeOfTargetEntity;
 	components.m_velocityComponent->m_currentVelocity = FVector2D::ZeroVector;
+}
+
+bool TransformSystems::ShouldAdvanceSegment(const FVector& evaluationPoint, const FVector& segmentStart, const FVector& segmentEnd)
+{
+	const GlobalSettingsComponent* settings = GlobalSettingsComponent::Get();
+	ARGUS_RETURN_ON_NULL_BOOL(settings, ArgusECSLog);
+
+	const FVector segment = segmentEnd - segmentStart;
+	const FVector actual = evaluationPoint - segmentStart;
+	const float segmentLength = segment.Length();
+
+	bool isAtEndOfNavigationPath = false;
+	const float projectionDistance = FMath::Abs(actual.Dot(segment) / segmentLength);
+	const float scaledSegmentDistance = (segmentLength - settings->m_progressNavPathDistThreshold);
+
+	return projectionDistance >= scaledSegmentDistance;
+}
+
+bool TransformSystems::UpdateGroupIndex(const TransformSystemsArgs& components, const FVector& velocity)
+{
+	const AvoidanceGroupingComponent* groupingComponent = components.m_entity.GetComponent<AvoidanceGroupingComponent>();
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME) || !groupingComponent)
+	{
+		return false;
+	}
+
+	const int32 numNavigationPoints = components.m_navigationComponent->m_navigationPoints.Num();
+	const int32 lastPointIndex = components.m_navigationComponent->m_groupLastPointIndex;
+	if (numNavigationPoints == 0 || lastPointIndex >= numNavigationPoints - 1)
+	{
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] %s exceeded %s putting pathfinding in an invalid state."), ARGUS_FUNCNAME, ARGUS_NAMEOF(lastPointIndex), ARGUS_NAMEOF(numNavigationPoints));
+		return false;
+	}
+
+	const FVector evaluationPoint = groupingComponent->m_groupAverageLocation + velocity;
+	const FVector sourceLocation = components.m_navigationComponent->m_navigationPoints[lastPointIndex];
+	const FVector targetLocation = components.m_navigationComponent->m_navigationPoints[lastPointIndex + 1];
+	if (ShouldAdvanceSegment(evaluationPoint, sourceLocation, targetLocation))
+	{
+		if (lastPointIndex == (numNavigationPoints - 2))
+		{
+			return true;
+		}
+
+		components.m_navigationComponent->m_groupLastPointIndex++;
+	}
+
+	return false;
+}
+
+bool TransformSystems::IsGroupNearCompletion(ArgusEntity groupLeader, const FVector& velocity)
+{
+	if (!groupLeader)
+	{
+		return false;
+	}
+
+	const NavigationComponent* groupLeaderNavigationComponent = groupLeader.GetComponent<NavigationComponent>();
+	const AvoidanceGroupingComponent* groupLeaderGroupComponent = groupLeader.GetComponent<AvoidanceGroupingComponent>();
+	if (!groupLeaderNavigationComponent || !groupLeaderGroupComponent)
+	{
+		return false;
+	}
+
+	const int32 numNavigationPoints = groupLeaderNavigationComponent->m_navigationPoints.Num();
+	const int32 lastPointIndex = groupLeaderNavigationComponent->m_groupLastPointIndex;
+	if (numNavigationPoints == 0 || lastPointIndex >= numNavigationPoints - 1)
+	{
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] %s exceeded %s putting pathfinding in an invalid state."), ARGUS_FUNCNAME, ARGUS_NAMEOF(lastPointIndex), ARGUS_NAMEOF(numNavigationPoints));
+		return false;
+	}
+
+	const FVector evaluationPoint = groupLeaderGroupComponent->m_groupAverageLocation + velocity;
+	const FVector sourceLocation = groupLeaderNavigationComponent->m_navigationPoints[lastPointIndex];
+	const FVector targetLocation = groupLeaderNavigationComponent->m_navigationPoints[lastPointIndex + 1];
+	if (ShouldAdvanceSegment(evaluationPoint, sourceLocation, targetLocation) && (lastPointIndex == (numNavigationPoints - 2)))
+	{
+		return true;
+	}
+
+	return false;
 }
 
 void TransformSystems::OnCompleteNavigationPath(const TransformSystemsArgs& components)

@@ -61,7 +61,7 @@ FVector FlockingSystems::GetFlockingPoint(ArgusEntity flockingRootEntity)
 	const AvoidanceGroupingComponent* flockingRootGroupingComponent = flockingRootEntity.GetComponent<AvoidanceGroupingComponent>();
 	ARGUS_RETURN_ON_NULL_VALUE(flockingRootGroupingComponent, ArgusECSLog, FVector::ZeroVector);
 
-	if (flockingRootGroupingComponent->m_numberOfIdleEntities > 0)
+	if (flockingRootGroupingComponent->m_numberOfIdleEntities > 0u)
 	{
 		const TargetingComponent* flockingRootTargetingComponent = flockingRootEntity.GetComponent<TargetingComponent>();
 		const TransformComponent* flockingRootTransformComponent = flockingRootEntity.GetComponent<TransformComponent>();

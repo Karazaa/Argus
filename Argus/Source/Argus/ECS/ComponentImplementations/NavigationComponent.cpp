@@ -23,6 +23,7 @@ void NavigationComponent::Reset()
 	m_navigationPoints.Reset();
 	m_queuedWaypoints.Reset();
 	m_lastPointIndex = 0;
+	m_groupLastPointIndex = 0;
 	m_navAgentToUse = FNavAgentSelector(1u);
 }
 
@@ -31,6 +32,7 @@ void NavigationComponent::Serialize(FArchive& archive)
 	archive << m_navigationPoints;
 	m_queuedWaypoints.Serialize(archive);
 	archive << m_lastPointIndex;
+	archive << m_groupLastPointIndex;
 }
 
 void NavigationComponent::DrawComponentDebug() const
@@ -69,6 +71,10 @@ void NavigationComponent::DrawComponentDebug() const
 		ImGui::Text("m_lastPointIndex");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_lastPointIndex);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_groupLastPointIndex");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_groupLastPointIndex);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_navAgentToUse");
 		ImGui::TableNextColumn();

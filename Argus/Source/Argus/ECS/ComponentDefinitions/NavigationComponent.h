@@ -21,12 +21,16 @@ struct NavigationComponent
 	int32 m_lastPointIndex = 0;
 
 	ARGUS_COMP_NO_DATA
+	int32 m_groupLastPointIndex = 0;
+
+	ARGUS_COMP_NO_DATA
 	FNavAgentSelector m_navAgentToUse = FNavAgentSelector(1u);
 
 	void ResetPath()
 	{
 		m_navigationPoints.Reset();
-		m_lastPointIndex = 0u;
+		m_lastPointIndex = 0;
+		m_groupLastPointIndex = 0;
 	}
 
 	void ResetQueuedWaypoints()
@@ -37,5 +41,10 @@ struct NavigationComponent
 	bool HasValidNextIndex() const 
 	{
 		return m_navigationPoints.IsValidIndex(m_lastPointIndex + 1);
+	}
+
+	bool HasValidNextGroupIndex() const
+	{
+		return m_navigationPoints.IsValidIndex(m_groupLastPointIndex + 1);
 	}
 };
