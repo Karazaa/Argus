@@ -378,20 +378,33 @@ void NavigationSystems::DrawNavigationDebugPerEntity(const UWorld* worldPointer,
 		return;
 	}
 
+	const TArray<FVector, ArgusContainerAllocator<15u> >* navPathPointer = &components.m_navigationComponent->m_navigationPoints;
+	if (components.m_avoidanceGroupingComponent)
+	{	
+		ArgusEntity groupLeader = ArgusEntity::RetrieveEntity(components.m_avoidanceGroupingComponent->m_groupId);
+		if (groupLeader)
+		{
+			if (NavigationComponent* groupLeaderNavigationComponent = groupLeader.GetComponent<NavigationComponent>())
+			{
+				navPathPointer = &groupLeaderNavigationComponent->m_navigationPoints;
+			}
+		}
+	}
+
 	const int32 drawIndex = components.m_navigationComponent->m_lastPointIndex + 1;
-	const int32 numPathPoints = components.m_navigationComponent->m_navigationPoints.Num();
+	const int32 numPathPoints = navPathPointer->Num();
 	if (drawIndex >= numPathPoints)
 	{
 		return;
 	}
 
-	DrawDebugLine(worldPointer, components.m_transformComponent->m_location, components.m_navigationComponent->m_navigationPoints[drawIndex], FColor::Magenta, false, -1.0f);
+	DrawDebugLine(worldPointer, components.m_transformComponent->m_location, (*navPathPointer)[drawIndex], FColor::Magenta, false, -1.0f);
 	for (int32 i = drawIndex; i < numPathPoints; ++i)
 	{
-		DrawDebugSphere(worldPointer, components.m_navigationComponent->m_navigationPoints[i], 10.0f, 10, FColor::Magenta, false, -1.0f);
+		DrawDebugSphere(worldPointer, (*navPathPointer)[i], 10.0f, 10, FColor::Magenta, false, -1.0f);
 		if ((i + 1) < numPathPoints)
 		{
-			DrawDebugLine(worldPointer, components.m_navigationComponent->m_navigationPoints[i], components.m_navigationComponent->m_navigationPoints[i + 1], FColor::Magenta, false, -1.0f);
+			DrawDebugLine(worldPointer, (*navPathPointer)[i], (*navPathPointer)[i + 1], FColor::Magenta, false, -1.0f);
 		}
 	}
 }

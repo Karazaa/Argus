@@ -193,6 +193,43 @@ bool SpatialPartitioningSystems::FloodFillGroupRecursive(uint16 groupId, Avoidan
 	return groupId == entityId;
 }
 
+void SpatialPartitioningSystems::OnBecomeAvoidanceGroupLeader(ArgusEntity entity)
+{
+	ARGUS_RETURN_ON_INVALID_ENTITY(entity, ArgusECSLog);
+
+	TaskComponent* taskComponent = entity.GetComponent<TaskComponent>();
+	ARGUS_RETURN_ON_NULL(taskComponent, ArgusECSLog);
+
+	TargetingComponent* targetingComponent = entity.GetComponent<TargetingComponent>();
+	ARGUS_RETURN_ON_NULL(targetingComponent, ArgusECSLog);
+
+	if (targetingComponent->HasEntityTarget())
+	{
+		taskComponent->m_movementState = EMovementState::ProcessMoveToEntityCommand;
+	}
+	else if (targetingComponent->HasLocationTarget())
+	{
+		taskComponent->m_movementState = EMovementState::ProcessMoveToLocationCommand;
+	}
+}
+
+void SpatialPartitioningSystems::OnChangeAvoidanceGroups(ArgusEntity entity, AvoidanceGroupingComponent* groupingComponent)
+{
+	ARGUS_RETURN_ON_INVALID_ENTITY(entity, ArgusECSLog);
+	ARGUS_RETURN_ON_NULL(groupingComponent, ArgusECSLog);
+
+	NavigationComponent* navigationComponent = entity.GetComponent<NavigationComponent>();
+	ARGUS_RETURN_ON_NULL(navigationComponent, ArgusECSLog);
+
+	ArgusEntity groupLeaderEntity = ArgusEntity::RetrieveEntity(groupingComponent->m_groupId);
+	ARGUS_RETURN_ON_INVALID_ENTITY(groupLeaderEntity, ArgusECSLog);
+
+	NavigationComponent* groupLeaderNavigationComponent = groupLeaderEntity.GetComponent<NavigationComponent>();
+	ARGUS_RETURN_ON_NULL(groupLeaderNavigationComponent, ArgusECSLog);
+
+	navigationComponent->m_lastPointIndex = groupLeaderNavigationComponent->m_groupLastPointIndex;
+}
+
 void SpatialPartitioningSystems::CalculateAvoidanceObstacles(SpatialPartitioningComponent* spatialPartitioningComponent, UWorld* worldPointer)
 {
 	ARGUS_TRACE(SpatialPartitioningSystems::CalculateAvoidanceObstacles);
@@ -438,7 +475,7 @@ void SpatialPartitioningSystems::CalculateAdjacentEntityGroupsForEntity(ArgusEnt
 		return;
 	}
 
-	if (groupLeaderComponent->m_previousGroupId == ArgusECSConstants::k_maxEntities)
+	if (groupLeaderComponent->m_previousGroupId == ArgusECSConstants::k_maxEntities || groupLeaderComponent->m_groupId == ArgusECSConstants::k_maxEntities)
 	{
 		groupLeaderComponent->m_previousGroupId = groupLeaderComponent->m_groupId;
 		return;
@@ -446,11 +483,11 @@ void SpatialPartitioningSystems::CalculateAdjacentEntityGroupsForEntity(ArgusEnt
 
 	if (groupLeaderComponent->m_groupId == entity.GetId())
 	{
-		// TODO JAMES: Entity went from being a follower of an avoidance group to the leader of an avoidance group. Need to re-calculate navigation path.
+		OnBecomeAvoidanceGroupLeader(entity);
 	}
 	else
 	{
-		// TODO JAMES: Entity changed which avoidance group they were following. Need to update navigation index to other group's index.
+		OnChangeAvoidanceGroups(entity, groupLeaderComponent);
 	}
 
 	groupLeaderComponent->m_previousGroupId = groupLeaderComponent->m_groupId;

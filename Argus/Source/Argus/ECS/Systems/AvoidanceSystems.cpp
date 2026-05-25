@@ -690,9 +690,7 @@ FVector AvoidanceSystems::GetDesiredDirection(const TransformSystemsArgs& compon
 			return FVector::ZeroVector;
 		}
 
-		const int32 lastPointIndex = components.m_navigationComponent->m_lastPointIndex;
-		const FVector sourceLocation = isInRangeOfObstacles ? components.m_navigationComponent->m_navigationPoints[lastPointIndex] : components.m_transformComponent->m_location;
-		return components.m_navigationComponent->m_navigationPoints[lastPointIndex + 1] - sourceLocation;
+		return components.m_navigationComponent->m_navigationPoints[components.m_navigationComponent->m_lastPointIndex + 1] - components.m_transformComponent->m_location;
 	}
 
 	const AvoidanceGroupingComponent* groupLeaderGroupingComponent = groupLeaderEntity.GetComponent<AvoidanceGroupingComponent>();
@@ -700,7 +698,23 @@ FVector AvoidanceSystems::GetDesiredDirection(const TransformSystemsArgs& compon
 	ARGUS_RETURN_ON_NULL_VALUE(groupLeaderGroupingComponent, ArgusECSLog, FVector::ZeroVector);
 	ARGUS_RETURN_ON_NULL_VALUE(groupLeaderNavigationComponent, ArgusECSLog, FVector::ZeroVector);
 
-	if (groupLeaderNavigationComponent->m_navigationPoints.Num() == 0u || !groupLeaderNavigationComponent->HasValidNextGroupIndex())
+	if (groupLeaderNavigationComponent->m_navigationPoints.Num() == 0u)
+	{
+		return FVector::ZeroVector;
+	}
+
+	if (isInRangeOfObstacles)
+	{
+		const int32 lastPointIndex = components.m_navigationComponent->m_lastPointIndex;
+		if (!groupLeaderNavigationComponent->m_navigationPoints.IsValidIndex(lastPointIndex + 1))
+		{
+			return FVector::ZeroVector;
+		}
+
+		return groupLeaderNavigationComponent->m_navigationPoints[lastPointIndex + 1] - groupLeaderNavigationComponent->m_navigationPoints[lastPointIndex];
+	}
+
+	if (!groupLeaderNavigationComponent->HasValidNextGroupIndex())
 	{
 		return FVector::ZeroVector;
 	}

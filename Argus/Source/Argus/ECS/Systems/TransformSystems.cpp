@@ -71,15 +71,16 @@ void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float delta
 		isAtEndOfNavigationPath = IsGroupNearCompletion(groupLeader, velocity);
 	}
 
-	if (!isAtEndOfNavigationPath && components.m_navigationComponent->m_navigationPoints.Num() != 0 && components.m_navigationComponent->HasValidNextIndex())
+	if (!isAtEndOfNavigationPath)
 	{
-		const int32 lastPointIndex = components.m_navigationComponent->m_lastPointIndex;
-		const FVector sourceLocation = components.m_navigationComponent->m_navigationPoints[lastPointIndex];
-		FVector targetLocation = components.m_navigationComponent->m_navigationPoints[lastPointIndex + 1];
-		if (ShouldAdvanceSegment(moverLocation, sourceLocation, targetLocation))
+		if (NavigationComponent* groupLeaderNavigationComponent = groupLeader.GetComponent<NavigationComponent>())
 		{
-			components.m_navigationComponent->m_lastPointIndex++;
-		}		
+			UpdateIndividualSegmentIndex(components.m_navigationComponent, moverLocation, groupLeaderNavigationComponent->m_navigationPoints);
+		}
+		else
+		{
+			UpdateIndividualSegmentIndex(components.m_navigationComponent, moverLocation, components.m_navigationComponent->m_navigationPoints);
+		}	
 	}
 
 	if (components.m_taskComponent->m_flightState == EFlightState::Grounded)
@@ -500,7 +501,8 @@ bool TransformSystems::IsGroupNearCompletion(ArgusEntity groupLeader, const FVec
 	const int32 lastPointIndex = groupLeaderNavigationComponent->m_groupLastPointIndex;
 	if (numNavigationPoints == 0 || lastPointIndex >= numNavigationPoints - 1)
 	{
-		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] %s exceeded %s putting pathfinding in an invalid state."), ARGUS_FUNCNAME, ARGUS_NAMEOF(lastPointIndex), ARGUS_NAMEOF(numNavigationPoints));
+		// TODO JAMES: We need to account for the self target case where the MoveToEntity command is moving towards the group leader.
+		// ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] %s exceeded %s putting pathfinding in an invalid state."), ARGUS_FUNCNAME, ARGUS_NAMEOF(lastPointIndex), ARGUS_NAMEOF(numNavigationPoints));
 		return false;
 	}
 
@@ -513,6 +515,25 @@ bool TransformSystems::IsGroupNearCompletion(ArgusEntity groupLeader, const FVec
 	}
 
 	return false;
+}
+
+void TransformSystems::UpdateIndividualSegmentIndex(NavigationComponent* navigationComponent, const FVector& moverLocation, const TArray<FVector, ArgusContainerAllocator<15u> >& navigationPoints)
+{
+	ARGUS_RETURN_ON_NULL(navigationComponent, ArgusECSLog);
+
+	const int32 lastPointIndex = navigationComponent->m_lastPointIndex;
+	const int32 numNavigationPoints = navigationPoints.Num();
+	if (numNavigationPoints == 0 || !navigationPoints.IsValidIndex(lastPointIndex + 1))
+	{
+		return;
+	}
+
+	const FVector sourceLocation = navigationPoints[lastPointIndex];
+	FVector targetLocation = navigationPoints[lastPointIndex + 1];
+	if (ShouldAdvanceSegment(moverLocation, sourceLocation, targetLocation))
+	{
+		navigationComponent->m_lastPointIndex++;
+	}
 }
 
 void TransformSystems::OnCompleteNavigationPath(const TransformSystemsArgs& components)
