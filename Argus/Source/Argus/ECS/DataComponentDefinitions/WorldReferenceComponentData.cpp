@@ -12,10 +12,11 @@ void UWorldReferenceComponentData::InstantiateComponentForEntity(ArgusEntity ent
 
 }
 
-void UWorldReferenceComponentData::ReInitializeComponentForEntityPostLoad(ArgusEntity entity) const
+void UWorldReferenceComponentData::ReinitializeComponentForEntityPostLoad(ArgusEntity entity) const
 {
 	WorldReferenceComponent* WorldReferenceComponentRef = entity.GetComponent<WorldReferenceComponent>();
 	ARGUS_RETURN_ON_NULL(WorldReferenceComponentRef, ArgusECSLog);
+
 }
 
 void UWorldReferenceComponentData::OnComponentDataLoaded() const

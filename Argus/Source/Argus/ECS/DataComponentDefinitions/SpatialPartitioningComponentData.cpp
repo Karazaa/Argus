@@ -15,10 +15,11 @@ void USpatialPartitioningComponentData::InstantiateComponentForEntity(ArgusEntit
 	SpatialPartitioningComponentRef->m_elevatedObstaclePointHeightThreshold = m_elevatedObstaclePointHeightThreshold;
 }
 
-void USpatialPartitioningComponentData::ReInitializeComponentForEntityPostLoad(ArgusEntity entity) const
+void USpatialPartitioningComponentData::ReinitializeComponentForEntityPostLoad(ArgusEntity entity) const
 {
 	SpatialPartitioningComponent* SpatialPartitioningComponentRef = entity.GetComponent<SpatialPartitioningComponent>();
 	ARGUS_RETURN_ON_NULL(SpatialPartitioningComponentRef, ArgusECSLog);
+
 }
 
 void USpatialPartitioningComponentData::OnComponentDataLoaded() const

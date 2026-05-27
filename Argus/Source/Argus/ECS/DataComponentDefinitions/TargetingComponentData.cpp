@@ -15,10 +15,11 @@ void UTargetingComponentData::InstantiateComponentForEntity(ArgusEntity entity) 
 	TargetingComponentRef->m_sightRange = m_sightRange;
 }
 
-void UTargetingComponentData::ReInitializeComponentForEntityPostLoad(ArgusEntity entity) const
+void UTargetingComponentData::ReinitializeComponentForEntityPostLoad(ArgusEntity entity) const
 {
 	TargetingComponent* TargetingComponentRef = entity.GetComponent<TargetingComponent>();
 	ARGUS_RETURN_ON_NULL(TargetingComponentRef, ArgusECSLog);
+
 }
 
 void UTargetingComponentData::OnComponentDataLoaded() const

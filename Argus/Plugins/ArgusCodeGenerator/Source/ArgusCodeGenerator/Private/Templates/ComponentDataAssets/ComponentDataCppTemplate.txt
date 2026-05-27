@@ -13,10 +13,12 @@ void U#####Data::InstantiateComponentForEntity(ArgusEntity entity) const
 	@@@@@
 }
 
-void U#####Data::ReInitializeComponentForEntityPostLoad(ArgusEntity entity) const
+void U#####Data::ReinitializeComponentForEntityPostLoad(ArgusEntity entity) const
 {
 	#####* #####Ref = entity.GetComponent<#####>();
 	ARGUS_RETURN_ON_NULL(#####Ref, ArgusECSLog);
+
+	&&&&&
 }
 
 void U#####Data::OnComponentDataLoaded() const

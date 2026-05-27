@@ -21,10 +21,20 @@ void UGlobalSettingsComponentData::InstantiateComponentForEntity(ArgusEntity ent
 	GlobalSettingsComponentRef->m_groupSizeRadiusPair = m_groupSizeRadiusPair;
 }
 
-void UGlobalSettingsComponentData::ReInitializeComponentForEntityPostLoad(ArgusEntity entity) const
+void UGlobalSettingsComponentData::ReinitializeComponentForEntityPostLoad(ArgusEntity entity) const
 {
 	GlobalSettingsComponent* GlobalSettingsComponentRef = entity.GetComponent<GlobalSettingsComponent>();
 	ARGUS_RETURN_ON_NULL(GlobalSettingsComponentRef, ArgusECSLog);
+
+	GlobalSettingsComponentRef->m_avoidanceEntityDetectionPredictionTime = m_avoidanceEntityDetectionPredictionTime;
+	GlobalSettingsComponentRef->m_avoidanceObstacleDetectionPredictionTime = m_avoidanceObstacleDetectionPredictionTime;
+	GlobalSettingsComponentRef->m_maxAvoidanceObstaclePointHeightDifference = m_maxAvoidanceObstaclePointHeightDifference;
+	GlobalSettingsComponentRef->m_flockingVelocityInfluence = m_flockingVelocityInfluence;
+	GlobalSettingsComponentRef->m_obstacleShrinkFixupDistance = m_obstacleShrinkFixupDistance;
+	GlobalSettingsComponentRef->m_maxObstaclePointDistance = m_maxObstaclePointDistance;
+	GlobalSettingsComponentRef->m_minObstaclePointDistance = m_minObstaclePointDistance;
+	GlobalSettingsComponentRef->m_progressNavPathDistThreshold = m_progressNavPathDistThreshold;
+	GlobalSettingsComponentRef->m_groupSizeRadiusPair = m_groupSizeRadiusPair;
 }
 
 void UGlobalSettingsComponentData::OnComponentDataLoaded() const

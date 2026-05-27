@@ -12,10 +12,11 @@ void UPassengerComponentData::InstantiateComponentForEntity(ArgusEntity entity) 
 
 }
 
-void UPassengerComponentData::ReInitializeComponentForEntityPostLoad(ArgusEntity entity) const
+void UPassengerComponentData::ReinitializeComponentForEntityPostLoad(ArgusEntity entity) const
 {
 	PassengerComponent* PassengerComponentRef = entity.GetComponent<PassengerComponent>();
 	ARGUS_RETURN_ON_NULL(PassengerComponentRef, ArgusECSLog);
+
 }
 
 void UPassengerComponentData::OnComponentDataLoaded() const

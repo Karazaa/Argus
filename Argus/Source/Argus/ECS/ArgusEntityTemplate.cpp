@@ -91,6 +91,27 @@ void UArgusEntityTemplate::PopulateEntity(ArgusEntity entity) const
 	SetInitialStateFromData(entity);
 }
 
+void UArgusEntityTemplate::ReinitializeComponentsForEntityPostLoad(ArgusEntity entity) const
+{
+	ARGUS_MEMORY_TRACE(ArgusComponentData);
+
+	ARGUS_RETURN_ON_INVALID_ENTITY(entity, ArgusECSLog);
+
+	for (const TPair<UClass*, TObjectPtr<const UComponentData>>& keyValuePair : m_loadedComponentData)
+	{
+		const UComponentData* componentData = keyValuePair.Value.Get();
+		if (!componentData)
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Attempting to populate an entity from a template that has a deleted component."), ARGUS_FUNCNAME);
+			continue;
+		}
+
+		componentData->ReinitializeComponentForEntityPostLoad(entity);
+	}
+
+	SetInitialStateFromData(entity);
+}
+
 void UArgusEntityTemplate::SetInitialStateFromData(ArgusEntity entity) const
 {
 	TaskComponent* taskComponent = entity.GetComponent<TaskComponent>();

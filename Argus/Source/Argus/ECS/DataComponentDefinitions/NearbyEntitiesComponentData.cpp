@@ -12,10 +12,11 @@ void UNearbyEntitiesComponentData::InstantiateComponentForEntity(ArgusEntity ent
 
 }
 
-void UNearbyEntitiesComponentData::ReInitializeComponentForEntityPostLoad(ArgusEntity entity) const
+void UNearbyEntitiesComponentData::ReinitializeComponentForEntityPostLoad(ArgusEntity entity) const
 {
 	NearbyEntitiesComponent* NearbyEntitiesComponentRef = entity.GetComponent<NearbyEntitiesComponent>();
 	ARGUS_RETURN_ON_NULL(NearbyEntitiesComponentRef, ArgusECSLog);
+
 }
 
 void UNearbyEntitiesComponentData::OnComponentDataLoaded() const

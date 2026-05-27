@@ -16,10 +16,11 @@ void UConstructionComponentData::InstantiateComponentForEntity(ArgusEntity entit
 	ConstructionComponentRef->m_constructionType = m_constructionType;
 }
 
-void UConstructionComponentData::ReInitializeComponentForEntityPostLoad(ArgusEntity entity) const
+void UConstructionComponentData::ReinitializeComponentForEntityPostLoad(ArgusEntity entity) const
 {
 	ConstructionComponent* ConstructionComponentRef = entity.GetComponent<ConstructionComponent>();
 	ARGUS_RETURN_ON_NULL(ConstructionComponentRef, ArgusECSLog);
+
 }
 
 void UConstructionComponentData::OnComponentDataLoaded() const

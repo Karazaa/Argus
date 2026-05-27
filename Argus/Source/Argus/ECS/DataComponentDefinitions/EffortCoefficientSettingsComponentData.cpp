@@ -18,10 +18,17 @@ void UEffortCoefficientSettingsComponentData::InstantiateComponentForEntity(Argu
 	EffortCoefficientSettingsComponentRef->m_sameAvoidanceGroupIsConstructing = m_sameAvoidanceGroupIsConstructing;
 }
 
-void UEffortCoefficientSettingsComponentData::ReInitializeComponentForEntityPostLoad(ArgusEntity entity) const
+void UEffortCoefficientSettingsComponentData::ReinitializeComponentForEntityPostLoad(ArgusEntity entity) const
 {
 	EffortCoefficientSettingsComponent* EffortCoefficientSettingsComponentRef = entity.GetComponent<EffortCoefficientSettingsComponent>();
 	ARGUS_RETURN_ON_NULL(EffortCoefficientSettingsComponentRef, ArgusECSLog);
+
+	EffortCoefficientSettingsComponentRef->m_sameAvoidanceGroupBase = m_sameAvoidanceGroupBase;
+	EffortCoefficientSettingsComponentRef->m_sameAvoidanceGroupBothObstacle = m_sameAvoidanceGroupBothObstacle;
+	EffortCoefficientSettingsComponentRef->m_sameAvoidanceGroupHasObstacle = m_sameAvoidanceGroupHasObstacle;
+	EffortCoefficientSettingsComponentRef->m_sameAvoidanceGroupOtherHasObstacle = m_sameAvoidanceGroupOtherHasObstacle;
+	EffortCoefficientSettingsComponentRef->m_sameAvoidanceGroupIsAttacking = m_sameAvoidanceGroupIsAttacking;
+	EffortCoefficientSettingsComponentRef->m_sameAvoidanceGroupIsConstructing = m_sameAvoidanceGroupIsConstructing;
 }
 
 void UEffortCoefficientSettingsComponentData::OnComponentDataLoaded() const

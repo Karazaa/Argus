@@ -252,5 +252,5 @@ void AArgusGameModeBase::OnLoadComplete()
 		SpawnActorForEntity(entity);
 	});
 
-	ArgusSystemsManager::InitializePostLoad(GetWorld());
+	ArgusSystemsManager::InitializePostLoad(GetWorld(), m_singletonEntityTemplate.LoadSynchronous(), m_teamEntityTemplate.LoadSynchronous());
 }

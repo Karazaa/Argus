@@ -14,10 +14,11 @@ void USpawningComponentData::InstantiateComponentForEntity(ArgusEntity entity) c
 	SpawningComponentRef->m_maximumQueueSize = m_maximumQueueSize;
 }
 
-void USpawningComponentData::ReInitializeComponentForEntityPostLoad(ArgusEntity entity) const
+void USpawningComponentData::ReinitializeComponentForEntityPostLoad(ArgusEntity entity) const
 {
 	SpawningComponent* SpawningComponentRef = entity.GetComponent<SpawningComponent>();
 	ARGUS_RETURN_ON_NULL(SpawningComponentRef, ArgusECSLog);
+
 }
 
 void USpawningComponentData::OnComponentDataLoaded() const

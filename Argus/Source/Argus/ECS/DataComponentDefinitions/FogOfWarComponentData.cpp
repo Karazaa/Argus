@@ -23,10 +23,11 @@ void UFogOfWarComponentData::InstantiateComponentForEntity(ArgusEntity entity) c
 	FogOfWarComponentRef->m_visionObstacleAdjustDistance = m_visionObstacleAdjustDistance;
 }
 
-void UFogOfWarComponentData::ReInitializeComponentForEntityPostLoad(ArgusEntity entity) const
+void UFogOfWarComponentData::ReinitializeComponentForEntityPostLoad(ArgusEntity entity) const
 {
 	FogOfWarComponent* FogOfWarComponentRef = entity.GetComponent<FogOfWarComponent>();
 	ARGUS_RETURN_ON_NULL(FogOfWarComponentRef, ArgusECSLog);
+
 }
 
 void UFogOfWarComponentData::OnComponentDataLoaded() const

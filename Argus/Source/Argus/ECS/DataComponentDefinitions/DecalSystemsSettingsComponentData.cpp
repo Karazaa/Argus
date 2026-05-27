@@ -14,10 +14,11 @@ void UDecalSystemsSettingsComponentData::InstantiateComponentForEntity(ArgusEnti
 	DecalSystemsSettingsComponentRef->m_attackMoveToLocationDecalMaterial = m_attackMoveToLocationDecalMaterial;
 }
 
-void UDecalSystemsSettingsComponentData::ReInitializeComponentForEntityPostLoad(ArgusEntity entity) const
+void UDecalSystemsSettingsComponentData::ReinitializeComponentForEntityPostLoad(ArgusEntity entity) const
 {
 	DecalSystemsSettingsComponent* DecalSystemsSettingsComponentRef = entity.GetComponent<DecalSystemsSettingsComponent>();
 	ARGUS_RETURN_ON_NULL(DecalSystemsSettingsComponentRef, ArgusECSLog);
+
 }
 
 void UDecalSystemsSettingsComponentData::OnComponentDataLoaded() const

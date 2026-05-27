@@ -256,33 +256,7 @@ bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetCppFileTemplateWithRepl
 						continue;
 					}
 
-					std::string variableAssignment = "\t";
-					variableAssignment.append(parsedComponentData.m_componentNames[i]);
-					variableAssignment.append("Ref->");
-					variableAssignment.append(parsedComponentData.m_componentVariableData[i][j].m_varName);
-					variableAssignment.append(" = ");
-
-					const size_t propertyStaticDataDelimiterIndex = parsedComponentData.m_componentVariableData[i][j].m_propertyMacro.find(ArgusCodeGeneratorUtil::s_propertyStaticDataDelimiter);
-					const size_t exponentialDecaySmootherIndex = parsedComponentData.m_componentVariableData[i][j].m_typeName.find(s_exponentialDecaySmootherTypeName);
-					if (propertyStaticDataDelimiterIndex != std::string::npos)
-					{
-						variableAssignment.append(std::vformat("{}Reference.GetId()", std::make_format_args(parsedComponentData.m_componentVariableData[i][j].m_varName)));
-					}
-					else if (exponentialDecaySmootherIndex != std::string::npos)
-					{
-						const size_t lengthTypeName = parsedComponentData.m_componentVariableData[i][j].m_typeName.length();
-
-						std::string typeName = parsedComponentData.m_componentVariableData[i][j].m_typeName.substr(1, (lengthTypeName - 1));
-						std::string varName = parsedComponentData.m_componentVariableData[i][j].m_varName;
-						variableAssignment.append(std::vformat("{}({}DecayConstant, {}SmoothingSpeedMod)", std::make_format_args(typeName, varName, varName)));
-					}
-					else
-					{
-						variableAssignment.append(parsedComponentData.m_componentVariableData[i][j].m_varName);
-					}
-					variableAssignment.append(";");
-
-					outParsedFileContents[i].m_lines.push_back(variableAssignment);
+					WriteComponentAssignment(parsedComponentData.m_componentNames[i], parsedComponentData.m_componentVariableData[i][j], outParsedFileContents[i].m_lines);
 				}
 			}
 		}
@@ -309,6 +283,21 @@ bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetCppFileTemplateWithRepl
 					(
 						std::vformat("\tArgusStaticData::AsyncPreLoadRecord<{}>({}Reference.GetId());", std::make_format_args(parsedComponentData.m_componentVariableData[i][j].m_staticDataTypeName, parsedComponentData.m_componentVariableData[i][j].m_varName))
 					);
+				}
+			}
+		}
+		else if (cppLineText.find("&&&&&") != std::string::npos)
+		{
+			for (int i = 0; i < parsedComponentData.m_componentNames.size(); ++i)
+			{
+				for (int j = 0; j < parsedComponentData.m_componentVariableData[i].size(); ++j)
+				{
+					if (parsedComponentData.m_componentVariableData[i][j].m_propertyMacro.find(ArgusCodeGeneratorUtil::s_propertyTransientDelimiter) != std::string::npos &&
+						parsedComponentData.m_componentVariableData[i][j].m_propertyMacro.find(ArgusCodeGeneratorUtil::s_propertyIgnoreDelimiter) == std::string::npos &&
+						parsedComponentData.m_componentVariableData[i][j].m_propertyMacro.find("ARGUS_COMP_PROPERTY(Transient") == std::string::npos)
+					{
+						WriteComponentAssignment(parsedComponentData.m_componentNames[i], parsedComponentData.m_componentVariableData[i][j], outParsedFileContents[i].m_lines);
+					}
 				}
 			}
 		}
@@ -357,4 +346,35 @@ void ArgusDataAssetComponentCodeGenerator::DeleteObsoleteFiles(const ArgusCodeGe
 	{
 		std::remove(filesToDelete[i].c_str());
 	}
+}
+
+void ArgusDataAssetComponentCodeGenerator::WriteComponentAssignment(const std::string& componentName, const ArgusCodeGeneratorUtil::ParsedVariableData& variableData, std::vector<std::string>& outLines)
+{
+	std::string variableAssignment = "\t";
+	variableAssignment.append(componentName);
+	variableAssignment.append("Ref->");
+	variableAssignment.append(variableData.m_varName);
+	variableAssignment.append(" = ");
+
+	const size_t propertyStaticDataDelimiterIndex = variableData.m_propertyMacro.find(ArgusCodeGeneratorUtil::s_propertyStaticDataDelimiter);
+	const size_t exponentialDecaySmootherIndex = variableData.m_typeName.find(s_exponentialDecaySmootherTypeName);
+	if (propertyStaticDataDelimiterIndex != std::string::npos)
+	{
+		variableAssignment.append(std::vformat("{}Reference.GetId()", std::make_format_args(variableData.m_varName)));
+	}
+	else if (exponentialDecaySmootherIndex != std::string::npos)
+	{
+		const size_t lengthTypeName = variableData.m_typeName.length();
+
+		std::string typeName = variableData.m_typeName.substr(1, (lengthTypeName - 1));
+		std::string varName = variableData.m_varName;
+		variableAssignment.append(std::vformat("{}({}DecayConstant, {}SmoothingSpeedMod)", std::make_format_args(typeName, varName, varName)));
+	}
+	else
+	{
+		variableAssignment.append(variableData.m_varName);
+	}
+	variableAssignment.append(";");
+
+	outLines.push_back(variableAssignment);
 }

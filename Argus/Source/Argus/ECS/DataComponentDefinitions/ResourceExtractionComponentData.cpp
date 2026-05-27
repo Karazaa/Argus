@@ -14,10 +14,11 @@ void UResourceExtractionComponentData::InstantiateComponentForEntity(ArgusEntity
 	ResourceExtractionComponentRef->m_extractionLengthSeconds = m_extractionLengthSeconds;
 }
 
-void UResourceExtractionComponentData::ReInitializeComponentForEntityPostLoad(ArgusEntity entity) const
+void UResourceExtractionComponentData::ReinitializeComponentForEntityPostLoad(ArgusEntity entity) const
 {
 	ResourceExtractionComponent* ResourceExtractionComponentRef = entity.GetComponent<ResourceExtractionComponent>();
 	ARGUS_RETURN_ON_NULL(ResourceExtractionComponentRef, ArgusECSLog);
+
 }
 
 void UResourceExtractionComponentData::OnComponentDataLoaded() const

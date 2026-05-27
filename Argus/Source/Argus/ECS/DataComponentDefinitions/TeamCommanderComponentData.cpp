@@ -13,10 +13,11 @@ void UTeamCommanderComponentData::InstantiateComponentForEntity(ArgusEntity enti
 	TeamCommanderComponentRef->m_revealedAreaDimensionLength = m_revealedAreaDimensionLength;
 }
 
-void UTeamCommanderComponentData::ReInitializeComponentForEntityPostLoad(ArgusEntity entity) const
+void UTeamCommanderComponentData::ReinitializeComponentForEntityPostLoad(ArgusEntity entity) const
 {
 	TeamCommanderComponent* TeamCommanderComponentRef = entity.GetComponent<TeamCommanderComponent>();
 	ARGUS_RETURN_ON_NULL(TeamCommanderComponentRef, ArgusECSLog);
+
 }
 
 void UTeamCommanderComponentData::OnComponentDataLoaded() const

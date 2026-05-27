@@ -17,10 +17,11 @@ void UAbilityComponentData::InstantiateComponentForEntity(ArgusEntity entity) co
 	AbilityComponentRef->m_abilityCasterPriority = m_abilityCasterPriority;
 }
 
-void UAbilityComponentData::ReInitializeComponentForEntityPostLoad(ArgusEntity entity) const
+void UAbilityComponentData::ReinitializeComponentForEntityPostLoad(ArgusEntity entity) const
 {
 	AbilityComponent* AbilityComponentRef = entity.GetComponent<AbilityComponent>();
 	ARGUS_RETURN_ON_NULL(AbilityComponentRef, ArgusECSLog);
+
 }
 
 void UAbilityComponentData::OnComponentDataLoaded() const

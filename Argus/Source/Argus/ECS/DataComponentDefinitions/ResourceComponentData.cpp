@@ -16,10 +16,11 @@ void UResourceComponentData::InstantiateComponentForEntity(ArgusEntity entity) c
 	ResourceComponentRef->m_bufferRegionRadius = m_bufferRegionRadius;
 }
 
-void UResourceComponentData::ReInitializeComponentForEntityPostLoad(ArgusEntity entity) const
+void UResourceComponentData::ReinitializeComponentForEntityPostLoad(ArgusEntity entity) const
 {
 	ResourceComponent* ResourceComponentRef = entity.GetComponent<ResourceComponent>();
 	ARGUS_RETURN_ON_NULL(ResourceComponentRef, ArgusECSLog);
+
 }
 
 void UResourceComponentData::OnComponentDataLoaded() const

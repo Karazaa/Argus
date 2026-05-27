@@ -19,6 +19,7 @@ public:
 	ArgusEntity MakeEntity(uint16 entityId) const;
 	ArgusEntity MakeEntityAsync(const TFunction<void(ArgusEntity)> onCompleteCallback = nullptr) const;
 	void PopulateEntity(ArgusEntity entity) const;
+	void ReinitializeComponentsForEntityPostLoad(ArgusEntity entity) const;
 	void SetInitialStateFromData(ArgusEntity entity) const;
 	UEntityPriority GetEntityPriority() const { return m_entityPriority; }
 	bool DoesTemplateSatisfyEntityCategory(EntityCategory entityCategory) const;

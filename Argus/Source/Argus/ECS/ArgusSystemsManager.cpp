@@ -34,9 +34,23 @@ void ArgusSystemsManager::Initialize(UWorld* worldPointer, const UArgusEntityTem
 	PopulateTeamComponents(teamEntityTemplate);
 }
 
-void ArgusSystemsManager::InitializePostLoad(UWorld* worldPointer)
+void ArgusSystemsManager::InitializePostLoad(UWorld* worldPointer, const UArgusEntityTemplate* singletonEntityTemplate, const UArgusEntityTemplate* teamEntityTemplate)
 {
 	ARGUS_RETURN_ON_NULL(worldPointer, ArgusECSLog);
+	ARGUS_RETURN_ON_NULL(singletonEntityTemplate, ArgusECSLog);
+	ARGUS_RETURN_ON_NULL(teamEntityTemplate, ArgusECSLog);
+
+	singletonEntityTemplate->ReinitializeComponentsForEntityPostLoad(ArgusEntity::GetSingletonEntity());
+	for (uint8 i = 1u; i <= (sizeof(ETeam) * 8u); ++i)
+	{
+		ArgusEntity teamEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId - i);
+		if (!teamEntity)
+		{
+			continue;
+		}
+		
+		teamEntityTemplate->ReinitializeComponentsForEntityPostLoad(teamEntity);
+	}
 
 	FogOfWarSystems::InitializeSystemsPostLoad();
 

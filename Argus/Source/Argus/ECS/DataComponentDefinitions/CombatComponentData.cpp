@@ -16,10 +16,11 @@ void UCombatComponentData::InstantiateComponentForEntity(ArgusEntity entity) con
 	CombatComponentRef->m_rangedAttackCapability = m_rangedAttackCapability;
 }
 
-void UCombatComponentData::ReInitializeComponentForEntityPostLoad(ArgusEntity entity) const
+void UCombatComponentData::ReinitializeComponentForEntityPostLoad(ArgusEntity entity) const
 {
 	CombatComponent* CombatComponentRef = entity.GetComponent<CombatComponent>();
 	ARGUS_RETURN_ON_NULL(CombatComponentRef, ArgusECSLog);
+
 }
 
 void UCombatComponentData::OnComponentDataLoaded() const
