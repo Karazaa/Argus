@@ -14,6 +14,12 @@ void UVelocityComponentData::InstantiateComponentForEntity(ArgusEntity entity) c
 	VelocityComponentRef->m_desiredFlightSpeedUnitsPerSecond = m_desiredFlightSpeedUnitsPerSecond;
 }
 
+void UVelocityComponentData::ReInitializeComponentForEntityPostLoad(ArgusEntity entity) const
+{
+	VelocityComponent* VelocityComponentRef = entity.GetComponent<VelocityComponent>();
+	ARGUS_RETURN_ON_NULL(VelocityComponentRef, ArgusECSLog);
+}
+
 void UVelocityComponentData::OnComponentDataLoaded() const
 {
 }

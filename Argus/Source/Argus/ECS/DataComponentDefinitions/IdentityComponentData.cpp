@@ -13,6 +13,12 @@ void UIdentityComponentData::InstantiateComponentForEntity(ArgusEntity entity) c
 	IdentityComponentRef->m_factionId = m_factionIdReference.GetId();
 }
 
+void UIdentityComponentData::ReInitializeComponentForEntityPostLoad(ArgusEntity entity) const
+{
+	IdentityComponent* IdentityComponentRef = entity.GetComponent<IdentityComponent>();
+	ARGUS_RETURN_ON_NULL(IdentityComponentRef, ArgusECSLog);
+}
+
 void UIdentityComponentData::OnComponentDataLoaded() const
 {
 	ArgusStaticData::AsyncPreLoadRecord<UFactionRecord>(m_factionIdReference.GetId());

@@ -13,6 +13,12 @@ void UAvoidanceGroupingComponentData::InstantiateComponentForEntity(ArgusEntity 
 	AvoidanceGroupingComponentRef->m_avoidancePriority = m_avoidancePriority;
 }
 
+void UAvoidanceGroupingComponentData::ReInitializeComponentForEntityPostLoad(ArgusEntity entity) const
+{
+	AvoidanceGroupingComponent* AvoidanceGroupingComponentRef = entity.GetComponent<AvoidanceGroupingComponent>();
+	ARGUS_RETURN_ON_NULL(AvoidanceGroupingComponentRef, ArgusECSLog);
+}
+
 void UAvoidanceGroupingComponentData::OnComponentDataLoaded() const
 {
 }

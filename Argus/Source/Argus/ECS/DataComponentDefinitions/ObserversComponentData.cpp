@@ -12,6 +12,12 @@ void UObserversComponentData::InstantiateComponentForEntity(ArgusEntity entity) 
 
 }
 
+void UObserversComponentData::ReInitializeComponentForEntityPostLoad(ArgusEntity entity) const
+{
+	ObserversComponent* ObserversComponentRef = entity.GetComponent<ObserversComponent>();
+	ARGUS_RETURN_ON_NULL(ObserversComponentRef, ArgusECSLog);
+}
+
 void UObserversComponentData::OnComponentDataLoaded() const
 {
 }

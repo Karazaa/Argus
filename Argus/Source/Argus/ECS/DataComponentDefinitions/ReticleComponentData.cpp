@@ -12,6 +12,12 @@ void UReticleComponentData::InstantiateComponentForEntity(ArgusEntity entity) co
 
 }
 
+void UReticleComponentData::ReInitializeComponentForEntityPostLoad(ArgusEntity entity) const
+{
+	ReticleComponent* ReticleComponentRef = entity.GetComponent<ReticleComponent>();
+	ARGUS_RETURN_ON_NULL(ReticleComponentRef, ArgusECSLog);
+}
+
 void UReticleComponentData::OnComponentDataLoaded() const
 {
 }

@@ -14,6 +14,12 @@ void UHealthComponentData::InstantiateComponentForEntity(ArgusEntity entity) con
 	HealthComponentRef->m_maximumHealth = m_maximumHealth;
 }
 
+void UHealthComponentData::ReInitializeComponentForEntityPostLoad(ArgusEntity entity) const
+{
+	HealthComponent* HealthComponentRef = entity.GetComponent<HealthComponent>();
+	ARGUS_RETURN_ON_NULL(HealthComponentRef, ArgusECSLog);
+}
+
 void UHealthComponentData::OnComponentDataLoaded() const
 {
 }

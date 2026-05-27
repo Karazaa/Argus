@@ -12,6 +12,12 @@ void UNavigationComponentData::InstantiateComponentForEntity(ArgusEntity entity)
 
 }
 
+void UNavigationComponentData::ReInitializeComponentForEntityPostLoad(ArgusEntity entity) const
+{
+	NavigationComponent* NavigationComponentRef = entity.GetComponent<NavigationComponent>();
+	ARGUS_RETURN_ON_NULL(NavigationComponentRef, ArgusECSLog);
+}
+
 void UNavigationComponentData::OnComponentDataLoaded() const
 {
 }

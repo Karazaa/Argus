@@ -12,6 +12,12 @@ void UFogOfWarLocationComponentData::InstantiateComponentForEntity(ArgusEntity e
 
 }
 
+void UFogOfWarLocationComponentData::ReInitializeComponentForEntityPostLoad(ArgusEntity entity) const
+{
+	FogOfWarLocationComponent* FogOfWarLocationComponentRef = entity.GetComponent<FogOfWarLocationComponent>();
+	ARGUS_RETURN_ON_NULL(FogOfWarLocationComponentRef, ArgusECSLog);
+}
+
 void UFogOfWarLocationComponentData::OnComponentDataLoaded() const
 {
 }

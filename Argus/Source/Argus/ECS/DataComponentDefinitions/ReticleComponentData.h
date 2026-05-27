@@ -14,6 +14,7 @@ class ARGUS_API UReticleComponentData : public UComponentData
 public:
 
 	void InstantiateComponentForEntity(ArgusEntity entity) const override;
+	void ReInitializeComponentForEntityPostLoad(ArgusEntity entity) const override;
 	void OnComponentDataLoaded() const override;
 	bool MatchesType(const UComponentData* other) const override;
 };

@@ -13,6 +13,12 @@ void UCarrierComponentData::InstantiateComponentForEntity(ArgusEntity entity) co
 	CarrierComponentRef->m_carrierCapacity = m_carrierCapacity;
 }
 
+void UCarrierComponentData::ReInitializeComponentForEntityPostLoad(ArgusEntity entity) const
+{
+	CarrierComponent* CarrierComponentRef = entity.GetComponent<CarrierComponent>();
+	ARGUS_RETURN_ON_NULL(CarrierComponentRef, ArgusECSLog);
+}
+
 void UCarrierComponentData::OnComponentDataLoaded() const
 {
 }

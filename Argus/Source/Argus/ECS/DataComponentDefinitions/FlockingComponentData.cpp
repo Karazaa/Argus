@@ -14,6 +14,12 @@ void UFlockingComponentData::InstantiateComponentForEntity(ArgusEntity entity) c
 	FlockingComponentRef->m_flockingRootRadiusIncrement = m_flockingRootRadiusIncrement;
 }
 
+void UFlockingComponentData::ReInitializeComponentForEntityPostLoad(ArgusEntity entity) const
+{
+	FlockingComponent* FlockingComponentRef = entity.GetComponent<FlockingComponent>();
+	ARGUS_RETURN_ON_NULL(FlockingComponentRef, ArgusECSLog);
+}
+
 void UFlockingComponentData::OnComponentDataLoaded() const
 {
 }

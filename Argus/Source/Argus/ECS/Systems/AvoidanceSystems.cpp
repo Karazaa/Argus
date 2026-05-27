@@ -711,7 +711,10 @@ FVector AvoidanceSystems::GetDesiredDirection(const TransformSystemsArgs& compon
 			return FVector::ZeroVector;
 		}
 
-		return groupLeaderNavigationComponent->m_navigationPoints[lastPointIndex + 1] - groupLeaderNavigationComponent->m_navigationPoints[lastPointIndex];
+		// In this case, the desired velocity of the entity should be the closes point on the line from last waypoint to next waypoint.
+		const FVector segment = groupLeaderNavigationComponent->m_navigationPoints[lastPointIndex + 1] - groupLeaderNavigationComponent->m_navigationPoints[lastPointIndex];
+		const FVector segmentToProject = components.m_transformComponent->m_location - groupLeaderNavigationComponent->m_navigationPoints[lastPointIndex];
+		return (segmentToProject.ProjectOnTo(segment) + (segment.GetSafeNormal() * components.m_transformComponent->m_radius));
 	}
 
 	if (!groupLeaderNavigationComponent->HasValidNextGroupIndex())

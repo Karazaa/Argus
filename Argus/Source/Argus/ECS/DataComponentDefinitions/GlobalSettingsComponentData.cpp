@@ -21,6 +21,12 @@ void UGlobalSettingsComponentData::InstantiateComponentForEntity(ArgusEntity ent
 	GlobalSettingsComponentRef->m_groupSizeRadiusPair = m_groupSizeRadiusPair;
 }
 
+void UGlobalSettingsComponentData::ReInitializeComponentForEntityPostLoad(ArgusEntity entity) const
+{
+	GlobalSettingsComponent* GlobalSettingsComponentRef = entity.GetComponent<GlobalSettingsComponent>();
+	ARGUS_RETURN_ON_NULL(GlobalSettingsComponentRef, ArgusECSLog);
+}
+
 void UGlobalSettingsComponentData::OnComponentDataLoaded() const
 {
 }

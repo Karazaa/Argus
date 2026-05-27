@@ -12,6 +12,12 @@ void UTimerComponentData::InstantiateComponentForEntity(ArgusEntity entity) cons
 
 }
 
+void UTimerComponentData::ReInitializeComponentForEntityPostLoad(ArgusEntity entity) const
+{
+	TimerComponent* TimerComponentRef = entity.GetComponent<TimerComponent>();
+	ARGUS_RETURN_ON_NULL(TimerComponentRef, ArgusECSLog);
+}
+
 void UTimerComponentData::OnComponentDataLoaded() const
 {
 }

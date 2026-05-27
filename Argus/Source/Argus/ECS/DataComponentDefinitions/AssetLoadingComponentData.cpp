@@ -12,6 +12,12 @@ void UAssetLoadingComponentData::InstantiateComponentForEntity(ArgusEntity entit
 
 }
 
+void UAssetLoadingComponentData::ReInitializeComponentForEntityPostLoad(ArgusEntity entity) const
+{
+	AssetLoadingComponent* AssetLoadingComponentRef = entity.GetComponent<AssetLoadingComponent>();
+	ARGUS_RETURN_ON_NULL(AssetLoadingComponentRef, ArgusECSLog);
+}
+
 void UAssetLoadingComponentData::OnComponentDataLoaded() const
 {
 }

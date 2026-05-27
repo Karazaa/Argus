@@ -13,6 +13,12 @@ void UTaskComponentData::InstantiateComponentForEntity(ArgusEntity entity) const
 	TaskComponentRef->m_flightState = m_flightState;
 }
 
+void UTaskComponentData::ReInitializeComponentForEntityPostLoad(ArgusEntity entity) const
+{
+	TaskComponent* TaskComponentRef = entity.GetComponent<TaskComponent>();
+	ARGUS_RETURN_ON_NULL(TaskComponentRef, ArgusECSLog);
+}
+
 void UTaskComponentData::OnComponentDataLoaded() const
 {
 }

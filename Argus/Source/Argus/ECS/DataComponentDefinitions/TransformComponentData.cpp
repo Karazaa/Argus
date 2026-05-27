@@ -16,6 +16,12 @@ void UTransformComponentData::InstantiateComponentForEntity(ArgusEntity entity) 
 	TransformComponentRef->m_flightCapability = m_flightCapability;
 }
 
+void UTransformComponentData::ReInitializeComponentForEntityPostLoad(ArgusEntity entity) const
+{
+	TransformComponent* TransformComponentRef = entity.GetComponent<TransformComponent>();
+	ARGUS_RETURN_ON_NULL(TransformComponentRef, ArgusECSLog);
+}
+
 void UTransformComponentData::OnComponentDataLoaded() const
 {
 }

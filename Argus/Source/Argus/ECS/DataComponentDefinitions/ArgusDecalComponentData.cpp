@@ -13,6 +13,12 @@ void UArgusDecalComponentData::InstantiateComponentForEntity(ArgusEntity entity)
 	ArgusDecalComponentRef->m_lifetimeSeconds = m_lifetimeSeconds;
 }
 
+void UArgusDecalComponentData::ReInitializeComponentForEntityPostLoad(ArgusEntity entity) const
+{
+	ArgusDecalComponent* ArgusDecalComponentRef = entity.GetComponent<ArgusDecalComponent>();
+	ARGUS_RETURN_ON_NULL(ArgusDecalComponentRef, ArgusECSLog);
+}
+
 void UArgusDecalComponentData::OnComponentDataLoaded() const
 {
 }

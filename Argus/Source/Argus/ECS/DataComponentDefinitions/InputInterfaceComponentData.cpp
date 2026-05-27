@@ -15,6 +15,12 @@ void UInputInterfaceComponentData::InstantiateComponentForEntity(ArgusEntity ent
 	InputInterfaceComponentRef->m_numControlGroups = m_numControlGroups;
 }
 
+void UInputInterfaceComponentData::ReInitializeComponentForEntityPostLoad(ArgusEntity entity) const
+{
+	InputInterfaceComponent* InputInterfaceComponentRef = entity.GetComponent<InputInterfaceComponent>();
+	ARGUS_RETURN_ON_NULL(InputInterfaceComponentRef, ArgusECSLog);
+}
+
 void UInputInterfaceComponentData::OnComponentDataLoaded() const
 {
 }
