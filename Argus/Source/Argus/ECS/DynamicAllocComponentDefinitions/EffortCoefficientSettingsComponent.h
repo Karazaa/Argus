@@ -13,19 +13,19 @@ struct EffortCoefficientSettingsComponent
 	float m_sameAvoidanceGroupBase = 0.5f;
 
 	ARGUS_COMP_PROPERTY(EditAnywhere, meta = (Category = "Same Avoidance Group")) ARGUS_COMP_TRANSIENT
-	float m_sameAvoidanceGroupBothObstacle = 0.3f;
-
-	ARGUS_COMP_PROPERTY(EditAnywhere, meta = (Category = "Same Avoidance Group")) ARGUS_COMP_TRANSIENT
-	float m_sameAvoidanceGroupHasObstacle = 0.0f;
-
-	ARGUS_COMP_PROPERTY(EditAnywhere, meta = (Category = "Same Avoidance Group")) ARGUS_COMP_TRANSIENT
-	float m_sameAvoidanceGroupOtherHasObstacle = 0.75f;
-
-	ARGUS_COMP_PROPERTY(EditAnywhere, meta = (Category = "Same Avoidance Group")) ARGUS_COMP_TRANSIENT
 	float m_sameAvoidanceGroupIsAttacking = 0.33f;
 
 	ARGUS_COMP_PROPERTY(EditAnywhere, meta = (Category = "Same Avoidance Group")) ARGUS_COMP_TRANSIENT
 	float m_sameAvoidanceGroupIsConstructing = 0.33f;
+
+	ARGUS_COMP_PROPERTY(EditAnywhere, meta = (Category = "Adjacent to Obstacles")) ARGUS_COMP_TRANSIENT
+	float m_sameTeamBothObstacle = 0.4f;
+
+	ARGUS_COMP_PROPERTY(EditAnywhere, meta = (Category = "Adjacent to Obstacles")) ARGUS_COMP_TRANSIENT
+	float  m_sameTeamHasObstacle = 0.0f;
+
+	ARGUS_COMP_PROPERTY(EditAnywhere, meta = (Category = "Adjacent to Obstacles")) ARGUS_COMP_TRANSIENT
+	float m_sameTeamOtherHasObstacle = 1.0f;
 
 	static const EffortCoefficientSettingsComponent* Get();
 };

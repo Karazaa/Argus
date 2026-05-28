@@ -11,11 +11,11 @@ void UEffortCoefficientSettingsComponentData::InstantiateComponentForEntity(Argu
 	ARGUS_RETURN_ON_NULL(EffortCoefficientSettingsComponentRef, ArgusECSLog);
 
 	EffortCoefficientSettingsComponentRef->m_sameAvoidanceGroupBase = m_sameAvoidanceGroupBase;
-	EffortCoefficientSettingsComponentRef->m_sameAvoidanceGroupBothObstacle = m_sameAvoidanceGroupBothObstacle;
-	EffortCoefficientSettingsComponentRef->m_sameAvoidanceGroupHasObstacle = m_sameAvoidanceGroupHasObstacle;
-	EffortCoefficientSettingsComponentRef->m_sameAvoidanceGroupOtherHasObstacle = m_sameAvoidanceGroupOtherHasObstacle;
 	EffortCoefficientSettingsComponentRef->m_sameAvoidanceGroupIsAttacking = m_sameAvoidanceGroupIsAttacking;
 	EffortCoefficientSettingsComponentRef->m_sameAvoidanceGroupIsConstructing = m_sameAvoidanceGroupIsConstructing;
+	EffortCoefficientSettingsComponentRef->m_sameTeamBothObstacle = m_sameTeamBothObstacle;
+	EffortCoefficientSettingsComponentRef->m_sameTeamHasObstacle = m_sameTeamHasObstacle;
+	EffortCoefficientSettingsComponentRef->m_sameTeamOtherHasObstacle = m_sameTeamOtherHasObstacle;
 }
 
 void UEffortCoefficientSettingsComponentData::ReinitializeComponentForEntityPostLoad(ArgusEntity entity) const
@@ -24,11 +24,11 @@ void UEffortCoefficientSettingsComponentData::ReinitializeComponentForEntityPost
 	ARGUS_RETURN_ON_NULL(EffortCoefficientSettingsComponentRef, ArgusECSLog);
 
 	EffortCoefficientSettingsComponentRef->m_sameAvoidanceGroupBase = m_sameAvoidanceGroupBase;
-	EffortCoefficientSettingsComponentRef->m_sameAvoidanceGroupBothObstacle = m_sameAvoidanceGroupBothObstacle;
-	EffortCoefficientSettingsComponentRef->m_sameAvoidanceGroupHasObstacle = m_sameAvoidanceGroupHasObstacle;
-	EffortCoefficientSettingsComponentRef->m_sameAvoidanceGroupOtherHasObstacle = m_sameAvoidanceGroupOtherHasObstacle;
 	EffortCoefficientSettingsComponentRef->m_sameAvoidanceGroupIsAttacking = m_sameAvoidanceGroupIsAttacking;
 	EffortCoefficientSettingsComponentRef->m_sameAvoidanceGroupIsConstructing = m_sameAvoidanceGroupIsConstructing;
+	EffortCoefficientSettingsComponentRef->m_sameTeamBothObstacle = m_sameTeamBothObstacle;
+	EffortCoefficientSettingsComponentRef->m_sameTeamHasObstacle = m_sameTeamHasObstacle;
+	EffortCoefficientSettingsComponentRef->m_sameTeamOtherHasObstacle = m_sameTeamOtherHasObstacle;
 }
 
 void UEffortCoefficientSettingsComponentData::OnComponentDataLoaded() const

@@ -16,19 +16,19 @@ public:
 	float m_sameAvoidanceGroupBase = 0.5f;
 
 	UPROPERTY(EditAnywhere, meta = (Category = "Same Avoidance Group")) 
-	float m_sameAvoidanceGroupBothObstacle = 0.3f;
-
-	UPROPERTY(EditAnywhere, meta = (Category = "Same Avoidance Group")) 
-	float m_sameAvoidanceGroupHasObstacle = 0.0f;
-
-	UPROPERTY(EditAnywhere, meta = (Category = "Same Avoidance Group")) 
-	float m_sameAvoidanceGroupOtherHasObstacle = 0.75f;
-
-	UPROPERTY(EditAnywhere, meta = (Category = "Same Avoidance Group")) 
 	float m_sameAvoidanceGroupIsAttacking = 0.33f;
 
 	UPROPERTY(EditAnywhere, meta = (Category = "Same Avoidance Group")) 
 	float m_sameAvoidanceGroupIsConstructing = 0.33f;
+
+	UPROPERTY(EditAnywhere, meta = (Category = "Adjacent to Obstacles")) 
+	float m_sameTeamBothObstacle = 0.4f;
+
+	UPROPERTY(EditAnywhere, meta = (Category = "Adjacent to Obstacles")) 
+	float m_sameTeamHasObstacle = 0.0f;
+
+	UPROPERTY(EditAnywhere, meta = (Category = "Adjacent to Obstacles")) 
+	float m_sameTeamOtherHasObstacle = 1.0f;
 
 
 	void InstantiateComponentForEntity(ArgusEntity entity) const override;

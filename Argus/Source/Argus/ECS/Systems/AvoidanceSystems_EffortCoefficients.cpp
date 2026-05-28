@@ -31,6 +31,7 @@ float AvoidanceSystems::GetEffortCoefficientForEntityPair(const EffortCoefficien
 		ShouldReturnConstructionEffortCoefficient(settings, sourceEntityComponents, foundEntityTaskComponent, inSameAvoidanceGroup, effortCoefficient) ||
 		ShouldReturnResourceExtractionEffortCoefficient(settings, sourceEntityComponents, foundEntityTaskComponent, inSameAvoidanceGroup, effortCoefficient) ||
 		ShouldReturnCarrierEffortCoefficient(settings, sourceEntityComponents, foundEntity, foundEntityTaskComponent, effortCoefficient) ||
+		ShouldReturnObstacleEffortCoefficient(settings, sourceEntityComponents, foundEntity, sourceHasObstacles, effortCoefficient) ||
 		ShouldReturnTargetEffortCoefficient(settings, sourceEntityComponents, foundEntity, inSameAvoidanceGroup, effortCoefficient) ||
 		ShouldReturnStaticFlockingEffortCoefficient(settings, sourceEntityComponents, foundEntity, effortCoefficient) ||
 		ShouldReturnAvoidancePriorityEffortCoefficient(settings, sourceGroupingComponent, foundGroupingComponent, effortCoefficient) ||
@@ -41,15 +42,16 @@ float AvoidanceSystems::GetEffortCoefficientForEntityPair(const EffortCoefficien
 
 	if (inSameAvoidanceGroup)
 	{
-		return GetEffortCoefficientForAvoidanceGroupPair(settings, sourceEntityComponents, foundEntity, sourceGroupingComponent, foundGroupingComponent, sourceHasObstacles);
+		return GetEffortCoefficientForAvoidanceGroupPair(settings, sourceEntityComponents, foundEntity, sourceGroupingComponent, foundGroupingComponent);
 	}
 
 	return 0.5f;
 }
 
-float AvoidanceSystems::GetEffortCoefficientForAvoidanceGroupPair(const EffortCoefficientSettingsComponent* settings, const TransformSystemsArgs& sourceEntityComponents, ArgusEntity foundEntity, const AvoidanceGroupingComponent* sourceGroupComponent, const AvoidanceGroupingComponent* foundGroupComponent, bool sourceHasObstacles)
+float AvoidanceSystems::GetEffortCoefficientForAvoidanceGroupPair(const EffortCoefficientSettingsComponent* settings, const TransformSystemsArgs& sourceEntityComponents, ArgusEntity foundEntity, const AvoidanceGroupingComponent* sourceGroupComponent, const AvoidanceGroupingComponent* foundGroupComponent)
 {
 	ARGUS_RETURN_ON_NULL_BOOL(settings, ArgusECSLog);
+	ARGUS_RETURN_ON_INVALID_ENTITY_VALUE(foundEntity, ArgusECSLog, 1.0f);
 	if (!sourceEntityComponents.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return 0.0f;
@@ -76,30 +78,13 @@ float AvoidanceSystems::GetEffortCoefficientForAvoidanceGroupPair(const EffortCo
 		return 0.0f;
 	}
 
-	if (const NearbyObstaclesComponent* foundNearbyObstacles = foundEntity.GetComponent<NearbyObstaclesComponent>())
-	{
-		const bool foundHasObstacles = foundNearbyObstacles->m_obstacleIndicies.AnyObstacleInidiciesInAvoidanceRange();
-		if (sourceHasObstacles)
-		{
-			if (foundHasObstacles)
-			{
-				return settings->m_sameAvoidanceGroupBothObstacle;
-			}
-			return settings->m_sameAvoidanceGroupHasObstacle;
-		}
-
-		if (foundHasObstacles)
-		{
-			return settings->m_sameAvoidanceGroupOtherHasObstacle;
-		}
-	}
-
 	return settings->m_sameAvoidanceGroupBase;
 }
 
 bool AvoidanceSystems::ShouldReturnMovabilityEffortCoefficient(const EffortCoefficientSettingsComponent* settings, const TransformSystemsArgs& sourceEntityComponents, ArgusEntity foundEntity, float& coefficient)
 {
 	ARGUS_RETURN_ON_NULL_BOOL(settings, ArgusECSLog);
+	ARGUS_RETURN_ON_INVALID_ENTITY_VALUE(foundEntity, ArgusECSLog, false);
 	if (!foundEntity.IsMoveable())
 	{
 		coefficient = 1.0f;
@@ -159,6 +144,7 @@ bool AvoidanceSystems::ShouldReturnCarrierEffortCoefficient(const EffortCoeffici
 {
 	ARGUS_RETURN_ON_NULL_BOOL(settings, ArgusECSLog);
 	ARGUS_RETURN_ON_NULL_BOOL(foundEntityTaskComponent, ArgusECSLog);
+	ARGUS_RETURN_ON_INVALID_ENTITY_VALUE(foundEntity, ArgusECSLog, false);
 	if (!sourceEntityComponents.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return false;
@@ -196,6 +182,7 @@ bool AvoidanceSystems::ShouldReturnCarrierEffortCoefficient(const EffortCoeffici
 bool AvoidanceSystems::ShouldReturnTargetEffortCoefficient(const EffortCoefficientSettingsComponent* settings, const TransformSystemsArgs& sourceEntityComponents, ArgusEntity foundEntity, bool inSameAvoidanceGroup, float& coefficient)
 {
 	ARGUS_RETURN_ON_NULL_BOOL(settings, ArgusECSLog);
+	ARGUS_RETURN_ON_INVALID_ENTITY_VALUE(foundEntity, ArgusECSLog, false);
 	if (!sourceEntityComponents.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return false;
@@ -252,6 +239,7 @@ bool AvoidanceSystems::ShouldReturnMovementTaskEffortCoefficient(const EffortCoe
 {
 	ARGUS_RETURN_ON_NULL_BOOL(settings, ArgusECSLog);
 	ARGUS_RETURN_ON_NULL_BOOL(foundEntityTaskComponent, ArgusECSLog);
+	ARGUS_RETURN_ON_INVALID_ENTITY_VALUE(foundEntity, ArgusECSLog, false);
 	if (!sourceEntityComponents.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return false;
@@ -298,6 +286,7 @@ bool AvoidanceSystems::ShouldReturnResourceExtractionEffortCoefficient(const Eff
 bool AvoidanceSystems::ShouldReturnStaticFlockingEffortCoefficient(const EffortCoefficientSettingsComponent* settings, const TransformSystemsArgs& sourceEntityComponents, ArgusEntity foundEntity, float& coefficient)
 {
 	ARGUS_RETURN_ON_NULL_BOOL(settings, ArgusECSLog);
+	ARGUS_RETURN_ON_INVALID_ENTITY_VALUE(foundEntity, ArgusECSLog, false);
 	if (!sourceEntityComponents.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return false;
@@ -354,4 +343,47 @@ bool AvoidanceSystems::ShouldReturnStaticFlockingEffortCoefficient(const EffortC
 	const float targetDistSquared = FVector::DistSquared2D(foundTransformComponent->m_location, foundEntity.GetCurrentTargetLocation());
 	coefficient = sourceDistSquared > targetDistSquared ? 1.0f : 0.0f;
 	return true;
+}
+
+bool AvoidanceSystems::ShouldReturnObstacleEffortCoefficient(const EffortCoefficientSettingsComponent* settings, const TransformSystemsArgs& sourceEntityComponents, ArgusEntity foundEntity, bool sourceHasObstacles, float& coefficient)
+{
+	ARGUS_RETURN_ON_NULL_BOOL(settings, ArgusECSLog);
+	ARGUS_RETURN_ON_INVALID_ENTITY_VALUE(foundEntity, ArgusECSLog, false);
+	if (!sourceEntityComponents.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return false;
+	}
+
+	if (!sourceEntityComponents.m_entity.IsOnSameTeamAsOtherEntity(foundEntity))
+	{
+		return false;
+	}
+
+	const NearbyObstaclesComponent* foundNearbyObstacles = foundEntity.GetComponent<NearbyObstaclesComponent>();
+	if (!foundNearbyObstacles)
+	{
+		return false;
+	}
+
+	const bool foundHasObstacles = foundNearbyObstacles->m_obstacleIndicies.AnyObstacleInidiciesInAvoidanceRange();
+	if (sourceHasObstacles)
+	{
+		if (foundHasObstacles)
+		{
+			coefficient = settings->m_sameTeamBothObstacle;
+		}
+		else
+		{
+			coefficient = settings->m_sameTeamHasObstacle;
+		}
+		return true;
+	}
+
+	if (foundHasObstacles)
+	{
+		coefficient = settings->m_sameTeamOtherHasObstacle;
+		return true;
+	}
+
+	return false;
 }

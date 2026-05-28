@@ -660,23 +660,32 @@ FVector2D AvoidanceSystems::GetDesiredVelocity(const TransformSystemsArgs& compo
 		return flockingVelocity.IsNearlyZero() ? FVector2D::ZeroVector : ArgusMath::ToCartesianVector2(flockingVelocity.GetSafeNormal() * components.m_velocityComponent->m_desiredSpeedUnitsPerSecond);
 	}
 
-	FVector desiredDirection = GetDesiredDirection(components, isInRangeOfObstacles);
+	const GlobalSettingsComponent* settings = GlobalSettingsComponent::Get();
+	ARGUS_RETURN_ON_NULL_VALUE(settings, ArgusECSLog, FVector2D::ZeroVector);
+
+	FVector desiredDirection = GetDesiredDirection(components, isInRangeOfObstacles, settings);
 	if (desiredDirection.IsNearlyZero())
 	{
 		return FVector2D::ZeroVector;
 	}
 
-	const GlobalSettingsComponent* settings = GlobalSettingsComponent::Get();
-	ARGUS_RETURN_ON_NULL_VALUE(settings, ArgusECSLog, FVector2D::ZeroVector);
-
-	FVector2D desiredDirection2D = (FVector2D(desiredDirection).GetSafeNormal() * (1.0f - settings->m_flockingVelocityInfluence)) + (flockingVelocity.GetSafeNormal() * settings->m_flockingVelocityInfluence);
+	FVector2D desiredDirection2D;
+	if (isInRangeOfObstacles)
+	{
+		desiredDirection2D = FVector2D(desiredDirection);
+	}
+	else
+	{
+		desiredDirection2D = (FVector2D(desiredDirection).GetSafeNormal() * (1.0f - settings->m_flockingVelocityInfluence)) + (flockingVelocity.GetSafeNormal() * settings->m_flockingVelocityInfluence);
+	}
 	desiredDirection2D.Normalize();
 
 	return ArgusMath::ToCartesianVector2(desiredDirection2D * components.m_velocityComponent->m_desiredSpeedUnitsPerSecond);
 }
 
-FVector AvoidanceSystems::GetDesiredDirection(const TransformSystemsArgs& components, bool isInRangeOfObstacles)
+FVector AvoidanceSystems::GetDesiredDirection(const TransformSystemsArgs& components, bool isInRangeOfObstacles, const GlobalSettingsComponent* settings)
 {
+	ARGUS_RETURN_ON_NULL_VALUE(settings, ArgusECSLog, FVector::ZeroVector);
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return FVector::ZeroVector;
@@ -712,9 +721,12 @@ FVector AvoidanceSystems::GetDesiredDirection(const TransformSystemsArgs& compon
 		}
 
 		// In this case, the desired velocity of the entity should be the closes point on the line from last waypoint to next waypoint.
-		const FVector segment = groupLeaderNavigationComponent->m_navigationPoints[lastPointIndex + 1] - groupLeaderNavigationComponent->m_navigationPoints[lastPointIndex];
-		const FVector segmentToProject = components.m_transformComponent->m_location - groupLeaderNavigationComponent->m_navigationPoints[lastPointIndex];
-		return (segmentToProject.ProjectOnTo(segment) + (segment.GetSafeNormal() * components.m_transformComponent->m_radius));
+		const FVector originalDirection = (groupLeaderNavigationComponent->m_navigationPoints[lastPointIndex + 1] - groupLeaderNavigationComponent->m_navigationPoints[lastPointIndex]).GetSafeNormal();
+		const FVector toCurrent = components.m_transformComponent->m_location - groupLeaderNavigationComponent->m_navigationPoints[lastPointIndex];
+		const FVector projection = toCurrent.ProjectOnToNormal(originalDirection);
+		const FVector toProjection = ((groupLeaderNavigationComponent->m_navigationPoints[lastPointIndex] + projection) - components.m_transformComponent->m_location).GetSafeNormal();
+
+		return (originalDirection * settings->m_avoidanceObstacleLargeDesiredDirectionInfluence) + (toProjection * settings->m_avoidanceObstacleSmallDesiredDirectionInfluence);
 	}
 
 	if (!groupLeaderNavigationComponent->HasValidNextGroupIndex())

@@ -21,6 +21,12 @@ public:
 	UPROPERTY(EditDefaultsOnly, meta = (Category = "Avoidance")) 
 	float m_maxAvoidanceObstaclePointHeightDifference = 50.0f;
 
+	UPROPERTY(EditDefaultsOnly, meta = (Category = "Avoidance")) 
+	float m_avoidanceObstacleLargeDesiredDirectionInfluence = 1.0f;
+
+	UPROPERTY(EditDefaultsOnly, meta = (Category = "Avoidance")) 
+	float m_avoidanceObstacleSmallDesiredDirectionInfluence = 0.25f;
+
 	UPROPERTY(EditDefaultsOnly, meta = (Category = "Flocking")) 
 	float m_flockingVelocityInfluence = 0.3f;
 

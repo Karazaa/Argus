@@ -15,11 +15,11 @@
 void EffortCoefficientSettingsComponent::Reset()
 {
 	m_sameAvoidanceGroupBase = 0.5f;
-	m_sameAvoidanceGroupBothObstacle = 0.3f;
-	m_sameAvoidanceGroupHasObstacle = 0.0f;
-	m_sameAvoidanceGroupOtherHasObstacle = 0.75f;
 	m_sameAvoidanceGroupIsAttacking = 0.33f;
 	m_sameAvoidanceGroupIsConstructing = 0.33f;
+	m_sameTeamBothObstacle = 0.4f;
+	m_sameTeamHasObstacle = 0.0f;
+	m_sameTeamOtherHasObstacle = 1.0f;
 }
 
 void EffortCoefficientSettingsComponent::Serialize(FArchive& archive)
@@ -41,18 +41,6 @@ void EffortCoefficientSettingsComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_sameAvoidanceGroupBase);
 		ImGui::TableNextColumn();
-		ImGui::Text("m_sameAvoidanceGroupBothObstacle");
-		ImGui::TableNextColumn();
-		ImGui::Text("%.2f", m_sameAvoidanceGroupBothObstacle);
-		ImGui::TableNextColumn();
-		ImGui::Text("m_sameAvoidanceGroupHasObstacle");
-		ImGui::TableNextColumn();
-		ImGui::Text("%.2f", m_sameAvoidanceGroupHasObstacle);
-		ImGui::TableNextColumn();
-		ImGui::Text("m_sameAvoidanceGroupOtherHasObstacle");
-		ImGui::TableNextColumn();
-		ImGui::Text("%.2f", m_sameAvoidanceGroupOtherHasObstacle);
-		ImGui::TableNextColumn();
 		ImGui::Text("m_sameAvoidanceGroupIsAttacking");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_sameAvoidanceGroupIsAttacking);
@@ -60,6 +48,18 @@ void EffortCoefficientSettingsComponent::DrawComponentDebug() const
 		ImGui::Text("m_sameAvoidanceGroupIsConstructing");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_sameAvoidanceGroupIsConstructing);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_sameTeamBothObstacle");
+		ImGui::TableNextColumn();
+		ImGui::Text("%.2f", m_sameTeamBothObstacle);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_sameTeamHasObstacle");
+		ImGui::TableNextColumn();
+		ImGui::Text("%.2f", m_sameTeamHasObstacle);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_sameTeamOtherHasObstacle");
+		ImGui::TableNextColumn();
+		ImGui::Text("%.2f", m_sameTeamOtherHasObstacle);
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING
