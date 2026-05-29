@@ -345,23 +345,17 @@ void ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
 			FormatImGuiArrayField(avoidanceRangeName, "", outParsedVariableContents, FormatImGuiIntField);
 
+			std::string groupExitRangeName = std::vformat("{}.GetEntityIdsInGroupExitRange()", std::make_format_args(parsedVariableData[i].m_varName));
+			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
+			outParsedVariableContents.push_back(std::vformat("\t\tImGui::Text(\"{}\");", std::make_format_args(groupExitRangeName)));
+			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
+			FormatImGuiArrayField(groupExitRangeName, "", outParsedVariableContents, FormatImGuiIntField);
+
 			std::string sightRangeName = std::vformat("{}.GetEntityIdsInSightRange()", std::make_format_args(parsedVariableData[i].m_varName));
 			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
 			outParsedVariableContents.push_back(std::vformat("\t\tImGui::Text(\"{}\");", std::make_format_args(sightRangeName)));
 			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
 			FormatImGuiArrayField(sightRangeName, "", outParsedVariableContents, FormatImGuiIntField);
-
-			std::string rangedRangeName = std::vformat("{}.GetEntityIdsInRangedRange()", std::make_format_args(parsedVariableData[i].m_varName));
-			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
-			outParsedVariableContents.push_back(std::vformat("\t\tImGui::Text(\"{}\");", std::make_format_args(rangedRangeName)));
-			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
-			FormatImGuiArrayField(rangedRangeName, "", outParsedVariableContents, FormatImGuiIntField);
-
-			std::string meleeRangeName = std::vformat("{}.GetEntityIdsInMeleeRange()", std::make_format_args(parsedVariableData[i].m_varName));
-			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
-			outParsedVariableContents.push_back(std::vformat("\t\tImGui::Text(\"{}\");", std::make_format_args(meleeRangeName)));
-			outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
-			FormatImGuiArrayField(meleeRangeName, "", outParsedVariableContents, FormatImGuiIntField);
 
 			continue;
 		}

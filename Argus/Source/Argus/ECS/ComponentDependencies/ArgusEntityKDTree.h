@@ -31,14 +31,12 @@ struct ArgusEntityKDTreeNode
 
 struct ArgusEntityKDTreeQueryRangeThresholds
 {
-	ArgusEntityKDTreeQueryRangeThresholds(float rangedRangeThreshold, float meleeRangeThreshold, float avoidanceRangeThreshold, uint16 seenByEntityId) :
-		m_rangedRangeThresholdSquared(rangedRangeThreshold * rangedRangeThreshold),
-		m_meleeRangeThresholdSquared(meleeRangeThreshold * meleeRangeThreshold),
+	ArgusEntityKDTreeQueryRangeThresholds(float groupExitRangeThreshold, float avoidanceRangeThreshold, uint16 seenByEntityId) :
+		m_groupExitRangeThresholdSquared(groupExitRangeThreshold * groupExitRangeThreshold),
 		m_avoidanceRangeThresholdSquared(avoidanceRangeThreshold * avoidanceRangeThreshold),
 		m_seenByEntityId(seenByEntityId){}
 
-	float m_rangedRangeThresholdSquared = 0.0f;
-	float m_meleeRangeThresholdSquared = 0.0f;
+	float m_groupExitRangeThresholdSquared = 0.0f;
 	float m_avoidanceRangeThresholdSquared = 0.0f;
 	uint16 m_seenByEntityId = ArgusECSConstants::k_maxEntities;
 };
@@ -51,14 +49,12 @@ public:
 	void ResetAll();
 	bool FoundAny() const;
 	const TArray<uint16, ArgusContainerAllocator<20u> >& GetEntityIdsInSightRange() const { return m_entityIdsWithinSightRange; }
-	const TArray<uint16, ArgusContainerAllocator<20u> >& GetEntityIdsInRangedRange() const { return m_entityIdsWithinRangedRange; }
-	const TArray<uint16, ArgusContainerAllocator<10u> >& GetEntityIdsInMeleeRange() const { return m_entityIdsWithinMeleeRange; }
+	const TArray<uint16, ArgusContainerAllocator<10u> >& GetEntityIdsInGroupExitRange() const { return m_entityIdsWithinGroupExitRange; }
 	const TArray<uint16, ArgusContainerAllocator<10u> >& GetEntityIdsInAvoidanceRange() const { return m_entityIdsWithinAvoidanceRange; }
 
 private:
 	TArray<uint16, ArgusContainerAllocator<20u> > m_entityIdsWithinSightRange;
-	TArray<uint16, ArgusContainerAllocator<20u> > m_entityIdsWithinRangedRange;
-	TArray<uint16, ArgusContainerAllocator<10u> > m_entityIdsWithinMeleeRange;
+	TArray<uint16, ArgusContainerAllocator<10u> > m_entityIdsWithinGroupExitRange;
 	TArray<uint16, ArgusContainerAllocator<10u> > m_entityIdsWithinAvoidanceRange;
 };
 

@@ -83,7 +83,8 @@ void SpatialPartitioningSystems::CacheAdjacentEntityIds(const SpatialPartitionin
 			avoidanceGroupingComponent->m_entityIdsInGroup.Reset();
 		}
 
-		const float adjacentEntityRange = AvoidanceSystems::GetEntityAvoidanceRange(entity);
+		const float adjacentEntityRange = AvoidanceSystems::GetAvoidanceRange(entity, AvoidanceRange::Entity);
+		const float groupExitRange = AvoidanceSystems::GetAvoidanceRange(entity, AvoidanceRange::GroupExit);
 
 		const TFunction<bool(const ArgusEntityKDTreeNode*)> queryFilter = [entity](const ArgusEntityKDTreeNode* entityNode)
 		{
@@ -102,23 +103,20 @@ void SpatialPartitioningSystems::CacheAdjacentEntityIds(const SpatialPartitionin
 			return true;
 		};
 
-		float meleeRange = 0.0f;
-		float rangedRange = 0.0f;
 		float sightRange = adjacentEntityRange;
 		if (const TargetingComponent* targetingComponent = entity.GetComponent<TargetingComponent>())
 		{
-			meleeRange = targetingComponent->m_meleeRange;
-			rangedRange = targetingComponent->m_rangedRange;
 			sightRange = targetingComponent->m_sightRange;
 		}
-		ArgusEntityKDTreeQueryRangeThresholds queryThresholds = ArgusEntityKDTreeQueryRangeThresholds(rangedRange, meleeRange, adjacentEntityRange, entity.GetId());
+
+		ArgusEntityKDTreeQueryRangeThresholds queryThresholds = ArgusEntityKDTreeQueryRangeThresholds(groupExitRange, adjacentEntityRange, entity.GetId());
 		spatialPartitioningComponent->m_argusEntityKDTree.FindOtherArgusEntityIdsWithinRangeOfArgusEntity(nearbyEntitiesComponent->m_nearbyEntities, queryThresholds, entity, sightRange, queryFilter);
 		spatialPartitioningComponent->m_flyingArgusEntityKDTree.FindOtherArgusEntityIdsWithinRangeOfArgusEntity(nearbyEntitiesComponent->m_nearbyFlyingEntities, queryThresholds, entity, sightRange, queryFilter);
 		if (NearbyObstaclesComponent* nearbyObstaclesComponent = entity.GetComponent<NearbyObstaclesComponent>())
 		{
 			// TODO JAMES: Gate updates by whether or not the entity is capable of moving?
 			nearbyObstaclesComponent->m_obstacleIndicies.ResetAll();
-			ObstaclePointKDTreeQueryRangeThresholds obstacleQueryThresholds = ObstaclePointKDTreeQueryRangeThresholds(AvoidanceSystems::GetObstacleAvoidanceRange(entity));
+			ObstaclePointKDTreeQueryRangeThresholds obstacleQueryThresholds = ObstaclePointKDTreeQueryRangeThresholds(AvoidanceSystems::GetAvoidanceRange(entity, AvoidanceRange::Obstacle));
 			spatialPartitioningComponent->m_obstaclePointKDTree.FindObstacleIndiciesWithinRangeOfLocation(nearbyObstaclesComponent->m_obstacleIndicies, obstacleQueryThresholds, ArgusMath::ToCartesianVector(transformComponent->m_location), sightRange);
 		}
 	});
@@ -290,7 +288,7 @@ void SpatialPartitioningSystems::CalculateAvoidanceObstacles(SpatialPartitioning
 		}
 
 		nearbyObstaclesComponent->m_obstacleIndicies.ResetAll();
-		ObstaclePointKDTreeQueryRangeThresholds thresholds = ObstaclePointKDTreeQueryRangeThresholds(AvoidanceSystems::GetObstacleAvoidanceRange(entity));
+		ObstaclePointKDTreeQueryRangeThresholds thresholds = ObstaclePointKDTreeQueryRangeThresholds(AvoidanceSystems::GetAvoidanceRange(entity, AvoidanceRange::Obstacle));
 		spatialPartitioningComponent->m_obstaclePointKDTree.FindObstacleIndiciesWithinRangeOfLocation(nearbyObstaclesComponent->m_obstacleIndicies, thresholds, ArgusMath::ToCartesianVector(transformComponent->m_location), targetingComponent->m_sightRange);
 	});
 }

@@ -43,20 +43,6 @@ void TaskSystems::ProcessIdleEntity(const TaskSystemsArgs& components)
 		return;
 	}
 
-	for (int32 i = 0; i < components.m_nearbyEntitiesComponent->m_nearbyEntities.GetEntityIdsInMeleeRange().Num(); ++i)
-	{
-		if (ProcessDispatchingForEntityPair(components, components.m_nearbyEntitiesComponent->m_nearbyEntities.GetEntityIdsInMeleeRange()[i]))
-		{
-			return;
-		}
-	}
-	for (int32 i = 0; i < components.m_nearbyEntitiesComponent->m_nearbyEntities.GetEntityIdsInRangedRange().Num(); ++i)
-	{
-		if (ProcessDispatchingForEntityPair(components, components.m_nearbyEntitiesComponent->m_nearbyEntities.GetEntityIdsInRangedRange()[i]))
-		{
-			return;
-		}
-	}
 	for (int32 i = 0; i < components.m_nearbyEntitiesComponent->m_nearbyEntities.GetEntityIdsInSightRange().Num(); ++i)
 	{
 		if (ProcessDispatchingForEntityPair(components, components.m_nearbyEntitiesComponent->m_nearbyEntities.GetEntityIdsInSightRange()[i]))

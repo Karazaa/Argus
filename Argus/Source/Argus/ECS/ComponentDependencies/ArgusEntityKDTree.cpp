@@ -100,53 +100,28 @@ void ArgusEntityKDTreeRangeOutput::Add(const ArgusEntityKDTreeNode* nodeToAdd, c
 		m_entityIdsWithinAvoidanceRange.Add(entityId);
 	}
 
-	if (distFromTargetSquared < thresholds.m_meleeRangeThresholdSquared)
+	if (distFromTargetSquared < thresholds.m_groupExitRangeThresholdSquared)
 	{
-		m_entityIdsWithinMeleeRange.Add(entityId);
+		m_entityIdsWithinGroupExitRange.Add(entityId);
 	}
-	else if (distFromTargetSquared < thresholds.m_rangedRangeThresholdSquared)
-	{
-		m_entityIdsWithinRangedRange.Add(entityId);
-	}
-	else
-	{
-		m_entityIdsWithinSightRange.Add(entityId);
-	}
+
+	m_entityIdsWithinSightRange.Add(entityId);
 }
 
 void ArgusEntityKDTreeRangeOutput::ConsolidateInArray(TArray<uint16>& allEntities)
 {
-	const int32 totalSize = m_entityIdsWithinSightRange.Num() + m_entityIdsWithinRangedRange.Num() + m_entityIdsWithinMeleeRange.Num();
-	allEntities.SetNumZeroed(totalSize);
-	int32 counter = 0u;
-	for (int32 i = 0; i < m_entityIdsWithinMeleeRange.Num(); ++i)
-	{
-		allEntities[counter] = m_entityIdsWithinMeleeRange[i];
-		counter++;
-	}
-	for (int32 i = 0; i < m_entityIdsWithinRangedRange.Num(); ++i)
-	{
-		allEntities[counter] = m_entityIdsWithinRangedRange[i];
-		counter++;
-	}
-	for (int32 i = 0; i < m_entityIdsWithinSightRange.Num(); ++i)
-	{
-		allEntities[counter] = m_entityIdsWithinSightRange[i];
-		counter++;
-	}
+	allEntities = m_entityIdsWithinSightRange;
 }
 
 void ArgusEntityKDTreeRangeOutput::ResetAll()
 {
 	m_entityIdsWithinAvoidanceRange.Reset();
-	m_entityIdsWithinMeleeRange.Reset();
-	m_entityIdsWithinRangedRange.Reset();
 	m_entityIdsWithinSightRange.Reset();
 }
 
 bool ArgusEntityKDTreeRangeOutput::FoundAny() const
 {
-	return (m_entityIdsWithinSightRange.Num() + m_entityIdsWithinRangedRange.Num() + m_entityIdsWithinMeleeRange.Num()) > 0;
+	return m_entityIdsWithinSightRange.IsEmpty();
 }
 
 void ArgusEntityKDTree::ErrorOnInvalidArgusEntity(const WIDECHAR* functionName)
@@ -375,7 +350,7 @@ bool ArgusEntityKDTree::FindArgusEntityIdsWithinRangeOfLocation(TArray<uint16>& 
 bool ArgusEntityKDTree::FindArgusEntityIdsWithinRangeOfLocation(TArray<uint16>& outNearbyArgusEntityIds, const FVector& location, const float range, ArgusEntity entityToIgnore)
 {
 	m_queryScratchData.ResetAll();
-	FindArgusEntityIdsWithinRangeOfLocation(m_queryScratchData, ArgusEntityKDTreeQueryRangeThresholds(0.0f, 0.0f, range, ArgusECSConstants::k_maxEntities), location, range, entityToIgnore);
+	FindArgusEntityIdsWithinRangeOfLocation(m_queryScratchData, ArgusEntityKDTreeQueryRangeThresholds(0.0f, 0.0f, ArgusECSConstants::k_maxEntities), location, range, entityToIgnore);
 	m_queryScratchData.ConsolidateInArray(outNearbyArgusEntityIds);
 
 	return outNearbyArgusEntityIds.Num() > 0u;
@@ -410,7 +385,7 @@ bool ArgusEntityKDTree::FindArgusEntityIdsWithinRangeOfLocation(ArgusEntityKDTre
 bool ArgusEntityKDTree::FindArgusEntityIdsWithinRangeOfLocation(TArray<uint16>& outNearbyArgusEntityIds, const FVector& location, const float range, const TFunction<bool(const ArgusEntityKDTreeNode*)> queryFilterOverride)
 {
 	m_queryScratchData.ResetAll();
-	FindArgusEntityIdsWithinRangeOfLocation(m_queryScratchData, ArgusEntityKDTreeQueryRangeThresholds(0.0f, 0.0f, range, ArgusECSConstants::k_maxEntities), location, range, queryFilterOverride);
+	FindArgusEntityIdsWithinRangeOfLocation(m_queryScratchData, ArgusEntityKDTreeQueryRangeThresholds(0.0f, 0.0f, ArgusECSConstants::k_maxEntities), location, range, queryFilterOverride);
 	m_queryScratchData.ConsolidateInArray(outNearbyArgusEntityIds);
 
 	return outNearbyArgusEntityIds.Num() > 0u;
@@ -434,7 +409,7 @@ bool ArgusEntityKDTree::FindArgusEntityIdsWithinRangeOfLocation(ArgusEntityKDTre
 bool ArgusEntityKDTree::FindOtherArgusEntityIdsWithinRangeOfArgusEntity(TArray<uint16>& outNearbyArgusEntityIds, ArgusEntity entityToSearchAround, const float range, const TFunction<bool(const ArgusEntityKDTreeNode*)> queryFilterOverride)
 {
 	m_queryScratchData.ResetAll();
-	FindOtherArgusEntityIdsWithinRangeOfArgusEntity(m_queryScratchData, ArgusEntityKDTreeQueryRangeThresholds(0.0f, 0.0f, range, ArgusECSConstants::k_maxEntities), entityToSearchAround, range, queryFilterOverride);
+	FindOtherArgusEntityIdsWithinRangeOfArgusEntity(m_queryScratchData, ArgusEntityKDTreeQueryRangeThresholds(0.0f, 0.0f, ArgusECSConstants::k_maxEntities), entityToSearchAround, range, queryFilterOverride);
 	m_queryScratchData.ConsolidateInArray(outNearbyArgusEntityIds);
 
 	return outNearbyArgusEntityIds.Num() > 0u;
@@ -473,7 +448,7 @@ bool ArgusEntityKDTree::FindArgusEntityIdsWithinConvexPoly(TArray<uint16>& outNe
 	}
 
 	m_queryScratchData.ResetAll();
-	FindNodesWithinConvexPolyRecursive(m_queryScratchData, ArgusEntityKDTreeQueryRangeThresholds(0.0f, 0.0f, 0.0f, ArgusECSConstants::k_maxEntities), m_rootNode, convexPolygonPoints, nullptr, 0u);
+	FindNodesWithinConvexPolyRecursive(m_queryScratchData, ArgusEntityKDTreeQueryRangeThresholds(0.0f, 0.0f, ArgusECSConstants::k_maxEntities), m_rootNode, convexPolygonPoints, nullptr, 0u);
 	m_queryScratchData.ConsolidateInArray(outNearbyArgusEntityIds);
 
 	return outNearbyArgusEntityIds.Num() > 0;
