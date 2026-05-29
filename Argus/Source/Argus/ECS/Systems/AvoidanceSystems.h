@@ -5,6 +5,13 @@
 #include "ComponentDependencies/ObstaclePoint.h"
 #include "SystemArgumentDefinitions/TransformSystemsArgs.h"
 
+enum class AvoidanceRange
+{
+	Entity,
+	Obstacle,
+	GroupExit
+};
+
 class AvoidanceSystems
 {
 public:
@@ -17,8 +24,7 @@ public:
 	static TOptional<FVector>	GetAvoidanceGroupDestinationLocation(const TransformSystemsArgs& components);
 	static TOptional<FVector>	GetAvoidanceGroupSourceLocation(const TransformSystemsArgs& components);
 	static FVector2D			GetFlockingVelocity(const TransformSystemsArgs& components);
-	static float				GetEntityAvoidanceRange(ArgusEntity entity);
-	static float				GetObstacleAvoidanceRange(ArgusEntity entity);
+	static float				GetAvoidanceRange(ArgusEntity entity, AvoidanceRange avoidanceRange);
 
 	template<typename Function>
 	static void IterateEntitiesInAvoidanceGroup(ArgusEntity entity, Function&& function)

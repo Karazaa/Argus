@@ -134,6 +134,7 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 		params.m_sourceEntityLocation3D.Z += ArgusECSConstants::k_debugDrawHeightAdjustment;
 		DrawDebugCircle(worldPointer, params.m_sourceEntityLocation3D, params.m_adjacentObstacleRange, 20, FColor::Orange, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth, FVector::RightVector, FVector::ForwardVector, false);
 		DrawDebugCircle(worldPointer, params.m_sourceEntityLocation3D, params.m_adjacentEntityRange, 20, FColor::Yellow, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth, FVector::RightVector, FVector::ForwardVector, false);
+		DrawDebugCircle(worldPointer, params.m_sourceEntityLocation3D, GetAvoidanceRange(components.m_entity, AvoidanceRange::GroupExit), 20, FColor::Emerald, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth, FVector::RightVector, FVector::ForwardVector, false);
 		DrawORCADebugLines(worldPointer, params, calculatedORCALines, false, numStaticObstacles);
 		DrawDebugLine(worldPointer, params.m_sourceEntityLocation3D, params.m_sourceEntityLocation3D + FVector(ArgusMath::ToUnrealVector2(resultingVelocity), 0.0f), FColor::Magenta, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth);
 		DrawDebugLine(worldPointer, params.m_sourceEntityLocation3D, params.m_sourceEntityLocation3D + FVector(ArgusMath::ToUnrealVector2(desiredVelocity), 0.0f), FColor::Turquoise, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth);
@@ -278,19 +279,32 @@ FVector2D AvoidanceSystems::GetFlockingVelocity(const TransformSystemsArgs& comp
 	return FVector2D(FlockingSystems::GetFlockingPoint(ArgusEntity::RetrieveEntity(entityAvoidanceGroupComponent->m_groupId)) - components.m_transformComponent->m_location);
 }
 
-float AvoidanceSystems::GetEntityAvoidanceRange(ArgusEntity entity)
+float AvoidanceSystems::GetAvoidanceRange(ArgusEntity entity, AvoidanceRange avoidanceRange)
 {
-	float output;
-	float otherValue;
-	PopulateAvoidanceRanges(entity, output, otherValue);
-	return output;
-}
+	const GlobalSettingsComponent* settings = GlobalSettingsComponent::Get();
+	const TransformComponent* transformComponent = entity.GetComponent<TransformComponent>();
+	ARGUS_RETURN_ON_NULL_VALUE(settings, ArgusECSLog, 0.0f);
+	ARGUS_RETURN_ON_NULL_VALUE(transformComponent, ArgusECSLog, 0.0f);
 
-float AvoidanceSystems::GetObstacleAvoidanceRange(ArgusEntity entity)
-{
-	float output;
-	float otherValue;
-	PopulateAvoidanceRanges(entity, otherValue, output);
+	float output = transformComponent->m_radius;
+	if (const VelocityComponent* velocityComponent = entity.GetComponent<VelocityComponent>())
+	{
+		switch (avoidanceRange)
+		{
+			case AvoidanceRange::Entity:
+				output = velocityComponent->m_desiredSpeedUnitsPerSecond * settings->m_avoidanceEntityDetectionPredictionTime;
+				break;
+			case AvoidanceRange::Obstacle:
+				output = velocityComponent->m_desiredSpeedUnitsPerSecond * settings->m_avoidanceObstacleDetectionPredictionTime;
+				break;
+			case AvoidanceRange::GroupExit:
+				output = velocityComponent->m_desiredSpeedUnitsPerSecond * settings->m_avoidanceGroupExitPredictionTime;
+				break;
+			default:
+				break;
+		}
+	}
+
 	return output;
 }
 
