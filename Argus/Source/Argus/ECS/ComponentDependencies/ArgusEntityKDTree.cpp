@@ -351,7 +351,7 @@ bool ArgusEntityKDTree::FindArgusEntityIdsWithinRangeOfLocation(TArray<uint16>& 
 bool ArgusEntityKDTree::FindArgusEntityIdsWithinRangeOfLocation(TArray<uint16>& outNearbyArgusEntityIds, const FVector& location, const float range, ArgusEntity entityToIgnore)
 {
 	m_queryScratchData.ResetAll();
-	FindArgusEntityIdsWithinRangeOfLocation(m_queryScratchData, ArgusEntityKDTreeQueryRangeThresholds(0.0f, 0.0f, ArgusECSConstants::k_maxEntities), location, range, entityToIgnore);
+	FindArgusEntityIdsWithinRangeOfLocation(m_queryScratchData, ArgusEntityKDTreeQueryRangeThresholds(0.0f, 0.0f, 0.0f, ArgusECSConstants::k_maxEntities), location, range, entityToIgnore);
 	m_queryScratchData.ConsolidateInArray(outNearbyArgusEntityIds);
 
 	return outNearbyArgusEntityIds.Num() > 0u;
@@ -386,7 +386,7 @@ bool ArgusEntityKDTree::FindArgusEntityIdsWithinRangeOfLocation(ArgusEntityKDTre
 bool ArgusEntityKDTree::FindArgusEntityIdsWithinRangeOfLocation(TArray<uint16>& outNearbyArgusEntityIds, const FVector& location, const float range, const TFunction<bool(const ArgusEntityKDTreeNode*)> queryFilterOverride)
 {
 	m_queryScratchData.ResetAll();
-	FindArgusEntityIdsWithinRangeOfLocation(m_queryScratchData, ArgusEntityKDTreeQueryRangeThresholds(0.0f, 0.0f, ArgusECSConstants::k_maxEntities), location, range, queryFilterOverride);
+	FindArgusEntityIdsWithinRangeOfLocation(m_queryScratchData, ArgusEntityKDTreeQueryRangeThresholds(0.0f, 0.0f, 0.0f, ArgusECSConstants::k_maxEntities), location, range, queryFilterOverride);
 	m_queryScratchData.ConsolidateInArray(outNearbyArgusEntityIds);
 
 	return outNearbyArgusEntityIds.Num() > 0u;
@@ -410,7 +410,7 @@ bool ArgusEntityKDTree::FindArgusEntityIdsWithinRangeOfLocation(ArgusEntityKDTre
 bool ArgusEntityKDTree::FindOtherArgusEntityIdsWithinRangeOfArgusEntity(TArray<uint16>& outNearbyArgusEntityIds, ArgusEntity entityToSearchAround, const float range, const TFunction<bool(const ArgusEntityKDTreeNode*)> queryFilterOverride)
 {
 	m_queryScratchData.ResetAll();
-	FindOtherArgusEntityIdsWithinRangeOfArgusEntity(m_queryScratchData, ArgusEntityKDTreeQueryRangeThresholds(0.0f, 0.0f, ArgusECSConstants::k_maxEntities), entityToSearchAround, range, queryFilterOverride);
+	FindOtherArgusEntityIdsWithinRangeOfArgusEntity(m_queryScratchData, ArgusEntityKDTreeQueryRangeThresholds(0.0f, 0.0f, 0.0f, ArgusECSConstants::k_maxEntities), entityToSearchAround, range, queryFilterOverride);
 	m_queryScratchData.ConsolidateInArray(outNearbyArgusEntityIds);
 
 	return outNearbyArgusEntityIds.Num() > 0u;
@@ -449,7 +449,7 @@ bool ArgusEntityKDTree::FindArgusEntityIdsWithinConvexPoly(TArray<uint16>& outNe
 	}
 
 	m_queryScratchData.ResetAll();
-	FindNodesWithinConvexPolyRecursive(m_queryScratchData, ArgusEntityKDTreeQueryRangeThresholds(0.0f, 0.0f, ArgusECSConstants::k_maxEntities), m_rootNode, convexPolygonPoints, nullptr, 0u);
+	FindNodesWithinConvexPolyRecursive(m_queryScratchData, ArgusEntityKDTreeQueryRangeThresholds(0.0f, 0.0f, 0.0f, ArgusECSConstants::k_maxEntities), m_rootNode, convexPolygonPoints, nullptr, 0u);
 	m_queryScratchData.ConsolidateInArray(outNearbyArgusEntityIds);
 
 	return outNearbyArgusEntityIds.Num() > 0;

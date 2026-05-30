@@ -9,6 +9,7 @@ enum class AvoidanceRange
 {
 	Entity,
 	Obstacle,
+	GroupEnter,
 	GroupExit
 };
 
