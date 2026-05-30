@@ -17,6 +17,9 @@ struct GlobalSettingsComponent
 	float m_avoidanceObstacleDetectionPredictionTime = 0.75f;
 
 	ARGUS_COMP_PROPERTY(EditDefaultsOnly, meta = (Category = "Avoidance")) ARGUS_COMP_TRANSIENT
+	float m_avoidanceGroupEnterPredictionTime = 0.70f;
+
+	ARGUS_COMP_PROPERTY(EditDefaultsOnly, meta = (Category = "Avoidance")) ARGUS_COMP_TRANSIENT
 	float m_avoidanceGroupExitPredictionTime = 0.75f;
 
 	ARGUS_COMP_PROPERTY(EditDefaultsOnly, meta = (Category = "Avoidance")) ARGUS_COMP_TRANSIENT

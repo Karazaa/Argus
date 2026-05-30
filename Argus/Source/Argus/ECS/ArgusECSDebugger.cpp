@@ -19,6 +19,7 @@ bool ArgusECSDebugger::s_ignoreTeamRequirementsForSelectingEntities = false;
 bool ArgusECSDebugger::s_isTeamAIEnabled = true;
 bool ArgusECSDebugger::s_entityDebugToggles[ArgusECSConstants::k_maxEntities];
 bool ArgusECSDebugger::s_entityShowAvoidanceDebug[ArgusECSConstants::k_maxEntities];
+bool ArgusECSDebugger::s_entityShowGroupDebug[ArgusECSConstants::k_maxEntities];
 bool ArgusECSDebugger::s_entityShowNavigationDebug[ArgusECSConstants::k_maxEntities];
 bool ArgusECSDebugger::s_entityShowFlockingDebug[ArgusECSConstants::k_maxEntities];
 bool ArgusECSDebugger::s_teamEntityShowRevealedAreaDebug[sizeof(ETeam) * 8];
@@ -66,6 +67,11 @@ bool ArgusECSDebugger::ShouldShowAvoidanceDebugForEntity(uint16 entityId)
 	return s_entityShowAvoidanceDebug[entityId];
 }
 
+bool ArgusECSDebugger::ShouldShowGroupDebugForEntity(uint16 entityId)
+{
+	return s_entityShowGroupDebug[entityId];
+}
+
 bool ArgusECSDebugger::ShouldShowNavigationDebugForEntity(uint16 entityId)
 {
 	return s_entityShowNavigationDebug[entityId];
@@ -92,6 +98,7 @@ void ArgusECSDebugger::Serialize(FArchive& archive)
 	{
 		archive << s_entityDebugToggles[i];
 		archive << s_entityShowAvoidanceDebug[i];
+		archive << s_entityShowGroupDebug[i];
 		archive << s_entityShowNavigationDebug[i];
 		archive << s_entityShowFlockingDebug[i];
 	}
@@ -254,6 +261,7 @@ void ArgusECSDebugger::DrawEntityDockSpace()
 		if (!ArgusEntity::DoesEntityExist(i) || !s_entityDebugToggles[i])
 		{
 			s_entityShowAvoidanceDebug[i] = false;
+			s_entityShowGroupDebug[i] = false;
 			s_entityShowNavigationDebug[i] = false;
 			s_entityShowFlockingDebug[i] = false;
 			continue;
@@ -323,6 +331,7 @@ void ArgusECSDebugger::DrawWindowForEntity(uint16 entityId)
 	{
 		ImGui::Checkbox("Show Avoidance debug", &s_entityShowAvoidanceDebug[entityId]);
 		ImGui::SameLine();
+		ImGui::Checkbox("Show Group debug", &s_entityShowGroupDebug[entityId]);
 		ImGui::Checkbox("Show Navigation debug", &s_entityShowNavigationDebug[entityId]);
 		ImGui::SameLine();
 		ImGui::Checkbox("Show Flocking debug", &s_entityShowFlockingDebug[entityId]);

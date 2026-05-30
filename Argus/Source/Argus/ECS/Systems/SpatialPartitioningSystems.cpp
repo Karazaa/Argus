@@ -109,7 +109,7 @@ void SpatialPartitioningSystems::CacheAdjacentEntityIds(const SpatialPartitionin
 			sightRange = targetingComponent->m_sightRange;
 		}
 
-		ArgusEntityKDTreeQueryRangeThresholds queryThresholds = ArgusEntityKDTreeQueryRangeThresholds(groupExitRange, adjacentEntityRange, entity.GetId());
+		ArgusEntityKDTreeQueryRangeThresholds queryThresholds = ArgusEntityKDTreeQueryRangeThresholds(groupExitRange, adjacentEntityRange, transformComponent->m_radius, entity.GetId());
 		spatialPartitioningComponent->m_argusEntityKDTree.FindOtherArgusEntityIdsWithinRangeOfArgusEntity(nearbyEntitiesComponent->m_nearbyEntities, queryThresholds, entity, sightRange, queryFilter);
 		spatialPartitioningComponent->m_flyingArgusEntityKDTree.FindOtherArgusEntityIdsWithinRangeOfArgusEntity(nearbyEntitiesComponent->m_nearbyFlyingEntities, queryThresholds, entity, sightRange, queryFilter);
 		if (NearbyObstaclesComponent* nearbyObstaclesComponent = entity.GetComponent<NearbyObstaclesComponent>())
@@ -178,7 +178,7 @@ bool SpatialPartitioningSystems::FloodFillGroupRecursive(uint16 groupId, Avoidan
 	// If it's the same group, we don't need to do the range constraint
 	if (groupId != avoidanceGroupingComponent->m_previousGroupId)
 	{
-		const float range = AvoidanceSystems::GetAvoidanceRange(entity, AvoidanceRange::Entity);
+		const float range = AvoidanceSystems::GetAvoidanceRange(entity, AvoidanceRange::GroupEnter);
 		if (!entity.IsInRangeOfOtherEntity(groupLeaderEntity, range))
 		{
 			return false;

@@ -31,9 +31,9 @@ struct ArgusEntityKDTreeNode
 
 struct ArgusEntityKDTreeQueryRangeThresholds
 {
-	ArgusEntityKDTreeQueryRangeThresholds(float groupExitRangeThreshold, float avoidanceRangeThreshold, uint16 seenByEntityId) :
-		m_groupExitRangeThresholdSquared(groupExitRangeThreshold * groupExitRangeThreshold),
-		m_avoidanceRangeThresholdSquared(avoidanceRangeThreshold * avoidanceRangeThreshold),
+	ArgusEntityKDTreeQueryRangeThresholds(float groupExitRangeThreshold, float avoidanceRangeThreshold, float sourceRadius, uint16 seenByEntityId) :
+		m_groupExitRangeThresholdSquared(FMath::Square(groupExitRangeThreshold + sourceRadius)),
+		m_avoidanceRangeThresholdSquared(FMath::Square(avoidanceRangeThreshold + sourceRadius)),
 		m_seenByEntityId(seenByEntityId){}
 
 	float m_groupExitRangeThresholdSquared = 0.0f;

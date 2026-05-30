@@ -19,6 +19,9 @@ public:
 	float m_avoidanceObstacleDetectionPredictionTime = 0.75f;
 
 	UPROPERTY(EditDefaultsOnly, meta = (Category = "Avoidance")) 
+	float m_avoidanceGroupEnterPredictionTime = 0.70f;
+
+	UPROPERTY(EditDefaultsOnly, meta = (Category = "Avoidance")) 
 	float m_avoidanceGroupExitPredictionTime = 0.75f;
 
 	UPROPERTY(EditDefaultsOnly, meta = (Category = "Avoidance")) 
