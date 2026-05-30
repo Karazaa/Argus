@@ -718,7 +718,7 @@ FVector AvoidanceSystems::GetDesiredDirection(const TransformSystemsArgs& compon
 	}
 
 	ArgusEntity groupLeaderEntity = GetAvoidanceGroupLeader(components.m_entity);
-	if (!groupLeaderEntity || isInRangeOfObstacles)
+	if (!groupLeaderEntity)
 	{
 		if (components.m_navigationComponent->m_navigationPoints.Num() == 0u || !components.m_navigationComponent->HasValidNextIndex())
 		{
@@ -733,7 +733,7 @@ FVector AvoidanceSystems::GetDesiredDirection(const TransformSystemsArgs& compon
 	ARGUS_RETURN_ON_NULL_VALUE(groupLeaderGroupingComponent, ArgusECSLog, FVector::ZeroVector);
 	ARGUS_RETURN_ON_NULL_VALUE(groupLeaderNavigationComponent, ArgusECSLog, FVector::ZeroVector);
 
-	if (groupLeaderNavigationComponent->m_navigationPoints.Num() == 0u)
+	if (groupLeaderNavigationComponent->m_navigationPoints.Num() == 0u || !groupLeaderNavigationComponent->HasValidNextGroupIndex())
 	{
 		return FVector::ZeroVector;
 	}
@@ -747,17 +747,10 @@ FVector AvoidanceSystems::GetDesiredDirection(const TransformSystemsArgs& compon
 		}
 
 		// In this case, the desired velocity of the entity should be the closes point on the line from last waypoint to next waypoint.
-		const FVector originalDirection = (groupLeaderNavigationComponent->m_navigationPoints[lastPointIndex + 1] - groupLeaderNavigationComponent->m_navigationPoints[lastPointIndex]).GetSafeNormal();
-		const FVector toCurrent = components.m_transformComponent->m_location - groupLeaderNavigationComponent->m_navigationPoints[lastPointIndex];
-		const FVector projection = toCurrent.ProjectOnToNormal(originalDirection);
-		const FVector toProjection = ((groupLeaderNavigationComponent->m_navigationPoints[lastPointIndex] + projection) - components.m_transformComponent->m_location).GetSafeNormal();
+		const FVector originalDirection = (groupLeaderNavigationComponent->m_navigationPoints[groupLeaderNavigationComponent->m_groupLastPointIndex + 1] - groupLeaderGroupingComponent->m_groupAverageLocation).GetSafeNormal();
+		const FVector toTarget = (groupLeaderNavigationComponent->m_navigationPoints[lastPointIndex + 1] - components.m_transformComponent->m_location).GetSafeNormal();
 
-		return (originalDirection * settings->m_avoidanceObstacleLargeDesiredDirectionInfluence) + (toProjection * settings->m_avoidanceObstacleSmallDesiredDirectionInfluence);
-	}
-
-	if (!groupLeaderNavigationComponent->HasValidNextGroupIndex())
-	{
-		return FVector::ZeroVector;
+		return (originalDirection * settings->m_avoidanceObstacleLargeDesiredDirectionInfluence) + (toTarget * settings->m_avoidanceObstacleSmallDesiredDirectionInfluence);
 	}
 
 	return groupLeaderNavigationComponent->m_navigationPoints[groupLeaderNavigationComponent->m_groupLastPointIndex + 1] - groupLeaderGroupingComponent->m_groupAverageLocation;
