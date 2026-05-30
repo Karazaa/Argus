@@ -116,6 +116,7 @@ void ArgusEntityKDTreeRangeOutput::ConsolidateInArray(TArray<uint16>& allEntitie
 void ArgusEntityKDTreeRangeOutput::ResetAll()
 {
 	m_entityIdsWithinAvoidanceRange.Reset();
+	m_entityIdsWithinGroupExitRange.Reset();
 	m_entityIdsWithinSightRange.Reset();
 }
 

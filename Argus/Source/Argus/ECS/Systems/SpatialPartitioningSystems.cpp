@@ -140,7 +140,9 @@ bool SpatialPartitioningSystems::FloodFillGroupRecursive(uint16 groupId, Avoidan
 
 	ArgusEntity entity = ArgusEntity::RetrieveEntity(entityId);
 	ArgusEntity groupLeaderEntity = ArgusEntity::RetrieveEntity(groupId);
-	if (!entity || !groupLeaderEntity || !entity.IsMoveable())
+	ARGUS_RETURN_ON_INVALID_ENTITY_VALUE(entity, ArgusECSLog, false);
+	ARGUS_RETURN_ON_INVALID_ENTITY_VALUE(groupLeaderEntity, ArgusECSLog, false);
+	if (!entity.IsMoveable())
 	{
 		return false;
 	}
@@ -173,6 +175,16 @@ bool SpatialPartitioningSystems::FloodFillGroupRecursive(uint16 groupId, Avoidan
 		return false;
 	}
 
+	// If it's the same group, we don't need to do the range constraint
+	if (groupId != avoidanceGroupingComponent->m_previousGroupId)
+	{
+		const float range = AvoidanceSystems::GetAvoidanceRange(entity, AvoidanceRange::Entity);
+		if (!entity.IsInRangeOfOtherEntity(groupLeaderEntity, range))
+		{
+			return false;
+		}
+	}
+
 	avoidanceGroupingComponent->m_groupId = groupId;
 	averageLocation += transformComponent->m_location;
 	numberOfEntitiesInGroup += 1.0f;
@@ -183,9 +195,9 @@ bool SpatialPartitioningSystems::FloodFillGroupRecursive(uint16 groupId, Avoidan
 	}
 
 	const bool isGrounded = taskComponent->m_flightState == EFlightState::Grounded;
-	for (int32 i = 0; i < nearbyEntitiesComponent->GetNearbyEntities(!isGrounded).GetEntityIdsInAvoidanceRange().Num(); ++i)
+	for (int32 i = 0; i < nearbyEntitiesComponent->GetNearbyEntities(!isGrounded).GetEntityIdsInGroupExitRange().Num(); ++i)
 	{
-		FloodFillGroupRecursive(groupId, groupLeaderComponent, nearbyEntitiesComponent->GetNearbyEntities(!isGrounded).GetEntityIdsInAvoidanceRange()[i], averageLocation, numberOfEntitiesInGroup, numberOfStoppedEntities);
+		FloodFillGroupRecursive(groupId, groupLeaderComponent, nearbyEntitiesComponent->GetNearbyEntities(!isGrounded).GetEntityIdsInGroupExitRange()[i], averageLocation, numberOfEntitiesInGroup, numberOfStoppedEntities);
 	}
 
 	return groupId == entityId;
