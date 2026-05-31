@@ -36,22 +36,12 @@ bool ObstaclePointKDTreeNode::PassesRangeCheck(const FVector& targetLocation, fl
 	}
 
 	ArgusEntity singletonEntity = ArgusEntity::GetSingletonEntity();
-	if (!singletonEntity)
-	{
-		return false;
-	}
-
-	SpatialPartitioningComponent* spatialPartitioningComponent = singletonEntity.GetComponent<SpatialPartitioningComponent>();
-	if (!spatialPartitioningComponent)
-	{
-		return false;
-	}
+	ARGUS_RETURN_ON_INVALID_ENTITY_VALUE(singletonEntity, ArgusECSLog, false);
+	const SpatialPartitioningComponent* spatialPartitioningComponent = singletonEntity.GetComponent<SpatialPartitioningComponent>();
+	ARGUS_RETURN_ON_NULL_BOOL(spatialPartitioningComponent, ArgusECSLog);
 
 	nodeRangeSquared = FVector::DistSquared2D(GetLocation(), targetLocation);
-	if (nodeRangeSquared < rangeSquared)
-	{
-		return true;
-	}
+	bool output = nodeRangeSquared < rangeSquared;
 
 	const ObstaclePoint& next = spatialPartitioningComponent->m_obstacles[m_indicies.m_obstacleIndex].GetNext(m_indicies.m_obstaclePointIndex);
 
@@ -60,20 +50,20 @@ bool ObstaclePointKDTreeNode::PassesRangeCheck(const FVector& targetLocation, fl
 
 	if ((next.m_point - location2D).Dot(targetLocation2D - location2D) < 0.0f)
 	{
-		return false;
+		return output;
 	}
 
 	if ((location2D - next.m_point).Dot(targetLocation2D - next.m_point) < 0.0f)
 	{
-		return false;
+		return output;
 	}
 
 	const float amountLeftOfLine = ArgusMath::AmountLeftOf(location2D, next.m_point, targetLocation2D);
-	nodeRangeSquared = ArgusMath::SafeDivide(FMath::Square(amountLeftOfLine), FVector2D::DistSquared(location2D, next.m_point));
+	nodeRangeSquared = FMath::Square(ArgusMath::SafeDivide(amountLeftOfLine, FVector2D::Distance(location2D, next.m_point)));
 
-	const bool result = (nodeRangeSquared < rangeSquared);
+	output |= (nodeRangeSquared < rangeSquared);
 
-	return result;
+	return output;
 }
 
 float ObstaclePointKDTreeNode::GetValueForDimension(uint16 dimension) const
