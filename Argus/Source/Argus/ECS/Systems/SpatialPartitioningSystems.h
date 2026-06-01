@@ -25,7 +25,7 @@ private:
 	static void CacheAdjacentEntityIds(const SpatialPartitioningComponent* spatialPartitioningComponent);
 
 	static void CalculateAdjacentEntityGroups();
-	static bool FloodFillGroupRecursive(uint16 groupId, AvoidanceGroupingComponent* groupLeaderComponent, uint16 argusEntityId, FVector& currentPositionSum, float& numberOfEntitiesInGroup, uint16& numberOfStoppedEntities);
+	static bool FloodFillGroupRecursive(uint16 groupId, AvoidanceGroupingComponent* groupLeaderComponent, uint16 argusEntityId, uint16 lastArgusEntityId, FVector& currentPositionSum, float& numberOfEntitiesInGroup, uint16& numberOfStoppedEntities);
 	static void OnBecomeAvoidanceGroupLeader(ArgusEntity entity);
 	static void OnChangeAvoidanceGroups(ArgusEntity entity, AvoidanceGroupingComponent* groupingComponent);
 

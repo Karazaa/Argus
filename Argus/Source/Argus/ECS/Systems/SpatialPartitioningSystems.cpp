@@ -132,7 +132,7 @@ void SpatialPartitioningSystems::CalculateAdjacentEntityGroups()
 	});
 }
 
-bool SpatialPartitioningSystems::FloodFillGroupRecursive(uint16 groupId, AvoidanceGroupingComponent* groupLeaderComponent, uint16 entityId, FVector& averageLocation, float& numberOfEntitiesInGroup, uint16& numberOfStoppedEntities)
+bool SpatialPartitioningSystems::FloodFillGroupRecursive(uint16 groupId, AvoidanceGroupingComponent* groupLeaderComponent, uint16 entityId, uint16 lastArgusEntityId, FVector& averageLocation, float& numberOfEntitiesInGroup, uint16& numberOfStoppedEntities)
 {
 	ARGUS_TRACE(SpatialPartitioningSystems::FloodFillGroupRecursive);
 
@@ -179,7 +179,7 @@ bool SpatialPartitioningSystems::FloodFillGroupRecursive(uint16 groupId, Avoidan
 	if (groupId != avoidanceGroupingComponent->m_previousGroupId)
 	{
 		const float range = AvoidanceSystems::GetAvoidanceRange(entity, AvoidanceRange::GroupEnter);
-		if (!entity.IsInRangeOfOtherEntity(groupLeaderEntity, range))
+		if (!entity.IsInRangeOfOtherEntity(ArgusEntity::RetrieveEntity(lastArgusEntityId), range))
 		{
 			return false;
 		}
@@ -197,7 +197,7 @@ bool SpatialPartitioningSystems::FloodFillGroupRecursive(uint16 groupId, Avoidan
 	const bool isGrounded = taskComponent->m_flightState == EFlightState::Grounded;
 	for (int32 i = 0; i < nearbyEntitiesComponent->GetNearbyEntities(!isGrounded).GetEntityIdsInGroupExitRange().Num(); ++i)
 	{
-		FloodFillGroupRecursive(groupId, groupLeaderComponent, nearbyEntitiesComponent->GetNearbyEntities(!isGrounded).GetEntityIdsInGroupExitRange()[i], averageLocation, numberOfEntitiesInGroup, numberOfStoppedEntities);
+		FloodFillGroupRecursive(groupId, groupLeaderComponent, nearbyEntitiesComponent->GetNearbyEntities(!isGrounded).GetEntityIdsInGroupExitRange()[i], entityId, averageLocation, numberOfEntitiesInGroup, numberOfStoppedEntities);
 	}
 
 	return groupId == entityId;
@@ -468,7 +468,7 @@ void SpatialPartitioningSystems::CalculateAdjacentEntityGroupsForEntity(ArgusEnt
 		return;
 	}
 
-	if (FloodFillGroupRecursive(entity.GetId(), groupLeaderComponent, entity.GetId(), averageLocation, numberOfEntitiesInGroup, numberOfStoppedEntities))
+	if (FloodFillGroupRecursive(entity.GetId(), groupLeaderComponent, entity.GetId(), entity.GetId(), averageLocation, numberOfEntitiesInGroup, numberOfStoppedEntities))
 	{
 		groupLeaderComponent->m_groupAverageLocation = ArgusMath::SafeDivide(averageLocation, numberOfEntitiesInGroup);
 		groupLeaderComponent->m_numberOfIdleEntities = numberOfStoppedEntities;
