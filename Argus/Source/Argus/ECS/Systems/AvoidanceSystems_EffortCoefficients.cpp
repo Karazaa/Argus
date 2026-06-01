@@ -13,26 +13,20 @@ float AvoidanceSystems::GetEffortCoefficientForEntityPair(const EffortCoefficien
 	}
 
 	const TaskComponent* foundEntityTaskComponent = foundEntity.GetComponent<TaskComponent>();
-	const IdentityComponent* foundEntityIdentityComponent = foundEntity.GetComponent<IdentityComponent>();
-	const IdentityComponent* sourceEntityIdentityComponent = sourceEntityComponents.m_entity.GetComponent<IdentityComponent>();
-	if (!foundEntityTaskComponent || !foundEntityIdentityComponent || !sourceEntityIdentityComponent)
+	if (!foundEntityTaskComponent)
 	{
 		return 1.0f;
 	}
 
-	if (sourceEntityIdentityComponent->IsInTeamMask(foundEntityIdentityComponent->m_enemies))
-	{
-		return sourceEntityComponents.m_taskComponent->IsExecutingMoveTask() ? 1.0f : 0.0f;
-	}
-
 	float effortCoefficient = 0.5f;
-	if (ShouldReturnMovabilityEffortCoefficient(settings, sourceEntityComponents, foundEntity, effortCoefficient) ||
+	if (ShouldReturnTargetEffortCoefficient(settings, sourceEntityComponents, foundEntity, inSameAvoidanceGroup, effortCoefficient) || 
+		ShouldReturnMovabilityEffortCoefficient(settings, sourceEntityComponents, foundEntity, effortCoefficient) ||
+		ShouldReturnEnemyEffortCoefficient(settings, sourceEntityComponents, foundEntity, effortCoefficient) ||
 		ShouldReturnCombatEffortCoefficient(settings, sourceEntityComponents, foundEntityTaskComponent, inSameAvoidanceGroup, effortCoefficient) ||
 		ShouldReturnConstructionEffortCoefficient(settings, sourceEntityComponents, foundEntityTaskComponent, inSameAvoidanceGroup, effortCoefficient) ||
 		ShouldReturnResourceExtractionEffortCoefficient(settings, sourceEntityComponents, foundEntityTaskComponent, inSameAvoidanceGroup, effortCoefficient) ||
 		ShouldReturnCarrierEffortCoefficient(settings, sourceEntityComponents, foundEntity, foundEntityTaskComponent, effortCoefficient) ||
 		ShouldReturnObstacleEffortCoefficient(settings, sourceEntityComponents, foundEntity, sourceHasObstacles, effortCoefficient) ||
-		ShouldReturnTargetEffortCoefficient(settings, sourceEntityComponents, foundEntity, inSameAvoidanceGroup, effortCoefficient) ||
 		ShouldReturnStaticFlockingEffortCoefficient(settings, sourceEntityComponents, foundEntity, effortCoefficient) ||
 		ShouldReturnAvoidancePriorityEffortCoefficient(settings, sourceGroupingComponent, foundGroupingComponent, effortCoefficient) ||
 		ShouldReturnMovementTaskEffortCoefficient(settings, sourceEntityComponents, foundEntity, foundEntityTaskComponent, inSameAvoidanceGroup, effortCoefficient))
@@ -79,6 +73,31 @@ float AvoidanceSystems::GetEffortCoefficientForAvoidanceGroupPair(const EffortCo
 	}
 
 	return settings->m_sameAvoidanceGroupBase;
+}
+
+bool AvoidanceSystems::ShouldReturnEnemyEffortCoefficient(const EffortCoefficientSettingsComponent* settings, const TransformSystemsArgs& sourceEntityComponents, ArgusEntity foundEntity, float& coefficient)
+{
+	ARGUS_RETURN_ON_NULL_BOOL(settings, ArgusECSLog);
+	ARGUS_RETURN_ON_INVALID_ENTITY_VALUE(foundEntity, ArgusECSLog, false);
+	if (!sourceEntityComponents.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return false;
+	}
+
+	const IdentityComponent* foundEntityIdentityComponent = foundEntity.GetComponent<IdentityComponent>();
+	const IdentityComponent* sourceEntityIdentityComponent = sourceEntityComponents.m_entity.GetComponent<IdentityComponent>();
+	if (!foundEntityIdentityComponent || !sourceEntityIdentityComponent)
+	{
+		return false;
+	}
+
+	if (sourceEntityIdentityComponent->IsInTeamMask(foundEntityIdentityComponent->m_enemies))
+	{
+		coefficient = sourceEntityComponents.m_taskComponent->IsExecutingMoveTask() ? 1.0f : 0.0f;
+		return true;
+	}
+
+	return false;
 }
 
 bool AvoidanceSystems::ShouldReturnMovabilityEffortCoefficient(const EffortCoefficientSettingsComponent* settings, const TransformSystemsArgs& sourceEntityComponents, ArgusEntity foundEntity, float& coefficient)
