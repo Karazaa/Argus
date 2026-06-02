@@ -14,4 +14,5 @@ struct TransformSystemsArgs
 	VelocityComponent* m_velocityComponent = nullptr;
 	NavigationComponent* m_navigationComponent = nullptr;
 	TargetingComponent* m_targetingComponent = nullptr;
+	FacingComponent* m_facingComponent = nullptr;
 };

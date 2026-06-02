@@ -108,14 +108,23 @@ void AArgusActor::SetEntity(ArgusEntity entity)
 		if (m_shouldActorSpawnLocationSetEntityLocation)
 		{
 			transformComponent->m_location = GetActorLocation();
-			const float desiredYaw = ArgusMath::GetYawFromDirection(GetActorForwardVector());
-			transformComponent->m_targetYaw = desiredYaw;
-			transformComponent->m_smoothedYaw.Reset(desiredYaw);
+
+			if (FacingComponent* facingComponent = m_entity.GetComponent<FacingComponent>())
+			{
+				const float desiredYaw = ArgusMath::GetYawFromDirection(GetActorForwardVector());
+				facingComponent->m_targetYaw = desiredYaw;
+				facingComponent->m_smoothedYaw.Reset(desiredYaw);
+			}
 			FixupTransformForFlying();
 		}
 		else
 		{
-			SetActorLocationAndRotation(transformComponent->m_location, FRotator(0.0f, ArgusMath::GetUEYawDegreesFromYaw(transformComponent->GetCurrentYaw()), 0.0f));
+			float currentYaw = 0.0f;
+			if (FacingComponent* facingComponent = m_entity.GetComponent<FacingComponent>())
+			{
+				currentYaw = facingComponent->GetCurrentYaw();
+			}
+			SetActorLocationAndRotation(transformComponent->m_location, FRotator(0.0f, ArgusMath::GetUEYawDegreesFromYaw(currentYaw), 0.0f));
 		}
 	}
 
@@ -264,7 +273,12 @@ void AArgusActor::Update(float deltaTime, ETeam activePlayerControllerTeam)
 	if (const TransformComponent* transformComponent = m_entity.GetComponent<TransformComponent>())
 	{
 		ARGUS_TRACE(AArgusActor::SetActorLocationAndRotation);
-		SetActorLocationAndRotation(transformComponent->m_location, FRotator(0.0f, ArgusMath::GetUEYawDegreesFromYaw(transformComponent->GetCurrentYaw()), 0.0f));
+		float currentYaw = 0.0f;
+		if (FacingComponent* facingComponent = m_entity.GetComponent<FacingComponent>())
+		{
+			currentYaw = facingComponent->GetCurrentYaw();
+		}
+		SetActorLocationAndRotation(transformComponent->m_location, FRotator(0.0f, ArgusMath::GetUEYawDegreesFromYaw(currentYaw), 0.0f));
 
 #if !UE_BUILD_SHIPPING
 		if (ArgusECSDebugger::IsEntityBeingDebugged(m_entity.GetId()))
@@ -378,8 +392,14 @@ void AArgusActor::FixupTransformForFlying()
 	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
 	ARGUS_RETURN_ON_NULL(transformComponent, ArgusECSLog);
 
+	float currentYaw = 0.0f;
+	if (FacingComponent* facingComponent = m_entity.GetComponent<FacingComponent>())
+	{
+		currentYaw = facingComponent->GetCurrentYaw();
+	}
 	transformComponent->m_location.Z = spatialPartitioningComponent->m_flyingPlaneHeight;
-	SetActorLocationAndRotation(transformComponent->m_location, FRotator(0.0f, ArgusMath::GetUEYawDegreesFromYaw(transformComponent->GetCurrentYaw()), 0.0f));
+
+	SetActorLocationAndRotation(transformComponent->m_location, FRotator(0.0f, ArgusMath::GetUEYawDegreesFromYaw(currentYaw), 0.0f));
 }
 
 void AArgusActor::CallEventsForInitialState()

@@ -438,6 +438,9 @@ bool AbilitySystems::CastVacateAbility(const UAbilityRecord* abilityRecord, cons
 	const TransformComponent* transformComponent = components.m_entity.GetComponent<TransformComponent>();
 	ARGUS_RETURN_ON_NULL_BOOL(transformComponent, ArgusECSLog);
 
+	const FacingComponent* facingComponent = components.m_entity.GetComponent<FacingComponent>();
+	ARGUS_RETURN_ON_NULL_BOOL(facingComponent, ArgusECSLog);
+
 	CarrierComponent* carrierComponent = components.m_entity.GetComponent<CarrierComponent>();
 	ARGUS_RETURN_ON_NULL_BOOL(carrierComponent, ArgusECSLog);
 
@@ -483,7 +486,8 @@ bool AbilitySystems::CastVacateAbility(const UAbilityRecord* abilityRecord, cons
 		{
 			yawAdjustment *= -1.0f;
 		}
-		passengerTransformComponent->m_location = transformComponent->m_location + ((-ArgusMath::GetDirectionFromYaw(transformComponent->GetCurrentYaw() + yawAdjustment)) * transformComponent->m_radius);
+
+		passengerTransformComponent->m_location = transformComponent->m_location + ((-ArgusMath::GetDirectionFromYaw(facingComponent->GetCurrentYaw() + yawAdjustment)) * transformComponent->m_radius);
 	}
 
 	carrierComponent->m_passengerEntityIds.Reset();

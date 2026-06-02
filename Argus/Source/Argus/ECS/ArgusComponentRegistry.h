@@ -17,6 +17,7 @@
 #include "ComponentDefinitions\CarrierComponent.h"
 #include "ComponentDefinitions\CombatComponent.h"
 #include "ComponentDefinitions\ConstructionComponent.h"
+#include "ComponentDefinitions\FacingComponent.h"
 #include "ComponentDefinitions\FlockingComponent.h"
 #include "ComponentDefinitions\FogOfWarLocationComponent.h"
 #include "ComponentDefinitions\HealthComponent.h"
@@ -80,7 +81,7 @@ public:
 	static void DrawComponentsDebug(uint16 entityId);
 #endif //!UE_BUILD_SHIPPING
 
-	static constexpr uint32 k_numComponentTypes = 33;
+	static constexpr uint32 k_numComponentTypes = 34;
 
 	// Begin component specific template specifiers.
 	
@@ -653,6 +654,101 @@ public:
 	}
 
 	friend struct ConstructionComponent;
+#pragma endregion
+#pragma region FacingComponent
+private:
+	static FacingComponent* s_FacingComponents;
+	static TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > s_isFacingComponentActive;
+public:
+	template<>
+	inline FacingComponent* GetComponent<FacingComponent>(uint16 entityId)
+	{
+		if (UNLIKELY(!s_FacingComponents))
+		{
+			return nullptr;
+		}
+
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(FacingComponent));
+			return nullptr;
+		}
+
+		if (UNLIKELY(s_isFacingComponentActive.Num() == 0))
+		{
+			return nullptr;
+		}
+
+		if (!s_isFacingComponentActive[entityId])
+		{
+			return nullptr;
+		}
+
+		return &s_FacingComponents[entityId];
+	}
+
+	template<>
+	inline FacingComponent* AddComponent<FacingComponent>(uint16 entityId)
+	{
+		if (UNLIKELY(!s_FacingComponents))
+		{
+			return nullptr;
+		}
+
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(FacingComponent));
+			return nullptr;
+		}
+
+		if (UNLIKELY(s_isFacingComponentActive.Num() == 0))
+		{
+			s_isFacingComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
+		if (UNLIKELY(s_isFacingComponentActive[entityId]))
+		{
+			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(FacingComponent), entityId);
+			return &s_FacingComponents[entityId];
+		}
+
+		s_isFacingComponentActive[entityId] = true;
+		s_FacingComponents[entityId].Reset();
+		return &s_FacingComponents[entityId];
+	}
+
+	template<>
+	inline FacingComponent* GetOrAddComponent<FacingComponent>(uint16 entityId)
+	{
+		if (UNLIKELY(!s_FacingComponents))
+		{
+			return nullptr;
+		}
+
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(FacingComponent));
+			return nullptr;
+		}
+
+		if (UNLIKELY(s_isFacingComponentActive.Num() == 0))
+		{
+			s_isFacingComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
+		if (s_isFacingComponentActive[entityId])
+		{
+			return &s_FacingComponents[entityId];
+		}
+		else
+		{
+			s_isFacingComponentActive[entityId] = true;
+			s_FacingComponents[entityId].Reset();
+			return &s_FacingComponents[entityId];
+		}
+	}
+
+	friend struct FacingComponent;
 #pragma endregion
 #pragma region FlockingComponent
 private:

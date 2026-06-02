@@ -31,6 +31,10 @@ TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > ArgusCom
 ConstructionComponent* ArgusComponentRegistry::s_ConstructionComponents = nullptr;
 TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > ArgusComponentRegistry::s_isConstructionComponentActive;
 #pragma endregion
+#pragma region FacingComponent
+FacingComponent* ArgusComponentRegistry::s_FacingComponents = nullptr;
+TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > ArgusComponentRegistry::s_isFacingComponentActive;
+#pragma endregion
 #pragma region FlockingComponent
 FlockingComponent* ArgusComponentRegistry::s_FlockingComponents = nullptr;
 TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > ArgusComponentRegistry::s_isFlockingComponentActive;
@@ -186,6 +190,14 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 	else
 	{
 		s_isConstructionComponentActive[entityId] = false;
+	}
+	if (UNLIKELY(s_isFacingComponentActive.Num() == 0))
+	{
+		s_isFacingComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+	}
+	else
+	{
+		s_isFacingComponentActive[entityId] = false;
 	}
 	if (UNLIKELY(s_isFlockingComponentActive.Num() == 0))
 	{
@@ -349,6 +361,10 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 	{
 		s_ConstructionComponents[entityId].Reset();
 	}
+	if (LIKELY(s_FacingComponents))
+	{
+		s_FacingComponents[entityId].Reset();
+	}
 	if (LIKELY(s_FlockingComponents))
 	{
 		s_FlockingComponents[entityId].Reset();
@@ -506,6 +522,13 @@ void ArgusComponentRegistry::FlushAllComponents()
 		s_ConstructionComponents = ArgusMemorySource::Reallocate<ConstructionComponent>(s_ConstructionComponents, 0, ArgusECSConstants::k_maxEntities);
 	}
 	s_isConstructionComponentActive.Reset();
+	bool didAllocateFacingComponents = false;
+	if (!s_FacingComponents)
+	{
+		didAllocateFacingComponents = true;
+		s_FacingComponents = ArgusMemorySource::Reallocate<FacingComponent>(s_FacingComponents, 0, ArgusECSConstants::k_maxEntities);
+	}
+	s_isFacingComponentActive.Reset();
 	bool didAllocateFlockingComponents = false;
 	if (!s_FlockingComponents)
 	{
@@ -676,6 +699,14 @@ void ArgusComponentRegistry::FlushAllComponents()
 		else
 		{
 			s_ConstructionComponents[i].Reset();
+		}
+		if (didAllocateFacingComponents)
+		{
+			new (&s_FacingComponents[i]) FacingComponent();
+		}
+		else
+		{
+			s_FacingComponents[i].Reset();
 		}
 		if (didAllocateFlockingComponents)
 		{
@@ -970,6 +1001,11 @@ uint16 ArgusComponentRegistry::GetOwningEntityIdForComponentMember(const void* m
 		const ConstructionComponent* pretendComponent = reinterpret_cast<const ConstructionComponent*>(memberAddress);
 		return pretendComponent - &s_ConstructionComponents[0];
 	}
+	if (memberAddress >= &s_FacingComponents[0] && memberAddress <= &s_FacingComponents[ArgusECSConstants::k_maxEntities - 1])
+	{
+		const FacingComponent* pretendComponent = reinterpret_cast<const FacingComponent*>(memberAddress);
+		return pretendComponent - &s_FacingComponents[0];
+	}
 	if (memberAddress >= &s_FlockingComponents[0] && memberAddress <= &s_FlockingComponents[ArgusECSConstants::k_maxEntities - 1])
 	{
 		const FlockingComponent* pretendComponent = reinterpret_cast<const FlockingComponent*>(memberAddress);
@@ -1107,6 +1143,13 @@ void ArgusComponentRegistry::Serialize(FArchive& archive)
 	{
 		s_ConstructionComponents[currentIndex].Serialize(archive);
 		currentIndex = s_isConstructionComponentActive.FindFrom(true, currentIndex + 1);
+	}
+	s_isFacingComponentActive.Serialize(archive);
+	currentIndex = s_isFacingComponentActive.FindFrom(true, 0);
+	while (s_isFacingComponentActive.IsValidIndex(currentIndex))
+	{
+		s_FacingComponents[currentIndex].Serialize(archive);
+		currentIndex = s_isFacingComponentActive.FindFrom(true, currentIndex + 1);
 	}
 	s_isFlockingComponentActive.Serialize(archive);
 	currentIndex = s_isFlockingComponentActive.FindFrom(true, 0);
@@ -1528,6 +1571,10 @@ void ArgusComponentRegistry::DrawComponentsDebug(uint16 entityId)
 	if (const ConstructionComponent* ConstructionComponentPtr = GetComponent<ConstructionComponent>(entityId))
 	{
 		ConstructionComponentPtr->DrawComponentDebug();
+	}
+	if (const FacingComponent* FacingComponentPtr = GetComponent<FacingComponent>(entityId))
+	{
+		FacingComponentPtr->DrawComponentDebug();
 	}
 	if (const FlockingComponent* FlockingComponentPtr = GetComponent<FlockingComponent>(entityId))
 	{

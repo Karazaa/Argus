@@ -13,12 +13,6 @@ class ARGUS_API UTransformComponentData : public UComponentData
 
 public:
 	UPROPERTY(EditAnywhere)
-	float m_smoothedYawDecayConstant = 1.0f;
-
-	UPROPERTY(EditAnywhere)
-	float m_smoothedYawSmoothingSpeedMod = 0.0f;
-
-	UPROPERTY(EditAnywhere)
 	float m_smoothedTransitionAltitudeDecayConstant = 1.0f;
 
 	UPROPERTY(EditAnywhere)

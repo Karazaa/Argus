@@ -21,12 +21,7 @@ struct TransformComponent
 	ARGUS_COMP_NO_DATA
 	FVector m_location = FVector::ZeroVector;
 
-	ArgusMath::ExponentialDecaySmoother<float> m_smoothedYaw;
-
 	ArgusMath::ExponentialDecaySmoother<float> m_smoothedTransitionAltitude;
-
-	ARGUS_COMP_NO_DATA
-	float m_targetYaw = 0.0f;
 
 	ARGUS_COMP_NO_DATA
 	float m_targetTransitionAltitude = 0.0f;
@@ -34,11 +29,6 @@ struct TransformComponent
 	float m_radius = 45.0f;
 	
 	EFlightCapability m_flightCapability;
-
-	float GetCurrentYaw() const
-	{
-		return m_smoothedYaw.GetValue();
-	}
 
 	bool CanFly() const
 	{

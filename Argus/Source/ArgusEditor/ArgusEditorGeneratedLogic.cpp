@@ -12,6 +12,7 @@
 #include "AssetFactories/ComponentDataFactories/CarrierComponentDataFactory.h"
 #include "AssetFactories/ComponentDataFactories/CombatComponentDataFactory.h"
 #include "AssetFactories/ComponentDataFactories/ConstructionComponentDataFactory.h"
+#include "AssetFactories/ComponentDataFactories/FacingComponentDataFactory.h"
 #include "AssetFactories/ComponentDataFactories/FlockingComponentDataFactory.h"
 #include "AssetFactories/ComponentDataFactories/FogOfWarLocationComponentDataFactory.h"
 #include "AssetFactories/ComponentDataFactories/HealthComponentDataFactory.h"
@@ -67,6 +68,8 @@ void ArgusEditorModule::RegisterAssetActions(IAssetTools& assetTools) const
 	assetTools.RegisterAssetTypeActions(actionsCombatComponentData);
 	TSharedRef<IAssetTypeActions> actionsConstructionComponentData = MakeShareable(new FAssetTypeActions_ConstructionComponentData);
 	assetTools.RegisterAssetTypeActions(actionsConstructionComponentData);
+	TSharedRef<IAssetTypeActions> actionsFacingComponentData = MakeShareable(new FAssetTypeActions_FacingComponentData);
+	assetTools.RegisterAssetTypeActions(actionsFacingComponentData);
 	TSharedRef<IAssetTypeActions> actionsFlockingComponentData = MakeShareable(new FAssetTypeActions_FlockingComponentData);
 	assetTools.RegisterAssetTypeActions(actionsFlockingComponentData);
 	TSharedRef<IAssetTypeActions> actionsFogOfWarLocationComponentData = MakeShareable(new FAssetTypeActions_FogOfWarLocationComponentData);

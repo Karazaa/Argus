@@ -21,9 +21,7 @@ uint16 TransformComponent::GetOwningEntityId() const
 void TransformComponent::Reset()
 {
 	m_location = FVector::ZeroVector;
-	m_smoothedYaw.ResetZero();
 	m_smoothedTransitionAltitude.ResetZero();
-	m_targetYaw = 0.0f;
 	m_targetTransitionAltitude = 0.0f;
 	m_radius = 45.0f;
 }
@@ -31,9 +29,7 @@ void TransformComponent::Reset()
 void TransformComponent::Serialize(FArchive& archive)
 {
 	archive << m_location;
-	m_smoothedYaw.Serialize(archive);
 	m_smoothedTransitionAltitude.Serialize(archive);
-	archive << m_targetYaw;
 	archive << m_targetTransitionAltitude;
 	archive << m_radius;
 	archive << m_flightCapability;
@@ -54,17 +50,9 @@ void TransformComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("(%.2f, %.2f, %.2f)", m_location.X, m_location.Y, m_location.Z);
 		ImGui::TableNextColumn();
-		ImGui::Text("m_smoothedYaw");
-		ImGui::TableNextColumn();
-		ImGui::Text("%.2f", m_smoothedYaw.GetValue());
-		ImGui::TableNextColumn();
 		ImGui::Text("m_smoothedTransitionAltitude");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_smoothedTransitionAltitude.GetValue());
-		ImGui::TableNextColumn();
-		ImGui::Text("m_targetYaw");
-		ImGui::TableNextColumn();
-		ImGui::Text("%.2f", m_targetYaw);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_targetTransitionAltitude");
 		ImGui::TableNextColumn();

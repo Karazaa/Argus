@@ -17,8 +17,9 @@ bool TransformSystemsArgs::PopulateArguments(ArgusEntity entity)
 	m_velocityComponent = entity.GetComponent<VelocityComponent>();
 	m_navigationComponent = entity.GetComponent<NavigationComponent>();
 	m_targetingComponent = entity.GetComponent<TargetingComponent>();
+	m_facingComponent = entity.GetComponent<FacingComponent>();
 
-	if (!m_entity || !m_taskComponent || !m_transformComponent || !m_velocityComponent || !m_navigationComponent || !m_targetingComponent)
+	if (!m_entity || !m_taskComponent || !m_transformComponent || !m_velocityComponent || !m_navigationComponent || !m_targetingComponent || !m_facingComponent)
 	{
 		return false;
 	}
@@ -28,7 +29,7 @@ bool TransformSystemsArgs::PopulateArguments(ArgusEntity entity)
 
 bool TransformSystemsArgs::AreComponentsValidCheck(const WIDECHAR* functionName) const
 {
-	if (UNLIKELY(!m_entity || !m_taskComponent || !m_transformComponent || !m_velocityComponent || !m_navigationComponent || !m_targetingComponent))
+	if (UNLIKELY(!m_entity || !m_taskComponent || !m_transformComponent || !m_velocityComponent || !m_navigationComponent || !m_targetingComponent || !m_facingComponent))
 	{
 		ArgusLogging::LogInvalidComponentReferences(functionName, ARGUS_NAMEOF(TransformSystemsArgs));
 		return false;

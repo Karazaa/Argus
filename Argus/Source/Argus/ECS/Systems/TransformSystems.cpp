@@ -226,7 +226,7 @@ bool TransformSystems::ProcessMovementTaskCommands(UWorld* worldPointer, float d
 			break;
 	}
 
-	components.m_transformComponent->m_smoothedYaw.SmoothChase(components.m_transformComponent->m_targetYaw, deltaTime);
+	components.m_facingComponent->m_smoothedYaw.SmoothChase(components.m_facingComponent->m_targetYaw, deltaTime);
 
 	return movedThisFrame;
 }
@@ -342,7 +342,7 @@ void TransformSystems::FaceTargetEntity(const TransformSystemsArgs& components)
 	const TransformComponent* targetEntityTransformComponent = targetEntity.GetComponent<TransformComponent>();
 	ARGUS_RETURN_ON_NULL(targetEntityTransformComponent, ArgusECSLog);
 
-	FaceTowardsLocationXY(components.m_transformComponent, targetEntityTransformComponent->m_location - components.m_transformComponent->m_location);
+	FaceTowardsLocationXY(components.m_facingComponent, targetEntityTransformComponent->m_location - components.m_transformComponent->m_location);
 }
 
 void TransformSystems::FaceVelocity(const TransformSystemsArgs& components)
@@ -355,11 +355,11 @@ void TransformSystems::FaceVelocity(const TransformSystemsArgs& components)
 	const float desiredSpeed = components.m_taskComponent->m_flightState == EFlightState::Flying ? components.m_velocityComponent->m_desiredFlightSpeedUnitsPerSecond : components.m_velocityComponent->m_desiredSpeedUnitsPerSecond;
 	if (components.m_velocityComponent->m_currentVelocity.SquaredLength() > (desiredSpeed * 0.8f))
 	{
-		FaceTowardsLocationXY(components.m_transformComponent, FVector(components.m_velocityComponent->m_currentVelocity, 0.0f));
+		FaceTowardsLocationXY(components.m_facingComponent, FVector(components.m_velocityComponent->m_currentVelocity, 0.0f));
 	}	
 }
 
-void TransformSystems::FaceTowardsLocationXY(TransformComponent* transformComponent, FVector vectorFromTransformToTarget)
+void TransformSystems::FaceTowardsLocationXY(FacingComponent* facingComponent, FVector vectorFromTransformToTarget)
 {
 	vectorFromTransformToTarget.Z = 0.0f;
 	if (vectorFromTransformToTarget.Equals(FVector::ZeroVector))
@@ -367,18 +367,18 @@ void TransformSystems::FaceTowardsLocationXY(TransformComponent* transformCompon
 		return;
 	}
 
-	if (!transformComponent)
+	if (!facingComponent)
 	{
 		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Passed in an invalid %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent*));
 		return;
 	}
 
 	vectorFromTransformToTarget = ArgusMath::ToCartesianVector(vectorFromTransformToTarget).GetSafeNormal();
-	const FVector currentDirection = ArgusMath::ToCartesianVector(ArgusMath::GetDirectionFromYaw(transformComponent->m_targetYaw));
+	const FVector currentDirection = ArgusMath::ToCartesianVector(ArgusMath::GetDirectionFromYaw(facingComponent->m_targetYaw));
 	const FVector crossProduct = currentDirection.Cross(vectorFromTransformToTarget);
 	const float angleDifference = FMath::Acos(vectorFromTransformToTarget.Dot(currentDirection));
 
-	transformComponent->m_targetYaw += (angleDifference * FMath::Sign(crossProduct.Z));
+	facingComponent->m_targetYaw += (angleDifference * FMath::Sign(crossProduct.Z));
 }
 
 bool TransformSystems::CheckFlockCompletedNavigation(const TransformSystemsArgs& components)
@@ -621,15 +621,15 @@ void TransformSystems::UpdatePassengerLocations(const TransformSystemsArgs& comp
 			return;
 		}
 
-		TransformComponent* passengerTransformComponent = passenger.GetComponent<TransformComponent>();
-		if (!passengerTransformComponent)
+		if (TransformComponent* passengerTransformComponent = passenger.GetComponent<TransformComponent>())
 		{
-			continue;
+			passengerTransformComponent->m_location = components.m_transformComponent->m_location;
 		}
-
-		passengerTransformComponent->m_location = components.m_transformComponent->m_location;
-		passengerTransformComponent->m_targetYaw = components.m_transformComponent->m_targetYaw;
-		passengerTransformComponent->m_smoothedYaw.Reset(components.m_transformComponent->m_smoothedYaw.GetValue());
+		if (FacingComponent* passengerFacingComponent = passenger.GetComponent<FacingComponent>())
+		{
+			passengerFacingComponent->m_targetYaw = components.m_facingComponent->m_targetYaw;
+			passengerFacingComponent->m_smoothedYaw.Reset(components.m_facingComponent->m_smoothedYaw.GetValue());
+		}
 	}
 }
 

@@ -26,7 +26,7 @@ private:
 	static void PerformLanding(float deltaTime, const TransformSystemsArgs& components);
 	static void FaceTargetEntity(const TransformSystemsArgs& components);
 	static void FaceVelocity(const TransformSystemsArgs& components);
-	static void FaceTowardsLocationXY(TransformComponent* transformComponent, FVector vectorFromTransformToTarget);
+	static void FaceTowardsLocationXY(FacingComponent* facingComponent, FVector vectorFromTransformToTarget);
 	static bool CheckFlockCompletedNavigation(const TransformSystemsArgs& components);
 	static void OnWithinRangeOfTargetEntity(const TransformSystemsArgs& components);
 	static bool ShouldAdvanceSegment(const FVector& evaluationPoint, const FVector& segmentStart, const FVector& segmentEnd);

@@ -325,7 +325,7 @@ void SpawningSystems::GetSpawnLocationAndNavigationState(const SpawningSystemsAr
 
 	if (!components.m_targetingComponent->HasEntityTarget())
 	{
-		FVector spawnForward = ArgusMath::GetDirectionFromYaw(components.m_transformComponent->GetCurrentYaw());
+		FVector spawnForward = ArgusMath::GetDirectionFromYaw(0.0f);
 		outSpawnLocation = spawnerLocation + (spawnForward * components.m_spawningComponent->m_spawningRadius);
 		outMovementState = EMovementState::None;
 		return;
