@@ -11,6 +11,37 @@ class FArchive;
 
 namespace ArgusMath
 {
+	float SafeDivide(float numerator, float denominator, float fallbackValue = 0.0f);
+	FVector2D SafeDivide(FVector2D numerator, float denominator, FVector2D fallbackValue = FVector2D::ZeroVector);
+	FVector SafeDivide(FVector numerator, float denominator, FVector fallbackValue = FVector::ZeroVector);
+
+	float Determinant(const FVector2D& topRow, const FVector2D& bottomRow);
+	float AmountLeftOf(const FVector2D& lineSegmentPoint0, const FVector2D& lineSegmentPoint1, const FVector2D& evaluationPoint);
+
+	// Unreal being left handed hurts my soul. Defining two functions here simply for code readability. 
+	FVector2D ToCartesianVector2(const FVector2D& vectorToConvert);
+	FVector2D ToUnrealVector2(const FVector2D& vectorToConvert);
+	FVector ToCartesianVector(const FVector& vectorToConvert);
+	FVector ToUnrealVector(const FVector& vectorToConvert);
+
+	bool IsLeftOfCartesian(const FVector2D& lineSegmentPoint0, const FVector2D& lineSegmentPoint1, const FVector2D& evaluationPoint, float radius = 0.0f);
+	bool IsLeftOfUnreal(const FVector2D& lineSegmentPoint0, const FVector2D& lineSegmentPoint1, const FVector2D& evaluationPoint, float radius = 0.0f);
+
+	bool DoLineSegmentsIntersectCartesian(const FVector2D& lineSegmentAPoint0, const FVector2D& lineSegmentAPoint1, const FVector2D& lineSegmentBPoint0, const FVector2D& lineSegmentBPoint1);
+	bool DoLineSegmentsIntersectUnreal(const FVector2D& lineSegmentAPoint0, const FVector2D& lineSegmentAPoint1, const FVector2D& lineSegmentBPoint0, const FVector2D& lineSegmentBPoint1);
+
+	bool GetLineSegmentIntersectionCartesian(const FVector2D& lineSegmentAPoint0, const FVector2D& lineSegmentAPoint1, const FVector2D& lineSegmentBPoint0, const FVector2D& lineSegmentBPoint1, FVector2D& outIntersectionPoint);
+
+	float GetNormalizedZeroToTwoPi(float angle);
+	FVector GetDirectionFromYaw(float yaw);
+	float GetYawFromDirection(const FVector& direction);
+	float GetUEYawDegreesFromYaw(float yaw);
+
+	int FColorAsBGRA(const FColor& color);
+	bool IsNearlyEqual(const FVector2D& vector0, const FVector2D& vector1);
+
+	FVector2D Average(const FVector2D& vector0, const FVector2D& vector1);
+
 	template<typename T>
 	static T GetZero()
 	{
@@ -33,6 +64,18 @@ namespace ArgusMath
 	inline FVector GetZero<FVector>()
 	{
 		return FVector::ZeroVector;
+	}
+
+	template <typename T>
+	static T SafeDivide(T numerator, float denominator, T fallbackValue)
+	{
+		if (FMath::IsNearlyZero(denominator))
+		{
+			ARGUS_LOG(ArgusUtilitiesLog, Warning, TEXT("[%s] Division by zero occured!"), ARGUS_FUNCNAME);
+			return fallbackValue;
+		}
+
+		return numerator / denominator;
 	}
 
 	template <typename T, uint8 SmoothingOrder = 1u>
@@ -64,7 +107,7 @@ namespace ArgusMath
 			m_smoothingSpeedMod = smoothingSpeedMod;
 		}
 
-		ExponentialDecaySmoother(T initialValue, float decayConstant, float smoothingSpeedMod)
+		ExponentialDecaySmoother(const T& initialValue, float decayConstant, float smoothingSpeedMod)
 		{
 			Reset(initialValue);
 			m_decayConstant = FMath::Clamp(decayConstant, k_minDecayConstant, k_maxDecayConstant);
@@ -129,50 +172,76 @@ namespace ArgusMath
 		float m_smoothingSpeedMod = 0.0f;
 	};
 
-	template <typename T>
-	static T SafeDivide(T numerator, float denominator, T fallbackValue)
+	template<typename T>
+	class SecondOrderSystemSmoother
 	{
-		if (FMath::IsNearlyZero(denominator))
+	public:
+		SecondOrderSystemSmoother()
 		{
-			ARGUS_LOG(ArgusUtilitiesLog, Warning, TEXT("[%s] Division by zero occured!"), ARGUS_FUNCNAME);
-			return fallbackValue;
+			ResetZero();
+			ComputeConstants(1.0f, 1.0f, 0.0f);
 		}
 
-		return numerator / denominator;
-	}
+		SecondOrderSystemSmoother(float f, float z, float r, const T& initialValue)
+		{
+			Reset(initialValue);
+			ComputeConstants(f, z, r);
+		}
 
-	float SafeDivide(float numerator, float denominator, float fallbackValue = 0.0f);
-	FVector2D SafeDivide(FVector2D numerator, float denominator, FVector2D fallbackValue = FVector2D::ZeroVector);
-	FVector SafeDivide(FVector numerator, float denominator, FVector fallbackValue = FVector::ZeroVector);
+		T GetValue () const { return m_currentValue; }
 
-	float Determinant(const FVector2D& topRow, const FVector2D& bottomRow);
-	float AmountLeftOf(const FVector2D& lineSegmentPoint0, const FVector2D& lineSegmentPoint1, const FVector2D& evaluationPoint);
+		void Reset(const T& initialValue)
+		{
+			m_previousTarget = initialValue;
+			m_currentValue = initialValue;
+			m_currentVelocity = GetZero<T>();
+		}
 
-	// Unreal being left handed hurts my soul. Defining two functions here simply for code readability. 
-	FVector2D ToCartesianVector2(const FVector2D& vectorToConvert);
-	FVector2D ToUnrealVector2(const FVector2D& vectorToConvert);
-	FVector ToCartesianVector(const FVector& vectorToConvert);
-	FVector ToUnrealVector(const FVector& vectorToConvert);
+		void ResetZero()
+		{
+			Reset(GetZero<T>());
+		}
 
-	bool IsLeftOfCartesian(const FVector2D& lineSegmentPoint0, const FVector2D& lineSegmentPoint1, const FVector2D& evaluationPoint, float radius = 0.0f);
-	bool IsLeftOfUnreal(const FVector2D& lineSegmentPoint0, const FVector2D& lineSegmentPoint1, const FVector2D& evaluationPoint, float radius = 0.0f);
+		void SmoothChase(const T& targetValue, float deltaTime)
+		{
+			if (FMath::IsNearlyZero(deltaTime))
+			{
+				return;
+			}
 
-	bool DoLineSegmentsIntersectCartesian(const FVector2D& lineSegmentAPoint0, const FVector2D& lineSegmentAPoint1, const FVector2D& lineSegmentBPoint0, const FVector2D& lineSegmentBPoint1);
-	bool DoLineSegmentsIntersectUnreal(const FVector2D& lineSegmentAPoint0, const FVector2D& lineSegmentAPoint1, const FVector2D& lineSegmentBPoint0, const FVector2D& lineSegmentBPoint1);
+			T targetVelocity = (targetValue - m_previousTarget) / deltaTime;
+			m_previousTarget = targetValue;
 
-	bool GetLineSegmentIntersectionCartesian(const FVector2D& lineSegmentAPoint0, const FVector2D& lineSegmentAPoint1, const FVector2D& lineSegmentBPoint0, const FVector2D& lineSegmentBPoint1, FVector2D& outIntersectionPoint);
+			const float k2Stable = FMath::Max3(m_k2, FMath::Square(deltaTime) * 0.5f, deltaTime * m_k1 * 0.5f);
+			m_currentValue = m_currentValue + (m_currentVelocity * deltaTime);
+			m_currentVelocity = m_currentVelocity + ((targetValue + (targetVelocity * m_k3) - m_currentValue - (m_currentVelocity * m_k1)) * SafeDivide(deltaTime, k2Stable));
+		}
 
-	float GetNormalizedZeroToTwoPi(float angle);
+		void Serialize(FArchive& archive)
+		{
+			archive << m_previousTarget;
+			archive << m_currentValue;
+			archive << m_currentVelocity;
+			archive << m_k1;
+			archive << m_k2;
+			archive << m_k3;
+		}
 
-	FVector GetDirectionFromYaw(float yaw);
+	private:
+		void ComputeConstants(float f, float z, float r)
+		{
+			const float fpi = UE_PI * f;
+			const float fpi2 = 2.0f * fpi;
+			m_k1 = SafeDivide(z, fpi);
+			m_k2 = SafeDivide(1.0f, FMath::Square(fpi2));
+			m_k3 = SafeDivide(r * z, fpi2);
+		}
 
-	float GetYawFromDirection(const FVector& direction);
-
-	float GetUEYawDegreesFromYaw(float yaw);
-
-	int FColorAsBGRA(const FColor& color);
-
-	bool IsNearlyEqual(const FVector2D& vector0, const FVector2D& vector1);
-
-	FVector2D Average(const FVector2D& vector0, const FVector2D& vector1);
+		T m_previousTarget;
+		T m_currentValue;
+		T m_currentVelocity;
+		float m_k1 = 0.0f;
+		float m_k2 = 0.0f;
+		float m_k3 = 0.0f;
+	};
 }
