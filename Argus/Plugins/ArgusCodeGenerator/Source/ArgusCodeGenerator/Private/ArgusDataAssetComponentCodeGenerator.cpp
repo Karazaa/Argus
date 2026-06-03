@@ -16,6 +16,7 @@ const char* ArgusDataAssetComponentCodeGenerator::s_propertyMacro = "\tUPROPERTY
 const char* ArgusDataAssetComponentCodeGenerator::s_upropertyPrefix = "UPROPERTY";
 const char* ArgusDataAssetComponentCodeGenerator::s_dataAssetComponentTemplateDirectorySuffix = "ComponentDataAssets/";
 const char* ArgusDataAssetComponentCodeGenerator::s_exponentialDecaySmootherTypeName = "ArgusMath::ExponentialDecaySmoother";
+const char* ArgusDataAssetComponentCodeGenerator::s_sosSmootherTypeName = "ArgusMath::SecondOrderSystemSmoother";
 
 void ArgusDataAssetComponentCodeGenerator::GenerateDataAssetComponentsCode(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData)
 {
@@ -162,21 +163,23 @@ bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetHeaderFileTemplateWithR
 					else
 					{
 						const size_t exponentialDecaySmootherIndex = parsedComponentData.m_componentVariableData[i][j].m_typeName.find(s_exponentialDecaySmootherTypeName);
+						const size_t sosSmootherIndex = parsedComponentData.m_componentVariableData[i][j].m_typeName.find(s_sosSmootherTypeName);
 						if (exponentialDecaySmootherIndex != std::string::npos)
 						{
-							variable = "\tfloat";
-							variable.append(" ");
-							variable.append(parsedComponentData.m_componentVariableData[i][j].m_varName);
-							variable.append("DecayConstant");
-							variable.append(" = 1.0f;");
-							outParsedFileContents[i].m_lines.push_back(variable);
+							outParsedFileContents[i].m_lines.push_back(std::vformat("\tfloat {}DecayConstant = 1.0f;", std::make_format_args(parsedComponentData.m_componentVariableData[i][j].m_varName)));
 							outParsedFileContents[i].m_lines.push_back("");
 							outParsedFileContents[i].m_lines.push_back(s_propertyMacro);
-							variable = "\tfloat";
-							variable.append(" ");
-							variable.append(parsedComponentData.m_componentVariableData[i][j].m_varName);
-							variable.append("SmoothingSpeedMod");
-							variable.append(" = 0.0f");
+							variable = std::vformat("\tfloat {}SmoothingSpeedMod = 0.0f", std::make_format_args(parsedComponentData.m_componentVariableData[i][j].m_varName));
+						}
+						else if (sosSmootherIndex != std::string::npos)
+						{
+							outParsedFileContents[i].m_lines.push_back(std::vformat("\tfloat {}Frequency = 1.0f;", std::make_format_args(parsedComponentData.m_componentVariableData[i][j].m_varName)));
+							outParsedFileContents[i].m_lines.push_back("");
+							outParsedFileContents[i].m_lines.push_back(s_propertyMacro);
+							outParsedFileContents[i].m_lines.push_back(std::vformat("\tfloat {}Damping = 1.0f;", std::make_format_args(parsedComponentData.m_componentVariableData[i][j].m_varName)));
+							outParsedFileContents[i].m_lines.push_back("");
+							outParsedFileContents[i].m_lines.push_back(s_propertyMacro);
+							variable = std::vformat("\tfloat {}Response = 0.0f", std::make_format_args(parsedComponentData.m_componentVariableData[i][j].m_varName));
 						}
 						else
 						{
@@ -358,6 +361,7 @@ void ArgusDataAssetComponentCodeGenerator::WriteComponentAssignment(const std::s
 
 	const size_t propertyStaticDataDelimiterIndex = variableData.m_propertyMacro.find(ArgusCodeGeneratorUtil::s_propertyStaticDataDelimiter);
 	const size_t exponentialDecaySmootherIndex = variableData.m_typeName.find(s_exponentialDecaySmootherTypeName);
+	const size_t sosSmootherIndex = variableData.m_typeName.find(s_sosSmootherTypeName);
 	if (propertyStaticDataDelimiterIndex != std::string::npos)
 	{
 		variableAssignment.append(std::vformat("{}Reference.GetId()", std::make_format_args(variableData.m_varName)));
@@ -369,6 +373,14 @@ void ArgusDataAssetComponentCodeGenerator::WriteComponentAssignment(const std::s
 		std::string typeName = variableData.m_typeName.substr(1, (lengthTypeName - 1));
 		std::string varName = variableData.m_varName;
 		variableAssignment.append(std::vformat("{}({}DecayConstant, {}SmoothingSpeedMod)", std::make_format_args(typeName, varName, varName)));
+	}
+	else if (sosSmootherIndex)
+	{
+		const size_t lengthTypeName = variableData.m_typeName.length();
+
+		std::string typeName = variableData.m_typeName.substr(1, (lengthTypeName - 1));
+		std::string varName = variableData.m_varName;
+		variableAssignment.append(std::vformat("{}({}Frequency, {}Damping, {}Response)", std::make_format_args(typeName, varName, varName, varName)));
 	}
 	else
 	{

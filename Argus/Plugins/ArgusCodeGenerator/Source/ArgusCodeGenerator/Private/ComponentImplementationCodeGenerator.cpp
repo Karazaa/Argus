@@ -263,7 +263,7 @@ void ComponentImplementationGenerator::GeneratePerVariableResetText(const std::v
 			continue;
 		}
 
-		if (typeInfo.m_containerType == ContainerType::Smoother)
+		if (typeInfo.m_containerType == ContainerType::ExponentialSmoother || typeInfo.m_containerType == SOSSmoother)
 		{
 			outParsedVariableContents.push_back(std::vformat("\t{}.ResetZero();", std::make_format_args(parsedVariableData[i].m_varName)));
 			continue;
@@ -315,7 +315,8 @@ void ComponentImplementationGenerator::GeneratePerVariableSerializeText(const st
 
 		switch (typeInfo.m_containerType)
 		{
-			case ContainerType::Smoother:
+			case ContainerType::ExponentialSmoother:
+			case ContainerType::SOSSmoother:
 			case ContainerType::BitArray:
 			case ContainerType::Optional:
 			case ContainerType::Deque:
@@ -421,7 +422,7 @@ void ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 			default:
 				{
 					std::string variableName = parsedVariableData[i].m_varName;
-					if (typeInfo.m_containerType == ContainerType::Smoother)
+					if (typeInfo.m_containerType == ContainerType::ExponentialSmoother || typeInfo.m_containerType == ContainerType::SOSSmoother)
 					{
 						variableName.append(".GetValue()");
 					}
@@ -873,7 +874,12 @@ ComponentImplementationGenerator::TypeInfo::TypeInfo(const std::string& typeStri
 
 	if (typeString.find("ExponentialDecaySmoother") != std::string::npos)
 	{
-		m_containerType = ContainerType::Smoother;
+		m_containerType = ContainerType::ExponentialSmoother;
+		ExtractTemplateParameters(typeString, m_templateTypes);
+	}
+	else if (typeString.find("SecondOrderSystemSmoother") != std::string::npos)
+	{
+		m_containerType = ContainerType::SOSSmoother;
 		ExtractTemplateParameters(typeString, m_templateTypes);
 	}
 	else if (typeString.find("TOptional") != std::string::npos)

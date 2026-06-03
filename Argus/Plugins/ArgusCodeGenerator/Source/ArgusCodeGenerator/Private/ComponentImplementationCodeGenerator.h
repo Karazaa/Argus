@@ -50,7 +50,8 @@ private:
 		Array,
 		Queue,
 		Deque,
-		Smoother,
+		ExponentialSmoother,
+		SOSSmoother,
 		Optional,
 		BitArray,
 		Map

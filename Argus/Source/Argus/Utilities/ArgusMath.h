@@ -182,6 +182,12 @@ namespace ArgusMath
 			ComputeConstants(1.0f, 1.0f, 0.0f);
 		}
 
+		SecondOrderSystemSmoother(float f, float z, float r)
+		{
+			ResetZero();
+			ComputeConstants(f, z, r);
+		}
+
 		SecondOrderSystemSmoother(float f, float z, float r, const T& initialValue)
 		{
 			Reset(initialValue);

@@ -12,6 +12,8 @@ struct FacingComponent
 
 	ArgusMath::ExponentialDecaySmoother<float> m_smoothedYaw;
 
+	ArgusMath::SecondOrderSystemSmoother<float> m_smoothedFacing;
+
 	ARGUS_COMP_NO_DATA
 	float m_targetYaw = 0.0f;
 

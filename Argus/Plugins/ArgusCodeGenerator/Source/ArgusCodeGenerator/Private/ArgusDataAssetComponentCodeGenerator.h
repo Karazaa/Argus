@@ -19,6 +19,7 @@ private:
 	static const char* s_upropertyPrefix;
 	static const char* s_dataAssetComponentTemplateDirectorySuffix;
 	static const char* s_exponentialDecaySmootherTypeName;
+	static const char* s_sosSmootherTypeName;
 
 	static bool ParseDataAssetHeaderFileTemplateWithReplacements(const ArgusCodeGeneratorUtil::CombinedComponentDataOutput& parsedComponentData, std::string& templateFilePath, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents);
 	static bool ParseDataAssetCppFileTemplateWithReplacements(const ArgusCodeGeneratorUtil::CombinedComponentDataOutput& parsedComponentData, std::string& templateFilePath, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents);
