@@ -374,7 +374,7 @@ void ArgusDataAssetComponentCodeGenerator::WriteComponentAssignment(const std::s
 		std::string varName = variableData.m_varName;
 		variableAssignment.append(std::vformat("{}({}DecayConstant, {}SmoothingSpeedMod)", std::make_format_args(typeName, varName, varName)));
 	}
-	else if (sosSmootherIndex)
+	else if (sosSmootherIndex != std::string::npos)
 	{
 		const size_t lengthTypeName = variableData.m_typeName.length();
 
