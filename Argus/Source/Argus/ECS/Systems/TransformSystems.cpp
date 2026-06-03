@@ -379,6 +379,12 @@ void TransformSystems::FaceTowardsLocationXY(FacingComponent* facingComponent, F
 	const float angleDifference = FMath::Acos(vectorFromTransformToTarget.Dot(currentDirection));
 
 	facingComponent->m_targetFacing += (angleDifference * FMath::Sign(crossProduct.Z));
+
+	const float currentAngleDifference = facingComponent->m_targetFacing - facingComponent->GetCurrentFacing();
+	if (FMath::Abs(currentAngleDifference) > UE_PI)
+	{
+		facingComponent->m_targetFacing -= (FMath::Sign(currentAngleDifference) * UE_TWO_PI);
+	}
 }
 
 bool TransformSystems::CheckFlockCompletedNavigation(const TransformSystemsArgs& components)
