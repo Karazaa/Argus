@@ -10,15 +10,13 @@ struct FacingComponent
 {
 	ARGUS_COMPONENT_SHARED;
 
-	ArgusMath::ExponentialDecaySmoother<float> m_smoothedYaw;
-
 	ArgusMath::SecondOrderSystemSmoother<float> m_smoothedFacing;
 
 	ARGUS_COMP_NO_DATA
-	float m_targetYaw = 0.0f;
+	float m_targetFacing = 0.0f;
 
-	float GetCurrentYaw() const
+	float GetCurrentFacing() const
 	{
-		return m_smoothedYaw.GetValue();
+		return m_smoothedFacing.GetValue();
 	}
 };

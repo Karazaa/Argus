@@ -20,14 +20,14 @@ uint16 FacingComponent::GetOwningEntityId() const
 
 void FacingComponent::Reset()
 {
-	m_smoothedYaw.ResetZero();
-	m_targetYaw = 0.0f;
+	m_smoothedFacing.ResetZero();
+	m_targetFacing = 0.0f;
 }
 
 void FacingComponent::Serialize(FArchive& archive)
 {
-	m_smoothedYaw.Serialize(archive);
-	archive << m_targetYaw;
+	m_smoothedFacing.Serialize(archive);
+	archive << m_targetFacing;
 }
 
 void FacingComponent::DrawComponentDebug() const
@@ -41,13 +41,13 @@ void FacingComponent::DrawComponentDebug() const
 	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_BordersInner))
 	{
 		ImGui::TableNextColumn();
-		ImGui::Text("m_smoothedYaw");
+		ImGui::Text("m_smoothedFacing");
 		ImGui::TableNextColumn();
-		ImGui::Text("%.2f", m_smoothedYaw.GetValue());
+		ImGui::Text("%.2f", m_smoothedFacing.GetValue());
 		ImGui::TableNextColumn();
-		ImGui::Text("m_targetYaw");
+		ImGui::Text("m_targetFacing");
 		ImGui::TableNextColumn();
-		ImGui::Text("%.2f", m_targetYaw);
+		ImGui::Text("%.2f", m_targetFacing);
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

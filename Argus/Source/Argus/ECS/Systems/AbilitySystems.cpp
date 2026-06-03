@@ -487,7 +487,7 @@ bool AbilitySystems::CastVacateAbility(const UAbilityRecord* abilityRecord, cons
 			yawAdjustment *= -1.0f;
 		}
 
-		passengerTransformComponent->m_location = transformComponent->m_location + ((-ArgusMath::GetDirectionFromYaw(facingComponent->GetCurrentYaw() + yawAdjustment)) * transformComponent->m_radius);
+		passengerTransformComponent->m_location = transformComponent->m_location + ((-ArgusMath::GetDirectionFromYaw(facingComponent->GetCurrentFacing() + yawAdjustment)) * transformComponent->m_radius);
 	}
 
 	carrierComponent->m_passengerEntityIds.Reset();

@@ -13,10 +13,13 @@ class ARGUS_API UFacingComponentData : public UComponentData
 
 public:
 	UPROPERTY(EditAnywhere)
-	float m_smoothedYawDecayConstant = 1.0f;
+	float m_smoothedFacingFrequency = 1.0f;
 
 	UPROPERTY(EditAnywhere)
-	float m_smoothedYawSmoothingSpeedMod = 0.0f;
+	float m_smoothedFacingDamping = 1.0f;
+
+	UPROPERTY(EditAnywhere)
+	float m_smoothedFacingResponse = 0.0f;
 
 
 	void InstantiateComponentForEntity(ArgusEntity entity) const override;

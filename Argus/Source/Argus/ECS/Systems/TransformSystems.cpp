@@ -226,7 +226,7 @@ bool TransformSystems::ProcessMovementTaskCommands(UWorld* worldPointer, float d
 			break;
 	}
 
-	components.m_facingComponent->m_smoothedYaw.SmoothChase(components.m_facingComponent->m_targetYaw, deltaTime);
+	components.m_facingComponent->m_smoothedFacing.SmoothChase(components.m_facingComponent->m_targetFacing, deltaTime);
 
 	return movedThisFrame;
 }
@@ -374,11 +374,11 @@ void TransformSystems::FaceTowardsLocationXY(FacingComponent* facingComponent, F
 	}
 
 	vectorFromTransformToTarget = ArgusMath::ToCartesianVector(vectorFromTransformToTarget).GetSafeNormal();
-	const FVector currentDirection = ArgusMath::ToCartesianVector(ArgusMath::GetDirectionFromYaw(facingComponent->m_targetYaw));
+	const FVector currentDirection = ArgusMath::ToCartesianVector(ArgusMath::GetDirectionFromYaw(facingComponent->m_targetFacing));
 	const FVector crossProduct = currentDirection.Cross(vectorFromTransformToTarget);
 	const float angleDifference = FMath::Acos(vectorFromTransformToTarget.Dot(currentDirection));
 
-	facingComponent->m_targetYaw += (angleDifference * FMath::Sign(crossProduct.Z));
+	facingComponent->m_targetFacing += (angleDifference * FMath::Sign(crossProduct.Z));
 }
 
 bool TransformSystems::CheckFlockCompletedNavigation(const TransformSystemsArgs& components)
@@ -627,8 +627,8 @@ void TransformSystems::UpdatePassengerLocations(const TransformSystemsArgs& comp
 		}
 		if (FacingComponent* passengerFacingComponent = passenger.GetComponent<FacingComponent>())
 		{
-			passengerFacingComponent->m_targetYaw = components.m_facingComponent->m_targetYaw;
-			passengerFacingComponent->m_smoothedYaw.Reset(components.m_facingComponent->m_smoothedYaw.GetValue());
+			passengerFacingComponent->m_targetFacing = components.m_facingComponent->m_targetFacing;
+			passengerFacingComponent->m_smoothedFacing.Reset(components.m_facingComponent->m_smoothedFacing.GetValue());
 		}
 	}
 }

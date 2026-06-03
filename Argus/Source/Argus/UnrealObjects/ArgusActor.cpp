@@ -111,20 +111,20 @@ void AArgusActor::SetEntity(ArgusEntity entity)
 
 			if (FacingComponent* facingComponent = m_entity.GetComponent<FacingComponent>())
 			{
-				const float desiredYaw = ArgusMath::GetYawFromDirection(GetActorForwardVector());
-				facingComponent->m_targetYaw = desiredYaw;
-				facingComponent->m_smoothedYaw.Reset(desiredYaw);
+				const float desiredFacing = ArgusMath::GetYawFromDirection(GetActorForwardVector());
+				facingComponent->m_targetFacing = desiredFacing;
+				facingComponent->m_smoothedFacing.Reset(desiredFacing);
 			}
 			FixupTransformForFlying();
 		}
 		else
 		{
-			float currentYaw = 0.0f;
+			float currentFacing = 0.0f;
 			if (FacingComponent* facingComponent = m_entity.GetComponent<FacingComponent>())
 			{
-				currentYaw = facingComponent->GetCurrentYaw();
+				currentFacing = facingComponent->GetCurrentFacing();
 			}
-			SetActorLocationAndRotation(transformComponent->m_location, FRotator(0.0f, ArgusMath::GetUEYawDegreesFromYaw(currentYaw), 0.0f));
+			SetActorLocationAndRotation(transformComponent->m_location, FRotator(0.0f, ArgusMath::GetUEYawDegreesFromYaw(currentFacing), 0.0f));
 		}
 	}
 
@@ -273,12 +273,12 @@ void AArgusActor::Update(float deltaTime, ETeam activePlayerControllerTeam)
 	if (const TransformComponent* transformComponent = m_entity.GetComponent<TransformComponent>())
 	{
 		ARGUS_TRACE(AArgusActor::SetActorLocationAndRotation);
-		float currentYaw = 0.0f;
+		float currentFacing = 0.0f;
 		if (FacingComponent* facingComponent = m_entity.GetComponent<FacingComponent>())
 		{
-			currentYaw = facingComponent->GetCurrentYaw();
+			currentFacing = facingComponent->GetCurrentFacing();
 		}
-		SetActorLocationAndRotation(transformComponent->m_location, FRotator(0.0f, ArgusMath::GetUEYawDegreesFromYaw(currentYaw), 0.0f));
+		SetActorLocationAndRotation(transformComponent->m_location, FRotator(0.0f, ArgusMath::GetUEYawDegreesFromYaw(currentFacing), 0.0f));
 
 #if !UE_BUILD_SHIPPING
 		if (ArgusECSDebugger::IsEntityBeingDebugged(m_entity.GetId()))
@@ -392,14 +392,14 @@ void AArgusActor::FixupTransformForFlying()
 	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
 	ARGUS_RETURN_ON_NULL(transformComponent, ArgusECSLog);
 
-	float currentYaw = 0.0f;
+	float currentFacing = 0.0f;
 	if (FacingComponent* facingComponent = m_entity.GetComponent<FacingComponent>())
 	{
-		currentYaw = facingComponent->GetCurrentYaw();
+		currentFacing = facingComponent->GetCurrentFacing();
 	}
 	transformComponent->m_location.Z = spatialPartitioningComponent->m_flyingPlaneHeight;
 
-	SetActorLocationAndRotation(transformComponent->m_location, FRotator(0.0f, ArgusMath::GetUEYawDegreesFromYaw(currentYaw), 0.0f));
+	SetActorLocationAndRotation(transformComponent->m_location, FRotator(0.0f, ArgusMath::GetUEYawDegreesFromYaw(currentFacing), 0.0f));
 }
 
 void AArgusActor::CallEventsForInitialState()

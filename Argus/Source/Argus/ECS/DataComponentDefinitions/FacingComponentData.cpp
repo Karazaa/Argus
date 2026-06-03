@@ -10,7 +10,7 @@ void UFacingComponentData::InstantiateComponentForEntity(ArgusEntity entity) con
 	FacingComponent* FacingComponentRef = entity.GetOrAddComponent<FacingComponent>();
 	ARGUS_RETURN_ON_NULL(FacingComponentRef, ArgusECSLog);
 
-	FacingComponentRef->m_smoothedYaw = ArgusMath::ExponentialDecaySmoother<float>(m_smoothedYawDecayConstant, m_smoothedYawSmoothingSpeedMod);
+	FacingComponentRef->m_smoothedFacing = ArgusMath::SecondOrderSystemSmoother<float>(m_smoothedFacingFrequency, m_smoothedFacingDamping, m_smoothedFacingResponse);
 }
 
 void UFacingComponentData::ReinitializeComponentForEntityPostLoad(ArgusEntity entity) const
