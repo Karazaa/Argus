@@ -26,10 +26,10 @@ struct GlobalSettingsComponent
 	float m_maxAvoidanceObstaclePointHeightDifference = 50.0f;
 
 	ARGUS_COMP_PROPERTY(EditDefaultsOnly, meta = (Category = "Avoidance")) ARGUS_COMP_TRANSIENT
-	float m_avoidanceObstacleLargeDesiredDirectionInfluence = 1.0f;
+	float m_avoidanceObstacleOriginalDirectionInfluence = 1.0f;
 
 	ARGUS_COMP_PROPERTY(EditDefaultsOnly, meta = (Category = "Avoidance")) ARGUS_COMP_TRANSIENT
-	float m_avoidanceObstacleSmallDesiredDirectionInfluence = 0.25f;
+	float m_avoidanceObstacleIndividualWaypointInfluence = 0.25f;
 
 	ARGUS_COMP_PROPERTY(EditDefaultsOnly, meta = (Category = "Flocking")) ARGUS_COMP_TRANSIENT
 	float m_flockingVelocityInfluence = 0.3f;

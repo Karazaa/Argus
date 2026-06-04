@@ -574,7 +574,7 @@ bool AvoidanceSystems::OneDimensionalLinearProgram(const TArray<ORCALine>& orcaL
 		{
 			resultingVelocity = orcaLines[lineIndex].m_point + (tLeft * orcaLines[lineIndex].m_direction);
 		}
-		else if (t < tRight)
+		else if (t > tRight)
 		{
 			resultingVelocity = orcaLines[lineIndex].m_point + (tRight * orcaLines[lineIndex].m_direction);
 		}
@@ -611,7 +611,7 @@ bool AvoidanceSystems::TwoDimensionalLinearProgram(const TArray<ORCALine>& orcaL
 			const FVector2D cachedResultingVelocity = resultingVelocity;
 			if (!OneDimensionalLinearProgram(orcaLines, radius, preferredVelocity, shouldOptimizeDirection, i, resultingVelocity))
 			{
-				resultingVelocity = resultingVelocity;
+				resultingVelocity = cachedResultingVelocity;
 				failureLine = i;
 				return false;
 			}
@@ -644,7 +644,7 @@ void AvoidanceSystems::ThreeDimensionalLinearProgram(const TArray<ORCALine>& orc
 			const float determinant = ArgusMath::Determinant(orcaLines[i].m_direction, orcaLines[j].m_direction);
 			if (FMath::IsNearlyZero(determinant, ArgusECSConstants::k_avoidanceEpsilonValue))
 			{
-				if (orcaLines[j].m_direction.Dot(orcaLines[j].m_direction) > 0.0f)
+				if (orcaLines[i].m_direction.Dot(orcaLines[j].m_direction) > 0.0f)
 				{
 					continue;
 				}
@@ -750,7 +750,7 @@ FVector AvoidanceSystems::GetDesiredDirection(const TransformSystemsArgs& compon
 		const FVector originalDirection = (groupLeaderNavigationComponent->m_navigationPoints[groupLeaderNavigationComponent->m_groupLastPointIndex + 1] - groupLeaderGroupingComponent->m_groupAverageLocation).GetSafeNormal();
 		const FVector toTarget = (groupLeaderNavigationComponent->m_navigationPoints[lastPointIndex + 1] - components.m_transformComponent->m_location).GetSafeNormal();
 
-		return (originalDirection * settings->m_avoidanceObstacleLargeDesiredDirectionInfluence) + (toTarget * settings->m_avoidanceObstacleSmallDesiredDirectionInfluence);
+		return (originalDirection * settings->m_avoidanceObstacleOriginalDirectionInfluence) + (toTarget * settings->m_avoidanceObstacleIndividualWaypointInfluence);
 	}
 
 	return groupLeaderNavigationComponent->m_navigationPoints[groupLeaderNavigationComponent->m_groupLastPointIndex + 1] - groupLeaderGroupingComponent->m_groupAverageLocation;
