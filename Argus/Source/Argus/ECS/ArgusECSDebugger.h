@@ -29,10 +29,22 @@ public:
 	static void Serialize(FArchive& archive);
 
 private:
+	enum class EntityDebugFlags : uint8
+	{
+		ShowDebugMenu = 1 << 0,
+		ShowAvoidanceDebug = 1 << 1,
+		ShowGroupDebug = 1 << 2,
+		ShowNavigationDebug = 1 << 3,
+		ShowFlockingDebug = 1 << 4,
+		ShowIdDebug = 1 << 5
+	};
+
 	static bool s_shouldDrawFogOfWar;
 	static bool s_onlyDebugSelectedEntities;
 	static bool s_ignoreTeamRequirementsForSelectingEntities;
 	static bool s_isTeamAIEnabled;
+
+	static EntityDebugFlags s_entityDebugFlags[ArgusECSConstants::k_maxEntities];
 	static bool s_entityDebugToggles[ArgusECSConstants::k_maxEntities];
 	static bool s_entityShowAvoidanceDebug[ArgusECSConstants::k_maxEntities];
 	static bool s_entityShowGroupDebug[ArgusECSConstants::k_maxEntities];
@@ -55,5 +67,7 @@ private:
 	static void DrawResourceRegion();
 
 	static void ClearAllEntityDebugWindows();
+
+
 };
 #endif //!UE_BUILD_SHIPPING

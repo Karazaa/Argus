@@ -17,6 +17,7 @@ bool ArgusECSDebugger::s_shouldDrawFogOfWar = true;
 bool ArgusECSDebugger::s_onlyDebugSelectedEntities = false;
 bool ArgusECSDebugger::s_ignoreTeamRequirementsForSelectingEntities = false;
 bool ArgusECSDebugger::s_isTeamAIEnabled = true;
+ArgusECSDebugger::EntityDebugFlags ArgusECSDebugger::s_entityDebugFlags[ArgusECSConstants::k_maxEntities];
 bool ArgusECSDebugger::s_entityDebugToggles[ArgusECSConstants::k_maxEntities];
 bool ArgusECSDebugger::s_entityShowAvoidanceDebug[ArgusECSConstants::k_maxEntities];
 bool ArgusECSDebugger::s_entityShowGroupDebug[ArgusECSConstants::k_maxEntities];
