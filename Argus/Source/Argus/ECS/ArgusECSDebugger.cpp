@@ -52,31 +52,6 @@ void ArgusECSDebugger::DrawECSDebugger()
 	ImGui::End();
 }
 
-bool ArgusECSDebugger::IsEntityBeingDebugged(uint16 entityId)
-{
-	return HasEntityDebugFlag(entityId, EntityDebugFlag::ShowDebugMenu);
-}
-
-bool ArgusECSDebugger::ShouldShowAvoidanceDebugForEntity(uint16 entityId)
-{
-	return HasEntityDebugFlag(entityId, EntityDebugFlag::ShowAvoidanceDebug);
-}
-
-bool ArgusECSDebugger::ShouldShowGroupDebugForEntity(uint16 entityId)
-{
-	return HasEntityDebugFlag(entityId, EntityDebugFlag::ShowGroupDebug);
-}
-
-bool ArgusECSDebugger::ShouldShowNavigationDebugForEntity(uint16 entityId)
-{
-	return HasEntityDebugFlag(entityId, EntityDebugFlag::ShowNavigationDebug);
-}
-
-bool ArgusECSDebugger::ShouldShowFlockingDebugForEntity(uint16 entityId)
-{
-	return HasEntityDebugFlag(entityId, EntityDebugFlag::ShowGroupLeaderFlockingDisplay);
-}
-
 void ArgusECSDebugger::Serialize(FArchive& archive)
 {
 	archive << s_shouldDrawFogOfWar;
@@ -249,12 +224,14 @@ void ArgusECSDebugger::DrawEntityDockSpace()
 
 	for (uint16 i = 0u; i < ArgusECSConstants::k_maxEntities; ++i)
 	{
+		UnsetEntityDebugFlag(i, EntityDebugFlag::ShowGroupLeaderFlockingDisplay);
 		if (!ArgusEntity::DoesEntityExist(i) || !HasEntityDebugFlag(i, EntityDebugFlag::ShowDebugMenu))
 		{
 			UnsetEntityDebugFlag(i, EntityDebugFlag::ShowAvoidanceDebug);
 			UnsetEntityDebugFlag(i, EntityDebugFlag::ShowGroupDebug);
 			UnsetEntityDebugFlag(i, EntityDebugFlag::ShowNavigationDebug);
 			UnsetEntityDebugFlag(i, EntityDebugFlag::ShowFlockingDebug);
+			UnsetEntityDebugFlag(i, EntityDebugFlag::ShowIdDebug);
 			continue;
 		}
 
@@ -318,9 +295,11 @@ void ArgusECSDebugger::DrawWindowForEntity(uint16 entityId)
 
 	if (isSelectableEntity)
 	{
-		EntityDebugFlagCheckbox("Show Avoidance debug", entityId, EntityDebugFlag::ShowAvoidanceDebug);
+		EntityDebugFlagCheckbox("Show ID", entityId, EntityDebugFlag::ShowIdDebug);
 		ImGui::SameLine();
 		EntityDebugFlagCheckbox("Show Group debug", entityId, EntityDebugFlag::ShowGroupDebug);
+		ImGui::SameLine();
+		EntityDebugFlagCheckbox("Show Avoidance debug", entityId, EntityDebugFlag::ShowAvoidanceDebug);
 		EntityDebugFlagCheckbox("Show Navigation debug", entityId, EntityDebugFlag::ShowNavigationDebug);
 		ImGui::SameLine();
 		EntityDebugFlagCheckbox("Show Flocking debug", entityId, EntityDebugFlag::ShowFlockingDebug);

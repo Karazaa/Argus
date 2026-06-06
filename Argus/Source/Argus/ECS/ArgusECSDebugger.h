@@ -17,11 +17,12 @@ class ArgusECSDebugger
 {
 public:
 	static void DrawECSDebugger();
-	static bool IsEntityBeingDebugged(uint16 entityId);
-	static bool ShouldShowAvoidanceDebugForEntity(uint16 entityId);
-	static bool ShouldShowGroupDebugForEntity(uint16 entityId);
-	static bool ShouldShowNavigationDebugForEntity(uint16 entityId);
-	static bool ShouldShowFlockingDebugForEntity(uint16 entityId);
+	static bool IsEntityBeingDebugged(uint16 entityId) { return HasEntityDebugFlag(entityId, EntityDebugFlag::ShowDebugMenu); }
+	static bool ShouldShowAvoidanceDebugForEntity(uint16 entityId) { return HasEntityDebugFlag(entityId, EntityDebugFlag::ShowAvoidanceDebug); }
+	static bool ShouldShowGroupDebugForEntity(uint16 entityId) { return HasEntityDebugFlag(entityId, EntityDebugFlag::ShowGroupDebug); }
+	static bool ShouldShowNavigationDebugForEntity(uint16 entityId) { return HasEntityDebugFlag(entityId, EntityDebugFlag::ShowNavigationDebug); }
+	static bool ShouldShowFlockingDebugForEntity(uint16 entityId) { return HasEntityDebugFlag(entityId, EntityDebugFlag::ShowGroupLeaderFlockingDisplay); }
+	static bool ShouldShowIdDebugForEntity(uint16 entityId) { return HasEntityDebugFlag(entityId, EntityDebugFlag::ShowIdDebug); };
 	static bool ShouldIgnoreTeamRequirementsForSelectingEntities() { return s_ignoreTeamRequirementsForSelectingEntities; };
 	static bool ShouldDrawFogOfWar() { return s_shouldDrawFogOfWar; }
 	static bool IsTeamAIEnabled() { return s_isTeamAIEnabled; }

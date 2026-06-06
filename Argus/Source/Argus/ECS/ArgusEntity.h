@@ -112,10 +112,6 @@ public:
 
 	const UArgusActorRecord* GetAssociatedActorRecord() const;
 
-#if !UE_BUILD_SHIPPING
-	const FString	GetDebugString() const;
-#endif //!UE_BUILD_SHIPPING
-
 	template<class ArgusComponent>
 	inline ArgusComponent* GetComponent() const
 	{

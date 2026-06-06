@@ -281,10 +281,10 @@ void AArgusActor::Update(float deltaTime, ETeam activePlayerControllerTeam)
 		SetActorLocationAndRotation(transformComponent->m_location, FRotator(0.0f, ArgusMath::GetUEYawDegreesFromYaw(currentFacing), 0.0f));
 
 #if !UE_BUILD_SHIPPING
-		if (ArgusECSDebugger::IsEntityBeingDebugged(m_entity.GetId()))
+		if (ArgusECSDebugger::ShouldShowIdDebugForEntity(m_entity.GetId()))
 		{
-			// TODO JAMES: uhhh what do we want to do here? It is too visually cluttered to show ID at the moment.
-			// DrawDebugString(GetWorld(), transformComponent->m_location, m_entity.GetDebugString(), nullptr, FColor::Yellow, 0.0f, true, 0.75f);
+			const FVector debugLocation = transformComponent->m_location + FVector(transformComponent->m_radius, 0.0f, 0.0f);
+			DrawDebugString(GetWorld(), debugLocation, FString::Printf(TEXT("%d"), m_entity.GetId()), nullptr, FColor::Yellow, 0.0f, true, 1.0f);
 		}
 #endif //!UE_BUILD_SHIPPING
 	}

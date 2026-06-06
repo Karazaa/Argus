@@ -488,10 +488,3 @@ void ArgusEntity::Destroy()
 {
 	ArgusEntity::DestroyEntity(*this);
 }
-
-#if !UE_BUILD_SHIPPING
-const FString ArgusEntity::GetDebugString() const
-{
-	return FString::Printf(TEXT("(%s: %d)"), ARGUS_NAMEOF(m_id), m_id);
-}
-#endif //!UE_BUILD_SHIPPING
