@@ -29,14 +29,15 @@ public:
 	static void Serialize(FArchive& archive);
 
 private:
-	enum class EntityDebugFlags : uint8
+	enum class EntityDebugFlag : uint8
 	{
 		ShowDebugMenu = 1 << 0,
 		ShowAvoidanceDebug = 1 << 1,
 		ShowGroupDebug = 1 << 2,
 		ShowNavigationDebug = 1 << 3,
 		ShowFlockingDebug = 1 << 4,
-		ShowIdDebug = 1 << 5
+		ShowGroupLeaderFlockingDisplay = 1 << 5,
+		ShowIdDebug = 1 << 6
 	};
 
 	static bool s_shouldDrawFogOfWar;
@@ -44,16 +45,10 @@ private:
 	static bool s_ignoreTeamRequirementsForSelectingEntities;
 	static bool s_isTeamAIEnabled;
 
-	static EntityDebugFlags s_entityDebugFlags[ArgusECSConstants::k_maxEntities];
-	static bool s_entityDebugToggles[ArgusECSConstants::k_maxEntities];
-	static bool s_entityShowAvoidanceDebug[ArgusECSConstants::k_maxEntities];
-	static bool s_entityShowGroupDebug[ArgusECSConstants::k_maxEntities];
-	static bool s_entityShowNavigationDebug[ArgusECSConstants::k_maxEntities];
-	static bool s_entityShowFlockingDebug[ArgusECSConstants::k_maxEntities];
+	static uint8 s_entityDebugFlags[ArgusECSConstants::k_maxEntities];
 	static bool s_teamEntityShowRevealedAreaDebug[sizeof(ETeam) * 8];
 	static int	s_teamToApplyResourcesTo;
 	static TArray<std::string> s_resourceToAddStrings;
-	static TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets>> s_groupLeaderFlockingDisplay;
 
 	static void DrawEntityScrollRegion();
 	static void DrawSelectableEntityScrollRegion(int windowFlags, int childFlags, int tableWidth);
@@ -68,6 +63,10 @@ private:
 
 	static void ClearAllEntityDebugWindows();
 
-
+	static void SetEntityDebugFlag(uint16 entityId, EntityDebugFlag debugFlag);
+	static void UnsetEntityDebugFlag(uint16 entityId, EntityDebugFlag debugFlag);
+	static bool HasEntityDebugFlag(uint16 entityId, EntityDebugFlag debugFlag);
+	static bool EntityDebugFlagCheckbox(const char* label, uint16 entityId, EntityDebugFlag debugFlag);
+	static bool EntityDebugFlagSelectable(const char* label, uint16 entityId, EntityDebugFlag debugFlag);
 };
 #endif //!UE_BUILD_SHIPPING

@@ -17,16 +17,10 @@ bool ArgusECSDebugger::s_shouldDrawFogOfWar = true;
 bool ArgusECSDebugger::s_onlyDebugSelectedEntities = false;
 bool ArgusECSDebugger::s_ignoreTeamRequirementsForSelectingEntities = false;
 bool ArgusECSDebugger::s_isTeamAIEnabled = true;
-ArgusECSDebugger::EntityDebugFlags ArgusECSDebugger::s_entityDebugFlags[ArgusECSConstants::k_maxEntities];
-bool ArgusECSDebugger::s_entityDebugToggles[ArgusECSConstants::k_maxEntities];
-bool ArgusECSDebugger::s_entityShowAvoidanceDebug[ArgusECSConstants::k_maxEntities];
-bool ArgusECSDebugger::s_entityShowGroupDebug[ArgusECSConstants::k_maxEntities];
-bool ArgusECSDebugger::s_entityShowNavigationDebug[ArgusECSConstants::k_maxEntities];
-bool ArgusECSDebugger::s_entityShowFlockingDebug[ArgusECSConstants::k_maxEntities];
+uint8 ArgusECSDebugger::s_entityDebugFlags[ArgusECSConstants::k_maxEntities];
 bool ArgusECSDebugger::s_teamEntityShowRevealedAreaDebug[sizeof(ETeam) * 8];
 int  ArgusECSDebugger::s_teamToApplyResourcesTo = 0;
 TArray<std::string> ArgusECSDebugger::s_resourceToAddStrings;
-TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets>> ArgusECSDebugger::s_groupLeaderFlockingDisplay;
 
 void ArgusECSDebugger::DrawECSDebugger()
 {
@@ -60,33 +54,27 @@ void ArgusECSDebugger::DrawECSDebugger()
 
 bool ArgusECSDebugger::IsEntityBeingDebugged(uint16 entityId)
 {
-	return s_entityDebugToggles[entityId];
+	return HasEntityDebugFlag(entityId, EntityDebugFlag::ShowDebugMenu);
 }
 
 bool ArgusECSDebugger::ShouldShowAvoidanceDebugForEntity(uint16 entityId)
 {
-	return s_entityShowAvoidanceDebug[entityId];
+	return HasEntityDebugFlag(entityId, EntityDebugFlag::ShowAvoidanceDebug);
 }
 
 bool ArgusECSDebugger::ShouldShowGroupDebugForEntity(uint16 entityId)
 {
-	return s_entityShowGroupDebug[entityId];
+	return HasEntityDebugFlag(entityId, EntityDebugFlag::ShowGroupDebug);
 }
 
 bool ArgusECSDebugger::ShouldShowNavigationDebugForEntity(uint16 entityId)
 {
-	return s_entityShowNavigationDebug[entityId];
+	return HasEntityDebugFlag(entityId, EntityDebugFlag::ShowNavigationDebug);
 }
 
 bool ArgusECSDebugger::ShouldShowFlockingDebugForEntity(uint16 entityId)
 {
-	const int32 index = entityId;
-	if (!s_groupLeaderFlockingDisplay.IsValidIndex(index))
-	{
-		return false;
-	}
-
-	return s_groupLeaderFlockingDisplay[index];
+	return HasEntityDebugFlag(entityId, EntityDebugFlag::ShowGroupLeaderFlockingDisplay);
 }
 
 void ArgusECSDebugger::Serialize(FArchive& archive)
@@ -97,11 +85,7 @@ void ArgusECSDebugger::Serialize(FArchive& archive)
 	archive << s_isTeamAIEnabled;
 	for (uint16 i = 0; i < ArgusECSConstants::k_maxEntities; ++i)
 	{
-		archive << s_entityDebugToggles[i];
-		archive << s_entityShowAvoidanceDebug[i];
-		archive << s_entityShowGroupDebug[i];
-		archive << s_entityShowNavigationDebug[i];
-		archive << s_entityShowFlockingDebug[i];
+		archive << s_entityDebugFlags[i];
 	}
 }
 
@@ -147,19 +131,26 @@ void ArgusECSDebugger::DrawSelectableEntityScrollRegion(int windowFlags, int chi
 			ArgusEntity entity = ArgusEntity::RetrieveEntity(i);
 			if (!entity)
 			{
-				s_entityDebugToggles[i] = false;
+				UnsetEntityDebugFlag(i, EntityDebugFlag::ShowDebugMenu);
 				continue;
 			}
 
 			if (s_onlyDebugSelectedEntities)
 			{
-				s_entityDebugToggles[i] = entity.IsSelected();
+				if (entity.IsSelected())
+				{
+					SetEntityDebugFlag(i, EntityDebugFlag::ShowDebugMenu);
+				}
+				else
+				{
+					UnsetEntityDebugFlag(i, EntityDebugFlag::ShowDebugMenu);
+				}
 			}
 
 			char buf[32];
 			sprintf_s(buf, "%d", i);
 			ImGui::TableNextColumn();
-			ImGui::Selectable(buf, &s_entityDebugToggles[i], ImGuiSelectableFlags_None);
+			EntityDebugFlagSelectable(buf, i, EntityDebugFlag::ShowDebugMenu);
 		}
 		ImGui::EndTable();
 	}
@@ -189,7 +180,7 @@ void ArgusECSDebugger::DrawTeamEntityScrollRegion(int windowFlags, int childFlag
 
 				const char* teamName = ARGUS_FSTRING_TO_CHAR(StaticEnum<ETeam>()->GetNameStringByValue(static_cast<uint8>(teamCommanderComponent->m_teamToCommand)));
 				ImGui::TableNextColumn();
-				ImGui::Selectable(teamName, &s_entityDebugToggles[teamEntity.GetId()], ImGuiSelectableFlags_None);
+				EntityDebugFlagSelectable(teamName, teamEntity.GetId(), EntityDebugFlag::ShowDebugMenu);
 			});
 		ImGui::EndTable();
 	}
@@ -207,7 +198,7 @@ void ArgusECSDebugger::DrawSingletonEntityScrollRegion(int windowFlags, int chil
 		}
 		ImGui::EndMenuBar();
 	}
-	ImGui::Selectable("Singleton Entity", &s_entityDebugToggles[ArgusECSConstants::k_singletonEntityId], ImGuiSelectableFlags_None);
+	EntityDebugFlagSelectable("Singleton Entity", ArgusECSConstants::k_singletonEntityId, EntityDebugFlag::ShowDebugMenu);
 	ImGui::EndChild();
 }
 
@@ -240,7 +231,7 @@ void ArgusECSDebugger::DrawCurrentlySelectedEntities()
 
 	for (int32 i = 0; i < inputInterfaceComponent->m_selectedArgusEntityIds.Num(); ++i)
 	{
-		s_entityDebugToggles[inputInterfaceComponent->m_selectedArgusEntityIds[i]] = true;
+		SetEntityDebugFlag(inputInterfaceComponent->m_selectedArgusEntityIds[i], EntityDebugFlag::ShowDebugMenu);
 	}
 }
 
@@ -256,15 +247,14 @@ void ArgusECSDebugger::DrawEntityDockSpace()
 	ImGuiID dockspaceId = ImGui::GetID("Entity Dock Space");
 	ImGui::DockSpace(dockspaceId, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
 
-	s_groupLeaderFlockingDisplay.Init(false, ArgusECSConstants::k_maxEntities);
 	for (uint16 i = 0u; i < ArgusECSConstants::k_maxEntities; ++i)
 	{
-		if (!ArgusEntity::DoesEntityExist(i) || !s_entityDebugToggles[i])
+		if (!ArgusEntity::DoesEntityExist(i) || !HasEntityDebugFlag(i, EntityDebugFlag::ShowDebugMenu))
 		{
-			s_entityShowAvoidanceDebug[i] = false;
-			s_entityShowGroupDebug[i] = false;
-			s_entityShowNavigationDebug[i] = false;
-			s_entityShowFlockingDebug[i] = false;
+			UnsetEntityDebugFlag(i, EntityDebugFlag::ShowAvoidanceDebug);
+			UnsetEntityDebugFlag(i, EntityDebugFlag::ShowGroupDebug);
+			UnsetEntityDebugFlag(i, EntityDebugFlag::ShowNavigationDebug);
+			UnsetEntityDebugFlag(i, EntityDebugFlag::ShowFlockingDebug);
 			continue;
 		}
 
@@ -312,13 +302,11 @@ void ArgusECSDebugger::DrawWindowForEntity(uint16 entityId)
 		isSelectableEntity = true;
 	}
 
-	if (isSelectableEntity && s_entityShowFlockingDebug[entityId])
+	if (isSelectableEntity && HasEntityDebugFlag(entityId, EntityDebugFlag::ShowFlockingDebug))
 	{
-		ArgusEntity groupLeaderEntity = AvoidanceSystems::GetAvoidanceGroupLeader(entity);
-		const int32 index = groupLeaderEntity.GetId();
-		if (groupLeaderEntity && s_groupLeaderFlockingDisplay.IsValidIndex(index))
+		if (ArgusEntity groupLeaderEntity = AvoidanceSystems::GetAvoidanceGroupLeader(entity))
 		{
-			s_groupLeaderFlockingDisplay[index] = true;
+			SetEntityDebugFlag(groupLeaderEntity.GetId(), EntityDebugFlag::ShowGroupLeaderFlockingDisplay);
 		}
 	}
 
@@ -330,12 +318,12 @@ void ArgusECSDebugger::DrawWindowForEntity(uint16 entityId)
 
 	if (isSelectableEntity)
 	{
-		ImGui::Checkbox("Show Avoidance debug", &s_entityShowAvoidanceDebug[entityId]);
+		EntityDebugFlagCheckbox("Show Avoidance debug", entityId, EntityDebugFlag::ShowAvoidanceDebug);
 		ImGui::SameLine();
-		ImGui::Checkbox("Show Group debug", &s_entityShowGroupDebug[entityId]);
-		ImGui::Checkbox("Show Navigation debug", &s_entityShowNavigationDebug[entityId]);
+		EntityDebugFlagCheckbox("Show Group debug", entityId, EntityDebugFlag::ShowGroupDebug);
+		EntityDebugFlagCheckbox("Show Navigation debug", entityId, EntityDebugFlag::ShowNavigationDebug);
 		ImGui::SameLine();
-		ImGui::Checkbox("Show Flocking debug", &s_entityShowFlockingDebug[entityId]);
+		EntityDebugFlagCheckbox("Show Flocking debug", entityId, EntityDebugFlag::ShowFlockingDebug);
 	}
 
 	if (hasRevealedAreas)
@@ -407,8 +395,88 @@ void ArgusECSDebugger::ClearAllEntityDebugWindows()
 {
 	for (uint16 i = 0u; i < ArgusECSConstants::k_maxEntities; ++i)
 	{
-		s_entityDebugToggles[i] = false;
+		UnsetEntityDebugFlag(i, EntityDebugFlag::ShowDebugMenu);
 	}
+}
+
+void ArgusECSDebugger::SetEntityDebugFlag(uint16 entityId, EntityDebugFlag debugFlag)
+{
+	if (!ensure(entityId < ArgusECSConstants::k_maxEntities))
+	{
+		return;
+	}
+
+	s_entityDebugFlags[entityId] |= static_cast<uint8>(debugFlag);
+}
+
+void ArgusECSDebugger::UnsetEntityDebugFlag(uint16 entityId, EntityDebugFlag debugFlag)
+{
+	if (!ensure(entityId < ArgusECSConstants::k_maxEntities))
+	{
+		return;
+	}
+
+	s_entityDebugFlags[entityId] &= (~static_cast<uint8>(debugFlag));
+}
+
+bool ArgusECSDebugger::HasEntityDebugFlag(uint16 entityId, EntityDebugFlag debugFlag)
+{
+	if (!ensure(entityId < ArgusECSConstants::k_maxEntities))
+	{
+		return false;
+	}
+
+	return (s_entityDebugFlags[entityId] & static_cast<uint8>(debugFlag)) != 0;
+}
+
+bool ArgusECSDebugger::EntityDebugFlagCheckbox(const char* label, uint16 entityId, EntityDebugFlag debugFlag)
+{
+	if (!ensure(entityId < ArgusECSConstants::k_maxEntities))
+	{
+		return false;
+	}
+
+	bool value = HasEntityDebugFlag(entityId, debugFlag);
+	if (ImGui::Checkbox(label, &value))
+	{
+		if (value)
+		{
+			SetEntityDebugFlag(entityId, debugFlag);
+		}
+		else
+		{
+			UnsetEntityDebugFlag(entityId, debugFlag);
+		}
+
+		return true;
+	}
+
+	return false;
+}
+
+bool ArgusECSDebugger::EntityDebugFlagSelectable(const char* label, uint16 entityId, EntityDebugFlag debugFlag)
+{
+	if (!ensure(entityId < ArgusECSConstants::k_maxEntities))
+	{
+		return false;
+	}
+
+	bool value = HasEntityDebugFlag(entityId, debugFlag);
+	if (ImGui::Selectable(label, &value, ImGuiSelectableFlags_None))
+	{
+		if (value)
+		{
+			SetEntityDebugFlag(entityId, debugFlag);
+		}
+		else
+		{
+			UnsetEntityDebugFlag(entityId, debugFlag);
+		}
+
+		return true;
+	}
+
+	return false;
 }
 
 #endif //!UE_BUILD_SHIPPING
