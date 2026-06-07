@@ -20,14 +20,7 @@ void AvoidanceSystems::RunSystems(UWorld* worldPointer, float deltaTime)
 {
 	ARGUS_TRACE(AvoidanceSystems::RunSystems);
 
-	TransformSystemsArgs components;
-
-	const GlobalSettingsComponent* settings = ArgusEntity::GetSingletonEntity().GetComponent<GlobalSettingsComponent>();
-	ARGUS_RETURN_ON_NULL(settings, ArgusECSLog);
-	const float inverseEntityPredictionTime = ArgusMath::SafeDivide(1.0f, settings->m_avoidanceEntityDetectionPredictionTime);
-	const float inverseObstaclePredictionTime = ArgusMath::SafeDivide(1.0f, settings->m_avoidanceObstacleDetectionPredictionTime);
-
-	ArgusEntity::IterateSystemsArgs<TransformSystemsArgs>([worldPointer, deltaTime, inverseEntityPredictionTime, inverseObstaclePredictionTime](TransformSystemsArgs& components)
+	ArgusEntity::IterateSystemsArgs<TransformSystemsArgs>([worldPointer, deltaTime](TransformSystemsArgs& components)
 	{
 		if (components.m_entity.IsKillable() && !components.m_entity.IsAlive())
 		{
@@ -45,12 +38,12 @@ void AvoidanceSystems::RunSystems(UWorld* worldPointer, float deltaTime)
 			return;
 		}
 
-		ProcessORCAvoidance(worldPointer, deltaTime, components, nearbyEntitiesComponent, inverseEntityPredictionTime, inverseObstaclePredictionTime);
+		ProcessORCAvoidance(worldPointer, deltaTime, components, nearbyEntitiesComponent);
 	});
 }
 
 #pragma region Optimal Reciprocal Collision Avoidance
-void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime, const TransformSystemsArgs& components, const NearbyEntitiesComponent* nearbyEntitiesComponent, float inverseEntityPredictionTime, float inverseObstaclePredictionTime)
+void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime, const TransformSystemsArgs& components, const NearbyEntitiesComponent* nearbyEntitiesComponent)
 {
 	ARGUS_MEMORY_TRACE(ArgusAvoidanceSystems);
 	ARGUS_TRACE(AvoidanceSystems::ProcessORCAvoidance);
@@ -91,8 +84,6 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 	params.m_sourceEntityLocation3D = components.m_transformComponent->m_location;
 	params.m_sourceEntityLocation = ArgusMath::ToCartesianVector2(FVector2D(params.m_sourceEntityLocation3D));
 
-	PopulateAvoidanceRanges(components.m_entity, params.m_adjacentEntityRange, params.m_adjacentObstacleRange);
-
 	const NearbyObstaclesComponent* nearbyObstaclesComponent = components.m_entity.GetComponent<NearbyObstaclesComponent>();
 	if (nearbyObstaclesComponent)
 	{
@@ -104,8 +95,14 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 	params.m_sourceEntityVelocity = desiredVelocity.IsNearlyZero() ? ArgusMath::ToCartesianVector2(desiredVelocity) : ArgusMath::ToCartesianVector2(components.m_velocityComponent->m_currentVelocity);
 	params.m_deltaTime = deltaTime;
 	params.m_entityRadius = components.m_transformComponent->m_radius;
-	params.m_defaultInverseEntityPredictionTime = inverseEntityPredictionTime;
-	params.m_inverseObstaclePredictionTime = inverseObstaclePredictionTime;
+
+	const float entityPredictionTime = GetAvoidancePredictionTime(components.m_entity, AvoidanceRange::Entity);
+	const float obstaclePredictionTime = GetAvoidancePredictionTime(components.m_entity, AvoidanceRange::Obstacle);
+	params.m_inverseEntityPredictionTime = ArgusMath::SafeDivide(1.0f, entityPredictionTime);
+	params.m_inverseObstaclePredictionTime = ArgusMath::SafeDivide(1.0f, obstaclePredictionTime);
+	params.m_adjacentEntityRange = GetAvoidanceRange(components.m_entity, AvoidanceRange::Entity, entityPredictionTime);
+	params.m_adjacentObstacleRange = GetAvoidanceRange(components.m_entity, AvoidanceRange::Obstacle, obstaclePredictionTime);
+
 	params.m_spatialPartitioningComponent = spatialPartitioningComponent;
 
 	// If no entities nearby, then nothing can effect our navigation, so we should just early out with a desired velocity.
@@ -288,36 +285,57 @@ FVector2D AvoidanceSystems::GetFlockingVelocity(const TransformSystemsArgs& comp
 	return FVector2D(FlockingSystems::GetFlockingPoint(ArgusEntity::RetrieveEntity(entityAvoidanceGroupComponent->m_groupId)) - components.m_transformComponent->m_location);
 }
 
-float AvoidanceSystems::GetAvoidanceRange(ArgusEntity entity, AvoidanceRange avoidanceRange)
+float AvoidanceSystems::GetAvoidancePredictionTime(ArgusEntity entity, AvoidanceRange avoidanceRange)
 {
 	const GlobalSettingsComponent* settings = GlobalSettingsComponent::Get();
 	const TransformComponent* transformComponent = entity.GetComponent<TransformComponent>();
-	ARGUS_RETURN_ON_NULL_VALUE(settings, ArgusECSLog, 0.0f);
+	ARGUS_RETURN_ON_NULL_VALUE(settings, ArgusECSLog, 1.0f);
+	ARGUS_RETURN_ON_NULL_VALUE(transformComponent, ArgusECSLog, 1.0f);
+
+	float output = 0.0f;
+	if (const VelocityComponent* velocityComponent = entity.GetComponent<VelocityComponent>())
+	{
+		output = ArgusMath::SafeDivide(transformComponent->m_radius, velocityComponent->m_desiredSpeedUnitsPerSecond);
+	}
+
+	switch (avoidanceRange)
+	{
+		case AvoidanceRange::Entity:
+			output += settings->m_avoidanceEntityDetectionPredictionTime;
+			break;
+		case AvoidanceRange::Obstacle:
+			output += settings->m_avoidanceObstacleDetectionPredictionTime;
+			break;
+		case AvoidanceRange::GroupEnter:
+			output += settings->m_avoidanceGroupEnterPredictionTime;
+			break;
+		case AvoidanceRange::GroupExit:
+			output += settings->m_avoidanceGroupExitPredictionTime;
+			break;
+		default:
+			break;
+	}
+
+	return output;
+}
+
+float AvoidanceSystems::GetAvoidanceRange(ArgusEntity entity, AvoidanceRange avoidanceRange, float predictionTime)
+{
+	const TransformComponent* transformComponent = entity.GetComponent<TransformComponent>();
 	ARGUS_RETURN_ON_NULL_VALUE(transformComponent, ArgusECSLog, 0.0f);
 
 	float output = transformComponent->m_radius;
 	if (const VelocityComponent* velocityComponent = entity.GetComponent<VelocityComponent>())
 	{
-		switch (avoidanceRange)
-		{
-			case AvoidanceRange::Entity:
-				output = velocityComponent->m_desiredSpeedUnitsPerSecond * settings->m_avoidanceEntityDetectionPredictionTime;
-				break;
-			case AvoidanceRange::Obstacle:
-				output = velocityComponent->m_desiredSpeedUnitsPerSecond * settings->m_avoidanceObstacleDetectionPredictionTime;
-				break;
-			case AvoidanceRange::GroupEnter:
-				output = velocityComponent->m_desiredSpeedUnitsPerSecond * settings->m_avoidanceGroupEnterPredictionTime;
-				break;
-			case AvoidanceRange::GroupExit:
-				output = velocityComponent->m_desiredSpeedUnitsPerSecond * settings->m_avoidanceGroupExitPredictionTime;
-				break;
-			default:
-				break;
-		}
+		output = velocityComponent->m_desiredSpeedUnitsPerSecond * predictionTime;
 	}
 
 	return output;
+}
+
+float AvoidanceSystems::GetAvoidanceRange(ArgusEntity entity, AvoidanceRange avoidanceRange)
+{
+	return GetAvoidanceRange(entity, avoidanceRange, GetAvoidancePredictionTime(entity, avoidanceRange));
 }
 
 void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const CreateEntityORCALinesParams& params, const TransformSystemsArgs& components, const NearbyObstaclesComponent* nearbyObstaclesComponent,  TArray<ORCALine>& outORCALines)
@@ -414,7 +432,7 @@ void AvoidanceSystems::CreateEntityORCALines(const CreateEntityORCALinesParams& 
 		}
 
 		perEntityParams.m_foundEntityLocation = ArgusMath::ToCartesianVector2(FVector2D(foundTransformComponent->m_location));
-		perEntityParams.m_inverseEntityPredictionTime = params.m_defaultInverseEntityPredictionTime;
+		perEntityParams.m_inverseEntityPredictionTime = params.m_inverseEntityPredictionTime;
 
 		if (const VelocityComponent* foundVelocityComponent = foundEntity.GetComponent<VelocityComponent>())
 		{
@@ -1008,24 +1026,6 @@ void AvoidanceSystems::CalculateORCALineForObstacleSegment(const CreateEntityORC
 	line.m_direction = -rightLegDirection;
 	line.m_point = rightCutoff + (params.m_entityRadius * params.m_inverseObstaclePredictionTime * FVector2D(-line.m_direction.Y, line.m_direction.X));
 	outORCALines.Add(line);
-}
-
-void AvoidanceSystems::PopulateAvoidanceRanges(ArgusEntity entity, float& outEntityRange, float& outObstacleRange)
-{
-	outEntityRange = 0.0f;
-	outObstacleRange = 0.0f;
-	const GlobalSettingsComponent* settings = GlobalSettingsComponent::Get();
-	const TransformComponent* transformComponent = entity.GetComponent<TransformComponent>();
-	ARGUS_RETURN_ON_NULL(settings, ArgusECSLog);
-	ARGUS_RETURN_ON_NULL(transformComponent, ArgusECSLog);
-
-	outEntityRange = transformComponent->m_radius;
-	outObstacleRange = outEntityRange;
-	if (const VelocityComponent* velocityComponent = entity.GetComponent<VelocityComponent>())
-	{
-		outEntityRange = velocityComponent->m_desiredSpeedUnitsPerSecond * settings->m_avoidanceEntityDetectionPredictionTime;
-		outObstacleRange = velocityComponent->m_desiredSpeedUnitsPerSecond * settings->m_avoidanceObstacleDetectionPredictionTime;
-	}
 }
 
 #if !UE_BUILD_SHIPPING

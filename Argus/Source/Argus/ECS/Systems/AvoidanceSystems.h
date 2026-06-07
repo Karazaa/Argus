@@ -18,13 +18,15 @@ class AvoidanceSystems
 public:
 	static void RunSystems(UWorld* worldPointer, float deltaTime);
 
-	static void					ProcessORCAvoidance(UWorld* worldPointer, float deltaTime, const TransformSystemsArgs& components, const NearbyEntitiesComponent* nearbyEntitiesComponent, float inverseEntityPredictionTime = 1.0f, float inverseObstaclePredictionTime = 1.0f);
+	static void					ProcessORCAvoidance(UWorld* worldPointer, float deltaTime, const TransformSystemsArgs& components, const NearbyEntitiesComponent* nearbyEntitiesComponent);
 	static ArgusEntity			GetAvoidanceGroupLeader(ArgusEntity entity);
 	static bool					AreInSameAvoidanceGroup(ArgusEntity entity, ArgusEntity otherEntity);
 	static void					DecrementIdleEntitiesInGroup(ArgusEntity entity);
 	static TOptional<FVector>	GetAvoidanceGroupDestinationLocation(const TransformSystemsArgs& components);
 	static TOptional<FVector>	GetAvoidanceGroupSourceLocation(const TransformSystemsArgs& components);
 	static FVector2D			GetFlockingVelocity(const TransformSystemsArgs& components);
+	static float				GetAvoidancePredictionTime(ArgusEntity entity, AvoidanceRange avoidanceRange);
+	static float				GetAvoidanceRange(ArgusEntity entity, AvoidanceRange avoidanceRange, float predictionTime);
 	static float				GetAvoidanceRange(ArgusEntity entity, AvoidanceRange avoidanceRange);
 
 	template<typename Function>
@@ -67,7 +69,7 @@ private:
 		FVector2D m_sourceEntityLocation = FVector2D::ZeroVector;
 		FVector2D m_sourceEntityVelocity = FVector2D::ZeroVector;
 		float m_deltaTime = 0.0f;
-		float m_defaultInverseEntityPredictionTime = 0.0f;
+		float m_inverseEntityPredictionTime = 0.0f;
 		float m_inverseObstaclePredictionTime = 0.0f;
 		float m_entityRadius = 45.0f;
 		float m_adjacentEntityRange = 150.0f;
@@ -109,8 +111,6 @@ private:
 	static float		FindAreaOfObstacleCartesian(const TArray<ObstaclePoint>& obstaclePoints);
 	
 	static void			CalculateORCALineForObstacleSegment(const CreateEntityORCALinesParams& params, ObstaclePoint obstaclePoint0, ObstaclePoint obstaclePoint1, const FVector2D& previousObstaclePointDir, TArray<ORCALine>& outORCALines);
-	
-	static void			PopulateAvoidanceRanges(ArgusEntity entity, float& outEntityRange, float& outObstacleRange);
 	
 #if !UE_BUILD_SHIPPING
 	static void			DrawORCADebugLines(UWorld* worldPointer, const CreateEntityORCALinesParams& params, const TArray<ORCALine>& orcaLines, bool areObstacleLines, int32 startingLine);
