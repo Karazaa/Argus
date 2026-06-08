@@ -24,14 +24,18 @@ void InputInterfaceSystems::MoveSelectedEntitiesToTarget(EMovementState inputMov
 	const GlobalSettingsComponent* settings = GlobalSettingsComponent::Get();
 	ARGUS_RETURN_ON_NULL(settings, ArgusECSLog);
 	
-	FNavAgentSelector agentToUse = FNavAgentSelector(1u);
-	int32 numEntitiesMoving = inputInterfaceComponent->m_selectedArgusEntityIds.Num();
-	for (int32 i = settings->m_groupSizeRadiusPair.Num() - 1; i >= 0; --i)
+	FNavAgentSelector agentToUse = FNavAgentSelector(0);
+	const int32 numEntitiesMoving = inputInterfaceComponent->m_selectedArgusEntityIds.Num();
+
+	if (numEntitiesMoving > 1)
 	{
-		if (numEntitiesMoving > settings->m_groupSizeRadiusPair[i].m_groupSizeLowerBound)
+		for (int32 i = settings->m_groupSizeRadiusPair.Num() - 1; i >= 0; --i)
 		{
-			agentToUse = settings->m_groupSizeRadiusPair[i].m_navAgentSelection;
-			break;
+			if (numEntitiesMoving > settings->m_groupSizeRadiusPair[i].m_groupSizeLowerBound)
+			{
+				agentToUse = settings->m_groupSizeRadiusPair[i].m_navAgentSelection;
+				break;
+			}
 		}
 	}
 
@@ -405,7 +409,7 @@ void InputInterfaceSystems::MoveEntityToTarget(ArgusEntity entity, EMovementStat
 	if (navigationComponent)
 	{
 		navigationComponent->ResetQueuedWaypoints();
-		navigationComponent->m_navAgentToUse = navAgentToUse;
+		navigationComponent->m_currentNavAgentToUse = navAgentToUse;
 	}
 
 	if (inputMovementState == EMovementState::ProcessMoveToEntityCommand)

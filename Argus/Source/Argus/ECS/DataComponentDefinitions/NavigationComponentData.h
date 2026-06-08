@@ -12,6 +12,9 @@ class ARGUS_API UNavigationComponentData : public UComponentData
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(EditAnywhere)
+	FNavAgentSelector m_navAgentToUseWhenSolo = FNavAgentSelector(1u);
+
 
 	void InstantiateComponentForEntity(ArgusEntity entity) const override;
 	void ReinitializeComponentForEntityPostLoad(ArgusEntity entity) const override;

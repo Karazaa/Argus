@@ -297,11 +297,16 @@ void NavigationSystems::GeneratePathPointsForGroundedEntity(UWorld* worldPointer
 		return;
 	}
 
+	if (!components.m_navigationComponent->m_currentNavAgentToUse.ContainsAnyAgent())
+	{
+		components.m_navigationComponent->m_currentNavAgentToUse = components.m_navigationComponent->m_navAgentToUseWhenSolo;
+	}
+
 	int32 propertyIndex = 0;
 	for (int32 i = 0; i < allNavAgents.Num(); ++i)
 	{
 		// For whatever reason in Unreal's internals, allNavAgentProperties is returned fully inverted.
-		if (components.m_navigationComponent->m_navAgentToUse.Contains(i))
+		if (components.m_navigationComponent->m_currentNavAgentToUse.Contains(i))
 		{
 			propertyIndex = i;
 			break;

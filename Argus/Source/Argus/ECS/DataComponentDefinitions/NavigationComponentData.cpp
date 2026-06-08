@@ -10,6 +10,7 @@ void UNavigationComponentData::InstantiateComponentForEntity(ArgusEntity entity)
 	NavigationComponent* NavigationComponentRef = entity.GetOrAddComponent<NavigationComponent>();
 	ARGUS_RETURN_ON_NULL(NavigationComponentRef, ArgusECSLog);
 
+	NavigationComponentRef->m_navAgentToUseWhenSolo = m_navAgentToUseWhenSolo;
 }
 
 void UNavigationComponentData::ReinitializeComponentForEntityPostLoad(ArgusEntity entity) const

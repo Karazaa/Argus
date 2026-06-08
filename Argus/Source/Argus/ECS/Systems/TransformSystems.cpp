@@ -438,6 +438,7 @@ void TransformSystems::OnWithinRangeOfTargetEntity(const TransformSystemsArgs& c
 	}
 
 	components.m_taskComponent->m_movementState = EMovementState::InRangeOfTargetEntity;
+	components.m_navigationComponent->m_currentNavAgentToUse.Empty();
 	components.m_velocityComponent->m_currentVelocity = FVector2D::ZeroVector;
 }
 
@@ -571,6 +572,7 @@ void TransformSystems::CompleteNavigationPathPerGroupEntity(ArgusEntity entity)
 	{
 		components.m_taskComponent->m_movementState = EMovementState::None;
 		components.m_navigationComponent->ResetPath();
+		components.m_navigationComponent->m_currentNavAgentToUse.Empty();
 		components.m_velocityComponent->m_currentVelocity = FVector2D::ZeroVector;
 	}
 	else
