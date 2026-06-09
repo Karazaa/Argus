@@ -23,9 +23,10 @@ struct NavigationComponent
 	ARGUS_COMP_NO_DATA
 	int32 m_groupLastPointIndex = 0;
 
-	ARGUS_COMP_NO_DATA
+	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT
 	FNavAgentSelector m_currentNavAgentToUse = FNavAgentSelector(0u);
 
+	ARGUS_COMP_TRANSIENT
 	FNavAgentSelector m_navAgentToUseWhenSolo = FNavAgentSelector(1u);
 
 	void ResetPath()

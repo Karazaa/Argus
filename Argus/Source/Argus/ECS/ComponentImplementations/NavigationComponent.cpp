@@ -34,6 +34,7 @@ void NavigationComponent::Serialize(FArchive& archive)
 	m_queuedWaypoints.Serialize(archive);
 	archive << m_lastPointIndex;
 	archive << m_groupLastPointIndex;
+	m_navAgentToUseWhenSolo.Serialize(archive);
 }
 
 void NavigationComponent::DrawComponentDebug() const
@@ -97,6 +98,21 @@ void NavigationComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_navAgentToUseWhenSolo");
 		ImGui::TableNextColumn();
+		if (!m_navAgentToUseWhenSolo.ContainsAnyAgent())
+		{
+			ImGui::Text("None");
+		}
+		else
+		{
+			for (int32 i = 0; i < 16; ++i)
+			{
+				if (m_navAgentToUseWhenSolo.Contains(i))
+				{
+					ImGui::Text("Agent Index %d", i);
+					break;
+				}
+			}
+		}
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING
