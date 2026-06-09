@@ -304,6 +304,7 @@ void ComponentImplementationGenerator::GeneratePerVariableSerializeText(const st
 					break;
 				case UnderlyingType::ResourceSet:
 				case UnderlyingType::TimerHandle:
+				case UnderlyingType::NavAgentSelector:
 					outParsedVariableContents.push_back(std::vformat("\t{}.Serialize(archive);", std::make_format_args(parsedVariableData[i].m_varName)));
 					break;
 				default:
@@ -488,6 +489,9 @@ bool ComponentImplementationGenerator::PopulateAtomicFormattingFunction(Underlyi
 			break;
 		case UnderlyingType::ConstructionData:
 			functionToPopulate = FormatImGuiConstructionDataField;
+			break;
+		case UnderlyingType::NavAgentSelector:
+			functionToPopulate = FormatImGuiNavAgentSelectorField;
 			break;
 		default:
 			// TODO JAMES: Set some breakpoints here and capture any data types we don't currently have represented.
@@ -868,6 +872,26 @@ void ComponentImplementationGenerator::FormatImGuiResourceSourceExtractionDataFi
 	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::EndTable();", std::make_format_args(prefix)));
 }
 
+void ComponentImplementationGenerator::FormatImGuiNavAgentSelectorField(const std::string& variableName, const std::string& extraData, const std::string& prefix, std::vector<std::string>& outParsedVariableContents)
+{
+	outParsedVariableContents.push_back(std::vformat("{}\t\tif (!{}.ContainsAnyAgent())", std::make_format_args(prefix, variableName)));
+	outParsedVariableContents.push_back(std::vformat("{}\t\t{", std::make_format_args(prefix)));
+	outParsedVariableContents.push_back(std::vformat("{}\t\t\tImGui::Text(\"None\");", std::make_format_args(prefix)));
+	outParsedVariableContents.push_back(std::vformat("{}\t\t}", std::make_format_args(prefix)));
+	outParsedVariableContents.push_back(std::vformat("{}\t\telse", std::make_format_args(prefix)));
+	outParsedVariableContents.push_back(std::vformat("{}\t\t{", std::make_format_args(prefix)));
+	outParsedVariableContents.push_back(std::vformat("{}\t\t\tfor (int32 i = 0; i < 16; ++i)", std::make_format_args(prefix)));
+	outParsedVariableContents.push_back(std::vformat("{}\t\t\t{", std::make_format_args(prefix)));
+	outParsedVariableContents.push_back(std::vformat("{}\t\t\t\tif ({}.Contains(i))", std::make_format_args(prefix, variableName)));
+	outParsedVariableContents.push_back(std::vformat("{}\t\t\t\t{", std::make_format_args(prefix)));
+	outParsedVariableContents.push_back(std::vformat("{}\t\t\t\t\tImGui::Text(\"Agent Index % d\", i);", std::make_format_args(prefix)));
+	outParsedVariableContents.push_back(std::vformat("{}\t\t\t\t\tbreak;", std::make_format_args(prefix)));
+	outParsedVariableContents.push_back(std::vformat("{}\t\t\t\t}", std::make_format_args(prefix)));
+	outParsedVariableContents.push_back(std::vformat("{}\t\t\t}", std::make_format_args(prefix)));
+	outParsedVariableContents.push_back(std::vformat("{}\t\t}", std::make_format_args(prefix)));
+	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::Text(\"Entity Constructing Other Id %d\", {}.m_constructingOtherEntityId);", std::make_format_args(prefix, variableName)));
+}
+
 ComponentImplementationGenerator::TypeInfo::TypeInfo(const std::string& typeString, const std::string& macroString)
 {
 	m_underlyingType = DetermineType(typeString, macroString, m_cleanTypeName);
@@ -1020,6 +1044,10 @@ ComponentImplementationGenerator::UnderlyingType ComponentImplementationGenerato
 	else if (typeString.find("ConstructionData") != std::string::npos)
 	{
 		output = UnderlyingType::ConstructionData;
+	}
+	else if (typeString.find("FNavAgentSelector") != std::string::npos)
+	{
+		output = UnderlyingType::NavAgentSelector;
 	}
 
 	return output;

@@ -79,6 +79,21 @@ void NavigationComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_currentNavAgentToUse");
 		ImGui::TableNextColumn();
+		if (!m_currentNavAgentToUse.ContainsAnyAgent())
+		{
+			ImGui::Text("None");
+		}
+		else
+		{
+			for (int32 i = 0; i < 16; ++i)
+			{
+				if (m_currentNavAgentToUse.Contains(i))
+				{
+					ImGui::Text("Agent Index %d", i);
+					break;
+				}
+			}
+		}
 		ImGui::TableNextColumn();
 		ImGui::Text("m_navAgentToUseWhenSolo");
 		ImGui::TableNextColumn();
