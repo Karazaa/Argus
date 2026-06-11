@@ -18,6 +18,9 @@ public:
 	static void MoveAlongNavigationPath(UWorld* worldPointer, float deltaTime, const TransformSystemsArgs& components);
 	static FVector ProjectLocationOntoNavigationData(UWorld* worldPointer, float navAgentRadius, const FVector& location);
 
+	static float GetDesiredSpeed(const TaskComponent* taskComponent, const VelocityComponent* velocityComponent);
+	static float GetDesiredSpeed(ArgusEntity entity);
+
 private:
 	static bool ProcessMovementTaskCommands(UWorld* worldPointer, float deltaTime, const TransformSystemsArgs& components);
 	static void ProcessTakeOffCommand(UWorld* worldPointer, float deltaTime, const TransformSystemsArgs& components);

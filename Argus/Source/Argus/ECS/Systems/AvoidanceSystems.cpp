@@ -125,14 +125,15 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 
 	int32 failureLine = -1;
 	FVector2D resultingVelocity = FVector2D::ZeroVector;
-	if (!TwoDimensionalLinearProgram(calculatedORCALines, components.m_velocityComponent->m_desiredSpeedUnitsPerSecond, desiredVelocity, true, resultingVelocity, failureLine))
+	const float desiredSpeed = TransformSystems::GetDesiredSpeed(components.m_taskComponent, components.m_velocityComponent);
+	if (!TwoDimensionalLinearProgram(calculatedORCALines, desiredSpeed, desiredVelocity, true, resultingVelocity, failureLine))
 	{
-		ThreeDimensionalLinearProgram(calculatedORCALines, components.m_velocityComponent->m_desiredSpeedUnitsPerSecond, failureLine, numStaticObstacles, resultingVelocity);
+		ThreeDimensionalLinearProgram(calculatedORCALines, desiredSpeed, failureLine, numStaticObstacles, resultingVelocity);
 	}
 
-	if (resultingVelocity.SquaredLength() > FMath::Square(components.m_velocityComponent->m_desiredSpeedUnitsPerSecond))
+	if (resultingVelocity.SquaredLength() > FMath::Square(desiredSpeed))
 	{
-		resultingVelocity = resultingVelocity.GetSafeNormal() * components.m_velocityComponent->m_desiredSpeedUnitsPerSecond;
+		resultingVelocity = resultingVelocity.GetSafeNormal() * desiredSpeed;
 	}
 
 #if !UE_BUILD_SHIPPING
@@ -293,9 +294,10 @@ float AvoidanceSystems::GetAvoidancePredictionTime(ArgusEntity entity, Avoidance
 	ARGUS_RETURN_ON_NULL_VALUE(transformComponent, ArgusECSLog, 1.0f);
 
 	float output = 0.0f;
-	if (const VelocityComponent* velocityComponent = entity.GetComponent<VelocityComponent>())
+	const float desiredSpeed = TransformSystems::GetDesiredSpeed(entity);
+	if (!FMath::IsNearlyZero(desiredSpeed))
 	{
-		output = ArgusMath::SafeDivide(transformComponent->m_radius, velocityComponent->m_desiredSpeedUnitsPerSecond);
+		output = transformComponent->m_radius / desiredSpeed;
 	}
 
 	switch (avoidanceRange)
@@ -325,9 +327,11 @@ float AvoidanceSystems::GetAvoidanceRange(ArgusEntity entity, AvoidanceRange avo
 	ARGUS_RETURN_ON_NULL_VALUE(transformComponent, ArgusECSLog, 0.0f);
 
 	float output = transformComponent->m_radius;
-	if (const VelocityComponent* velocityComponent = entity.GetComponent<VelocityComponent>())
+
+	const float desiredSpeed = TransformSystems::GetDesiredSpeed(entity);
+	if (!FMath::IsNearlyZero(desiredSpeed))
 	{
-		output = velocityComponent->m_desiredSpeedUnitsPerSecond * predictionTime;
+		output = desiredSpeed * predictionTime;
 	}
 
 	return output;
@@ -697,11 +701,12 @@ FVector2D AvoidanceSystems::GetDesiredVelocity(const TransformSystemsArgs& compo
 	}
 
 	const FVector2D flockingVelocity = GetFlockingVelocity(components);
+	const float desiredSpeed = TransformSystems::GetDesiredSpeed(components.m_taskComponent, components.m_velocityComponent);
 
 	// If we are not executing a move task, we would like to early out with zero velocity as our desired velocity (this may change as we define more functionality for AvoidanceGroups)
 	if (!components.m_taskComponent->IsExecutingMoveTask())
 	{
-		return flockingVelocity.IsNearlyZero() ? FVector2D::ZeroVector : ArgusMath::ToCartesianVector2(flockingVelocity.GetSafeNormal() * components.m_velocityComponent->m_desiredSpeedUnitsPerSecond);
+		return flockingVelocity.IsNearlyZero() ? FVector2D::ZeroVector : ArgusMath::ToCartesianVector2(flockingVelocity.GetSafeNormal() * desiredSpeed);
 	}
 
 	const GlobalSettingsComponent* settings = GlobalSettingsComponent::Get();
@@ -724,7 +729,7 @@ FVector2D AvoidanceSystems::GetDesiredVelocity(const TransformSystemsArgs& compo
 	}
 	desiredDirection2D.Normalize();
 
-	return ArgusMath::ToCartesianVector2(desiredDirection2D * components.m_velocityComponent->m_desiredSpeedUnitsPerSecond);
+	return ArgusMath::ToCartesianVector2(desiredDirection2D * desiredSpeed);
 }
 
 FVector AvoidanceSystems::GetDesiredDirection(const TransformSystemsArgs& components, bool isInRangeOfObstacles, const GlobalSettingsComponent* settings)

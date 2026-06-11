@@ -9,6 +9,7 @@
 #include "Systems/ConstructionSystems.h"
 #include "Systems/ResourceSystems.h"
 #include "Systems/SpatialPartitioningSystems.h"
+#include "Systems/TransformSystems.h"
 
 #if !UE_BUILD_SHIPPING
 #include "ArgusECSDebugger.h"
@@ -110,7 +111,7 @@ void NavigationSystems::NavigateFromEntityToLocation(UWorld* worldPointer, std::
 	// Need to set initial velocity when starting pathing so that avoidance systems can properly consider desired velocity when starting movement.
 	FVector moverLocation = components.m_transformComponent->m_location;
 	const FVector firstLocation = components.m_navigationComponent->m_navigationPoints[1];
-	components.m_velocityComponent->m_currentVelocity = FVector2D((firstLocation - moverLocation).GetSafeNormal() * components.m_velocityComponent->m_desiredSpeedUnitsPerSecond);
+	components.m_velocityComponent->m_currentVelocity = FVector2D((firstLocation - moverLocation).GetSafeNormal() * TransformSystems::GetDesiredSpeed(components.m_taskComponent, components.m_velocityComponent));
 }
 
 void NavigationSystems::StartNavigatingToQueuedWaypoint(TaskComponent* taskComponent, TargetingComponent* targetingComponent, NavigationComponent* navigationComponent)

@@ -131,6 +131,27 @@ FVector TransformSystems::ProjectLocationOntoNavigationData(UWorld* worldPointer
 	return location;
 }
 
+float TransformSystems::GetDesiredSpeed(const TaskComponent* taskComponent, const VelocityComponent* velocityComponent)
+{
+	ARGUS_RETURN_ON_NULL_VALUE(taskComponent, ArgusECSLog, 0.0f);
+	ARGUS_RETURN_ON_NULL_VALUE(velocityComponent, ArgusECSLog, 0.0f);
+
+	return taskComponent->m_flightState == EFlightState::Flying ? velocityComponent->m_desiredFlightSpeedUnitsPerSecond : velocityComponent->m_desiredSpeedUnitsPerSecond;
+}
+
+float TransformSystems::GetDesiredSpeed(ArgusEntity entity)
+{
+	const TaskComponent* taskComponent = entity.GetComponent<TaskComponent>();
+	const VelocityComponent* velocityComponent = entity.GetComponent<VelocityComponent>();
+
+	if (!taskComponent || !velocityComponent)
+	{
+		return 0.0f;
+	}
+
+	return GetDesiredSpeed(taskComponent, velocityComponent);
+}
+
 bool TransformSystems::ProcessMovementTaskCommands(UWorld* worldPointer, float deltaTime, const TransformSystemsArgs& components)
 {
 	ARGUS_TRACE(TransformSystems::ProcessMovementTaskCommands);
@@ -352,7 +373,7 @@ void TransformSystems::FaceVelocity(const TransformSystemsArgs& components)
 		return;
 	}
 
-	const float desiredSpeed = components.m_taskComponent->m_flightState == EFlightState::Flying ? components.m_velocityComponent->m_desiredFlightSpeedUnitsPerSecond : components.m_velocityComponent->m_desiredSpeedUnitsPerSecond;
+	const float desiredSpeed = GetDesiredSpeed(components.m_taskComponent, components.m_velocityComponent);
 	if (components.m_velocityComponent->m_currentVelocity.SquaredLength() > (desiredSpeed * 0.8f))
 	{
 		FaceTowardsLocationXY(components.m_facingComponent, FVector(components.m_velocityComponent->m_currentVelocity, 0.0f));
@@ -585,7 +606,7 @@ float TransformSystems::GetEndMoveRange(const TransformSystemsArgs& components)
 {
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
-		return components.m_velocityComponent->m_desiredSpeedUnitsPerSecond + components.m_transformComponent->m_radius;
+		return GetDesiredSpeed(components.m_taskComponent, components.m_velocityComponent) + components.m_transformComponent->m_radius;
 	}
 
 	if (components.m_taskComponent->m_movementState != EMovementState::MoveToEntity)
