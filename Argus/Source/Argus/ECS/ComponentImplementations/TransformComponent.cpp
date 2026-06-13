@@ -21,16 +21,12 @@ uint16 TransformComponent::GetOwningEntityId() const
 void TransformComponent::Reset()
 {
 	m_location = FVector::ZeroVector;
-	m_smoothedTransitionAltitude.ResetZero();
-	m_targetTransitionAltitude = 0.0f;
 	m_radius = 45.0f;
 }
 
 void TransformComponent::Serialize(FArchive& archive)
 {
 	archive << m_location;
-	m_smoothedTransitionAltitude.Serialize(archive);
-	archive << m_targetTransitionAltitude;
 	archive << m_radius;
 	archive << m_flightCapability;
 }
@@ -49,14 +45,6 @@ void TransformComponent::DrawComponentDebug() const
 		ImGui::Text("m_location");
 		ImGui::TableNextColumn();
 		ImGui::Text("(%.2f, %.2f, %.2f)", m_location.X, m_location.Y, m_location.Z);
-		ImGui::TableNextColumn();
-		ImGui::Text("m_smoothedTransitionAltitude");
-		ImGui::TableNextColumn();
-		ImGui::Text("%.2f", m_smoothedTransitionAltitude.GetValue());
-		ImGui::TableNextColumn();
-		ImGui::Text("m_targetTransitionAltitude");
-		ImGui::TableNextColumn();
-		ImGui::Text("%.2f", m_targetTransitionAltitude);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_radius");
 		ImGui::TableNextColumn();

@@ -28,6 +28,7 @@ void AbilityComponent::Reset()
 	m_ability1OverrideId = 0u;
 	m_ability2OverrideId = 0u;
 	m_ability3OverrideId = 0u;
+	m_queuedAbilityIds.Reset();
 	m_abilityToRefundId = 0u;
 	m_abilityOverrideBitmask = 0u;
 	m_abilityCasterPriority = 0u;
@@ -43,6 +44,7 @@ void AbilityComponent::Serialize(FArchive& archive)
 	archive << m_ability1OverrideId;
 	archive << m_ability2OverrideId;
 	archive << m_ability3OverrideId;
+	archive << m_queuedAbilityIds;
 	archive << m_abilityToRefundId;
 	archive << m_abilityOverrideBitmask;
 	archive << m_abilityCasterPriority;
@@ -134,6 +136,25 @@ void AbilityComponent::DrawComponentDebug() const
 		ImGui::Text("m_ability3OverrideId");
 		ImGui::TableNextColumn();
 		ImGui::Text("%d", m_ability3OverrideId);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_queuedAbilityIds");
+		ImGui::TableNextColumn();
+		ImGui::Text("Array max is currently = %d", m_queuedAbilityIds.Max());
+		if (m_queuedAbilityIds.Num() == 0)
+		{
+			ImGui::Text("Array is empty");
+		}
+		else
+		{
+			ImGui::Text("Size of array = %d", m_queuedAbilityIds.Num());
+			ImGui::Indent();
+			for (int32 i = 0; i < m_queuedAbilityIds.Num(); ++i)
+			{
+				if (i != 0) ImGui::Separator();
+				ImGui::Text("%d", m_queuedAbilityIds[i]);
+			}
+			ImGui::Unindent();
+		}
 		ImGui::TableNextColumn();
 		ImGui::Text("m_abilityToRefundId");
 		ImGui::TableNextColumn();

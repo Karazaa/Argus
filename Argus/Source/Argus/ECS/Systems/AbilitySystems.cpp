@@ -124,8 +124,6 @@ void AbilitySystems::CastAbility(const UAbilityRecord* abilityRecord, const Abil
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Successfully casted ability id %d, but could not afford it!"), ARGUS_FUNCNAME, abilityRecord->m_id);
 		}
 	}
-
-	components.m_taskComponent->m_abilityState = EAbilityState::None;
 }
 
 void AbilitySystems::PrepReticle(const UAbilityRecord* abilityRecord, const AbilitySystemsArgs& components)
@@ -316,6 +314,19 @@ void AbilitySystems::ProcessAbilityTaskCommands(const AbilitySystemsArgs& compon
 		return;
 	}
 
+	for (int32 i = 0; i < components.m_abilityComponent->m_queuedAbilityIds.Num(); ++i)
+	{
+		const UAbilityRecord* abilityRecord = ArgusStaticData::GetRecord<UAbilityRecord>(components.m_abilityComponent->m_queuedAbilityIds[i]);
+		if (!abilityRecord)
+		{
+			LogAbilityRecordError(ARGUS_FUNCNAME);
+			return;
+		}
+
+		CastAbility(abilityRecord, components);
+	}
+	components.m_abilityComponent->m_queuedAbilityIds.Reset();
+
 	uint32 abilityId = 0u;
 	switch (components.m_taskComponent->m_abilityState)
 	{
@@ -369,6 +380,7 @@ void AbilitySystems::ProcessAbilityTaskCommands(const AbilitySystemsArgs& compon
 	}
 
 	CastAbility(abilityRecord, components);
+	components.m_taskComponent->m_abilityState = EAbilityState::None;
 }
 
 bool AbilitySystems::CastSpawnAbility(const UAbilityRecord* abilityRecord, const FAbilityEffect& abilityEffect, const AbilitySystemsArgs& components, bool needsConstruction, bool atTargetLocation)
@@ -513,7 +525,9 @@ bool AbilitySystems::CastFlightTransitionAbility(const UAbilityRecord* abilityRe
 	}
 	
 	const TransformComponent* transformComponent = components.m_entity.GetComponent<TransformComponent>();
+	FlightTransitionComponent* flightTransitionComponent = components.m_entity.GetComponent<FlightTransitionComponent>();
 	ARGUS_RETURN_ON_NULL_BOOL(transformComponent, ArgusECSLog);
+	ARGUS_RETURN_ON_NULL_BOOL(flightTransitionComponent, ArgusECSLog);
 
 	if (transformComponent->m_flightCapability != EFlightCapability::BothGroundedAndFlying)
 	{
@@ -522,6 +536,8 @@ bool AbilitySystems::CastFlightTransitionAbility(const UAbilityRecord* abilityRe
 	}
 
 	components.m_taskComponent->Set_m_flightState(landing ? EFlightState::ProcessLandCommand : EFlightState::ProcessTakeOffCommand);
+	flightTransitionComponent->m_onTransitionCompleteAbilityId = abilityEffect.m_abilityRecordReference.GetId();
+
 	return true;
 }
 

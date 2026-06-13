@@ -112,6 +112,9 @@ ArgusMap<uint16, DecalSystemsSettingsComponent*, ArgusSetAllocator<1> > ArgusCom
 #pragma region EffortCoefficientSettingsComponent
 ArgusMap<uint16, EffortCoefficientSettingsComponent*, ArgusSetAllocator<1> > ArgusComponentRegistry::s_EffortCoefficientSettingsComponents;
 #pragma endregion
+#pragma region FlightTransitionComponent
+ArgusMap<uint16, FlightTransitionComponent*, ArgusSetAllocator<1> > ArgusComponentRegistry::s_FlightTransitionComponents;
+#pragma endregion
 #pragma region FogOfWarComponent
 ArgusMap<uint16, FogOfWarComponent*, ArgusSetAllocator<1> > ArgusComponentRegistry::s_FogOfWarComponents;
 #pragma endregion
@@ -446,6 +449,10 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 	if (s_EffortCoefficientSettingsComponents.Contains(entityId))
 	{
 		s_EffortCoefficientSettingsComponents.Remove(entityId);
+	}
+	if (s_FlightTransitionComponents.Contains(entityId))
+	{
+		s_FlightTransitionComponents.Remove(entityId);
 	}
 	if (s_FogOfWarComponents.Contains(entityId))
 	{
@@ -872,6 +879,18 @@ void ArgusComponentRegistry::FlushAllComponents()
 	);
  
 	s_EffortCoefficientSettingsComponents.RemoveAll([](const uint16& entityId, EffortCoefficientSettingsComponent*& component)
+		{
+			if (ArgusEntity::IsReservedEntityId(entityId) && component)
+			{
+				component->Reset();
+				return false;
+			}
+
+			return true;
+		}
+	);
+ 
+	s_FlightTransitionComponents.RemoveAll([](const uint16& entityId, FlightTransitionComponent*& component)
 		{
 			if (ArgusEntity::IsReservedEntityId(entityId) && component)
 			{
@@ -1354,6 +1373,33 @@ void ArgusComponentRegistry::Serialize(FArchive& archive)
 			}
 		}
 	}
+	numComponents = s_FlightTransitionComponents.Num();
+	archive << numComponents;
+	if (archive.IsLoading())
+	{
+		for (int32 i = 0; i < numComponents; ++i)
+		{
+			uint16 entityId = 0;
+			archive << entityId;
+
+			FlightTransitionComponent* component = GetOrAddComponent<FlightTransitionComponent>(entityId);
+			if (component)
+			{
+				component->Serialize(archive);
+			}
+		}
+	}
+	else
+	{
+		for (TPair<uint16, FlightTransitionComponent*>& pair : s_FlightTransitionComponents)
+		{
+			archive << pair.Key;
+			if (pair.Value)
+			{
+				pair.Value->Serialize(archive);
+			}
+		}
+	}
 	numComponents = s_FogOfWarComponents.Num();
 	archive << numComponents;
 	if (archive.IsLoading())
@@ -1655,6 +1701,10 @@ void ArgusComponentRegistry::DrawComponentsDebug(uint16 entityId)
 	if (const EffortCoefficientSettingsComponent* EffortCoefficientSettingsComponentPtr = GetComponent<EffortCoefficientSettingsComponent>(entityId))
 	{
 		EffortCoefficientSettingsComponentPtr->DrawComponentDebug();
+	}
+	if (const FlightTransitionComponent* FlightTransitionComponentPtr = GetComponent<FlightTransitionComponent>(entityId))
+	{
+		FlightTransitionComponentPtr->DrawComponentDebug();
 	}
 	if (const FogOfWarComponent* FogOfWarComponentPtr = GetComponent<FogOfWarComponent>(entityId))
 	{

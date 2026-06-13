@@ -291,12 +291,14 @@ void TransformSystems::ProcessTakeOffCommand(UWorld* worldPointer, float deltaTi
 	{
 		return;
 	}
+	FlightTransitionComponent* flightTransitionComponent = components.m_entity.GetComponent<FlightTransitionComponent>();
+	ARGUS_RETURN_ON_NULL(flightTransitionComponent, ArgusECSLog);
 
 	SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::GetSingletonEntity().GetComponent<SpatialPartitioningComponent>();
 	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
 
 	components.m_taskComponent->Set_m_flightState(EFlightState::TakingOff);
-	components.m_transformComponent->m_smoothedTransitionAltitude.Reset(components.m_transformComponent->m_location.Z);
+	flightTransitionComponent->m_smoothedTransitionAltitude.Reset(components.m_transformComponent->m_location.Z);
 
 	if (!spatialPartitioningComponent->m_flyingArgusEntityKDTree.DoesArgusEntityExistInKDTree(components.m_entity))
 	{
@@ -312,6 +314,8 @@ void TransformSystems::ProcessLandCommand(UWorld* worldPointer, float deltaTime,
 	{
 		return;
 	}
+	FlightTransitionComponent* flightTransitionComponent = components.m_entity.GetComponent<FlightTransitionComponent>();
+	ARGUS_RETURN_ON_NULL(flightTransitionComponent, ArgusECSLog);
 
 	SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::GetSingletonEntity().GetComponent<SpatialPartitioningComponent>();
 	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
@@ -324,13 +328,13 @@ void TransformSystems::ProcessLandCommand(UWorld* worldPointer, float deltaTime,
 	endLocation.Z = ArgusECSConstants::k_lowestPossibleAltitude;
 	if (worldPointer->LineTraceSingleByChannel(hitResult, startLocation, endLocation, ECC_RETICLE))
 	{
-		components.m_transformComponent->m_targetTransitionAltitude = ProjectLocationOntoNavigationData(worldPointer, components.m_transformComponent->m_radius, hitResult.Location).Z;
+		flightTransitionComponent->m_targetTransitionAltitude = ProjectLocationOntoNavigationData(worldPointer, components.m_transformComponent->m_radius, hitResult.Location).Z;
 	}
 	else
 	{
-		components.m_transformComponent->m_targetTransitionAltitude = components.m_transformComponent->m_location.Z;
+		flightTransitionComponent->m_targetTransitionAltitude = components.m_transformComponent->m_location.Z;
 	}
-	components.m_transformComponent->m_smoothedTransitionAltitude.Reset(components.m_transformComponent->m_location.Z);
+	flightTransitionComponent->m_smoothedTransitionAltitude.Reset(components.m_transformComponent->m_location.Z);
 
 	if (!spatialPartitioningComponent->m_argusEntityKDTree.DoesArgusEntityExistInKDTree(components.m_entity))
 	{
@@ -345,17 +349,20 @@ void TransformSystems::PerformTakeOff(float deltaTime, const TransformSystemsArg
 	{
 		return;
 	}
+	FlightTransitionComponent* flightTransitionComponent = components.m_entity.GetComponent<FlightTransitionComponent>();
+	ARGUS_RETURN_ON_NULL(flightTransitionComponent, ArgusECSLog);
 
 	SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::GetSingletonEntity().GetComponent<SpatialPartitioningComponent>();
 	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
 
-	components.m_transformComponent->m_smoothedTransitionAltitude.SmoothChase(spatialPartitioningComponent->m_flyingPlaneHeight, deltaTime);
-	float newAltitude = components.m_transformComponent->m_smoothedTransitionAltitude.GetValue();
+	flightTransitionComponent->m_smoothedTransitionAltitude.SmoothChase(spatialPartitioningComponent->m_flyingPlaneHeight, deltaTime);
+	float newAltitude = flightTransitionComponent->m_smoothedTransitionAltitude.GetValue();
 
 	if (FMath::IsNearlyEqual(newAltitude, spatialPartitioningComponent->m_flyingPlaneHeight, ArgusECSConstants::k_flightTransitionAltitudeThreshold))
 	{
 		components.m_taskComponent->Set_m_flightState(EFlightState::Flying);
 		newAltitude = spatialPartitioningComponent->m_flyingPlaneHeight;
+
 	}
 
 	components.m_transformComponent->m_location.Z = newAltitude;
@@ -367,17 +374,35 @@ void TransformSystems::PerformLanding(float deltaTime, const TransformSystemsArg
 	{
 		return;
 	}
+	FlightTransitionComponent* flightTransitionComponent = components.m_entity.GetComponent<FlightTransitionComponent>();
+	ARGUS_RETURN_ON_NULL(flightTransitionComponent, ArgusECSLog);
 
-	components.m_transformComponent->m_smoothedTransitionAltitude.SmoothChase(components.m_transformComponent->m_targetTransitionAltitude, deltaTime);
-	float newAltitude = components.m_transformComponent->m_smoothedTransitionAltitude.GetValue();
+	flightTransitionComponent->m_smoothedTransitionAltitude.SmoothChase(flightTransitionComponent->m_targetTransitionAltitude, deltaTime);
+	float newAltitude = flightTransitionComponent->m_smoothedTransitionAltitude.GetValue();
 
-	if (FMath::IsNearlyEqual(newAltitude, components.m_transformComponent->m_targetTransitionAltitude, ArgusECSConstants::k_flightTransitionAltitudeThreshold))
+	if (FMath::IsNearlyEqual(newAltitude, flightTransitionComponent->m_targetTransitionAltitude, ArgusECSConstants::k_flightTransitionAltitudeThreshold))
 	{
 		components.m_taskComponent->Set_m_flightState(EFlightState::Grounded);
-		newAltitude = components.m_transformComponent->m_targetTransitionAltitude;
+		newAltitude = flightTransitionComponent->m_targetTransitionAltitude;
+		QueuePostFlightTransitionAbility(components.m_entity, flightTransitionComponent);
 	}
 
 	components.m_transformComponent->m_location.Z = newAltitude;
+}
+
+void TransformSystems::QueuePostFlightTransitionAbility(ArgusEntity entity, FlightTransitionComponent* flightTransitionComponent)
+{
+	ARGUS_RETURN_ON_NULL(flightTransitionComponent, ArgusECSLog);
+	AbilityComponent* abilityComponent = entity.GetComponent<AbilityComponent>();
+	ARGUS_RETURN_ON_NULL(abilityComponent, ArgusECSLog);
+
+	if (flightTransitionComponent->m_onTransitionCompleteAbilityId == 0u)
+	{
+		return;
+	}
+
+	abilityComponent->m_queuedAbilityIds.Add(flightTransitionComponent->m_onTransitionCompleteAbilityId);
+	flightTransitionComponent->m_onTransitionCompleteAbilityId = 0u;
 }
 
 void TransformSystems::FaceTargetEntity(const TransformSystemsArgs& components)

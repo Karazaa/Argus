@@ -27,7 +27,7 @@ class ARGUS_API UAbilityRecord : public UArgusStaticRecord
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (TitleProperty = ""))
 	TArray<FAbilityEffect> m_abilityEffects;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)

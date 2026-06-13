@@ -19,7 +19,7 @@ struct FAbilityEffect
 	UPROPERTY(EditAnywhere, meta = (EditCondition = "m_abilityType == EAbilityTypes::Spawn || m_abilityType == EAbilityTypes::Construct", EditConditionHides))
 	FUArgusActorRecordReference m_argusActorRecordReference;
 
-	UPROPERTY(EditAnywhere, meta = (EditCondition = "m_abilityType == EAbilityTypes::AddAbilityOverride", EditConditionHides))
+	UPROPERTY(EditAnywhere, meta = (EditCondition = "m_abilityType == EAbilityTypes::AddAbilityOverride || m_abilityType == EAbilityTypes::TakeOff || m_abilityType == EAbilityTypes::Land", EditConditionHides))
 	FUAbilityRecordReference m_abilityRecordReference;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (EditCondition = "m_abilityType == EAbilityTypes::AddAbilityOverride || m_abilityType == EAbilityTypes::RemoveAbilityOverride", EditConditionHides))

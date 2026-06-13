@@ -21,11 +21,6 @@ struct TransformComponent
 	ARGUS_COMP_NO_DATA
 	FVector m_location = FVector::ZeroVector;
 
-	ArgusMath::ExponentialDecaySmoother<float> m_smoothedTransitionAltitude;
-
-	ARGUS_COMP_NO_DATA
-	float m_targetTransitionAltitude = 0.0f;
-
 	float m_radius = 45.0f;
 	
 	EFlightCapability m_flightCapability;

@@ -40,6 +40,7 @@
 #include "DynamicAllocComponentDefinitions\AssetLoadingComponent.h"
 #include "DynamicAllocComponentDefinitions\DecalSystemsSettingsComponent.h"
 #include "DynamicAllocComponentDefinitions\EffortCoefficientSettingsComponent.h"
+#include "DynamicAllocComponentDefinitions\FlightTransitionComponent.h"
 #include "DynamicAllocComponentDefinitions\FogOfWarComponent.h"
 #include "DynamicAllocComponentDefinitions\GlobalSettingsComponent.h"
 #include "DynamicAllocComponentDefinitions\InputInterfaceComponent.h"
@@ -81,7 +82,7 @@ public:
 	static void DrawComponentsDebug(uint16 entityId);
 #endif //!UE_BUILD_SHIPPING
 
-	static constexpr uint32 k_numComponentTypes = 34;
+	static constexpr uint32 k_numComponentTypes = 35;
 
 	// Begin component specific template specifiers.
 	
@@ -2545,6 +2546,66 @@ public:
 		}
 
 		return s_EffortCoefficientSettingsComponents[entityId];
+	}
+#pragma endregion
+#pragma region FlightTransitionComponent
+private:
+	static ArgusMap<uint16, FlightTransitionComponent*, ArgusSetAllocator<1> > s_FlightTransitionComponents;
+public:
+	template<>
+	inline FlightTransitionComponent* GetComponent<FlightTransitionComponent>(uint16 entityId)
+	{
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(FlightTransitionComponent));
+			return nullptr;
+		}
+
+		if (!s_FlightTransitionComponents.Contains(entityId))
+		{
+			return nullptr;
+		}
+
+		return s_FlightTransitionComponents[entityId];
+	}
+
+	template<>
+	inline FlightTransitionComponent* AddComponent<FlightTransitionComponent>(uint16 entityId)
+	{
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(FlightTransitionComponent));
+			return nullptr;
+		}
+
+		if (UNLIKELY(s_FlightTransitionComponents.Contains(entityId)))
+		{
+			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(FlightTransitionComponent), entityId);
+			return s_FlightTransitionComponents[entityId];
+		}
+
+		FlightTransitionComponent* output = new (ArgusMemorySource::Allocate<FlightTransitionComponent>()) FlightTransitionComponent();
+		s_FlightTransitionComponents.Emplace(entityId, output);
+		return output;
+	}
+
+	template<>
+	inline FlightTransitionComponent* GetOrAddComponent<FlightTransitionComponent>(uint16 entityId)
+	{
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(FlightTransitionComponent));
+			return nullptr;
+		}
+
+		if (!s_FlightTransitionComponents.Contains(entityId))
+		{
+			FlightTransitionComponent* output = new (ArgusMemorySource::Allocate<FlightTransitionComponent>()) FlightTransitionComponent();
+			s_FlightTransitionComponents.Emplace(entityId, output);
+			return output;
+		}
+
+		return s_FlightTransitionComponents[entityId];
 	}
 #pragma endregion
 #pragma region FogOfWarComponent

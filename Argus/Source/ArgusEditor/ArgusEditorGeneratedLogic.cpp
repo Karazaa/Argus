@@ -33,6 +33,7 @@
 #include "AssetFactories/ComponentDataFactories/AssetLoadingComponentDataFactory.h"
 #include "AssetFactories/ComponentDataFactories/DecalSystemsSettingsComponentDataFactory.h"
 #include "AssetFactories/ComponentDataFactories/EffortCoefficientSettingsComponentDataFactory.h"
+#include "AssetFactories/ComponentDataFactories/FlightTransitionComponentDataFactory.h"
 #include "AssetFactories/ComponentDataFactories/FogOfWarComponentDataFactory.h"
 #include "AssetFactories/ComponentDataFactories/GlobalSettingsComponentDataFactory.h"
 #include "AssetFactories/ComponentDataFactories/InputInterfaceComponentDataFactory.h"
@@ -110,6 +111,8 @@ void ArgusEditorModule::RegisterAssetActions(IAssetTools& assetTools) const
 	assetTools.RegisterAssetTypeActions(actionsDecalSystemsSettingsComponentData);
 	TSharedRef<IAssetTypeActions> actionsEffortCoefficientSettingsComponentData = MakeShareable(new FAssetTypeActions_EffortCoefficientSettingsComponentData);
 	assetTools.RegisterAssetTypeActions(actionsEffortCoefficientSettingsComponentData);
+	TSharedRef<IAssetTypeActions> actionsFlightTransitionComponentData = MakeShareable(new FAssetTypeActions_FlightTransitionComponentData);
+	assetTools.RegisterAssetTypeActions(actionsFlightTransitionComponentData);
 	TSharedRef<IAssetTypeActions> actionsFogOfWarComponentData = MakeShareable(new FAssetTypeActions_FogOfWarComponentData);
 	assetTools.RegisterAssetTypeActions(actionsFogOfWarComponentData);
 	TSharedRef<IAssetTypeActions> actionsGlobalSettingsComponentData = MakeShareable(new FAssetTypeActions_GlobalSettingsComponentData);

@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "ArgusContainerAllocator.h"
 #include "ArgusMacros.h"
 #include "CoreMinimal.h"
 
@@ -44,6 +45,9 @@ struct AbilityComponent
 
 	ARGUS_COMP_NO_DATA
 	uint32 m_ability3OverrideId = 0u;
+
+	ARGUS_COMP_NO_DATA
+	TArray<uint32, ArgusContainerAllocator<4u>> m_queuedAbilityIds;
 
 	ARGUS_COMP_NO_DATA
 	uint32 m_abilityToRefundId = 0u;

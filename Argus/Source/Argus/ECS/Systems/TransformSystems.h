@@ -30,6 +30,7 @@ private:
 
 	static void PerformTakeOff(float deltaTime, const TransformSystemsArgs& components);
 	static void PerformLanding(float deltaTime, const TransformSystemsArgs& components);
+	static void QueuePostFlightTransitionAbility(ArgusEntity entity, FlightTransitionComponent* flightTransitionComponent);
 
 	static void FaceTargetEntity(const TransformSystemsArgs& components);
 	static void FaceVelocity(const TransformSystemsArgs& components);
