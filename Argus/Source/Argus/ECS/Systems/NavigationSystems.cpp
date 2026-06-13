@@ -189,14 +189,20 @@ void NavigationSystems::ProcessNavigationTaskCommands(UWorld* worldPointer, cons
 			break;
 
 		case EMovementState::ProcessMoveToEntityCommand:
-		{
-			components.m_taskComponent->m_movementState = EMovementState::MoveToEntity;
-			ArgusEntity targetEntity = ArgusEntity::RetrieveEntity(components.m_targetingComponent->m_targetEntityId);
-			NavigateFromEntityToEntity(worldPointer, targetEntity, components);
-			ChangeTasksOnNavigatingToEntity(targetEntity, components);
-			SpatialPartitioningSystems::CalculateAdjacentEntityGroupsForEntity(components.m_entity, false);
+			if (TransformSystems::IsWithinEndMoveRange(components.m_entity, components.m_taskComponent, components.m_targetingComponent, components.m_transformComponent))
+			{
+				components.m_taskComponent->m_movementState = EMovementState::InRangeOfTargetEntity;
+				ChangeTasksOnNavigatingToEntity(ArgusEntity::RetrieveEntity(components.m_targetingComponent->m_targetEntityId), components);
+			}
+			else
+			{
+				components.m_taskComponent->m_movementState = EMovementState::MoveToEntity;
+				ArgusEntity targetEntity = ArgusEntity::RetrieveEntity(components.m_targetingComponent->m_targetEntityId);
+				NavigateFromEntityToEntity(worldPointer, targetEntity, components);
+				ChangeTasksOnNavigatingToEntity(targetEntity, components);
+				SpatialPartitioningSystems::CalculateAdjacentEntityGroupsForEntity(components.m_entity, false);
+			}
 			break;
-		}
 		default:
 			break;
 	}

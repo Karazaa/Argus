@@ -92,9 +92,7 @@ void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float delta
 	bool isWithinRangeOfTargetEntity = false;
 	if (components.m_taskComponent->m_movementState == EMovementState::MoveToEntity)
 	{
-		const float rangeSquared = FMath::Square(GetEndMoveRange(components));
-		const float distanceToTargetSquared =  FVector::DistSquared2D(moverLocation, components.m_entity.GetCurrentTargetLocation());
-		isWithinRangeOfTargetEntity = rangeSquared > distanceToTargetSquared;
+		isWithinRangeOfTargetEntity = IsWithinEndMoveRange(components.m_entity, components.m_taskComponent, components.m_targetingComponent, components.m_transformComponent);
 	}
 
 	if (isWithinRangeOfTargetEntity)
@@ -150,6 +148,41 @@ float TransformSystems::GetDesiredSpeed(ArgusEntity entity)
 	}
 
 	return GetDesiredSpeed(taskComponent, velocityComponent);
+}
+
+float TransformSystems::GetEndMoveRange(ArgusEntity entity, const TaskComponent* taskComponent, const TargetingComponent* targetingComponent, const TransformComponent* transformComponent)
+{
+	ARGUS_RETURN_ON_NULL_VALUE(taskComponent, ArgusECSLog, 0.0f);
+	ARGUS_RETURN_ON_NULL_VALUE(targetingComponent, ArgusECSLog, 0.0f);
+	ARGUS_RETURN_ON_NULL_VALUE(transformComponent, ArgusECSLog, 0.0f);
+
+	if (taskComponent->m_movementState != EMovementState::ProcessMoveToEntityCommand && taskComponent->m_movementState != EMovementState::MoveToEntity)
+	{
+		return targetingComponent->m_meleeRange;
+	}
+
+	if (!targetingComponent->HasEntityTarget())
+	{
+		return targetingComponent->m_meleeRange;
+	}
+
+	float combinedRadius = transformComponent->m_radius;
+	ArgusEntity targetEntity = ArgusEntity::RetrieveEntity(targetingComponent->m_targetEntityId);
+	if (const TransformComponent* targetTransformComponent = targetEntity.GetComponent<TransformComponent>())
+	{
+		combinedRadius += targetTransformComponent->m_radius;
+	}
+	const float rangeWithoutCombinedRadius = TargetingSystems::GetRangeToUseForOtherEntity(entity, targetEntity);
+	return rangeWithoutCombinedRadius + combinedRadius;
+}
+
+bool TransformSystems::IsWithinEndMoveRange(ArgusEntity entity, const TaskComponent* taskComponent, const TargetingComponent* targetingComponent, const TransformComponent* transformComponent)
+{
+	ARGUS_RETURN_ON_NULL_VALUE(taskComponent, ArgusECSLog, false);
+	ARGUS_RETURN_ON_NULL_VALUE(targetingComponent, ArgusECSLog, false);
+	ARGUS_RETURN_ON_NULL_VALUE(transformComponent, ArgusECSLog, false);
+
+	return FMath::Square(GetEndMoveRange(entity, taskComponent, targetingComponent, transformComponent)) > FVector::DistSquared2D(transformComponent->m_location, entity.GetCurrentTargetLocation());
 }
 
 bool TransformSystems::ProcessMovementTaskCommands(UWorld* worldPointer, float deltaTime, const TransformSystemsArgs& components)
@@ -600,33 +633,6 @@ void TransformSystems::CompleteNavigationPathPerGroupEntity(ArgusEntity entity)
 	{
 		NavigationSystems::StartNavigatingToQueuedWaypoint(components.m_taskComponent, components.m_targetingComponent, components.m_navigationComponent);
 	}
-}
-
-float TransformSystems::GetEndMoveRange(const TransformSystemsArgs& components)
-{
-	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
-	{
-		return GetDesiredSpeed(components.m_taskComponent, components.m_velocityComponent) + components.m_transformComponent->m_radius;
-	}
-
-	if (components.m_taskComponent->m_movementState != EMovementState::MoveToEntity)
-	{
-		return components.m_targetingComponent->m_meleeRange;
-	}
-
-	if (!components.m_targetingComponent->HasEntityTarget())
-	{
-		return components.m_targetingComponent->m_meleeRange;
-	}
-
-	float combinedRadius = components.m_transformComponent->m_radius;
-	ArgusEntity targetEntity = ArgusEntity::RetrieveEntity(components.m_targetingComponent->m_targetEntityId);
-	if (const TransformComponent* targetTransformComponent = targetEntity.GetComponent<TransformComponent>())
-	{
-		combinedRadius += targetTransformComponent->m_radius;
-	}
-	const float rangeWithoutCombinedRadius = TargetingSystems::GetRangeToUseForOtherEntity(components.m_entity, targetEntity);
-	return rangeWithoutCombinedRadius + combinedRadius;
 }
 
 void TransformSystems::UpdatePassengerLocations(const TransformSystemsArgs& components)
