@@ -32,6 +32,7 @@ public:
 	void Save(const TFunction<void(const FString&, bool)>& completedDelegate = nullptr);
 	void Load(const FString& saveSlotName, const TFunction<void(UArgusSaveGame*)>& completedDelegate);
 	void LoadMostRecent(const TFunction<void(UArgusSaveGame*)>& completedDelegate);
+	void DeleteSaveGame(const FString& saveSlotName, const TFunction<void(const FString&, bool)>& completedDelegate = nullptr);
 
 #if !UE_BUILD_SHIPPING
 	void DrawDebugger();
@@ -48,7 +49,7 @@ private:
 	{
 		SaveLoadLock() = default;
 		SaveLoadLock(SaveLoadLock&& otherSaveLoadLock) = delete;
-		SaveLoadLock(UArgusSaveManager* saveManager, SaveLoadLockType lockType);
+		SaveLoadLock(SaveLoadLockType lockType);
 		SaveLoadLock(const SaveLoadLock& otherSaveLoadLock);
 		~SaveLoadLock();
 
@@ -58,7 +59,6 @@ private:
 	private:
 		void IncrementLock();
 
-		TWeakObjectPtr<UArgusSaveManager> m_saveManager = nullptr;
 		SaveLoadLockType m_lockType = SaveLoadLockType::SaveLock;
 	};
 
@@ -71,6 +71,7 @@ private:
 	void ExecuteLoadRequest();
 	void LoadInternal(const FString& saveSlotName, const TFunction<void(USaveGame*)>& completedDelegate);
 	void OnLoadComplete() const;
+	void DeleteInternal(const FString& saveSlotName, const TFunction<void(const FString&, bool)>& completedDelegate);
 
 	void OnCheckIfMetadataExists(bool doesExist);
 	void OnMetadataLoaded(USaveGame* saveGame);
@@ -79,7 +80,8 @@ private:
 	void SaveMetadata(const SaveLoadLock& SaveLoadLock);
 	void SaveMetadata(const FString& mostRecentSaveSlotName, const SaveLoadLock& SaveLoadLock);
 
-	void OnCheckIfSaveExists(const FString& saveSlotName, bool doesExist, const TFunction<void(UArgusSaveGame*)>& completedDelegate, const SaveLoadLock& loadLock);
+	void OnCheckIfSaveExistsForLoad(const FString& saveSlotName, bool doesExist, const TFunction<void(UArgusSaveGame*)>& completedDelegate, const SaveLoadLock& loadLock);
+	void OnCheckIfSaveExistsForDelete(const FString& saveSlotName, bool doesExist, const TFunction<void(const FString&, bool)>& completedDelegate, const SaveLoadLock& loadLock);
 
 	void PopulateMetadata(const FString& mostRecentSaveSlotName);
 

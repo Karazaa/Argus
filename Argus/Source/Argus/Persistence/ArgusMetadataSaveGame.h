@@ -31,7 +31,7 @@ private:
 	TArray<FSaveSlotMetadata> m_saveSlotMetadata;
 
 	UPROPERTY(SaveGame)
-	FString m_mostRecentSaveName;
+	int32 m_lastSaveSlotNumber = 0;
 
 	friend class UArgusSaveManager;
 };

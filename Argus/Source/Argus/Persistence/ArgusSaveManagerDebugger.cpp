@@ -47,6 +47,8 @@ void UArgusSaveManager::DrawDebugger()
 	ImGui::SameLine();
 	ImGui::Checkbox("Is Loading?", &isLoading);
 
+	ImGui::NewLine();
+
 	if (ImGui::Button("Save"))
 	{
 		Save();
@@ -69,6 +71,19 @@ void UArgusSaveManager::DrawDebugger()
 		if (m_saveMetadata && m_saveMetadata->m_saveSlotMetadata.IsValidIndex(m_debugSelectedIndex))
 		{
 			Load(m_saveMetadata->m_saveSlotMetadata[m_debugSelectedIndex].m_slotName, [](UArgusSaveGame* saveGame)
+			{
+				// TODO JAMES: Do something
+			});
+		}
+	}
+
+	ImGui::SameLine();
+
+	if (ImGui::Button("Delete"))
+	{
+		if (m_saveMetadata && m_saveMetadata->m_saveSlotMetadata.IsValidIndex(m_debugSelectedIndex))
+		{
+			DeleteSaveGame(m_saveMetadata->m_saveSlotMetadata[m_debugSelectedIndex].m_slotName, [](const FString& slotName, bool didSucceed)
 			{
 				// TODO JAMES: Do something
 			});
@@ -106,9 +121,12 @@ void UArgusSaveManager::DrawDebugger()
 				ImGui::PushItemWidth(-1.0f);
 				if (ImGui::InputText("", buffer, k_stringBufferSize, ImGuiInputTextFlags_EnterReturnsTrue))
 				{
-					m_saveMetadata->m_saveSlotMetadata[i].m_description = FString(buffer);
-					SaveLoadLock saveLoadLock;
-					SaveMetadata(saveLoadLock);
+					if (!IsSaving())
+					{
+						m_saveMetadata->m_saveSlotMetadata[i].m_description = FString(buffer);
+						SaveLoadLock saveLoadLock = SaveLoadLock(SaveLoadLockType::SaveLock);
+						SaveMetadata(saveLoadLock);
+					}
 				}
 				ImGui::PopItemWidth();
 

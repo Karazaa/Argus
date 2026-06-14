@@ -31,9 +31,9 @@ void UArgusSaveManager::Initialize(AArgusGameModeBase* gameMode)
 	k_instance = this;
 	m_gameMode = gameMode;
 
-	DoesSaveExistInternal(k_metadataSaveSlotName, [saveManager = TWeakObjectPtr<UArgusSaveManager>(this)](const FString& slotName, bool doesExist)
+	DoesSaveExistInternal(k_metadataSaveSlotName, [](const FString& slotName, bool doesExist)
 	{
-		UArgusSaveManager* rawSaveManager = saveManager.Get();
+		UArgusSaveManager* rawSaveManager = UArgusSaveManager::Get();
 		ARGUS_RETURN_ON_NULL(rawSaveManager, ArgusPersistenceLog);
 		rawSaveManager->OnCheckIfMetadataExists(doesExist);
 	});
@@ -46,15 +46,15 @@ void UArgusSaveManager::Save(const TFunction<void(const FString&, bool)>& comple
 		m_saveRequestQueue.Enqueue(completedDelegate);
 		return;
 	}
-	const SaveLoadLock saveLock = SaveLoadLock(this, SaveLoadLockType::SaveLock);
+	const SaveLoadLock saveLock = SaveLoadLock(SaveLoadLockType::SaveLock);
 
 	UArgusSaveGame* argusSaveGame = NewObject<UArgusSaveGame>(this);
 	const FString saveSlotName = GetNextSaveSlotName();
 	ARGUS_RETURN_ON_NULL_INVOKE(argusSaveGame, ArgusPersistenceLog, completedDelegate, saveSlotName, false);
 
-	SaveInternal(saveSlotName, argusSaveGame, [saveManager = TWeakObjectPtr<UArgusSaveManager>(this), saveSlotName, saveLock, completedDelegate](bool didSucceed)
+	SaveInternal(saveSlotName, argusSaveGame, [saveSlotName, saveLock, completedDelegate](bool didSucceed)
 	{
-		UArgusSaveManager* rawSaveManager = saveManager.Get();
+		UArgusSaveManager* rawSaveManager = UArgusSaveManager::Get();
 		ARGUS_RETURN_ON_NULL_INVOKE(rawSaveManager, ArgusPersistenceLog, completedDelegate, saveSlotName, didSucceed);
 
 		if (completedDelegate)
@@ -75,6 +75,7 @@ void UArgusSaveManager::Load(const FString& saveSlotName, const TFunction<void(U
 	ARGUS_RETURN_ON_NULL(completedDelegate, ArgusPersistenceLog);
 	if (saveSlotName.IsEmpty())
 	{
+		UE_LOG(ArgusPersistenceLog, Warning, TEXT("[%s] Could not load because %s was empty."), ARGUS_FUNCNAME, ARGUS_NAMEOF(saveSlotName))
 		completedDelegate(nullptr);
 		return;
 	}
@@ -86,56 +87,68 @@ void UArgusSaveManager::Load(const FString& saveSlotName, const TFunction<void(U
 void UArgusSaveManager::LoadMostRecent(const TFunction<void(UArgusSaveGame*)>& completedDelegate)
 {
 	ARGUS_RETURN_ON_NULL(m_saveMetadata, ArgusPersistenceLog);
-	Load(m_saveMetadata->m_mostRecentSaveName, completedDelegate);
+	Load(m_saveMetadata->m_saveSlotMetadata.Last().m_slotName, completedDelegate);
 }
 
-UArgusSaveManager::SaveLoadLock::SaveLoadLock(UArgusSaveManager* saveManager, SaveLoadLockType lockType)
+void UArgusSaveManager::DeleteSaveGame(const FString& saveSlotName, const TFunction<void(const FString&, bool)>& completedDelegate)
 {
-	ARGUS_RETURN_ON_NULL(saveManager, ArgusPersistenceLog);
+	if (IsLoading() || HasLoadRequest())
+	{
+		return;
+	}
+	ARGUS_RETURN_ON_NULL(completedDelegate, ArgusPersistenceLog);
+	if (saveSlotName.IsEmpty())
+	{
+		UE_LOG(ArgusPersistenceLog, Warning, TEXT("[%s] Could not delete because %s was empty."), ARGUS_FUNCNAME, ARGUS_NAMEOF(saveSlotName))
+		completedDelegate(saveSlotName, false);
+		return;
+	}
 
-	m_saveManager = saveManager;
+	const SaveLoadLock loadLock = SaveLoadLock(SaveLoadLockType::LoadLock);
+	DoesSaveExistInternal(saveSlotName, [completedDelegate, loadLock](const FString& slotName, bool doesExist)
+	{
+		UArgusSaveManager* rawSaveManager = UArgusSaveManager::Get();
+		ARGUS_RETURN_ON_NULL_INVOKE(rawSaveManager, ArgusPersistenceLog, completedDelegate, slotName, false);
+		rawSaveManager->OnCheckIfSaveExistsForDelete(slotName, doesExist, completedDelegate, loadLock);
+	});
+}
+
+UArgusSaveManager::SaveLoadLock::SaveLoadLock(SaveLoadLockType lockType)
+{
 	m_lockType = lockType;
 	IncrementLock();
 }
 
 UArgusSaveManager::SaveLoadLock::SaveLoadLock(const SaveLoadLock& otherSaveLock)
 {
-	if (!otherSaveLock.m_saveManager.IsValid())
-	{
-		return;
-	}
-
-	m_saveManager = otherSaveLock.m_saveManager;
 	m_lockType = otherSaveLock.m_lockType;
 	IncrementLock();
 }
 
 UArgusSaveManager::SaveLoadLock::~SaveLoadLock()
 {
-	if (!m_saveManager.IsValid())
-	{
-		return;
-	}
+	UArgusSaveManager* saveManager = UArgusSaveManager::Get();
+	ARGUS_RETURN_ON_NULL(saveManager, ArgusPersistenceLog);
 
 	switch (m_lockType)
 	{
 		case SaveLoadLockType::SaveLock:
 			{
-				m_saveManager->m_saveLockReferenceCount--;
-				if (m_saveManager->m_saveLockReferenceCount > 0u)
+				saveManager->m_saveLockReferenceCount--;
+				if (saveManager->m_saveLockReferenceCount > 0u)
 				{
 					return;
 				}
 
 				TFunction<void(const FString&, bool)> cachedDelegate;
-				if (m_saveManager->m_saveRequestQueue.Dequeue(cachedDelegate))
+				if (saveManager->m_saveRequestQueue.Dequeue(cachedDelegate))
 				{
-					m_saveManager->Save(cachedDelegate);
+					saveManager->Save(cachedDelegate);
 				}
 			}
 			break;
 		case SaveLoadLockType::LoadLock:
-			m_saveManager->m_loadLockReferenceCount--;
+			saveManager->m_loadLockReferenceCount--;
 			break;
 		default:
 			break;
@@ -144,18 +157,16 @@ UArgusSaveManager::SaveLoadLock::~SaveLoadLock()
 
 void UArgusSaveManager::SaveLoadLock::IncrementLock()
 {
-	if (!m_saveManager.IsValid())
-	{
-		return;
-	}
+	UArgusSaveManager* saveManager = UArgusSaveManager::Get();
+	ARGUS_RETURN_ON_NULL(saveManager, ArgusPersistenceLog);
 
 	switch (m_lockType)
 	{
 		case SaveLoadLockType::SaveLock:
-			m_saveManager->m_saveLockReferenceCount++;
+			saveManager->m_saveLockReferenceCount++;
 			break;
 		case SaveLoadLockType::LoadLock:
-			m_saveManager->m_loadLockReferenceCount++;
+			saveManager->m_loadLockReferenceCount++;
 			break;
 		default:
 			break;
@@ -221,15 +232,15 @@ void UArgusSaveManager::ExecuteLoadRequest()
 
 	ArgusEntity::FlushAllEntities();
 
-	const SaveLoadLock loadLock = SaveLoadLock(this, SaveLoadLockType::LoadLock);
+	const SaveLoadLock loadLock = SaveLoadLock(SaveLoadLockType::LoadLock);
 	const FString saveSlotName = m_loadRequest.Key;
 	const TFunction<void(UArgusSaveGame*)> completedDelegate = m_loadRequest.Value;
 
-	DoesSaveExistInternal(saveSlotName, [saveManager = TWeakObjectPtr<UArgusSaveManager>(this), completedDelegate, loadLock](const FString& slotName, bool doesExist)
+	DoesSaveExistInternal(saveSlotName, [completedDelegate, loadLock](const FString& slotName, bool doesExist)
 	{
-		UArgusSaveManager* rawSaveManager = saveManager.Get();
+		UArgusSaveManager* rawSaveManager = UArgusSaveManager::Get();
 		ARGUS_RETURN_ON_NULL_INVOKE(rawSaveManager, ArgusPersistenceLog, completedDelegate, nullptr);
-		rawSaveManager->OnCheckIfSaveExists(slotName, doesExist, completedDelegate, loadLock);
+		rawSaveManager->OnCheckIfSaveExistsForLoad(slotName, doesExist, completedDelegate, loadLock);
 	});
 
 	m_loadRequest.Key.Empty();
@@ -269,6 +280,26 @@ void UArgusSaveManager::OnLoadComplete() const
 	gameMode->OnLoadComplete();
 }
 
+void UArgusSaveManager::DeleteInternal(const FString& saveSlotName, const TFunction<void(const FString&, bool)>& completedDelegate)
+{
+	ARGUS_RETURN_ON_NULL(completedDelegate, ArgusPersistenceLog);
+	if (!ensure(!saveSlotName.IsEmpty()))
+	{
+		return;
+	}
+
+	ISaveGameSystem* saveSystem = IPlatformFeaturesModule::Get().GetSaveGameSystem();
+	ARGUS_RETURN_ON_NULL(saveSystem, ArgusPersistenceLog);
+
+	saveSystem->DeleteGameAsync(false, *saveSlotName, m_userId, [completedDelegate](const FString& saveSlotName, FPlatformUserId userId, bool didSucceed) 
+	{
+		if (completedDelegate)
+		{
+			completedDelegate(saveSlotName, didSucceed);
+		}
+	});
+}
+
 void UArgusSaveManager::OnCheckIfMetadataExists(bool doesExist)
 {
 	if (!doesExist)
@@ -277,9 +308,9 @@ void UArgusSaveManager::OnCheckIfMetadataExists(bool doesExist)
 		return;
 	}
 
-	LoadInternal(k_metadataSaveSlotName, [saveManager = TWeakObjectPtr<UArgusSaveManager>(this)](USaveGame* saveGame)
+	LoadInternal(k_metadataSaveSlotName, [](USaveGame* saveGame)
 	{
-		UArgusSaveManager* rawSaveManager = saveManager.Get();
+		UArgusSaveManager* rawSaveManager = UArgusSaveManager::Get();
 		ARGUS_RETURN_ON_NULL(rawSaveManager, ArgusPersistenceLog);
 		rawSaveManager->OnMetadataLoaded(saveGame);
 	});
@@ -320,7 +351,7 @@ void UArgusSaveManager::SaveMetadata(const FString& mostRecentSaveSlotName, cons
 	SaveMetadata(saveLock);
 }
 
-void UArgusSaveManager::OnCheckIfSaveExists(const FString& saveSlotName, bool doesExist, const TFunction<void(UArgusSaveGame*)>& completedDelegate, const SaveLoadLock& loadLock)
+void UArgusSaveManager::OnCheckIfSaveExistsForLoad(const FString& saveSlotName, bool doesExist, const TFunction<void(UArgusSaveGame*)>& completedDelegate, const SaveLoadLock& loadLock)
 {
 	ARGUS_RETURN_ON_NULL(completedDelegate, ArgusPersistenceLog);
 	if (!doesExist)
@@ -329,12 +360,12 @@ void UArgusSaveManager::OnCheckIfSaveExists(const FString& saveSlotName, bool do
 		return;
 	}
 
-	LoadInternal(saveSlotName, [saveManager = TWeakObjectPtr<UArgusSaveManager>(this), completedDelegate, loadLock](USaveGame* saveGame)
+	LoadInternal(saveSlotName, [completedDelegate, loadLock](USaveGame* saveGame)
 	{
 		UArgusSaveGame* argusSaveGame = Cast<UArgusSaveGame>(saveGame);
 		ARGUS_RETURN_ON_NULL_INVOKE(argusSaveGame, ArgusPersistenceLog, completedDelegate, argusSaveGame);
 		
-		UArgusSaveManager* rawSaveManager = saveManager.Get();
+		UArgusSaveManager* rawSaveManager = UArgusSaveManager::Get();
 		ARGUS_RETURN_ON_NULL_INVOKE(rawSaveManager, ArgusPersistenceLog, completedDelegate, nullptr);
 		rawSaveManager->OnLoadComplete();
 		
@@ -342,11 +373,38 @@ void UArgusSaveManager::OnCheckIfSaveExists(const FString& saveSlotName, bool do
 	});
 }
 
+void UArgusSaveManager::OnCheckIfSaveExistsForDelete(const FString& saveSlotName, bool doesExist, const TFunction<void(const FString&, bool)>& completedDelegate, const SaveLoadLock& loadLock)
+{
+	ARGUS_RETURN_ON_NULL(completedDelegate, ArgusPersistenceLog);
+	if (!doesExist)
+	{
+		completedDelegate(saveSlotName, false);
+		return;
+	}
+	ARGUS_RETURN_ON_NULL_INVOKE(m_saveMetadata, ArgusPersistenceLog, completedDelegate, saveSlotName, false);
+
+	m_saveMetadata->m_saveSlotMetadata.RemoveAll([&saveSlotName](const FSaveSlotMetadata& slotMetadata)
+	{
+		return slotMetadata.m_slotName.Equals(saveSlotName);
+	});
+
+	DeleteInternal(saveSlotName, [completedDelegate, loadLock](const FString& saveSlotName, bool didSucceed) 
+	{
+		completedDelegate(saveSlotName, didSucceed);
+	});
+
+	if (!IsSaving())
+	{
+		SaveLoadLock saveLoadLock = SaveLoadLock(SaveLoadLockType::SaveLock);
+		SaveMetadata(saveLoadLock);
+	}
+}
+
 void UArgusSaveManager::PopulateMetadata(const FString& mostRecentSaveSlotName)
 {
 	ARGUS_RETURN_ON_NULL(m_saveMetadata, ArgusPersistenceLog);
 
-	m_saveMetadata->m_mostRecentSaveName = mostRecentSaveSlotName;
+	m_saveMetadata->m_lastSaveSlotNumber++;
 	FSaveSlotMetadata& slotMetadata = m_saveMetadata->m_saveSlotMetadata.Emplace_GetRef();
 	slotMetadata.m_slotName = mostRecentSaveSlotName;
 	slotMetadata.m_saveTimestamp = FDateTime::Now();
@@ -356,5 +414,5 @@ FString UArgusSaveManager::GetNextSaveSlotName() const
 {
 	ARGUS_RETURN_ON_NULL_VALUE(m_saveMetadata, ArgusPersistenceLog, FString());
 
-	return FString::Printf(TEXT("%s_%d"), *k_saveSlotPrefix, m_saveMetadata->m_saveSlotMetadata.Num());
+	return FString::Printf(TEXT("%s_%d"), *k_saveSlotPrefix, m_saveMetadata->m_lastSaveSlotNumber);
 }
