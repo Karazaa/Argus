@@ -1,12 +1,20 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
+#include "CoreMinimal.h"
+
 #if !UE_BUILD_SHIPPING
 #include "ArgusSaveManager.h"
 #include "ArgusMacros.h"
 #include "ArgusMetadataSaveGame.h"
+#include "HAL/IConsoleManager.h"
 #include "imgui.h"
 
 static TAutoConsoleVariable<bool> CVarDrawSaveManagerDebugger(TEXT("Argus.Debug.SaveManager"), false, TEXT("Whether or not the SaveManager ImGui debugger should be drawn."));
+
+namespace
+{
+	static constexpr int32 k_stringBufferSize = 128;
+}
 
 void UArgusSaveManager::DrawDebugger()
 {
@@ -67,41 +75,51 @@ void UArgusSaveManager::DrawDebugger()
 		}
 	}
 
-	ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 5.0f);
-
-	ImGui::BeginChild("CurrentSaveRegion", ImVec2(0, 0), childFlags, windowFlags);
-	if (ImGui::BeginMenuBar())
+	if (ImGui::BeginTable("CurrentSaveTable", 3, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_SizingStretchProp | ImGuiTableFlags_BordersOuter))
 	{
-		if (ImGui::BeginMenu("Current Saves"))
-		{
-			ImGui::EndMenu();
-		}
-		ImGui::EndMenuBar();
-	}
-	if (ImGui::BeginTable("CurrentSaveTable", 2, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_SizingStretchProp))
-	{
+		ImGui::TableSetupColumn("Slot Name");
+		ImGui::TableSetupColumn("Description");
+		ImGui::TableSetupColumn("Timestamp");
+		ImGui::TableHeadersRow();
 		if (m_saveMetadata)
 		{
 			for (int32 i = 0; i < m_saveMetadata->m_saveSlotMetadata.Num(); ++i)
 			{
+				ImGui::PushID(i);
+
 				bool selected = i == static_cast<int32>(m_debugSelectedIndex);
 				const char* slotName = ARGUS_FSTRING_TO_CHAR(m_saveMetadata->m_saveSlotMetadata[i].m_slotName);
 				const char* timestamp = ARGUS_FSTRING_TO_CHAR(m_saveMetadata->m_saveSlotMetadata[i].m_saveTimestamp.ToFormattedString(TEXT("%Y-%m-%d-%I:%M")));
 
 				ImGui::TableNextColumn();
-				if (ImGui::Selectable(slotName, &selected, ImGuiSelectableFlags_SpanAllColumns))
+				if (ImGui::Selectable(slotName, &selected, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowOverlap))
 				{
 					m_debugSelectedIndex = i;
 				}
+
+				ImGui::TableNextColumn();
+				if (m_saveMetadata->m_saveSlotMetadata[i].m_description.GetAllocatedSize() != k_stringBufferSize)
+				{
+					m_saveMetadata->m_saveSlotMetadata[i].m_description.Reserve(k_stringBufferSize);
+				}
+				char* buffer = ARGUS_FSTRING_TO_CHAR(m_saveMetadata->m_saveSlotMetadata[i].m_description);
+				ImGui::PushItemWidth(-1.0f);
+				if (ImGui::InputText("", buffer, k_stringBufferSize, ImGuiInputTextFlags_EnterReturnsTrue))
+				{
+					m_saveMetadata->m_saveSlotMetadata[i].m_description = FString(buffer);
+					SaveLoadLock saveLoadLock;
+					SaveMetadata(saveLoadLock);
+				}
+				ImGui::PopItemWidth();
+
 				ImGui::TableNextColumn();
 				ImGui::Text(timestamp);
+
+				ImGui::PopID();
 			}
 		}
 		ImGui::EndTable();
 	}
-	ImGui::EndChild();
-
-	ImGui::PopStyleVar();
 
 	ImGui::End();
 }

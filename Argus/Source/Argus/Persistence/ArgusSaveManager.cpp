@@ -303,10 +303,8 @@ void UArgusSaveManager::OnSaveComplete(const FString& saveSlotName, const SaveLo
 	SaveMetadata(saveSlotName, saveLock);
 }
 
-void UArgusSaveManager::SaveMetadata(const FString& mostRecentSaveSlotName, const SaveLoadLock& saveLock)
+void UArgusSaveManager::SaveMetadata(const SaveLoadLock& saveLock)
 {
-	PopulateMetadata(mostRecentSaveSlotName);
-
 	SaveInternal(k_metadataSaveSlotName, m_saveMetadata, [saveLock](bool didSucceed)
 	{
 		if (!didSucceed)
@@ -314,6 +312,12 @@ void UArgusSaveManager::SaveMetadata(const FString& mostRecentSaveSlotName, cons
 			ARGUS_LOG(ArgusPersistenceLog, Error, TEXT("[%s] Failed to save metadata!"), ARGUS_FUNCNAME);
 		}
 	});
+}
+
+void UArgusSaveManager::SaveMetadata(const FString& mostRecentSaveSlotName, const SaveLoadLock& saveLock)
+{
+	PopulateMetadata(mostRecentSaveSlotName);
+	SaveMetadata(saveLock);
 }
 
 void UArgusSaveManager::OnCheckIfSaveExists(const FString& saveSlotName, bool doesExist, const TFunction<void(UArgusSaveGame*)>& completedDelegate, const SaveLoadLock& loadLock)

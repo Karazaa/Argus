@@ -76,6 +76,7 @@ private:
 	void OnMetadataLoaded(USaveGame* saveGame);
 
 	void OnSaveComplete(const FString& saveSlotName, const SaveLoadLock& SaveLoadLock, bool didSucceed);
+	void SaveMetadata(const SaveLoadLock& SaveLoadLock);
 	void SaveMetadata(const FString& mostRecentSaveSlotName, const SaveLoadLock& SaveLoadLock);
 
 	void OnCheckIfSaveExists(const FString& saveSlotName, bool doesExist, const TFunction<void(UArgusSaveGame*)>& completedDelegate, const SaveLoadLock& loadLock);

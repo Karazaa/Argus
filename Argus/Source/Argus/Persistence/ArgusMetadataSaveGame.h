@@ -15,6 +15,9 @@ struct FSaveSlotMetadata
 	FString m_slotName;
 
 	UPROPERTY(SaveGame)
+	FString m_description;
+
+	UPROPERTY(SaveGame)
 	FDateTime m_saveTimestamp;
 };
 
