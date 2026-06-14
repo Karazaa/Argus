@@ -3,6 +3,7 @@
 #include "ArgusEntity.h"
 #include "ArgusLogging.h"
 #include "ArgusStaticData.h"
+#include "Systems/TargetingSystems.h"
 
 const ArgusEntity ArgusEntity::k_emptyEntity = ArgusEntity();
 TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > ArgusEntity::s_takenEntityIds;
@@ -310,8 +311,18 @@ bool ArgusEntity::IsInRangeOfOtherEntity(ArgusEntity otherEntity, float range) c
 		return false;
 	}
 
-	float combinedRadius = transformComponent->m_radius + otherTransformComponent->m_radius;
-	return (FVector::Dist2D(transformComponent->m_location, otherTransformComponent->m_location) - combinedRadius) <= range;
+	const float combinedRadius = transformComponent->m_radius + otherTransformComponent->m_radius;
+	const float distanceSquared = FVector::DistSquared2D(transformComponent->m_location, otherTransformComponent->m_location);
+	return distanceSquared <= FMath::Square(range + combinedRadius);
+}
+
+bool ArgusEntity::IsInRangeOfTargetEntity() const
+{
+	TargetingComponent* targetingComponent = GetComponent<TargetingComponent>();
+	ARGUS_RETURN_ON_NULL_VALUE(targetingComponent, ArgusECSLog, false);
+
+	ArgusEntity targetEntity = ArgusEntity::RetrieveEntity(targetingComponent->m_targetEntityId);
+	return IsInRangeOfOtherEntity(targetEntity, TargetingSystems::GetRangeToUseForOtherEntity(*this, targetEntity));
 }
 
 bool ArgusEntity::IsPassenger() const

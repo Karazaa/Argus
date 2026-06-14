@@ -97,6 +97,7 @@ public:
 	bool				IsSelected() const;
 	bool				IsIdle() const;
 	bool				IsInRangeOfOtherEntity(ArgusEntity otherEntity, float range) const;
+	bool				IsInRangeOfTargetEntity() const;
 	bool				IsPassenger() const;
 	bool				IsCarryingPassengers() const;
 	bool				IsOnTeam(ETeam team) const;

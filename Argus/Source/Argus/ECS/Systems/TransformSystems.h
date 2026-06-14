@@ -20,8 +20,6 @@ public:
 
 	static float GetDesiredSpeed(const TaskComponent* taskComponent, const VelocityComponent* velocityComponent);
 	static float GetDesiredSpeed(ArgusEntity entity);
-	static float GetEndMoveRange(ArgusEntity entity, const TaskComponent* taskComponent, const TargetingComponent* targetingComponent, const TransformComponent* transformComponent);
-	static bool  IsWithinEndMoveRange(ArgusEntity entity, const TaskComponent* taskComponent, const TargetingComponent* targetingComponent, const TransformComponent* transformComponent);
 
 private:
 	static bool ProcessMovementTaskCommands(UWorld* worldPointer, float deltaTime, const TransformSystemsArgs& components);

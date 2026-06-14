@@ -92,7 +92,7 @@ void TransformSystems::MoveAlongNavigationPath(UWorld* worldPointer, float delta
 	bool isWithinRangeOfTargetEntity = false;
 	if (components.m_taskComponent->m_movementState == EMovementState::MoveToEntity)
 	{
-		isWithinRangeOfTargetEntity = IsWithinEndMoveRange(components.m_entity, components.m_taskComponent, components.m_targetingComponent, components.m_transformComponent);
+		isWithinRangeOfTargetEntity = components.m_entity.IsInRangeOfTargetEntity();
 	}
 
 	if (isWithinRangeOfTargetEntity)
@@ -148,41 +148,6 @@ float TransformSystems::GetDesiredSpeed(ArgusEntity entity)
 	}
 
 	return GetDesiredSpeed(taskComponent, velocityComponent);
-}
-
-float TransformSystems::GetEndMoveRange(ArgusEntity entity, const TaskComponent* taskComponent, const TargetingComponent* targetingComponent, const TransformComponent* transformComponent)
-{
-	ARGUS_RETURN_ON_NULL_VALUE(taskComponent, ArgusECSLog, 0.0f);
-	ARGUS_RETURN_ON_NULL_VALUE(targetingComponent, ArgusECSLog, 0.0f);
-	ARGUS_RETURN_ON_NULL_VALUE(transformComponent, ArgusECSLog, 0.0f);
-
-	if (taskComponent->m_movementState != EMovementState::ProcessMoveToEntityCommand && taskComponent->m_movementState != EMovementState::MoveToEntity)
-	{
-		return targetingComponent->m_meleeRange;
-	}
-
-	if (!targetingComponent->HasEntityTarget())
-	{
-		return targetingComponent->m_meleeRange;
-	}
-
-	float combinedRadius = transformComponent->m_radius;
-	ArgusEntity targetEntity = ArgusEntity::RetrieveEntity(targetingComponent->m_targetEntityId);
-	if (const TransformComponent* targetTransformComponent = targetEntity.GetComponent<TransformComponent>())
-	{
-		combinedRadius += targetTransformComponent->m_radius;
-	}
-	const float rangeWithoutCombinedRadius = TargetingSystems::GetRangeToUseForOtherEntity(entity, targetEntity);
-	return rangeWithoutCombinedRadius + combinedRadius;
-}
-
-bool TransformSystems::IsWithinEndMoveRange(ArgusEntity entity, const TaskComponent* taskComponent, const TargetingComponent* targetingComponent, const TransformComponent* transformComponent)
-{
-	ARGUS_RETURN_ON_NULL_VALUE(taskComponent, ArgusECSLog, false);
-	ARGUS_RETURN_ON_NULL_VALUE(targetingComponent, ArgusECSLog, false);
-	ARGUS_RETURN_ON_NULL_VALUE(transformComponent, ArgusECSLog, false);
-
-	return FMath::Square(GetEndMoveRange(entity, taskComponent, targetingComponent, transformComponent)) > FVector::DistSquared2D(transformComponent->m_location, entity.GetCurrentTargetLocation());
 }
 
 bool TransformSystems::ProcessMovementTaskCommands(UWorld* worldPointer, float deltaTime, const TransformSystemsArgs& components)

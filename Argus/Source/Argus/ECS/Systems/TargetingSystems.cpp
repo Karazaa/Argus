@@ -107,12 +107,12 @@ float TargetingSystems::GetRangeToUseForOtherEntity(ArgusEntity entity, ArgusEnt
 
 	switch (combatComponent->m_attackType)
 	{
-	case EAttackType::Melee:
-		return targetingComponent->m_meleeRange;
-	case EAttackType::Ranged:
-		return targetingComponent->m_rangedRange;
-	default:
-		break;
+		case EAttackType::Melee:
+			return targetingComponent->m_meleeRange;
+		case EAttackType::Ranged:
+			return targetingComponent->m_rangedRange;
+		default:
+			break;
 	}
 
 	return range;

@@ -118,8 +118,7 @@ void TaskSystems::ProcessInRangeOfTargetEntity(const TaskSystemsArgs& components
 		return;
 	}
 
-	ArgusEntity targetEntity = ArgusEntity::RetrieveEntity(components.m_targetingComponent->m_targetEntityId);
-	if (components.m_entity.IsInRangeOfOtherEntity(targetEntity, TargetingSystems::GetRangeToUseForOtherEntity(components.m_entity, targetEntity)))
+	if (components.m_entity.IsInRangeOfTargetEntity())
 	{
 		return;
 	}
