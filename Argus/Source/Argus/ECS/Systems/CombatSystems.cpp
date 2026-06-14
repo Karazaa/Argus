@@ -20,7 +20,7 @@ void CombatSystems::RunSystems(float deltaTime)
 
 bool CombatSystems::CanEntityAttackOtherEntity(ArgusEntity potentialAttacker, ArgusEntity potentialVictim)
 {
-	if (!potentialVictim.IsAlive())
+	if (!potentialVictim.IsAlive() || potentialVictim.IsPassenger())
 	{
 		return false;
 	}
