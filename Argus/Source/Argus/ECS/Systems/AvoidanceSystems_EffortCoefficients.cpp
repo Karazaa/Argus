@@ -19,13 +19,13 @@ float AvoidanceSystems::GetEffortCoefficientForEntityPair(const EffortCoefficien
 	}
 
 	float effortCoefficient = 0.5f;
-	if (ShouldReturnTargetEffortCoefficient(settings, sourceEntityComponents, foundEntity, inSameAvoidanceGroup, effortCoefficient) || 
+	if (ShouldReturnCarrierEffortCoefficient(settings, sourceEntityComponents, foundEntity, foundEntityTaskComponent, effortCoefficient) ||
+		ShouldReturnTargetEffortCoefficient(settings, sourceEntityComponents, foundEntity, inSameAvoidanceGroup, effortCoefficient) || 
 		ShouldReturnMovabilityEffortCoefficient(settings, sourceEntityComponents, foundEntity, effortCoefficient) ||
 		ShouldReturnEnemyEffortCoefficient(settings, sourceEntityComponents, foundEntity, effortCoefficient) ||
 		ShouldReturnCombatEffortCoefficient(settings, sourceEntityComponents, foundEntityTaskComponent, inSameAvoidanceGroup, effortCoefficient) ||
 		ShouldReturnConstructionEffortCoefficient(settings, sourceEntityComponents, foundEntityTaskComponent, inSameAvoidanceGroup, effortCoefficient) ||
 		ShouldReturnResourceExtractionEffortCoefficient(settings, sourceEntityComponents, foundEntityTaskComponent, inSameAvoidanceGroup, effortCoefficient) ||
-		ShouldReturnCarrierEffortCoefficient(settings, sourceEntityComponents, foundEntity, foundEntityTaskComponent, effortCoefficient) ||
 		ShouldReturnObstacleEffortCoefficient(settings, sourceEntityComponents, foundEntity, sourceHasObstacles, effortCoefficient) ||
 		ShouldReturnStaticFlockingEffortCoefficient(settings, sourceEntityComponents, foundEntity, effortCoefficient) ||
 		ShouldReturnAvoidancePriorityEffortCoefficient(settings, sourceGroupingComponent, foundGroupingComponent, effortCoefficient) ||
@@ -165,6 +165,11 @@ bool AvoidanceSystems::ShouldReturnCarrierEffortCoefficient(const EffortCoeffici
 	ARGUS_RETURN_ON_NULL_BOOL(foundEntityTaskComponent, ArgusECSLog);
 	ARGUS_RETURN_ON_INVALID_ENTITY_VALUE(foundEntity, ArgusECSLog, false);
 	if (!sourceEntityComponents.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return false;
+	}
+
+	if (!sourceEntityComponents.m_entity.IsOnSameTeamAsOtherEntity(foundEntity))
 	{
 		return false;
 	}
