@@ -5,6 +5,7 @@
 #include "ArgusComponentRegistry.h"
 #include "ArgusECSConstants.h"
 #include "CoreMinimal.h"
+#include "Tasks/Task.h"
 #include <bitset>
 
 class FArchive;
@@ -34,10 +35,10 @@ public:
 	static ArgusEntity		GetTeamEntity(ETeam team);
 
 	template <typename Function>
-	static void IterateEntities(Function&& perEntityFunction)
+	static void IterateEntityRange(int32 fromInclusive, int32 toIncusive, Function&& perEntityFunction)
 	{
-		int32 currentIndex = GetLowestTakenEntityId();
-		while (currentIndex <= GetHighestTakenEntityId() && currentIndex >= 0)
+		int32 currentIndex = fromInclusive;
+		while (currentIndex <= toIncusive && currentIndex >= 0)
 		{
 			if (ArgusEntity entity = RetrieveEntity(currentIndex))
 			{
@@ -46,6 +47,39 @@ public:
 
 			currentIndex = s_takenEntityIds.FindFrom(true, currentIndex + 1);
 		}
+	}
+
+	template <typename Function>
+	static void IterateEntities(Function&& perEntityFunction)
+	{
+		IterateEntityRange(GetLowestTakenEntityId(), GetHighestTakenEntityId(), perEntityFunction);
+	}
+
+	template <uint8 ChunkCount, typename Function>
+	static void IterateEntitiesParallel(Function&& perEntityFunction)
+	{
+		TArray<UE::Tasks::FTask, TInlineAllocator<ChunkCount>> chunkTasks;
+
+		uint16 rollingBound = GetLowestTakenEntityId();
+		const uint16 upperBound = GetHighestTakenEntityId();
+		const uint16 difference = upperBound - rollingBound;
+		const uint16 increment = difference / ChunkCount;
+
+		for (uint8 i = 1u; i < ChunkCount; ++i)
+		{
+			chunkTasks.Add(UE::Tasks::Launch(ARGUS_NAMEOF(ArgusEntity::IterateEntitiesParallel), [rollingBound, increment, &perEntityFunction]()
+			{
+				IterateEntityRange(rollingBound, rollingBound + (increment - 1u), perEntityFunction);
+			}));
+			rollingBound += increment;
+		}
+
+		chunkTasks.Add(UE::Tasks::Launch(ARGUS_NAMEOF(ArgusEntity::IterateEntitiesParallel), [rollingBound, upperBound, &perEntityFunction]()
+		{
+			IterateEntityRange(rollingBound, upperBound, perEntityFunction);
+		}));
+
+		UE::Tasks::Wait(chunkTasks);
 	}
 
 	template <typename Function>
@@ -60,13 +94,31 @@ public:
 		}
 	}
 
-	template <typename SystemsArgs, typename Function>
-	static void IterateSystemsArgs(Function&& perSystemsArgsFunction)
+	template <typename Function>
+	static void IterateTeamEntitiesParallel(Function&& perEntityFunction)
 	{
-		int32 currentIndex = GetLowestTakenEntityId();
+		TArray<UE::Tasks::FTask, TInlineAllocator<(sizeof(ETeam) * 8u)>> teamTasks;
+		for (uint8 i = 1u; i <= (sizeof(ETeam) * 8u); ++i)
+		{
+			if (ArgusEntity entity = RetrieveEntity(ArgusECSConstants::k_singletonEntityId - i))
+			{
+				teamTasks.Add(UE::Tasks::Launch(ARGUS_NAMEOF(ArgusEntity::IterateTeamEntitiesParallel), [entity, &perEntityFunction]()
+				{
+					perEntityFunction(entity);
+				}));
+			}
+		}
+
+		UE::Tasks::Wait(teamTasks);
+	}
+
+	template <typename SystemsArgs, typename Function>
+	static void IterateSystemArgRange(int32 fromInclusive, int32 toIncusive, Function&& perSystemsArgsFunction)
+	{
+		int32 currentIndex = fromInclusive;
 		SystemsArgs systemsArgs = SystemsArgs();
 
-		while (currentIndex <= GetHighestTakenEntityId() && currentIndex >= 0)
+		while (currentIndex <= toIncusive && currentIndex >= 0)
 		{
 			if (systemsArgs.PopulateArguments(RetrieveEntity(currentIndex)))
 			{
@@ -75,6 +127,75 @@ public:
 
 			currentIndex = s_takenEntityIds.FindFrom(true, currentIndex + 1);
 		}
+	}
+
+	template <typename SystemsArgs, typename Function>
+	static void IterateSystemsArgRangeForTeam(ETeam team, int32 fromInclusive, int32 toIncusive, Function&& perSystemsArgsFunction)
+	{
+		int32 currentIndex = fromInclusive;
+		SystemsArgs systemsArgs = SystemsArgs();
+
+		while (currentIndex <= toIncusive && currentIndex >= 0)
+		{
+			if (systemsArgs.PopulateArguments(RetrieveEntity(currentIndex)))
+			{
+				if (systemsArgs.m_entity.IsOnTeam(team))
+				{
+					perSystemsArgsFunction(systemsArgs);
+				}
+			}
+
+			currentIndex = s_takenEntityIds.FindFrom(true, currentIndex + 1);
+		}
+	}
+
+	template <typename SystemsArgs, typename Function>
+	static void IterateSystemsArgs(Function&& perSystemsArgsFunction)
+	{
+		IterateSystemArgRange<SystemsArgs>(GetLowestTakenEntityId(), GetHighestTakenEntityId(), perSystemsArgsFunction);
+	}
+
+	template <typename SystemsArgs, uint8 ChunkCount, typename Function>
+	static void IterateSystemsArgsParallel(Function&& perSystemsArgsFunction)
+	{
+		TArray<UE::Tasks::FTask, TInlineAllocator<ChunkCount>> chunkTasks;
+
+		uint16 rollingBound = GetLowestTakenEntityId();
+		const uint16 upperBound = GetHighestTakenEntityId();
+		const uint16 difference = upperBound - rollingBound;
+		const uint16 increment = difference / ChunkCount;
+
+		for (uint8 i = 1u; i < ChunkCount; ++i)
+		{
+			chunkTasks.Add(UE::Tasks::Launch(ARGUS_NAMEOF(ArgusEntity::IterateSystemsArgsParallel), [rollingBound, increment, &perSystemsArgsFunction]()
+			{
+				IterateSystemArgRange<SystemsArgs>(rollingBound, rollingBound + (increment - 1u), perSystemsArgsFunction);
+			}));
+			rollingBound += increment;
+		}
+
+		chunkTasks.Add(UE::Tasks::Launch(ARGUS_NAMEOF(ArgusEntity::IterateSystemsArgsParallel), [rollingBound, upperBound, &perSystemsArgsFunction]()
+		{
+			IterateSystemArgRange<SystemsArgs>(rollingBound, upperBound, perSystemsArgsFunction);
+		}));
+
+		UE::Tasks::Wait(chunkTasks);
+	}
+
+	template <typename SystemsArgs, typename Function>
+	static void IterateSystemsArgsByTeamParallel(Function&& perSystemsArgsFunction)
+	{
+		TArray<UE::Tasks::FTask, TInlineAllocator<(sizeof(ETeam) * 8u)>> teamTasks;
+		for (uint8 i = 0u; i <= (sizeof(ETeam) * 8u); ++i)
+		{
+			const ETeam team = static_cast<ETeam>(i);
+			teamTasks.Add(UE::Tasks::Launch(ARGUS_NAMEOF(ArgusEntity::IterateSystemsArgsByTeamParallel), [team, &perSystemsArgsFunction]()
+			{
+				IterateSystemsArgRangeForTeam<SystemsArgs>(team, GetLowestTakenEntityId(), GetHighestTakenEntityId(), perSystemsArgsFunction);
+			}));
+		}
+
+		UE::Tasks::Wait(teamTasks);
 	}
 
 	static const ArgusEntity k_emptyEntity;

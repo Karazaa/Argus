@@ -11,8 +11,8 @@ void TeamCommanderSystems_GatherInfo::RunSystems()
 {
 	ARGUS_TRACE(TeamCommanderSystems_GatherInfo::RunSystems);
 
-	ArgusEntity::IterateTeamEntities(TeamCommanderSystems_GatherInfo::ClearUpdatesPerCommanderEntity);
-	ArgusEntity::IterateSystemsArgs<TeamCommanderSystemsArgs>(TeamCommanderSystems_GatherInfo::UpdateTeamCommanderPerEntity);
+	ArgusEntity::IterateTeamEntitiesParallel(TeamCommanderSystems_GatherInfo::ClearUpdatesPerCommanderEntity);
+	ArgusEntity::IterateSystemsArgsByTeamParallel<TeamCommanderSystemsArgs>(TeamCommanderSystems_GatherInfo::UpdateTeamCommanderPerEntity);
 }
 
 void TeamCommanderSystems_GatherInfo::ClearUpdatesPerCommanderEntity(ArgusEntity teamEntity)

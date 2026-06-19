@@ -63,7 +63,7 @@ void SpatialPartitioningSystems::CacheAdjacentEntityIds(const SpatialPartitionin
 
 	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
 
-	ArgusEntity::IterateEntities([spatialPartitioningComponent](ArgusEntity entity)
+	ArgusEntity::IterateEntitiesParallel<8u>([spatialPartitioningComponent](ArgusEntity entity)
 	{
 		NearbyEntitiesComponent* nearbyEntitiesComponent = entity.GetComponent<NearbyEntitiesComponent>();
 		const TransformComponent* transformComponent = entity.GetComponent<TransformComponent>();

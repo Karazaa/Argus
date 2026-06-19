@@ -10,7 +10,7 @@ void TeamCommanderSystems_UpdatePriorities::RunSystems()
 {
 	ARGUS_TRACE(TeamCommanderSystems_UpdatePriorities::RunSystems);
 
-	ArgusEntity::IterateTeamEntities(TeamCommanderSystems_UpdatePriorities::UpdateTeamCommanderPriorities);
+	ArgusEntity::IterateTeamEntitiesParallel(TeamCommanderSystems_UpdatePriorities::UpdateTeamCommanderPriorities);
 }
 
 void TeamCommanderSystems_UpdatePriorities::UpdateTeamCommanderPriorities(ArgusEntity teamEntity)
