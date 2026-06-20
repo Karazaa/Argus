@@ -84,6 +84,8 @@ protected:
 	void FixupTransformForFlying();
 	void CallEventsForInitialState();
 
+	bool IsLocationNearlyActorLocation(const FVector& location) const;
+	bool IsRotationNearlyActorRotation(const FRotator& rotation) const;
 protected:
 	ArgusEntity m_entity = ArgusEntity::k_emptyEntity;
 	bool m_isSelected = false;

@@ -23,5 +23,6 @@ struct LODComponent
 	void PreInViewFrustrumUpdate()
 	{
 		m_bWasInViewFrustrum = m_bIsInViewFrustrum;
+		m_bIsInViewFrustrum = false;
 	}
 };

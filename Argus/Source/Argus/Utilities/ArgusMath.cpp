@@ -147,7 +147,8 @@ namespace ArgusMath
 
 	float GetUEYawDegreesFromYaw(float yaw)
 	{
-		return 360.0f - FMath::RadiansToDegrees(GetNormalizedZeroToTwoPi(yaw));
+		const float yawDegreeOffset = FMath::RadiansToDegrees(GetNormalizedZeroToTwoPi(yaw));
+		return FMath::IsNearlyZero(yawDegreeOffset) ? 0.0f : 360.0f - yawDegreeOffset;
 	}
 
 	int FColorAsBGRA(const FColor& color)

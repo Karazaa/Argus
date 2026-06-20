@@ -102,6 +102,7 @@ private:
 	void UpdateCameraOrbitInternal(const TOptional<FHitResult>& hitResult, const float deltaTime);
 	void UpdateCameraPanning(const UpdateCameraPanningParameters& cameraParameters, const float deltaTime);
 	void UpdateCameraZoomInternal(const TOptional<FHitResult>& hitResult, const float deltaTime);
+	void UpdateEntitiesInViewFrustrum();
 
 	void TraceToGround(TOptional<FHitResult>& hitResult);
 

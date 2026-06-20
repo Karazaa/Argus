@@ -1,7 +1,7 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusCameraActor.h"
-#include "ArgusEntity.h"
+#include "ArgusIterators.h"
 #include "ArgusLogging.h"
 #include "ArgusMath.h"
 #include "Camera/CameraComponent.h"
@@ -80,6 +80,7 @@ void AArgusCameraActor::UpdateCamera(const UpdateCameraPanningParameters& camera
 	UpdateCameraOrbitInternal(hitResult, deltaTime);
 	UpdateCameraPanning(cameraParameters, deltaTime);
 	UpdateCameraZoomInternal(hitResult, deltaTime);
+	UpdateEntitiesInViewFrustrum();
 
 	m_zoomInputThisFrame = 0.0f;
 	m_orbitInputThisFrame = 0.0f;
@@ -245,7 +246,7 @@ void AArgusCameraActor::UpdateCameraPanning(const UpdateCameraPanningParameters&
 
 void AArgusCameraActor::UpdateCameraZoomInternal(const TOptional<FHitResult>& hitResult, const float deltaTime)
 {
-	ARGUS_TRACE(AArgusCameraActor::UpdateCameraZoom);
+	ARGUS_TRACE(AArgusCameraActor::UpdateCameraZoomInternal);
 
 	UWorld* world = GetWorld();
 	ARGUS_RETURN_ON_NULL(world, ArgusUnrealObjectsLog);
@@ -293,8 +294,29 @@ void AArgusCameraActor::UpdateCameraZoomInternal(const TOptional<FHitResult>& hi
 	SetActorLocation(m_cameraLocationWithoutZoom + (m_currentZoomTranslationAmount.GetValue() * forwardVector));
 }
 
+void AArgusCameraActor::UpdateEntitiesInViewFrustrum()
+{
+	ARGUS_TRACE(AArgusCameraActor::UpdateEntitiesInViewFrustrum);
+
+	ArgusIterators::IterateEntities([](ArgusEntity entity)
+	{
+		LODComponent* lodComponent = entity.GetComponent<LODComponent>();
+		if (!lodComponent)
+		{
+			return;
+		}
+
+		lodComponent->PreInViewFrustrumUpdate();
+
+		// TODO JAMES: Remove this and instead do spatial queries for within camera frustrum below.
+		lodComponent->m_bIsInViewFrustrum = true;
+	});
+}
+
 void AArgusCameraActor::TraceToGround(TOptional<FHitResult>& hitResult)
 {
+	ARGUS_TRACE(AArgusCameraActor::TraceToGround);
+
 	FHitResult underlyingHitResult;
 	const FVector forwardVector = GetActorForwardVector();
 	const FVector proposedLocation = m_cameraLocationWithoutZoom + (m_currentZoomTranslationAmount.GetValue() * forwardVector);

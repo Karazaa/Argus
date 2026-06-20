@@ -34,6 +34,8 @@ bool AArgusActor::IsFlying() const
 
 void AArgusActor::Reset()
 {
+	ARGUS_TRACE(AArgusActor::Reset);
+
 	if (m_entity)
 	{
 		if (ObserversComponent* observersComponent = m_entity.GetComponent<ObserversComponent>())
@@ -70,6 +72,8 @@ ArgusEntity AArgusActor::GetEntity() const
 
 void AArgusActor::SetEntity(ArgusEntity entity)
 {
+	ARGUS_TRACE(AArgusActor::SetEntity);
+
 	const UWorld* world = GetWorld();
 	if (!world)
 	{
@@ -270,15 +274,23 @@ void AArgusActor::Update(float deltaTime, ETeam activePlayerControllerTeam)
 		return;
 	}
 
+	bool hasMovedOrRotated = false;
 	if (const TransformComponent* transformComponent = m_entity.GetComponent<TransformComponent>())
 	{
-		ARGUS_TRACE(AArgusActor::SetActorLocationAndRotation);
 		float currentFacing = 0.0f;
 		if (FacingComponent* facingComponent = m_entity.GetComponent<FacingComponent>())
 		{
 			currentFacing = facingComponent->GetCurrentFacing();
 		}
-		SetActorLocationAndRotation(transformComponent->m_location, FRotator(0.0f, ArgusMath::GetUEYawDegreesFromYaw(currentFacing), 0.0f));
+
+		const FRotator facingRotation = FRotator(0.0f, ArgusMath::GetUEYawDegreesFromYaw(currentFacing), 0.0f);
+		hasMovedOrRotated = (!IsLocationNearlyActorLocation(transformComponent->m_location)) || (!IsRotationNearlyActorRotation(facingRotation));
+
+		if (hasMovedOrRotated)
+		{
+			ARGUS_TRACE(AArgusActor::SetActorLocationAndRotation);
+			SetActorLocationAndRotation(transformComponent->m_location, facingRotation);
+		}
 
 #if !UE_BUILD_SHIPPING
 		if (ArgusECSDebugger::ShouldShowIdDebugForEntity(m_entity.GetId()))
@@ -291,8 +303,11 @@ void AArgusActor::Update(float deltaTime, ETeam activePlayerControllerTeam)
 
 	if (m_argusActorInfoWidget.IsValid())
 	{
-		ARGUS_TRACE(AArgusActor::UpdateUIWidgetComponentLocation);
-		UpdateUIWidgetComponentLocation();
+		if (hasMovedOrRotated)
+		{
+			UpdateUIWidgetComponentLocation();
+		}
+		
 		m_argusActorInfoWidget->RefreshDisplay(m_entity);
 	}
 
@@ -362,6 +377,8 @@ void AArgusActor::InitializeWidgets()
 
 void AArgusActor::UpdateUIWidgetComponentLocation()
 {
+	ARGUS_TRACE(AArgusActor::UpdateUIWidgetComponentLocation)
+
 	UWidgetComponent* widgetComponent = GetComponentByClass<UWidgetComponent>();
 	if (!widgetComponent)
 	{
@@ -433,4 +450,16 @@ void AArgusActor::CallEventsForInitialState()
 
 	m_isSelected = m_entity.IsSelected();
 	m_isSelected ? OnSelected() : OnDeselected();
+}
+
+bool AArgusActor::IsLocationNearlyActorLocation(const FVector& location) const
+{
+	const FVector actorLocation = GetActorLocation();
+	return FMath::IsNearlyEqual(location.X, actorLocation.X) && FMath::IsNearlyEqual(location.Y, actorLocation.Y) && FMath::IsNearlyEqual(location.Z, actorLocation.Z);
+}
+
+bool AArgusActor::IsRotationNearlyActorRotation(const FRotator& rotation) const
+{
+	const FRotator actorRotation = GetActorRotation();
+	return FMath::IsNearlyEqual(rotation.Pitch, actorRotation.Pitch) && FMath::IsNearlyEqual(rotation.Yaw, actorRotation.Yaw) && FMath::IsNearlyEqual(rotation.Roll, actorRotation.Roll);
 }
