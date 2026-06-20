@@ -23,7 +23,7 @@ namespace ArgusIterators
 	template <typename Function>
 	static void IterateEntities(Function&& perEntityFunction)
 	{
-		IterateEntityRange(ArgusEntity::GetLowestTakenEntityId(), ArgusEntity::GetHighestTakenEntityId(), perEntityFunction);
+		ArgusIterators::IterateEntityRange(ArgusEntity::GetLowestTakenEntityId(), ArgusEntity::GetHighestTakenEntityId(), perEntityFunction);
 	}
 
 	template <uint8 ChunkCount, typename Function>
@@ -40,14 +40,14 @@ namespace ArgusIterators
 		{
 			chunkTasks.Add(UE::Tasks::Launch(ARGUS_NAMEOF(ArgusIterators::IterateEntitiesParallel), [rollingBound, increment, &perEntityFunction]()
 			{
-				IterateEntityRange(rollingBound, rollingBound + (increment - 1u), perEntityFunction);
+				ArgusIterators::IterateEntityRange(rollingBound, rollingBound + (increment - 1u), perEntityFunction);
 			}));
 			rollingBound += increment;
 		}
 
 		chunkTasks.Add(UE::Tasks::Launch(ARGUS_NAMEOF(ArgusIterators::IterateEntitiesParallel), [rollingBound, upperBound, &perEntityFunction]()
 		{
-			IterateEntityRange(rollingBound, upperBound, perEntityFunction);
+			ArgusIterators::IterateEntityRange(rollingBound, upperBound, perEntityFunction);
 		}));
 
 		UE::Tasks::Wait(chunkTasks);
@@ -123,7 +123,7 @@ namespace ArgusIterators
 	template <typename SystemsArgs, typename Function>
 	static void IterateSystemsArgs(Function&& perSystemsArgsFunction)
 	{
-		IterateSystemArgRange<SystemsArgs>(ArgusEntity::GetLowestTakenEntityId(), ArgusEntity::GetHighestTakenEntityId(), perSystemsArgsFunction);
+		ArgusIterators::IterateSystemArgRange<SystemsArgs>(ArgusEntity::GetLowestTakenEntityId(), ArgusEntity::GetHighestTakenEntityId(), perSystemsArgsFunction);
 	}
 
 	template <typename SystemsArgs, uint8 ChunkCount, typename Function>
@@ -140,14 +140,14 @@ namespace ArgusIterators
 		{
 			chunkTasks.Add(UE::Tasks::Launch(ARGUS_NAMEOF(ArgusIterators::IterateSystemsArgsParallel), [rollingBound, increment, &perSystemsArgsFunction]()
 			{
-				IterateSystemArgRange<SystemsArgs>(rollingBound, rollingBound + (increment - 1u), perSystemsArgsFunction);
+				ArgusIterators::IterateSystemArgRange<SystemsArgs>(rollingBound, rollingBound + (increment - 1u), perSystemsArgsFunction);
 			}));
 			rollingBound += increment;
 		}
 
 		chunkTasks.Add(UE::Tasks::Launch(ARGUS_NAMEOF(ArgusIterators::IterateSystemsArgsParallel), [rollingBound, upperBound, &perSystemsArgsFunction]()
 		{
-			IterateSystemArgRange<SystemsArgs>(rollingBound, upperBound, perSystemsArgsFunction);
+			ArgusIterators::IterateSystemArgRange<SystemsArgs>(rollingBound, upperBound, perSystemsArgsFunction);
 		}));
 
 		UE::Tasks::Wait(chunkTasks);
@@ -163,7 +163,7 @@ namespace ArgusIterators
 
 			teamTasks.Add(UE::Tasks::Launch(ARGUS_NAMEOF(ArgusIterators::IterateSystemsArgsByTeamParallel), [team, &perSystemsArgsFunction]()
 			{
-				IterateSystemsArgRangeForTeam<SystemsArgs>(team, ArgusEntity::GetLowestTakenEntityId(), ArgusEntity::GetHighestTakenEntityId(), perSystemsArgsFunction);
+				ArgusIterators::IterateSystemsArgRangeForTeam<SystemsArgs>(team, ArgusEntity::GetLowestTakenEntityId(), ArgusEntity::GetHighestTakenEntityId(), perSystemsArgsFunction);
 			}));
 		}
 

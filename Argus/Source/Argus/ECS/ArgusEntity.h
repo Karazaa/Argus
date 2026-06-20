@@ -5,7 +5,6 @@
 #include "ArgusComponentRegistry.h"
 #include "ArgusECSConstants.h"
 #include "CoreMinimal.h"
-#include "Tasks/Task.h"
 #include <bitset>
 
 class FArchive;
