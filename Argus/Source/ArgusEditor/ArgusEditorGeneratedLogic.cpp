@@ -17,6 +17,7 @@
 #include "AssetFactories/ComponentDataFactories/FogOfWarLocationComponentDataFactory.h"
 #include "AssetFactories/ComponentDataFactories/HealthComponentDataFactory.h"
 #include "AssetFactories/ComponentDataFactories/IdentityComponentDataFactory.h"
+#include "AssetFactories/ComponentDataFactories/LODComponentDataFactory.h"
 #include "AssetFactories/ComponentDataFactories/NavigationComponentDataFactory.h"
 #include "AssetFactories/ComponentDataFactories/NearbyEntitiesComponentDataFactory.h"
 #include "AssetFactories/ComponentDataFactories/NearbyObstaclesComponentDataFactory.h"
@@ -79,6 +80,8 @@ void ArgusEditorModule::RegisterAssetActions(IAssetTools& assetTools) const
 	assetTools.RegisterAssetTypeActions(actionsHealthComponentData);
 	TSharedRef<IAssetTypeActions> actionsIdentityComponentData = MakeShareable(new FAssetTypeActions_IdentityComponentData);
 	assetTools.RegisterAssetTypeActions(actionsIdentityComponentData);
+	TSharedRef<IAssetTypeActions> actionsLODComponentData = MakeShareable(new FAssetTypeActions_LODComponentData);
+	assetTools.RegisterAssetTypeActions(actionsLODComponentData);
 	TSharedRef<IAssetTypeActions> actionsNavigationComponentData = MakeShareable(new FAssetTypeActions_NavigationComponentData);
 	assetTools.RegisterAssetTypeActions(actionsNavigationComponentData);
 	TSharedRef<IAssetTypeActions> actionsNearbyEntitiesComponentData = MakeShareable(new FAssetTypeActions_NearbyEntitiesComponentData);

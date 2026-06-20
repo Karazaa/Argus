@@ -124,27 +124,69 @@ void AArgusGameModeBase::ManageActorStateForEntities(const UWorld* worldPointer,
 
 	ArgusIterators::IterateEntities([this, gameInstance, deltaTime](ArgusEntity entity) 
 	{
-		TaskComponent* taskComponent = entity.GetComponent<TaskComponent>();
-		if (!taskComponent)
+		if (const LODComponent* lodComponent = entity.GetComponent<LODComponent>())
 		{
-			return;
+			if (lodComponent->m_bIsInViewFrustrum)
+			{
+				ManageActorStateInViewFrustrum(entity, lodComponent, gameInstance, deltaTime);
+			}
+			else
+			{
+				ManageActorStateOutOfViewFrustrum(entity, lodComponent);
+			}
 		}
-
-		if (taskComponent->m_baseState == EBaseState::SpawnedWaitingForActorTake)
+		else
 		{
-			SpawnActorForEntity(entity);
-			taskComponent->m_baseState = EBaseState::Alive;
-		}
-		else if (taskComponent->m_baseState == EBaseState::DestroyedWaitingForActorRelease)
-		{
-			DespawnActorForEntity(entity);
-		}
-
-		if (AArgusActor* argusActor = gameInstance->GetArgusActorFromArgusEntity(entity))
-		{
-			argusActor->Update(deltaTime, m_activePlayerController->GetPlayerTeam());
+			ManageActorStateInViewFrustrum(entity, nullptr, gameInstance, deltaTime);
 		}
 	});
+}
+
+void AArgusGameModeBase::ManageActorStateInViewFrustrum(ArgusEntity entity, const LODComponent* lodComponent, const UArgusGameInstance* gameInstance, float deltaTime)
+{
+	ARGUS_TRACE(AArgusGameModeBase::ManageActorStateInViewFrustrum);
+
+	ARGUS_RETURN_ON_NULL(gameInstance, ArgusUnrealObjectsLog);
+	TaskComponent* taskComponent = entity.GetComponent<TaskComponent>();
+	ARGUS_RETURN_ON_NULL(taskComponent, ArgusUnrealObjectsLog);
+
+	if (taskComponent->m_baseState == EBaseState::SpawnedWaitingForActorTake)
+	{
+		SpawnActorForEntity(entity);
+		taskComponent->m_baseState = EBaseState::Alive;
+	}
+	else if (taskComponent->m_baseState == EBaseState::DestroyedWaitingForActorRelease)
+	{
+		DespawnActorForEntity(entity);
+		entity.Destroy();
+	}
+	else if (lodComponent && lodComponent->DidInViewFrustrumStatusChange())
+	{
+		SpawnActorForEntity(entity);
+	}
+
+	if (AArgusActor* argusActor = gameInstance->GetArgusActorFromArgusEntity(entity))
+	{
+		argusActor->Update(deltaTime, m_activePlayerController->GetPlayerTeam());
+	}
+}
+
+void AArgusGameModeBase::ManageActorStateOutOfViewFrustrum(ArgusEntity entity, const LODComponent* lodComponent)
+{
+	ARGUS_TRACE(AArgusGameModeBase::ManageActorStateOutOfViewFrustrum);
+
+	TaskComponent* taskComponent = entity.GetComponent<TaskComponent>();
+	ARGUS_RETURN_ON_NULL(taskComponent, ArgusUnrealObjectsLog);
+
+	if (taskComponent->m_baseState == EBaseState::DestroyedWaitingForActorRelease)
+	{
+		DespawnActorForEntity(entity);
+		entity.Destroy();
+	}
+	else if (lodComponent && lodComponent->DidInViewFrustrumStatusChange())
+	{
+		DespawnActorForEntity(entity);
+	}
 }
 
 void AArgusGameModeBase::SpawnActorForEntity(ArgusEntity spawnedEntity)
@@ -194,8 +236,6 @@ void AArgusGameModeBase::DespawnActorForEntity(ArgusEntity spawnedEntity)
 	{
 		m_argusActorPool.Release(argusActor);
 	}
-
-	spawnedEntity.Destroy();
 }
 
 FColor AArgusGameModeBase::GetTeamColor(ETeam team)
@@ -241,6 +281,7 @@ void AArgusGameModeBase::OnLoadStart()
 	ArgusIterators::IterateEntities([this](ArgusEntity entity)
 	{
 		DespawnActorForEntity(entity);
+		entity.Destroy();
 	});
 }
 

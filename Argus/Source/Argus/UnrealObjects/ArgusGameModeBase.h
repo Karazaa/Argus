@@ -15,6 +15,7 @@
 
 class AArgusPlayerController;
 class UArgusEntityTemplate;
+class UArgusGameInstance;
 class UUserWidget;
 
 UCLASS()
@@ -52,6 +53,8 @@ protected:
 
 private:
 	void ManageActorStateForEntities(const UWorld* worldPointer, float deltaTime);
+	void ManageActorStateInViewFrustrum(ArgusEntity entity, const LODComponent* lodComponent, const UArgusGameInstance* gameInstance, float deltaTime);
+	void ManageActorStateOutOfViewFrustrum(ArgusEntity entity, const LODComponent* lodComponent);
 	void SpawnActorForEntity(ArgusEntity spawnedEntity);
 	void DespawnActorForEntity(ArgusEntity despawnedEntity);
 	void OnLoadStart();

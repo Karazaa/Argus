@@ -51,6 +51,10 @@ TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > ArgusCom
 IdentityComponent* ArgusComponentRegistry::s_IdentityComponents = nullptr;
 TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > ArgusComponentRegistry::s_isIdentityComponentActive;
 #pragma endregion
+#pragma region LODComponent
+LODComponent* ArgusComponentRegistry::s_LODComponents = nullptr;
+TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > ArgusComponentRegistry::s_isLODComponentActive;
+#pragma endregion
 #pragma region NavigationComponent
 NavigationComponent* ArgusComponentRegistry::s_NavigationComponents = nullptr;
 TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > ArgusComponentRegistry::s_isNavigationComponentActive;
@@ -234,6 +238,14 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 	{
 		s_isIdentityComponentActive[entityId] = false;
 	}
+	if (UNLIKELY(s_isLODComponentActive.Num() == 0))
+	{
+		s_isLODComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+	}
+	else
+	{
+		s_isLODComponentActive[entityId] = false;
+	}
 	if (UNLIKELY(s_isNavigationComponentActive.Num() == 0))
 	{
 		s_isNavigationComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
@@ -383,6 +395,10 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 	if (LIKELY(s_IdentityComponents))
 	{
 		s_IdentityComponents[entityId].Reset();
+	}
+	if (LIKELY(s_LODComponents))
+	{
+		s_LODComponents[entityId].Reset();
 	}
 	if (LIKELY(s_NavigationComponents))
 	{
@@ -564,6 +580,13 @@ void ArgusComponentRegistry::FlushAllComponents()
 		s_IdentityComponents = ArgusMemorySource::Reallocate<IdentityComponent>(s_IdentityComponents, 0, ArgusECSConstants::k_maxEntities);
 	}
 	s_isIdentityComponentActive.Reset();
+	bool didAllocateLODComponents = false;
+	if (!s_LODComponents)
+	{
+		didAllocateLODComponents = true;
+		s_LODComponents = ArgusMemorySource::Reallocate<LODComponent>(s_LODComponents, 0, ArgusECSConstants::k_maxEntities);
+	}
+	s_isLODComponentActive.Reset();
 	bool didAllocateNavigationComponents = false;
 	if (!s_NavigationComponents)
 	{
@@ -746,6 +769,14 @@ void ArgusComponentRegistry::FlushAllComponents()
 		else
 		{
 			s_IdentityComponents[i].Reset();
+		}
+		if (didAllocateLODComponents)
+		{
+			new (&s_LODComponents[i]) LODComponent();
+		}
+		else
+		{
+			s_LODComponents[i].Reset();
 		}
 		if (didAllocateNavigationComponents)
 		{
@@ -1045,6 +1076,11 @@ uint16 ArgusComponentRegistry::GetOwningEntityIdForComponentMember(const void* m
 		const IdentityComponent* pretendComponent = reinterpret_cast<const IdentityComponent*>(memberAddress);
 		return pretendComponent - &s_IdentityComponents[0];
 	}
+	if (memberAddress >= &s_LODComponents[0] && memberAddress <= &s_LODComponents[ArgusECSConstants::k_maxEntities - 1])
+	{
+		const LODComponent* pretendComponent = reinterpret_cast<const LODComponent*>(memberAddress);
+		return pretendComponent - &s_LODComponents[0];
+	}
 	if (memberAddress >= &s_NavigationComponents[0] && memberAddress <= &s_NavigationComponents[ArgusECSConstants::k_maxEntities - 1])
 	{
 		const NavigationComponent* pretendComponent = reinterpret_cast<const NavigationComponent*>(memberAddress);
@@ -1197,6 +1233,13 @@ void ArgusComponentRegistry::Serialize(FArchive& archive)
 	{
 		s_IdentityComponents[currentIndex].Serialize(archive);
 		currentIndex = s_isIdentityComponentActive.FindFrom(true, currentIndex + 1);
+	}
+	s_isLODComponentActive.Serialize(archive);
+	currentIndex = s_isLODComponentActive.FindFrom(true, 0);
+	while (s_isLODComponentActive.IsValidIndex(currentIndex))
+	{
+		s_LODComponents[currentIndex].Serialize(archive);
+		currentIndex = s_isLODComponentActive.FindFrom(true, currentIndex + 1);
 	}
 	s_isNavigationComponentActive.Serialize(archive);
 	currentIndex = s_isNavigationComponentActive.FindFrom(true, 0);
@@ -1637,6 +1680,10 @@ void ArgusComponentRegistry::DrawComponentsDebug(uint16 entityId)
 	if (const IdentityComponent* IdentityComponentPtr = GetComponent<IdentityComponent>(entityId))
 	{
 		IdentityComponentPtr->DrawComponentDebug();
+	}
+	if (const LODComponent* LODComponentPtr = GetComponent<LODComponent>(entityId))
+	{
+		LODComponentPtr->DrawComponentDebug();
 	}
 	if (const NavigationComponent* NavigationComponentPtr = GetComponent<NavigationComponent>(entityId))
 	{

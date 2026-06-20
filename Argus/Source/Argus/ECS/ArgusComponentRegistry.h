@@ -22,6 +22,7 @@
 #include "ComponentDefinitions\FogOfWarLocationComponent.h"
 #include "ComponentDefinitions\HealthComponent.h"
 #include "ComponentDefinitions\IdentityComponent.h"
+#include "ComponentDefinitions\LODComponent.h"
 #include "ComponentDefinitions\NavigationComponent.h"
 #include "ComponentDefinitions\NearbyEntitiesComponent.h"
 #include "ComponentDefinitions\NearbyObstaclesComponent.h"
@@ -82,7 +83,7 @@ public:
 	static void DrawComponentsDebug(uint16 entityId);
 #endif //!UE_BUILD_SHIPPING
 
-	static constexpr uint32 k_numComponentTypes = 35;
+	static constexpr uint32 k_numComponentTypes = 36;
 
 	// Begin component specific template specifiers.
 	
@@ -1130,6 +1131,101 @@ public:
 	}
 
 	friend struct IdentityComponent;
+#pragma endregion
+#pragma region LODComponent
+private:
+	static LODComponent* s_LODComponents;
+	static TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > s_isLODComponentActive;
+public:
+	template<>
+	inline LODComponent* GetComponent<LODComponent>(uint16 entityId)
+	{
+		if (UNLIKELY(!s_LODComponents))
+		{
+			return nullptr;
+		}
+
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(LODComponent));
+			return nullptr;
+		}
+
+		if (UNLIKELY(s_isLODComponentActive.Num() == 0))
+		{
+			return nullptr;
+		}
+
+		if (!s_isLODComponentActive[entityId])
+		{
+			return nullptr;
+		}
+
+		return &s_LODComponents[entityId];
+	}
+
+	template<>
+	inline LODComponent* AddComponent<LODComponent>(uint16 entityId)
+	{
+		if (UNLIKELY(!s_LODComponents))
+		{
+			return nullptr;
+		}
+
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(LODComponent));
+			return nullptr;
+		}
+
+		if (UNLIKELY(s_isLODComponentActive.Num() == 0))
+		{
+			s_isLODComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
+		if (UNLIKELY(s_isLODComponentActive[entityId]))
+		{
+			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(LODComponent), entityId);
+			return &s_LODComponents[entityId];
+		}
+
+		s_isLODComponentActive[entityId] = true;
+		s_LODComponents[entityId].Reset();
+		return &s_LODComponents[entityId];
+	}
+
+	template<>
+	inline LODComponent* GetOrAddComponent<LODComponent>(uint16 entityId)
+	{
+		if (UNLIKELY(!s_LODComponents))
+		{
+			return nullptr;
+		}
+
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(LODComponent));
+			return nullptr;
+		}
+
+		if (UNLIKELY(s_isLODComponentActive.Num() == 0))
+		{
+			s_isLODComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
+		if (s_isLODComponentActive[entityId])
+		{
+			return &s_LODComponents[entityId];
+		}
+		else
+		{
+			s_isLODComponentActive[entityId] = true;
+			s_LODComponents[entityId].Reset();
+			return &s_LODComponents[entityId];
+		}
+	}
+
+	friend struct LODComponent;
 #pragma endregion
 #pragma region NavigationComponent
 private:
