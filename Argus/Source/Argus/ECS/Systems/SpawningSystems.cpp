@@ -1,6 +1,7 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "SpawningSystems.h"
+#include "ArgusIterators.h"
 #include "ArgusLogging.h"
 #include "ArgusStaticData.h"
 #include "HAL/UnrealMemory.h"
@@ -14,7 +15,7 @@ bool SpawningSystems::RunSystems(float deltaTime)
 
 	bool spawnedAnEntityThisFrame = false;
 
-	ArgusEntity::IterateSystemsArgs<SpawningSystemsArgs>([deltaTime, &spawnedAnEntityThisFrame](SpawningSystemsArgs& components)
+	ArgusIterators::IterateSystemsArgs<SpawningSystemsArgs>([deltaTime, &spawnedAnEntityThisFrame](SpawningSystemsArgs& components)
 	{
 		if ((components.m_entity.IsKillable() && !components.m_entity.IsAlive()) || components.m_entity.IsPassenger())
 		{

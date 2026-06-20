@@ -2,6 +2,7 @@
 
 #include "NavigationSystems.h"
 #include "AI/Navigation/NavigationTypes.h"
+#include "ArgusIterators.h"
 #include "NavigationData.h"
 #include "NavigationSystem.h"
 #include "NavigationSystemTypes.h"
@@ -22,7 +23,7 @@ void NavigationSystems::RunSystems(UWorld* worldPointer)
 
 	ARGUS_RETURN_ON_NULL(worldPointer, ArgusECSLog);
 
-	ArgusEntity::IterateSystemsArgs<NavigationSystemsArgs>([](NavigationSystemsArgs& components)
+	ArgusIterators::IterateSystemsArgs<NavigationSystemsArgs>([](NavigationSystemsArgs& components)
 	{
 		if ((components.m_entity.IsKillable() && !components.m_entity.IsAlive()) || components.m_entity.IsPassenger())
 		{
@@ -37,7 +38,7 @@ void NavigationSystems::RunSystems(UWorld* worldPointer)
 		ClearAvoidanceGroupsForUpcomingPathing(components);
 	});
 
-	ArgusEntity::IterateSystemsArgs<NavigationSystemsArgs>([worldPointer](NavigationSystemsArgs& components) 
+	ArgusIterators::IterateSystemsArgs<NavigationSystemsArgs>([worldPointer](NavigationSystemsArgs& components)
 	{
 		if ((components.m_entity.IsKillable() && !components.m_entity.IsAlive()) || components.m_entity.IsPassenger())
 		{

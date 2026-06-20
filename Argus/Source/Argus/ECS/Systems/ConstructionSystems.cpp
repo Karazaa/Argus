@@ -1,6 +1,7 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ConstructionSystems.h"
+#include "ArgusIterators.h"
 #include "ArgusLogging.h"
 #include "Systems/TargetingSystems.h"
 
@@ -8,7 +9,7 @@ void ConstructionSystems::RunSystems(float deltaTime)
 {
 	ARGUS_TRACE(ConstructionSystems::RunSystems);
 
-	ArgusEntity::IterateSystemsArgs<ConstructionSystemsArgs>([deltaTime](ConstructionSystemsArgs& components) 
+	ArgusIterators::IterateSystemsArgs<ConstructionSystemsArgs>([deltaTime](ConstructionSystemsArgs& components)
 	{
 		if ((components.m_entity.IsKillable() && !components.m_entity.IsAlive()) || components.m_entity.IsPassenger())
 		{

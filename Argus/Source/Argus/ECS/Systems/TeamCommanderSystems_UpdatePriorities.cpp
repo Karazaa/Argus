@@ -1,7 +1,7 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "TeamCommanderSystems_UpdatePriorities.h"
-#include "ArgusEntity.h"
+#include "ArgusIterators.h"
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
 #include "ArgusStaticData.h"
@@ -10,7 +10,7 @@ void TeamCommanderSystems_UpdatePriorities::RunSystems()
 {
 	ARGUS_TRACE(TeamCommanderSystems_UpdatePriorities::RunSystems);
 
-	ArgusEntity::IterateTeamEntitiesParallel(TeamCommanderSystems_UpdatePriorities::UpdateTeamCommanderPriorities);
+	ArgusIterators::IterateTeamEntitiesParallel(TeamCommanderSystems_UpdatePriorities::UpdateTeamCommanderPriorities);
 }
 
 void TeamCommanderSystems_UpdatePriorities::UpdateTeamCommanderPriorities(ArgusEntity teamEntity)

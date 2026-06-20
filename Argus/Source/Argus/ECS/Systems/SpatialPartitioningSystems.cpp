@@ -3,6 +3,7 @@
 #include "SpatialPartitioningSystems.h"
 #include "ArgusDetourQuery.h"
 #include "ArgusECSConstants.h"
+#include "ArgusIterators.h"
 #include "ArgusLogging.h"
 #include "ArgusMath.h"
 #include "NavigationData.h"
@@ -48,7 +49,7 @@ void SpatialPartitioningSystems::ClearSeenByStatus()
 {
 	ARGUS_TRACE(SpatialPartitioningSystems::ClearSeenByStatus);
 
-	ArgusEntity::IterateEntities([](ArgusEntity entity) 
+	ArgusIterators::IterateEntities([](ArgusEntity entity)
 	{
 		if (IdentityComponent* identityComponent = entity.GetComponent<IdentityComponent>())
 		{
@@ -63,7 +64,7 @@ void SpatialPartitioningSystems::CacheAdjacentEntityIds(const SpatialPartitionin
 
 	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
 
-	ArgusEntity::IterateEntitiesParallel<8u>([spatialPartitioningComponent](ArgusEntity entity)
+	ArgusIterators::IterateEntitiesParallel<8u>([spatialPartitioningComponent](ArgusEntity entity)
 	{
 		NearbyEntitiesComponent* nearbyEntitiesComponent = entity.GetComponent<NearbyEntitiesComponent>();
 		const TransformComponent* transformComponent = entity.GetComponent<TransformComponent>();
@@ -126,7 +127,7 @@ void SpatialPartitioningSystems::CalculateAdjacentEntityGroups()
 {
 	ARGUS_TRACE(SpatialPartitioningSystems::CalculateAdjacentEntityGroups);
 
-	ArgusEntity::IterateEntities([](ArgusEntity entity) 
+	ArgusIterators::IterateEntities([](ArgusEntity entity)
 	{
 		CalculateAdjacentEntityGroupsForEntity(entity, true);
 	});
@@ -289,7 +290,7 @@ void SpatialPartitioningSystems::CalculateAvoidanceObstacles(SpatialPartitioning
 
 	spatialPartitioningComponent->m_obstaclePointKDTree.InsertObstaclesIntoKDTree(spatialPartitioningComponent->m_obstacles);
 
-	ArgusEntity::IterateEntities([spatialPartitioningComponent](ArgusEntity entity)
+	ArgusIterators::IterateEntities([spatialPartitioningComponent](ArgusEntity entity)
 	{
 		TransformComponent* transformComponent = entity.GetComponent<TransformComponent>();
 		TargetingComponent* targetingComponent = entity.GetComponent<TargetingComponent>();

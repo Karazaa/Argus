@@ -1,7 +1,7 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "FlockingSystems.h"
-#include "ArgusEntity.h"
+#include "ArgusIterators.h"
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
 #include "Systems/AvoidanceSystems.h"
@@ -84,7 +84,7 @@ void FlockingSystems::ClearPackingValues()
 {
 	ARGUS_TRACE(FlockingSystems::ClearPackingValues);
 
-	ArgusEntity::IterateEntities([](ArgusEntity entity)
+	ArgusIterators::IterateEntities([](ArgusEntity entity)
 	{
 		if (FlockingComponent* flockingComponent = entity.GetComponent<FlockingComponent>())
 		{
@@ -97,7 +97,7 @@ void FlockingSystems::SetPackingValues()
 {
 	ARGUS_TRACE(FlockingSystems::SetPackingValues);
 
-	ArgusEntity::IterateSystemsArgs<FlockingSystemsArgs>([](FlockingSystemsArgs& components)
+	ArgusIterators::IterateSystemsArgs<FlockingSystemsArgs>([](FlockingSystemsArgs& components)
 	{
 		if (components.m_flockingComponent->m_flockingState != EFlockingState::Stable)
 		{
@@ -115,7 +115,7 @@ void FlockingSystems::SetFlockingState(float deltaTime)
 {
 	ARGUS_TRACE(FlockingSystems::SetFlockingState);
 
-	ArgusEntity::IterateSystemsArgs<FlockingSystemsArgs>([deltaTime](FlockingSystemsArgs& components)
+	ArgusIterators::IterateSystemsArgs<FlockingSystemsArgs>([deltaTime](FlockingSystemsArgs& components)
 	{
 		if (components.m_flockingComponent->m_flockingState == EFlockingState::Shrinking)
 		{
@@ -282,7 +282,7 @@ void FlockingSystems::DrawFlockingDebug(float deltaTime)
 	const WorldReferenceComponent* worldReference = ArgusEntity::GetSingletonEntity().GetComponent<WorldReferenceComponent>();
 	ARGUS_RETURN_ON_NULL(worldReference, ArgusECSLog);
 
-	ArgusEntity::IterateSystemsArgs<FlockingSystemsArgs>([deltaTime, worldReference](FlockingSystemsArgs& components)
+	ArgusIterators::IterateSystemsArgs<FlockingSystemsArgs>([deltaTime, worldReference](FlockingSystemsArgs& components)
 	{
 		if (ArgusECSDebugger::ShouldShowFlockingDebugForEntity(components.m_entity.GetId()))
 		{

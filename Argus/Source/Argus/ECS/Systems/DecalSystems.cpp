@@ -1,8 +1,8 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "DecalSystems.h"
-#include "ArgusEntity.h"
 #include "ArgusEntityTemplate.h"
+#include "ArgusIterators.h"
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
 #include "ArgusStaticData.h"
@@ -16,7 +16,7 @@ void DecalSystems::RunSystems(UWorld* worldPointer, float deltaTime)
 
 	ARGUS_RETURN_ON_NULL(worldPointer, ArgusECSLog);
 
-	ArgusEntity::IterateSystemsArgs<DecalSystemsArgs>([worldPointer, deltaTime](DecalSystemsArgs& components)
+	ArgusIterators::IterateSystemsArgs<DecalSystemsArgs>([worldPointer, deltaTime](DecalSystemsArgs& components)
 	{
 		if (components.m_decalComponent->m_lifetimeSeconds > 0.0f && !components.m_decalComponent->m_lifetimeTimer.WasTimerSet())
 		{

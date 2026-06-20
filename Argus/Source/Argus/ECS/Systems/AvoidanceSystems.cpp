@@ -1,6 +1,7 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "AvoidanceSystems.h"
+#include "ArgusIterators.h"
 #include "ArgusMath.h"
 #include "ArgusSystemsManager.h"
 #include "NavigationData.h"
@@ -20,7 +21,7 @@ void AvoidanceSystems::RunSystems(UWorld* worldPointer, float deltaTime)
 {
 	ARGUS_TRACE(AvoidanceSystems::RunSystems);
 
-	ArgusEntity::IterateSystemsArgs<TransformSystemsArgs>([worldPointer, deltaTime](TransformSystemsArgs& components)
+	ArgusIterators::IterateSystemsArgs<TransformSystemsArgs>([worldPointer, deltaTime](TransformSystemsArgs& components)
 	{
 		if (components.m_entity.IsKillable() && !components.m_entity.IsAlive())
 		{

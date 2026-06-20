@@ -1,13 +1,14 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "CombatSystems.h"
+#include "ArgusIterators.h"
 #include "Systems/TargetingSystems.h"
 
 void CombatSystems::RunSystems(float deltaTime)
 {
 	ARGUS_TRACE(CombatSystems::RunSystems);
 
-	ArgusEntity::IterateSystemsArgs<CombatSystemsArgs>([deltaTime](CombatSystemsArgs& components)
+	ArgusIterators::IterateSystemsArgs<CombatSystemsArgs>([deltaTime](CombatSystemsArgs& components)
 	{
 		if ((components.m_entity.IsKillable() && !components.m_entity.IsAlive()) || components.m_entity.IsPassenger())
 		{

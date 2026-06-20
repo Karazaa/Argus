@@ -1,7 +1,7 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "TransformSystems.h"
-#include "ArgusEntity.h"
+#include "ArgusIterators.h"
 #include "ArgusMath.h"
 #include "NavigationSystem.h"
 #include "Systems/AvoidanceSystems.h"
@@ -16,7 +16,7 @@ bool TransformSystems::RunSystems(UWorld* worldPointer, float deltaTime)
 
 	bool didMovementUpdateThisFrame = false;
 
-	ArgusEntity::IterateSystemsArgs<TransformSystemsArgs>([worldPointer, deltaTime, &didMovementUpdateThisFrame](TransformSystemsArgs& components) 
+	ArgusIterators::IterateSystemsArgs<TransformSystemsArgs>([worldPointer, deltaTime, &didMovementUpdateThisFrame](TransformSystemsArgs& components)
 	{
 		if ((components.m_entity.IsKillable() && !components.m_entity.IsAlive()) || components.m_entity.IsPassenger())
 		{

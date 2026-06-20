@@ -3,7 +3,7 @@
 #include "ArgusECSDebugger.h"
 
 #if !UE_BUILD_SHIPPING
-#include "ArgusEntity.h"
+#include "ArgusIterators.h"
 #include "ArgusMacros.h"
 #include "ComponentDependencies/ResourceSet.h"
 #include "imgui.h"
@@ -145,7 +145,7 @@ void ArgusECSDebugger::DrawTeamEntityScrollRegion(int windowFlags, int childFlag
 	}
 	if (ImGui::BeginTable("TeamEntitiesTable", tableWidth, ImGuiTableFlags_NoSavedSettings))
 	{
-		ArgusEntity::IterateTeamEntities([](ArgusEntity teamEntity)
+		ArgusIterators::IterateTeamEntities([](ArgusEntity teamEntity)
 			{
 				const TeamCommanderComponent* teamCommanderComponent = teamEntity.GetComponent<TeamCommanderComponent>();
 				if (!teamCommanderComponent)

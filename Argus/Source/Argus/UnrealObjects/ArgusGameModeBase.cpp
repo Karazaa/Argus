@@ -3,6 +3,7 @@
 #include "ArgusGameModeBase.h"
 #include "ArgusEntityTemplate.h"
 #include "ArgusGameStateBase.h"
+#include "ArgusIterators.h"
 #include "ArgusPlayerController.h"
 #include "ArgusStaticData.h"
 #include "Misc/App.h"
@@ -121,7 +122,7 @@ void AArgusGameModeBase::ManageActorStateForEntities(const UWorld* worldPointer,
 	ARGUS_RETURN_ON_NULL(gameInstance, ArgusUnrealObjectsLog);
 	ARGUS_RETURN_ON_NULL(m_activePlayerController, ArgusUnrealObjectsLog);
 
-	ArgusEntity::IterateEntities([this, gameInstance, deltaTime](ArgusEntity entity) 
+	ArgusIterators::IterateEntities([this, gameInstance, deltaTime](ArgusEntity entity) 
 	{
 		TaskComponent* taskComponent = entity.GetComponent<TaskComponent>();
 		if (!taskComponent)
@@ -237,7 +238,7 @@ void AArgusGameModeBase::OnLoadStart()
 {
 	ARGUS_TRACE(AArgusGameModeBase::OnLoadStart)
 
-	ArgusEntity::IterateEntities([this](ArgusEntity entity)
+	ArgusIterators::IterateEntities([this](ArgusEntity entity)
 	{
 		DespawnActorForEntity(entity);
 	});
@@ -247,7 +248,7 @@ void AArgusGameModeBase::OnLoadComplete()
 {
 	ARGUS_TRACE(AArgusGameModeBase::OnLoadComplete)
 
-	ArgusEntity::IterateEntities([this](ArgusEntity entity)
+	ArgusIterators::IterateEntities([this](ArgusEntity entity)
 	{
 		SpawnActorForEntity(entity);
 	});

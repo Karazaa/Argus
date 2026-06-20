@@ -1,7 +1,7 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "TeamCommanderSystems_GatherInfo.h"
-#include "ArgusEntity.h"
+#include "ArgusIterators.h"
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
 #include "Systems/TargetingSystems.h"
@@ -11,8 +11,8 @@ void TeamCommanderSystems_GatherInfo::RunSystems()
 {
 	ARGUS_TRACE(TeamCommanderSystems_GatherInfo::RunSystems);
 
-	ArgusEntity::IterateTeamEntitiesParallel(TeamCommanderSystems_GatherInfo::ClearUpdatesPerCommanderEntity);
-	ArgusEntity::IterateSystemsArgsByTeamParallel<TeamCommanderSystemsArgs>(TeamCommanderSystems_GatherInfo::UpdateTeamCommanderPerEntity);
+	ArgusIterators::IterateTeamEntitiesParallel(TeamCommanderSystems_GatherInfo::ClearUpdatesPerCommanderEntity);
+	ArgusIterators::IterateSystemsArgsByTeamParallel<TeamCommanderSystemsArgs>(TeamCommanderSystems_GatherInfo::UpdateTeamCommanderPerEntity);
 }
 
 void TeamCommanderSystems_GatherInfo::ClearUpdatesPerCommanderEntity(ArgusEntity teamEntity)
@@ -140,7 +140,7 @@ void TeamCommanderSystems_GatherInfo::UpdateTeamCommanderPerEntity(const TeamCom
 
 	if (components.m_identityComponent->m_team == ETeam::None)
 	{
-		ArgusEntity::IterateTeamEntities([&components](ArgusEntity teamCommanderEntity)
+		ArgusIterators::IterateTeamEntities([&components](ArgusEntity teamCommanderEntity)
 		{
 			TeamCommanderSystems_GatherInfo::UpdateTeamCommanderPerNeutralEntity(components, teamCommanderEntity);
 		});

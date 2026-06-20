@@ -1,7 +1,7 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "FogOfWarSystems.h"
-#include "ArgusEntity.h"
+#include "ArgusIterators.h"
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
 #include "Async/ParallelFor.h"
@@ -254,7 +254,7 @@ void FogOfWarSystems::SetRevealedStatePerEntity(FogOfWarComponent* fogOfWarCompo
 	fogOfWarComponent->m_asyncTasks.Reset();
 
 	// Calculate new actively revealed pixels.
-	ArgusEntity::IterateSystemsArgs<FogOfWarSystemsArgs>([fogOfWarComponent, inputInterfaceComponent](FogOfWarSystemsArgs& components)
+	ArgusIterators::IterateSystemsArgs<FogOfWarSystemsArgs>([fogOfWarComponent, inputInterfaceComponent](FogOfWarSystemsArgs& components)
 	{
 		if (!components.m_entity.IsOnTeam(inputInterfaceComponent->m_activePlayerTeam) || 
 			!components.m_entity.IsAlive() || 

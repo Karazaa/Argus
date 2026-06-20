@@ -1,7 +1,7 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "TaskSystems.h"
-#include "ArgusEntity.h"
+#include "ArgusIterators.h"
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
 #include "Systems/CombatSystems.h"
@@ -13,7 +13,7 @@ void TaskSystems::RunSystems(float deltaTime)
 {
 	ARGUS_TRACE(TaskSystems::RunSystems);
 
-	ArgusEntity::IterateSystemsArgs<TaskSystemsArgs>([deltaTime](TaskSystemsArgs& components) 
+	ArgusIterators::IterateSystemsArgs<TaskSystemsArgs>([deltaTime](TaskSystemsArgs& components)
 	{
 		if ((components.m_entity.IsKillable() && !components.m_entity.IsAlive()) || components.m_entity.IsPassenger())
 		{

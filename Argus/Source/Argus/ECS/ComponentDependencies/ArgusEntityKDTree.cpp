@@ -1,7 +1,7 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusEntityKDTree.h"
-#include "ArgusEntity.h"
+#include "ArgusIterators.h"
 #include "ArgusLogging.h"
 #include "ComponentDefinitions/TransformComponent.h"
 #include "Systems/IdentitySystems.h"
@@ -145,7 +145,7 @@ void ArgusEntityKDTree::SeedTreeWithAverageEntityLocation(bool forFlyingEntities
 	FVector averageLocation = FVector::ZeroVector;
 	float numIncludedEntities = 0.0f;
 
-	ArgusEntity::IterateEntities([forFlyingEntities, &averageLocation, &numIncludedEntities](ArgusEntity entity) 
+	ArgusIterators::IterateEntities([forFlyingEntities, &averageLocation, &numIncludedEntities](ArgusEntity entity) 
 	{
 		const TransformComponent* transformComponent = entity.GetComponent<TransformComponent>();
 		if (!transformComponent)

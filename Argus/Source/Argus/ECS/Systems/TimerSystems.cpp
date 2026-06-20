@@ -1,14 +1,14 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "TimerSystems.h"
-#include "ArgusEntity.h"
+#include "ArgusIterators.h"
 #include "ArgusLogging.h"
 
 void TimerSystems::RunSystems(float deltaTime)
 {
 	ARGUS_TRACE(TimerSystems::RunSystems);
 
-	ArgusEntity::IterateEntities([deltaTime](ArgusEntity entity) 
+	ArgusIterators::IterateEntities([deltaTime](ArgusEntity entity)
 	{
 		TimerComponent* timerComponent = entity.GetComponent<TimerComponent>();
 		if (!timerComponent)

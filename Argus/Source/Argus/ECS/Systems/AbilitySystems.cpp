@@ -1,6 +1,7 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "AbilitySystems.h"
+#include "ArgusIterators.h"
 #include "ArgusLogging.h"
 #include "ArgusStaticData.h"
 #include "ComponentDependencies/SpawnEntityInfo.h"
@@ -16,7 +17,7 @@ void AbilitySystems::RunSystems(float deltaTime)
 	ReticleComponent* reticleComponent = ArgusEntity::GetSingletonEntity().GetComponent<ReticleComponent>();
 	ARGUS_RETURN_ON_NULL(reticleComponent, ArgusECSLog);
 
-	ArgusEntity::IterateSystemsArgs<AbilitySystemsArgs>([reticleComponent, deltaTime](AbilitySystemsArgs& components)
+	ArgusIterators::IterateSystemsArgs<AbilitySystemsArgs>([reticleComponent, deltaTime](AbilitySystemsArgs& components)
 	{
 		components.m_reticleComponent = reticleComponent;
 		if ((components.m_entity.IsKillable() && !components.m_entity.IsAlive()) || components.m_entity.IsPassenger())

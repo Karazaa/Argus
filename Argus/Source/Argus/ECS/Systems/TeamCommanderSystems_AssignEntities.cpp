@@ -1,7 +1,7 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "TeamCommanderSystems_AssignEntities.h"
-#include "ArgusEntity.h"
+#include "ArgusIterators.h"
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
 #include "Systems/AbilitySystems.h"
@@ -14,7 +14,7 @@ void TeamCommanderSystems_AssignEntities::RunSystems()
 {
 	ARGUS_TRACE(TeamCommanderSystems_AssignEntities::RunSystems);
 
-	ArgusEntity::IterateTeamEntities(TeamCommanderSystems_AssignEntities::ActUponUpdatesPerCommanderEntity);
+	ArgusIterators::IterateTeamEntities(TeamCommanderSystems_AssignEntities::ActUponUpdatesPerCommanderEntity);
 }
 
 void TeamCommanderSystems_AssignEntities::ActUponUpdatesPerCommanderEntity(ArgusEntity teamEntity)
