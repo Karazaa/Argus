@@ -298,6 +298,9 @@ void AArgusCameraActor::UpdateEntitiesInViewFrustrum()
 {
 	ARGUS_TRACE(AArgusCameraActor::UpdateEntitiesInViewFrustrum);
 
+	UCameraComponent* cameraComponent = GetComponentByClass<UCameraComponent>();
+	ARGUS_RETURN_ON_NULL(cameraComponent, ArgusUnrealObjectsLog);
+
 	ArgusIterators::IterateEntities([](ArgusEntity entity)
 	{
 		LODComponent* lodComponent = entity.GetComponent<LODComponent>();
@@ -311,6 +314,41 @@ void AArgusCameraActor::UpdateEntitiesInViewFrustrum()
 		// TODO JAMES: Remove this and instead do spatial queries for within camera frustrum below.
 		lodComponent->m_bIsInViewFrustrum = true;
 	});
+
+	FMinimalViewInfo viewInfo;
+	cameraComponent->GetCameraView(0.0f, viewInfo);
+
+	const float nearClipPlaneDistance = GNearClippingPlane;
+	const float farClipPlaneDistance = AArgusCameraActor::k_cameraTraceLength;
+	const float fieldOfView = FMath::DegreesToRadians(viewInfo.FOV);
+	const float aspectRatio = viewInfo.AspectRatio;
+	const FVector cameraPosition = ArgusMath::ToCartesianVector(GetActorLocation());
+	const FVector cameraViewDirection = ArgusMath::ToCartesianVector(GetActorForwardVector());
+	const FVector cameraUpDirection = ArgusMath::ToCartesianVector(GetActorUpVector());
+	const FVector cameraRightDirection = ArgusMath::ToCartesianVector(GetActorRightVector());
+
+	const float tangentFOV = 2.0f * FMath::Tan(fieldOfView * 0.5f);
+	const float nearPlaneHeight = tangentFOV * nearClipPlaneDistance;
+	const float nearPlaneWidth = nearPlaneHeight * aspectRatio;
+	const float farPlaneHeight = tangentFOV * farClipPlaneDistance;
+	const float farPlaneWidth = farPlaneHeight * aspectRatio;
+
+	const FVector centerOfNearPlane = cameraPosition + (cameraViewDirection * nearClipPlaneDistance);
+	const FVector centerOfFarPlane = cameraPosition + (cameraViewDirection * farClipPlaneDistance);
+
+	const FVector nearUpOffset = cameraUpDirection * (nearPlaneHeight * 0.5f);
+	const FVector nearRightOffset = cameraRightDirection * (nearPlaneWidth * 0.5f);
+	const FVector farUpOffset = cameraUpDirection * (farPlaneHeight * 0.5f);
+	const FVector farRightOffset = cameraRightDirection * (farPlaneWidth * 0.5f);
+
+	const FVector nearTopLeft = centerOfNearPlane + nearUpOffset - nearRightOffset;
+	const FVector nearTopRight = centerOfNearPlane + nearUpOffset + nearRightOffset;
+	const FVector nearBottomLeft = centerOfNearPlane - nearUpOffset - nearRightOffset;
+	const FVector nearBottomRight = centerOfNearPlane - nearUpOffset + nearRightOffset;
+	const FVector farTopLeft = centerOfNearPlane + farUpOffset - farRightOffset;
+	const FVector farTopRight = centerOfNearPlane + farUpOffset + farRightOffset;
+	const FVector farBottomLeft = centerOfNearPlane - farUpOffset - farRightOffset;
+	const FVector farBottomRight = centerOfNearPlane - farUpOffset + farRightOffset;
 }
 
 void AArgusCameraActor::TraceToGround(TOptional<FHitResult>& hitResult)
