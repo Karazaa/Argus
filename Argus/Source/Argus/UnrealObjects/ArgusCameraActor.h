@@ -4,6 +4,7 @@
 
 #include "ArgusMath.h"
 #include "CoreMinimal.h"
+#include "ComponentDependencies/Teams.h"
 #include "GameFramework/Actor.h"
 #include "ArgusCameraActor.generated.h"
 
@@ -32,7 +33,7 @@ public:
 
 	void ForceSetCameraLocationWithoutZoom(const FVector& location, bool resetZoomSmoothing = true);
 	void FocusOnArgusEntity(ArgusEntity entity);
-	void UpdateCamera(const UpdateCameraPanningParameters& cameraParameters, const float deltaTime);
+	void UpdateCamera(const UpdateCameraPanningParameters& cameraParameters, float deltaTime, ETeam playerTeam);
 	void UpdateCameraOrbit(const float inputOrbitValue);
 	void UpdateCameraZoom(const float inputZoomValue);
 
@@ -115,10 +116,10 @@ private:
 	void UpdateCameraOrbitInternal(const TOptional<FHitResult>& hitResult, const float deltaTime);
 	void UpdateCameraPanning(const UpdateCameraPanningParameters& cameraParameters, const float deltaTime);
 	void UpdateCameraZoomInternal(const TOptional<FHitResult>& hitResult, const float deltaTime);
-	void UpdateEntitiesInViewFrustrum();
+	void UpdateEntitiesInViewFrustrum(ETeam playerTeam);
 
 	void PopulateCameraFrustrumEdges(CameraFrustrumEdges& frustrumEdgesToPopulate);
-	void QueryEntitiesInFrustrum(const FVector& planeLocation, const CameraFrustrumEdges& cameraFrustrumEdges, const ArgusEntityKDTree& entityKDTree) const;
+	void QueryEntitiesInFrustrum(const FVector& planeLocation, const CameraFrustrumEdges& cameraFrustrumEdges, ArgusEntityKDTree& entityKDTree, ETeam playerTeam) const;
 	void TraceToGround(TOptional<FHitResult>& hitResult);
 
 	ArgusMath::ExponentialDecaySmoother<float>		m_currentVerticalVelocity;

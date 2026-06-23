@@ -167,7 +167,7 @@ void AArgusGameModeBase::ManageActorStateInViewFrustrum(ArgusEntity entity, cons
 
 	if (AArgusActor* argusActor = gameInstance->GetArgusActorFromArgusEntity(entity))
 	{
-		argusActor->Update(deltaTime, m_activePlayerController->GetPlayerTeam());
+		argusActor->Update(deltaTime);
 	}
 }
 

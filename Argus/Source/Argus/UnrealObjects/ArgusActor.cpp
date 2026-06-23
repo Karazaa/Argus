@@ -265,7 +265,7 @@ void AArgusActor::EndPlay(const EEndPlayReason::Type endPlayReason)
 	gameInstance->DeregisterArgusEntityActor(this);
 }
 
-void AArgusActor::Update(float deltaTime, ETeam activePlayerControllerTeam)
+void AArgusActor::Update(float deltaTime)
 {
 	ARGUS_TRACE(AArgusActor::Update);
 
@@ -309,20 +309,6 @@ void AArgusActor::Update(float deltaTime, ETeam activePlayerControllerTeam)
 		}
 		
 		m_argusActorInfoWidget->RefreshDisplay(m_entity);
-	}
-
-	if (const IdentityComponent* identityComponent = m_entity.GetComponent<IdentityComponent>())
-	{
-		ARGUS_TRACE(AArgusActor::SeenBy);
-
-		if (identityComponent->IsSeenBy(activePlayerControllerTeam) || (!m_entity.IsMoveable() && m_entity.IsAlive() && identityComponent->WasEverSeenBy(activePlayerControllerTeam)) || !FogOfWarSystems::IsFogOfWarVisible())
-		{
-			Show();
-		}
-		else
-		{
-			Hide();
-		}
 	}
 }
 

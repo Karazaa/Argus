@@ -9,6 +9,7 @@
 #include "Engine/HitResult.h"
 #include "Engine/World.h"
 #include "Misc/Optional.h"
+#include "Systems/FogOfWarSystems.h"
 
 uint8 AArgusCameraActor::s_numWidgetPanningBlockers = 0u;
 FVector AArgusCameraActor::s_moveUpDir = FVector::UpVector;
@@ -71,7 +72,7 @@ void AArgusCameraActor::FocusOnArgusEntity(ArgusEntity entity)
 	ForceSetCameraLocationWithoutZoom(locationToJumpTo, false);
 }
 
-void AArgusCameraActor::UpdateCamera(const UpdateCameraPanningParameters& cameraParameters, const float deltaTime)
+void AArgusCameraActor::UpdateCamera(const UpdateCameraPanningParameters& cameraParameters, float deltaTime, ETeam playerTeam)
 {
 	ARGUS_TRACE(AArgusCameraActor::UpdateCamera);
 
@@ -80,7 +81,7 @@ void AArgusCameraActor::UpdateCamera(const UpdateCameraPanningParameters& camera
 	UpdateCameraOrbitInternal(hitResult, deltaTime);
 	UpdateCameraPanning(cameraParameters, deltaTime);
 	UpdateCameraZoomInternal(hitResult, deltaTime);
-	UpdateEntitiesInViewFrustrum();
+	UpdateEntitiesInViewFrustrum(playerTeam);
 
 	m_zoomInputThisFrame = 0.0f;
 	m_orbitInputThisFrame = 0.0f;
@@ -294,11 +295,11 @@ void AArgusCameraActor::UpdateCameraZoomInternal(const TOptional<FHitResult>& hi
 	SetActorLocation(m_cameraLocationWithoutZoom + (m_currentZoomTranslationAmount.GetValue() * forwardVector));
 }
 
-void AArgusCameraActor::UpdateEntitiesInViewFrustrum()
+void AArgusCameraActor::UpdateEntitiesInViewFrustrum(ETeam playerTeam)
 {
 	ARGUS_TRACE(AArgusCameraActor::UpdateEntitiesInViewFrustrum);
 
-	const SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::GetSingletonEntity().GetComponent<SpatialPartitioningComponent>();
+	SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::GetSingletonEntity().GetComponent<SpatialPartitioningComponent>();
 	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusUnrealObjectsLog);
 
 	ArgusIterators::IterateEntities([](ArgusEntity entity)
@@ -310,9 +311,10 @@ void AArgusCameraActor::UpdateEntitiesInViewFrustrum()
 		}
 
 		lodComponent->PreInViewFrustrumUpdate();
-
-		// TODO JAMES: Remove this and instead do spatial queries for within camera frustrum below.
-		lodComponent->m_bIsInViewFrustrum = true;
+		if (const ArgusDecalComponent* decalComponent = entity.GetComponent<ArgusDecalComponent>())
+		{
+			lodComponent->m_bIsInViewFrustrum = true;
+		}
 	});
 
 	CameraFrustrumEdges cameraFrustrumEdges;
@@ -321,8 +323,8 @@ void AArgusCameraActor::UpdateEntitiesInViewFrustrum()
 	const FVector groundPlaneLocation = FVector::ZeroVector;
 	const FVector flyingPlaneLocation = FVector(0.0f, 0.0f, spatialPartitioningComponent->m_flyingPlaneHeight);
 
-	QueryEntitiesInFrustrum(groundPlaneLocation, cameraFrustrumEdges, spatialPartitioningComponent->m_argusEntityKDTree);
-	QueryEntitiesInFrustrum(flyingPlaneLocation, cameraFrustrumEdges, spatialPartitioningComponent->m_flyingArgusEntityKDTree);
+	QueryEntitiesInFrustrum(groundPlaneLocation, cameraFrustrumEdges, spatialPartitioningComponent->m_argusEntityKDTree, playerTeam);
+	QueryEntitiesInFrustrum(flyingPlaneLocation, cameraFrustrumEdges, spatialPartitioningComponent->m_flyingArgusEntityKDTree, playerTeam);
 }
 
 void AArgusCameraActor::PopulateCameraFrustrumEdges(CameraFrustrumEdges& frustrumEdgesToPopulate)
@@ -368,21 +370,51 @@ void AArgusCameraActor::PopulateCameraFrustrumEdges(CameraFrustrumEdges& frustru
 	frustrumEdgesToPopulate.m_bottomRightDirection = (ArgusMath::ToUnrealVector(centerOfFarPlane - farUpOffset + farRightOffset) - frustrumEdgesToPopulate.m_bottomRightLocation).GetSafeNormal();
 }
 
-void AArgusCameraActor::QueryEntitiesInFrustrum(const FVector& planeLocation, const CameraFrustrumEdges& cameraFrustrumEdges, const ArgusEntityKDTree& entityKDTree) const
+void AArgusCameraActor::QueryEntitiesInFrustrum(const FVector& planeLocation, const CameraFrustrumEdges& cameraFrustrumEdges, ArgusEntityKDTree& entityKDTree, ETeam playerTeam) const
 {
 	ARGUS_TRACE(AArgusCameraActor::QueryEntitiesInFrustrum);
 
 	const FVector planeNormal = FVector::UpVector;
-	FVector topLeftIntersection, topRightIntersection, bottomLeftIntersection, bottomRightIntersection;
-	if (!ArgusMath::GetRayToPlaneIntersection(cameraFrustrumEdges.m_topLeftLocation, cameraFrustrumEdges.m_topLeftDirection, planeLocation, planeNormal, topLeftIntersection) ||
-		!ArgusMath::GetRayToPlaneIntersection(cameraFrustrumEdges.m_topRightLocation, cameraFrustrumEdges.m_topRightDirection, planeLocation, planeNormal, topRightIntersection) ||
-		!ArgusMath::GetRayToPlaneIntersection(cameraFrustrumEdges.m_bottomLeftLocation, cameraFrustrumEdges.m_bottomLeftDirection, planeLocation, planeNormal, bottomLeftIntersection) ||
-		!ArgusMath::GetRayToPlaneIntersection(cameraFrustrumEdges.m_bottomRightLocation, cameraFrustrumEdges.m_bottomRightDirection, planeLocation, planeNormal, bottomRightIntersection))
+	TArray<FVector> intersectionPolygon;
+	intersectionPolygon.SetNumZeroed(4);
+
+	if (!ArgusMath::GetRayToPlaneIntersection(cameraFrustrumEdges.m_topLeftLocation, cameraFrustrumEdges.m_topLeftDirection, planeLocation, planeNormal, intersectionPolygon[0]) ||
+		!ArgusMath::GetRayToPlaneIntersection(cameraFrustrumEdges.m_topRightLocation, cameraFrustrumEdges.m_topRightDirection, planeLocation, planeNormal, intersectionPolygon[1]) ||
+		!ArgusMath::GetRayToPlaneIntersection(cameraFrustrumEdges.m_bottomRightLocation, cameraFrustrumEdges.m_bottomRightDirection, planeLocation, planeNormal, intersectionPolygon[2]) ||
+		!ArgusMath::GetRayToPlaneIntersection(cameraFrustrumEdges.m_bottomLeftLocation, cameraFrustrumEdges.m_bottomLeftDirection, planeLocation, planeNormal, intersectionPolygon[3]))
 	{
 		return;
 	}
 
-	// TODO JAMES: Make polygon and query the KDTree.
+	TArray<uint16> entityIdsWithinBounds;
+	entityKDTree.FindArgusEntityIdsWithinConvexPoly(entityIdsWithinBounds, intersectionPolygon);
+
+	for (int32 i = 0; i < entityIdsWithinBounds.Num(); ++i)
+	{
+		ArgusEntity entityInFrustrum = ArgusEntity::RetrieveEntity(entityIdsWithinBounds[i]);
+		if (!entityInFrustrum)
+		{
+			continue;
+		}
+
+		LODComponent* lodComponent = entityInFrustrum.GetComponent<LODComponent>();
+		if (!lodComponent)
+		{
+			continue;
+		}
+
+		if (const IdentityComponent* identityComponent = entityInFrustrum.GetComponent<IdentityComponent>())
+		{
+			if (!identityComponent->IsSeenBy(playerTeam) && 
+				(!(!entityInFrustrum.IsMoveable() && entityInFrustrum.IsAlive() && identityComponent->WasEverSeenBy(playerTeam))) && 
+				FogOfWarSystems::IsFogOfWarVisible())
+			{
+				continue;
+			}
+		}
+
+		lodComponent->m_bIsInViewFrustrum = true;
+	}
 }
 
 void AArgusCameraActor::TraceToGround(TOptional<FHitResult>& hitResult)

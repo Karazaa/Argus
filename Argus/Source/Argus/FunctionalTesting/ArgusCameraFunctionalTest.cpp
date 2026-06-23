@@ -141,7 +141,7 @@ bool AArgusCameraFunctionalTest::DidPanLeftTestStepSucceed(const FVector& locati
 	AArgusCameraActor::UpdateCameraPanningParameters cameraParameters;
 	cameraParameters.m_screenSpaceXYBounds = k_screenBounds;
 	cameraParameters.m_screenSpaceMouseLocation = k_leftScreenPos;
-	m_argusCameraActor->UpdateCamera(cameraParameters, m_currentDeltaSeconds);
+	m_argusCameraActor->UpdateCamera(cameraParameters, m_currentDeltaSeconds, ETeam::TeamA);
 
 	return false;
 }
@@ -156,7 +156,7 @@ bool AArgusCameraFunctionalTest::DidPanRightTestStepSucceed(const FVector& locat
 	AArgusCameraActor::UpdateCameraPanningParameters cameraParameters;
 	cameraParameters.m_screenSpaceXYBounds = k_screenBounds;
 	cameraParameters.m_screenSpaceMouseLocation = k_rightScreenPos;
-	m_argusCameraActor->UpdateCamera(cameraParameters, m_currentDeltaSeconds);
+	m_argusCameraActor->UpdateCamera(cameraParameters, m_currentDeltaSeconds, ETeam::TeamA);
 
 	return false;
 }
@@ -171,7 +171,7 @@ bool AArgusCameraFunctionalTest::DidPanUpTestStepSucceed(const FVector& location
 	AArgusCameraActor::UpdateCameraPanningParameters cameraParameters;
 	cameraParameters.m_screenSpaceXYBounds = k_screenBounds;
 	cameraParameters.m_screenSpaceMouseLocation = k_upScreenPos;
-	m_argusCameraActor->UpdateCamera(cameraParameters, m_currentDeltaSeconds);
+	m_argusCameraActor->UpdateCamera(cameraParameters, m_currentDeltaSeconds, ETeam::TeamA);
 
 	return false;
 }
@@ -186,7 +186,7 @@ bool AArgusCameraFunctionalTest::DidPanDownTestStepSucceed(const FVector& locati
 	AArgusCameraActor::UpdateCameraPanningParameters cameraParameters;
 	cameraParameters.m_screenSpaceXYBounds = k_screenBounds;
 	cameraParameters.m_screenSpaceMouseLocation = k_downScreenPos;
-	m_argusCameraActor->UpdateCamera(cameraParameters, m_currentDeltaSeconds);
+	m_argusCameraActor->UpdateCamera(cameraParameters, m_currentDeltaSeconds, ETeam::TeamA);
 
 	return false;
 }
@@ -212,7 +212,7 @@ bool AArgusCameraFunctionalTest::UpdateCameraZoomAndCheckAtBoundaries(const FVec
 	AArgusCameraActor::UpdateCameraPanningParameters cameraParameters;
 	cameraParameters.m_screenSpaceXYBounds = k_screenBounds;
 	cameraParameters.m_screenSpaceMouseLocation = k_neutralScreenPos;
-	m_argusCameraActor->UpdateCamera(cameraParameters, m_currentDeltaSeconds);
+	m_argusCameraActor->UpdateCamera(cameraParameters, m_currentDeltaSeconds, ETeam::TeamA);
 
 	const FVector postUpdateZoomTargetTranslation = m_argusCameraActor->GetZoomTargetTranslation();
 	const FVector cameraPositionWithoutZoom = m_argusCameraActor->GetCameraLocationWithoutZoom();

@@ -31,7 +31,7 @@ public:
 	void Show();
 	void Hide();
 	bool IsVisible() const;
-	void Update(float deltaTime, ETeam activePlayerControllerTeam);
+	void Update(float deltaTime);
 
 protected:
 	UFUNCTION(BlueprintImplementableEvent)
@@ -86,6 +86,7 @@ protected:
 
 	bool IsLocationNearlyActorLocation(const FVector& location) const;
 	bool IsRotationNearlyActorRotation(const FRotator& rotation) const;
+
 protected:
 	ArgusEntity m_entity = ArgusEntity::k_emptyEntity;
 	bool m_isSelected = false;

@@ -339,7 +339,10 @@ void UArgusInputManager::ProcessPlayerInput(AArgusCameraActor* argusCamera, cons
 
 	ARGUS_RETURN_ON_NULL(argusCamera, ArgusInputLog);
 
-	argusCamera->UpdateCamera(updateCameraParameters, unscaledDeltaTime);
+	if (ValidateOwningPlayerController())
+	{
+		argusCamera->UpdateCamera(updateCameraParameters, unscaledDeltaTime, m_owningPlayerController->GetPlayerTeam());
+	}
 }
 
 void UArgusInputManager::CleanUpInputState() const
