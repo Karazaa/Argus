@@ -298,9 +298,6 @@ void AArgusCameraActor::UpdateEntitiesInViewFrustrum()
 {
 	ARGUS_TRACE(AArgusCameraActor::UpdateEntitiesInViewFrustrum);
 
-	UCameraComponent* cameraComponent = GetComponentByClass<UCameraComponent>();
-	ARGUS_RETURN_ON_NULL(cameraComponent, ArgusUnrealObjectsLog);
-
 	ArgusIterators::IterateEntities([](ArgusEntity entity)
 	{
 		LODComponent* lodComponent = entity.GetComponent<LODComponent>();
@@ -314,6 +311,17 @@ void AArgusCameraActor::UpdateEntitiesInViewFrustrum()
 		// TODO JAMES: Remove this and instead do spatial queries for within camera frustrum below.
 		lodComponent->m_bIsInViewFrustrum = true;
 	});
+
+	CameraFrustrumEdges cameraFrustrumEdges;
+	PopulateCameraFrustrumEdges(cameraFrustrumEdges);
+}
+
+void AArgusCameraActor::PopulateCameraFrustrumEdges(CameraFrustrumEdges& frustrumEdgesToPopulate)
+{
+	ARGUS_TRACE(AArgusCameraActor::PopulateCameraFrustrumEdges);
+
+	UCameraComponent* cameraComponent = GetComponentByClass<UCameraComponent>();
+	ARGUS_RETURN_ON_NULL(cameraComponent, ArgusUnrealObjectsLog);
 
 	FMinimalViewInfo viewInfo;
 	cameraComponent->GetCameraView(0.0f, viewInfo);
@@ -341,14 +349,14 @@ void AArgusCameraActor::UpdateEntitiesInViewFrustrum()
 	const FVector farUpOffset = cameraUpDirection * (farPlaneHeight * 0.5f);
 	const FVector farRightOffset = cameraRightDirection * (farPlaneWidth * 0.5f);
 
-	const FVector nearTopLeft = centerOfNearPlane + nearUpOffset - nearRightOffset;
-	const FVector nearTopRight = centerOfNearPlane + nearUpOffset + nearRightOffset;
-	const FVector nearBottomLeft = centerOfNearPlane - nearUpOffset - nearRightOffset;
-	const FVector nearBottomRight = centerOfNearPlane - nearUpOffset + nearRightOffset;
-	const FVector farTopLeft = centerOfNearPlane + farUpOffset - farRightOffset;
-	const FVector farTopRight = centerOfNearPlane + farUpOffset + farRightOffset;
-	const FVector farBottomLeft = centerOfNearPlane - farUpOffset - farRightOffset;
-	const FVector farBottomRight = centerOfNearPlane - farUpOffset + farRightOffset;
+	frustrumEdgesToPopulate.m_topLeftLocation = ArgusMath::ToUnrealVector(centerOfNearPlane + nearUpOffset - nearRightOffset);
+	frustrumEdgesToPopulate.m_topRightLocation = ArgusMath::ToUnrealVector(centerOfNearPlane + nearUpOffset + nearRightOffset);
+	frustrumEdgesToPopulate.m_bottomLeftLocation = ArgusMath::ToUnrealVector(centerOfNearPlane - nearUpOffset - nearRightOffset);
+	frustrumEdgesToPopulate.m_bottomRightLocation = ArgusMath::ToUnrealVector(centerOfNearPlane - nearUpOffset + nearRightOffset);
+	frustrumEdgesToPopulate.m_topLeftDirection = (ArgusMath::ToUnrealVector(centerOfFarPlane + farUpOffset - farRightOffset) - frustrumEdgesToPopulate.m_topLeftLocation).GetSafeNormal();
+	frustrumEdgesToPopulate.m_topRightDirection = (ArgusMath::ToUnrealVector(centerOfFarPlane + farUpOffset + farRightOffset) - frustrumEdgesToPopulate.m_topRightLocation).GetSafeNormal();
+	frustrumEdgesToPopulate.m_bottomLeftDirection = (ArgusMath::ToUnrealVector(centerOfFarPlane - farUpOffset - farRightOffset) - frustrumEdgesToPopulate.m_bottomLeftLocation).GetSafeNormal();
+	frustrumEdgesToPopulate.m_bottomRightDirection = (ArgusMath::ToUnrealVector(centerOfFarPlane - farUpOffset + farRightOffset) - frustrumEdgesToPopulate.m_bottomRightLocation).GetSafeNormal();
 }
 
 void AArgusCameraActor::TraceToGround(TOptional<FHitResult>& hitResult)

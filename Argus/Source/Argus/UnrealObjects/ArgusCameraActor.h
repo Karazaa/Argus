@@ -93,6 +93,18 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
+	struct CameraFrustrumEdges
+	{
+		FVector m_topLeftDirection = FVector::ZeroVector;
+		FVector m_topLeftLocation = FVector::ZeroVector;
+		FVector m_topRightDirection = FVector::ZeroVector;
+		FVector m_topRightLocation = FVector::ZeroVector;
+		FVector m_bottomLeftDirection = FVector::ZeroVector;
+		FVector m_bottomLeftLocation = FVector::ZeroVector;
+		FVector m_bottomRightDirection = FVector::ZeroVector;
+		FVector m_bottomRightLocation = FVector::ZeroVector;
+	};
+
 	static uint8 s_numWidgetPanningBlockers;
 	static FVector s_moveUpDir;
 	static FVector s_moveRightDir;
@@ -104,6 +116,7 @@ private:
 	void UpdateCameraZoomInternal(const TOptional<FHitResult>& hitResult, const float deltaTime);
 	void UpdateEntitiesInViewFrustrum();
 
+	void PopulateCameraFrustrumEdges(CameraFrustrumEdges& frustrumEdgesToPopulate);
 	void TraceToGround(TOptional<FHitResult>& hitResult);
 
 	ArgusMath::ExponentialDecaySmoother<float>		m_currentVerticalVelocity;
