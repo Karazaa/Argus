@@ -8,6 +8,7 @@
 #include "ArgusCameraActor.generated.h"
 
 class ArgusEntity;
+class ArgusEntityKDTree;
 
 UCLASS()
 class AArgusCameraActor : public AActor
@@ -117,6 +118,7 @@ private:
 	void UpdateEntitiesInViewFrustrum();
 
 	void PopulateCameraFrustrumEdges(CameraFrustrumEdges& frustrumEdgesToPopulate);
+	void QueryEntitiesInFrustrum(const FVector& planeLocation, const CameraFrustrumEdges& cameraFrustrumEdges, const ArgusEntityKDTree& entityKDTree) const;
 	void TraceToGround(TOptional<FHitResult>& hitResult);
 
 	ArgusMath::ExponentialDecaySmoother<float>		m_currentVerticalVelocity;

@@ -31,6 +31,7 @@ namespace ArgusMath
 	bool DoLineSegmentsIntersectUnreal(const FVector2D& lineSegmentAPoint0, const FVector2D& lineSegmentAPoint1, const FVector2D& lineSegmentBPoint0, const FVector2D& lineSegmentBPoint1);
 
 	bool GetLineSegmentIntersectionCartesian(const FVector2D& lineSegmentAPoint0, const FVector2D& lineSegmentAPoint1, const FVector2D& lineSegmentBPoint0, const FVector2D& lineSegmentBPoint1, FVector2D& outIntersectionPoint);
+	bool GetRayToPlaneIntersection(const FVector& raySourceLocation, const FVector& rayDirection, const FVector& planeLocation, const FVector& planeNormal, FVector& outIntersection);
 
 	float GetNormalizedZeroToTwoPi(float angle);
 	FVector GetDirectionFromYaw(float yaw);

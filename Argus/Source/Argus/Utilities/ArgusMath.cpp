@@ -107,6 +107,22 @@ namespace ArgusMath
 		return DoLineSegmentsIntersectCartesian(lineSegmentAPoint0, lineSegmentAPoint1, lineSegmentBPoint0, lineSegmentBPoint1);
 	}
 
+	bool GetRayToPlaneIntersection(const FVector& raySourceLocation, const FVector& rayDirection, const FVector& planeLocation, const FVector& planeNormal, FVector& outIntersection)
+	{
+		outIntersection = FVector::ZeroVector;
+		const FVector rayDirectionNormalized = rayDirection.GetSafeNormal();
+		const FVector planeNormalized = planeNormal.GetSafeNormal();
+		const float rayDotNormal = rayDirectionNormalized.Dot(planeNormalized);
+
+		if (FMath::IsNearlyZero(rayDotNormal))
+		{
+			return false;
+		}
+
+		const float t = (planeLocation - raySourceLocation).Dot(planeNormalized) / rayDotNormal;
+		outIntersection = raySourceLocation + (t * rayDirectionNormalized);
+		return true;
+	}
 
 	float GetNormalizedZeroToTwoPi(float angle)
 	{

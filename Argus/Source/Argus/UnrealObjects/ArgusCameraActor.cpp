@@ -298,6 +298,9 @@ void AArgusCameraActor::UpdateEntitiesInViewFrustrum()
 {
 	ARGUS_TRACE(AArgusCameraActor::UpdateEntitiesInViewFrustrum);
 
+	const SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::GetSingletonEntity().GetComponent<SpatialPartitioningComponent>();
+	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusUnrealObjectsLog);
+
 	ArgusIterators::IterateEntities([](ArgusEntity entity)
 	{
 		LODComponent* lodComponent = entity.GetComponent<LODComponent>();
@@ -314,6 +317,12 @@ void AArgusCameraActor::UpdateEntitiesInViewFrustrum()
 
 	CameraFrustrumEdges cameraFrustrumEdges;
 	PopulateCameraFrustrumEdges(cameraFrustrumEdges);
+
+	const FVector groundPlaneLocation = FVector::ZeroVector;
+	const FVector flyingPlaneLocation = FVector(0.0f, 0.0f, spatialPartitioningComponent->m_flyingPlaneHeight);
+
+	QueryEntitiesInFrustrum(groundPlaneLocation, cameraFrustrumEdges, spatialPartitioningComponent->m_argusEntityKDTree);
+	QueryEntitiesInFrustrum(flyingPlaneLocation, cameraFrustrumEdges, spatialPartitioningComponent->m_flyingArgusEntityKDTree);
 }
 
 void AArgusCameraActor::PopulateCameraFrustrumEdges(CameraFrustrumEdges& frustrumEdgesToPopulate)
@@ -357,6 +366,23 @@ void AArgusCameraActor::PopulateCameraFrustrumEdges(CameraFrustrumEdges& frustru
 	frustrumEdgesToPopulate.m_topRightDirection = (ArgusMath::ToUnrealVector(centerOfFarPlane + farUpOffset + farRightOffset) - frustrumEdgesToPopulate.m_topRightLocation).GetSafeNormal();
 	frustrumEdgesToPopulate.m_bottomLeftDirection = (ArgusMath::ToUnrealVector(centerOfFarPlane - farUpOffset - farRightOffset) - frustrumEdgesToPopulate.m_bottomLeftLocation).GetSafeNormal();
 	frustrumEdgesToPopulate.m_bottomRightDirection = (ArgusMath::ToUnrealVector(centerOfFarPlane - farUpOffset + farRightOffset) - frustrumEdgesToPopulate.m_bottomRightLocation).GetSafeNormal();
+}
+
+void AArgusCameraActor::QueryEntitiesInFrustrum(const FVector& planeLocation, const CameraFrustrumEdges& cameraFrustrumEdges, const ArgusEntityKDTree& entityKDTree) const
+{
+	ARGUS_TRACE(AArgusCameraActor::QueryEntitiesInFrustrum);
+
+	const FVector planeNormal = FVector::UpVector;
+	FVector topLeftIntersection, topRightIntersection, bottomLeftIntersection, bottomRightIntersection;
+	if (!ArgusMath::GetRayToPlaneIntersection(cameraFrustrumEdges.m_topLeftLocation, cameraFrustrumEdges.m_topLeftDirection, planeLocation, planeNormal, topLeftIntersection) ||
+		!ArgusMath::GetRayToPlaneIntersection(cameraFrustrumEdges.m_topRightLocation, cameraFrustrumEdges.m_topRightDirection, planeLocation, planeNormal, topRightIntersection) ||
+		!ArgusMath::GetRayToPlaneIntersection(cameraFrustrumEdges.m_bottomLeftLocation, cameraFrustrumEdges.m_bottomLeftDirection, planeLocation, planeNormal, bottomLeftIntersection) ||
+		!ArgusMath::GetRayToPlaneIntersection(cameraFrustrumEdges.m_bottomRightLocation, cameraFrustrumEdges.m_bottomRightDirection, planeLocation, planeNormal, bottomRightIntersection))
+	{
+		return;
+	}
+
+	// TODO JAMES: Make polygon and query the KDTree.
 }
 
 void AArgusCameraActor::TraceToGround(TOptional<FHitResult>& hitResult)
