@@ -28,6 +28,7 @@ void AArgusGameModeBase::StartPlay()
 	ArgusStaticData::ResetLoadedPointerArrays();
 	ArgusEntity::FlushAllEntities();
 
+	m_argusActorPool = NewObject<UArgusActorPool>(this, FName(TEXT("ArgusActorPool")));
 	m_saveManager = NewObject<UArgusSaveManager>(this, FName(TEXT("SaveManager")));
 	if (m_saveManager)
 	{
@@ -191,6 +192,8 @@ void AArgusGameModeBase::ManageActorStateOutOfViewFrustrum(ArgusEntity entity, c
 
 void AArgusGameModeBase::SpawnActorForEntity(ArgusEntity spawnedEntity)
 {
+	ARGUS_RETURN_ON_NULL(m_argusActorPool, ArgusUnrealObjectsLog);
+
 	UWorld* worldPointer = GetWorld();
 	if (!worldPointer || !spawnedEntity)
 	{
@@ -209,7 +212,7 @@ void AArgusGameModeBase::SpawnActorForEntity(ArgusEntity spawnedEntity)
 		return;
 	}
 
-	AArgusActor* spawnedActor = m_argusActorPool.Take(worldPointer, actorRecord->m_argusActorClass.LoadAndStorePtr());
+	AArgusActor* spawnedActor = m_argusActorPool->Take(worldPointer, actorRecord->m_argusActorClass.LoadAndStorePtr());
 	if (!spawnedActor)
 	{
 		return;
@@ -220,6 +223,8 @@ void AArgusGameModeBase::SpawnActorForEntity(ArgusEntity spawnedEntity)
 
 void AArgusGameModeBase::DespawnActorForEntity(ArgusEntity spawnedEntity)
 {
+	ARGUS_RETURN_ON_NULL(m_argusActorPool, ArgusUnrealObjectsLog);
+
 	UWorld* worldPointer = GetWorld();
 	if (!worldPointer || !spawnedEntity)
 	{
@@ -234,7 +239,7 @@ void AArgusGameModeBase::DespawnActorForEntity(ArgusEntity spawnedEntity)
 
 	if (AArgusActor* argusActor = gameInstance->GetArgusActorFromArgusEntity(spawnedEntity))
 	{
-		m_argusActorPool.Release(argusActor);
+		m_argusActorPool->Release(argusActor);
 	}
 }
 

@@ -4,21 +4,21 @@
 #include "ArgusMacros.h"
 #include "Engine/World.h"
 
-ArgusActorPool::~ArgusActorPool()
+UArgusActorPool::~UArgusActorPool()
 {
 	ClearPool();
 }
 
-AArgusActor* ArgusActorPool::Take(UWorld* worldPointer, UClass* classPointer)
+AArgusActor* UArgusActorPool::Take(UWorld* worldPointer, UClass* classPointer)
 {
-	ARGUS_MEMORY_TRACE(ArgusActorPool);
+	ARGUS_MEMORY_TRACE(UArgusActorPool);
 
 	if (!classPointer)
 	{
 		return nullptr;
 	}
 
-	if (!m_availableObjects.Contains(classPointer) || m_availableObjects[classPointer].IsEmpty())
+	if (!m_availableObjects.Contains(classPointer) || m_availableObjects[classPointer].m_actors.IsEmpty())
 	{
 		if (!worldPointer)
 		{
@@ -29,7 +29,7 @@ AArgusActor* ArgusActorPool::Take(UWorld* worldPointer, UClass* classPointer)
 	}
 
 	m_numAvailableObjects--;
-	AArgusActor* cachedActor = m_availableObjects[classPointer].Pop();
+	AArgusActor* cachedActor = m_availableObjects[classPointer].m_actors.Pop();
 	if (!cachedActor)
 	{
 		return nullptr;
@@ -39,9 +39,9 @@ AArgusActor* ArgusActorPool::Take(UWorld* worldPointer, UClass* classPointer)
 	return cachedActor;
 }
 
-void ArgusActorPool::Release(AArgusActor*& actorPointer)
+void UArgusActorPool::Release(AArgusActor*& actorPointer)
 {
-	ARGUS_MEMORY_TRACE(ArgusActorPool);
+	ARGUS_MEMORY_TRACE(UArgusActorPool);
 
 	UClass* classPointer = actorPointer->GetClass();
 	if (!classPointer)
@@ -55,11 +55,11 @@ void ArgusActorPool::Release(AArgusActor*& actorPointer)
 	{
 		m_availableObjects.Emplace(classPointer, TArray<TObjectPtr<AArgusActor>>());
 	}
-	m_availableObjects[classPointer].Add(actorPointer);	
+	m_availableObjects[classPointer].m_actors.Add(actorPointer);	
 	actorPointer = nullptr;
 }
 
-void ArgusActorPool::Release(TObjectPtr<AArgusActor>& actorPointer)
+void UArgusActorPool::Release(TObjectPtr<AArgusActor>& actorPointer)
 {
 	if (!actorPointer)
 	{
@@ -76,8 +76,8 @@ void ArgusActorPool::Release(TObjectPtr<AArgusActor>& actorPointer)
 	actorPointer = nullptr;
 }
 
-void ArgusActorPool::ClearPool()
+void UArgusActorPool::ClearPool()
 {
-	ARGUS_MEMORY_TRACE(ArgusActorPool);
+	ARGUS_MEMORY_TRACE(UArgusActorPool);
 	m_availableObjects.Empty();
 }

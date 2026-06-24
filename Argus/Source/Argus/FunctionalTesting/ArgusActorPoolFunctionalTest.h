@@ -55,7 +55,12 @@ private:
 	bool DidTakeSecondInstantiatedActorTestStepSucceed();
 	bool DidMakeEntityForSecondActorTestStepSucceed();
 
-	ArgusActorPool m_argusActorPool;
+	UPROPERTY(VisibleAnywhere, Instanced)
+	TObjectPtr<UArgusActorPool> m_argusActorPool;
+
+	UPROPERTY(VisibleAnywhere, Transient)
 	TObjectPtr<AArgusActor> m_actor0 = nullptr;
+
+	UPROPERTY(VisibleAnywhere, Transient)
 	TObjectPtr<AArgusActor> m_actor1 = nullptr;
 };

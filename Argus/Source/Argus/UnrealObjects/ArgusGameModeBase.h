@@ -60,7 +60,9 @@ private:
 	void OnLoadStart();
 	void OnLoadComplete();
 
-	ArgusActorPool m_argusActorPool = ArgusActorPool();
+	UPROPERTY(VisibleAnywhere, Instanced)
+	TObjectPtr<UArgusActorPool> m_argusActorPool = nullptr;
+
 	ArgusSystemsThread m_argusSystemsThread = ArgusSystemsThread();
 
 	friend class UArgusSaveManager;
