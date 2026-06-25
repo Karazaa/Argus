@@ -80,13 +80,13 @@ void InputInterfaceSystems::AddSelectedEntityExclusive(ArgusEntity selectedEntit
 	const UArgusGameInstance* gameInstance = UArgusGameInstance::GetArgusGameInstance();
 	ARGUS_RETURN_ON_NULL(gameInstance, ArgusECSLog);
 
-	AArgusActor* actor = gameInstance->GetArgusActorFromArgusEntity(selectedEntity);
-	ARGUS_RETURN_ON_NULL(actor, ArgusECSLog);
-
 	bool alreadySelected = RemoveAllSelectedEntities(selectedEntity);
 	if (!alreadySelected)
 	{
-		actor->SetSelectionState(true);
+		if (AArgusActor* actor = gameInstance->GetArgusActorFromArgusEntity(selectedEntity))
+		{
+			actor->SetSelectionState(true);
+		}
 		DecalSystems::ActivateCachedMoveToLocationDecalPerEntity(moveToLocationDecalActorRecord, selectedEntity);
 	}
 	inputInterfaceComponent->m_selectedArgusEntityIds.Add(selectedEntity.GetId());
@@ -105,17 +105,24 @@ void InputInterfaceSystems::AddSelectedEntityAdditive(ArgusEntity selectedEntity
 	ARGUS_RETURN_ON_NULL(gameInstance, ArgusECSLog);
 
 	AArgusActor* actor = gameInstance->GetArgusActorFromArgusEntity(selectedEntity);
-	ARGUS_RETURN_ON_NULL(actor, ArgusECSLog);
 
 	if (inputInterfaceComponent->m_selectedArgusEntityIds.Contains(selectedEntity.GetId()))
 	{
-		actor->SetSelectionState(false);
+		if (actor)
+		{
+			actor->SetSelectionState(false);
+		}
+		
 		DecalSystems::ClearMoveToLocationDecalPerEntity(selectedEntity, true);
 		inputInterfaceComponent->m_selectedArgusEntityIds.Remove(selectedEntity.GetId());
 	}
 	else
 	{
-		actor->SetSelectionState(true);
+		if (actor)
+		{
+			actor->SetSelectionState(true);
+		}
+		
 		DecalSystems::ActivateCachedMoveToLocationDecalPerEntity(moveToLocationDecalActorRecord, selectedEntity);
 		inputInterfaceComponent->m_selectedArgusEntityIds.Add(selectedEntity.GetId());
 	}
@@ -481,10 +488,11 @@ void InputInterfaceSystems::RemoveSelectionStateForEntity(ArgusEntity entity)
 	const UArgusGameInstance* gameInstance = UArgusGameInstance::GetArgusGameInstance();
 	ARGUS_RETURN_ON_NULL(gameInstance, ArgusECSLog);
 
-	AArgusActor* actor = gameInstance->GetArgusActorFromArgusEntity(entity);
-	ARGUS_RETURN_ON_NULL(actor, ArgusECSLog);
+	if (AArgusActor* actor = gameInstance->GetArgusActorFromArgusEntity(entity))
+	{
+		actor->SetSelectionState(false);
+	}
 
-	actor->SetSelectionState(false);
 	DecalSystems::ClearMoveToLocationDecalPerEntity(entity, true);
 }
 

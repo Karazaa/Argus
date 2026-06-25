@@ -70,5 +70,11 @@ AArgusActor* UArgusGameInstance::GetArgusActorFromArgusEntity(ArgusEntity argusE
 		return nullptr;
 	}
 
-	return m_argusEntityActorMap[entityId].Get();
+	const TWeakObjectPtr<AArgusActor>* weakActorPointer = m_argusEntityActorMap.Find(entityId);
+	if (!weakActorPointer)
+	{
+		return nullptr;
+	}
+
+	return weakActorPointer->Get();
 }

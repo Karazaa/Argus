@@ -18,7 +18,8 @@ AArgusActor* UArgusActorPool::Take(UWorld* worldPointer, UClass* classPointer)
 		return nullptr;
 	}
 
-	if (!m_availableObjects.Contains(classPointer) || m_availableObjects[classPointer].m_actors.IsEmpty())
+	FActorArray* actorArray = m_availableObjects.Find(classPointer);
+	if (!actorArray || actorArray->m_actors.IsEmpty())
 	{
 		if (!worldPointer)
 		{
@@ -29,7 +30,7 @@ AArgusActor* UArgusActorPool::Take(UWorld* worldPointer, UClass* classPointer)
 	}
 
 	m_numAvailableObjects--;
-	AArgusActor* cachedActor = m_availableObjects[classPointer].m_actors.Pop();
+	AArgusActor* cachedActor = actorArray->m_actors.Pop();
 	if (!cachedActor)
 	{
 		return nullptr;
@@ -51,11 +52,17 @@ void UArgusActorPool::Release(AArgusActor*& actorPointer)
 	
 	m_numAvailableObjects++;
 	actorPointer->Reset();
-	if (!m_availableObjects.Contains(classPointer))
+
+	FActorArray* actorArray = m_availableObjects.Find(classPointer);
+	if (!actorArray)
 	{
-		m_availableObjects.Emplace(classPointer, TArray<TObjectPtr<AArgusActor>>());
+		m_availableObjects.Emplace(classPointer, TArray<TObjectPtr<AArgusActor>>()).m_actors.Add(actorPointer);
 	}
-	m_availableObjects[classPointer].m_actors.Add(actorPointer);	
+	else
+	{
+		actorArray->m_actors.Add(actorPointer);
+	}
+	
 	actorPointer = nullptr;
 }
 
