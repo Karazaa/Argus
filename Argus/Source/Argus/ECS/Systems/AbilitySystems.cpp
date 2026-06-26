@@ -538,6 +538,10 @@ bool AbilitySystems::CastFlightTransitionAbility(const UAbilityRecord* abilityRe
 
 	components.m_taskComponent->Set_m_flightState(landing ? EFlightState::ProcessLandCommand : EFlightState::ProcessTakeOffCommand);
 	flightTransitionComponent->m_onTransitionCompleteAbilityId = abilityEffect.m_abilityRecordReference.GetId();
+	if (flightTransitionComponent->m_onTransitionCompleteAbilityId > 0u)
+	{
+		ArgusStaticData::AsyncPreLoadRecord<UAbilityRecord>(flightTransitionComponent->m_onTransitionCompleteAbilityId);
+	}
 
 	return true;
 }
