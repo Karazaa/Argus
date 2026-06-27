@@ -81,7 +81,7 @@ bool FogOfWarSystems::HasLocationEverBeenRevealed(const FVector& worldSpaceLocat
 	const FogOfWarComponent* fogOfWarComponent = ArgusEntity::GetSingletonEntity().GetComponent<FogOfWarComponent>();
 	ARGUS_RETURN_ON_NULL_BOOL(fogOfWarComponent, ArgusECSLog);
 
-	return GetAlphaAtWorldSpaceLocation(fogOfWarComponent, worldSpaceLocation) <= fogOfWarComponent->m_revealedOnceAlpha;
+	return GetAlphaAtWorldSpaceLocation(fogOfWarComponent, worldSpaceLocation) <= fogOfWarComponent->GetRevealedOnceAlpha();
 }
 
 bool FogOfWarSystems::IsLocationCurrentlyRevealed(const FVector& worldSpaceLocation)
@@ -199,7 +199,7 @@ void FogOfWarSystems::ClearActivelyRevealedPixelsForRange(FogOfWarComponent* fog
 	static constexpr int32 midIterationSize = 32;
 
 	uint8* textureData = fogOfWarComponent->m_textureData.GetData();
-	const uint8 revealedOnceAlpha = fogOfWarComponent->m_revealedOnceAlpha;
+	const uint8 revealedOnceAlpha = fogOfWarComponent->GetRevealedOnceAlpha();
 
 	const __m256i zeroedBytes = _mm256_setzero_si256();
 	const __m256i replacementAlphaBytes = _mm256_set1_epi8(static_cast<char>(revealedOnceAlpha));

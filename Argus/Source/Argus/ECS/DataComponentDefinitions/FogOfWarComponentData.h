@@ -45,6 +45,12 @@ public:
 	UPROPERTY(EditAnywhere)
 	float m_visionObstacleAdjustDistance = 100.0f;
 
+	UPROPERTY(EditAnywhere)
+	uint8 m_ditherAlpha = 100u;
+
+	UPROPERTY(EditAnywhere)
+	bool m_shouldUseDitherAlpha = false;
+
 
 	void InstantiateComponentForEntity(ArgusEntity entity) const override;
 	void ReinitializeComponentForEntityPostLoad(ArgusEntity entity) const override;

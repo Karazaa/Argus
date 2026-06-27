@@ -56,9 +56,16 @@ struct FogOfWarComponent
 	uint8 m_triangleRasterizeModulo = 4u;
 	uint8 m_numberSmoothingChunks = 4u;
 	float m_visionObstacleAdjustDistance = 100.0f;
+	uint8 m_ditherAlpha = 100u;
+	bool m_shouldUseDitherAlpha = false;
 
-	uint32 GetTotalPixels()
+	uint32 GetTotalPixels() const
 	{
 		return static_cast<uint32>(m_textureSize) * static_cast<uint32>(m_textureSize);
+	}
+
+	uint8 GetRevealedOnceAlpha() const
+	{
+		return m_shouldUseDitherAlpha ? m_ditherAlpha : m_revealedOnceAlpha;
 	}
 };

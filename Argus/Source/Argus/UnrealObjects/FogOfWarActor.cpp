@@ -45,13 +45,15 @@ void AFogOfWarActor::BeginPlay()
 	ARGUS_RETURN_ON_NULL(m_planeMesh, ArgusUnrealObjectsLog);
 	ARGUS_RETURN_ON_NULL(m_blurredMaterial, ArgusUnrealObjectsLog);
 	ARGUS_RETURN_ON_NULL(m_noBlurMaterial, ArgusUnrealObjectsLog);
+	const FogOfWarComponent* fogOfWarComponent = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId).GetComponent<FogOfWarComponent>();
+	ARGUS_RETURN_ON_NULL(fogOfWarComponent, ArgusUnrealObjectsLog);
 
 	UArgusSaveManager* saveManager = UArgusSaveManager::Get();
 	ARGUS_RETURN_ON_NULL(saveManager, ArgusUnrealObjectsLog);
 
 	saveManager->m_loadCompleted.AddUniqueDynamic(this, &AFogOfWarActor::SetDynamicMaterialInstanceInECS);
 
-	m_dynamicMaterialInstance = m_planeMesh->CreateDynamicMaterialInstance(0, m_shouldBlurFogOfWar ? m_blurredMaterial : m_noBlurMaterial, TEXT("FogOfWarDynamicMaterialInstance"));
+	m_dynamicMaterialInstance = m_planeMesh->CreateDynamicMaterialInstance(0, fogOfWarComponent->m_shouldUseDitherAlpha ? m_noBlurMaterial : m_blurredMaterial, TEXT("FogOfWarDynamicMaterialInstance"));
 	SetDynamicMaterialInstanceInECS();
 }
 

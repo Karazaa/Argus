@@ -38,7 +38,4 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UMaterialInterface> m_noBlurMaterial = nullptr;
-
-	UPROPERTY(EditAnywhere)
-	bool m_shouldBlurFogOfWar = true;
 };

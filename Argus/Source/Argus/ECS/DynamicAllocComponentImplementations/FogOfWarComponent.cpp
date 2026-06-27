@@ -30,6 +30,8 @@ void FogOfWarComponent::Reset()
 	m_triangleRasterizeModulo = 4u;
 	m_numberSmoothingChunks = 4u;
 	m_visionObstacleAdjustDistance = 100.0f;
+	m_ditherAlpha = 100u;
+	m_shouldUseDitherAlpha = false;
 }
 
 void FogOfWarComponent::Serialize(FArchive& archive)
@@ -44,6 +46,8 @@ void FogOfWarComponent::Serialize(FArchive& archive)
 	archive << m_triangleRasterizeModulo;
 	archive << m_numberSmoothingChunks;
 	archive << m_visionObstacleAdjustDistance;
+	archive << m_ditherAlpha;
+	archive << m_shouldUseDitherAlpha;
 }
 
 void FogOfWarComponent::DrawComponentDebug() const
@@ -182,6 +186,14 @@ void FogOfWarComponent::DrawComponentDebug() const
 		ImGui::Text("m_visionObstacleAdjustDistance");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_visionObstacleAdjustDistance);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_ditherAlpha");
+		ImGui::TableNextColumn();
+		ImGui::Text("%d", m_ditherAlpha);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_shouldUseDitherAlpha");
+		ImGui::TableNextColumn();
+		ImGui::Text(m_shouldUseDitherAlpha ? "true" : "false");
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

@@ -21,6 +21,8 @@ void UFogOfWarComponentData::InstantiateComponentForEntity(ArgusEntity entity) c
 	FogOfWarComponentRef->m_triangleRasterizeModulo = m_triangleRasterizeModulo;
 	FogOfWarComponentRef->m_numberSmoothingChunks = m_numberSmoothingChunks;
 	FogOfWarComponentRef->m_visionObstacleAdjustDistance = m_visionObstacleAdjustDistance;
+	FogOfWarComponentRef->m_ditherAlpha = m_ditherAlpha;
+	FogOfWarComponentRef->m_shouldUseDitherAlpha = m_shouldUseDitherAlpha;
 }
 
 void UFogOfWarComponentData::ReinitializeComponentForEntityPostLoad(ArgusEntity entity) const
