@@ -5,7 +5,9 @@
 #include "ArgusMath.h"
 #include "CoreMinimal.h"
 #include "ComponentDependencies/Teams.h"
+#include "Engine/HitResult.h"
 #include "GameFramework/Actor.h"
+#include "WorldCollision.h"
 #include "ArgusCameraActor.generated.h"
 
 class ArgusEntity;
@@ -111,16 +113,25 @@ private:
 	static FVector s_moveUpDir;
 	static FVector s_moveRightDir;
 
+	UPROPERTY(Transient)
+	TOptional<FHitResult> m_lastHitResult = NullOpt;
+
 	bool IsPanningBlocked() const { return s_numWidgetPanningBlockers != 0u || m_orbitInputThisFrame != 0.0f; }
 
-	void UpdateCameraOrbitInternal(const TOptional<FHitResult>& hitResult, const float deltaTime);
+	void UpdateCameraOrbitInternal(const float deltaTime);
 	void UpdateCameraPanning(const UpdateCameraPanningParameters& cameraParameters, const float deltaTime);
-	void UpdateCameraZoomInternal(const TOptional<FHitResult>& hitResult, const float deltaTime);
+	void UpdateCameraZoomInternal(const float deltaTime);
 	void UpdateEntitiesInViewFrustrum(ETeam playerTeam);
 
 	void PopulateCameraFrustrumEdges(CameraFrustrumEdges& frustrumEdgesToPopulate);
 	void QueryEntitiesInFrustrum(const FVector& planeLocation, const CameraFrustrumEdges& cameraFrustrumEdges, ArgusEntityKDTree& entityKDTree, ETeam playerTeam) const;
+	
+	void PopulateTraceStartAndEnd(FVector& outTraceStart, FVector& outTraceEnd) const;
 	void TraceToGround(TOptional<FHitResult>& hitResult);
+	void AsyncTraceToGround();
+	void OnTraceComplete(const FTraceHandle& traceHandle, FTraceDatum& traceData);
+
+	FTraceDelegate m_groundTraceDelegate;
 
 	ArgusMath::ExponentialDecaySmoother<float>		m_currentVerticalVelocity;
 	ArgusMath::ExponentialDecaySmoother<float>		m_currentHorizontalVelocity;

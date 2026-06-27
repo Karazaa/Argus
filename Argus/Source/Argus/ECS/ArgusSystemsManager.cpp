@@ -224,6 +224,8 @@ void ArgusSystemsManager::InitializeTeamComponents()
 
 void ArgusSystemsManager::UpdateSingletonComponents(UWorld* worldPointer)
 {
+	ARGUS_TRACE(ArgusSystemsManager::UpdateSingletonComponents);
+
 	ARGUS_RETURN_ON_NULL(worldPointer, ArgusECSLog);
 
 	ArgusEntity singletonEntity = ArgusEntity::GetSingletonEntity();
