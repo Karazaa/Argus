@@ -6,6 +6,7 @@
 #include "ArgusIterators.h"
 #include "ArgusMacros.h"
 #include "ComponentDependencies/ResourceSet.h"
+#include "FogOfWarActor.h"
 #include "imgui.h"
 #include "Systems/AvoidanceSystems.h"
 #include "Systems/ResourceSystems.h"
@@ -67,8 +68,13 @@ void ArgusECSDebugger::Serialize(FArchive& archive)
 void ArgusECSDebugger::DrawEntityScrollRegion()
 {
 	DrawResourceRegion();
-
-	ImGui::Checkbox("Draw fog of war", &s_shouldDrawFogOfWar);
+	if (ImGui::Checkbox("Draw fog of war", &s_shouldDrawFogOfWar))
+	{
+		if (AFogOfWarActor* fogOfWarActor = AFogOfWarActor::Get())
+		{
+			fogOfWarActor->UpdateVisibility();
+		}
+	}
 	ImGui::SameLine();
 	ImGui::Checkbox("Is team AI enabled", &s_isTeamAIEnabled);
 	ImGui::Checkbox("Only debug selected entities", &s_onlyDebugSelectedEntities);

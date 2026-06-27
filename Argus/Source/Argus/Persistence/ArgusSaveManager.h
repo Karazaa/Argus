@@ -107,5 +107,6 @@ private:
 #endif //!UE_BUILD_SHIPPING
 
 	friend class AArgusGameModeBase;
+	friend class AFogOfWarActor;
 	friend class UArgusUIBlueprintLibrary;
 };
