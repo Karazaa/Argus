@@ -97,7 +97,8 @@ void UIconQueueWidget::RefreshDisplayFromSpawnQueue()
 
 void UIconQueueWidget::RefreshDisplayFromAbilityQueue()
 {
-
+	// TODO JAMES: Until we have something to put here, just collapse the queue widget so that icons don't carry across data sources.
+	SetVisibility(ESlateVisibility::Collapsed);
 }
 
 void UIconQueueWidget::RefreshDisplayFromCarrierPassengers()
