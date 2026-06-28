@@ -176,15 +176,7 @@ void UArgusInputManager::OnUserInterfaceEntityClicked(ArgusEntity clickedEntity)
 
 void UArgusInputManager::OnUserInterfaceFocusEntityClicked(ArgusEntity clickedEntity)
 {
-	if (!ValidateOwningPlayerController())
-	{
-		return;
-	}
-
-	AArgusCameraActor* cameraActor = m_owningPlayerController->GetArgusCameraActor();
-	ARGUS_RETURN_ON_NULL(cameraActor, ArgusInputLog);
-
-	cameraActor->FocusOnArgusEntity(clickedEntity);
+	m_inputEventsThisFrame.Emplace(InputCache(InputType::UserInterfaceFocusEntityClicked, clickedEntity));
 }
 
 void UArgusInputManager::OnControlGroup0(const FInputActionValue& value)
@@ -726,6 +718,9 @@ void UArgusInputManager::ProcessInputEvent(AArgusCameraActor* argusCamera, const
 		case InputType::UserInterfaceEntityClicked:
 			ProcessUserInterfaceEntityClicked(inputType.m_entity);
 			break;
+		case InputType::UserInterfaceFocusEntityClicked:
+			ProcessUserInterfaceFocusEntityClicked(inputType.m_entity);
+			break;
 		default:
 			break;
 	}
@@ -1130,7 +1125,7 @@ void UArgusInputManager::ProcessChangeActiveAbilityGroup()
 
 void UArgusInputManager::ProcessUserInterfaceEntityClicked(ArgusEntity entity)
 {
-	ARGUS_RETURN_ON_NULL(entity, ArgusInputLog);
+	ARGUS_RETURN_ON_INVALID_ENTITY(entity, ArgusInputLog);
 	if (!ValidateOwningPlayerController())
 	{
 		return;
@@ -1139,6 +1134,19 @@ void UArgusInputManager::ProcessUserInterfaceEntityClicked(ArgusEntity entity)
 	InputInterfaceSystems::AddSelectedEntityExclusive(entity, m_owningPlayerController->GetMoveToLocationDecalActorRecord());
 }
 
+void UArgusInputManager::ProcessUserInterfaceFocusEntityClicked(ArgusEntity entity)
+{
+	ARGUS_RETURN_ON_INVALID_ENTITY(entity, ArgusInputLog);
+	if (!ValidateOwningPlayerController())
+	{
+		return;
+	}
+
+	AArgusCameraActor* cameraActor = m_owningPlayerController->GetArgusCameraActor();
+	ARGUS_RETURN_ON_NULL(cameraActor, ArgusInputLog);
+
+	cameraActor->FocusOnArgusEntity(entity);
+}
 #pragma endregion
 
 void UArgusInputManager::SetReticleState()

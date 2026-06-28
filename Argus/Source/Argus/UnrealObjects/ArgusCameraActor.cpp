@@ -50,6 +50,7 @@ void AArgusCameraActor::ForceSetCameraLocationWithoutZoom(const FVector& locatio
 	}
 	
 	SetActorLocation(location);
+	TraceToGround(m_lastHitResult);
 }
 
 void AArgusCameraActor::FocusOnArgusEntity(ArgusEntity entity)
@@ -107,7 +108,6 @@ void AArgusCameraActor::BeginPlay()
 
 	ForceSetCameraLocationWithoutZoom(GetActorLocation());
 
-	TraceToGround(m_lastHitResult);
 	if (m_lastHitResult)
 	{
 		const FVector2D hitLocation2D = FVector2D(m_lastHitResult.GetValue().Location);
@@ -453,7 +453,6 @@ void AArgusCameraActor::AsyncTraceToGround()
 	PopulateTraceStartAndEnd(traceStart, traceEnd);
 
 	worldPointer->AsyncLineTraceByChannel(EAsyncTraceType::Single, traceStart, traceEnd, ECC_WorldStatic, FCollisionQueryParams::DefaultQueryParam, FCollisionResponseParams::DefaultResponseParam, &m_groundTraceDelegate);
-	m_lastHitResult = NullOpt;
 }
 
 void AArgusCameraActor::OnTraceComplete(const FTraceHandle& traceHandle, FTraceDatum& traceData)

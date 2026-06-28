@@ -68,6 +68,7 @@ public:
 		SetControlGroup11,
 		ChangeActiveAbilityGroup,
 		UserInterfaceEntityClicked,
+		UserInterfaceFocusEntityClicked
 	};
 	static bool ShouldUpdateSelectedActorDisplay(ArgusEntity& templateSelectedEntity);
 
@@ -156,6 +157,7 @@ private:
 	void ProcessSetControlGroup(uint8 controlGroupIndex);
 	void ProcessChangeActiveAbilityGroup();
 	void ProcessUserInterfaceEntityClicked(ArgusEntity entity);
+	void ProcessUserInterfaceFocusEntityClicked(ArgusEntity entity);
 
 	void SetReticleState();
 	void ProcessReticleAbilityForSelectedEntities(const ReticleComponent* reticleComponent);
