@@ -30,19 +30,17 @@ struct ResourceSourceExtractionData
 	uint16 m_resourceSourceEntityId = ArgusECSConstants::k_maxEntities;
 	uint16 m_resourceSinkEntityId = ArgusECSConstants::k_maxEntities;
 	uint16 m_resourceExtractorEntityId = ArgusECSConstants::k_maxEntities;
-	uint16 m_resourceSinkConstructorEntityId = ArgusECSConstants::k_maxEntities;
 
 	bool HasSourceEntityId(uint16 entityId) const { return m_resourceSourceEntityId == entityId; }
 	void SetSourceEntityId(uint16 entityId) { m_resourceSourceEntityId = entityId; }
 };
+FArchive& operator<<(FArchive& archive, ResourceSourceExtractionData& controlGroup);
 
 struct ConstructionData
 {
 	uint16 m_beingConstructedEntityId = ArgusECSConstants::k_maxEntities;
 	uint16 m_constructingOtherEntityId = ArgusECSConstants::k_maxEntities;
 };
-FArchive& operator<<(FArchive& archive, ResourceSourceExtractionData& controlGroup);
-
 
 FORCEINLINE static bool operator<(const TeamCommanderPriority& A, const TeamCommanderPriority& B)
 {

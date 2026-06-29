@@ -8,6 +8,5 @@ FArchive& operator<<(FArchive& archive, ResourceSourceExtractionData& resourceSo
 	archive << resourceSourceExtractionData.m_resourceSourceEntityId;
 	archive << resourceSourceExtractionData.m_resourceSinkEntityId;
 	archive << resourceSourceExtractionData.m_resourceExtractorEntityId;
-	archive << resourceSourceExtractionData.m_resourceSinkConstructorEntityId;
 	return archive;
 }

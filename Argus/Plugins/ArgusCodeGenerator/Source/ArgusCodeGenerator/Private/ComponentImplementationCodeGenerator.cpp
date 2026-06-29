@@ -860,11 +860,6 @@ void ComponentImplementationGenerator::FormatImGuiResourceSourceExtractionDataFi
 	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::Text(\"%d\", {});", std::make_format_args(prefix, resourceSinkIdName)));
 
 	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::TableNextColumn();", std::make_format_args(prefix)));
-	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::Text(\"Sink Constructor Entity Id\");", std::make_format_args(prefix)));
-	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::TableNextColumn();", std::make_format_args(prefix)));
-	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::Text(\"%d\", {});", std::make_format_args(prefix, resourceSinkConstructorIdName)));
-
-	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::TableNextColumn();", std::make_format_args(prefix)));
 	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::Text(\"Extractor Entity Id\");", std::make_format_args(prefix, resourceExtractorIdName)));
 	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::TableNextColumn();", std::make_format_args(prefix)));
 	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::Text(\"%d\", {});", std::make_format_args(prefix, resourceExtractorIdName)));

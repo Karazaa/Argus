@@ -12,7 +12,6 @@ public:
 private:
 	static void ClearUpdatesPerCommanderEntity(ArgusEntity teamCommmanderEntity);
 	static void ClearResourceSinkFromExtractionDataIfNeeded(ArgusEntity existingResourceSinkEntity, ResourceSourceExtractionData& data);
-	static void ClearResourceSinkConstructorFromExtractionDataIfNeeded(ArgusEntity existingResourceSinkConstructorEntity, ResourceSourceExtractionData& data);
 	static void ClearResourceExtractorFromExtractionDataIfNeeded(ArgusEntity existingResourceExtractorEntity, ResourceSourceExtractionData& data);
 
 	static void UpdateTeamCommanderPerEntity(const TeamCommanderSystemsArgs& components);

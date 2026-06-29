@@ -169,11 +169,21 @@ void TeamCommanderSystems_UpdatePriorities::UpdateSpawnUnitTeamPriority(TeamComm
 	float extractorNeedWeight = -0.5f;
 	teamCommanderComponent->IterateSeenResourceSourcesOfType(priority.m_entityCategory.m_resourceType, [&extractorNeedWeight](const ResourceSourceExtractionData& data)
 	{
-		if (data.m_resourceSourceEntityId != ArgusECSConstants::k_maxEntities && data.m_resourceExtractorEntityId == ArgusECSConstants::k_maxEntities && data.m_resourceSinkConstructorEntityId == ArgusECSConstants::k_maxEntities)
+		if (data.m_resourceSourceEntityId == ArgusECSConstants::k_maxEntities || data.m_resourceExtractorEntityId != ArgusECSConstants::k_maxEntities)
 		{
-			extractorNeedWeight += 1.0f;
+			return false;
 		}
 
+		if (data.m_resourceSinkEntityId != ArgusECSConstants::k_maxEntities)
+		{
+			ArgusEntity sinkEntity = ArgusEntity::RetrieveEntity(data.m_resourceSinkEntityId);
+			if (sinkEntity.IsUnderConstruction())
+			{
+				return false;
+			}
+		}
+
+		extractorNeedWeight += 1.0f;
 		return false;
 	});
 

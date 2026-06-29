@@ -25,7 +25,7 @@ void TeamCommanderSystems_GatherInfo::ClearUpdatesPerCommanderEntity(ArgusEntity
 	teamCommanderComponent->IterateAllSeenResourceSources([](ResourceSourceExtractionData& data)
 	{
 		ClearResourceSinkFromExtractionDataIfNeeded(ArgusEntity::RetrieveEntity(data.m_resourceSinkEntityId), data);
-		ClearResourceSinkConstructorFromExtractionDataIfNeeded(ArgusEntity::RetrieveEntity(data.m_resourceSinkConstructorEntityId), data);
+		// ClearResourceSinkConstructorFromExtractionDataIfNeeded(ArgusEntity::RetrieveEntity(data.m_resourceSinkConstructorEntityId), data);
 		ClearResourceExtractorFromExtractionDataIfNeeded(ArgusEntity::RetrieveEntity(data.m_resourceExtractorEntityId), data);
 		return false;
 	});
@@ -43,47 +43,6 @@ void TeamCommanderSystems_GatherInfo::ClearResourceSinkFromExtractionDataIfNeede
 	if (!existingResourceSinkEntity.IsAlive())
 	{
 		data.m_resourceSinkEntityId = ArgusECSConstants::k_maxEntities;
-		return;
-	}
-}
-
-void TeamCommanderSystems_GatherInfo::ClearResourceSinkConstructorFromExtractionDataIfNeeded(ArgusEntity existingResourceSinkConstructorEntity, ResourceSourceExtractionData& data)
-{
-	if (!existingResourceSinkConstructorEntity)
-	{
-		data.m_resourceSinkConstructorEntityId = ArgusECSConstants::k_maxEntities;
-		return;
-	}
-
-	if (!existingResourceSinkConstructorEntity.IsAlive())
-	{
-		data.m_resourceSinkConstructorEntityId = ArgusECSConstants::k_maxEntities;
-		return;
-	}
-
-	const TaskComponent* constructorTaskComponent = existingResourceSinkConstructorEntity.GetComponent<TaskComponent>();
-	const TargetingComponent* constructorTargetingComponent = existingResourceSinkConstructorEntity.GetComponent<TargetingComponent>();
-	if (!constructorTaskComponent || !constructorTargetingComponent)
-	{
-		data.m_resourceSinkConstructorEntityId = ArgusECSConstants::k_maxEntities;
-		return;
-	}
-
-	if (constructorTaskComponent->m_constructionState != EConstructionState::DispatchedToConstructOther && constructorTaskComponent->m_constructionState != EConstructionState::ConstructingOther)
-	{
-		data.m_resourceSinkConstructorEntityId = ArgusECSConstants::k_maxEntities;
-		return;
-	}
-
-	if (!constructorTargetingComponent->HasEntityTarget())
-	{
-		data.m_resourceSinkConstructorEntityId = ArgusECSConstants::k_maxEntities;
-		return;
-	}
-
-	if (data.m_resourceSinkEntityId != ArgusECSConstants::k_maxEntities && constructorTargetingComponent->m_targetEntityId != data.m_resourceSinkEntityId)
-	{
-		data.m_resourceSinkConstructorEntityId = ArgusECSConstants::k_maxEntities;
 		return;
 	}
 }

@@ -287,7 +287,6 @@ bool TeamCommanderSystems_AssignEntities::FindTargetLocForConstructResourceSink(
 		return false;
 	}
 
-	sources[extractionDataIndex].m_resourceSinkConstructorEntityId = entity.GetId();
 	targetingComponent->SetLocationTarget(TransformSystems::ProjectLocationOntoNavigationData(worldReferenceComponent->m_worldPointer, radiusDistance, candidatePoint));
 	return true;
 }
