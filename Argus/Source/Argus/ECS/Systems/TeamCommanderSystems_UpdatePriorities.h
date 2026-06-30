@@ -15,4 +15,5 @@ private:
 	static void UpdateResourceExtractionTeamPriority(TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority);
 	static void UpdateSpawnUnitTeamPriority(TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority);
 	static void UpdateScoutingTeamPriority(TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority);
+	static void UpdateContinueConstructionPriority(TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority);
 };

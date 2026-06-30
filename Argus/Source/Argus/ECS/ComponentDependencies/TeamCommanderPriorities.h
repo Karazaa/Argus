@@ -10,7 +10,8 @@ class FArchive;
 UENUM()
 enum class ETeamCommanderDirective : uint8
 {
-	ConstructResourceSink,
+	StartConstruction,
+	ContinueConstruction,
 	ExtractResources,
 	SpawnUnit,
 	Scout,

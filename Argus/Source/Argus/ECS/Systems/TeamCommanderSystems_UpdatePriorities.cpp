@@ -25,7 +25,7 @@ void TeamCommanderSystems_UpdatePriorities::UpdateTeamCommanderPriorities(ArgusE
 		const ETeamCommanderDirective directiveToEvaluate = static_cast<ETeamCommanderDirective>(i);
 		switch (directiveToEvaluate)
 		{
-			case ETeamCommanderDirective::ConstructResourceSink:
+			case ETeamCommanderDirective::StartConstruction:
 				for (uint8 j = 0u; j < static_cast<uint8>(EResourceType::Count); ++j)
 				{
 					TeamCommanderPriority& priority = teamCommanderComponent->m_priorities.Emplace_GetRef();
@@ -35,6 +35,13 @@ void TeamCommanderSystems_UpdatePriorities::UpdateTeamCommanderPriorities(ArgusE
 					UpdateConstructResourceSinkTeamPriority(teamCommanderComponent, priority);
 				}
 				continue;
+			case ETeamCommanderDirective::ContinueConstruction:
+			{
+				TeamCommanderPriority& priority = teamCommanderComponent->m_priorities.Emplace_GetRef();
+				priority.m_directive = directiveToEvaluate;
+				UpdateContinueConstructionPriority(teamCommanderComponent, priority);
+				continue;
+			}
 			case ETeamCommanderDirective::ExtractResources:
 				for (uint8 j = 0u; j < static_cast<uint8>(EResourceType::Count); ++j)
 				{
@@ -70,7 +77,6 @@ void TeamCommanderSystems_UpdatePriorities::UpdateTeamCommanderPriorities(ArgusE
 						TeamCommanderPriority& priority = teamCommanderComponent->m_priorities.Emplace_GetRef();
 						priority.m_directive = directiveToEvaluate;
 						priority.m_entityCategory.m_entityCategoryType = unitCategoryType;
-						priority.m_entityCategory.m_resourceType = EResourceType::Count;
 						UpdateSpawnUnitTeamPriority(teamCommanderComponent, priority);
 					}
 				}
@@ -95,7 +101,7 @@ void TeamCommanderSystems_UpdatePriorities::UpdateConstructResourceSinkTeamPrior
 	ARGUS_TRACE(TeamCommanderSystems_UpdatePriorities::UpdateConstructResourceSinkTeamPriority);
 
 	ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
-	if (priority.m_directive != ETeamCommanderDirective::ConstructResourceSink || priority.m_entityCategory.m_resourceType == EResourceType::Count)
+	if (priority.m_directive != ETeamCommanderDirective::StartConstruction || priority.m_entityCategory.m_resourceType == EResourceType::Count)
 	{
 		return;
 	}
@@ -237,4 +243,23 @@ void TeamCommanderSystems_UpdatePriorities::UpdateScoutingTeamPriority(TeamComma
 	// TODO JAMES: We should probably massively de-prioritize this based on how much of the map has been discovered. 
 
 	priority.m_weight = 1.0f;
+}
+
+void TeamCommanderSystems_UpdatePriorities::UpdateContinueConstructionPriority(TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority)
+{
+	ARGUS_TRACE(TeamCommanderSystems_UpdatePriorities::UpdateContinueConstructionPriority);
+
+	ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
+	if (priority.m_directive != ETeamCommanderDirective::ContinueConstruction)
+	{
+		return;
+	}
+
+	for (const TPair<uint16, ConstructionData>& pair : teamCommanderComponent->m_inProgressConstructionData)
+	{
+		if (pair.Value.m_beingConstructedEntityId != ArgusECSConstants::k_maxEntities && pair.Value.m_constructingOtherEntityId == ArgusECSConstants::k_maxEntities)
+		{
+			priority.m_weight += 1.0f;
+		}
+	}
 }

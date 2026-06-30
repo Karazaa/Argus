@@ -64,8 +64,10 @@ bool TeamCommanderSystems_AssignEntities::AssignIdleEntityToDirectiveIfAble(Argu
 
 	switch (priority.m_directive)
 	{
-		case ETeamCommanderDirective::ConstructResourceSink:
-			return AssignEntityToConstructResourceSinkIfAble(idleEntity, teamCommanderComponent, priority);
+		case ETeamCommanderDirective::StartConstruction:
+			return AssignEntityToStartConstructionOfResourceSinkIfAble(idleEntity, teamCommanderComponent, priority);
+		case ETeamCommanderDirective::ContinueConstruction:
+			return AssignEntityToContinueConstructionIfAble(idleEntity, teamCommanderComponent, priority);
 		case ETeamCommanderDirective::ExtractResources:
 			return AssignEntityToResourceExtractionIfAble(idleEntity, teamCommanderComponent);
 		case ETeamCommanderDirective::SpawnUnit:
@@ -79,9 +81,22 @@ bool TeamCommanderSystems_AssignEntities::AssignIdleEntityToDirectiveIfAble(Argu
 	return false;
 }
 
-bool TeamCommanderSystems_AssignEntities::AssignEntityToConstructResourceSinkIfAble(ArgusEntity entity, TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority)
+bool TeamCommanderSystems_AssignEntities::AssignEntityToStartConstructionIfAble(ArgusEntity entity, TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority)
 {
-	ARGUS_TRACE(TeamCommanderSystems_AssignEntities::AssignEntityToConstructResourceSinkIfAble);
+	switch (priority.m_entityCategory.m_entityCategoryType)
+	{
+		case EEntityCategoryType::ResourceSink:
+			return AssignEntityToStartConstructionOfResourceSinkIfAble(entity, teamCommanderComponent, priority);
+		default:
+			break;
+	}
+
+	return false;
+}
+
+bool TeamCommanderSystems_AssignEntities::AssignEntityToStartConstructionOfResourceSinkIfAble(ArgusEntity entity, TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority)
+{
+	ARGUS_TRACE(TeamCommanderSystems_AssignEntities::AssignEntityToStartConstructionOfResourceSinkIfAble);
 	ARGUS_RETURN_ON_NULL_BOOL(teamCommanderComponent, ArgusECSLog);
 	if (priority.m_entityCategory.m_resourceType == EResourceType::Count)
 	{
@@ -111,6 +126,11 @@ bool TeamCommanderSystems_AssignEntities::AssignEntityToConstructResourceSinkIfA
 	teamCommanderComponent->m_priorities.Sort();
 
 	return true;
+}
+
+bool TeamCommanderSystems_AssignEntities::AssignEntityToContinueConstructionIfAble(ArgusEntity entity, TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority)
+{
+	return false;
 }
 
 bool TeamCommanderSystems_AssignEntities::AssignEntityToResourceExtractionIfAble(ArgusEntity entity, TeamCommanderComponent* teamCommanderComponent)
