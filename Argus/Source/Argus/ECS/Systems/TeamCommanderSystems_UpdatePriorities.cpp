@@ -17,10 +17,12 @@ void TeamCommanderSystems_UpdatePriorities::UpdateTeamCommanderPriorities(ArgusE
 {
 	ARGUS_TRACE(TeamCommanderSystems_UpdatePriorities::UpdateTeamCommanderPriorities);
 
-	TeamCommanderComponent* teamCommanderComponent = teamEntity.GetComponent<TeamCommanderComponent>();
-	ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
-	TeamCommanderResourceDataComponent* teamCommanderResourceDataComponent = teamEntity.GetComponent<TeamCommanderResourceDataComponent>();
-	ARGUS_RETURN_ON_NULL(teamCommanderResourceDataComponent, ArgusECSLog);
+	TeamCommanderComponentCollection components;
+	components.PopulateArguments(teamEntity);
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
 
 	for (uint8 i = 0u; i < static_cast<uint8>(ETeamCommanderDirective::Count); ++i)
 	{
@@ -30,35 +32,35 @@ void TeamCommanderSystems_UpdatePriorities::UpdateTeamCommanderPriorities(ArgusE
 			case ETeamCommanderDirective::StartConstruction:
 				for (uint8 j = 0u; j < static_cast<uint8>(EResourceType::Count); ++j)
 				{
-					TeamCommanderPriority& priority = teamCommanderComponent->m_priorities.Emplace_GetRef();
+					TeamCommanderPriority& priority = components.m_baseComponent->m_priorities.Emplace_GetRef();
 					priority.m_directive = directiveToEvaluate;
 					priority.m_entityCategory.m_entityCategoryType = EEntityCategoryType::ResourceSink;
 					priority.m_entityCategory.m_resourceType = static_cast<EResourceType>(j);
-					UpdateConstructResourceSinkTeamPriority(teamCommanderResourceDataComponent, priority);
+					UpdateConstructResourceSinkTeamPriority(components, priority);
 				}
 				continue;
 			case ETeamCommanderDirective::ContinueConstruction:
 			{
-				TeamCommanderPriority& priority = teamCommanderComponent->m_priorities.Emplace_GetRef();
+				TeamCommanderPriority& priority = components.m_baseComponent->m_priorities.Emplace_GetRef();
 				priority.m_directive = directiveToEvaluate;
-				UpdateContinueConstructionPriority(teamCommanderComponent, priority);
+				UpdateContinueConstructionPriority(components, priority);
 				continue;
 			}
 			case ETeamCommanderDirective::ExtractResources:
 				for (uint8 j = 0u; j < static_cast<uint8>(EResourceType::Count); ++j)
 				{
-					TeamCommanderPriority& priority = teamCommanderComponent->m_priorities.Emplace_GetRef();
+					TeamCommanderPriority& priority = components.m_baseComponent->m_priorities.Emplace_GetRef();
 					priority.m_directive = directiveToEvaluate;
 					priority.m_entityCategory.m_entityCategoryType = EEntityCategoryType::ResourceSource;
 					priority.m_entityCategory.m_resourceType = static_cast<EResourceType>(j);
-					UpdateResourceExtractionTeamPriority(teamCommanderResourceDataComponent, priority);
+					UpdateResourceExtractionTeamPriority(components, priority);
 				}
 				continue;
 			case ETeamCommanderDirective::SpawnUnit:
 				for (uint8 j = 0u; j < static_cast<uint8>(EEntityCategoryType::Count); ++j)
 				{
-					EEntityCategoryType unitCategoryType = static_cast<EEntityCategoryType>(j);
-					if (unitCategoryType == EEntityCategoryType::ResourceSink || unitCategoryType == EEntityCategoryType::ResourceSource)
+					const EEntityCategoryType unitCategoryType = static_cast<EEntityCategoryType>(j);
+					if (!EntityCategoryUtils::IsSpawnable(unitCategoryType))
 					{
 						continue;
 					}
@@ -67,27 +69,41 @@ void TeamCommanderSystems_UpdatePriorities::UpdateTeamCommanderPriorities(ArgusE
 					{
 						for (uint8 k = 0u; k < static_cast<uint8>(EResourceType::Count); ++k)
 						{
-							TeamCommanderPriority& priority = teamCommanderComponent->m_priorities.Emplace_GetRef();
+							TeamCommanderPriority& priority = components.m_baseComponent->m_priorities.Emplace_GetRef();
 							priority.m_directive = directiveToEvaluate;
 							priority.m_entityCategory.m_entityCategoryType = unitCategoryType;
 							priority.m_entityCategory.m_resourceType = static_cast<EResourceType>(k);
-							UpdateSpawnUnitTeamPriority(teamCommanderComponent, teamCommanderResourceDataComponent, priority);
+							UpdateSpawnUnitTeamPriority(components, priority);
 						}
+					}
+					else if (unitCategoryType == EEntityCategoryType::Combatant)
+					{
+						TeamCommanderPriority& attackGroundedPriority = components.m_baseComponent->m_priorities.Emplace_GetRef();
+						attackGroundedPriority.m_directive = directiveToEvaluate;
+						attackGroundedPriority.m_entityCategory.m_entityCategoryType = unitCategoryType;
+						attackGroundedPriority.m_entityCategory.m_rangedCapability = ERangedAttackCapability::GroundedOnly;
+						UpdateSpawnUnitTeamPriority(components, attackGroundedPriority);
+
+						TeamCommanderPriority& attackFlyingPriority = components.m_baseComponent->m_priorities.Emplace_GetRef();
+						attackFlyingPriority.m_directive = directiveToEvaluate;
+						attackFlyingPriority.m_entityCategory.m_entityCategoryType = unitCategoryType;
+						attackFlyingPriority.m_entityCategory.m_rangedCapability = ERangedAttackCapability::FlyingOnly;
+						UpdateSpawnUnitTeamPriority(components, attackFlyingPriority);
 					}
 					else
 					{
-						TeamCommanderPriority& priority = teamCommanderComponent->m_priorities.Emplace_GetRef();
+						TeamCommanderPriority& priority = components.m_baseComponent->m_priorities.Emplace_GetRef();
 						priority.m_directive = directiveToEvaluate;
 						priority.m_entityCategory.m_entityCategoryType = unitCategoryType;
-						UpdateSpawnUnitTeamPriority(teamCommanderComponent, teamCommanderResourceDataComponent, priority);
+						UpdateSpawnUnitTeamPriority(components, priority);
 					}
 				}
 				continue;
 			case ETeamCommanderDirective::Scout:
 			{
-				TeamCommanderPriority& priority = teamCommanderComponent->m_priorities.Emplace_GetRef();
+				TeamCommanderPriority& priority = components.m_baseComponent->m_priorities.Emplace_GetRef();
 				priority.m_directive = directiveToEvaluate;
-				UpdateScoutingTeamPriority(teamCommanderComponent, priority);
+				UpdateScoutingTeamPriority(components, priority);
 				continue;
 			}
 			default:
@@ -95,20 +111,23 @@ void TeamCommanderSystems_UpdatePriorities::UpdateTeamCommanderPriorities(ArgusE
 		}
 	}
 
-	teamCommanderComponent->m_priorities.Sort();
+	components.m_baseComponent->m_priorities.Sort();
 }
 
-void TeamCommanderSystems_UpdatePriorities::UpdateConstructResourceSinkTeamPriority(TeamCommanderResourceDataComponent* teamCommanderResourceDataComponent, TeamCommanderPriority& priority)
+void TeamCommanderSystems_UpdatePriorities::UpdateConstructResourceSinkTeamPriority(const TeamCommanderComponentCollection& components, TeamCommanderPriority& priority)
 {
 	ARGUS_TRACE(TeamCommanderSystems_UpdatePriorities::UpdateConstructResourceSinkTeamPriority);
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
 
-	ARGUS_RETURN_ON_NULL(teamCommanderResourceDataComponent, ArgusECSLog);
 	if (priority.m_directive != ETeamCommanderDirective::StartConstruction || priority.m_entityCategory.m_resourceType == EResourceType::Count)
 	{
 		return;
 	}
 
-	bool updated = teamCommanderResourceDataComponent->IterateSeenResourceSourcesOfType(priority.m_entityCategory.m_resourceType, [&priority](const ResourceSourceExtractionData& data)
+	bool updated = components.m_resourceDataComponent->IterateSeenResourceSourcesOfType(priority.m_entityCategory.m_resourceType, [&priority](const ResourceSourceExtractionData& data)
 	{
 		if (data.m_resourceSourceEntityId != ArgusECSConstants::k_maxEntities && data.m_resourceSinkEntityId == ArgusECSConstants::k_maxEntities)
 		{
@@ -127,17 +146,20 @@ void TeamCommanderSystems_UpdatePriorities::UpdateConstructResourceSinkTeamPrior
 	priority.m_weight = 0.0f;
 }
 
-void TeamCommanderSystems_UpdatePriorities::UpdateResourceExtractionTeamPriority(TeamCommanderResourceDataComponent* teamCommanderResourceDataComponent, TeamCommanderPriority& priority)
+void TeamCommanderSystems_UpdatePriorities::UpdateResourceExtractionTeamPriority(const TeamCommanderComponentCollection& components, TeamCommanderPriority& priority)
 {
 	ARGUS_TRACE(TeamCommanderSystems_UpdatePriorities::UpdateResourceExtractionTeamPriority);
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
 
-	ARGUS_RETURN_ON_NULL(teamCommanderResourceDataComponent, ArgusECSLog);
 	if (priority.m_directive != ETeamCommanderDirective::ExtractResources)
 	{
 		return;
 	}
 
-	bool updated = teamCommanderResourceDataComponent->IterateSeenResourceSourcesOfType(priority.m_entityCategory.m_resourceType, [&priority](const ResourceSourceExtractionData& data)
+	bool updated = components.m_resourceDataComponent->IterateSeenResourceSourcesOfType(priority.m_entityCategory.m_resourceType, [&priority](const ResourceSourceExtractionData& data)
 	{
 		if (data.m_resourceSourceEntityId != ArgusECSConstants::k_maxEntities && 
 			data.m_resourceExtractorEntityId == ArgusECSConstants::k_maxEntities &&
@@ -158,25 +180,71 @@ void TeamCommanderSystems_UpdatePriorities::UpdateResourceExtractionTeamPriority
 	priority.m_weight = 0.0f;
 }
 
-void TeamCommanderSystems_UpdatePriorities::UpdateSpawnUnitTeamPriority(TeamCommanderComponent* teamCommanderComponent, TeamCommanderResourceDataComponent* teamCommanderResourceDataComponent, TeamCommanderPriority& priority)
+void TeamCommanderSystems_UpdatePriorities::UpdateSpawnUnitTeamPriority(const TeamCommanderComponentCollection& components, TeamCommanderPriority& priority)
 {
 	ARGUS_TRACE(TeamCommanderSystems_UpdatePriorities::UpdateSpawnUnitTeamPriority);
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
 
-	ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
-	ARGUS_RETURN_ON_NULL(teamCommanderResourceDataComponent, ArgusECSLog);
 	if (priority.m_directive != ETeamCommanderDirective::SpawnUnit)
 	{
 		return;
 	}
 
-	if (priority.m_entityCategory.m_entityCategoryType == EEntityCategoryType::Carrier)
+	priority.m_weight = -0.5f;
+
+	switch (priority.m_entityCategory.m_entityCategoryType)
 	{
-		priority.m_weight = -0.5f;
-		return;
+		case EEntityCategoryType::Extractor:
+			UpdateSpawnUnitResourceExtractorTeamPriority(components, priority);
+			break;
+		case EEntityCategoryType::Combatant:
+			// TODO JAMES: Determine combatant spawning priority.
+			break;
+		default:
+			break;
 	}
 
-	float extractorNeedWeight = -0.5f;
-	teamCommanderResourceDataComponent->IterateSeenResourceSourcesOfType(priority.m_entityCategory.m_resourceType, [&extractorNeedWeight](const ResourceSourceExtractionData& data)
+	for (int32 i = 0; i < components.m_baseComponent->m_spawningEntityRecordIds.Num(); ++i)
+	{
+		const UArgusActorRecord* argusActorRecord = ArgusStaticData::GetRecord<UArgusActorRecord>(components.m_baseComponent->m_spawningEntityRecordIds[i]);
+		if (!argusActorRecord)
+		{
+			continue;
+		}
+
+		const UArgusEntityTemplate* entityTemplate = argusActorRecord->m_entityTemplate.LoadAndStorePtr();
+		if (!entityTemplate)
+		{
+			continue;
+		}
+
+		if (entityTemplate->DoesTemplateSatisfyEntityCategory(priority.m_entityCategory))
+		{
+			priority.m_weight -= 1.0f;
+		}
+	}
+
+	for (int32 i = 0; i < components.m_baseComponent->m_idleEntityIdsForTeam.Num(); ++i)
+	{
+		ArgusEntity entity = ArgusEntity::RetrieveEntity(components.m_baseComponent->m_idleEntityIdsForTeam[i]);
+		if (!entity)
+		{
+			continue;
+		}
+
+		if (entity.DoesEntitySatisfyEntityCategory(priority.m_entityCategory))
+		{
+			priority.m_weight -= 1.0f;
+		}
+	}
+}
+
+void TeamCommanderSystems_UpdatePriorities::UpdateSpawnUnitResourceExtractorTeamPriority(const TeamCommanderComponentCollection& components, TeamCommanderPriority& priority)
+{
+	components.m_resourceDataComponent->IterateSeenResourceSourcesOfType(priority.m_entityCategory.m_resourceType, [&priority](const ResourceSourceExtractionData& data)
 	{
 		if (data.m_resourceSourceEntityId == ArgusECSConstants::k_maxEntities || data.m_resourceExtractorEntityId != ArgusECSConstants::k_maxEntities)
 		{
@@ -192,52 +260,19 @@ void TeamCommanderSystems_UpdatePriorities::UpdateSpawnUnitTeamPriority(TeamComm
 			}
 		}
 
-		extractorNeedWeight += 1.0f;
+		priority.m_weight += 1.0f;
 		return false;
 	});
-
-	for (int32 i = 0; i < teamCommanderComponent->m_spawningEntityRecordIds.Num(); ++i)
-	{
-		const UArgusActorRecord* argusActorRecord = ArgusStaticData::GetRecord<UArgusActorRecord>(teamCommanderComponent->m_spawningEntityRecordIds[i]);
-		if (!argusActorRecord)
-		{
-			continue;
-		}
-
-		const UArgusEntityTemplate* entityTemplate = argusActorRecord->m_entityTemplate.LoadAndStorePtr();
-		if (!entityTemplate)
-		{
-			continue;
-		}
-
-		if (entityTemplate->DoesTemplateSatisfyEntityCategory(priority.m_entityCategory))
-		{
-			extractorNeedWeight -= 1.0f;
-		}
-	}
-
-	for (int32 i = 0; i < teamCommanderComponent->m_idleEntityIdsForTeam.Num(); ++i)
-	{
-		ArgusEntity entity = ArgusEntity::RetrieveEntity(teamCommanderComponent->m_idleEntityIdsForTeam[i]);
-		if (!entity)
-		{
-			continue;
-		}
-
-		if (entity.DoesEntitySatisfyEntityCategory(priority.m_entityCategory))
-		{
-			extractorNeedWeight -= 1.0f;
-		}
-	}
-
-	priority.m_weight = extractorNeedWeight;
 }
 
-void TeamCommanderSystems_UpdatePriorities::UpdateScoutingTeamPriority(TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority)
+void TeamCommanderSystems_UpdatePriorities::UpdateScoutingTeamPriority(const TeamCommanderComponentCollection& components, TeamCommanderPriority& priority)
 {
 	ARGUS_TRACE(TeamCommanderSystems_UpdatePriorities::UpdateScoutingTeamPriority);
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
 
-	ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
 	if (priority.m_directive != ETeamCommanderDirective::Scout)
 	{
 		return;
@@ -248,17 +283,20 @@ void TeamCommanderSystems_UpdatePriorities::UpdateScoutingTeamPriority(TeamComma
 	priority.m_weight = 1.0f;
 }
 
-void TeamCommanderSystems_UpdatePriorities::UpdateContinueConstructionPriority(TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority)
+void TeamCommanderSystems_UpdatePriorities::UpdateContinueConstructionPriority(const TeamCommanderComponentCollection& components, TeamCommanderPriority& priority)
 {
 	ARGUS_TRACE(TeamCommanderSystems_UpdatePriorities::UpdateContinueConstructionPriority);
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
 
-	ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
 	if (priority.m_directive != ETeamCommanderDirective::ContinueConstruction)
 	{
 		return;
 	}
 
-	for (const TPair<uint16, ConstructionData>& pair : teamCommanderComponent->m_inProgressConstructionData)
+	for (const TPair<uint16, ConstructionData>& pair : components.m_baseComponent->m_inProgressConstructionData)
 	{
 		if (pair.Value.m_beingConstructedEntityId != ArgusECSConstants::k_maxEntities && pair.Value.m_constructingOtherEntityId == ArgusECSConstants::k_maxEntities)
 		{

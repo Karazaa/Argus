@@ -2,25 +2,9 @@
 
 #pragma once
 
-#include "ComponentDependencies/Timer.h"
-#include "CoreMinimal.h"
 #include "ArgusMacros.h"
-#include "CombatComponent.generated.h"
-
-UENUM(BlueprintType)
-enum class EAttackType : uint8
-{
-	Melee,
-	Ranged
-};
-
-UENUM(BlueprintType)
-enum class ERangedAttackCapability : uint8
-{
-	GroundedOnly,
-	FlyingOnly,
-	GroundedAndFlying
-};
+#include "ComponentDependencies/CombatInfo.h"
+#include "ComponentDependencies/Timer.h"
 
 struct CombatComponent
 {

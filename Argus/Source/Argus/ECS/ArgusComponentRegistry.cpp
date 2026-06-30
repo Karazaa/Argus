@@ -134,6 +134,9 @@ ArgusMap<uint16, ReticleComponent*, ArgusSetAllocator<1> > ArgusComponentRegistr
 #pragma region SpatialPartitioningComponent
 ArgusMap<uint16, SpatialPartitioningComponent*, ArgusSetAllocator<1> > ArgusComponentRegistry::s_SpatialPartitioningComponents;
 #pragma endregion
+#pragma region TeamCommanderCombatDataComponent
+ArgusMap<uint16, TeamCommanderCombatDataComponent*, ArgusSetAllocator<1> > ArgusComponentRegistry::s_TeamCommanderCombatDataComponents;
+#pragma endregion
 #pragma region TeamCommanderComponent
 ArgusMap<uint16, TeamCommanderComponent*, ArgusSetAllocator<1> > ArgusComponentRegistry::s_TeamCommanderComponents;
 #pragma endregion
@@ -492,6 +495,10 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 	if (s_SpatialPartitioningComponents.Contains(entityId))
 	{
 		s_SpatialPartitioningComponents.Remove(entityId);
+	}
+	if (s_TeamCommanderCombatDataComponents.Contains(entityId))
+	{
+		s_TeamCommanderCombatDataComponents.Remove(entityId);
 	}
 	if (s_TeamCommanderComponents.Contains(entityId))
 	{
@@ -989,6 +996,18 @@ void ArgusComponentRegistry::FlushAllComponents()
 	);
  
 	s_SpatialPartitioningComponents.RemoveAll([](const uint16& entityId, SpatialPartitioningComponent*& component)
+		{
+			if (ArgusEntity::IsReservedEntityId(entityId) && component)
+			{
+				component->Reset();
+				return false;
+			}
+
+			return true;
+		}
+	);
+ 
+	s_TeamCommanderCombatDataComponents.RemoveAll([](const uint16& entityId, TeamCommanderCombatDataComponent*& component)
 		{
 			if (ArgusEntity::IsReservedEntityId(entityId) && component)
 			{
@@ -1597,6 +1616,33 @@ void ArgusComponentRegistry::Serialize(FArchive& archive)
 			}
 		}
 	}
+	numComponents = s_TeamCommanderCombatDataComponents.Num();
+	archive << numComponents;
+	if (archive.IsLoading())
+	{
+		for (int32 i = 0; i < numComponents; ++i)
+		{
+			uint16 entityId = 0;
+			archive << entityId;
+
+			TeamCommanderCombatDataComponent* component = GetOrAddComponent<TeamCommanderCombatDataComponent>(entityId);
+			if (component)
+			{
+				component->Serialize(archive);
+			}
+		}
+	}
+	else
+	{
+		for (TPair<uint16, TeamCommanderCombatDataComponent*>& pair : s_TeamCommanderCombatDataComponents)
+		{
+			archive << pair.Key;
+			if (pair.Value)
+			{
+				pair.Value->Serialize(archive);
+			}
+		}
+	}
 	numComponents = s_TeamCommanderComponents.Num();
 	archive << numComponents;
 	if (archive.IsLoading())
@@ -1818,6 +1864,10 @@ void ArgusComponentRegistry::DrawComponentsDebug(uint16 entityId)
 	if (const SpatialPartitioningComponent* SpatialPartitioningComponentPtr = GetComponent<SpatialPartitioningComponent>(entityId))
 	{
 		SpatialPartitioningComponentPtr->DrawComponentDebug();
+	}
+	if (const TeamCommanderCombatDataComponent* TeamCommanderCombatDataComponentPtr = GetComponent<TeamCommanderCombatDataComponent>(entityId))
+	{
+		TeamCommanderCombatDataComponentPtr->DrawComponentDebug();
 	}
 	if (const TeamCommanderComponent* TeamCommanderComponentPtr = GetComponent<TeamCommanderComponent>(entityId))
 	{

@@ -40,6 +40,7 @@
 #include "AssetFactories/ComponentDataFactories/InputInterfaceComponentDataFactory.h"
 #include "AssetFactories/ComponentDataFactories/ReticleComponentDataFactory.h"
 #include "AssetFactories/ComponentDataFactories/SpatialPartitioningComponentDataFactory.h"
+#include "AssetFactories/ComponentDataFactories/TeamCommanderCombatDataComponentDataFactory.h"
 #include "AssetFactories/ComponentDataFactories/TeamCommanderComponentDataFactory.h"
 #include "AssetFactories/ComponentDataFactories/TeamCommanderResourceDataComponentDataFactory.h"
 #include "AssetFactories/ComponentDataFactories/WorldReferenceComponentDataFactory.h"
@@ -127,6 +128,8 @@ void ArgusEditorModule::RegisterAssetActions(IAssetTools& assetTools) const
 	assetTools.RegisterAssetTypeActions(actionsReticleComponentData);
 	TSharedRef<IAssetTypeActions> actionsSpatialPartitioningComponentData = MakeShareable(new FAssetTypeActions_SpatialPartitioningComponentData);
 	assetTools.RegisterAssetTypeActions(actionsSpatialPartitioningComponentData);
+	TSharedRef<IAssetTypeActions> actionsTeamCommanderCombatDataComponentData = MakeShareable(new FAssetTypeActions_TeamCommanderCombatDataComponentData);
+	assetTools.RegisterAssetTypeActions(actionsTeamCommanderCombatDataComponentData);
 	TSharedRef<IAssetTypeActions> actionsTeamCommanderComponentData = MakeShareable(new FAssetTypeActions_TeamCommanderComponentData);
 	assetTools.RegisterAssetTypeActions(actionsTeamCommanderComponentData);
 	TSharedRef<IAssetTypeActions> actionsTeamCommanderResourceDataComponentData = MakeShareable(new FAssetTypeActions_TeamCommanderResourceDataComponentData);

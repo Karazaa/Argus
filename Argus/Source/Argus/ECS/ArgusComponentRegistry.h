@@ -47,6 +47,7 @@
 #include "DynamicAllocComponentDefinitions\InputInterfaceComponent.h"
 #include "DynamicAllocComponentDefinitions\ReticleComponent.h"
 #include "DynamicAllocComponentDefinitions\SpatialPartitioningComponent.h"
+#include "DynamicAllocComponentDefinitions\TeamCommanderCombatDataComponent.h"
 #include "DynamicAllocComponentDefinitions\TeamCommanderComponent.h"
 #include "DynamicAllocComponentDefinitions\TeamCommanderResourceDataComponent.h"
 #include "DynamicAllocComponentDefinitions\WorldReferenceComponent.h"
@@ -84,7 +85,7 @@ public:
 	static void DrawComponentsDebug(uint16 entityId);
 #endif //!UE_BUILD_SHIPPING
 
-	static constexpr uint32 k_numComponentTypes = 37;
+	static constexpr uint32 k_numComponentTypes = 38;
 
 	// Begin component specific template specifiers.
 	
@@ -3003,6 +3004,66 @@ public:
 		}
 
 		return s_SpatialPartitioningComponents[entityId];
+	}
+#pragma endregion
+#pragma region TeamCommanderCombatDataComponent
+private:
+	static ArgusMap<uint16, TeamCommanderCombatDataComponent*, ArgusSetAllocator<1> > s_TeamCommanderCombatDataComponents;
+public:
+	template<>
+	inline TeamCommanderCombatDataComponent* GetComponent<TeamCommanderCombatDataComponent>(uint16 entityId)
+	{
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(TeamCommanderCombatDataComponent));
+			return nullptr;
+		}
+
+		if (!s_TeamCommanderCombatDataComponents.Contains(entityId))
+		{
+			return nullptr;
+		}
+
+		return s_TeamCommanderCombatDataComponents[entityId];
+	}
+
+	template<>
+	inline TeamCommanderCombatDataComponent* AddComponent<TeamCommanderCombatDataComponent>(uint16 entityId)
+	{
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(TeamCommanderCombatDataComponent));
+			return nullptr;
+		}
+
+		if (UNLIKELY(s_TeamCommanderCombatDataComponents.Contains(entityId)))
+		{
+			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TeamCommanderCombatDataComponent), entityId);
+			return s_TeamCommanderCombatDataComponents[entityId];
+		}
+
+		TeamCommanderCombatDataComponent* output = new (ArgusMemorySource::Allocate<TeamCommanderCombatDataComponent>()) TeamCommanderCombatDataComponent();
+		s_TeamCommanderCombatDataComponents.Emplace(entityId, output);
+		return output;
+	}
+
+	template<>
+	inline TeamCommanderCombatDataComponent* GetOrAddComponent<TeamCommanderCombatDataComponent>(uint16 entityId)
+	{
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(TeamCommanderCombatDataComponent));
+			return nullptr;
+		}
+
+		if (!s_TeamCommanderCombatDataComponents.Contains(entityId))
+		{
+			TeamCommanderCombatDataComponent* output = new (ArgusMemorySource::Allocate<TeamCommanderCombatDataComponent>()) TeamCommanderCombatDataComponent();
+			s_TeamCommanderCombatDataComponents.Emplace(entityId, output);
+			return output;
+		}
+
+		return s_TeamCommanderCombatDataComponents[entityId];
 	}
 #pragma endregion
 #pragma region TeamCommanderComponent

@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "SystemArgumentDefinitions/TeamCommanderComponentCollection.h"
 #include "SystemArgumentDefinitions/TeamCommanderSystemsArgs.h"
 
 class TeamCommanderSystems_UpdatePriorities
@@ -11,9 +12,10 @@ public:
 
 private:
 	static void UpdateTeamCommanderPriorities(ArgusEntity teamCommmanderEntity);
-	static void UpdateConstructResourceSinkTeamPriority(TeamCommanderResourceDataComponent* teamCommanderResourceDataComponent, TeamCommanderPriority& priority);
-	static void UpdateResourceExtractionTeamPriority(TeamCommanderResourceDataComponent* teamCommanderResourceDataComponent, TeamCommanderPriority& priority);
-	static void UpdateSpawnUnitTeamPriority(TeamCommanderComponent* teamCommanderComponent, TeamCommanderResourceDataComponent* teamCommanderResourceDataComponent, TeamCommanderPriority& priority);
-	static void UpdateScoutingTeamPriority(TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority);
-	static void UpdateContinueConstructionPriority(TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority);
+	static void UpdateConstructResourceSinkTeamPriority(const TeamCommanderComponentCollection& components, TeamCommanderPriority& priority);
+	static void UpdateResourceExtractionTeamPriority(const TeamCommanderComponentCollection& components, TeamCommanderPriority& priority);
+	static void UpdateSpawnUnitTeamPriority(const TeamCommanderComponentCollection& components, TeamCommanderPriority& priority);
+	static void UpdateSpawnUnitResourceExtractorTeamPriority(const TeamCommanderComponentCollection& components, TeamCommanderPriority& priority);
+	static void UpdateScoutingTeamPriority(const TeamCommanderComponentCollection& components, TeamCommanderPriority& priority);
+	static void UpdateContinueConstructionPriority(const TeamCommanderComponentCollection& components, TeamCommanderPriority& priority);
 };

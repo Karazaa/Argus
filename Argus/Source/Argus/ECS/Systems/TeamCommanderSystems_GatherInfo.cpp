@@ -107,8 +107,6 @@ void TeamCommanderSystems_GatherInfo::UpdateTeamCommanderPerEntity(const TeamCom
 		return;
 	}
 
-
-
 	UpdateTeamCommanderPerEntityOnTeam(components, ArgusEntity::GetTeamEntity(components.m_identityComponent->m_team));
 }
 
