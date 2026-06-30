@@ -5,6 +5,7 @@
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
 #include "Systems/AbilitySystems.h"
+#include "Systems/ConstructionSystems.h"
 #include "Systems/ResourceSystems.h"
 #include "Systems/SpatialPartitioningSystems.h"
 #include "Systems/TeamCommanderSystems.h"
@@ -130,6 +131,31 @@ bool TeamCommanderSystems_AssignEntities::AssignEntityToStartConstructionOfResou
 
 bool TeamCommanderSystems_AssignEntities::AssignEntityToContinueConstructionIfAble(ArgusEntity entity, TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority)
 {
+	TaskComponent* taskComponent = entity.GetComponent<TaskComponent>();
+	TargetingComponent* targetingComponent = entity.GetComponent<TargetingComponent>();
+	if (!taskComponent || !targetingComponent)
+	{
+		return false;
+	}
+
+	for (TPair<uint16, ConstructionData>& pair : teamCommanderComponent->m_inProgressConstructionData)
+	{
+		if (pair.Value.m_beingConstructedEntityId != ArgusECSConstants::k_maxEntities && pair.Value.m_constructingOtherEntityId == ArgusECSConstants::k_maxEntities)
+		{
+			if (ConstructionSystems::CanEntityConstructOtherEntity(entity, ArgusEntity::RetrieveEntity(pair.Value.m_beingConstructedEntityId)))
+			{
+				pair.Value.m_constructingOtherEntityId = entity.GetId();
+				priority.m_weight -= 1.0f;
+
+				targetingComponent->SetEntityTarget(pair.Value.m_beingConstructedEntityId);
+				taskComponent->m_movementState = EMovementState::ProcessMoveToEntityCommand;
+				taskComponent->m_directiveFromTeamCommander = priority.m_directive;
+
+				return true;
+			}
+		}
+	}
+
 	return false;
 }
 
