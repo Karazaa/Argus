@@ -21,8 +21,10 @@ void TeamCommanderSystems_GatherInfo::ClearUpdatesPerCommanderEntity(ArgusEntity
 
 	TeamCommanderComponent* teamCommanderComponent = teamEntity.GetComponent<TeamCommanderComponent>();
 	ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
+	TeamCommanderResourceDataComponent* teamCommanderResourceDataComponent = teamEntity.GetComponent<TeamCommanderResourceDataComponent>();
+	ARGUS_RETURN_ON_NULL(teamCommanderResourceDataComponent, ArgusECSLog);
 
-	teamCommanderComponent->IterateAllSeenResourceSources([](ResourceSourceExtractionData& data)
+	teamCommanderResourceDataComponent->IterateAllSeenResourceSources([](ResourceSourceExtractionData& data)
 	{
 		ClearResourceSinkFromExtractionDataIfNeeded(ArgusEntity::RetrieveEntity(data.m_resourceSinkEntityId), data);
 		ClearResourceExtractorFromExtractionDataIfNeeded(ArgusEntity::RetrieveEntity(data.m_resourceExtractorEntityId), data);
@@ -105,17 +107,19 @@ void TeamCommanderSystems_GatherInfo::UpdateTeamCommanderPerEntity(const TeamCom
 		return;
 	}
 
-	TeamCommanderComponent* teamCommanderComponent = ArgusEntity::GetTeamEntity(components.m_identityComponent->m_team).GetComponent<TeamCommanderComponent>();
-	ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
 
-	UpdateTeamCommanderPerEntityOnTeam(components, teamCommanderComponent);
+
+	UpdateTeamCommanderPerEntityOnTeam(components, ArgusEntity::GetTeamEntity(components.m_identityComponent->m_team));
 }
 
-void TeamCommanderSystems_GatherInfo::UpdateTeamCommanderPerEntityOnTeam(const TeamCommanderSystemsArgs& components, TeamCommanderComponent* teamCommanderComponent)
+void TeamCommanderSystems_GatherInfo::UpdateTeamCommanderPerEntityOnTeam(const TeamCommanderSystemsArgs& components, ArgusEntity teamCommanderEntity)
 {
 	ARGUS_TRACE(TeamCommanderSystems_GatherInfo::UpdateTeamCommanderPerEntityOnTeam);
 
+	TeamCommanderComponent* teamCommanderComponent = teamCommanderEntity.GetComponent<TeamCommanderComponent>();
 	ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
+	TeamCommanderResourceDataComponent* teamCommanderResourceDataComponent = teamCommanderEntity.GetComponent<TeamCommanderResourceDataComponent>();
+	ARGUS_RETURN_ON_NULL(teamCommanderResourceDataComponent, ArgusECSLog);
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return;
@@ -126,7 +130,7 @@ void TeamCommanderSystems_GatherInfo::UpdateTeamCommanderPerEntityOnTeam(const T
 		teamCommanderComponent->m_idleEntityIdsForTeam.Add(components.m_entity.GetId());
 	}
 
-	UpdateResourceExtractionDataPerSink(components, teamCommanderComponent);
+	UpdateResourceExtractionDataPerSink(components, teamCommanderResourceDataComponent);
 	UpdateRevealedAreasPerEntityOnTeam(components, teamCommanderComponent);
 	UpdateSpawningUnitTypesPerSpawner(components, teamCommanderComponent);
 	UpdateConstructionDataPerConstructee(components, teamCommanderComponent);
@@ -138,6 +142,9 @@ void TeamCommanderSystems_GatherInfo::UpdateTeamCommanderPerNeutralEntity(const 
 
 	TeamCommanderComponent* teamCommanderComponent = teamCommanderEntity.GetComponent<TeamCommanderComponent>();
 	ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
+	TeamCommanderResourceDataComponent* teamCommanderResourceDataComponent = teamCommanderEntity.GetComponent<TeamCommanderResourceDataComponent>();
+	ARGUS_RETURN_ON_NULL(teamCommanderResourceDataComponent, ArgusECSLog);
+
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return;
@@ -152,18 +159,18 @@ void TeamCommanderSystems_GatherInfo::UpdateTeamCommanderPerNeutralEntity(const 
 				EResourceType type = static_cast<EResourceType>(i);
 				if (components.m_resourceComponent->m_currentResources.HasResourceType(type))
 				{
-					teamCommanderComponent->AddSeenResourceSourceIfNotPresent(type, components.m_entity.GetId());
+					teamCommanderResourceDataComponent->AddSeenResourceSourceIfNotPresent(type, components.m_entity.GetId());
 				}
 			}
 		}
 	}
 }
 
-void TeamCommanderSystems_GatherInfo::UpdateResourceExtractionDataPerSink(const TeamCommanderSystemsArgs& components, TeamCommanderComponent* teamCommanderComponent)
+void TeamCommanderSystems_GatherInfo::UpdateResourceExtractionDataPerSink(const TeamCommanderSystemsArgs& components, TeamCommanderResourceDataComponent* teamCommanderResourceDataComponent)
 {
 	ARGUS_TRACE(TeamCommanderSystems_GatherInfo::UpdateResourceExtractionDataPerSink);
 
-	ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
+	ARGUS_RETURN_ON_NULL(teamCommanderResourceDataComponent, ArgusECSLog);
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return;
@@ -182,7 +189,7 @@ void TeamCommanderSystems_GatherInfo::UpdateResourceExtractionDataPerSink(const 
 			continue;
 		}
 
-		teamCommanderComponent->IterateSeenResourceSourcesOfType(type, [&components](ResourceSourceExtractionData& data)
+		teamCommanderResourceDataComponent->IterateSeenResourceSourcesOfType(type, [&components](ResourceSourceExtractionData& data)
 		{
 			if (data.m_resourceSourceEntityId == ArgusECSConstants::k_maxEntities)
 			{

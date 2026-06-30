@@ -15,9 +15,9 @@ private:
 	static void ClearResourceExtractorFromExtractionDataIfNeeded(ArgusEntity existingResourceExtractorEntity, ResourceSourceExtractionData& data);
 
 	static void UpdateTeamCommanderPerEntity(const TeamCommanderSystemsArgs& components);
-	static void UpdateTeamCommanderPerEntityOnTeam(const TeamCommanderSystemsArgs& components, TeamCommanderComponent* teamCommanderComponent);
+	static void UpdateTeamCommanderPerEntityOnTeam(const TeamCommanderSystemsArgs& components, ArgusEntity teamCommanderEntity);
 	static void UpdateTeamCommanderPerNeutralEntity(const TeamCommanderSystemsArgs& components, ArgusEntity teamCommanderEntity);
-	static void UpdateResourceExtractionDataPerSink(const TeamCommanderSystemsArgs& components, TeamCommanderComponent* teamCommanderComponent);
+	static void UpdateResourceExtractionDataPerSink(const TeamCommanderSystemsArgs& components, TeamCommanderResourceDataComponent* teamCommanderResourceDataComponent);
 	static void UpdateRevealedAreasPerEntityOnTeam(const TeamCommanderSystemsArgs& components, TeamCommanderComponent* teamCommanderComponent);
 	static void UpdateSpawningUnitTypesPerSpawner(const TeamCommanderSystemsArgs& components, TeamCommanderComponent* teamCommanderComponent);
 	static void UpdateConstructionDataPerConstructee(const TeamCommanderSystemsArgs& components, TeamCommanderComponent* teamCommanderComponent);

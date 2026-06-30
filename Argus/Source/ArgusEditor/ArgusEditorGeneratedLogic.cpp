@@ -41,6 +41,7 @@
 #include "AssetFactories/ComponentDataFactories/ReticleComponentDataFactory.h"
 #include "AssetFactories/ComponentDataFactories/SpatialPartitioningComponentDataFactory.h"
 #include "AssetFactories/ComponentDataFactories/TeamCommanderComponentDataFactory.h"
+#include "AssetFactories/ComponentDataFactories/TeamCommanderResourceDataComponentDataFactory.h"
 #include "AssetFactories/ComponentDataFactories/WorldReferenceComponentDataFactory.h"
 
 // Static Record Includes
@@ -128,6 +129,8 @@ void ArgusEditorModule::RegisterAssetActions(IAssetTools& assetTools) const
 	assetTools.RegisterAssetTypeActions(actionsSpatialPartitioningComponentData);
 	TSharedRef<IAssetTypeActions> actionsTeamCommanderComponentData = MakeShareable(new FAssetTypeActions_TeamCommanderComponentData);
 	assetTools.RegisterAssetTypeActions(actionsTeamCommanderComponentData);
+	TSharedRef<IAssetTypeActions> actionsTeamCommanderResourceDataComponentData = MakeShareable(new FAssetTypeActions_TeamCommanderResourceDataComponentData);
+	assetTools.RegisterAssetTypeActions(actionsTeamCommanderResourceDataComponentData);
 	TSharedRef<IAssetTypeActions> actionsWorldReferenceComponentData = MakeShareable(new FAssetTypeActions_WorldReferenceComponentData);
 	assetTools.RegisterAssetTypeActions(actionsWorldReferenceComponentData);
 

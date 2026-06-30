@@ -11,9 +11,9 @@ public:
 
 private:
 	static void UpdateTeamCommanderPriorities(ArgusEntity teamCommmanderEntity);
-	static void UpdateConstructResourceSinkTeamPriority(TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority);
-	static void UpdateResourceExtractionTeamPriority(TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority);
-	static void UpdateSpawnUnitTeamPriority(TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority);
+	static void UpdateConstructResourceSinkTeamPriority(TeamCommanderResourceDataComponent* teamCommanderResourceDataComponent, TeamCommanderPriority& priority);
+	static void UpdateResourceExtractionTeamPriority(TeamCommanderResourceDataComponent* teamCommanderResourceDataComponent, TeamCommanderPriority& priority);
+	static void UpdateSpawnUnitTeamPriority(TeamCommanderComponent* teamCommanderComponent, TeamCommanderResourceDataComponent* teamCommanderResourceDataComponent, TeamCommanderPriority& priority);
 	static void UpdateScoutingTeamPriority(TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority);
 	static void UpdateContinueConstructionPriority(TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority);
 };

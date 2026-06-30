@@ -27,6 +27,8 @@ void TeamCommanderSystems_AssignEntities::ActUponUpdatesPerCommanderEntity(Argus
 
 	TeamCommanderComponent* teamCommanderComponent = teamEntity.GetComponent<TeamCommanderComponent>();
 	ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
+	TeamCommanderResourceDataComponent* teamCommanderResourceDataComponent = teamEntity.GetComponent<TeamCommanderResourceDataComponent>();
+	ARGUS_RETURN_ON_NULL(teamCommanderResourceDataComponent, ArgusECSLog);
 
 	// TODO JAMES: Are there any circumstances in which we want to allow the AI to control a player team?
 	if (teamCommanderComponent->m_teamToCommand == inputInterfaceComponent->m_activePlayerTeam)
@@ -36,25 +38,25 @@ void TeamCommanderSystems_AssignEntities::ActUponUpdatesPerCommanderEntity(Argus
 
 	for (int32 i = 0; i < teamCommanderComponent->m_idleEntityIdsForTeam.Num(); ++i)
 	{
-		AssignIdleEntityToWork(ArgusEntity::RetrieveEntity(teamCommanderComponent->m_idleEntityIdsForTeam[i]), teamCommanderComponent);
+		AssignIdleEntityToWork(ArgusEntity::RetrieveEntity(teamCommanderComponent->m_idleEntityIdsForTeam[i]), teamCommanderComponent, teamCommanderResourceDataComponent);
 	}
 }
 
-void TeamCommanderSystems_AssignEntities::AssignIdleEntityToWork(ArgusEntity idleEntity, TeamCommanderComponent* teamCommanderComponent)
+void TeamCommanderSystems_AssignEntities::AssignIdleEntityToWork(ArgusEntity idleEntity, TeamCommanderComponent* teamCommanderComponent, TeamCommanderResourceDataComponent* teamCommanderResourceDataComponent)
 {
 	ARGUS_TRACE(TeamCommanderSystems_AssignEntities::AssignIdleEntityToWork);
 	ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
 
 	for (int32 i = 0; i < teamCommanderComponent->m_priorities.Num(); ++i)
 	{
-		if (AssignIdleEntityToDirectiveIfAble(idleEntity, teamCommanderComponent, teamCommanderComponent->m_priorities[i]))
+		if (AssignIdleEntityToDirectiveIfAble(idleEntity, teamCommanderComponent, teamCommanderResourceDataComponent, teamCommanderComponent->m_priorities[i]))
 		{
 			return;
 		}
 	}
 }
 
-bool TeamCommanderSystems_AssignEntities::AssignIdleEntityToDirectiveIfAble(ArgusEntity idleEntity, TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority)
+bool TeamCommanderSystems_AssignEntities::AssignIdleEntityToDirectiveIfAble(ArgusEntity idleEntity, TeamCommanderComponent* teamCommanderComponent, TeamCommanderResourceDataComponent* teamCommanderResourceDataComponent, TeamCommanderPriority& priority)
 {
 	ARGUS_TRACE(TeamCommanderSystems_AssignEntities::AssignIdleEntityToDirectiveIfAble);
 
@@ -66,11 +68,11 @@ bool TeamCommanderSystems_AssignEntities::AssignIdleEntityToDirectiveIfAble(Argu
 	switch (priority.m_directive)
 	{
 		case ETeamCommanderDirective::StartConstruction:
-			return AssignEntityToStartConstructionOfResourceSinkIfAble(idleEntity, teamCommanderComponent, priority);
+			return AssignEntityToStartConstructionIfAble(idleEntity, teamCommanderComponent, teamCommanderResourceDataComponent, priority);
 		case ETeamCommanderDirective::ContinueConstruction:
 			return AssignEntityToContinueConstructionIfAble(idleEntity, teamCommanderComponent, priority);
 		case ETeamCommanderDirective::ExtractResources:
-			return AssignEntityToResourceExtractionIfAble(idleEntity, teamCommanderComponent);
+			return AssignEntityToResourceExtractionIfAble(idleEntity, teamCommanderResourceDataComponent);
 		case ETeamCommanderDirective::SpawnUnit:
 			return AssignEntityToSpawnUnitIfAble(idleEntity, teamCommanderComponent, priority);
 		case ETeamCommanderDirective::Scout:
@@ -82,12 +84,12 @@ bool TeamCommanderSystems_AssignEntities::AssignIdleEntityToDirectiveIfAble(Argu
 	return false;
 }
 
-bool TeamCommanderSystems_AssignEntities::AssignEntityToStartConstructionIfAble(ArgusEntity entity, TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority)
+bool TeamCommanderSystems_AssignEntities::AssignEntityToStartConstructionIfAble(ArgusEntity entity, TeamCommanderComponent* teamCommanderComponent, TeamCommanderResourceDataComponent* teamCommanderResourceDataComponent, TeamCommanderPriority& priority)
 {
 	switch (priority.m_entityCategory.m_entityCategoryType)
 	{
 		case EEntityCategoryType::ResourceSink:
-			return AssignEntityToStartConstructionOfResourceSinkIfAble(entity, teamCommanderComponent, priority);
+			return AssignEntityToStartConstructionOfResourceSinkIfAble(entity, teamCommanderComponent, teamCommanderResourceDataComponent, priority);
 		default:
 			break;
 	}
@@ -95,7 +97,7 @@ bool TeamCommanderSystems_AssignEntities::AssignEntityToStartConstructionIfAble(
 	return false;
 }
 
-bool TeamCommanderSystems_AssignEntities::AssignEntityToStartConstructionOfResourceSinkIfAble(ArgusEntity entity, TeamCommanderComponent* teamCommanderComponent, TeamCommanderPriority& priority)
+bool TeamCommanderSystems_AssignEntities::AssignEntityToStartConstructionOfResourceSinkIfAble(ArgusEntity entity, TeamCommanderComponent* teamCommanderComponent, TeamCommanderResourceDataComponent* teamCommanderResourceDataComponent, TeamCommanderPriority& priority)
 {
 	ARGUS_TRACE(TeamCommanderSystems_AssignEntities::AssignEntityToStartConstructionOfResourceSinkIfAble);
 	ARGUS_RETURN_ON_NULL_BOOL(teamCommanderComponent, ArgusECSLog);
@@ -116,7 +118,7 @@ bool TeamCommanderSystems_AssignEntities::AssignEntityToStartConstructionOfResou
 		return false;
 	}
 
-	if (!FindTargetLocForConstructResourceSink(entity, abilityIndexPairs, teamCommanderComponent, priority.m_entityCategory.m_resourceType))
+	if (!FindTargetLocForConstructResourceSink(entity, abilityIndexPairs, teamCommanderResourceDataComponent, priority.m_entityCategory.m_resourceType))
 	{
 		return false;
 	}
@@ -151,6 +153,7 @@ bool TeamCommanderSystems_AssignEntities::AssignEntityToContinueConstructionIfAb
 				taskComponent->m_movementState = EMovementState::ProcessMoveToEntityCommand;
 				taskComponent->m_directiveFromTeamCommander = priority.m_directive;
 
+				teamCommanderComponent->m_priorities.Sort();
 				return true;
 			}
 		}
@@ -159,10 +162,10 @@ bool TeamCommanderSystems_AssignEntities::AssignEntityToContinueConstructionIfAb
 	return false;
 }
 
-bool TeamCommanderSystems_AssignEntities::AssignEntityToResourceExtractionIfAble(ArgusEntity entity, TeamCommanderComponent* teamCommanderComponent)
+bool TeamCommanderSystems_AssignEntities::AssignEntityToResourceExtractionIfAble(ArgusEntity entity, TeamCommanderResourceDataComponent* teamCommanderResourceDataComponent)
 {
 	ARGUS_TRACE(TeamCommanderSystems_AssignEntities::AssignEntityToResourceExtractionIfAble);
-	ARGUS_RETURN_ON_NULL_BOOL(teamCommanderComponent, ArgusECSLog);
+	ARGUS_RETURN_ON_NULL_BOOL(teamCommanderResourceDataComponent, ArgusECSLog);
 
 	TaskComponent* taskComponent = entity.GetComponent<TaskComponent>();
 	TargetingComponent* targetingComponent = entity.GetComponent<TargetingComponent>();
@@ -174,7 +177,7 @@ bool TeamCommanderSystems_AssignEntities::AssignEntityToResourceExtractionIfAble
 	ArgusEntity closestEntity = ArgusEntity::k_emptyEntity;
 	float closestDistanceSquared = FLT_MAX;
 	ResourceSourceExtractionData* pointerToClosestExtractionData = nullptr;
-	teamCommanderComponent->IterateAllSeenResourceSources([entity, &closestEntity, &closestDistanceSquared, &pointerToClosestExtractionData](ResourceSourceExtractionData& data)
+	teamCommanderResourceDataComponent->IterateAllSeenResourceSources([entity, &closestEntity, &closestDistanceSquared, &pointerToClosestExtractionData](ResourceSourceExtractionData& data)
 	{
 		const bool isCurrentEntity = data.m_resourceExtractorEntityId == entity.GetId();
 		if (data.m_resourceSourceEntityId == ArgusECSConstants::k_maxEntities || (data.m_resourceExtractorEntityId != ArgusECSConstants::k_maxEntities && !isCurrentEntity))
@@ -272,9 +275,9 @@ bool TeamCommanderSystems_AssignEntities::AssignEntityToScoutingIfAble(ArgusEnti
 	return true;
 }
 
-bool TeamCommanderSystems_AssignEntities::FindTargetLocForConstructResourceSink(ArgusEntity entity, const TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& abilityIndexPairs, TeamCommanderComponent* teamCommanderComponent, EResourceType type)
+bool TeamCommanderSystems_AssignEntities::FindTargetLocForConstructResourceSink(ArgusEntity entity, const TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& abilityIndexPairs, TeamCommanderResourceDataComponent* teamCommanderResourceDataComponent, EResourceType type)
 {
-	ARGUS_RETURN_ON_NULL_BOOL(teamCommanderComponent, ArgusECSLog);
+	ARGUS_RETURN_ON_NULL_BOOL(teamCommanderResourceDataComponent, ArgusECSLog);
 
 	WorldReferenceComponent* worldReferenceComponent = ArgusEntity::GetSingletonEntity().GetComponent<WorldReferenceComponent>();
 	ARGUS_RETURN_ON_NULL_BOOL(worldReferenceComponent, ArgusECSLog);
@@ -286,11 +289,11 @@ bool TeamCommanderSystems_AssignEntities::FindTargetLocForConstructResourceSink(
 		return false;
 	}
 
-	TArray<ResourceSourceExtractionData, ArgusContainerAllocator<10u> >& sources = teamCommanderComponent->GetSeenSourceExtractionDataForResourceType(type);
+	TArray<ResourceSourceExtractionData, ArgusContainerAllocator<10u> >& sources = teamCommanderResourceDataComponent->GetSeenSourceExtractionDataForResourceType(type);
 
 	int32 pairIndex = -1;
 	int32 extractionDataIndex = -1;
-	ArgusEntity nearestResourceSource = GetNearestSeenResourceSourceToEntity(entity, abilityIndexPairs, teamCommanderComponent, type, pairIndex, extractionDataIndex);
+	ArgusEntity nearestResourceSource = GetNearestSeenResourceSourceToEntity(entity, abilityIndexPairs, teamCommanderResourceDataComponent, type, pairIndex, extractionDataIndex);
 	if (!nearestResourceSource || pairIndex < 0 || extractionDataIndex < 0 || pairIndex >= abilityIndexPairs.Num() || extractionDataIndex >= sources.Num())
 	{
 		return false;
@@ -337,9 +340,9 @@ bool TeamCommanderSystems_AssignEntities::FindTargetLocForConstructResourceSink(
 	return true;
 }
 
-ArgusEntity TeamCommanderSystems_AssignEntities::GetNearestSeenResourceSourceToEntity(ArgusEntity entity, const TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& abilityIndexPairs, TeamCommanderComponent* teamCommanderComponent, EResourceType type, int32& outPairIndex, int32& outExtractionDataIndex)
+ArgusEntity TeamCommanderSystems_AssignEntities::GetNearestSeenResourceSourceToEntity(ArgusEntity entity, const TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& abilityIndexPairs, TeamCommanderResourceDataComponent* teamCommanderResourceDataComponent, EResourceType type, int32& outPairIndex, int32& outExtractionDataIndex)
 {
-	ARGUS_RETURN_ON_NULL_VALUE(teamCommanderComponent, ArgusECSLog, ArgusEntity::k_emptyEntity);
+	ARGUS_RETURN_ON_NULL_VALUE(teamCommanderResourceDataComponent, ArgusECSLog, ArgusEntity::k_emptyEntity);
 
 	outPairIndex = 0;
 
@@ -353,7 +356,7 @@ ArgusEntity TeamCommanderSystems_AssignEntities::GetNearestSeenResourceSourceToE
 
 	float minDistanceSquared = FLT_MAX;
 
-	TArray<ResourceSourceExtractionData, ArgusContainerAllocator<10u> >& sources = teamCommanderComponent->GetSeenSourceExtractionDataForResourceType(type);
+	TArray<ResourceSourceExtractionData, ArgusContainerAllocator<10u> >& sources = teamCommanderResourceDataComponent->GetSeenSourceExtractionDataForResourceType(type);
 	for (int32 i = 0; i < sources.Num(); ++i)
 	{
 		if (sources[i].m_resourceSinkEntityId != ArgusECSConstants::k_maxEntities)

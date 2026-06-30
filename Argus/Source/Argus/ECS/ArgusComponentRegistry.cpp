@@ -137,6 +137,9 @@ ArgusMap<uint16, SpatialPartitioningComponent*, ArgusSetAllocator<1> > ArgusComp
 #pragma region TeamCommanderComponent
 ArgusMap<uint16, TeamCommanderComponent*, ArgusSetAllocator<1> > ArgusComponentRegistry::s_TeamCommanderComponents;
 #pragma endregion
+#pragma region TeamCommanderResourceDataComponent
+ArgusMap<uint16, TeamCommanderResourceDataComponent*, ArgusSetAllocator<1> > ArgusComponentRegistry::s_TeamCommanderResourceDataComponents;
+#pragma endregion
 #pragma region WorldReferenceComponent
 ArgusMap<uint16, WorldReferenceComponent*, ArgusSetAllocator<1> > ArgusComponentRegistry::s_WorldReferenceComponents;
 #pragma endregion
@@ -493,6 +496,10 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 	if (s_TeamCommanderComponents.Contains(entityId))
 	{
 		s_TeamCommanderComponents.Remove(entityId);
+	}
+	if (s_TeamCommanderResourceDataComponents.Contains(entityId))
+	{
+		s_TeamCommanderResourceDataComponents.Remove(entityId);
 	}
 	if (s_WorldReferenceComponents.Contains(entityId))
 	{
@@ -994,6 +1001,18 @@ void ArgusComponentRegistry::FlushAllComponents()
 	);
  
 	s_TeamCommanderComponents.RemoveAll([](const uint16& entityId, TeamCommanderComponent*& component)
+		{
+			if (ArgusEntity::IsReservedEntityId(entityId) && component)
+			{
+				component->Reset();
+				return false;
+			}
+
+			return true;
+		}
+	);
+ 
+	s_TeamCommanderResourceDataComponents.RemoveAll([](const uint16& entityId, TeamCommanderResourceDataComponent*& component)
 		{
 			if (ArgusEntity::IsReservedEntityId(entityId) && component)
 			{
@@ -1605,6 +1624,33 @@ void ArgusComponentRegistry::Serialize(FArchive& archive)
 			}
 		}
 	}
+	numComponents = s_TeamCommanderResourceDataComponents.Num();
+	archive << numComponents;
+	if (archive.IsLoading())
+	{
+		for (int32 i = 0; i < numComponents; ++i)
+		{
+			uint16 entityId = 0;
+			archive << entityId;
+
+			TeamCommanderResourceDataComponent* component = GetOrAddComponent<TeamCommanderResourceDataComponent>(entityId);
+			if (component)
+			{
+				component->Serialize(archive);
+			}
+		}
+	}
+	else
+	{
+		for (TPair<uint16, TeamCommanderResourceDataComponent*>& pair : s_TeamCommanderResourceDataComponents)
+		{
+			archive << pair.Key;
+			if (pair.Value)
+			{
+				pair.Value->Serialize(archive);
+			}
+		}
+	}
 	numComponents = s_WorldReferenceComponents.Num();
 	archive << numComponents;
 	if (archive.IsLoading())
@@ -1776,6 +1822,10 @@ void ArgusComponentRegistry::DrawComponentsDebug(uint16 entityId)
 	if (const TeamCommanderComponent* TeamCommanderComponentPtr = GetComponent<TeamCommanderComponent>(entityId))
 	{
 		TeamCommanderComponentPtr->DrawComponentDebug();
+	}
+	if (const TeamCommanderResourceDataComponent* TeamCommanderResourceDataComponentPtr = GetComponent<TeamCommanderResourceDataComponent>(entityId))
+	{
+		TeamCommanderResourceDataComponentPtr->DrawComponentDebug();
 	}
 	if (const WorldReferenceComponent* WorldReferenceComponentPtr = GetComponent<WorldReferenceComponent>(entityId))
 	{
