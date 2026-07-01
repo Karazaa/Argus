@@ -2,9 +2,10 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "ComponentDependencies/CombatInfo.h"
 #include "ComponentDependencies/ResourceSet.h"
+
+#include "EntityCategory.generated.h"
 
 UENUM()
 enum class EEntityCategoryType : uint8

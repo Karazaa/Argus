@@ -6,6 +6,8 @@
 #include "ComponentDependencies/ResourceSet.h"
 #include "CoreMinimal.h"
 
+#include "ResourceComponent.generated.h"
+
 class UResourceSetRecord;
 
 UENUM()

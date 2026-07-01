@@ -9,6 +9,8 @@
 #include "ComponentDependencies/Timer.h"
 #include "CoreMinimal.h"
 
+#include "InputInterfaceComponent.generated.h"
+
 UENUM()
 enum class ESelectedActorsDisplayState : uint8
 {

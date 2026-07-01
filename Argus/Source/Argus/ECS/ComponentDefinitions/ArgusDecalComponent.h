@@ -6,6 +6,8 @@
 #include "ArgusMacros.h"
 #include "ComponentDependencies/Timer.h"
 
+#include "ArgusDecalComponent.generated.h"
+
 UENUM()
 enum class EDecalType : uint8 
 {

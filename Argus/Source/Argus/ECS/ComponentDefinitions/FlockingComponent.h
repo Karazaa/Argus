@@ -6,6 +6,8 @@
 #include "ArgusMacros.h"
 #include "CoreMinimal.h"
 
+#include "FlockingComponent.generated.h"
+
 UENUM()
 enum class EFlockingState : uint8
 {

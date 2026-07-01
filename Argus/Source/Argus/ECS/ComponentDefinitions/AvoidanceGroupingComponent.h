@@ -7,6 +7,8 @@
 #include "ArgusECSConstants.h"
 #include "ArgusMacros.h"
 
+#include "AvoidanceGroupingComponent.generated.h"
+
 UENUM()
 enum class EAvoidancePriority : uint8
 {

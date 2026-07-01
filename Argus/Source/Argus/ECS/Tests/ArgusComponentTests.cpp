@@ -526,7 +526,7 @@ bool ArgusComponentNavigationComponentResetQueuedWaypointsTest::RunTest(const FS
 #pragma region Test size of queued waypoints
 	TestTrue
 	(
-		FString::Printf(TEXT("[%s] Testing that %s is empty after being reset"), ARGUS_FUNCNAME, ARGUS_NAMEOF(navigationComponent->m_queuedWaypoints), 0),
+		FString::Printf(TEXT("[%s] Testing that %s is empty after being reset"), ARGUS_FUNCNAME, ARGUS_NAMEOF(navigationComponent->m_queuedWaypoints)),
 		navigationComponent->m_queuedWaypoints.IsEmpty()
 	);
 #pragma endregion
