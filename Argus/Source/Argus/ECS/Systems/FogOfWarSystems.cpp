@@ -901,7 +901,7 @@ void FogOfWarSystems::UpdateTexture()
 				int32 currentFirstMip = fogOfWarComponent->m_fogOfWarTexture->FirstResourceMemMip;
 				if (fogOfWarComponent->m_textureRegionsUpdateData.m_textureRHI && fogOfWarComponent->m_textureRegionsUpdateData.m_mipIndex >= currentFirstMip)
 				{
-					RHIUpdateTexture2D(
+					RHICmdList.UpdateTexture2D(
 						fogOfWarComponent->m_textureRegionsUpdateData.m_textureRHI,
 						fogOfWarComponent->m_textureRegionsUpdateData.m_mipIndex - currentFirstMip,
 						fogOfWarComponent->m_textureRegionsUpdateData.m_regions[regionIndex],
@@ -938,7 +938,7 @@ void FogOfWarSystems::UpdateGaussianWeightsTexture()
 
 			uint32 srcPitch = fogOfWarComponent->m_gaussianDimension * sizeof(float);
 
-			RHIUpdateTexture2D(
+			RHICmdList.UpdateTexture2D(
 				reinterpret_cast<FTexture2DResource*>(fogOfWarComponent->m_gaussianWeightsTexture->GetResource())->GetTexture2DRHI(),
 				0,
 				region,

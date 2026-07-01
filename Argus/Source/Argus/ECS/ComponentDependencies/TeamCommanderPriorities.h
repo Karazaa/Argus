@@ -2,8 +2,9 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "ComponentDependencies/EntityCategory.h"
+
+#include "TeamCommanderPriorities.generated.h"
 
 class FArchive;
 

@@ -65,8 +65,8 @@ static dtStatus getPortalPoints(const dtNavMesh* nav, dtPolyRef from, const dtPo
 			if (testLink.ref == to)
 			{
 				const int v = testLink.edge;
-				dtVcopy(left, &fromTile->verts[fromPoly->verts[v] * 3]);
-				dtVcopy(right, &fromTile->verts[fromPoly->verts[v] * 3]);
+				fromTile->verts[fromPoly->verts[v]].toWorld(fromTile->header->bmin, left); //@UE
+				fromTile->verts[fromPoly->verts[v]].toWorld(fromTile->header->bmin, right); //@UE
 				return DT_SUCCESS;
 			}
 		}
@@ -86,8 +86,8 @@ static dtStatus getPortalPoints(const dtNavMesh* nav, dtPolyRef from, const dtPo
 			if (testLink.ref == to)
 			{
 				const int v = testLink.edge * 2;
-				dtVcopy(left, &fromTile->verts[fromPoly->verts[v + 0] * 3]);
-				dtVcopy(right, &fromTile->verts[fromPoly->verts[v + 1] * 3]);
+				fromTile->verts[fromPoly->verts[v + 0]].toWorld(fromTile->header->bmin, left); //@UE
+				fromTile->verts[fromPoly->verts[v + 1]].toWorld(fromTile->header->bmin, right); //@UE
 				return DT_SUCCESS;
 			}
 		}
@@ -108,8 +108,8 @@ static dtStatus getPortalPoints(const dtNavMesh* nav, dtPolyRef from, const dtPo
 			if (testLink.ref == from)
 			{
 				const int v = testLink.edge;
-				dtVcopy(left, &toTile->verts[toPoly->verts[v] * 3]);
-				dtVcopy(right, &toTile->verts[toPoly->verts[v] * 3]);
+				toTile->verts[toPoly->verts[v]].toWorld(toTile->header->bmin, left); //@UE
+				toTile->verts[toPoly->verts[v]].toWorld(toTile->header->bmin, right); //@UE
 				return DT_SUCCESS;
 			}
 		}
@@ -128,8 +128,8 @@ static dtStatus getPortalPoints(const dtNavMesh* nav, dtPolyRef from, const dtPo
 			if (testLink.ref == from)
 			{
 				const int v = testLink.edge * 2;
-				dtVcopy(left, &toTile->verts[toPoly->verts[v + 0] * 3]);
-				dtVcopy(right, &toTile->verts[toPoly->verts[v + 1] * 3]);
+				toTile->verts[toPoly->verts[v + 0]].toWorld(toTile->header->bmin, left); //@UE
+				toTile->verts[toPoly->verts[v + 1]].toWorld(toTile->header->bmin, right); //@UE
 				return DT_SUCCESS;
 			}
 		}
@@ -141,14 +141,17 @@ static dtStatus getPortalPoints(const dtNavMesh* nav, dtPolyRef from, const dtPo
 	// Find portal vertices.
 	const int v0 = fromPoly->verts[link->edge];
 	const int v1 = fromPoly->verts[(link->edge + 1) % (int)fromPoly->vertCount];
-	dtVcopy(left, &fromTile->verts[v0 * 3]);
-	dtVcopy(right, &fromTile->verts[v1 * 3]);
+	dtReal v0pos[3], v1pos[3]; //@UE
+	fromTile->verts[v0].toWorld(fromTile->header->bmin, v0pos); //@UE
+	fromTile->verts[v1].toWorld(fromTile->header->bmin, v1pos); //@UE
+	dtVcopy(left, v0pos); //@UE
+	dtVcopy(right, v1pos); //@UE
 
 	// If the link is at tile boundary, dtClamp the vertices to
 	// the link width.
-//@UE BEGIN
+	//@UE BEGIN
 	if ((link->side & DT_CONNECTION_INTERNAL) == 0)
-		//@UE END
+	//@UE END
 	{
 		// Unpack portal limits.
 		if (link->bmin != 0 || link->bmax != 255)
@@ -156,8 +159,8 @@ static dtStatus getPortalPoints(const dtNavMesh* nav, dtPolyRef from, const dtPo
 			const dtReal s = dtReal(1.) / 255.0f;
 			const dtReal tmin = link->bmin * s;
 			const dtReal tmax = link->bmax * s;
-			dtVlerp(left, &fromTile->verts[v0 * 3], &fromTile->verts[v1 * 3], tmin);
-			dtVlerp(right, &fromTile->verts[v0 * 3], &fromTile->verts[v1 * 3], tmax);
+			dtVlerp(left, v0pos, v1pos, tmin); //@UE
+			dtVlerp(right, v0pos, v1pos, tmax); //@UE
 		}
 	}
 
@@ -178,8 +181,30 @@ static void storeWallSegment(const dtNavMesh* nav, const dtMeshTile* tile, const
 		return;
 	}
 
-	const dtReal* va = &tile->verts[poly->verts[edge] * 3];
-	const dtReal* vb = &tile->verts[poly->verts[(edge + 1) % poly->vertCount] * 3];
+	if (!ensureMsgf(edge < DT_VERTS_PER_POLYGON, TEXT("Invalid edge index %i"), edge))
+	{
+		return;
+	}
+
+	const int tempEdgeIndexB = (edge + 1) % poly->vertCount;
+	if (!ensureMsgf(tempEdgeIndexB < DT_VERTS_PER_POLYGON, TEXT("Invalid computed edge index %i"), tempEdgeIndexB))
+	{
+		return;
+	}
+
+	const int vertIndexA = poly->verts[edge]; //@UE
+	const int vertIndexB = poly->verts[tempEdgeIndexB]; //@UE
+
+	const int tileVertArraySize = tile->header->vertCount; //@UE
+	if (!ensureMsgf(vertIndexA < tileVertArraySize && vertIndexB < tileVertArraySize,
+		TEXT("Invalid vert index (vertIndexA=%i, vertIndexB=%i, vertCount=%i)"), vertIndexA, vertIndexB, tile->header->vertCount))
+	{
+		return;
+	}
+
+	dtReal va[3], vb[3]; //@UE
+	tile->verts[vertIndexA].toWorld(tile->header->bmin, va); //@UE
+	tile->verts[vertIndexB].toWorld(tile->header->bmin, vb); //@UE
 
 	const int32 wall0Offset = (*resultCount * 6) + 0;
 	const int32 wall1Offset = (*resultCount * 6) + 3;
@@ -191,14 +216,14 @@ static void storeWallSegment(const dtNavMesh* nav, const dtMeshTile* tile, const
 
 	*resultCount += 1;
 
-	// If neighbor is valid, find the segment that both polygons share by projecting the neighbor segment to the current segment va-vb.
+	// If neighbour is valid, find the segment that both polygons share by projecting the neighbour segment to the current segment va-vb.
 	if (ref1)
 	{
 		const dtMeshTile* neiTile = 0;
 		const dtPoly* neiPoly = 0;
 		nav->getTileAndPolyByRef(ref1, &neiTile, &neiPoly);
 
-		// Find edge of the neighbor polygon.
+		// Find edge of the neighbour polygon.
 		int neiEdge = -1;
 		unsigned int neiLinkId = neiPoly ? neiPoly->firstLink : DT_NULL_LINK;
 		while (neiLinkId != DT_NULL_LINK)
@@ -214,8 +239,9 @@ static void storeWallSegment(const dtNavMesh* nav, const dtMeshTile* tile, const
 
 		if (neiEdge != -1)
 		{
-			const dtReal* va2 = &neiTile->verts[neiPoly->verts[neiEdge] * 3];
-			const dtReal* vb2 = &neiTile->verts[neiPoly->verts[(neiEdge + 1) % neiPoly->vertCount] * 3];
+			dtReal va2[3], vb2[3]; //@UE
+			neiTile->verts[neiPoly->verts[neiEdge]].toWorld(neiTile->header->bmin, va2); //@UE
+			neiTile->verts[neiPoly->verts[(neiEdge + 1) % neiPoly->vertCount]].toWorld(neiTile->header->bmin, vb2); //@UE
 
 			// Project and clip segment va2-vb2 on va-vb
 			dtReal seg[3], diffA[3], diffB[3], clippedA[3], clippedB[3];

@@ -403,7 +403,7 @@ bool ArgusEntityDoesEntityExistTest::RunTest(const FString& Parameters)
 	(
 		FString::Printf
 		(
-			TEXT("[%s] Testing if %s returns false on and ID of "), 
+			TEXT("[%s] Testing if %s returns false on and ID of %s"), 
 			ARGUS_FUNCNAME, 
 			ARGUS_NAMEOF(ArgusEntity::DoesEntityExist), 
 			ARGUS_NAMEOF(ArgusECSConstants::k_maxEntities)
