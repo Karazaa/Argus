@@ -114,24 +114,23 @@ void TeamCommanderSystems_GatherInfo::UpdateTeamCommanderPerEntityOnTeam(const T
 {
 	ARGUS_TRACE(TeamCommanderSystems_GatherInfo::UpdateTeamCommanderPerEntityOnTeam);
 
-	TeamCommanderComponent* teamCommanderComponent = teamCommanderEntity.GetComponent<TeamCommanderComponent>();
-	ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
-	TeamCommanderResourceDataComponent* teamCommanderResourceDataComponent = teamCommanderEntity.GetComponent<TeamCommanderResourceDataComponent>();
-	ARGUS_RETURN_ON_NULL(teamCommanderResourceDataComponent, ArgusECSLog);
-	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	TeamCommanderComponentCollection teamCommanderComponents;
+	teamCommanderComponents.PopulateArguments(teamCommanderEntity);
+
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME) || !teamCommanderComponents.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return;
 	}
 
 	if (components.m_entity.IsAlive() && components.m_entity.IsIdle() && !components.m_entity.IsPassenger())
 	{
-		teamCommanderComponent->m_idleEntityIdsForTeam.Add(components.m_entity.GetId());
+		teamCommanderComponents.m_baseComponent->m_idleEntityIdsForTeam.Add(components.m_entity.GetId());
 	}
 
-	UpdateResourceExtractionDataPerSink(components, teamCommanderResourceDataComponent);
-	UpdateRevealedAreasPerEntityOnTeam(components, teamCommanderComponent);
-	UpdateSpawningUnitTypesPerSpawner(components, teamCommanderComponent);
-	UpdateConstructionDataPerConstructee(components, teamCommanderComponent);
+	UpdateResourceExtractionDataPerSink(components, teamCommanderComponents);
+	UpdateRevealedAreasPerEntityOnTeam(components, teamCommanderComponents);
+	UpdateSpawningUnitTypesPerSpawner(components, teamCommanderComponents);
+	UpdateConstructionDataPerConstructee(components, teamCommanderComponents);
 }
 
 void TeamCommanderSystems_GatherInfo::UpdateTeamCommanderPerNeutralEntity(const TeamCommanderSystemsArgs& components, ArgusEntity teamCommanderEntity)
@@ -164,12 +163,11 @@ void TeamCommanderSystems_GatherInfo::UpdateTeamCommanderPerNeutralEntity(const 
 	}
 }
 
-void TeamCommanderSystems_GatherInfo::UpdateResourceExtractionDataPerSink(const TeamCommanderSystemsArgs& components, TeamCommanderResourceDataComponent* teamCommanderResourceDataComponent)
+void TeamCommanderSystems_GatherInfo::UpdateResourceExtractionDataPerSink(const TeamCommanderSystemsArgs& components, const TeamCommanderComponentCollection& teamCommanderComponents)
 {
 	ARGUS_TRACE(TeamCommanderSystems_GatherInfo::UpdateResourceExtractionDataPerSink);
 
-	ARGUS_RETURN_ON_NULL(teamCommanderResourceDataComponent, ArgusECSLog);
-	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME) || !teamCommanderComponents.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return;
 	}
@@ -187,7 +185,7 @@ void TeamCommanderSystems_GatherInfo::UpdateResourceExtractionDataPerSink(const 
 			continue;
 		}
 
-		teamCommanderResourceDataComponent->IterateSeenResourceSourcesOfType(type, [&components](ResourceSourceExtractionData& data)
+		teamCommanderComponents.m_resourceDataComponent->IterateSeenResourceSourcesOfType(type, [&components](ResourceSourceExtractionData& data)
 		{
 			if (data.m_resourceSourceEntityId == ArgusECSConstants::k_maxEntities)
 			{
@@ -210,29 +208,28 @@ void TeamCommanderSystems_GatherInfo::UpdateResourceExtractionDataPerSink(const 
 	}
 }
 
-void TeamCommanderSystems_GatherInfo::UpdateRevealedAreasPerEntityOnTeam(const TeamCommanderSystemsArgs& components, TeamCommanderComponent* teamCommanderComponent)
+void TeamCommanderSystems_GatherInfo::UpdateRevealedAreasPerEntityOnTeam(const TeamCommanderSystemsArgs& components, const TeamCommanderComponentCollection& teamCommanderComponents)
 {
 	ARGUS_TRACE(TeamCommanderSystems_GatherInfo::UpdateRevealedAreasPerEntityOnTeam);
 
-	ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
-	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME) || !components.m_transformComponent || !components.m_targetingComponent)
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME) || !teamCommanderComponents.AreComponentsValidCheck(ARGUS_FUNCNAME) ||
+		!components.m_transformComponent || !components.m_targetingComponent)
 	{
 		return;
 	}
 
-	const int32 areaIndex = TeamCommanderSystems::GetAreaIndexFromWorldSpaceLocation(components, teamCommanderComponent);
+	const int32 areaIndex = TeamCommanderSystems::GetAreaIndexFromWorldSpaceLocation(components, teamCommanderComponents.m_baseComponent);
 	if (areaIndex >= 0)
 	{
-		teamCommanderComponent->m_revealedAreas[areaIndex] = true;
+		teamCommanderComponents.m_baseComponent->m_revealedAreas[areaIndex] = true;
 	}
 }
 
-void TeamCommanderSystems_GatherInfo::UpdateSpawningUnitTypesPerSpawner(const TeamCommanderSystemsArgs& components, TeamCommanderComponent* teamCommanderComponent)
+void TeamCommanderSystems_GatherInfo::UpdateSpawningUnitTypesPerSpawner(const TeamCommanderSystemsArgs& components, const TeamCommanderComponentCollection& teamCommanderComponents)
 {
 	ARGUS_TRACE(TeamCommanderSystems_GatherInfo::UpdateSpawningUnitTypesPerSpawner);
 
-	ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
-	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME) || !teamCommanderComponents.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return;
 	}
@@ -249,23 +246,22 @@ void TeamCommanderSystems_GatherInfo::UpdateSpawningUnitTypesPerSpawner(const Te
 	}
 
 	const SpawnEntityInfo& spawnInfo = spawningComponent->m_spawnQueue.First();
-	teamCommanderComponent->m_spawningEntityRecordIds.Add(spawnInfo.m_argusActorRecordId);
+	teamCommanderComponents.m_baseComponent->m_spawningEntityRecordIds.Add(spawnInfo.m_argusActorRecordId);
 }
 
-void TeamCommanderSystems_GatherInfo::UpdateConstructionDataPerConstructee(const TeamCommanderSystemsArgs& components, TeamCommanderComponent* teamCommanderComponent)
+void TeamCommanderSystems_GatherInfo::UpdateConstructionDataPerConstructee(const TeamCommanderSystemsArgs& components, const TeamCommanderComponentCollection& teamCommanderComponents)
 {
 	ARGUS_TRACE(TeamCommanderSystems_GatherInfo::UpdateConstructionDataPerConstructee);
 
-	ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
-	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME) || !teamCommanderComponents.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return;
 	}
 
 	const uint16 entityId = components.m_entity.GetId();
-	if (components.m_taskComponent->m_constructionState == EConstructionState::BeingConstructed && !teamCommanderComponent->m_inProgressConstructionData.Contains(entityId))
+	if (components.m_taskComponent->m_constructionState == EConstructionState::BeingConstructed && !teamCommanderComponents.m_baseComponent->m_inProgressConstructionData.Contains(entityId))
 	{
-		ConstructionData& newConstructionData = teamCommanderComponent->m_inProgressConstructionData.Emplace(entityId);
+		ConstructionData& newConstructionData = teamCommanderComponents.m_baseComponent->m_inProgressConstructionData.Emplace(entityId);
 		newConstructionData.m_beingConstructedEntityId = entityId;
 		return;
 	}
@@ -281,14 +277,14 @@ void TeamCommanderSystems_GatherInfo::UpdateConstructionDataPerConstructee(const
 	}
 
 	const uint16 targetEntityId = components.m_targetingComponent->m_targetEntityId;
-	ConstructionData* existingConstructionData = teamCommanderComponent->m_inProgressConstructionData.Find(targetEntityId);
+	ConstructionData* existingConstructionData = teamCommanderComponents.m_baseComponent->m_inProgressConstructionData.Find(targetEntityId);
 	if (existingConstructionData)
 	{
 		existingConstructionData->m_constructingOtherEntityId = entityId;
 	}
 	else
 	{
-		ConstructionData& newConstructionData = teamCommanderComponent->m_inProgressConstructionData.Emplace(targetEntityId);
+		ConstructionData& newConstructionData = teamCommanderComponents.m_baseComponent->m_inProgressConstructionData.Emplace(targetEntityId);
 		newConstructionData.m_beingConstructedEntityId = targetEntityId;
 		newConstructionData.m_constructingOtherEntityId = entityId;
 	}
