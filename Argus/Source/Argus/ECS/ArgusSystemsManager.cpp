@@ -41,7 +41,7 @@ void ArgusSystemsManager::InitializePostLoad(UWorld* worldPointer, const UArgusE
 	ARGUS_RETURN_ON_NULL(teamEntityTemplate, ArgusECSLog);
 
 	singletonEntityTemplate->ReinitializeComponentsForEntityPostLoad(ArgusEntity::GetSingletonEntity());
-	for (uint8 i = 1u; i <= (sizeof(ETeam) * 8u); ++i)
+	for (uint8 i = 1u; i <= NUM_TEAMS; ++i)
 	{
 		ArgusEntity teamEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId - i);
 		if (!teamEntity)
@@ -182,7 +182,7 @@ void ArgusSystemsManager::SetInitialSingletonState(UWorld* worldPointer, ETeam a
 
 void ArgusSystemsManager::PopulateTeamComponents(const UArgusEntityTemplate* teamEntityTemplate)
 {
-	for (uint8 i = 1u; i <= (sizeof(ETeam) * 8u); ++i)
+	for (uint8 i = 1u; i <= NUM_TEAMS; ++i)
 	{
 		if (ArgusEntity::DoesEntityExist(ArgusECSConstants::k_singletonEntityId - i))
 		{
@@ -210,7 +210,7 @@ void ArgusSystemsManager::PopulateTeamComponents(const UArgusEntityTemplate* tea
 
 void ArgusSystemsManager::InitializeTeamComponents()
 {
-	for (uint8 i = 1u; i <= (sizeof(ETeam) * 8u); ++i)
+	for (uint8 i = 1u; i <= NUM_TEAMS; ++i)
 	{
 		ArgusEntity teamEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId - i);
 		TeamCommanderComponent* teamCommanderComponent = teamEntity.GetOrAddComponent<TeamCommanderComponent>();

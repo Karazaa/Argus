@@ -20,4 +20,6 @@ enum class ETeam : uint8
 };
 ENUM_CLASS_FLAGS(ETeam);
 
+#define NUM_TEAMS sizeof(ETeam) * 8u
+
 using BITMASK_ETeam = uint8;

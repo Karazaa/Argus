@@ -58,7 +58,7 @@ namespace ArgusIterators
 	template <typename Function>
 	static void IterateTeamEntities(Function&& perEntityFunction)
 	{
-		for (uint8 i = 1u; i <= (sizeof(ETeam) * 8u); ++i)
+		for (uint8 i = 1u; i <= NUM_TEAMS; ++i)
 		{
 			const ETeam team = static_cast<ETeam>(1u << (i - 1u));
 			if (!ArgusEntity::IsTeamRegistered(team))
@@ -76,8 +76,8 @@ namespace ArgusIterators
 	template <typename Function>
 	static void IterateTeamEntitiesParallel(Function&& perEntityFunction)
 	{
-		TArray<UE::Tasks::FTask, TInlineAllocator<(sizeof(ETeam) * 8u)>> teamTasks;
-		for (uint8 i = 1u; i <= (sizeof(ETeam) * 8u); ++i)
+		TArray<UE::Tasks::FTask, TInlineAllocator<NUM_TEAMS>> teamTasks;
+		for (uint8 i = 1u; i <= NUM_TEAMS; ++i)
 		{
 			const ETeam team = static_cast<ETeam>(1u << (i - 1u));
 			if (!ArgusEntity::IsTeamRegistered(team))
@@ -170,8 +170,8 @@ namespace ArgusIterators
 	template <typename SystemsArgs, typename Function>
 	static void IterateSystemsArgsByTeamParallel(Function&& perSystemsArgsFunction)
 	{
-		TArray<UE::Tasks::FTask, TInlineAllocator<(sizeof(ETeam) * 8u)>> teamTasks;
-		for (uint8 i = 0u; i <= (sizeof(ETeam) * 8u); ++i)
+		TArray<UE::Tasks::FTask, TInlineAllocator<NUM_TEAMS>> teamTasks;
+		for (uint8 i = 0u; i <= NUM_TEAMS; ++i)
 		{
 			const ETeam team = i > 0u ? static_cast<ETeam>(1u << (i - 1u)) : ETeam::None;
 			if (!ArgusEntity::IsTeamRegistered(team))
@@ -191,7 +191,7 @@ namespace ArgusIterators
 	template <typename Function>
 	static void IterateTeamEntitiesInBitmask(BITMASK_ETeam teamBitmask, Function&& perTeamEntityFunction)
 	{
-		for (uint8 i = 1u; i <= (sizeof(ETeam) * 8u); ++i)
+		for (uint8 i = 1u; i <= NUM_TEAMS; ++i)
 		{
 			const uint8 team = 1u << (i - 1u);
 			if ((team & teamBitmask) > 0u)

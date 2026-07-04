@@ -47,14 +47,12 @@ bool ArgusEntity::DoesEntityExist(uint16 id)
 
 bool ArgusEntity::IsReservedEntityId(uint16 id)
 {
-	uint16 sizeOfTeamEnum = sizeof(ETeam) * 8;
-	return id >= (ArgusECSConstants::k_singletonEntityId - sizeOfTeamEnum);
+	return id >= (ArgusECSConstants::k_singletonEntityId - NUM_TEAMS);
 }
 
 uint16 ArgusEntity::GetHighestNonReservedEntityId()
 {
-	uint16 sizeOfTeamEnum = sizeof(ETeam) * 8;
-	return (ArgusECSConstants::k_singletonEntityId - (sizeOfTeamEnum + 1));
+	return (ArgusECSConstants::k_singletonEntityId - (NUM_TEAMS + 1u));
 }
 
 ArgusEntity ArgusEntity::CreateEntity(uint16 lowestId)
