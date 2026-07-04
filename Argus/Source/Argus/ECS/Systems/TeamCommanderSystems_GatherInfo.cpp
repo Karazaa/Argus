@@ -159,8 +159,32 @@ void TeamCommanderSystems_GatherInfo::UpdateSeenByTeamCommandersPerEntity(const 
 			return;
 		}
 
-		// TODO JAMES: Do stuff (including updating combat components for enemy teams)
+		UpdateSeenByTeamCommanderPerEntity(components, teamCommanderComponents);
 	});
+}
+
+void TeamCommanderSystems_GatherInfo::UpdateSeenByTeamCommanderPerEntity(const TeamCommanderSystemsArgs& components, const TeamCommanderComponentCollection& teamCommanderComponents)
+{
+	ARGUS_TRACE(TeamCommanderSystems_GatherInfo::UpdateSeenByTeamCommanderPerEntity);
+
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME) || !teamCommanderComponents.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+
+	EntityCategory combatantCategory;
+	combatantCategory.m_entityCategoryType = EEntityCategoryType::Combatant;
+	if (components.m_entity.DoesEntitySatisfyEntityCategory(combatantCategory))
+	{
+		if (components.m_entity.IsFlying())
+		{
+			// TODO JAMES: Increment flying combatants.
+		}
+		else
+		{
+			// TODO JAMES: Increment grounded combatants.
+		}
+	}
 }
 
 void TeamCommanderSystems_GatherInfo::UpdateTeamCommanderPerNeutralEntity(const TeamCommanderSystemsArgs& components, ArgusEntity teamCommanderEntity)

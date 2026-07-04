@@ -454,6 +454,12 @@ bool ArgusEntity::DoesEntitySatisfyEntityCategory(EntityCategory entityCategory)
 				return resourceComponent->m_resourceComponentOwnerType == EResourceComponentOwnerType::Sink && resourceComponent->m_currentResources.HasResourceType(entityCategory.m_resourceType);
 			}
 			return false;
+		case EEntityCategoryType::Combatant:
+			if (const CombatComponent* combatComponent = GetComponent<CombatComponent>())
+			{
+				return combatComponent->m_isConsideredCombatant;
+			}
+			return false;
 		default:
 			return false;
 	}

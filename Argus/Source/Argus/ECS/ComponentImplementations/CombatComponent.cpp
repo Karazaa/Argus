@@ -25,6 +25,7 @@ void CombatComponent::Reset()
 	m_attackType = EAttackType::Melee;
 	m_rangedAttackCapability = ERangedAttackCapability::GroundedAndFlying;
 	m_attackTimerHandle.Reset();
+	m_isConsideredCombatant = false;
 }
 
 void CombatComponent::Serialize(FArchive& archive)
@@ -34,6 +35,7 @@ void CombatComponent::Serialize(FArchive& archive)
 	archive << m_attackType;
 	archive << m_rangedAttackCapability;
 	m_attackTimerHandle.Serialize(archive);
+	archive << m_isConsideredCombatant;
 }
 
 void CombatComponent::DrawComponentDebug() const
@@ -82,6 +84,10 @@ void CombatComponent::DrawComponentDebug() const
 		{
 			ImGui::Text("Not set");
 		}
+		ImGui::TableNextColumn();
+		ImGui::Text("m_isConsideredCombatant");
+		ImGui::TableNextColumn();
+		ImGui::Text(m_isConsideredCombatant ? "true" : "false");
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

@@ -14,6 +14,7 @@ void UCombatComponentData::InstantiateComponentForEntity(ArgusEntity entity) con
 	CombatComponentRef->m_intervalDurationSeconds = m_intervalDurationSeconds;
 	CombatComponentRef->m_attackType = m_attackType;
 	CombatComponentRef->m_rangedAttackCapability = m_rangedAttackCapability;
+	CombatComponentRef->m_isConsideredCombatant = m_isConsideredCombatant;
 }
 
 void UCombatComponentData::ReinitializeComponentForEntityPostLoad(ArgusEntity entity) const

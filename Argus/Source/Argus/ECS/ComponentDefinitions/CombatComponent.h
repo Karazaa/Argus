@@ -21,4 +21,6 @@ struct CombatComponent
 
 	ARGUS_COMP_NO_DATA
 	TimerHandle m_attackTimerHandle;
+
+	bool m_isConsideredCombatant = false;
 };

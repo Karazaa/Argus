@@ -24,6 +24,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (EditCondition = "m_attackType == EAttackType::Ranged", EditConditionHides));
 	ERangedAttackCapability m_rangedAttackCapability = ERangedAttackCapability::GroundedAndFlying;
 
+	UPROPERTY(EditAnywhere)
+	bool m_isConsideredCombatant = false;
+
 
 	void InstantiateComponentForEntity(ArgusEntity entity) const override;
 	void ReinitializeComponentForEntityPostLoad(ArgusEntity entity) const override;
