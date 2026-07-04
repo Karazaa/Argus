@@ -60,6 +60,12 @@ namespace ArgusIterators
 	{
 		for (uint8 i = 1u; i <= (sizeof(ETeam) * 8u); ++i)
 		{
+			const ETeam team = static_cast<ETeam>(1u << (i - 1u));
+			if (!ArgusEntity::IsTeamRegistered(team))
+			{
+				continue;
+			}
+
 			if (ArgusEntity entity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId - i))
 			{
 				perEntityFunction(entity);
@@ -73,6 +79,12 @@ namespace ArgusIterators
 		TArray<UE::Tasks::FTask, TInlineAllocator<(sizeof(ETeam) * 8u)>> teamTasks;
 		for (uint8 i = 1u; i <= (sizeof(ETeam) * 8u); ++i)
 		{
+			const ETeam team = static_cast<ETeam>(1u << (i - 1u));
+			if (!ArgusEntity::IsTeamRegistered(team))
+			{
+				continue;
+			}
+
 			if (ArgusEntity entity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId - i))
 			{
 				teamTasks.Add(UE::Tasks::Launch(ARGUS_NAMEOF(ArgusIterators::IterateTeamEntitiesParallel), [entity, &perEntityFunction]()
@@ -162,6 +174,10 @@ namespace ArgusIterators
 		for (uint8 i = 0u; i <= (sizeof(ETeam) * 8u); ++i)
 		{
 			const ETeam team = i > 0u ? static_cast<ETeam>(1u << (i - 1u)) : ETeam::None;
+			if (!ArgusEntity::IsTeamRegistered(team))
+			{
+				continue;
+			}
 
 			teamTasks.Add(UE::Tasks::Launch(ARGUS_NAMEOF(ArgusIterators::IterateSystemsArgsByTeamParallel), [team, &perSystemsArgsFunction]()
 			{

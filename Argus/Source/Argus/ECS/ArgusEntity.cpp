@@ -10,6 +10,7 @@ TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > ArgusEnt
 
 uint16 ArgusEntity::s_lowestTakenEntityId = ArgusECSConstants::k_maxEntities;
 uint16 ArgusEntity::s_highestTakenEntityId = 0u;
+BITMASK_ETeam ArgusEntity::s_teamsForIteration = 0u;
 
 void ArgusEntity::FlushAllEntities()
 {
@@ -19,6 +20,7 @@ void ArgusEntity::FlushAllEntities()
 	s_takenEntityIds.SetNum(ArgusECSConstants::k_maxEntities, false);
 	s_lowestTakenEntityId = ArgusECSConstants::k_maxEntities;
 	s_highestTakenEntityId = 0u;
+	s_teamsForIteration = 0u;
 }
 
 void ArgusEntity::Serialize(FArchive& archive)
@@ -27,6 +29,7 @@ void ArgusEntity::Serialize(FArchive& archive)
 
 	archive << s_lowestTakenEntityId;
 	archive << s_highestTakenEntityId;
+	archive << s_teamsForIteration;
 	s_takenEntityIds.Serialize(archive);
 
 	ArgusComponentRegistry::Serialize(archive);
@@ -195,6 +198,22 @@ uint16 ArgusEntity::GetTeamEntityId(ETeam team)
 ArgusEntity ArgusEntity::GetTeamEntity(ETeam team)
 {
 	return RetrieveEntity(GetTeamEntityId(team));
+}
+
+void ArgusEntity::RegisterTeam(ETeam team)
+{
+	s_teamsForIteration |= static_cast<uint8>(team);
+}
+
+bool ArgusEntity::IsTeamRegistered(ETeam team)
+{
+	// The "None" team is always registered.
+	if (team == ETeam::None)
+	{
+		return true;
+	}
+
+	return s_teamsForIteration & static_cast<uint8>(team);
 }
 
 ArgusEntity& ArgusEntity::operator=(const ArgusEntity& other)

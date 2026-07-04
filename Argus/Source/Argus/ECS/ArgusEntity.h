@@ -33,12 +33,15 @@ public:
 	static uint16			GetTeamOffset(ETeam team);
 	static uint16			GetTeamEntityId(ETeam team);
 	static ArgusEntity		GetTeamEntity(ETeam team);
+	static void				RegisterTeam(ETeam team);
+	static bool				IsTeamRegistered(ETeam team);
 
 	static const ArgusEntity k_emptyEntity;
 
 private:
 	static uint16 s_lowestTakenEntityId;
 	static uint16 s_highestTakenEntityId;
+	static BITMASK_ETeam s_teamsForIteration;
 	
 public:
 	FORCEINLINE ArgusEntity(const ArgusEntity& other) { m_id = other.GetId(); };

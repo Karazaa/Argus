@@ -228,6 +228,7 @@ void AArgusActor::BeginPlay()
 		if (IdentityComponent* identityComponent = m_entity.GetComponent<IdentityComponent>())
 		{
 			identityComponent->m_team = loadedTeamInfoRecord->m_team;
+			ArgusEntity::RegisterTeam(identityComponent->m_team);
 			identityComponent->m_allies = loadedTeamInfoRecord->m_allies;
 			identityComponent->m_enemies = loadedTeamInfoRecord->m_enemies;
 		}

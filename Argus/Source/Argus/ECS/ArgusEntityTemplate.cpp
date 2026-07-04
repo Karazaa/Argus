@@ -114,17 +114,19 @@ void UArgusEntityTemplate::ReinitializeComponentsForEntityPostLoad(ArgusEntity e
 
 void UArgusEntityTemplate::SetInitialStateFromData(ArgusEntity entity) const
 {
-	TaskComponent* taskComponent = entity.GetComponent<TaskComponent>();
-	if (!taskComponent)
+	if (const IdentityComponent* identityComponent = entity.GetComponent<IdentityComponent>())
 	{
-		return;
+		ArgusEntity::RegisterTeam(identityComponent->m_team);
 	}
 
 	if (const ConstructionComponent* constructionComponent = entity.GetComponent<ConstructionComponent>())
 	{
-		if (constructionComponent->m_currentWorkSeconds != 0.0f)
+		if (TaskComponent* taskComponent = entity.GetComponent<TaskComponent>())
 		{
-			taskComponent->m_constructionState = EConstructionState::BeingConstructed;
+			if (constructionComponent->m_currentWorkSeconds != 0.0f)
+			{
+				taskComponent->m_constructionState = EConstructionState::BeingConstructed;
+			}
 		}
 	}
 
