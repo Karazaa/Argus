@@ -9,6 +9,8 @@ class CombatSystems
 public:
 	static void RunSystems(float deltaTime);
 	static bool CanEntityAttackOtherEntity(ArgusEntity potentialAttacker, ArgusEntity potentialVictim);
+	static bool CanAttackGrounded(const CombatSystemsArgs& components);
+	static bool CanAttackFlying(const CombatSystemsArgs& components);
 
 private:
 	static void ProcessCombatTaskCommands(float deltaTime, const CombatSystemsArgs& components);
@@ -19,6 +21,4 @@ private:
 	static void ApplyDamage(uint32 damageAmount, ArgusEntity targetEntity, const CombatSystemsArgs& components);
 	static void KillEntity(ArgusEntity targetEntity, HealthComponent* targetHealthComponent);
 	static void StopAttackingEntity(const CombatSystemsArgs& components);
-	static bool CanAttackGrounded(const CombatSystemsArgs& components);
-	static bool CanAttackFlying(const CombatSystemsArgs& components);
 };
