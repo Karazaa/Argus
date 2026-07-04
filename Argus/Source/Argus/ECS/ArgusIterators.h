@@ -187,4 +187,20 @@ namespace ArgusIterators
 
 		UE::Tasks::Wait(teamTasks);
 	}
+	
+	template <typename Function>
+	static void IterateTeamEntitiesInBitmask(BITMASK_ETeam teamBitmask, Function&& perTeamEntityFunction)
+	{
+		for (uint8 i = 1u; i <= (sizeof(ETeam) * 8u); ++i)
+		{
+			const uint8 team = 1u << (i - 1u);
+			if ((team & teamBitmask) > 0u)
+			{
+				if (ArgusEntity entity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId - i))
+				{
+					perTeamEntityFunction(entity);
+				}
+			}
+		}
+	}
 }

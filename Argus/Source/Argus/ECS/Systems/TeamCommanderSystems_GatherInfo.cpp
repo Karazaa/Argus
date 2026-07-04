@@ -19,18 +19,20 @@ void TeamCommanderSystems_GatherInfo::ClearUpdatesPerCommanderEntity(ArgusEntity
 {
 	ARGUS_TRACE(TeamCommanderSystems_GatherInfo::ClearUpdatesPerCommanderEntity);
 
-	TeamCommanderComponent* teamCommanderComponent = teamEntity.GetComponent<TeamCommanderComponent>();
-	ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
-	TeamCommanderResourceDataComponent* teamCommanderResourceDataComponent = teamEntity.GetComponent<TeamCommanderResourceDataComponent>();
-	ARGUS_RETURN_ON_NULL(teamCommanderResourceDataComponent, ArgusECSLog);
+	TeamCommanderComponentCollection components;
+	components.PopulateArguments(teamEntity);
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
 
-	teamCommanderResourceDataComponent->IterateAllSeenResourceSources([](ResourceSourceExtractionData& data)
+	components.m_resourceDataComponent->IterateAllSeenResourceSources([](ResourceSourceExtractionData& data)
 	{
 		ClearResourceSinkFromExtractionDataIfNeeded(ArgusEntity::RetrieveEntity(data.m_resourceSinkEntityId), data);
 		ClearResourceExtractorFromExtractionDataIfNeeded(ArgusEntity::RetrieveEntity(data.m_resourceExtractorEntityId), data);
 		return false;
 	});
-	teamCommanderComponent->ResetUpdateArrays();
+	components.m_baseComponent->ResetUpdateArrays();
 }
 
 void TeamCommanderSystems_GatherInfo::ClearResourceSinkFromExtractionDataIfNeeded(ArgusEntity existingResourceSinkEntity, ResourceSourceExtractionData& data)
@@ -108,6 +110,7 @@ void TeamCommanderSystems_GatherInfo::UpdateTeamCommanderPerEntity(const TeamCom
 	}
 
 	UpdateTeamCommanderPerEntityOnTeam(components, ArgusEntity::GetTeamEntity(components.m_identityComponent->m_team));
+	UpdateSeenByTeamCommandersPerEntity(components);
 }
 
 void TeamCommanderSystems_GatherInfo::UpdateTeamCommanderPerEntityOnTeam(const TeamCommanderSystemsArgs& components, ArgusEntity teamCommanderEntity)
@@ -131,6 +134,33 @@ void TeamCommanderSystems_GatherInfo::UpdateTeamCommanderPerEntityOnTeam(const T
 	UpdateRevealedAreasPerEntityOnTeam(components, teamCommanderComponents);
 	UpdateSpawningUnitTypesPerSpawner(components, teamCommanderComponents);
 	UpdateConstructionDataPerConstructee(components, teamCommanderComponents);
+}
+
+void TeamCommanderSystems_GatherInfo::UpdateSeenByTeamCommandersPerEntity(const TeamCommanderSystemsArgs& components)
+{
+	ARGUS_TRACE(TeamCommanderSystems_GatherInfo::UpdateSeenByTeamCommandersPerEntity);
+
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+
+	ArgusIterators::IterateTeamEntitiesInBitmask(components.m_identityComponent->m_seenBy, [&components](ArgusEntity teamCommanderEntity)
+	{	
+		TeamCommanderComponentCollection teamCommanderComponents;
+		teamCommanderComponents.PopulateArguments(teamCommanderEntity);
+		if (!teamCommanderComponents.AreComponentsValidCheck(ARGUS_FUNCNAME))
+		{
+			return;
+		}
+
+		if (components.m_identityComponent->m_team == teamCommanderComponents.m_baseComponent->m_teamToCommand)
+		{
+			return;
+		}
+
+		// TODO JAMES: Do stuff (including updating combat components for enemy teams)
+	});
 }
 
 void TeamCommanderSystems_GatherInfo::UpdateTeamCommanderPerNeutralEntity(const TeamCommanderSystemsArgs& components, ArgusEntity teamCommanderEntity)
