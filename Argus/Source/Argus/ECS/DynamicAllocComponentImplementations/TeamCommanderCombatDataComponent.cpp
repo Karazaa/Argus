@@ -14,10 +14,10 @@
 // Component shared functionality
 void TeamCommanderCombatDataComponent::Reset()
 {
-	m_numCombatantsCanAttackGrounded = 0u;
-	m_numCombatantsCanAttackFlying = 0u;
-	m_numEnemyCombatantsGrounded = 0u;
-	m_numEnemyCombatantsFlying = 0u;
+	//m_numCombatantsCanAttackGrounded = 0u;
+	//m_numCombatantsCanAttackFlying = 0u;
+	//m_numEnemyCombatantsGrounded = 0u;
+	//m_numEnemyCombatantsFlying = 0u;
 }
 
 void TeamCommanderCombatDataComponent::Serialize(FArchive& archive)
@@ -37,19 +37,19 @@ void TeamCommanderCombatDataComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_numCombatantsCanAttackGrounded");
 		ImGui::TableNextColumn();
-		ImGui::Text("%d", m_numCombatantsCanAttackGrounded);
+		//ImGui::Text("%d", m_numCombatantsCanAttackGrounded);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_numCombatantsCanAttackFlying");
 		ImGui::TableNextColumn();
-		ImGui::Text("%d", m_numCombatantsCanAttackFlying);
+		//ImGui::Text("%d", m_numCombatantsCanAttackFlying);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_numEnemyCombatantsGrounded");
 		ImGui::TableNextColumn();
-		ImGui::Text("%d", m_numEnemyCombatantsGrounded);
+		//ImGui::Text("%d", m_numEnemyCombatantsGrounded);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_numEnemyCombatantsFlying");
 		ImGui::TableNextColumn();
-		ImGui::Text("%d", m_numEnemyCombatantsFlying);
+		//ImGui::Text("%d", m_numEnemyCombatantsFlying);
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING
