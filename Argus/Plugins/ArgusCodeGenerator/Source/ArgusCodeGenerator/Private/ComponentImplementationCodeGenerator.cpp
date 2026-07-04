@@ -242,36 +242,45 @@ void ComponentImplementationGenerator::GeneratePerVariableResetText(const std::v
 			continue;
 		}
 
-		const TypeInfo typeInfo = TypeInfo(parsedVariableData[i].m_typeName, parsedVariableData[i].m_propertyMacro);
+		const TypeInfo typeInfo = TypeInfo(parsedVariableData[i]);
 
 		if (typeInfo.m_containerType == ContainerType::Array || typeInfo.m_containerType == ContainerType::BitArray || typeInfo.m_containerType == ContainerType::Deque ||
 			typeInfo.m_underlyingType == UnderlyingType::ResourceSet || typeInfo.m_underlyingType == UnderlyingType::TimerHandle || typeInfo.m_underlyingType == UnderlyingType::Observers)
 		{
-			outParsedVariableContents.push_back(std::vformat("\t{}.Reset();", std::make_format_args(parsedVariableData[i].m_varName)));
+			outParsedVariableContents.push_back(std::vformat("\t{}.Reset();", std::make_format_args(typeInfo.m_cleanVariableName)));
 			continue;
 		}
 
 		if (typeInfo.m_underlyingType == UnderlyingType::EntityKDTreeOutput || typeInfo.m_underlyingType == UnderlyingType::ObstacleKDTreeOutput)
 		{
-			outParsedVariableContents.push_back(std::vformat("\t{}.ResetAll();", std::make_format_args(parsedVariableData[i].m_varName)));
+			outParsedVariableContents.push_back(std::vformat("\t{}.ResetAll();", std::make_format_args(typeInfo.m_cleanVariableName)));
 			continue;
 		}
 
 		if (typeInfo.m_underlyingType == UnderlyingType::EntityKDTree || typeInfo.m_underlyingType == UnderlyingType::ObstacleKDTree)
 		{
-			outParsedVariableContents.push_back(std::vformat("\t{}.FlushAllNodes();", std::make_format_args(parsedVariableData[i].m_varName)));
+			outParsedVariableContents.push_back(std::vformat("\t{}.FlushAllNodes();", std::make_format_args(typeInfo.m_cleanVariableName)));
 			continue;
 		}
 
 		if (typeInfo.m_containerType == ContainerType::ExponentialSmoother || typeInfo.m_containerType == SOSSmoother)
 		{
-			outParsedVariableContents.push_back(std::vformat("\t{}.ResetZero();", std::make_format_args(parsedVariableData[i].m_varName)));
+			outParsedVariableContents.push_back(std::vformat("\t{}.ResetZero();", std::make_format_args(typeInfo.m_cleanVariableName)));
 			continue;
 		}
 
 		if (typeInfo.m_containerType == ContainerType::Map)
 		{
-			outParsedVariableContents.push_back(std::vformat("\t{}.Empty();", std::make_format_args(parsedVariableData[i].m_varName)));
+			outParsedVariableContents.push_back(std::vformat("\t{}.Empty();", std::make_format_args(typeInfo.m_cleanVariableName)));
+			continue;
+		}
+
+		if (typeInfo.m_containerType == ContainerType::CArray)
+		{
+			outParsedVariableContents.push_back(std::vformat("\tfor (int32 i = 0; i < {}; ++i)", std::make_format_args(typeInfo.m_staticSize)));
+			outParsedVariableContents.push_back("\t{");
+			outParsedVariableContents.push_back(std::vformat("\t\t{}[i] = ArgusMath::GetZero<{}>();", std::make_format_args(typeInfo.m_cleanVariableName, typeInfo.m_cleanTypeName)));
+			outParsedVariableContents.push_back("\t}");
 			continue;
 		}
 	}
@@ -286,7 +295,7 @@ void ComponentImplementationGenerator::GeneratePerVariableSerializeText(const st
 			continue;
 		}
 
-		const TypeInfo typeInfo = TypeInfo(parsedVariableData[i].m_typeName, parsedVariableData[i].m_propertyMacro);
+		const TypeInfo typeInfo = TypeInfo(parsedVariableData[i]);
 
 		if (typeInfo.m_containerType == NoContainer)
 		{
@@ -300,12 +309,12 @@ void ComponentImplementationGenerator::GeneratePerVariableSerializeText(const st
 				case UnderlyingType::Enum:
 				case UnderlyingType::Bitmask:
 				case UnderlyingType::StaticData:
-					outParsedVariableContents.push_back(std::vformat("\tarchive << {};", std::make_format_args(parsedVariableData[i].m_varName)));
+					outParsedVariableContents.push_back(std::vformat("\tarchive << {};", std::make_format_args(typeInfo.m_cleanVariableName)));
 					break;
 				case UnderlyingType::ResourceSet:
 				case UnderlyingType::TimerHandle:
 				case UnderlyingType::NavAgentSelector:
-					outParsedVariableContents.push_back(std::vformat("\t{}.Serialize(archive);", std::make_format_args(parsedVariableData[i].m_varName)));
+					outParsedVariableContents.push_back(std::vformat("\t{}.Serialize(archive);", std::make_format_args(typeInfo.m_cleanVariableName)));
 					break;
 				default:
 					break;
@@ -321,11 +330,17 @@ void ComponentImplementationGenerator::GeneratePerVariableSerializeText(const st
 			case ContainerType::BitArray:
 			case ContainerType::Optional:
 			case ContainerType::Deque:
-				outParsedVariableContents.push_back(std::vformat("\t{}.Serialize(archive);", std::make_format_args(parsedVariableData[i].m_varName)));
+				outParsedVariableContents.push_back(std::vformat("\t{}.Serialize(archive);", std::make_format_args(typeInfo.m_cleanVariableName)));
 				break;
 			case ContainerType::Array:
 			case ContainerType::Map:
-				outParsedVariableContents.push_back(std::vformat("\tarchive << {};", std::make_format_args(parsedVariableData[i].m_varName)));
+				outParsedVariableContents.push_back(std::vformat("\tarchive << {};", std::make_format_args(typeInfo.m_cleanVariableName)));
+				break;
+			case ContainerType::CArray:
+				outParsedVariableContents.push_back(std::vformat("\tfor (int32 i = 0; i < {}; ++i)", std::make_format_args(typeInfo.m_staticSize)));
+				outParsedVariableContents.push_back("\t{");
+				outParsedVariableContents.push_back(std::vformat("\t\tarchive << {}[i];", std::make_format_args(typeInfo.m_cleanVariableName)));
+				outParsedVariableContents.push_back("\t}");
 				break;
 			default:
 				break;
@@ -337,7 +352,7 @@ void ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 {
 	for (int i = 0; i < parsedVariableData.size(); ++i)
 	{
-		const TypeInfo typeInfo = TypeInfo(parsedVariableData[i].m_typeName, parsedVariableData[i].m_propertyMacro);
+		const TypeInfo typeInfo = TypeInfo(parsedVariableData[i]);
 
 		if (typeInfo.m_underlyingType == UnderlyingType::EntityKDTreeOutput)
 		{
@@ -363,7 +378,7 @@ void ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 		}
 
 		outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
-		outParsedVariableContents.push_back(std::vformat("\t\tImGui::Text(\"{}\");", std::make_format_args(parsedVariableData[i].m_varName)));
+		outParsedVariableContents.push_back(std::vformat("\t\tImGui::Text(\"{}\");", std::make_format_args(typeInfo.m_cleanVariableName)));
 		outParsedVariableContents.push_back("\t\tImGui::TableNextColumn();");
 
 		std::string extraData = "";
@@ -378,21 +393,28 @@ void ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 				{
 					continue;
 				}
-				FormatImGuiQueueField(parsedVariableData[i].m_varName, outParsedVariableContents);
+				FormatImGuiQueueField(typeInfo.m_cleanVariableName, outParsedVariableContents);
 				break;
 			case ContainerType::Array:
 				if (!PopulateAtomicFormattingFunction(typeInfo.GetTemplateParameter(0), typeInfo.m_cleanTypeName, parsedVariableData[i].m_propertyMacro, atomicFieldFormattingFunction, extraData))
 				{
 					continue;
 				}
-				FormatImGuiArrayField(parsedVariableData[i].m_varName, extraData, outParsedVariableContents, atomicFieldFormattingFunction);
+				FormatImGuiArrayField(typeInfo.m_cleanVariableName, extraData, outParsedVariableContents, atomicFieldFormattingFunction);
+				break;
+			case ContainerType::CArray:
+				if (!PopulateAtomicFormattingFunction(typeInfo.m_underlyingType, typeInfo.m_cleanTypeName, parsedVariableData[i].m_propertyMacro, atomicFieldFormattingFunction, extraData))
+				{
+					continue;
+				}
+				FormatImGuiCArrayField(typeInfo.m_cleanVariableName, typeInfo.m_staticSize, extraData, outParsedVariableContents, atomicFieldFormattingFunction);
 				break;
 			case ContainerType::Deque:
 				if (!PopulateAtomicFormattingFunction(typeInfo.GetTemplateParameter(0), typeInfo.m_cleanTypeName, parsedVariableData[i].m_propertyMacro, atomicFieldFormattingFunction, extraData))
 				{
 					continue;
 				}
-				FormatImGuiDequeField(parsedVariableData[i].m_varName, extraData, outParsedVariableContents, atomicFieldFormattingFunction);
+				FormatImGuiDequeField(typeInfo.m_cleanVariableName, extraData, outParsedVariableContents, atomicFieldFormattingFunction);
 				break;
 			case ContainerType::Map:
 				if (!PopulateAtomicFormattingFunction(typeInfo.GetTemplateParameter(0), typeInfo.m_cleanTypeName, parsedVariableData[i].m_propertyMacro, atomicFieldFormattingFunction, extraData) ||
@@ -400,7 +422,7 @@ void ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 				{
 					continue;
 				}
-				FormatImGuiMapField(parsedVariableData[i].m_varName, extraData, secondExtraData, outParsedVariableContents, atomicFieldFormattingFunction, secondAtomicFieldFormattingFunction);
+				FormatImGuiMapField(typeInfo.m_cleanVariableName, extraData, secondExtraData, outParsedVariableContents, atomicFieldFormattingFunction, secondAtomicFieldFormattingFunction);
 				break;
 			case ContainerType::Optional:
 				atomicFieldFormattingFunction = FormatImGuiOptionalField;
@@ -418,11 +440,11 @@ void ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 				default:
 					break;
 				}
-				atomicFieldFormattingFunction(parsedVariableData[i].m_varName, extraData, "", outParsedVariableContents);
+				atomicFieldFormattingFunction(typeInfo.m_cleanVariableName, extraData, "", outParsedVariableContents);
 				break;
 			default:
 				{
-					std::string variableName = parsedVariableData[i].m_varName;
+					std::string variableName = typeInfo.m_cleanVariableName;
 					if (typeInfo.m_containerType == ContainerType::ExponentialSmoother || typeInfo.m_containerType == ContainerType::SOSSmoother)
 					{
 						variableName.append(".GetValue()");
@@ -438,7 +460,7 @@ void ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 	}
 }
 
-bool ComponentImplementationGenerator::PopulateAtomicFormattingFunction(UnderlyingType variableType, const std::string& cleanType, const std::string& macro,  TFunction<void(const std::string&, const std::string&, const std::string&, std::vector<std::string>&)>& functionToPopulate, std::string& extraDataToPopulate)
+bool ComponentImplementationGenerator::PopulateAtomicFormattingFunction(UnderlyingType variableType, const std::string& cleanType, const std::string& macro, TFunction<void(const std::string&, const std::string&, const std::string&, std::vector<std::string>&)>& functionToPopulate, std::string& extraDataToPopulate)
 {
 	switch (variableType)
 	{
@@ -523,6 +545,23 @@ void ComponentImplementationGenerator::FormatImGuiArrayField(const std::string& 
 	outParsedVariableContents.push_back("\t\t\t}");
 	outParsedVariableContents.push_back("\t\t\tImGui::Unindent();");
 	outParsedVariableContents.push_back("\t\t}");
+}
+
+void ComponentImplementationGenerator::FormatImGuiCArrayField(const std::string& variableName, const std::string& size, const std::string& extraData, std::vector<std::string>& outParsedVariableContents, const TFunction<void(const std::string&, const std::string&, const std::string&, std::vector<std::string>&)>& elementFormattingFunction)
+{
+	outParsedVariableContents.push_back(std::vformat("\t\tImGui::Text(\"Size of array = %d\", {});", std::make_format_args(size)));
+	outParsedVariableContents.push_back("\t\tImGui::Indent();");
+	outParsedVariableContents.push_back(std::vformat("\t\tfor (int32 i = 0; i < {}; ++i)", std::make_format_args(size)));
+	outParsedVariableContents.push_back("\t\t{");
+	outParsedVariableContents.push_back("\t\t\tif (i != 0) ImGui::Separator();");
+	std::string subVariableName = std::vformat("{}[i]", std::make_format_args(variableName));
+	std::string prefix = "\t";
+	if (elementFormattingFunction)
+	{
+		elementFormattingFunction(subVariableName, extraData, prefix, outParsedVariableContents);
+	}
+	outParsedVariableContents.push_back("\t\t}");
+	outParsedVariableContents.push_back("\t\tImGui::Unindent();");
 }
 
 void ComponentImplementationGenerator::FormatImGuiQueueField(const std::string& variableName, std::vector<std::string>& outParsedVariableContents)
@@ -886,48 +925,55 @@ void ComponentImplementationGenerator::FormatImGuiNavAgentSelectorField(const st
 	outParsedVariableContents.push_back(std::vformat("{}\t\t}}", std::make_format_args(prefix)));
 }
 
-ComponentImplementationGenerator::TypeInfo::TypeInfo(const std::string& typeString, const std::string& macroString)
+ComponentImplementationGenerator::TypeInfo::TypeInfo(const ArgusCodeGeneratorUtil::ParsedVariableData& variableData)
 {
-	m_underlyingType = DetermineType(typeString, macroString, m_cleanTypeName);
+	m_cleanVariableName = variableData.m_varName;
+	m_underlyingType = DetermineType(variableData.m_typeName, variableData.m_propertyMacro, m_cleanTypeName);
 
-	if (typeString.find("ExponentialDecaySmoother") != std::string::npos)
+	if (variableData.m_typeName.find("ExponentialDecaySmoother") != std::string::npos)
 	{
 		m_containerType = ContainerType::ExponentialSmoother;
-		ExtractTemplateParameters(typeString, m_templateTypes);
+		ExtractTemplateParameters(variableData.m_typeName, m_templateTypes);
 	}
-	else if (typeString.find("SecondOrderSystemSmoother") != std::string::npos)
+	else if (variableData.m_typeName.find("SecondOrderSystemSmoother") != std::string::npos)
 	{
 		m_containerType = ContainerType::SOSSmoother;
-		ExtractTemplateParameters(typeString, m_templateTypes);
+		ExtractTemplateParameters(variableData.m_typeName, m_templateTypes);
 	}
-	else if (typeString.find("TOptional") != std::string::npos)
+	else if (variableData.m_typeName.find("TOptional") != std::string::npos)
 	{
 		m_containerType = ContainerType::Optional;
-		ExtractTemplateParameters(typeString, m_templateTypes);
+		ExtractTemplateParameters(variableData.m_typeName, m_templateTypes);
 	}
-	else if (typeString.find("TArray") != std::string::npos)
+	else if (variableData.m_typeName.find("TArray") != std::string::npos)
 	{
 		m_containerType = ContainerType::Array;
-		ExtractTemplateParameters(typeString, m_templateTypes);
+		ExtractTemplateParameters(variableData.m_typeName, m_templateTypes);
 	}
-	else if (typeString.find("ArgusQueue") != std::string::npos)
+	else if (variableData.m_typeName.find("ArgusQueue") != std::string::npos)
 	{
 		m_containerType = ContainerType::Queue;
-		ExtractTemplateParameters(typeString, m_templateTypes);
+		ExtractTemplateParameters(variableData.m_typeName, m_templateTypes);
 	}
-	else if (typeString.find("ArgusDeque") != std::string::npos)
+	else if (variableData.m_typeName.find("ArgusDeque") != std::string::npos)
 	{
 		m_containerType = ContainerType::Deque;
-		ExtractTemplateParameters(typeString, m_templateTypes);
+		ExtractTemplateParameters(variableData.m_typeName, m_templateTypes);
 	}
-	else if (typeString.find("TBitArray") != std::string::npos)
+	else if (variableData.m_typeName.find("TBitArray") != std::string::npos)
 	{
 		m_containerType = ContainerType::BitArray;
 	}
-	else if (typeString.find("ArgusMap") != std::string::npos)
+	else if (variableData.m_typeName.find("ArgusMap") != std::string::npos)
 	{
 		m_containerType = ContainerType::Map;
-		ExtractTemplateParameters(typeString, m_templateTypes);
+		ExtractTemplateParameters(variableData.m_typeName, m_templateTypes);
+	}
+	else if (variableData.m_varName.find("[") != std::string::npos &&
+			 variableData.m_varName.find("]") != std::string::npos)
+	{
+		m_containerType = ContainerType::CArray;
+		ExtractStaticSizeAndCleanVarName(variableData.m_varName, m_cleanVariableName, m_staticSize);
 	}
 }
 
@@ -966,12 +1012,12 @@ ComponentImplementationGenerator::UnderlyingType ComponentImplementationGenerato
 	{
 		output = UnderlyingType::StaticData;
 	}
-	else if (typeString.find("uint8") != std::string::npos ||
-		typeString.find("uint16") != std::string::npos ||
-		typeString.find("uint32") != std::string::npos ||
-		typeString.find("int8") != std::string::npos ||
-		typeString.find("int16") != std::string::npos ||
-		typeString.find("int32") != std::string::npos)
+	else if (typeString.find("uint8")  != std::string::npos ||
+			 typeString.find("uint16") != std::string::npos ||
+			 typeString.find("uint32") != std::string::npos ||
+			 typeString.find("int8")   != std::string::npos ||
+			 typeString.find("int16")  != std::string::npos ||
+			 typeString.find("int32")  != std::string::npos)
 	{
 		output = UnderlyingType::Integer;
 	}
@@ -1071,4 +1117,14 @@ void ComponentImplementationGenerator::TypeInfo::ExtractTemplateParameters(const
 			outPopulatedTemplateParameters.push_back(DetermineType(underlyingTypeString, "", unusedCleanTypeName));
 		}
 	}
+}
+
+void ComponentImplementationGenerator::TypeInfo::ExtractStaticSizeAndCleanVarName(const std::string& variableName, std::string& outCleanVariableName, std::string& outStaticSize)
+{
+	size_t indexOfParamStart = variableName.find_first_of('[');
+	const size_t indexOfParamEnd = variableName.find_first_of(']');
+
+	outCleanVariableName = variableName.substr(0, indexOfParamStart);
+	indexOfParamStart++;
+	outStaticSize = variableName.substr(indexOfParamStart, indexOfParamEnd - indexOfParamStart);
 }

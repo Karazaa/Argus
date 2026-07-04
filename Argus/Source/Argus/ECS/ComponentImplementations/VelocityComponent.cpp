@@ -4,6 +4,7 @@
 #include "ComponentDefinitions/VelocityComponent.h"
 #include "ArgusEntity.h"
 #include "ArgusLogging.h"
+#include "ArgusMath.h"
 #include "Serialization/Archive.h"
 
 #if !UE_BUILD_SHIPPING

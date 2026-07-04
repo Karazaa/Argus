@@ -67,6 +67,24 @@ namespace ArgusMath
 		return FVector::ZeroVector;
 	}
 
+	template<>
+	inline uint8 GetZero<uint8>()
+	{
+		return 0u;
+	}
+
+	template<>
+	inline uint16 GetZero<uint16>()
+	{
+		return 0u;
+	}
+
+	template<>
+	inline int32 GetZero<int32>()
+	{
+		return 0;
+	}
+
 	template <typename T>
 	static T SafeDivide(T numerator, float denominator, T fallbackValue)
 	{

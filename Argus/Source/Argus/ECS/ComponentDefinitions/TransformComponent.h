@@ -6,6 +6,8 @@
 #include "ArgusMath.h"
 #include "CoreMinimal.h"
 
+#include "TransformComponent.generated.h"
+
 UENUM()
 enum class EFlightCapability : uint8
 {

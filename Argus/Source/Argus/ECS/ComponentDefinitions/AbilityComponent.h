@@ -6,6 +6,8 @@
 #include "ArgusMacros.h"
 #include "CoreMinimal.h"
 
+#include "AbilityComponent.generated.h"
+
 class UAbilityRecord;
 
 UENUM(BlueprintType)

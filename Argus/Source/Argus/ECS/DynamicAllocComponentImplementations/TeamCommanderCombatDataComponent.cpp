@@ -14,10 +14,22 @@
 // Component shared functionality
 void TeamCommanderCombatDataComponent::Reset()
 {
-	//m_numCombatantsCanAttackGrounded = 0u;
-	//m_numCombatantsCanAttackFlying = 0u;
-	//m_numEnemyCombatantsGrounded = 0u;
-	//m_numEnemyCombatantsFlying = 0u;
+	for (int32 i = 0; i < NUM_TEAMS; ++i)
+	{
+		m_numCanAttackGroundedCombatants[i] = ArgusMath::GetZero<uint16>();
+	}
+	for (int32 i = 0; i < NUM_TEAMS; ++i)
+	{
+		m_numCanAttackFlyingCombatants[i] = ArgusMath::GetZero<uint16>();
+	}
+	for (int32 i = 0; i < NUM_TEAMS; ++i)
+	{
+		m_numGroundedCombatants[i] = ArgusMath::GetZero<uint16>();
+	}
+	for (int32 i = 0; i < NUM_TEAMS; ++i)
+	{
+		m_numFlyingCombatants[i] = ArgusMath::GetZero<uint16>();
+	}
 }
 
 void TeamCommanderCombatDataComponent::Serialize(FArchive& archive)
@@ -35,21 +47,49 @@ void TeamCommanderCombatDataComponent::DrawComponentDebug() const
 	if (ImGui::BeginTable("ComponentValues", 2, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_BordersInner))
 	{
 		ImGui::TableNextColumn();
-		ImGui::Text("m_numCombatantsCanAttackGrounded");
+		ImGui::Text("m_numCanAttackGroundedCombatants");
 		ImGui::TableNextColumn();
-		//ImGui::Text("%d", m_numCombatantsCanAttackGrounded);
+		ImGui::Text("Size of array = %d", NUM_TEAMS);
+		ImGui::Indent();
+		for (int32 i = 0; i < NUM_TEAMS; ++i)
+		{
+			if (i != 0) ImGui::Separator();
+			ImGui::Text("%d", m_numCanAttackGroundedCombatants[i]);
+		}
+		ImGui::Unindent();
 		ImGui::TableNextColumn();
-		ImGui::Text("m_numCombatantsCanAttackFlying");
+		ImGui::Text("m_numCanAttackFlyingCombatants");
 		ImGui::TableNextColumn();
-		//ImGui::Text("%d", m_numCombatantsCanAttackFlying);
+		ImGui::Text("Size of array = %d", NUM_TEAMS);
+		ImGui::Indent();
+		for (int32 i = 0; i < NUM_TEAMS; ++i)
+		{
+			if (i != 0) ImGui::Separator();
+			ImGui::Text("%d", m_numCanAttackFlyingCombatants[i]);
+		}
+		ImGui::Unindent();
 		ImGui::TableNextColumn();
-		ImGui::Text("m_numEnemyCombatantsGrounded");
+		ImGui::Text("m_numGroundedCombatants");
 		ImGui::TableNextColumn();
-		//ImGui::Text("%d", m_numEnemyCombatantsGrounded);
+		ImGui::Text("Size of array = %d", NUM_TEAMS);
+		ImGui::Indent();
+		for (int32 i = 0; i < NUM_TEAMS; ++i)
+		{
+			if (i != 0) ImGui::Separator();
+			ImGui::Text("%d", m_numGroundedCombatants[i]);
+		}
+		ImGui::Unindent();
 		ImGui::TableNextColumn();
-		ImGui::Text("m_numEnemyCombatantsFlying");
+		ImGui::Text("m_numFlyingCombatants");
 		ImGui::TableNextColumn();
-		//ImGui::Text("%d", m_numEnemyCombatantsFlying);
+		ImGui::Text("Size of array = %d", NUM_TEAMS);
+		ImGui::Indent();
+		for (int32 i = 0; i < NUM_TEAMS; ++i)
+		{
+			if (i != 0) ImGui::Separator();
+			ImGui::Text("%d", m_numFlyingCombatants[i]);
+		}
+		ImGui::Unindent();
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING
