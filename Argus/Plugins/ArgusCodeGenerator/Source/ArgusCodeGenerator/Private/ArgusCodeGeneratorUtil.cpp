@@ -693,6 +693,18 @@ bool ArgusCodeGeneratorUtil::ParseVariableDeclarations(std::string lineText, boo
 		return false;
 	}
 
+	if (variableData.m_varName.find("[") != std::string::npos &&
+		variableData.m_varName.find("]") != std::string::npos)
+	{
+		size_t indexOfParamStart = variableData.m_varName.find_first_of('[');
+		const size_t indexOfParamEnd = variableData.m_varName.find_first_of(']');
+
+		std::string cleanVarName = variableData.m_varName.substr(0, indexOfParamStart);
+		indexOfParamStart++;
+		variableData.m_sizeString = variableData.m_varName.substr(indexOfParamStart, indexOfParamEnd - indexOfParamStart);
+		variableData.m_varName = cleanVarName;
+	}
+
 	std::erase(variableData.m_typeName, ' ');
 	std::erase(variableData.m_varName, ' ');
 	std::erase(variableData.m_defaultValue, ' ');
@@ -709,6 +721,7 @@ bool ArgusCodeGeneratorUtil::ParseVariableDeclarations(std::string lineText, boo
 		parsedVariableData.back()[index].m_typeName = variableData.m_typeName;
 		parsedVariableData.back()[index].m_varName = variableData.m_varName;
 		parsedVariableData.back()[index].m_defaultValue = variableData.m_defaultValue;
+		parsedVariableData.back()[index].m_sizeString = variableData.m_sizeString;
 		hasObservables |= parsedVariableData.back()[index].m_isObservable;
 	}
 	else

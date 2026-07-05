@@ -48,6 +48,7 @@ public:
 		std::string m_defaultValue = "";
 		std::string m_propertyMacro = "";
 		std::string m_staticDataTypeName = "";
+		std::string m_sizeString = "";
 		bool m_isObservable = false;
 	};
 

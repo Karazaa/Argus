@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "ArgusCodeGeneratorUtil.h"
+#include "TypeInfo.h"
 
 class ComponentImplementationGenerator
 {
@@ -17,66 +17,7 @@ private:
 	static const char* s_dynamicAllocComponentImplementationCppTemplateFilename;
 	static const char* s_perObservableTemplateFilename;
 	static const char* s_sharedFunctionalityTemplateFilename;
-	static const char* s_componentCppSuffix;
-
-	enum UnderlyingType : uint8
-	{
-		None,
-		Integer,
-		Float,
-		Vector,
-		Vector2,
-		TimerHandle,
-		ResourceSet,
-		EntityKDTree,
-		ObstacleKDTree,
-		EntityKDTreeOutput,
-		ObstacleKDTreeOutput,
-		SpawnEntityInfo,
-		Bool,
-		ControlGroup,
-		TeamCommanderPriority,
-		ResourceExtractionData,
-		Bitmask,
-		StaticData,
-		Enum,
-		Observers,
-		ConstructionData,
-		NavAgentSelector
-	};
-
-	enum ContainerType : uint8
-	{
-		NoContainer,
-		Array,
-		Queue,
-		Deque,
-		ExponentialSmoother,
-		SOSSmoother,
-		Optional,
-		BitArray,
-		Map,
-		CArray
-	};
-
-	struct TypeInfo
-	{
-		std::string m_cleanTypeName;
-		std::string m_cleanVariableName;
-		std::string m_staticSize;
-		std::vector<UnderlyingType> m_templateTypes;
-		UnderlyingType m_underlyingType = UnderlyingType::None;
-		ContainerType m_containerType = ContainerType::NoContainer;
-
-		TypeInfo(const ArgusCodeGeneratorUtil::ParsedVariableData& variableData);
-
-		UnderlyingType GetTemplateParameter(int index) const;
-	private:
-		UnderlyingType DetermineType(const std::string& typeString, const std::string& macroString, std::string& outCleanTypeName);
-		void ExtractTemplateParameters(const std::string& typeString, std::vector<UnderlyingType>& outPopulatedTemplateParameters);
-		void ExtractStaticSizeAndCleanVarName(const std::string& variableName, std::string& outCleanVariableName, std::string& outStaticSize);
-	};
-	
+	static const char* s_componentCppSuffix;	
 
 	static bool ParseComponentImplementationCppFileTemplateWithReplacements(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents);
 	static bool ParseDynamicAllocComponentImplementationCppFileTemplateWithReplacements(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents);
