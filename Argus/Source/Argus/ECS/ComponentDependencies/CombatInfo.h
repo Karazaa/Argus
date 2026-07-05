@@ -17,5 +17,6 @@ enum class ERangedAttackCapability : uint8
 {
 	GroundedOnly,
 	FlyingOnly,
-	GroundedAndFlying
+	GroundedAndFlying,
+	Count
 };

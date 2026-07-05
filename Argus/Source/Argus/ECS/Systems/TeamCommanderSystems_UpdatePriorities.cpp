@@ -201,7 +201,7 @@ void TeamCommanderSystems_UpdatePriorities::UpdateSpawnUnitTeamPriority(const Te
 			UpdateSpawnUnitResourceExtractorTeamPriority(components, priority);
 			break;
 		case EEntityCategoryType::Combatant:
-			// TODO JAMES: Determine combatant spawning priority.
+			UpdateSpawnUnitCombatantTeamPriority(components, priority);
 			break;
 		default:
 			break;
@@ -222,20 +222,6 @@ void TeamCommanderSystems_UpdatePriorities::UpdateSpawnUnitTeamPriority(const Te
 		}
 
 		if (entityTemplate->DoesTemplateSatisfyEntityCategory(priority.m_entityCategory))
-		{
-			priority.m_weight -= 1.0f;
-		}
-	}
-
-	for (int32 i = 0; i < components.m_baseComponent->m_idleEntityIdsForTeam.Num(); ++i)
-	{
-		ArgusEntity entity = ArgusEntity::RetrieveEntity(components.m_baseComponent->m_idleEntityIdsForTeam[i]);
-		if (!entity)
-		{
-			continue;
-		}
-
-		if (entity.DoesEntitySatisfyEntityCategory(priority.m_entityCategory))
 		{
 			priority.m_weight -= 1.0f;
 		}
@@ -263,6 +249,25 @@ void TeamCommanderSystems_UpdatePriorities::UpdateSpawnUnitResourceExtractorTeam
 		priority.m_weight += 1.0f;
 		return false;
 	});
+
+	for (int32 i = 0; i < components.m_baseComponent->m_idleEntityIdsForTeam.Num(); ++i)
+	{
+		ArgusEntity entity = ArgusEntity::RetrieveEntity(components.m_baseComponent->m_idleEntityIdsForTeam[i]);
+		if (!entity)
+		{
+			continue;
+		}
+
+		if (entity.DoesEntitySatisfyEntityCategory(priority.m_entityCategory))
+		{
+			priority.m_weight -= 1.0f;
+		}
+	}
+}
+
+void TeamCommanderSystems_UpdatePriorities::UpdateSpawnUnitCombatantTeamPriority(const TeamCommanderComponentCollection& components, TeamCommanderPriority& priority)
+{
+	// TODO JAMES: Determine combatant spawning priority.
 }
 
 void TeamCommanderSystems_UpdatePriorities::UpdateScoutingTeamPriority(const TeamCommanderComponentCollection& components, TeamCommanderPriority& priority)

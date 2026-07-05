@@ -16,6 +16,7 @@ private:
 	static void UpdateResourceExtractionTeamPriority(const TeamCommanderComponentCollection& components, TeamCommanderPriority& priority);
 	static void UpdateSpawnUnitTeamPriority(const TeamCommanderComponentCollection& components, TeamCommanderPriority& priority);
 	static void UpdateSpawnUnitResourceExtractorTeamPriority(const TeamCommanderComponentCollection& components, TeamCommanderPriority& priority);
+	static void UpdateSpawnUnitCombatantTeamPriority(const TeamCommanderComponentCollection& components, TeamCommanderPriority& priority);
 	static void UpdateScoutingTeamPriority(const TeamCommanderComponentCollection& components, TeamCommanderPriority& priority);
 	static void UpdateContinueConstructionPriority(const TeamCommanderComponentCollection& components, TeamCommanderPriority& priority);
 };

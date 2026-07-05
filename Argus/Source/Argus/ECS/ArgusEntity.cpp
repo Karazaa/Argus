@@ -3,6 +3,7 @@
 #include "ArgusEntity.h"
 #include "ArgusLogging.h"
 #include "ArgusStaticData.h"
+#include "Systems/CombatSystems.h"
 #include "Systems/TargetingSystems.h"
 
 const ArgusEntity ArgusEntity::k_emptyEntity = ArgusEntity();
@@ -455,7 +456,28 @@ bool ArgusEntity::DoesEntitySatisfyEntityCategory(EntityCategory entityCategory)
 		case EEntityCategoryType::Combatant:
 			if (const CombatComponent* combatComponent = GetComponent<CombatComponent>())
 			{
-				return combatComponent->m_isConsideredCombatant;
+				if (!combatComponent->m_isConsideredCombatant)
+				{
+					return false;
+				}
+				if (entityCategory.m_attackCapability == ERangedAttackCapability::Count)
+				{
+					return true;
+				}
+
+				CombatSystemsArgs combatArgs;
+				if (!combatArgs.PopulateArguments(*this))
+				{
+					return false;
+				}
+				if (entityCategory.m_attackCapability == ERangedAttackCapability::FlyingOnly)
+				{
+					return CombatSystems::CanAttackFlying(combatArgs);
+				}
+				if (entityCategory.m_attackCapability == ERangedAttackCapability::GroundedOnly)
+				{
+					return CombatSystems::CanAttackGrounded(combatArgs);
+				}
 			}
 			return false;
 		default:

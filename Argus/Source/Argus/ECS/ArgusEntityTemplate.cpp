@@ -159,7 +159,7 @@ void UArgusEntityTemplate::SetInitialStateFromData(ArgusEntity entity) const
 		ArgusStaticData::AsyncPreLoadRecord<UResourceSetRecord>(resourceComponent->m_resourceCapacityRecordId);
 	}
 
-	if (const ResourceExtractionComponent* resourceExtractionComponent = entity.GetComponent<ResourceExtractionComponent>())
+	if (const ResourceExtractionComponent* resourceExtractionComponent = entity.GetComponent<ResourceExtractionComponent>()) 
 	{
 		ArgusStaticData::AsyncPreLoadRecord<UResourceSetRecord>(resourceExtractionComponent->m_resourcesToExtractRecordId);
 	}
@@ -189,6 +189,9 @@ bool UArgusEntityTemplate::DoesTemplateSatisfyEntityCategory(EntityCategory enti
 			{
 				return resourceComponentData->m_resourceComponentOwnerType == EResourceComponentOwnerType::Sink && resourceComponentData->m_currentResources.HasResourceType(entityCategory.m_resourceType);
 			}
+			return false;
+		case EEntityCategoryType::Combatant:
+			// TODO JAMES: Populate this.
 			return false;
 		default:
 			return false;
