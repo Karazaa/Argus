@@ -64,47 +64,47 @@ void TaskComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_baseState");
 		ImGui::TableNextColumn();
-		const char* valueName_m_baseState = ARGUS_FSTRING_TO_CHAR(StaticEnum<EBaseState>()->GetNameStringByValue(static_cast<uint8>(m_baseState)))
+		const char* valueName_m_baseState = ARGUS_FSTRING_TO_CHAR(StaticEnum<EBaseState>()->GetNameStringByValue(static_cast<uint8>(m_baseState)));
 		ImGui::Text(valueName_m_baseState);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_movementState");
 		ImGui::TableNextColumn();
-		const char* valueName_m_movementState = ARGUS_FSTRING_TO_CHAR(StaticEnum<EMovementState>()->GetNameStringByValue(static_cast<uint8>(m_movementState)))
+		const char* valueName_m_movementState = ARGUS_FSTRING_TO_CHAR(StaticEnum<EMovementState>()->GetNameStringByValue(static_cast<uint8>(m_movementState)));
 		ImGui::Text(valueName_m_movementState);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_spawningState");
 		ImGui::TableNextColumn();
-		const char* valueName_m_spawningState = ARGUS_FSTRING_TO_CHAR(StaticEnum<ESpawningState>()->GetNameStringByValue(static_cast<uint8>(m_spawningState)))
+		const char* valueName_m_spawningState = ARGUS_FSTRING_TO_CHAR(StaticEnum<ESpawningState>()->GetNameStringByValue(static_cast<uint8>(m_spawningState)));
 		ImGui::Text(valueName_m_spawningState);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_abilityState");
 		ImGui::TableNextColumn();
-		const char* valueName_m_abilityState = ARGUS_FSTRING_TO_CHAR(StaticEnum<EAbilityState>()->GetNameStringByValue(static_cast<uint8>(m_abilityState)))
+		const char* valueName_m_abilityState = ARGUS_FSTRING_TO_CHAR(StaticEnum<EAbilityState>()->GetNameStringByValue(static_cast<uint8>(m_abilityState)));
 		ImGui::Text(valueName_m_abilityState);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_constructionState");
 		ImGui::TableNextColumn();
-		const char* valueName_m_constructionState = ARGUS_FSTRING_TO_CHAR(StaticEnum<EConstructionState>()->GetNameStringByValue(static_cast<uint8>(m_constructionState)))
+		const char* valueName_m_constructionState = ARGUS_FSTRING_TO_CHAR(StaticEnum<EConstructionState>()->GetNameStringByValue(static_cast<uint8>(m_constructionState)));
 		ImGui::Text(valueName_m_constructionState);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_combatState");
 		ImGui::TableNextColumn();
-		const char* valueName_m_combatState = ARGUS_FSTRING_TO_CHAR(StaticEnum<ECombatState>()->GetNameStringByValue(static_cast<uint8>(m_combatState)))
+		const char* valueName_m_combatState = ARGUS_FSTRING_TO_CHAR(StaticEnum<ECombatState>()->GetNameStringByValue(static_cast<uint8>(m_combatState)));
 		ImGui::Text(valueName_m_combatState);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_resourceExtractionState");
 		ImGui::TableNextColumn();
-		const char* valueName_m_resourceExtractionState = ARGUS_FSTRING_TO_CHAR(StaticEnum<EResourceExtractionState>()->GetNameStringByValue(static_cast<uint8>(m_resourceExtractionState)))
+		const char* valueName_m_resourceExtractionState = ARGUS_FSTRING_TO_CHAR(StaticEnum<EResourceExtractionState>()->GetNameStringByValue(static_cast<uint8>(m_resourceExtractionState)));
 		ImGui::Text(valueName_m_resourceExtractionState);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_flightState");
 		ImGui::TableNextColumn();
-		const char* valueName_m_flightState = ARGUS_FSTRING_TO_CHAR(StaticEnum<EFlightState>()->GetNameStringByValue(static_cast<uint8>(m_flightState)))
+		const char* valueName_m_flightState = ARGUS_FSTRING_TO_CHAR(StaticEnum<EFlightState>()->GetNameStringByValue(static_cast<uint8>(m_flightState)));
 		ImGui::Text(valueName_m_flightState);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_directiveFromTeamCommander");
 		ImGui::TableNextColumn();
-		const char* valueName_m_directiveFromTeamCommander = ARGUS_FSTRING_TO_CHAR(StaticEnum<ETeamCommanderDirective>()->GetNameStringByValue(static_cast<uint8>(m_directiveFromTeamCommander)))
+		const char* valueName_m_directiveFromTeamCommander = ARGUS_FSTRING_TO_CHAR(StaticEnum<ETeamCommanderDirective>()->GetNameStringByValue(static_cast<uint8>(m_directiveFromTeamCommander)));
 		ImGui::Text(valueName_m_directiveFromTeamCommander);
 		ImGui::EndTable();
 	}

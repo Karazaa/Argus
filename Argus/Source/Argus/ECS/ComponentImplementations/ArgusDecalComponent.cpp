@@ -80,7 +80,7 @@ void ArgusDecalComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_decalType");
 		ImGui::TableNextColumn();
-		const char* valueName_m_decalType = ARGUS_FSTRING_TO_CHAR(StaticEnum<EDecalType>()->GetNameStringByValue(static_cast<uint8>(m_decalType)))
+		const char* valueName_m_decalType = ARGUS_FSTRING_TO_CHAR(StaticEnum<EDecalType>()->GetNameStringByValue(static_cast<uint8>(m_decalType)));
 		ImGui::Text(valueName_m_decalType);
 		ImGui::EndTable();
 	}

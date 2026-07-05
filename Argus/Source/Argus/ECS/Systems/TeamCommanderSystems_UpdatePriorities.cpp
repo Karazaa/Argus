@@ -81,13 +81,13 @@ void TeamCommanderSystems_UpdatePriorities::UpdateTeamCommanderPriorities(ArgusE
 						TeamCommanderPriority& attackGroundedPriority = components.m_baseComponent->m_priorities.Emplace_GetRef();
 						attackGroundedPriority.m_directive = directiveToEvaluate;
 						attackGroundedPriority.m_entityCategory.m_entityCategoryType = unitCategoryType;
-						attackGroundedPriority.m_entityCategory.m_rangedCapability = ERangedAttackCapability::GroundedOnly;
+						attackGroundedPriority.m_entityCategory.m_attackCapability = ERangedAttackCapability::GroundedOnly;
 						UpdateSpawnUnitTeamPriority(components, attackGroundedPriority);
 
 						TeamCommanderPriority& attackFlyingPriority = components.m_baseComponent->m_priorities.Emplace_GetRef();
 						attackFlyingPriority.m_directive = directiveToEvaluate;
 						attackFlyingPriority.m_entityCategory.m_entityCategoryType = unitCategoryType;
-						attackFlyingPriority.m_entityCategory.m_rangedCapability = ERangedAttackCapability::FlyingOnly;
+						attackFlyingPriority.m_entityCategory.m_attackCapability = ERangedAttackCapability::FlyingOnly;
 						UpdateSpawnUnitTeamPriority(components, attackFlyingPriority);
 					}
 					else

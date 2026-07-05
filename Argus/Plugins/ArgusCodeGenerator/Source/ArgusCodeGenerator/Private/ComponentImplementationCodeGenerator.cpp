@@ -739,7 +739,7 @@ void ComponentImplementationGenerator::FormatImGuiEnumField(const std::string& v
 		newVariableName.append(variableName);
 	}
 	
-	outParsedVariableContents.push_back(std::vformat("{}\t\tconst char* {} = ARGUS_FSTRING_TO_CHAR(StaticEnum<{}>()->GetNameStringByValue(static_cast<uint8>({})))", std::make_format_args(prefix, newVariableName, extraData, variableName)));
+	outParsedVariableContents.push_back(std::vformat("{}\t\tconst char* {} = ARGUS_FSTRING_TO_CHAR(StaticEnum<{}>()->GetNameStringByValue(static_cast<uint8>({})));", std::make_format_args(prefix, newVariableName, extraData, variableName)));
 	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::Text({});", std::make_format_args(prefix, newVariableName)));
 }
 
@@ -835,75 +835,12 @@ void ComponentImplementationGenerator::FormatImGuiControlGroupField(const std::s
 
 void ComponentImplementationGenerator::FormatImGuiTeamCommanderPriorityField(const std::string& variableName, const std::string& extraData, const std::string& prefix, std::vector<std::string>& outParsedVariableContents)
 {
-	std::string enumVarName = variableName;
-	enumVarName.append(".m_directive");
-	std::string enumTypeName = "ETeamCommanderDirective";
-
-	std::string resourceVarName = variableName;
-	resourceVarName.append(".m_entityCategory.m_resourceType");
-	std::string resourceTypeName = "EResourceType";
-
-	std::string unitVarName = variableName;
-	unitVarName.append(".m_entityCategory.m_entityCategoryType");
-	std::string unitTypeName = "EEntityCategoryType";
-
-	std::string indentPrefix = prefix;
-	indentPrefix.append("\t");
-
-	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::BeginTable(\"{}\", 4, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_SizingStretchProp);", std::make_format_args(prefix, variableName)));
-
-	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::TableNextColumn();", std::make_format_args(prefix)));
-	std::string floatVarName = variableName;
-	floatVarName.append(".m_weight");
-	FormatImGuiFloatField(floatVarName, extraData, prefix, outParsedVariableContents);
-
-	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::TableNextColumn();", std::make_format_args(prefix)));
-	FormatImGuiEnumField(enumVarName, enumTypeName, prefix, outParsedVariableContents);
-
-	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::TableNextColumn();", std::make_format_args(prefix)));
-	outParsedVariableContents.push_back(std::vformat("{}\t\tif ({} != EResourceType::Count)", std::make_format_args(prefix, resourceVarName)));
-	outParsedVariableContents.push_back(std::vformat("{}\t\t{{", std::make_format_args(prefix)));
-	FormatImGuiEnumField(resourceVarName, resourceTypeName, indentPrefix, outParsedVariableContents);
-	outParsedVariableContents.push_back(std::vformat("{}\t\t}}", std::make_format_args(prefix)));
-
-	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::TableNextColumn();", std::make_format_args(prefix)));
-	outParsedVariableContents.push_back(std::vformat("{}\t\tif ({} != EEntityCategoryType::Count)", std::make_format_args(prefix, unitVarName)));
-	outParsedVariableContents.push_back(std::vformat("{}\t\t{{", std::make_format_args(prefix)));
-	FormatImGuiEnumField(unitVarName, unitTypeName, indentPrefix, outParsedVariableContents);
-	outParsedVariableContents.push_back(std::vformat("{}\t\t}}", std::make_format_args(prefix)));
-
-	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::EndTable();", std::make_format_args(prefix)));
+	outParsedVariableContents.push_back(std::vformat("{}\t\t{}.DrawImGuiDebug();", std::make_format_args(prefix, variableName)));
 }
 
 void ComponentImplementationGenerator::FormatImGuiResourceSourceExtractionDataField(const std::string& variableName, const std::string& extraData, const std::string& prefix, std::vector<std::string>& outParsedVariableContents)
 {
-	std::string resourceSourceIdName = variableName;
-	std::string resourceSinkIdName = variableName;
-	std::string resourceSinkConstructorIdName = variableName;
-	std::string resourceExtractorIdName = variableName;
-	resourceSourceIdName.append(".m_resourceSourceEntityId");
-	resourceSinkIdName.append(".m_resourceSinkEntityId");
-	resourceSinkConstructorIdName.append(".m_resourceSinkConstructorEntityId");
-	resourceExtractorIdName.append(".m_resourceExtractorEntityId");
-
-	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::BeginTable(\"{}\", 2, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_SizingStretchProp);", std::make_format_args(prefix, variableName)));
-
-	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::TableNextColumn();", std::make_format_args(prefix)));
-	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::Text(\"Source Entity Id\");", std::make_format_args(prefix)));
-	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::TableNextColumn();", std::make_format_args(prefix)));
-	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::Text(\"%d\", {});", std::make_format_args(prefix, resourceSourceIdName)));
-
-	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::TableNextColumn();", std::make_format_args(prefix)));
-	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::Text(\"Sink Entity Id\");", std::make_format_args(prefix)));
-	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::TableNextColumn();", std::make_format_args(prefix)));
-	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::Text(\"%d\", {});", std::make_format_args(prefix, resourceSinkIdName)));
-
-	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::TableNextColumn();", std::make_format_args(prefix)));
-	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::Text(\"Extractor Entity Id\");", std::make_format_args(prefix, resourceExtractorIdName)));
-	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::TableNextColumn();", std::make_format_args(prefix)));
-	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::Text(\"%d\", {});", std::make_format_args(prefix, resourceExtractorIdName)));
-
-	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::EndTable();", std::make_format_args(prefix)));
+	outParsedVariableContents.push_back(std::vformat("{}\t\t{}.DrawImGuiDebug();", std::make_format_args(prefix, variableName)));
 }
 
 void ComponentImplementationGenerator::FormatImGuiNavAgentSelectorField(const std::string& variableName, const std::string& extraData, const std::string& prefix, std::vector<std::string>& outParsedVariableContents)

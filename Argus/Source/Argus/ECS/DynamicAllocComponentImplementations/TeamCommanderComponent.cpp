@@ -109,25 +109,7 @@ void TeamCommanderComponent::DrawComponentDebug() const
 			for (int32 i = 0; i < m_priorities.Num(); ++i)
 			{
 				if (i != 0) ImGui::Separator();
-				ImGui::BeginTable("m_priorities[i]", 4, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_SizingStretchProp);
-				ImGui::TableNextColumn();
-				ImGui::Text("%.2f", m_priorities[i].m_weight);
-				ImGui::TableNextColumn();
-				const char* valueName_m_priorities_m_directive = ARGUS_FSTRING_TO_CHAR(StaticEnum<ETeamCommanderDirective>()->GetNameStringByValue(static_cast<uint8>(m_priorities[i].m_directive)))
-				ImGui::Text(valueName_m_priorities_m_directive);
-				ImGui::TableNextColumn();
-				if (m_priorities[i].m_entityCategory.m_resourceType != EResourceType::Count)
-				{
-					const char* valueName_m_priorities_m_entityCategory_m_resourceType = ARGUS_FSTRING_TO_CHAR(StaticEnum<EResourceType>()->GetNameStringByValue(static_cast<uint8>(m_priorities[i].m_entityCategory.m_resourceType)))
-					ImGui::Text(valueName_m_priorities_m_entityCategory_m_resourceType);
-				}
-				ImGui::TableNextColumn();
-				if (m_priorities[i].m_entityCategory.m_entityCategoryType != EEntityCategoryType::Count)
-				{
-					const char* valueName_m_priorities_m_entityCategory_m_entityCategoryType = ARGUS_FSTRING_TO_CHAR(StaticEnum<EEntityCategoryType>()->GetNameStringByValue(static_cast<uint8>(m_priorities[i].m_entityCategory.m_entityCategoryType)))
-					ImGui::Text(valueName_m_priorities_m_entityCategory_m_entityCategoryType);
-				}
-				ImGui::EndTable();
+				m_priorities[i].DrawImGuiDebug();
 			}
 			ImGui::Unindent();
 		}
@@ -141,7 +123,7 @@ void TeamCommanderComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_teamToCommand");
 		ImGui::TableNextColumn();
-		const char* valueName_m_teamToCommand = ARGUS_FSTRING_TO_CHAR(StaticEnum<ETeam>()->GetNameStringByValue(static_cast<uint8>(m_teamToCommand)))
+		const char* valueName_m_teamToCommand = ARGUS_FSTRING_TO_CHAR(StaticEnum<ETeam>()->GetNameStringByValue(static_cast<uint8>(m_teamToCommand)));
 		ImGui::Text(valueName_m_teamToCommand);
 		ImGui::EndTable();
 	}

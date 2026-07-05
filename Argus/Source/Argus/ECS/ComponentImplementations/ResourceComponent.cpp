@@ -72,7 +72,7 @@ void ResourceComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_resourceComponentOwnerType");
 		ImGui::TableNextColumn();
-		const char* valueName_m_resourceComponentOwnerType = ARGUS_FSTRING_TO_CHAR(StaticEnum<EResourceComponentOwnerType>()->GetNameStringByValue(static_cast<uint8>(m_resourceComponentOwnerType)))
+		const char* valueName_m_resourceComponentOwnerType = ARGUS_FSTRING_TO_CHAR(StaticEnum<EResourceComponentOwnerType>()->GetNameStringByValue(static_cast<uint8>(m_resourceComponentOwnerType)));
 		ImGui::Text(valueName_m_resourceComponentOwnerType);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_bufferRegionRadius");

@@ -25,6 +25,10 @@ struct TeamCommanderPriority
 	ETeamCommanderDirective m_directive = ETeamCommanderDirective::Scout;
 	EntityCategory m_entityCategory;
 	float m_weight = 0.0f;
+
+#if !UE_BUILD_SHIPPING
+	void DrawImGuiDebug() const;
+#endif // !UE_BUILD_SHIPPING
 };
 
 struct ResourceSourceExtractionData
@@ -35,6 +39,10 @@ struct ResourceSourceExtractionData
 
 	bool HasSourceEntityId(uint16 entityId) const { return m_resourceSourceEntityId == entityId; }
 	void SetSourceEntityId(uint16 entityId) { m_resourceSourceEntityId = entityId; }
+
+#if !UE_BUILD_SHIPPING
+	void DrawImGuiDebug() const;
+#endif // !UE_BUILD_SHIPPING
 };
 FArchive& operator<<(FArchive& archive, ResourceSourceExtractionData& controlGroup);
 

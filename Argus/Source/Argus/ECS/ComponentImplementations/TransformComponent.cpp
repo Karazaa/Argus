@@ -53,7 +53,7 @@ void TransformComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_flightCapability");
 		ImGui::TableNextColumn();
-		const char* valueName_m_flightCapability = ARGUS_FSTRING_TO_CHAR(StaticEnum<EFlightCapability>()->GetNameStringByValue(static_cast<uint8>(m_flightCapability)))
+		const char* valueName_m_flightCapability = ARGUS_FSTRING_TO_CHAR(StaticEnum<EFlightCapability>()->GetNameStringByValue(static_cast<uint8>(m_flightCapability)));
 		ImGui::Text(valueName_m_flightCapability);
 		ImGui::EndTable();
 	}

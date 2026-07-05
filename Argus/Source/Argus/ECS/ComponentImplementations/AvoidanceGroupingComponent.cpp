@@ -83,7 +83,7 @@ void AvoidanceGroupingComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_avoidancePriority");
 		ImGui::TableNextColumn();
-		const char* valueName_m_avoidancePriority = ARGUS_FSTRING_TO_CHAR(StaticEnum<EAvoidancePriority>()->GetNameStringByValue(static_cast<uint8>(m_avoidancePriority)))
+		const char* valueName_m_avoidancePriority = ARGUS_FSTRING_TO_CHAR(StaticEnum<EAvoidancePriority>()->GetNameStringByValue(static_cast<uint8>(m_avoidancePriority)));
 		ImGui::Text(valueName_m_avoidancePriority);
 		ImGui::EndTable();
 	}

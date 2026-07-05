@@ -22,8 +22,7 @@ struct EntityCategory
 {
 	EEntityCategoryType m_entityCategoryType = EEntityCategoryType::Count;
 	EResourceType m_resourceType = EResourceType::Count;
-	EAttackType m_attackType = EAttackType::Melee;
-	ERangedAttackCapability m_rangedCapability = ERangedAttackCapability::GroundedAndFlying;
+	ERangedAttackCapability m_attackCapability = ERangedAttackCapability::GroundedAndFlying;
 };
 
 namespace EntityCategoryUtils

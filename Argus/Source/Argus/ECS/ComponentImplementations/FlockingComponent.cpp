@@ -78,7 +78,7 @@ void FlockingComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_flockingState");
 		ImGui::TableNextColumn();
-		const char* valueName_m_flockingState = ARGUS_FSTRING_TO_CHAR(StaticEnum<EFlockingState>()->GetNameStringByValue(static_cast<uint8>(m_flockingState)))
+		const char* valueName_m_flockingState = ARGUS_FSTRING_TO_CHAR(StaticEnum<EFlockingState>()->GetNameStringByValue(static_cast<uint8>(m_flockingState)));
 		ImGui::Text(valueName_m_flockingState);
 		ImGui::EndTable();
 	}

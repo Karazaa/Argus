@@ -51,20 +51,7 @@ void TeamCommanderResourceDataComponent::DrawComponentDebug() const
 			for (int32 i = 0; i < m_seenResourceASourceExtractionData.Num(); ++i)
 			{
 				if (i != 0) ImGui::Separator();
-				ImGui::BeginTable("m_seenResourceASourceExtractionData[i]", 2, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_SizingStretchProp);
-				ImGui::TableNextColumn();
-				ImGui::Text("Source Entity Id");
-				ImGui::TableNextColumn();
-				ImGui::Text("%d", m_seenResourceASourceExtractionData[i].m_resourceSourceEntityId);
-				ImGui::TableNextColumn();
-				ImGui::Text("Sink Entity Id");
-				ImGui::TableNextColumn();
-				ImGui::Text("%d", m_seenResourceASourceExtractionData[i].m_resourceSinkEntityId);
-				ImGui::TableNextColumn();
-				ImGui::Text("Extractor Entity Id");
-				ImGui::TableNextColumn();
-				ImGui::Text("%d", m_seenResourceASourceExtractionData[i].m_resourceExtractorEntityId);
-				ImGui::EndTable();
+				m_seenResourceASourceExtractionData[i].DrawImGuiDebug();
 			}
 			ImGui::Unindent();
 		}
@@ -83,20 +70,7 @@ void TeamCommanderResourceDataComponent::DrawComponentDebug() const
 			for (int32 i = 0; i < m_seenResourceBSourceExtractionData.Num(); ++i)
 			{
 				if (i != 0) ImGui::Separator();
-				ImGui::BeginTable("m_seenResourceBSourceExtractionData[i]", 2, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_SizingStretchProp);
-				ImGui::TableNextColumn();
-				ImGui::Text("Source Entity Id");
-				ImGui::TableNextColumn();
-				ImGui::Text("%d", m_seenResourceBSourceExtractionData[i].m_resourceSourceEntityId);
-				ImGui::TableNextColumn();
-				ImGui::Text("Sink Entity Id");
-				ImGui::TableNextColumn();
-				ImGui::Text("%d", m_seenResourceBSourceExtractionData[i].m_resourceSinkEntityId);
-				ImGui::TableNextColumn();
-				ImGui::Text("Extractor Entity Id");
-				ImGui::TableNextColumn();
-				ImGui::Text("%d", m_seenResourceBSourceExtractionData[i].m_resourceExtractorEntityId);
-				ImGui::EndTable();
+				m_seenResourceBSourceExtractionData[i].DrawImGuiDebug();
 			}
 			ImGui::Unindent();
 		}
@@ -115,20 +89,7 @@ void TeamCommanderResourceDataComponent::DrawComponentDebug() const
 			for (int32 i = 0; i < m_seenResourceCSourceExtractionData.Num(); ++i)
 			{
 				if (i != 0) ImGui::Separator();
-				ImGui::BeginTable("m_seenResourceCSourceExtractionData[i]", 2, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_SizingStretchProp);
-				ImGui::TableNextColumn();
-				ImGui::Text("Source Entity Id");
-				ImGui::TableNextColumn();
-				ImGui::Text("%d", m_seenResourceCSourceExtractionData[i].m_resourceSourceEntityId);
-				ImGui::TableNextColumn();
-				ImGui::Text("Sink Entity Id");
-				ImGui::TableNextColumn();
-				ImGui::Text("%d", m_seenResourceCSourceExtractionData[i].m_resourceSinkEntityId);
-				ImGui::TableNextColumn();
-				ImGui::Text("Extractor Entity Id");
-				ImGui::TableNextColumn();
-				ImGui::Text("%d", m_seenResourceCSourceExtractionData[i].m_resourceExtractorEntityId);
-				ImGui::EndTable();
+				m_seenResourceCSourceExtractionData[i].DrawImGuiDebug();
 			}
 			ImGui::Unindent();
 		}

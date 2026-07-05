@@ -122,7 +122,7 @@ void InputInterfaceComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_selectedActorsDisplayState");
 		ImGui::TableNextColumn();
-		const char* valueName_m_selectedActorsDisplayState = ARGUS_FSTRING_TO_CHAR(StaticEnum<ESelectedActorsDisplayState>()->GetNameStringByValue(static_cast<uint8>(m_selectedActorsDisplayState)))
+		const char* valueName_m_selectedActorsDisplayState = ARGUS_FSTRING_TO_CHAR(StaticEnum<ESelectedActorsDisplayState>()->GetNameStringByValue(static_cast<uint8>(m_selectedActorsDisplayState)));
 		ImGui::Text(valueName_m_selectedActorsDisplayState);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_indexOfActiveAbilityGroup");
@@ -131,7 +131,7 @@ void InputInterfaceComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_activePlayerTeam");
 		ImGui::TableNextColumn();
-		const char* valueName_m_activePlayerTeam = ARGUS_FSTRING_TO_CHAR(StaticEnum<ETeam>()->GetNameStringByValue(static_cast<uint8>(m_activePlayerTeam)))
+		const char* valueName_m_activePlayerTeam = ARGUS_FSTRING_TO_CHAR(StaticEnum<ETeam>()->GetNameStringByValue(static_cast<uint8>(m_activePlayerTeam)));
 		ImGui::Text(valueName_m_activePlayerTeam);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_doubleClickTimer");
