@@ -5,8 +5,10 @@
 #include "ArgusStaticData.h"
 #include "DataComponentDefinitions/CarrierComponentData.h"
 #include "DataComponentDefinitions/ComponentData.h"
+#include "DataComponentDefinitions/CombatComponentData.h"
 #include "DataComponentDefinitions/ResourceComponentData.h"
 #include "DataComponentDefinitions/ResourceExtractionComponentData.h"
+#include "DataComponentDefinitions/TaskComponentData.h"
 
 void UArgusEntityTemplate::AsyncLoadComponents(const TFunction<void()> onCompleteCallback) const
 {
@@ -191,7 +193,37 @@ bool UArgusEntityTemplate::DoesTemplateSatisfyEntityCategory(EntityCategory enti
 			}
 			return false;
 		case EEntityCategoryType::Combatant:
-			// TODO JAMES: Populate this.
+			if (const UCombatComponentData* combatComponentData = GetComponentFromTemplate<UCombatComponentData>())
+			{
+				if (!combatComponentData->m_isConsideredCombatant)
+				{
+					return false;
+				}
+
+				if (entityCategory.m_attackCapability == ERangedAttackCapability::Count)
+				{
+					return true;
+				}
+
+				if (combatComponentData->m_attackType == EAttackType::Ranged)
+				{
+					return  combatComponentData->m_rangedAttackCapability == ERangedAttackCapability::GroundedAndFlying ||
+							combatComponentData->m_rangedAttackCapability == entityCategory.m_attackCapability;
+				}
+
+				if (const UTaskComponentData* taskComponentData = GetComponentFromTemplate<UTaskComponentData>())
+				{
+					if (entityCategory.m_attackCapability == ERangedAttackCapability::FlyingOnly)
+					{
+						return taskComponentData->m_flightState == EFlightState::Flying;
+					}
+
+					if (entityCategory.m_attackCapability == ERangedAttackCapability::GroundedOnly)
+					{
+						return taskComponentData->m_flightState == EFlightState::Grounded;
+					}
+				}
+			}
 			return false;
 		default:
 			return false;
