@@ -91,10 +91,16 @@ bool AvoidanceSystems::ShouldReturnEnemyEffortCoefficient(const EffortCoefficien
 		return false;
 	}
 
-	if (sourceEntityIdentityComponent->IsInTeamMask(foundEntityIdentityComponent->m_enemies))
+	if (const ArgusEntity foundTeamCommanderEntity = ArgusEntity::GetTeamEntity(foundEntityIdentityComponent->m_team))
 	{
-		coefficient = sourceEntityComponents.m_taskComponent->IsExecutingMoveTask() ? 1.0f : 0.0f;
-		return true;
+		if (const TeamCommanderComponent* foundCommanderComponent = foundTeamCommanderEntity.GetComponent<TeamCommanderComponent>())
+		{
+			if (TeamUtils::IsInTeamMask(sourceEntityIdentityComponent->m_team, foundCommanderComponent->m_enemies))
+			{
+				coefficient = sourceEntityComponents.m_taskComponent->IsExecutingMoveTask() ? 1.0f : 0.0f;
+				return true;
+			}
+		}
 	}
 
 	return false;

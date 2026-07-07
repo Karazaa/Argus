@@ -15,6 +15,12 @@ public:
 	UPROPERTY(EditAnywhere)
 	float m_revealedAreaDimensionLength = 800.0f;
 
+	UPROPERTY(EditAnywhere, meta = (Bitmask, BitmaskEnum = "/Script/Argus.ETeam"))
+	uint8 m_allies = 0u;
+
+	UPROPERTY(EditAnywhere, meta = (Bitmask, BitmaskEnum = "/Script/Argus.ETeam"))
+	uint8 m_enemies = 0u;
+
 
 	void InstantiateComponentForEntity(ArgusEntity entity) const override;
 	void ReinitializeComponentForEntityPostLoad(ArgusEntity entity) const override;

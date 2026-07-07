@@ -61,6 +61,8 @@ public:
 	bool				IsCarryingPassengers() const;
 	bool				IsOnTeam(ETeam team) const;
 	bool				IsOnSameTeamAsOtherEntity(ArgusEntity otherEntity) const;
+	bool				IsOtherEntityAnEnemy(ArgusEntity otherEntity) const;
+	bool				IsOtherEntityAnAlly(ArgusEntity otherEntity) const;
 	bool				IsOnPlayerTeam() const;
 	bool				IsFlying() const;
 	bool				IsUnderConstruction() const;

@@ -35,6 +35,12 @@ struct TeamCommanderComponent
 	ARGUS_COMP_NO_DATA
 	ETeam m_teamToCommand = ETeam::None;
 
+	ARGUS_COMP_PROPERTY(EditAnywhere, meta = (Bitmask, BitmaskEnum = "/Script/Argus.ETeam"))
+	BITMASK_ETeam m_allies = 0u;
+
+	ARGUS_COMP_PROPERTY(EditAnywhere, meta = (Bitmask, BitmaskEnum = "/Script/Argus.ETeam"))
+	BITMASK_ETeam m_enemies = 0u;
+
 	void ResetUpdateArrays()
 	{
 		m_idleEntityIdsForTeam.Reset();

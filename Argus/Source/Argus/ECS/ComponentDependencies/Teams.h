@@ -23,3 +23,11 @@ ENUM_CLASS_FLAGS(ETeam);
 #define NUM_TEAMS sizeof(ETeam) * 8u
 
 using BITMASK_ETeam = uint8;
+
+namespace TeamUtils
+{
+	bool inline IsInTeamMask(ETeam team, BITMASK_ETeam mask)
+	{
+		return mask & (static_cast<BITMASK_ETeam>(team));
+	}
+}

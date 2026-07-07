@@ -21,6 +21,8 @@ void TeamCommanderComponent::Reset()
 	m_revealedAreas.Reset();
 	m_revealedAreaDimensionLength = 800.0f;
 	m_teamToCommand = ETeam::None;
+	m_allies = 0u;
+	m_enemies = 0u;
 }
 
 void TeamCommanderComponent::Serialize(FArchive& archive)
@@ -28,6 +30,8 @@ void TeamCommanderComponent::Serialize(FArchive& archive)
 	m_revealedAreas.Serialize(archive);
 	archive << m_revealedAreaDimensionLength;
 	archive << m_teamToCommand;
+	archive << m_allies;
+	archive << m_enemies;
 }
 
 void TeamCommanderComponent::DrawComponentDebug() const
@@ -125,6 +129,44 @@ void TeamCommanderComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		const char* valueName_m_teamToCommand = ARGUS_FSTRING_TO_CHAR(StaticEnum<ETeam>()->GetNameStringByValue(static_cast<uint8>(m_teamToCommand)));
 		ImGui::Text(valueName_m_teamToCommand);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_allies");
+		ImGui::TableNextColumn();
+		uint8 enumSize_m_allies = sizeof(ETeam) * 8u;
+		bool triggered_m_allies = false;
+		for (uint8 i = 0u; i < enumSize_m_allies; ++i)
+		{
+			uint32 enumValue_m_allies = 1 << i;
+			if (m_allies & enumValue_m_allies)
+			{
+				if (triggered_m_allies)
+				{
+					ImGui::SameLine();
+				}
+				const char* valueName_m_allies = ARGUS_FSTRING_TO_CHAR(StaticEnum<ETeam>()->GetNameStringByValue(enumValue_m_allies));
+				ImGui::Text("%s, ", valueName_m_allies);
+				triggered_m_allies = true;
+			}
+		}
+		ImGui::TableNextColumn();
+		ImGui::Text("m_enemies");
+		ImGui::TableNextColumn();
+		uint8 enumSize_m_enemies = sizeof(ETeam) * 8u;
+		bool triggered_m_enemies = false;
+		for (uint8 i = 0u; i < enumSize_m_enemies; ++i)
+		{
+			uint32 enumValue_m_enemies = 1 << i;
+			if (m_enemies & enumValue_m_enemies)
+			{
+				if (triggered_m_enemies)
+				{
+					ImGui::SameLine();
+				}
+				const char* valueName_m_enemies = ARGUS_FSTRING_TO_CHAR(StaticEnum<ETeam>()->GetNameStringByValue(enumValue_m_enemies));
+				ImGui::Text("%s, ", valueName_m_enemies);
+				triggered_m_enemies = true;
+			}
+		}
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

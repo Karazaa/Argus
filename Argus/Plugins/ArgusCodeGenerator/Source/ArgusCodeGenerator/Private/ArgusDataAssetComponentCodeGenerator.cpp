@@ -2,6 +2,7 @@
 
 #include "ArgusDataAssetComponentCodeGenerator.h"
 #include "Misc/Paths.h"
+#include "TypeInfo.h"
 #include <filesystem>
 #include <fstream>
 #include <regex>
@@ -162,16 +163,16 @@ bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetHeaderFileTemplateWithR
 					}
 					else
 					{
-						const size_t exponentialDecaySmootherIndex = parsedComponentData.m_componentVariableData[i][j].m_typeName.find(s_exponentialDecaySmootherTypeName);
-						const size_t sosSmootherIndex = parsedComponentData.m_componentVariableData[i][j].m_typeName.find(s_sosSmootherTypeName);
-						if (exponentialDecaySmootherIndex != std::string::npos)
+						TypeInfo typeInfo = TypeInfo(parsedComponentData.m_componentVariableData[i][j]);
+
+						if (typeInfo.m_containerType == ContainerType::ExponentialSmoother)
 						{
 							outParsedFileContents[i].m_lines.push_back(std::vformat("\tfloat {}DecayConstant = 1.0f;", std::make_format_args(parsedComponentData.m_componentVariableData[i][j].m_varName)));
 							outParsedFileContents[i].m_lines.push_back("");
 							outParsedFileContents[i].m_lines.push_back(s_propertyMacro);
 							variable = std::vformat("\tfloat {}SmoothingSpeedMod = 0.0f", std::make_format_args(parsedComponentData.m_componentVariableData[i][j].m_varName));
 						}
-						else if (sosSmootherIndex != std::string::npos)
+						else if (typeInfo.m_containerType == ContainerType::SOSSmoother)
 						{
 							outParsedFileContents[i].m_lines.push_back(std::vformat("\tfloat {}Frequency = 1.0f;", std::make_format_args(parsedComponentData.m_componentVariableData[i][j].m_varName)));
 							outParsedFileContents[i].m_lines.push_back("");
@@ -180,6 +181,15 @@ bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetHeaderFileTemplateWithR
 							outParsedFileContents[i].m_lines.push_back("");
 							outParsedFileContents[i].m_lines.push_back(s_propertyMacro);
 							variable = std::vformat("\tfloat {}Response = 0.0f", std::make_format_args(parsedComponentData.m_componentVariableData[i][j].m_varName));
+						}
+						else if (typeInfo.m_underlyingType == UnderlyingType::Bitmask)
+						{
+							std::string defaultValue = parsedComponentData.m_componentVariableData[i][j].m_defaultValue;
+							if (defaultValue.empty())
+							{
+								defaultValue = "0u";
+							}
+							variable = std::vformat("\tuint8 {} = {}", std::make_format_args(parsedComponentData.m_componentVariableData[i][j].m_varName, defaultValue));
 						}
 						else
 						{

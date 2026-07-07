@@ -18,37 +18,14 @@ struct IdentityComponent
 	ETeam m_team = ETeam::None;
 
 	ARGUS_COMP_NO_DATA
-	BITMASK_ETeam m_allies = 0u;
-
-	ARGUS_COMP_NO_DATA
-	BITMASK_ETeam m_enemies = 0u;
-
-	ARGUS_COMP_NO_DATA
 	BITMASK_ETeam m_seenBy = 0u;
 
 	ARGUS_COMP_NO_DATA
 	BITMASK_ETeam m_everSeenBy = 0u;
 
-	void AddEnemyTeam(ETeam enemyTeam)
-	{
-		if (enemyTeam == m_team)
-		{
-			return;
-		}
-
-		m_allies &= ~(static_cast<BITMASK_ETeam>(enemyTeam));
-		m_enemies |= (static_cast<BITMASK_ETeam>(enemyTeam));
-	}
-
-	void AddAllyTeam(ETeam allyTeam)
-	{
-		m_enemies &= ~(static_cast<BITMASK_ETeam>(allyTeam));
-		m_allies |= (static_cast<BITMASK_ETeam>(allyTeam));
-	}
-
 	bool IsInTeamMask(BITMASK_ETeam teamMask) const
 	{
-		return teamMask & (static_cast<BITMASK_ETeam>(m_team));
+		return TeamUtils::IsInTeamMask(m_team, teamMask);
 	}
 
 	void AddSeenBy(ETeam seeingTeam)
@@ -70,15 +47,5 @@ struct IdentityComponent
 	bool WasEverSeenBy(ETeam team) const
 	{
 		return m_everSeenBy & (static_cast<BITMASK_ETeam>(team));
-	}
-
-	bool IsSeenByAllies() const 
-	{
-		return m_seenBy & m_allies;
-	}
-
-	bool IsSeenByEnemies() const
-	{
-		return m_seenBy & m_enemies;
 	}
 };
