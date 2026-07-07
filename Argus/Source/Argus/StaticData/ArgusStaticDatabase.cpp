@@ -650,6 +650,113 @@ void UArgusStaticDatabase::LazyLoadUResourceSetRecordDatabase()
 	}
 }
 #pragma endregion
+#pragma region UTeamAlignmentRecord
+const UTeamAlignmentRecord* UArgusStaticDatabase::GetUTeamAlignmentRecord(uint32 id)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUTeamAlignmentRecordDatabase();
+
+	if (!m_UTeamAlignmentRecordDatabasePersistent)
+	{
+		return nullptr;
+	}
+
+	return m_UTeamAlignmentRecordDatabasePersistent->GetRecord(id);
+}
+
+const bool UArgusStaticDatabase::AsyncPreLoadUTeamAlignmentRecord(uint32 id, TFunction<void(const UTeamAlignmentRecord*)> callback)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUTeamAlignmentRecordDatabase();
+
+	if (!m_UTeamAlignmentRecordDatabasePersistent)
+	{
+		return false;
+	}
+
+	return m_UTeamAlignmentRecordDatabasePersistent->AsyncPreLoadRecord(id);
+}
+
+void UArgusStaticDatabase::ResetLoadedUTeamAlignmentRecordPointerArray()
+{
+	if (!m_UTeamAlignmentRecordDatabasePersistent)
+	{
+		return;
+	}
+
+	m_UTeamAlignmentRecordDatabasePersistent->ResetPersistentObjectPointerArray();
+}
+
+#if WITH_EDITOR
+uint32 UArgusStaticDatabase::AddUTeamAlignmentRecordToDatabase(UTeamAlignmentRecord* record)
+{
+	LazyLoadUTeamAlignmentRecordDatabase();
+
+	if (!m_UTeamAlignmentRecordDatabasePersistent)
+	{
+		return 0u;
+	}
+
+	m_UTeamAlignmentRecordDatabasePersistent->AddUTeamAlignmentRecordToDatabase(record);
+	
+	return record->m_id;
+}
+
+void UArgusStaticDatabase::RegisterNewUTeamAlignmentRecordDatabase(UTeamAlignmentRecordDatabase* database)
+{
+	if (!database)
+	{
+		return;
+	}
+
+	if (!m_UTeamAlignmentRecordDatabase.IsNull())
+	{
+		ARGUS_LOG
+		(
+			ArgusStaticDataLog,
+			Error,
+			TEXT("[%s] Trying to assign to %s. Potential duplicate databases."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(m_UTeamAlignmentRecordDatabase)
+		);
+		return;
+	}
+
+	m_UTeamAlignmentRecordDatabase = database;
+	SaveDatabase();
+}
+#endif //WITH_EDITOR
+
+void UArgusStaticDatabase::LazyLoadUTeamAlignmentRecordDatabase()
+{
+	if (!m_UTeamAlignmentRecordDatabasePersistent)
+	{
+		m_UTeamAlignmentRecordDatabasePersistent = m_UTeamAlignmentRecordDatabase.LoadSynchronous();
+		if (!m_UTeamAlignmentRecordDatabasePersistent)
+		{
+			ARGUS_LOG(ArgusStaticDataLog, Error, TEXT("[%s] Could not find %s reference. Need to set reference in %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(m_UTeamAlignmentRecordDatabase), ARGUS_NAMEOF(UArgusStaticDatabase));
+			return;
+		}
+
+		m_UTeamAlignmentRecordDatabasePersistent->ResizePersistentObjectPointerArrayToFitRecord(0u);
+	}
+
+	if (!m_UTeamAlignmentRecordDatabasePersistent)
+	{
+		ARGUS_LOG
+		(
+			ArgusStaticDataLog, Error,
+			TEXT("[%s] Could not retrieve %s. %s might not be properly assigned."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(m_UTeamAlignmentRecordDatabasePersistent),
+			ARGUS_NAMEOF(m_UTeamAlignmentRecordDatabase)
+		);
+		return;
+	}
+}
+#pragma endregion
 #pragma region UTeamColorRecord
 const UTeamColorRecord* UArgusStaticDatabase::GetUTeamColorRecord(uint32 id)
 {
@@ -766,6 +873,7 @@ void UArgusStaticDatabase::ResetLoadedPointerArrays()
 	ResetLoadedUMaterialRecordPointerArray();
 	ResetLoadedUPlacedArgusActorTeamInfoRecordPointerArray();
 	ResetLoadedUResourceSetRecordPointerArray();
+	ResetLoadedUTeamAlignmentRecordPointerArray();
 	ResetLoadedUTeamColorRecordPointerArray();
 }
 
