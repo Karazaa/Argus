@@ -26,12 +26,12 @@
 #include "ArgusMemoryDebugger.h"
 #endif //!UE_BUILD_SHIPPING
 
-void ArgusSystemsManager::Initialize(UWorld* worldPointer, const UArgusEntityTemplate* singletonEntityTemplate, const UArgusEntityTemplate* teamEntityTemplate)
+void ArgusSystemsManager::Initialize(UWorld* worldPointer, const UArgusEntityTemplate* singletonEntityTemplate, const UArgusEntityTemplate* teamEntityTemplate, const UTeamAlignmentRecord* teamAlignmentRecord)
 {
 	ARGUS_RETURN_ON_NULL(worldPointer, ArgusECSLog);
 
 	PopulateSingletonComponents(worldPointer, singletonEntityTemplate);
-	PopulateTeamComponents(teamEntityTemplate);
+	PopulateTeamComponents(teamEntityTemplate, teamAlignmentRecord);
 }
 
 void ArgusSystemsManager::InitializePostLoad(UWorld* worldPointer, const UArgusEntityTemplate* singletonEntityTemplate, const UArgusEntityTemplate* teamEntityTemplate)
@@ -180,8 +180,9 @@ void ArgusSystemsManager::SetInitialSingletonState(UWorld* worldPointer, ETeam a
 	ArgusStaticData::AsyncPreLoadRecord<UMaterialRecord>(decalSystemsSettings->m_attackMoveToLocationDecalMaterial.GetId());
 }
 
-void ArgusSystemsManager::PopulateTeamComponents(const UArgusEntityTemplate* teamEntityTemplate)
+void ArgusSystemsManager::PopulateTeamComponents(const UArgusEntityTemplate* teamEntityTemplate, const UTeamAlignmentRecord* teamAlignmentRecord)
 {
+
 	for (uint8 i = 1u; i <= NUM_TEAMS; ++i)
 	{
 		if (ArgusEntity::DoesEntityExist(ArgusECSConstants::k_singletonEntityId - i))
@@ -205,6 +206,11 @@ void ArgusSystemsManager::PopulateTeamComponents(const UArgusEntityTemplate* tea
 		ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
 
 		teamCommanderComponent->m_teamToCommand = static_cast<ETeam>(1u << (i - 1u));
+		if (teamAlignmentRecord)
+		{
+			teamCommanderComponent->m_enemies = teamAlignmentRecord->GetEnemyMaskForTeam(teamCommanderComponent->m_teamToCommand);
+			teamCommanderComponent->m_allies = teamAlignmentRecord->GetAllyMaskForTeam(teamCommanderComponent->m_teamToCommand);
+		}
 	}
 }
 

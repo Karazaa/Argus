@@ -86,12 +86,11 @@ void SpawningSystems::SpawnEntityInternal(const SpawningSystemsArgs& components,
 	spawnedEntityTaskComponent->m_baseState = EBaseState::SpawnedWaitingForActorTake;
 	spawnedEntityTaskComponent->m_spawnedFromArgusActorRecordId = argusActorRecord->m_id;
 
-	// TODO JAMES: THis needs to be refactored to get ally/enemy/team state differently. Preferably from team commander.
 	if (IdentityComponent* spawningEntityIdentityComponent = components.m_entity.GetComponent<IdentityComponent>())
 	{
 		if (IdentityComponent* spawnedEntityIdentityComponent = spawnedEntity.GetComponent<IdentityComponent>())
 		{
-			*spawnedEntityIdentityComponent = *spawningEntityIdentityComponent;
+			spawnedEntityIdentityComponent->m_team = spawningEntityIdentityComponent->m_team;
 		}
 	}
 
