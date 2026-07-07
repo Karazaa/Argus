@@ -387,6 +387,42 @@ bool ArgusEntity::IsOnSameTeamAsOtherEntity(ArgusEntity otherEntity) const
 	return IsOnTeam(otherIdentityComponent->m_team);
 }
 
+bool ArgusEntity::IsOtherEntityAnEnemy(ArgusEntity otherEntity) const
+{
+	const IdentityComponent* identityComponent = GetComponent<IdentityComponent>();
+	const IdentityComponent* otherIdentityComponent = otherEntity.GetComponent<IdentityComponent>();
+	if (!identityComponent || !otherIdentityComponent)
+	{
+		return false;
+	}
+
+	const TeamCommanderComponent* teamCommanderComponent = GetTeamEntity(identityComponent->m_team).GetComponent<TeamCommanderComponent>();
+	if (!teamCommanderComponent)
+	{
+		return false;
+	}
+
+	return TeamUtils::IsInTeamMask(otherIdentityComponent->m_team, teamCommanderComponent->m_enemies);
+}
+
+bool ArgusEntity::IsOtherEntityAnAlly(ArgusEntity otherEntity) const
+{
+	const IdentityComponent* identityComponent = GetComponent<IdentityComponent>();
+	const IdentityComponent* otherIdentityComponent = otherEntity.GetComponent<IdentityComponent>();
+	if (!identityComponent || !otherIdentityComponent)
+	{
+		return false;
+	}
+
+	const TeamCommanderComponent* teamCommanderComponent = GetTeamEntity(identityComponent->m_team).GetComponent<TeamCommanderComponent>();
+	if (!teamCommanderComponent)
+	{
+		return false;
+	}
+
+	return TeamUtils::IsInTeamMask(otherIdentityComponent->m_team, teamCommanderComponent->m_allies);
+}
+
 bool ArgusEntity::IsOnPlayerTeam() const
 {
 	const InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::GetSingletonEntity().GetComponent<InputInterfaceComponent>();

@@ -39,10 +39,16 @@ bool CombatSystems::CanEntityAttackOtherEntity(ArgusEntity potentialAttacker, Ar
 	{
 		return false;
 	}
-
-	if (!victimIdentityComponent->IsInTeamMask(components.m_identityComponent->m_enemies))
+	
+	if (const ArgusEntity teamCommanderEntity = ArgusEntity::GetTeamEntity(components.m_identityComponent->m_team))
 	{
-		return false;
+		if (const TeamCommanderComponent* commanderComponent = teamCommanderEntity.GetComponent<TeamCommanderComponent>())
+		{
+			if (!TeamUtils::IsInTeamMask(victimIdentityComponent->m_team, commanderComponent->m_enemies))
+			{
+				return false;
+			}
+		}
 	}
 
 	if (attackerTaskComponent->m_flightState == EFlightState::TakingOff || attackerTaskComponent->m_flightState == EFlightState::Landing)

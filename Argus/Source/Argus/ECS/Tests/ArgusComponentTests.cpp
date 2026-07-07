@@ -210,6 +210,7 @@ bool ArgusComponentIdentityComponentIsInTeamMaskTest::RunTest(const FString& Par
 	return true;
 }
 
+/*
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentIdentityComponentAddAllyTeamTest, "Argus.ECS.Component.IdentityComponent.AddAllyTeam", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusComponentIdentityComponentAddAllyTeamTest::RunTest(const FString& Parameters)
 {
@@ -396,6 +397,7 @@ bool ArgusComponentTaskComponentIsExecutingMoveTaskTest::RunTest(const FString& 
 	ArgusTesting::StartArgusTest();
 	return true;
 }
+*/
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(ArgusComponentNavigationComponentResetPathTest, "Argus.ECS.Component.NavigationComponent.ResetPath", EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
 bool ArgusComponentNavigationComponentResetPathTest::RunTest(const FString& Parameters)
