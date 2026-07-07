@@ -10,6 +10,7 @@
 #include "RecordDatabases/MaterialRecordDatabase.h"
 #include "RecordDatabases/PlacedArgusActorTeamInfoRecordDatabase.h"
 #include "RecordDatabases/ResourceSetRecordDatabase.h"
+#include "RecordDatabases/TeamAlignmentRecordDatabase.h"
 #include "RecordDatabases/TeamColorRecordDatabase.h"
 #include "ArgusStaticDatabase.generated.h"
 
@@ -125,6 +126,24 @@ protected:
 	TObjectPtr<UResourceSetRecordDatabase> m_UResourceSetRecordDatabasePersistent;
 
 	void LazyLoadUResourceSetRecordDatabase();
+#pragma endregion
+#pragma region UTeamAlignmentRecord
+public:
+	const UTeamAlignmentRecord* GetUTeamAlignmentRecord(uint32 id);
+	const bool AsyncPreLoadUTeamAlignmentRecord(uint32 id, TFunction<void(const UTeamAlignmentRecord*)> callback = nullptr);
+	void ResetLoadedUTeamAlignmentRecordPointerArray();
+#if WITH_EDITOR
+	uint32 AddUTeamAlignmentRecordToDatabase(UTeamAlignmentRecord* record);
+	void RegisterNewUTeamAlignmentRecordDatabase(UTeamAlignmentRecordDatabase* database);
+#endif //WITH_EDITOR
+
+protected:
+	UPROPERTY(EditAnywhere)
+	TSoftObjectPtr<UTeamAlignmentRecordDatabase> m_UTeamAlignmentRecordDatabase;
+	UPROPERTY(Transient)
+	TObjectPtr<UTeamAlignmentRecordDatabase> m_UTeamAlignmentRecordDatabasePersistent;
+
+	void LazyLoadUTeamAlignmentRecordDatabase();
 #pragma endregion
 #pragma region UTeamColorRecord
 public:

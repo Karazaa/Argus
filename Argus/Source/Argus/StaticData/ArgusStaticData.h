@@ -75,6 +75,10 @@ public:
 		{
 			return staticDatabase->AddUResourceSetRecordToDatabase(UResourceSetRecordInstance);
 		}
+		if (UTeamAlignmentRecord* UTeamAlignmentRecordInstance = dynamic_cast<UTeamAlignmentRecord*>(record))
+		{
+			return staticDatabase->AddUTeamAlignmentRecordToDatabase(UTeamAlignmentRecordInstance);
+		}
 		if (UTeamColorRecord* UTeamColorRecordInstance = dynamic_cast<UTeamColorRecord*>(record))
 		{
 			return staticDatabase->AddUTeamColorRecordToDatabase(UTeamColorRecordInstance);
@@ -242,6 +246,33 @@ public:
 		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
 		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
 		staticDatabase->RegisterNewUResourceSetRecordDatabase(database);
+	}
+#endif //WITH_EDITOR
+#pragma endregion
+
+#pragma region UTeamAlignmentRecord
+	template<>
+	inline const UTeamAlignmentRecord* GetRecord(uint32 id)
+	{
+		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
+		ARGUS_RETURN_ON_NULL_POINTER(staticDatabase, ArgusStaticDataLog);
+		return staticDatabase->GetUTeamAlignmentRecord(id);
+	}
+
+	template<>
+	inline const bool AsyncPreLoadRecord<UTeamAlignmentRecord>(uint32 id, TFunction<void(const UTeamAlignmentRecord*)> callback)
+	{
+		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
+		ARGUS_RETURN_ON_NULL_BOOL(staticDatabase, ArgusStaticDataLog);
+		return staticDatabase->AsyncPreLoadUTeamAlignmentRecord(id, callback);
+	}
+
+#if WITH_EDITOR
+	static void RegisterNewUTeamAlignmentRecordDatabase(UTeamAlignmentRecordDatabase* database)
+	{
+		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
+		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
+		staticDatabase->RegisterNewUTeamAlignmentRecordDatabase(database);
 	}
 #endif //WITH_EDITOR
 #pragma endregion
