@@ -11,8 +11,6 @@ void UTeamCommanderComponentData::InstantiateComponentForEntity(ArgusEntity enti
 	ARGUS_RETURN_ON_NULL(TeamCommanderComponentRef, ArgusECSLog);
 
 	TeamCommanderComponentRef->m_revealedAreaDimensionLength = m_revealedAreaDimensionLength;
-	TeamCommanderComponentRef->m_allies = m_allies;
-	TeamCommanderComponentRef->m_enemies = m_enemies;
 }
 
 void UTeamCommanderComponentData::ReinitializeComponentForEntityPostLoad(ArgusEntity entity) const

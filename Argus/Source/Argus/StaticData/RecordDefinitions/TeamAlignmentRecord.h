@@ -91,24 +91,24 @@ public:
 	{
 		switch (team)
 		{
-		case ETeam::TeamA:
-			return m_teamAAllies;
-		case ETeam::TeamB:
-			return m_teamBAllies;
-		case ETeam::TeamC:
-			return m_teamCAllies;
-		case ETeam::TeamD:
-			return m_teamDAllies;
-		case ETeam::TeamE:
-			return m_teamEAllies;
-		case ETeam::TeamF:
-			return m_teamFAllies;
-		case ETeam::TeamG:
-			return m_teamGAllies;
-		case ETeam::TeamH:
-			return m_teamHAllies;
-		default:
-			break;
+			case ETeam::TeamA:
+				return m_teamAAllies;
+			case ETeam::TeamB:
+				return m_teamBAllies;
+			case ETeam::TeamC:
+				return m_teamCAllies;
+			case ETeam::TeamD:
+				return m_teamDAllies;
+			case ETeam::TeamE:
+				return m_teamEAllies;
+			case ETeam::TeamF:
+				return m_teamFAllies;
+			case ETeam::TeamG:
+				return m_teamGAllies;
+			case ETeam::TeamH:
+				return m_teamHAllies;
+			default:
+				break;
 		}
 
 		return 0u;

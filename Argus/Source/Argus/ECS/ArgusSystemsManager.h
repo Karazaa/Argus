@@ -7,12 +7,13 @@
 #include "CoreMinimal.h"
 
 class UArgusEntityTemplate;
+class UTeamAlignmentRecord;
 class UWorld;
 
 class ArgusSystemsManager
 {
 public:
-	static void Initialize(UWorld* worldPointer, const UArgusEntityTemplate* singletonEntityTemplate, const UArgusEntityTemplate* teamEntityTemplate);
+	static void Initialize(UWorld* worldPointer, const UArgusEntityTemplate* singletonEntityTemplate, const UArgusEntityTemplate* teamEntityTemplate, const UTeamAlignmentRecord* teamAlignmentRecord);
 	static void InitializePostLoad(UWorld* worldPointer, const UArgusEntityTemplate* singletonEntityTemplate, const UArgusEntityTemplate* teamEntityTemplate);
 	static void OnStartPlay(UWorld* worldPointer, ETeam activePlayerTeam);
 	static void RunSystems(UWorld* worldPointer, float deltaTime);
@@ -21,7 +22,7 @@ public:
 private:
 	static void PopulateSingletonComponents(UWorld* worldPointer, const UArgusEntityTemplate* singletonEntityTemplate);
 	static void SetInitialSingletonState(UWorld* worldPointer, ETeam activePlayerTeam);
-	static void PopulateTeamComponents(const UArgusEntityTemplate* teamEntityTemplate);
+	static void PopulateTeamComponents(const UArgusEntityTemplate* teamEntityTemplate, const UTeamAlignmentRecord* teamAlignmentRecord);
 	static void InitializeTeamComponents();
 	static void UpdateSingletonComponents(UWorld* worldPointer);
 };

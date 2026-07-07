@@ -37,7 +37,7 @@ void AArgusGameModeBase::StartPlay()
 
 	UWorld* worldPointer = GetWorld();
 	ARGUS_RETURN_ON_NULL(worldPointer, ArgusUnrealObjectsLog);
-	ArgusSystemsManager::Initialize(worldPointer, m_singletonEntityTemplate.LoadSynchronous(), m_teamEntityTemplate.LoadSynchronous());
+	ArgusSystemsManager::Initialize(worldPointer, m_singletonEntityTemplate.Get(), m_teamEntityTemplate.Get(), m_teamAlignmentRecord);
 
 	Super::StartPlay();
 	ARGUS_LOG(ArgusUnrealObjectsLog, Display, TEXT("[%s] Argus game mode base starting play."), ARGUS_FUNCNAME);
@@ -299,5 +299,5 @@ void AArgusGameModeBase::OnLoadComplete()
 		SpawnActorForEntity(entity);
 	});
 
-	ArgusSystemsManager::InitializePostLoad(GetWorld(), m_singletonEntityTemplate.LoadSynchronous(), m_teamEntityTemplate.LoadSynchronous());
+	ArgusSystemsManager::InitializePostLoad(GetWorld(), m_singletonEntityTemplate.Get(), m_teamEntityTemplate.Get());
 }

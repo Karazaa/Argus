@@ -10,6 +10,7 @@
 #include "ComponentDefinitions/IdentityComponent.h"
 #include "ComponentDependencies/ResourceSet.h"
 #include "GameFramework/GameModeBase.h"
+#include "RecordDefinitions/TeamAlignmentRecord.h"
 #include "RecordDefinitions/TeamColorRecord.h"
 #include "ArgusGameModeBase.generated.h"
 
@@ -35,13 +36,16 @@ public:
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "EntityTemplates")
-	TSoftObjectPtr<UArgusEntityTemplate> m_singletonEntityTemplate = nullptr;
+	TObjectPtr<UArgusEntityTemplate> m_singletonEntityTemplate = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, Category = "EntityTemplates")
-	TSoftObjectPtr<UArgusEntityTemplate> m_teamEntityTemplate = nullptr;
+	TObjectPtr<UArgusEntityTemplate> m_teamEntityTemplate = nullptr;
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Teams")
 	TMap<ETeam, TObjectPtr<UTeamColorRecord>> m_teamColorMap;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Teams")
+	TObjectPtr<UTeamAlignmentRecord> m_teamAlignmentRecord = nullptr;
 
 	UPROPERTY(Transient)
 	TObjectPtr<AArgusPlayerController> m_activePlayerController = nullptr;
