@@ -43,6 +43,26 @@ struct TeamCommanderCombatDataComponent
 		m_numFlyingCombatants[static_cast<uint16>(FMath::FloorLog2(static_cast<uint32>(team)))]++;
 	}
 
+	uint16 GetNumCanAttackGroundedCombatants(ETeam team) const
+	{
+		return m_numCanAttackGroundedCombatants[static_cast<uint16>(FMath::FloorLog2(static_cast<uint32>(team)))];
+	}
+
+	uint16 GetNumCanAttackFlyingCombatants(ETeam team) const
+	{
+		return m_numCanAttackFlyingCombatants[static_cast<uint16>(FMath::FloorLog2(static_cast<uint32>(team)))];
+	}
+
+	uint16 GetNumGroundedCombatants(ETeam team) const
+	{
+		return m_numGroundedCombatants[static_cast<uint16>(FMath::FloorLog2(static_cast<uint32>(team)))];
+	}
+
+	uint16 GetNumFlyingCombatants(ETeam team) const
+	{
+		return m_numFlyingCombatants[static_cast<uint16>(FMath::FloorLog2(static_cast<uint32>(team)))];
+	}
+
 	void ClearTeamCountArrays()
 	{
 		for (uint8 i = 0; i < NUM_TEAMS; ++i)

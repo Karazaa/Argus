@@ -203,4 +203,17 @@ namespace ArgusIterators
 			}
 		}
 	}
+
+	template <typename Function>
+	static void IterateTeamIndiciesInBitmask(BITMASK_ETeam teamBitmask, Function&& perTeamEntityFunction)
+	{
+		for (uint8 i = 0u; i < NUM_TEAMS; ++i)
+		{
+			const uint8 team = 1u << i;
+			if ((team & teamBitmask) > 0u)
+			{
+				perTeamEntityFunction(i);
+			}
+		}
+	}
 }

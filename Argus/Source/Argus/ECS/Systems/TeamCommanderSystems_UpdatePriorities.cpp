@@ -267,7 +267,35 @@ void TeamCommanderSystems_UpdatePriorities::UpdateSpawnUnitResourceExtractorTeam
 
 void TeamCommanderSystems_UpdatePriorities::UpdateSpawnUnitCombatantTeamPriority(const TeamCommanderComponentCollection& components, TeamCommanderPriority& priority)
 {
-	// TODO JAMES: Determine combatant spawning priority.
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+
+	int16 difference = 0;
+	if (priority.m_entityCategory.m_attackCapability == ERangedAttackCapability::FlyingOnly)
+	{
+		uint16 numEnemyFlyingCombatants = 0u;
+		ArgusIterators::IterateTeamIndiciesInBitmask(components.m_baseComponent->m_enemies, [&components, &numEnemyFlyingCombatants](uint8 index)
+		{
+			numEnemyFlyingCombatants += components.m_combatDataComponent->m_numFlyingCombatants[index];
+		});
+
+		uint16 numCanAttackFlying = components.m_combatDataComponent->GetNumCanAttackFlyingCombatants(components.m_baseComponent->m_teamToCommand);
+		difference = static_cast<int16>(numEnemyFlyingCombatants) - static_cast<int16>(numCanAttackFlying);
+	}
+	else
+	{
+		uint16 numEnemyGroundedCombatants = 0u;
+		ArgusIterators::IterateTeamIndiciesInBitmask(components.m_baseComponent->m_enemies, [&components, &numEnemyGroundedCombatants](uint8 index)
+		{
+			numEnemyGroundedCombatants += components.m_combatDataComponent->m_numGroundedCombatants[index];
+		});
+		uint16 numCanAttackGrounded = components.m_combatDataComponent->GetNumCanAttackGroundedCombatants(components.m_baseComponent->m_teamToCommand);
+		difference = static_cast<int16>(numEnemyGroundedCombatants) - static_cast<int16>(numCanAttackGrounded);
+	}
+
+	// TODO JAMES: Do something with difference to result in a priority.
 }
 
 void TeamCommanderSystems_UpdatePriorities::UpdateScoutingTeamPriority(const TeamCommanderComponentCollection& components, TeamCommanderPriority& priority)
