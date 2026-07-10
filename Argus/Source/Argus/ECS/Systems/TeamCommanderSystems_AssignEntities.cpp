@@ -260,6 +260,8 @@ bool TeamCommanderSystems_AssignEntities::AssignEntityToSpawnUnitIfAble(ArgusEnt
 		return false;
 	}
 
+	// TODO JAMES: Sort spawning abilities by cost.
+
 	taskComponent->m_abilityState = AbilitySystems::GetProcessAbilityStateForAbilityIndex(abilityIndexPairs[0].Value);
 	taskComponent->m_directiveFromTeamCommander = priority.m_directive;
 	priority.m_weight -= 1.0f;

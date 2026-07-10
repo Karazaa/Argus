@@ -295,7 +295,7 @@ void TeamCommanderSystems_UpdatePriorities::UpdateSpawnUnitCombatantTeamPriority
 		difference = static_cast<int16>(numEnemyGroundedCombatants) - static_cast<int16>(numCanAttackGrounded);
 	}
 
-	// TODO JAMES: Do something with difference to result in a priority.
+	priority.m_weight += static_cast<float>(difference);
 }
 
 void TeamCommanderSystems_UpdatePriorities::UpdateScoutingTeamPriority(const TeamCommanderComponentCollection& components, TeamCommanderPriority& priority)
