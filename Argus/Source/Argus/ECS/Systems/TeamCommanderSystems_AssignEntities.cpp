@@ -4,6 +4,7 @@
 #include "ArgusIterators.h"
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
+#include "RecordDefinitions/AbilityRecord.h"
 #include "Systems/AbilitySystems.h"
 #include "Systems/ConstructionSystems.h"
 #include "Systems/ResourceSystems.h"
@@ -260,7 +261,15 @@ bool TeamCommanderSystems_AssignEntities::AssignEntityToSpawnUnitIfAble(ArgusEnt
 		return false;
 	}
 
-	// TODO JAMES: Sort spawning abilities by cost.
+	abilityIndexPairs.Sort([](const TPair<const UAbilityRecord*, EAbilityIndex>& left, const TPair<const UAbilityRecord*, EAbilityIndex>& right)
+	{
+		if (!left.Key || !right.Key)
+		{
+			return false;
+		}
+
+		return left.Key->m_requiredResourceChangeToCast.DoesCostLessThan(right.Key->m_requiredResourceChangeToCast);
+	});
 
 	taskComponent->m_abilityState = AbilitySystems::GetProcessAbilityStateForAbilityIndex(abilityIndexPairs[0].Value);
 	taskComponent->m_directiveFromTeamCommander = priority.m_directive;

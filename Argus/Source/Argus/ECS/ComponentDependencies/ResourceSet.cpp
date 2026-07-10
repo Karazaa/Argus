@@ -108,6 +108,23 @@ FResourceSet FResourceSet::CalculateResourceChangeAffordable(const FResourceSet&
 	return changeApplied;
 }
 
+bool FResourceSet::DoesCostLessThan(const FResourceSet& other) const
+{
+	int32 sum = 0;
+	for (uint8 i = 0; i < static_cast<uint8>(EResourceType::Count); ++i)
+	{
+		sum += m_resourceQuantities[i];
+	}
+
+	int32 sumOther = 0;
+	for (uint8 i = 0; i < static_cast<uint8>(EResourceType::Count); ++i)
+	{
+		sumOther += other.m_resourceQuantities[i];
+	}
+
+	return sum > sumOther;
+}
+
 bool FResourceSet::IsEmpty() const
 {
 	for (uint8 i = 0; i < static_cast<uint8>(EResourceType::Count); ++i)

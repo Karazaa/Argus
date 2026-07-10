@@ -35,6 +35,7 @@ struct FResourceSet
 	bool IsEntirelyAtCap(const FResourceSet& capacityResrouceSet) const;
 	FResourceSet MaskResourceSet(const FResourceSet& maskSet) const;
 	FResourceSet CalculateResourceChangeAffordable(const FResourceSet& otherResourceSetRepresentingChange, const FResourceSet* maximumResources = nullptr) const;
+	bool DoesCostLessThan(const FResourceSet& other) const;
 	bool IsEmpty() const;
 	void Serialize(FArchive& archive);
 
