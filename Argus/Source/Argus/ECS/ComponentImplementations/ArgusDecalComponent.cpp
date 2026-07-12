@@ -62,21 +62,7 @@ void ArgusDecalComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_lifetimeTimer");
 		ImGui::TableNextColumn();
-		const ArgusEntity owningEntity = ArgusEntity::RetrieveEntity(GetOwningEntityId());
-		if (m_lifetimeTimer.IsTimerTicking(owningEntity))
-		{
-			ImGui::Text("%.2f", m_lifetimeTimer.GetTimeRemaining(owningEntity));
-			ImGui::SameLine();
-			ImGui::ProgressBar(m_lifetimeTimer.GetTimeElapsedProportion(owningEntity));
-		}
-		else if (m_lifetimeTimer.IsTimerComplete(owningEntity))
-		{
-			ImGui::Text("Timer complete");
-		}
-		else
-		{
-			ImGui::Text("Not set");
-		}
+		m_lifetimeTimer.DrawImGuiDebug();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_decalType");
 		ImGui::TableNextColumn();

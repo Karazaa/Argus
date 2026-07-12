@@ -74,8 +74,7 @@ void TeamCommanderComponent::DrawComponentDebug() const
 			ImGui::TableNextColumn();
 			ImGui::Text("%d", mapPair.Key);
 			ImGui::TableNextColumn();
-			ImGui::Text("Entity Being Constructed Id %d", mapPair.Value.m_beingConstructedEntityId);
-			ImGui::Text("Entity Constructing Other Id %d", mapPair.Value.m_constructingOtherEntityId);
+			mapPair.Value.DrawImGuiDebug();
 		}
 		ImGui::EndTable();
 		ImGui::Unindent();

@@ -78,21 +78,7 @@ void ConstructionComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_automaticConstructionTimerHandle");
 		ImGui::TableNextColumn();
-		const ArgusEntity owningEntity = ArgusEntity::RetrieveEntity(GetOwningEntityId());
-		if (m_automaticConstructionTimerHandle.IsTimerTicking(owningEntity))
-		{
-			ImGui::Text("%.2f", m_automaticConstructionTimerHandle.GetTimeRemaining(owningEntity));
-			ImGui::SameLine();
-			ImGui::ProgressBar(m_automaticConstructionTimerHandle.GetTimeElapsedProportion(owningEntity));
-		}
-		else if (m_automaticConstructionTimerHandle.IsTimerComplete(owningEntity))
-		{
-			ImGui::Text("Timer complete");
-		}
-		else
-		{
-			ImGui::Text("Not set");
-		}
+		m_automaticConstructionTimerHandle.DrawImGuiDebug();
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

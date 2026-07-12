@@ -71,21 +71,7 @@ void ResourceExtractionComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_resourceExtractionTimer");
 		ImGui::TableNextColumn();
-		const ArgusEntity owningEntity = ArgusEntity::RetrieveEntity(GetOwningEntityId());
-		if (m_resourceExtractionTimer.IsTimerTicking(owningEntity))
-		{
-			ImGui::Text("%.2f", m_resourceExtractionTimer.GetTimeRemaining(owningEntity));
-			ImGui::SameLine();
-			ImGui::ProgressBar(m_resourceExtractionTimer.GetTimeElapsedProportion(owningEntity));
-		}
-		else if (m_resourceExtractionTimer.IsTimerComplete(owningEntity))
-		{
-			ImGui::Text("Timer complete");
-		}
-		else
-		{
-			ImGui::Text("Not set");
-		}
+		m_resourceExtractionTimer.DrawImGuiDebug();
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

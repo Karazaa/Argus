@@ -70,21 +70,7 @@ void CombatComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_attackTimerHandle");
 		ImGui::TableNextColumn();
-		const ArgusEntity owningEntity = ArgusEntity::RetrieveEntity(GetOwningEntityId());
-		if (m_attackTimerHandle.IsTimerTicking(owningEntity))
-		{
-			ImGui::Text("%.2f", m_attackTimerHandle.GetTimeRemaining(owningEntity));
-			ImGui::SameLine();
-			ImGui::ProgressBar(m_attackTimerHandle.GetTimeElapsedProportion(owningEntity));
-		}
-		else if (m_attackTimerHandle.IsTimerComplete(owningEntity))
-		{
-			ImGui::Text("Timer complete");
-		}
-		else
-		{
-			ImGui::Text("Not set");
-		}
+		m_attackTimerHandle.DrawImGuiDebug();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_isConsideredCombatant");
 		ImGui::TableNextColumn();

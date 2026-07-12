@@ -103,6 +103,7 @@ void InputInterfaceComponent::DrawComponentDebug() const
 			for (int32 i = 0; i < m_controlGroups.Num(); ++i)
 			{
 				if (i != 0) ImGui::Separator();
+				m_controlGroups[i].DrawImGuiDebug();
 			}
 			ImGui::Unindent();
 		}
@@ -123,21 +124,7 @@ void InputInterfaceComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_doubleClickTimer");
 		ImGui::TableNextColumn();
-		const ArgusEntity owningEntity = ArgusEntity::RetrieveEntity(GetOwningEntityId());
-		if (m_doubleClickTimer.IsTimerTicking(owningEntity))
-		{
-			ImGui::Text("%.2f", m_doubleClickTimer.GetTimeRemaining(owningEntity));
-			ImGui::SameLine();
-			ImGui::ProgressBar(m_doubleClickTimer.GetTimeElapsedProportion(owningEntity));
-		}
-		else if (m_doubleClickTimer.IsTimerComplete(owningEntity))
-		{
-			ImGui::Text("Timer complete");
-		}
-		else
-		{
-			ImGui::Text("Not set");
-		}
+		m_doubleClickTimer.DrawImGuiDebug();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_doubleClickThresholdSeconds");
 		ImGui::TableNextColumn();

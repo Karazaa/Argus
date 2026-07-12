@@ -91,21 +91,7 @@ void SpawningComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_spawnTimerHandle");
 		ImGui::TableNextColumn();
-		const ArgusEntity owningEntity = ArgusEntity::RetrieveEntity(GetOwningEntityId());
-		if (m_spawnTimerHandle.IsTimerTicking(owningEntity))
-		{
-			ImGui::Text("%.2f", m_spawnTimerHandle.GetTimeRemaining(owningEntity));
-			ImGui::SameLine();
-			ImGui::ProgressBar(m_spawnTimerHandle.GetTimeElapsedProportion(owningEntity));
-		}
-		else if (m_spawnTimerHandle.IsTimerComplete(owningEntity))
-		{
-			ImGui::Text("Timer complete");
-		}
-		else
-		{
-			ImGui::Text("Not set");
-		}
+		m_spawnTimerHandle.DrawImGuiDebug();
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING
