@@ -3,6 +3,10 @@
 #include "ResourceSet.h"
 #include "Serialization/Archive.h"
 
+#if !UE_BUILD_SHIPPING
+#include "imgui.h"
+#endif // !UE_BUILD_SHIPPING
+
 FResourceSet FResourceSet::operator-() const
 {
 	FResourceSet outResources;
@@ -144,3 +148,15 @@ void FResourceSet::Serialize(FArchive& archive)
 		archive << m_resourceQuantities[i];
 	}
 }
+
+#if !UE_BUILD_SHIPPING
+void FResourceSet::DrawImGuiDebug() const
+{
+	const uint8 numResources = static_cast<uint8>(EResourceType::Count);
+	for (int32 i = 0; i < numResources; ++i)
+	{
+		ImGui::SameLine();
+		ImGui::Text("%d ", m_resourceQuantities[i]);
+	}
+}
+#endif // !UE_BUILD_SHIPPING

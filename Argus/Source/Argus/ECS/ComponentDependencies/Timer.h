@@ -51,6 +51,10 @@ public:
 
 	void Serialize(FArchive& archive);
 
+#if !UE_BUILD_SHIPPING
+	void DrawImGuiDebug() const;
+#endif // !UE_BUILD_SHIPPING
+
 private:
 	TimerComponent* GetTimerComponentForEntity(ArgusEntity entityWithTimer, const WIDECHAR* functionName) const;
 	Timer* GetTimerForEntity(ArgusEntity entityWithTimer, const WIDECHAR* functionName) const;

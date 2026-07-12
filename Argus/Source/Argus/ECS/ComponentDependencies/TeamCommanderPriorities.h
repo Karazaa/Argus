@@ -50,6 +50,10 @@ struct ConstructionData
 {
 	uint16 m_beingConstructedEntityId = ArgusECSConstants::k_maxEntities;
 	uint16 m_constructingOtherEntityId = ArgusECSConstants::k_maxEntities;
+
+#if !UE_BUILD_SHIPPING
+	void DrawImGuiDebug() const;
+#endif // !UE_BUILD_SHIPPING
 };
 
 FORCEINLINE static bool operator<(const TeamCommanderPriority& A, const TeamCommanderPriority& B)

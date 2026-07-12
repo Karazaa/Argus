@@ -63,4 +63,10 @@ void ResourceSourceExtractionData::DrawImGuiDebug() const
 	ImGui::Text("%d", m_resourceExtractorEntityId);
 	ImGui::EndTable();
 }
+
+void ConstructionData::DrawImGuiDebug() const
+{
+	ImGui::Text("Entity Being Constructed Id %d", m_beingConstructedEntityId);
+	ImGui::Text("Entity Constructing Other Id %d", m_constructingOtherEntityId);
+}
 #endif // !UE_BUILD_SHIPPING

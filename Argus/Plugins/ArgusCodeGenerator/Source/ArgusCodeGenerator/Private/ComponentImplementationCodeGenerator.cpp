@@ -492,25 +492,25 @@ bool ComponentImplementationGenerator::PopulateAtomicFormattingFunction(Underlyi
 			functionToPopulate = FormatImGuiEnumField;
 			break;
 		case UnderlyingType::TimerHandle:
-			functionToPopulate = FormatImGuiTimerField;
+			functionToPopulate = FormatImGuiCustomTypeField;
 			break;
 		case UnderlyingType::ResourceSet:
-			functionToPopulate = FormatImGuiResourceSetField;
+			functionToPopulate = FormatImGuiCustomTypeField;
 			break;
 		case UnderlyingType::SpawnEntityInfo:
 			functionToPopulate = FormatImGuiSpawnEntityInfoField;
 			break;
 		case UnderlyingType::ControlGroup:
-			functionToPopulate = FormatImGuiControlGroupField;
+			functionToPopulate = FormatImGuiCustomTypeField;
 			break;
 		case UnderlyingType::TeamCommanderPriority:
-			functionToPopulate = FormatImGuiTeamCommanderPriorityField;
+			functionToPopulate = FormatImGuiCustomTypeField;
 			break;
 		case UnderlyingType::ResourceExtractionData:
-			functionToPopulate = FormatImGuiResourceSourceExtractionDataField;
+			functionToPopulate = FormatImGuiCustomTypeField;
 			break;
 		case UnderlyingType::ConstructionData:
-			functionToPopulate = FormatImGuiConstructionDataField;
+			functionToPopulate = FormatImGuiCustomTypeField;
 			break;
 		case UnderlyingType::NavAgentSelector:
 			functionToPopulate = FormatImGuiNavAgentSelectorField;
@@ -743,41 +743,6 @@ void ComponentImplementationGenerator::FormatImGuiEnumField(const std::string& v
 	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::Text({});", std::make_format_args(prefix, newVariableName)));
 }
 
-void ComponentImplementationGenerator::FormatImGuiTimerField(const std::string& variableName, const std::string& extraData, const std::string& prefix, std::vector<std::string>& outParsedVariableContents)
-{
-	outParsedVariableContents.push_back(std::string(prefix).append("\t\tconst ArgusEntity owningEntity = ArgusEntity::RetrieveEntity(GetOwningEntityId());"));
-	outParsedVariableContents.push_back(std::vformat("{}\t\tif ({}.IsTimerTicking(owningEntity))", std::make_format_args(prefix, variableName)));
-	outParsedVariableContents.push_back(std::string(prefix).append("\t\t{"));
-	outParsedVariableContents.push_back(std::vformat("{}\t\t\tImGui::Text(\"%.2f\", {}.GetTimeRemaining(owningEntity));", std::make_format_args(prefix, variableName)));
-	outParsedVariableContents.push_back(std::string(prefix).append("\t\t\tImGui::SameLine();"));
-	outParsedVariableContents.push_back(std::vformat("{}\t\t\tImGui::ProgressBar({}.GetTimeElapsedProportion(owningEntity));", std::make_format_args(prefix, variableName)));
-	outParsedVariableContents.push_back(std::string(prefix).append("\t\t}"));
-	outParsedVariableContents.push_back(std::vformat("{}\t\telse if ({}.IsTimerComplete(owningEntity))", std::make_format_args(prefix, variableName)));
-	outParsedVariableContents.push_back(std::string(prefix).append("\t\t{"));
-	outParsedVariableContents.push_back(std::string(prefix).append("\t\t\tImGui::Text(\"Timer complete\");"));
-	outParsedVariableContents.push_back(std::string(prefix).append("\t\t}"));
-	outParsedVariableContents.push_back(std::string(prefix).append("\t\telse"));
-	outParsedVariableContents.push_back(std::string(prefix).append("\t\t{"));
-	outParsedVariableContents.push_back(std::string(prefix).append("\t\t\tImGui::Text(\"Not set\");"));
-	outParsedVariableContents.push_back(std::string(prefix).append("\t\t}"));
-}
-
-void ComponentImplementationGenerator::FormatImGuiResourceSetField(const std::string& variableName, const std::string& extraData, const std::string& prefix, std::vector<std::string>& outParsedVariableContents)
-{
-	outParsedVariableContents.push_back(std::vformat("{}\t\tconst uint8 {}_numResources = static_cast<uint8>(EResourceType::Count);", std::make_format_args(prefix, variableName)));
-	outParsedVariableContents.push_back(std::vformat("{}\t\tfor (int32 i = 0; i < {}_numResources; ++i)", std::make_format_args(prefix, variableName)));
-	outParsedVariableContents.push_back(std::string(prefix).append("\t\t{"));
-	outParsedVariableContents.push_back(std::string(prefix).append("\t\t\tImGui::SameLine();"));
-	outParsedVariableContents.push_back(std::vformat("{}\t\t\tImGui::Text(\"%d \", {}.m_resourceQuantities[i]);", std::make_format_args(prefix, variableName)));
-	outParsedVariableContents.push_back(std::string(prefix).append("\t\t}"));
-}
-
-void ComponentImplementationGenerator::FormatImGuiConstructionDataField(const std::string& variableName, const std::string& extraData, const std::string& prefix, std::vector<std::string>& outParsedVariableContents)
-{
-	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::Text(\"Entity Being Constructed Id %d\", {}.m_beingConstructedEntityId);", std::make_format_args(prefix, variableName)));
-	outParsedVariableContents.push_back(std::vformat("{}\t\tImGui::Text(\"Entity Constructing Other Id %d\", {}.m_constructingOtherEntityId);", std::make_format_args(prefix, variableName)));
-}
-
 void ComponentImplementationGenerator::FormatImGuiOptionalField(const std::string& variableName, const std::string& extraData, const std::string& prefix, std::vector<std::string>& outParsedVariableContents)
 {
 	outParsedVariableContents.push_back(std::vformat("{}\t\tif ({}.IsSet())", std::make_format_args(prefix, variableName)));
@@ -814,31 +779,7 @@ void ComponentImplementationGenerator::FormatImGuiSpawnEntityInfoField(const std
 	FormatImGuiRecordField(modifiedVariableName, "ARGUS_COMP_STATIC_DATA(UArgusActorRecord)", prefix, outParsedVariableContents);
 }
 
-void ComponentImplementationGenerator::FormatImGuiControlGroupField(const std::string& variableName, const std::string& extraData, const std::string& prefix, std::vector<std::string>& outParsedVariableContents)
-{
-	outParsedVariableContents.push_back(std::vformat("\t\t\t\tImGui::Text(\"Array max is currently = %d\", {}.Max());", std::make_format_args(variableName)));
-	outParsedVariableContents.push_back(std::vformat("\t\t\t\tif ({}.Num() == 0)", std::make_format_args(variableName)));
-	outParsedVariableContents.push_back("\t\t\t\t{");
-	outParsedVariableContents.push_back("\t\t\t\t\tImGui::Text(\"Array is empty\");");
-	outParsedVariableContents.push_back("\t\t\t\t}");
-	outParsedVariableContents.push_back("\t\t\t\telse");
-	outParsedVariableContents.push_back("\t\t\t\t{");
-	outParsedVariableContents.push_back(std::vformat("\t\t\t\t\tImGui::Text(\"Size of array = %d\", {}.Num());", std::make_format_args(variableName)));
-	outParsedVariableContents.push_back(std::vformat("\t\t\t\t\tfor (int32 j = 0; j < {}.Num(); ++j)", std::make_format_args(variableName)));
-	outParsedVariableContents.push_back("\t\t\t\t\t{");
-	std::string subVariableName = std::vformat("{}[j]", std::make_format_args(variableName));
-	std::string secondPrefix = "\t\t\t\t\t";
-	FormatImGuiIntField(subVariableName, extraData, secondPrefix, outParsedVariableContents);
-	outParsedVariableContents.push_back("\t\t\t\t\t}");
-	outParsedVariableContents.push_back("\t\t\t\t}");
-}
-
-void ComponentImplementationGenerator::FormatImGuiTeamCommanderPriorityField(const std::string& variableName, const std::string& extraData, const std::string& prefix, std::vector<std::string>& outParsedVariableContents)
-{
-	outParsedVariableContents.push_back(std::vformat("{}\t\t{}.DrawImGuiDebug();", std::make_format_args(prefix, variableName)));
-}
-
-void ComponentImplementationGenerator::FormatImGuiResourceSourceExtractionDataField(const std::string& variableName, const std::string& extraData, const std::string& prefix, std::vector<std::string>& outParsedVariableContents)
+void ComponentImplementationGenerator::FormatImGuiCustomTypeField(const std::string& variableName, const std::string& extraData, const std::string& prefix, std::vector<std::string>& outParsedVariableContents)
 {
 	outParsedVariableContents.push_back(std::vformat("{}\t\t{}.DrawImGuiDebug();", std::make_format_args(prefix, variableName)));
 }

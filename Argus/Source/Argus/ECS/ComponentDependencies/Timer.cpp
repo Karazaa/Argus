@@ -6,6 +6,10 @@
 #include "ComponentDefinitions/TimerComponent.h"
 #include "Serialization/Archive.h"
 
+#if !UE_BUILD_SHIPPING
+#include "imgui.h"
+#endif // !UE_BUILD_SHIPPING
+
 void TimerHandle::StartTimer(float seconds)
 {
 	ArgusEntity entity = ArgusEntity::RetrieveEntity(ArgusComponentRegistry::GetOwningEntityIdForComponentMember(this));
@@ -219,6 +223,27 @@ void TimerHandle::Serialize(FArchive& archive)
 {
 	archive << m_timerIndex;
 }
+
+#if !UE_BUILD_SHIPPING
+void TimerHandle::DrawImGuiDebug() const
+{
+	ArgusEntity owningEntity = ArgusEntity::RetrieveEntity(ArgusComponentRegistry::GetOwningEntityIdForComponentMember(this));
+	if (IsTimerTicking(owningEntity))
+	{
+		ImGui::Text("%.2f", GetTimeRemaining(owningEntity));
+		ImGui::SameLine();
+		ImGui::ProgressBar(GetTimeElapsedProportion(owningEntity));
+	}
+	else if (IsTimerComplete(owningEntity))
+	{
+		ImGui::Text("Timer complete");
+	}
+	else
+	{
+		ImGui::Text("Not set");
+	}
+}
+#endif // !UE_BUILD_SHIPPING
 
 TimerComponent* TimerHandle::GetTimerComponentForEntity(ArgusEntity entityWithTimer, const WIDECHAR* functionName) const
 {

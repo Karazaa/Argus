@@ -39,6 +39,10 @@ struct FResourceSet
 	bool IsEmpty() const;
 	void Serialize(FArchive& archive);
 
+#if !UE_BUILD_SHIPPING
+	void DrawImGuiDebug() const;
+#endif // !UE_BUILD_SHIPPING
+
 	friend bool operator>(const FResourceSet& left, const FResourceSet& right)
 	{
 		for (uint8 i = 0u; i < static_cast<uint8>(EResourceType::Count); ++i)

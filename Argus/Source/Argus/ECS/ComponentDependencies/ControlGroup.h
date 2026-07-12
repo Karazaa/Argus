@@ -17,5 +17,9 @@ struct ControlGroup
 	void Add(uint16 entityId) { m_entityIds.Add(entityId); }
 	uint16& operator[](int32 index) { return m_entityIds[index]; }
 	const uint16& operator[](int32 index) const { return m_entityIds[index]; }
+
+#if !UE_BUILD_SHIPPING
+	void DrawImGuiDebug() const;
+#endif // !UE_BUILD_SHIPPING
 };
 FArchive& operator<<(FArchive& archive, ControlGroup& controlGroup);
