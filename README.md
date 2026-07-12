@@ -14,7 +14,7 @@ Detailed documentation, examples, resources, and reasonings will be added over t
 
 # How to Run Argus
 
-Right now, Argus is based on Unreal Engine version 5.7.1. In order to run Argus you would either need to install Unreal version 5.7.1 via the Epic Games launcher or build Unreal 5.7.1 from source code. 
+Right now, Argus is based on Unreal Engine version 5.8.0. In order to run Argus you would either need to install Unreal version 5.8.0 via the Epic Games launcher or build Unreal 5.8.0 from source code. 
 
 
 
@@ -31,4 +31,9 @@ To build Unreal Engine from source, you will need to [join the Epic Games Organi
 This will generate an Argus.sln that you can open in Visual Studio 2022, and then build **DebugGameEditor** from in order to run the editor locally. After running the editor, I'd suggest opening the **Sandbox** level and hitting play! From there you can get a very basic sense for what is currently implemented and poke around.
 
 Argus relies on no bespoke engine changes, so having a vanilla version of Unreal Engine is fine! Feel free to contact Karazaa on GitHub if you have any questions or need a little assistance building ArgusEditor. 
+
+# Current GitHub Actions status
+I'd eventually like to add automatic packaging/commandlet GitHub Actions, but for now just have a Hello World action running to validate runner state.
+
+[![Hello World](https://github.com/Karazaa/Argus/actions/workflows/hello-world.yml/badge.svg)](https://github.com/Karazaa/Argus/actions/workflows/hello-world.yml)
 
