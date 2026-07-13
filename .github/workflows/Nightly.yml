@@ -1,0 +1,12 @@
+name: Nightly
+
+on:
+   schedule:
+     - cron: "0 8 * * *" #This is midnight PST
+
+jobs: 
+  build: 
+    runs-on: self-hosted
+    steps:
+      - name: Print Hello World
+        run: echo "Hello World!"
