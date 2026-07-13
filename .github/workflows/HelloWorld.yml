@@ -3,6 +3,9 @@ name: Hello World
 on:
   workflow_dispatch:
 
+env:
+  PATH_TO_REPO: C:/Users/treym/GameDevelopment/Argus/
+
 jobs:
   hello-job:
     runs-on: self-hosted
@@ -17,3 +20,11 @@ jobs:
     steps:
       - name: goodbye-world
         run: echo "Goodbye World!"
+
+  pull:
+    runs-on: self-hosted
+    needs:
+      - goodbye-job
+    steps:
+      - name: git-pull
+        run: git -C $PATH_TO_REPO pull
