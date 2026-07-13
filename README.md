@@ -33,7 +33,6 @@ This will generate an Argus.sln that you can open in Visual Studio 2022, and the
 Argus relies on no bespoke engine changes, so having a vanilla version of Unreal Engine is fine! Feel free to contact Karazaa on GitHub if you have any questions or need a little assistance building ArgusEditor. 
 
 # Current GitHub Actions status
-I'd eventually like to add automatic packaging/commandlet GitHub Actions, but for now just have a Hello World action running to validate runner state.
-
-[![Hello World](https://github.com/Karazaa/Argus/actions/workflows/hello-world.yml/badge.svg)](https://github.com/Karazaa/Argus/actions/workflows/hello-world.yml)
+[![Nightly](https://github.com/Karazaa/Argus/actions/workflows/Nightly.yml/badge.svg)](https://github.com/Karazaa/Argus/actions/workflows/Nightly.yml)
+[![Update Runner](https://github.com/Karazaa/Argus/actions/workflows/UpdateRunner.yml/badge.svg)](https://github.com/Karazaa/Argus/actions/workflows/UpdateRunner.yml)
 
