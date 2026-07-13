@@ -1,11 +1,21 @@
 name: Hello World
 
 on:
-   workflow_dispatch: 
+  workflow_dispatch:
 
-jobs: 
-  hello-job: 
+jobs:
+  hello-job:
     runs-on: self-hosted
     steps:
-      - name: Print Hello World
+      - name: hello-world
         run: echo "Hello World!"
+
+  goodbye-job:
+    runs-on: self-hosted
+    needs:
+      - hello-job
+    steps:
+      - name: goodbye-world
+        run: echo "Goodbye World!"
+  
+	
