@@ -3,9 +3,6 @@ name: Hello World
 on:
   workflow_dispatch:
 
-env:
-  PATH_TO_REPO: ${{ secrets.PATH_TO_REPO }}
-
 jobs:
   hello-job:
     runs-on: self-hosted
@@ -20,12 +17,3 @@ jobs:
     steps:
       - name: goodbye-world
         run: echo "Goodbye World!"
-
-  pull:
-    runs-on: self-hosted
-    needs:
-      - goodbye-job
-    steps:
-      - name: git-pull
-        shell: cmd
-        run: git -C %PATH_TO_REPO% pull
