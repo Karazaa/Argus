@@ -17,5 +17,3 @@ jobs:
     steps:
       - name: goodbye-world
         run: echo "Goodbye World!"
-  
-	
