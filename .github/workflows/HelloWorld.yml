@@ -28,4 +28,4 @@ jobs:
     steps:
       - name: git-pull
         shell: cmd
-        run: git -C $PATH_TO_REPO pull
+        run: git -C %PATH_TO_REPO% pull
