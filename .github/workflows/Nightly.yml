@@ -1,6 +1,7 @@
 name: Nightly
 
 on:
+   workflow_dispatch:
    schedule:
      - cron: "0 8 * * *" #This is midnight PST
 
@@ -8,5 +9,18 @@ jobs:
   build: 
     runs-on: self-hosted
     steps:
-      - name: Print Hello World
-        run: echo "Hello World!"
+      - name: Cook, Stage & Package UE Project
+        uses: OrchidIsle/UE5-Build-Project@latest
+        with:
+          RUNUAT_PATH: ${{ secrets.PATH_TO_UPROJECT }}
+          UPROJECT_PATH: ${{ secrets.PATH_TO_UPROJECT }}
+          BUILD_CONFIG: Development
+          PLATFORM: Win64
+          CLEAN: true
+          COOK: true
+          STAGE: true
+          PACKAGE: true
+          ARCHIVE: true
+          ARCHIVE_PATH: ${{ secrets.PATH_TO_ARCHIVE_DIR }}
+          NULLRHI: true
+          EDITOR: true
