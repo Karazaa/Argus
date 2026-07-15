@@ -6,17 +6,17 @@ on:
      - cron: "0 6 * * *"
 
 jobs: 
-  non-unity-job:
-    runs-on: self-hosted
-    steps:
-      - name: Validating Non-Unity Build
-        shell: powershell
-        run: Start-process -FilePath "${{ secrets.PATH_TO_RUN_UBT }}" -ArgumentList "${{ secrets.PATH_TO_UPROJECT }} Win64 Development ArgusEditor -DisableAdaptiveUnity -DisableUnity -NoPCH -NoSharedPCH" -NoNewWindow -Wait
+#  non-unity-job:
+#    runs-on: self-hosted
+#    steps:
+#     - name: Validating Non-Unity Build
+#        shell: powershell
+#        run: Start-process -FilePath "${{ secrets.PATH_TO_RUN_UBT }}" -ArgumentList "${{ secrets.PATH_TO_UPROJECT }} Win64 Development ArgusEditor -DisableAdaptiveUnity -DisableUnity -NoPCH -NoSharedPCH" -NoNewWindow -Wait
   
   build: 
     runs-on: self-hosted
-    needs:
-      - non-unity-job
+#    needs:
+#      - non-unity-job
     steps:
       - name: Cook, Stage & Package UE Project
         uses: OrchidIsle/UE5-Build-Project@latest
