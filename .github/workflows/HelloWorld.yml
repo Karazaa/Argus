@@ -8,5 +8,5 @@ jobs:
     runs-on: self-hosted
     steps:
       - name: Making non-unity build
-        shell: cmd
-        run: start C:\Users\treym\GameDevelopment\UnrealEngine\Engine\Build\BatchFiles\RunUBT.bat "C:\Users\treym\GameDevelopment\Argus\Argus\Argus.uproject" Win64 Development ArgusEditor -DisableAdaptiveUnity -DisableUnity -NoPCH -NoSharedPCH
+        shell: powershell
+        run: Start-process -FilePath "C:\Users\treym\GameDevelopment\UnrealEngine\Engine\Build\BatchFiles\RunUBT.bat" -ArgumentList "C:\Users\treym\GameDevelopment\Argus\Argus\Argus.uproject Win64 Development ArgusEditor -DisableAdaptiveUnity -DisableUnity -NoPCH -NoSharedPCH" -NoNewWindow
