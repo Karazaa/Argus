@@ -27,6 +27,7 @@ void TeamCommanderSystems_GatherInfo::ClearUpdatesPerCommanderEntity(ArgusEntity
 		return;
 	}
 
+	components.m_resourceDataComponent->m_resourceReserveTarget.Reset();
 	components.m_resourceDataComponent->IterateAllSeenResourceSources([](ResourceSourceExtractionData& data)
 	{
 		ClearResourceSinkFromExtractionDataIfNeeded(ArgusEntity::RetrieveEntity(data.m_resourceSinkEntityId), data);

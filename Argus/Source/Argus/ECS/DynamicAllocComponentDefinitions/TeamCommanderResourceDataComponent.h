@@ -4,6 +4,7 @@
 
 #include "ArgusContainerAllocator.h"
 #include "ArgusMacros.h"
+#include "ComponentDependencies/ResourceSet.h"
 #include "ComponentDependencies/TeamCommanderPriorities.h"
 
 struct TeamCommanderResourceDataComponent
@@ -18,6 +19,9 @@ struct TeamCommanderResourceDataComponent
 
 	ARGUS_COMP_NO_DATA
 	TArray<ResourceSourceExtractionData, ArgusContainerAllocator<10u> > m_seenResourceCSourceExtractionData;
+
+	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT
+	FResourceSet m_resourceReserveTarget;
 
 	TArray<ResourceSourceExtractionData, ArgusContainerAllocator<10u> >& GetSeenSourceExtractionDataForResourceType(EResourceType type)
 	{

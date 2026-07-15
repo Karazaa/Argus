@@ -123,7 +123,7 @@ bool TeamCommanderSystems_AssignEntities::AssignEntityToStartConstructionOfResou
 	}
 
 	TArray<TPair<const UAbilityRecord*, EAbilityIndex>> abilityIndexPairs;
-	if (!AbilitySystems::GetSpawnEntityCategoryAbilities(entity, priority.m_entityCategory, abilityIndexPairs))
+	if (!AbilitySystems::GetSpawnEntityCategoryAbilities(entity, priority.m_entityCategory, abilityIndexPairs, components.m_resourceDataComponent->m_resourceReserveTarget))
 	{
 		return false;
 	}
@@ -256,7 +256,7 @@ bool TeamCommanderSystems_AssignEntities::AssignEntityToSpawnUnitIfAble(ArgusEnt
 	}
 
 	TArray<TPair<const UAbilityRecord*, EAbilityIndex>> abilityIndexPairs;
-	if (!AbilitySystems::GetSpawnEntityCategoryAbilities(entity, priority.m_entityCategory, abilityIndexPairs))
+	if (!AbilitySystems::GetSpawnEntityCategoryAbilities(entity, priority.m_entityCategory, abilityIndexPairs, components.m_resourceDataComponent->m_resourceReserveTarget))
 	{
 		return false;
 	}

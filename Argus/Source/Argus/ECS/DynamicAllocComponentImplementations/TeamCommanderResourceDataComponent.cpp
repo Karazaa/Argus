@@ -17,6 +17,7 @@ void TeamCommanderResourceDataComponent::Reset()
 	m_seenResourceASourceExtractionData.Reset();
 	m_seenResourceBSourceExtractionData.Reset();
 	m_seenResourceCSourceExtractionData.Reset();
+	m_resourceReserveTarget.Reset();
 }
 
 void TeamCommanderResourceDataComponent::Serialize(FArchive& archive)
@@ -93,6 +94,10 @@ void TeamCommanderResourceDataComponent::DrawComponentDebug() const
 			}
 			ImGui::Unindent();
 		}
+		ImGui::TableNextColumn();
+		ImGui::Text("m_resourceReserveTarget");
+		ImGui::TableNextColumn();
+		m_resourceReserveTarget.DrawImGuiDebug();
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 
+#include "AbilityTypes.generated.h"
+
 UENUM()
 enum class EAbilityTypes : uint8
 {
