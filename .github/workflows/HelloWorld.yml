@@ -17,3 +17,12 @@ jobs:
     steps:
       - name: goodbye-world
         run: echo "Goodbye World!"
+
+  non-unity-job:
+    runs-on: self-hosted
+    needs: 
+      - goodbye-job
+    steps:
+      - name: Making non-unity build
+        shell: cmd
+        run: start /B ${{ secrets.PATH_TO_RUN_UAT }} "${{ secrets.PATH_TO_UPROJECT }}" Win64 Development ArgusEditor -DisableAdaptiveUnity -DisableUnity -NoPCH -NoSharedPCH
