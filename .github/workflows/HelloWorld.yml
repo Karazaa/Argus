@@ -25,4 +25,4 @@ jobs:
     steps:
       - name: Making non-unity build
         shell: cmd
-        run: start /B ${{ secrets.PATH_TO_RUN_UBT }} "${{ secrets.PATH_TO_UPROJECT }}" Win64 Development ArgusEditor -DisableAdaptiveUnity -DisableUnity -NoPCH -NoSharedPCH
+        run: start /B C:\Users\treym\GameDevelopment\UnrealEngine\Engine\Build\BatchFiles\RunUBT.bat "C:\Users\treym\GameDevelopment\Argus\Argus\Argus.uproject" Win64 Development ArgusEditor -DisableAdaptiveUnity -DisableUnity -NoPCH -NoSharedPCH
