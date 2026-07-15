@@ -4,25 +4,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  hello-job:
-    runs-on: self-hosted
-    steps:
-      - name: hello-world
-        run: echo "Hello World!"
-
-  goodbye-job:
-    runs-on: self-hosted
-    needs:
-      - hello-job
-    steps:
-      - name: goodbye-world
-        run: echo "Goodbye World!"
-
   non-unity-job:
     runs-on: self-hosted
-    needs: 
-      - goodbye-job
     steps:
       - name: Making non-unity build
         shell: cmd
-        run: start /B C:\Users\treym\GameDevelopment\UnrealEngine\Engine\Build\BatchFiles\RunUBT.bat "C:\Users\treym\GameDevelopment\Argus\Argus\Argus.uproject" Win64 Development ArgusEditor -DisableAdaptiveUnity -DisableUnity -NoPCH -NoSharedPCH
+        run: start C:\Users\treym\GameDevelopment\UnrealEngine\Engine\Build\BatchFiles\RunUBT.bat "C:\Users\treym\GameDevelopment\Argus\Argus\Argus.uproject" Win64 Development ArgusEditor -DisableAdaptiveUnity -DisableUnity -NoPCH -NoSharedPCH
