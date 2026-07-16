@@ -6,17 +6,20 @@ on:
      - cron: "0 6 * * *"
 
 jobs: 
-#  non-unity-job:
-#    runs-on: self-hosted
-#    steps:
-#     - name: Validating Non-Unity Build
-#        shell: powershell
-#        run: Start-process -FilePath "${{ secrets.PATH_TO_RUN_UBT }}" -ArgumentList "${{ secrets.PATH_TO_UPROJECT }} Win64 Development ArgusEditor -DisableAdaptiveUnity -DisableUnity -NoPCH -NoSharedPCH" -NoNewWindow -Wait
+  non-unity-job:
+    runs-on: self-hosted
+    steps:
+      - name: Validating Non-Unity Build
+        shell: powershell
+        run: |
+             $Process = Start-process -FilePath "C:\Users\treym\GameDevelopment\UnrealEngine\Engine\Build\BatchFiles\RunUBT.bat" -ArgumentList "C:\Users\treym\GameDevelopment\Argus\Argus\Argus.uproject Win64 Development ArgusEditor -DisableAdaptiveUnity -DisableUnity -NoPCH -NoSharedPCH" -NoNewWindow -PassThru
+             $Process.WaitForExit()
+             if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
   
   build: 
     runs-on: self-hosted
-#    needs:
-#      - non-unity-job
+    needs:
+      - non-unity-job
     steps:
       - name: Cook, Stage & Package UE Project
         uses: OrchidIsle/UE5-Build-Project@latest
