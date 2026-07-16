@@ -2,6 +2,8 @@
 
 #include "ArgusSystemsThread.h"
 #include "GameTime.h"
+#include "GenericPlatform/GenericPlatformProcess.h"
+#include "HAL/RunnableThread.h"
 #include "Systems/FogOfWarSystems.h"
 
 ArgusSystemsThread::ArgusSystemsThread()
@@ -29,7 +31,7 @@ void ArgusSystemsThread::StartThread()
 
 uint32 ArgusSystemsThread::Run()
 {
-    FPlatformProcess::ConditionalSleep([this]() -> bool
+    FGenericPlatformProcess::ConditionalSleep([this]() -> bool
     {
         return m_isStarted;
     });
@@ -41,7 +43,7 @@ uint32 ArgusSystemsThread::Run()
 
         m_tickCondition = false;
         m_onTickComplete.ExecuteIfBound();
-        FPlatformProcess::ConditionalSleep([this]() -> bool
+        FGenericPlatformProcess::ConditionalSleep([this]() -> bool
         {
             return m_tickCondition || m_isShutdown;
         });

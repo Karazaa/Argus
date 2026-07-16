@@ -9,6 +9,7 @@
 
 #if !UE_BUILD_SHIPPING
 #include "ArgusECSDebugger.h"
+#include "DrawDebugHelpers.h"
 #endif //!UE_BUILD_SHIPPING
 
 void FlockingSystems::RunSystems(float deltaTime)

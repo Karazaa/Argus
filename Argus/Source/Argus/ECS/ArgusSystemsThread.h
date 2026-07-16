@@ -3,6 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "HAL/Runnable.h"
+
+class FRunnableThread;
 
 // Declaring a Singlecast, one-parameter void Delegate (done before classes)
 DECLARE_DELEGATE(OnTickComplete)
