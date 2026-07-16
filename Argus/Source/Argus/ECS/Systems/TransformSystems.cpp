@@ -10,6 +10,10 @@
 #include "Systems/NavigationSystems.h"
 #include "Systems/TargetingSystems.h"
 
+#if !UE_BUILD_SHIPPING
+#include "DrawDebugHelpers.h"
+#endif //!UE_BUILD_SHIPPING
+
 bool TransformSystems::RunSystems(UWorld* worldPointer, float deltaTime)
 {
 	ARGUS_TRACE(TransformSystems::RunSystems);
