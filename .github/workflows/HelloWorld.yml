@@ -9,4 +9,5 @@ jobs:
     steps:
       - name: Making non-unity build
         shell: powershell
-        run: Start-process -FilePath "C:\Users\treym\GameDevelopment\UnrealEngine\Engine\Build\BatchFiles\RunUBT.bat" -ArgumentList "C:\Users\treym\GameDevelopment\Argus\Argus\Argus.uproject Win64 Development ArgusEditor -DisableAdaptiveUnity -DisableUnity -NoPCH -NoSharedPCH" -NoNewWindow -Wait
+        run: $Process = Start-process -FilePath "C:\Users\treym\GameDevelopment\UnrealEngine\Engine\Build\BatchFiles\RunUBT.bat" -ArgumentList "C:\Users\treym\GameDevelopment\Argus\Argus\Argus.uproject Win64 Development ArgusEditor -DisableAdaptiveUnity -DisableUnity -NoPCH -NoSharedPCH" -NoNewWindow
+             $Process.WaitForExit()
