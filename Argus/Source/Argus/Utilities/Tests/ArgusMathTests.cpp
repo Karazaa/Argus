@@ -1,5 +1,6 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
+#include "ArgusCVars.h"
 #include "ArgusLogging.h"
 #include "ArgusMath.h"
 #include "ArgusTesting.h"
@@ -17,14 +18,14 @@ namespace ArgusMathTests
 
 void ChaseValue(ArgusMath::ExponentialDecaySmoother<float>& smoother, float from, float to)
 {
-	if (CVarEnableVerboseTestLogging.GetValueOnAnyThread())
+	if (ArgusCVars::CVarEnableVerboseTestLogging.GetValueOnAnyThread())
 	{
 		ARGUS_LOG(ArgusTestingLog, Display, TEXT("Smoothing from %f to %f"), from, to);
 	}
 	for (int i = 0; i < ArgusMathTests::k_sampleSize; ++i)
 	{
 		smoother.SmoothChase(to, ArgusMathTests::k_deltaTime);
-		if (CVarEnableVerboseTestLogging.GetValueOnAnyThread())
+		if (ArgusCVars::CVarEnableVerboseTestLogging.GetValueOnAnyThread())
 		{
 			ARGUS_LOG(ArgusTestingLog, Display, TEXT("%s value: %f"), ARGUS_NAMEOF(ExponentialDecaySmoother<float>), smoother.GetValue());
 		}
@@ -33,7 +34,7 @@ void ChaseValue(ArgusMath::ExponentialDecaySmoother<float>& smoother, float from
 
 void ChaseValue(ArgusMath::ExponentialDecaySmoother<FVector>& smoother, const FVector& from, const FVector& to)
 {
-	if (CVarEnableVerboseTestLogging.GetValueOnAnyThread())
+	if (ArgusCVars::CVarEnableVerboseTestLogging.GetValueOnAnyThread())
 	{
 		ARGUS_LOG
 		(
@@ -46,7 +47,7 @@ void ChaseValue(ArgusMath::ExponentialDecaySmoother<FVector>& smoother, const FV
 	{
 		smoother.SmoothChase(to, ArgusMathTests::k_deltaTime);
 		const FVector value = smoother.GetValue();
-		if (CVarEnableVerboseTestLogging.GetValueOnAnyThread())
+		if (ArgusCVars::CVarEnableVerboseTestLogging.GetValueOnAnyThread())
 		{
 			ARGUS_LOG
 			(

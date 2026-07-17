@@ -3,6 +3,7 @@
 #include "ArgusECSDebugger.h"
 
 #if !UE_BUILD_SHIPPING
+#include "ArgusCVars.h"
 #include "ArgusIterators.h"
 #include "ArgusMacros.h"
 #include "ComponentDependencies/ResourceSet.h"
@@ -11,8 +12,6 @@
 #include "Systems/AvoidanceSystems.h"
 #include "Systems/ResourceSystems.h"
 #include "Systems/TeamCommanderSystems.h"
-
-static TAutoConsoleVariable<bool> CVarDrawECSDebugger(TEXT("Argus.Debug.ECS"), false, TEXT("Whether or not the ECS ImGui debugger should be drawn."));
 
 bool ArgusECSDebugger::s_shouldDrawFogOfWar = true;
 bool ArgusECSDebugger::s_onlyDebugSelectedEntities = false;
@@ -27,7 +26,7 @@ void ArgusECSDebugger::DrawECSDebugger()
 {
 	ARGUS_TRACE(ArgusECSDebugger::DrawECSDebugger);
 
-	if (!CVarDrawECSDebugger.GetValueOnGameThread())
+	if (!ArgusCVars::CVarDrawECSDebugger.GetValueOnGameThread())
 	{
 		return;
 	}

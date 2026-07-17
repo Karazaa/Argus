@@ -3,13 +3,12 @@
 #include "CoreMinimal.h"
 
 #if !UE_BUILD_SHIPPING
+#include "ArgusCVars.h"
 #include "ArgusSaveManager.h"
 #include "ArgusMacros.h"
 #include "ArgusMetadataSaveGame.h"
 #include "HAL/IConsoleManager.h"
 #include "imgui.h"
-
-static TAutoConsoleVariable<bool> CVarDrawSaveManagerDebugger(TEXT("Argus.Debug.SaveManager"), false, TEXT("Whether or not the SaveManager ImGui debugger should be drawn."));
 
 namespace
 {
@@ -20,7 +19,7 @@ void UArgusSaveManager::DrawDebugger()
 {
 	ARGUS_TRACE(UArgusSaveManager::DrawDebugger);
 
-	if (!CVarDrawSaveManagerDebugger.GetValueOnGameThread())
+	if (!ArgusCVars::CVarDrawSaveManagerDebugger.GetValueOnGameThread())
 	{
 		return;
 	}

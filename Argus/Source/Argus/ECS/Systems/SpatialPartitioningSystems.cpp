@@ -14,10 +14,9 @@
 #include "Systems/AvoidanceSystems.h"
 
 #if !UE_BUILD_SHIPPING
+#include "ArgusCVars.h"
 #include "DrawDebugHelpers.h"
 #endif //!UE_BUILD_SHIPPING
-
-static TAutoConsoleVariable<bool> CVarShowObstacleDebug(TEXT("Argus.SpatialPartitioning.ShowAvoidanceObstacleDebug"), false, TEXT(""));
 
 void SpatialPartitioningSystems::RunSystems()
 {
@@ -807,7 +806,7 @@ void SpatialPartitioningSystems::DrawDebugObstacles(UWorld* worldPointer, const 
 		return;
 	}
 
-	if (!CVarShowObstacleDebug.GetValueOnGameThread())
+	if (!ArgusCVars::CVarShowObstacleDebug.GetValueOnGameThread())
 	{
 		return;
 	}

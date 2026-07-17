@@ -1,18 +1,18 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusMemoryDebugger.h"
+
+#if !UE_BUILD_SHIPPING
+#include "ArgusCVars.h"
 #include "ArgusMath.h"
 #include "ArgusMemorySource.h"
 #include "imgui.h"
-
-#if !UE_BUILD_SHIPPING
-static TAutoConsoleVariable<bool> CVarDrawMemoryDebugger(TEXT("Argus.Debug.Memory"), false, TEXT("Whether or not the Memory ImGui debugger should be drawn."));
 
 void ArgusMemoryDebugger::DrawMemoryDebugger()
 {
 	ARGUS_TRACE(ArgusMemoryDebugger::DrawMemoryDebugger);
 
-	if (!CVarDrawMemoryDebugger.GetValueOnGameThread())
+	if (!ArgusCVars::CVarDrawMemoryDebugger.GetValueOnGameThread())
 	{
 		return;
 	}

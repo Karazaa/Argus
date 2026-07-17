@@ -3,6 +3,7 @@
 #include "ArgusInputManager.h"
 #include "ArgusActor.h"
 #include "ArgusCameraActor.h"
+#include "ArgusCVars.h"
 #include "ArgusECSDebugger.h"
 #include "ArgusInputActionSet.h"
 #include "ArgusLogging.h"
@@ -784,7 +785,7 @@ void UArgusInputManager::ProcessSelectInputEvent(bool isAdditive)
 		InputInterfaceSystems::AddSelectedEntityExclusive(argusActor->GetEntity(), m_owningPlayerController->GetMoveToLocationDecalActorRecord());
 	}
 
-	if (CVarEnableVerboseArgusInputLogging.GetValueOnGameThread())
+	if (ArgusCVars::CVarEnableVerboseArgusInputLogging.GetValueOnGameThread())
 	{
 		ARGUS_LOG
 		(
@@ -878,7 +879,7 @@ void UArgusInputManager::ProcessMarqueeSelectInputEvent(const AArgusCameraActor*
 	}
 	
 	const int numFoundEntities = entityIdsWithinBounds.Num();
-	if (CVarEnableVerboseArgusInputLogging.GetValueOnGameThread())
+	if (ArgusCVars::CVarEnableVerboseArgusInputLogging.GetValueOnGameThread())
 	{
 		ARGUS_LOG
 		(
@@ -977,7 +978,7 @@ void UArgusInputManager::ProcessMoveToInputEvent(bool onAttackMove)
 	}
 
 	FVector targetLocation = hitResult.Location;
-	if (CVarEnableVerboseArgusInputLogging.GetValueOnGameThread())
+	if (ArgusCVars::CVarEnableVerboseArgusInputLogging.GetValueOnGameThread())
 	{
 		ARGUS_LOG
 		(
@@ -1027,7 +1028,7 @@ void UArgusInputManager::ProcessSetWaypointInputEvent()
 	}
 
 	FVector targetLocation = hitResult.Location;
-	if (CVarEnableVerboseArgusInputLogging.GetValueOnGameThread())
+	if (ArgusCVars::CVarEnableVerboseArgusInputLogging.GetValueOnGameThread())
 	{
 		ARGUS_LOG
 		(
@@ -1052,7 +1053,7 @@ void UArgusInputManager::ProcessSetWaypointInputEvent()
 void UArgusInputManager::ProcessZoomInputEvent(AArgusCameraActor* argusCamera, const FInputActionValue& value)
 {
 	const float zoomValue = value.Get<float>();
-	if (CVarEnableVerboseArgusInputLogging.GetValueOnGameThread())
+	if (ArgusCVars::CVarEnableVerboseArgusInputLogging.GetValueOnGameThread())
 	{
 		ARGUS_LOG
 		(
@@ -1069,7 +1070,7 @@ void UArgusInputManager::ProcessZoomInputEvent(AArgusCameraActor* argusCamera, c
 
 void UArgusInputManager::ProcessAbilityInputEvent(EAbilityIndex abilityIndex)
 {
-	if (CVarEnableVerboseArgusInputLogging.GetValueOnGameThread())
+	if (ArgusCVars::CVarEnableVerboseArgusInputLogging.GetValueOnGameThread())
 	{
 		ARGUS_LOG
 		(
@@ -1090,7 +1091,7 @@ void UArgusInputManager::ProcessEscapeInputEvent()
 void UArgusInputManager::ProcessRotateCameraInputEvent(AArgusCameraActor* argusCamera, const FInputActionValue& value)
 {
 	const float rotationValue = value.Get<float>();
-	if (CVarEnableVerboseArgusInputLogging.GetValueOnGameThread())
+	if (ArgusCVars::CVarEnableVerboseArgusInputLogging.GetValueOnGameThread())
 	{
 		ARGUS_LOG
 		(
@@ -1194,7 +1195,7 @@ void UArgusInputManager::ProcessReticleAbilityForSelectedEntities(const ReticleC
 {
 	ARGUS_RETURN_ON_NULL(reticleComponent, ArgusInputLog);
 
-	if (CVarEnableVerboseArgusInputLogging.GetValueOnGameThread())
+	if (ArgusCVars::CVarEnableVerboseArgusInputLogging.GetValueOnGameThread())
 	{
 		ARGUS_LOG
 		(
