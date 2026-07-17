@@ -9,7 +9,4 @@ jobs:
     steps:
       - name: Making non-unity build
         shell: powershell
-        run: |
-             $Process = Start-process -FilePath "C:\Users\treym\GameDevelopment\UnrealEngine\Engine\Build\BatchFiles\RunUBT.bat" -ArgumentList "C:\Users\treym\GameDevelopment\Argus\Argus\Argus.uproject Win64 Development ArgusEditor -DisableAdaptiveUnity -DisableUnity -NoPCH -NoSharedPCH" -NoNewWindow -PassThru
-             $Process.WaitForExit()
-             if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+        run: ${{ secrets.PATH_TO_EDITOR_CMD }} "${{ secrets.PATH_TO_UPROJECT }}" -run=CompileAllBlueprints -Unattended -NoLogTimes
