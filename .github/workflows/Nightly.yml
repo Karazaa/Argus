@@ -6,8 +6,17 @@ on:
      - cron: "0 6 * * *"
 
 jobs: 
+  compile-all-bp-job:
+    runs-on: self-hosted
+    steps:
+      - name: Compiling All Blueprints
+        shell: powershell
+        run: ${{ secrets.PATH_TO_EDITOR_CMD }} "${{ secrets.PATH_TO_UPROJECT }}" -run=CompileAllBlueprints -Unattended -NoLogTimes
+
   non-unity-job:
     runs-on: self-hosted
+    needs:
+      - compile-all-bp-job
     steps:
       - name: Validating Non-Unity Build
         shell: powershell
@@ -15,8 +24,8 @@ jobs:
              $Process = Start-process -FilePath "C:\Users\treym\GameDevelopment\UnrealEngine\Engine\Build\BatchFiles\RunUBT.bat" -ArgumentList "C:\Users\treym\GameDevelopment\Argus\Argus\Argus.uproject Win64 Development ArgusEditor -DisableAdaptiveUnity -DisableUnity -NoPCH -NoSharedPCH" -NoNewWindow -PassThru
              $Process.WaitForExit()
              if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-  
-  build: 
+             
+  build-job: 
     runs-on: self-hosted
     needs:
       - non-unity-job
