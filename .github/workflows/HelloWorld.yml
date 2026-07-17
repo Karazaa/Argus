@@ -9,4 +9,6 @@ jobs:
     steps:
       - name: Making non-unity build
         shell: powershell
-        run: ${{ secrets.PATH_TO_EDITOR_CMD }} "${{ secrets.PATH_TO_UPROJECT }}" -run=CompileAllBlueprints -Unattended -NoLogTimes
+        run: |
+          $command = "& `"${{ secrets.PATH_TO_RUN_UBT }}`" `"${{ secrets.PATH_TO_UPROJECT }}`" Win64 Development ArgusEditor -DisableAdaptiveUnity -DisableUnity -NoPCH -NoSharedPCH"
+          Invoke-Expression $command
