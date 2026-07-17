@@ -4,23 +4,28 @@ on:
   push:
     branches: main
 
-env:
-  PATH_TO_REPO: ${{ secrets.PATH_TO_REPO }}
-  PATH_TO_GENERATE_PROJ_FILES: ${{ secrets.PATH_TO_GENERATE_PROJ_FILES }}
-
 jobs:
+  git-reset-hard:
+    runs-on: self-hosted
+    steps:
+      - name: git-reset-hard
+        shell: cmd
+        run: git -C ${{ secrets.PATH_TO_REPO }} reset --hard
+
   git-pull:
     runs-on: self-hosted
+    needs:
+      - git-reset-hard
     steps:
       - name: git-pull
         shell: cmd
-        run: git -C %PATH_TO_REPO% pull
+        run: git -C ${{ secrets.PATH_TO_REPO }} pull
 
   generate-project-files:
     runs-on: self-hosted
     needs:
-    - git-pull
+      - git-pull
     steps: 
-    - name: generate-project-files
-      shell: cmd
-      run: start %PATH_TO_GENERATE_PROJ_FILES%
+      - name: generate-project-files
+        shell: cmd
+        run: start ${{ secrets.PATH_TO_GENERATE_PROJ_FILES }}
