@@ -9,7 +9,7 @@ jobs:
     runs-on: self-hosted
     steps:
       - name: git-reset-hard
-        shell: cmd
+        shell: powershell
         run: git -C ${{ secrets.PATH_TO_REPO }} reset --hard
 
   git-pull:
@@ -18,7 +18,7 @@ jobs:
       - git-reset-hard
     steps:
       - name: git-pull
-        shell: cmd
+        shell: powershell
         run: git -C ${{ secrets.PATH_TO_REPO }} pull
 
   generate-project-files:
@@ -27,5 +27,7 @@ jobs:
       - git-pull
     steps: 
       - name: generate-project-files
-        shell: cmd
-        run: start ${{ secrets.PATH_TO_GENERATE_PROJ_FILES }}
+        shell: powershell
+        run: |
+             $command = "& `"${{ secrets.PATH_TO_GENERATE_PROJ_FILES }}`""
+             Invoke-Expression $command
