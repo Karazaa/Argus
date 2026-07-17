@@ -21,9 +21,8 @@ jobs:
       - name: Validating Non-Unity Build
         shell: powershell
         run: |
-             $Process = Start-process -FilePath "C:\Users\treym\GameDevelopment\UnrealEngine\Engine\Build\BatchFiles\RunUBT.bat" -ArgumentList "C:\Users\treym\GameDevelopment\Argus\Argus\Argus.uproject Win64 Development ArgusEditor -DisableAdaptiveUnity -DisableUnity -NoPCH -NoSharedPCH" -NoNewWindow -PassThru
-             $Process.WaitForExit()
-             if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+             $command = "& `"${{ secrets.PATH_TO_RUN_UBT }}`" `"${{ secrets.PATH_TO_UPROJECT }}`" Win64 Development ArgusEditor -DisableAdaptiveUnity -DisableUnity -NoPCH -NoSharedPCH"
+             Invoke-Expression $command
              
   build-job: 
     runs-on: self-hosted
