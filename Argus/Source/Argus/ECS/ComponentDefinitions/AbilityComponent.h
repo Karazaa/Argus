@@ -133,24 +133,24 @@ struct AbilityComponent
 	{
 		switch (abilityIndex)
 		{
-		case EAbilityIndex::Ability0:
-			m_ability0OverrideId = 0u;
-			break;
+			case EAbilityIndex::Ability0:
+				m_ability0OverrideId = 0u;
+				break;
 
-		case EAbilityIndex::Ability1:
-			m_ability1OverrideId = 0u;
-			break;
+			case EAbilityIndex::Ability1:
+				m_ability1OverrideId = 0u;
+				break;
 
-		case EAbilityIndex::Ability2:
-			m_ability2OverrideId = 0u;
-			break;
+			case EAbilityIndex::Ability2:
+				m_ability2OverrideId = 0u;
+				break;
 
-		case EAbilityIndex::Ability3:
-			m_ability3OverrideId = 0u;
-			break;
+			case EAbilityIndex::Ability3:
+				m_ability3OverrideId = 0u;
+				break;
 
-		default:
-			break;
+			default:
+				break;
 		}
 
 		Set_m_abilityOverrideBitmask(m_abilityOverrideBitmask & ~(static_cast<uint8>(abilityIndex)));

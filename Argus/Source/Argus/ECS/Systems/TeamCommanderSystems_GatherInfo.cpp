@@ -138,6 +138,7 @@ void TeamCommanderSystems_GatherInfo::UpdateTeamCommanderPerEntityOnTeam(const T
 	UpdateCombatDataPerEntity(components, teamCommanderComponents);
 	UpdateSpawningUnitTypesPerSpawner(components, teamCommanderComponents);
 	UpdateConstructionDataPerConstructee(components, teamCommanderComponents);
+	UpdateTeamAvailableAbilityIdsPerEntity(components, teamCommanderComponents);
 }
 
 void TeamCommanderSystems_GatherInfo::UpdateSeenByTeamCommandersPerEntity(const TeamCommanderSystemsArgs& components)
@@ -188,9 +189,9 @@ void TeamCommanderSystems_GatherInfo::UpdateTeamCommanderPerNeutralEntity(const 
 		return;
 	}
 
-	if (ResourceComponent* resourceComponent = components.m_entity.GetComponent<ResourceComponent>())
+	if (components.m_resourceComponent)
 	{
-		if (resourceComponent->m_resourceComponentOwnerType == EResourceComponentOwnerType::Source && components.m_identityComponent->WasEverSeenBy(teamCommanderComponent->m_teamToCommand))
+		if (components.m_resourceComponent->m_resourceComponentOwnerType == EResourceComponentOwnerType::Source && components.m_identityComponent->WasEverSeenBy(teamCommanderComponent->m_teamToCommand))
 		{
 			for (uint8 i = 0u; i < static_cast<uint8>(EResourceType::Count); ++i)
 			{
@@ -370,4 +371,22 @@ void TeamCommanderSystems_GatherInfo::UpdateConstructionDataPerConstructee(const
 		newConstructionData.m_beingConstructedEntityId = targetEntityId;
 		newConstructionData.m_constructingOtherEntityId = entityId;
 	}
+}
+
+void TeamCommanderSystems_GatherInfo::UpdateTeamAvailableAbilityIdsPerEntity(const TeamCommanderSystemsArgs& components, const TeamCommanderComponentCollection& teamCommanderComponents)
+{
+	ARGUS_TRACE(TeamCommanderSystems_GatherInfo::UpdateTeamAvailableAbilityIdsPerEntity);
+
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME) || !teamCommanderComponents.AreComponentsValidCheck(ARGUS_FUNCNAME) || !components.m_abilityComponent)
+	{
+		return;
+	}
+
+	components.m_abilityComponent->IterateActiveAbilityIds([](uint32 abilityRecordId, EAbilityIndex abilityIndex) 
+	{
+		if (abilityRecordId > 0u)
+		{
+			// TODO JAMES: Add ability to set that defines what abilities are currently present for the team.
+		}
+	});
 }

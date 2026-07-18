@@ -25,4 +25,5 @@ private:
 	static void UpdateCombatDataPerEntity(const TeamCommanderSystemsArgs& components, const TeamCommanderComponentCollection& teamCommanderComponents);
 	static void UpdateSpawningUnitTypesPerSpawner(const TeamCommanderSystemsArgs& components, const TeamCommanderComponentCollection& teamCommanderComponents);
 	static void UpdateConstructionDataPerConstructee(const TeamCommanderSystemsArgs& components, const TeamCommanderComponentCollection& teamCommanderComponents);
+	static void UpdateTeamAvailableAbilityIdsPerEntity(const TeamCommanderSystemsArgs& components, const TeamCommanderComponentCollection& teamCommanderComponents);
 };
