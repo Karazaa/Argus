@@ -45,7 +45,7 @@ void CarrierComponent::DrawComponentDebug() const
 		ImGui::Text("m_passengerEntityIds");
 		ImGui::TableNextColumn();
 		ImGui::Text("Array max is currently = %d", m_passengerEntityIds.Max());
-		if (m_passengerEntityIds.Num() == 0)
+		if (m_passengerEntityIds.IsEmpty())
 		{
 			ImGui::Text("Array is empty");
 		}

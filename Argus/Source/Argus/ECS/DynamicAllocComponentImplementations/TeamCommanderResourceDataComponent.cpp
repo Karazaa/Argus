@@ -41,7 +41,7 @@ void TeamCommanderResourceDataComponent::DrawComponentDebug() const
 		ImGui::Text("m_seenResourceASourceExtractionData");
 		ImGui::TableNextColumn();
 		ImGui::Text("Array max is currently = %d", m_seenResourceASourceExtractionData.Max());
-		if (m_seenResourceASourceExtractionData.Num() == 0)
+		if (m_seenResourceASourceExtractionData.IsEmpty())
 		{
 			ImGui::Text("Array is empty");
 		}
@@ -60,7 +60,7 @@ void TeamCommanderResourceDataComponent::DrawComponentDebug() const
 		ImGui::Text("m_seenResourceBSourceExtractionData");
 		ImGui::TableNextColumn();
 		ImGui::Text("Array max is currently = %d", m_seenResourceBSourceExtractionData.Max());
-		if (m_seenResourceBSourceExtractionData.Num() == 0)
+		if (m_seenResourceBSourceExtractionData.IsEmpty())
 		{
 			ImGui::Text("Array is empty");
 		}
@@ -79,7 +79,7 @@ void TeamCommanderResourceDataComponent::DrawComponentDebug() const
 		ImGui::Text("m_seenResourceCSourceExtractionData");
 		ImGui::TableNextColumn();
 		ImGui::Text("Array max is currently = %d", m_seenResourceCSourceExtractionData.Max());
-		if (m_seenResourceCSourceExtractionData.Num() == 0)
+		if (m_seenResourceCSourceExtractionData.IsEmpty())
 		{
 			ImGui::Text("Array is empty");
 		}

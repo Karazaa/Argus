@@ -54,7 +54,7 @@ void InputInterfaceComponent::DrawComponentDebug() const
 		ImGui::Text("m_selectedArgusEntityIds");
 		ImGui::TableNextColumn();
 		ImGui::Text("Array max is currently = %d", m_selectedArgusEntityIds.Max());
-		if (m_selectedArgusEntityIds.Num() == 0)
+		if (m_selectedArgusEntityIds.IsEmpty())
 		{
 			ImGui::Text("Array is empty");
 		}
@@ -73,7 +73,7 @@ void InputInterfaceComponent::DrawComponentDebug() const
 		ImGui::Text("m_activeAbilityGroupArgusEntityIds");
 		ImGui::TableNextColumn();
 		ImGui::Text("Array max is currently = %d", m_activeAbilityGroupArgusEntityIds.Max());
-		if (m_activeAbilityGroupArgusEntityIds.Num() == 0)
+		if (m_activeAbilityGroupArgusEntityIds.IsEmpty())
 		{
 			ImGui::Text("Array is empty");
 		}
@@ -92,7 +92,7 @@ void InputInterfaceComponent::DrawComponentDebug() const
 		ImGui::Text("m_controlGroups");
 		ImGui::TableNextColumn();
 		ImGui::Text("Array max is currently = %d", m_controlGroups.Max());
-		if (m_controlGroups.Num() == 0)
+		if (m_controlGroups.IsEmpty())
 		{
 			ImGui::Text("Array is empty");
 		}

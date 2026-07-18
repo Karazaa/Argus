@@ -18,6 +18,7 @@ void TeamCommanderComponent::Reset()
 	m_inProgressConstructionData.Empty();
 	m_spawningEntityRecordIds.Reset();
 	m_priorities.Reset();
+	m_availableAbilityRecordIds.Reset();
 	m_revealedAreas.Reset();
 	m_revealedAreaDimensionLength = 800.0f;
 	m_teamToCommand = ETeam::None;
@@ -48,7 +49,7 @@ void TeamCommanderComponent::DrawComponentDebug() const
 		ImGui::Text("m_idleEntityIdsForTeam");
 		ImGui::TableNextColumn();
 		ImGui::Text("Array max is currently = %d", m_idleEntityIdsForTeam.Max());
-		if (m_idleEntityIdsForTeam.Num() == 0)
+		if (m_idleEntityIdsForTeam.IsEmpty())
 		{
 			ImGui::Text("Array is empty");
 		}
@@ -82,7 +83,7 @@ void TeamCommanderComponent::DrawComponentDebug() const
 		ImGui::Text("m_spawningEntityRecordIds");
 		ImGui::TableNextColumn();
 		ImGui::Text("Array max is currently = %d", m_spawningEntityRecordIds.Max());
-		if (m_spawningEntityRecordIds.Num() == 0)
+		if (m_spawningEntityRecordIds.IsEmpty())
 		{
 			ImGui::Text("Array is empty");
 		}
@@ -101,7 +102,7 @@ void TeamCommanderComponent::DrawComponentDebug() const
 		ImGui::Text("m_priorities");
 		ImGui::TableNextColumn();
 		ImGui::Text("Array max is currently = %d", m_priorities.Max());
-		if (m_priorities.Num() == 0)
+		if (m_priorities.IsEmpty())
 		{
 			ImGui::Text("Array is empty");
 		}
@@ -113,6 +114,23 @@ void TeamCommanderComponent::DrawComponentDebug() const
 			{
 				if (i != 0) ImGui::Separator();
 				m_priorities[i].DrawImGuiDebug();
+			}
+			ImGui::Unindent();
+		}
+		ImGui::TableNextColumn();
+		ImGui::Text("m_availableAbilityRecordIds");
+		ImGui::TableNextColumn();
+		if (m_availableAbilityRecordIds.IsEmpty())
+		{
+			ImGui::Text("Set is empty");
+		}
+		else
+		{
+			ImGui::Text("Size of set = %d", m_availableAbilityRecordIds.Num());
+			ImGui::Indent();
+			for (const auto& element_m_availableAbilityRecordIds : m_availableAbilityRecordIds)
+			{
+				ImGui::Text("%d", element_m_availableAbilityRecordIds);
 			}
 			ImGui::Unindent();
 		}

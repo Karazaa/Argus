@@ -141,7 +141,7 @@ void AbilityComponent::DrawComponentDebug() const
 		ImGui::Text("m_queuedAbilityIds");
 		ImGui::TableNextColumn();
 		ImGui::Text("Array max is currently = %d", m_queuedAbilityIds.Max());
-		if (m_queuedAbilityIds.Num() == 0)
+		if (m_queuedAbilityIds.IsEmpty())
 		{
 			ImGui::Text("Array is empty");
 		}

@@ -10,6 +10,7 @@
 #include "ComponentDependencies/TeamCommanderPriorities.h"
 #include "ComponentDependencies/Teams.h"
 #include "Containers/BitArray.h"
+#include "Containers/Set.h"
 
 struct TeamCommanderComponent
 {
@@ -26,6 +27,9 @@ struct TeamCommanderComponent
 
 	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT
 	TArray<TeamCommanderPriority, ArgusContainerAllocator<11u> > m_priorities;
+
+	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT
+	TSet<uint32> m_availableAbilityRecordIds;
 
 	ARGUS_COMP_NO_DATA
 	TBitArray<ArgusContainerAllocator<0u> > m_revealedAreas;

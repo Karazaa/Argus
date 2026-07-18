@@ -629,10 +629,9 @@ void ComponentImplementationGenerator::FormatImGuiSetField(const std::string& va
 	outParsedVariableContents.push_back("\t\t{");
 	outParsedVariableContents.push_back(std::vformat("\t\t\tImGui::Text(\"Size of set = %d\", {}.Num());", std::make_format_args(variableName)));
 	outParsedVariableContents.push_back("\t\t\tImGui::Indent();");
-	outParsedVariableContents.push_back(std::vformat("\t\t\tfor (const auto& element : {})", std::make_format_args(variableName)));
+	outParsedVariableContents.push_back(std::vformat("\t\t\tfor (const auto& element_{} : {})", std::make_format_args(variableName, variableName)));
 	outParsedVariableContents.push_back("\t\t\t{");
-	outParsedVariableContents.push_back("\t\t\t\tif (i != 0) ImGui::Separator();");
-	std::string subVariableName = std::vformat("{}[i]", std::make_format_args(variableName));
+	std::string subVariableName = std::vformat("element_{}", std::make_format_args(variableName));
 	std::string prefix = "\t\t";
 	if (elementFormattingFunction)
 	{

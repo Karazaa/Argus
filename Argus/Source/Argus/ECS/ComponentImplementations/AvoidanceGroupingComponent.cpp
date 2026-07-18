@@ -53,7 +53,7 @@ void AvoidanceGroupingComponent::DrawComponentDebug() const
 		ImGui::Text("m_entityIdsInGroup");
 		ImGui::TableNextColumn();
 		ImGui::Text("Array max is currently = %d", m_entityIdsInGroup.Max());
-		if (m_entityIdsInGroup.Num() == 0)
+		if (m_entityIdsInGroup.IsEmpty())
 		{
 			ImGui::Text("Array is empty");
 		}

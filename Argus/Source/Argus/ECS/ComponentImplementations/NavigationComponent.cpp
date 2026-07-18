@@ -52,7 +52,7 @@ void NavigationComponent::DrawComponentDebug() const
 		ImGui::Text("m_navigationPoints");
 		ImGui::TableNextColumn();
 		ImGui::Text("Array max is currently = %d", m_navigationPoints.Max());
-		if (m_navigationPoints.Num() == 0)
+		if (m_navigationPoints.IsEmpty())
 		{
 			ImGui::Text("Array is empty");
 		}

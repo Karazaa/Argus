@@ -79,7 +79,7 @@ void FogOfWarComponent::DrawComponentDebug() const
 		ImGui::Text("m_textureData");
 		ImGui::TableNextColumn();
 		ImGui::Text("Array max is currently = %d", m_textureData.Max());
-		if (m_textureData.Num() == 0)
+		if (m_textureData.IsEmpty())
 		{
 			ImGui::Text("Array is empty");
 		}
@@ -98,7 +98,7 @@ void FogOfWarComponent::DrawComponentDebug() const
 		ImGui::Text("m_smoothedTextureData");
 		ImGui::TableNextColumn();
 		ImGui::Text("Array max is currently = %d", m_smoothedTextureData.Max());
-		if (m_smoothedTextureData.Num() == 0)
+		if (m_smoothedTextureData.IsEmpty())
 		{
 			ImGui::Text("Array is empty");
 		}
@@ -117,7 +117,7 @@ void FogOfWarComponent::DrawComponentDebug() const
 		ImGui::Text("m_intermediarySmoothingData");
 		ImGui::TableNextColumn();
 		ImGui::Text("Array max is currently = %d", m_intermediarySmoothingData.Max());
-		if (m_intermediarySmoothingData.Num() == 0)
+		if (m_intermediarySmoothingData.IsEmpty())
 		{
 			ImGui::Text("Array is empty");
 		}
@@ -136,7 +136,7 @@ void FogOfWarComponent::DrawComponentDebug() const
 		ImGui::Text("m_gaussianFilter");
 		ImGui::TableNextColumn();
 		ImGui::Text("Array max is currently = %d", m_gaussianFilter.Max());
-		if (m_gaussianFilter.Num() == 0)
+		if (m_gaussianFilter.IsEmpty())
 		{
 			ImGui::Text("Array is empty");
 		}
