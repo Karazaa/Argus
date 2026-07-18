@@ -41,7 +41,8 @@ enum ContainerType : uint8
 	Optional,
 	BitArray,
 	Map,
-	CArray
+	CArray,
+	Set
 };
 
 struct TypeInfo
@@ -56,6 +57,8 @@ struct TypeInfo
 	TypeInfo(const ArgusCodeGeneratorUtil::ParsedVariableData& variableData);
 
 	UnderlyingType GetTemplateParameter(int index) const;
+	bool HasTemplateParameters() const;
+
 private:
 	UnderlyingType DetermineType(const std::string& typeString, const std::string& macroString, std::string& outCleanTypeName);
 	void ExtractTemplateParameters(const std::string& typeString, std::vector<UnderlyingType>& outPopulatedTemplateParameters);

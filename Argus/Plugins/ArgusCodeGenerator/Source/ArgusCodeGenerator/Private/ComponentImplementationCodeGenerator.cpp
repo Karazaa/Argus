@@ -244,7 +244,7 @@ void ComponentImplementationGenerator::GeneratePerVariableResetText(const std::v
 
 		const TypeInfo typeInfo = TypeInfo(parsedVariableData[i]);
 
-		if (typeInfo.m_containerType == ContainerType::Array || typeInfo.m_containerType == ContainerType::BitArray || typeInfo.m_containerType == ContainerType::Deque ||
+		if (typeInfo.m_containerType == ContainerType::Array || typeInfo.m_containerType == ContainerType::BitArray || typeInfo.m_containerType == ContainerType::Deque || typeInfo.m_containerType == ContainerType::Set ||
 			typeInfo.m_underlyingType == UnderlyingType::ResourceSet || typeInfo.m_underlyingType == UnderlyingType::TimerHandle || typeInfo.m_underlyingType == UnderlyingType::Observers)
 		{
 			outParsedVariableContents.push_back(std::vformat("\t{}.Reset();", std::make_format_args(typeInfo.m_cleanVariableName)));
@@ -334,6 +334,7 @@ void ComponentImplementationGenerator::GeneratePerVariableSerializeText(const st
 				break;
 			case ContainerType::Array:
 			case ContainerType::Map:
+			case ContainerType::Set:
 				outParsedVariableContents.push_back(std::vformat("\tarchive << {};", std::make_format_args(typeInfo.m_cleanVariableName)));
 				break;
 			case ContainerType::CArray:
@@ -386,20 +387,17 @@ void ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 		std::string secondExtraData = "";
 		TFunction<void(const std::string&, const std::string&, const std::string&, std::vector<std::string>&)> secondAtomicFieldFormattingFunction = nullptr;
 
+		if (typeInfo.HasTemplateParameters() && !PopulateAtomicFormattingFunction(typeInfo.GetTemplateParameter(0), typeInfo.m_cleanTypeName, parsedVariableData[i].m_propertyMacro, atomicFieldFormattingFunction, extraData))
+		{
+			continue;
+		}
+
 		switch (typeInfo.m_containerType)
 		{
 			case ContainerType::Queue:
-				if (!PopulateAtomicFormattingFunction(typeInfo.GetTemplateParameter(0), typeInfo.m_cleanTypeName, parsedVariableData[i].m_propertyMacro, atomicFieldFormattingFunction, extraData))
-				{
-					continue;
-				}
 				FormatImGuiQueueField(typeInfo.m_cleanVariableName, outParsedVariableContents);
 				break;
 			case ContainerType::Array:
-				if (!PopulateAtomicFormattingFunction(typeInfo.GetTemplateParameter(0), typeInfo.m_cleanTypeName, parsedVariableData[i].m_propertyMacro, atomicFieldFormattingFunction, extraData))
-				{
-					continue;
-				}
 				FormatImGuiArrayField(typeInfo.m_cleanVariableName, extraData, outParsedVariableContents, atomicFieldFormattingFunction);
 				break;
 			case ContainerType::CArray:
@@ -410,19 +408,17 @@ void ComponentImplementationGenerator::GeneratePerVariableImGuiText(const std::v
 				FormatImGuiCArrayField(typeInfo.m_cleanVariableName, typeInfo.m_staticSize, extraData, outParsedVariableContents, atomicFieldFormattingFunction);
 				break;
 			case ContainerType::Deque:
-				if (!PopulateAtomicFormattingFunction(typeInfo.GetTemplateParameter(0), typeInfo.m_cleanTypeName, parsedVariableData[i].m_propertyMacro, atomicFieldFormattingFunction, extraData))
-				{
-					continue;
-				}
 				FormatImGuiDequeField(typeInfo.m_cleanVariableName, extraData, outParsedVariableContents, atomicFieldFormattingFunction);
 				break;
 			case ContainerType::Map:
-				if (!PopulateAtomicFormattingFunction(typeInfo.GetTemplateParameter(0), typeInfo.m_cleanTypeName, parsedVariableData[i].m_propertyMacro, atomicFieldFormattingFunction, extraData) ||
-					!PopulateAtomicFormattingFunction(typeInfo.GetTemplateParameter(1), typeInfo.m_cleanTypeName, parsedVariableData[i].m_propertyMacro, secondAtomicFieldFormattingFunction, secondExtraData))
+				if (!PopulateAtomicFormattingFunction(typeInfo.GetTemplateParameter(1), typeInfo.m_cleanTypeName, parsedVariableData[i].m_propertyMacro, secondAtomicFieldFormattingFunction, secondExtraData))
 				{
 					continue;
 				}
 				FormatImGuiMapField(typeInfo.m_cleanVariableName, extraData, secondExtraData, outParsedVariableContents, atomicFieldFormattingFunction, secondAtomicFieldFormattingFunction);
+				break;
+			case ContainerType::Set:
+				FormatImGuiSetField(typeInfo.m_cleanVariableName, extraData, outParsedVariableContents, atomicFieldFormattingFunction);
 				break;
 			case ContainerType::Optional:
 				atomicFieldFormattingFunction = FormatImGuiOptionalField;
@@ -525,7 +521,7 @@ bool ComponentImplementationGenerator::PopulateAtomicFormattingFunction(Underlyi
 void ComponentImplementationGenerator::FormatImGuiArrayField(const std::string& variableName, const std::string& extraData, std::vector<std::string>& outParsedVariableContents, const TFunction<void(const std::string&, const std::string&, const std::string&, std::vector<std::string>&)>& elementFormattingFunction)
 {
 	outParsedVariableContents.push_back(std::vformat("\t\tImGui::Text(\"Array max is currently = %d\", {}.Max());", std::make_format_args(variableName)));
-	outParsedVariableContents.push_back(std::vformat("\t\tif ({}.Num() == 0)", std::make_format_args(variableName)));
+	outParsedVariableContents.push_back(std::vformat("\t\tif ({}.IsEmpty())", std::make_format_args(variableName)));
 	outParsedVariableContents.push_back("\t\t{");
 	outParsedVariableContents.push_back("\t\t\tImGui::Text(\"Array is empty\");");
 	outParsedVariableContents.push_back("\t\t}");
@@ -621,6 +617,30 @@ void ComponentImplementationGenerator::FormatImGuiMapField(	const std::string& v
 	outParsedVariableContents.push_back("\t\t}");
 	outParsedVariableContents.push_back("\t\tImGui::EndTable();");
 	outParsedVariableContents.push_back("\t\tImGui::Unindent();");
+}
+
+void ComponentImplementationGenerator::FormatImGuiSetField(const std::string& variableName, const std::string& extraData, std::vector<std::string>& outParsedVariableContents, const TFunction<void(const std::string&, const std::string&, const std::string&, std::vector<std::string>&)>& elementFormattingFunction)
+{
+	outParsedVariableContents.push_back(std::vformat("\t\tif ({}.IsEmpty())", std::make_format_args(variableName)));
+	outParsedVariableContents.push_back("\t\t{");
+	outParsedVariableContents.push_back("\t\t\tImGui::Text(\"Set is empty\");");
+	outParsedVariableContents.push_back("\t\t}");
+	outParsedVariableContents.push_back("\t\telse");
+	outParsedVariableContents.push_back("\t\t{");
+	outParsedVariableContents.push_back(std::vformat("\t\t\tImGui::Text(\"Size of set = %d\", {}.Num());", std::make_format_args(variableName)));
+	outParsedVariableContents.push_back("\t\t\tImGui::Indent();");
+	outParsedVariableContents.push_back(std::vformat("\t\t\tfor (const auto& element : {})", std::make_format_args(variableName)));
+	outParsedVariableContents.push_back("\t\t\t{");
+	outParsedVariableContents.push_back("\t\t\t\tif (i != 0) ImGui::Separator();");
+	std::string subVariableName = std::vformat("{}[i]", std::make_format_args(variableName));
+	std::string prefix = "\t\t";
+	if (elementFormattingFunction)
+	{
+		elementFormattingFunction(subVariableName, extraData, prefix, outParsedVariableContents);
+	}
+	outParsedVariableContents.push_back("\t\t\t}");
+	outParsedVariableContents.push_back("\t\t\tImGui::Unindent();");
+	outParsedVariableContents.push_back("\t\t}");
 }
 
 void ComponentImplementationGenerator::FormatImGuiFloatField(const std::string& variableName, const std::string& extraData, const std::string& prefix, std::vector<std::string>& outParsedVariableContents)

@@ -51,6 +51,11 @@ TypeInfo::TypeInfo(const ArgusCodeGeneratorUtil::ParsedVariableData& variableDat
 		m_containerType = ContainerType::CArray;
 		m_staticSize = variableData.m_sizeString;
 	}
+	else if (variableData.m_typeName.find("TSet") != std::string::npos)
+	{
+		m_containerType = ContainerType::Set;
+		ExtractTemplateParameters(variableData.m_typeName, m_templateTypes);
+	}
 }
 
 UnderlyingType TypeInfo::GetTemplateParameter(int index) const
@@ -61,6 +66,11 @@ UnderlyingType TypeInfo::GetTemplateParameter(int index) const
 	}
 
 	return UnderlyingType::None;
+}
+
+bool TypeInfo::HasTemplateParameters() const
+{
+	return !m_templateTypes.empty();
 }
 
 UnderlyingType TypeInfo::DetermineType(const std::string& typeString, const std::string& macroString, std::string& outCleanTypeName)
