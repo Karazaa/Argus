@@ -5,6 +5,8 @@
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
 #include "ArgusStaticData.h"
+#include "Systems/AbilitySystems.h"
+#include "Systems/ResourceSystems.h"
 
 void TeamCommanderSystems_UpdatePriorities::RunSystems()
 {
@@ -37,14 +39,15 @@ void TeamCommanderSystems_UpdatePriorities::UpdateTeamCommanderPriorities(ArgusE
 					priority.m_entityCategory.m_entityCategoryType = EEntityCategoryType::ResourceSink;
 					priority.m_entityCategory.m_resourceType = static_cast<EResourceType>(j);
 					UpdateConstructResourceSinkTeamPriority(components, priority);
+					UpdateTeamCommanderPriorityCost(components, priority);
 				}
-				break;
+				continue;
 			case ETeamCommanderDirective::ContinueConstruction:
 			{
 				TeamCommanderPriority& priority = components.m_baseComponent->m_priorities.Emplace_GetRef();
 				priority.m_directive = directiveToEvaluate;
 				UpdateContinueConstructionPriority(components, priority);
-				break;
+				continue;
 			}
 			case ETeamCommanderDirective::ExtractResources:
 				for (uint8 j = 0u; j < static_cast<uint8>(EResourceType::Count); ++j)
@@ -55,7 +58,7 @@ void TeamCommanderSystems_UpdatePriorities::UpdateTeamCommanderPriorities(ArgusE
 					priority.m_entityCategory.m_resourceType = static_cast<EResourceType>(j);
 					UpdateResourceExtractionTeamPriority(components, priority);
 				}
-				break;
+				continue;
 			case ETeamCommanderDirective::SpawnUnit:
 				for (uint8 j = 0u; j < static_cast<uint8>(EEntityCategoryType::Count); ++j)
 				{
@@ -74,6 +77,7 @@ void TeamCommanderSystems_UpdatePriorities::UpdateTeamCommanderPriorities(ArgusE
 							priority.m_entityCategory.m_entityCategoryType = unitCategoryType;
 							priority.m_entityCategory.m_resourceType = static_cast<EResourceType>(k);
 							UpdateSpawnUnitTeamPriority(components, priority);
+							UpdateTeamCommanderPriorityCost(components, priority);
 						}
 					}
 					else if (unitCategoryType == EEntityCategoryType::Combatant)
@@ -83,12 +87,14 @@ void TeamCommanderSystems_UpdatePriorities::UpdateTeamCommanderPriorities(ArgusE
 						attackGroundedPriority.m_entityCategory.m_entityCategoryType = unitCategoryType;
 						attackGroundedPriority.m_entityCategory.m_attackCapability = ERangedAttackCapability::GroundedOnly;
 						UpdateSpawnUnitTeamPriority(components, attackGroundedPriority);
+						UpdateTeamCommanderPriorityCost(components, attackGroundedPriority);
 
 						TeamCommanderPriority& attackFlyingPriority = components.m_baseComponent->m_priorities.Emplace_GetRef();
 						attackFlyingPriority.m_directive = directiveToEvaluate;
 						attackFlyingPriority.m_entityCategory.m_entityCategoryType = unitCategoryType;
 						attackFlyingPriority.m_entityCategory.m_attackCapability = ERangedAttackCapability::FlyingOnly;
 						UpdateSpawnUnitTeamPriority(components, attackFlyingPriority);
+						UpdateTeamCommanderPriorityCost(components, attackFlyingPriority);
 					}
 					else
 					{
@@ -96,21 +102,20 @@ void TeamCommanderSystems_UpdatePriorities::UpdateTeamCommanderPriorities(ArgusE
 						priority.m_directive = directiveToEvaluate;
 						priority.m_entityCategory.m_entityCategoryType = unitCategoryType;
 						UpdateSpawnUnitTeamPriority(components, priority);
+						UpdateTeamCommanderPriorityCost(components, priority);
 					}
 				}
-				break;
+				continue;
 			case ETeamCommanderDirective::Scout:
 			{
 				TeamCommanderPriority& priority = components.m_baseComponent->m_priorities.Emplace_GetRef();
 				priority.m_directive = directiveToEvaluate;
 				UpdateScoutingTeamPriority(components, priority);
-				break;
+				continue;
 			}
 			default:
 				continue;
 		}
-
-		UpdateTeamCommanderPriorityCost(components, components.m_baseComponent->m_priorities.Last());
 	}
 
 	components.m_baseComponent->m_priorities.Sort();
@@ -124,7 +129,31 @@ void TeamCommanderSystems_UpdatePriorities::UpdateTeamCommanderPriorityCost(cons
 		return;
 	}
 
-	// TODO JAMES: Iterate over ability record Ids and get costs associated with each priority. Assign the lowest cost to the priorities resource cost.
+	if (priority.m_entityCategory.m_entityCategoryType == EEntityCategoryType::Count)
+	{
+		return;
+	}
+
+	TArray<FResourceSet> abilityCosts;
+	for (uint32 abilityRecordId : components.m_baseComponent->m_availableAbilityRecordIds)
+	{
+		const UAbilityRecord* record = ArgusStaticData::GetRecord<UAbilityRecord>(abilityRecordId);
+		if (!record)
+		{
+			continue;
+		}
+
+		if (AbilitySystems::DoesAbilitySpawnEntityOfCategory(record, priority.m_entityCategory))
+		{
+			abilityCosts.Add(record->m_requiredResourceChangeToCast);
+		}
+	}
+
+	if (!abilityCosts.IsEmpty())
+	{
+		abilityCosts.Sort();
+		priority.m_minAssociatedResourceCost = abilityCosts[0];
+	}
 }
 
 void TeamCommanderSystems_UpdatePriorities::UpdateConstructResourceSinkTeamPriority(const TeamCommanderComponentCollection& components, TeamCommanderPriority& priority)
