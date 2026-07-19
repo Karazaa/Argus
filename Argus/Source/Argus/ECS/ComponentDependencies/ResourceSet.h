@@ -31,8 +31,10 @@ struct FResourceSet
 	void Reset();
 	bool HasResourceType(EResourceType type) const;
 	bool CanAffordResourceChange(const FResourceSet& otherResourceSetRepresentingChange) const;
+	FResourceSet GetResourceChangeConstraints(const FResourceSet& otherResourceSetRepresentingChange) const;
 	void ApplyResourceChange(const FResourceSet& otherResourceSetRepresentingChange);
-	bool IsEntirelyAtCap(const FResourceSet& capacityResrouceSet) const;
+	bool IsEntirelyAtCap(const FResourceSet& capacityResourceSet) const;
+	bool IsChangeConstrained(const FResourceSet& constraintResourceSet) const;
 	FResourceSet MaskResourceSet(const FResourceSet& maskSet) const;
 	FResourceSet CalculateResourceChangeAffordable(const FResourceSet& otherResourceSetRepresentingChange, const FResourceSet* maximumResources = nullptr) const;
 	bool DoesCostLessThan(const FResourceSet& other) const;

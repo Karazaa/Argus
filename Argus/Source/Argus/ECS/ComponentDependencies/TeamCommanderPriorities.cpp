@@ -19,7 +19,7 @@ FArchive& operator<<(FArchive& archive, ResourceSourceExtractionData& resourceSo
 #if !UE_BUILD_SHIPPING
 void TeamCommanderPriority::DrawImGuiDebug() const
 {
-	ImGui::BeginTable("TeamCommanderPriority", 4, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_SizingStretchProp);
+	ImGui::BeginTable("TeamCommanderPriority", 5, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_SizingStretchProp);
 	ImGui::TableNextColumn();
 	ImGui::Text("%.2f", m_weight);
 	ImGui::TableNextColumn();
@@ -43,6 +43,10 @@ void TeamCommanderPriority::DrawImGuiDebug() const
 		const char* attackCapability = ARGUS_FSTRING_TO_CHAR(StaticEnum<ERangedAttackCapability>()->GetNameStringByValue(static_cast<uint8>(m_entityCategory.m_attackCapability)));
 		ImGui::Text(attackCapability);
 	}
+
+	ImGui::TableNextColumn();
+	m_minAssociatedResourceCost.DrawImGuiDebug();
+
 	ImGui::EndTable();
 }
 

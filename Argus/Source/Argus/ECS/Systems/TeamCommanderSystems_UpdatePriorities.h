@@ -12,6 +12,7 @@ public:
 
 private:
 	static void UpdateTeamCommanderPriorities(ArgusEntity teamCommmanderEntity);
+	static void UpdateTeamCommanderPriorityCost(const TeamCommanderComponentCollection& components, TeamCommanderPriority& priority);
 	static void UpdateConstructResourceSinkTeamPriority(const TeamCommanderComponentCollection& components, TeamCommanderPriority& priority);
 	static void UpdateResourceExtractionTeamPriority(const TeamCommanderComponentCollection& components, TeamCommanderPriority& priority);
 	static void UpdateSpawnUnitTeamPriority(const TeamCommanderComponentCollection& components, TeamCommanderPriority& priority);

@@ -12,11 +12,12 @@ bool TeamCommanderComponentCollection::PopulateArguments(ArgusEntity entity)
 	}
 
 	m_entity = entity;
+	m_currentResourcesComponent = entity.GetComponent<ResourceComponent>();
 	m_baseComponent = entity.GetComponent<TeamCommanderComponent>();
 	m_resourceDataComponent = entity.GetComponent<TeamCommanderResourceDataComponent>();
 	m_combatDataComponent = entity.GetComponent<TeamCommanderCombatDataComponent>();
 
-	if (!m_entity || !m_baseComponent || !m_resourceDataComponent || !m_combatDataComponent)
+	if (!m_entity || !m_currentResourcesComponent || !m_baseComponent || !m_resourceDataComponent || !m_combatDataComponent)
 	{
 		return false;
 	}
@@ -26,7 +27,7 @@ bool TeamCommanderComponentCollection::PopulateArguments(ArgusEntity entity)
 
 bool TeamCommanderComponentCollection::AreComponentsValidCheck(const WIDECHAR* functionName) const
 {
-	if (UNLIKELY(!m_entity || !m_baseComponent || !m_resourceDataComponent || !m_combatDataComponent))
+	if (UNLIKELY(!m_entity || !m_currentResourcesComponent || !m_baseComponent || !m_resourceDataComponent || !m_combatDataComponent))
 	{
 		ArgusLogging::LogInvalidComponentReferences(functionName, ARGUS_NAMEOF(TeamCommanderComponentCollection));
 		return false;

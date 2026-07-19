@@ -3,6 +3,7 @@
 #pragma once
 
 #include "ComponentDependencies/EntityCategory.h"
+#include "ComponentDependencies/ResourceSet.h"
 
 #include "TeamCommanderPriorities.generated.h"
 
@@ -22,9 +23,10 @@ enum class ETeamCommanderDirective : uint8
 
 struct TeamCommanderPriority
 {
+	float m_weight = 0.0f;
 	ETeamCommanderDirective m_directive = ETeamCommanderDirective::Scout;
 	EntityCategory m_entityCategory;
-	float m_weight = 0.0f;
+	FResourceSet m_minAssociatedResourceCost;
 
 #if !UE_BUILD_SHIPPING
 	void DrawImGuiDebug() const;

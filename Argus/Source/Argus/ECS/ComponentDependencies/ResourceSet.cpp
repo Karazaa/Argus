@@ -55,6 +55,21 @@ bool FResourceSet::CanAffordResourceChange(const FResourceSet& otherResourceSetR
 	return true;
 }
 
+FResourceSet FResourceSet::GetResourceChangeConstraints(const FResourceSet& otherResourceSetRepresentingChange) const
+{
+	FResourceSet output;
+	for (uint8 i = 0; i < static_cast<uint8>(EResourceType::Count); ++i)
+	{
+		const int32 change = otherResourceSetRepresentingChange.m_resourceQuantities[i] + m_resourceQuantities[i];
+		if (otherResourceSetRepresentingChange.m_resourceQuantities[i] < 0 && change < 0)
+		{
+			output.m_resourceQuantities[i] = change;
+		}
+	}
+
+	return output;
+}
+
 void FResourceSet::ApplyResourceChange(const FResourceSet& otherResourceSetRepresentingChange)
 {
 	for (uint8 i = 0; i < static_cast<uint8>(EResourceType::Count); ++i)
@@ -74,6 +89,19 @@ bool FResourceSet::IsEntirelyAtCap(const FResourceSet& capacityResrouceSet) cons
 	}
 
 	return true;
+}
+
+bool FResourceSet::IsChangeConstrained(const FResourceSet& constraintResourceSet) const
+{
+	for (uint8 i = 0; i < static_cast<uint8>(EResourceType::Count); ++i)
+	{
+		if (m_resourceQuantities[i] < 0 && constraintResourceSet.m_resourceQuantities[i] < 0)
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
 FResourceSet FResourceSet::MaskResourceSet(const FResourceSet& maskSet) const

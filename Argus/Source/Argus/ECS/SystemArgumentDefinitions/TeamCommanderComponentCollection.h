@@ -9,6 +9,7 @@ struct TeamCommanderComponentCollection
 {
 	ARGUS_SYSTEM_ARGS_SHARED;
 
+	ResourceComponent* m_currentResourcesComponent = nullptr;
 	TeamCommanderComponent* m_baseComponent = nullptr;
 	TeamCommanderResourceDataComponent* m_resourceDataComponent = nullptr;
 	TeamCommanderCombatDataComponent* m_combatDataComponent = nullptr;

@@ -20,9 +20,6 @@ struct TeamCommanderResourceDataComponent
 	ARGUS_COMP_NO_DATA
 	TArray<ResourceSourceExtractionData, ArgusContainerAllocator<10u> > m_seenResourceCSourceExtractionData;
 
-	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT
-	FResourceSet m_resourceReserveTarget;
-
 	TArray<ResourceSourceExtractionData, ArgusContainerAllocator<10u> >& GetSeenSourceExtractionDataForResourceType(EResourceType type)
 	{
 		switch (type)

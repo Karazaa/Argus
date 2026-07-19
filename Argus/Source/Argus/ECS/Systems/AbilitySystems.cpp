@@ -256,7 +256,7 @@ bool AbilitySystems::DoesAbilitySpawnEntityOfCategory(const UAbilityRecord* abil
 	return entityTemplate->DoesTemplateSatisfyEntityCategory(entityCategory);
 }
 
-bool AbilitySystems::GetSpawnEntityCategoryAbilities(ArgusEntity entity, EntityCategory entityCategory, TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& outAbilityIndexPairs, FResourceSet& lowestOverBudgetCost)
+bool AbilitySystems::GetSpawnEntityCategoryAbilities(ArgusEntity entity, EntityCategory entityCategory, TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& outAbilityIndexPairs)
 {
 	ARGUS_TRACE(AbilitySystems::GetSpawnEntityCategoryAbilities);
 
@@ -268,7 +268,7 @@ bool AbilitySystems::GetSpawnEntityCategoryAbilities(ArgusEntity entity, EntityC
 		return false;
 	}
 
-	abilityComponent->IterateActiveAbilityIds([entity, entityCategory, &outAbilityIndexPairs, &lowestOverBudgetCost](uint32 abilityRecordId, EAbilityIndex iteratedAbilityIndex)
+	abilityComponent->IterateActiveAbilityIds([entity, entityCategory, &outAbilityIndexPairs](uint32 abilityRecordId, EAbilityIndex iteratedAbilityIndex)
 	{
 		const UAbilityRecord* record = ArgusStaticData::GetRecord<UAbilityRecord>(abilityRecordId);
 		if (!record)
@@ -282,16 +282,11 @@ bool AbilitySystems::GetSpawnEntityCategoryAbilities(ArgusEntity entity, EntityC
 			{
 				outAbilityIndexPairs.Add(TPair<const UAbilityRecord*, EAbilityIndex>(record, iteratedAbilityIndex));
 			}
-			else if (lowestOverBudgetCost.IsEmpty() || record->m_requiredResourceChangeToCast.DoesCostLessThan(lowestOverBudgetCost))
-			{
-				lowestOverBudgetCost = record->m_requiredResourceChangeToCast;
-			}
 		}
 	});
 
 	if (outAbilityIndexPairs.Num() > 0)
 	{
-		lowestOverBudgetCost.Reset();
 		return true;
 	}
 

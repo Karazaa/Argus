@@ -53,8 +53,25 @@ void TeamCommanderSystems_AssignEntities::AssignIdleEntityToWork(ArgusEntity idl
 		return;
 	}
 
+	FResourceSet spendConstraints;
 	for (int32 i = 0; i < components.m_baseComponent->m_priorities.Num(); ++i)
 	{
+		if (!spendConstraints.IsEmpty())
+		{
+			if (components.m_baseComponent->m_priorities[i].m_minAssociatedResourceCost.IsChangeConstrained(spendConstraints))
+			{
+				continue;
+			}
+		}
+		else
+		{
+			spendConstraints = components.m_currentResourcesComponent->m_currentResources.GetResourceChangeConstraints(components.m_baseComponent->m_priorities[i].m_minAssociatedResourceCost);
+			if (!spendConstraints.IsEmpty())
+			{
+				continue;
+			}
+		}
+
 		if (AssignIdleEntityToDirectiveIfAble(idleEntity, components, components.m_baseComponent->m_priorities[i]))
 		{
 			return;
@@ -123,7 +140,7 @@ bool TeamCommanderSystems_AssignEntities::AssignEntityToStartConstructionOfResou
 	}
 
 	TArray<TPair<const UAbilityRecord*, EAbilityIndex>> abilityIndexPairs;
-	if (!AbilitySystems::GetSpawnEntityCategoryAbilities(entity, priority.m_entityCategory, abilityIndexPairs, components.m_resourceDataComponent->m_resourceReserveTarget))
+	if (!AbilitySystems::GetSpawnEntityCategoryAbilities(entity, priority.m_entityCategory, abilityIndexPairs))
 	{
 		return false;
 	}
@@ -256,7 +273,7 @@ bool TeamCommanderSystems_AssignEntities::AssignEntityToSpawnUnitIfAble(ArgusEnt
 	}
 
 	TArray<TPair<const UAbilityRecord*, EAbilityIndex>> abilityIndexPairs;
-	if (!AbilitySystems::GetSpawnEntityCategoryAbilities(entity, priority.m_entityCategory, abilityIndexPairs, components.m_resourceDataComponent->m_resourceReserveTarget))
+	if (!AbilitySystems::GetSpawnEntityCategoryAbilities(entity, priority.m_entityCategory, abilityIndexPairs))
 	{
 		return false;
 	}

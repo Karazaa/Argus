@@ -27,7 +27,6 @@ void TeamCommanderSystems_GatherInfo::ClearUpdatesPerCommanderEntity(ArgusEntity
 		return;
 	}
 
-	components.m_resourceDataComponent->m_resourceReserveTarget.Reset();
 	components.m_resourceDataComponent->IterateAllSeenResourceSources([](ResourceSourceExtractionData& data)
 	{
 		ClearResourceSinkFromExtractionDataIfNeeded(ArgusEntity::RetrieveEntity(data.m_resourceSinkEntityId), data);
@@ -382,11 +381,11 @@ void TeamCommanderSystems_GatherInfo::UpdateTeamAvailableAbilityIdsPerEntity(con
 		return;
 	}
 
-	components.m_abilityComponent->IterateActiveAbilityIds([](uint32 abilityRecordId, EAbilityIndex abilityIndex) 
+	components.m_abilityComponent->IterateActiveAbilityIds([&teamCommanderComponents](uint32 abilityRecordId, EAbilityIndex abilityIndex)
 	{
 		if (abilityRecordId > 0u)
 		{
-			// TODO JAMES: Add ability to set that defines what abilities are currently present for the team.
+			teamCommanderComponents.m_baseComponent->m_availableAbilityRecordIds.Add(abilityRecordId);
 		}
 	});
 }

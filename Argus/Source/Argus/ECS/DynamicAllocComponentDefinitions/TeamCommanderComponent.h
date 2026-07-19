@@ -51,6 +51,7 @@ struct TeamCommanderComponent
 		m_inProgressConstructionData.Reset();
 		m_spawningEntityRecordIds.Reset();
 		m_priorities.Reset();
+		m_availableAbilityRecordIds.Reset();
 	}
 
 	template <typename Function>

@@ -38,13 +38,13 @@ void TeamCommanderSystems_UpdatePriorities::UpdateTeamCommanderPriorities(ArgusE
 					priority.m_entityCategory.m_resourceType = static_cast<EResourceType>(j);
 					UpdateConstructResourceSinkTeamPriority(components, priority);
 				}
-				continue;
+				break;
 			case ETeamCommanderDirective::ContinueConstruction:
 			{
 				TeamCommanderPriority& priority = components.m_baseComponent->m_priorities.Emplace_GetRef();
 				priority.m_directive = directiveToEvaluate;
 				UpdateContinueConstructionPriority(components, priority);
-				continue;
+				break;
 			}
 			case ETeamCommanderDirective::ExtractResources:
 				for (uint8 j = 0u; j < static_cast<uint8>(EResourceType::Count); ++j)
@@ -55,7 +55,7 @@ void TeamCommanderSystems_UpdatePriorities::UpdateTeamCommanderPriorities(ArgusE
 					priority.m_entityCategory.m_resourceType = static_cast<EResourceType>(j);
 					UpdateResourceExtractionTeamPriority(components, priority);
 				}
-				continue;
+				break;
 			case ETeamCommanderDirective::SpawnUnit:
 				for (uint8 j = 0u; j < static_cast<uint8>(EEntityCategoryType::Count); ++j)
 				{
@@ -98,20 +98,33 @@ void TeamCommanderSystems_UpdatePriorities::UpdateTeamCommanderPriorities(ArgusE
 						UpdateSpawnUnitTeamPriority(components, priority);
 					}
 				}
-				continue;
+				break;
 			case ETeamCommanderDirective::Scout:
 			{
 				TeamCommanderPriority& priority = components.m_baseComponent->m_priorities.Emplace_GetRef();
 				priority.m_directive = directiveToEvaluate;
 				UpdateScoutingTeamPriority(components, priority);
-				continue;
+				break;
 			}
 			default:
 				continue;
 		}
+
+		UpdateTeamCommanderPriorityCost(components, components.m_baseComponent->m_priorities.Last());
 	}
 
 	components.m_baseComponent->m_priorities.Sort();
+}
+
+void TeamCommanderSystems_UpdatePriorities::UpdateTeamCommanderPriorityCost(const TeamCommanderComponentCollection& components, TeamCommanderPriority& priority)
+{
+	ARGUS_TRACE(TeamCommanderSystems_UpdatePriorities::UpdateTeamCommanderPriorityCost);
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+
+	// TODO JAMES: Iterate over ability record Ids and get costs associated with each priority. Assign the lowest cost to the priorities resource cost.
 }
 
 void TeamCommanderSystems_UpdatePriorities::UpdateConstructResourceSinkTeamPriority(const TeamCommanderComponentCollection& components, TeamCommanderPriority& priority)
