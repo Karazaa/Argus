@@ -24,7 +24,6 @@ public:
 
 	static EAbilityState GetProcessAbilityStateForAbilityIndex(EAbilityIndex index);
 
-	static bool DoesAbilitySpawnEntityOfCategory(const UAbilityRecord* abilityRecord, EntityCategory entityCategory);
 	static bool GetSpawnEntityCategoryAbilities(ArgusEntity entity, EntityCategory entityCategory, TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& outAbilityIndexPairs);
 
 private:

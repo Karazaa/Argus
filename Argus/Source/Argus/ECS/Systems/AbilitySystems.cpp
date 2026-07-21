@@ -241,21 +241,6 @@ EAbilityState AbilitySystems::GetProcessAbilityStateForAbilityIndex(EAbilityInde
 	return EAbilityState::None;
 }
 
-bool AbilitySystems::DoesAbilitySpawnEntityOfCategory(const UAbilityRecord* abilityRecord, EntityCategory entityCategory)
-{
-	ARGUS_TRACE(AbilitySystems::DoesAbilitySpawnEntityOfCategory);
-
-	ARGUS_RETURN_ON_NULL_BOOL(abilityRecord, ArgusECSLog);
-
-	const UArgusEntityTemplate* entityTemplate = AbilitySystems::GetEntityTemplateForAbility(abilityRecord);
-	if (!entityTemplate)
-	{
-		return false;
-	}
-
-	return entityTemplate->DoesTemplateSatisfyEntityCategory(entityCategory);
-}
-
 bool AbilitySystems::GetSpawnEntityCategoryAbilities(ArgusEntity entity, EntityCategory entityCategory, TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& outAbilityIndexPairs)
 {
 	ARGUS_TRACE(AbilitySystems::GetSpawnEntityCategoryAbilities);
@@ -276,7 +261,7 @@ bool AbilitySystems::GetSpawnEntityCategoryAbilities(ArgusEntity entity, EntityC
 			return;
 		}
 
-		if (DoesAbilitySpawnEntityOfCategory(record, entityCategory))
+		if (record->DoesAbilitySpawnEntityOfCategory(entityCategory))
 		{
 			if (ResourceSystems::CanEntityAffordTeamResourceChange(entity, record->m_requiredResourceChangeToCast))
 			{

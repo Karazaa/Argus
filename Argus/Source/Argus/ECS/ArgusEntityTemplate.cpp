@@ -169,64 +169,82 @@ void UArgusEntityTemplate::SetInitialStateFromData(ArgusEntity entity) const
 
 bool UArgusEntityTemplate::DoesTemplateSatisfyEntityCategory(EntityCategory entityCategory) const
 {
+	ARGUS_TRACE(UArgusEntityTemplate::DoesTemplateSatisfyEntityCategory);
+
+	bool* isAlreadySatisfied = m_isEntityCategorySatisfiedByTemplate.Find(entityCategory);
+	if (isAlreadySatisfied)
+	{
+		return *isAlreadySatisfied;
+	}
+
+	bool& isSatisfied = m_isEntityCategorySatisfiedByTemplate.Add(entityCategory);
+	isSatisfied = false;
 	switch (entityCategory.m_entityCategoryType)
 	{
 		case EEntityCategoryType::Carrier:
 			if (const UCarrierComponentData* carrierComponentData = GetComponentFromTemplate<UCarrierComponentData>())
 			{
-				return true;
+				isSatisfied = true;
+				return isSatisfied;
 			}
-			return false;
+			return isSatisfied;
 		case EEntityCategoryType::Extractor:
 			if (const UResourceExtractionComponentData* resourceExtractionComponentData = GetComponentFromTemplate<UResourceExtractionComponentData>())
 			{
 				if (const UResourceSetRecord* resourceSetRecord = ArgusStaticData::GetRecord<UResourceSetRecord>(resourceExtractionComponentData->m_resourcesToExtractRecordIdReference.GetId()))
 				{
-					return resourceSetRecord->m_resourceSet.HasResourceType(entityCategory.m_resourceType);
+					isSatisfied = resourceSetRecord->m_resourceSet.HasResourceType(entityCategory.m_resourceType);
+					return isSatisfied;
 				}
 			}
-			return false;
+			return isSatisfied;
 		case EEntityCategoryType::ResourceSink:
 			if (const UResourceComponentData* resourceComponentData = GetComponentFromTemplate<UResourceComponentData>())
 			{
-				return resourceComponentData->m_resourceComponentOwnerType == EResourceComponentOwnerType::Sink && resourceComponentData->m_currentResources.HasResourceType(entityCategory.m_resourceType);
+				isSatisfied = resourceComponentData->m_resourceComponentOwnerType == EResourceComponentOwnerType::Sink && resourceComponentData->m_currentResources.HasResourceType(entityCategory.m_resourceType);
+				return isSatisfied;
 			}
-			return false;
+			return isSatisfied;
 		case EEntityCategoryType::Combatant:
 			if (const UCombatComponentData* combatComponentData = GetComponentFromTemplate<UCombatComponentData>())
 			{
 				if (!combatComponentData->m_isConsideredCombatant)
 				{
-					return false;
+					return isSatisfied;
 				}
 
 				if (entityCategory.m_attackCapability == ERangedAttackCapability::Count)
 				{
-					return true;
+					isSatisfied = true;
+					return isSatisfied;
 				}
 
 				if (combatComponentData->m_attackType == EAttackType::Ranged)
 				{
-					return  combatComponentData->m_rangedAttackCapability == ERangedAttackCapability::GroundedAndFlying ||
-							combatComponentData->m_rangedAttackCapability == entityCategory.m_attackCapability;
+					isSatisfied = combatComponentData->m_rangedAttackCapability == ERangedAttackCapability::GroundedAndFlying ||
+								  combatComponentData->m_rangedAttackCapability == entityCategory.m_attackCapability;
+
+					return isSatisfied;
 				}
 
 				if (const UTaskComponentData* taskComponentData = GetComponentFromTemplate<UTaskComponentData>())
 				{
 					if (entityCategory.m_attackCapability == ERangedAttackCapability::FlyingOnly)
 					{
-						return taskComponentData->m_flightState == EFlightState::Flying;
+						isSatisfied = taskComponentData->m_flightState == EFlightState::Flying;
+						return isSatisfied;
 					}
 
 					if (entityCategory.m_attackCapability == ERangedAttackCapability::GroundedOnly)
 					{
-						return taskComponentData->m_flightState == EFlightState::Grounded;
+						isSatisfied = taskComponentData->m_flightState == EFlightState::Grounded;
+						return isSatisfied;
 					}
 				}
 			}
-			return false;
+			return isSatisfied;
 		default:
-			return false;
+			return isSatisfied;
 	}
 }
 

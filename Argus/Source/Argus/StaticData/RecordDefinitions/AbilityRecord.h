@@ -2,8 +2,10 @@
 
 #pragma once
 
+#include "ArgusMap.h"
+#include "ArgusSetAllocator.h"
 #include "ArgusStaticRecord.h"
-#include "ComponentDependencies/ResourceSet.h"
+#include "ComponentDependencies/EntityCategory.h"
 #include "RecordDependencies/AbilityEffect.h"
 #include "RecordReferences/MaterialRecordReference.h"
 #include "SoftPtrLoadStore.h"
@@ -60,6 +62,11 @@ public:
 		return static_cast<bool>(m_reticleFlags & static_cast<uint8>(EReticleFlags::DisableReticleAfterCast));
 	}
 
-	void OnAsyncLoaded() const override;
-	void ResetSoftPtrLoadStores() override;
+	virtual void OnAsyncLoaded() const override;
+	virtual void ResetSoftPtrLoadStores() override;
+
+	bool DoesAbilitySpawnEntityOfCategory(EntityCategory entityCategory) const;
+
+private:
+	mutable ArgusMap<EntityCategory, bool, ArgusSetAllocator<14u> > m_isEntityCategorySpawnedByAbility;
 };

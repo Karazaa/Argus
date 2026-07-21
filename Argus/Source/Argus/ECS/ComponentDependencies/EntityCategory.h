@@ -23,7 +23,16 @@ struct EntityCategory
 	EEntityCategoryType m_entityCategoryType = EEntityCategoryType::Count;
 	EResourceType m_resourceType = EResourceType::Count;
 	ERangedAttackCapability m_attackCapability = ERangedAttackCapability::Count;
+
+	bool operator==(const EntityCategory& other) const
+	{
+		return m_entityCategoryType == other.m_entityCategoryType && m_resourceType == other.m_resourceType && m_attackCapability == other.m_attackCapability;
+	}
 };
+FORCEINLINE uint32 GetTypeHash(const EntityCategory& entityCategory)
+{
+	return HashCombine(GetTypeHash(entityCategory.m_entityCategoryType), GetTypeHash(entityCategory.m_resourceType), GetTypeHash(entityCategory.m_attackCapability));
+}
 
 namespace EntityCategoryUtils
 {

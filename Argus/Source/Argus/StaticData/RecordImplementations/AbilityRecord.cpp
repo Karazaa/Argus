@@ -2,6 +2,7 @@
 
 #include "RecordDefinitions/AbilityRecord.h"
 #include "ArgusStaticData.h"
+#include "Systems/AbilitySystems.h"
 
 void UAbilityRecord::OnAsyncLoaded() const
 {
@@ -36,4 +37,27 @@ void UAbilityRecord::OnAsyncLoaded() const
 void UAbilityRecord::ResetSoftPtrLoadStores()
 {
 	m_abilityIcon.ResetHardPtr();
+}
+
+bool UAbilityRecord::DoesAbilitySpawnEntityOfCategory(EntityCategory entityCategory) const
+{
+	ARGUS_TRACE(UAbilityRecord::DoesAbilitySpawnEntityOfCategory);
+
+	bool* isAlreadySatisfied = m_isEntityCategorySpawnedByAbility.Find(entityCategory);
+	if (isAlreadySatisfied)
+	{
+		return *isAlreadySatisfied;
+	}
+
+	bool& isSatisfied = m_isEntityCategorySpawnedByAbility.Add(entityCategory);
+	isSatisfied = false;
+
+	const UArgusEntityTemplate* entityTemplate = AbilitySystems::GetEntityTemplateForAbility(this);
+	if (!entityTemplate)
+	{
+		return isSatisfied;
+	}
+
+	isSatisfied = entityTemplate->DoesTemplateSatisfyEntityCategory(entityCategory);
+	return isSatisfied;
 }

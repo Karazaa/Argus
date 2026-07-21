@@ -134,7 +134,8 @@ void TeamCommanderSystems_UpdatePriorities::UpdateTeamCommanderPriorityCost(cons
 		return;
 	}
 
-	TArray<FResourceSet> abilityCosts;
+	bool initialized = false;
+	priority.m_minAssociatedResourceCost.Reset();
 	for (uint32 abilityRecordId : components.m_baseComponent->m_availableAbilityRecordIds)
 	{
 		const UAbilityRecord* record = ArgusStaticData::GetRecord<UAbilityRecord>(abilityRecordId);
@@ -143,16 +144,12 @@ void TeamCommanderSystems_UpdatePriorities::UpdateTeamCommanderPriorityCost(cons
 			continue;
 		}
 
-		if (AbilitySystems::DoesAbilitySpawnEntityOfCategory(record, priority.m_entityCategory))
+		if (record->DoesAbilitySpawnEntityOfCategory(priority.m_entityCategory) && 
+			(!initialized || record->m_requiredResourceChangeToCast < priority.m_minAssociatedResourceCost))
 		{
-			abilityCosts.Add(record->m_requiredResourceChangeToCast);
+			initialized = true;
+			priority.m_minAssociatedResourceCost = record->m_requiredResourceChangeToCast;
 		}
-	}
-
-	if (!abilityCosts.IsEmpty())
-	{
-		abilityCosts.Sort();
-		priority.m_minAssociatedResourceCost = abilityCosts[0];
 	}
 }
 

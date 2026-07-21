@@ -3,6 +3,9 @@
 #pragma once
 
 #include "ArgusEntity.h"
+#include "ArgusMap.h"
+#include "ArgusSetAllocator.h"
+#include "ComponentDependencies/EntityCategory.h"
 #include "DataComponentDefinitions/ComponentData.h"
 #include "Misc/AutomationTest.h"
 #include "UObject/SoftObjectPtr.h"
@@ -53,6 +56,8 @@ private:
 
 	UPROPERTY(Transient)
 	mutable TMap<UClass*, TObjectPtr<const UComponentData>> m_loadedComponentData;
+
+	mutable ArgusMap<EntityCategory, bool, ArgusSetAllocator<14u> > m_isEntityCategorySatisfiedByTemplate;
 
 	void CacheComponents() const;
 
