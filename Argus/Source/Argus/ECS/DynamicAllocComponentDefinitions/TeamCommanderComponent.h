@@ -5,6 +5,7 @@
 #include "ArgusContainerAllocator.h"
 #include "ArgusMacros.h"
 #include "ArgusMap.h"
+#include "ArgusSet.h"
 #include "ArgusSetAllocator.h"
 #include "ComponentDependencies/ResourceSet.h"
 #include "ComponentDependencies/TeamCommanderPriorities.h"
@@ -20,16 +21,16 @@ struct TeamCommanderComponent
 	TArray<uint16, ArgusContainerAllocator<10u> > m_idleEntityIdsForTeam;
 
 	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT
-	ArgusMap<uint16, ConstructionData, ArgusSetAllocator<10> > m_inProgressConstructionData;
+	ArgusMap<uint16, ConstructionData, ArgusSetAllocator<10u> > m_inProgressConstructionData;
 
 	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT
 	TArray<uint32, ArgusContainerAllocator<10u>> m_spawningEntityRecordIds; 
 
 	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT
-	TArray<TeamCommanderPriority, ArgusContainerAllocator<11u> > m_priorities;
+	TArray<TeamCommanderPriority, ArgusContainerAllocator<14u> > m_priorities;
 
 	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT
-	TSet<uint32> m_availableAbilityRecordIds;
+	ArgusSet<uint32, ArgusSetAllocator<20u> > m_availableAbilityRecordIds;
 
 	ARGUS_COMP_NO_DATA
 	TBitArray<ArgusContainerAllocator<0u> > m_revealedAreas;

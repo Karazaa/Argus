@@ -51,7 +51,7 @@ TypeInfo::TypeInfo(const ArgusCodeGeneratorUtil::ParsedVariableData& variableDat
 		m_containerType = ContainerType::CArray;
 		m_staticSize = variableData.m_sizeString;
 	}
-	else if (variableData.m_typeName.find("TSet") != std::string::npos)
+	else if (variableData.m_typeName.find("ArgusSet") != std::string::npos)
 	{
 		m_containerType = ContainerType::Set;
 		ExtractTemplateParameters(variableData.m_typeName, m_templateTypes);
