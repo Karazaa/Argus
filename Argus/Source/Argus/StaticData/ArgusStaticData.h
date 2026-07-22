@@ -51,35 +51,35 @@ public:
 			return 0u;
 		}
 		
-		if (UAbilityRecord* UAbilityRecordInstance = dynamic_cast<UAbilityRecord*>(record))
+		if (UAbilityRecord* UAbilityRecordInstance = Cast<UAbilityRecord>(record))
 		{
 			return staticDatabase->AddUAbilityRecordToDatabase(UAbilityRecordInstance);
 		}
-		if (UArgusActorRecord* UArgusActorRecordInstance = dynamic_cast<UArgusActorRecord*>(record))
+		if (UArgusActorRecord* UArgusActorRecordInstance = Cast<UArgusActorRecord>(record))
 		{
 			return staticDatabase->AddUArgusActorRecordToDatabase(UArgusActorRecordInstance);
 		}
-		if (UFactionRecord* UFactionRecordInstance = dynamic_cast<UFactionRecord*>(record))
+		if (UFactionRecord* UFactionRecordInstance = Cast<UFactionRecord>(record))
 		{
 			return staticDatabase->AddUFactionRecordToDatabase(UFactionRecordInstance);
 		}
-		if (UMaterialRecord* UMaterialRecordInstance = dynamic_cast<UMaterialRecord*>(record))
+		if (UMaterialRecord* UMaterialRecordInstance = Cast<UMaterialRecord>(record))
 		{
 			return staticDatabase->AddUMaterialRecordToDatabase(UMaterialRecordInstance);
 		}
-		if (UPlacedArgusActorTeamInfoRecord* UPlacedArgusActorTeamInfoRecordInstance = dynamic_cast<UPlacedArgusActorTeamInfoRecord*>(record))
+		if (UPlacedArgusActorTeamInfoRecord* UPlacedArgusActorTeamInfoRecordInstance = Cast<UPlacedArgusActorTeamInfoRecord>(record))
 		{
 			return staticDatabase->AddUPlacedArgusActorTeamInfoRecordToDatabase(UPlacedArgusActorTeamInfoRecordInstance);
 		}
-		if (UResourceSetRecord* UResourceSetRecordInstance = dynamic_cast<UResourceSetRecord*>(record))
+		if (UResourceSetRecord* UResourceSetRecordInstance = Cast<UResourceSetRecord>(record))
 		{
 			return staticDatabase->AddUResourceSetRecordToDatabase(UResourceSetRecordInstance);
 		}
-		if (UTeamAlignmentRecord* UTeamAlignmentRecordInstance = dynamic_cast<UTeamAlignmentRecord*>(record))
+		if (UTeamAlignmentRecord* UTeamAlignmentRecordInstance = Cast<UTeamAlignmentRecord>(record))
 		{
 			return staticDatabase->AddUTeamAlignmentRecordToDatabase(UTeamAlignmentRecordInstance);
 		}
-		if (UTeamColorRecord* UTeamColorRecordInstance = dynamic_cast<UTeamColorRecord*>(record))
+		if (UTeamColorRecord* UTeamColorRecordInstance = Cast<UTeamColorRecord>(record))
 		{
 			return staticDatabase->AddUTeamColorRecordToDatabase(UTeamColorRecordInstance);
 		}
