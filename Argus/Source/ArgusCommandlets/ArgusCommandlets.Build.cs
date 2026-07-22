@@ -15,9 +15,8 @@ public class ArgusCommandlets : ModuleRules
 			"Core",
 			"CoreUObject",
 			"Engine",
-			"InputCore",
 			"UnrealEd",
-            		"Argus"
+            "Argus"
 		);
 
 		PrivateDependencyModuleNames.AddAll();

@@ -1,4 +1,4 @@
-		if (#####* #####Instance = dynamic_cast<#####*>(record))
+		if (#####* #####Instance = Cast<#####>(record))
 		{
 			return staticDatabase->Add#####ToDatabase(#####Instance);
 		}
