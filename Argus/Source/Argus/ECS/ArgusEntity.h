@@ -10,7 +10,7 @@
 class FArchive;
 class UArgusActorRecord;
 
-class ARGUS_API ArgusEntity
+class ArgusEntity
 {
 private:
 	static TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > s_takenEntityIds;
