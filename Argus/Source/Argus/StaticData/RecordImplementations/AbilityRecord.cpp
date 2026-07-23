@@ -49,15 +49,37 @@ bool UAbilityRecord::DoesAbilitySpawnEntityOfCategory(EntityCategory entityCateg
 		return *isAlreadySatisfied;
 	}
 
-	bool& isSatisfied = m_isEntityCategorySpawnedByAbility.Add(entityCategory);
-	isSatisfied = false;
+	return false;
+}
+
+#if WITH_EDITOR
+void UAbilityRecord::UpdateEntityCategoriesSpawnedByAbility()
+{
+	m_isEntityCategorySpawnedByAbility.Reset();
 
 	const UArgusEntityTemplate* entityTemplate = AbilitySystems::GetEntityTemplateForAbility(this);
 	if (!entityTemplate)
 	{
-		return isSatisfied;
+		return;
 	}
+	entityTemplate->CacheComponents();
 
-	isSatisfied = entityTemplate->DoesTemplateSatisfyEntityCategory(entityCategory);
-	return isSatisfied;
+	const EntityCategory extractorA = EntityCategory(EEntityCategoryType::Extractor, EResourceType::ResourceA, ERangedAttackCapability::Count);
+	const EntityCategory extractorB = EntityCategory(EEntityCategoryType::Extractor, EResourceType::ResourceB, ERangedAttackCapability::Count);
+	const EntityCategory extractorC = EntityCategory(EEntityCategoryType::Extractor, EResourceType::ResourceC, ERangedAttackCapability::Count);
+	const EntityCategory sinkA = EntityCategory(EEntityCategoryType::ResourceSink, EResourceType::ResourceA, ERangedAttackCapability::Count);
+	const EntityCategory sinkB = EntityCategory(EEntityCategoryType::ResourceSink, EResourceType::ResourceB, ERangedAttackCapability::Count);
+	const EntityCategory sinkC = EntityCategory(EEntityCategoryType::ResourceSink, EResourceType::ResourceC, ERangedAttackCapability::Count);
+	const EntityCategory combatantGrounded = EntityCategory(EEntityCategoryType::Combatant, EResourceType::Count, ERangedAttackCapability::GroundedOnly);
+	const EntityCategory combatantFlying = EntityCategory(EEntityCategoryType::Combatant, EResourceType::Count, ERangedAttackCapability::FlyingOnly);
+
+	m_isEntityCategorySpawnedByAbility.Emplace(extractorA, entityTemplate->DoesTemplateSatisfyEntityCategory(extractorA));
+	m_isEntityCategorySpawnedByAbility.Emplace(extractorB, entityTemplate->DoesTemplateSatisfyEntityCategory(extractorB));
+	m_isEntityCategorySpawnedByAbility.Emplace(extractorC, entityTemplate->DoesTemplateSatisfyEntityCategory(extractorC));
+	m_isEntityCategorySpawnedByAbility.Emplace(sinkA, entityTemplate->DoesTemplateSatisfyEntityCategory(sinkA));
+	m_isEntityCategorySpawnedByAbility.Emplace(sinkB, entityTemplate->DoesTemplateSatisfyEntityCategory(sinkB));
+	m_isEntityCategorySpawnedByAbility.Emplace(sinkC, entityTemplate->DoesTemplateSatisfyEntityCategory(sinkC));
+	m_isEntityCategorySpawnedByAbility.Emplace(combatantGrounded, entityTemplate->DoesTemplateSatisfyEntityCategory(combatantGrounded));
+	m_isEntityCategorySpawnedByAbility.Emplace(combatantFlying, entityTemplate->DoesTemplateSatisfyEntityCategory(combatantFlying));
 }
+#endif //WITH_EDITOR

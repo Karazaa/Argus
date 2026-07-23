@@ -30,5 +30,6 @@ public:
 	virtual void PreSave(FObjectPreSaveContext saveContext) override;
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent) override;
 	void AddUMaterialRecordToDatabase(UMaterialRecord* record);
+	void IterateAllUMaterialRecords(const TFunctionRef<void(UMaterialRecord*)>& function);
 #endif //WITH_EDITOR
 };

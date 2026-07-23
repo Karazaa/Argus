@@ -26,6 +26,7 @@ public:
 	void ResetLoadedUAbilityRecordPointerArray();
 #if WITH_EDITOR
 	uint32 AddUAbilityRecordToDatabase(UAbilityRecord* record);
+	void IterateAllUAbilityRecords(const TFunctionRef<void(UAbilityRecord*)>& function);
 	void RegisterNewUAbilityRecordDatabase(UAbilityRecordDatabase* database);
 #endif //WITH_EDITOR
 
@@ -44,6 +45,7 @@ public:
 	void ResetLoadedUArgusActorRecordPointerArray();
 #if WITH_EDITOR
 	uint32 AddUArgusActorRecordToDatabase(UArgusActorRecord* record);
+	void IterateAllUArgusActorRecords(const TFunctionRef<void(UArgusActorRecord*)>& function);
 	void RegisterNewUArgusActorRecordDatabase(UArgusActorRecordDatabase* database);
 #endif //WITH_EDITOR
 
@@ -62,6 +64,7 @@ public:
 	void ResetLoadedUFactionRecordPointerArray();
 #if WITH_EDITOR
 	uint32 AddUFactionRecordToDatabase(UFactionRecord* record);
+	void IterateAllUFactionRecords(const TFunctionRef<void(UFactionRecord*)>& function);
 	void RegisterNewUFactionRecordDatabase(UFactionRecordDatabase* database);
 #endif //WITH_EDITOR
 
@@ -80,6 +83,7 @@ public:
 	void ResetLoadedUMaterialRecordPointerArray();
 #if WITH_EDITOR
 	uint32 AddUMaterialRecordToDatabase(UMaterialRecord* record);
+	void IterateAllUMaterialRecords(const TFunctionRef<void(UMaterialRecord*)>& function);
 	void RegisterNewUMaterialRecordDatabase(UMaterialRecordDatabase* database);
 #endif //WITH_EDITOR
 
@@ -98,6 +102,7 @@ public:
 	void ResetLoadedUPlacedArgusActorTeamInfoRecordPointerArray();
 #if WITH_EDITOR
 	uint32 AddUPlacedArgusActorTeamInfoRecordToDatabase(UPlacedArgusActorTeamInfoRecord* record);
+	void IterateAllUPlacedArgusActorTeamInfoRecords(const TFunctionRef<void(UPlacedArgusActorTeamInfoRecord*)>& function);
 	void RegisterNewUPlacedArgusActorTeamInfoRecordDatabase(UPlacedArgusActorTeamInfoRecordDatabase* database);
 #endif //WITH_EDITOR
 
@@ -116,6 +121,7 @@ public:
 	void ResetLoadedUResourceSetRecordPointerArray();
 #if WITH_EDITOR
 	uint32 AddUResourceSetRecordToDatabase(UResourceSetRecord* record);
+	void IterateAllUResourceSetRecords(const TFunctionRef<void(UResourceSetRecord*)>& function);
 	void RegisterNewUResourceSetRecordDatabase(UResourceSetRecordDatabase* database);
 #endif //WITH_EDITOR
 
@@ -134,6 +140,7 @@ public:
 	void ResetLoadedUTeamAlignmentRecordPointerArray();
 #if WITH_EDITOR
 	uint32 AddUTeamAlignmentRecordToDatabase(UTeamAlignmentRecord* record);
+	void IterateAllUTeamAlignmentRecords(const TFunctionRef<void(UTeamAlignmentRecord*)>& function);
 	void RegisterNewUTeamAlignmentRecordDatabase(UTeamAlignmentRecordDatabase* database);
 #endif //WITH_EDITOR
 
@@ -152,6 +159,7 @@ public:
 	void ResetLoadedUTeamColorRecordPointerArray();
 #if WITH_EDITOR
 	uint32 AddUTeamColorRecordToDatabase(UTeamColorRecord* record);
+	void IterateAllUTeamColorRecords(const TFunctionRef<void(UTeamColorRecord*)>& function);
 	void RegisterNewUTeamColorRecordDatabase(UTeamColorRecordDatabase* database);
 #endif //WITH_EDITOR
 

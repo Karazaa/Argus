@@ -217,4 +217,13 @@ void UFactionRecordDatabase::AddUFactionRecordToDatabase(UFactionRecord* record)
 
 	editorAssetSubsystem->SaveLoadedAsset(this, false);
 }
+
+void UFactionRecordDatabase::IterateAllUFactionRecords(const TFunctionRef<void(UFactionRecord*)>& function)
+{
+	const uint32 upperBound = m_UFactionRecords.Num();
+	for (uint32 i = 1u; i < upperBound; ++i)
+	{
+		function(const_cast<UFactionRecord*>(GetRecord(i)));
+	}
+}
 #endif //WITH_EDITOR

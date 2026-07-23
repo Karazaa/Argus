@@ -35,6 +35,11 @@ public:
 	}
 
 #if WITH_EDITOR
+	template<typename ArgusStaticRecord>
+	static void IterateAllRecordsOfType(const TFunctionRef<void(ArgusStaticRecord*)>& function)
+	{
+	}
+
 	static const uint32 AddRecordToDatabase(UArgusStaticRecord* record)
 	{
 		if (!GEditor)
@@ -106,6 +111,14 @@ public:
 	}
 
 #if WITH_EDITOR
+	template<>
+	inline void IterateAllRecordsOfType<UAbilityRecord>(const TFunctionRef<void(UAbilityRecord*)>& function)
+	{
+		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
+		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
+		staticDatabase->IterateAllUAbilityRecords(function);
+	}
+
 	static void RegisterNewUAbilityRecordDatabase(UAbilityRecordDatabase* database)
 	{
 		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
@@ -133,6 +146,14 @@ public:
 	}
 
 #if WITH_EDITOR
+	template<>
+	inline void IterateAllRecordsOfType<UArgusActorRecord>(const TFunctionRef<void(UArgusActorRecord*)>& function)
+	{
+		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
+		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
+		staticDatabase->IterateAllUArgusActorRecords(function);
+	}
+
 	static void RegisterNewUArgusActorRecordDatabase(UArgusActorRecordDatabase* database)
 	{
 		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
@@ -160,6 +181,14 @@ public:
 	}
 
 #if WITH_EDITOR
+	template<>
+	inline void IterateAllRecordsOfType<UFactionRecord>(const TFunctionRef<void(UFactionRecord*)>& function)
+	{
+		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
+		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
+		staticDatabase->IterateAllUFactionRecords(function);
+	}
+
 	static void RegisterNewUFactionRecordDatabase(UFactionRecordDatabase* database)
 	{
 		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
@@ -187,6 +216,14 @@ public:
 	}
 
 #if WITH_EDITOR
+	template<>
+	inline void IterateAllRecordsOfType<UMaterialRecord>(const TFunctionRef<void(UMaterialRecord*)>& function)
+	{
+		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
+		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
+		staticDatabase->IterateAllUMaterialRecords(function);
+	}
+
 	static void RegisterNewUMaterialRecordDatabase(UMaterialRecordDatabase* database)
 	{
 		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
@@ -214,6 +251,14 @@ public:
 	}
 
 #if WITH_EDITOR
+	template<>
+	inline void IterateAllRecordsOfType<UPlacedArgusActorTeamInfoRecord>(const TFunctionRef<void(UPlacedArgusActorTeamInfoRecord*)>& function)
+	{
+		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
+		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
+		staticDatabase->IterateAllUPlacedArgusActorTeamInfoRecords(function);
+	}
+
 	static void RegisterNewUPlacedArgusActorTeamInfoRecordDatabase(UPlacedArgusActorTeamInfoRecordDatabase* database)
 	{
 		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
@@ -241,6 +286,14 @@ public:
 	}
 
 #if WITH_EDITOR
+	template<>
+	inline void IterateAllRecordsOfType<UResourceSetRecord>(const TFunctionRef<void(UResourceSetRecord*)>& function)
+	{
+		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
+		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
+		staticDatabase->IterateAllUResourceSetRecords(function);
+	}
+
 	static void RegisterNewUResourceSetRecordDatabase(UResourceSetRecordDatabase* database)
 	{
 		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
@@ -268,6 +321,14 @@ public:
 	}
 
 #if WITH_EDITOR
+	template<>
+	inline void IterateAllRecordsOfType<UTeamAlignmentRecord>(const TFunctionRef<void(UTeamAlignmentRecord*)>& function)
+	{
+		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
+		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
+		staticDatabase->IterateAllUTeamAlignmentRecords(function);
+	}
+
 	static void RegisterNewUTeamAlignmentRecordDatabase(UTeamAlignmentRecordDatabase* database)
 	{
 		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
@@ -295,6 +356,14 @@ public:
 	}
 
 #if WITH_EDITOR
+	template<>
+	inline void IterateAllRecordsOfType<UTeamColorRecord>(const TFunctionRef<void(UTeamColorRecord*)>& function)
+	{
+		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
+		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
+		staticDatabase->IterateAllUTeamColorRecords(function);
+	}
+
 	static void RegisterNewUTeamColorRecordDatabase(UTeamColorRecordDatabase* database)
 	{
 		UArgusStaticDatabase* staticDatabase = GetParentDatabase();

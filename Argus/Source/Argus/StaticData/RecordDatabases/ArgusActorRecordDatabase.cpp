@@ -217,4 +217,13 @@ void UArgusActorRecordDatabase::AddUArgusActorRecordToDatabase(UArgusActorRecord
 
 	editorAssetSubsystem->SaveLoadedAsset(this, false);
 }
+
+void UArgusActorRecordDatabase::IterateAllUArgusActorRecords(const TFunctionRef<void(UArgusActorRecord*)>& function)
+{
+	const uint32 upperBound = m_UArgusActorRecords.Num();
+	for (uint32 i = 1u; i < upperBound; ++i)
+	{
+		function(const_cast<UArgusActorRecord*>(GetRecord(i)));
+	}
+}
 #endif //WITH_EDITOR

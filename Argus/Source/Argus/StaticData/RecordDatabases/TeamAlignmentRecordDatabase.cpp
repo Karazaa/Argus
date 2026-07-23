@@ -217,4 +217,13 @@ void UTeamAlignmentRecordDatabase::AddUTeamAlignmentRecordToDatabase(UTeamAlignm
 
 	editorAssetSubsystem->SaveLoadedAsset(this, false);
 }
+
+void UTeamAlignmentRecordDatabase::IterateAllUTeamAlignmentRecords(const TFunctionRef<void(UTeamAlignmentRecord*)>& function)
+{
+	const uint32 upperBound = m_UTeamAlignmentRecords.Num();
+	for (uint32 i = 1u; i < upperBound; ++i)
+	{
+		function(const_cast<UTeamAlignmentRecord*>(GetRecord(i)));
+	}
+}
 #endif //WITH_EDITOR

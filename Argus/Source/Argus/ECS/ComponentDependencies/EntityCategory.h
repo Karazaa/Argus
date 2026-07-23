@@ -24,6 +24,11 @@ struct EntityCategory
 	EResourceType m_resourceType = EResourceType::Count;
 	ERangedAttackCapability m_attackCapability = ERangedAttackCapability::Count;
 
+	EntityCategory() = default;
+	EntityCategory(EEntityCategoryType entityCategoryType, EResourceType resourceType, ERangedAttackCapability attackCapability) :	m_entityCategoryType(m_entityCategoryType), 
+																																	m_resourceType(m_resourceType), 
+																																	m_attackCapability(m_attackCapability) {}
+
 	bool operator==(const EntityCategory& other) const
 	{
 		return m_entityCategoryType == other.m_entityCategoryType && m_resourceType == other.m_resourceType && m_attackCapability == other.m_attackCapability;

@@ -30,5 +30,6 @@ public:
 	virtual void PreSave(FObjectPreSaveContext saveContext) override;
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent) override;
 	void AddUAbilityRecordToDatabase(UAbilityRecord* record);
+	void IterateAllUAbilityRecords(const TFunctionRef<void(UAbilityRecord*)>& function);
 #endif //WITH_EDITOR
 };
