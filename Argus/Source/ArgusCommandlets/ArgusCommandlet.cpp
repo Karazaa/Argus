@@ -13,8 +13,8 @@ UArgusCommandlet::UArgusCommandlet()
 int32 UArgusCommandlet::Main(const FString& parameters)
 {
 	OnStart();
-	DoWork();
+	int32 result = DoWork();
 	OnFinish();
 
-	return 0;
+	return result;
 }

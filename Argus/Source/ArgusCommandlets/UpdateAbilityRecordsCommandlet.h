@@ -1,0 +1,14 @@
+// Copyright Karazaa. This is a part of an RTS project called Argus.
+
+#pragma once
+
+#include "ArgusCommandlet.h"
+
+UCLASS()
+class ARGUSCOMMANDLETS_API UUpdateAbilityRecordsCommandlet : public UArgusCommandlet
+{
+	GENERATED_BODY()
+
+protected:
+	virtual int32 DoWork() override;
+};
