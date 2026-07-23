@@ -3,6 +3,7 @@
 #pragma once
 
 #include "ArgusCommandlet.h"
+#include "UpdateAbilityRecordsCommandlet.generated.h"
 
 UCLASS()
 class ARGUSCOMMANDLETS_API UUpdateAbilityRecordsCommandlet : public UArgusCommandlet
