@@ -17,6 +17,14 @@
 	}
 
 #if WITH_EDITOR
+	template<>
+	inline void IterateAllRecordsOfType<#####>(const TFunctionRef<void(#####*)>& function)
+	{
+		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
+		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
+		staticDatabase->IterateAll#####s(function);
+	}
+
 	static void RegisterNew#####Database(#####Database* database)
 	{
 		UArgusStaticDatabase* staticDatabase = GetParentDatabase();

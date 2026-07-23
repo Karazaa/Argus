@@ -35,6 +35,11 @@ public:
 	}
 
 #if WITH_EDITOR
+	template<typename ArgusStaticRecord>
+	static void IterateAllRecordsOfType(const TFunctionRef<void(ArgusStaticRecord*)>& function)
+	{
+	}
+
 	static const uint32 AddRecordToDatabase(UArgusStaticRecord* record)
 	{
 		if (!GEditor)

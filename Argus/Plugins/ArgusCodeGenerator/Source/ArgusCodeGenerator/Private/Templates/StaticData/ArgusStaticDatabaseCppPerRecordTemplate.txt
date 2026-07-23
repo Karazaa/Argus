@@ -52,6 +52,18 @@ uint32 UArgusStaticDatabase::Add#####ToDatabase(#####* record)
 	return record->m_id;
 }
 
+void UArgusStaticDatabase::IterateAll#####s(const TFunctionRef<void(#####*)>& function)
+{
+	LazyLoad#####Database();
+
+	if (!m_#####DatabasePersistent)
+	{
+		return;
+	}
+
+	m_#####DatabasePersistent->IterateAll#####s(function);
+}
+
 void UArgusStaticDatabase::RegisterNew#####Database(#####Database* database)
 {
 	if (!database)
