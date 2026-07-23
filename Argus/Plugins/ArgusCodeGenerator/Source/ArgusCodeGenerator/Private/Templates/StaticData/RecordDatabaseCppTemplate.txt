@@ -217,4 +217,13 @@ void #####Database::Add#####ToDatabase(#####* record)
 
 	editorAssetSubsystem->SaveLoadedAsset(this, false);
 }
+
+void #####Database::IterateAll#####s(const TFunctionRef<void(#####*)>& function)
+{
+	const uint32 upperBound = m_#####s.Num();
+	for (uint32 i = 1u; i < upperBound; ++i)
+	{
+		function(const_cast<#####*>(GetRecord(i)));
+	}
+}
 #endif //WITH_EDITOR
