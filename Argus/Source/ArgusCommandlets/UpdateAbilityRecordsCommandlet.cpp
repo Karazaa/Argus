@@ -1,15 +1,12 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "UpdateAbilityRecordsCommandlet.h"
-#include "ArgusEntity.h"
+#include "ArgusECSCommandletInterface.h"
 #include "ArgusStaticData.h"
 
 void UUpdateAbilityRecordsCommandlet::OnStart()
 {
-	// TODO JAMES: Need to support DLL export on more things in order to not run into linker errors.
-	//ArgusEntity::FlushAllEntities();
-	//ArgusEntity singletonEntity = ArgusEntity::CreateEntity(ArgusECSConstants::k_singletonEntityId);
-	//singletonEntity.AddComponent<AssetLoadingComponent>();
+	ArgusECSCommandletInterface::InitializeECSForCommandlet();
 }
 
 int32 UUpdateAbilityRecordsCommandlet::DoWork()
@@ -27,5 +24,5 @@ int32 UUpdateAbilityRecordsCommandlet::DoWork()
 
 void UUpdateAbilityRecordsCommandlet::OnFinish()
 {
-	//ArgusEntity::FlushAllEntities();
+	ArgusECSCommandletInterface::TeardownECSForCommandlet();
 }
