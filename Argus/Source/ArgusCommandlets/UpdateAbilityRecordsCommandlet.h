@@ -11,5 +11,7 @@ class ARGUSCOMMANDLETS_API UUpdateAbilityRecordsCommandlet : public UArgusComman
 	GENERATED_BODY()
 
 protected:
+	virtual void OnStart() override;
 	virtual int32 DoWork() override;
+	virtual void OnFinish() override;
 };

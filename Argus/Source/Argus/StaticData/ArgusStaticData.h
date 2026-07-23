@@ -29,7 +29,7 @@ public:
 	}
 
 	template<typename ArgusStaticRecord>
-	static const bool AsyncPreLoadRecord(uint32 id, TFunction<void(const ArgusStaticRecord*)> callback = nullptr)
+	static bool AsyncPreLoadRecord(uint32 id, TFunction<void(const ArgusStaticRecord*)> callback = nullptr)
 	{
 		return false;
 	}
@@ -103,7 +103,7 @@ public:
 	}
 
 	template<>
-	inline const bool AsyncPreLoadRecord<UAbilityRecord>(uint32 id, TFunction<void(const UAbilityRecord*)> callback)
+	inline bool AsyncPreLoadRecord<UAbilityRecord>(uint32 id, TFunction<void(const UAbilityRecord*)> callback)
 	{
 		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
 		ARGUS_RETURN_ON_NULL_BOOL(staticDatabase, ArgusStaticDataLog);
@@ -112,11 +112,12 @@ public:
 
 #if WITH_EDITOR
 	template<>
-	inline void IterateAllRecordsOfType<UAbilityRecord>(const TFunctionRef<void(UAbilityRecord*)>& function)
+	ARGUS_API inline void IterateAllRecordsOfType<UAbilityRecord>(const TFunctionRef<void(UAbilityRecord*)>& function)
 	{
-		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
-		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
-		staticDatabase->IterateAllUAbilityRecords(function);
+		if (UArgusStaticDatabase* staticDatabase = GetParentDatabase())
+		{
+			staticDatabase->IterateAllUAbilityRecords(function);
+		}
 	}
 
 	static void RegisterNewUAbilityRecordDatabase(UAbilityRecordDatabase* database)
@@ -138,7 +139,7 @@ public:
 	}
 
 	template<>
-	inline const bool AsyncPreLoadRecord<UArgusActorRecord>(uint32 id, TFunction<void(const UArgusActorRecord*)> callback)
+	inline bool AsyncPreLoadRecord<UArgusActorRecord>(uint32 id, TFunction<void(const UArgusActorRecord*)> callback)
 	{
 		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
 		ARGUS_RETURN_ON_NULL_BOOL(staticDatabase, ArgusStaticDataLog);
@@ -147,11 +148,12 @@ public:
 
 #if WITH_EDITOR
 	template<>
-	inline void IterateAllRecordsOfType<UArgusActorRecord>(const TFunctionRef<void(UArgusActorRecord*)>& function)
+	ARGUS_API inline void IterateAllRecordsOfType<UArgusActorRecord>(const TFunctionRef<void(UArgusActorRecord*)>& function)
 	{
-		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
-		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
-		staticDatabase->IterateAllUArgusActorRecords(function);
+		if (UArgusStaticDatabase* staticDatabase = GetParentDatabase())
+		{
+			staticDatabase->IterateAllUArgusActorRecords(function);
+		}
 	}
 
 	static void RegisterNewUArgusActorRecordDatabase(UArgusActorRecordDatabase* database)
@@ -173,7 +175,7 @@ public:
 	}
 
 	template<>
-	inline const bool AsyncPreLoadRecord<UFactionRecord>(uint32 id, TFunction<void(const UFactionRecord*)> callback)
+	inline bool AsyncPreLoadRecord<UFactionRecord>(uint32 id, TFunction<void(const UFactionRecord*)> callback)
 	{
 		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
 		ARGUS_RETURN_ON_NULL_BOOL(staticDatabase, ArgusStaticDataLog);
@@ -182,11 +184,12 @@ public:
 
 #if WITH_EDITOR
 	template<>
-	inline void IterateAllRecordsOfType<UFactionRecord>(const TFunctionRef<void(UFactionRecord*)>& function)
+	ARGUS_API inline void IterateAllRecordsOfType<UFactionRecord>(const TFunctionRef<void(UFactionRecord*)>& function)
 	{
-		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
-		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
-		staticDatabase->IterateAllUFactionRecords(function);
+		if (UArgusStaticDatabase* staticDatabase = GetParentDatabase())
+		{
+			staticDatabase->IterateAllUFactionRecords(function);
+		}
 	}
 
 	static void RegisterNewUFactionRecordDatabase(UFactionRecordDatabase* database)
@@ -208,7 +211,7 @@ public:
 	}
 
 	template<>
-	inline const bool AsyncPreLoadRecord<UMaterialRecord>(uint32 id, TFunction<void(const UMaterialRecord*)> callback)
+	inline bool AsyncPreLoadRecord<UMaterialRecord>(uint32 id, TFunction<void(const UMaterialRecord*)> callback)
 	{
 		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
 		ARGUS_RETURN_ON_NULL_BOOL(staticDatabase, ArgusStaticDataLog);
@@ -217,11 +220,12 @@ public:
 
 #if WITH_EDITOR
 	template<>
-	inline void IterateAllRecordsOfType<UMaterialRecord>(const TFunctionRef<void(UMaterialRecord*)>& function)
+	ARGUS_API inline void IterateAllRecordsOfType<UMaterialRecord>(const TFunctionRef<void(UMaterialRecord*)>& function)
 	{
-		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
-		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
-		staticDatabase->IterateAllUMaterialRecords(function);
+		if (UArgusStaticDatabase* staticDatabase = GetParentDatabase())
+		{
+			staticDatabase->IterateAllUMaterialRecords(function);
+		}
 	}
 
 	static void RegisterNewUMaterialRecordDatabase(UMaterialRecordDatabase* database)
@@ -243,7 +247,7 @@ public:
 	}
 
 	template<>
-	inline const bool AsyncPreLoadRecord<UPlacedArgusActorTeamInfoRecord>(uint32 id, TFunction<void(const UPlacedArgusActorTeamInfoRecord*)> callback)
+	inline bool AsyncPreLoadRecord<UPlacedArgusActorTeamInfoRecord>(uint32 id, TFunction<void(const UPlacedArgusActorTeamInfoRecord*)> callback)
 	{
 		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
 		ARGUS_RETURN_ON_NULL_BOOL(staticDatabase, ArgusStaticDataLog);
@@ -252,11 +256,12 @@ public:
 
 #if WITH_EDITOR
 	template<>
-	inline void IterateAllRecordsOfType<UPlacedArgusActorTeamInfoRecord>(const TFunctionRef<void(UPlacedArgusActorTeamInfoRecord*)>& function)
+	ARGUS_API inline void IterateAllRecordsOfType<UPlacedArgusActorTeamInfoRecord>(const TFunctionRef<void(UPlacedArgusActorTeamInfoRecord*)>& function)
 	{
-		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
-		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
-		staticDatabase->IterateAllUPlacedArgusActorTeamInfoRecords(function);
+		if (UArgusStaticDatabase* staticDatabase = GetParentDatabase())
+		{
+			staticDatabase->IterateAllUPlacedArgusActorTeamInfoRecords(function);
+		}
 	}
 
 	static void RegisterNewUPlacedArgusActorTeamInfoRecordDatabase(UPlacedArgusActorTeamInfoRecordDatabase* database)
@@ -278,7 +283,7 @@ public:
 	}
 
 	template<>
-	inline const bool AsyncPreLoadRecord<UResourceSetRecord>(uint32 id, TFunction<void(const UResourceSetRecord*)> callback)
+	inline bool AsyncPreLoadRecord<UResourceSetRecord>(uint32 id, TFunction<void(const UResourceSetRecord*)> callback)
 	{
 		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
 		ARGUS_RETURN_ON_NULL_BOOL(staticDatabase, ArgusStaticDataLog);
@@ -287,11 +292,12 @@ public:
 
 #if WITH_EDITOR
 	template<>
-	inline void IterateAllRecordsOfType<UResourceSetRecord>(const TFunctionRef<void(UResourceSetRecord*)>& function)
+	ARGUS_API inline void IterateAllRecordsOfType<UResourceSetRecord>(const TFunctionRef<void(UResourceSetRecord*)>& function)
 	{
-		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
-		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
-		staticDatabase->IterateAllUResourceSetRecords(function);
+		if (UArgusStaticDatabase* staticDatabase = GetParentDatabase())
+		{
+			staticDatabase->IterateAllUResourceSetRecords(function);
+		}
 	}
 
 	static void RegisterNewUResourceSetRecordDatabase(UResourceSetRecordDatabase* database)
@@ -313,7 +319,7 @@ public:
 	}
 
 	template<>
-	inline const bool AsyncPreLoadRecord<UTeamAlignmentRecord>(uint32 id, TFunction<void(const UTeamAlignmentRecord*)> callback)
+	inline bool AsyncPreLoadRecord<UTeamAlignmentRecord>(uint32 id, TFunction<void(const UTeamAlignmentRecord*)> callback)
 	{
 		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
 		ARGUS_RETURN_ON_NULL_BOOL(staticDatabase, ArgusStaticDataLog);
@@ -322,11 +328,12 @@ public:
 
 #if WITH_EDITOR
 	template<>
-	inline void IterateAllRecordsOfType<UTeamAlignmentRecord>(const TFunctionRef<void(UTeamAlignmentRecord*)>& function)
+	ARGUS_API inline void IterateAllRecordsOfType<UTeamAlignmentRecord>(const TFunctionRef<void(UTeamAlignmentRecord*)>& function)
 	{
-		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
-		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
-		staticDatabase->IterateAllUTeamAlignmentRecords(function);
+		if (UArgusStaticDatabase* staticDatabase = GetParentDatabase())
+		{
+			staticDatabase->IterateAllUTeamAlignmentRecords(function);
+		}
 	}
 
 	static void RegisterNewUTeamAlignmentRecordDatabase(UTeamAlignmentRecordDatabase* database)
@@ -348,7 +355,7 @@ public:
 	}
 
 	template<>
-	inline const bool AsyncPreLoadRecord<UTeamColorRecord>(uint32 id, TFunction<void(const UTeamColorRecord*)> callback)
+	inline bool AsyncPreLoadRecord<UTeamColorRecord>(uint32 id, TFunction<void(const UTeamColorRecord*)> callback)
 	{
 		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
 		ARGUS_RETURN_ON_NULL_BOOL(staticDatabase, ArgusStaticDataLog);
@@ -357,11 +364,12 @@ public:
 
 #if WITH_EDITOR
 	template<>
-	inline void IterateAllRecordsOfType<UTeamColorRecord>(const TFunctionRef<void(UTeamColorRecord*)>& function)
+	ARGUS_API inline void IterateAllRecordsOfType<UTeamColorRecord>(const TFunctionRef<void(UTeamColorRecord*)>& function)
 	{
-		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
-		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
-		staticDatabase->IterateAllUTeamColorRecords(function);
+		if (UArgusStaticDatabase* staticDatabase = GetParentDatabase())
+		{
+			staticDatabase->IterateAllUTeamColorRecords(function);
+		}
 	}
 
 	static void RegisterNewUTeamColorRecordDatabase(UTeamColorRecordDatabase* database)

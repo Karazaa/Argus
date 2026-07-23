@@ -36,7 +36,7 @@ public:
 
 #if WITH_EDITOR
 	template<typename ArgusStaticRecord>
-	ARGUS_API static void IterateAllRecordsOfType(const TFunctionRef<void(ArgusStaticRecord*)>& function)
+	static void IterateAllRecordsOfType(const TFunctionRef<void(ArgusStaticRecord*)>& function)
 	{
 	}
 

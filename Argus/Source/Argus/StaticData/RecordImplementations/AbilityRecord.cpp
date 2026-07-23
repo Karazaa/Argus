@@ -64,6 +64,8 @@ void UAbilityRecord::UpdateEntityCategoriesSpawnedByAbility()
 	}
 	entityTemplate->CacheComponents();
 
+	ARGUS_LOG(ArgusStaticDataLog, Display, TEXT("===> Updating entity categories spawned by ability for ability, %s"), *GetName())
+
 	const EntityCategory extractorA = EntityCategory(EEntityCategoryType::Extractor, EResourceType::ResourceA, ERangedAttackCapability::Count);
 	const EntityCategory extractorB = EntityCategory(EEntityCategoryType::Extractor, EResourceType::ResourceB, ERangedAttackCapability::Count);
 	const EntityCategory extractorC = EntityCategory(EEntityCategoryType::Extractor, EResourceType::ResourceC, ERangedAttackCapability::Count);
