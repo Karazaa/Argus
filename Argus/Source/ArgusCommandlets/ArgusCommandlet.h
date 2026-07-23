@@ -17,6 +17,6 @@ public:
 
 protected:
 	virtual void OnStart() {}
-	virtual void DoWork() {}
+	virtual int32 DoWork() { return 0; }
 	virtual void OnFinish() {}
 };

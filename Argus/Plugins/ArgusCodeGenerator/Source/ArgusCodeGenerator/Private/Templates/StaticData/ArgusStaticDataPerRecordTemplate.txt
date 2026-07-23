@@ -9,7 +9,7 @@
 	}
 
 	template<>
-	inline const bool AsyncPreLoadRecord<#####>(uint32 id, TFunction<void(const #####*)> callback)
+	inline bool AsyncPreLoadRecord<#####>(uint32 id, TFunction<void(const #####*)> callback)
 	{
 		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
 		ARGUS_RETURN_ON_NULL_BOOL(staticDatabase, ArgusStaticDataLog);
@@ -18,7 +18,7 @@
 
 #if WITH_EDITOR
 	template<>
-	inline void IterateAllRecordsOfType<#####>(const TFunctionRef<void(#####*)>& function)
+	ARGUS_API inline void IterateAllRecordsOfType<#####>(const TFunctionRef<void(#####*)>& function)
 	{
 		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
 		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);

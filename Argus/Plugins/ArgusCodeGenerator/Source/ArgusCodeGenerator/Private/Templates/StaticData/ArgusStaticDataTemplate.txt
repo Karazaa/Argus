@@ -29,14 +29,14 @@ public:
 	}
 
 	template<typename ArgusStaticRecord>
-	static const bool AsyncPreLoadRecord(uint32 id, TFunction<void(const ArgusStaticRecord*)> callback = nullptr)
+	static bool AsyncPreLoadRecord(uint32 id, TFunction<void(const ArgusStaticRecord*)> callback = nullptr)
 	{
 		return false;
 	}
 
 #if WITH_EDITOR
 	template<typename ArgusStaticRecord>
-	static void IterateAllRecordsOfType(const TFunctionRef<void(ArgusStaticRecord*)>& function)
+	ARGUS_API static void IterateAllRecordsOfType(const TFunctionRef<void(ArgusStaticRecord*)>& function)
 	{
 	}
 
