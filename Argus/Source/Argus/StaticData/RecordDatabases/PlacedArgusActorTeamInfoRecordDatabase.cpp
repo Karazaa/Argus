@@ -217,4 +217,13 @@ void UPlacedArgusActorTeamInfoRecordDatabase::AddUPlacedArgusActorTeamInfoRecord
 
 	editorAssetSubsystem->SaveLoadedAsset(this, false);
 }
+
+void UPlacedArgusActorTeamInfoRecordDatabase::IterateAllUPlacedArgusActorTeamInfoRecords(const TFunctionRef<void(UPlacedArgusActorTeamInfoRecord*)>& function)
+{
+	const uint32 upperBound = m_UPlacedArgusActorTeamInfoRecords.Num();
+	for (uint32 i = 1u; i < upperBound; ++i)
+	{
+		function(const_cast<UPlacedArgusActorTeamInfoRecord*>(GetRecord(i)));
+	}
+}
 #endif //WITH_EDITOR

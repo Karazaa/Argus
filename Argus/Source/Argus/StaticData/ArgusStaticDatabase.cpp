@@ -62,6 +62,18 @@ uint32 UArgusStaticDatabase::AddUAbilityRecordToDatabase(UAbilityRecord* record)
 	return record->m_id;
 }
 
+void UArgusStaticDatabase::IterateAllUAbilityRecords(const TFunctionRef<void(UAbilityRecord*)>& function)
+{
+	LazyLoadUAbilityRecordDatabase();
+
+	if (!m_UAbilityRecordDatabasePersistent)
+	{
+		return;
+	}
+
+	m_UAbilityRecordDatabasePersistent->IterateAllUAbilityRecords(function);
+}
+
 void UArgusStaticDatabase::RegisterNewUAbilityRecordDatabase(UAbilityRecordDatabase* database)
 {
 	if (!database)
@@ -167,6 +179,18 @@ uint32 UArgusStaticDatabase::AddUArgusActorRecordToDatabase(UArgusActorRecord* r
 	m_UArgusActorRecordDatabasePersistent->AddUArgusActorRecordToDatabase(record);
 	
 	return record->m_id;
+}
+
+void UArgusStaticDatabase::IterateAllUArgusActorRecords(const TFunctionRef<void(UArgusActorRecord*)>& function)
+{
+	LazyLoadUArgusActorRecordDatabase();
+
+	if (!m_UArgusActorRecordDatabasePersistent)
+	{
+		return;
+	}
+
+	m_UArgusActorRecordDatabasePersistent->IterateAllUArgusActorRecords(function);
 }
 
 void UArgusStaticDatabase::RegisterNewUArgusActorRecordDatabase(UArgusActorRecordDatabase* database)
@@ -276,6 +300,18 @@ uint32 UArgusStaticDatabase::AddUFactionRecordToDatabase(UFactionRecord* record)
 	return record->m_id;
 }
 
+void UArgusStaticDatabase::IterateAllUFactionRecords(const TFunctionRef<void(UFactionRecord*)>& function)
+{
+	LazyLoadUFactionRecordDatabase();
+
+	if (!m_UFactionRecordDatabasePersistent)
+	{
+		return;
+	}
+
+	m_UFactionRecordDatabasePersistent->IterateAllUFactionRecords(function);
+}
+
 void UArgusStaticDatabase::RegisterNewUFactionRecordDatabase(UFactionRecordDatabase* database)
 {
 	if (!database)
@@ -381,6 +417,18 @@ uint32 UArgusStaticDatabase::AddUMaterialRecordToDatabase(UMaterialRecord* recor
 	m_UMaterialRecordDatabasePersistent->AddUMaterialRecordToDatabase(record);
 	
 	return record->m_id;
+}
+
+void UArgusStaticDatabase::IterateAllUMaterialRecords(const TFunctionRef<void(UMaterialRecord*)>& function)
+{
+	LazyLoadUMaterialRecordDatabase();
+
+	if (!m_UMaterialRecordDatabasePersistent)
+	{
+		return;
+	}
+
+	m_UMaterialRecordDatabasePersistent->IterateAllUMaterialRecords(function);
 }
 
 void UArgusStaticDatabase::RegisterNewUMaterialRecordDatabase(UMaterialRecordDatabase* database)
@@ -490,6 +538,18 @@ uint32 UArgusStaticDatabase::AddUPlacedArgusActorTeamInfoRecordToDatabase(UPlace
 	return record->m_id;
 }
 
+void UArgusStaticDatabase::IterateAllUPlacedArgusActorTeamInfoRecords(const TFunctionRef<void(UPlacedArgusActorTeamInfoRecord*)>& function)
+{
+	LazyLoadUPlacedArgusActorTeamInfoRecordDatabase();
+
+	if (!m_UPlacedArgusActorTeamInfoRecordDatabasePersistent)
+	{
+		return;
+	}
+
+	m_UPlacedArgusActorTeamInfoRecordDatabasePersistent->IterateAllUPlacedArgusActorTeamInfoRecords(function);
+}
+
 void UArgusStaticDatabase::RegisterNewUPlacedArgusActorTeamInfoRecordDatabase(UPlacedArgusActorTeamInfoRecordDatabase* database)
 {
 	if (!database)
@@ -595,6 +655,18 @@ uint32 UArgusStaticDatabase::AddUResourceSetRecordToDatabase(UResourceSetRecord*
 	m_UResourceSetRecordDatabasePersistent->AddUResourceSetRecordToDatabase(record);
 	
 	return record->m_id;
+}
+
+void UArgusStaticDatabase::IterateAllUResourceSetRecords(const TFunctionRef<void(UResourceSetRecord*)>& function)
+{
+	LazyLoadUResourceSetRecordDatabase();
+
+	if (!m_UResourceSetRecordDatabasePersistent)
+	{
+		return;
+	}
+
+	m_UResourceSetRecordDatabasePersistent->IterateAllUResourceSetRecords(function);
 }
 
 void UArgusStaticDatabase::RegisterNewUResourceSetRecordDatabase(UResourceSetRecordDatabase* database)
@@ -704,6 +776,18 @@ uint32 UArgusStaticDatabase::AddUTeamAlignmentRecordToDatabase(UTeamAlignmentRec
 	return record->m_id;
 }
 
+void UArgusStaticDatabase::IterateAllUTeamAlignmentRecords(const TFunctionRef<void(UTeamAlignmentRecord*)>& function)
+{
+	LazyLoadUTeamAlignmentRecordDatabase();
+
+	if (!m_UTeamAlignmentRecordDatabasePersistent)
+	{
+		return;
+	}
+
+	m_UTeamAlignmentRecordDatabasePersistent->IterateAllUTeamAlignmentRecords(function);
+}
+
 void UArgusStaticDatabase::RegisterNewUTeamAlignmentRecordDatabase(UTeamAlignmentRecordDatabase* database)
 {
 	if (!database)
@@ -809,6 +893,18 @@ uint32 UArgusStaticDatabase::AddUTeamColorRecordToDatabase(UTeamColorRecord* rec
 	m_UTeamColorRecordDatabasePersistent->AddUTeamColorRecordToDatabase(record);
 	
 	return record->m_id;
+}
+
+void UArgusStaticDatabase::IterateAllUTeamColorRecords(const TFunctionRef<void(UTeamColorRecord*)>& function)
+{
+	LazyLoadUTeamColorRecordDatabase();
+
+	if (!m_UTeamColorRecordDatabasePersistent)
+	{
+		return;
+	}
+
+	m_UTeamColorRecordDatabasePersistent->IterateAllUTeamColorRecords(function);
 }
 
 void UArgusStaticDatabase::RegisterNewUTeamColorRecordDatabase(UTeamColorRecordDatabase* database)

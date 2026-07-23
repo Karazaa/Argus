@@ -217,4 +217,13 @@ void UResourceSetRecordDatabase::AddUResourceSetRecordToDatabase(UResourceSetRec
 
 	editorAssetSubsystem->SaveLoadedAsset(this, false);
 }
+
+void UResourceSetRecordDatabase::IterateAllUResourceSetRecords(const TFunctionRef<void(UResourceSetRecord*)>& function)
+{
+	const uint32 upperBound = m_UResourceSetRecords.Num();
+	for (uint32 i = 1u; i < upperBound; ++i)
+	{
+		function(const_cast<UResourceSetRecord*>(GetRecord(i)));
+	}
+}
 #endif //WITH_EDITOR

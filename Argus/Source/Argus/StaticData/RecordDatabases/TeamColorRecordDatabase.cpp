@@ -217,4 +217,13 @@ void UTeamColorRecordDatabase::AddUTeamColorRecordToDatabase(UTeamColorRecord* r
 
 	editorAssetSubsystem->SaveLoadedAsset(this, false);
 }
+
+void UTeamColorRecordDatabase::IterateAllUTeamColorRecords(const TFunctionRef<void(UTeamColorRecord*)>& function)
+{
+	const uint32 upperBound = m_UTeamColorRecords.Num();
+	for (uint32 i = 1u; i < upperBound; ++i)
+	{
+		function(const_cast<UTeamColorRecord*>(GetRecord(i)));
+	}
+}
 #endif //WITH_EDITOR

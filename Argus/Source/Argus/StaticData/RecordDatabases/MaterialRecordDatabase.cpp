@@ -217,4 +217,13 @@ void UMaterialRecordDatabase::AddUMaterialRecordToDatabase(UMaterialRecord* reco
 
 	editorAssetSubsystem->SaveLoadedAsset(this, false);
 }
+
+void UMaterialRecordDatabase::IterateAllUMaterialRecords(const TFunctionRef<void(UMaterialRecord*)>& function)
+{
+	const uint32 upperBound = m_UMaterialRecords.Num();
+	for (uint32 i = 1u; i < upperBound; ++i)
+	{
+		function(const_cast<UMaterialRecord*>(GetRecord(i)));
+	}
+}
 #endif //WITH_EDITOR

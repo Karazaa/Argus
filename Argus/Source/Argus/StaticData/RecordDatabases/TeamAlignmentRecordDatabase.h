@@ -30,5 +30,6 @@ public:
 	virtual void PreSave(FObjectPreSaveContext saveContext) override;
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent) override;
 	void AddUTeamAlignmentRecordToDatabase(UTeamAlignmentRecord* record);
+	void IterateAllUTeamAlignmentRecords(const TFunctionRef<void(UTeamAlignmentRecord*)>& function);
 #endif //WITH_EDITOR
 };

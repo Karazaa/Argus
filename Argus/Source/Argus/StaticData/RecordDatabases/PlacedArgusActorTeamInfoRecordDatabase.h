@@ -30,5 +30,6 @@ public:
 	virtual void PreSave(FObjectPreSaveContext saveContext) override;
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent) override;
 	void AddUPlacedArgusActorTeamInfoRecordToDatabase(UPlacedArgusActorTeamInfoRecord* record);
+	void IterateAllUPlacedArgusActorTeamInfoRecords(const TFunctionRef<void(UPlacedArgusActorTeamInfoRecord*)>& function);
 #endif //WITH_EDITOR
 };

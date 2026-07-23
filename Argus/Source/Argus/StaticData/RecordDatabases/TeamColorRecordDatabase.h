@@ -30,5 +30,6 @@ public:
 	virtual void PreSave(FObjectPreSaveContext saveContext) override;
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent) override;
 	void AddUTeamColorRecordToDatabase(UTeamColorRecord* record);
+	void IterateAllUTeamColorRecords(const TFunctionRef<void(UTeamColorRecord*)>& function);
 #endif //WITH_EDITOR
 };

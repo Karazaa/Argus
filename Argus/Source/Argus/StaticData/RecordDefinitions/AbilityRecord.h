@@ -11,6 +11,7 @@
 #include "SoftPtrLoadStore.h"
 #include "AbilityRecord.generated.h"
 
+class UArgusEntityTemplate;
 class UMaterial;
 
 UENUM(meta = (Bitflags, UseEnumValuesAsMaskValuesInEditor = "true"))
@@ -66,6 +67,10 @@ public:
 	virtual void ResetSoftPtrLoadStores() override;
 
 	bool DoesAbilitySpawnEntityOfCategory(EntityCategory entityCategory) const;
+
+#if WITH_EDITOR
+	void UpdateEntityCategoriesSpawnedByAbility();
+#endif //WITH_EDITOR
 
 private:
 	mutable ArgusMap<EntityCategory, bool, ArgusSetAllocator<14u> > m_isEntityCategorySpawnedByAbility;

@@ -30,5 +30,6 @@ public:
 	virtual void PreSave(FObjectPreSaveContext saveContext) override;
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent) override;
 	void AddUResourceSetRecordToDatabase(UResourceSetRecord* record);
+	void IterateAllUResourceSetRecords(const TFunctionRef<void(UResourceSetRecord*)>& function);
 #endif //WITH_EDITOR
 };

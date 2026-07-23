@@ -217,4 +217,13 @@ void UAbilityRecordDatabase::AddUAbilityRecordToDatabase(UAbilityRecord* record)
 
 	editorAssetSubsystem->SaveLoadedAsset(this, false);
 }
+
+void UAbilityRecordDatabase::IterateAllUAbilityRecords(const TFunctionRef<void(UAbilityRecord*)>& function)
+{
+	const uint32 upperBound = m_UAbilityRecords.Num();
+	for (uint32 i = 1u; i < upperBound; ++i)
+	{
+		function(const_cast<UAbilityRecord*>(GetRecord(i)));
+	}
+}
 #endif //WITH_EDITOR

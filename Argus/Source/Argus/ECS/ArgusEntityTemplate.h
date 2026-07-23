@@ -64,5 +64,8 @@ private:
 #if WITH_AUTOMATION_TESTS
 	friend class ArgusEntityTemplateInstantiateEntityTest;
 	friend class SpawningSystemsSpawnEntityTest;
-#endif
+#endif //WITH_AUTOMATION_TESTS
+#if WITH_EDITOR
+	friend class UAbilityRecord;
+#endif //WITH_EDITOR
 };
