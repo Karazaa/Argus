@@ -19,6 +19,14 @@ class UArgusStaticDatabase : public UDataAsset
 {
 	GENERATED_BODY()
 
+public:
+	static UArgusStaticDatabase* GetInstance();
+	UArgusStaticDatabase();
+	~UArgusStaticDatabase();
+
+private:
+	static UArgusStaticDatabase* s_loadedDatabase;
+
 #pragma region UAbilityRecord
 public:
 	const UAbilityRecord* GetUAbilityRecord(uint32 id);

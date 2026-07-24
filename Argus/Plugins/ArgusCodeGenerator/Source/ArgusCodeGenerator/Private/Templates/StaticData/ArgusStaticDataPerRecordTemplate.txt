@@ -3,7 +3,7 @@
 	template<>
 	inline const #####* GetRecord(uint32 id)
 	{
-		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
+		UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance();
 		ARGUS_RETURN_ON_NULL_POINTER(staticDatabase, ArgusStaticDataLog);
 		return staticDatabase->Get#####(id);
 	}
@@ -11,7 +11,7 @@
 	template<>
 	inline bool AsyncPreLoadRecord<#####>(uint32 id, TFunction<void(const #####*)> callback)
 	{
-		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
+		UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance();
 		ARGUS_RETURN_ON_NULL_BOOL(staticDatabase, ArgusStaticDataLog);
 		return staticDatabase->AsyncPreLoad#####(id, callback);
 	}

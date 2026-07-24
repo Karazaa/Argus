@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "ArgusGameInstance.h"
+#include "ArgusStaticDatabase.h"
 #include "ArgusLogging.h"
 
 #if WITH_EDITOR
@@ -16,7 +16,7 @@ class ArgusStaticData
 public:
 	static void ResetLoadedPointerArrays() 
 	{		
-		if (UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase())
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
 		{
 			staticDatabase->ResetLoadedPointerArrays();
 		}		
@@ -97,7 +97,7 @@ public:
 	template<>
 	inline const UAbilityRecord* GetRecord(uint32 id)
 	{
-		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
+		UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance();
 		ARGUS_RETURN_ON_NULL_POINTER(staticDatabase, ArgusStaticDataLog);
 		return staticDatabase->GetUAbilityRecord(id);
 	}
@@ -105,7 +105,7 @@ public:
 	template<>
 	inline bool AsyncPreLoadRecord<UAbilityRecord>(uint32 id, TFunction<void(const UAbilityRecord*)> callback)
 	{
-		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
+		UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance();
 		ARGUS_RETURN_ON_NULL_BOOL(staticDatabase, ArgusStaticDataLog);
 		return staticDatabase->AsyncPreLoadUAbilityRecord(id, callback);
 	}
@@ -133,7 +133,7 @@ public:
 	template<>
 	inline const UArgusActorRecord* GetRecord(uint32 id)
 	{
-		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
+		UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance();
 		ARGUS_RETURN_ON_NULL_POINTER(staticDatabase, ArgusStaticDataLog);
 		return staticDatabase->GetUArgusActorRecord(id);
 	}
@@ -141,7 +141,7 @@ public:
 	template<>
 	inline bool AsyncPreLoadRecord<UArgusActorRecord>(uint32 id, TFunction<void(const UArgusActorRecord*)> callback)
 	{
-		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
+		UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance();
 		ARGUS_RETURN_ON_NULL_BOOL(staticDatabase, ArgusStaticDataLog);
 		return staticDatabase->AsyncPreLoadUArgusActorRecord(id, callback);
 	}
@@ -169,7 +169,7 @@ public:
 	template<>
 	inline const UFactionRecord* GetRecord(uint32 id)
 	{
-		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
+		UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance();
 		ARGUS_RETURN_ON_NULL_POINTER(staticDatabase, ArgusStaticDataLog);
 		return staticDatabase->GetUFactionRecord(id);
 	}
@@ -177,7 +177,7 @@ public:
 	template<>
 	inline bool AsyncPreLoadRecord<UFactionRecord>(uint32 id, TFunction<void(const UFactionRecord*)> callback)
 	{
-		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
+		UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance();
 		ARGUS_RETURN_ON_NULL_BOOL(staticDatabase, ArgusStaticDataLog);
 		return staticDatabase->AsyncPreLoadUFactionRecord(id, callback);
 	}
@@ -205,7 +205,7 @@ public:
 	template<>
 	inline const UMaterialRecord* GetRecord(uint32 id)
 	{
-		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
+		UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance();
 		ARGUS_RETURN_ON_NULL_POINTER(staticDatabase, ArgusStaticDataLog);
 		return staticDatabase->GetUMaterialRecord(id);
 	}
@@ -213,7 +213,7 @@ public:
 	template<>
 	inline bool AsyncPreLoadRecord<UMaterialRecord>(uint32 id, TFunction<void(const UMaterialRecord*)> callback)
 	{
-		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
+		UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance();
 		ARGUS_RETURN_ON_NULL_BOOL(staticDatabase, ArgusStaticDataLog);
 		return staticDatabase->AsyncPreLoadUMaterialRecord(id, callback);
 	}
@@ -241,7 +241,7 @@ public:
 	template<>
 	inline const UPlacedArgusActorTeamInfoRecord* GetRecord(uint32 id)
 	{
-		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
+		UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance();
 		ARGUS_RETURN_ON_NULL_POINTER(staticDatabase, ArgusStaticDataLog);
 		return staticDatabase->GetUPlacedArgusActorTeamInfoRecord(id);
 	}
@@ -249,7 +249,7 @@ public:
 	template<>
 	inline bool AsyncPreLoadRecord<UPlacedArgusActorTeamInfoRecord>(uint32 id, TFunction<void(const UPlacedArgusActorTeamInfoRecord*)> callback)
 	{
-		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
+		UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance();
 		ARGUS_RETURN_ON_NULL_BOOL(staticDatabase, ArgusStaticDataLog);
 		return staticDatabase->AsyncPreLoadUPlacedArgusActorTeamInfoRecord(id, callback);
 	}
@@ -277,7 +277,7 @@ public:
 	template<>
 	inline const UResourceSetRecord* GetRecord(uint32 id)
 	{
-		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
+		UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance();
 		ARGUS_RETURN_ON_NULL_POINTER(staticDatabase, ArgusStaticDataLog);
 		return staticDatabase->GetUResourceSetRecord(id);
 	}
@@ -285,7 +285,7 @@ public:
 	template<>
 	inline bool AsyncPreLoadRecord<UResourceSetRecord>(uint32 id, TFunction<void(const UResourceSetRecord*)> callback)
 	{
-		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
+		UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance();
 		ARGUS_RETURN_ON_NULL_BOOL(staticDatabase, ArgusStaticDataLog);
 		return staticDatabase->AsyncPreLoadUResourceSetRecord(id, callback);
 	}
@@ -313,7 +313,7 @@ public:
 	template<>
 	inline const UTeamAlignmentRecord* GetRecord(uint32 id)
 	{
-		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
+		UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance();
 		ARGUS_RETURN_ON_NULL_POINTER(staticDatabase, ArgusStaticDataLog);
 		return staticDatabase->GetUTeamAlignmentRecord(id);
 	}
@@ -321,7 +321,7 @@ public:
 	template<>
 	inline bool AsyncPreLoadRecord<UTeamAlignmentRecord>(uint32 id, TFunction<void(const UTeamAlignmentRecord*)> callback)
 	{
-		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
+		UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance();
 		ARGUS_RETURN_ON_NULL_BOOL(staticDatabase, ArgusStaticDataLog);
 		return staticDatabase->AsyncPreLoadUTeamAlignmentRecord(id, callback);
 	}
@@ -349,7 +349,7 @@ public:
 	template<>
 	inline const UTeamColorRecord* GetRecord(uint32 id)
 	{
-		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
+		UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance();
 		ARGUS_RETURN_ON_NULL_POINTER(staticDatabase, ArgusStaticDataLog);
 		return staticDatabase->GetUTeamColorRecord(id);
 	}
@@ -357,7 +357,7 @@ public:
 	template<>
 	inline bool AsyncPreLoadRecord<UTeamColorRecord>(uint32 id, TFunction<void(const UTeamColorRecord*)> callback)
 	{
-		UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase();
+		UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance();
 		ARGUS_RETURN_ON_NULL_BOOL(staticDatabase, ArgusStaticDataLog);
 		return staticDatabase->AsyncPreLoadUTeamColorRecord(id, callback);
 	}
@@ -385,6 +385,8 @@ public:
 private:
 	static UArgusStaticDatabase* GetParentDatabase()
 	{
+		// TODO JAMES: Refactor this to use PrimaryDataAsset loading style.
+
 		if (!GEditor)
 		{
 			return nullptr;
