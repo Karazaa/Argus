@@ -1,6 +1,8 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusCommandlet.h"
+#include "PackageHelperFunctions.h"
+#include "SourceControlHelpers.h"
 
 UArgusCommandlet::UArgusCommandlet()
 {
@@ -17,4 +19,21 @@ int32 UArgusCommandlet::Main(const FString& parameters)
 	OnFinish();
 
 	return result;
+}
+
+bool UArgusCommandlet::SaveDataAsset(const UDataAsset* dataAssetToSave) const
+{
+	if (!dataAssetToSave)
+	{
+		return false;
+	}
+
+	UPackage* package = dataAssetToSave->GetPackage();
+	if (!ensure(package))
+	{
+		return false;
+	}
+
+	const FString packageFilename = SourceControlHelpers::PackageFilename(package);
+	return SavePackageHelper(package, packageFilename);
 }

@@ -5,6 +5,8 @@
 #include "Commandlets/Commandlet.h"
 #include "ArgusCommandlet.generated.h"
 
+class UDataAsset;
+
 UCLASS()
 class ARGUSCOMMANDLETS_API UArgusCommandlet : public UCommandlet 
 {
@@ -19,4 +21,6 @@ protected:
 	virtual void OnStart() {}
 	virtual int32 DoWork() { return 0; }
 	virtual void OnFinish() {}
+
+	bool SaveDataAsset(const UDataAsset* dataAssetToSave) const;
 };
