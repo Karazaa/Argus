@@ -16,6 +16,7 @@ public class ArgusCommandlets : ModuleRules
 			"CoreUObject",
 			"Engine",
 			"UnrealEd",
+            "SourceControl",
             "Argus"
 		);
 

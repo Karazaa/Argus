@@ -18,11 +18,13 @@ void UUpdateAbilityRecordsCommandlet::OnStart()
 
 int32 UUpdateAbilityRecordsCommandlet::DoWork()
 {
-	ArgusStaticData::IterateAllRecordsOfType<UAbilityRecord>([](UAbilityRecord* abilityRecord) 
+	ArgusStaticData::IterateAllRecordsOfType<UAbilityRecord>([this](UAbilityRecord* abilityRecord) 
 	{
 		if (abilityRecord)
 		{
 			abilityRecord->UpdateEntityCategoriesSpawnedByAbility();
+			abilityRecord->Modify(true);
+			SaveDataAsset(abilityRecord);
 		}
 	});
 
