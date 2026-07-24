@@ -8,6 +8,23 @@
 #include "Subsystems/EditorAssetSubsystem.h"
 #endif
 
+UArgusStaticDatabase* UArgusStaticDatabase::s_loadedDatabase = nullptr;
+
+UArgusStaticDatabase* UArgusStaticDatabase::GetInstance()
+{
+	return s_loadedDatabase;
+}
+
+UArgusStaticDatabase::UArgusStaticDatabase()
+{
+	s_loadedDatabase = this;
+}
+
+UArgusStaticDatabase::~UArgusStaticDatabase()
+{
+	s_loadedDatabase = nullptr;
+}
+
 #pragma region UAbilityRecord
 const UAbilityRecord* UArgusStaticDatabase::GetUAbilityRecord(uint32 id)
 {

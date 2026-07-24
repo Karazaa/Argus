@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "ArgusGameInstance.h"
+#include "ArgusStaticDatabase.h"
 #include "ArgusLogging.h"
 
 #if WITH_EDITOR
@@ -16,7 +16,7 @@ class ArgusStaticData
 public:
 	static void ResetLoadedPointerArrays() 
 	{		
-		if (UArgusStaticDatabase* staticDatabase = UArgusGameInstance::GetStaticDatabase())
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
 		{
 			staticDatabase->ResetLoadedPointerArrays();
 		}		
@@ -67,6 +67,8 @@ public:
 private:
 	static UArgusStaticDatabase* GetParentDatabase()
 	{
+		// TODO JAMES: Refactor this to use PrimaryDataAsset loading style.
+
 		if (!GEditor)
 		{
 			return nullptr;
