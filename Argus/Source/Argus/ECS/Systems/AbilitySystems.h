@@ -24,7 +24,7 @@ public:
 
 	static EAbilityState GetProcessAbilityStateForAbilityIndex(EAbilityIndex index);
 
-	static bool GetSpawnEntityCategoryAbilities(ArgusEntity entity, EntityCategory entityCategory, TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& outAbilityIndexPairs);
+	static bool GetSpawnEntityCategoryAbilities(ArgusEntity entity, FEntityCategory entityCategory, TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& outAbilityIndexPairs);
 
 private:
 	static void ProcessAbilityRefundRequests(const AbilitySystemsArgs& components);

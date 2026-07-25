@@ -167,7 +167,7 @@ void UArgusEntityTemplate::SetInitialStateFromData(ArgusEntity entity) const
 	}
 }
 
-bool UArgusEntityTemplate::DoesTemplateSatisfyEntityCategory(EntityCategory entityCategory) const
+bool UArgusEntityTemplate::DoesTemplateSatisfyEntityCategory(FEntityCategory entityCategory) const
 {
 	ARGUS_TRACE(UArgusEntityTemplate::DoesTemplateSatisfyEntityCategory);
 

@@ -275,7 +275,7 @@ void TeamCommanderSystems_GatherInfo::UpdateCombatDataPerEntity(const TeamComman
 		return;
 	}
 
-	EntityCategory combatantCategory;
+	FEntityCategory combatantCategory;
 	combatantCategory.m_entityCategoryType = EEntityCategoryType::Combatant;
 	if (!components.m_entity.DoesEntitySatisfyEntityCategory(combatantCategory))
 	{

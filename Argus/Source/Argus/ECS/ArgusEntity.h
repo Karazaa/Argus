@@ -67,7 +67,7 @@ public:
 	bool				IsFlying() const;
 	bool				IsUnderConstruction() const;
 	bool				CanFly() const;
-	bool				DoesEntitySatisfyEntityCategory(EntityCategory entityCategory) const;
+	bool				DoesEntitySatisfyEntityCategory(FEntityCategory entityCategory) const;
 	FVector				GetCurrentTargetLocation() const;
 	float				GetDistanceSquaredToOtherEntity(ArgusEntity otherEntity) const;
 	float				GetDistanceToOtherEntity(ArgusEntity otherEntity) const;

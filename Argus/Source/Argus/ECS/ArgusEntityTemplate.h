@@ -25,7 +25,7 @@ public:
 	void ReinitializeComponentsForEntityPostLoad(ArgusEntity entity) const;
 	void SetInitialStateFromData(ArgusEntity entity) const;
 	UEntityPriority GetEntityPriority() const { return m_entityPriority; }
-	bool DoesTemplateSatisfyEntityCategory(EntityCategory entityCategory) const;
+	bool DoesTemplateSatisfyEntityCategory(FEntityCategory entityCategory) const;
 
 	template <typename ComponentType>
 	const ComponentType* GetComponentFromTemplate() const
@@ -57,7 +57,7 @@ private:
 	UPROPERTY(Transient)
 	mutable TMap<UClass*, TObjectPtr<const UComponentData>> m_loadedComponentData;
 
-	mutable ArgusMap<EntityCategory, bool, ArgusSetAllocator<14u> > m_isEntityCategorySatisfiedByTemplate;
+	mutable ArgusMap<FEntityCategory, bool, ArgusSetAllocator<14u> > m_isEntityCategorySatisfiedByTemplate;
 
 	void CacheComponents() const;
 
