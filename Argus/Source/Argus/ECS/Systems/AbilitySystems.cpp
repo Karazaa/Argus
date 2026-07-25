@@ -241,7 +241,7 @@ EAbilityState AbilitySystems::GetProcessAbilityStateForAbilityIndex(EAbilityInde
 	return EAbilityState::None;
 }
 
-bool AbilitySystems::GetSpawnEntityCategoryAbilities(ArgusEntity entity, EntityCategory entityCategory, TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& outAbilityIndexPairs)
+bool AbilitySystems::GetSpawnEntityCategoryAbilities(ArgusEntity entity, FEntityCategory entityCategory, TArray<TPair<const UAbilityRecord*, EAbilityIndex>>& outAbilityIndexPairs)
 {
 	ARGUS_TRACE(AbilitySystems::GetSpawnEntityCategoryAbilities);
 

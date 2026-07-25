@@ -464,7 +464,7 @@ bool ArgusEntity::CanFly() const
 	return transformComponent->m_flightCapability != EFlightCapability::OnlyGrounded;
 }
 
-bool ArgusEntity::DoesEntitySatisfyEntityCategory(EntityCategory entityCategory) const
+bool ArgusEntity::DoesEntitySatisfyEntityCategory(FEntityCategory entityCategory) const
 {
 	switch (entityCategory.m_entityCategoryType)
 	{

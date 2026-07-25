@@ -18,23 +18,26 @@ enum class EEntityCategoryType : uint8
 	Count
 };
 
-struct EntityCategory
+USTRUCT()
+struct FEntityCategory
 {
+	GENERATED_BODY()
+
 	EEntityCategoryType m_entityCategoryType = EEntityCategoryType::Count;
 	EResourceType m_resourceType = EResourceType::Count;
 	ERangedAttackCapability m_attackCapability = ERangedAttackCapability::Count;
 
-	EntityCategory() = default;
-	EntityCategory(EEntityCategoryType entityCategoryType, EResourceType resourceType, ERangedAttackCapability attackCapability) :	m_entityCategoryType(m_entityCategoryType), 
+	FEntityCategory() = default;
+	FEntityCategory(EEntityCategoryType entityCategoryType, EResourceType resourceType, ERangedAttackCapability attackCapability) :	m_entityCategoryType(m_entityCategoryType), 
 																																	m_resourceType(m_resourceType), 
 																																	m_attackCapability(m_attackCapability) {}
 
-	bool operator==(const EntityCategory& other) const
+	bool operator==(const FEntityCategory& other) const
 	{
 		return m_entityCategoryType == other.m_entityCategoryType && m_resourceType == other.m_resourceType && m_attackCapability == other.m_attackCapability;
 	}
 };
-FORCEINLINE uint32 GetTypeHash(const EntityCategory& entityCategory)
+FORCEINLINE uint32 GetTypeHash(const FEntityCategory& entityCategory)
 {
 	return HashCombine(GetTypeHash(entityCategory.m_entityCategoryType), GetTypeHash(entityCategory.m_resourceType), GetTypeHash(entityCategory.m_attackCapability));
 }

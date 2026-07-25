@@ -39,7 +39,7 @@ void UAbilityRecord::ResetSoftPtrLoadStores()
 	m_abilityIcon.ResetHardPtr();
 }
 
-bool UAbilityRecord::DoesAbilitySpawnEntityOfCategory(EntityCategory entityCategory) const
+bool UAbilityRecord::DoesAbilitySpawnEntityOfCategory(FEntityCategory entityCategory) const
 {
 	ARGUS_TRACE(UAbilityRecord::DoesAbilitySpawnEntityOfCategory);
 
@@ -66,14 +66,14 @@ void UAbilityRecord::UpdateEntityCategoriesSpawnedByAbility()
 
 	ARGUS_LOG(ArgusStaticDataLog, Display, TEXT("===> Updating entity categories spawned by ability for ability, %s"), *GetName())
 
-	const EntityCategory extractorA = EntityCategory(EEntityCategoryType::Extractor, EResourceType::ResourceA, ERangedAttackCapability::Count);
-	const EntityCategory extractorB = EntityCategory(EEntityCategoryType::Extractor, EResourceType::ResourceB, ERangedAttackCapability::Count);
-	const EntityCategory extractorC = EntityCategory(EEntityCategoryType::Extractor, EResourceType::ResourceC, ERangedAttackCapability::Count);
-	const EntityCategory sinkA = EntityCategory(EEntityCategoryType::ResourceSink, EResourceType::ResourceA, ERangedAttackCapability::Count);
-	const EntityCategory sinkB = EntityCategory(EEntityCategoryType::ResourceSink, EResourceType::ResourceB, ERangedAttackCapability::Count);
-	const EntityCategory sinkC = EntityCategory(EEntityCategoryType::ResourceSink, EResourceType::ResourceC, ERangedAttackCapability::Count);
-	const EntityCategory combatantGrounded = EntityCategory(EEntityCategoryType::Combatant, EResourceType::Count, ERangedAttackCapability::GroundedOnly);
-	const EntityCategory combatantFlying = EntityCategory(EEntityCategoryType::Combatant, EResourceType::Count, ERangedAttackCapability::FlyingOnly);
+	const FEntityCategory extractorA = FEntityCategory(EEntityCategoryType::Extractor, EResourceType::ResourceA, ERangedAttackCapability::Count);
+	const FEntityCategory extractorB = FEntityCategory(EEntityCategoryType::Extractor, EResourceType::ResourceB, ERangedAttackCapability::Count);
+	const FEntityCategory extractorC = FEntityCategory(EEntityCategoryType::Extractor, EResourceType::ResourceC, ERangedAttackCapability::Count);
+	const FEntityCategory sinkA = FEntityCategory(EEntityCategoryType::ResourceSink, EResourceType::ResourceA, ERangedAttackCapability::Count);
+	const FEntityCategory sinkB = FEntityCategory(EEntityCategoryType::ResourceSink, EResourceType::ResourceB, ERangedAttackCapability::Count);
+	const FEntityCategory sinkC = FEntityCategory(EEntityCategoryType::ResourceSink, EResourceType::ResourceC, ERangedAttackCapability::Count);
+	const FEntityCategory combatantGrounded = FEntityCategory(EEntityCategoryType::Combatant, EResourceType::Count, ERangedAttackCapability::GroundedOnly);
+	const FEntityCategory combatantFlying = FEntityCategory(EEntityCategoryType::Combatant, EResourceType::Count, ERangedAttackCapability::FlyingOnly);
 
 	m_isEntityCategorySpawnedByAbility.Emplace(extractorA, entityTemplate->DoesTemplateSatisfyEntityCategory(extractorA));
 	m_isEntityCategorySpawnedByAbility.Emplace(extractorB, entityTemplate->DoesTemplateSatisfyEntityCategory(extractorB));

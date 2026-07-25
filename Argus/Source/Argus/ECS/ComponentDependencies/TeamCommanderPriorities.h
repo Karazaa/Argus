@@ -25,7 +25,7 @@ struct TeamCommanderPriority
 {
 	float m_weight = 0.0f;
 	ETeamCommanderDirective m_directive = ETeamCommanderDirective::Scout;
-	EntityCategory m_entityCategory;
+	FEntityCategory m_entityCategory;
 	FResourceSet m_minAssociatedResourceCost;
 
 #if !UE_BUILD_SHIPPING
