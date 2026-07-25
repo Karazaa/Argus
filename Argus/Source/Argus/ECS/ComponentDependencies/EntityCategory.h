@@ -7,7 +7,7 @@
 
 #include "EntityCategory.generated.h"
 
-UENUM()
+UENUM(BlueprintType)
 enum class EEntityCategoryType : uint8
 {
 	Extractor,
@@ -23,8 +23,13 @@ struct FEntityCategory
 {
 	GENERATED_BODY()
 
+	UPROPERTY(VisibleAnywhere)
 	EEntityCategoryType m_entityCategoryType = EEntityCategoryType::Count;
+
+	UPROPERTY(VisibleAnywhere)
 	EResourceType m_resourceType = EResourceType::Count;
+
+	UPROPERTY(VisibleAnywhere)
 	ERangedAttackCapability m_attackCapability = ERangedAttackCapability::Count;
 
 	FEntityCategory() = default;
