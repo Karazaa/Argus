@@ -5,8 +5,17 @@ on:
     branches: main
 
 jobs:
+  git-checkout-main:
+    runs-on: self-hosted
+    steps:
+      - name: git-checkout-main
+        shell: powershell
+        run: git -C ${{ secrets.PATH_TO_REPO }} checkout main
+
   git-reset-hard:
     runs-on: self-hosted
+    needs:
+      - git-checkout-main
     steps:
       - name: git-reset-hard
         shell: powershell
