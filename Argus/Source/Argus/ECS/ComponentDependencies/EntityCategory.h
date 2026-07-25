@@ -4,7 +4,7 @@
 
 #include "ComponentDependencies/CombatInfo.h"
 #include "ComponentDependencies/ResourceSet.h"
-
+#include "Misc/Crc.h"
 #include "EntityCategory.generated.h"
 
 UENUM(BlueprintType)
@@ -33,18 +33,18 @@ struct FEntityCategory
 	ERangedAttackCapability m_attackCapability = ERangedAttackCapability::Count;
 
 	FEntityCategory() = default;
-	FEntityCategory(EEntityCategoryType entityCategoryType, EResourceType resourceType, ERangedAttackCapability attackCapability) :	m_entityCategoryType(m_entityCategoryType), 
-																																	m_resourceType(m_resourceType), 
-																																	m_attackCapability(m_attackCapability) {}
+	FEntityCategory(EEntityCategoryType entityCategoryType, EResourceType resourceType, ERangedAttackCapability attackCapability) :	m_entityCategoryType(entityCategoryType),
+																																	m_resourceType(resourceType),
+																																	m_attackCapability(attackCapability) {}
 
 	bool operator==(const FEntityCategory& other) const
 	{
-		return m_entityCategoryType == other.m_entityCategoryType && m_resourceType == other.m_resourceType && m_attackCapability == other.m_attackCapability;
+		return (m_entityCategoryType == other.m_entityCategoryType) && (m_resourceType == other.m_resourceType) && (m_attackCapability == other.m_attackCapability);
 	}
 };
 FORCEINLINE uint32 GetTypeHash(const FEntityCategory& entityCategory)
 {
-	return HashCombine(GetTypeHash(entityCategory.m_entityCategoryType), GetTypeHash(entityCategory.m_resourceType), GetTypeHash(entityCategory.m_attackCapability));
+	return FCrc::MemCrc32(&entityCategory, sizeof(FEntityCategory));
 }
 
 namespace EntityCategoryUtils
