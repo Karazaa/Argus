@@ -2,6 +2,7 @@ name: Update Ability Records
 
 on:
   workflow_dispatch:
+  workflow_call:
   
 jobs:
   run-commandlet:
