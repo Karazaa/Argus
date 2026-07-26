@@ -4,11 +4,17 @@ on:
   workflow_dispatch:
 
 jobs:
-  non-unity-job:
+  update-runner: 
     runs-on: self-hosted
     steps:
-      - name: Making non-unity build
+      - name: Update Runner
+        uses: Argus/UpdateRunner@latest
+
+  hello-world:
+    runs-on: self-hosted
+    needs: 
+      - update-runner
+    steps:
+      - name: Hello World!
         shell: powershell
-        run: |
-          $command = "& `"${{ secrets.PATH_TO_RUN_UBT }}`" `"${{ secrets.PATH_TO_UPROJECT }}`" Win64 Development ArgusEditor -DisableAdaptiveUnity -DisableUnity -NoPCH -NoSharedPCH"
-          Invoke-Expression $command
+        run: echo "Hello World!"
