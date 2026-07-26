@@ -5,10 +5,7 @@ on:
 
 jobs:
   update-runner: 
-    runs-on: self-hosted
-    steps:
-      - name: Update Runner
-        uses: Argus/UpdateRunner@latest
+    uses: ./.github/workflows/UpdateRunner.yml
 
   hello-world:
     runs-on: self-hosted
