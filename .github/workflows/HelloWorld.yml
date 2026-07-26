@@ -6,6 +6,7 @@ on:
 jobs:
   update-runner: 
     uses: ./.github/workflows/UpdateRunner.yml
+    secrets: inherit
 
   hello-world:
     runs-on: self-hosted
