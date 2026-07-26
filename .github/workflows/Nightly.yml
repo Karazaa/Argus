@@ -10,49 +10,26 @@ jobs:
     uses: ./.github/workflows/UpdateRunner.yml
     secrets: inherit
 
-  compile-all-bp-job:
-    runs-on: self-hosted
+  compile-all-bp:
     needs:
       - update-runner 
-    steps:
-      - name: Compiling All Blueprints
-        shell: powershell
-        run: ${{ secrets.PATH_TO_EDITOR_CMD }} "${{ secrets.PATH_TO_UPROJECT }}" -run=CompileAllBlueprints -Unattended -NoLogTimes
+    uses: ./.github/workflows/CompileAllBP.yml
+    secrets: inherit
 
-  non-unity-job:
-    runs-on: self-hosted
+  non-unity:
     needs:
-      - compile-all-bp-job
-    steps:
-      - name: Validating Non-Unity Build
-        shell: powershell
-        run: |
-             $command = "& `"${{ secrets.PATH_TO_RUN_UBT }}`" `"${{ secrets.PATH_TO_UPROJECT }}`" Win64 Development ArgusEditor -DisableAdaptiveUnity -DisableUnity -NoPCH -NoSharedPCH"
-             Invoke-Expression $command
+      - compile-all-bp
+    uses: ./.github/workflows/ValidateNonUnityBuild.yml
+    secrets: inherit
              
-  build-job: 
-    runs-on: self-hosted
+  packaged-build: 
     needs:
-      - non-unity-job
-    steps:
-      - name: Cook, Stage & Package UE Project
-        uses: OrchidIsle/UE5-Build-Project@latest
-        with:
-          RUNUAT_PATH: ${{ secrets.PATH_TO_RUN_UAT }}
-          UPROJECT_PATH: ${{ secrets.PATH_TO_UPROJECT }}
-          BUILD_CONFIG: Development
-          PLATFORM: Win64
-          CLEAN: true
-          COOK: true
-          STAGE: true
-          PACKAGE: true
-          ARCHIVE: true
-          ARCHIVE_PATH: ${{ secrets.PATH_TO_ARCHIVE_DIR }}
-          NULLRHI: true
-          EDITOR: true
+      - non-unity
+    uses: ./.github/workflows/MakePackagedBuild.yml
+    secrets: inherit
 
   update-ability-records:
     needs: 
-      - build-job
+      - packaged-build
     uses: ./.github/workflows/UpdateAbilityRecords.yml
     secrets: inherit
