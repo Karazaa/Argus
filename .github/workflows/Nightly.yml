@@ -5,9 +5,15 @@ on:
    schedule:
      - cron: "0 6 * * *"
 
-jobs: 
+jobs:
+  update-runner: 
+    uses: ./.github/workflows/UpdateRunner.yml
+    secrets: inherit
+
   compile-all-bp-job:
     runs-on: self-hosted
+    needs:
+      - update-runner 
     steps:
       - name: Compiling All Blueprints
         shell: powershell
@@ -44,3 +50,9 @@ jobs:
           ARCHIVE_PATH: ${{ secrets.PATH_TO_ARCHIVE_DIR }}
           NULLRHI: true
           EDITOR: true
+
+  update-ability-records:
+    needs: 
+      - build-job
+    uses: ./.github/workflows/UpdateAbilityRecords.yml
+    secrets: inherit
