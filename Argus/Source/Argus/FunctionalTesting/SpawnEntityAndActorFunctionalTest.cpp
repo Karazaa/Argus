@@ -3,6 +3,7 @@
 #include "SpawnEntityAndActorFunctionalTest.h"
 #include "ArgusActor.h"
 #include "ArgusEntityTemplate.h"
+#include "ArgusGameInstance.h"
 #include "ArgusStaticData.h"
 #include "EngineUtils.h"
 

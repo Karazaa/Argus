@@ -2,6 +2,7 @@
 
 #include "ArgusGameModeBase.h"
 #include "ArgusEntityTemplate.h"
+#include "ArgusGameInstance.h"
 #include "ArgusGameStateBase.h"
 #include "ArgusIterators.h"
 #include "ArgusPlayerController.h"

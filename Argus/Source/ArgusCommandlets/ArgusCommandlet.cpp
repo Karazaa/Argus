@@ -1,6 +1,7 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusCommandlet.h"
+#include "Engine/DataAsset.h"
 #include "PackageHelperFunctions.h"
 #include "SourceControlHelpers.h"
 
