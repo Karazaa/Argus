@@ -23,6 +23,7 @@ public:
 	static UArgusStaticDatabase* GetInstance();
 	UArgusStaticDatabase();
 	~UArgusStaticDatabase();
+	FPrimaryAssetId GetPrimaryAssetId() const { return FPrimaryAssetId(UArgusStaticDatabase::StaticClass()->GetFName(), GetFName()); }
 
 private:
 	static UArgusStaticDatabase* s_loadedDatabase;
