@@ -3,6 +3,7 @@ name: Update Runner
 on:
   push:
     branches: main
+  workflow_call:
 
 jobs:
   git-checkout-main:

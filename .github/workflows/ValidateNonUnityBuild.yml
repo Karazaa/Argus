@@ -1,0 +1,15 @@
+name: Validate Non-Unity Build
+
+on:
+  workflow_dispatch:
+  workflow_call:
+  
+jobs:
+  non-unity:
+    runs-on: self-hosted
+    steps:
+      - name: Validating Non-Unity Build
+        shell: powershell
+        run: |
+             $command = "& `"${{ secrets.PATH_TO_RUN_UBT }}`" `"${{ secrets.PATH_TO_UPROJECT }}`" Win64 Development ArgusEditor -DisableAdaptiveUnity -DisableUnity -NoPCH -NoSharedPCH"
+             Invoke-Expression $command
