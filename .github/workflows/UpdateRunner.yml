@@ -50,5 +50,5 @@ jobs:
       - name: Build Development Editor
         shell: powershell
         run: |
-             $command = "& ${{ secrets.PATH_TO_RUN_UAT }} compile --project=${{ secrets.PATH_TO_UPROJECT }} --platform=Win64 --configuration=Development_Editor"
+             $command = "& ${{ secrets.PATH_TO_RUN_UAT }} Build --project=${{ secrets.PATH_TO_UPROJECT }} --platform=Win64 --configuration=Development_Editor"
              Invoke-Expression $command
