@@ -52,7 +52,7 @@ jobs:
         with:
           RUNUAT_PATH: ${{ secrets.PATH_TO_RUN_UAT }}
           UPROJECT_PATH: ${{ secrets.PATH_TO_UPROJECT }}
-          BUILD_CONFIG: Development
+          BUILD_CONFIG: Development_Editor
           PLATFORM: Win64
           CLEAN: false
           COOK: false
@@ -60,4 +60,4 @@ jobs:
           PACKAGE: false
           ARCHIVE: false
           NULLRHI: true
-          EDITOR: true
+          EDITOR: false
