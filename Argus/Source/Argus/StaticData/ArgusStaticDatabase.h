@@ -15,7 +15,7 @@
 #include "ArgusStaticDatabase.generated.h"
 
 UCLASS()
-class UArgusStaticDatabase : public UDataAsset
+class UArgusStaticDatabase : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
 
