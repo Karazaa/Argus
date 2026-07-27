@@ -41,3 +41,14 @@ jobs:
         run: |
              $command = "& `"${{ secrets.PATH_TO_GENERATE_PROJ_FILES }}`""
              Invoke-Expression $command
+
+  build-development-editor:
+    runs-on: self-hosted
+    needs:
+      - generate-project-files
+    steps:
+      - name: Build Development Editor
+        shell: powershell
+        run: |
+             $command = "& ${{ secrets.PATH_TO_RUN_UAT }} compile --project=${{ secrets.PATH_TO_UPROJECT }} --platform=Win64 --configuration=Development_Editor"
+             Invoke-Expression $command
