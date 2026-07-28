@@ -19,7 +19,6 @@ class UPlacedArgusActorTeamInfoRecordDatabase;
 class UResourceSetRecord;
 class UResourceSetRecordDatabase;
 class UTeamAlignmentRecord;
-class UTeamAlignmentRecord;
 class UTeamAlignmentRecordDatabase;
 class UTeamColorRecord;
 class UTeamColorRecordDatabase;

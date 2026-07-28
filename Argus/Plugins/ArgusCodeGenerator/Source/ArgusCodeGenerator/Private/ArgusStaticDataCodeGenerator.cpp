@@ -367,6 +367,14 @@ bool ArgusStaticDataCodeGenerator::ParseArgusStaticDatabaseCppTemplate(const Arg
 				writeData.m_lines.push_back(std::vformat("\tResetLoaded{}PointerArray();", std::make_format_args(parsedStaticDataRecords.m_staticDataRecordNames[j])));
 			}
 		}
+		else if (fileContents[i].find("%%%%%") != std::string::npos)
+		{
+			for (int j = 0; j < headerFilePaths.size(); ++j)
+			{
+				std::string includeStatement = std::vformat("#include \"{}.h\"", std::make_format_args(headerFilePaths[j]));
+				writeData.m_lines.push_back(includeStatement);
+			}
+		}
 		else
 		{
 			writeData.m_lines.push_back(fileContents[i]);
