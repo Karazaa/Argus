@@ -191,7 +191,7 @@ bool ArgusCodeGeneratorUtil::ParseComponentDataFromFile(const std::string& fileP
 			continue;
 		}
 
-		if (ParsePropertyMacro(lineText, parsedVariableData))
+		if (ParsePropertyMacro(lineText, parsedVariableData, &componentInfo.back().m_recordDependencies))
 		{
 			didParsePropertyDeclaration = true;
 			continue;
@@ -624,7 +624,7 @@ bool ArgusCodeGeneratorUtil::ParseSystemArgStructDeclarations(std::string lineTe
 	return true;
 }
 
-bool ArgusCodeGeneratorUtil::ParsePropertyMacro(std::string lineText, std::vector < std::vector<ParsedVariableData> >& parsedVariableData)
+bool ArgusCodeGeneratorUtil::ParsePropertyMacro(std::string lineText, std::vector < std::vector<ParsedVariableData> >& parsedVariableData, std::unordered_set<std::string>* recordDependencies)
 {
 	const size_t propertyDelimiterIndex = lineText.find(s_propertyDelimiter);
 	const size_t propertyIgnoreDelimiterIndex = lineText.find(s_propertyIgnoreDelimiter);
@@ -652,6 +652,13 @@ bool ArgusCodeGeneratorUtil::ParsePropertyMacro(std::string lineText, std::vecto
 		const size_t lineSize = lineText.length();
 		const size_t startIndex = lineText.find('(') + 1;
 		variableData.m_staticDataTypeName = lineText.substr(startIndex, (lineSize - 1) - startIndex);
+
+		if (recordDependencies)
+		{
+			std::string cleanTypeName = variableData.m_staticDataTypeName;
+			cleanTypeName = cleanTypeName.substr(1, cleanTypeName.length() - 1);
+			recordDependencies->emplace(cleanTypeName);
+		}
 	}
 
 	parsedVariableData.back().push_back(variableData);

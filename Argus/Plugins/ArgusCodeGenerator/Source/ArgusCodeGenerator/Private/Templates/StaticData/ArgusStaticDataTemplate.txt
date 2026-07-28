@@ -6,6 +6,8 @@
 #include "ArgusLogging.h"
 #include "ArgusStaticDatabase.h"
 
+class UArgusStaticRecord;
+
 class ArgusStaticData
 {
 public:

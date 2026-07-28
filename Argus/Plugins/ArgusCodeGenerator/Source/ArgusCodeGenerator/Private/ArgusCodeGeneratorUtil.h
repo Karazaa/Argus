@@ -54,6 +54,7 @@ public:
 
 	struct PerComponentData
 	{
+		std::unordered_set<std::string> m_recordDependencies;
 		bool m_hasObservables = false;
 		bool m_useSharedFunctions = false;
 	};
@@ -138,7 +139,7 @@ private:
 	static bool ParseStructDeclarations(std::string& lineText);
 	static bool ParseComponentStructDeclarations(std::string lineText, const std::string& componentDataAssetIncludeStatement, ParseComponentDataOutput& output, bool isDynamicallyAllocated);
 	static bool ParseSystemArgStructDeclarations(std::string lineText, const std::string& systemArgIncludeStatement, ParseSystemArgDefinitionsOutput& output);
-	static bool ParsePropertyMacro(std::string lineText, std::vector < std::vector<ParsedVariableData> >& parsedVariableData);
+	static bool ParsePropertyMacro(std::string lineText, std::vector < std::vector<ParsedVariableData> >& parsedVariableData, std::unordered_set<std::string>* recordDependencies = nullptr);
 	static bool ParseVariableDeclarations(std::string lineText, bool withProperty, std::vector < std::vector<ParsedVariableData> >& parsedVariableData, bool& hasObservables);
 	static bool ParseJointPropertyAndDeclarationMacro(std::string lineText, std::vector < std::vector<ParsedVariableData> >& parsedVariableData, bool& hasObservables);
 	static bool ParseRecordClassDeclarations(std::string lineText, ParseStaticDataRecordsOutput& output);
