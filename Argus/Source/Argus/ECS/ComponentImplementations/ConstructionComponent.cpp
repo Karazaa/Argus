@@ -10,9 +10,8 @@
 #if !UE_BUILD_SHIPPING
 #include "ArgusStaticData.h"
 #include "imgui.h"
-#include "UObject/ReflectedTypeAccessors.h"
-
 #include "RecordDefinitions/AbilityRecord.h"
+#include "UObject/ReflectedTypeAccessors.h"
 #endif //!UE_BUILD_SHIPPING
 
 // Component shared functionality

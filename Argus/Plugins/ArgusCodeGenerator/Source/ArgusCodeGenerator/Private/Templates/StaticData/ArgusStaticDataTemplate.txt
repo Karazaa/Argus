@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "ArgusStaticDatabase.h"
 #include "ArgusLogging.h"
+#include "ArgusStaticDatabase.h"
 
 class ArgusStaticData
 {
@@ -35,7 +35,7 @@ public:
 	{
 	}
 
-	static const uint32 AddRecordToDatabase(UArgusStaticRecord* record);
+	static uint32 AddRecordToDatabase(UArgusStaticRecord* record);
 #endif //WITH_EDITOR
 @@@@@
 
