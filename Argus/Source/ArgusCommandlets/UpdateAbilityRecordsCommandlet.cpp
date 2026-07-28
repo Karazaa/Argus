@@ -4,6 +4,7 @@
 #include "ArgusECSCommandletInterface.h"
 #include "ArgusStaticData.h"
 #include "Engine/AssetManager.h"
+#include "RecordDefinitions/AbilityRecord.h"
 
 void UUpdateAbilityRecordsCommandlet::OnStart()
 {

@@ -1,13 +1,15 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "AbilitySystems.h"
+#include "ArgusEntityTemplate.h"
 #include "ArgusIterators.h"
 #include "ArgusLogging.h"
 #include "ArgusStaticData.h"
 #include "ComponentDependencies/SpawnEntityInfo.h"
 #include "DataComponentDefinitions/ResourceComponentData.h"
 #include "DataComponentDefinitions/TransformComponentData.h"
-
+#include "RecordDefinitions/AbilityRecord.h"
+#include "RecordDefinitions/ArgusActorRecord.h"
 #include "Systems/ResourceSystems.h"
 
 void AbilitySystems::RunSystems(float deltaTime)

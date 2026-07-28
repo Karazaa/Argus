@@ -6,11 +6,6 @@
 #include "ArgusStaticDatabase.h"
 #include "ArgusLogging.h"
 
-#if WITH_EDITOR
-#include "Editor.h"
-#include "Subsystems/EditorAssetSubsystem.h"
-#endif //WITH_EDITOR
-
 class ArgusStaticData
 {
 public:
@@ -40,47 +35,12 @@ public:
 	{
 	}
 
-	static const uint32 AddRecordToDatabase(UArgusStaticRecord* record)
-	{
-		if (!GEditor)
-		{
-			return 0u;
-		}
-
-		UEditorAssetSubsystem* editorAssetSubsystem = GEditor->GetEditorSubsystem<UEditorAssetSubsystem>();
-		const FString assetPath = FString(TEXT("/Game/StaticData/ArgusStaticDatabase.ArgusStaticDatabase"));
-		UArgusStaticDatabase* staticDatabase = Cast<UArgusStaticDatabase>(editorAssetSubsystem->LoadAsset(assetPath));
-
-		if (!staticDatabase)
-		{
-			return 0u;
-		}
-		
-		$$$$$
-
-		return 0u;
-	}
+	static const uint32 AddRecordToDatabase(UArgusStaticRecord* record);
 #endif //WITH_EDITOR
 @@@@@
 
 #if WITH_EDITOR
 private:
-	static UArgusStaticDatabase* GetParentDatabase()
-	{
-		// TODO JAMES: Refactor this to use PrimaryDataAsset loading style.
-
-		if (!GEditor)
-		{
-			return nullptr;
-		}
-
-		UEditorAssetSubsystem* editorAssetSubsystem = GEditor->GetEditorSubsystem<UEditorAssetSubsystem>();
-		if (!editorAssetSubsystem)
-		{
-			return nullptr;
-		}
-
-		return Cast<UArgusStaticDatabase>(editorAssetSubsystem->LoadAsset(FString("/Game/StaticData/ArgusStaticDatabase.ArgusStaticDatabase")));
-	}
+	static UArgusStaticDatabase* GetParentDatabase();
 #endif //WITH_EDITOR
 };

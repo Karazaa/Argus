@@ -9,6 +9,7 @@
 #include "DataComponentDefinitions/ResourceComponentData.h"
 #include "DataComponentDefinitions/ResourceExtractionComponentData.h"
 #include "DataComponentDefinitions/TaskComponentData.h"
+#include "RecordDefinitions/ResourceSetRecord.h"
 
 void UArgusEntityTemplate::AsyncLoadComponents(const TFunction<void()> onCompleteCallback) const
 {

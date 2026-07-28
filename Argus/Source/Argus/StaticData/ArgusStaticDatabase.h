@@ -4,15 +4,25 @@
 #pragma once
 
 #include "ArgusLogging.h"
-#include "RecordDatabases/AbilityRecordDatabase.h"
-#include "RecordDatabases/ArgusActorRecordDatabase.h"
-#include "RecordDatabases/FactionRecordDatabase.h"
-#include "RecordDatabases/MaterialRecordDatabase.h"
-#include "RecordDatabases/PlacedArgusActorTeamInfoRecordDatabase.h"
-#include "RecordDatabases/ResourceSetRecordDatabase.h"
-#include "RecordDatabases/TeamAlignmentRecordDatabase.h"
-#include "RecordDatabases/TeamColorRecordDatabase.h"
 #include "ArgusStaticDatabase.generated.h"
+
+class UAbilityRecord;
+class UAbilityRecordDatabase;
+class UArgusActorRecord;
+class UArgusActorRecordDatabase;
+class UFactionRecord;
+class UFactionRecordDatabase;
+class UMaterialRecord;
+class UMaterialRecordDatabase;
+class UPlacedArgusActorTeamInfoRecord;
+class UPlacedArgusActorTeamInfoRecordDatabase;
+class UResourceSetRecord;
+class UResourceSetRecordDatabase;
+class UTeamAlignmentRecord;
+class UTeamAlignmentRecord;
+class UTeamAlignmentRecordDatabase;
+class UTeamColorRecord;
+class UTeamColorRecordDatabase;
 
 UCLASS()
 class UArgusStaticDatabase : public UPrimaryDataAsset

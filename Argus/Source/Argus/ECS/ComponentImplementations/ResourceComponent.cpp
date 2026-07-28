@@ -11,6 +11,8 @@
 #include "ArgusStaticData.h"
 #include "imgui.h"
 #include "UObject/ReflectedTypeAccessors.h"
+
+#include "RecordDefinitions/ResourceSetRecord.h"
 #endif //!UE_BUILD_SHIPPING
 
 // Component shared functionality

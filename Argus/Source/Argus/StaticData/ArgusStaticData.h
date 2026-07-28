@@ -3,13 +3,10 @@
 
 #pragma once
 
-#include "ArgusStaticDatabase.h"
 #include "ArgusLogging.h"
+#include "ArgusStaticDatabase.h"
 
-#if WITH_EDITOR
-#include "Editor.h"
-#include "Subsystems/EditorAssetSubsystem.h"
-#endif //WITH_EDITOR
+class UArgusStaticRecord;
 
 class ArgusStaticData
 {
@@ -40,57 +37,7 @@ public:
 	{
 	}
 
-	static const uint32 AddRecordToDatabase(UArgusStaticRecord* record)
-	{
-		if (!GEditor)
-		{
-			return 0u;
-		}
-
-		UEditorAssetSubsystem* editorAssetSubsystem = GEditor->GetEditorSubsystem<UEditorAssetSubsystem>();
-		const FString assetPath = FString(TEXT("/Game/StaticData/ArgusStaticDatabase.ArgusStaticDatabase"));
-		UArgusStaticDatabase* staticDatabase = Cast<UArgusStaticDatabase>(editorAssetSubsystem->LoadAsset(assetPath));
-
-		if (!staticDatabase)
-		{
-			return 0u;
-		}
-		
-		if (UAbilityRecord* UAbilityRecordInstance = Cast<UAbilityRecord>(record))
-		{
-			return staticDatabase->AddUAbilityRecordToDatabase(UAbilityRecordInstance);
-		}
-		if (UArgusActorRecord* UArgusActorRecordInstance = Cast<UArgusActorRecord>(record))
-		{
-			return staticDatabase->AddUArgusActorRecordToDatabase(UArgusActorRecordInstance);
-		}
-		if (UFactionRecord* UFactionRecordInstance = Cast<UFactionRecord>(record))
-		{
-			return staticDatabase->AddUFactionRecordToDatabase(UFactionRecordInstance);
-		}
-		if (UMaterialRecord* UMaterialRecordInstance = Cast<UMaterialRecord>(record))
-		{
-			return staticDatabase->AddUMaterialRecordToDatabase(UMaterialRecordInstance);
-		}
-		if (UPlacedArgusActorTeamInfoRecord* UPlacedArgusActorTeamInfoRecordInstance = Cast<UPlacedArgusActorTeamInfoRecord>(record))
-		{
-			return staticDatabase->AddUPlacedArgusActorTeamInfoRecordToDatabase(UPlacedArgusActorTeamInfoRecordInstance);
-		}
-		if (UResourceSetRecord* UResourceSetRecordInstance = Cast<UResourceSetRecord>(record))
-		{
-			return staticDatabase->AddUResourceSetRecordToDatabase(UResourceSetRecordInstance);
-		}
-		if (UTeamAlignmentRecord* UTeamAlignmentRecordInstance = Cast<UTeamAlignmentRecord>(record))
-		{
-			return staticDatabase->AddUTeamAlignmentRecordToDatabase(UTeamAlignmentRecordInstance);
-		}
-		if (UTeamColorRecord* UTeamColorRecordInstance = Cast<UTeamColorRecord>(record))
-		{
-			return staticDatabase->AddUTeamColorRecordToDatabase(UTeamColorRecordInstance);
-		}
-
-		return 0u;
-	}
+	static uint32 AddRecordToDatabase(UArgusStaticRecord* record);
 #endif //WITH_EDITOR
 
 #pragma region UAbilityRecord
@@ -383,22 +330,6 @@ public:
 
 #if WITH_EDITOR
 private:
-	static UArgusStaticDatabase* GetParentDatabase()
-	{
-		// TODO JAMES: Refactor this to use PrimaryDataAsset loading style.
-
-		if (!GEditor)
-		{
-			return nullptr;
-		}
-
-		UEditorAssetSubsystem* editorAssetSubsystem = GEditor->GetEditorSubsystem<UEditorAssetSubsystem>();
-		if (!editorAssetSubsystem)
-		{
-			return nullptr;
-		}
-
-		return Cast<UArgusStaticDatabase>(editorAssetSubsystem->LoadAsset(FString("/Game/StaticData/ArgusStaticDatabase.ArgusStaticDatabase")));
-	}
+	static UArgusStaticDatabase* GetParentDatabase();
 #endif //WITH_EDITOR
 };
