@@ -105,15 +105,10 @@ bool ComponentImplementationGenerator::ParseComponentImplementationCppFileTempla
 		{
 			for (int i = 0; i < parsedComponentData.m_componentNames.size(); ++i)
 			{
-				for (int j = 0; j < parsedComponentData.m_componentVariableData[i].size(); ++j)
+				for (const std::string& cleanTypeName : parsedComponentData.m_componentInfo[i].m_recordDependencies)
 				{
-					if (!parsedComponentData.m_componentVariableData[i][j].m_staticDataTypeName.empty())
-					{
-						std::string cleanTypeName = parsedComponentData.m_componentVariableData[i][j].m_staticDataTypeName;
-						cleanTypeName = cleanTypeName.substr(1, cleanTypeName.length() - 1);
-						std::string includeStatement = std::vformat("#include \"RecordDefinitions/{}.h\"", std::make_format_args(cleanTypeName));
-						outParsedFileContents[i].m_lines.push_back(includeStatement);
-					}
+					std::string includeStatement = std::vformat("#include \"RecordDefinitions/{}.h\"", std::make_format_args(cleanTypeName));
+					outParsedFileContents[i].m_lines.push_back(includeStatement);
 				}
 			}
 		}
