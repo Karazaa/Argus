@@ -7,6 +7,7 @@
 #include "Components/DecalComponent.h"
 #include "DataComponentDefinitions/TransformComponentData.h"
 #include "RecordDefinitions/AbilityRecord.h"
+#include "RecordDefinitions/MaterialRecord.h"
 
 AReticleActor::AReticleActor()
 {

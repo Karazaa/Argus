@@ -3,6 +3,7 @@
 #include "ArgusEntity.h"
 #include "ArgusLogging.h"
 #include "ArgusStaticData.h"
+#include "RecordDefinitions/ResourceSetRecord.h"
 #include "Systems/CombatSystems.h"
 #include "Systems/TargetingSystems.h"
 

@@ -1,10 +1,12 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ResourceSystems.h"
+#include "ArgusEntityTemplate.h"
 #include "ArgusIterators.h"
 #include "ArgusLogging.h"
 #include "ArgusStaticData.h"
 #include "DataComponentDefinitions/ResourceComponentData.h"
+#include "RecordDefinitions/ResourceSetRecord.h"
 #include "Systems/TargetingSystems.h"
 
 void ResourceSystems::RunSystems(float deltaTime)
