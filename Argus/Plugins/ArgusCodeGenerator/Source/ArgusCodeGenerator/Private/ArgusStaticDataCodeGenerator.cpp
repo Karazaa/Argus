@@ -316,13 +316,12 @@ bool ArgusStaticDataCodeGenerator::ParseArgusStaticDatabaseHeaderTemplate(const 
 		}
 		else if (fileContents[i].find("$$$$$") != std::string::npos)
 		{
-			for (int j = 0; j < headerFilePaths.size(); ++j)
+			for (int j = 0; j < parsedStaticDataRecords.m_staticDataRecordNames.size(); ++j)
 			{
-				std::string includeStatement = "#include \"";
-				std::string filePath = headerFilePaths[j];
-				filePath.append(".h");
-				includeStatement.append(filePath).append("\"");
-				writeData.m_lines.push_back(includeStatement);
+				std::string forwardDeclareRecord = std::vformat("class {};", std::make_format_args(parsedStaticDataRecords.m_staticDataRecordNames[j]));
+				std::string forwardDeclareDatabase = std::vformat("class {}Database;", std::make_format_args(parsedStaticDataRecords.m_staticDataRecordNames[j]));
+				writeData.m_lines.push_back(forwardDeclareRecord);
+				writeData.m_lines.push_back(forwardDeclareDatabase);
 			}
 		}
 		else
