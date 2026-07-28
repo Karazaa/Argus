@@ -201,6 +201,17 @@ bool ComponentImplementationGenerator::ParseDynamicAllocComponentImplementationC
 				outParsedFileContents[i].m_lines.push_back(std::regex_replace(perComponentLineText, std::regex("#####"), parsedComponentData.m_dynamicAllocComponentNames[i]));
 			}
 		}
+		else if (lineText.find("@@@@@") != std::string::npos)
+		{
+			for (int i = 0; i < parsedComponentData.m_dynamicAllocComponentNames.size(); ++i)
+			{
+				for (const std::string& cleanTypeName : parsedComponentData.m_dynamicAllocComponentInfo[i].m_recordDependencies)
+				{
+					std::string includeStatement = std::vformat("#include \"RecordDefinitions/{}.h\"", std::make_format_args(cleanTypeName));
+					outParsedFileContents[i].m_lines.push_back(includeStatement);
+				}
+			}
+		}
 		else if (lineText.find("%%%%%") != std::string::npos)
 		{
 			for (int i = 0; i < parsedComponentData.m_dynamicAllocComponentNames.size(); ++i)
