@@ -4,8 +4,9 @@
 #pragma once
 
 #include "ArgusLogging.h"
-$$$$$
 #include "ArgusStaticDatabase.generated.h"
+
+$$$$$
 
 UCLASS()
 class UArgusStaticDatabase : public UPrimaryDataAsset
