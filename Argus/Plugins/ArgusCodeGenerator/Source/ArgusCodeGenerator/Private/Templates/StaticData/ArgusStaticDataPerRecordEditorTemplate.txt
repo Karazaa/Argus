@@ -1,4 +1,4 @@
-		if (#####* #####Instance = Cast<#####>(record))
-		{
-			return staticDatabase->Add#####ToDatabase(#####Instance);
-		}
+	if (#####* #####Instance = Cast<#####>(record))
+	{
+		return staticDatabase->Add#####ToDatabase(#####Instance);
+	}
