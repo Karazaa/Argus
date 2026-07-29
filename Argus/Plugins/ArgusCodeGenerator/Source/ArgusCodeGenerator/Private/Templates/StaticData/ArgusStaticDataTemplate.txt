@@ -39,7 +39,7 @@ public:
 
 	static uint32 AddRecordToDatabase(UArgusStaticRecord* record);
 #endif //WITH_EDITOR
-@@@@@
+&&&&&
 
 #if WITH_EDITOR
 private:

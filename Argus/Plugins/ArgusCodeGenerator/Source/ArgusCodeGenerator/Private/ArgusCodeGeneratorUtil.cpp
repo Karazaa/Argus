@@ -552,6 +552,11 @@ void ArgusCodeGeneratorUtil::DeleteObsoleteComponentDependentFiles(const std::ve
 	}
 }
 
+std::string ArgusCodeGeneratorUtil::MakeIncludeStatement(const std::string& headerFilePath)
+{
+	return std::vformat("#include \"{}.h\"", std::make_format_args(headerFilePath));
+}
+
 bool ArgusCodeGeneratorUtil::ParseStructDeclarations(std::string& lineText)
 {
 	const size_t structDelimiterLength = std::strlen(s_structDelimiter);

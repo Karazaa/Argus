@@ -122,6 +122,8 @@ public:
 	
 	static void DeleteObsoleteComponentDependentFiles(const std::vector<std::string>& componentNames, const char* componentDependentFilesDirectory, const char* excludedFile = nullptr);
 
+	static std::string MakeIncludeStatement(const std::string& headerFilePath);
+
 private:
 	static const char* s_componentDefinitionDirectoryName;
 	static const char* s_componentDefinitionDirectorySuffix;
