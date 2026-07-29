@@ -68,8 +68,8 @@ bool ArgusStaticDataCodeGenerator::GenerateStaticDataCode(const ArgusCodeGenerat
 	parseArgusStaticDataTemplateParams.m_perRecordTemplateFilePath = std::string(cStrTemplateDirectory).append(s_argusStaticDataPerRecordTemplateFileName);
 
 	ParseTemplateParams parseArgusStaticDataCppTemplateParams;
-	parseArgusStaticDataTemplateParams.m_templateFilePath = std::string(cStrTemplateDirectory).append(s_argusStaticDataCppTemplateFileName);
-	parseArgusStaticDataTemplateParams.m_perRecordEditorTemplateFilePath = std::string(cStrTemplateDirectory).append(s_argusStaticDataPerRecordEditorTemplateFileName);
+	parseArgusStaticDataCppTemplateParams.m_templateFilePath = std::string(cStrTemplateDirectory).append(s_argusStaticDataCppTemplateFileName);
+	parseArgusStaticDataCppTemplateParams.m_perRecordEditorTemplateFilePath = std::string(cStrTemplateDirectory).append(s_argusStaticDataPerRecordEditorTemplateFileName);
 
 	ParseTemplateParams parseRecordDatabaseHeaderTemplateParams;
 	parseRecordDatabaseHeaderTemplateParams.m_templateFilePath = std::string(cStrTemplateDirectory).append(s_recordDatabaseHeaderTemplateFileName);
