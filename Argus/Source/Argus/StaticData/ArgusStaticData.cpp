@@ -4,9 +4,7 @@
 #include "ArgusStaticData.h"
 
 #if WITH_EDITOR
-#include "Editor.h"
-#include "Subsystems/EditorAssetSubsystem.h"
-
+#include "Engine/AssetManager.h"
 #include "RecordDatabases/AbilityRecordDatabase.h"
 #include "RecordDatabases/ArgusActorRecordDatabase.h"
 #include "RecordDatabases/FactionRecordDatabase.h"
@@ -62,19 +60,19 @@ uint32 ArgusStaticData::AddRecordToDatabase(UArgusStaticRecord* record)
 
 UArgusStaticDatabase* ArgusStaticData::GetParentDatabase()
 {
-	// TODO JAMES: Refactor this to use PrimaryDataAsset loading style.
-
-	if (!GEditor)
+	const FPrimaryAssetType staticDatabaseAssetType = FPrimaryAssetType(UArgusStaticDatabase::StaticClass()->GetFName());
+	TSharedPtr<FStreamableHandle> loadDatabaseHandle = UAssetManager::Get().LoadPrimaryAssetsWithType(staticDatabaseAssetType);
+	if (loadDatabaseHandle.IsValid())
 	{
-		return nullptr;
+		loadDatabaseHandle->WaitUntilComplete();
 	}
 
-	UEditorAssetSubsystem* editorAssetSubsystem = GEditor->GetEditorSubsystem<UEditorAssetSubsystem>();
-	if (!editorAssetSubsystem)
+	TArray<UObject*> loadedDatabases;
+	if (UAssetManager::Get().GetPrimaryAssetObjectList(staticDatabaseAssetType, loadedDatabases))
 	{
-		return nullptr;
+		return Cast<UArgusStaticDatabase>(loadedDatabases[0]);
 	}
 
-	return Cast<UArgusStaticDatabase>(editorAssetSubsystem->LoadAsset(FString("/Game/StaticData/ArgusStaticDatabase.ArgusStaticDatabase")));
+	return nullptr;	
 }
 #endif //WITH_EDITOR

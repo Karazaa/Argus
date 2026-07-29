@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "ArgusLogging.h"
+#include "Engine/DataAsset.h"
 #include "ArgusStaticDatabase.generated.h"
 
 $$$$$
