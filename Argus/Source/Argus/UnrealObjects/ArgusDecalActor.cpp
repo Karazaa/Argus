@@ -3,6 +3,7 @@
 #include "ArgusDecalActor.h"
 #include "ArgusStaticData.h"
 #include "Components/DecalComponent.h"
+#include "RecordDefinitions/MaterialRecord.h"
 
 void AArgusDecalActor::SetEntity(ArgusEntity entity)
 {

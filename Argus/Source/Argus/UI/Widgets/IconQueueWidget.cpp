@@ -7,6 +7,8 @@
 #include "Components/Image.h"
 #include "Components/UniformGridPanel.h"
 #include "Components/UniformGridSlot.h"
+#include "RecordDefinitions/AbilityRecord.h"
+#include "RecordDefinitions/ArgusActorRecord.h"
 #include "Widgets/IconWidget.h"
 
 void UIconQueueWidget::RefreshDisplay(ArgusEntity selectedEntity)

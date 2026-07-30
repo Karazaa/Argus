@@ -5,6 +5,8 @@
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
 #include "ArgusStaticData.h"
+#include "RecordDefinitions/AbilityRecord.h"
+#include "RecordDefinitions/ArgusActorRecord.h"
 #include "Systems/AbilitySystems.h"
 #include "Systems/ResourceSystems.h"
 

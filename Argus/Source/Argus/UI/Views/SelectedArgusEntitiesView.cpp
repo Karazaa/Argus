@@ -6,6 +6,7 @@
 #include "ArgusLogging.h"
 #include "ArgusStaticData.h"
 #include "Components/Button.h"
+#include "RecordDefinitions/AbilityRecord.h"
 #include "Views/MultipleSelectedEntitiesView.h"
 #include "Views/SingleSelectedEntityView.h"
 

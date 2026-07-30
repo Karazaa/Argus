@@ -9,6 +9,8 @@
 #include "Components/WidgetComponent.h"
 #include "DrawDebugHelpers.h"
 #include "Engine/World.h"
+#include "RecordDefinitions/ArgusActorRecord.h"
+#include "RecordDefinitions/PlacedArgusActorTeamInfoRecord.h"
 #include "Systems/FogOfWarSystems.h"
 #include "Views/ArgusActorInfoView.h"
 

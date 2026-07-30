@@ -7,8 +7,9 @@
 #include "ArgusIterators.h"
 #include "ArgusPlayerController.h"
 #include "ArgusStaticData.h"
-#include "Misc/App.h"
 #include "EngineUtils.h"
+#include "Misc/App.h"
+#include "RecordDefinitions/ArgusActorRecord.h"
 
 AArgusGameModeBase::AArgusGameModeBase()
 {

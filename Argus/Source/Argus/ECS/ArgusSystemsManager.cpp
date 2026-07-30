@@ -5,6 +5,7 @@
 #include "ArgusLogging.h"
 #include "ArgusStaticData.h"
 #include "Engine/World.h"
+#include "RecordDefinitions/TeamAlignmentRecord.h"
 #include "Systems/AbilitySystems.h"
 #include "Systems/AvoidanceSystems.h"
 #include "Systems/CombatSystems.h"

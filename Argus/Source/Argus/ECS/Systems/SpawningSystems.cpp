@@ -5,6 +5,7 @@
 #include "ArgusLogging.h"
 #include "ArgusStaticData.h"
 #include "HAL/UnrealMemory.h"
+#include "RecordDefinitions/ArgusActorRecord.h"
 #include "Systems/ConstructionSystems.h"
 #include "Systems/DecalSystems.h"
 #include "Systems/InputInterfaceSystems.h"
