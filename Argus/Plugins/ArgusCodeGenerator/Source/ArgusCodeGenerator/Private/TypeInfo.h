@@ -3,6 +3,8 @@
 #pragma once
 
 #include "ArgusCodeGeneratorUtil.h"
+#include <string>
+#include <vector>
 
 enum UnderlyingType : uint8
 {
@@ -58,6 +60,7 @@ struct TypeInfo
 
 	UnderlyingType GetTemplateParameter(int index) const;
 	bool HasTemplateParameters() const;
+	bool GetRecordDependencies(std::vector<std::string>& outRecordDependencies) const; 
 
 private:
 	UnderlyingType DetermineType(const std::string& typeString, const std::string& macroString, std::string& outCleanTypeName);

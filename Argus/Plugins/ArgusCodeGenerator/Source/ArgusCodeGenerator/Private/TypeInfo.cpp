@@ -73,6 +73,35 @@ bool TypeInfo::HasTemplateParameters() const
 	return !m_templateTypes.empty();
 }
 
+bool TypeInfo::GetRecordDependencies(std::vector<std::string>& outRecordDependencies) const
+{
+	bool foundDependency = false;
+	switch (m_underlyingType)
+	{
+		case UnderlyingType::SpawnEntityInfo:
+			foundDependency = true;
+			outRecordDependencies.push_back("ArgusActorRecord");
+			break;
+		default:
+			break;
+	}
+
+	for (int i = 0; i < m_templateTypes.size(); ++i)
+	{
+		switch (m_templateTypes[i])
+		{
+			case UnderlyingType::SpawnEntityInfo:
+				foundDependency = true;
+				outRecordDependencies.push_back("ArgusActorRecord");
+				break;
+			default:
+				break;
+		}
+	}
+
+	return foundDependency;
+}
+
 UnderlyingType TypeInfo::DetermineType(const std::string& typeString, const std::string& macroString, std::string& outCleanTypeName)
 {
 	if (typeString.at(0) == '\t')

@@ -2,6 +2,7 @@
 
 #include "ArgusCodeGeneratorUtil.h"
 #include "Misc/Paths.h"
+#include "TypeInfo.h"
 #include <fstream>
 #include <regex>
 
@@ -185,7 +186,7 @@ bool ArgusCodeGeneratorUtil::ParseComponentDataFromFile(const std::string& fileP
 			continue;
 		}
 
-		if (ParseVariableDeclarations(lineText, didParsePropertyDeclaration, parsedVariableData, componentInfo.back().m_hasObservables))
+		if (ParseVariableDeclarations(lineText, didParsePropertyDeclaration, parsedVariableData, componentInfo.back().m_hasObservables, &componentInfo.back().m_recordDependencies))
 		{
 			didParsePropertyDeclaration = false;
 			continue;
@@ -671,7 +672,7 @@ bool ArgusCodeGeneratorUtil::ParsePropertyMacro(std::string lineText, std::vecto
 	return true;
 }
 
-bool ArgusCodeGeneratorUtil::ParseVariableDeclarations(std::string lineText, bool withProperty, std::vector < std::vector<ParsedVariableData> >& parsedVariableData, bool& hasObservables)
+bool ArgusCodeGeneratorUtil::ParseVariableDeclarations(std::string lineText, bool withProperty, std::vector < std::vector<ParsedVariableData> >& parsedVariableData, bool& hasObservables, std::unordered_set<std::string>* recordDependencies)
 {
 	const size_t variableDelimiterIndex = lineText.find(s_varDelimiter);
 	if (variableDelimiterIndex == std::string::npos)
@@ -749,6 +750,20 @@ bool ArgusCodeGeneratorUtil::ParseVariableDeclarations(std::string lineText, boo
 
 		parsedVariableData.back().push_back(variableData);
 	}
+
+	if (recordDependencies)
+	{
+		const TypeInfo typeInfo = TypeInfo(variableData);
+		std::vector<std::string> foundDependencies;
+		if (typeInfo.GetRecordDependencies(foundDependencies))
+		{
+			for (int i = 0; i < foundDependencies.size(); ++i)
+			{
+				recordDependencies->emplace(foundDependencies[i]);
+			}
+		}
+	}
+
 	return true;
 }
 
