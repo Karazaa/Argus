@@ -108,5 +108,6 @@ private:
 
 	friend class AArgusGameModeBase;
 	friend class AFogOfWarActor;
+	friend class AArgusDirectionalLight;
 	friend class UArgusUIBlueprintLibrary;
 };
