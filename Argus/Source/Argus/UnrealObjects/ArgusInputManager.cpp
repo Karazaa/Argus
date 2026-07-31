@@ -12,6 +12,7 @@
 #include "ArgusTesting.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedPlayerInput.h"
+#include "RecordDefinitions/AbilityRecord.h"
 #include "Systems/AbilitySystems.h"
 #include "Systems/DecalSystems.h"
 #include "Systems/FogOfWarSystems.h"

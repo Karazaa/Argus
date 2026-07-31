@@ -1,6 +1,7 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "RecordDefinitions/AbilityRecord.h"
+#include "ArgusEntityTemplate.h"
 #include "ArgusStaticData.h"
 #include "Systems/AbilitySystems.h"
 
