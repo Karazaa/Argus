@@ -3,7 +3,9 @@ name: Update Ability Records
 on:
   workflow_dispatch:
   workflow_call:
-  
+
+permissions: {}
+
 jobs:
   run-commandlet:
     runs-on: self-hosted
