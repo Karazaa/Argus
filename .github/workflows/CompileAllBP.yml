@@ -3,7 +3,9 @@ name: Compile All BP
 on:
   workflow_dispatch:
   workflow_call:
-  
+
+permissions: {}
+
 jobs:
   run-commandlet:
     runs-on: self-hosted
