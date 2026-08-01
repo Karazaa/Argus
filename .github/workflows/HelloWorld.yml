@@ -3,6 +3,8 @@ name: Hello World
 on:
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   update-runner: 
     uses: ./.github/workflows/UpdateRunner.yml
