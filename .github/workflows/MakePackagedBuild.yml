@@ -3,6 +3,8 @@ name: Make Packaged Build
 on:
   workflow_dispatch:
   workflow_call:
+
+permissions: {}
   
 jobs:
   packaged-build:
