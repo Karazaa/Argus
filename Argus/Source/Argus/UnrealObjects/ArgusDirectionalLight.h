@@ -13,8 +13,16 @@ class AArgusDirectionalLight : public ADirectionalLight
 {
 	GENERATED_BODY()
 
+public:
+	static AArgusDirectionalLight* Get() { return k_instance; };
+
+	void UpdateVisibility();
+
 protected:
+	static AArgusDirectionalLight* k_instance;
+
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type endPlayReason) override;
 
 	UFUNCTION()
 	void SetDynamicMaterialInstanceInECS();

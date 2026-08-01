@@ -4,6 +4,7 @@
 
 #if !UE_BUILD_SHIPPING
 #include "ArgusCVars.h"
+#include "ArgusDirectionalLight.h"
 #include "ArgusIterators.h"
 #include "ArgusMacros.h"
 #include "ComponentDependencies/ResourceSet.h"
@@ -69,6 +70,10 @@ void ArgusECSDebugger::DrawEntityScrollRegion()
 	DrawResourceRegion();
 	if (ImGui::Checkbox("Draw fog of war", &s_shouldDrawFogOfWar))
 	{
+		if (AArgusDirectionalLight* fogOfWarLight = AArgusDirectionalLight::Get())
+		{
+			fogOfWarLight->UpdateVisibility();
+		}
 		if (AFogOfWarActor* fogOfWarActor = AFogOfWarActor::Get())
 		{
 			fogOfWarActor->UpdateVisibility();
