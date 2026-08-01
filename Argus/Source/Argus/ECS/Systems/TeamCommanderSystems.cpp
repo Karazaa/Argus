@@ -25,7 +25,7 @@ void TeamCommanderSystems::RunSystems(float)
 	}
 #endif
 
-	TeamCommanderSystems_GatherInfo::RunSystems();
+	TeamCommanderSystems_GatherInfo::RunSystems(false);
 	TeamCommanderSystems_UpdatePriorities::RunSystems();
 	TeamCommanderSystems_AssignEntities::RunSystems();
 }
@@ -44,7 +44,9 @@ void TeamCommanderSystems::InitializeRevealedAreas(TeamCommanderComponent* teamC
 
 void TeamCommanderSystems::PerformInitialUpdate()
 {
-	TeamCommanderSystems_GatherInfo::RunSystems();
+	ARGUS_TRACE(TeamCommanderSystems::PerformInitialUpdate);
+
+	TeamCommanderSystems_GatherInfo::RunSystems(true);
 }
 
 int32 TeamCommanderSystems::GetAreaIndexFromWorldSpaceLocation(const TeamCommanderSystemsArgs& components, const TeamCommanderComponent* teamCommanderComponent)

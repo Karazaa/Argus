@@ -8,7 +8,7 @@
 class TeamCommanderSystems_GatherInfo
 {
 public:
-	static void RunSystems();
+	static void RunSystems(bool forceSynchronous = false);
 
 private:
 	static void ClearUpdatesPerCommanderEntity(ArgusEntity teamCommmanderEntity);

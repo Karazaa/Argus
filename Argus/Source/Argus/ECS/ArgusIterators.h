@@ -168,6 +168,21 @@ namespace ArgusIterators
 	}
 
 	template <typename SystemsArgs, typename Function>
+	static void IterateSystemsArgsByTeam(Function&& perSystemsArgsFunction)
+	{
+		for (uint8 i = 0u; i <= NUM_TEAMS; ++i)
+		{
+			const ETeam team = i > 0u ? static_cast<ETeam>(1u << (i - 1u)) : ETeam::None;
+			if (!ArgusEntity::IsTeamRegistered(team))
+			{
+				continue;
+			}
+
+			IterateSystemsArgRangeForTeam<SystemsArgs>(team, ArgusEntity::GetLowestTakenEntityId(), ArgusEntity::GetHighestTakenEntityId(), perSystemsArgsFunction);
+		}
+	}
+
+	template <typename SystemsArgs, typename Function>
 	static void IterateSystemsArgsByTeamParallel(Function&& perSystemsArgsFunction)
 	{
 		TArray<UE::Tasks::FTask, TInlineAllocator<NUM_TEAMS>> teamTasks;
