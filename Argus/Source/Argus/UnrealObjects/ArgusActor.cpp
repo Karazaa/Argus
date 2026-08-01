@@ -150,6 +150,15 @@ void AArgusActor::SetEntity(ArgusEntity entity)
 		OnPopulateTeam(gameMode->GetTeamColor(identityComponent->m_team));
 	}
 
+	if (m_shouldActorSpawnLocationSetEntityLocation)
+	{
+		if (LODComponent* lodComponent = m_entity.GetComponent<LODComponent>())
+		{
+			lodComponent->m_bWasInViewFrustrum = true;
+			lodComponent->m_bIsInViewFrustrum = true;
+		}
+	}
+
 	InitializeWidgets();
 	CallEventsForInitialState();
 }
