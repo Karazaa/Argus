@@ -3,6 +3,8 @@ name: Validate Non-Unity Build
 on:
   workflow_dispatch:
   workflow_call:
+
+permissions: {}
   
 jobs:
   non-unity:
