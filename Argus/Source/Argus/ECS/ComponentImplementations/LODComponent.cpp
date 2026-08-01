@@ -21,8 +21,8 @@ uint16 LODComponent::GetOwningEntityId() const
 
 void LODComponent::Reset()
 {
-	m_bIsInViewFrustrum = true;
-	m_bWasInViewFrustrum = true;
+	m_bIsInViewFrustrum = false;
+	m_bWasInViewFrustrum = false;
 }
 
 void LODComponent::Serialize(FArchive& archive)

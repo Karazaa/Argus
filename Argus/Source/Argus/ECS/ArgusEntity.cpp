@@ -253,7 +253,7 @@ bool ArgusEntity::IsAlive() const
 		return false;
 	}
 
-	return taskComponent->m_baseState == EBaseState::Alive;
+	return taskComponent->m_baseState == EBaseState::Alive || taskComponent->m_baseState == EBaseState::SpawnedWaitingForActorTake;
 }
 
 bool ArgusEntity::IsMoveable() const

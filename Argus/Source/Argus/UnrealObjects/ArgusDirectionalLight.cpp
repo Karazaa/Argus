@@ -23,7 +23,7 @@ void AArgusDirectionalLight::BeginPlay()
 
 	SetDynamicMaterialInstanceInECS();
 
-	UDirectionalLightComponent* directionalLightComponent = GetComponent();
+	ULightComponent* directionalLightComponent = GetLightComponent();
 	ARGUS_RETURN_ON_NULL(directionalLightComponent, ArgusUnrealObjectsLog);
 
 	const SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::GetSingletonEntity().GetComponent<SpatialPartitioningComponent>();
