@@ -295,11 +295,5 @@ void AArgusGameModeBase::OnLoadStart()
 void AArgusGameModeBase::OnLoadComplete()
 {
 	ARGUS_TRACE(AArgusGameModeBase::OnLoadComplete)
-
-	ArgusIterators::IterateEntities([this](ArgusEntity entity)
-	{
-		SpawnActorForEntity(entity);
-	});
-
 	ArgusSystemsManager::InitializePostLoad(GetWorld(), m_singletonEntityTemplate.Get(), m_teamEntityTemplate.Get());
 }
