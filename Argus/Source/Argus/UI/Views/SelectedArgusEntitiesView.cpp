@@ -76,6 +76,7 @@ void USelectedArgusEntitiesView::OnUpdateSelectedArgusActors(ArgusEntity templat
 
 	if (m_templateEntityId != templateEntity.GetId())
 	{
+		RemoveTemplateEntityObserver();
 		if (ObserversComponent* observersComponent = templateEntity.GetComponent<ObserversComponent>())
 		{
 			observersComponent->m_AbilityComponentObservers.AddObserver(this);

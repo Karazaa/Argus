@@ -12,6 +12,7 @@ const char* ArgusCodeGeneratorUtil::s_propertyDelimiter = "ARGUS_COMP_PROPERTY";
 const char* ArgusCodeGeneratorUtil::s_propertyIgnoreDelimiter = "ARGUS_COMP_NO_DATA";
 const char* ArgusCodeGeneratorUtil::s_propertyStaticDataDelimiter = "ARGUS_COMP_STATIC_DATA";
 const char* ArgusCodeGeneratorUtil::s_propertyObservableDelimiter = "ARGUS_OBSERVABLE";
+const char* ArgusCodeGeneratorUtil::s_propertyObservablePropertyDelimiter = "ARGUS_OBSERVABLE_PROPERTY";
 const char* ArgusCodeGeneratorUtil::s_propertyObservableDeclarationDelimiter = "ARGUS_OBSERVABLE_DECLARATION";
 const char* ArgusCodeGeneratorUtil::s_propertyObservablePropertyDeclarationDelimiter = "ARGUS_OBSERVABLE_PROPERTY_DECLARATION";
 const char* ArgusCodeGeneratorUtil::s_propertyGetButSkipDelimiter = "ARGUS_SYSARG_UNCHECKED_GET";
@@ -781,9 +782,8 @@ bool ArgusCodeGeneratorUtil::ParseJointPropertyAndDeclarationMacro(std::string l
 		isDataProperty = true;
 	}
 
-	const size_t observableDeclarationDelimiterLength = std::strlen(isDataProperty ? s_propertyObservablePropertyDeclarationDelimiter : s_propertyObservableDeclarationDelimiter);
 	const size_t startIndex = lineText.find('(') + 1;
-	const size_t endIndex = lineText.find(')');
+	const size_t endIndex = lineText.find_last_of(')');
 	lineText = lineText.substr(startIndex, endIndex - startIndex);
 	
 	const size_t firstCommaIndex = lineText.find_first_of(',');

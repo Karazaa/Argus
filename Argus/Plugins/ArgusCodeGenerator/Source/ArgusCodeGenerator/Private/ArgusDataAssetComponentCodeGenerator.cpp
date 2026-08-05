@@ -126,8 +126,9 @@ bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetHeaderFileTemplateWithR
 						else if (propertyObservableDelimiterIndex != std::string::npos)
 						{
 							const size_t propertyObservablePropertyDeclarationDelimiter = parsedComponentData.m_componentVariableData[i][j].m_propertyMacro.find(ArgusCodeGeneratorUtil::s_propertyObservablePropertyDeclarationDelimiter);
-							
-							if (propertyObservablePropertyDeclarationDelimiter != std::string::npos)
+							const size_t propertyObservablePropertyDelimiter = parsedComponentData.m_componentVariableData[i][j].m_propertyMacro.find(ArgusCodeGeneratorUtil::s_propertyObservablePropertyDelimiter);
+							if (propertyObservablePropertyDeclarationDelimiter != std::string::npos ||
+								propertyObservablePropertyDelimiter != std::string::npos)
 							{
 								outParsedFileContents[i].m_lines.push_back(s_propertyMacro);
 							}

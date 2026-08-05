@@ -23,6 +23,7 @@
 								 ArgusEntity m_entity = ArgusEntity::k_emptyEntity;
 
 #define ARGUS_OBSERVABLE(x, y) void Set_##y(x newValue);
+#define ARGUS_OBSERVABLE_PROPERTY(x, y) void Set_##y(x newValue);
 #define ARGUS_OBSERVABLE_DECLARATION(x, y, z)	x y = z; \
 												void Set_##y(x newValue);
 

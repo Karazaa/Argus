@@ -21,6 +21,7 @@ public:
 	static const char* s_propertyIgnoreDelimiter;
 	static const char* s_propertyStaticDataDelimiter;
 	static const char* s_propertyObservableDelimiter;
+	static const char* s_propertyObservablePropertyDelimiter;
 	static const char* s_propertyObservableDeclarationDelimiter;
 	static const char* s_propertyObservablePropertyDeclarationDelimiter;
 	static const char* s_propertyGetButSkipDelimiter;

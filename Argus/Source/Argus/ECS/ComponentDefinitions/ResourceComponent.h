@@ -23,6 +23,7 @@ struct ResourceComponent
 {
 	ARGUS_COMPONENT_SHARED
 
+	ARGUS_OBSERVABLE_PROPERTY(FResourceSet, m_currentResources)
 	FResourceSet m_currentResources;
 
 	ARGUS_COMP_STATIC_DATA(UResourceSetRecord)

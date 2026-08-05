@@ -10,7 +10,6 @@ void UResourceComponentData::InstantiateComponentForEntity(ArgusEntity entity) c
 	ResourceComponent* ResourceComponentRef = entity.GetOrAddComponent<ResourceComponent>();
 	ARGUS_RETURN_ON_NULL(ResourceComponentRef, ArgusECSLog);
 
-	ResourceComponentRef->m_currentResources = m_currentResources;
 	ResourceComponentRef->m_resourceCapacityRecordId = m_resourceCapacityRecordIdReference.GetId();
 	ResourceComponentRef->m_resourceComponentOwnerType = m_resourceComponentOwnerType;
 	ResourceComponentRef->m_bufferRegionRadius = m_bufferRegionRadius;

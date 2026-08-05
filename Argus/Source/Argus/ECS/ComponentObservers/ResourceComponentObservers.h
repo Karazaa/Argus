@@ -5,11 +5,13 @@
 
 #include "ArgusContainerAllocator.h"
 #include "CoreMinimal.h"
+#include "ComponentDependencies/ResourceSet.h"
 #include "ComponentDependencies/TaskComponentStates.h"
 
 class IResourceComponentObserver
 {
 public:
+	virtual void OnChanged_m_currentResources(FResourceSet oldValue, FResourceSet newValue) = 0;
 };
 
 class ResourceComponentObservers
@@ -50,6 +52,13 @@ public:
 	}
 
 private:
+	void OnChanged_m_currentResources(FResourceSet oldValue, FResourceSet newValue)
+	{
+		for (int32 i = 0; i < m_ResourceComponentObservers.Num(); ++i)
+		{
+			m_ResourceComponentObservers[i]->OnChanged_m_currentResources(oldValue, newValue);
+		}
+	};
 
 	friend struct ResourceComponent;
 };

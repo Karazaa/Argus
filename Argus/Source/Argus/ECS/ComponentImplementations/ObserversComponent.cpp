@@ -23,6 +23,7 @@ void ObserversComponent::Reset()
 {
 	m_AbilityComponentObservers.Reset();
 	m_PassengerComponentObservers.Reset();
+	m_ResourceComponentObservers.Reset();
 	m_TaskComponentObservers.Reset();
 }
 
@@ -45,6 +46,9 @@ void ObserversComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_PassengerComponentObservers");
+		ImGui::TableNextColumn();
+		ImGui::TableNextColumn();
+		ImGui::Text("m_ResourceComponentObservers");
 		ImGui::TableNextColumn();
 		ImGui::TableNextColumn();
 		ImGui::Text("m_TaskComponentObservers");

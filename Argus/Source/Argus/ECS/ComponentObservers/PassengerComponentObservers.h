@@ -5,6 +5,7 @@
 
 #include "ArgusContainerAllocator.h"
 #include "CoreMinimal.h"
+#include "ComponentDependencies/ResourceSet.h"
 #include "ComponentDependencies/TaskComponentStates.h"
 
 class IPassengerComponentObserver

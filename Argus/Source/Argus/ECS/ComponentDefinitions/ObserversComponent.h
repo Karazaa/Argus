@@ -6,6 +6,7 @@
 #include "CoreMinimal.h"
 #include "ComponentObservers/AbilityComponentObservers.h"
 #include "ComponentObservers/PassengerComponentObservers.h"
+#include "ComponentObservers/ResourceComponentObservers.h"
 #include "ComponentObservers/TaskComponentObservers.h"
 
 struct ObserversComponent
@@ -17,6 +18,9 @@ struct ObserversComponent
 
 	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT
 	PassengerComponentObservers m_PassengerComponentObservers;
+
+	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT
+	ResourceComponentObservers m_ResourceComponentObservers;
 
 	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT
 	TaskComponentObservers m_TaskComponentObservers;
