@@ -11,7 +11,7 @@
 class IResourceComponentObserver
 {
 public:
-	virtual void OnChanged_m_currentResources(FResourceSet oldValue, FResourceSet newValue) = 0;
+	virtual void OnChanged_m_currentResources(const FResourceSet& oldValue, const FResourceSet& newValue) = 0;
 };
 
 class ResourceComponentObservers
@@ -52,7 +52,7 @@ public:
 	}
 
 private:
-	void OnChanged_m_currentResources(FResourceSet oldValue, FResourceSet newValue)
+	void OnChanged_m_currentResources(const FResourceSet& oldValue, const FResourceSet& newValue)
 	{
 		for (int32 i = 0; i < m_ResourceComponentObservers.Num(); ++i)
 		{

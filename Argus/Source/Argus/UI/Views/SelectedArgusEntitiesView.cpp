@@ -125,7 +125,7 @@ void USelectedArgusEntitiesView::OnUpdateSelectedArgusActors(ArgusEntity templat
 	}
 }
 
-void USelectedArgusEntitiesView::OnChanged_m_abilityOverrideBitmask(uint8 oldValue, uint8 newValue)
+void USelectedArgusEntitiesView::OnChanged_m_abilityOverrideBitmask(const uint8& oldValue, const uint8& newValue)
 {
 	if (m_templateEntityId == ArgusECSConstants::k_maxEntities)
 	{

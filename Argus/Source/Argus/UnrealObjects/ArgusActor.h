@@ -75,9 +75,9 @@ protected:
 
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type endPlayReason) override;
-	virtual void OnChanged_m_baseState(EBaseState oldValue, EBaseState newValue) override;
-	virtual void OnChanged_m_flightState(EFlightState oldValue, EFlightState newValue) override;
-	virtual void OnChanged_m_carrierEntityId(uint16 oldValue, uint16 newValue) override;
+	virtual void OnChanged_m_baseState(const EBaseState& oldValue, const EBaseState& newValue) override;
+	virtual void OnChanged_m_flightState(const EFlightState& oldValue, const EFlightState& newValue) override;
+	virtual void OnChanged_m_carrierEntityId(const uint16& oldValue, const uint16& newValue) override;
 
 	void InitializeWidgets();
 	void UpdateUIWidgetComponentLocation();

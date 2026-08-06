@@ -49,7 +49,7 @@ void PassengerComponent::DrawComponentDebug() const
 }
 
 // Per observable logic
-void PassengerComponent::Set_m_carrierEntityId(uint16 newValue)
+void PassengerComponent::Set_m_carrierEntityId(const uint16& newValue)
 {
 	uint16 oldValue = m_carrierEntityId;
 	m_carrierEntityId = newValue;

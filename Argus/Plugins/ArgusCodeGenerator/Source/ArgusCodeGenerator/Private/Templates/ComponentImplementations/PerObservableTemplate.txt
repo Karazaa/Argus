@@ -1,4 +1,4 @@
-void #####::Set_#&#&#(&&&&& newValue)
+void #####::Set_#&#&#(const &&&&&& newValue)
 {
 	&&&&& oldValue = #&#&#;
 	#&#&# = newValue;

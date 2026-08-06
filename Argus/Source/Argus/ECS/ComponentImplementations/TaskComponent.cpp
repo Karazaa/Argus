@@ -112,7 +112,7 @@ void TaskComponent::DrawComponentDebug() const
 }
 
 // Per observable logic
-void TaskComponent::Set_m_baseState(EBaseState newValue)
+void TaskComponent::Set_m_baseState(const EBaseState& newValue)
 {
 	EBaseState oldValue = m_baseState;
 	m_baseState = newValue;
@@ -121,7 +121,7 @@ void TaskComponent::Set_m_baseState(EBaseState newValue)
 	ARGUS_RETURN_ON_NULL(observersComponent, ArgusECSLog);
 	observersComponent->m_TaskComponentObservers.OnChanged_m_baseState(oldValue, newValue);
 }
-void TaskComponent::Set_m_flightState(EFlightState newValue)
+void TaskComponent::Set_m_flightState(const EFlightState& newValue)
 {
 	EFlightState oldValue = m_flightState;
 	m_flightState = newValue;

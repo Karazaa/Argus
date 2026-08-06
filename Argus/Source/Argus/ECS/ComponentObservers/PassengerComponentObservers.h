@@ -11,7 +11,7 @@
 class IPassengerComponentObserver
 {
 public:
-	virtual void OnChanged_m_carrierEntityId(uint16 oldValue, uint16 newValue) = 0;
+	virtual void OnChanged_m_carrierEntityId(const uint16& oldValue, const uint16& newValue) = 0;
 };
 
 class PassengerComponentObservers
@@ -52,7 +52,7 @@ public:
 	}
 
 private:
-	void OnChanged_m_carrierEntityId(uint16 oldValue, uint16 newValue)
+	void OnChanged_m_carrierEntityId(const uint16& oldValue, const uint16& newValue)
 	{
 		for (int32 i = 0; i < m_PassengerComponentObservers.Num(); ++i)
 		{

@@ -322,7 +322,7 @@ void AArgusActor::Update(float deltaTime)
 	}
 }
 
-void AArgusActor::OnChanged_m_baseState(EBaseState oldState, EBaseState newState)
+void AArgusActor::OnChanged_m_baseState(const EBaseState& oldState, const EBaseState& newState)
 {
 	if (oldState != EBaseState::Dead && newState == EBaseState::Dead)
 	{
@@ -330,7 +330,7 @@ void AArgusActor::OnChanged_m_baseState(EBaseState oldState, EBaseState newState
 	}
 }
 
-void AArgusActor::OnChanged_m_flightState(EFlightState oldValue, EFlightState newValue)
+void AArgusActor::OnChanged_m_flightState(const EFlightState& oldValue, const EFlightState& newValue)
 {
 	if (oldValue != EFlightState::TakingOff && newValue == EFlightState::TakingOff)
 	{
@@ -342,7 +342,7 @@ void AArgusActor::OnChanged_m_flightState(EFlightState oldValue, EFlightState ne
 	}
 }
 
-void AArgusActor::OnChanged_m_carrierEntityId(uint16 oldValue, uint16 newValue)
+void AArgusActor::OnChanged_m_carrierEntityId(const uint16& oldValue, const uint16& newValue)
 {
 	OnArgusEntityPassengerStateChanged(newValue != ArgusECSConstants::k_maxEntities);
 }

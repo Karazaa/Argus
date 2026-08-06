@@ -175,7 +175,7 @@ void AbilityComponent::DrawComponentDebug() const
 }
 
 // Per observable logic
-void AbilityComponent::Set_m_abilityOverrideBitmask(uint8 newValue)
+void AbilityComponent::Set_m_abilityOverrideBitmask(const uint8& newValue)
 {
 	uint8 oldValue = m_abilityOverrideBitmask;
 	m_abilityOverrideBitmask = newValue;

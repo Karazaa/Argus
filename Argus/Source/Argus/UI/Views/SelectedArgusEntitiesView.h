@@ -26,7 +26,7 @@ public:
 	virtual void NativeConstruct() override;
 	virtual void UpdateDisplay(const UpdateDisplayParameters& updateDisplayParams) override;
 	virtual void OnUpdateSelectedArgusActors(ArgusEntity templateEntity) override;
-	virtual void OnChanged_m_abilityOverrideBitmask(uint8 oldValue, uint8 newValue) override;
+	virtual void OnChanged_m_abilityOverrideBitmask(const uint8& oldValue, const uint8& newValue) override;
 
 protected:
 	UFUNCTION()

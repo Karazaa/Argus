@@ -11,8 +11,8 @@
 class ITaskComponentObserver
 {
 public:
-	virtual void OnChanged_m_baseState(EBaseState oldValue, EBaseState newValue) = 0;
-	virtual void OnChanged_m_flightState(EFlightState oldValue, EFlightState newValue) = 0;
+	virtual void OnChanged_m_baseState(const EBaseState& oldValue, const EBaseState& newValue) = 0;
+	virtual void OnChanged_m_flightState(const EFlightState& oldValue, const EFlightState& newValue) = 0;
 };
 
 class TaskComponentObservers
@@ -53,14 +53,14 @@ public:
 	}
 
 private:
-	void OnChanged_m_baseState(EBaseState oldValue, EBaseState newValue)
+	void OnChanged_m_baseState(const EBaseState& oldValue, const EBaseState& newValue)
 	{
 		for (int32 i = 0; i < m_TaskComponentObservers.Num(); ++i)
 		{
 			m_TaskComponentObservers[i]->OnChanged_m_baseState(oldValue, newValue);
 		}
 	};
-	void OnChanged_m_flightState(EFlightState oldValue, EFlightState newValue)
+	void OnChanged_m_flightState(const EFlightState& oldValue, const EFlightState& newValue)
 	{
 		for (int32 i = 0; i < m_TaskComponentObservers.Num(); ++i)
 		{
