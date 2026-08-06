@@ -637,14 +637,12 @@ bool ArgusCodeGeneratorUtil::ParsePropertyMacro(std::string lineText, std::vecto
 	const size_t propertyIgnoreDelimiterIndex = lineText.find(s_propertyIgnoreDelimiter);
 	const size_t propertyGetButSkipDeclarationDelimiter = lineText.find(s_propertyGetButSkipDelimiter);
 	const size_t propertyStaticDataDelimiterIndex = lineText.find(s_propertyStaticDataDelimiter);
-	const size_t propertyObservableDelimiter = lineText.find(s_propertyObservableDelimiter);
 	const size_t propertyFromSingletonDelimiter = lineText.find(s_propertyFromSingletonDelimiter);
 	const size_t uePropertyDelimiterIndex = lineText.find(s_uePropertyDelimiter);
 	if (propertyDelimiterIndex == std::string::npos && 
 		propertyIgnoreDelimiterIndex == std::string::npos &&
 		propertyGetButSkipDeclarationDelimiter == std::string::npos &&
 		propertyStaticDataDelimiterIndex == std::string::npos &&
-		propertyObservableDelimiter == std::string::npos &&
 		propertyFromSingletonDelimiter == std::string::npos &&
 		uePropertyDelimiterIndex == std::string::npos)
 	{
@@ -653,7 +651,6 @@ bool ArgusCodeGeneratorUtil::ParsePropertyMacro(std::string lineText, std::vecto
 
 	ParsedVariableData variableData;
 	variableData.m_propertyMacro = lineText;
-	variableData.m_isObservable = propertyObservableDelimiter != std::string::npos;
 	if (propertyStaticDataDelimiterIndex != std::string::npos)
 	{
 		const size_t lineSize = lineText.length();
@@ -771,15 +768,35 @@ bool ArgusCodeGeneratorUtil::ParseVariableDeclarations(std::string lineText, boo
 bool ArgusCodeGeneratorUtil::ParseJointPropertyAndDeclarationMacro(std::string lineText, std::vector < std::vector<ParsedVariableData> >& parsedVariableData, bool& hasObservables)
 {
 	bool isDataProperty = false;
+	bool hasDefaultValue = false;
 	size_t propertyObservableDeclarationDelimiter = lineText.find(s_propertyObservableDeclarationDelimiter);
-	if (propertyObservableDeclarationDelimiter == std::string::npos)
+	size_t propertyObservablePropertyDeclarationDelimiter = lineText.find(s_propertyObservablePropertyDeclarationDelimiter);
+	size_t propertyObservableDelimiter = lineText.find(s_propertyObservableDelimiter);
+	size_t propertyObservablePropertyDelimiter = lineText.find(s_propertyObservablePropertyDelimiter);
+
+	if (propertyObservablePropertyDeclarationDelimiter != std::string::npos)
 	{
-		propertyObservableDeclarationDelimiter = lineText.find(s_propertyObservablePropertyDeclarationDelimiter);
-		if (propertyObservableDeclarationDelimiter == std::string::npos)
-		{
-			return false;
-		}
+		hasDefaultValue = true;
 		isDataProperty = true;
+	}
+	if (propertyObservableDeclarationDelimiter != std::string::npos)
+	{
+		hasDefaultValue = true;
+		isDataProperty = false;
+	}
+	else if (propertyObservablePropertyDelimiter != std::string::npos)
+	{
+		hasDefaultValue = false;
+		isDataProperty = true;
+	}
+	else if (propertyObservableDelimiter != std::string::npos)
+	{
+		hasDefaultValue = false;
+		isDataProperty = false;
+	}
+	else
+	{
+		return false;
 	}
 
 	const size_t startIndex = lineText.find('(') + 1;
@@ -788,14 +805,19 @@ bool ArgusCodeGeneratorUtil::ParseJointPropertyAndDeclarationMacro(std::string l
 	
 	const size_t firstCommaIndex = lineText.find_first_of(',');
 	const size_t firstCommaIndexPlus2 = firstCommaIndex + 2;
-	const size_t lastCommaIndex = lineText.find_last_of(',');
+	const size_t lastCommaIndex = lineText.find_last_of(hasDefaultValue ? ',' : ')');
 	const size_t lastCommaIndexPlus2 = lineText.find_last_of(',') + 2;
 
 	ParsedVariableData variableData;
 	variableData.m_typeName = "\t";
 	variableData.m_typeName.append(lineText.substr(0, firstCommaIndex));
 	variableData.m_varName = lineText.substr(firstCommaIndexPlus2, lastCommaIndex - firstCommaIndexPlus2);
-	variableData.m_defaultValue = lineText.substr(lastCommaIndexPlus2, lineText.size() - lastCommaIndexPlus2);
+
+	if (hasDefaultValue)
+	{
+		variableData.m_defaultValue = lineText.substr(lastCommaIndexPlus2, lineText.size() - lastCommaIndexPlus2);
+	}
+
 	variableData.m_propertyMacro = isDataProperty ? s_propertyObservablePropertyDeclarationDelimiter : s_propertyObservableDeclarationDelimiter;
 	variableData.m_isObservable = true;
 	hasObservables = true;
