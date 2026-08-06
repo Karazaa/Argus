@@ -779,7 +779,7 @@ bool ArgusCodeGeneratorUtil::ParseJointPropertyAndDeclarationMacro(std::string l
 		hasDefaultValue = true;
 		isDataProperty = true;
 	}
-	if (propertyObservableDeclarationDelimiter != std::string::npos)
+	else if (propertyObservableDeclarationDelimiter != std::string::npos)
 	{
 		hasDefaultValue = true;
 		isDataProperty = false;
