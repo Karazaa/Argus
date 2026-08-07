@@ -4,9 +4,7 @@
 #pragma once
 
 #include "ArgusContainerAllocator.h"
-#include "CoreMinimal.h"
-#include "ComponentDependencies/ResourceSet.h"
-#include "ComponentDependencies/TaskComponentStates.h"
+#include "ComponentDefinitions/TaskComponent.h"
 
 class ITaskComponentObserver
 {
