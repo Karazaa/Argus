@@ -7,6 +7,7 @@
 class ComponentObserversGenerator
 {
 public:
+	static void GenerateObserversComponentCode(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData);
 	static void GenerateComponentObserversCode(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData);
 
 private:

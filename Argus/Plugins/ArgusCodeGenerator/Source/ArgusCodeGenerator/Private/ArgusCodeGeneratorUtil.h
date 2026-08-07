@@ -104,6 +104,8 @@ public:
 	{
 		std::string m_filename = "";
 		std::vector<std::string> m_lines = std::vector<std::string>();
+
+		bool IsEmpty() const { return m_filename.empty() || m_lines.empty(); }
 	};
 
 	static bool ParseComponentData(ParseComponentDataOutput& output);
