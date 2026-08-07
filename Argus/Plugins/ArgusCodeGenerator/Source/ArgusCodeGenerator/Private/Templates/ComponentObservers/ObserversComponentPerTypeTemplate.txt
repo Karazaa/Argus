@@ -1,0 +1,2 @@
+	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT
+	#####Observers m_#####Observers;
