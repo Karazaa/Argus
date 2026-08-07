@@ -97,7 +97,7 @@ bool ComponentObserversGenerator::ParseObserversComponentHeaderFileTemplateWithR
 	std::string lineText;
 	while (std::getline(inObserversStream, lineText))
 	{
-		if (lineText.find("#####") != std::string::npos)
+		if (lineText.find("$$$$$") != std::string::npos)
 		{
 			for (int i = 0; i < parsedComponentData.m_componentNames.size(); ++i)
 			{
@@ -109,7 +109,7 @@ bool ComponentObserversGenerator::ParseObserversComponentHeaderFileTemplateWithR
 				outParsedFileContents[0].m_lines.push_back(std::vformat("#include \"ComponentObservers/{}Observers.h\"", std::make_format_args(parsedComponentData.m_componentNames[i])));
 			}
 		}
-		else if (lineText.find("#####") != std::string::npos)
+		else if (lineText.find("%%%%%") != std::string::npos)
 		{
 			ArgusCodeGeneratorUtil::DoPerObservableReplacements(parsedComponentData, rawLines, outParsedFileContents);
 		}

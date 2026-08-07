@@ -489,15 +489,25 @@ void ArgusCodeGeneratorUtil::CombineStaticAndDynamicComponentData(const ParseCom
 
 void ArgusCodeGeneratorUtil::DoPerObservableReplacements(const ParseComponentDataOutput& input, const std::vector<std::string>& rawFileContents, std::vector<FileWriteData>& outParsedFileContents)
 {
+	bool perComponentOnly = outParsedFileContents.size() == 1;
+
 	for (int i = 0; i < input.m_componentNames.size(); ++i)
 	{
-		int outIndex = outParsedFileContents.size() == 1 ? 0 : i;
-
 		if (!input.m_componentInfo[i].m_hasObservables)
 		{
 			continue;
 		}
 
+		if (perComponentOnly)
+		{
+			for (int k = 0; k < rawFileContents.size(); ++k)
+			{
+				std::string finalizedText = std::regex_replace(rawFileContents[k], std::regex("#####"), input.m_componentNames[i]);
+				outParsedFileContents[0].m_lines.push_back(finalizedText);
+			}
+			continue;
+		}
+		
 		for (int j = 0; j < input.m_componentVariableData[i].size(); ++j)
 		{
 			if (!input.m_componentVariableData[i][j].m_isObservable)
@@ -511,7 +521,7 @@ void ArgusCodeGeneratorUtil::DoPerObservableReplacements(const ParseComponentDat
 				finalizedText = std::regex_replace(finalizedText, std::regex("#&#&#"), input.m_componentVariableData[i][j].m_varName);
 				finalizedText = std::regex_replace(finalizedText, std::regex("&&&&&"), input.m_componentVariableData[i][j].m_typeName.substr(1));
 
-				outParsedFileContents[outIndex].m_lines.push_back(finalizedText);
+				outParsedFileContents[i].m_lines.push_back(finalizedText);
 			}
 		}
 	}
