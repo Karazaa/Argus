@@ -16,16 +16,26 @@ const char* ComponentObserversGenerator::s_observersComponentTemplateDirectorySu
 const char* ComponentObserversGenerator::s_perObservableTypeTemplateDirectorySuffix = "ObserversComponentPerTypeTemplate.txt";
 const char* ComponentObserversGenerator::s_observersComponentFilename = "/ObserversComponent.h";
 
-void ComponentObserversGenerator::GenerateObserversComponentCode(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData)
+void ComponentObserversGenerator::GenerateObserversComponentCode(ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData)
 {
 	UE_LOG(ArgusCodeGeneratorLog, Display, TEXT("[%s] Starting generation of ObserversComponent.h."), ARGUS_FUNCNAME);
 	bool didSucceed = true;
 
 	UE_LOG(ArgusCodeGeneratorLog, Display, TEXT("[%s] Parsing from template files to generate ObserversComponent.h."), ARGUS_FUNCNAME);
 
+	int observersComponentIndex = INDEX_NONE;
+	for (int i = 0; i < parsedComponentData.m_componentNames.size(); ++i)
+	{
+		if (parsedComponentData.m_componentNames[i].find("ObserversComponent") != std::string::npos)
+		{
+			observersComponentIndex = i;
+			break;
+		}
+	}
+
 	std::vector<ArgusCodeGeneratorUtil::FileWriteData> observersComponentFileData;
 	observersComponentFileData.resize(1);
-	didSucceed &= ParseObserversComponentHeaderFileTemplateWithReplacements(parsedComponentData, observersComponentFileData);
+	didSucceed &= ParseObserversComponentHeaderFileTemplateWithReplacements(parsedComponentData, observersComponentIndex, observersComponentFileData);
 	
 	// Construct a directory path to componentdefinitions location. 
 	const char* cStrComponentDefinitionsDirectory = ARGUS_FSTRING_TO_CHAR(ArgusCodeGeneratorUtil::GetComponentDefinitionsDirectory());
@@ -70,14 +80,17 @@ void ComponentObserversGenerator::GenerateComponentObserversCode(const ArgusCode
 	}
 }
 
-bool ComponentObserversGenerator::ParseObserversComponentHeaderFileTemplateWithReplacements(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents)
+bool ComponentObserversGenerator::ParseObserversComponentHeaderFileTemplateWithReplacements(ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData, int observersComponentIndex, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents)
 {
-	if (outParsedFileContents.empty())
+	if (outParsedFileContents.empty() || observersComponentIndex == INDEX_NONE)
 	{
 		return false;
 	}
 
 	outParsedFileContents[0].m_filename = s_observersComponentFilename;
+	parsedComponentData.m_componentVariableData[observersComponentIndex].clear();
+	parsedComponentData.m_componentInfo[observersComponentIndex].m_hasObservables = false;
+	parsedComponentData.m_componentInfo[observersComponentIndex].m_recordDependencies.clear();
 
 	const char* cStrTemplateDirectory = ARGUS_FSTRING_TO_CHAR(ArgusCodeGeneratorUtil::GetTemplateDirectory(s_componentObserversTemplateDirectorySuffix));
 	std::string observersComponentHeaderTemplateFilename = std::string(cStrTemplateDirectory).append(s_observersComponentTemplateDirectorySuffix);
@@ -112,6 +125,17 @@ bool ComponentObserversGenerator::ParseObserversComponentHeaderFileTemplateWithR
 		else if (lineText.find("%%%%%") != std::string::npos)
 		{
 			ArgusCodeGeneratorUtil::DoPerObservableReplacements(parsedComponentData, rawLines, outParsedFileContents);
+
+			ArgusCodeGeneratorUtil::ParsePropertyMacro(			outParsedFileContents[0].m_lines[outParsedFileContents[0].m_lines.size() - 2], 
+																parsedComponentData.m_componentVariableData,
+																&parsedComponentData.m_componentInfo[observersComponentIndex].m_recordDependencies);
+
+			ArgusCodeGeneratorUtil::ParseVariableDeclarations(	outParsedFileContents[0].m_lines.back(), 
+																true,
+																parsedComponentData.m_componentVariableData,
+																parsedComponentData.m_componentInfo[observersComponentIndex].m_hasObservables, 
+																&parsedComponentData.m_componentInfo[observersComponentIndex].m_recordDependencies);
+			outParsedFileContents[0].m_lines.push_back("");
 		}
 		else
 		{

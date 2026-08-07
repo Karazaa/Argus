@@ -127,6 +127,9 @@ public:
 
 	static std::string MakeIncludeStatement(const std::string& headerFilePath);
 
+	static bool ParsePropertyMacro(std::string lineText, std::vector < std::vector<ParsedVariableData> >& parsedVariableData, std::unordered_set<std::string>* recordDependencies = nullptr);
+	static bool ParseVariableDeclarations(std::string lineText, bool withProperty, std::vector < std::vector<ParsedVariableData> >& parsedVariableData, bool& hasObservables, std::unordered_set<std::string>* recordDependencies = nullptr);
+
 private:
 	static const char* s_componentDefinitionDirectoryName;
 	static const char* s_componentDefinitionDirectorySuffix;
@@ -144,8 +147,6 @@ private:
 	static bool ParseStructDeclarations(std::string& lineText);
 	static bool ParseComponentStructDeclarations(std::string lineText, const std::string& componentDataAssetIncludeStatement, ParseComponentDataOutput& output, bool isDynamicallyAllocated);
 	static bool ParseSystemArgStructDeclarations(std::string lineText, const std::string& systemArgIncludeStatement, ParseSystemArgDefinitionsOutput& output);
-	static bool ParsePropertyMacro(std::string lineText, std::vector < std::vector<ParsedVariableData> >& parsedVariableData, std::unordered_set<std::string>* recordDependencies = nullptr);
-	static bool ParseVariableDeclarations(std::string lineText, bool withProperty, std::vector < std::vector<ParsedVariableData> >& parsedVariableData, bool& hasObservables, std::unordered_set<std::string>* recordDependencies = nullptr);
 	static bool ParseJointPropertyAndDeclarationMacro(std::string lineText, std::vector < std::vector<ParsedVariableData> >& parsedVariableData, bool& hasObservables);
 	static bool ParseRecordClassDeclarations(std::string lineText, ParseStaticDataRecordsOutput& output);
 };

@@ -7,7 +7,7 @@
 class ComponentObserversGenerator
 {
 public:
-	static void GenerateObserversComponentCode(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData);
+	static void GenerateObserversComponentCode(ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData);
 	static void GenerateComponentObserversCode(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData);
 
 private:
@@ -21,6 +21,6 @@ private:
 	static const char* s_perObservableTypeTemplateDirectorySuffix;
 	static const char* s_observersComponentFilename;
 
-	static bool ParseObserversComponentHeaderFileTemplateWithReplacements(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents);
+	static bool ParseObserversComponentHeaderFileTemplateWithReplacements(ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData, int observersComponentIndex, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents);
 	static bool ParseComponentObserversHeaderFileTemplateWithReplacements(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents);
 };

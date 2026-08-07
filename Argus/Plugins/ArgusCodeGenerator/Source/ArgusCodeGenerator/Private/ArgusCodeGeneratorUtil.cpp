@@ -571,78 +571,6 @@ std::string ArgusCodeGeneratorUtil::MakeIncludeStatement(const std::string& head
 	return std::vformat("#include \"{}.h\"", std::make_format_args(headerFilePath));
 }
 
-bool ArgusCodeGeneratorUtil::ParseStructDeclarations(std::string& lineText)
-{
-	const size_t structDelimiterLength = std::strlen(s_structDelimiter);
-	const size_t structDelimiterIndex = lineText.find(s_structDelimiter);
-	if (structDelimiterIndex == std::string::npos)
-	{
-		return false;
-	}
-
-	const size_t postClassStartIndex = structDelimiterIndex + structDelimiterLength;
-
-	const size_t inheritanceDelimiterIndex = lineText.find(':');
-	if (inheritanceDelimiterIndex != std::string::npos)
-	{
-		lineText = lineText.substr(postClassStartIndex, inheritanceDelimiterIndex - postClassStartIndex);
-	}
-	else
-	{
-		const size_t openBracketDelimiterIndex = lineText.find('{');
-		if (openBracketDelimiterIndex != std::string::npos)
-		{
-			lineText = lineText.substr(postClassStartIndex, openBracketDelimiterIndex - postClassStartIndex);
-		}
-		else
-		{
-			lineText = lineText.substr(postClassStartIndex, lineText.length() - 1);
-		}
-	}
-
-	std::erase(lineText, ' ');
-	return true;
-}
-
-bool ArgusCodeGeneratorUtil::ParseComponentStructDeclarations(std::string lineText, const std::string& componentDataAssetIncludeStatement, ParseComponentDataOutput& output, bool isDynamicallyAllocated)
-{
-	if (!ParseStructDeclarations(lineText))
-	{
-		return false;
-	}
-
-	if (isDynamicallyAllocated)
-	{
-		output.m_dynamicAllocComponentNames.push_back(lineText);
-		output.m_dynamicAllocComponentDataAssetIncludeStatements.push_back(componentDataAssetIncludeStatement);
-		output.m_dynamicAllocComponentVariableData.push_back(std::vector<ParsedVariableData>());
-		PerComponentData data;
-		output.m_dynamicAllocComponentInfo.push_back(data);
-	}
-	else
-	{
-		output.m_componentNames.push_back(lineText);
-		output.m_componentDataAssetIncludeStatements.push_back(componentDataAssetIncludeStatement);
-		output.m_componentVariableData.push_back(std::vector<ParsedVariableData>());
-		PerComponentData data;
-		output.m_componentInfo.push_back(data);
-	}
-	return true;
-}
-
-bool ArgusCodeGeneratorUtil::ParseSystemArgStructDeclarations(std::string lineText, const std::string& systemArgIncludeStatement, ParseSystemArgDefinitionsOutput& output)
-{
-	if (!ParseStructDeclarations(lineText))
-	{
-		return false;
-	}
-
-	output.m_systemArgsNames.push_back(lineText);
-	output.m_systemArgsIncludeStatements.push_back(systemArgIncludeStatement);
-	output.m_systemArgsVariableData.push_back(std::vector<ParsedVariableData>());
-	return true;
-}
-
 bool ArgusCodeGeneratorUtil::ParsePropertyMacro(std::string lineText, std::vector < std::vector<ParsedVariableData> >& parsedVariableData, std::unordered_set<std::string>* recordDependencies)
 {
 	const size_t propertyDelimiterIndex = lineText.find(s_propertyDelimiter);
@@ -651,7 +579,7 @@ bool ArgusCodeGeneratorUtil::ParsePropertyMacro(std::string lineText, std::vecto
 	const size_t propertyStaticDataDelimiterIndex = lineText.find(s_propertyStaticDataDelimiter);
 	const size_t propertyFromSingletonDelimiter = lineText.find(s_propertyFromSingletonDelimiter);
 	const size_t uePropertyDelimiterIndex = lineText.find(s_uePropertyDelimiter);
-	if (propertyDelimiterIndex == std::string::npos && 
+	if (propertyDelimiterIndex == std::string::npos &&
 		propertyIgnoreDelimiterIndex == std::string::npos &&
 		propertyGetButSkipDeclarationDelimiter == std::string::npos &&
 		propertyStaticDataDelimiterIndex == std::string::npos &&
@@ -734,7 +662,7 @@ bool ArgusCodeGeneratorUtil::ParseVariableDeclarations(std::string lineText, boo
 
 	if (variableData.m_typeName.starts_with("\tconst"))
 	{
-		variableData.m_typeName.insert(6, 1,' ');
+		variableData.m_typeName.insert(6, 1, ' ');
 	}
 
 	const int componentVariableCount = parsedVariableData.back().size();
@@ -774,6 +702,78 @@ bool ArgusCodeGeneratorUtil::ParseVariableDeclarations(std::string lineText, boo
 		}
 	}
 
+	return true;
+}
+
+bool ArgusCodeGeneratorUtil::ParseStructDeclarations(std::string& lineText)
+{
+	const size_t structDelimiterLength = std::strlen(s_structDelimiter);
+	const size_t structDelimiterIndex = lineText.find(s_structDelimiter);
+	if (structDelimiterIndex == std::string::npos)
+	{
+		return false;
+	}
+
+	const size_t postClassStartIndex = structDelimiterIndex + structDelimiterLength;
+
+	const size_t inheritanceDelimiterIndex = lineText.find(':');
+	if (inheritanceDelimiterIndex != std::string::npos)
+	{
+		lineText = lineText.substr(postClassStartIndex, inheritanceDelimiterIndex - postClassStartIndex);
+	}
+	else
+	{
+		const size_t openBracketDelimiterIndex = lineText.find('{');
+		if (openBracketDelimiterIndex != std::string::npos)
+		{
+			lineText = lineText.substr(postClassStartIndex, openBracketDelimiterIndex - postClassStartIndex);
+		}
+		else
+		{
+			lineText = lineText.substr(postClassStartIndex, lineText.length() - 1);
+		}
+	}
+
+	std::erase(lineText, ' ');
+	return true;
+}
+
+bool ArgusCodeGeneratorUtil::ParseComponentStructDeclarations(std::string lineText, const std::string& componentDataAssetIncludeStatement, ParseComponentDataOutput& output, bool isDynamicallyAllocated)
+{
+	if (!ParseStructDeclarations(lineText))
+	{
+		return false;
+	}
+
+	if (isDynamicallyAllocated)
+	{
+		output.m_dynamicAllocComponentNames.push_back(lineText);
+		output.m_dynamicAllocComponentDataAssetIncludeStatements.push_back(componentDataAssetIncludeStatement);
+		output.m_dynamicAllocComponentVariableData.push_back(std::vector<ParsedVariableData>());
+		PerComponentData data;
+		output.m_dynamicAllocComponentInfo.push_back(data);
+	}
+	else
+	{
+		output.m_componentNames.push_back(lineText);
+		output.m_componentDataAssetIncludeStatements.push_back(componentDataAssetIncludeStatement);
+		output.m_componentVariableData.push_back(std::vector<ParsedVariableData>());
+		PerComponentData data;
+		output.m_componentInfo.push_back(data);
+	}
+	return true;
+}
+
+bool ArgusCodeGeneratorUtil::ParseSystemArgStructDeclarations(std::string lineText, const std::string& systemArgIncludeStatement, ParseSystemArgDefinitionsOutput& output)
+{
+	if (!ParseStructDeclarations(lineText))
+	{
+		return false;
+	}
+
+	output.m_systemArgsNames.push_back(lineText);
+	output.m_systemArgsIncludeStatements.push_back(systemArgIncludeStatement);
+	output.m_systemArgsVariableData.push_back(std::vector<ParsedVariableData>());
 	return true;
 }
 
