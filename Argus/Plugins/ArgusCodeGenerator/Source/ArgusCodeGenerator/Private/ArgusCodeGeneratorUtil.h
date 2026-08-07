@@ -127,8 +127,8 @@ public:
 
 	static std::string MakeIncludeStatement(const std::string& headerFilePath);
 
-	static bool ParsePropertyMacro(std::string lineText, std::vector < std::vector<ParsedVariableData> >& parsedVariableData, std::unordered_set<std::string>* recordDependencies = nullptr);
-	static bool ParseVariableDeclarations(std::string lineText, bool withProperty, std::vector < std::vector<ParsedVariableData> >& parsedVariableData, bool& hasObservables, std::unordered_set<std::string>* recordDependencies = nullptr);
+	static bool ParsePropertyMacro(std::string lineText, std::vector<ParsedVariableData>& parsedVariableData, std::unordered_set<std::string>* recordDependencies = nullptr);
+	static bool ParseVariableDeclarations(std::string lineText, bool withProperty, std::vector<ParsedVariableData>& parsedVariableData, bool& hasObservables, std::unordered_set<std::string>* recordDependencies = nullptr);
 
 private:
 	static const char* s_componentDefinitionDirectoryName;

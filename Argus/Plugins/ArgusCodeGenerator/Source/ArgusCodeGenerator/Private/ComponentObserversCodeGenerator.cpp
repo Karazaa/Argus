@@ -124,18 +124,30 @@ bool ComponentObserversGenerator::ParseObserversComponentHeaderFileTemplateWithR
 		}
 		else if (lineText.find("%%%%%") != std::string::npos)
 		{
-			ArgusCodeGeneratorUtil::DoPerObservableReplacements(parsedComponentData, rawLines, outParsedFileContents);
+			for (int i = 0; i < parsedComponentData.m_componentNames.size(); ++i)
+			{
+				if (!parsedComponentData.m_componentInfo[i].m_hasObservables)
+				{
+					continue;
+				}
 
-			ArgusCodeGeneratorUtil::ParsePropertyMacro(			outParsedFileContents[0].m_lines[outParsedFileContents[0].m_lines.size() - 2], 
-																parsedComponentData.m_componentVariableData,
-																&parsedComponentData.m_componentInfo[observersComponentIndex].m_recordDependencies);
+				for (int j = 0; j < rawLines.size(); ++j)
+				{
+					std::string finalizedText = std::regex_replace(rawLines[j], std::regex("#####"), parsedComponentData.m_componentNames[i]);
+					outParsedFileContents[0].m_lines.push_back(finalizedText);
+				}
 
-			ArgusCodeGeneratorUtil::ParseVariableDeclarations(	outParsedFileContents[0].m_lines.back(), 
-																true,
-																parsedComponentData.m_componentVariableData,
-																parsedComponentData.m_componentInfo[observersComponentIndex].m_hasObservables, 
-																&parsedComponentData.m_componentInfo[observersComponentIndex].m_recordDependencies);
-			outParsedFileContents[0].m_lines.push_back("");
+				ArgusCodeGeneratorUtil::ParsePropertyMacro(			outParsedFileContents[0].m_lines[outParsedFileContents[0].m_lines.size() - 2],
+																	parsedComponentData.m_componentVariableData[observersComponentIndex],
+																	&parsedComponentData.m_componentInfo[observersComponentIndex].m_recordDependencies);
+
+				ArgusCodeGeneratorUtil::ParseVariableDeclarations(	outParsedFileContents[0].m_lines.back(),
+																	true,
+																	parsedComponentData.m_componentVariableData[observersComponentIndex],
+																	parsedComponentData.m_componentInfo[observersComponentIndex].m_hasObservables,
+																	&parsedComponentData.m_componentInfo[observersComponentIndex].m_recordDependencies);
+				outParsedFileContents[0].m_lines.push_back("");
+			}
 		}
 		else
 		{

@@ -4,7 +4,6 @@
 #pragma once
 
 #include "ArgusMacros.h"
-#include "CoreMinimal.h"
 #include "ComponentObservers/AbilityComponentObservers.h"
 #include "ComponentObservers/PassengerComponentObservers.h"
 #include "ComponentObservers/ResourceComponentObservers.h"
@@ -16,10 +15,14 @@ struct ObserversComponent
 
 	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT
 	AbilityComponentObservers m_AbilityComponentObservers;
+
 	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT
 	PassengerComponentObservers m_PassengerComponentObservers;
+
 	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT
 	ResourceComponentObservers m_ResourceComponentObservers;
+
 	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT
 	TaskComponentObservers m_TaskComponentObservers;
+
 };

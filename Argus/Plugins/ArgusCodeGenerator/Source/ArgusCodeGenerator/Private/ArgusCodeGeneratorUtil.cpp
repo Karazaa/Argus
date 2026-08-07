@@ -187,13 +187,13 @@ bool ArgusCodeGeneratorUtil::ParseComponentDataFromFile(const std::string& fileP
 			continue;
 		}
 
-		if (ParseVariableDeclarations(lineText, didParsePropertyDeclaration, parsedVariableData, componentInfo.back().m_hasObservables, &componentInfo.back().m_recordDependencies))
+		if (ParseVariableDeclarations(lineText, didParsePropertyDeclaration, parsedVariableData.back(), componentInfo.back().m_hasObservables, &componentInfo.back().m_recordDependencies))
 		{
 			didParsePropertyDeclaration = false;
 			continue;
 		}
 
-		if (ParsePropertyMacro(lineText, parsedVariableData, &componentInfo.back().m_recordDependencies))
+		if (ParsePropertyMacro(lineText, parsedVariableData.back(), &componentInfo.back().m_recordDependencies))
 		{
 			didParsePropertyDeclaration = true;
 			continue;
@@ -286,13 +286,13 @@ bool ArgusCodeGeneratorUtil::ParseStaticDataDataRecordsFromFile(const std::strin
 			continue;
 		}
 
-		if (ParseVariableDeclarations(lineText, didParsePropertyDeclaration, output.m_staticDataRecordVariableData, hasObservables))
+		if (ParseVariableDeclarations(lineText, didParsePropertyDeclaration, output.m_staticDataRecordVariableData.back(), hasObservables))
 		{
 			didParsePropertyDeclaration = false;
 			continue;
 		}
 
-		if (ParsePropertyMacro(lineText, output.m_staticDataRecordVariableData))
+		if (ParsePropertyMacro(lineText, output.m_staticDataRecordVariableData.back()))
 		{
 			didParsePropertyDeclaration = true;
 			continue;
@@ -351,13 +351,13 @@ bool ArgusCodeGeneratorUtil::ParseSystemArgDefinitionFromFile(const std::string&
 		}
 
 		bool hasObservables = false;
-		if (ParseVariableDeclarations(lineText, didParsePropertyDeclaration, output.m_systemArgsVariableData, hasObservables))
+		if (ParseVariableDeclarations(lineText, didParsePropertyDeclaration, output.m_systemArgsVariableData.back(), hasObservables))
 		{
 			didParsePropertyDeclaration = false;
 			continue;
 		}
 
-		if (ParsePropertyMacro(lineText, output.m_systemArgsVariableData))
+		if (ParsePropertyMacro(lineText, output.m_systemArgsVariableData.back()))
 		{
 			didParsePropertyDeclaration = true;
 			continue;
@@ -489,22 +489,10 @@ void ArgusCodeGeneratorUtil::CombineStaticAndDynamicComponentData(const ParseCom
 
 void ArgusCodeGeneratorUtil::DoPerObservableReplacements(const ParseComponentDataOutput& input, const std::vector<std::string>& rawFileContents, std::vector<FileWriteData>& outParsedFileContents)
 {
-	bool perComponentOnly = outParsedFileContents.size() == 1;
-
 	for (int i = 0; i < input.m_componentNames.size(); ++i)
 	{
 		if (!input.m_componentInfo[i].m_hasObservables)
 		{
-			continue;
-		}
-
-		if (perComponentOnly)
-		{
-			for (int k = 0; k < rawFileContents.size(); ++k)
-			{
-				std::string finalizedText = std::regex_replace(rawFileContents[k], std::regex("#####"), input.m_componentNames[i]);
-				outParsedFileContents[0].m_lines.push_back(finalizedText);
-			}
 			continue;
 		}
 		
@@ -571,7 +559,7 @@ std::string ArgusCodeGeneratorUtil::MakeIncludeStatement(const std::string& head
 	return std::vformat("#include \"{}.h\"", std::make_format_args(headerFilePath));
 }
 
-bool ArgusCodeGeneratorUtil::ParsePropertyMacro(std::string lineText, std::vector < std::vector<ParsedVariableData> >& parsedVariableData, std::unordered_set<std::string>* recordDependencies)
+bool ArgusCodeGeneratorUtil::ParsePropertyMacro(std::string lineText, std::vector<ParsedVariableData>& parsedVariableData, std::unordered_set<std::string>* recordDependencies)
 {
 	const size_t propertyDelimiterIndex = lineText.find(s_propertyDelimiter);
 	const size_t propertyIgnoreDelimiterIndex = lineText.find(s_propertyIgnoreDelimiter);
@@ -605,12 +593,12 @@ bool ArgusCodeGeneratorUtil::ParsePropertyMacro(std::string lineText, std::vecto
 		}
 	}
 
-	parsedVariableData.back().push_back(variableData);
+	parsedVariableData.push_back(variableData);
 
 	return true;
 }
 
-bool ArgusCodeGeneratorUtil::ParseVariableDeclarations(std::string lineText, bool withProperty, std::vector < std::vector<ParsedVariableData> >& parsedVariableData, bool& hasObservables, std::unordered_set<std::string>* recordDependencies)
+bool ArgusCodeGeneratorUtil::ParseVariableDeclarations(std::string lineText, bool withProperty, std::vector<ParsedVariableData>& parsedVariableData, bool& hasObservables, std::unordered_set<std::string>* recordDependencies)
 {
 	const size_t variableDelimiterIndex = lineText.find(s_varDelimiter);
 	if (variableDelimiterIndex == std::string::npos)
@@ -665,28 +653,28 @@ bool ArgusCodeGeneratorUtil::ParseVariableDeclarations(std::string lineText, boo
 		variableData.m_typeName.insert(6, 1, ' ');
 	}
 
-	const int componentVariableCount = parsedVariableData.back().size();
+	const int componentVariableCount = parsedVariableData.size();
 	if (withProperty && componentVariableCount)
 	{
 		const int index = componentVariableCount - 1;
-		parsedVariableData.back()[index].m_typeName = variableData.m_typeName;
-		parsedVariableData.back()[index].m_varName = variableData.m_varName;
-		parsedVariableData.back()[index].m_defaultValue = variableData.m_defaultValue;
-		parsedVariableData.back()[index].m_sizeString = variableData.m_sizeString;
-		hasObservables |= parsedVariableData.back()[index].m_isObservable;
+		parsedVariableData[index].m_typeName = variableData.m_typeName;
+		parsedVariableData[index].m_varName = variableData.m_varName;
+		parsedVariableData[index].m_defaultValue = variableData.m_defaultValue;
+		parsedVariableData[index].m_sizeString = variableData.m_sizeString;
+		hasObservables |= parsedVariableData[index].m_isObservable;
 	}
 	else
 	{
-		for (int i = 0; i < parsedVariableData.back().size(); ++i)
+		for (int i = 0; i < parsedVariableData.size(); ++i)
 		{
-			const size_t variableNameIndex = variableData.m_varName.find(parsedVariableData.back()[i].m_varName);
+			const size_t variableNameIndex = variableData.m_varName.find(parsedVariableData[i].m_varName);
 			if (variableNameIndex != std::string::npos)
 			{
 				return false;
 			}
 		}
 
-		parsedVariableData.back().push_back(variableData);
+		parsedVariableData.push_back(variableData);
 	}
 
 	if (recordDependencies)
