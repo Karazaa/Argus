@@ -17,6 +17,10 @@ private:
 	static const char* s_perObservableOnChangedTemplateFilename;
 	static const char* s_componentObserversHeaderSuffix;
 	static const char* s_componentObserversTemplateDirectorySuffix;
+	static const char* s_observersComponentTemplateDirectorySuffix;
+	static const char* s_perObservableTypeTemplateDirectorySuffix;
+	static const char* s_observersComponentFilename;
 
+	static bool ParseObserversComponentHeaderFileTemplateWithReplacements(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents);
 	static bool ParseComponentObserversHeaderFileTemplateWithReplacements(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents);
 };

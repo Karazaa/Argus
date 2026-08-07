@@ -491,6 +491,8 @@ void ArgusCodeGeneratorUtil::DoPerObservableReplacements(const ParseComponentDat
 {
 	for (int i = 0; i < input.m_componentNames.size(); ++i)
 	{
+		int outIndex = outParsedFileContents.size() == 1 ? 0 : i;
+
 		if (!input.m_componentInfo[i].m_hasObservables)
 		{
 			continue;
@@ -509,7 +511,7 @@ void ArgusCodeGeneratorUtil::DoPerObservableReplacements(const ParseComponentDat
 				finalizedText = std::regex_replace(finalizedText, std::regex("#&#&#"), input.m_componentVariableData[i][j].m_varName);
 				finalizedText = std::regex_replace(finalizedText, std::regex("&&&&&"), input.m_componentVariableData[i][j].m_typeName.substr(1));
 
-				outParsedFileContents[i].m_lines.push_back(finalizedText);
+				outParsedFileContents[outIndex].m_lines.push_back(finalizedText);
 			}
 		}
 	}

@@ -12,6 +12,9 @@ const char* ComponentObserversGenerator::s_perObservableAbstractFuncTemplateFile
 const char* ComponentObserversGenerator::s_perObservableOnChangedTemplateFilename = "PerObservableOnChangedTemplate.txt";
 const char* ComponentObserversGenerator::s_componentObserversHeaderSuffix = "Observers.h";
 const char* ComponentObserversGenerator::s_componentObserversTemplateDirectorySuffix = "ComponentObservers/";
+const char* ComponentObserversGenerator::s_observersComponentTemplateDirectorySuffix = "ObserversComponentTemplate.txt";
+const char* ComponentObserversGenerator::s_perObservableTypeTemplateDirectorySuffix = "ObserversComponentPerTypeTemplate.txt";
+const char* ComponentObserversGenerator::s_observersComponentFilename = "/ObserversComponent.h";
 
 void ComponentObserversGenerator::GenerateObserversComponentCode(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData)
 {
@@ -20,9 +23,18 @@ void ComponentObserversGenerator::GenerateObserversComponentCode(const ArgusCode
 
 	UE_LOG(ArgusCodeGeneratorLog, Display, TEXT("[%s] Parsing from template files to generate ObserversComponent.h."), ARGUS_FUNCNAME);
 
-	ArgusCodeGeneratorUtil::FileWriteData observersComponentFileData;
+	std::vector<ArgusCodeGeneratorUtil::FileWriteData> observersComponentFileData;
+	observersComponentFileData.resize(1);
+	didSucceed &= ParseObserversComponentHeaderFileTemplateWithReplacements(parsedComponentData, observersComponentFileData);
 	
-	// TODO JAMES: Populate rest of function.
+	// Construct a directory path to componentdefinitions location. 
+	const char* cStrComponentDefinitionsDirectory = ARGUS_FSTRING_TO_CHAR(ArgusCodeGeneratorUtil::GetComponentDefinitionsDirectory());
+	didSucceed &= ArgusCodeGeneratorUtil::WriteOutFile(std::string(cStrComponentDefinitionsDirectory).append(observersComponentFileData[0].m_filename), observersComponentFileData[0].m_lines);
+
+	if (didSucceed)
+	{
+		UE_LOG(ArgusCodeGeneratorLog, Display, TEXT("[%s] Successfully wrote out ObserversComponent.h."), ARGUS_FUNCNAME)
+	}
 }
 
 void ComponentObserversGenerator::GenerateComponentObserversCode(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData)
@@ -36,7 +48,7 @@ void ComponentObserversGenerator::GenerateComponentObserversCode(const ArgusCode
 	std::vector<ArgusCodeGeneratorUtil::FileWriteData> outParsedObserversHeaderFileContents = std::vector<ArgusCodeGeneratorUtil::FileWriteData>();
 	didSucceed &= ParseComponentObserversHeaderFileTemplateWithReplacements(parsedComponentData, outParsedObserversHeaderFileContents);
 
-	// Construct a directory path to registry location and to tests location. 
+	// Construct a directory path to observables location.
 	FString componentObserversDirectory = ArgusCodeGeneratorUtil::GetProjectDirectory();
 	componentObserversDirectory.Append(s_componentObserversDirectorySuffix);
 	FPaths::MakeStandardFilename(componentObserversDirectory);
@@ -56,6 +68,58 @@ void ComponentObserversGenerator::GenerateComponentObserversCode(const ArgusCode
 		ArgusCodeGeneratorUtil::DeleteObsoleteComponentDependentFiles(parsedComponentData.m_componentNames, cStrComponentObserversDirectory);
 		UE_LOG(ArgusCodeGeneratorLog, Display, TEXT("[%s] Successfully wrote out Argus ECS component observers code."), ARGUS_FUNCNAME)
 	}
+}
+
+bool ComponentObserversGenerator::ParseObserversComponentHeaderFileTemplateWithReplacements(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents)
+{
+	if (outParsedFileContents.empty())
+	{
+		return false;
+	}
+
+	outParsedFileContents[0].m_filename = s_observersComponentFilename;
+
+	const char* cStrTemplateDirectory = ARGUS_FSTRING_TO_CHAR(ArgusCodeGeneratorUtil::GetTemplateDirectory(s_componentObserversTemplateDirectorySuffix));
+	std::string observersComponentHeaderTemplateFilename = std::string(cStrTemplateDirectory).append(s_observersComponentTemplateDirectorySuffix);
+	std::string perObservableTypeTemplateFilename = std::string(cStrTemplateDirectory).append(s_perObservableTypeTemplateDirectorySuffix);
+
+	std::ifstream inObserversStream = std::ifstream(observersComponentHeaderTemplateFilename);
+	const FString ueObserversFilePath = FString(observersComponentHeaderTemplateFilename.c_str());
+	if (!inObserversStream.is_open())
+	{
+		UE_LOG(ArgusCodeGeneratorLog, Error, TEXT("[%s] Failed to read from template file: %s"), ARGUS_FUNCNAME, *ueObserversFilePath);
+		return false;
+	}
+
+	std::vector<std::string> rawLines = std::vector<std::string>();
+	ArgusCodeGeneratorUtil::GetRawLinesFromFile(perObservableTypeTemplateFilename, rawLines);
+
+	std::string lineText;
+	while (std::getline(inObserversStream, lineText))
+	{
+		if (lineText.find("#####") != std::string::npos)
+		{
+			for (int i = 0; i < parsedComponentData.m_componentNames.size(); ++i)
+			{
+				if (!parsedComponentData.m_componentInfo[i].m_hasObservables)
+				{
+					continue;
+				}
+
+				outParsedFileContents[0].m_lines.push_back(std::vformat("#include \"ComponentObservers/{}Observers.h\"", std::make_format_args(parsedComponentData.m_componentNames[i])));
+			}
+		}
+		else if (lineText.find("#####") != std::string::npos)
+		{
+			ArgusCodeGeneratorUtil::DoPerObservableReplacements(parsedComponentData, rawLines, outParsedFileContents);
+		}
+		else
+		{
+			outParsedFileContents[0].m_lines.push_back(lineText);
+		}
+	}
+
+	return true;
 }
 
 bool ComponentObserversGenerator::ParseComponentObserversHeaderFileTemplateWithReplacements(const ArgusCodeGeneratorUtil::ParseComponentDataOutput& parsedComponentData, std::vector<ArgusCodeGeneratorUtil::FileWriteData>& outParsedFileContents)
