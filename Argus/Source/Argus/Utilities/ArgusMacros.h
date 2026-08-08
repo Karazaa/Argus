@@ -23,16 +23,20 @@
 								 ArgusEntity m_entity = ArgusEntity::k_emptyEntity;
 
 #define ARGUS_OBSERVABLE(x, y)  x y;\
-								void Set_##y(const x& newValue);
+								void Set_##y(const x& newValue);\
+								void Apply_##y##_Change(const x& newValue);
 
 #define ARGUS_OBSERVABLE_PROPERTY(x, y) x y;\
-										void Set_##y(const x& newValue);
+										void Set_##y(const x& newValue);\
+										void Apply_##y##_Change(const x& newValue);
 
 #define ARGUS_OBSERVABLE_DECLARATION(x, y, z)	x y = z;\
-												void Set_##y(const x& newValue);
+												void Set_##y(const x& newValue);\
+												void Apply_##y##_Change(const x& newValue);
 
 #define ARGUS_OBSERVABLE_PROPERTY_DECLARATION(x, y, z)	x y = z;\
-														void Set_##y(const x& newValue);
+														void Set_##y(const x& newValue);\
+														void Apply_##y##_Change(const x& newValue);
 
 #define ARGUS_FSTRING_TO_CHAR(fstring) (ANSICHAR*)StringCast<ANSICHAR, 256>(static_cast<const TCHAR*>(*fstring)).Get();
 

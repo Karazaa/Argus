@@ -13,6 +13,11 @@ enum class EBaseState : uint8
 	Dead,
 	DestroyedWaitingForActorRelease	
 };
+inline EBaseState& operator+=(EBaseState& left, const EBaseState& right)
+{
+	left = static_cast<EBaseState>(static_cast<uint8>(left) + static_cast<uint8>(right));
+	return left;
+}
 
 UENUM()
 enum class EMovementState : uint8
@@ -86,3 +91,8 @@ enum class EFlightState : uint8
 	ProcessLandCommand,
 	Landing
 };
+inline EFlightState& operator+=(EFlightState& left, const EFlightState& right)
+{
+	left = static_cast<EFlightState>(static_cast<uint8>(left) + static_cast<uint8>(right));
+	return left;
+}

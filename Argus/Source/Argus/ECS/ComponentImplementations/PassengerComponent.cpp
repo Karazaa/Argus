@@ -49,10 +49,21 @@ void PassengerComponent::DrawComponentDebug() const
 }
 
 // Per observable logic
+ 
 void PassengerComponent::Set_m_carrierEntityId(const uint16& newValue)
 {
 	uint16 oldValue = m_carrierEntityId;
 	m_carrierEntityId = newValue;
+
+	ObserversComponent* observersComponent = ArgusComponentRegistry::GetComponent<ObserversComponent>(GetOwningEntityId());
+	ARGUS_RETURN_ON_NULL(observersComponent, ArgusECSLog);
+	observersComponent->m_PassengerComponentObservers.OnChanged_m_carrierEntityId(oldValue, newValue);
+}
+
+void PassengerComponent::Apply_m_carrierEntityId_Change(const uint16& newValue)
+{
+	uint16 oldValue = m_carrierEntityId;
+	m_carrierEntityId += newValue;
 
 	ObserversComponent* observersComponent = ArgusComponentRegistry::GetComponent<ObserversComponent>(GetOwningEntityId());
 	ARGUS_RETURN_ON_NULL(observersComponent, ArgusECSLog);

@@ -27,6 +27,7 @@ struct FResourceSet
 
 	FResourceSet operator-() const;
 	FResourceSet operator-(const FResourceSet& right) const;
+	FResourceSet& operator+=(const FResourceSet& right);
 
 	void Reset();
 	bool HasResourceType(EResourceType type) const;

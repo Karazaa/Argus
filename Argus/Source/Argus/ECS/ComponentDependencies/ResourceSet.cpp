@@ -29,6 +29,16 @@ FResourceSet FResourceSet::operator-(const FResourceSet& right) const
 	return outResources;
 }
 
+FResourceSet& FResourceSet::operator+=(const FResourceSet& right)
+{
+	for (uint8 i = 0; i < static_cast<uint8>(EResourceType::Count); ++i)
+	{
+		m_resourceQuantities[i] += right.m_resourceQuantities[i];
+	}
+
+	return *this;
+}
+
 void FResourceSet::Reset()
 {
 	for (uint8 i = 0; i < static_cast<uint8>(EResourceType::Count); ++i)
