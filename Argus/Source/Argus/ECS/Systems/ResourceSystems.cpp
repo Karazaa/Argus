@@ -400,7 +400,7 @@ bool ResourceSystems::ApplyTeamResourceChangeIfAffordable(ArgusEntity entity, co
 		return false;
 	}
 
-	teamResourceComponent->m_currentResources.ApplyResourceChange(resourceChange);
+	teamResourceComponent->Apply_m_currentResources_Change(resourceChange);
 	return true;
 }
 
@@ -417,7 +417,7 @@ bool ResourceSystems::ApplyTeamResourceChangeIfAffordable(ETeam team, const FRes
 		return false;
 	}
 
-	teamResourceComponent->m_currentResources.ApplyResourceChange(resourceChange);
+	teamResourceComponent->Apply_m_currentResources_Change(resourceChange);
 	return true;
 }
 
@@ -466,8 +466,8 @@ void ResourceSystems::TransferResourcesBetweenComponents(ResourceComponent* sour
 	FResourceSet potentialResourceChange = sourceComponent->m_currentResources.CalculateResourceChangeAffordable(-amount);
 	potentialResourceChange = targetComponent->m_currentResources.CalculateResourceChangeAffordable(-potentialResourceChange, resourceCapacityPointer);
 
-	sourceComponent->m_currentResources.ApplyResourceChange(-potentialResourceChange);
-	targetComponent->m_currentResources.ApplyResourceChange(potentialResourceChange);
+	sourceComponent->Apply_m_currentResources_Change(-potentialResourceChange);
+	targetComponent->Apply_m_currentResources_Change(potentialResourceChange);
 }
 
 void ResourceSystems::ClearResourceGatheringForEntity(const ResourceSystemsArgs& components)

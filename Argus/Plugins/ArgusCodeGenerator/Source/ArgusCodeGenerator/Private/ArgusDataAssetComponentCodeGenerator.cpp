@@ -265,7 +265,7 @@ bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetCppFileTemplateWithRepl
 					}
 
 					if (parsedComponentData.m_componentVariableData[i][j].m_propertyMacro.find(ArgusCodeGeneratorUtil::s_propertyObservableDelimiter) != std::string::npos &&
-						parsedComponentData.m_componentVariableData[i][j].m_propertyMacro.find(ArgusCodeGeneratorUtil::s_propertyObservablePropertyDeclarationDelimiter) == std::string::npos)
+						parsedComponentData.m_componentVariableData[i][j].m_propertyMacro.find(ArgusCodeGeneratorUtil::s_propertyObservablePropertyDelimiter) == std::string::npos)
 					{
 						continue;
 					}
