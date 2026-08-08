@@ -3,6 +3,7 @@
 #pragma once
 
 #include "ArgusUIElement.h"
+#include "ComponentObservers/AbilityComponentObservers.h"
 #include "Layout/Margin.h"
 #include "Widgets/ResourceWidget.h"
 #include "TeamResourcesView.generated.h"
@@ -10,13 +11,16 @@
 class UHorizontalBox;
 
 UCLASS()
-class UTeamResourcesView : public UArgusUIElement
+class UTeamResourcesView : public UArgusUIElement, public IResourceComponentObserver
 {
 	GENERATED_BODY()
 
 public:
 	virtual void NativeConstruct() override;
-	virtual void UpdateDisplay(const UpdateDisplayParameters& updateDisplayParams) override;
+	virtual void NativeDestruct() override;
+	virtual void OnChanged_m_currentResources(const FResourceSet& oldValue, const FResourceSet& newValue) override;
+
+	void UpdateResources(const FResourceSet& newValue);
 
 protected:
 	UPROPERTY(EditAnywhere)

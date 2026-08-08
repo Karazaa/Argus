@@ -18,9 +18,7 @@ public:
 	struct UpdateDisplayParameters
 	{
 		const FVector2D m_currentMouseLocation = FVector2D::ZeroVector;
-		const ETeam m_team = ETeam::None;
-
-		UpdateDisplayParameters(const FVector2D& currentMouseLocation, ETeam team) : m_currentMouseLocation(currentMouseLocation), m_team(team) {}
+		UpdateDisplayParameters(const FVector2D& currentMouseLocation) : m_currentMouseLocation(currentMouseLocation) {}
 	};
 
 	virtual void UpdateDisplay(const UpdateDisplayParameters& updateDisplayParams);

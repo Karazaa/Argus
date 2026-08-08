@@ -285,7 +285,7 @@ void AArgusPlayerController::UpdateUIWidgetDisplay(const FVector2D& mouseScreenS
 {
 	ARGUS_TRACE(AArgusPlayerController::UpdateUIWidgetDisplay);
 
-	UArgusUIElement::UpdateDisplayParameters uiParams = UArgusUIElement::UpdateDisplayParameters(mouseScreenSpaceLocation, m_playerTeam);
+	UArgusUIElement::UpdateDisplayParameters uiParams = UArgusUIElement::UpdateDisplayParameters(mouseScreenSpaceLocation);
 
 	if (m_baseCanvasUserWidget)
 	{
@@ -294,9 +294,5 @@ void AArgusPlayerController::UpdateUIWidgetDisplay(const FVector2D& mouseScreenS
 	if (m_selectedArgusEntityUserWidget)
 	{
 		m_selectedArgusEntityUserWidget->UpdateDisplay(uiParams);
-	}
-	if (m_teamResourcesUserWidget)
-	{
-		m_teamResourcesUserWidget->UpdateDisplay(uiParams);
 	}
 }
