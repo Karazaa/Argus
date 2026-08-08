@@ -33,6 +33,7 @@ public:
 	static uint16			GetTeamOffset(ETeam team);
 	static uint16			GetTeamEntityId(ETeam team);
 	static ArgusEntity		GetTeamEntity(ETeam team);
+	static ArgusEntity		GetPlayerTeamEntity();
 	static void				RegisterTeam(ETeam team);
 	static bool				IsTeamRegistered(ETeam team);
 
@@ -71,6 +72,7 @@ public:
 	FVector				GetCurrentTargetLocation() const;
 	float				GetDistanceSquaredToOtherEntity(ArgusEntity otherEntity) const;
 	float				GetDistanceToOtherEntity(ArgusEntity otherEntity) const;
+	ArgusEntity			GetTeamEntity() const;
 
 	const UArgusActorRecord* GetAssociatedActorRecord() const;
 

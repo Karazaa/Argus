@@ -10,9 +10,17 @@
 #include "Views/MultipleSelectedEntitiesView.h"
 #include "Views/SingleSelectedEntityView.h"
 
-USelectedArgusEntitiesView::~USelectedArgusEntitiesView()
+ButtonRecordSet::ButtonRecordSet(const AbilityComponent* abilityComponent)
 {
-	RemoveTemplateEntityObserver();
+	if (!abilityComponent)
+	{
+		return;
+	}
+
+	m_ability0Record = ArgusStaticData::GetRecord<UAbilityRecord>(abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability0));
+	m_ability1Record = ArgusStaticData::GetRecord<UAbilityRecord>(abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability1));
+	m_ability2Record = ArgusStaticData::GetRecord<UAbilityRecord>(abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability2));
+	m_ability3Record = ArgusStaticData::GetRecord<UAbilityRecord>(abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability3));
 }
 
 void USelectedArgusEntitiesView::NativeConstruct()
@@ -33,6 +41,21 @@ void USelectedArgusEntitiesView::NativeConstruct()
 	m_multipleSelectedEntitiesWidget->SetVisibility(ESlateVisibility::Collapsed);
 	m_singleSelectedEntityWidget->SetInputManager(m_inputManager.Get());
 	m_multipleSelectedEntitiesWidget->SetInputManager(m_inputManager.Get());
+
+	ObserversComponent* playerTeamObserversComponent = ArgusEntity::GetPlayerTeamEntity().GetComponent<ObserversComponent>();
+	ARGUS_RETURN_ON_NULL(playerTeamObserversComponent, ArgusUILog);
+
+	playerTeamObserversComponent->m_ResourceComponentObservers.AddObserver(this);
+}
+
+void USelectedArgusEntitiesView::NativeDestruct()
+{
+	RemoveTemplateEntityObserver();
+
+	ObserversComponent* playerTeamObserversComponent = ArgusEntity::GetPlayerTeamEntity().GetComponent<ObserversComponent>();
+	ARGUS_RETURN_ON_NULL(playerTeamObserversComponent, ArgusUILog);
+
+	playerTeamObserversComponent->m_ResourceComponentObservers.RemoveObserver(this);
 }
 
 void USelectedArgusEntitiesView::UpdateDisplay(const UpdateDisplayParameters& updateDisplayParams)
@@ -85,19 +108,7 @@ void USelectedArgusEntitiesView::OnUpdateSelectedArgusActors(ArgusEntity templat
 		m_templateEntityId = templateEntity.GetId();
 	}
 
-	if (const AbilityComponent* abilityComponent = templateEntity.GetComponent<AbilityComponent>())
-	{
-		const UAbilityRecord* ability0Record = abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability0) == 0 ? nullptr : ArgusStaticData::GetRecord<UAbilityRecord>(abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability0));
-		const UAbilityRecord* ability1Record = abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability1) == 0 ? nullptr : ArgusStaticData::GetRecord<UAbilityRecord>(abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability1));
-		const UAbilityRecord* ability2Record = abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability2) == 0 ? nullptr : ArgusStaticData::GetRecord<UAbilityRecord>(abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability2));
-		const UAbilityRecord* ability3Record = abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability3) == 0 ? nullptr : ArgusStaticData::GetRecord<UAbilityRecord>(abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability3));
-
-		UpdateAllAbilityButtonsDisplay(ability0Record, ability1Record, ability2Record, ability3Record);
-	}
-	else
-	{
-		UpdateAllAbilityButtonsDisplay(nullptr, nullptr, nullptr, nullptr);
-	}
+	UpdateAllAbilityButtonsDisplay(ButtonRecordSet(templateEntity.GetComponent<AbilityComponent>()));
 
 	ArgusEntity singletonEntity = ArgusEntity::GetSingletonEntity();
 	if (!singletonEntity)
@@ -135,15 +146,21 @@ void USelectedArgusEntitiesView::OnChanged_m_abilityOverrideBitmask(const uint8&
 	const AbilityComponent* abilityComponent = ArgusEntity::RetrieveEntity(m_templateEntityId).GetComponent<AbilityComponent>();
 	if (!abilityComponent)
 	{
-			return;
+		return;
 	}
 
-	const UAbilityRecord* ability0Record = abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability0) == 0 ? nullptr : ArgusStaticData::GetRecord<UAbilityRecord>(abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability0));
-	const UAbilityRecord* ability1Record = abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability1) == 0 ? nullptr : ArgusStaticData::GetRecord<UAbilityRecord>(abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability1));
-	const UAbilityRecord* ability2Record = abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability2) == 0 ? nullptr : ArgusStaticData::GetRecord<UAbilityRecord>(abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability2));
-	const UAbilityRecord* ability3Record = abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability3) == 0 ? nullptr : ArgusStaticData::GetRecord<UAbilityRecord>(abilityComponent->GetActiveAbilityId(EAbilityIndex::Ability3));
+	UpdateAllAbilityButtonsDisplay(ButtonRecordSet(abilityComponent));
+}
 
-	UpdateAllAbilityButtonsDisplay(ability0Record, ability1Record, ability2Record, ability3Record);
+void USelectedArgusEntitiesView::OnChanged_m_currentResources(const FResourceSet& oldValue, const FResourceSet& newValue)
+{
+	const AbilityComponent* abilityComponent = ArgusEntity::RetrieveEntity(m_templateEntityId).GetComponent<AbilityComponent>();
+	if (!abilityComponent)
+	{
+		return;
+	}
+
+	UpdateAllAbilityButtonsDisplay(ButtonRecordSet(abilityComponent), &newValue);
 }
 
 void USelectedArgusEntitiesView::NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
@@ -162,17 +179,26 @@ void USelectedArgusEntitiesView::NativeOnMouseLeave(const FPointerEvent& InMouse
 	}
 }
 
-void USelectedArgusEntitiesView::UpdateAllAbilityButtonsDisplay(const UAbilityRecord* ability0Record, const UAbilityRecord* ability1Record, const UAbilityRecord* ability2Record, const UAbilityRecord* ability3Record)
+void USelectedArgusEntitiesView::UpdateAllAbilityButtonsDisplay(const ButtonRecordSet& buttonRecordSet, const FResourceSet* teamResourceSet)
 {
-	UpdateAbilityButtonDisplay(m_abilityButton0, ability0Record);
-	UpdateAbilityButtonDisplay(m_abilityButton1, ability1Record);
-	UpdateAbilityButtonDisplay(m_abilityButton2, ability2Record);
-	UpdateAbilityButtonDisplay(m_abilityButton3, ability3Record);
+	if (!teamResourceSet)
+	{
+		const ResourceComponent* resourceComponent = ArgusEntity::GetPlayerTeamEntity().GetComponent<ResourceComponent>();
+		ARGUS_RETURN_ON_NULL(resourceComponent, ArgusUILog);
+
+		teamResourceSet = &resourceComponent->m_currentResources;
+	}
+
+	UpdateAbilityButtonDisplay(m_abilityButton0, buttonRecordSet.m_ability0Record, teamResourceSet);
+	UpdateAbilityButtonDisplay(m_abilityButton1, buttonRecordSet.m_ability1Record, teamResourceSet);
+	UpdateAbilityButtonDisplay(m_abilityButton2, buttonRecordSet.m_ability2Record, teamResourceSet);
+	UpdateAbilityButtonDisplay(m_abilityButton3, buttonRecordSet.m_ability3Record, teamResourceSet);
 }
 
-void USelectedArgusEntitiesView::UpdateAbilityButtonDisplay(UButton* button, const UAbilityRecord* abilityRecord)
+void USelectedArgusEntitiesView::UpdateAbilityButtonDisplay(UButton* button, const UAbilityRecord* abilityRecord, const FResourceSet* teamResourceSet)
 {
 	ARGUS_RETURN_ON_NULL(button, ArgusUILog);
+	ARGUS_RETURN_ON_NULL(teamResourceSet, ArgusUILog);
 
 	if (!abilityRecord)
 	{
@@ -184,16 +210,28 @@ void USelectedArgusEntitiesView::UpdateAbilityButtonDisplay(UButton* button, con
 	m_abilityButtonNormalSlateBrush.SetResourceObject(abilityRecord->m_abilityIcon.LoadAndStorePtr());
 	m_abilityButtonHoveredSlateBrush.SetResourceObject(abilityRecord->m_abilityIcon.LoadAndStorePtr());
 	m_abilityButtonPressedSlateBrush.SetResourceObject(abilityRecord->m_abilityIcon.LoadAndStorePtr());
-	m_abilityButtonStyle.SetNormal(m_abilityButtonNormalSlateBrush);
-	m_abilityButtonStyle.SetHovered(m_abilityButtonHoveredSlateBrush);
-	m_abilityButtonStyle.SetPressed(m_abilityButtonPressedSlateBrush);
+	m_abilityButtonCantAffordSlateBrush.SetResourceObject(abilityRecord->m_abilityIcon.LoadAndStorePtr());
+
+	if (teamResourceSet->CanAffordResourceChange(abilityRecord->m_requiredResourceChangeToCast))
+	{
+		m_abilityButtonStyle.SetNormal(m_abilityButtonNormalSlateBrush);
+		m_abilityButtonStyle.SetHovered(m_abilityButtonHoveredSlateBrush);
+		m_abilityButtonStyle.SetPressed(m_abilityButtonPressedSlateBrush);
+	}
+	else
+	{
+		m_abilityButtonStyle.SetNormal(m_abilityButtonCantAffordSlateBrush);
+		m_abilityButtonStyle.SetHovered(m_abilityButtonCantAffordSlateBrush);
+		m_abilityButtonStyle.SetPressed(m_abilityButtonCantAffordSlateBrush);
+	}
+
 	button->SetStyle(m_abilityButtonStyle);
 }
 
 void USelectedArgusEntitiesView::HideAllElements()
 {
 	RemoveTemplateEntityObserver();
-	UpdateAllAbilityButtonsDisplay(nullptr, nullptr, nullptr, nullptr);
+	UpdateAllAbilityButtonsDisplay(ButtonRecordSet());
 
 	if (m_singleSelectedEntityWidget)
 	{

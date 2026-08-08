@@ -4,6 +4,11 @@ void #####::Set_#&#&#(const &&&&&& newValue)
 	&&&&& oldValue = #&#&#;
 	#&#&# = newValue;
 
+	if (#&#&# == oldValue)
+	{
+		return;
+	}
+
 	ObserversComponent* observersComponent = ArgusComponentRegistry::GetComponent<ObserversComponent>(GetOwningEntityId());
 	ARGUS_RETURN_ON_NULL(observersComponent, ArgusECSLog);
 	observersComponent->m_#####Observers.OnChanged_#&#&#(oldValue, newValue);
@@ -14,7 +19,12 @@ void #####::Apply_#&#&#_Change(const &&&&&& newValue)
 	&&&&& oldValue = #&#&#;
 	#&#&# += newValue;
 
+	if (#&#&# == oldValue)
+	{
+		return;
+	}
+
 	ObserversComponent* observersComponent = ArgusComponentRegistry::GetComponent<ObserversComponent>(GetOwningEntityId());
 	ARGUS_RETURN_ON_NULL(observersComponent, ArgusECSLog);
-	observersComponent->m_#####Observers.OnChanged_#&#&#(oldValue, newValue);
+	observersComponent->m_#####Observers.OnChanged_#&#&#(oldValue, #&#&#);
 }

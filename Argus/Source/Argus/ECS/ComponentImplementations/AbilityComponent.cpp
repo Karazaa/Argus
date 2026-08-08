@@ -181,6 +181,11 @@ void AbilityComponent::Set_m_abilityOverrideBitmask(const uint8& newValue)
 	uint8 oldValue = m_abilityOverrideBitmask;
 	m_abilityOverrideBitmask = newValue;
 
+	if (m_abilityOverrideBitmask == oldValue)
+	{
+		return;
+	}
+
 	ObserversComponent* observersComponent = ArgusComponentRegistry::GetComponent<ObserversComponent>(GetOwningEntityId());
 	ARGUS_RETURN_ON_NULL(observersComponent, ArgusECSLog);
 	observersComponent->m_AbilityComponentObservers.OnChanged_m_abilityOverrideBitmask(oldValue, newValue);
@@ -191,7 +196,12 @@ void AbilityComponent::Apply_m_abilityOverrideBitmask_Change(const uint8& newVal
 	uint8 oldValue = m_abilityOverrideBitmask;
 	m_abilityOverrideBitmask += newValue;
 
+	if (m_abilityOverrideBitmask == oldValue)
+	{
+		return;
+	}
+
 	ObserversComponent* observersComponent = ArgusComponentRegistry::GetComponent<ObserversComponent>(GetOwningEntityId());
 	ARGUS_RETURN_ON_NULL(observersComponent, ArgusECSLog);
-	observersComponent->m_AbilityComponentObservers.OnChanged_m_abilityOverrideBitmask(oldValue, newValue);
+	observersComponent->m_AbilityComponentObservers.OnChanged_m_abilityOverrideBitmask(oldValue, m_abilityOverrideBitmask);
 }

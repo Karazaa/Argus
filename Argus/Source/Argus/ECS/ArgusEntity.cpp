@@ -200,6 +200,14 @@ ArgusEntity ArgusEntity::GetTeamEntity(ETeam team)
 	return RetrieveEntity(GetTeamEntityId(team));
 }
 
+ArgusEntity ArgusEntity::GetPlayerTeamEntity()
+{
+	const InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::GetSingletonEntity().GetComponent<InputInterfaceComponent>();
+	ARGUS_RETURN_ON_NULL_VALUE(inputInterfaceComponent, ArgusECSLog, ArgusEntity::k_emptyEntity);
+
+	return GetTeamEntity(inputInterfaceComponent->m_activePlayerTeam);
+}
+
 void ArgusEntity::RegisterTeam(ETeam team)
 {
 	s_teamsForIteration |= static_cast<uint8>(team);
@@ -558,6 +566,17 @@ float ArgusEntity::GetDistanceSquaredToOtherEntity(ArgusEntity otherEntity) cons
 float ArgusEntity::GetDistanceToOtherEntity(ArgusEntity other) const
 {
 	return FMath::Sqrt(GetDistanceSquaredToOtherEntity(other));
+}
+
+ArgusEntity ArgusEntity::GetTeamEntity() const
+{
+	const IdentityComponent* identityComponent = GetComponent<IdentityComponent>();
+	if (!identityComponent)
+	{
+		return ArgusEntity::k_emptyEntity;
+	}
+
+	return GetTeamEntity(identityComponent->m_team);
 }
 
 const UArgusActorRecord* ArgusEntity::GetAssociatedActorRecord() const

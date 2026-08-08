@@ -86,6 +86,11 @@ void ResourceComponent::Set_m_currentResources(const FResourceSet& newValue)
 	FResourceSet oldValue = m_currentResources;
 	m_currentResources = newValue;
 
+	if (m_currentResources == oldValue)
+	{
+		return;
+	}
+
 	ObserversComponent* observersComponent = ArgusComponentRegistry::GetComponent<ObserversComponent>(GetOwningEntityId());
 	ARGUS_RETURN_ON_NULL(observersComponent, ArgusECSLog);
 	observersComponent->m_ResourceComponentObservers.OnChanged_m_currentResources(oldValue, newValue);
@@ -96,7 +101,12 @@ void ResourceComponent::Apply_m_currentResources_Change(const FResourceSet& newV
 	FResourceSet oldValue = m_currentResources;
 	m_currentResources += newValue;
 
+	if (m_currentResources == oldValue)
+	{
+		return;
+	}
+
 	ObserversComponent* observersComponent = ArgusComponentRegistry::GetComponent<ObserversComponent>(GetOwningEntityId());
 	ARGUS_RETURN_ON_NULL(observersComponent, ArgusECSLog);
-	observersComponent->m_ResourceComponentObservers.OnChanged_m_currentResources(oldValue, newValue);
+	observersComponent->m_ResourceComponentObservers.OnChanged_m_currentResources(oldValue, m_currentResources);
 }

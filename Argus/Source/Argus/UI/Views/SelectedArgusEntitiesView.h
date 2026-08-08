@@ -16,17 +16,29 @@ class UButton;
 class UMultipleSelectedEntitiesView;
 class USingleSelectedEntityView;
 
+struct ButtonRecordSet
+{
+	const UAbilityRecord* m_ability0Record = nullptr;
+	const UAbilityRecord* m_ability1Record = nullptr;
+	const UAbilityRecord* m_ability2Record = nullptr;
+	const UAbilityRecord* m_ability3Record = nullptr;
+
+	ButtonRecordSet() = default;
+	ButtonRecordSet(const AbilityComponent* abilityComponent);
+};
+
 UCLASS()
-class USelectedArgusEntitiesView : public UArgusUIElement, public IAbilityComponentObserver
+class USelectedArgusEntitiesView : public UArgusUIElement, public IAbilityComponentObserver, public IResourceComponentObserver
 {
 	GENERATED_BODY()
 
 public:
-	~USelectedArgusEntitiesView();
 	virtual void NativeConstruct() override;
+	virtual void NativeDestruct() override;
 	virtual void UpdateDisplay(const UpdateDisplayParameters& updateDisplayParams) override;
 	virtual void OnUpdateSelectedArgusActors(ArgusEntity templateEntity) override;
 	virtual void OnChanged_m_abilityOverrideBitmask(const uint8& oldValue, const uint8& newValue) override;
+	virtual void OnChanged_m_currentResources(const FResourceSet& oldValue, const FResourceSet& newValue) override;
 
 protected:
 	UFUNCTION()
@@ -53,6 +65,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	FSlateBrush m_abilityButtonPressedSlateBrush;
 
+	UPROPERTY(EditDefaultsOnly)
+	FSlateBrush m_abilityButtonCantAffordSlateBrush;
+
 	UPROPERTY(BlueprintReadWrite, Transient)
 	TObjectPtr<USingleSelectedEntityView> m_singleSelectedEntityWidget = nullptr;
 
@@ -74,8 +89,8 @@ protected:
 	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
 
-	void UpdateAllAbilityButtonsDisplay(const UAbilityRecord* ability0Record, const UAbilityRecord* ability1Record, const UAbilityRecord* ability2Record, const UAbilityRecord* ability3Record);
-	void UpdateAbilityButtonDisplay(UButton* button, const UAbilityRecord* abilityRecord);
+	void UpdateAllAbilityButtonsDisplay(const ButtonRecordSet& buttonRecordSet, const FResourceSet* teamResourceSet = nullptr);
+	void UpdateAbilityButtonDisplay(UButton* button, const UAbilityRecord* abilityRecord, const FResourceSet* teamResourceSet);
 	void HideAllElements();
 	void RemoveTemplateEntityObserver();
 
