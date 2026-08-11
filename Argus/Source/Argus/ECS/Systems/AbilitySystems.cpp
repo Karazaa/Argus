@@ -126,6 +126,11 @@ void AbilitySystems::CastAbility(const UAbilityRecord* abilityRecord, const Abil
 		{
 			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Successfully casted ability id %d, but could not afford it!"), ARGUS_FUNCNAME, abilityRecord->m_id);
 		}
+
+		if (components.m_reticleComponent->m_wasAbilityCast && !ResourceSystems::CanEntityAffordTeamResourceChange(components.m_entity, abilityRecord->m_requiredResourceChangeToCast))
+		{
+			components.m_reticleComponent->DisableReticle();
+		}
 	}
 }
 
@@ -154,13 +159,20 @@ void AbilitySystems::PrepReticle(const UAbilityRecord* abilityRecord, const Abil
 
 	components.m_reticleComponent->m_abilityRecordId = abilityRecord->m_id;
 
-	for (int32 i = 0; i < abilityRecord->m_abilityEffects.Num(); ++i)
+	if (ResourceSystems::CanEntityAffordTeamResourceChange(components.m_entity, abilityRecord->m_requiredResourceChangeToCast))
 	{
-		if (abilityRecord->m_abilityEffects[i].m_abilityType == EAbilityTypes::Construct)
+		for (int32 i = 0; i < abilityRecord->m_abilityEffects.Num(); ++i)
 		{
-			PrepReticleForConstructAbility(abilityRecord, abilityRecord->m_abilityEffects[i], components);
-			break;
+			if (abilityRecord->m_abilityEffects[i].m_abilityType == EAbilityTypes::Construct)
+			{
+				PrepReticleForConstructAbility(abilityRecord, abilityRecord->m_abilityEffects[i], components);
+				break;
+			}
 		}
+	}
+	else
+	{
+		components.m_reticleComponent->DisableReticle();
 	}
 
 	components.m_taskComponent->m_abilityState = EAbilityState::None;
