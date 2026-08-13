@@ -2,8 +2,9 @@ name: Nightly
 
 on:
    workflow_dispatch:
-   schedule:
-     - cron: "0 6 * * *"
+   ## Temporarily disabling workflow schedule to handle engine upgrade.
+   ##schedule:
+     ##- cron: "0 6 * * *"
 
 permissions: {}
 
