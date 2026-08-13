@@ -61,6 +61,9 @@ private:
 	{
 		FVector2D m_direction = FVector2D::ZeroVector;
 		FVector2D m_point = FVector2D::ZeroVector;
+#if !UE_BUILD_SHIPPING
+		uint16 m_instigatingEntityId = ArgusECSConstants::k_maxEntities;
+#endif // !UE_BUILD_SHIPPING
 	};
 	struct CreateEntityORCALinesParams
 	{

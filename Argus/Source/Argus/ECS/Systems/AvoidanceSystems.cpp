@@ -114,6 +114,7 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 	}
 
 	// Generate ORCA lines for grounded entities.
+	// TODO JAMES: Create a component cached calculatedORCALines array to reduce allocation?
 	TArray<ORCALine> calculatedORCALines;
 	if (params.m_hasObstacles)
 	{
@@ -459,6 +460,11 @@ void AvoidanceSystems::CreateEntityORCALines(const CreateEntityORCALinesParams& 
 		}
 		
 		calculatedORCALine.m_point = params.m_sourceEntityVelocity + (velocityToBoundaryOfVO * effortCoefficient);
+
+#if !UE_BUILD_SHIPPING
+		calculatedORCALine.m_instigatingEntityId = foundEntity.GetId();
+#endif //!UE_BUILD_SHIPPING
+
 		outORCALines.Add(calculatedORCALine);
 	}
 }
@@ -1067,6 +1073,11 @@ void AvoidanceSystems::DrawORCADebugLines(UWorld* worldPointer, const CreateEnti
 		DrawDebugLine(worldPointer, worldspacePoint, worldspacePoint + (worldspaceDirection * 100.0f), FColor::Red, false, -1.0f, 0u, ArgusECSConstants::k_debugDrawLineWidth);
 		DrawDebugLine(worldPointer, worldspacePoint, worldspacePoint + (worldspaceDirection * -100.0f), FColor::Green, false, -1.0f, 0u, ArgusECSConstants::k_debugDrawLineWidth);
 		DrawDebugLine(worldPointer, worldspacePoint - worldspaceOrthogonalDirectionScaled, worldspacePoint + worldspaceOrthogonalDirectionScaled, debugColor, false, -1.0f, 0u, ArgusECSConstants::k_debugDrawLineWidth);
+	
+		if (orcaLines[i].m_instigatingEntityId != ArgusECSConstants::k_maxEntities)
+		{
+			DrawDebugString(worldPointer, worldspacePoint, FString::Printf(TEXT("%d"), orcaLines[i].m_instigatingEntityId), nullptr, debugColor, 0.0f, true, 1.0f);
+		}
 	}
 }
 #endif //!UE_BUILD_SHIPPING
