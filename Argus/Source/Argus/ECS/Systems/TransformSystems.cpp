@@ -514,6 +514,12 @@ bool TransformSystems::UpdateGroupIndex(const TransformSystemsArgs& components, 
 		return false;
 	}
 
+	// If we are the solo entity in the group, we should reset the group last index to be based on individual index.
+	if (groupingComponent->m_entityIdsInGroup.Num() == 1)
+	{
+		components.m_navigationComponent->m_groupLastPointIndex = components.m_navigationComponent->m_lastPointIndex;
+	}
+
 	const int32 numNavigationPoints = components.m_navigationComponent->m_navigationPoints.Num();
 	const int32 lastPointIndex = components.m_navigationComponent->m_groupLastPointIndex;
 	if (numNavigationPoints == 0 || lastPointIndex >= numNavigationPoints - 1)

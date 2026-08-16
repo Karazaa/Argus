@@ -128,7 +128,7 @@ void AvoidanceSystems::ProcessORCAvoidance(UWorld* worldPointer, float deltaTime
 	int32 failureLine = -1;
 	FVector2D resultingVelocity = FVector2D::ZeroVector;
 	const float desiredSpeed = TransformSystems::GetDesiredSpeed(components.m_taskComponent, components.m_velocityComponent);
-	if (!TwoDimensionalLinearProgram(calculatedORCALines, desiredSpeed, desiredVelocity, true, resultingVelocity, failureLine))
+	if (!TwoDimensionalLinearProgram(calculatedORCALines, desiredSpeed, desiredVelocity, false, resultingVelocity, failureLine))
 	{
 		ThreeDimensionalLinearProgram(calculatedORCALines, desiredSpeed, failureLine, numStaticObstacles, resultingVelocity);
 	}
