@@ -142,7 +142,7 @@ bool ComponentImplementationGenerator::ParseComponentImplementationCppFileTempla
 					}
 					else if (rawLines[j].find("&&&&&") != std::string::npos)
 					{
-						GeneratePerVariableSerializeText(parsedComponentData.m_componentVariableData[i], outParsedFileContents[i].m_lines);
+						GeneratePerVariableSerializeText(parsedComponentData.m_componentVariableData[i], parsedComponentData.m_componentNames[i], outParsedFileContents[i].m_lines);
 					}
 					else
 					{
@@ -234,7 +234,7 @@ bool ComponentImplementationGenerator::ParseDynamicAllocComponentImplementationC
 		{
 			for (int i = 0; i < parsedComponentData.m_dynamicAllocComponentNames.size(); ++i)
 			{
-				GeneratePerVariableSerializeText(parsedComponentData.m_dynamicAllocComponentVariableData[i], outParsedFileContents[i].m_lines);
+				GeneratePerVariableSerializeText(parsedComponentData.m_dynamicAllocComponentVariableData[i], parsedComponentData.m_dynamicAllocComponentNames[i], outParsedFileContents[i].m_lines);
 			}
 		}
 		else
@@ -308,7 +308,7 @@ void ComponentImplementationGenerator::GeneratePerVariableResetText(const std::v
 	}
 }
 
-void ComponentImplementationGenerator::GeneratePerVariableSerializeText(const std::vector<ArgusCodeGeneratorUtil::ParsedVariableData>& parsedVariableData, std::vector<std::string>& outParsedVariableContents)
+void ComponentImplementationGenerator::GeneratePerVariableSerializeText(const std::vector<ArgusCodeGeneratorUtil::ParsedVariableData>& parsedVariableData, const std::string& componentName, std::vector<std::string>& outParsedVariableContents)
 {
 	for (int i = 0; i < parsedVariableData.size(); ++i)
 	{
@@ -321,6 +321,11 @@ void ComponentImplementationGenerator::GeneratePerVariableSerializeText(const st
 
 		if (typeInfo.m_containerType == NoContainer)
 		{
+			if (typeInfo.m_isObservable)
+			{
+				outParsedVariableContents.push_back(std::vformat("\t{} Old_{} = {};", std::make_format_args(typeInfo.m_cleanTypeName, typeInfo.m_cleanVariableName, typeInfo.m_cleanVariableName)));
+			}
+
 			switch (typeInfo.m_underlyingType)
 			{
 				case UnderlyingType::Bool:
@@ -340,6 +345,19 @@ void ComponentImplementationGenerator::GeneratePerVariableSerializeText(const st
 					break;
 				default:
 					break;
+			}
+
+			if (typeInfo.m_isObservable)
+			{
+				outParsedVariableContents.push_back(std::vformat("\tif (Old_{} != {})", std::make_format_args(typeInfo.m_cleanVariableName, typeInfo.m_cleanVariableName)));
+				outParsedVariableContents.push_back("\t{");
+				outParsedVariableContents.push_back("\t\tObserversComponent* observersComponent = ArgusComponentRegistry::GetComponent<ObserversComponent>(GetOwningEntityId());");
+				outParsedVariableContents.push_back("\t\tARGUS_RETURN_ON_NULL(observersComponent, ArgusECSLog);");
+				outParsedVariableContents.push_back(std::vformat("\t\tobserversComponent->m_{}Observers.OnChanged_{}(Old_{}, {});", std::make_format_args(componentName,
+																																	typeInfo.m_cleanVariableName, 
+																																	typeInfo.m_cleanVariableName, 
+																																	typeInfo.m_cleanVariableName)));
+				outParsedVariableContents.push_back("\t}");
 			}
 
 			continue;

@@ -56,6 +56,8 @@ TypeInfo::TypeInfo(const ArgusCodeGeneratorUtil::ParsedVariableData& variableDat
 		m_containerType = ContainerType::Set;
 		ExtractTemplateParameters(variableData.m_typeName, m_templateTypes);
 	}
+
+	m_isObservable = (variableData.m_propertyMacro.find(ArgusCodeGeneratorUtil::s_propertyObservableDelimiter) != std::string::npos);
 }
 
 UnderlyingType TypeInfo::GetTemplateParameter(int index) const

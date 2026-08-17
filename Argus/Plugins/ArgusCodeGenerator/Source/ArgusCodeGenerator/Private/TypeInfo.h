@@ -55,6 +55,7 @@ struct TypeInfo
 	std::vector<UnderlyingType> m_templateTypes;
 	UnderlyingType m_underlyingType = UnderlyingType::None;
 	ContainerType m_containerType = ContainerType::NoContainer;
+	bool m_isObservable = false;
 
 	TypeInfo(const ArgusCodeGeneratorUtil::ParsedVariableData& variableData);
 
