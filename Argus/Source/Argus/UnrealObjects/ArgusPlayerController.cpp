@@ -242,6 +242,22 @@ void AArgusPlayerController::InitializeUIWidgets()
 	}
 }
 
+void AArgusPlayerController::ReInitializeUIWidgetsPostLoad()
+{
+	if (m_baseCanvasUserWidget)
+	{
+		m_baseCanvasUserWidget->ReInitializePostLoad();
+	}
+	if (m_selectedArgusEntityUserWidget)
+	{
+		m_selectedArgusEntityUserWidget->ReInitializePostLoad();
+	}
+	if (m_teamResourcesUserWidget)
+	{
+		m_teamResourcesUserWidget->ReInitializePostLoad();
+	}
+}
+
 void AArgusPlayerController::BeginPlay()
 {
 	m_argusCameraActor = Cast<AArgusCameraActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AArgusCameraActor::StaticClass()));

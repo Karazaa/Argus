@@ -19,6 +19,7 @@ public:
 	virtual void NativeConstruct() override;
 	virtual void NativeDestruct() override;
 	virtual void OnChanged_m_currentResources(const FResourceSet& oldValue, const FResourceSet& newValue) override;
+	virtual void ReInitializePostLoad() override;
 
 	void UpdateResources(const FResourceSet& newValue);
 

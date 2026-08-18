@@ -46,6 +46,7 @@ public:
 	bool IsArgusEntityOnPlayerTeam(ArgusEntity entity) const;
 
 	void InitializeUIWidgets();
+	void ReInitializeUIWidgetsPostLoad();
 
 	UArgusInputManager* GetInputManager() const { return m_argusInputManager; }
 

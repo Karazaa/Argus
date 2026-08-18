@@ -296,4 +296,6 @@ void AArgusGameModeBase::OnLoadComplete()
 {
 	ARGUS_TRACE(AArgusGameModeBase::OnLoadComplete)
 	ArgusSystemsManager::InitializePostLoad(GetWorld(), m_singletonEntityTemplate.Get(), m_teamEntityTemplate.Get());
+	ARGUS_RETURN_ON_NULL(m_activePlayerController, ArgusUnrealObjectsLog);
+	m_activePlayerController->ReInitializeUIWidgetsPostLoad();
 }

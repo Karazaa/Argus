@@ -24,14 +24,7 @@ void UTeamResourcesView::NativeConstruct()
 		m_resourceWidgetInstances[i]->SetPadding(m_resourceWidgetMargin);
 	}
 
-	ArgusEntity teamEntity = ArgusEntity::GetPlayerTeamEntity();
-	ObserversComponent* playerTeamObserversComponent = teamEntity.GetComponent<ObserversComponent>();
-	ARGUS_RETURN_ON_NULL(playerTeamObserversComponent, ArgusUILog);
-	ResourceComponent* playerTeamResourceComponent = teamEntity.GetComponent<ResourceComponent>();
-	ARGUS_RETURN_ON_NULL(playerTeamResourceComponent, ArgusUILog);
-
-	UpdateResources(playerTeamResourceComponent->m_currentResources);
-	playerTeamObserversComponent->m_ResourceComponentObservers.AddObserver(this);
+	ReInitializePostLoad();
 }
 
 void UTeamResourcesView::NativeDestruct()
@@ -45,6 +38,20 @@ void UTeamResourcesView::NativeDestruct()
 void UTeamResourcesView::OnChanged_m_currentResources(const FResourceSet& oldValue, const FResourceSet& newValue)
 {
 	UpdateResources(newValue);
+}
+
+void UTeamResourcesView::ReInitializePostLoad()
+{
+	Super::ReInitializePostLoad();
+
+	ArgusEntity teamEntity = ArgusEntity::GetPlayerTeamEntity();
+	ObserversComponent* playerTeamObserversComponent = teamEntity.GetComponent<ObserversComponent>();
+	ARGUS_RETURN_ON_NULL(playerTeamObserversComponent, ArgusUILog);
+	ResourceComponent* playerTeamResourceComponent = teamEntity.GetComponent<ResourceComponent>();
+	ARGUS_RETURN_ON_NULL(playerTeamResourceComponent, ArgusUILog);
+
+	UpdateResources(playerTeamResourceComponent->m_currentResources);
+	playerTeamObserversComponent->m_ResourceComponentObservers.AddObserver(this);
 }
 
 void UTeamResourcesView::UpdateResources(const FResourceSet& newValue)
