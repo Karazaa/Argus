@@ -257,13 +257,9 @@ void AArgusPlayerController::ReInitializeUIWidgetsPostLoad()
 		m_teamResourcesUserWidget->ReInitializePostLoad();
 	}
 
-	InputInterfaceComponent* inputInterfaceComponent = ArgusEntity::GetSingletonEntity().GetComponent<InputInterfaceComponent>();
-	ARGUS_RETURN_ON_NULL(inputInterfaceComponent, ArgusInputLog);
-
 	const AArgusCameraActor::UpdateCameraPanningParameters cameraParams = GetScreenSpaceInputValues();
 	const FVector2D mouseScreenSpaceLocation = cameraParams.m_screenSpaceMouseLocation.IsSet() ? cameraParams.m_screenSpaceMouseLocation.GetValue() : FVector2D::ZeroVector;
 
-	inputInterfaceComponent->m_selectedActorsDisplayState = ESelectedActorsDisplayState::ChangedThisFrame;
 	UpdateUIWidgetDisplay(mouseScreenSpaceLocation);
 }
 
