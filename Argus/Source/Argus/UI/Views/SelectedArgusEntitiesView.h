@@ -39,6 +39,7 @@ public:
 	virtual void OnUpdateSelectedArgusActors(ArgusEntity templateEntity) override;
 	virtual void OnChanged_m_abilityOverrideBitmask(const uint8& oldValue, const uint8& newValue) override;
 	virtual void OnChanged_m_currentResources(const FResourceSet& oldValue, const FResourceSet& newValue) override;
+	virtual void ReInitializePostLoad() override;
 
 protected:
 	UFUNCTION()

@@ -42,10 +42,7 @@ void USelectedArgusEntitiesView::NativeConstruct()
 	m_singleSelectedEntityWidget->SetInputManager(m_inputManager.Get());
 	m_multipleSelectedEntitiesWidget->SetInputManager(m_inputManager.Get());
 
-	ObserversComponent* playerTeamObserversComponent = ArgusEntity::GetPlayerTeamEntity().GetComponent<ObserversComponent>();
-	ARGUS_RETURN_ON_NULL(playerTeamObserversComponent, ArgusUILog);
-
-	playerTeamObserversComponent->m_ResourceComponentObservers.AddObserver(this);
+	ReInitializePostLoad();
 }
 
 void USelectedArgusEntitiesView::NativeDestruct()
@@ -161,6 +158,14 @@ void USelectedArgusEntitiesView::OnChanged_m_currentResources(const FResourceSet
 	}
 
 	UpdateAllAbilityButtonsDisplay(ButtonRecordSet(abilityComponent), &newValue);
+}
+
+void USelectedArgusEntitiesView::ReInitializePostLoad()
+{
+	ObserversComponent* playerTeamObserversComponent = ArgusEntity::GetPlayerTeamEntity().GetComponent<ObserversComponent>();
+	ARGUS_RETURN_ON_NULL(playerTeamObserversComponent, ArgusUILog);
+
+	playerTeamObserversComponent->m_ResourceComponentObservers.AddObserver(this);
 }
 
 void USelectedArgusEntitiesView::NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
