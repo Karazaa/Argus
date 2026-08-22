@@ -8,6 +8,8 @@
 
 void IdentitySystems::RegisterEntityAsSeenByOther(const uint16 perceivedEntityId, const uint16 perceiverEntityId)
 {
+	ARGUS_TRACE(IdentitySystems::RegisterEntityAsSeenByOther)
+
 	const ArgusEntity perceivedEntity = ArgusEntity::RetrieveEntity(perceivedEntityId);
 	const ArgusEntity perceiverEntity = ArgusEntity::RetrieveEntity(perceiverEntityId);
 	if (!perceivedEntity || !perceiverEntity || !perceiverEntity.IsAlive())
@@ -19,6 +21,11 @@ void IdentitySystems::RegisterEntityAsSeenByOther(const uint16 perceivedEntityId
 	const TaskComponent* perceiverTaskComponent = perceiverEntity.GetComponent<TaskComponent>();
 	IdentityComponent* perceivedIdentityComponent = perceivedEntity.GetComponent<IdentityComponent>();
 	if (!perceiverIdentityComponent || !perceivedIdentityComponent)
+	{
+		return;
+	}
+
+	if (perceivedIdentityComponent->IsSeenBy(perceiverIdentityComponent->m_team))
 	{
 		return;
 	}

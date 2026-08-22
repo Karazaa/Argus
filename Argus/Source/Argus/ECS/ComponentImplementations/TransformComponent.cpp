@@ -23,6 +23,7 @@ void TransformComponent::Reset()
 {
 	m_location = FVector::ZeroVector;
 	m_radius = 45.0f;
+	m_movedThisFrame = true;
 }
 
 void TransformComponent::Serialize(FArchive& archive)
@@ -55,6 +56,10 @@ void TransformComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		const char* valueName_m_flightCapability = ARGUS_FSTRING_TO_CHAR(StaticEnum<EFlightCapability>()->GetNameStringByValue(static_cast<uint8>(m_flightCapability)));
 		ImGui::Text(valueName_m_flightCapability);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_movedThisFrame");
+		ImGui::TableNextColumn();
+		ImGui::Text(m_movedThisFrame ? "true" : "false");
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

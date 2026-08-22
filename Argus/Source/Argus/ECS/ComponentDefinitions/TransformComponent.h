@@ -27,6 +27,10 @@ struct TransformComponent
 	
 	EFlightCapability m_flightCapability;
 
+	// m_movedThisFrame defaults to true since instantiation effectively counts as a movement.
+	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT
+	bool m_movedThisFrame = true;
+
 	bool CanFly() const
 	{
 		return m_flightCapability == EFlightCapability::BothGroundedAndFlying || m_flightCapability == EFlightCapability::OnlyFlying;

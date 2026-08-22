@@ -22,6 +22,8 @@ bool TransformSystems::RunSystems(UWorld* worldPointer, float deltaTime)
 
 	ArgusIterators::IterateSystemsArgs<TransformSystemsArgs>([worldPointer, deltaTime, &didMovementUpdateThisFrame](TransformSystemsArgs& components)
 	{
+		components.m_transformComponent->m_movedThisFrame = false;
+
 		if ((components.m_entity.IsKillable() && !components.m_entity.IsAlive()) || components.m_entity.IsPassenger())
 		{
 			return;
@@ -32,11 +34,11 @@ bool TransformSystems::RunSystems(UWorld* worldPointer, float deltaTime)
 			return;
 		}
 
-		const bool didEntityMove = ProcessMovementTaskCommands(worldPointer, deltaTime, components);
-		didMovementUpdateThisFrame |= didEntityMove;
+		components.m_transformComponent->m_movedThisFrame = ProcessMovementTaskCommands(worldPointer, deltaTime, components);
+		didMovementUpdateThisFrame |= components.m_transformComponent->m_movedThisFrame;
 
 		// Carriers should update their passengers locations to match their location after doing an update.
-		if (didEntityMove && components.m_entity.IsCarryingPassengers())
+		if (components.m_transformComponent->m_movedThisFrame && components.m_entity.IsCarryingPassengers())
 		{
 			UpdatePassengerLocations(components);
 		}
