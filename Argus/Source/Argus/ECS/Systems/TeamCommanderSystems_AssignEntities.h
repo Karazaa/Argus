@@ -8,7 +8,7 @@
 class TeamCommanderSystems_AssignEntities
 {
 public:
-	static void RunSystems();
+	static void RunSystems(ETeamCommanderUpdateMethod updateMethod);
 
 private:
 	static void ActUponUpdatesPerCommanderEntity(ArgusEntity teamCommmanderEntity);

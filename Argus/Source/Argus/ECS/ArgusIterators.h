@@ -168,7 +168,7 @@ namespace ArgusIterators
 	}
 
 	template <typename SystemsArgs, typename Function>
-	static void IterateSystemsArgsByTeam(Function&& perSystemsArgsFunction)
+	static void IterateSystemsArgsForAllTeams(Function&& perSystemsArgsFunction)
 	{
 		for (uint8 i = 0u; i <= NUM_TEAMS; ++i)
 		{
@@ -183,7 +183,7 @@ namespace ArgusIterators
 	}
 
 	template <typename SystemsArgs, typename Function>
-	static void IterateSystemsArgsByTeamParallel(Function&& perSystemsArgsFunction)
+	static void IterateSystemsArgsForAllTeamsParallel(Function&& perSystemsArgsFunction)
 	{
 		TArray<UE::Tasks::FTask, TInlineAllocator<NUM_TEAMS>> teamTasks;
 		for (uint8 i = 0u; i <= NUM_TEAMS; ++i)
@@ -194,7 +194,7 @@ namespace ArgusIterators
 				continue;
 			}
 
-			teamTasks.Add(UE::Tasks::Launch(ARGUS_NAMEOF(ArgusIterators::IterateSystemsArgsByTeamParallel), [team, &perSystemsArgsFunction]()
+			teamTasks.Add(UE::Tasks::Launch(ARGUS_NAMEOF(ArgusIterators::IterateSystemsArgsForAllTeamsParallel), [team, &perSystemsArgsFunction]()
 			{
 				IterateSystemsArgRangeForTeam<SystemsArgs>(team, ArgusEntity::GetLowestTakenEntityId(), ArgusEntity::GetHighestTakenEntityId(), perSystemsArgsFunction);
 			}));

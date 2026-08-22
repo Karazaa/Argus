@@ -4,6 +4,7 @@
 
 #include "ArgusEntity.h"
 #include "ArgusMacros.h"
+#include "TeamCommanderSystemsArgs.generated.h"
 
 struct TeamCommanderSystemsArgs
 {
@@ -23,4 +24,13 @@ struct TeamCommanderSystemsArgs
 
 	ARGUS_SYSARG_UNCHECKED_GET
 	TransformComponent* m_transformComponent = nullptr;
+};
+
+
+UENUM()
+enum class ETeamCommanderUpdateMethod : uint8
+{
+	Synchronous,
+	Asynchronous,
+	DeferredPerTeam
 };

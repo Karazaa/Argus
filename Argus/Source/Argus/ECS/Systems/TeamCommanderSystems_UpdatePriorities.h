@@ -8,7 +8,7 @@
 class TeamCommanderSystems_UpdatePriorities
 {
 public:
-	static void RunSystems();
+	static void RunSystems(ETeamCommanderUpdateMethod updateMethod);
 
 private:
 	static void UpdateTeamCommanderPriorities(ArgusEntity teamCommmanderEntity);

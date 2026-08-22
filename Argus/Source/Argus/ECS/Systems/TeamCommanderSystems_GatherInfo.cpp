@@ -8,19 +8,24 @@
 #include "Systems/TargetingSystems.h"
 #include "Systems/TeamCommanderSystems.h"
 
-void TeamCommanderSystems_GatherInfo::RunSystems(bool forceSynchronous)
+void TeamCommanderSystems_GatherInfo::RunSystems(ETeamCommanderUpdateMethod updateMethod)
 {
 	ARGUS_TRACE(TeamCommanderSystems_GatherInfo::RunSystems);
 
-	if (forceSynchronous)
+	switch (updateMethod)
 	{
-		ArgusIterators::IterateTeamEntities(TeamCommanderSystems_GatherInfo::ClearUpdatesPerCommanderEntity);
-		ArgusIterators::IterateSystemsArgsByTeam<TeamCommanderSystemsArgs>(TeamCommanderSystems_GatherInfo::UpdateTeamCommanderPerEntity);
-	}
-	else
-	{
-		ArgusIterators::IterateTeamEntitiesParallel(TeamCommanderSystems_GatherInfo::ClearUpdatesPerCommanderEntity);
-		ArgusIterators::IterateSystemsArgsByTeamParallel<TeamCommanderSystemsArgs>(TeamCommanderSystems_GatherInfo::UpdateTeamCommanderPerEntity);
+		case ETeamCommanderUpdateMethod::Synchronous:
+			ArgusIterators::IterateTeamEntities(TeamCommanderSystems_GatherInfo::ClearUpdatesPerCommanderEntity);
+			ArgusIterators::IterateSystemsArgsForAllTeams<TeamCommanderSystemsArgs>(TeamCommanderSystems_GatherInfo::UpdateTeamCommanderPerEntity);
+			break;
+		case ETeamCommanderUpdateMethod::Asynchronous:
+			ArgusIterators::IterateTeamEntitiesParallel(TeamCommanderSystems_GatherInfo::ClearUpdatesPerCommanderEntity);
+			ArgusIterators::IterateSystemsArgsForAllTeamsParallel<TeamCommanderSystemsArgs>(TeamCommanderSystems_GatherInfo::UpdateTeamCommanderPerEntity);
+			break;
+		case ETeamCommanderUpdateMethod::DeferredPerTeam:
+			break;
+		default:
+			break;
 	}
 }
 

@@ -90,7 +90,7 @@ void ArgusSystemsManager::RunSystems(UWorld* worldPointer, float deltaTime)
 	UpdateSingletonComponents(worldPointer);
 	TimerSystems::RunSystems(deltaTime);
 	TaskSystems::RunSystems(deltaTime);
-	TeamCommanderSystems::RunSystems(deltaTime);
+	TeamCommanderSystems::RunSystems(ETeamCommanderUpdateMethod::Asynchronous, deltaTime);
 	AbilitySystems::RunSystems(deltaTime);
 	CombatSystems::RunSystems(deltaTime);
 	NavigationSystems::RunSystems(worldPointer);

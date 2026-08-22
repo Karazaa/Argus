@@ -12,11 +12,18 @@
 #include "Systems/TeamCommanderSystems.h"
 #include "Systems/TransformSystems.h"
 
-void TeamCommanderSystems_AssignEntities::RunSystems()
+void TeamCommanderSystems_AssignEntities::RunSystems(ETeamCommanderUpdateMethod updateMethod)
 {
 	ARGUS_TRACE(TeamCommanderSystems_AssignEntities::RunSystems);
 
-	ArgusIterators::IterateTeamEntities(TeamCommanderSystems_AssignEntities::ActUponUpdatesPerCommanderEntity);
+	switch (updateMethod)
+	{
+		case ETeamCommanderUpdateMethod::DeferredPerTeam:
+			break;
+		default:
+			ArgusIterators::IterateTeamEntities(TeamCommanderSystems_AssignEntities::ActUponUpdatesPerCommanderEntity);
+			break;
+	}
 }
 
 void TeamCommanderSystems_AssignEntities::ActUponUpdatesPerCommanderEntity(ArgusEntity teamEntity)

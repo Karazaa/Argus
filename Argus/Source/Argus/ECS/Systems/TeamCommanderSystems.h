@@ -9,7 +9,7 @@ class UAbilityRecord;
 class TeamCommanderSystems
 {
 public:
-	static void RunSystems(float);
+	static void RunSystems(ETeamCommanderUpdateMethod updateMethod, float);
 	static void InitializeRevealedAreas(TeamCommanderComponent* teamCommanderComponent);
 	static void PerformInitialUpdate();
 

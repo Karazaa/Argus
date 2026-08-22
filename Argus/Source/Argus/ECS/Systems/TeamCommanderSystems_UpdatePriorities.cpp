@@ -10,11 +10,18 @@
 #include "Systems/AbilitySystems.h"
 #include "Systems/ResourceSystems.h"
 
-void TeamCommanderSystems_UpdatePriorities::RunSystems()
+void TeamCommanderSystems_UpdatePriorities::RunSystems(ETeamCommanderUpdateMethod updateMethod)
 {
 	ARGUS_TRACE(TeamCommanderSystems_UpdatePriorities::RunSystems);
 
-	ArgusIterators::IterateTeamEntities(TeamCommanderSystems_UpdatePriorities::UpdateTeamCommanderPriorities);
+	switch (updateMethod)
+	{
+		case ETeamCommanderUpdateMethod::DeferredPerTeam:
+			break;
+		default:
+			ArgusIterators::IterateTeamEntities(TeamCommanderSystems_UpdatePriorities::UpdateTeamCommanderPriorities);
+			break;
+	}
 }
 
 void TeamCommanderSystems_UpdatePriorities::UpdateTeamCommanderPriorities(ArgusEntity teamEntity)
