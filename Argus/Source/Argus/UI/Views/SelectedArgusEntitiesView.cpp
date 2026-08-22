@@ -151,6 +151,11 @@ void USelectedArgusEntitiesView::OnChanged_m_abilityOverrideBitmask(const uint8&
 
 void USelectedArgusEntitiesView::OnChanged_m_currentResources(const FResourceSet& oldValue, const FResourceSet& newValue)
 {
+	if (m_templateEntityId == ArgusECSConstants::k_maxEntities)
+	{
+		return;
+	}
+
 	const AbilityComponent* abilityComponent = ArgusEntity::RetrieveEntity(m_templateEntityId).GetComponent<AbilityComponent>();
 	if (!abilityComponent)
 	{
