@@ -90,7 +90,7 @@ void ArgusSystemsManager::RunSystems(UWorld* worldPointer, float deltaTime)
 	UpdateSingletonComponents(worldPointer);
 	TimerSystems::RunSystems(deltaTime);
 	TaskSystems::RunSystems(deltaTime);
-	TeamCommanderSystems::RunSystems(ETeamCommanderUpdateMethod::Asynchronous, deltaTime);
+	TeamCommanderSystems::RunSystems(ETeamCommanderUpdateMethod::DeferredPerTeam, deltaTime);
 	AbilitySystems::RunSystems(deltaTime);
 	CombatSystems::RunSystems(deltaTime);
 	NavigationSystems::RunSystems(worldPointer);
@@ -113,6 +113,7 @@ void ArgusSystemsManager::RunPostThreadSystems(UWorld* worldPointer, float delta
 	ARGUS_TRACE(ArgusSystemsManager::RunPostThreadSystems);
 	FogOfWarSystems::RunSystems();
 	SpatialPartitioningSystems::RunSystems();
+	IncrementFrameCounter();
 }
 
 void ArgusSystemsManager::PopulateSingletonComponents(UWorld* worldPointer, const UArgusEntityTemplate* singletonEntityTemplate)
@@ -240,4 +241,12 @@ void ArgusSystemsManager::UpdateSingletonComponents(UWorld* worldPointer)
 	ARGUS_RETURN_ON_NULL(worldReferenceComponent, ArgusECSLog);
 
 	worldReferenceComponent->m_worldPointer = worldPointer;
+}
+
+void ArgusSystemsManager::IncrementFrameCounter()
+{
+	WorldReferenceComponent* worldReferenceComponent = ArgusEntity::GetSingletonEntity().GetComponent<WorldReferenceComponent>();
+	ARGUS_RETURN_ON_NULL(worldReferenceComponent, ArgusECSLog);
+
+	worldReferenceComponent->IncrementFrameCounter();
 }

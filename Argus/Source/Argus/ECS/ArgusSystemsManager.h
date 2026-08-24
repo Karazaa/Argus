@@ -25,4 +25,5 @@ private:
 	static void PopulateTeamComponents(const UArgusEntityTemplate* teamEntityTemplate, const UTeamAlignmentRecord* teamAlignmentRecord);
 	static void InitializeTeamComponents();
 	static void UpdateSingletonComponents(UWorld* worldPointer);
+	static void IncrementFrameCounter();
 };

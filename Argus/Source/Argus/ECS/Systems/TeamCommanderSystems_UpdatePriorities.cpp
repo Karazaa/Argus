@@ -17,7 +17,12 @@ void TeamCommanderSystems_UpdatePriorities::RunSystems(ETeamCommanderUpdateMetho
 	switch (updateMethod)
 	{
 		case ETeamCommanderUpdateMethod::DeferredPerTeam:
+		{
+			WorldReferenceComponent* worldReferenceComponent = ArgusEntity::GetSingletonEntity().GetComponent<WorldReferenceComponent>();
+			ARGUS_RETURN_ON_NULL(worldReferenceComponent, ArgusECSLog);
+			TeamCommanderSystems_UpdatePriorities::UpdateTeamCommanderPriorities(ArgusEntity::GetTeamEntity(worldReferenceComponent->GetFrameDeferredRelevantTeam()));
 			break;
+		}
 		default:
 			ArgusIterators::IterateTeamEntities(TeamCommanderSystems_UpdatePriorities::UpdateTeamCommanderPriorities);
 			break;

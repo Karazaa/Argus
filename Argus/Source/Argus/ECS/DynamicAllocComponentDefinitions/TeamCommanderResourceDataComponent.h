@@ -24,14 +24,14 @@ struct TeamCommanderResourceDataComponent
 	{
 		switch (type)
 		{
-		case EResourceType::ResourceA:
-			return m_seenResourceASourceExtractionData;
-		case EResourceType::ResourceB:
-			return m_seenResourceBSourceExtractionData;
-		case EResourceType::ResourceC:
-			return m_seenResourceCSourceExtractionData;
-		default:
-			break;
+			case EResourceType::ResourceA:
+				return m_seenResourceASourceExtractionData;
+			case EResourceType::ResourceB:
+				return m_seenResourceBSourceExtractionData;
+			case EResourceType::ResourceC:
+				return m_seenResourceCSourceExtractionData;
+			default:
+				break;
 		}
 
 		return m_seenResourceASourceExtractionData;

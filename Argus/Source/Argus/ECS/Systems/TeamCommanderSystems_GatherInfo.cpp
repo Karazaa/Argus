@@ -23,7 +23,15 @@ void TeamCommanderSystems_GatherInfo::RunSystems(ETeamCommanderUpdateMethod upda
 			ArgusIterators::IterateSystemsArgsForAllTeamsParallel<TeamCommanderSystemsArgs>(TeamCommanderSystems_GatherInfo::UpdateTeamCommanderPerEntity);
 			break;
 		case ETeamCommanderUpdateMethod::DeferredPerTeam:
+		{
+			WorldReferenceComponent* worldReferenceComponent = ArgusEntity::GetSingletonEntity().GetComponent<WorldReferenceComponent>();
+			ARGUS_RETURN_ON_NULL(worldReferenceComponent, ArgusECSLog);
+
+			const ETeam team = worldReferenceComponent->GetFrameDeferredRelevantTeam();
+			TeamCommanderSystems_GatherInfo::ClearUpdatesPerCommanderEntity(ArgusEntity::GetTeamEntity(team));
+			ArgusIterators::IterateSystemsArgRangeForTeam<TeamCommanderSystemsArgs>(team, ArgusEntity::GetLowestTakenEntityId(), ArgusEntity::GetHighestTakenEntityId(), TeamCommanderSystems_GatherInfo::UpdateTeamCommanderPerEntity);
 			break;
+		}
 		default:
 			break;
 	}
