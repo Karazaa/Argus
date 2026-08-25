@@ -4,6 +4,8 @@
 #include "ArgusIterators.h"
 #include "ArgusLogging.h"
 #include "ComponentDefinitions/TransformComponent.h"
+#include "Systems/CombatSystems.h"
+#include "Systems/ConstructionSystems.h"
 #include "Systems/IdentitySystems.h"
 
 void ArgusEntityKDTreeNode::Populate(const FVector& worldSpaceLocation)
@@ -83,15 +85,24 @@ void ArgusEntityKDTreeRangeOutput::Add(const ArgusEntityKDTreeNode* nodeToAdd, c
 		return;
 	}
 
-	if (thresholds.m_seenByEntityId != ArgusECSConstants::k_maxEntities && nodeToAdd->m_entityId != ArgusECSConstants::k_maxEntities)
-	{
-		IdentitySystems::RegisterEntityAsSeenByOther(nodeToAdd->m_entityId, thresholds.m_seenByEntityId);
-	}
-
 	ArgusEntity nodeToAddEntity = ArgusEntity::RetrieveEntity(nodeToAdd->m_entityId);
+	ArgusEntity seenByEntity = ArgusEntity::RetrieveEntity(thresholds.m_seenByEntityId);
 	if (!nodeToAddEntity)
 	{
 		return;
+	}
+
+	if (seenByEntity)
+	{
+		IdentitySystems::RegisterEntityAsSeenByOther(nodeToAddEntity, seenByEntity);
+		if (!m_hasConstructionTargetInSightRange)
+		{
+			m_hasConstructionTargetInSightRange = ConstructionSystems::CanEntityConstructOtherEntity(seenByEntity, nodeToAddEntity);
+		}
+		if (!m_hasCombatTargetInSightRange)
+		{
+			m_hasCombatTargetInSightRange = CombatSystems::CanEntityAttackOtherEntity(seenByEntity, nodeToAddEntity);
+		}
 	}
 
 	const uint16 entityId = nodeToAdd->m_entityId;

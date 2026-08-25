@@ -27,6 +27,8 @@ void TaskSystems::RunSystems(float deltaTime)
 
 void TaskSystems::ProcessIdleEntity(const TaskSystemsArgs& components)
 {
+	ARGUS_TRACE(TaskSystems::ProcessIdleEntity);
+
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return;
@@ -43,24 +45,30 @@ void TaskSystems::ProcessIdleEntity(const TaskSystemsArgs& components)
 		return;
 	}
 
-	for (int32 i = 0; i < components.m_nearbyEntitiesComponent->m_nearbyEntities.GetEntityIdsInSightRange().Num(); ++i)
+	const bool hasConstructionTargets = components.m_nearbyEntitiesComponent->HasConstructionTargetsInSightRange();
+	const bool hasCombatTargets = components.m_nearbyEntitiesComponent->HasCombatTargetsInSightRange();
+	if (!hasConstructionTargets && !hasCombatTargets)
 	{
-		if (ProcessDispatchingForEntityPair(components, components.m_nearbyEntitiesComponent->m_nearbyEntities.GetEntityIdsInSightRange()[i]))
-		{
-			return;
-		}
+		return;
 	}
+
+	components.m_nearbyEntitiesComponent->IterateSeenEntityIds(true, true, [&components, hasConstructionTargets, hasCombatTargets](uint16 entityId)
+	{
+		return ProcessDispatchingForEntityPair(components, entityId, hasConstructionTargets, hasCombatTargets);
+	});
 }
 
-bool TaskSystems::ProcessDispatchingForEntityPair(const TaskSystemsArgs& components, uint16 potentialTargetEntityId)
+bool TaskSystems::ProcessDispatchingForEntityPair(const TaskSystemsArgs& components, uint16 potentialTargetEntityId, bool checkConstruction, bool checkCombat)
 {
+	ARGUS_TRACE(TaskSystems::ProcessDispatchingForEntityPair);
+
 	ArgusEntity potentialTargetEntity = ArgusEntity::RetrieveEntity(potentialTargetEntityId);
 
-	if (DispatchToConstructionIfAble(components, potentialTargetEntity))
+	if (checkConstruction && DispatchToConstructionIfAble(components, potentialTargetEntity))
 	{
 		return true;
 	}
-	if (DispatchToCombatIfAble(components, potentialTargetEntity))
+	if (checkCombat&& DispatchToCombatIfAble(components, potentialTargetEntity))
 	{
 		return true;
 	}
@@ -70,6 +78,8 @@ bool TaskSystems::ProcessDispatchingForEntityPair(const TaskSystemsArgs& compone
 
 bool TaskSystems::DispatchToConstructionIfAble(const TaskSystemsArgs& components, ArgusEntity potentialTargetEntity)
 {
+	ARGUS_TRACE(TaskSystems::DispatchToConstructionIfAble);
+
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return false;
@@ -89,6 +99,8 @@ bool TaskSystems::DispatchToConstructionIfAble(const TaskSystemsArgs& components
 
 bool TaskSystems::DispatchToCombatIfAble(const TaskSystemsArgs& components, ArgusEntity potentialTargetEntity)
 {
+	ARGUS_TRACE(TaskSystems::DispatchToCombatIfAble);
+
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return false;
@@ -108,6 +120,8 @@ bool TaskSystems::DispatchToCombatIfAble(const TaskSystemsArgs& components, Argu
 
 void TaskSystems::ProcessInRangeOfTargetEntity(const TaskSystemsArgs& components)
 {
+	ARGUS_TRACE(TaskSystems::ProcessInRangeOfTargetEntity);
+
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return;

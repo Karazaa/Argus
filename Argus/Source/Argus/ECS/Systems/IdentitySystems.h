@@ -2,10 +2,10 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "ArgusEntity.h"
 
 class IdentitySystems
 {
 public:
-	static void RegisterEntityAsSeenByOther(const uint16 perceivedEntityId, const uint16 perceiverEntityId);
+	static void RegisterEntityAsSeenByOther(ArgusEntity perceivedEntity, ArgusEntity perceiverEntity);
 };

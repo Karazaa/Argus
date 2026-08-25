@@ -20,6 +20,16 @@ struct NearbyEntitiesComponent
 		return shouldGetFlying ? m_nearbyFlyingEntities : m_nearbyEntities;
 	}
 
+	bool HasConstructionTargetsInSightRange() const
+	{
+		return m_nearbyEntities.HasConstructionTargetInSightRange() || m_nearbyFlyingEntities.HasCombatTargetInSightRange();
+	}
+
+	bool HasCombatTargetsInSightRange() const
+	{
+		return m_nearbyEntities.HasCombatTargetInSightRange() || m_nearbyFlyingEntities.HasCombatTargetInSightRange();
+	}
+
 	template <typename Function>
 	void IterateSeenEntityIds(bool iterateGrounded, bool iterateFlying, Function&& perEntityIdFunction) const
 	{

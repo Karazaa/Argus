@@ -1,17 +1,14 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "IdentitySystems.h"
-#include "ArgusEntity.h"
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
 #include "Systems/SpatialPartitioningSystems.h"
 
-void IdentitySystems::RegisterEntityAsSeenByOther(const uint16 perceivedEntityId, const uint16 perceiverEntityId)
+void IdentitySystems::RegisterEntityAsSeenByOther(ArgusEntity perceivedEntity, ArgusEntity perceiverEntity)
 {
 	ARGUS_TRACE(IdentitySystems::RegisterEntityAsSeenByOther)
 
-	const ArgusEntity perceivedEntity = ArgusEntity::RetrieveEntity(perceivedEntityId);
-	const ArgusEntity perceiverEntity = ArgusEntity::RetrieveEntity(perceiverEntityId);
 	if (!perceivedEntity || !perceiverEntity || !perceiverEntity.IsAlive())
 	{
 		return;

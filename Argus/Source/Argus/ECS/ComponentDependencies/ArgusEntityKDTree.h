@@ -48,6 +48,8 @@ public:
 	void ConsolidateInArray(TArray<uint16>& allEntityIds);
 	void ResetAll();
 	bool FoundAny() const;
+	bool HasConstructionTargetInSightRange() const { return m_hasConstructionTargetInSightRange; }
+	bool HasCombatTargetInSightRange() const { return m_hasCombatTargetInSightRange; }
 	const TArray<uint16, ArgusContainerAllocator<20u> >& GetEntityIdsInSightRange() const { return m_entityIdsWithinSightRange; }
 	const TArray<uint16, ArgusContainerAllocator<10u> >& GetEntityIdsInGroupExitRange() const { return m_entityIdsWithinGroupExitRange; }
 	const TArray<uint16, ArgusContainerAllocator<10u> >& GetEntityIdsInAvoidanceRange() const { return m_entityIdsWithinAvoidanceRange; }
@@ -56,6 +58,8 @@ private:
 	TArray<uint16, ArgusContainerAllocator<20u> > m_entityIdsWithinSightRange;
 	TArray<uint16, ArgusContainerAllocator<10u> > m_entityIdsWithinGroupExitRange;
 	TArray<uint16, ArgusContainerAllocator<10u> > m_entityIdsWithinAvoidanceRange;
+	bool m_hasConstructionTargetInSightRange = false;
+	bool m_hasCombatTargetInSightRange = false;
 };
 
 class ArgusEntityKDTree : public ArgusKDTree<	ArgusEntityKDTreeNode, ArgusEntityKDTreeRangeOutput, 
