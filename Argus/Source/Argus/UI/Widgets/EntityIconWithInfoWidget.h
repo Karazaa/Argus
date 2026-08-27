@@ -10,7 +10,7 @@ class UArgusInputManager;
 class UImage;
 struct FSlateBrush;
 
-UCLASS()
+UCLASS(meta = (DisableNativeTick))
 class UEntityIconWithInfoWidget : public UArgusActorInfoView
 {
 	GENERATED_BODY()

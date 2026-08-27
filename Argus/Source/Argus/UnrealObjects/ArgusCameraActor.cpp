@@ -27,8 +27,7 @@ void AArgusCameraActor::DecrementPanningBlockers()
 
 AArgusCameraActor::AArgusCameraActor()
 {
-	PrimaryActorTick.bCanEverTick = true;
-	PrimaryActorTick.TickGroup = ETickingGroup::TG_LastDemotable;
+	PrimaryActorTick.bCanEverTick = false;
 	SetRootComponent(CreateDefaultSubobject<UCameraComponent>(FName("CameraComponent")));
 
 	s_numWidgetPanningBlockers = 0u;

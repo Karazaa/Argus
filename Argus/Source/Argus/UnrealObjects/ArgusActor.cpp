@@ -130,7 +130,11 @@ void AArgusActor::SetEntity(ArgusEntity entity)
 			{
 				currentFacing = facingComponent->GetCurrentFacing();
 			}
-			SetActorLocationAndRotation(transformComponent->m_location, FRotator(0.0f, ArgusMath::GetUEYawDegreesFromYaw(currentFacing), 0.0f));
+
+			if (RootComponent)
+			{
+				RootComponent->SetWorldLocationAndRotationNoPhysics(transformComponent->m_location, FRotator(0.0f, ArgusMath::GetUEYawDegreesFromYaw(currentFacing), 0.0f));
+			}
 		}
 	}
 
@@ -298,8 +302,12 @@ void AArgusActor::Update(float deltaTime)
 
 		if (hasMovedOrRotated)
 		{
-			ARGUS_TRACE(AArgusActor::SetActorLocationAndRotation);
-			SetActorLocationAndRotation(transformComponent->m_location, facingRotation);
+			ARGUS_TRACE(AArgusActor::SetWorldLocationAndRotationNoPhysics);
+
+			if (RootComponent)
+			{
+				RootComponent->SetWorldLocationAndRotationNoPhysics(transformComponent->m_location, facingRotation);
+			}
 		}
 
 #if !UE_BUILD_SHIPPING
@@ -412,7 +420,10 @@ void AArgusActor::FixupTransformForFlying()
 	}
 	transformComponent->m_location.Z = spatialPartitioningComponent->m_flyingPlaneHeight;
 
-	SetActorLocationAndRotation(transformComponent->m_location, FRotator(0.0f, ArgusMath::GetUEYawDegreesFromYaw(currentFacing), 0.0f));
+	if (RootComponent)
+	{
+		RootComponent->SetWorldLocationAndRotationNoPhysics(transformComponent->m_location, FRotator(0.0f, ArgusMath::GetUEYawDegreesFromYaw(currentFacing), 0.0f));
+	}
 }
 
 void AArgusActor::CallEventsForInitialState()

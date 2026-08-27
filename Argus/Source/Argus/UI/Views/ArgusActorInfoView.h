@@ -7,7 +7,7 @@
 
 class ArgusEntity;
 
-UCLASS()
+UCLASS(meta = (DisableNativeTick))
 class UArgusActorInfoView : public UUserWidget
 {
 	GENERATED_BODY()

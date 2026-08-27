@@ -13,7 +13,7 @@ class UArgusActorCastBarWidget;
 class UImage;
 class UTextBlock;
 
-UCLASS()
+UCLASS(meta = (DisableNativeTick))
 class USingleSelectedEntityView : public UArgusUIElement
 {
 	GENERATED_BODY()

@@ -10,7 +10,7 @@
 
 class UHorizontalBox;
 
-UCLASS()
+UCLASS(meta = (DisableNativeTick))
 class UTeamResourcesView : public UArgusUIElement, public IResourceComponentObserver
 {
 	GENERATED_BODY()

@@ -27,7 +27,7 @@ struct ButtonRecordSet
 	ButtonRecordSet(const AbilityComponent* abilityComponent);
 };
 
-UCLASS()
+UCLASS(meta = (DisableNativeTick))
 class USelectedArgusEntitiesView : public UArgusUIElement, public IAbilityComponentObserver, public IResourceComponentObserver
 {
 	GENERATED_BODY()

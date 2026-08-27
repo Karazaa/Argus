@@ -21,7 +21,7 @@ enum class EIconQueueDataSource : uint8
 	Count UMETA(Hidden)
 };
 
-UCLASS()
+UCLASS(meta = (DisableNativeTick))
 class UIconQueueWidget : public UArgusUIElement
 {
 	GENERATED_BODY()

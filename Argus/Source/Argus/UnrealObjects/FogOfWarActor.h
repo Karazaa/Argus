@@ -8,7 +8,7 @@
 class UMaterialInstanceDynamic;
 class UMaterialInterface;
 
-UCLASS()
+UCLASS(meta = (DisableNativeTick))
 class AFogOfWarActor : public AActor
 {
 	GENERATED_BODY()

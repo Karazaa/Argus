@@ -9,7 +9,7 @@
 
 class UArgusInputManager;
 
-UCLASS()
+UCLASS(meta = (DisableNativeTick))
 class UArgusUIElement : public UUserWidget
 {
 	GENERATED_BODY()

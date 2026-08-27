@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "ReticleActor.generated.h"
 
@@ -10,7 +9,7 @@ class UAbilityRecord;
 class UDecalComponent;
 struct ReticleComponent;
 
-UCLASS()
+UCLASS(meta = (DisableNativeTick))
 class AReticleActor : public AActor
 {
 	GENERATED_BODY()

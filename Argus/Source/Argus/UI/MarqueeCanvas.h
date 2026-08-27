@@ -9,7 +9,7 @@ class ArgusEntity;
 class UArgusInputManager;
 class UCanvasPanel;
 
-UCLASS()
+UCLASS(meta = (DisableNativeTick))
 class UMarqueeCanvas : public UArgusUIElement
 {
 	GENERATED_BODY()

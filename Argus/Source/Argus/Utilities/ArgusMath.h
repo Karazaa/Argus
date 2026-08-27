@@ -237,7 +237,7 @@ namespace ArgusMath
 			T targetVelocity = (targetValue - m_previousTarget) / deltaTime;
 			m_previousTarget = targetValue;
 
-			const float k2Stable = FMath::Max3(m_k2, FMath::Square(deltaTime) * 0.5f, deltaTime * m_k1 * 0.5f);
+			const float k2Stable = FMath::Max3(m_k2, (FMath::Square(deltaTime) * 0.5f) + (deltaTime * m_k1 * 0.5f), deltaTime * m_k1);
 			m_currentValue = m_currentValue + (m_currentVelocity * deltaTime);
 			m_currentVelocity = m_currentVelocity + ((targetValue + (targetVelocity * m_k3) - m_currentValue - (m_currentVelocity * m_k1)) * SafeDivide(deltaTime, k2Stable));
 		}

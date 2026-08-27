@@ -12,7 +12,7 @@ class UArgusActorRecord;
 class UFactionRecord;
 class UPlacedArgusActorTeamInfoRecord;
 
-UCLASS()
+UCLASS(meta = (DisableNativeTick))
 class AArgusActor : public AActor, public IPassengerComponentObserver, public ITaskComponentObserver
 {
 	GENERATED_BODY()

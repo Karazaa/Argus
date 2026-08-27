@@ -13,7 +13,7 @@
 class ArgusEntity;
 class ArgusEntityKDTree;
 
-UCLASS()
+UCLASS(meta = (DisableNativeTick))
 class AArgusCameraActor : public AActor
 {
 	GENERATED_BODY()

@@ -10,7 +10,7 @@ class UImage;
 class UUniformGridPanel;
 class UUniformGridSlot;
 
-UCLASS()
+UCLASS(meta = (DisableNativeTick))
 class UMultipleSelectedEntitiesView : public UArgusUIElement
 {
 	GENERATED_BODY()

@@ -8,7 +8,7 @@
 class ArgusEntity;
 class UProgressBar;
 
-UCLASS()
+UCLASS(meta = (DisableNativeTick))
 class UArgusActorHealthBarWidget : public UArgusActorInfoView
 {
 	GENERATED_BODY()

@@ -7,7 +7,7 @@
 
 class UImage;
 
-UCLASS()
+UCLASS(meta = (DisableNativeTick))
 class UIconWidget : public UArgusUIElement
 {
 	GENERATED_BODY()

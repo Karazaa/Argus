@@ -11,6 +11,7 @@
 
 AReticleActor::AReticleActor()
 {
+	PrimaryActorTick.bCanEverTick = false;
 	m_decalComponent = CreateDefaultSubobject<UDecalComponent>(FName("DecalComponent"));
 	SetRootComponent(m_decalComponent);
 	DisableReticleDecalComponent();

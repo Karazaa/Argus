@@ -10,7 +10,7 @@ class UHorizontalBox;
 class UImage;
 struct CarrierComponent;
 
-UCLASS()
+UCLASS(meta = (DisableNativeTick))
 class UArgusActorCarrierBarWidget : public UArgusActorInfoView
 {
 	GENERATED_BODY()

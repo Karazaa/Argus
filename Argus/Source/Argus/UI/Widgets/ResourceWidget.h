@@ -9,7 +9,7 @@
 
 class UTextBlock;
 
-UCLASS()
+UCLASS(meta = (DisableNativeTick))
 class UResourceWidget : public UUserWidget
 {
 	GENERATED_BODY()
