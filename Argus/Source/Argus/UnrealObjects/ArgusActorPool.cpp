@@ -1,12 +1,40 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusActorPool.h"
+#include "ArgusActor.h"
 #include "ArgusMacros.h"
 #include "Engine/World.h"
 
 UArgusActorPool::~UArgusActorPool()
 {
 	ClearPool();
+}
+
+void UArgusActorPool::RequestPreLoadActors(UClass* classPointer, uint16 numActors)
+{
+	ARGUS_MEMORY_TRACE(UArgusActorPool);
+
+	if (!classPointer)
+	{
+		return;
+	}
+
+	uint16* currentRequestCount = m_preLoadRequests.Find(classPointer);
+	if (currentRequestCount)
+	{
+		(*currentRequestCount) += numActors;
+	}
+	else
+	{
+		m_preLoadRequests.Add(classPointer, numActors);
+	}
+}
+
+void UArgusActorPool::ProcessPreLoadRequests()
+{
+	// TODO JAMES: Move m_preLoadRequests into a queue once available objects have been subtracted.
+	// Empty m_preLoadRequests.
+	// Process spawn one actor from the queue
 }
 
 AArgusActor* UArgusActorPool::Take(UWorld* worldPointer, UClass* classPointer)

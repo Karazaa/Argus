@@ -2,10 +2,11 @@
 
 #pragma once
 
-#include "ArgusActor.h"
 #include "CoreMinimal.h"
+#include "ComponentDependencies/ArgusDeque.h"
 #include "ArgusActorPool.generated.h"
 
+class AArgusActor;
 class UWorld;
 
 USTRUCT()
@@ -25,7 +26,9 @@ class UArgusActorPool : public UObject
 public:
 	~UArgusActorPool();
 
-	AArgusActor* Take(UWorld* worldPointer, UClass* classSoftPointer);
+	void RequestPreLoadActors(UClass* classPointer, uint16 numActors = 1u);
+	void ProcessPreLoadRequests();
+	AArgusActor* Take(UWorld* worldPointer, UClass* classPointer);
 	void Release(AArgusActor*& actorPointer);
 	void Release(TObjectPtr<AArgusActor>& actorPointer);
 	void ClearPool();
@@ -34,6 +37,11 @@ public:
 private:
 	UPROPERTY(VisibleAnywhere, Transient)
 	TMap<UClass*, FActorArray> m_availableObjects;
+
+	UPROPERTY(VisibleAnywhere, Transient)
+	TMap<UClass*, uint16> m_preLoadRequests;
+
+	ArgusDeque<UClass*, ArgusContainerAllocator<20u>> m_committedPreLoadInstances;
 
 	UPROPERTY(VisibleAnywhere, Transient)
 	uint32 m_numAvailableObjects = 0u;
