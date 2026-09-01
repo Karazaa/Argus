@@ -2,21 +2,19 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "ArgusActorPool.h"
-#include "ArgusSaveManager.h"
-#include "ArgusSystemsManager.h"
+#include "ArgusEntity.h"
 #include "ArgusSystemsThread.h"
-#include "ComponentDefinitions/IdentityComponent.h"
-#include "ComponentDependencies/ResourceSet.h"
+#include "ComponentDependencies/Teams.h"
 #include "GameFramework/GameModeBase.h"
-#include "RecordDefinitions/TeamAlignmentRecord.h"
-#include "RecordDefinitions/TeamColorRecord.h"
 #include "ArgusGameModeBase.generated.h"
 
 class AArgusPlayerController;
+class UArgusActorPool;
 class UArgusEntityTemplate;
 class UArgusGameInstance;
+class UArgusSaveManager;
+class UTeamAlignmentRecord;
+class UTeamColorRecord;
 class UUserWidget;
 
 UCLASS()

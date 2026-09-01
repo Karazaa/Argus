@@ -1,15 +1,21 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusGameModeBase.h"
+#include "ArgusActor.h"
+#include "ArgusActorPool.h"
 #include "ArgusEntityTemplate.h"
 #include "ArgusGameInstance.h"
 #include "ArgusGameStateBase.h"
 #include "ArgusIterators.h"
 #include "ArgusPlayerController.h"
+#include "ArgusSaveManager.h"
 #include "ArgusStaticData.h"
+#include "ArgusSystemsManager.h"
 #include "EngineUtils.h"
 #include "Misc/App.h"
 #include "RecordDefinitions/ArgusActorRecord.h"
+#include "RecordDefinitions/TeamAlignmentRecord.h"
+#include "RecordDefinitions/TeamColorRecord.h"
 
 AArgusGameModeBase::AArgusGameModeBase()
 {
