@@ -54,7 +54,7 @@ protected:
 	virtual void Tick(float deltaTime) override;
 
 private:
-	void ManageActorStateForEntities(const UWorld* worldPointer, float deltaTime);
+	void ManageActorStateForEntities(UWorld* worldPointer, float deltaTime);
 	void ManageActorStateInViewFrustrum(ArgusEntity entity, const LODComponent* lodComponent, const UArgusGameInstance* gameInstance, float deltaTime);
 	void ManageActorStateOutOfViewFrustrum(ArgusEntity entity, const LODComponent* lodComponent);
 	void SpawnActorForEntity(ArgusEntity spawnedEntity);

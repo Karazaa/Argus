@@ -122,10 +122,10 @@ void AArgusGameModeBase::Tick(float deltaTime)
 #endif //!UE_BUILD_SHIPPING
 }
 
-void AArgusGameModeBase::ManageActorStateForEntities(const UWorld* worldPointer, float deltaTime)
+void AArgusGameModeBase::ManageActorStateForEntities(UWorld* worldPointer, float deltaTime)
 {
 	ARGUS_TRACE(AArgusGameModeBase::ManageActorStateForEntities);
-
+	ARGUS_RETURN_ON_NULL(m_argusActorPool, ArgusUnrealObjectsLog);
 	ARGUS_RETURN_ON_NULL(worldPointer, ArgusUnrealObjectsLog);
 	const UArgusGameInstance* gameInstance = worldPointer->GetGameInstance<UArgusGameInstance>();
 	ARGUS_RETURN_ON_NULL(gameInstance, ArgusUnrealObjectsLog);
@@ -149,6 +149,8 @@ void AArgusGameModeBase::ManageActorStateForEntities(const UWorld* worldPointer,
 			ManageActorStateInViewFrustrum(entity, nullptr, gameInstance, deltaTime);
 		}
 	});
+
+	m_argusActorPool->ProcessPreLoadRequests(worldPointer);
 }
 
 void AArgusGameModeBase::ManageActorStateInViewFrustrum(ArgusEntity entity, const LODComponent* lodComponent, const UArgusGameInstance* gameInstance, float deltaTime)

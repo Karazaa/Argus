@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "ComponentDependencies/ArgusDeque.h"
+#include "UObject/ObjectKey.h"
 #include "ArgusActorPool.generated.h"
 
 class AArgusActor;
@@ -27,7 +28,7 @@ public:
 	~UArgusActorPool();
 
 	void RequestPreLoadActors(UClass* classPointer, uint16 numActors = 1u);
-	void ProcessPreLoadRequests();
+	void ProcessPreLoadRequests(UWorld* worldPointer);
 	AArgusActor* Take(UWorld* worldPointer, UClass* classPointer);
 	void Release(AArgusActor*& actorPointer);
 	void Release(TObjectPtr<AArgusActor>& actorPointer);
@@ -36,12 +37,10 @@ public:
 
 private:
 	UPROPERTY(VisibleAnywhere, Transient)
-	TMap<UClass*, FActorArray> m_availableObjects;
+	TMap<TSubclassOf<AActor>, FActorArray> m_availableObjects;
 
-	UPROPERTY(VisibleAnywhere, Transient)
-	TMap<UClass*, uint16> m_preLoadRequests;
-
-	ArgusDeque<UClass*, ArgusContainerAllocator<20u>> m_committedPreLoadInstances;
+	TMap<TObjectKey<UClass>, uint16> m_preLoadRequests;
+	ArgusDeque<TObjectKey<UClass>, ArgusContainerAllocator<20u>> m_committedPreLoadInstances;
 
 	UPROPERTY(VisibleAnywhere, Transient)
 	uint32 m_numAvailableObjects = 0u;

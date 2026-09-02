@@ -12,12 +12,8 @@ UArgusActorPool::~UArgusActorPool()
 
 void UArgusActorPool::RequestPreLoadActors(UClass* classPointer, uint16 numActors)
 {
+	ARGUS_RETURN_ON_NULL(classPointer, ArgusUnrealObjectsLog);
 	ARGUS_MEMORY_TRACE(UArgusActorPool);
-
-	if (!classPointer)
-	{
-		return;
-	}
 
 	uint16* currentRequestCount = m_preLoadRequests.Find(classPointer);
 	if (currentRequestCount)
@@ -30,39 +26,79 @@ void UArgusActorPool::RequestPreLoadActors(UClass* classPointer, uint16 numActor
 	}
 }
 
-void UArgusActorPool::ProcessPreLoadRequests()
+void UArgusActorPool::ProcessPreLoadRequests(UWorld* worldPointer)
 {
-	// TODO JAMES: Move m_preLoadRequests into a queue once available objects have been subtracted.
-	// Empty m_preLoadRequests.
-	// Process spawn one actor from the queue
+	ARGUS_TRACE(UArgusActorPool::ProcessPreLoadRequests);
+	ARGUS_RETURN_ON_NULL(worldPointer, ArgusUnrealObjectsLog);
+	ARGUS_MEMORY_TRACE(UArgusActorPool);
+
+	// Commit preload requests to a queue once available objects have been subtracted.
+	for (const TPair<TObjectKey<UClass>, uint16>& preLoadRequest : m_preLoadRequests)
+	{
+		UClass* classPointer = preLoadRequest.Key.ResolveObjectPtr();
+		if (!classPointer)
+		{
+			continue;
+		}
+
+		uint16 numActorsToPreload = preLoadRequest.Value;
+		if (const FActorArray* availableActors = m_availableObjects.Find(classPointer))
+		{
+			numActorsToPreload -= static_cast<uint16>(availableActors->m_actors.Num());
+		}
+
+		for (uint16 i = 0; i < numActorsToPreload; ++i)
+		{
+			m_committedPreLoadInstances.PushLast(preLoadRequest.Key);
+		}
+	}
+
+	// Reset preload requests for next frame
+	m_preLoadRequests.Reset();
+
+	if (m_committedPreLoadInstances.IsEmpty())
+	{
+		return;
+	}
+
+	// Spawn one actor from the queue
+	if (UClass* classToSpawn = m_committedPreLoadInstances.First().ResolveObjectPtr())
+	{
+		if (AArgusActor* spawnedActor = worldPointer->SpawnActor<AArgusActor>(classToSpawn))
+		{
+			m_numAvailableObjects++;
+			spawnedActor->Reset();
+
+			FActorArray* actorArray = m_availableObjects.Find(classToSpawn);
+			if (!actorArray)
+			{
+				m_availableObjects.Emplace(classToSpawn, TArray<TObjectPtr<AArgusActor>>()).m_actors.Add(spawnedActor);
+			}
+			else
+			{
+				actorArray->m_actors.Add(spawnedActor);
+			}
+		}
+	}
+
+	m_committedPreLoadInstances.PopFirst();
 }
 
 AArgusActor* UArgusActorPool::Take(UWorld* worldPointer, UClass* classPointer)
 {
+	ARGUS_RETURN_ON_NULL_POINTER(classPointer, ArgusUnrealObjectsLog);
+	ARGUS_RETURN_ON_NULL_POINTER(worldPointer, ArgusUnrealObjectsLog);
 	ARGUS_MEMORY_TRACE(UArgusActorPool);
-
-	if (!classPointer)
-	{
-		return nullptr;
-	}
 
 	FActorArray* actorArray = m_availableObjects.Find(classPointer);
 	if (!actorArray || actorArray->m_actors.IsEmpty())
 	{
-		if (!worldPointer)
-		{
-			return nullptr;
-		}
-
 		return worldPointer->SpawnActor<AArgusActor>(classPointer);
 	}
 
 	m_numAvailableObjects--;
 	AArgusActor* cachedActor = actorArray->m_actors.Pop();
-	if (!cachedActor)
-	{
-		return nullptr;
-	}
+	ARGUS_RETURN_ON_NULL_POINTER(cachedActor, ArgusUnrealObjectsLog);
 
 	cachedActor->Show();
 	return cachedActor;
@@ -70,6 +106,7 @@ AArgusActor* UArgusActorPool::Take(UWorld* worldPointer, UClass* classPointer)
 
 void UArgusActorPool::Release(AArgusActor*& actorPointer)
 {
+	ARGUS_RETURN_ON_NULL(actorPointer, ArgusUnrealObjectsLog);
 	ARGUS_MEMORY_TRACE(UArgusActorPool);
 
 	UClass* classPointer = actorPointer->GetClass();
