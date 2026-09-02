@@ -3,9 +3,11 @@
 #pragma once
 
 #include "ArgusActorPool.h"
-#include "ArgusActor.h"
 #include "ArgusFunctionalTest.h"
 #include "ArgusActorPoolFunctionalTest.generated.h"
+
+class AArgusActor;
+class UArgusEntityTemplate;
 
 UCLASS()
 class ARGUS_API AArgusActorPoolFunctionalTest : public AArgusFunctionalTest 

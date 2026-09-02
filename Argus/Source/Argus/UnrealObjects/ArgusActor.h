@@ -2,8 +2,7 @@
 
 #pragma once
 
-#include "ArgusEntityTemplate.h"
-#include "CoreMinimal.h"
+#include "ArgusEntity.h"
 #include "GameFramework/Actor.h"
 #include "ArgusActor.generated.h"
 

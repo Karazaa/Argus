@@ -2,6 +2,7 @@
 
 #include "ArgusActor.h"
 #include "ArgusCameraActor.h"
+#include "ArgusEntityTemplate.h"
 #include "ArgusGameInstance.h"
 #include "ArgusGameModeBase.h"
 #include "ArgusMath.h"

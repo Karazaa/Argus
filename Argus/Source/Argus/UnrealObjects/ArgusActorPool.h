@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "ArgusActor.h"
 #include "ComponentDependencies/ArgusDeque.h"
 #include "UObject/ObjectKey.h"
 #include "ArgusActorPool.generated.h"

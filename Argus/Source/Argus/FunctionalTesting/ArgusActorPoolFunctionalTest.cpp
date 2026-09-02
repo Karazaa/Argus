@@ -1,6 +1,8 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusActorPoolFunctionalTest.h"
+#include "ArgusActor.h"
+#include "ArgusEntityTemplate.h"
 
 AArgusActorPoolFunctionalTest::AArgusActorPoolFunctionalTest(const FObjectInitializer& ObjectInitializer)
 {
