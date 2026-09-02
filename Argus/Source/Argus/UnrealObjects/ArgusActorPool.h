@@ -37,7 +37,7 @@ public:
 
 private:
 	UPROPERTY(VisibleAnywhere, Transient)
-	TMap<TSubclassOf<AActor>, FActorArray> m_availableObjects;
+	TMap<TSubclassOf<AArgusActor>, FActorArray> m_availableObjects;
 
 	TMap<TObjectKey<UClass>, uint16> m_preLoadRequests;
 	ArgusDeque<TObjectKey<UClass>, ArgusContainerAllocator<20u>> m_committedPreLoadInstances;
