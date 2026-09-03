@@ -5,8 +5,23 @@
 #include "ArgusMacros.h"
 #include "Engine/World.h"
 
+UArgusActorPool* UArgusActorPool::s_argusActorPool = nullptr;
+
+UArgusActorPool::UArgusActorPool()
+{
+	if (!s_argusActorPool)
+	{
+		s_argusActorPool = this;
+	}
+}
+
 UArgusActorPool::~UArgusActorPool()
 {
+	if (s_argusActorPool == this)
+	{
+		s_argusActorPool = nullptr;
+	}
+
 	ClearPool();
 }
 

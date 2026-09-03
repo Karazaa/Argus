@@ -1,6 +1,7 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "SpawningSystems.h"
+#include "ArgusActorPool.h"
 #include "ArgusIterators.h"
 #include "ArgusLogging.h"
 #include "ArgusStaticData.h"
@@ -292,6 +293,12 @@ bool SpawningSystems::ProcessQueuedSpawnEntity(const SpawningSystemsArgs& compon
 	bool spawnedAnEntityThisFrame = false;
 	if (spawnInfo.m_timeToCastSeconds > 0.0f)
 	{
+		UArgusActorPool* argusActorPool = UArgusActorPool::Get();
+		ARGUS_RETURN_ON_NULL_BOOL(argusActorPool, ArgusECSLog);
+		const UArgusActorRecord* actorRecord = ArgusStaticData::GetRecord<UArgusActorRecord>(spawnInfo.m_argusActorRecordId);
+		ARGUS_RETURN_ON_NULL_BOOL(actorRecord, ArgusECSLog);
+
+		argusActorPool->RequestPreLoadActors(actorRecord->m_argusActorClass.LoadAndStorePtr());
 		components.m_taskComponent->m_spawningState = ESpawningState::WaitingToSpawnEntity;
 		components.m_spawningComponent->m_spawnTimerHandle.StartTimer(components.m_entity, spawnInfo.m_timeToCastSeconds);
 	}

@@ -25,6 +25,9 @@ class UArgusActorPool : public UObject
 	GENERATED_BODY()
 
 public:
+	static UArgusActorPool* Get() { return s_argusActorPool; };
+
+	UArgusActorPool();
 	~UArgusActorPool();
 
 	void RequestPreLoadActors(UClass* classPointer, uint16 numActors = 1u);
@@ -36,6 +39,8 @@ public:
 	uint32 GetNumAvailableObjects() const { return m_numAvailableObjects; }
 
 private:
+	static UArgusActorPool* s_argusActorPool;
+
 	UPROPERTY(VisibleAnywhere, Transient)
 	TMap<TSubclassOf<AArgusActor>, FActorArray> m_availableObjects;
 
