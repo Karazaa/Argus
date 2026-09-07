@@ -50,6 +50,7 @@
 #include "AssetFactories/StaticRecordFactories/ArgusActorRecordFactory.h"
 #include "AssetFactories/StaticRecordFactories/FactionRecordFactory.h"
 #include "AssetFactories/StaticRecordFactories/MaterialRecordFactory.h"
+#include "AssetFactories/StaticRecordFactories/ObstaclesRecordFactory.h"
 #include "AssetFactories/StaticRecordFactories/PlacedArgusActorTeamInfoRecordFactory.h"
 #include "AssetFactories/StaticRecordFactories/ResourceSetRecordFactory.h"
 #include "AssetFactories/StaticRecordFactories/TeamAlignmentRecordFactory.h"
@@ -147,6 +148,8 @@ void ArgusEditorModule::RegisterAssetActions(IAssetTools& assetTools) const
 	assetTools.RegisterAssetTypeActions(actionsFactionRecord);
 	TSharedRef<IAssetTypeActions> actionsMaterialRecord = MakeShareable(new FAssetTypeActions_MaterialRecord);
 	assetTools.RegisterAssetTypeActions(actionsMaterialRecord);
+	TSharedRef<IAssetTypeActions> actionsObstaclesRecord = MakeShareable(new FAssetTypeActions_ObstaclesRecord);
+	assetTools.RegisterAssetTypeActions(actionsObstaclesRecord);
 	TSharedRef<IAssetTypeActions> actionsPlacedArgusActorTeamInfoRecord = MakeShareable(new FAssetTypeActions_PlacedArgusActorTeamInfoRecord);
 	assetTools.RegisterAssetTypeActions(actionsPlacedArgusActorTeamInfoRecord);
 	TSharedRef<IAssetTypeActions> actionsResourceSetRecord = MakeShareable(new FAssetTypeActions_ResourceSetRecord);

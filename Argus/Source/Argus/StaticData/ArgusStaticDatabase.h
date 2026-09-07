@@ -14,6 +14,8 @@ class UFactionRecord;
 class UFactionRecordDatabase;
 class UMaterialRecord;
 class UMaterialRecordDatabase;
+class UObstaclesRecord;
+class UObstaclesRecordDatabase;
 class UPlacedArgusActorTeamInfoRecord;
 class UPlacedArgusActorTeamInfoRecordDatabase;
 class UResourceSetRecord;
@@ -112,6 +114,25 @@ protected:
 	TObjectPtr<UMaterialRecordDatabase> m_UMaterialRecordDatabasePersistent;
 
 	void LazyLoadUMaterialRecordDatabase();
+#pragma endregion
+#pragma region UObstaclesRecord
+public:
+	const UObstaclesRecord* GetUObstaclesRecord(uint32 id);
+	const bool AsyncPreLoadUObstaclesRecord(uint32 id, TFunction<void(const UObstaclesRecord*)> callback = nullptr);
+	void ResetLoadedUObstaclesRecordPointerArray();
+#if WITH_EDITOR
+	uint32 AddUObstaclesRecordToDatabase(UObstaclesRecord* record);
+	void IterateAllUObstaclesRecords(const TFunctionRef<void(UObstaclesRecord*)>& function);
+	void RegisterNewUObstaclesRecordDatabase(UObstaclesRecordDatabase* database);
+#endif //WITH_EDITOR
+
+protected:
+	UPROPERTY(EditAnywhere)
+	TSoftObjectPtr<UObstaclesRecordDatabase> m_UObstaclesRecordDatabase;
+	UPROPERTY(Transient)
+	TObjectPtr<UObstaclesRecordDatabase> m_UObstaclesRecordDatabasePersistent;
+
+	void LazyLoadUObstaclesRecordDatabase();
 #pragma endregion
 #pragma region UPlacedArgusActorTeamInfoRecord
 public:

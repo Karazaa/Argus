@@ -15,6 +15,7 @@
 void WorldReferenceComponent::Reset()
 {
 	m_worldPointer = nullptr;
+	m_frameCounter = 0u;
 }
 
 void WorldReferenceComponent::Serialize(FArchive& archive)
@@ -33,6 +34,9 @@ void WorldReferenceComponent::DrawComponentDebug() const
 	{
 		ImGui::TableNextColumn();
 		ImGui::Text("m_worldPointer");
+		ImGui::TableNextColumn();
+		ImGui::TableNextColumn();
+		ImGui::Text("m_frameCounter");
 		ImGui::TableNextColumn();
 		ImGui::EndTable();
 	}

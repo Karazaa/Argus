@@ -7,6 +7,7 @@
 #include "RecordDatabases/ArgusActorRecordDatabase.h"
 #include "RecordDatabases/FactionRecordDatabase.h"
 #include "RecordDatabases/MaterialRecordDatabase.h"
+#include "RecordDatabases/ObstaclesRecordDatabase.h"
 #include "RecordDatabases/PlacedArgusActorTeamInfoRecordDatabase.h"
 #include "RecordDatabases/ResourceSetRecordDatabase.h"
 #include "RecordDatabases/TeamAlignmentRecordDatabase.h"
@@ -510,6 +511,125 @@ void UArgusStaticDatabase::LazyLoadUMaterialRecordDatabase()
 	}
 }
 #pragma endregion
+#pragma region UObstaclesRecord
+const UObstaclesRecord* UArgusStaticDatabase::GetUObstaclesRecord(uint32 id)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUObstaclesRecordDatabase();
+
+	if (!m_UObstaclesRecordDatabasePersistent)
+	{
+		return nullptr;
+	}
+
+	return m_UObstaclesRecordDatabasePersistent->GetRecord(id);
+}
+
+const bool UArgusStaticDatabase::AsyncPreLoadUObstaclesRecord(uint32 id, TFunction<void(const UObstaclesRecord*)> callback)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUObstaclesRecordDatabase();
+
+	if (!m_UObstaclesRecordDatabasePersistent)
+	{
+		return false;
+	}
+
+	return m_UObstaclesRecordDatabasePersistent->AsyncPreLoadRecord(id);
+}
+
+void UArgusStaticDatabase::ResetLoadedUObstaclesRecordPointerArray()
+{
+	if (!m_UObstaclesRecordDatabasePersistent)
+	{
+		return;
+	}
+
+	m_UObstaclesRecordDatabasePersistent->ResetPersistentObjectPointerArray();
+}
+
+#if WITH_EDITOR
+uint32 UArgusStaticDatabase::AddUObstaclesRecordToDatabase(UObstaclesRecord* record)
+{
+	LazyLoadUObstaclesRecordDatabase();
+
+	if (!m_UObstaclesRecordDatabasePersistent)
+	{
+		return 0u;
+	}
+
+	m_UObstaclesRecordDatabasePersistent->AddUObstaclesRecordToDatabase(record);
+	
+	return record->m_id;
+}
+
+void UArgusStaticDatabase::IterateAllUObstaclesRecords(const TFunctionRef<void(UObstaclesRecord*)>& function)
+{
+	LazyLoadUObstaclesRecordDatabase();
+
+	if (!m_UObstaclesRecordDatabasePersistent)
+	{
+		return;
+	}
+
+	m_UObstaclesRecordDatabasePersistent->IterateAllUObstaclesRecords(function);
+}
+
+void UArgusStaticDatabase::RegisterNewUObstaclesRecordDatabase(UObstaclesRecordDatabase* database)
+{
+	if (!database)
+	{
+		return;
+	}
+
+	if (!m_UObstaclesRecordDatabase.IsNull())
+	{
+		ARGUS_LOG
+		(
+			ArgusStaticDataLog,
+			Error,
+			TEXT("[%s] Trying to assign to %s. Potential duplicate databases."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(m_UObstaclesRecordDatabase)
+		);
+		return;
+	}
+
+	m_UObstaclesRecordDatabase = database;
+	SaveDatabase();
+}
+#endif //WITH_EDITOR
+
+void UArgusStaticDatabase::LazyLoadUObstaclesRecordDatabase()
+{
+	if (!m_UObstaclesRecordDatabasePersistent)
+	{
+		m_UObstaclesRecordDatabasePersistent = m_UObstaclesRecordDatabase.LoadSynchronous();
+		if (!m_UObstaclesRecordDatabasePersistent)
+		{
+			ARGUS_LOG(ArgusStaticDataLog, Error, TEXT("[%s] Could not find %s reference. Need to set reference in %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(m_UObstaclesRecordDatabase), ARGUS_NAMEOF(UArgusStaticDatabase));
+			return;
+		}
+
+		m_UObstaclesRecordDatabasePersistent->ResizePersistentObjectPointerArrayToFitRecord(0u);
+	}
+
+	if (!m_UObstaclesRecordDatabasePersistent)
+	{
+		ARGUS_LOG
+		(
+			ArgusStaticDataLog, Error,
+			TEXT("[%s] Could not retrieve %s. %s might not be properly assigned."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(m_UObstaclesRecordDatabasePersistent),
+			ARGUS_NAMEOF(m_UObstaclesRecordDatabase)
+		);
+		return;
+	}
+}
+#pragma endregion
 #pragma region UPlacedArgusActorTeamInfoRecord
 const UPlacedArgusActorTeamInfoRecord* UArgusStaticDatabase::GetUPlacedArgusActorTeamInfoRecord(uint32 id)
 {
@@ -993,6 +1113,7 @@ void UArgusStaticDatabase::ResetLoadedPointerArrays()
 	ResetLoadedUArgusActorRecordPointerArray();
 	ResetLoadedUFactionRecordPointerArray();
 	ResetLoadedUMaterialRecordPointerArray();
+	ResetLoadedUObstaclesRecordPointerArray();
 	ResetLoadedUPlacedArgusActorTeamInfoRecordPointerArray();
 	ResetLoadedUResourceSetRecordPointerArray();
 	ResetLoadedUTeamAlignmentRecordPointerArray();

@@ -9,6 +9,7 @@
 #include "RecordDatabases/ArgusActorRecordDatabase.h"
 #include "RecordDatabases/FactionRecordDatabase.h"
 #include "RecordDatabases/MaterialRecordDatabase.h"
+#include "RecordDatabases/ObstaclesRecordDatabase.h"
 #include "RecordDatabases/PlacedArgusActorTeamInfoRecordDatabase.h"
 #include "RecordDatabases/ResourceSetRecordDatabase.h"
 #include "RecordDatabases/TeamAlignmentRecordDatabase.h"
@@ -37,6 +38,10 @@ uint32 ArgusStaticData::AddRecordToDatabase(UArgusStaticRecord* record)
 	if (UMaterialRecord* UMaterialRecordInstance = Cast<UMaterialRecord>(record))
 	{
 		return staticDatabase->AddUMaterialRecordToDatabase(UMaterialRecordInstance);
+	}
+	if (UObstaclesRecord* UObstaclesRecordInstance = Cast<UObstaclesRecord>(record))
+	{
+		return staticDatabase->AddUObstaclesRecordToDatabase(UObstaclesRecordInstance);
 	}
 	if (UPlacedArgusActorTeamInfoRecord* UPlacedArgusActorTeamInfoRecordInstance = Cast<UPlacedArgusActorTeamInfoRecord>(record))
 	{
