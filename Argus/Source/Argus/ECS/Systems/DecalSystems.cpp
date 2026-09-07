@@ -68,16 +68,9 @@ ArgusEntity DecalSystems::InstantiateMoveToLocationDecalEntity(const UArgusActor
 {
 	ARGUS_TRACE(DecalSystems::InstantiateMoveToLocationDecalEntity);
 
-	if (!moveToLocationDecalRecord)
-	{
-		return ArgusEntity::k_emptyEntity;
-	}
-
+	ARGUS_RETURN_ON_NULL_VALUE(moveToLocationDecalRecord, ArgusECSLog, ArgusEntity::k_emptyEntity);
 	const UArgusEntityTemplate* moveToLocationDecalTemplate = moveToLocationDecalRecord->m_entityTemplate.LoadAndStorePtr();
-	if (!moveToLocationDecalTemplate)
-	{
-		return ArgusEntity::k_emptyEntity;
-	}
+	ARGUS_RETURN_ON_NULL_VALUE(moveToLocationDecalTemplate, ArgusECSLog, ArgusEntity::k_emptyEntity);
 
 	const uint32 recordId = moveToLocationDecalRecord->m_id;
 	TFunction<void(ArgusEntity)> callback = nullptr;
