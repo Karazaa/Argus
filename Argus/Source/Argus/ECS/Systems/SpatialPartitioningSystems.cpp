@@ -6,6 +6,7 @@
 #include "ArgusIterators.h"
 #include "ArgusLogging.h"
 #include "ArgusMath.h"
+#include "ComponentDependencies/ObstaclePoint.h"
 #include "NavigationData.h"
 #include "NavigationSystem.h"
 #include "NavMesh/RecastHelpers.h"
@@ -42,6 +43,75 @@ void SpatialPartitioningSystems::RunSystems()
 	ClearSeenByStatus();
 	CacheAdjacentEntityIds(spatialPartitioningComponent);
 	CalculateAdjacentEntityGroups();
+}
+
+void SpatialPartitioningSystems::GatherAvoidanceObstacles(UWorld* worldPointer, float queryExtent, FObstaclesContainer& outObstacles)
+{
+	if (!worldPointer)
+	{
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Passed in %s is nullptr."), ARGUS_FUNCNAME, ARGUS_NAMEOF(UWorld*));
+		return;
+	}
+
+	const UNavigationSystemV1* unrealNavigationSystem = UNavigationSystemV1::GetCurrent(worldPointer);
+	if (!unrealNavigationSystem)
+	{
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Could not retrieve a valid %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(UNavigationSystemV1*));
+		return;
+	}
+
+	const ARecastNavMesh* navMesh = Cast<ARecastNavMesh>(unrealNavigationSystem->MainNavData);
+	if (!navMesh)
+	{
+		return;
+	}
+
+	FNavLocation originLocation;
+	if (!unrealNavigationSystem->ProjectPointToNavigation(FVector::ZeroVector, originLocation))
+	{
+		return;
+	}
+
+	TArray<FVector> navWalls;
+	GetNavMeshWalls(queryExtent, navMesh, originLocation, navWalls);
+	ConvertWallsIntoObstacles(navWalls, outObstacles);
+
+#if !UE_BUILD_SHIPPING
+	DrawDebugObstacles(worldPointer, outObstacles);
+#endif //!UE_BUILD_SHIPPING
+}
+
+void SpatialPartitioningSystems::InitializeAvoidanceObstacles(SpatialPartitioningComponent* spatialPartitioningComponent, UWorld* worldPointer)
+{
+	ARGUS_TRACE(SpatialPartitioningSystems::InitializeAvoidanceObstacles);
+
+	if (!spatialPartitioningComponent)
+	{
+		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Passed in %s is nullptr."), ARGUS_FUNCNAME, ARGUS_NAMEOF(SpatialPartitioningComponent*));
+		return;
+	}
+
+	spatialPartitioningComponent->m_obstacles.m_obstacleArrays.Reset();
+	spatialPartitioningComponent->m_obstaclePointKDTree.ResetKDTreeWithAverageLocation();
+
+	GatherAvoidanceObstacles(worldPointer, spatialPartitioningComponent->m_validSpaceExtent, spatialPartitioningComponent->m_obstacles);
+
+	spatialPartitioningComponent->m_obstaclePointKDTree.InsertObstaclesIntoKDTree(spatialPartitioningComponent->m_obstacles);
+
+	ArgusIterators::IterateEntities([spatialPartitioningComponent](ArgusEntity entity)
+	{
+		TransformComponent* transformComponent = entity.GetComponent<TransformComponent>();
+		TargetingComponent* targetingComponent = entity.GetComponent<TargetingComponent>();
+		NearbyObstaclesComponent* nearbyObstaclesComponent = entity.GetComponent<NearbyObstaclesComponent>();
+		if (!transformComponent || !targetingComponent || !nearbyObstaclesComponent)
+		{
+			return;
+		}
+
+		nearbyObstaclesComponent->m_obstacleIndicies.ResetAll();
+		ObstaclePointKDTreeQueryRangeThresholds thresholds = ObstaclePointKDTreeQueryRangeThresholds(AvoidanceSystems::GetAvoidanceRange(entity, AvoidanceRange::Obstacle));
+		spatialPartitioningComponent->m_obstaclePointKDTree.FindObstacleIndiciesWithinRangeOfLocation(nearbyObstaclesComponent->m_obstacleIndicies, thresholds, ArgusMath::ToCartesianVector(transformComponent->m_location), targetingComponent->m_sightRange);
+	});
 }
 
 void SpatialPartitioningSystems::ClearSeenByStatus()
@@ -241,79 +311,14 @@ void SpatialPartitioningSystems::OnChangeAvoidanceGroups(ArgusEntity entity, Avo
 	navigationComponent->m_lastPointIndex = groupLeaderNavigationComponent->m_groupLastPointIndex;
 }
 
-void SpatialPartitioningSystems::CalculateAvoidanceObstacles(SpatialPartitioningComponent* spatialPartitioningComponent, UWorld* worldPointer)
-{
-	ARGUS_TRACE(SpatialPartitioningSystems::CalculateAvoidanceObstacles);
-
-	if (!spatialPartitioningComponent)
-	{
-		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Passed in %s is nullptr."), ARGUS_FUNCNAME, ARGUS_NAMEOF(SpatialPartitioningComponent*));
-		return;
-	}
-
-	if (!worldPointer)
-	{
-		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Passed in %s is nullptr."), ARGUS_FUNCNAME, ARGUS_NAMEOF(UWorld*));
-		return;
-	}
-
-	const UNavigationSystemV1* unrealNavigationSystem = UNavigationSystemV1::GetCurrent(worldPointer);
-	if (!unrealNavigationSystem)
-	{
-		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Could not retrieve a valid %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(UNavigationSystemV1*));
-		return;
-	}
-
-	const ARecastNavMesh* navMesh = Cast<ARecastNavMesh>(unrealNavigationSystem->MainNavData);
-	if (!navMesh)
-	{
-		return;
-	}
-
-	FNavLocation originLocation;
-	if (!unrealNavigationSystem->ProjectPointToNavigation(FVector::ZeroVector, originLocation))
-	{
-		return;
-	}
-
-	spatialPartitioningComponent->m_obstacles.Reset();
-	spatialPartitioningComponent->m_obstaclePointKDTree.ResetKDTreeWithAverageLocation();
-
-	TArray<FVector> navWalls;
-	GetNavMeshWalls(spatialPartitioningComponent, navMesh, originLocation, navWalls);
-
-	ConvertWallsIntoObstacles(navWalls, spatialPartitioningComponent->m_obstacles);
-
-#if !UE_BUILD_SHIPPING
-	DrawDebugObstacles(worldPointer, spatialPartitioningComponent->m_obstacles);
-#endif //!UE_BUILD_SHIPPING
-
-	spatialPartitioningComponent->m_obstaclePointKDTree.InsertObstaclesIntoKDTree(spatialPartitioningComponent->m_obstacles);
-
-	ArgusIterators::IterateEntities([spatialPartitioningComponent](ArgusEntity entity)
-	{
-		TransformComponent* transformComponent = entity.GetComponent<TransformComponent>();
-		TargetingComponent* targetingComponent = entity.GetComponent<TargetingComponent>();
-		NearbyObstaclesComponent* nearbyObstaclesComponent = entity.GetComponent<NearbyObstaclesComponent>();
-		if (!transformComponent || !targetingComponent || !nearbyObstaclesComponent)
-		{
-			return;
-		}
-
-		nearbyObstaclesComponent->m_obstacleIndicies.ResetAll();
-		ObstaclePointKDTreeQueryRangeThresholds thresholds = ObstaclePointKDTreeQueryRangeThresholds(AvoidanceSystems::GetAvoidanceRange(entity, AvoidanceRange::Obstacle));
-		spatialPartitioningComponent->m_obstaclePointKDTree.FindObstacleIndiciesWithinRangeOfLocation(nearbyObstaclesComponent->m_obstacleIndicies, thresholds, ArgusMath::ToCartesianVector(transformComponent->m_location), targetingComponent->m_sightRange);
-	});
-}
-
-float SpatialPartitioningSystems::FindAreaOfObstacleCartesian(const ObstaclePointArray& obstaclePoints)
+float SpatialPartitioningSystems::FindAreaOfObstacleCartesian(const FObstaclePointArray& obstaclePoints)
 {
 	float area = 0.0f;
 
-	for (int32 i = 0; i < obstaclePoints.Num(); ++i)
+	for (int32 i = 0; i < obstaclePoints.m_obstaclePoints.Num(); ++i)
 	{
-		FVector2D point0 = obstaclePoints[i].m_point;
-		FVector2D point1 = obstaclePoints[(i + 1) % obstaclePoints.Num()].m_point;
+		FVector2D point0 = obstaclePoints.m_obstaclePoints[i].m_point;
+		FVector2D point1 = obstaclePoints.m_obstaclePoints[(i + 1) % obstaclePoints.m_obstaclePoints.Num()].m_point;
 
 		float width = point1.X - point0.X;
 		float height = (point1.Y + point0.Y) / 2.0f;
@@ -377,8 +382,8 @@ bool SpatialPartitioningSystems::IsPointInLineOfSightOfEntity(ArgusEntity source
 			return;
 		}
 
-		const ObstaclePoint& currentObstaclePoint = spatialPartitioningComponent->GetObstaclePointFromIndicies(indicies);
-		const ObstaclePoint& nextObstaclePoint = spatialPartitioningComponent->GetNextObstaclePointFromIndicies(indicies);
+		const FObstaclePoint& currentObstaclePoint = spatialPartitioningComponent->GetObstaclePointFromIndicies(indicies);
+		const FObstaclePoint& nextObstaclePoint = spatialPartitioningComponent->GetNextObstaclePointFromIndicies(indicies);
 
 		FVector2D currentPoint = currentObstaclePoint.m_point;
 		const FVector2D currentLeft = currentObstaclePoint.GetLeftVector();
@@ -504,11 +509,10 @@ void SpatialPartitioningSystems::CalculateAdjacentEntityGroupsForEntity(ArgusEnt
 	groupLeaderComponent->m_previousGroupId = groupLeaderComponent->m_groupId;
 }
 
-bool SpatialPartitioningSystems::GetNavMeshWalls(const SpatialPartitioningComponent* spatialPartitioningComponent, const ARecastNavMesh* navMesh, const FNavLocation& originLocation, TArray<FVector>& outNavWalls)
+bool SpatialPartitioningSystems::GetNavMeshWalls(float queryExtent, const ARecastNavMesh* navMesh, const FNavLocation& originLocation, TArray<FVector>& outNavWalls)
 {
 	ARGUS_TRACE(SpatialPartitioningSystems::GetNavMeshWalls);
 
-	ARGUS_RETURN_ON_NULL_BOOL(spatialPartitioningComponent, ArgusECSLog);
 	ARGUS_RETURN_ON_NULL_BOOL(navMesh, ArgusECSLog);
 
 	const FNavigationQueryFilter* filter = navMesh->GetDefaultQueryFilter().Get();
@@ -534,14 +538,14 @@ bool SpatialPartitioningSystems::GetNavMeshWalls(const SpatialPartitioningCompon
 	const int verts = 4;
 	TArray<FVector> queryShapePoints;
 	queryShapePoints.SetNumZeroed(verts);
-	queryShapePoints[0].X -= spatialPartitioningComponent->m_validSpaceExtent;
-	queryShapePoints[1].X += spatialPartitioningComponent->m_validSpaceExtent;
-	queryShapePoints[2].X += spatialPartitioningComponent->m_validSpaceExtent;
-	queryShapePoints[3].X -= spatialPartitioningComponent->m_validSpaceExtent;
-	queryShapePoints[0].Y += spatialPartitioningComponent->m_validSpaceExtent;
-	queryShapePoints[1].Y += spatialPartitioningComponent->m_validSpaceExtent;
-	queryShapePoints[2].Y -= spatialPartitioningComponent->m_validSpaceExtent;
-	queryShapePoints[3].Y -= spatialPartitioningComponent->m_validSpaceExtent;
+	queryShapePoints[0].X -= queryExtent;
+	queryShapePoints[1].X += queryExtent;
+	queryShapePoints[2].X += queryExtent;
+	queryShapePoints[3].X -= queryExtent;
+	queryShapePoints[0].Y += queryExtent;
+	queryShapePoints[1].Y += queryExtent;
+	queryShapePoints[2].Y -= queryExtent;
+	queryShapePoints[3].Y -= queryExtent;
 
 	FVector::FReal rcConvexPolygon[verts * 3] = { 0 };
 
@@ -555,7 +559,7 @@ bool SpatialPartitioningSystems::GetNavMeshWalls(const SpatialPartitioningCompon
 
 	dtStatus queryStatus = ArgusDetourQuery::FindWallsOverlappingShape
 	(
-		detourMesh, maxSearchNodes, originLocation.NodeRef, rcConvexPolygon, verts, queryFilter, 
+		detourMesh, maxSearchNodes, originLocation.NodeRef, rcConvexPolygon, verts, queryFilter,
 		neiPolys, &numNeis, ArgusECSConstants::k_maxDetourPolys, wallSegments, wallPolys, &numWalls, ArgusECSConstants::k_maxDetourWalls
 	);
 
@@ -567,10 +571,10 @@ bool SpatialPartitioningSystems::GetNavMeshWalls(const SpatialPartitioningCompon
 			FVector vertex0 = Recast2UnrealPoint(&wallSegments[Idx * 6]);
 			FVector vertex1 = Recast2UnrealPoint(&wallSegments[Idx * 6 + 3]);
 
-			bool excluded = ((vertex0.X < -spatialPartitioningComponent->m_validSpaceExtent || vertex0.X > spatialPartitioningComponent->m_validSpaceExtent) ||
-							(vertex0.Y < -spatialPartitioningComponent->m_validSpaceExtent || vertex0.Y > spatialPartitioningComponent->m_validSpaceExtent)) &&
-							((vertex1.X < -spatialPartitioningComponent->m_validSpaceExtent || vertex1.X > spatialPartitioningComponent->m_validSpaceExtent) ||
-							(vertex1.Y < -spatialPartitioningComponent->m_validSpaceExtent || vertex1.Y > spatialPartitioningComponent->m_validSpaceExtent));
+			const bool excluded =	((vertex0.X < -queryExtent || vertex0.X > queryExtent) ||
+									(vertex0.Y < -queryExtent || vertex0.Y > queryExtent)) &&
+									((vertex1.X < -queryExtent || vertex1.X > queryExtent) ||
+									(vertex1.Y < -queryExtent || vertex1.Y > queryExtent));
 			if (!excluded)
 			{
 				outNavWalls.Add(vertex0);
@@ -584,7 +588,7 @@ bool SpatialPartitioningSystems::GetNavMeshWalls(const SpatialPartitioningCompon
 	return false;
 }
 
-void SpatialPartitioningSystems::ConvertWallsIntoObstacles(const TArray<FVector>& navEdges, ObstaclesContainer& outObstacles)
+void SpatialPartitioningSystems::ConvertWallsIntoObstacles(const TArray<FVector>& navEdges, FObstaclesContainer& outObstacles)
 {
 	ARGUS_TRACE(SpatialPartitioningSystems::ConvertWallsIntoObstacles);
 
@@ -602,17 +606,17 @@ void SpatialPartitioningSystems::ConvertWallsIntoObstacles(const TArray<FVector>
 		const FVector2D edgeVertex1 = ArgusMath::ToCartesianVector2(FVector2D(navEdges[i + 1]));
 
 		bool handledEdge = false;
-		for (int32 j = 0; j < outObstacles.Num(); ++j)
+		for (int32 j = 0; j < outObstacles.m_obstacleArrays.Num(); ++j)
 		{
-			const int32 numObstaclesInChain = outObstacles[j].Num();
+			const int32 numObstaclesInChain = outObstacles.m_obstacleArrays[j].m_obstaclePoints.Num();
 			if (numObstaclesInChain == 0)
 			{
 				continue;
 			}
 
-			const FVector2D startOfChainLocation = outObstacles[j].GetHead().m_point;
-			const FVector2D endOfChainLocation = outObstacles[j].GetTail().m_point;
-			ObstaclePoint pointToAdd;
+			const FVector2D startOfChainLocation = outObstacles.m_obstacleArrays[j].GetHead().m_point;
+			const FVector2D endOfChainLocation = outObstacles.m_obstacleArrays[j].GetTail().m_point;
+			FObstaclePoint pointToAdd;
 			bool matchesStart = false;
 			bool matchesEnd = false;
 			if (startOfChainLocation == edgeVertex0)
@@ -642,13 +646,13 @@ void SpatialPartitioningSystems::ConvertWallsIntoObstacles(const TArray<FVector>
 
 			if (matchesStart && !matchesEnd)
 			{
-				outObstacles[j].AddObstaclePointsWithFillIn(pointToAdd, true);
+				outObstacles.m_obstacleArrays[j].AddObstaclePointsWithFillIn(pointToAdd, true);
 				handledEdge = true;
 				break;
 			}
 			if (!matchesStart && matchesEnd)
 			{
-				outObstacles[j].AddObstaclePointsWithFillIn(pointToAdd, false);
+				outObstacles.m_obstacleArrays[j].AddObstaclePointsWithFillIn(pointToAdd, false);
 				handledEdge = true;
 				break;
 			}
@@ -664,27 +668,27 @@ void SpatialPartitioningSystems::ConvertWallsIntoObstacles(const TArray<FVector>
 			continue;
 		}
 
-		ObstaclePoint vertex0Obstacle, vertex1Obstacle;
+		FObstaclePoint vertex0Obstacle, vertex1Obstacle;
 		vertex0Obstacle.m_point = edgeVertex0;
 		vertex0Obstacle.m_height = edgeVertex0Height;
 		vertex1Obstacle.m_point = edgeVertex1;
 		vertex1Obstacle.m_height = edgeVertex1Height;
-		ObstaclePointArray& array = outObstacles.Emplace_GetRef();
-		array.Add(vertex0Obstacle);
+		FObstaclePointArray& array = outObstacles.m_obstacleArrays.Emplace_GetRef();
+		array.m_obstaclePoints.Add(vertex0Obstacle);
 		array.AddObstaclePointsWithFillIn(vertex1Obstacle, false);
 	}
 
-	const int32 initialSize = outObstacles.Num();
+	const int32 initialSize = outObstacles.m_obstacleArrays.Num();
 	for (int32 i = (initialSize - 1); i >= 0; --i)
 	{
-		ObstaclePointArray& appending = outObstacles[i];
+		FObstaclePointArray& appending = outObstacles.m_obstacleArrays[i];
 		FVector2D appendingObstacleHead = appending.GetHead().m_point;
 		FVector2D appendingObstacleTail = appending.GetTail().m_point;
 
 		bool didAppend = false;
 		for (int32 j = i - 1; j >= 0; --j)
 		{
-			ObstaclePointArray& receiving = outObstacles[j];
+			FObstaclePointArray& receiving = outObstacles.m_obstacleArrays[j];
 			FVector2D receivingObstacleHead = receiving.GetHead().m_point;
 			FVector2D receivingObstacleTail = receiving.GetTail().m_point;
 
@@ -724,28 +728,28 @@ void SpatialPartitioningSystems::ConvertWallsIntoObstacles(const TArray<FVector>
 
 		if (didAppend)
 		{
-			outObstacles.RemoveAt(i, EAllowShrinking::No);
+			outObstacles.m_obstacleArrays.RemoveAt(i, EAllowShrinking::No);
 		}
 	}
 
-	outObstacles.Shrink();
+	outObstacles.m_obstacleArrays.Shrink();
 
-	for (int32 i = 0; i < outObstacles.Num(); ++i)
+	for (int32 i = 0; i < outObstacles.m_obstacleArrays.Num(); ++i)
 	{
-		outObstacles[i].CloseLoop();
-		outObstacles[i].ConsolidateNearbyPoints();
-		outObstacles[i].Shrink();
-		outObstacles[i].m_fixupDirections.Reserve(outObstacles[i].Num());
-		CalculateFixupDirectionForObstacles(outObstacles[i]);
-		ApplyFixupDirectionForObstacles(outObstacles[i]);
-		CalculateDirectionAndConvexForObstacles(outObstacles[i]);
-		outObstacles[i].m_fixupDirections.Empty();
+		outObstacles.m_obstacleArrays[i].CloseLoop();
+		outObstacles.m_obstacleArrays[i].ConsolidateNearbyPoints();
+		outObstacles.m_obstacleArrays[i].m_obstaclePoints.Shrink();
+		outObstacles.m_obstacleArrays[i].m_fixupDirections.Reserve(outObstacles.m_obstacleArrays[i].m_obstaclePoints.Num());
+		CalculateFixupDirectionForObstacles(outObstacles.m_obstacleArrays[i]);
+		ApplyFixupDirectionForObstacles(outObstacles.m_obstacleArrays[i]);
+		CalculateDirectionAndConvexForObstacles(outObstacles.m_obstacleArrays[i]);
+		outObstacles.m_obstacleArrays[i].m_fixupDirections.Empty();
 	}
 }
 
-void SpatialPartitioningSystems::CalculateFixupDirectionForObstacles(ObstaclePointArray& outObstacle)
+void SpatialPartitioningSystems::CalculateFixupDirectionForObstacles(FObstaclePointArray& outObstacle)
 {
-	const int32 numObstaclePoints = outObstacle.Num();
+	const int32 numObstaclePoints = outObstacle.m_obstaclePoints.Num();
 	float fixupDirectionMult = -1.0f;
 	if (FindAreaOfObstacleCartesian(outObstacle) > 0.0f)
 	{
@@ -759,39 +763,39 @@ void SpatialPartitioningSystems::CalculateFixupDirectionForObstacles(ObstaclePoi
 		const int32 nextIndex = (i + 1) % numObstaclePoints;
 		const int32 lastIndex = (i - 1) >= 0 ? (i - 1) : numObstaclePoints - 1;
 
-		const FVector2D neighborDirection = outObstacle[nextIndex].m_point - outObstacle[lastIndex].m_point;
+		const FVector2D neighborDirection = outObstacle.m_obstaclePoints[nextIndex].m_point - outObstacle.m_obstaclePoints[lastIndex].m_point;
 		outObstacle.m_fixupDirections.Add(FVector2D(-neighborDirection.Y, neighborDirection.X).GetSafeNormal() * fixupDirectionMult);
 	}
 }
 
-void SpatialPartitioningSystems::ApplyFixupDirectionForObstacles(ObstaclePointArray& outObstacle)
+void SpatialPartitioningSystems::ApplyFixupDirectionForObstacles(FObstaclePointArray& outObstacle)
 {
 	const GlobalSettingsComponent* settings = GlobalSettingsComponent::Get();
 	ARGUS_RETURN_ON_NULL(settings, ArgusECSLog);
 
-	for (int32 i = 0; i < outObstacle.Num(); ++i)
+	for (int32 i = 0; i < outObstacle.m_obstaclePoints.Num(); ++i)
 	{
-		outObstacle[i].m_point += (outObstacle.m_fixupDirections[i] * settings->m_obstacleShrinkFixupDistance);
+		outObstacle.m_obstaclePoints[i].m_point += (outObstacle.m_fixupDirections[i] * settings->m_obstacleShrinkFixupDistance);
 	}
 }
 
-void SpatialPartitioningSystems::CalculateDirectionAndConvexForObstacles(ObstaclePointArray& outObstacle)
+void SpatialPartitioningSystems::CalculateDirectionAndConvexForObstacles(FObstaclePointArray& outObstacle)
 {
 	ARGUS_TRACE(SpatialPartitioningSystems::CalculateDirectionAndConvexForObstacles);
 
-	const int32 numObstaclePoints = outObstacle.Num();
+	const int32 numObstaclePoints = outObstacle.m_obstaclePoints.Num();
 
 	float floorHeight = FLT_MAX;
 	for (int32 i = 0; i < numObstaclePoints; ++i)
 	{
 		const int32 nextIndex = (i + 1) % numObstaclePoints;
-		outObstacle[i].m_direction = outObstacle[nextIndex].m_point - outObstacle[i].m_point;
-		outObstacle[i].m_direction.Normalize();
+		outObstacle.m_obstaclePoints[i].m_direction = outObstacle.m_obstaclePoints[nextIndex].m_point - outObstacle.m_obstaclePoints[i].m_point;
+		outObstacle.m_obstaclePoints[i].m_direction.Normalize();
 
 		const int32 lastIndex = (i - 1) >= 0 ? (i - 1) : numObstaclePoints - 1;
-		outObstacle[i].m_isConvex = ArgusMath::IsLeftOfCartesian(outObstacle[lastIndex].m_point, outObstacle[i].m_point, outObstacle[nextIndex].m_point);
+		outObstacle.m_obstaclePoints[i].m_isConvex = ArgusMath::IsLeftOfCartesian(outObstacle.m_obstaclePoints[lastIndex].m_point, outObstacle.m_obstaclePoints[i].m_point, outObstacle.m_obstaclePoints[nextIndex].m_point);
 
-		floorHeight = outObstacle[i].m_height < floorHeight ? outObstacle[i].m_height : floorHeight;
+		floorHeight = outObstacle.m_obstaclePoints[i].m_height < floorHeight ? outObstacle.m_obstaclePoints[i].m_height : floorHeight;
 	}
 
 	const SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::GetSingletonEntity().GetComponent<SpatialPartitioningComponent>();
@@ -800,7 +804,7 @@ void SpatialPartitioningSystems::CalculateDirectionAndConvexForObstacles(Obstacl
 }
 
 #if !UE_BUILD_SHIPPING
-void SpatialPartitioningSystems::DrawDebugObstacles(UWorld* worldPointer, const ObstaclesContainer& obstacles)
+void SpatialPartitioningSystems::DrawDebugObstacles(UWorld* worldPointer, const FObstaclesContainer& obstacles)
 {
 	if (!worldPointer)
 	{
@@ -815,11 +819,11 @@ void SpatialPartitioningSystems::DrawDebugObstacles(UWorld* worldPointer, const 
 	const GlobalSettingsComponent* settings = GlobalSettingsComponent::Get();
 	ARGUS_RETURN_ON_NULL(settings, ArgusECSLog);
 
-	for (int32 i = 0; i < obstacles.Num(); ++i)
+	for (int32 i = 0; i < obstacles.m_obstacleArrays.Num(); ++i)
 	{
-		for (int32 j = 0; j < obstacles[i].Num(); ++j)
+		for (int32 j = 0; j < obstacles.m_obstacleArrays[i].m_obstaclePoints.Num(); ++j)
 		{
-			obstacles[i][j].DrawDebugObstaclePoint(worldPointer, 120.0f, false, obstacles[i].IsPointElevated(j));
+			obstacles.m_obstacleArrays[i].m_obstaclePoints[j].DrawDebugObstaclePoint(worldPointer, 120.0f, false, obstacles.m_obstacleArrays[i].IsPointElevated(j));
 		}
 	}
 }

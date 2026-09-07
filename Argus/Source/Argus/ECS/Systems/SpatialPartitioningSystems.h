@@ -3,18 +3,21 @@
 #pragma once
 
 #include "ArgusEntity.h"
-#include "ComponentDependencies/ObstaclePoint.h"
 
-class UWorld;
 class ARecastNavMesh;
+class UWorld;
 struct FNavLocation;
+struct FObstaclePointArray;
+struct FObstaclesContainer;
 
 class SpatialPartitioningSystems
 {
 public:
 	static void RunSystems();
-	static void CalculateAvoidanceObstacles(SpatialPartitioningComponent* spatialPartitioningComponent, UWorld* worldPointer);
-	static float FindAreaOfObstacleCartesian(const ObstaclePointArray& obstaclePoints);
+
+	ARGUS_API static void GatherAvoidanceObstacles(UWorld* worldPointer, float queryExtent, FObstaclesContainer& outObstacles);
+	static void InitializeAvoidanceObstacles(SpatialPartitioningComponent* spatialPartitioningComponent, UWorld* worldPointer);
+	static float FindAreaOfObstacleCartesian(const FObstaclePointArray& obstaclePoints);
 	static bool IsEntityInLineOfSightOfOther(ArgusEntity sourceEntity, ArgusEntity targetEntity);
 	static bool IsPointInLineOfSightOfEntity(ArgusEntity sourceEntity, const FVector& targetLocation);
 	static bool AnyObstaclesOrStaticEntitiesInCircle(const FVector& center, float radius, float resourceSourceBufferRadius);
@@ -29,14 +32,14 @@ private:
 	static void OnBecomeAvoidanceGroupLeader(ArgusEntity entity);
 	static void OnChangeAvoidanceGroups(ArgusEntity entity, AvoidanceGroupingComponent* groupingComponent);
 
-	static bool GetNavMeshWalls(const SpatialPartitioningComponent* spatialPartitioningComponent, const ARecastNavMesh* navMesh, const FNavLocation& originLocation, TArray<FVector>& outNavWalls);
-	static void ConvertWallsIntoObstacles(const TArray<FVector>& navEdges, ObstaclesContainer& outObstacles);
-	static void CalculateFixupDirectionForObstacles(ObstaclePointArray& outObstacle);
-	static void ApplyFixupDirectionForObstacles(ObstaclePointArray& outObstacle);
-	static void CalculateDirectionAndConvexForObstacles(ObstaclePointArray& outObstacle);
+	static bool GetNavMeshWalls(float queryExtent, const ARecastNavMesh* navMesh, const FNavLocation& originLocation, TArray<FVector>& outNavWalls);
+	static void ConvertWallsIntoObstacles(const TArray<FVector>& navEdges, FObstaclesContainer& outObstacles);
+	static void CalculateFixupDirectionForObstacles(FObstaclePointArray& outObstacle);
+	static void ApplyFixupDirectionForObstacles(FObstaclePointArray& outObstacle);
+	static void CalculateDirectionAndConvexForObstacles(FObstaclePointArray& outObstacle);
 
 
 #if !UE_BUILD_SHIPPING
-	static void DrawDebugObstacles(UWorld* worldPointer, const ObstaclesContainer& obstacles);
+	static void DrawDebugObstacles(UWorld* worldPointer, const FObstaclesContainer& obstacles);
 #endif //!UE_BUILD_SHIPPING
 };

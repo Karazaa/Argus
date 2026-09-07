@@ -76,7 +76,7 @@ class ObstaclePointKDTree : public ArgusKDTree<	ObstaclePointKDTreeNode, Obstacl
 												ObstaclePointKDTreeQueryRangeThresholds, ArgusECSConstants::k_avoidanceObstaclePreAllocatedAmount>
 {
 public:
-	void InsertObstaclesIntoKDTree(const ObstaclesContainer& obstacles);
+	void InsertObstaclesIntoKDTree(const FObstaclesContainer& obstacles);
 	bool FindObstacleIndiciesWithinRangeOfLocation(TArray<ObstacleIndicies>& obstacleIndicies, const FVector& location, const float range);
 	bool FindObstacleIndiciesWithinRangeOfLocation(ObstaclePointKDTreeRangeOutput& obstacleIndicies, ObstaclePointKDTreeQueryRangeThresholds& thresholds, const FVector& location, const float range) const;
 

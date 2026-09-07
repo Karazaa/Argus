@@ -64,7 +64,7 @@ void ArgusSystemsManager::InitializePostLoad(UWorld* worldPointer, const UArgusE
 	spatialPartitioningComponent->m_argusEntityKDTree.InsertAllArgusEntitiesIntoKDTree(false);
 	spatialPartitioningComponent->m_flyingArgusEntityKDTree.SeedTreeWithAverageEntityLocation(true);
 	spatialPartitioningComponent->m_flyingArgusEntityKDTree.InsertAllArgusEntitiesIntoKDTree(true);
-	SpatialPartitioningSystems::CalculateAvoidanceObstacles(spatialPartitioningComponent, worldPointer);
+	SpatialPartitioningSystems::InitializeAvoidanceObstacles(spatialPartitioningComponent, worldPointer);
 
 	SpatialPartitioningSystems::RunSystems();
 
@@ -165,7 +165,7 @@ void ArgusSystemsManager::SetInitialSingletonState(UWorld* worldPointer, ETeam a
 	spatialPartitioningComponent->m_argusEntityKDTree.InsertAllArgusEntitiesIntoKDTree(false);
 	spatialPartitioningComponent->m_flyingArgusEntityKDTree.SeedTreeWithAverageEntityLocation(true);
 	spatialPartitioningComponent->m_flyingArgusEntityKDTree.InsertAllArgusEntitiesIntoKDTree(true);
-	SpatialPartitioningSystems::CalculateAvoidanceObstacles(spatialPartitioningComponent, worldPointer);
+	SpatialPartitioningSystems::InitializeAvoidanceObstacles(spatialPartitioningComponent, worldPointer);
 
 	InputInterfaceComponent* inputInterfaceComponent = singletonEntity.GetComponent<InputInterfaceComponent>();
 	ARGUS_RETURN_ON_NULL(inputInterfaceComponent, ArgusECSLog);

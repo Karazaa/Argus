@@ -9,7 +9,7 @@
 #if !UE_BUILD_SHIPPING
 #include "DrawDebugHelpers.h"
 
-void ObstaclePoint::DrawDebugObstaclePoint(UWorld* worldPointer, float duration, bool shouldShowText, bool isPointElevated) const
+void FObstaclePoint::DrawDebugObstaclePoint(UWorld* worldPointer, float duration, bool shouldShowText, bool isPointElevated) const
 {
 	const FColor color = isPointElevated ? FColor::Magenta : FColor::Purple;
 	if (shouldShowText)
@@ -74,69 +74,69 @@ void ObstaclePoint::DrawDebugObstaclePoint(UWorld* worldPointer, float duration,
 }
 #endif //#!UE_BUILD_SHIPPING
 
-const ObstaclePoint& ObstaclePointArray::GetHead() const
+const FObstaclePoint& FObstaclePointArray::GetHead() const
 {
-	if (Num() == 0)
+	if (m_obstaclePoints.Num() == 0)
 	{
 		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Attempting to access index of empty %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ObstaclePointArray));
 		verify(false);
 	}
 	
-	return (GetData()[0]);
+	return (m_obstaclePoints[0]);
 }
 
-const ObstaclePoint& ObstaclePointArray::GetTail() const
+const FObstaclePoint& FObstaclePointArray::GetTail() const
 {
-	if (Num() == 0)
+	if (m_obstaclePoints.Num() == 0)
 	{
 		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Attempting to access index of empty %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(ObstaclePointArray));
 		verify(false);
 	}
 
-	return (GetData()[Num() - 1]);
+	return (m_obstaclePoints[m_obstaclePoints.Num() - 1]);
 }
 
-const int32 ObstaclePointArray::GetPreviousIndex(int32 index) const
+const int32 FObstaclePointArray::GetPreviousIndex(int32 index) const
 {
-	if (index >= Num() || index < 0)
+	if (index >= m_obstaclePoints.Num() || index < 0)
 	{
 		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Attempting to access invalid index(%d) of %s."), ARGUS_FUNCNAME, index, ARGUS_NAMEOF(ObstaclePointArray));
 		verify(false);
 	}
 
-	return (index - 1 + Num()) % Num();
+	return (index - 1 + m_obstaclePoints.Num()) % m_obstaclePoints.Num();
 }
 
-const ObstaclePoint& ObstaclePointArray::GetPrevious(int32 index) const
+const FObstaclePoint& FObstaclePointArray::GetPrevious(int32 index) const
 {
-	return (GetData()[GetPreviousIndex(index)]);
+	return (m_obstaclePoints[GetPreviousIndex(index)]);
 }
 
-const int32 ObstaclePointArray::GetPreviousNonAliasIndex(int32 index) const
+const int32 FObstaclePointArray::GetPreviousNonAliasIndex(int32 index) const
 {
 	int32 iterations = 0;
 	index = GetPreviousIndex(index);
-	const ObstaclePoint* newPoint = &GetData()[index];
+	const FObstaclePoint* newPoint = &m_obstaclePoints[index];
 
-	while (newPoint->m_isAlias && iterations < Num())
+	while (newPoint->m_isAlias && iterations < m_obstaclePoints.Num())
 	{
 		index = GetPreviousIndex(index);
-		newPoint = &GetData()[index];
+		newPoint = &m_obstaclePoints[index];
 		iterations++;
 	}
 
 	return index;
 }
 
-const int32 ObstaclePointArray::GetCurrentNonAliasIndex(int32 index) const
+const int32 FObstaclePointArray::GetCurrentNonAliasIndex(int32 index) const
 {
-	if (index >= Num() || index < 0)
+	if (index >= m_obstaclePoints.Num() || index < 0)
 	{
 		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Attempting to access invalid index(%d) of %s."), ARGUS_FUNCNAME, index, ARGUS_NAMEOF(ObstaclePointArray));
 		verify(false);
 	}
 
-	if (GetData()[index].m_isAlias)
+	if (m_obstaclePoints[index].m_isAlias)
 	{
 		return GetPreviousNonAliasIndex(index);
 	}
@@ -144,49 +144,49 @@ const int32 ObstaclePointArray::GetCurrentNonAliasIndex(int32 index) const
 	return index;
 }
 
-const ObstaclePoint& ObstaclePointArray::GetPreviousNonAlias(int32 index) const
+const FObstaclePoint& FObstaclePointArray::GetPreviousNonAlias(int32 index) const
 {
-	return GetData()[GetPreviousNonAliasIndex(index)];
+	return m_obstaclePoints[GetPreviousNonAliasIndex(index)];
 }
 
-const int32 ObstaclePointArray::GetNextIndex(int32 index) const
+const int32 FObstaclePointArray::GetNextIndex(int32 index) const
 {
-	if (index >= Num() || index < 0)
+	if (index >= m_obstaclePoints.Num() || index < 0)
 	{
 		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Attempting to access invalid index(%d) of %s."), ARGUS_FUNCNAME, index, ARGUS_NAMEOF(ObstaclePointArray));
 		verify(false);
 	}
 
-	return (index + 1) % Num();
+	return (index + 1) % m_obstaclePoints.Num();
 }
 
-const ObstaclePoint& ObstaclePointArray::GetNext(int32 index) const
+const FObstaclePoint& FObstaclePointArray::GetNext(int32 index) const
 {
-	return (GetData()[GetNextIndex(index)]);
+	return (m_obstaclePoints[GetNextIndex(index)]);
 }
 
-const int32 ObstaclePointArray::GetNextNonAliasIndex(int32 index) const
+const int32 FObstaclePointArray::GetNextNonAliasIndex(int32 index) const
 {
 	int32 iterations = 0;
 	index = GetNextIndex(index);
-	const ObstaclePoint* newPoint = &GetData()[index];
+	const FObstaclePoint* newPoint = &m_obstaclePoints[index];
 
-	while (newPoint->m_isAlias && iterations < Num())
+	while (newPoint->m_isAlias && iterations < m_obstaclePoints.Num())
 	{
 		index = GetNextIndex(index);
-		newPoint = &GetData()[index];
+		newPoint = &m_obstaclePoints[index];
 		iterations++;
 	}
 
 	return index;
 }
 
-const ObstaclePoint& ObstaclePointArray::GetNextNonAlias(int32 index) const
+const FObstaclePoint& FObstaclePointArray::GetNextNonAlias(int32 index) const
 {
-	return GetData()[GetNextNonAliasIndex(index)];
+	return m_obstaclePoints[GetNextNonAliasIndex(index)];
 }
 
-void ObstaclePointArray::FillInBetweenObstaclePoints(const ObstaclePoint& fromPoint, const ObstaclePoint& toPoint, TArray<ObstaclePoint>& outPoints)
+void FObstaclePointArray::FillInBetweenObstaclePoints(const FObstaclePoint& fromPoint, const FObstaclePoint& toPoint, TArray<FObstaclePoint>& outPoints)
 {
 	const GlobalSettingsComponent* settings = GlobalSettingsComponent::Get();
 	ARGUS_RETURN_ON_NULL(settings, ArgusECSLog);
@@ -209,21 +209,21 @@ void ObstaclePointArray::FillInBetweenObstaclePoints(const ObstaclePoint& fromPo
 	for (int32 i = 1; i <= numAddedPoints; ++i)
 	{
 		const float distanceThisIteration = static_cast<float>(i) * distanceIncrement;
-		ObstaclePoint& pointToInsert = outPoints.Emplace_GetRef();
+		FObstaclePoint& pointToInsert = outPoints.Emplace_GetRef();
 		pointToInsert.m_point = fromPoint.m_point + (distanceThisIteration * directionBetweenObstaclePoints);
 		pointToInsert.m_height = fromPoint.m_height + (distanceThisIteration * slopeBetweenObstaclePoints);
 		pointToInsert.m_isAlias = true;
 	}
 }
 
-void ObstaclePointArray::AddObstaclePointsWithFillIn(const ObstaclePoint& instigatingObstacle, bool addToHead)
+void FObstaclePointArray::AddObstaclePointsWithFillIn(const FObstaclePoint& instigatingObstacle, bool addToHead)
 {
-	TArray<ObstaclePoint> obstaclePointsToAdd;
+	TArray<FObstaclePoint> obstaclePointsToAdd;
 
-	const ObstaclePoint& attachPoint = addToHead ? GetHead() : GetTail();
-	const ObstaclePoint& startPoint = addToHead ? instigatingObstacle : attachPoint;
-	const ObstaclePoint& endPoint = addToHead ? attachPoint : instigatingObstacle;
-	const int32 index = addToHead ? 0 : Num();
+	const FObstaclePoint& attachPoint = addToHead ? GetHead() : GetTail();
+	const FObstaclePoint& startPoint = addToHead ? instigatingObstacle : attachPoint;
+	const FObstaclePoint& endPoint = addToHead ? attachPoint : instigatingObstacle;
+	const int32 index = addToHead ? 0 : m_obstaclePoints.Num();
 
 	if (addToHead)
 	{
@@ -237,98 +237,98 @@ void ObstaclePointArray::AddObstaclePointsWithFillIn(const ObstaclePoint& instig
 		obstaclePointsToAdd.Add(endPoint);
 	}
 
-	Insert(obstaclePointsToAdd, index);
+	m_obstaclePoints.Insert(obstaclePointsToAdd, index);
 }
 
-void ObstaclePointArray::Reverse()
+void FObstaclePointArray::Reverse()
 {
-	const int32 halfObstaclePoints = Num() / 2;
+	const int32 halfObstaclePoints = m_obstaclePoints.Num() / 2;
 	for (int32 i = 0; i < halfObstaclePoints; ++i)
 	{
-		Swap(i, Num() - (i + 1));
+		m_obstaclePoints.Swap(i, m_obstaclePoints.Num() - (i + 1));
 	}
 }
 
-void ObstaclePointArray::AppendOtherToThis(ObstaclePointArray& other)
+void FObstaclePointArray::AppendOtherToThis(FObstaclePointArray& other)
 {
-	if (other.Num() < 2)
+	if (other.m_obstaclePoints.Num() < 2)
 	{
 		return;
 	}
 
-	TArray<ObstaclePoint> obstaclePointsToAdd;
-	FillInBetweenObstaclePoints(GetTail(), other[1], obstaclePointsToAdd);
+	TArray<FObstaclePoint> obstaclePointsToAdd;
+	FillInBetweenObstaclePoints(GetTail(), other.m_obstaclePoints[1], obstaclePointsToAdd);
 	if (obstaclePointsToAdd.Num() > 0)
 	{
-		Insert(obstaclePointsToAdd, Num());
+		m_obstaclePoints.Insert(obstaclePointsToAdd, m_obstaclePoints.Num());
 	}
 
-	Append(&other[1], other.Num() - 1);
+	m_obstaclePoints.Append(&other.m_obstaclePoints[1], other.m_obstaclePoints.Num() - 1);
 }
 
-void ObstaclePointArray::CloseLoop()
+void FObstaclePointArray::CloseLoop()
 {
 	if (GetHead().m_point == GetTail().m_point)
 	{
-		RemoveAt(Num() - 1, EAllowShrinking::No);
+		m_obstaclePoints.RemoveAt(m_obstaclePoints.Num() - 1, EAllowShrinking::No);
 	}
 
-	TArray<ObstaclePoint> obstaclePointsToAdd;
+	TArray<FObstaclePoint> obstaclePointsToAdd;
 	FillInBetweenObstaclePoints(GetTail(), GetHead(), obstaclePointsToAdd);
 	if (obstaclePointsToAdd.Num() > 0)
 	{
-		Insert(obstaclePointsToAdd, Num());
+		m_obstaclePoints.Insert(obstaclePointsToAdd, m_obstaclePoints.Num());
 	}
 }
 
-void ObstaclePointArray::ConsolidateNearbyPoints()
+void FObstaclePointArray::ConsolidateNearbyPoints()
 {
 	const GlobalSettingsComponent* settings = GlobalSettingsComponent::Get();
 	ARGUS_RETURN_ON_NULL(settings, ArgusECSLog);
 
 	const float thresholdSquared = FMath::Square(settings->m_minObstaclePointDistance);
-	TArray<ObstaclePoint> finalObstaclePoints;
-	finalObstaclePoints.Reserve(Num());
+	TArray<FObstaclePoint> finalObstaclePoints;
+	finalObstaclePoints.Reserve(m_obstaclePoints.Num());
 	finalObstaclePoints.Add(GetTail());
 
 	int32 j = 0;
-	for (int32 i = 0; i < Num() - 1; ++i)
+	for (int32 i = 0; i < m_obstaclePoints.Num() - 1; ++i)
 	{
-		const float distSquared = FVector2D::DistSquared(finalObstaclePoints[j].m_point, GetData()[i].m_point);
+		const float distSquared = FVector2D::DistSquared(finalObstaclePoints[j].m_point, m_obstaclePoints[i].m_point);
 		if (distSquared < thresholdSquared)
 		{
-			finalObstaclePoints[j].m_point = ArgusMath::Average(finalObstaclePoints[j].m_point, GetData()[i].m_point);
+			finalObstaclePoints[j].m_point = ArgusMath::Average(finalObstaclePoints[j].m_point, m_obstaclePoints[i].m_point);
 			finalObstaclePoints[j].m_isAlias = false;
 		}
 		else
 		{
-			finalObstaclePoints.Add(GetData()[i]);
+			finalObstaclePoints.Add(m_obstaclePoints[i]);
 			++j;
 		}
 	}
 
-	Reset();
+	m_obstaclePoints.Reset();
 
 	for (int32 i = 0; i < finalObstaclePoints.Num(); ++i)
 	{
-		Add(finalObstaclePoints[i]);
+		m_obstaclePoints.Add(finalObstaclePoints[i]);
 	}
 }
 
-bool ObstaclePointArray::IsPointElevated(int32 index) const
+bool FObstaclePointArray::IsPointElevated(int32 index) const
 {
-	if (index < 0 || index >= Num())
+	if (index < 0 || index >= m_obstaclePoints.Num())
 	{
 		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Index, %d, was out of range of the %s"), ARGUS_FUNCNAME, index, ARGUS_NAMEOF(ObstaclePointArray));
 		return false;
 	}
 
-	return (GetData()[index].m_height > m_floorHeight);
+	return (m_obstaclePoints[index].m_height > m_floorHeight);
 }
 
-bool ObstaclePointArray::IsNextPointElevated(int32 index) const
+bool FObstaclePointArray::IsNextPointElevated(int32 index) const
 {
-	if (index < 0 || index >= Num())
+	if (index < 0 || index >= m_obstaclePoints.Num())
 	{
 		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Index, %d, was out of range of the %s"), ARGUS_FUNCNAME, index, ARGUS_NAMEOF(ObstaclePointArray));
 		return false;

@@ -43,7 +43,7 @@ bool ObstaclePointKDTreeNode::PassesRangeCheck(const FVector& targetLocation, fl
 	nodeRangeSquared = FVector::DistSquared2D(GetLocation(), targetLocation);
 	bool output = nodeRangeSquared < rangeSquared;
 
-	const ObstaclePoint& next = spatialPartitioningComponent->m_obstacles[m_indicies.m_obstacleIndex].GetNext(m_indicies.m_obstaclePointIndex);
+	const FObstaclePoint& next = spatialPartitioningComponent->m_obstacles.m_obstacleArrays[m_indicies.m_obstacleIndex].GetNext(m_indicies.m_obstaclePointIndex);
 
 	const FVector2D targetLocation2D = FVector2D(targetLocation);
 	const FVector2D location2D = FVector2D(m_location);
@@ -114,17 +114,17 @@ void ObstaclePointKDTreeRangeOutput::PopulateArrayWithObstacleIndiciesInSightRan
 	});
 }
 
-void ObstaclePointKDTree::InsertObstaclesIntoKDTree(const ObstaclesContainer& obstacles)
+void ObstaclePointKDTree::InsertObstaclesIntoKDTree(const FObstaclesContainer& obstacles)
 {
 	ARGUS_MEMORY_TRACE(ArgusKDTree);
 	ARGUS_TRACE(ArgusKDTree::InsertObstaclesIntoKDTree);
 
-	for (int32 i = 0; i < obstacles.Num(); ++i)
+	for (int32 i = 0; i < obstacles.m_obstacleArrays.Num(); ++i)
 	{
-		for (int32 j = 0; j < obstacles[i].Num(); ++j)
+		for (int32 j = 0; j < obstacles.m_obstacleArrays[i].m_obstaclePoints.Num(); ++j)
 		{
 			ObstaclePointKDTreeNode* nodeToInsert = m_nodePool.Take();
-			nodeToInsert->m_location = obstacles[i][j].m_point;
+			nodeToInsert->m_location = obstacles.m_obstacleArrays[i].m_obstaclePoints[j].m_point;
 			nodeToInsert->m_indicies.m_obstacleIndex = i;
 			nodeToInsert->m_indicies.m_obstaclePointIndex = j;
 

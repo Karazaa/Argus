@@ -356,14 +356,14 @@ void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const Creat
 	const TArray<ObstacleIndicies, ArgusContainerAllocator<20u> >& obstacleIndicies = nearbyObstaclesComponent->m_obstacleIndicies.GetObstacleIndiciesInAvoidanceRange();
 	for (int32 i = 0; i < obstacleIndicies.Num(); ++i)
 	{
-		const ObstaclePointArray& obstaclesArray = params.m_spatialPartitioningComponent->m_obstacles[obstacleIndicies[i].m_obstacleIndex];
+		const FObstaclePointArray& obstaclesArray = params.m_spatialPartitioningComponent->m_obstacles.m_obstacleArrays[obstacleIndicies[i].m_obstacleIndex];
 		const int32 currentObstacleIndex = obstaclesArray.GetCurrentNonAliasIndex(obstacleIndicies[i].m_obstaclePointIndex);
 		const int32 previousObstacleIndex = obstaclesArray.GetPreviousNonAliasIndex(currentObstacleIndex);
 		const int32 nextObstacleIndex = obstaclesArray.GetNextNonAliasIndex(currentObstacleIndex);
 
-		const ObstaclePoint& previous = obstaclesArray[previousObstacleIndex];
-		const ObstaclePoint& current = obstaclesArray[currentObstacleIndex];
-		const ObstaclePoint& next = obstaclesArray[nextObstacleIndex];
+		const FObstaclePoint& previous = obstaclesArray.m_obstaclePoints[previousObstacleIndex];
+		const FObstaclePoint& current = obstaclesArray.m_obstaclePoints[currentObstacleIndex];
+		const FObstaclePoint& next = obstaclesArray.m_obstaclePoints[nextObstacleIndex];
 
 		if (FMath::Abs(current.m_height - params.m_sourceEntityLocation3D.Z) > settings->m_maxAvoidanceObstaclePointHeightDifference)
 		{
@@ -795,7 +795,7 @@ FVector AvoidanceSystems::GetDesiredDirection(const TransformSystemsArgs& compon
 	return groupLeaderNavigationComponent->m_navigationPoints[groupLeaderNavigationComponent->m_groupLastPointIndex + 1] - groupLeaderGroupingComponent->m_groupAverageLocation;
 }
 
-float AvoidanceSystems::FindAreaOfObstacleCartesian(const TArray<ObstaclePoint>& obstaclePoints)
+float AvoidanceSystems::FindAreaOfObstacleCartesian(const TArray<FObstaclePoint>& obstaclePoints)
 {
 	float area = 0.0f;
 
@@ -813,7 +813,7 @@ float AvoidanceSystems::FindAreaOfObstacleCartesian(const TArray<ObstaclePoint>&
 	return area;
 }
 
-void AvoidanceSystems::CalculateORCALineForObstacleSegment(const CreateEntityORCALinesParams& params, ObstaclePoint obstaclePoint0, ObstaclePoint obstaclePoint1, const FVector2D& previousObstaclePointDir, TArray<ORCALine>& outORCALines)
+void AvoidanceSystems::CalculateORCALineForObstacleSegment(const CreateEntityORCALinesParams& params, FObstaclePoint obstaclePoint0, FObstaclePoint obstaclePoint1, const FVector2D& previousObstaclePointDir, TArray<ORCALine>& outORCALines)
 {
 	const FVector2D relativeLocation0 = obstaclePoint0.m_point - params.m_sourceEntityLocation;
 	const FVector2D relativeLocation1 = obstaclePoint1.m_point - params.m_sourceEntityLocation;

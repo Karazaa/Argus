@@ -21,29 +21,29 @@ struct SpatialPartitioningComponent
 	ObstaclePointKDTree m_obstaclePointKDTree;
 
 	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT
-	ObstaclesContainer m_obstacles;
+	FObstaclesContainer m_obstacles;
 
 	float m_validSpaceExtent = 3000.0f;
 	float m_flyingPlaneHeight = 300.0f;
 	float m_elevatedObstaclePointHeightThreshold = 10.0f;
 
-	const ObstaclePoint& GetObstaclePointFromIndicies(const ObstacleIndicies& indicies) const 
+	const FObstaclePoint& GetObstaclePointFromIndicies(const ObstacleIndicies& indicies) const 
 	{
-		return m_obstacles[indicies.m_obstacleIndex][indicies.m_obstaclePointIndex];
+		return m_obstacles.m_obstacleArrays[indicies.m_obstacleIndex].m_obstaclePoints[indicies.m_obstaclePointIndex];
 	}
 
-	const ObstaclePoint& GetNextObstaclePointFromIndicies(const ObstacleIndicies& indicies) const
+	const FObstaclePoint& GetNextObstaclePointFromIndicies(const ObstacleIndicies& indicies) const
 	{
-		return m_obstacles[indicies.m_obstacleIndex].GetNext(indicies.m_obstaclePointIndex);
+		return m_obstacles.m_obstacleArrays[indicies.m_obstacleIndex].GetNext(indicies.m_obstaclePointIndex);
 	}
 
 	bool IsPointElevated(const ObstacleIndicies& indicies) const
 	{
-		return m_obstacles[indicies.m_obstacleIndex].IsPointElevated(indicies.m_obstaclePointIndex);
+		return m_obstacles.m_obstacleArrays[indicies.m_obstacleIndex].IsPointElevated(indicies.m_obstaclePointIndex);
 	}
 
 	bool IsNextPointElevated(const ObstacleIndicies& indicies) const
 	{
-		return m_obstacles[indicies.m_obstacleIndex].IsNextPointElevated(indicies.m_obstaclePointIndex);
+		return m_obstacles.m_obstacleArrays[indicies.m_obstacleIndex].IsNextPointElevated(indicies.m_obstaclePointIndex);
 	}
 };
