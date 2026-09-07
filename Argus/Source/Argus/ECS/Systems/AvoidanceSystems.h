@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "ComponentDependencies/ObstaclePoint.h"
 #include "SystemArgumentDefinitions/TransformSystemsArgs.h"
 
 enum class AvoidanceRange
@@ -111,9 +110,9 @@ private:
 	static bool			ShouldReturnResourceExtractionEffortCoefficient(const EffortCoefficientSettingsComponent* settings, const TransformSystemsArgs& sourceEntityComponents, const TaskComponent* foundEntityTaskComponent, bool inSameAvoidanceGroup, float& coefficient);
 	static bool			ShouldReturnStaticFlockingEffortCoefficient(const EffortCoefficientSettingsComponent* settings, const TransformSystemsArgs& sourceEntityComponents, ArgusEntity foundEntity, float& coefficient);
 	static bool			ShouldReturnObstacleEffortCoefficient(const EffortCoefficientSettingsComponent* settings, const TransformSystemsArgs& sourceEntityComponents, ArgusEntity foundEntity, bool sourceHasObstacles, float& coefficient);
-	static float		FindAreaOfObstacleCartesian(const TArray<ObstaclePoint>& obstaclePoints);
+	static float		FindAreaOfObstacleCartesian(const TArray<FObstaclePoint>& obstaclePoints);
 	
-	static void			CalculateORCALineForObstacleSegment(const CreateEntityORCALinesParams& params, ObstaclePoint obstaclePoint0, ObstaclePoint obstaclePoint1, const FVector2D& previousObstaclePointDir, TArray<ORCALine>& outORCALines);
+	static void			CalculateORCALineForObstacleSegment(const CreateEntityORCALinesParams& params, FObstaclePoint obstaclePoint0, FObstaclePoint obstaclePoint1, const FVector2D& previousObstaclePointDir, TArray<ORCALine>& outORCALines);
 	
 #if !UE_BUILD_SHIPPING
 	static void			DrawORCADebugLines(UWorld* worldPointer, const CreateEntityORCALinesParams& params, const TArray<ORCALine>& orcaLines, bool areObstacleLines, int32 startingLine);

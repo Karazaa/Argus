@@ -787,8 +787,8 @@ void FogOfWarSystems::RevealPixelRangeWithObstacles(FogOfWarComponent* fogOfWarC
 			return;
 		}
 
-		const ObstaclePoint& currentObstaclePoint = spatialPartitioningComponent->GetObstaclePointFromIndicies(indicies);
-		const ObstaclePoint& nextObstaclePoint = spatialPartitioningComponent->GetNextObstaclePointFromIndicies(indicies);
+		const FObstaclePoint& currentObstaclePoint = spatialPartitioningComponent->GetObstaclePointFromIndicies(indicies);
+		const FObstaclePoint& nextObstaclePoint = spatialPartitioningComponent->GetNextObstaclePointFromIndicies(indicies);
 
 		FVector2D currentPoint = currentObstaclePoint.m_point;
 		const FVector2D currentLeft = currentObstaclePoint.GetLeftVector();
