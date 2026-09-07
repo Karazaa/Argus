@@ -12,6 +12,7 @@
 #include "RecordDatabases/ResourceSetRecordDatabase.h"
 #include "RecordDatabases/TeamAlignmentRecordDatabase.h"
 #include "RecordDatabases/TeamColorRecordDatabase.h"
+#include "RecordDatabases/WorldCellRecordDatabase.h"
 
 #if WITH_EDITOR
 #include "Editor.h"
@@ -1106,6 +1107,125 @@ void UArgusStaticDatabase::LazyLoadUTeamColorRecordDatabase()
 	}
 }
 #pragma endregion
+#pragma region UWorldCellRecord
+const UWorldCellRecord* UArgusStaticDatabase::GetUWorldCellRecord(uint32 id)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUWorldCellRecordDatabase();
+
+	if (!m_UWorldCellRecordDatabasePersistent)
+	{
+		return nullptr;
+	}
+
+	return m_UWorldCellRecordDatabasePersistent->GetRecord(id);
+}
+
+const bool UArgusStaticDatabase::AsyncPreLoadUWorldCellRecord(uint32 id, TFunction<void(const UWorldCellRecord*)> callback)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUWorldCellRecordDatabase();
+
+	if (!m_UWorldCellRecordDatabasePersistent)
+	{
+		return false;
+	}
+
+	return m_UWorldCellRecordDatabasePersistent->AsyncPreLoadRecord(id);
+}
+
+void UArgusStaticDatabase::ResetLoadedUWorldCellRecordPointerArray()
+{
+	if (!m_UWorldCellRecordDatabasePersistent)
+	{
+		return;
+	}
+
+	m_UWorldCellRecordDatabasePersistent->ResetPersistentObjectPointerArray();
+}
+
+#if WITH_EDITOR
+uint32 UArgusStaticDatabase::AddUWorldCellRecordToDatabase(UWorldCellRecord* record)
+{
+	LazyLoadUWorldCellRecordDatabase();
+
+	if (!m_UWorldCellRecordDatabasePersistent)
+	{
+		return 0u;
+	}
+
+	m_UWorldCellRecordDatabasePersistent->AddUWorldCellRecordToDatabase(record);
+	
+	return record->m_id;
+}
+
+void UArgusStaticDatabase::IterateAllUWorldCellRecords(const TFunctionRef<void(UWorldCellRecord*)>& function)
+{
+	LazyLoadUWorldCellRecordDatabase();
+
+	if (!m_UWorldCellRecordDatabasePersistent)
+	{
+		return;
+	}
+
+	m_UWorldCellRecordDatabasePersistent->IterateAllUWorldCellRecords(function);
+}
+
+void UArgusStaticDatabase::RegisterNewUWorldCellRecordDatabase(UWorldCellRecordDatabase* database)
+{
+	if (!database)
+	{
+		return;
+	}
+
+	if (!m_UWorldCellRecordDatabase.IsNull())
+	{
+		ARGUS_LOG
+		(
+			ArgusStaticDataLog,
+			Error,
+			TEXT("[%s] Trying to assign to %s. Potential duplicate databases."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(m_UWorldCellRecordDatabase)
+		);
+		return;
+	}
+
+	m_UWorldCellRecordDatabase = database;
+	SaveDatabase();
+}
+#endif //WITH_EDITOR
+
+void UArgusStaticDatabase::LazyLoadUWorldCellRecordDatabase()
+{
+	if (!m_UWorldCellRecordDatabasePersistent)
+	{
+		m_UWorldCellRecordDatabasePersistent = m_UWorldCellRecordDatabase.LoadSynchronous();
+		if (!m_UWorldCellRecordDatabasePersistent)
+		{
+			ARGUS_LOG(ArgusStaticDataLog, Error, TEXT("[%s] Could not find %s reference. Need to set reference in %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(m_UWorldCellRecordDatabase), ARGUS_NAMEOF(UArgusStaticDatabase));
+			return;
+		}
+
+		m_UWorldCellRecordDatabasePersistent->ResizePersistentObjectPointerArrayToFitRecord(0u);
+	}
+
+	if (!m_UWorldCellRecordDatabasePersistent)
+	{
+		ARGUS_LOG
+		(
+			ArgusStaticDataLog, Error,
+			TEXT("[%s] Could not retrieve %s. %s might not be properly assigned."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(m_UWorldCellRecordDatabasePersistent),
+			ARGUS_NAMEOF(m_UWorldCellRecordDatabase)
+		);
+		return;
+	}
+}
+#pragma endregion
 
 void UArgusStaticDatabase::ResetLoadedPointerArrays()
 {
@@ -1118,6 +1238,7 @@ void UArgusStaticDatabase::ResetLoadedPointerArrays()
 	ResetLoadedUResourceSetRecordPointerArray();
 	ResetLoadedUTeamAlignmentRecordPointerArray();
 	ResetLoadedUTeamColorRecordPointerArray();
+	ResetLoadedUWorldCellRecordPointerArray();
 }
 
 #if WITH_EDITOR

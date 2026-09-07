@@ -45,7 +45,7 @@ void SpatialPartitioningSystems::RunSystems()
 	CalculateAdjacentEntityGroups();
 }
 
-void SpatialPartitioningSystems::GatherAvoidanceObstacles(UWorld* worldPointer, float queryExtent, FObstaclesContainer& outObstacles)
+void SpatialPartitioningSystems::GatherAvoidanceObstacles(UWorld* worldPointer, const FVector& queryOrigin, float queryExtent, FObstaclesContainer& outObstacles)
 {
 	if (!worldPointer)
 	{
@@ -67,7 +67,7 @@ void SpatialPartitioningSystems::GatherAvoidanceObstacles(UWorld* worldPointer, 
 	}
 
 	FNavLocation originLocation;
-	if (!unrealNavigationSystem->ProjectPointToNavigation(FVector::ZeroVector, originLocation))
+	if (!unrealNavigationSystem->ProjectPointToNavigation(queryOrigin, originLocation))
 	{
 		return;
 	}
@@ -94,7 +94,7 @@ void SpatialPartitioningSystems::InitializeAvoidanceObstacles(SpatialPartitionin
 	spatialPartitioningComponent->m_obstacles.m_obstacleArrays.Reset();
 	spatialPartitioningComponent->m_obstaclePointKDTree.ResetKDTreeWithAverageLocation();
 
-	GatherAvoidanceObstacles(worldPointer, spatialPartitioningComponent->m_validSpaceExtent, spatialPartitioningComponent->m_obstacles);
+	GatherAvoidanceObstacles(worldPointer, FVector::ZeroVector, spatialPartitioningComponent->m_validSpaceExtent, spatialPartitioningComponent->m_obstacles);
 
 	spatialPartitioningComponent->m_obstaclePointKDTree.InsertObstaclesIntoKDTree(spatialPartitioningComponent->m_obstacles);
 

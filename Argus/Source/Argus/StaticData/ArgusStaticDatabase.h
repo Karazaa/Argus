@@ -24,6 +24,8 @@ class UTeamAlignmentRecord;
 class UTeamAlignmentRecordDatabase;
 class UTeamColorRecord;
 class UTeamColorRecordDatabase;
+class UWorldCellRecord;
+class UWorldCellRecordDatabase;
 
 UCLASS()
 class UArgusStaticDatabase : public UPrimaryDataAsset
@@ -209,6 +211,25 @@ protected:
 	TObjectPtr<UTeamColorRecordDatabase> m_UTeamColorRecordDatabasePersistent;
 
 	void LazyLoadUTeamColorRecordDatabase();
+#pragma endregion
+#pragma region UWorldCellRecord
+public:
+	const UWorldCellRecord* GetUWorldCellRecord(uint32 id);
+	const bool AsyncPreLoadUWorldCellRecord(uint32 id, TFunction<void(const UWorldCellRecord*)> callback = nullptr);
+	void ResetLoadedUWorldCellRecordPointerArray();
+#if WITH_EDITOR
+	uint32 AddUWorldCellRecordToDatabase(UWorldCellRecord* record);
+	void IterateAllUWorldCellRecords(const TFunctionRef<void(UWorldCellRecord*)>& function);
+	void RegisterNewUWorldCellRecordDatabase(UWorldCellRecordDatabase* database);
+#endif //WITH_EDITOR
+
+protected:
+	UPROPERTY(EditAnywhere)
+	TSoftObjectPtr<UWorldCellRecordDatabase> m_UWorldCellRecordDatabase;
+	UPROPERTY(Transient)
+	TObjectPtr<UWorldCellRecordDatabase> m_UWorldCellRecordDatabasePersistent;
+
+	void LazyLoadUWorldCellRecordDatabase();
 #pragma endregion
 
 public:
