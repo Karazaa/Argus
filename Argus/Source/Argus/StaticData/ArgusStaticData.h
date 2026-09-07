@@ -184,6 +184,42 @@ public:
 #endif //WITH_EDITOR
 #pragma endregion
 
+#pragma region UObstaclesRecord
+	template<>
+	inline const UObstaclesRecord* GetRecord(uint32 id)
+	{
+		UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance();
+		ARGUS_RETURN_ON_NULL_POINTER(staticDatabase, ArgusStaticDataLog);
+		return staticDatabase->GetUObstaclesRecord(id);
+	}
+
+	template<>
+	inline bool AsyncPreLoadRecord<UObstaclesRecord>(uint32 id, TFunction<void(const UObstaclesRecord*)> callback)
+	{
+		UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance();
+		ARGUS_RETURN_ON_NULL_BOOL(staticDatabase, ArgusStaticDataLog);
+		return staticDatabase->AsyncPreLoadUObstaclesRecord(id, callback);
+	}
+
+#if WITH_EDITOR
+	template<>
+	ARGUS_API inline void IterateAllRecordsOfType<UObstaclesRecord>(const TFunctionRef<void(UObstaclesRecord*)>& function)
+	{
+		if (UArgusStaticDatabase* staticDatabase = GetParentDatabase())
+		{
+			staticDatabase->IterateAllUObstaclesRecords(function);
+		}
+	}
+
+	static void RegisterNewUObstaclesRecordDatabase(UObstaclesRecordDatabase* database)
+	{
+		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
+		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
+		staticDatabase->RegisterNewUObstaclesRecordDatabase(database);
+	}
+#endif //WITH_EDITOR
+#pragma endregion
+
 #pragma region UPlacedArgusActorTeamInfoRecord
 	template<>
 	inline const UPlacedArgusActorTeamInfoRecord* GetRecord(uint32 id)
