@@ -15,7 +15,7 @@ class SpatialPartitioningSystems
 public:
 	static void RunSystems();
 
-	ARGUS_API static void GatherAvoidanceObstacles(UWorld* worldPointer, float queryExtent, FObstaclesContainer& outObstacles);
+	ARGUS_API static void GatherAvoidanceObstacles(UWorld* worldPointer, const FVector& queryOrigin, float queryExtent, FObstaclesContainer& outObstacles);
 	static void InitializeAvoidanceObstacles(SpatialPartitioningComponent* spatialPartitioningComponent, UWorld* worldPointer);
 	static float FindAreaOfObstacleCartesian(const FObstaclePointArray& obstaclePoints);
 	static bool IsEntityInLineOfSightOfOther(ArgusEntity sourceEntity, ArgusEntity targetEntity);

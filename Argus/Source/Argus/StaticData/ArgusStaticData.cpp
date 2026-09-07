@@ -14,6 +14,7 @@
 #include "RecordDatabases/ResourceSetRecordDatabase.h"
 #include "RecordDatabases/TeamAlignmentRecordDatabase.h"
 #include "RecordDatabases/TeamColorRecordDatabase.h"
+#include "RecordDatabases/WorldCellRecordDatabase.h"
  
 uint32 ArgusStaticData::AddRecordToDatabase(UArgusStaticRecord* record)
 {
@@ -58,6 +59,10 @@ uint32 ArgusStaticData::AddRecordToDatabase(UArgusStaticRecord* record)
 	if (UTeamColorRecord* UTeamColorRecordInstance = Cast<UTeamColorRecord>(record))
 	{
 		return staticDatabase->AddUTeamColorRecordToDatabase(UTeamColorRecordInstance);
+	}
+	if (UWorldCellRecord* UWorldCellRecordInstance = Cast<UWorldCellRecord>(record))
+	{
+		return staticDatabase->AddUWorldCellRecordToDatabase(UWorldCellRecordInstance);
 	}
 
 	return 0u;

@@ -364,6 +364,42 @@ public:
 #endif //WITH_EDITOR
 #pragma endregion
 
+#pragma region UWorldCellRecord
+	template<>
+	inline const UWorldCellRecord* GetRecord(uint32 id)
+	{
+		UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance();
+		ARGUS_RETURN_ON_NULL_POINTER(staticDatabase, ArgusStaticDataLog);
+		return staticDatabase->GetUWorldCellRecord(id);
+	}
+
+	template<>
+	inline bool AsyncPreLoadRecord<UWorldCellRecord>(uint32 id, TFunction<void(const UWorldCellRecord*)> callback)
+	{
+		UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance();
+		ARGUS_RETURN_ON_NULL_BOOL(staticDatabase, ArgusStaticDataLog);
+		return staticDatabase->AsyncPreLoadUWorldCellRecord(id, callback);
+	}
+
+#if WITH_EDITOR
+	template<>
+	ARGUS_API inline void IterateAllRecordsOfType<UWorldCellRecord>(const TFunctionRef<void(UWorldCellRecord*)>& function)
+	{
+		if (UArgusStaticDatabase* staticDatabase = GetParentDatabase())
+		{
+			staticDatabase->IterateAllUWorldCellRecords(function);
+		}
+	}
+
+	static void RegisterNewUWorldCellRecordDatabase(UWorldCellRecordDatabase* database)
+	{
+		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
+		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
+		staticDatabase->RegisterNewUWorldCellRecordDatabase(database);
+	}
+#endif //WITH_EDITOR
+#pragma endregion
+
 #if WITH_EDITOR
 private:
 	static UArgusStaticDatabase* GetParentDatabase();
