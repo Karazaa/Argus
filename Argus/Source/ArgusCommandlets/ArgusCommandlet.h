@@ -6,6 +6,7 @@
 #include "ArgusCommandlet.generated.h"
 
 class UDataAsset;
+class UWorld;
 
 UCLASS()
 class ARGUSCOMMANDLETS_API UArgusCommandlet : public UCommandlet 
@@ -22,5 +23,9 @@ protected:
 	virtual int32 DoWork() { return 0; }
 	virtual void OnFinish() {}
 
+	UWorld* LoadWorld(const FString& worldLongPackageName);
 	bool SaveDataAsset(const UDataAsset* dataAssetToSave) const;
+
+private:
+	TObjectPtr<UWorld> m_currentlyLoadedWorld = nullptr;
 };
