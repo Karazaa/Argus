@@ -1,19 +1,25 @@
 
 #pragma region #####
 	template<>
-	inline const #####* GetRecord(uint32 id)
+	ARGUS_API inline const #####* GetRecord(uint32 id)
 	{
-		UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance();
-		ARGUS_RETURN_ON_NULL_POINTER(staticDatabase, ArgusStaticDataLog);
-		return staticDatabase->Get#####(id);
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->Get#####(id);
+		}
+
+		return nullptr;
 	}
 
 	template<>
-	inline bool AsyncPreLoadRecord<#####>(uint32 id, TFunction<void(const #####*)> callback)
+	ARGUS_API inline bool AsyncPreLoadRecord<#####>(uint32 id, TFunction<void(const #####*)> callback)
 	{
-		UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance();
-		ARGUS_RETURN_ON_NULL_BOOL(staticDatabase, ArgusStaticDataLog);
-		return staticDatabase->AsyncPreLoad#####(id, callback);
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->AsyncPreLoad#####(id, callback);
+		}
+
+		return false;
 	}
 
 #if WITH_EDITOR

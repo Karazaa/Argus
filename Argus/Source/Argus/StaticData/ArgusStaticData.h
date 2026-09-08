@@ -42,19 +42,25 @@ public:
 
 #pragma region UAbilityRecord
 	template<>
-	inline const UAbilityRecord* GetRecord(uint32 id)
+	ARGUS_API inline const UAbilityRecord* GetRecord(uint32 id)
 	{
-		UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance();
-		ARGUS_RETURN_ON_NULL_POINTER(staticDatabase, ArgusStaticDataLog);
-		return staticDatabase->GetUAbilityRecord(id);
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->GetUAbilityRecord(id);
+		}
+
+		return nullptr;
 	}
 
 	template<>
-	inline bool AsyncPreLoadRecord<UAbilityRecord>(uint32 id, TFunction<void(const UAbilityRecord*)> callback)
+	ARGUS_API inline bool AsyncPreLoadRecord<UAbilityRecord>(uint32 id, TFunction<void(const UAbilityRecord*)> callback)
 	{
-		UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance();
-		ARGUS_RETURN_ON_NULL_BOOL(staticDatabase, ArgusStaticDataLog);
-		return staticDatabase->AsyncPreLoadUAbilityRecord(id, callback);
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->AsyncPreLoadUAbilityRecord(id, callback);
+		}
+
+		return false;
 	}
 
 #if WITH_EDITOR
@@ -78,19 +84,25 @@ public:
 
 #pragma region UArgusActorRecord
 	template<>
-	inline const UArgusActorRecord* GetRecord(uint32 id)
+	ARGUS_API inline const UArgusActorRecord* GetRecord(uint32 id)
 	{
-		UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance();
-		ARGUS_RETURN_ON_NULL_POINTER(staticDatabase, ArgusStaticDataLog);
-		return staticDatabase->GetUArgusActorRecord(id);
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->GetUArgusActorRecord(id);
+		}
+
+		return nullptr;
 	}
 
 	template<>
-	inline bool AsyncPreLoadRecord<UArgusActorRecord>(uint32 id, TFunction<void(const UArgusActorRecord*)> callback)
+	ARGUS_API inline bool AsyncPreLoadRecord<UArgusActorRecord>(uint32 id, TFunction<void(const UArgusActorRecord*)> callback)
 	{
-		UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance();
-		ARGUS_RETURN_ON_NULL_BOOL(staticDatabase, ArgusStaticDataLog);
-		return staticDatabase->AsyncPreLoadUArgusActorRecord(id, callback);
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->AsyncPreLoadUArgusActorRecord(id, callback);
+		}
+
+		return false;
 	}
 
 #if WITH_EDITOR
@@ -114,19 +126,25 @@ public:
 
 #pragma region UFactionRecord
 	template<>
-	inline const UFactionRecord* GetRecord(uint32 id)
+	ARGUS_API inline const UFactionRecord* GetRecord(uint32 id)
 	{
-		UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance();
-		ARGUS_RETURN_ON_NULL_POINTER(staticDatabase, ArgusStaticDataLog);
-		return staticDatabase->GetUFactionRecord(id);
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->GetUFactionRecord(id);
+		}
+
+		return nullptr;
 	}
 
 	template<>
-	inline bool AsyncPreLoadRecord<UFactionRecord>(uint32 id, TFunction<void(const UFactionRecord*)> callback)
+	ARGUS_API inline bool AsyncPreLoadRecord<UFactionRecord>(uint32 id, TFunction<void(const UFactionRecord*)> callback)
 	{
-		UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance();
-		ARGUS_RETURN_ON_NULL_BOOL(staticDatabase, ArgusStaticDataLog);
-		return staticDatabase->AsyncPreLoadUFactionRecord(id, callback);
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->AsyncPreLoadUFactionRecord(id, callback);
+		}
+
+		return false;
 	}
 
 #if WITH_EDITOR
@@ -150,19 +168,25 @@ public:
 
 #pragma region UMaterialRecord
 	template<>
-	inline const UMaterialRecord* GetRecord(uint32 id)
+	ARGUS_API inline const UMaterialRecord* GetRecord(uint32 id)
 	{
-		UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance();
-		ARGUS_RETURN_ON_NULL_POINTER(staticDatabase, ArgusStaticDataLog);
-		return staticDatabase->GetUMaterialRecord(id);
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->GetUMaterialRecord(id);
+		}
+
+		return nullptr;
 	}
 
 	template<>
-	inline bool AsyncPreLoadRecord<UMaterialRecord>(uint32 id, TFunction<void(const UMaterialRecord*)> callback)
+	ARGUS_API inline bool AsyncPreLoadRecord<UMaterialRecord>(uint32 id, TFunction<void(const UMaterialRecord*)> callback)
 	{
-		UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance();
-		ARGUS_RETURN_ON_NULL_BOOL(staticDatabase, ArgusStaticDataLog);
-		return staticDatabase->AsyncPreLoadUMaterialRecord(id, callback);
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->AsyncPreLoadUMaterialRecord(id, callback);
+		}
+
+		return false;
 	}
 
 #if WITH_EDITOR
@@ -186,19 +210,25 @@ public:
 
 #pragma region UObstaclesRecord
 	template<>
-	inline const UObstaclesRecord* GetRecord(uint32 id)
+	ARGUS_API inline const UObstaclesRecord* GetRecord(uint32 id)
 	{
-		UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance();
-		ARGUS_RETURN_ON_NULL_POINTER(staticDatabase, ArgusStaticDataLog);
-		return staticDatabase->GetUObstaclesRecord(id);
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->GetUObstaclesRecord(id);
+		}
+
+		return nullptr;
 	}
 
 	template<>
-	inline bool AsyncPreLoadRecord<UObstaclesRecord>(uint32 id, TFunction<void(const UObstaclesRecord*)> callback)
+	ARGUS_API inline bool AsyncPreLoadRecord<UObstaclesRecord>(uint32 id, TFunction<void(const UObstaclesRecord*)> callback)
 	{
-		UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance();
-		ARGUS_RETURN_ON_NULL_BOOL(staticDatabase, ArgusStaticDataLog);
-		return staticDatabase->AsyncPreLoadUObstaclesRecord(id, callback);
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->AsyncPreLoadUObstaclesRecord(id, callback);
+		}
+
+		return false;
 	}
 
 #if WITH_EDITOR
@@ -222,19 +252,25 @@ public:
 
 #pragma region UPlacedArgusActorTeamInfoRecord
 	template<>
-	inline const UPlacedArgusActorTeamInfoRecord* GetRecord(uint32 id)
+	ARGUS_API inline const UPlacedArgusActorTeamInfoRecord* GetRecord(uint32 id)
 	{
-		UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance();
-		ARGUS_RETURN_ON_NULL_POINTER(staticDatabase, ArgusStaticDataLog);
-		return staticDatabase->GetUPlacedArgusActorTeamInfoRecord(id);
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->GetUPlacedArgusActorTeamInfoRecord(id);
+		}
+
+		return nullptr;
 	}
 
 	template<>
-	inline bool AsyncPreLoadRecord<UPlacedArgusActorTeamInfoRecord>(uint32 id, TFunction<void(const UPlacedArgusActorTeamInfoRecord*)> callback)
+	ARGUS_API inline bool AsyncPreLoadRecord<UPlacedArgusActorTeamInfoRecord>(uint32 id, TFunction<void(const UPlacedArgusActorTeamInfoRecord*)> callback)
 	{
-		UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance();
-		ARGUS_RETURN_ON_NULL_BOOL(staticDatabase, ArgusStaticDataLog);
-		return staticDatabase->AsyncPreLoadUPlacedArgusActorTeamInfoRecord(id, callback);
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->AsyncPreLoadUPlacedArgusActorTeamInfoRecord(id, callback);
+		}
+
+		return false;
 	}
 
 #if WITH_EDITOR
@@ -258,19 +294,25 @@ public:
 
 #pragma region UResourceSetRecord
 	template<>
-	inline const UResourceSetRecord* GetRecord(uint32 id)
+	ARGUS_API inline const UResourceSetRecord* GetRecord(uint32 id)
 	{
-		UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance();
-		ARGUS_RETURN_ON_NULL_POINTER(staticDatabase, ArgusStaticDataLog);
-		return staticDatabase->GetUResourceSetRecord(id);
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->GetUResourceSetRecord(id);
+		}
+
+		return nullptr;
 	}
 
 	template<>
-	inline bool AsyncPreLoadRecord<UResourceSetRecord>(uint32 id, TFunction<void(const UResourceSetRecord*)> callback)
+	ARGUS_API inline bool AsyncPreLoadRecord<UResourceSetRecord>(uint32 id, TFunction<void(const UResourceSetRecord*)> callback)
 	{
-		UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance();
-		ARGUS_RETURN_ON_NULL_BOOL(staticDatabase, ArgusStaticDataLog);
-		return staticDatabase->AsyncPreLoadUResourceSetRecord(id, callback);
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->AsyncPreLoadUResourceSetRecord(id, callback);
+		}
+
+		return false;
 	}
 
 #if WITH_EDITOR
@@ -294,19 +336,25 @@ public:
 
 #pragma region UTeamAlignmentRecord
 	template<>
-	inline const UTeamAlignmentRecord* GetRecord(uint32 id)
+	ARGUS_API inline const UTeamAlignmentRecord* GetRecord(uint32 id)
 	{
-		UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance();
-		ARGUS_RETURN_ON_NULL_POINTER(staticDatabase, ArgusStaticDataLog);
-		return staticDatabase->GetUTeamAlignmentRecord(id);
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->GetUTeamAlignmentRecord(id);
+		}
+
+		return nullptr;
 	}
 
 	template<>
-	inline bool AsyncPreLoadRecord<UTeamAlignmentRecord>(uint32 id, TFunction<void(const UTeamAlignmentRecord*)> callback)
+	ARGUS_API inline bool AsyncPreLoadRecord<UTeamAlignmentRecord>(uint32 id, TFunction<void(const UTeamAlignmentRecord*)> callback)
 	{
-		UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance();
-		ARGUS_RETURN_ON_NULL_BOOL(staticDatabase, ArgusStaticDataLog);
-		return staticDatabase->AsyncPreLoadUTeamAlignmentRecord(id, callback);
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->AsyncPreLoadUTeamAlignmentRecord(id, callback);
+		}
+
+		return false;
 	}
 
 #if WITH_EDITOR
@@ -330,19 +378,25 @@ public:
 
 #pragma region UTeamColorRecord
 	template<>
-	inline const UTeamColorRecord* GetRecord(uint32 id)
+	ARGUS_API inline const UTeamColorRecord* GetRecord(uint32 id)
 	{
-		UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance();
-		ARGUS_RETURN_ON_NULL_POINTER(staticDatabase, ArgusStaticDataLog);
-		return staticDatabase->GetUTeamColorRecord(id);
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->GetUTeamColorRecord(id);
+		}
+
+		return nullptr;
 	}
 
 	template<>
-	inline bool AsyncPreLoadRecord<UTeamColorRecord>(uint32 id, TFunction<void(const UTeamColorRecord*)> callback)
+	ARGUS_API inline bool AsyncPreLoadRecord<UTeamColorRecord>(uint32 id, TFunction<void(const UTeamColorRecord*)> callback)
 	{
-		UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance();
-		ARGUS_RETURN_ON_NULL_BOOL(staticDatabase, ArgusStaticDataLog);
-		return staticDatabase->AsyncPreLoadUTeamColorRecord(id, callback);
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->AsyncPreLoadUTeamColorRecord(id, callback);
+		}
+
+		return false;
 	}
 
 #if WITH_EDITOR
@@ -366,19 +420,25 @@ public:
 
 #pragma region UWorldCellRecord
 	template<>
-	inline const UWorldCellRecord* GetRecord(uint32 id)
+	ARGUS_API inline const UWorldCellRecord* GetRecord(uint32 id)
 	{
-		UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance();
-		ARGUS_RETURN_ON_NULL_POINTER(staticDatabase, ArgusStaticDataLog);
-		return staticDatabase->GetUWorldCellRecord(id);
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->GetUWorldCellRecord(id);
+		}
+
+		return nullptr;
 	}
 
 	template<>
-	inline bool AsyncPreLoadRecord<UWorldCellRecord>(uint32 id, TFunction<void(const UWorldCellRecord*)> callback)
+	ARGUS_API inline bool AsyncPreLoadRecord<UWorldCellRecord>(uint32 id, TFunction<void(const UWorldCellRecord*)> callback)
 	{
-		UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance();
-		ARGUS_RETURN_ON_NULL_BOOL(staticDatabase, ArgusStaticDataLog);
-		return staticDatabase->AsyncPreLoadUWorldCellRecord(id, callback);
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->AsyncPreLoadUWorldCellRecord(id, callback);
+		}
+
+		return false;
 	}
 
 #if WITH_EDITOR

@@ -28,23 +28,23 @@ int32 UUpdateObstaclesRecordsCommandlet::DoWork()
 			return;
 		}
 
-		//UObstaclesRecord* obstaclesRecord = const_cast<UObstaclesRecord*>(ArgusStaticData::GetRecord<UObstaclesRecord>(worldCellRecord->m_obstaclesRecord.GetId()));
-		//if (obstaclesRecord)
-		//{
-		//	// TODO JAMES: Need way of loading level as a UWorld for the Commandlet.
-		//	// Map soft reference is stored in WorldCellRecord.
-		//	// 
-		//	// 1) Load package
-		//	// 2) UWorld::FindWorldInPackage
-		//	// 3) World->WorldType = EWorldType::Editor;
-		//	// 4) World->AddToRoot
-		//	// 5) Initialize World
-		//	// 
-		//	// SpatialPartitioningSystems::GatherAvoidanceObstacles(nullptr, 8000.0f, obstaclesRecord->m_obstaclesContainer);
+		UObstaclesRecord* obstaclesRecord = const_cast<UObstaclesRecord*>(ArgusStaticData::GetRecord<UObstaclesRecord>(worldCellRecord->m_obstaclesRecord.GetId()));
+		if (obstaclesRecord)
+		{
+			// TODO JAMES: Need way of loading level as a UWorld for the Commandlet.
+			// Map soft reference is stored in WorldCellRecord.
+			// 
+			// 1) Load package
+			// 2) UWorld::FindWorldInPackage
+			// 3) World->WorldType = EWorldType::Editor;
+			// 4) World->AddToRoot
+			// 5) Initialize World
+			// 
+			// SpatialPartitioningSystems::GatherAvoidanceObstacles(nullptr, 8000.0f, obstaclesRecord->m_obstaclesContainer);
 
-		//	obstaclesRecord->Modify(true);
-		//	SaveDataAsset(obstaclesRecord);
-		//}
+			obstaclesRecord->Modify(true);
+			SaveDataAsset(obstaclesRecord);
+		}
 	});
 
 	return 0;
