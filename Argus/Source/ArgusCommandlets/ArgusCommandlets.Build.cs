@@ -17,8 +17,10 @@ public class ArgusCommandlets : ModuleRules
 			"Engine",
 			"UnrealEd",
             "SourceControl",
-            "Argus"
-		);
+            "Argus",
+            "NavigationSystem", 
+			"Navmesh"
+        );
 
 		PrivateDependencyModuleNames.AddAll();
 	}

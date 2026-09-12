@@ -47,24 +47,13 @@ void SpatialPartitioningSystems::RunSystems()
 
 void SpatialPartitioningSystems::GatherAvoidanceObstacles(UWorld* worldPointer, const FVector& queryOrigin, float queryExtent, FObstaclesContainer& outObstacles)
 {
-	if (!worldPointer)
-	{
-		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Passed in %s is nullptr."), ARGUS_FUNCNAME, ARGUS_NAMEOF(UWorld*));
-		return;
-	}
+	ARGUS_RETURN_ON_NULL(worldPointer, ArgusECSLog);
 
 	const UNavigationSystemV1* unrealNavigationSystem = UNavigationSystemV1::GetCurrent(worldPointer);
-	if (!unrealNavigationSystem)
-	{
-		ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Could not retrieve a valid %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(UNavigationSystemV1*));
-		return;
-	}
+	ARGUS_RETURN_ON_NULL(unrealNavigationSystem, ArgusECSLog);
 
-	const ARecastNavMesh* navMesh = Cast<ARecastNavMesh>(unrealNavigationSystem->MainNavData);
-	if (!navMesh)
-	{
-		return;
-	}
+	const ARecastNavMesh* navMesh = Cast<ARecastNavMesh>(unrealNavigationSystem->GetDefaultNavDataInstance());
+	ARGUS_RETURN_ON_NULL(navMesh, ArgusECSLog);
 
 	FNavLocation originLocation;
 	if (!unrealNavigationSystem->ProjectPointToNavigation(queryOrigin, originLocation))

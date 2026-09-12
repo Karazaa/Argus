@@ -5,6 +5,7 @@
 #include "ArgusStaticData.h"
 #include "Engine/AssetManager.h"
 #include "Engine/World.h"
+#include "NavigationSystem.h"
 #include "RecordDefinitions/WorldCellRecord.h"
 #include "RecordDefinitions/ObstaclesRecord.h"
 #include "Systems/SpatialPartitioningSystems.h"
@@ -38,7 +39,17 @@ int32 UUpdateObstaclesRecordsCommandlet::DoWork()
 		const FString packageName = worldCellRecord->m_worldReference.GetLongPackageName();
 		if (UWorld* loadedWorld = LoadWorld(packageName))
 		{
-			SpatialPartitioningSystems::GatherAvoidanceObstacles(loadedWorld, FVector::ZeroVector, 8000.0f, obstaclesRecord->m_obstaclesContainer);
+			UE_LOG(LogTemp, Display, TEXT("===> Successfully loaded world: %s"), *loadedWorld->GetName());
+
+			if (UNavigationSystemV1* unrealNavigationSystem = UNavigationSystemV1::GetCurrent(loadedWorld))
+			{
+				unrealNavigationSystem->InitializeForWorld(*loadedWorld, FNavigationSystemRunMode::EditorMode);
+				SpatialPartitioningSystems::GatherAvoidanceObstacles(loadedWorld, FVector::ZeroVector, 8000.0f, obstaclesRecord->m_obstaclesContainer);
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Display, TEXT("===> Failed to load world at path: %s"), *packageName);
 		}
 
 		obstaclesRecord->Modify(true);
