@@ -20,6 +20,8 @@ class UPlacedArgusActorTeamInfoRecord;
 class UPlacedArgusActorTeamInfoRecordDatabase;
 class UResourceSetRecord;
 class UResourceSetRecordDatabase;
+class UStructuralEntityTemplateRecord;
+class UStructuralEntityTemplateRecordDatabase;
 class UTeamAlignmentRecord;
 class UTeamAlignmentRecordDatabase;
 class UTeamColorRecord;
@@ -173,6 +175,25 @@ protected:
 	TObjectPtr<UResourceSetRecordDatabase> m_UResourceSetRecordDatabasePersistent;
 
 	void LazyLoadUResourceSetRecordDatabase();
+#pragma endregion
+#pragma region UStructuralEntityTemplateRecord
+public:
+	const UStructuralEntityTemplateRecord* GetUStructuralEntityTemplateRecord(uint32 id);
+	const bool AsyncPreLoadUStructuralEntityTemplateRecord(uint32 id, TFunction<void(const UStructuralEntityTemplateRecord*)> callback = nullptr);
+	void ResetLoadedUStructuralEntityTemplateRecordPointerArray();
+#if WITH_EDITOR
+	uint32 AddUStructuralEntityTemplateRecordToDatabase(UStructuralEntityTemplateRecord* record);
+	void IterateAllUStructuralEntityTemplateRecords(const TFunctionRef<void(UStructuralEntityTemplateRecord*)>& function);
+	void RegisterNewUStructuralEntityTemplateRecordDatabase(UStructuralEntityTemplateRecordDatabase* database);
+#endif //WITH_EDITOR
+
+protected:
+	UPROPERTY(EditAnywhere)
+	TSoftObjectPtr<UStructuralEntityTemplateRecordDatabase> m_UStructuralEntityTemplateRecordDatabase;
+	UPROPERTY(Transient)
+	TObjectPtr<UStructuralEntityTemplateRecordDatabase> m_UStructuralEntityTemplateRecordDatabasePersistent;
+
+	void LazyLoadUStructuralEntityTemplateRecordDatabase();
 #pragma endregion
 #pragma region UTeamAlignmentRecord
 public:

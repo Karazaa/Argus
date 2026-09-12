@@ -10,6 +10,7 @@
 #include "RecordDatabases/ObstaclesRecordDatabase.h"
 #include "RecordDatabases/PlacedArgusActorTeamInfoRecordDatabase.h"
 #include "RecordDatabases/ResourceSetRecordDatabase.h"
+#include "RecordDatabases/StructuralEntityTemplateRecordDatabase.h"
 #include "RecordDatabases/TeamAlignmentRecordDatabase.h"
 #include "RecordDatabases/TeamColorRecordDatabase.h"
 #include "RecordDatabases/WorldCellRecordDatabase.h"
@@ -869,6 +870,125 @@ void UArgusStaticDatabase::LazyLoadUResourceSetRecordDatabase()
 	}
 }
 #pragma endregion
+#pragma region UStructuralEntityTemplateRecord
+const UStructuralEntityTemplateRecord* UArgusStaticDatabase::GetUStructuralEntityTemplateRecord(uint32 id)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUStructuralEntityTemplateRecordDatabase();
+
+	if (!m_UStructuralEntityTemplateRecordDatabasePersistent)
+	{
+		return nullptr;
+	}
+
+	return m_UStructuralEntityTemplateRecordDatabasePersistent->GetRecord(id);
+}
+
+const bool UArgusStaticDatabase::AsyncPreLoadUStructuralEntityTemplateRecord(uint32 id, TFunction<void(const UStructuralEntityTemplateRecord*)> callback)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUStructuralEntityTemplateRecordDatabase();
+
+	if (!m_UStructuralEntityTemplateRecordDatabasePersistent)
+	{
+		return false;
+	}
+
+	return m_UStructuralEntityTemplateRecordDatabasePersistent->AsyncPreLoadRecord(id);
+}
+
+void UArgusStaticDatabase::ResetLoadedUStructuralEntityTemplateRecordPointerArray()
+{
+	if (!m_UStructuralEntityTemplateRecordDatabasePersistent)
+	{
+		return;
+	}
+
+	m_UStructuralEntityTemplateRecordDatabasePersistent->ResetPersistentObjectPointerArray();
+}
+
+#if WITH_EDITOR
+uint32 UArgusStaticDatabase::AddUStructuralEntityTemplateRecordToDatabase(UStructuralEntityTemplateRecord* record)
+{
+	LazyLoadUStructuralEntityTemplateRecordDatabase();
+
+	if (!m_UStructuralEntityTemplateRecordDatabasePersistent)
+	{
+		return 0u;
+	}
+
+	m_UStructuralEntityTemplateRecordDatabasePersistent->AddUStructuralEntityTemplateRecordToDatabase(record);
+	
+	return record->m_id;
+}
+
+void UArgusStaticDatabase::IterateAllUStructuralEntityTemplateRecords(const TFunctionRef<void(UStructuralEntityTemplateRecord*)>& function)
+{
+	LazyLoadUStructuralEntityTemplateRecordDatabase();
+
+	if (!m_UStructuralEntityTemplateRecordDatabasePersistent)
+	{
+		return;
+	}
+
+	m_UStructuralEntityTemplateRecordDatabasePersistent->IterateAllUStructuralEntityTemplateRecords(function);
+}
+
+void UArgusStaticDatabase::RegisterNewUStructuralEntityTemplateRecordDatabase(UStructuralEntityTemplateRecordDatabase* database)
+{
+	if (!database)
+	{
+		return;
+	}
+
+	if (!m_UStructuralEntityTemplateRecordDatabase.IsNull())
+	{
+		ARGUS_LOG
+		(
+			ArgusStaticDataLog,
+			Error,
+			TEXT("[%s] Trying to assign to %s. Potential duplicate databases."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(m_UStructuralEntityTemplateRecordDatabase)
+		);
+		return;
+	}
+
+	m_UStructuralEntityTemplateRecordDatabase = database;
+	SaveDatabase();
+}
+#endif //WITH_EDITOR
+
+void UArgusStaticDatabase::LazyLoadUStructuralEntityTemplateRecordDatabase()
+{
+	if (!m_UStructuralEntityTemplateRecordDatabasePersistent)
+	{
+		m_UStructuralEntityTemplateRecordDatabasePersistent = m_UStructuralEntityTemplateRecordDatabase.LoadSynchronous();
+		if (!m_UStructuralEntityTemplateRecordDatabasePersistent)
+		{
+			ARGUS_LOG(ArgusStaticDataLog, Error, TEXT("[%s] Could not find %s reference. Need to set reference in %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(m_UStructuralEntityTemplateRecordDatabase), ARGUS_NAMEOF(UArgusStaticDatabase));
+			return;
+		}
+
+		m_UStructuralEntityTemplateRecordDatabasePersistent->ResizePersistentObjectPointerArrayToFitRecord(0u);
+	}
+
+	if (!m_UStructuralEntityTemplateRecordDatabasePersistent)
+	{
+		ARGUS_LOG
+		(
+			ArgusStaticDataLog, Error,
+			TEXT("[%s] Could not retrieve %s. %s might not be properly assigned."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(m_UStructuralEntityTemplateRecordDatabasePersistent),
+			ARGUS_NAMEOF(m_UStructuralEntityTemplateRecordDatabase)
+		);
+		return;
+	}
+}
+#pragma endregion
 #pragma region UTeamAlignmentRecord
 const UTeamAlignmentRecord* UArgusStaticDatabase::GetUTeamAlignmentRecord(uint32 id)
 {
@@ -1236,6 +1356,7 @@ void UArgusStaticDatabase::ResetLoadedPointerArrays()
 	ResetLoadedUObstaclesRecordPointerArray();
 	ResetLoadedUPlacedArgusActorTeamInfoRecordPointerArray();
 	ResetLoadedUResourceSetRecordPointerArray();
+	ResetLoadedUStructuralEntityTemplateRecordPointerArray();
 	ResetLoadedUTeamAlignmentRecordPointerArray();
 	ResetLoadedUTeamColorRecordPointerArray();
 	ResetLoadedUWorldCellRecordPointerArray();

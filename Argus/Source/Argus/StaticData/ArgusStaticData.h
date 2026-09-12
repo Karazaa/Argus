@@ -334,6 +334,48 @@ public:
 #endif //WITH_EDITOR
 #pragma endregion
 
+#pragma region UStructuralEntityTemplateRecord
+	template<>
+	ARGUS_API inline const UStructuralEntityTemplateRecord* GetRecord(uint32 id)
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->GetUStructuralEntityTemplateRecord(id);
+		}
+
+		return nullptr;
+	}
+
+	template<>
+	ARGUS_API inline bool AsyncPreLoadRecord<UStructuralEntityTemplateRecord>(uint32 id, TFunction<void(const UStructuralEntityTemplateRecord*)> callback)
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->AsyncPreLoadUStructuralEntityTemplateRecord(id, callback);
+		}
+
+		return false;
+	}
+
+#if WITH_EDITOR
+	template<>
+	ARGUS_API inline void IterateAllRecordsOfType<UStructuralEntityTemplateRecord>(const TFunctionRef<void(UStructuralEntityTemplateRecord*)>& function)
+	{
+		if (UArgusStaticDatabase* staticDatabase = GetParentDatabase())
+		{
+			staticDatabase->IterateAllUStructuralEntityTemplateRecords(function);
+		}
+	}
+
+	static void RegisterNewUStructuralEntityTemplateRecordDatabase(UStructuralEntityTemplateRecordDatabase* database)
+	{
+		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
+		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
+		staticDatabase->RegisterNewUStructuralEntityTemplateRecordDatabase(database);
+	}
+#endif //WITH_EDITOR
+#pragma endregion
+
 #pragma region UTeamAlignmentRecord
 	template<>
 	ARGUS_API inline const UTeamAlignmentRecord* GetRecord(uint32 id)
