@@ -52,9 +52,6 @@ void SpatialPartitioningComponent::DrawComponentDebug() const
 		ImGui::Text("m_initialWorldCell");
 		ImGui::TableNextColumn();
 		ImGui::TableNextColumn();
-		ImGui::Text("m_obstacles");
-		ImGui::TableNextColumn();
-		ImGui::TableNextColumn();
 		ImGui::Text("m_validSpaceExtent");
 		ImGui::TableNextColumn();
 		ImGui::Text("%.2f", m_validSpaceExtent);

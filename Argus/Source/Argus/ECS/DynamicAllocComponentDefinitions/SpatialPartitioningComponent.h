@@ -22,9 +22,6 @@ struct SpatialPartitioningComponent
 
 	FUWorldCellRecordReference m_initialWorldCell;
 
-	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT
-	FObstaclesContainer m_obstacles;
-
 	float m_validSpaceExtent = 3000.0f;
 	float m_flyingPlaneHeight = 300.0f;
 	float m_elevatedObstaclePointHeightThreshold = 10.0f;
