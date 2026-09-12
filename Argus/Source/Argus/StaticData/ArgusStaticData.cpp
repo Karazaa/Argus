@@ -12,6 +12,7 @@
 #include "RecordDatabases/ObstaclesRecordDatabase.h"
 #include "RecordDatabases/PlacedArgusActorTeamInfoRecordDatabase.h"
 #include "RecordDatabases/ResourceSetRecordDatabase.h"
+#include "RecordDatabases/StructuralEntityTemplateRecordDatabase.h"
 #include "RecordDatabases/TeamAlignmentRecordDatabase.h"
 #include "RecordDatabases/TeamColorRecordDatabase.h"
 #include "RecordDatabases/WorldCellRecordDatabase.h"
@@ -51,6 +52,10 @@ uint32 ArgusStaticData::AddRecordToDatabase(UArgusStaticRecord* record)
 	if (UResourceSetRecord* UResourceSetRecordInstance = Cast<UResourceSetRecord>(record))
 	{
 		return staticDatabase->AddUResourceSetRecordToDatabase(UResourceSetRecordInstance);
+	}
+	if (UStructuralEntityTemplateRecord* UStructuralEntityTemplateRecordInstance = Cast<UStructuralEntityTemplateRecord>(record))
+	{
+		return staticDatabase->AddUStructuralEntityTemplateRecordToDatabase(UStructuralEntityTemplateRecordInstance);
 	}
 	if (UTeamAlignmentRecord* UTeamAlignmentRecordInstance = Cast<UTeamAlignmentRecord>(record))
 	{

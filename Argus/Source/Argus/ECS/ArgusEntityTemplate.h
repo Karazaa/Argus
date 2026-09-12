@@ -26,6 +26,7 @@ public:
 	void SetInitialStateFromData(ArgusEntity entity) const;
 	UEntityPriority GetEntityPriority() const { return m_entityPriority; }
 	bool DoesTemplateSatisfyEntityCategory(FEntityCategory entityCategory) const;
+	void CacheComponents() const;
 
 	template <typename ComponentType>
 	const ComponentType* GetComponentFromTemplate() const
@@ -58,8 +59,6 @@ private:
 	mutable TMap<UClass*, TObjectPtr<const UComponentData>> m_loadedComponentData;
 
 	mutable ArgusMap<FEntityCategory, bool, ArgusSetAllocator<14u> > m_isEntityCategorySatisfiedByTemplate;
-
-	void CacheComponents() const;
 
 #if WITH_AUTOMATION_TESTS
 	friend class ArgusEntityTemplateInstantiateEntityTest;
