@@ -1,6 +1,7 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusCommandlet.h"
+#include "Editor.h"
 #include "Engine/DataAsset.h"
 #include "Engine/World.h"
 #include "PackageHelperFunctions.h"
@@ -42,17 +43,41 @@ UWorld* UArgusCommandlet::LoadWorld(const FString& worldLongPackageName)
 		worldPackage = LoadPackage(nullptr, *worldLongPackageName, LOAD_None);
 	}
 
-	// TODO JAMES: Need way of loading level as a UWorld for the Commandlet.
-	// Map soft reference is stored in WorldCellRecord.
-	// 
-	// 1) X
-	// 2) UWorld::FindWorldInPackage
-	// 3) World->WorldType = EWorldType::Editor;
-	// 4) World->AddToRoot
-	// 5) Initialize World
-	// 
+	UWorld* world = UWorld::FindWorldInPackage(worldPackage);
+	if (!world)
+	{
+		return nullptr;
+	}
 
-	return nullptr;
+	world->WorldType = EWorldType::Editor;
+	world->AddToRoot();
+
+	if (!world->bIsWorldInitialized)
+	{
+		world->InitWorld();
+		if (world->PersistentLevel)
+		{
+			world->PersistentLevel->UpdateModelComponents();
+		}
+		world->UpdateWorldComponents(true, false);
+	}
+
+	FWorldContext& worldContext = GEditor->GetEditorWorldContext(true);
+	if (UWorld* currentEditorWorld = worldContext.World())
+	{
+		if (currentEditorWorld->IsInitialized())
+		{
+			currentEditorWorld->ClearWorldComponents();
+			currentEditorWorld->DestroyWorld(true);
+			currentEditorWorld->RemoveFromRoot();
+		}
+	}
+
+	worldContext.SetCurrentWorld(world);
+	GWorld = world;
+	m_currentlyLoadedWorld = world;
+
+	return world;
 }
 
 bool UArgusCommandlet::SaveDataAsset(const UDataAsset* dataAssetToSave) const
