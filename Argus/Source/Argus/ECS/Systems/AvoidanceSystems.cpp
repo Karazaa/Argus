@@ -356,7 +356,7 @@ void AvoidanceSystems::CreateObstacleORCALines(UWorld* worldPointer, const Creat
 	const TArray<ObstacleIndicies, ArgusContainerAllocator<20u> >& obstacleIndicies = nearbyObstaclesComponent->m_obstacleIndicies.GetObstacleIndiciesInAvoidanceRange();
 	for (int32 i = 0; i < obstacleIndicies.Num(); ++i)
 	{
-		const FObstaclePointArray& obstaclesArray = params.m_spatialPartitioningComponent->m_obstacles.m_obstacleArrays[obstacleIndicies[i].m_obstacleIndex];
+		const FObstaclePointArray& obstaclesArray = params.m_spatialPartitioningComponent->GetObstalcesContainer().m_obstacleArrays[obstacleIndicies[i].m_obstacleIndex];
 		const int32 currentObstacleIndex = obstaclesArray.GetCurrentNonAliasIndex(obstacleIndicies[i].m_obstaclePointIndex);
 		const int32 previousObstacleIndex = obstaclesArray.GetPreviousNonAliasIndex(currentObstacleIndex);
 		const int32 nextObstacleIndex = obstaclesArray.GetNextNonAliasIndex(currentObstacleIndex);
