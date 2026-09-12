@@ -43,7 +43,7 @@ bool ObstaclePointKDTreeNode::PassesRangeCheck(const FVector& targetLocation, fl
 	nodeRangeSquared = FVector::DistSquared2D(GetLocation(), targetLocation);
 	bool output = nodeRangeSquared < rangeSquared;
 
-	const FObstaclePoint& next = spatialPartitioningComponent->m_obstacles.m_obstacleArrays[m_indicies.m_obstacleIndex].GetNext(m_indicies.m_obstaclePointIndex);
+	const FObstaclePoint& next = spatialPartitioningComponent->GetObstalcesContainer().m_obstacleArrays[m_indicies.m_obstacleIndex].GetNext(m_indicies.m_obstaclePointIndex);
 
 	const FVector2D targetLocation2D = FVector2D(targetLocation);
 	const FVector2D location2D = FVector2D(m_location);

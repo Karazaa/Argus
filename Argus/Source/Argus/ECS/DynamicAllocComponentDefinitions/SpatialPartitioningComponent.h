@@ -5,7 +5,7 @@
 #include "ArgusMacros.h"
 #include "ComponentDependencies/ArgusEntityKDTree.h"
 #include "ComponentDependencies/ObstaclePointKDTree.h"
-#include "CoreMinimal.h"
+#include "RecordReferences/WorldCellRecordReference.h"
 
 struct SpatialPartitioningComponent
 {
@@ -20,6 +20,8 @@ struct SpatialPartitioningComponent
 	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT
 	ObstaclePointKDTree m_obstaclePointKDTree;
 
+	FUWorldCellRecordReference m_initialWorldCell;
+
 	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT
 	FObstaclesContainer m_obstacles;
 
@@ -27,23 +29,9 @@ struct SpatialPartitioningComponent
 	float m_flyingPlaneHeight = 300.0f;
 	float m_elevatedObstaclePointHeightThreshold = 10.0f;
 
-	const FObstaclePoint& GetObstaclePointFromIndicies(const ObstacleIndicies& indicies) const 
-	{
-		return m_obstacles.m_obstacleArrays[indicies.m_obstacleIndex].m_obstaclePoints[indicies.m_obstaclePointIndex];
-	}
-
-	const FObstaclePoint& GetNextObstaclePointFromIndicies(const ObstacleIndicies& indicies) const
-	{
-		return m_obstacles.m_obstacleArrays[indicies.m_obstacleIndex].GetNext(indicies.m_obstaclePointIndex);
-	}
-
-	bool IsPointElevated(const ObstacleIndicies& indicies) const
-	{
-		return m_obstacles.m_obstacleArrays[indicies.m_obstacleIndex].IsPointElevated(indicies.m_obstaclePointIndex);
-	}
-
-	bool IsNextPointElevated(const ObstacleIndicies& indicies) const
-	{
-		return m_obstacles.m_obstacleArrays[indicies.m_obstacleIndex].IsNextPointElevated(indicies.m_obstaclePointIndex);
-	}
+	const FObstaclesContainer& GetObstalcesContainer() const;
+	const FObstaclePoint& GetObstaclePointFromIndicies(const ObstacleIndicies& indicies) const;
+	const FObstaclePoint& GetNextObstaclePointFromIndicies(const ObstacleIndicies& indicies) const;
+	bool IsPointElevated(const ObstacleIndicies& indicies) const;
+	bool IsNextPointElevated(const ObstacleIndicies& indicies) const;
 };

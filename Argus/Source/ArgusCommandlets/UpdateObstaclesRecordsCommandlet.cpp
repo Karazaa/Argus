@@ -35,6 +35,7 @@ int32 UUpdateObstaclesRecordsCommandlet::DoWork()
 		{
 			return;
 		}
+		obstaclesRecord->m_obstaclesContainer.m_obstacleArrays.Reset();
 
 		const FString packageName = worldCellRecord->m_worldReference.GetLongPackageName();
 		if (UWorld* loadedWorld = LoadWorld(packageName))
@@ -44,7 +45,7 @@ int32 UUpdateObstaclesRecordsCommandlet::DoWork()
 			if (UNavigationSystemV1* unrealNavigationSystem = UNavigationSystemV1::GetCurrent(loadedWorld))
 			{
 				unrealNavigationSystem->InitializeForWorld(*loadedWorld, FNavigationSystemRunMode::EditorMode);
-				SpatialPartitioningSystems::GatherAvoidanceObstacles(loadedWorld, FVector::ZeroVector, 8000.0f, obstaclesRecord->m_obstaclesContainer);
+				SpatialPartitioningSystems::GatherAvoidanceObstacles(loadedWorld, FVector::ZeroVector, 4000.0f, obstaclesRecord->m_obstaclesContainer);
 			}
 		}
 		else

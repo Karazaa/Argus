@@ -64,10 +64,6 @@ void SpatialPartitioningSystems::GatherAvoidanceObstacles(UWorld* worldPointer, 
 	TArray<FVector> navWalls;
 	GetNavMeshWalls(queryExtent, navMesh, originLocation, navWalls);
 	ConvertWallsIntoObstacles(navWalls, outObstacles);
-
-#if !UE_BUILD_SHIPPING
-	DrawDebugObstacles(worldPointer, outObstacles);
-#endif //!UE_BUILD_SHIPPING
 }
 
 void SpatialPartitioningSystems::InitializeAvoidanceObstacles(SpatialPartitioningComponent* spatialPartitioningComponent, UWorld* worldPointer)
@@ -80,12 +76,12 @@ void SpatialPartitioningSystems::InitializeAvoidanceObstacles(SpatialPartitionin
 		return;
 	}
 
-	spatialPartitioningComponent->m_obstacles.m_obstacleArrays.Reset();
 	spatialPartitioningComponent->m_obstaclePointKDTree.ResetKDTreeWithAverageLocation();
+	spatialPartitioningComponent->m_obstaclePointKDTree.InsertObstaclesIntoKDTree(spatialPartitioningComponent->GetObstalcesContainer());
 
-	GatherAvoidanceObstacles(worldPointer, FVector::ZeroVector, spatialPartitioningComponent->m_validSpaceExtent, spatialPartitioningComponent->m_obstacles);
-
-	spatialPartitioningComponent->m_obstaclePointKDTree.InsertObstaclesIntoKDTree(spatialPartitioningComponent->m_obstacles);
+#if !UE_BUILD_SHIPPING
+	DrawDebugObstacles(worldPointer, spatialPartitioningComponent->GetObstalcesContainer());
+#endif //!UE_BUILD_SHIPPING
 
 	ArgusIterators::IterateEntities([spatialPartitioningComponent](ArgusEntity entity)
 	{

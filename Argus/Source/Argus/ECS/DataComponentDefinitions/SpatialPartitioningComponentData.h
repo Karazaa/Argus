@@ -13,6 +13,9 @@ class ARGUS_API USpatialPartitioningComponentData : public UComponentData
 
 public:
 	UPROPERTY(EditAnywhere)
+	FUWorldCellRecordReference m_initialWorldCell;
+
+	UPROPERTY(EditAnywhere)
 	float m_validSpaceExtent = 3000.0f;
 
 	UPROPERTY(EditAnywhere)

@@ -15,7 +15,7 @@ void ArgusECSCommandletInterface::InitializeECSForCommandlet()
 	ArgusEntity singletonEntity = ArgusEntity::CreateEntity(ArgusECSConstants::k_singletonEntityId);
 	singletonEntity.AddComponent<AssetLoadingComponent>();
 
-	const UStructuralEntityTemplateRecord* singletonEntityTemplateRecord = ArgusStaticData::GetRecord<UStructuralEntityTemplateRecord>(1);
+	const UStructuralEntityTemplateRecord* singletonEntityTemplateRecord = ArgusStaticData::GetRecord<UStructuralEntityTemplateRecord>(ArgusECSConstants::k_singletonEntityTemplateRecordId);
 	ARGUS_RETURN_ON_NULL(singletonEntityTemplateRecord, ArgusECSLog);
 	const UArgusEntityTemplate* singletonEntityTemplate = singletonEntityTemplateRecord->m_entityTemplate.LoadAndStorePtr();
 	ARGUS_RETURN_ON_NULL(singletonEntityTemplate, ArgusECSLog);
