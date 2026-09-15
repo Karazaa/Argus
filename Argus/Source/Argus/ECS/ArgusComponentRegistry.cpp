@@ -107,6 +107,10 @@ TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > ArgusCom
 VelocityComponent* ArgusComponentRegistry::s_VelocityComponents = nullptr;
 TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > ArgusComponentRegistry::s_isVelocityComponentActive;
 #pragma endregion
+#pragma region WorldCellComponent
+WorldCellComponent* ArgusComponentRegistry::s_WorldCellComponents = nullptr;
+TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > ArgusComponentRegistry::s_isWorldCellComponentActive;
+#pragma endregion
 #pragma region AssetLoadingComponent
 ArgusMap<uint16, AssetLoadingComponent*, ArgusSetAllocator<1> > ArgusComponentRegistry::s_AssetLoadingComponents;
 #pragma endregion
@@ -356,6 +360,14 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 	{
 		s_isVelocityComponentActive[entityId] = false;
 	}
+	if (UNLIKELY(s_isWorldCellComponentActive.Num() == 0))
+	{
+		s_isWorldCellComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+	}
+	else
+	{
+		s_isWorldCellComponentActive[entityId] = false;
+	}
 
 	// Begin set component values
 	if (LIKELY(s_AbilityComponents))
@@ -457,6 +469,10 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 	if (LIKELY(s_VelocityComponents))
 	{
 		s_VelocityComponents[entityId].Reset();
+	}
+	if (LIKELY(s_WorldCellComponents))
+	{
+		s_WorldCellComponents[entityId].Reset();
 	}
 
 	// Begin remove dynamically allocated components
@@ -692,6 +708,13 @@ void ArgusComponentRegistry::FlushAllComponents()
 		s_VelocityComponents = ArgusMemorySource::Reallocate<VelocityComponent>(s_VelocityComponents, 0, ArgusECSConstants::k_maxEntities);
 	}
 	s_isVelocityComponentActive.Reset();
+	bool didAllocateWorldCellComponents = false;
+	if (!s_WorldCellComponents)
+	{
+		didAllocateWorldCellComponents = true;
+		s_WorldCellComponents = ArgusMemorySource::Reallocate<WorldCellComponent>(s_WorldCellComponents, 0, ArgusECSConstants::k_maxEntities);
+	}
+	s_isWorldCellComponentActive.Reset();
 
 	// Begin flush component values or construct components.
 	for (uint16 i = 0u; i < ArgusECSConstants::k_maxEntities; ++i)
@@ -895,6 +918,14 @@ void ArgusComponentRegistry::FlushAllComponents()
 		else
 		{
 			s_VelocityComponents[i].Reset();
+		}
+		if (didAllocateWorldCellComponents)
+		{
+			new (&s_WorldCellComponents[i]) WorldCellComponent();
+		}
+		else
+		{
+			s_WorldCellComponents[i].Reset();
 		}
 	}
 
@@ -1184,6 +1215,11 @@ uint16 ArgusComponentRegistry::GetOwningEntityIdForComponentMember(const void* m
 		const VelocityComponent* pretendComponent = reinterpret_cast<const VelocityComponent*>(memberAddress);
 		return pretendComponent - &s_VelocityComponents[0];
 	}
+	if (memberAddress >= &s_WorldCellComponents[0] && memberAddress <= &s_WorldCellComponents[ArgusECSConstants::k_maxEntities - 1])
+	{
+		const WorldCellComponent* pretendComponent = reinterpret_cast<const WorldCellComponent*>(memberAddress);
+		return pretendComponent - &s_WorldCellComponents[0];
+	}
 
 	return ArgusECSConstants::k_maxEntities;
 }
@@ -1369,6 +1405,13 @@ void ArgusComponentRegistry::Serialize(FArchive& archive)
 	{
 		s_VelocityComponents[currentIndex].Serialize(archive);
 		currentIndex = s_isVelocityComponentActive.FindFrom(true, currentIndex + 1);
+	}
+	s_isWorldCellComponentActive.Serialize(archive);
+	currentIndex = s_isWorldCellComponentActive.FindFrom(true, 0);
+	while (s_isWorldCellComponentActive.IsValidIndex(currentIndex))
+	{
+		s_WorldCellComponents[currentIndex].Serialize(archive);
+		currentIndex = s_isWorldCellComponentActive.FindFrom(true, currentIndex + 1);
 	}
 
 	// Serialize dynamically allocated components
@@ -1828,6 +1871,10 @@ void ArgusComponentRegistry::DrawComponentsDebug(uint16 entityId)
 	if (const VelocityComponent* VelocityComponentPtr = GetComponent<VelocityComponent>(entityId))
 	{
 		VelocityComponentPtr->DrawComponentDebug();
+	}
+	if (const WorldCellComponent* WorldCellComponentPtr = GetComponent<WorldCellComponent>(entityId))
+	{
+		WorldCellComponentPtr->DrawComponentDebug();
 	}
 	if (const AssetLoadingComponent* AssetLoadingComponentPtr = GetComponent<AssetLoadingComponent>(entityId))
 	{

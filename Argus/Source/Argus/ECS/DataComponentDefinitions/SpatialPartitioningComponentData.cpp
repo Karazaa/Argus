@@ -11,7 +11,7 @@ void USpatialPartitioningComponentData::InstantiateComponentForEntity(ArgusEntit
 	ARGUS_RETURN_ON_NULL(SpatialPartitioningComponentRef, ArgusECSLog);
 
 	SpatialPartitioningComponentRef->m_initialWorldCell = m_initialWorldCell;
-	SpatialPartitioningComponentRef->m_validSpaceExtent = m_validSpaceExtent;
+	SpatialPartitioningComponentRef->m_worldCellExtent = m_worldCellExtent;
 	SpatialPartitioningComponentRef->m_flyingPlaneHeight = m_flyingPlaneHeight;
 	SpatialPartitioningComponentRef->m_elevatedObstaclePointHeightThreshold = m_elevatedObstaclePointHeightThreshold;
 }

@@ -969,10 +969,10 @@ bool FogOfWarSystems::GetPixelCoordsFromWorldSpaceLocation(const FogOfWarCompone
 	ARGUS_RETURN_ON_NULL_BOOL(spatialPartitioningComponent, ArgusECSLog);
 
 	const float textureSize = static_cast<float>(fogOfWarComponent->m_textureSize);
-	const float worldspaceWidth = spatialPartitioningComponent->m_validSpaceExtent * 2.0f;
+	const float worldspaceWidth = spatialPartitioningComponent->m_worldCellExtent * 2.0f;
 
-	float xValue = ArgusMath::SafeDivide(worldSpaceLocation.Y + spatialPartitioningComponent->m_validSpaceExtent, worldspaceWidth) * textureSize;
-	float yValue = ArgusMath::SafeDivide((-worldSpaceLocation.X) + spatialPartitioningComponent->m_validSpaceExtent, worldspaceWidth) * textureSize;
+	float xValue = ArgusMath::SafeDivide(worldSpaceLocation.Y + spatialPartitioningComponent->m_worldCellExtent, worldspaceWidth) * textureSize;
+	float yValue = ArgusMath::SafeDivide((-worldSpaceLocation.X) + spatialPartitioningComponent->m_worldCellExtent, worldspaceWidth) * textureSize;
 
 	ouputPair.Key = FMath::FloorToInt32(xValue);
 	ouputPair.Value = FMath::FloorToInt32(yValue);
@@ -987,10 +987,10 @@ uint32 FogOfWarSystems::GetPixelNumberFromWorldSpaceLocation(const FogOfWarCompo
 	ARGUS_RETURN_ON_NULL_VALUE(spatialPartitioningComponent, ArgusECSLog, 0u);
 
 	const float textureSize = static_cast<float>(fogOfWarComponent->m_textureSize);
-	const float worldspaceWidth = spatialPartitioningComponent->m_validSpaceExtent * 2.0f;
+	const float worldspaceWidth = spatialPartitioningComponent->m_worldCellExtent * 2.0f;
 
-	float xValue = ArgusMath::SafeDivide(worldSpaceLocation.Y + spatialPartitioningComponent->m_validSpaceExtent, worldspaceWidth) * textureSize;
-	float yValue = ArgusMath::SafeDivide((-worldSpaceLocation.X) + spatialPartitioningComponent->m_validSpaceExtent, worldspaceWidth) * textureSize;
+	float xValue = ArgusMath::SafeDivide(worldSpaceLocation.Y + spatialPartitioningComponent->m_worldCellExtent, worldspaceWidth) * textureSize;
+	float yValue = ArgusMath::SafeDivide((-worldSpaceLocation.X) + spatialPartitioningComponent->m_worldCellExtent, worldspaceWidth) * textureSize;
 
 	uint32 xValue32 = static_cast<uint32>(FMath::FloorToInt32(xValue));
 	uint32 yValue32 = static_cast<uint32>(FMath::FloorToInt32(yValue));
@@ -1008,13 +1008,13 @@ FVector2D FogOfWarSystems::GetWorldSpaceLocationFromPixelNumber(const FogOfWarCo
 	ARGUS_RETURN_ON_NULL_VALUE(fogOfWarComponent, ArgusECSLog, FVector2D::ZeroVector);
 	ARGUS_RETURN_ON_NULL_VALUE(spatialPartitioningComponent, ArgusECSLog, FVector2D::ZeroVector);
 
-	const float worldspaceWidth = spatialPartitioningComponent->m_validSpaceExtent * 2.0f;
+	const float worldspaceWidth = spatialPartitioningComponent->m_worldCellExtent * 2.0f;
 	const float textureIncrement = ArgusMath::SafeDivide(worldspaceWidth, static_cast<float>(fogOfWarComponent->m_textureSize));
 
 	const float leftOffset = static_cast<float>(pixelNumber % fogOfWarComponent->m_textureSize) * textureIncrement;
 	const float topOffset = static_cast<float>(pixelNumber / fogOfWarComponent->m_textureSize) * textureIncrement;
 	
-	FVector2D output = FVector2D(spatialPartitioningComponent->m_validSpaceExtent - topOffset, leftOffset - spatialPartitioningComponent->m_validSpaceExtent);
+	FVector2D output = FVector2D(spatialPartitioningComponent->m_worldCellExtent - topOffset, leftOffset - spatialPartitioningComponent->m_worldCellExtent);
 	ClampVectorToWorldBounds(output);
 	return output;
 }
@@ -1025,7 +1025,7 @@ uint32 FogOfWarSystems::GetPixelRadiusFromWorldSpaceRadius(const FogOfWarCompone
 	SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId).GetComponent<SpatialPartitioningComponent>();
 	ARGUS_RETURN_ON_NULL_VALUE(spatialPartitioningComponent, ArgusECSLog, 0u);
 
-	const float portion = ArgusMath::SafeDivide(radius, (2.0f * spatialPartitioningComponent->m_validSpaceExtent));
+	const float portion = ArgusMath::SafeDivide(radius, (2.0f * spatialPartitioningComponent->m_worldCellExtent));
 	return FMath::FloorToInt32(static_cast<float>(fogOfWarComponent->m_textureSize) * portion);
 }
 
@@ -1034,8 +1034,8 @@ void FogOfWarSystems::ClampVectorToWorldBounds(FVector2D& vector)
 	SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId).GetComponent<SpatialPartitioningComponent>();
 	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
 
-	vector.X = FMath::Clamp(vector.X, -spatialPartitioningComponent->m_validSpaceExtent, spatialPartitioningComponent->m_validSpaceExtent);
-	vector.Y = FMath::Clamp(vector.Y, -spatialPartitioningComponent->m_validSpaceExtent, spatialPartitioningComponent->m_validSpaceExtent);
+	vector.X = FMath::Clamp(vector.X, -spatialPartitioningComponent->m_worldCellExtent, spatialPartitioningComponent->m_worldCellExtent);
+	vector.Y = FMath::Clamp(vector.Y, -spatialPartitioningComponent->m_worldCellExtent, spatialPartitioningComponent->m_worldCellExtent);
 }
 
 uint8 FogOfWarSystems::GetAlphaAtWorldSpaceLocation(const FogOfWarComponent* fogOfWarComponent, const FVector& worldSpaceLocation)

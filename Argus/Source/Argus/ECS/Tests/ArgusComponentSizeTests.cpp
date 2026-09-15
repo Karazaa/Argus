@@ -139,6 +139,11 @@ bool ArgusComponentComponentSizeTest::RunTest(const FString& Parameters)
 	netSize += VelocityComponentSize;
 	ARGUS_LOG(ArgusTestingLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(VelocityComponent), VelocityComponentSize);
 #pragma endregion
+#pragma region WorldCellComponent
+	const size_t WorldCellComponentSize = sizeof(WorldCellComponent);
+	netSize += WorldCellComponentSize;
+	ARGUS_LOG(ArgusTestingLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(WorldCellComponent), WorldCellComponentSize);
+#pragma endregion
 
 	netSize *= ArgusECSConstants::k_maxEntities;
 	netSize /= 1024;

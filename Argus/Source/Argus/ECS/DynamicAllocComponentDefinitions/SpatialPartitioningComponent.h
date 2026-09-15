@@ -22,7 +22,7 @@ struct SpatialPartitioningComponent
 
 	FUWorldCellRecordReference m_initialWorldCell;
 
-	float m_validSpaceExtent = 3000.0f;
+	float m_worldCellExtent = 4000.0f;
 	float m_flyingPlaneHeight = 300.0f;
 	float m_elevatedObstaclePointHeightThreshold = 10.0f;
 

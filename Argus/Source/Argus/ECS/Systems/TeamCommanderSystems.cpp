@@ -36,7 +36,7 @@ void TeamCommanderSystems::InitializeRevealedAreas(TeamCommanderComponent* teamC
 	const SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::GetSingletonEntity().GetComponent<SpatialPartitioningComponent>();
 	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
 
-	const float worldspaceWidth = spatialPartitioningComponent->m_validSpaceExtent * 2.0f;
+	const float worldspaceWidth = spatialPartitioningComponent->m_worldCellExtent * 2.0f;
 	const float areasPerWidth = ArgusMath::SafeDivide(worldspaceWidth, teamCommanderComponent->m_revealedAreaDimensionLength);
 	const int32 numAreas = FMath::FloorToInt32(FMath::Square(areasPerWidth));
 	teamCommanderComponent->m_revealedAreas.SetNum(numAreas, false);
@@ -60,11 +60,11 @@ int32 TeamCommanderSystems::GetAreaIndexFromWorldSpaceLocation(const TeamCommand
 	SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::GetSingletonEntity().GetComponent<SpatialPartitioningComponent>();
 	ARGUS_RETURN_ON_NULL_VALUE(spatialPartitioningComponent, ArgusECSLog, -1);
 
-	const float worldspaceWidth = spatialPartitioningComponent->m_validSpaceExtent * 2.0f;
+	const float worldspaceWidth = spatialPartitioningComponent->m_worldCellExtent * 2.0f;
 	const float areasPerDimension = ArgusMath::SafeDivide(worldspaceWidth, teamCommanderComponent->m_revealedAreaDimensionLength);
 
-	float xValue = ArgusMath::SafeDivide(components.m_transformComponent->m_location.Y + spatialPartitioningComponent->m_validSpaceExtent, teamCommanderComponent->m_revealedAreaDimensionLength);
-	float yValue = ArgusMath::SafeDivide((-components.m_transformComponent->m_location.X) + spatialPartitioningComponent->m_validSpaceExtent, teamCommanderComponent->m_revealedAreaDimensionLength);
+	float xValue = ArgusMath::SafeDivide(components.m_transformComponent->m_location.Y + spatialPartitioningComponent->m_worldCellExtent, teamCommanderComponent->m_revealedAreaDimensionLength);
+	float yValue = ArgusMath::SafeDivide((-components.m_transformComponent->m_location.X) + spatialPartitioningComponent->m_worldCellExtent, teamCommanderComponent->m_revealedAreaDimensionLength);
 
 	int32 xValue32 = FMath::FloorToInt32(xValue);
 	int32 yValue32 = FMath::FloorToInt32(yValue);
@@ -83,7 +83,7 @@ FVector TeamCommanderSystems::GetWorldSpaceLocationFromAreaIndex(int32 areaIndex
 	SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::GetSingletonEntity().GetComponent<SpatialPartitioningComponent>();
 	ARGUS_RETURN_ON_NULL_VALUE(spatialPartitioningComponent, ArgusECSLog, FVector::ZeroVector);
 
-	const float worldspaceWidth = spatialPartitioningComponent->m_validSpaceExtent * 2.0f;
+	const float worldspaceWidth = spatialPartitioningComponent->m_worldCellExtent * 2.0f;
 	const int32 areasPerDimension = FMath::FloorToInt32(ArgusMath::SafeDivide(worldspaceWidth, teamCommanderComponent->m_revealedAreaDimensionLength));
 
 	int32 xCoordinate, yCoordinate;
@@ -93,8 +93,8 @@ FVector TeamCommanderSystems::GetWorldSpaceLocationFromAreaIndex(int32 areaIndex
 	const float yOffset = ((static_cast<float>(yCoordinate) + 0.5f) * teamCommanderComponent->m_revealedAreaDimensionLength);
 
 	FVector output = FVector::ZeroVector;
-	output.Y = xOffset - spatialPartitioningComponent->m_validSpaceExtent;
-	output.X = spatialPartitioningComponent->m_validSpaceExtent - yOffset;
+	output.Y = xOffset - spatialPartitioningComponent->m_worldCellExtent;
+	output.X = spatialPartitioningComponent->m_worldCellExtent - yOffset;
 	return output;
 }
 
@@ -105,7 +105,7 @@ int32 TeamCommanderSystems::GetClosestUnrevealedAreaToEntity(const TeamCommander
 	SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::GetSingletonEntity().GetComponent<SpatialPartitioningComponent>();
 	ARGUS_RETURN_ON_NULL_VALUE(spatialPartitioningComponent, ArgusECSLog, -1);
 
-	const float worldspaceWidth = spatialPartitioningComponent->m_validSpaceExtent * 2.0f;
+	const float worldspaceWidth = spatialPartitioningComponent->m_worldCellExtent * 2.0f;
 	const int32 areasPerDimension = FMath::FloorToInt32(ArgusMath::SafeDivide(worldspaceWidth, teamCommanderComponent->m_revealedAreaDimensionLength));
 	int32 entityXCoordinate, entityYCoordinate;
 	ConvertAreaIndexToAreaCoordinates(GetAreaIndexFromWorldSpaceLocation(components, teamCommanderComponent), areasPerDimension, entityXCoordinate, entityYCoordinate);

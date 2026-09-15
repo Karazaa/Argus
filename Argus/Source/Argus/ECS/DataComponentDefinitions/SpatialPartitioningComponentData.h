@@ -16,7 +16,7 @@ public:
 	FUWorldCellRecordReference m_initialWorldCell;
 
 	UPROPERTY(EditAnywhere)
-	float m_validSpaceExtent = 3000.0f;
+	float m_worldCellExtent = 4000.0f;
 
 	UPROPERTY(EditAnywhere)
 	float m_flyingPlaneHeight = 300.0f;

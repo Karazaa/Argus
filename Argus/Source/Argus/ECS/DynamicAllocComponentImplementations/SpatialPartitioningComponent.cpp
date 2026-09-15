@@ -17,14 +17,14 @@ void SpatialPartitioningComponent::Reset()
 	m_argusEntityKDTree.FlushAllNodes();
 	m_flyingArgusEntityKDTree.FlushAllNodes();
 	m_obstaclePointKDTree.FlushAllNodes();
-	m_validSpaceExtent = 3000.0f;
+	m_worldCellExtent = 4000.0f;
 	m_flyingPlaneHeight = 300.0f;
 	m_elevatedObstaclePointHeightThreshold = 10.0f;
 }
 
 void SpatialPartitioningComponent::Serialize(FArchive& archive)
 {
-	archive << m_validSpaceExtent;
+	archive << m_worldCellExtent;
 	archive << m_flyingPlaneHeight;
 	archive << m_elevatedObstaclePointHeightThreshold;
 }
@@ -52,9 +52,9 @@ void SpatialPartitioningComponent::DrawComponentDebug() const
 		ImGui::Text("m_initialWorldCell");
 		ImGui::TableNextColumn();
 		ImGui::TableNextColumn();
-		ImGui::Text("m_validSpaceExtent");
+		ImGui::Text("m_worldCellExtent");
 		ImGui::TableNextColumn();
-		ImGui::Text("%.2f", m_validSpaceExtent);
+		ImGui::Text("%.2f", m_worldCellExtent);
 		ImGui::TableNextColumn();
 		ImGui::Text("m_flyingPlaneHeight");
 		ImGui::TableNextColumn();

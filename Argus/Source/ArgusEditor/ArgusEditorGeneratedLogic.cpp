@@ -31,6 +31,7 @@
 #include "AssetFactories/ComponentDataFactories/TimerComponentDataFactory.h"
 #include "AssetFactories/ComponentDataFactories/TransformComponentDataFactory.h"
 #include "AssetFactories/ComponentDataFactories/VelocityComponentDataFactory.h"
+#include "AssetFactories/ComponentDataFactories/WorldCellComponentDataFactory.h"
 #include "AssetFactories/ComponentDataFactories/AssetLoadingComponentDataFactory.h"
 #include "AssetFactories/ComponentDataFactories/DecalSystemsSettingsComponentDataFactory.h"
 #include "AssetFactories/ComponentDataFactories/EffortCoefficientSettingsComponentDataFactory.h"
@@ -114,6 +115,8 @@ void ArgusEditorModule::RegisterAssetActions(IAssetTools& assetTools) const
 	assetTools.RegisterAssetTypeActions(actionsTransformComponentData);
 	TSharedRef<IAssetTypeActions> actionsVelocityComponentData = MakeShareable(new FAssetTypeActions_VelocityComponentData);
 	assetTools.RegisterAssetTypeActions(actionsVelocityComponentData);
+	TSharedRef<IAssetTypeActions> actionsWorldCellComponentData = MakeShareable(new FAssetTypeActions_WorldCellComponentData);
+	assetTools.RegisterAssetTypeActions(actionsWorldCellComponentData);
 	TSharedRef<IAssetTypeActions> actionsAssetLoadingComponentData = MakeShareable(new FAssetTypeActions_AssetLoadingComponentData);
 	assetTools.RegisterAssetTypeActions(actionsAssetLoadingComponentData);
 	TSharedRef<IAssetTypeActions> actionsDecalSystemsSettingsComponentData = MakeShareable(new FAssetTypeActions_DecalSystemsSettingsComponentData);

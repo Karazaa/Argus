@@ -36,6 +36,7 @@
 #include "ComponentDefinitions\TimerComponent.h"
 #include "ComponentDefinitions\TransformComponent.h"
 #include "ComponentDefinitions\VelocityComponent.h"
+#include "ComponentDefinitions\WorldCellComponent.h"
 
 // Begin dynamically allocated component specific includes.
 #include "DynamicAllocComponentDefinitions\AssetLoadingComponent.h"
@@ -85,7 +86,7 @@ public:
 	static void DrawComponentsDebug(uint16 entityId);
 #endif //!UE_BUILD_SHIPPING
 
-	static constexpr uint32 k_numComponentTypes = 38;
+	static constexpr uint32 k_numComponentTypes = 39;
 
 	// Begin component specific template specifiers.
 	
@@ -2463,6 +2464,101 @@ public:
 	}
 
 	friend struct VelocityComponent;
+#pragma endregion
+#pragma region WorldCellComponent
+private:
+	static WorldCellComponent* s_WorldCellComponents;
+	static TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > s_isWorldCellComponentActive;
+public:
+	template<>
+	inline WorldCellComponent* GetComponent<WorldCellComponent>(uint16 entityId)
+	{
+		if (UNLIKELY(!s_WorldCellComponents))
+		{
+			return nullptr;
+		}
+
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(WorldCellComponent));
+			return nullptr;
+		}
+
+		if (UNLIKELY(s_isWorldCellComponentActive.Num() == 0))
+		{
+			return nullptr;
+		}
+
+		if (!s_isWorldCellComponentActive[entityId])
+		{
+			return nullptr;
+		}
+
+		return &s_WorldCellComponents[entityId];
+	}
+
+	template<>
+	inline WorldCellComponent* AddComponent<WorldCellComponent>(uint16 entityId)
+	{
+		if (UNLIKELY(!s_WorldCellComponents))
+		{
+			return nullptr;
+		}
+
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(WorldCellComponent));
+			return nullptr;
+		}
+
+		if (UNLIKELY(s_isWorldCellComponentActive.Num() == 0))
+		{
+			s_isWorldCellComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
+		if (UNLIKELY(s_isWorldCellComponentActive[entityId]))
+		{
+			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(WorldCellComponent), entityId);
+			return &s_WorldCellComponents[entityId];
+		}
+
+		s_isWorldCellComponentActive[entityId] = true;
+		s_WorldCellComponents[entityId].Reset();
+		return &s_WorldCellComponents[entityId];
+	}
+
+	template<>
+	inline WorldCellComponent* GetOrAddComponent<WorldCellComponent>(uint16 entityId)
+	{
+		if (UNLIKELY(!s_WorldCellComponents))
+		{
+			return nullptr;
+		}
+
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(WorldCellComponent));
+			return nullptr;
+		}
+
+		if (UNLIKELY(s_isWorldCellComponentActive.Num() == 0))
+		{
+			s_isWorldCellComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
+		if (s_isWorldCellComponentActive[entityId])
+		{
+			return &s_WorldCellComponents[entityId];
+		}
+		else
+		{
+			s_isWorldCellComponentActive[entityId] = true;
+			s_WorldCellComponents[entityId].Reset();
+			return &s_WorldCellComponents[entityId];
+		}
+	}
+
+	friend struct WorldCellComponent;
 #pragma endregion
 	
 	// Begin dynamically allocated component specific template specifiers.

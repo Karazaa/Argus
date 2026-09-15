@@ -57,7 +57,7 @@ void AArgusDirectionalLight::BeginPlay()
 	visible = ArgusECSDebugger::ShouldDrawFogOfWar();
 #endif //!UE_BUILD_SHIPPING
 
-	const float spatialBounds = spatialPartitioningComponent->m_validSpaceExtent * 2.0f;
+	const float spatialBounds = spatialPartitioningComponent->m_worldCellExtent * 2.0f;
 	if (visible)
 	{
 		directionalLightComponent->SetLightFunctionMaterial(m_dynamicMaterialInstance);
