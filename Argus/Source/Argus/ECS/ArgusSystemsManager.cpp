@@ -21,6 +21,7 @@
 #include "Systems/TeamCommanderSystems.h"
 #include "Systems/TimerSystems.h"
 #include "Systems/TransformSystems.h"
+#include "Systems/WorldCellSystems.h"
 
 #if !UE_BUILD_SHIPPING
 #include "ArgusECSDebugger.h"
@@ -85,8 +86,6 @@ void ArgusSystemsManager::RunSystems(UWorld* worldPointer, float deltaTime)
 	ARGUS_TRACE(ArgusSystemsManager::RunSystems);
 	ARGUS_RETURN_ON_NULL(worldPointer, ArgusECSLog);
 
-	bool didEntityPositionChangeThisFrame = false;
-
 	UpdateSingletonComponents(worldPointer);
 	TimerSystems::RunSystems(deltaTime);
 	TaskSystems::RunSystems(deltaTime);
@@ -97,10 +96,11 @@ void ArgusSystemsManager::RunSystems(UWorld* worldPointer, float deltaTime)
 	AvoidanceSystems::RunSystems(worldPointer, deltaTime);
 	ResourceSystems::RunSystems(deltaTime);
 	ConstructionSystems::RunSystems(deltaTime);
-	didEntityPositionChangeThisFrame |= TransformSystems::RunSystems(worldPointer, deltaTime);
+	TransformSystems::RunSystems(worldPointer, deltaTime);
 	FlockingSystems::RunSystems(deltaTime);
-	didEntityPositionChangeThisFrame |= SpawningSystems::RunSystems(deltaTime);
+	SpawningSystems::RunSystems(deltaTime);
 	DecalSystems::RunSystems(worldPointer, deltaTime);
+	WorldCellSystems::RunSystems(deltaTime);
 
 #if !UE_BUILD_SHIPPING
 	ArgusECSDebugger::DrawECSDebugger();
