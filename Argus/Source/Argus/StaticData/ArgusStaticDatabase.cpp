@@ -13,6 +13,7 @@
 #include "RecordDatabases/StructuralEntityTemplateRecordDatabase.h"
 #include "RecordDatabases/TeamAlignmentRecordDatabase.h"
 #include "RecordDatabases/TeamColorRecordDatabase.h"
+#include "RecordDatabases/WorldCellIndexTranslationRecordDatabase.h"
 #include "RecordDatabases/WorldCellRecordDatabase.h"
 
 #if WITH_EDITOR
@@ -1227,6 +1228,125 @@ void UArgusStaticDatabase::LazyLoadUTeamColorRecordDatabase()
 	}
 }
 #pragma endregion
+#pragma region UWorldCellIndexTranslationRecord
+const UWorldCellIndexTranslationRecord* UArgusStaticDatabase::GetUWorldCellIndexTranslationRecord(uint32 id)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUWorldCellIndexTranslationRecordDatabase();
+
+	if (!m_UWorldCellIndexTranslationRecordDatabasePersistent)
+	{
+		return nullptr;
+	}
+
+	return m_UWorldCellIndexTranslationRecordDatabasePersistent->GetRecord(id);
+}
+
+const bool UArgusStaticDatabase::AsyncPreLoadUWorldCellIndexTranslationRecord(uint32 id, TFunction<void(const UWorldCellIndexTranslationRecord*)> callback)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUWorldCellIndexTranslationRecordDatabase();
+
+	if (!m_UWorldCellIndexTranslationRecordDatabasePersistent)
+	{
+		return false;
+	}
+
+	return m_UWorldCellIndexTranslationRecordDatabasePersistent->AsyncPreLoadRecord(id);
+}
+
+void UArgusStaticDatabase::ResetLoadedUWorldCellIndexTranslationRecordPointerArray()
+{
+	if (!m_UWorldCellIndexTranslationRecordDatabasePersistent)
+	{
+		return;
+	}
+
+	m_UWorldCellIndexTranslationRecordDatabasePersistent->ResetPersistentObjectPointerArray();
+}
+
+#if WITH_EDITOR
+uint32 UArgusStaticDatabase::AddUWorldCellIndexTranslationRecordToDatabase(UWorldCellIndexTranslationRecord* record)
+{
+	LazyLoadUWorldCellIndexTranslationRecordDatabase();
+
+	if (!m_UWorldCellIndexTranslationRecordDatabasePersistent)
+	{
+		return 0u;
+	}
+
+	m_UWorldCellIndexTranslationRecordDatabasePersistent->AddUWorldCellIndexTranslationRecordToDatabase(record);
+	
+	return record->m_id;
+}
+
+void UArgusStaticDatabase::IterateAllUWorldCellIndexTranslationRecords(const TFunctionRef<void(UWorldCellIndexTranslationRecord*)>& function)
+{
+	LazyLoadUWorldCellIndexTranslationRecordDatabase();
+
+	if (!m_UWorldCellIndexTranslationRecordDatabasePersistent)
+	{
+		return;
+	}
+
+	m_UWorldCellIndexTranslationRecordDatabasePersistent->IterateAllUWorldCellIndexTranslationRecords(function);
+}
+
+void UArgusStaticDatabase::RegisterNewUWorldCellIndexTranslationRecordDatabase(UWorldCellIndexTranslationRecordDatabase* database)
+{
+	if (!database)
+	{
+		return;
+	}
+
+	if (!m_UWorldCellIndexTranslationRecordDatabase.IsNull())
+	{
+		ARGUS_LOG
+		(
+			ArgusStaticDataLog,
+			Error,
+			TEXT("[%s] Trying to assign to %s. Potential duplicate databases."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(m_UWorldCellIndexTranslationRecordDatabase)
+		);
+		return;
+	}
+
+	m_UWorldCellIndexTranslationRecordDatabase = database;
+	SaveDatabase();
+}
+#endif //WITH_EDITOR
+
+void UArgusStaticDatabase::LazyLoadUWorldCellIndexTranslationRecordDatabase()
+{
+	if (!m_UWorldCellIndexTranslationRecordDatabasePersistent)
+	{
+		m_UWorldCellIndexTranslationRecordDatabasePersistent = m_UWorldCellIndexTranslationRecordDatabase.LoadSynchronous();
+		if (!m_UWorldCellIndexTranslationRecordDatabasePersistent)
+		{
+			ARGUS_LOG(ArgusStaticDataLog, Error, TEXT("[%s] Could not find %s reference. Need to set reference in %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(m_UWorldCellIndexTranslationRecordDatabase), ARGUS_NAMEOF(UArgusStaticDatabase));
+			return;
+		}
+
+		m_UWorldCellIndexTranslationRecordDatabasePersistent->ResizePersistentObjectPointerArrayToFitRecord(0u);
+	}
+
+	if (!m_UWorldCellIndexTranslationRecordDatabasePersistent)
+	{
+		ARGUS_LOG
+		(
+			ArgusStaticDataLog, Error,
+			TEXT("[%s] Could not retrieve %s. %s might not be properly assigned."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(m_UWorldCellIndexTranslationRecordDatabasePersistent),
+			ARGUS_NAMEOF(m_UWorldCellIndexTranslationRecordDatabase)
+		);
+		return;
+	}
+}
+#pragma endregion
 #pragma region UWorldCellRecord
 const UWorldCellRecord* UArgusStaticDatabase::GetUWorldCellRecord(uint32 id)
 {
@@ -1359,6 +1479,7 @@ void UArgusStaticDatabase::ResetLoadedPointerArrays()
 	ResetLoadedUStructuralEntityTemplateRecordPointerArray();
 	ResetLoadedUTeamAlignmentRecordPointerArray();
 	ResetLoadedUTeamColorRecordPointerArray();
+	ResetLoadedUWorldCellIndexTranslationRecordPointerArray();
 	ResetLoadedUWorldCellRecordPointerArray();
 }
 

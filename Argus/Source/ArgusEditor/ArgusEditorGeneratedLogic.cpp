@@ -57,6 +57,7 @@
 #include "AssetFactories/StaticRecordFactories/StructuralEntityTemplateRecordFactory.h"
 #include "AssetFactories/StaticRecordFactories/TeamAlignmentRecordFactory.h"
 #include "AssetFactories/StaticRecordFactories/TeamColorRecordFactory.h"
+#include "AssetFactories/StaticRecordFactories/WorldCellIndexTranslationRecordFactory.h"
 #include "AssetFactories/StaticRecordFactories/WorldCellRecordFactory.h"
 
 void ArgusEditorModule::RegisterAssetActions(IAssetTools& assetTools) const 
@@ -165,6 +166,8 @@ void ArgusEditorModule::RegisterAssetActions(IAssetTools& assetTools) const
 	assetTools.RegisterAssetTypeActions(actionsTeamAlignmentRecord);
 	TSharedRef<IAssetTypeActions> actionsTeamColorRecord = MakeShareable(new FAssetTypeActions_TeamColorRecord);
 	assetTools.RegisterAssetTypeActions(actionsTeamColorRecord);
+	TSharedRef<IAssetTypeActions> actionsWorldCellIndexTranslationRecord = MakeShareable(new FAssetTypeActions_WorldCellIndexTranslationRecord);
+	assetTools.RegisterAssetTypeActions(actionsWorldCellIndexTranslationRecord);
 	TSharedRef<IAssetTypeActions> actionsWorldCellRecord = MakeShareable(new FAssetTypeActions_WorldCellRecord);
 	assetTools.RegisterAssetTypeActions(actionsWorldCellRecord);
 }

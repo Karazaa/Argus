@@ -460,6 +460,48 @@ public:
 #endif //WITH_EDITOR
 #pragma endregion
 
+#pragma region UWorldCellIndexTranslationRecord
+	template<>
+	ARGUS_API inline const UWorldCellIndexTranslationRecord* GetRecord(uint32 id)
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->GetUWorldCellIndexTranslationRecord(id);
+		}
+
+		return nullptr;
+	}
+
+	template<>
+	ARGUS_API inline bool AsyncPreLoadRecord<UWorldCellIndexTranslationRecord>(uint32 id, TFunction<void(const UWorldCellIndexTranslationRecord*)> callback)
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->AsyncPreLoadUWorldCellIndexTranslationRecord(id, callback);
+		}
+
+		return false;
+	}
+
+#if WITH_EDITOR
+	template<>
+	ARGUS_API inline void IterateAllRecordsOfType<UWorldCellIndexTranslationRecord>(const TFunctionRef<void(UWorldCellIndexTranslationRecord*)>& function)
+	{
+		if (UArgusStaticDatabase* staticDatabase = GetParentDatabase())
+		{
+			staticDatabase->IterateAllUWorldCellIndexTranslationRecords(function);
+		}
+	}
+
+	static void RegisterNewUWorldCellIndexTranslationRecordDatabase(UWorldCellIndexTranslationRecordDatabase* database)
+	{
+		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
+		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
+		staticDatabase->RegisterNewUWorldCellIndexTranslationRecordDatabase(database);
+	}
+#endif //WITH_EDITOR
+#pragma endregion
+
 #pragma region UWorldCellRecord
 	template<>
 	ARGUS_API inline const UWorldCellRecord* GetRecord(uint32 id)

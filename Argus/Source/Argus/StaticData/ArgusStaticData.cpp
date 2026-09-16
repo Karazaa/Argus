@@ -15,6 +15,7 @@
 #include "RecordDatabases/StructuralEntityTemplateRecordDatabase.h"
 #include "RecordDatabases/TeamAlignmentRecordDatabase.h"
 #include "RecordDatabases/TeamColorRecordDatabase.h"
+#include "RecordDatabases/WorldCellIndexTranslationRecordDatabase.h"
 #include "RecordDatabases/WorldCellRecordDatabase.h"
  
 uint32 ArgusStaticData::AddRecordToDatabase(UArgusStaticRecord* record)
@@ -64,6 +65,10 @@ uint32 ArgusStaticData::AddRecordToDatabase(UArgusStaticRecord* record)
 	if (UTeamColorRecord* UTeamColorRecordInstance = Cast<UTeamColorRecord>(record))
 	{
 		return staticDatabase->AddUTeamColorRecordToDatabase(UTeamColorRecordInstance);
+	}
+	if (UWorldCellIndexTranslationRecord* UWorldCellIndexTranslationRecordInstance = Cast<UWorldCellIndexTranslationRecord>(record))
+	{
+		return staticDatabase->AddUWorldCellIndexTranslationRecordToDatabase(UWorldCellIndexTranslationRecordInstance);
 	}
 	if (UWorldCellRecord* UWorldCellRecordInstance = Cast<UWorldCellRecord>(record))
 	{

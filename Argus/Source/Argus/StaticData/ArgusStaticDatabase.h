@@ -26,6 +26,8 @@ class UTeamAlignmentRecord;
 class UTeamAlignmentRecordDatabase;
 class UTeamColorRecord;
 class UTeamColorRecordDatabase;
+class UWorldCellIndexTranslationRecord;
+class UWorldCellIndexTranslationRecordDatabase;
 class UWorldCellRecord;
 class UWorldCellRecordDatabase;
 
@@ -232,6 +234,25 @@ protected:
 	TObjectPtr<UTeamColorRecordDatabase> m_UTeamColorRecordDatabasePersistent;
 
 	void LazyLoadUTeamColorRecordDatabase();
+#pragma endregion
+#pragma region UWorldCellIndexTranslationRecord
+public:
+	const UWorldCellIndexTranslationRecord* GetUWorldCellIndexTranslationRecord(uint32 id);
+	const bool AsyncPreLoadUWorldCellIndexTranslationRecord(uint32 id, TFunction<void(const UWorldCellIndexTranslationRecord*)> callback = nullptr);
+	void ResetLoadedUWorldCellIndexTranslationRecordPointerArray();
+#if WITH_EDITOR
+	uint32 AddUWorldCellIndexTranslationRecordToDatabase(UWorldCellIndexTranslationRecord* record);
+	void IterateAllUWorldCellIndexTranslationRecords(const TFunctionRef<void(UWorldCellIndexTranslationRecord*)>& function);
+	void RegisterNewUWorldCellIndexTranslationRecordDatabase(UWorldCellIndexTranslationRecordDatabase* database);
+#endif //WITH_EDITOR
+
+protected:
+	UPROPERTY(EditAnywhere)
+	TSoftObjectPtr<UWorldCellIndexTranslationRecordDatabase> m_UWorldCellIndexTranslationRecordDatabase;
+	UPROPERTY(Transient)
+	TObjectPtr<UWorldCellIndexTranslationRecordDatabase> m_UWorldCellIndexTranslationRecordDatabasePersistent;
+
+	void LazyLoadUWorldCellIndexTranslationRecordDatabase();
 #pragma endregion
 #pragma region UWorldCellRecord
 public:
