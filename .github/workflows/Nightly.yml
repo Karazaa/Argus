@@ -35,3 +35,9 @@ jobs:
       - packaged-build
     uses: ./.github/workflows/UpdateAbilityRecords.yml
     secrets: inherit
+
+  update-obstacles-records:
+    needs: 
+      - packaged-build
+    uses: ./.github/workflows/UpdateObstaclesRecords.yml
+    secrets: inherit
