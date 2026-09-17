@@ -18,6 +18,9 @@ struct FCellIndexKey
 	UPROPERTY(VisibleAnywhere)
 	int32 m_cellYIndex = 0;
 
+	FCellIndexKey() = default;
+	FCellIndexKey(int32 cellXIndex, int32 cellYIndex) : m_cellXIndex(cellXIndex), m_cellYIndex(cellYIndex) {}
+
 	bool operator==(const FCellIndexKey& other) const { return m_cellXIndex == other.m_cellXIndex && m_cellYIndex == other.m_cellYIndex; }
 };
 FORCEINLINE uint32 GetTypeHash(const FCellIndexKey& currentKey) 
@@ -31,6 +34,9 @@ class ARGUS_API UWorldCellIndexTranslationRecord : public UArgusStaticRecord
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(EditAnywhere)
+	TSoftObjectPtr<UWorld> m_worldReference = nullptr;
+
 	UPROPERTY(VisibleAnywhere)
 	TMap<FCellIndexKey, uint32> m_cellIndexRecordMapping;
 };
