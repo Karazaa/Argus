@@ -9,8 +9,9 @@ class ArgusStaticDataCodeGenerator
 public:
 	static bool GenerateStaticDataCode(const ArgusCodeGeneratorUtil::ParseStaticDataRecordsOutput& parsedStaticDataRecords);
 
-private:
 	static const char* s_staticDataTemplateDirectorySuffix;
+
+private:
 	static const char* s_staticDataDirectorySuffix;
 	static const char* s_utilitiesDirectorySuffix;
 	static const char* s_argusStaticDataTemplateFileName;

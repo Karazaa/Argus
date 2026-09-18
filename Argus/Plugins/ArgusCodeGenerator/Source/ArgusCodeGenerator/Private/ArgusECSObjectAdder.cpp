@@ -2,8 +2,9 @@
 
 #include "ArgusECSObjectAdder.h"
 #include "ArgusComponentRegistryCodeGenerator.h"
-#include "ComponentImplementationCodeGenerator.h"
+#include "ArgusStaticDataCodeGenerator.h"
 #include "ArgusSystemArgsImplementationCodeGenerator.h"
+#include "ComponentImplementationCodeGenerator.h"
 #include "Widgets/Docking/SDockTab.h"
 #include "Widgets/Input/SButton.h"
 #include "Widgets/Input/SComboButton.h"
@@ -155,6 +156,16 @@ void ArgusECSObjectAdder::OnECSTypeChange(int32 Index)
 			m_currentHintText->SetHintText(FText::FromString(TEXT("Enter system arguments to add name here.")));
 			m_componentTypeBox->SetVisibility(EVisibility::Collapsed);
 			break;
+		case ECSType::StaticDataRecord:
+			m_currentLabelText->SetText(FText::FromString(TEXT("Static Data Record Name: ")));
+			m_currentHintText->SetHintText(FText::FromString(TEXT("Enter static data record to add name here.")));
+			m_componentTypeBox->SetVisibility(EVisibility::Collapsed);
+			break;
+		case ECSType::Commandlet:
+			m_currentLabelText->SetText(FText::FromString(TEXT("Commandlet Name: ")));
+			m_currentHintText->SetHintText(FText::FromString(TEXT("Enter commandlet to add name here.")));
+			m_componentTypeBox->SetVisibility(EVisibility::Collapsed);
+			break;
 	}
 }
 
@@ -202,6 +213,14 @@ FReply ArgusECSObjectAdder::OnClicked()
 			break;
 		case ECSType::SystemArguments:
 			OnClicked_SystemArgument();
+			break;
+		case ECSType::StaticDataRecord:
+			OnClicked_StaticDataRecord();
+			break;
+		case ECSType::Commandlet:
+			OnClicked_Commandlet();
+			break;
+		default:
 			break;
 	}
 
@@ -284,7 +303,7 @@ FReply ArgusECSObjectAdder::OnClicked_Component()
 		ArgusCodeGeneratorUtil::WriteOutFile(std::string(cStrImplementationsDirectory).append(inputString.append("Manual.cpp")), parsedLines);
 	}
 
-	MessageSuccess(FText::FromString(TEXT("Succesfully added Component!")));
+	MessageSuccess(FText::FromString(TEXT("Succesfully added component!")));
 	return FReply::Handled();
 }
 
@@ -331,7 +350,7 @@ FReply ArgusECSObjectAdder::OnClicked_System()
 	writeOutFileName = inputString;
 	ArgusCodeGeneratorUtil::WriteOutFile(std::string(cStrDefinitionsDirectory).append(writeOutFileName.append(".cpp")), parsedLines);
 
-	MessageSuccess(FText::FromString(TEXT("Succesfully added Systems!")));
+	MessageSuccess(FText::FromString(TEXT("Succesfully added systems!")));
 	return FReply::Handled();
 }
 
@@ -372,7 +391,54 @@ FReply ArgusECSObjectAdder::OnClicked_SystemArgument()
 	// Write out newly defined system arguments
 	ArgusCodeGeneratorUtil::WriteOutFile(std::string(cStrDefinitionsDirectory).append(inputString.append(".h")), parsedLines);
 
-	MessageSuccess(FText::FromString(TEXT("Succesfully added System Arguments!")));
+	MessageSuccess(FText::FromString(TEXT("Succesfully added system arguments!")));
+	return FReply::Handled();
+}
+
+FReply ArgusECSObjectAdder::OnClicked_StaticDataRecord()
+{
+	// Parse from source files
+	ArgusCodeGeneratorUtil::ParseStaticDataRecordsOutput parsedStaticDataRecords;
+	ArgusCodeGeneratorUtil::ParseStaticDataRecords(parsedStaticDataRecords);
+
+	std::string inputString = std::string(TCHAR_TO_UTF8(*m_inputFieldText.ToString()));
+	for (int i = 0; i < parsedStaticDataRecords.m_trimmedStaticDataRecordNames.size(); ++i)
+	{
+		if (parsedStaticDataRecords.m_trimmedStaticDataRecordNames[i].compare(inputString) == 0)
+		{
+			MessageError(FText::FromString(TEXT("Static data record name already exists!")));
+			return FReply::Handled();
+		}
+	}
+
+	// Construct a directory path to object adder templates
+	const char* cStrTemplateDirectory = ARGUS_FSTRING_TO_CHAR(ArgusCodeGeneratorUtil::GetTemplateDirectory(ArgusStaticDataCodeGenerator::s_staticDataTemplateDirectorySuffix));
+
+	// Parse per static data record template
+	std::vector<std::string> parsedLines = std::vector<std::string>();
+	std::vector<std::string> staticDataRecords = std::vector<std::string>();
+	staticDataRecords.push_back(inputString);
+
+	std::string templateFileName = "StaticDataRecordsAdderTemplate.txt";
+	ArgusCodeGeneratorUtil::ParseComponentSpecificTemplate(std::string(cStrTemplateDirectory).append(templateFileName), staticDataRecords, parsedLines);
+
+	// Construct a directory path to record definition location
+	FString definitionsDirectory = ArgusCodeGeneratorUtil::GetProjectDirectory();
+	std::string directorySuffix = "Source/Argus/StaticData/RecordDefinitions/";
+	definitionsDirectory.Append(directorySuffix.c_str());
+	FPaths::MakeStandardFilename(definitionsDirectory);
+	const char* cStrDefinitionsDirectory = ARGUS_FSTRING_TO_CHAR(definitionsDirectory);
+
+	// Write out newly defined static data record
+	ArgusCodeGeneratorUtil::WriteOutFile(std::string(cStrDefinitionsDirectory).append(inputString.append(".h")), parsedLines);
+
+	MessageSuccess(FText::FromString(TEXT("Succesfully added static data record!")));
+	return FReply::Handled();
+}
+
+FReply ArgusECSObjectAdder::OnClicked_Commandlet()
+{
+	MessageSuccess(FText::FromString(TEXT("Succesfully added commandlet!")));
 	return FReply::Handled();
 }
 
