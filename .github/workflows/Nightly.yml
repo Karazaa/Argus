@@ -38,6 +38,12 @@ jobs:
 
   update-obstacles-records:
     needs: 
-      - packaged-build
+      - update-ability-records
     uses: ./.github/workflows/UpdateObstaclesRecords.yml
+    secrets: inherit
+
+  update-world-cell-index-translation-record:
+    needs: 
+      - update-obstacles-records
+    uses: ./.github/workflows/UpdateWorldCellIndexTranslationRecord.yml
     secrets: inherit
