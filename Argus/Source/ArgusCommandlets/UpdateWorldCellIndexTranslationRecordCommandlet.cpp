@@ -39,7 +39,15 @@ int32 UUpdateWorldCellIndexTranslationRecordCommandlet::DoWork()
 				return;
 			}
 
-			worldCellTranslationRecord->m_cellIndexRecordMapping[FCellIndexKey(worldCellRecord->m_cellXCoordinate, worldCellRecord->m_cellYCoordinate)] = worldCellRecord->m_id;
+			FCellIndexKey coordinateKey = FCellIndexKey(worldCellRecord->m_cellXCoordinate, worldCellRecord->m_cellYCoordinate);
+			if (uint32* existingId = worldCellTranslationRecord->m_cellIndexRecordMapping.Find(coordinateKey))
+			{
+				*existingId = worldCellRecord->m_id;
+			}
+			else
+			{
+				worldCellTranslationRecord->m_cellIndexRecordMapping.Add(coordinateKey, worldCellRecord->m_id);
+			}
 		});
 
 		worldCellTranslationRecord->Modify(true);
