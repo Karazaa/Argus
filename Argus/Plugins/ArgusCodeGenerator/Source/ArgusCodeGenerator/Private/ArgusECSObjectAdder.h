@@ -16,7 +16,9 @@ public:
 	{
 		Component,
 		System,
-		SystemArguments
+		SystemArguments,
+		StaticDataRecord,
+		Commandlet
 	};
 
 	enum class ComponentType : uint8
@@ -38,6 +40,8 @@ private:
 	FReply OnClicked_Component();
 	FReply OnClicked_System();
 	FReply OnClicked_SystemArgument();
+	FReply OnClicked_StaticDataRecord();
+	FReply OnClicked_Commandlet();
 
 	void ClearMessage();
 	void MessageError(const FText& errorMessage);
@@ -50,7 +54,7 @@ private:
 	TSharedPtr<SEditableText> m_currentHintText;
 	TSharedPtr<SHorizontalBox> m_componentTypeBox;
 
-	FText m_ecsTypeNameArray[3] = { FText::FromString(TEXT("Component")), FText::FromString(TEXT("System")), FText::FromString(TEXT("System Arguments")) };
+	FText m_ecsTypeNameArray[5] = { FText::FromString(TEXT("Component")), FText::FromString(TEXT("System")), FText::FromString(TEXT("System Arguments")), FText::FromString(TEXT("Static Data Record")),  FText::FromString(TEXT("Commandlet")) };
 	FText m_componentTypeNameArray[3] = { FText::FromString(TEXT("Static Allocated")), FText::FromString(TEXT("Dynamic Allocated")), FText::FromString(TEXT("Settings")) };
 	FText m_inputFieldText;
 	FText m_messageText;
