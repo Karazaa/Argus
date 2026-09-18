@@ -18,7 +18,8 @@ public:
 		System,
 		SystemArguments,
 		StaticDataRecord,
-		Commandlet
+		Commandlet,
+		Count
 	};
 
 	enum class ComponentType : uint8
@@ -54,7 +55,7 @@ private:
 	TSharedPtr<SEditableText> m_currentHintText;
 	TSharedPtr<SHorizontalBox> m_componentTypeBox;
 
-	FText m_ecsTypeNameArray[5] = { FText::FromString(TEXT("Component")), FText::FromString(TEXT("System")), FText::FromString(TEXT("System Arguments")), FText::FromString(TEXT("Static Data Record")),  FText::FromString(TEXT("Commandlet")) };
+	FText m_ecsTypeNameArray[static_cast<uint8>(ECSType::Count)] = { FText::FromString(TEXT("Component")), FText::FromString(TEXT("System")), FText::FromString(TEXT("System Arguments")), FText::FromString(TEXT("Static Data Record")),  FText::FromString(TEXT("Commandlet")) };
 	FText m_componentTypeNameArray[3] = { FText::FromString(TEXT("Static Allocated")), FText::FromString(TEXT("Dynamic Allocated")), FText::FromString(TEXT("Settings")) };
 	FText m_inputFieldText;
 	FText m_messageText;
