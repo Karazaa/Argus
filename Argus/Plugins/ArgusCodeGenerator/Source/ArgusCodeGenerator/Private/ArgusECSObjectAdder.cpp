@@ -123,7 +123,7 @@ TSharedRef<SDockTab> ArgusECSObjectAdder::OnSpawnPluginTab(const FSpawnTabArgs& 
 TSharedRef<SWidget> ArgusECSObjectAdder::OnGetECSTypeContent()
 {
 	FMenuBuilder MenuBuilder(true, NULL);
-	for (uint8 i = 0u; i < 3; i++)
+	for (uint8 i = 0u; i < static_cast<uint8>(ECSType::Count); i++)
 	{
 		FUIAction itemAction = FUIAction(FExecuteAction::CreateRaw(this, &ArgusECSObjectAdder::OnECSTypeChange, static_cast<int32>(i)));
 		MenuBuilder.AddMenuEntry(m_ecsTypeNameArray[i], TAttribute<FText>(), FSlateIcon(), itemAction);
