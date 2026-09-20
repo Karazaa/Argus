@@ -395,12 +395,12 @@ FReply ArgusECSObjectAdder::OnClicked_Commandlet()
 	ObjectAdderFileInfo headerFileInfo;
 	headerFileInfo.m_templateDirectorySuffix = "Commandlets/";
 	headerFileInfo.m_outputDirectorySuffix = "Source/ArgusCommandlets/";
-	headerFileInfo.m_templateFileName = "CommandletsHeaderTemplate.txt";
+	headerFileInfo.m_templateFileName = "CommandletHeaderTemplate.txt";
 
 	ObjectAdderFileInfo implementationFileInfo;
 	implementationFileInfo.m_templateDirectorySuffix = "Commandlets/";
 	implementationFileInfo.m_outputDirectorySuffix = "Source/ArgusCommandlets/";
-	implementationFileInfo.m_templateFileName = "CommandletsCppTemplate.txt";
+	implementationFileInfo.m_templateFileName = "CommandletCppTemplate.txt";
 	GenerateFiles(inputString, &headerFileInfo, &implementationFileInfo);
 
 	MessageSuccess(FText::FromString(TEXT("Succesfully added commandlet!")));
