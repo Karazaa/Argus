@@ -326,9 +326,9 @@ FReply ArgusECSObjectAdder::OnClicked_System()
 	headerFileInfo.m_templateFileName = "SystemsHeaderTemplate.txt";
 
 	ObjectAdderFileInfo implementationFileInfo;
-	headerFileInfo.m_templateDirectorySuffix = ArgusCodeGeneratorUtil::s_systemsTemplateDirectorySuffix;
-	headerFileInfo.m_outputDirectorySuffix = "Source/Argus/ECS/Systems/";
-	headerFileInfo.m_templateFileName = "SystemsImplementationTemplate.txt";
+	implementationFileInfo.m_templateDirectorySuffix = ArgusCodeGeneratorUtil::s_systemsTemplateDirectorySuffix;
+	implementationFileInfo.m_outputDirectorySuffix = "Source/Argus/ECS/Systems/";
+	implementationFileInfo.m_templateFileName = "SystemsImplementationTemplate.txt";
 	GenerateFiles(inputString, &headerFileInfo, &implementationFileInfo);
 
 	MessageSuccess(FText::FromString(TEXT("Succesfully added systems!")));
