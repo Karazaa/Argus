@@ -1,0 +1,27 @@
+// Copyright Karazaa. This is a part of an RTS project called Argus.
+
+#include "#####.h"
+#include "ArgusECSCommandletInterface.h"
+#include "ArgusStaticData.h"
+#include "Engine/AssetManager.h"
+
+void U#####::OnStart()
+{
+	TSharedPtr<FStreamableHandle> loadDatabaseHandle = UAssetManager::Get().LoadPrimaryAssetsWithType(FPrimaryAssetType(UArgusStaticDatabase::StaticClass()->GetFName()));
+	if (loadDatabaseHandle.IsValid())
+	{
+		loadDatabaseHandle->WaitUntilComplete();
+	}
+
+	ArgusECSCommandletInterface::InitializeECSForCommandlet();
+}
+
+int32 U#####::DoWork()
+{
+	return 0;
+}
+
+void U#####::OnFinish()
+{
+	ArgusECSCommandletInterface::TeardownECSForCommandlet();
+}

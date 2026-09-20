@@ -389,6 +389,20 @@ FReply ArgusECSObjectAdder::OnClicked_StaticDataRecord()
 
 FReply ArgusECSObjectAdder::OnClicked_Commandlet()
 {
+	std::string inputString = std::string(TCHAR_TO_UTF8(*m_inputFieldText.ToString()));
+	// TODO JAMES: Check for duplicate commandlet names.
+
+	ObjectAdderFileInfo headerFileInfo;
+	headerFileInfo.m_templateDirectorySuffix = "Commandlets/";
+	headerFileInfo.m_outputDirectorySuffix = "Source/ArgusCommandlets/";
+	headerFileInfo.m_templateFileName = "CommandletsHeaderTemplate.txt";
+
+	ObjectAdderFileInfo implementationFileInfo;
+	implementationFileInfo.m_templateDirectorySuffix = "Commandlets/";
+	implementationFileInfo.m_outputDirectorySuffix = "Source/ArgusCommandlets/";
+	implementationFileInfo.m_templateFileName = "CommandletsCppTemplate.txt";
+	GenerateFiles(inputString, &headerFileInfo, &implementationFileInfo);
+
 	MessageSuccess(FText::FromString(TEXT("Succesfully added commandlet!")));
 	return FReply::Handled();
 }
