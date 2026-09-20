@@ -5,9 +5,18 @@
 #include "CoreMinimal.h"
 #include "Misc/MessageDialog.h"
 #include "ToolMenus.h"
+#include <string>
 
-class STextBlock;
+class SDockTab;
 class SEditableText;
+class STextBlock;
+
+struct ObjectAdderFileInfo
+{
+	const char* m_templateDirectorySuffix = nullptr;
+	const char* m_outputDirectorySuffix = nullptr;
+	const char* m_templateFileName;
+};
 
 class ArgusECSObjectAdder
 {
@@ -44,6 +53,7 @@ private:
 	FReply OnClicked_StaticDataRecord();
 	FReply OnClicked_Commandlet();
 
+	void GenerateFiles(const std::string& inputString, ObjectAdderFileInfo* headerFileInfo, ObjectAdderFileInfo* implementationFileInfo = nullptr);
 	void ClearMessage();
 	void MessageError(const FText& errorMessage);
 	void MessageSuccess(const FText& successMessage);
