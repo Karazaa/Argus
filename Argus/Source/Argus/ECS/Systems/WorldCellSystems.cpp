@@ -5,6 +5,10 @@
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
 #include "ArgusMath.h"
+#include "ArgusStaticData.h"
+#include "RecordDefinitions/PersistentWorldTranslationRecord.h"
+#include "RecordDefinitions/WorldCellIndexTranslationRecord.h"
+#include "RecordDefinitions/WorldCellRecord.h"
 #include "SystemArgumentDefinitions/WorldCellSystemsArgs.h"
 
 void WorldCellSystems::RunSystems(float deltaTime)
@@ -18,6 +22,30 @@ void WorldCellSystems::RunSystems(float deltaTime)
 	{
 		UpdateWorldCellLocationPerEntity(components, spatialPartitioningComponent);
 	});
+}
+
+const UWorldCellRecord* WorldCellSystems::GetWorldCellRecordForIndicies(TSoftObjectPtr<UWorld>& persistentWorld, int32 worldCellX, int32 worldCellY)
+{
+	if (persistentWorld.IsNull())
+	{
+		ARGUS_ERROR_NULL(ArgusECSLog, persistentWorld);
+		return nullptr;
+	}
+
+	const UPersistentWorldTranslationRecord* persistentWorldTranslationRecord = ArgusStaticData::GetRecord<UPersistentWorldTranslationRecord>(ArgusECSConstants::k_persistentWorldTranslationRecordId);
+	ARGUS_RETURN_ON_NULL_POINTER(persistentWorldTranslationRecord, ArgusECSLog);
+
+	const uint32* worldCellIndexTranslationRecordId = persistentWorldTranslationRecord->m_persistentWorldToRecordId.Find(persistentWorld);
+	ARGUS_RETURN_ON_NULL_POINTER(worldCellIndexTranslationRecordId, ArgusECSLog);
+
+	const UWorldCellIndexTranslationRecord* worldCellIndexTranslationRecord = ArgusStaticData::GetRecord<UWorldCellIndexTranslationRecord>(*worldCellIndexTranslationRecordId);
+	ARGUS_RETURN_ON_NULL_POINTER(worldCellIndexTranslationRecord, ArgusECSLog);
+
+	const FCellIndexKey cellIndexKey = FCellIndexKey(worldCellX, worldCellY);
+	const uint32* worldCellRecordId = worldCellIndexTranslationRecord->m_cellIndexRecordMapping.Find(cellIndexKey);
+	ARGUS_RETURN_ON_NULL_POINTER(worldCellRecordId, ArgusECSLog);
+
+	return ArgusStaticData::GetRecord<UWorldCellRecord>(*worldCellRecordId);
 }
 
 void WorldCellSystems::UpdateWorldCellLocationPerEntity(const WorldCellSystemsArgs& components, const SpatialPartitioningComponent* spatialPartitioningComponent)

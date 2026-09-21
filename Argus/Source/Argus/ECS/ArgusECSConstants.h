@@ -33,6 +33,7 @@ namespace ArgusECSConstants
 	static constexpr float k_resourceSinkBufferDistanceAdjustment = 5.0f;
 
 	static constexpr int32 k_numEntityAbilities = 4;
+	static constexpr uint32 k_persistentWorldTranslationRecordId = 1u;
 
 #if !UE_BUILD_SHIPPING
 	static constexpr float k_debugDrawLineWidth = 3.0f;
