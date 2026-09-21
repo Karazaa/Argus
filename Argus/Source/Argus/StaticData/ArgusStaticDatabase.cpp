@@ -8,6 +8,7 @@
 #include "RecordDatabases/FactionRecordDatabase.h"
 #include "RecordDatabases/MaterialRecordDatabase.h"
 #include "RecordDatabases/ObstaclesRecordDatabase.h"
+#include "RecordDatabases/PersistentWorldTranslationRecordDatabase.h"
 #include "RecordDatabases/PlacedArgusActorTeamInfoRecordDatabase.h"
 #include "RecordDatabases/ResourceSetRecordDatabase.h"
 #include "RecordDatabases/StructuralEntityTemplateRecordDatabase.h"
@@ -628,6 +629,125 @@ void UArgusStaticDatabase::LazyLoadUObstaclesRecordDatabase()
 			ARGUS_FUNCNAME,
 			ARGUS_NAMEOF(m_UObstaclesRecordDatabasePersistent),
 			ARGUS_NAMEOF(m_UObstaclesRecordDatabase)
+		);
+		return;
+	}
+}
+#pragma endregion
+#pragma region UPersistentWorldTranslationRecord
+const UPersistentWorldTranslationRecord* UArgusStaticDatabase::GetUPersistentWorldTranslationRecord(uint32 id)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUPersistentWorldTranslationRecordDatabase();
+
+	if (!m_UPersistentWorldTranslationRecordDatabasePersistent)
+	{
+		return nullptr;
+	}
+
+	return m_UPersistentWorldTranslationRecordDatabasePersistent->GetRecord(id);
+}
+
+const bool UArgusStaticDatabase::AsyncPreLoadUPersistentWorldTranslationRecord(uint32 id, TFunction<void(const UPersistentWorldTranslationRecord*)> callback)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUPersistentWorldTranslationRecordDatabase();
+
+	if (!m_UPersistentWorldTranslationRecordDatabasePersistent)
+	{
+		return false;
+	}
+
+	return m_UPersistentWorldTranslationRecordDatabasePersistent->AsyncPreLoadRecord(id);
+}
+
+void UArgusStaticDatabase::ResetLoadedUPersistentWorldTranslationRecordPointerArray()
+{
+	if (!m_UPersistentWorldTranslationRecordDatabasePersistent)
+	{
+		return;
+	}
+
+	m_UPersistentWorldTranslationRecordDatabasePersistent->ResetPersistentObjectPointerArray();
+}
+
+#if WITH_EDITOR
+uint32 UArgusStaticDatabase::AddUPersistentWorldTranslationRecordToDatabase(UPersistentWorldTranslationRecord* record)
+{
+	LazyLoadUPersistentWorldTranslationRecordDatabase();
+
+	if (!m_UPersistentWorldTranslationRecordDatabasePersistent)
+	{
+		return 0u;
+	}
+
+	m_UPersistentWorldTranslationRecordDatabasePersistent->AddUPersistentWorldTranslationRecordToDatabase(record);
+	
+	return record->m_id;
+}
+
+void UArgusStaticDatabase::IterateAllUPersistentWorldTranslationRecords(const TFunctionRef<void(UPersistentWorldTranslationRecord*)>& function)
+{
+	LazyLoadUPersistentWorldTranslationRecordDatabase();
+
+	if (!m_UPersistentWorldTranslationRecordDatabasePersistent)
+	{
+		return;
+	}
+
+	m_UPersistentWorldTranslationRecordDatabasePersistent->IterateAllUPersistentWorldTranslationRecords(function);
+}
+
+void UArgusStaticDatabase::RegisterNewUPersistentWorldTranslationRecordDatabase(UPersistentWorldTranslationRecordDatabase* database)
+{
+	if (!database)
+	{
+		return;
+	}
+
+	if (!m_UPersistentWorldTranslationRecordDatabase.IsNull())
+	{
+		ARGUS_LOG
+		(
+			ArgusStaticDataLog,
+			Error,
+			TEXT("[%s] Trying to assign to %s. Potential duplicate databases."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(m_UPersistentWorldTranslationRecordDatabase)
+		);
+		return;
+	}
+
+	m_UPersistentWorldTranslationRecordDatabase = database;
+	SaveDatabase();
+}
+#endif //WITH_EDITOR
+
+void UArgusStaticDatabase::LazyLoadUPersistentWorldTranslationRecordDatabase()
+{
+	if (!m_UPersistentWorldTranslationRecordDatabasePersistent)
+	{
+		m_UPersistentWorldTranslationRecordDatabasePersistent = m_UPersistentWorldTranslationRecordDatabase.LoadSynchronous();
+		if (!m_UPersistentWorldTranslationRecordDatabasePersistent)
+		{
+			ARGUS_LOG(ArgusStaticDataLog, Error, TEXT("[%s] Could not find %s reference. Need to set reference in %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(m_UPersistentWorldTranslationRecordDatabase), ARGUS_NAMEOF(UArgusStaticDatabase));
+			return;
+		}
+
+		m_UPersistentWorldTranslationRecordDatabasePersistent->ResizePersistentObjectPointerArrayToFitRecord(0u);
+	}
+
+	if (!m_UPersistentWorldTranslationRecordDatabasePersistent)
+	{
+		ARGUS_LOG
+		(
+			ArgusStaticDataLog, Error,
+			TEXT("[%s] Could not retrieve %s. %s might not be properly assigned."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(m_UPersistentWorldTranslationRecordDatabasePersistent),
+			ARGUS_NAMEOF(m_UPersistentWorldTranslationRecordDatabase)
 		);
 		return;
 	}
@@ -1474,6 +1594,7 @@ void UArgusStaticDatabase::ResetLoadedPointerArrays()
 	ResetLoadedUFactionRecordPointerArray();
 	ResetLoadedUMaterialRecordPointerArray();
 	ResetLoadedUObstaclesRecordPointerArray();
+	ResetLoadedUPersistentWorldTranslationRecordPointerArray();
 	ResetLoadedUPlacedArgusActorTeamInfoRecordPointerArray();
 	ResetLoadedUResourceSetRecordPointerArray();
 	ResetLoadedUStructuralEntityTemplateRecordPointerArray();

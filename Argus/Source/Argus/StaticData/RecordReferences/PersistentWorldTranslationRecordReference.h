@@ -4,12 +4,12 @@
 #pragma once
 
 #include "ArgusStaticRecordReference.h"
-#include "WorldCellIndexTranslationRecordReference.generated.h"
+#include "PersistentWorldTranslationRecordReference.generated.h"
 
-class UWorldCellIndexTranslationRecord;
+class UPersistentWorldTranslationRecord;
 
 USTRUCT()
-struct FUWorldCellIndexTranslationRecordReference : public FArgusStaticRecordReference
+struct FUPersistentWorldTranslationRecordReference : public FArgusStaticRecordReference
 {
 	GENERATED_BODY();
 
@@ -21,6 +21,6 @@ public:
 private:
 #if WITH_EDITORONLY_DATA
 	UPROPERTY(EditAnywhere)
-	TSoftObjectPtr<UWorldCellIndexTranslationRecord> m_softObjectPtr = nullptr;
+	TSoftObjectPtr<UPersistentWorldTranslationRecord> m_softObjectPtr = nullptr;
 #endif
 };

@@ -10,6 +10,7 @@
 #include "RecordDatabases/FactionRecordDatabase.h"
 #include "RecordDatabases/MaterialRecordDatabase.h"
 #include "RecordDatabases/ObstaclesRecordDatabase.h"
+#include "RecordDatabases/PersistentWorldTranslationRecordDatabase.h"
 #include "RecordDatabases/PlacedArgusActorTeamInfoRecordDatabase.h"
 #include "RecordDatabases/ResourceSetRecordDatabase.h"
 #include "RecordDatabases/StructuralEntityTemplateRecordDatabase.h"
@@ -45,6 +46,10 @@ uint32 ArgusStaticData::AddRecordToDatabase(UArgusStaticRecord* record)
 	if (UObstaclesRecord* UObstaclesRecordInstance = Cast<UObstaclesRecord>(record))
 	{
 		return staticDatabase->AddUObstaclesRecordToDatabase(UObstaclesRecordInstance);
+	}
+	if (UPersistentWorldTranslationRecord* UPersistentWorldTranslationRecordInstance = Cast<UPersistentWorldTranslationRecord>(record))
+	{
+		return staticDatabase->AddUPersistentWorldTranslationRecordToDatabase(UPersistentWorldTranslationRecordInstance);
 	}
 	if (UPlacedArgusActorTeamInfoRecord* UPlacedArgusActorTeamInfoRecordInstance = Cast<UPlacedArgusActorTeamInfoRecord>(record))
 	{

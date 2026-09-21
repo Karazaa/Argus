@@ -16,6 +16,8 @@ class UMaterialRecord;
 class UMaterialRecordDatabase;
 class UObstaclesRecord;
 class UObstaclesRecordDatabase;
+class UPersistentWorldTranslationRecord;
+class UPersistentWorldTranslationRecordDatabase;
 class UPlacedArgusActorTeamInfoRecord;
 class UPlacedArgusActorTeamInfoRecordDatabase;
 class UResourceSetRecord;
@@ -139,6 +141,25 @@ protected:
 	TObjectPtr<UObstaclesRecordDatabase> m_UObstaclesRecordDatabasePersistent;
 
 	void LazyLoadUObstaclesRecordDatabase();
+#pragma endregion
+#pragma region UPersistentWorldTranslationRecord
+public:
+	const UPersistentWorldTranslationRecord* GetUPersistentWorldTranslationRecord(uint32 id);
+	const bool AsyncPreLoadUPersistentWorldTranslationRecord(uint32 id, TFunction<void(const UPersistentWorldTranslationRecord*)> callback = nullptr);
+	void ResetLoadedUPersistentWorldTranslationRecordPointerArray();
+#if WITH_EDITOR
+	uint32 AddUPersistentWorldTranslationRecordToDatabase(UPersistentWorldTranslationRecord* record);
+	void IterateAllUPersistentWorldTranslationRecords(const TFunctionRef<void(UPersistentWorldTranslationRecord*)>& function);
+	void RegisterNewUPersistentWorldTranslationRecordDatabase(UPersistentWorldTranslationRecordDatabase* database);
+#endif //WITH_EDITOR
+
+protected:
+	UPROPERTY(EditAnywhere)
+	TSoftObjectPtr<UPersistentWorldTranslationRecordDatabase> m_UPersistentWorldTranslationRecordDatabase;
+	UPROPERTY(Transient)
+	TObjectPtr<UPersistentWorldTranslationRecordDatabase> m_UPersistentWorldTranslationRecordDatabasePersistent;
+
+	void LazyLoadUPersistentWorldTranslationRecordDatabase();
 #pragma endregion
 #pragma region UPlacedArgusActorTeamInfoRecord
 public:

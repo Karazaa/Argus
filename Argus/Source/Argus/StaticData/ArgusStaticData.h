@@ -250,6 +250,48 @@ public:
 #endif //WITH_EDITOR
 #pragma endregion
 
+#pragma region UPersistentWorldTranslationRecord
+	template<>
+	ARGUS_API inline const UPersistentWorldTranslationRecord* GetRecord(uint32 id)
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->GetUPersistentWorldTranslationRecord(id);
+		}
+
+		return nullptr;
+	}
+
+	template<>
+	ARGUS_API inline bool AsyncPreLoadRecord<UPersistentWorldTranslationRecord>(uint32 id, TFunction<void(const UPersistentWorldTranslationRecord*)> callback)
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->AsyncPreLoadUPersistentWorldTranslationRecord(id, callback);
+		}
+
+		return false;
+	}
+
+#if WITH_EDITOR
+	template<>
+	ARGUS_API inline void IterateAllRecordsOfType<UPersistentWorldTranslationRecord>(const TFunctionRef<void(UPersistentWorldTranslationRecord*)>& function)
+	{
+		if (UArgusStaticDatabase* staticDatabase = GetParentDatabase())
+		{
+			staticDatabase->IterateAllUPersistentWorldTranslationRecords(function);
+		}
+	}
+
+	static void RegisterNewUPersistentWorldTranslationRecordDatabase(UPersistentWorldTranslationRecordDatabase* database)
+	{
+		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
+		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
+		staticDatabase->RegisterNewUPersistentWorldTranslationRecordDatabase(database);
+	}
+#endif //WITH_EDITOR
+#pragma endregion
+
 #pragma region UPlacedArgusActorTeamInfoRecord
 	template<>
 	ARGUS_API inline const UPlacedArgusActorTeamInfoRecord* GetRecord(uint32 id)
