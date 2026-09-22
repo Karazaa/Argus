@@ -22,6 +22,7 @@
 #include "Systems/TimerSystems.h"
 #include "Systems/TransformSystems.h"
 #include "Systems/WorldCellSystems.h"
+#include "UObject/Package.h"
 
 #if !UE_BUILD_SHIPPING
 #include "ArgusECSDebugger.h"
@@ -241,6 +242,18 @@ void ArgusSystemsManager::UpdateSingletonComponents(UWorld* worldPointer)
 	ARGUS_RETURN_ON_NULL(worldReferenceComponent, ArgusECSLog);
 
 	worldReferenceComponent->m_worldPointer = worldPointer;
+	if (worldReferenceComponent->m_persistentWorldSoftObjectPath.IsNull())
+	{
+		const UPackage* package = worldReferenceComponent->m_worldPointer->GetPackage();
+		ARGUS_RETURN_ON_NULL(package, ArgusECSLog);
+
+		FString pathName = worldReferenceComponent->m_worldPointer->GetPathName();
+#if WITH_EDITOR
+		pathName = UWorld::RemovePIEPrefix(pathName);
+#endif // WITH_EDITOR
+
+		worldReferenceComponent->m_persistentWorldSoftObjectPath = FSoftObjectPath(pathName);
+	}
 }
 
 void ArgusSystemsManager::IncrementFrameCounter()

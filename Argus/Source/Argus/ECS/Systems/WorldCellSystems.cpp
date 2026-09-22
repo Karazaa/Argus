@@ -17,15 +17,20 @@ void WorldCellSystems::RunSystems(float deltaTime)
 
 	const SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::GetSingletonEntity().GetComponent<SpatialPartitioningComponent>();
 	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
+	const WorldReferenceComponent* worldReferenceComponent = ArgusEntity::GetSingletonEntity().GetComponent<WorldReferenceComponent>();
+	ARGUS_RETURN_ON_NULL(worldReferenceComponent, ArgusECSLog);
 
-	ArgusIterators::IterateSystemsArgs<WorldCellSystemsArgs>([spatialPartitioningComponent](const WorldCellSystemsArgs& components)
+	ArgusIterators::IterateSystemsArgs<WorldCellSystemsArgs>([spatialPartitioningComponent, worldReferenceComponent](const WorldCellSystemsArgs& components)
 	{
 		UpdateWorldCellLocationPerEntity(components, spatialPartitioningComponent);
+		// GetWorldCellRecordPerEntity(components.m_worldCellComponent, worldReferenceComponent);
 	});
 }
 
 const UWorldCellRecord* WorldCellSystems::GetWorldCellRecordForIndicies(TSoftObjectPtr<UWorld>& persistentWorld, int32 worldCellX, int32 worldCellY)
 {
+	ARGUS_TRACE(WorldCellSystems::GetWorldCellRecordForIndicies);
+
 	if (persistentWorld.IsNull())
 	{
 		ARGUS_ERROR_NULL(ArgusECSLog, persistentWorld);
@@ -46,6 +51,20 @@ const UWorldCellRecord* WorldCellSystems::GetWorldCellRecordForIndicies(TSoftObj
 	ARGUS_RETURN_ON_NULL_POINTER(worldCellRecordId, ArgusECSLog);
 
 	return ArgusStaticData::GetRecord<UWorldCellRecord>(*worldCellRecordId);
+}
+
+const UWorldCellRecord* WorldCellSystems::GetWorldCellRecordPerEntity(const WorldCellComponent* worldCellComponent, const WorldReferenceComponent* worldReferenceComponent)
+{
+	ARGUS_TRACE(WorldCellSystems::GetWorldCellRecordPerEntity);
+
+	ARGUS_RETURN_ON_NULL_POINTER(worldCellComponent, ArgusECSLog);
+	ARGUS_RETURN_ON_NULL_POINTER(worldReferenceComponent, ArgusECSLog);
+
+	TSoftObjectPtr<UWorld> worldSoftPointer = TSoftObjectPtr<UWorld>(worldReferenceComponent->m_persistentWorldSoftObjectPath);
+	const UWorldCellRecord* worldCellRecord = GetWorldCellRecordForIndicies(worldSoftPointer, worldCellComponent->m_cellXCoordinate, worldCellComponent->m_cellYCoordinate);
+	ARGUS_RETURN_ON_NULL_POINTER(worldCellRecord, ArgusECSLog);
+
+	return worldCellRecord;
 }
 
 void WorldCellSystems::UpdateWorldCellLocationPerEntity(const WorldCellSystemsArgs& components, const SpatialPartitioningComponent* spatialPartitioningComponent)

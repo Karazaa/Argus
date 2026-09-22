@@ -4,6 +4,7 @@
 
 #include "ArgusMacros.h"
 #include "ComponentDependencies/Teams.h"
+#include "UObject/SoftObjectPath.h"
 
 class UWorld;
 
@@ -13,6 +14,9 @@ struct WorldReferenceComponent
 
 	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT
 	UWorld* m_worldPointer = nullptr;
+
+	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT
+	FSoftObjectPath m_persistentWorldSoftObjectPath;
 
 	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT
 	uint64 m_frameCounter = 0u;
