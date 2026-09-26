@@ -22,7 +22,7 @@ private:
 	void ChangeResourceQuantity(int32 newQuantity);
 
 protected:
-	UPROPERTY(meta=(BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> m_resourceQuantity = nullptr;
 
 	TOptional<EResourceType> m_currentResourceType = NullOpt;

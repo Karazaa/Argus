@@ -27,7 +27,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	FLinearColor m_lowHealthBarColor = FLinearColor::Red;
 
-	UPROPERTY(meta=(BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UProgressBar> m_healthBar = nullptr;
 
 	void SetHealthBarPercentForEntity(ArgusEntity argusEntity);

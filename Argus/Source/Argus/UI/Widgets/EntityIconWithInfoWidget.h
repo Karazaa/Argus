@@ -20,7 +20,7 @@ public:
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& inGeometry, const FPointerEvent& inMouseEvent) override;
 
 protected:
-	UPROPERTY(meta=(BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> m_entityIcon = nullptr;
 
 	TWeakObjectPtr<UArgusInputManager> m_inputManager = nullptr;

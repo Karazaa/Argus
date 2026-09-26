@@ -18,7 +18,7 @@ public:
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& inGeometry, const FPointerEvent& nMouseEvent) override;
 
 protected:
-	UPROPERTY(meta=(BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> m_icon = nullptr;
 
 	TFunction<void(uint16)> m_onClickedCallback = nullptr;

@@ -69,22 +69,22 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	FSlateBrush m_abilityButtonCantAffordSlateBrush;
 
-	UPROPERTY(BlueprintReadWrite, Transient)
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<USingleSelectedEntityView> m_singleSelectedEntityWidget = nullptr;
 
-	UPROPERTY(BlueprintReadWrite, Transient)
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UMultipleSelectedEntitiesView> m_multipleSelectedEntitiesWidget = nullptr;
 
-	UPROPERTY(BlueprintReadWrite, Transient)
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> m_abilityButton0 = nullptr;
 
-	UPROPERTY(BlueprintReadWrite, Transient)
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> m_abilityButton1 = nullptr;
 
-	UPROPERTY(BlueprintReadWrite, Transient)
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> m_abilityButton2 = nullptr;
 
-	UPROPERTY(BlueprintReadWrite, Transient)
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> m_abilityButton3 = nullptr;
 
 	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;

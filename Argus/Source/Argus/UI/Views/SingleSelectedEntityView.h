@@ -28,19 +28,19 @@ protected:
 	UPROPERTY(EditAnywhere)
 	FSlateBrush m_entityImageSlateBrush;
 
-	UPROPERTY(BlueprintReadWrite, Transient)
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UIconWidget> m_entityIcon = nullptr;
 
-	UPROPERTY(BlueprintReadWrite, Transient)
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> m_entityName = nullptr;
 
-	UPROPERTY(BlueprintReadWrite, Transient)
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UArgusActorHealthBarWidget> m_entityHealthBar = nullptr;
 
-	UPROPERTY(BlueprintReadWrite, Transient)
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UArgusActorCastBarWidget> m_entityCastBar = nullptr;
 
-	UPROPERTY(BlueprintReadWrite, Transient)
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UIconQueueWidget> m_iconQueue = nullptr;
 
 	ArgusEntity m_selectedEntity = ArgusEntity::k_emptyEntity;
