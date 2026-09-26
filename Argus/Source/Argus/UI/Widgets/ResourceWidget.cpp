@@ -29,9 +29,9 @@ void UResourceWidget::ChangeResourceQuantity(int32 newQuantity)
 {
 	m_currentResourceQuantity = newQuantity;
 
-	ARGUS_RETURN_ON_NULL(m_quantityTextBlock, ArgusUILog);
+	ARGUS_RETURN_ON_NULL(m_resourceQuantity, ArgusUILog);
 	
-	m_quantityTextBlock->SetText(FText::Format(LOCTEXT("ResourceQuantity", "{0}"), newQuantity));
+	m_resourceQuantity->SetText(FText::Format(LOCTEXT("ResourceQuantity", "{0}"), newQuantity));
 }
 
 #undef LOCTEXT_NAMESPACE // ResourceWidget

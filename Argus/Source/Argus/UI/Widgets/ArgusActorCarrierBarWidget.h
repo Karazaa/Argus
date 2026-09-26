@@ -20,7 +20,7 @@ public:
 	virtual void RefreshDisplay(ArgusEntity argusEntity) override;
 
 protected:
-	UPROPERTY(BlueprintReadWrite, Transient)
+	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<UHorizontalBox> m_horizontalBox = nullptr;
 
 	UPROPERTY(Transient)

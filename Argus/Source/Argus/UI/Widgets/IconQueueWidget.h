@@ -32,7 +32,7 @@ public:
 	void OnIconClicked(uint16 identifier);
 
 protected:
-	UPROPERTY(BlueprintReadWrite, Transient)
+	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<UUniformGridPanel> m_uniformGridPanel = nullptr;
 
 	UPROPERTY(EditAnywhere)

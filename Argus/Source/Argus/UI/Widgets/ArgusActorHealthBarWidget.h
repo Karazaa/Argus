@@ -27,8 +27,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	FLinearColor m_lowHealthBarColor = FLinearColor::Red;
 
-	UPROPERTY(BlueprintReadWrite, Transient)
-	TObjectPtr<UProgressBar> m_progressBar = nullptr;
+	UPROPERTY(meta=(BindWidget))
+	TObjectPtr<UProgressBar> m_healthBar = nullptr;
 
 	void SetHealthBarPercentForEntity(ArgusEntity argusEntity);
 };

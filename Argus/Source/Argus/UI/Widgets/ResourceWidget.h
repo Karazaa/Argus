@@ -22,8 +22,8 @@ private:
 	void ChangeResourceQuantity(int32 newQuantity);
 
 protected:
-	UPROPERTY(BlueprintReadWrite, Transient)
-	TObjectPtr<UTextBlock> m_quantityTextBlock = nullptr;
+	UPROPERTY(meta=(BindWidget))
+	TObjectPtr<UTextBlock> m_resourceQuantity = nullptr;
 
 	TOptional<EResourceType> m_currentResourceType = NullOpt;
 	TOptional<int32> m_currentResourceQuantity = NullOpt;

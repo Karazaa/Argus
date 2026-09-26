@@ -24,6 +24,6 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FLinearColor m_constructionProgressColor;
 
-	UPROPERTY(BlueprintReadWrite, Transient)
-	TObjectPtr<UProgressBar> m_progressBar = nullptr;
+	UPROPERTY(meta=(BindWidget))
+	TObjectPtr<UProgressBar> m_castBar = nullptr;
 };

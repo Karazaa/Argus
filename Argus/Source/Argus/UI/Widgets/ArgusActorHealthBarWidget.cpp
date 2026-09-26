@@ -9,7 +9,7 @@ void UArgusActorHealthBarWidget::SetInitialDisplay(ArgusEntity argusEntity)
 {
 	Super::SetInitialDisplay(argusEntity);
 
-	ARGUS_RETURN_ON_NULL(m_progressBar, ArgusUILog);
+	ARGUS_RETURN_ON_NULL(m_healthBar, ArgusUILog);
 
 	if (const HealthComponent* healthComponent = argusEntity.GetComponent<HealthComponent>())
 	{
@@ -30,7 +30,7 @@ void UArgusActorHealthBarWidget::RefreshDisplay(ArgusEntity argusEntity)
 
 void UArgusActorHealthBarWidget::SetHealthBarPercentForEntity(ArgusEntity argusEntity)
 {
-	ARGUS_RETURN_ON_NULL(m_progressBar, ArgusUILog);
+	ARGUS_RETURN_ON_NULL(m_healthBar, ArgusUILog);
 
 	const HealthComponent* healthComponent = argusEntity.GetComponent<HealthComponent>();
 	if (!healthComponent)
@@ -43,11 +43,11 @@ void UArgusActorHealthBarWidget::SetHealthBarPercentForEntity(ArgusEntity argusE
 	const float maximumHealth = static_cast<float>(healthComponent->m_maximumHealth);
 	const float healthBarPortion = ArgusMath::SafeDivide(currentHealth, maximumHealth, 1.0);
 
-	if (healthBarPortion != m_progressBar->GetPercent())
+	if (healthBarPortion != m_healthBar->GetPercent())
 	{
 		SetVisibility(ESlateVisibility::HitTestInvisible);
-		m_progressBar->SetPercent(healthBarPortion);
-		m_progressBar->SetFillColorAndOpacity(FMath::Lerp(m_lowHealthBarColor, m_fullHealthBarColor, healthBarPortion));
+		m_healthBar->SetPercent(healthBarPortion);
+		m_healthBar->SetFillColorAndOpacity(FMath::Lerp(m_lowHealthBarColor, m_fullHealthBarColor, healthBarPortion));
 	}
 
 	if (healthBarPortion <= 0.0f || (healthBarPortion >= 1.0f && !m_showHealthBarAtFullHealth))

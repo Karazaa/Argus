@@ -18,7 +18,7 @@ void UArgusActorCastBarWidget::RefreshDisplay(ArgusEntity entity)
 	ARGUS_TRACE(UArgusActorCastBarWidget::RefreshDisplay);
 
 	Super::RefreshDisplay(entity);
-	ARGUS_RETURN_ON_NULL(m_progressBar, ArgusUILog);
+	ARGUS_RETURN_ON_NULL(m_castBar, ArgusUILog);
 
 	const bool isVisible = GetVisibility() != ESlateVisibility::Collapsed;
 	if (!entity.IsAlive() || (!entity.IsOnPlayerTeam() && FogOfWarSystems::IsFogOfWarVisible()))
@@ -64,13 +64,13 @@ void UArgusActorCastBarWidget::RefreshDisplay(ArgusEntity entity)
 		}
 		else
 		{
-			m_progressBar->SetPercent(timeElapsedProportion);
+			m_castBar->SetPercent(timeElapsedProportion);
 		}
 	}
 	else if (shouldBeVisible)
 	{
 		SetVisibility(ESlateVisibility::HitTestInvisible);
-		m_progressBar->SetFillColorAndOpacity(fillColor);
-		m_progressBar->SetPercent(timeElapsedProportion);
+		m_castBar->SetFillColorAndOpacity(fillColor);
+		m_castBar->SetPercent(timeElapsedProportion);
 	}
 }
