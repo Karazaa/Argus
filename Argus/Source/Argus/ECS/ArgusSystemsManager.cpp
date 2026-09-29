@@ -21,6 +21,7 @@
 #include "Systems/TeamCommanderSystems.h"
 #include "Systems/TimerSystems.h"
 #include "Systems/TransformSystems.h"
+#include "Systems/TriggerSystems.h"
 #include "Systems/WorldCellSystems.h"
 #include "UObject/Package.h"
 
@@ -92,6 +93,7 @@ void ArgusSystemsManager::RunSystems(UWorld* worldPointer, float deltaTime)
 	TaskSystems::RunSystems(deltaTime);
 	TeamCommanderSystems::RunSystems(ETeamCommanderUpdateMethod::DeferredPerTeam, deltaTime);
 	AbilitySystems::RunSystems(deltaTime);
+	TriggerSystems::RunSystems(deltaTime);
 	CombatSystems::RunSystems(deltaTime);
 	NavigationSystems::RunSystems(worldPointer);
 	AvoidanceSystems::RunSystems(worldPointer, deltaTime);
