@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "ArgusContainerAllocator.h"
 #include "ArgusMacros.h"
 #include "CoreMinimal.h"
 
@@ -18,7 +19,7 @@ struct RelativePolygonComponent
 {
 	ARGUS_DYNAMIC_COMPONENT_SHARED;
 
-	TArray<FVector2D> m_relativeUnrealVerticies;
+	TArray<FVector2D, ArgusContainerAllocator<0u>> m_relativeUnrealVerticies;
 
 	ERelativePolygonType m_polygonType = ERelativePolygonType::TriggerVolume;
 };

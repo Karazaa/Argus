@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "ArgusContainerAllocator.h"
 #include "ArgusMacros.h"
 #include "ComponentDependencies/SettingsStructures.h"
 #include "CoreMinimal.h"
@@ -47,7 +48,7 @@ struct GlobalSettingsComponent
 	float m_progressNavPathDistThreshold = 5.0f;
 
 	ARGUS_COMP_PROPERTY(EditDefaultsOnly, meta = (Category = "Navigation")) ARGUS_COMP_TRANSIENT ARGUS_COMP_NO_RESET
-	TArray<FGroupSizeRadiusPair> m_groupSizeRadiusPair;
+	TArray<FGroupSizeRadiusPair, ArgusContainerAllocator<4U>> m_groupSizeRadiusPair;
 
 	static const GlobalSettingsComponent* Get();
 };

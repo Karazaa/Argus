@@ -10,32 +10,32 @@ TypeInfo::TypeInfo(const ArgusCodeGeneratorUtil::ParsedVariableData& variableDat
 	if (variableData.m_typeName.find("ExponentialDecaySmoother") != std::string::npos)
 	{
 		m_containerType = ContainerType::ExponentialSmoother;
-		ExtractTemplateParameters(variableData.m_typeName, m_templateTypes);
+		ExtractTemplateParameters(variableData.m_typeName, m_templateTypes, m_templateStrings);
 	}
 	else if (variableData.m_typeName.find("SecondOrderSystemSmoother") != std::string::npos)
 	{
 		m_containerType = ContainerType::SOSSmoother;
-		ExtractTemplateParameters(variableData.m_typeName, m_templateTypes);
+		ExtractTemplateParameters(variableData.m_typeName, m_templateTypes, m_templateStrings);
 	}
 	else if (variableData.m_typeName.find("TOptional") != std::string::npos)
 	{
 		m_containerType = ContainerType::Optional;
-		ExtractTemplateParameters(variableData.m_typeName, m_templateTypes);
+		ExtractTemplateParameters(variableData.m_typeName, m_templateTypes, m_templateStrings);
 	}
 	else if (variableData.m_typeName.find("TArray") != std::string::npos)
 	{
 		m_containerType = ContainerType::Array;
-		ExtractTemplateParameters(variableData.m_typeName, m_templateTypes);
+		ExtractTemplateParameters(variableData.m_typeName, m_templateTypes, m_templateStrings);
 	}
 	else if (variableData.m_typeName.find("ArgusQueue") != std::string::npos)
 	{
 		m_containerType = ContainerType::Queue;
-		ExtractTemplateParameters(variableData.m_typeName, m_templateTypes);
+		ExtractTemplateParameters(variableData.m_typeName, m_templateTypes, m_templateStrings);
 	}
 	else if (variableData.m_typeName.find("ArgusDeque") != std::string::npos)
 	{
 		m_containerType = ContainerType::Deque;
-		ExtractTemplateParameters(variableData.m_typeName, m_templateTypes);
+		ExtractTemplateParameters(variableData.m_typeName, m_templateTypes, m_templateStrings);
 	}
 	else if (variableData.m_typeName.find("TBitArray") != std::string::npos)
 	{
@@ -44,7 +44,7 @@ TypeInfo::TypeInfo(const ArgusCodeGeneratorUtil::ParsedVariableData& variableDat
 	else if (variableData.m_typeName.find("ArgusMap") != std::string::npos)
 	{
 		m_containerType = ContainerType::Map;
-		ExtractTemplateParameters(variableData.m_typeName, m_templateTypes);
+		ExtractTemplateParameters(variableData.m_typeName, m_templateTypes, m_templateStrings);
 	}
 	else if (!variableData.m_sizeString.empty())
 	{
@@ -54,7 +54,7 @@ TypeInfo::TypeInfo(const ArgusCodeGeneratorUtil::ParsedVariableData& variableDat
 	else if (variableData.m_typeName.find("ArgusSet") != std::string::npos)
 	{
 		m_containerType = ContainerType::Set;
-		ExtractTemplateParameters(variableData.m_typeName, m_templateTypes);
+		ExtractTemplateParameters(variableData.m_typeName, m_templateTypes, m_templateStrings);
 	}
 
 	m_isObservable = (variableData.m_propertyMacro.find(ArgusCodeGeneratorUtil::s_propertyObservableDelimiter) != std::string::npos);
@@ -68,6 +68,16 @@ UnderlyingType TypeInfo::GetTemplateParameter(int index) const
 	}
 
 	return UnderlyingType::None;
+}
+
+const std::string& TypeInfo::GetTemplateParameterString(int index) const
+{
+	if (index >= 0 && index < m_templateTypes.size())
+	{
+		return m_templateStrings[index];
+	}
+
+	return m_cleanTypeName;
 }
 
 bool TypeInfo::HasTemplateParameters() const
@@ -210,7 +220,7 @@ UnderlyingType TypeInfo::DetermineType(const std::string& typeString, const std:
 	return output;
 }
 
-void TypeInfo::ExtractTemplateParameters(const std::string& typeString, std::vector<UnderlyingType>& outPopulatedTemplateParameters)
+void TypeInfo::ExtractTemplateParameters(const std::string& typeString, std::vector<UnderlyingType>& outPopulatedTemplateParameters, std::vector<std::string>& outPopulatedTemplateParameterStrings)
 {
 	const size_t indexOfTemplateParamStart = typeString.find_first_of('<');
 	const size_t indexOfTemplateParamEnd = typeString.find_first_of('>');
@@ -230,8 +240,8 @@ void TypeInfo::ExtractTemplateParameters(const std::string& typeString, std::vec
 		std::string underlyingTypeString = templateParamString.substr(previousParseIndex, currentParseIndex - (previousParseIndex + (currentParseIndex == std::string::npos ? 0 : 1)));
 		if (underlyingTypeString.find("ArgusContainerAllocator") == std::string::npos && underlyingTypeString.find("ArgusSetAllocator") == std::string::npos)
 		{
-			std::string unusedCleanTypeName;
-			outPopulatedTemplateParameters.push_back(DetermineType(underlyingTypeString, "", unusedCleanTypeName));
+			outPopulatedTemplateParameterStrings.push_back("");
+			outPopulatedTemplateParameters.push_back(DetermineType(underlyingTypeString, "", outPopulatedTemplateParameterStrings.back()));
 		}
 	}
 }

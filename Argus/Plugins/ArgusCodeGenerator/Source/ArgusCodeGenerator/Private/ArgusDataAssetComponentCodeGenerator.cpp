@@ -192,6 +192,10 @@ bool ArgusDataAssetComponentCodeGenerator::ParseDataAssetHeaderFileTemplateWithR
 							}
 							variable = std::vformat("\tuint8 {} = {}", std::make_format_args(parsedComponentData.m_componentVariableData[i][j].m_varName, defaultValue));
 						}
+						else if (typeInfo.m_containerType == ContainerType::Array)
+						{
+							variable = std::vformat("\tTArray<{}> {}", std::make_format_args(typeInfo.GetTemplateParameterString(0), parsedComponentData.m_componentVariableData[i][j].m_varName));
+						}
 						else
 						{
 							variable = parsedComponentData.m_componentVariableData[i][j].m_typeName;
