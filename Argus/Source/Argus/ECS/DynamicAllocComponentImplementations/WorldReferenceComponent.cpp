@@ -36,6 +36,9 @@ void WorldReferenceComponent::DrawComponentDebug() const
 		ImGui::Text("m_worldPointer");
 		ImGui::TableNextColumn();
 		ImGui::TableNextColumn();
+		ImGui::Text("m_persistentWorldSoftObjectPath");
+		ImGui::TableNextColumn();
+		ImGui::TableNextColumn();
 		ImGui::Text("m_frameCounter");
 		ImGui::TableNextColumn();
 		ImGui::EndTable();

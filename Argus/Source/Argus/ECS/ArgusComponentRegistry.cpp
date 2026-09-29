@@ -132,6 +132,9 @@ ArgusMap<uint16, GlobalSettingsComponent*, ArgusSetAllocator<1> > ArgusComponent
 #pragma region InputInterfaceComponent
 ArgusMap<uint16, InputInterfaceComponent*, ArgusSetAllocator<1> > ArgusComponentRegistry::s_InputInterfaceComponents;
 #pragma endregion
+#pragma region RelativePolygonComponent
+ArgusMap<uint16, RelativePolygonComponent*, ArgusSetAllocator<1> > ArgusComponentRegistry::s_RelativePolygonComponents;
+#pragma endregion
 #pragma region ReticleComponent
 ArgusMap<uint16, ReticleComponent*, ArgusSetAllocator<1> > ArgusComponentRegistry::s_ReticleComponents;
 #pragma endregion
@@ -503,6 +506,10 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 	if (s_InputInterfaceComponents.Contains(entityId))
 	{
 		s_InputInterfaceComponents.Remove(entityId);
+	}
+	if (s_RelativePolygonComponents.Contains(entityId))
+	{
+		s_RelativePolygonComponents.Remove(entityId);
 	}
 	if (s_ReticleComponents.Contains(entityId))
 	{
@@ -1003,6 +1010,18 @@ void ArgusComponentRegistry::FlushAllComponents()
 	);
  
 	s_InputInterfaceComponents.RemoveAll([](const uint16& entityId, InputInterfaceComponent*& component)
+		{
+			if (ArgusEntity::IsReservedEntityId(entityId) && component)
+			{
+				component->Reset();
+				return false;
+			}
+
+			return true;
+		}
+	);
+ 
+	s_RelativePolygonComponents.RemoveAll([](const uint16& entityId, RelativePolygonComponent*& component)
 		{
 			if (ArgusEntity::IsReservedEntityId(entityId) && component)
 			{
@@ -1605,6 +1624,33 @@ void ArgusComponentRegistry::Serialize(FArchive& archive)
 			}
 		}
 	}
+	numComponents = s_RelativePolygonComponents.Num();
+	archive << numComponents;
+	if (archive.IsLoading())
+	{
+		for (int32 i = 0; i < numComponents; ++i)
+		{
+			uint16 entityId = 0;
+			archive << entityId;
+
+			RelativePolygonComponent* component = GetOrAddComponent<RelativePolygonComponent>(entityId);
+			if (component)
+			{
+				component->Serialize(archive);
+			}
+		}
+	}
+	else
+	{
+		for (TPair<uint16, RelativePolygonComponent*>& pair : s_RelativePolygonComponents)
+		{
+			archive << pair.Key;
+			if (pair.Value)
+			{
+				pair.Value->Serialize(archive);
+			}
+		}
+	}
 	numComponents = s_ReticleComponents.Num();
 	archive << numComponents;
 	if (archive.IsLoading())
@@ -1903,6 +1949,10 @@ void ArgusComponentRegistry::DrawComponentsDebug(uint16 entityId)
 	if (const InputInterfaceComponent* InputInterfaceComponentPtr = GetComponent<InputInterfaceComponent>(entityId))
 	{
 		InputInterfaceComponentPtr->DrawComponentDebug();
+	}
+	if (const RelativePolygonComponent* RelativePolygonComponentPtr = GetComponent<RelativePolygonComponent>(entityId))
+	{
+		RelativePolygonComponentPtr->DrawComponentDebug();
 	}
 	if (const ReticleComponent* ReticleComponentPtr = GetComponent<ReticleComponent>(entityId))
 	{

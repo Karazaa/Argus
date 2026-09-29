@@ -46,6 +46,7 @@
 #include "DynamicAllocComponentDefinitions\FogOfWarComponent.h"
 #include "DynamicAllocComponentDefinitions\GlobalSettingsComponent.h"
 #include "DynamicAllocComponentDefinitions\InputInterfaceComponent.h"
+#include "DynamicAllocComponentDefinitions\RelativePolygonComponent.h"
 #include "DynamicAllocComponentDefinitions\ReticleComponent.h"
 #include "DynamicAllocComponentDefinitions\SpatialPartitioningComponent.h"
 #include "DynamicAllocComponentDefinitions\TeamCommanderCombatDataComponent.h"
@@ -86,7 +87,7 @@ public:
 	static void DrawComponentsDebug(uint16 entityId);
 #endif //!UE_BUILD_SHIPPING
 
-	static constexpr uint32 k_numComponentTypes = 39;
+	static constexpr uint32 k_numComponentTypes = 40;
 
 	// Begin component specific template specifiers.
 	
@@ -2980,6 +2981,66 @@ public:
 		}
 
 		return s_InputInterfaceComponents[entityId];
+	}
+#pragma endregion
+#pragma region RelativePolygonComponent
+private:
+	static ArgusMap<uint16, RelativePolygonComponent*, ArgusSetAllocator<1> > s_RelativePolygonComponents;
+public:
+	template<>
+	inline RelativePolygonComponent* GetComponent<RelativePolygonComponent>(uint16 entityId)
+	{
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(RelativePolygonComponent));
+			return nullptr;
+		}
+
+		if (!s_RelativePolygonComponents.Contains(entityId))
+		{
+			return nullptr;
+		}
+
+		return s_RelativePolygonComponents[entityId];
+	}
+
+	template<>
+	inline RelativePolygonComponent* AddComponent<RelativePolygonComponent>(uint16 entityId)
+	{
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(RelativePolygonComponent));
+			return nullptr;
+		}
+
+		if (UNLIKELY(s_RelativePolygonComponents.Contains(entityId)))
+		{
+			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(RelativePolygonComponent), entityId);
+			return s_RelativePolygonComponents[entityId];
+		}
+
+		RelativePolygonComponent* output = new (ArgusMemorySource::Allocate<RelativePolygonComponent>()) RelativePolygonComponent();
+		s_RelativePolygonComponents.Emplace(entityId, output);
+		return output;
+	}
+
+	template<>
+	inline RelativePolygonComponent* GetOrAddComponent<RelativePolygonComponent>(uint16 entityId)
+	{
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(RelativePolygonComponent));
+			return nullptr;
+		}
+
+		if (!s_RelativePolygonComponents.Contains(entityId))
+		{
+			RelativePolygonComponent* output = new (ArgusMemorySource::Allocate<RelativePolygonComponent>()) RelativePolygonComponent();
+			s_RelativePolygonComponents.Emplace(entityId, output);
+			return output;
+		}
+
+		return s_RelativePolygonComponents[entityId];
 	}
 #pragma endregion
 #pragma region ReticleComponent

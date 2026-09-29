@@ -39,6 +39,7 @@
 #include "AssetFactories/ComponentDataFactories/FogOfWarComponentDataFactory.h"
 #include "AssetFactories/ComponentDataFactories/GlobalSettingsComponentDataFactory.h"
 #include "AssetFactories/ComponentDataFactories/InputInterfaceComponentDataFactory.h"
+#include "AssetFactories/ComponentDataFactories/RelativePolygonComponentDataFactory.h"
 #include "AssetFactories/ComponentDataFactories/ReticleComponentDataFactory.h"
 #include "AssetFactories/ComponentDataFactories/SpatialPartitioningComponentDataFactory.h"
 #include "AssetFactories/ComponentDataFactories/TeamCommanderCombatDataComponentDataFactory.h"
@@ -133,6 +134,8 @@ void ArgusEditorModule::RegisterAssetActions(IAssetTools& assetTools) const
 	assetTools.RegisterAssetTypeActions(actionsGlobalSettingsComponentData);
 	TSharedRef<IAssetTypeActions> actionsInputInterfaceComponentData = MakeShareable(new FAssetTypeActions_InputInterfaceComponentData);
 	assetTools.RegisterAssetTypeActions(actionsInputInterfaceComponentData);
+	TSharedRef<IAssetTypeActions> actionsRelativePolygonComponentData = MakeShareable(new FAssetTypeActions_RelativePolygonComponentData);
+	assetTools.RegisterAssetTypeActions(actionsRelativePolygonComponentData);
 	TSharedRef<IAssetTypeActions> actionsReticleComponentData = MakeShareable(new FAssetTypeActions_ReticleComponentData);
 	assetTools.RegisterAssetTypeActions(actionsReticleComponentData);
 	TSharedRef<IAssetTypeActions> actionsSpatialPartitioningComponentData = MakeShareable(new FAssetTypeActions_SpatialPartitioningComponentData);
