@@ -4,16 +4,16 @@
 #pragma once
 
 #include "ComponentData.h"
-#include "RelativePolygonComponentData.generated.h"
+#include "TriggerComponentData.generated.h"
 
 UCLASS()
-class ARGUS_API URelativePolygonComponentData : public UComponentData
+class ARGUS_API UTriggerComponentData : public UComponentData
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere)
-	TArray<FVector2D> m_relativeUnrealVerticies;
+	bool m_extendsToFlyingPlane = false;
 
 
 	void InstantiateComponentForEntity(ArgusEntity entity) const override;

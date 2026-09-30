@@ -35,6 +35,7 @@
 #include "ComponentDefinitions\TaskComponent.h"
 #include "ComponentDefinitions\TimerComponent.h"
 #include "ComponentDefinitions\TransformComponent.h"
+#include "ComponentDefinitions\TriggerComponent.h"
 #include "ComponentDefinitions\VelocityComponent.h"
 #include "ComponentDefinitions\WorldCellComponent.h"
 
@@ -46,6 +47,7 @@
 #include "DynamicAllocComponentDefinitions\FogOfWarComponent.h"
 #include "DynamicAllocComponentDefinitions\GlobalSettingsComponent.h"
 #include "DynamicAllocComponentDefinitions\InputInterfaceComponent.h"
+#include "DynamicAllocComponentDefinitions\RelativeCircleComponent.h"
 #include "DynamicAllocComponentDefinitions\RelativePolygonComponent.h"
 #include "DynamicAllocComponentDefinitions\ReticleComponent.h"
 #include "DynamicAllocComponentDefinitions\SpatialPartitioningComponent.h"
@@ -87,7 +89,7 @@ public:
 	static void DrawComponentsDebug(uint16 entityId);
 #endif //!UE_BUILD_SHIPPING
 
-	static constexpr uint32 k_numComponentTypes = 40;
+	static constexpr uint32 k_numComponentTypes = 42;
 
 	// Begin component specific template specifiers.
 	
@@ -2371,6 +2373,101 @@ public:
 
 	friend struct TransformComponent;
 #pragma endregion
+#pragma region TriggerComponent
+private:
+	static TriggerComponent* s_TriggerComponents;
+	static TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > s_isTriggerComponentActive;
+public:
+	template<>
+	inline TriggerComponent* GetComponent<TriggerComponent>(uint16 entityId)
+	{
+		if (UNLIKELY(!s_TriggerComponents))
+		{
+			return nullptr;
+		}
+
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(TriggerComponent));
+			return nullptr;
+		}
+
+		if (UNLIKELY(s_isTriggerComponentActive.Num() == 0))
+		{
+			return nullptr;
+		}
+
+		if (!s_isTriggerComponentActive[entityId])
+		{
+			return nullptr;
+		}
+
+		return &s_TriggerComponents[entityId];
+	}
+
+	template<>
+	inline TriggerComponent* AddComponent<TriggerComponent>(uint16 entityId)
+	{
+		if (UNLIKELY(!s_TriggerComponents))
+		{
+			return nullptr;
+		}
+
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(TriggerComponent));
+			return nullptr;
+		}
+
+		if (UNLIKELY(s_isTriggerComponentActive.Num() == 0))
+		{
+			s_isTriggerComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
+		if (UNLIKELY(s_isTriggerComponentActive[entityId]))
+		{
+			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(TriggerComponent), entityId);
+			return &s_TriggerComponents[entityId];
+		}
+
+		s_isTriggerComponentActive[entityId] = true;
+		s_TriggerComponents[entityId].Reset();
+		return &s_TriggerComponents[entityId];
+	}
+
+	template<>
+	inline TriggerComponent* GetOrAddComponent<TriggerComponent>(uint16 entityId)
+	{
+		if (UNLIKELY(!s_TriggerComponents))
+		{
+			return nullptr;
+		}
+
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(TriggerComponent));
+			return nullptr;
+		}
+
+		if (UNLIKELY(s_isTriggerComponentActive.Num() == 0))
+		{
+			s_isTriggerComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+		}
+
+		if (s_isTriggerComponentActive[entityId])
+		{
+			return &s_TriggerComponents[entityId];
+		}
+		else
+		{
+			s_isTriggerComponentActive[entityId] = true;
+			s_TriggerComponents[entityId].Reset();
+			return &s_TriggerComponents[entityId];
+		}
+	}
+
+	friend struct TriggerComponent;
+#pragma endregion
 #pragma region VelocityComponent
 private:
 	static VelocityComponent* s_VelocityComponents;
@@ -2981,6 +3078,66 @@ public:
 		}
 
 		return s_InputInterfaceComponents[entityId];
+	}
+#pragma endregion
+#pragma region RelativeCircleComponent
+private:
+	static ArgusMap<uint16, RelativeCircleComponent*, ArgusSetAllocator<1> > s_RelativeCircleComponents;
+public:
+	template<>
+	inline RelativeCircleComponent* GetComponent<RelativeCircleComponent>(uint16 entityId)
+	{
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when getting %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(RelativeCircleComponent));
+			return nullptr;
+		}
+
+		if (!s_RelativeCircleComponents.Contains(entityId))
+		{
+			return nullptr;
+		}
+
+		return s_RelativeCircleComponents[entityId];
+	}
+
+	template<>
+	inline RelativeCircleComponent* AddComponent<RelativeCircleComponent>(uint16 entityId)
+	{
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(RelativeCircleComponent));
+			return nullptr;
+		}
+
+		if (UNLIKELY(s_RelativeCircleComponents.Contains(entityId)))
+		{
+			ARGUS_LOG(ArgusECSLog, Warning, TEXT("[%s] Attempting to add a %s to entity %d, which already has one."), ARGUS_FUNCNAME, ARGUS_NAMEOF(RelativeCircleComponent), entityId);
+			return s_RelativeCircleComponents[entityId];
+		}
+
+		RelativeCircleComponent* output = new (ArgusMemorySource::Allocate<RelativeCircleComponent>()) RelativeCircleComponent();
+		s_RelativeCircleComponents.Emplace(entityId, output);
+		return output;
+	}
+
+	template<>
+	inline RelativeCircleComponent* GetOrAddComponent<RelativeCircleComponent>(uint16 entityId)
+	{
+		if (UNLIKELY(entityId >= ArgusECSConstants::k_maxEntities))
+		{
+			ARGUS_LOG(ArgusECSLog, Error, TEXT("[%s] Invalid entity id %d, used when adding %s."), ARGUS_FUNCNAME, entityId, ARGUS_NAMEOF(RelativeCircleComponent));
+			return nullptr;
+		}
+
+		if (!s_RelativeCircleComponents.Contains(entityId))
+		{
+			RelativeCircleComponent* output = new (ArgusMemorySource::Allocate<RelativeCircleComponent>()) RelativeCircleComponent();
+			s_RelativeCircleComponents.Emplace(entityId, output);
+			return output;
+		}
+
+		return s_RelativeCircleComponents[entityId];
 	}
 #pragma endregion
 #pragma region RelativePolygonComponent

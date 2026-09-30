@@ -30,6 +30,7 @@
 #include "AssetFactories/ComponentDataFactories/TaskComponentDataFactory.h"
 #include "AssetFactories/ComponentDataFactories/TimerComponentDataFactory.h"
 #include "AssetFactories/ComponentDataFactories/TransformComponentDataFactory.h"
+#include "AssetFactories/ComponentDataFactories/TriggerComponentDataFactory.h"
 #include "AssetFactories/ComponentDataFactories/VelocityComponentDataFactory.h"
 #include "AssetFactories/ComponentDataFactories/WorldCellComponentDataFactory.h"
 #include "AssetFactories/ComponentDataFactories/AssetLoadingComponentDataFactory.h"
@@ -39,6 +40,7 @@
 #include "AssetFactories/ComponentDataFactories/FogOfWarComponentDataFactory.h"
 #include "AssetFactories/ComponentDataFactories/GlobalSettingsComponentDataFactory.h"
 #include "AssetFactories/ComponentDataFactories/InputInterfaceComponentDataFactory.h"
+#include "AssetFactories/ComponentDataFactories/RelativeCircleComponentDataFactory.h"
 #include "AssetFactories/ComponentDataFactories/RelativePolygonComponentDataFactory.h"
 #include "AssetFactories/ComponentDataFactories/ReticleComponentDataFactory.h"
 #include "AssetFactories/ComponentDataFactories/SpatialPartitioningComponentDataFactory.h"
@@ -116,6 +118,8 @@ void ArgusEditorModule::RegisterAssetActions(IAssetTools& assetTools) const
 	assetTools.RegisterAssetTypeActions(actionsTimerComponentData);
 	TSharedRef<IAssetTypeActions> actionsTransformComponentData = MakeShareable(new FAssetTypeActions_TransformComponentData);
 	assetTools.RegisterAssetTypeActions(actionsTransformComponentData);
+	TSharedRef<IAssetTypeActions> actionsTriggerComponentData = MakeShareable(new FAssetTypeActions_TriggerComponentData);
+	assetTools.RegisterAssetTypeActions(actionsTriggerComponentData);
 	TSharedRef<IAssetTypeActions> actionsVelocityComponentData = MakeShareable(new FAssetTypeActions_VelocityComponentData);
 	assetTools.RegisterAssetTypeActions(actionsVelocityComponentData);
 	TSharedRef<IAssetTypeActions> actionsWorldCellComponentData = MakeShareable(new FAssetTypeActions_WorldCellComponentData);
@@ -134,6 +138,8 @@ void ArgusEditorModule::RegisterAssetActions(IAssetTools& assetTools) const
 	assetTools.RegisterAssetTypeActions(actionsGlobalSettingsComponentData);
 	TSharedRef<IAssetTypeActions> actionsInputInterfaceComponentData = MakeShareable(new FAssetTypeActions_InputInterfaceComponentData);
 	assetTools.RegisterAssetTypeActions(actionsInputInterfaceComponentData);
+	TSharedRef<IAssetTypeActions> actionsRelativeCircleComponentData = MakeShareable(new FAssetTypeActions_RelativeCircleComponentData);
+	assetTools.RegisterAssetTypeActions(actionsRelativeCircleComponentData);
 	TSharedRef<IAssetTypeActions> actionsRelativePolygonComponentData = MakeShareable(new FAssetTypeActions_RelativePolygonComponentData);
 	assetTools.RegisterAssetTypeActions(actionsRelativePolygonComponentData);
 	TSharedRef<IAssetTypeActions> actionsReticleComponentData = MakeShareable(new FAssetTypeActions_ReticleComponentData);

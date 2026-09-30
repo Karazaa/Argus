@@ -4,17 +4,7 @@
 
 #include "ArgusMacros.h"
 #include "ArgusMath.h"
-#include "CoreMinimal.h"
-
-#include "TransformComponent.generated.h"
-
-UENUM()
-enum class EFlightCapability : uint8
-{
-	OnlyGrounded,
-	OnlyFlying,
-	BothGroundedAndFlying
-};
+#include "ComponentDependencies/FlightCapability.h"
 
 struct TransformComponent
 {

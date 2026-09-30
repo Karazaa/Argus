@@ -134,6 +134,11 @@ bool ArgusComponentComponentSizeTest::RunTest(const FString& Parameters)
 	netSize += TransformComponentSize;
 	ARGUS_LOG(ArgusTestingLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(TransformComponent), TransformComponentSize);
 #pragma endregion
+#pragma region TriggerComponent
+	const size_t TriggerComponentSize = sizeof(TriggerComponent);
+	netSize += TriggerComponentSize;
+	ARGUS_LOG(ArgusTestingLog, Display, TEXT("[%s] Size of %s = %d"), ARGUS_FUNCNAME, ARGUS_NAMEOF(TriggerComponent), TriggerComponentSize);
+#pragma endregion
 #pragma region VelocityComponent
 	const size_t VelocityComponentSize = sizeof(VelocityComponent);
 	netSize += VelocityComponentSize;

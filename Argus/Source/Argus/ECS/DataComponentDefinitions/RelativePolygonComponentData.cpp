@@ -11,7 +11,6 @@ void URelativePolygonComponentData::InstantiateComponentForEntity(ArgusEntity en
 	ARGUS_RETURN_ON_NULL(RelativePolygonComponentRef, ArgusECSLog);
 
 	RelativePolygonComponentRef->m_relativeUnrealVerticies = m_relativeUnrealVerticies;
-	RelativePolygonComponentRef->m_polygonType = m_polygonType;
 }
 
 void URelativePolygonComponentData::ReinitializeComponentForEntityPostLoad(ArgusEntity entity) const

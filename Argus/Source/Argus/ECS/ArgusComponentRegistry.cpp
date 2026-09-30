@@ -103,6 +103,10 @@ TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > ArgusCom
 TransformComponent* ArgusComponentRegistry::s_TransformComponents = nullptr;
 TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > ArgusComponentRegistry::s_isTransformComponentActive;
 #pragma endregion
+#pragma region TriggerComponent
+TriggerComponent* ArgusComponentRegistry::s_TriggerComponents = nullptr;
+TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > ArgusComponentRegistry::s_isTriggerComponentActive;
+#pragma endregion
 #pragma region VelocityComponent
 VelocityComponent* ArgusComponentRegistry::s_VelocityComponents = nullptr;
 TBitArray<ArgusContainerAllocator<ArgusECSConstants::k_numBitBuckets> > ArgusComponentRegistry::s_isVelocityComponentActive;
@@ -131,6 +135,9 @@ ArgusMap<uint16, GlobalSettingsComponent*, ArgusSetAllocator<1> > ArgusComponent
 #pragma endregion
 #pragma region InputInterfaceComponent
 ArgusMap<uint16, InputInterfaceComponent*, ArgusSetAllocator<1> > ArgusComponentRegistry::s_InputInterfaceComponents;
+#pragma endregion
+#pragma region RelativeCircleComponent
+ArgusMap<uint16, RelativeCircleComponent*, ArgusSetAllocator<1> > ArgusComponentRegistry::s_RelativeCircleComponents;
 #pragma endregion
 #pragma region RelativePolygonComponent
 ArgusMap<uint16, RelativePolygonComponent*, ArgusSetAllocator<1> > ArgusComponentRegistry::s_RelativePolygonComponents;
@@ -355,6 +362,14 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 	{
 		s_isTransformComponentActive[entityId] = false;
 	}
+	if (UNLIKELY(s_isTriggerComponentActive.Num() == 0))
+	{
+		s_isTriggerComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
+	}
+	else
+	{
+		s_isTriggerComponentActive[entityId] = false;
+	}
 	if (UNLIKELY(s_isVelocityComponentActive.Num() == 0))
 	{
 		s_isVelocityComponentActive.SetNum(ArgusECSConstants::k_maxEntities, false);
@@ -469,6 +484,10 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 	{
 		s_TransformComponents[entityId].Reset();
 	}
+	if (LIKELY(s_TriggerComponents))
+	{
+		s_TriggerComponents[entityId].Reset();
+	}
 	if (LIKELY(s_VelocityComponents))
 	{
 		s_VelocityComponents[entityId].Reset();
@@ -506,6 +525,10 @@ void ArgusComponentRegistry::RemoveComponentsForEntity(uint16 entityId)
 	if (s_InputInterfaceComponents.Contains(entityId))
 	{
 		s_InputInterfaceComponents.Remove(entityId);
+	}
+	if (s_RelativeCircleComponents.Contains(entityId))
+	{
+		s_RelativeCircleComponents.Remove(entityId);
 	}
 	if (s_RelativePolygonComponents.Contains(entityId))
 	{
@@ -708,6 +731,13 @@ void ArgusComponentRegistry::FlushAllComponents()
 		s_TransformComponents = ArgusMemorySource::Reallocate<TransformComponent>(s_TransformComponents, 0, ArgusECSConstants::k_maxEntities);
 	}
 	s_isTransformComponentActive.Reset();
+	bool didAllocateTriggerComponents = false;
+	if (!s_TriggerComponents)
+	{
+		didAllocateTriggerComponents = true;
+		s_TriggerComponents = ArgusMemorySource::Reallocate<TriggerComponent>(s_TriggerComponents, 0, ArgusECSConstants::k_maxEntities);
+	}
+	s_isTriggerComponentActive.Reset();
 	bool didAllocateVelocityComponents = false;
 	if (!s_VelocityComponents)
 	{
@@ -918,6 +948,14 @@ void ArgusComponentRegistry::FlushAllComponents()
 		{
 			s_TransformComponents[i].Reset();
 		}
+		if (didAllocateTriggerComponents)
+		{
+			new (&s_TriggerComponents[i]) TriggerComponent();
+		}
+		else
+		{
+			s_TriggerComponents[i].Reset();
+		}
 		if (didAllocateVelocityComponents)
 		{
 			new (&s_VelocityComponents[i]) VelocityComponent();
@@ -1010,6 +1048,18 @@ void ArgusComponentRegistry::FlushAllComponents()
 	);
  
 	s_InputInterfaceComponents.RemoveAll([](const uint16& entityId, InputInterfaceComponent*& component)
+		{
+			if (ArgusEntity::IsReservedEntityId(entityId) && component)
+			{
+				component->Reset();
+				return false;
+			}
+
+			return true;
+		}
+	);
+ 
+	s_RelativeCircleComponents.RemoveAll([](const uint16& entityId, RelativeCircleComponent*& component)
 		{
 			if (ArgusEntity::IsReservedEntityId(entityId) && component)
 			{
@@ -1229,6 +1279,11 @@ uint16 ArgusComponentRegistry::GetOwningEntityIdForComponentMember(const void* m
 		const TransformComponent* pretendComponent = reinterpret_cast<const TransformComponent*>(memberAddress);
 		return pretendComponent - &s_TransformComponents[0];
 	}
+	if (memberAddress >= &s_TriggerComponents[0] && memberAddress <= &s_TriggerComponents[ArgusECSConstants::k_maxEntities - 1])
+	{
+		const TriggerComponent* pretendComponent = reinterpret_cast<const TriggerComponent*>(memberAddress);
+		return pretendComponent - &s_TriggerComponents[0];
+	}
 	if (memberAddress >= &s_VelocityComponents[0] && memberAddress <= &s_VelocityComponents[ArgusECSConstants::k_maxEntities - 1])
 	{
 		const VelocityComponent* pretendComponent = reinterpret_cast<const VelocityComponent*>(memberAddress);
@@ -1417,6 +1472,13 @@ void ArgusComponentRegistry::Serialize(FArchive& archive)
 	{
 		s_TransformComponents[currentIndex].Serialize(archive);
 		currentIndex = s_isTransformComponentActive.FindFrom(true, currentIndex + 1);
+	}
+	s_isTriggerComponentActive.Serialize(archive);
+	currentIndex = s_isTriggerComponentActive.FindFrom(true, 0);
+	while (s_isTriggerComponentActive.IsValidIndex(currentIndex))
+	{
+		s_TriggerComponents[currentIndex].Serialize(archive);
+		currentIndex = s_isTriggerComponentActive.FindFrom(true, currentIndex + 1);
 	}
 	s_isVelocityComponentActive.Serialize(archive);
 	currentIndex = s_isVelocityComponentActive.FindFrom(true, 0);
@@ -1616,6 +1678,33 @@ void ArgusComponentRegistry::Serialize(FArchive& archive)
 	else
 	{
 		for (TPair<uint16, InputInterfaceComponent*>& pair : s_InputInterfaceComponents)
+		{
+			archive << pair.Key;
+			if (pair.Value)
+			{
+				pair.Value->Serialize(archive);
+			}
+		}
+	}
+	numComponents = s_RelativeCircleComponents.Num();
+	archive << numComponents;
+	if (archive.IsLoading())
+	{
+		for (int32 i = 0; i < numComponents; ++i)
+		{
+			uint16 entityId = 0;
+			archive << entityId;
+
+			RelativeCircleComponent* component = GetOrAddComponent<RelativeCircleComponent>(entityId);
+			if (component)
+			{
+				component->Serialize(archive);
+			}
+		}
+	}
+	else
+	{
+		for (TPair<uint16, RelativeCircleComponent*>& pair : s_RelativeCircleComponents)
 		{
 			archive << pair.Key;
 			if (pair.Value)
@@ -1914,6 +2003,10 @@ void ArgusComponentRegistry::DrawComponentsDebug(uint16 entityId)
 	{
 		TransformComponentPtr->DrawComponentDebug();
 	}
+	if (const TriggerComponent* TriggerComponentPtr = GetComponent<TriggerComponent>(entityId))
+	{
+		TriggerComponentPtr->DrawComponentDebug();
+	}
 	if (const VelocityComponent* VelocityComponentPtr = GetComponent<VelocityComponent>(entityId))
 	{
 		VelocityComponentPtr->DrawComponentDebug();
@@ -1949,6 +2042,10 @@ void ArgusComponentRegistry::DrawComponentsDebug(uint16 entityId)
 	if (const InputInterfaceComponent* InputInterfaceComponentPtr = GetComponent<InputInterfaceComponent>(entityId))
 	{
 		InputInterfaceComponentPtr->DrawComponentDebug();
+	}
+	if (const RelativeCircleComponent* RelativeCircleComponentPtr = GetComponent<RelativeCircleComponent>(entityId))
+	{
+		RelativeCircleComponentPtr->DrawComponentDebug();
 	}
 	if (const RelativePolygonComponent* RelativePolygonComponentPtr = GetComponent<RelativePolygonComponent>(entityId))
 	{

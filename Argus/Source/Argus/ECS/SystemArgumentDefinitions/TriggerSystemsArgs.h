@@ -9,6 +9,12 @@ struct TriggerSystemsArgs
 {
 	ARGUS_SYSTEM_ARGS_SHARED;
 
-	RelativePolygonComponent* m_relativePolygonComponent = nullptr;
+	TriggerComponent* m_triggerComponent = nullptr;
 	TransformComponent* m_transformComponent = nullptr;
+
+	ARGUS_SYSARG_UNCHECKED_GET
+	RelativeCircleComponent* m_relativeCircleComponent = nullptr;
+
+	ARGUS_SYSARG_UNCHECKED_GET
+	RelativePolygonComponent* m_relativePolygonComponent = nullptr;
 };

@@ -4,16 +4,19 @@
 #pragma once
 
 #include "ComponentData.h"
-#include "RelativePolygonComponentData.generated.h"
+#include "RelativeCircleComponentData.generated.h"
 
 UCLASS()
-class ARGUS_API URelativePolygonComponentData : public UComponentData
+class ARGUS_API URelativeCircleComponentData : public UComponentData
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere)
-	TArray<FVector2D> m_relativeUnrealVerticies;
+	FVector2D m_relativeCenter = FVector2D::ZeroVector;
+
+	UPROPERTY(EditAnywhere)
+	float m_radius = 100.0f;
 
 
 	void InstantiateComponentForEntity(ArgusEntity entity) const override;

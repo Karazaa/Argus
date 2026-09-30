@@ -15,13 +15,11 @@
 void RelativePolygonComponent::Reset()
 {
 	m_relativeUnrealVerticies.Reset();
-	m_polygonType = ERelativePolygonType::TriggerVolume;
 }
 
 void RelativePolygonComponent::Serialize(FArchive& archive)
 {
 	archive << m_relativeUnrealVerticies;
-	archive << m_polygonType;
 }
 
 void RelativePolygonComponent::DrawComponentDebug() const
@@ -53,11 +51,6 @@ void RelativePolygonComponent::DrawComponentDebug() const
 			}
 			ImGui::Unindent();
 		}
-		ImGui::TableNextColumn();
-		ImGui::Text("m_polygonType");
-		ImGui::TableNextColumn();
-		const char* valueName_m_polygonType = ARGUS_FSTRING_TO_CHAR(StaticEnum<ERelativePolygonType>()->GetNameStringByValue(static_cast<uint8>(m_polygonType)));
-		ImGui::Text(valueName_m_polygonType);
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

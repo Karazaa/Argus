@@ -12,10 +12,12 @@ bool TriggerSystemsArgs::PopulateArguments(ArgusEntity entity)
 	}
 
 	m_entity = entity;
-	m_relativePolygonComponent = entity.GetComponent<RelativePolygonComponent>();
+	m_triggerComponent = entity.GetComponent<TriggerComponent>();
 	m_transformComponent = entity.GetComponent<TransformComponent>();
+	m_relativeCircleComponent = entity.GetComponent<RelativeCircleComponent>();
+	m_relativePolygonComponent = entity.GetComponent<RelativePolygonComponent>();
 
-	if (!m_entity || !m_relativePolygonComponent || !m_transformComponent)
+	if (!m_entity || !m_triggerComponent || !m_transformComponent)
 	{
 		return false;
 	}
@@ -25,7 +27,7 @@ bool TriggerSystemsArgs::PopulateArguments(ArgusEntity entity)
 
 bool TriggerSystemsArgs::AreComponentsValidCheck(const WIDECHAR* functionName) const
 {
-	if (UNLIKELY(!m_entity || !m_relativePolygonComponent || !m_transformComponent))
+	if (UNLIKELY(!m_entity || !m_triggerComponent || !m_transformComponent))
 	{
 		ArgusLogging::LogInvalidComponentReferences(functionName, ARGUS_NAMEOF(TriggerSystemsArgs));
 		return false;

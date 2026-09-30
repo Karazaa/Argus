@@ -2,12 +2,14 @@
 
 #pragma once
 
-#include "ArgusContainerAllocator.h"
 #include "ArgusMacros.h"
+#include "CoreMinimal.h"
 
-struct RelativePolygonComponent
+struct RelativeCircleComponent
 {
 	ARGUS_DYNAMIC_COMPONENT_SHARED;
 
-	TArray<FVector2D, ArgusContainerAllocator<0u>> m_relativeUnrealVerticies;
+	FVector2D m_relativeCenter = FVector2D::ZeroVector;
+
+	float m_radius = 100.0f;
 };
