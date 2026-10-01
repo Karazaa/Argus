@@ -4,6 +4,7 @@
 
 #include "ArgusActor.h"
 #include "ArgusCameraActor.h"
+#include "ArgusContainerAllocator.h"
 #include "CoreMinimal.h"
 #include "InputActionValue.h"
 #include "UObject/SoftObjectPtr.h"
@@ -139,6 +140,7 @@ private:
 	TWeakObjectPtr<AArgusPlayerController> m_owningPlayerController = nullptr;
 	TSet<TWeakObjectPtr<AArgusActor>> m_controlGroupActors[6];
 	TArray<InputCache> m_inputEventsThisFrame;
+	TArray<uint16, ArgusContainerAllocator<50u> > m_marqueeQueryScratch;
 
 	void BindActions(TSoftObjectPtr<UArgusInputActionSet>& argusInputActionSet, UEnhancedInputComponent* enhancedInputComponent, UEnhancedPlayerInput* enhancedInput);
 	bool ValidateOwningPlayerController();

@@ -40,8 +40,8 @@ public:
 	ETeam GetPlayerTeam() const { return m_playerTeam; }
 	AArgusCameraActor* GetArgusCameraActor() const { return m_argusCameraActor.Get(); }
 
+	bool EntityOnPlayerTeamFilterPredicate(uint16 entityIdToCheck) const;
 	void FilterArgusActorsToPlayerTeam(TArray<AArgusActor*>& argusActors) const;
-	void FilterArgusEntityIdsToPlayerTeam(TArray<uint16>& entityIds) const;
 	bool IsArgusActorOnPlayerTeam(const AArgusActor* const actor) const;
 	bool IsArgusEntityOnPlayerTeam(ArgusEntity entity) const;
 
@@ -49,6 +49,18 @@ public:
 	void ReInitializeUIWidgetsPostLoad();
 
 	UArgusInputManager* GetInputManager() const { return m_argusInputManager; }
+
+	template <typename Array>
+	void FilterArgusEntityIdsToPlayerTeam(Array& entityIds) const
+	{
+		entityIds = entityIds.FilterByPredicate
+		(
+			[this](uint16 entityIdToCheck)
+			{
+				return EntityOnPlayerTeamFilterPredicate(entityIdToCheck);
+			}
+		);
+	}
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

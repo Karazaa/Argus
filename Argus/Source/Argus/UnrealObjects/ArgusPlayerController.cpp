@@ -163,6 +163,17 @@ const UArgusActorRecord* AArgusPlayerController::GetMoveToLocationDecalActorReco
 	return ArgusStaticData::GetRecord<UArgusActorRecord>(m_moveToLocationDecalActorRecordId);
 }
 
+bool AArgusPlayerController::EntityOnPlayerTeamFilterPredicate(uint16 entityIdToCheck) const
+{
+	ArgusEntity entityToCheck = ArgusEntity::RetrieveEntity(entityIdToCheck);
+	if (!entityToCheck)
+	{
+		return false;
+	}
+
+	return entityToCheck.IsAlive() && !entityToCheck.IsPassenger() && IsArgusEntityOnPlayerTeam(entityToCheck);
+}
+
 void AArgusPlayerController::FilterArgusActorsToPlayerTeam(TArray<AArgusActor*>& argusActors) const
 {
 	argusActors = argusActors.FilterByPredicate
@@ -175,23 +186,6 @@ void AArgusPlayerController::FilterArgusActorsToPlayerTeam(TArray<AArgusActor*>&
 			}
 
 			return actorToCheck->GetEntity().IsAlive() && !actorToCheck->GetEntity().IsPassenger() && IsArgusActorOnPlayerTeam(actorToCheck);
-		}
-	);
-}
-
-void AArgusPlayerController::FilterArgusEntityIdsToPlayerTeam(TArray<uint16>& entityIds) const
-{
-	entityIds = entityIds.FilterByPredicate
-	(
-		[this](uint16 entityIdToCheck)
-		{
-			ArgusEntity entityToCheck = ArgusEntity::RetrieveEntity(entityIdToCheck);
-			if (!entityToCheck)
-			{
-				return false;
-			}
-
-			return entityToCheck.IsAlive() && !entityToCheck.IsPassenger() && IsArgusEntityOnPlayerTeam(entityToCheck);
 		}
 	);
 }

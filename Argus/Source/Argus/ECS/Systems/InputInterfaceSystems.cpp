@@ -130,12 +130,6 @@ void InputInterfaceSystems::AddSelectedEntityAdditive(ArgusEntity selectedEntity
 	OnSelectedEntitiesChanged();
 }
 
-void InputInterfaceSystems::AddMultipleSelectedEntitiesExclusive(TArray<uint16>& selectedEntityIds, const UArgusActorRecord* moveToLocationDecalActorRecord)
-{
-	RemoveAllSelectedEntities(ArgusEntity::k_emptyEntity);
-	AddMultipleSelectedEntitiesAdditive(selectedEntityIds, moveToLocationDecalActorRecord);
-}
-
 void InputInterfaceSystems::RemoveNoLongerSelectableEntities()
 {
 	const UArgusGameInstance* gameInstance = UArgusGameInstance::GetArgusGameInstance();

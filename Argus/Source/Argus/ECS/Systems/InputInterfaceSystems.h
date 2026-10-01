@@ -18,7 +18,6 @@ public:
 
 	static void AddSelectedEntityExclusive(ArgusEntity selectedEntity, const UArgusActorRecord* moveToLocationDecalActorRecord);
 	static void AddSelectedEntityAdditive(ArgusEntity selectedEntity, const UArgusActorRecord* moveToLocationDecalActorRecord);
-	static void AddMultipleSelectedEntitiesExclusive(TArray<uint16>& selectedEntityIds, const UArgusActorRecord* moveToLocationDecalActorRecord);
 	static void RemoveNoLongerSelectableEntities();
 	static bool RemoveAllSelectedEntities(ArgusEntity excludedEntity);
 	static void SetAbilityStateForCastIndex(EAbilityIndex abilityIndex);
@@ -32,6 +31,13 @@ public:
 	static void CheckAndHandleEntityDoubleClick(ArgusEntity entity, const UArgusActorRecord* moveToLocationDecalActorRecord);
 
 	static void InterruptReticle();
+
+	template <typename Array>
+	static void AddMultipleSelectedEntitiesExclusive(Array& selectedEntityIds, const UArgusActorRecord* moveToLocationDecalActorRecord)
+	{
+		RemoveAllSelectedEntities(ArgusEntity::k_emptyEntity);
+		AddMultipleSelectedEntitiesAdditive(selectedEntityIds, moveToLocationDecalActorRecord);
+	}
 
 	template <typename Array>
 	static void AddMultipleSelectedEntitiesAdditive(Array& selectedEntityIds, const UArgusActorRecord* moveToLocationDecalActorRecord)

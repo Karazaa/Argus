@@ -13,7 +13,7 @@ class ARGUS_API UTriggerComponentData : public UComponentData
 
 public:
 	UPROPERTY(EditAnywhere)
-	bool m_extendsToFlyingPlane = false;
+	EFlightCapability m_triggerPlanarOverlaps = EFlightCapability::OnlyGrounded;
 
 
 	void InstantiateComponentForEntity(ArgusEntity entity) const override;

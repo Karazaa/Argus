@@ -354,6 +354,23 @@ uint16 ArgusEntityKDTree::FindOtherArgusEntityIdClosestToArgusEntity(ArgusEntity
 	return FindArgusEntityIdClosestToLocation(transformComponent->m_location, entityToSearchAround);
 }
 
+const TArray<uint16, ArgusContainerAllocator<20u> >& ArgusEntityKDTree::FindArgusEntityIdsWithinRangeOfLocation(const FVector& location, const float range, ArgusEntity entityToIgnore)
+{
+	m_queryScratchData.ResetAll();
+	FindArgusEntityIdsWithinRangeOfLocation(m_queryScratchData, ArgusEntityKDTreeQueryRangeThresholds(0.0f, 0.0f, 0.0f, ArgusECSConstants::k_maxEntities), location, range, entityToIgnore);
+
+	return m_queryScratchData.GetEntityIdsInSightRange();
+}
+
+const TArray<uint16, ArgusContainerAllocator<20u> >& ArgusEntityKDTree::FindArgusEntityIdsWithinRangeOfLocation(const FVector2D& location, const float range, ArgusEntity entityToIgnore)
+{
+	m_queryScratchData.ResetAll();
+	FVector location3D = FVector(location, 0.0f);
+	FindArgusEntityIdsWithinRangeOfLocation(m_queryScratchData, ArgusEntityKDTreeQueryRangeThresholds(0.0f, 0.0f, 0.0f, ArgusECSConstants::k_maxEntities), location3D, range, entityToIgnore);
+
+	return m_queryScratchData.GetEntityIdsInSightRange();
+}
+
 bool ArgusEntityKDTree::FindArgusEntityIdsWithinRangeOfLocation(TArray<uint16>& outNearbyArgusEntityIds, const FVector& location, const float range)
 {
 	return FindArgusEntityIdsWithinRangeOfLocation(outNearbyArgusEntityIds, location, range, ArgusEntity::k_emptyEntity);
@@ -475,6 +492,39 @@ bool ArgusEntityKDTree::FindArgusEntityIdsWithinConvexPoly(TArray<uint16>& outNe
 		convexPolyPoints3D.Add(FVector(convexPolygonPoints[i], 0.0f));
 	}
 	return FindArgusEntityIdsWithinConvexPoly(outNearbyArgusEntityIds, convexPolyPoints3D);
+}
+
+const TArray<uint16, ArgusContainerAllocator<20u> >& ArgusEntityKDTree::FindArgusEntityIdsWithinConvexPoly(const TArray<FVector>& convexPolygonPoints, ArgusEntity entityToIgnore)
+{
+	m_queryScratchData.ResetAll();
+
+	if (!m_rootNode)
+	{
+		return m_queryScratchData.GetEntityIdsInSightRange();
+	}
+
+	if (convexPolygonPoints.Num() < 3)
+	{
+		ARGUS_LOG(ArgusUtilitiesLog, Error, TEXT("[%s] Number of points in %s is less than three. You can't have a polygon with fewer than three points."), ARGUS_FUNCNAME, ARGUS_NAMEOF(convexPolygonPoints));
+		return m_queryScratchData.GetEntityIdsInSightRange();
+	}
+
+	FindNodesWithinConvexPolyRecursive(m_queryScratchData, ArgusEntityKDTreeQueryRangeThresholds(0.0f, 0.0f, 0.0f, ArgusECSConstants::k_maxEntities), m_rootNode, convexPolygonPoints, nullptr, 0u);
+
+	return m_queryScratchData.GetEntityIdsInSightRange();
+}
+
+const TArray<uint16, ArgusContainerAllocator<20u> >& ArgusEntityKDTree::FindArgusEntityIdsWithinConvexPoly(const TArray<FVector2D>& convexPolygonPoints, ArgusEntity entityToIgnore)
+{
+	m_queryScratchData.ResetAll();
+
+	TArray<FVector> convexPolyPoints3D;
+	convexPolyPoints3D.Reserve(convexPolygonPoints.Num());
+	for (int32 i = 0; i < convexPolygonPoints.Num(); ++i)
+	{
+		convexPolyPoints3D.Add(FVector(convexPolygonPoints[i], 0.0f));
+	}
+	return FindArgusEntityIdsWithinConvexPoly(convexPolyPoints3D, entityToIgnore);
 }
 
 bool ArgusEntityKDTree::DoesArgusEntityExistInKDTree(ArgusEntity entityToRepresent) const

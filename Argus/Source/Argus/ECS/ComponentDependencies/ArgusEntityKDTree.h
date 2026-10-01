@@ -79,6 +79,8 @@ public:
 	uint16 FindArgusEntityIdClosestToLocation(const FVector& location, const TFunction<bool(const ArgusEntityKDTreeNode*)> queryFilter) const;
 	uint16 FindOtherArgusEntityIdClosestToArgusEntity(ArgusEntity entityToSearchAround, const TFunction<bool(const ArgusEntityKDTreeNode*)> queryFilterOverride = nullptr) const;
 
+	const TArray<uint16, ArgusContainerAllocator<20u> >& FindArgusEntityIdsWithinRangeOfLocation(const FVector& location, const float range, ArgusEntity entityToIgnore);
+	const TArray<uint16, ArgusContainerAllocator<20u> >& FindArgusEntityIdsWithinRangeOfLocation(const FVector2D& location, const float range, ArgusEntity entityToIgnore);
 	bool FindArgusEntityIdsWithinRangeOfLocation(TArray<uint16>& outNearbyArgusEntityIds, const FVector& location, const float range);
 	bool FindArgusEntityIdsWithinRangeOfLocation(TArray<uint16>& outNearbyArgusEntityIds, const FVector& location, const float range, ArgusEntity entityToIgnore);
 	bool FindArgusEntityIdsWithinRangeOfLocation(ArgusEntityKDTreeRangeOutput& output, const ArgusEntityKDTreeQueryRangeThresholds& thresholds, const FVector& location, const float range, ArgusEntity entityToIgnore) const;
@@ -87,6 +89,8 @@ public:
 	bool FindOtherArgusEntityIdsWithinRangeOfArgusEntity(TArray<uint16>& outNearbyArgusEntityIds, ArgusEntity entityToSearchAround, const float range, const TFunction<bool(const ArgusEntityKDTreeNode*)> queryFilterOverride = nullptr);
 	bool FindOtherArgusEntityIdsWithinRangeOfArgusEntity(ArgusEntityKDTreeRangeOutput& output, const ArgusEntityKDTreeQueryRangeThresholds& thresholds, ArgusEntity entityToSearchAround, const float range, const TFunction<bool(const ArgusEntityKDTreeNode*)> queryFilterOverride = nullptr) const;
 
+	const TArray<uint16, ArgusContainerAllocator<20u> >& FindArgusEntityIdsWithinConvexPoly(const TArray<FVector>& convexPolygonPoints, ArgusEntity entityToIgnore);
+	const TArray<uint16, ArgusContainerAllocator<20u> >& FindArgusEntityIdsWithinConvexPoly(const TArray<FVector2D>& convexPolygonPoints, ArgusEntity entityToIgnore);
 	bool FindArgusEntityIdsWithinConvexPoly(TArray<uint16>& outNearbyArgusEntityIds, const TArray<FVector>& convexPolygonPoints);
 	bool FindArgusEntityIdsWithinConvexPoly(TArray<uint16>& outNearbyArgusEntityIds, const TArray<FVector2D>& convexPolygonPoints);
 

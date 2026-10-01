@@ -22,12 +22,14 @@ uint16 TriggerComponent::GetOwningEntityId() const
 void TriggerComponent::Reset()
 {
 	m_overlappingEntityIds.Reset();
-	//m_extendsToFlyingPlane = false;
+	m_entityIdsAddedThisFrame.Reset();
+	m_entityIdsRemovedThisFrame.Reset();
+	m_triggerPlanarOverlaps = EFlightCapability::OnlyGrounded;
 }
 
 void TriggerComponent::Serialize(FArchive& archive)
 {
-	//archive << m_extendsToFlyingPlane;
+	archive << m_triggerPlanarOverlaps;
 }
 
 void TriggerComponent::DrawComponentDebug() const
@@ -60,9 +62,48 @@ void TriggerComponent::DrawComponentDebug() const
 			ImGui::Unindent();
 		}
 		ImGui::TableNextColumn();
-		ImGui::Text("m_extendsToFlyingPlane");
+		ImGui::Text("m_entityIdsAddedThisFrame");
 		ImGui::TableNextColumn();
-		//ImGui::Text(m_extendsToFlyingPlane ? "true" : "false");
+		ImGui::Text("Array max is currently = %d", m_entityIdsAddedThisFrame.Max());
+		if (m_entityIdsAddedThisFrame.IsEmpty())
+		{
+			ImGui::Text("Array is empty");
+		}
+		else
+		{
+			ImGui::Text("Size of array = %d", m_entityIdsAddedThisFrame.Num());
+			ImGui::Indent();
+			for (int32 i = 0; i < m_entityIdsAddedThisFrame.Num(); ++i)
+			{
+				if (i != 0) ImGui::Separator();
+				ImGui::Text("%d", m_entityIdsAddedThisFrame[i]);
+			}
+			ImGui::Unindent();
+		}
+		ImGui::TableNextColumn();
+		ImGui::Text("m_entityIdsRemovedThisFrame");
+		ImGui::TableNextColumn();
+		ImGui::Text("Array max is currently = %d", m_entityIdsRemovedThisFrame.Max());
+		if (m_entityIdsRemovedThisFrame.IsEmpty())
+		{
+			ImGui::Text("Array is empty");
+		}
+		else
+		{
+			ImGui::Text("Size of array = %d", m_entityIdsRemovedThisFrame.Num());
+			ImGui::Indent();
+			for (int32 i = 0; i < m_entityIdsRemovedThisFrame.Num(); ++i)
+			{
+				if (i != 0) ImGui::Separator();
+				ImGui::Text("%d", m_entityIdsRemovedThisFrame[i]);
+			}
+			ImGui::Unindent();
+		}
+		ImGui::TableNextColumn();
+		ImGui::Text("m_triggerPlanarOverlaps");
+		ImGui::TableNextColumn();
+		const char* valueName_m_triggerPlanarOverlaps = ARGUS_FSTRING_TO_CHAR(StaticEnum<EFlightCapability>()->GetNameStringByValue(static_cast<uint8>(m_triggerPlanarOverlaps)));
+		ImGui::Text(valueName_m_triggerPlanarOverlaps);
 		ImGui::EndTable();
 	}
 #endif //!UE_BUILD_SHIPPING

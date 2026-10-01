@@ -10,7 +10,7 @@ void UTriggerComponentData::InstantiateComponentForEntity(ArgusEntity entity) co
 	TriggerComponent* TriggerComponentRef = entity.GetOrAddComponent<TriggerComponent>();
 	ARGUS_RETURN_ON_NULL(TriggerComponentRef, ArgusECSLog);
 
-	// TriggerComponentRef->m_extendsToFlyingPlane = m_extendsToFlyingPlane;
+	TriggerComponentRef->m_triggerPlanarOverlaps = m_triggerPlanarOverlaps;
 }
 
 void UTriggerComponentData::ReinitializeComponentForEntityPostLoad(ArgusEntity entity) const

@@ -805,6 +805,7 @@ void UArgusInputManager::ProcessMarqueeSelectInputEvent(const AArgusCameraActor*
 	{
 		return;
 	}
+	m_marqueeQueryScratch.Reset();
 
 	ArgusEntity singletonEntity = ArgusEntity::GetSingletonEntity();
 	if (!singletonEntity)
@@ -856,16 +857,16 @@ void UArgusInputManager::ProcessMarqueeSelectInputEvent(const AArgusCameraActor*
 	PopulateMarqueeSelectPolygon(argusCamera, groundConvexPolygon);
 	PopulateMarqueeSelectPolygon(argusCamera, flyingConvexPolygon);
 
-	TArray<uint16> entityIdsWithinBounds;
-	spatialPartitioningComponent->m_argusEntityKDTree.FindArgusEntityIdsWithinConvexPoly(entityIdsWithinBounds, groundConvexPolygon);
+	const TArray<uint16, ArgusContainerAllocator<20u> >& groundEntityIds = spatialPartitioningComponent->m_argusEntityKDTree.FindArgusEntityIdsWithinConvexPoly(groundConvexPolygon, ArgusEntity::k_emptyEntity);
+	const TArray<uint16, ArgusContainerAllocator<20u> >& flyingEntityIds = spatialPartitioningComponent->m_flyingArgusEntityKDTree.FindArgusEntityIdsWithinConvexPoly(flyingConvexPolygon, ArgusEntity::k_emptyEntity);
 
-	TArray<uint16> flyingEntityIdsWithinBounds;
-	spatialPartitioningComponent->m_flyingArgusEntityKDTree.FindArgusEntityIdsWithinConvexPoly(flyingEntityIdsWithinBounds, flyingConvexPolygon);
-
-	entityIdsWithinBounds.Reserve(entityIdsWithinBounds.Num() + flyingEntityIdsWithinBounds.Num());
-	for (int32 i = 0; i < flyingEntityIdsWithinBounds.Num(); ++i)
+	for (int32 i = 0; i < groundEntityIds.Num(); ++i)
 	{
-		entityIdsWithinBounds.Add(flyingEntityIdsWithinBounds[i]);
+		m_marqueeQueryScratch.Add(groundEntityIds[i]);
+	}
+	for (int32 i = 0; i < flyingEntityIds.Num(); ++i)
+	{
+		m_marqueeQueryScratch.Add(flyingEntityIds[i]);
 	}
 
 	bool shouldIgnoreTeamRequirement = false;
@@ -876,10 +877,10 @@ void UArgusInputManager::ProcessMarqueeSelectInputEvent(const AArgusCameraActor*
 
 	if (!shouldIgnoreTeamRequirement)
 	{
-		m_owningPlayerController->FilterArgusEntityIdsToPlayerTeam(entityIdsWithinBounds);
+		m_owningPlayerController->FilterArgusEntityIdsToPlayerTeam(m_marqueeQueryScratch);
 	}
 	
-	const int numFoundEntities = entityIdsWithinBounds.Num();
+	const int numFoundEntities = m_marqueeQueryScratch.Num();
 	if (ArgusCVars::CVarEnableVerboseArgusInputLogging.GetValueOnGameThread())
 	{
 		ARGUS_LOG
@@ -895,11 +896,11 @@ void UArgusInputManager::ProcessMarqueeSelectInputEvent(const AArgusCameraActor*
 
 	if (!isAdditive && numFoundEntities > 0)
 	{
-		InputInterfaceSystems::AddMultipleSelectedEntitiesExclusive(entityIdsWithinBounds, m_owningPlayerController->GetMoveToLocationDecalActorRecord());
+		InputInterfaceSystems::AddMultipleSelectedEntitiesExclusive(m_marqueeQueryScratch, m_owningPlayerController->GetMoveToLocationDecalActorRecord());
 	}
 	else
 	{
-		InputInterfaceSystems::AddMultipleSelectedEntitiesAdditive(entityIdsWithinBounds, m_owningPlayerController->GetMoveToLocationDecalActorRecord());
+		InputInterfaceSystems::AddMultipleSelectedEntitiesAdditive(m_marqueeQueryScratch, m_owningPlayerController->GetMoveToLocationDecalActorRecord());
 	}
 }
 
