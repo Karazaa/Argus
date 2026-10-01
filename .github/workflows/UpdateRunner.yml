@@ -1,9 +1,10 @@
 name: Update Runner
 
 on:
-  push:
-    branches: main
+  #push:
+    #branches: main
   workflow_call:
+  workflow_dispatch:
 
 permissions: {}
 
