@@ -22,8 +22,7 @@ uint16 TriggerComponent::GetOwningEntityId() const
 void TriggerComponent::Reset()
 {
 	m_overlappingEntityIds.Reset();
-	m_entityIdsAddedThisFrame.Reset();
-	m_entityIdsRemovedThisFrame.Reset();
+	m_removalStagedEntityIds.Reset();
 	m_triggerPlanarOverlaps = EFlightCapability::OnlyGrounded;
 }
 
@@ -45,57 +44,34 @@ void TriggerComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		ImGui::Text("m_overlappingEntityIds");
 		ImGui::TableNextColumn();
-		ImGui::Text("Array max is currently = %d", m_overlappingEntityIds.Max());
 		if (m_overlappingEntityIds.IsEmpty())
 		{
-			ImGui::Text("Array is empty");
+			ImGui::Text("Set is empty");
 		}
 		else
 		{
-			ImGui::Text("Size of array = %d", m_overlappingEntityIds.Num());
+			ImGui::Text("Size of set = %d", m_overlappingEntityIds.Num());
 			ImGui::Indent();
-			for (int32 i = 0; i < m_overlappingEntityIds.Num(); ++i)
+			for (const auto& element_m_overlappingEntityIds : m_overlappingEntityIds)
 			{
-				if (i != 0) ImGui::Separator();
-				ImGui::Text("%d", m_overlappingEntityIds[i]);
+				ImGui::Text("%d", element_m_overlappingEntityIds);
 			}
 			ImGui::Unindent();
 		}
 		ImGui::TableNextColumn();
-		ImGui::Text("m_entityIdsAddedThisFrame");
+		ImGui::Text("m_removalStagedEntityIds");
 		ImGui::TableNextColumn();
-		ImGui::Text("Array max is currently = %d", m_entityIdsAddedThisFrame.Max());
-		if (m_entityIdsAddedThisFrame.IsEmpty())
+		if (m_removalStagedEntityIds.IsEmpty())
 		{
-			ImGui::Text("Array is empty");
+			ImGui::Text("Set is empty");
 		}
 		else
 		{
-			ImGui::Text("Size of array = %d", m_entityIdsAddedThisFrame.Num());
+			ImGui::Text("Size of set = %d", m_removalStagedEntityIds.Num());
 			ImGui::Indent();
-			for (int32 i = 0; i < m_entityIdsAddedThisFrame.Num(); ++i)
+			for (const auto& element_m_removalStagedEntityIds : m_removalStagedEntityIds)
 			{
-				if (i != 0) ImGui::Separator();
-				ImGui::Text("%d", m_entityIdsAddedThisFrame[i]);
-			}
-			ImGui::Unindent();
-		}
-		ImGui::TableNextColumn();
-		ImGui::Text("m_entityIdsRemovedThisFrame");
-		ImGui::TableNextColumn();
-		ImGui::Text("Array max is currently = %d", m_entityIdsRemovedThisFrame.Max());
-		if (m_entityIdsRemovedThisFrame.IsEmpty())
-		{
-			ImGui::Text("Array is empty");
-		}
-		else
-		{
-			ImGui::Text("Size of array = %d", m_entityIdsRemovedThisFrame.Num());
-			ImGui::Indent();
-			for (int32 i = 0; i < m_entityIdsRemovedThisFrame.Num(); ++i)
-			{
-				if (i != 0) ImGui::Separator();
-				ImGui::Text("%d", m_entityIdsRemovedThisFrame[i]);
+				ImGui::Text("%d", element_m_removalStagedEntityIds);
 			}
 			ImGui::Unindent();
 		}

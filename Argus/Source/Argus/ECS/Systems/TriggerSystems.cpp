@@ -16,8 +16,7 @@ void TriggerSystems::RunSystems(float deltaTime)
 		{
 			return;
 		}
-		components.m_triggerComponent->m_entityIdsAddedThisFrame.Reset();
-		components.m_triggerComponent->m_entityIdsRemovedThisFrame.Reset();
+		components.m_triggerComponent->m_removalStagedEntityIds.Reset();
 
 		if (components.m_relativeCircleComponent)
 		{
@@ -53,4 +52,22 @@ void TriggerSystems::UpdatePolygonTriggerOverlaps(const TriggerSystemsArgs& comp
 		return;
 	}
 	ARGUS_RETURN_ON_NULL(components.m_relativePolygonComponent, ArgusECSLog);
+}
+
+void TriggerSystems::RegisterOverlappedEntityId(uint16 entityId, const TriggerSystemsArgs& components)
+{
+	ARGUS_TRACE(TriggerSystems::RegisterOverlappedEntityId);
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
+}
+
+void TriggerSystems::ProcessStagedRemovalEntityIds(const TriggerSystemsArgs& components)
+{
+	ARGUS_TRACE(TriggerSystems::ProcessStagedRemovalEntityIds);
+	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
+	{
+		return;
+	}
 }
