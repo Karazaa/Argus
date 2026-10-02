@@ -4,29 +4,31 @@
 #include "ArgusIterators.h"
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
-#include "SystemArgumentDefinitions/TriggerSystemsArgs.h"
 
 void TriggerSystems::RunSystems(float deltaTime)
 {
 	ARGUS_TRACE(TriggerSystems::RunSystems);
 
-	ArgusIterators::IterateSystemsArgs<TriggerSystemsArgs>([](const TriggerSystemsArgs& components)
+	SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::GetSingletonEntity().GetComponent<SpatialPartitioningComponent>();
+	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
+
+	ArgusIterators::IterateSystemsArgs<TriggerSystemsArgs>([spatialPartitioningComponent](const TriggerSystemsArgs& components)
 	{
 		if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 		{
 			return;
 		}
-		components.m_triggerComponent->m_removalStagedEntityIds.Reset();
+		components.m_triggerComponent->m_removalStagedEntityIds = components.m_triggerComponent->m_overlappingEntityIds;
 
 		if (components.m_relativeCircleComponent)
 		{
-			UpdateCircleTriggerOverlaps(components);
+			UpdateCircleTriggerOverlaps(components, spatialPartitioningComponent);
 			return;
 		}
 		
 		if (components.m_relativePolygonComponent)
 		{
-			UpdatePolygonTriggerOverlaps(components);
+			UpdatePolygonTriggerOverlaps(components, spatialPartitioningComponent);
 			return;
 		}
 
@@ -34,7 +36,7 @@ void TriggerSystems::RunSystems(float deltaTime)
 	});
 }
 
-void TriggerSystems::UpdateCircleTriggerOverlaps(const TriggerSystemsArgs& components)
+void TriggerSystems::UpdateCircleTriggerOverlaps(const TriggerSystemsArgs& components, SpatialPartitioningComponent* spatialPartitioningComponent)
 {
 	ARGUS_TRACE(TriggerSystems::UpdateCircleTriggerOverlaps);
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
@@ -42,9 +44,27 @@ void TriggerSystems::UpdateCircleTriggerOverlaps(const TriggerSystemsArgs& compo
 		return;
 	}
 	ARGUS_RETURN_ON_NULL(components.m_relativeCircleComponent, ArgusECSLog);
+	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
+
+	// TODO JAMES: Calculate the worldspace center and get radius.
+	const FVector center = FVector::ZeroVector;
+	const float radius = 0.0f;
+
+	if (components.m_triggerComponent->m_triggerPlanarOverlaps == EFlightCapability::BothGroundedAndFlying ||
+		components.m_triggerComponent->m_triggerPlanarOverlaps == EFlightCapability::OnlyGrounded)
+	{
+		const TArray<uint16, ArgusContainerAllocator<20u> >& foundEntityIds = spatialPartitioningComponent->m_argusEntityKDTree.FindArgusEntityIdsWithinRangeOfLocation(center, radius, components.m_entity);
+		UpdateOverlappingEntities(foundEntityIds, components);
+	}
+	if (components.m_triggerComponent->m_triggerPlanarOverlaps == EFlightCapability::BothGroundedAndFlying ||
+		components.m_triggerComponent->m_triggerPlanarOverlaps == EFlightCapability::OnlyFlying)
+	{
+		const TArray<uint16, ArgusContainerAllocator<20u> >& foundEntityIds = spatialPartitioningComponent->m_flyingArgusEntityKDTree.FindArgusEntityIdsWithinRangeOfLocation(center, radius, components.m_entity);
+		UpdateOverlappingEntities(foundEntityIds, components);
+	}
 }
 
-void TriggerSystems::UpdatePolygonTriggerOverlaps(const TriggerSystemsArgs& components)
+void TriggerSystems::UpdatePolygonTriggerOverlaps(const TriggerSystemsArgs& components, SpatialPartitioningComponent* spatialPartitioningComponent)
 {
 	ARGUS_TRACE(TriggerSystems::UpdatePolygonTriggerOverlaps);
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
@@ -52,6 +72,23 @@ void TriggerSystems::UpdatePolygonTriggerOverlaps(const TriggerSystemsArgs& comp
 		return;
 	}
 	ARGUS_RETURN_ON_NULL(components.m_relativePolygonComponent, ArgusECSLog);
+	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
+
+	// TODO JAMES: Calculate the worldspace polygon points.
+	TArray<FVector> polygonPoints;
+
+	if (components.m_triggerComponent->m_triggerPlanarOverlaps == EFlightCapability::BothGroundedAndFlying ||
+		components.m_triggerComponent->m_triggerPlanarOverlaps == EFlightCapability::OnlyGrounded)
+	{
+		const TArray<uint16, ArgusContainerAllocator<20u> >& foundEntityIds = spatialPartitioningComponent->m_argusEntityKDTree.FindArgusEntityIdsWithinConvexPoly(polygonPoints, components.m_entity);
+		UpdateOverlappingEntities(foundEntityIds, components);
+	}
+	if (components.m_triggerComponent->m_triggerPlanarOverlaps == EFlightCapability::BothGroundedAndFlying ||
+		components.m_triggerComponent->m_triggerPlanarOverlaps == EFlightCapability::OnlyFlying)
+	{
+		const TArray<uint16, ArgusContainerAllocator<20u> >& foundEntityIds = spatialPartitioningComponent->m_flyingArgusEntityKDTree.FindArgusEntityIdsWithinConvexPoly(polygonPoints, components.m_entity);
+		UpdateOverlappingEntities(foundEntityIds, components);
+	}
 }
 
 void TriggerSystems::RegisterOverlappedEntityId(uint16 entityId, const TriggerSystemsArgs& components)
@@ -60,6 +97,18 @@ void TriggerSystems::RegisterOverlappedEntityId(uint16 entityId, const TriggerSy
 	if (!components.AreComponentsValidCheck(ARGUS_FUNCNAME))
 	{
 		return;
+	}
+
+	bool alreadyInSet = false;
+	components.m_triggerComponent->m_overlappingEntityIds.FindOrAdd(entityId, &alreadyInSet);
+
+	if (alreadyInSet)
+	{
+		components.m_triggerComponent->m_removalStagedEntityIds.Remove(entityId);
+	}
+	else
+	{
+		EnteredTriggerThisFrame(entityId, components);
 	}
 }
 
@@ -70,4 +119,17 @@ void TriggerSystems::ProcessStagedRemovalEntityIds(const TriggerSystemsArgs& com
 	{
 		return;
 	}
+
+	for (uint16 entityId : components.m_triggerComponent->m_removalStagedEntityIds)
+	{
+		ExitedTriggerThisFrame(entityId, components);
+	}
+}
+
+void TriggerSystems::EnteredTriggerThisFrame(uint16 entityId, const TriggerSystemsArgs& components)
+{
+}
+
+void TriggerSystems::ExitedTriggerThisFrame(uint16 entityId, const TriggerSystemsArgs& components)
+{
 }
