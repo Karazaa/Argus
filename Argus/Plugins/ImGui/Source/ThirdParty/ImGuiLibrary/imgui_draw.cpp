@@ -3064,8 +3064,10 @@ static bool ImFontAtlasBuildWithStbTruetype(ImFontAtlas* atlas)
     // 7. Allocate texture
     atlas->TexHeight = (atlas->Flags & ImFontAtlasFlags_NoPowerOfTwoHeight) ? (atlas->TexHeight + 1) : ImUpperPowerOfTwo(atlas->TexHeight);
     atlas->TexUvScale = ImVec2(1.0f / atlas->TexWidth, 1.0f / atlas->TexHeight);
-    atlas->TexPixelsAlpha8 = (unsigned char*)IM_ALLOC(atlas->TexWidth * atlas->TexHeight);
-    memset(atlas->TexPixelsAlpha8, 0, atlas->TexWidth * atlas->TexHeight);
+    const size_t heightSize = static_cast<size_t>(atlas->TexHeight);
+    const size_t widthSize = static_cast<size_t>(atlas->TexWidth);
+    atlas->TexPixelsAlpha8 = (unsigned char*)IM_ALLOC(widthSize * heightSize);
+    memset(atlas->TexPixelsAlpha8, 0, widthSize * heightSize);
     spc.pixels = atlas->TexPixelsAlpha8;
     spc.height = atlas->TexHeight;
 
