@@ -4,6 +4,7 @@
 #include "ArgusIterators.h"
 #include "ArgusLogging.h"
 #include "ArgusMacros.h"
+#include "Systems/RelativeGeometrySystems.h"
 
 void TriggerSystems::RunSystems(float deltaTime)
 {
@@ -46,9 +47,8 @@ void TriggerSystems::UpdateCircleTriggerOverlaps(const TriggerSystemsArgs& compo
 	ARGUS_RETURN_ON_NULL(components.m_relativeCircleComponent, ArgusECSLog);
 	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
 
-	// TODO JAMES: Calculate the worldspace center and get radius.
-	const FVector center = FVector::ZeroVector;
-	const float radius = 0.0f;
+	const FVector center = RelativeGeometrySystems::GetWorldSpaceRelativeCircleCenter(components.m_relativeCircleComponent, components.m_facingComponent, components.m_transformComponent);
+	const float radius = components.m_relativeCircleComponent->m_radius;
 
 	if (components.m_triggerComponent->m_triggerPlanarOverlaps == EFlightCapability::BothGroundedAndFlying ||
 		components.m_triggerComponent->m_triggerPlanarOverlaps == EFlightCapability::OnlyGrounded)
@@ -74,8 +74,8 @@ void TriggerSystems::UpdatePolygonTriggerOverlaps(const TriggerSystemsArgs& comp
 	ARGUS_RETURN_ON_NULL(components.m_relativePolygonComponent, ArgusECSLog);
 	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
 
-	// TODO JAMES: Calculate the worldspace polygon points.
 	TArray<FVector> polygonPoints;
+	RelativeGeometrySystems::GetWorldSpaceRelativePolygonPoints(components.m_relativePolygonComponent, components.m_facingComponent, components.m_transformComponent, polygonPoints);
 
 	if (components.m_triggerComponent->m_triggerPlanarOverlaps == EFlightCapability::BothGroundedAndFlying ||
 		components.m_triggerComponent->m_triggerPlanarOverlaps == EFlightCapability::OnlyGrounded)

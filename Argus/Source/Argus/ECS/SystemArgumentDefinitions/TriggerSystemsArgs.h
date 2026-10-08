@@ -9,6 +9,7 @@ struct TriggerSystemsArgs
 {
 	ARGUS_SYSTEM_ARGS_SHARED;
 
+	FacingComponent* m_facingComponent = nullptr;
 	TriggerComponent* m_triggerComponent = nullptr;
 	TransformComponent* m_transformComponent = nullptr;
 
