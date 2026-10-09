@@ -71,7 +71,7 @@ void* ArgusMemorySource::Allocate(SIZE_T allocationSize, uint32 alignment)
 		headOfNewData = Align(s_occupiedAmount, alignment);
 	}
 	
-	if (UNLIKELY(headOfNewData + allocationSize > GetAvailableSpace()))
+	if (UNLIKELY(headOfNewData + allocationSize > GetCapacity()))
 	{
 		ARGUS_LOG(ArgusMemoryLog, Error, TEXT("[%s] Memory source ran out of space!"), ARGUS_FUNCNAME);
 		return nullptr;

@@ -36,6 +36,9 @@ void ArgusSystemsManager::Initialize(UWorld* worldPointer, const UArgusEntityTem
 
 	PopulateSingletonComponents(worldPointer, singletonEntityTemplate);
 	PopulateTeamComponents(teamEntityTemplate, teamAlignmentRecord);
+#if !UE_BUILD_SHIPPING
+	PopulateTestEntities();
+#endif // !UE_BUILD_SHIPPING
 }
 
 void ArgusSystemsManager::InitializePostLoad(UWorld* worldPointer, const UArgusEntityTemplate* singletonEntityTemplate, const UArgusEntityTemplate* teamEntityTemplate)
@@ -187,7 +190,6 @@ void ArgusSystemsManager::SetInitialSingletonState(UWorld* worldPointer, ETeam a
 
 void ArgusSystemsManager::PopulateTeamComponents(const UArgusEntityTemplate* teamEntityTemplate, const UTeamAlignmentRecord* teamAlignmentRecord)
 {
-
 	for (uint8 i = 1u; i <= NUM_TEAMS; ++i)
 	{
 		if (ArgusEntity::DoesEntityExist(ArgusECSConstants::k_singletonEntityId - i))
@@ -218,6 +220,30 @@ void ArgusSystemsManager::PopulateTeamComponents(const UArgusEntityTemplate* tea
 		}
 	}
 }
+
+#if !UE_BUILD_SHIPPING
+void ArgusSystemsManager::PopulateTestEntities()
+{
+	// Test Circle Trigger.
+	//ArgusEntity triggerEntity = ArgusEntity::CreateEntity();
+	//RelativeCircleComponent* relativeCircleComponent = triggerEntity.GetOrAddComponent<RelativeCircleComponent>();
+	//TransformComponent* transformComponent = triggerEntity.GetOrAddComponent<TransformComponent>();
+	//FacingComponent* facingComponent = triggerEntity.GetOrAddComponent<FacingComponent>();
+	//TriggerComponent* triggerComponent = triggerEntity.GetOrAddComponent<TriggerComponent>();
+	//ARGUS_RETURN_ON_NULL(relativeCircleComponent, ArgusECSLog);
+	//ARGUS_RETURN_ON_NULL(transformComponent, ArgusECSLog);
+	//ARGUS_RETURN_ON_NULL(facingComponent, ArgusECSLog);
+	//ARGUS_RETURN_ON_NULL(triggerComponent, ArgusECSLog);
+
+	//relativeCircleComponent->m_radius = 300.0f;
+	//relativeCircleComponent->m_relativeCenter = FVector2D(300.0f, 0.0f);
+	//transformComponent->m_radius = 1.0f;
+	//facingComponent->m_smoothedFacing.Reset(1.57f);
+	//triggerComponent->m_triggerPlanarOverlaps = EFlightCapability::BothGroundedAndFlying;
+
+	// Test Polygon Trigger
+}
+#endif // !UE_BUILD_SHIPPING
 
 void ArgusSystemsManager::InitializeTeamComponents()
 {

@@ -159,7 +159,10 @@ void AArgusGameModeBase::ManageActorStateInViewFrustrum(ArgusEntity entity, cons
 
 	ARGUS_RETURN_ON_NULL(gameInstance, ArgusUnrealObjectsLog);
 	TaskComponent* taskComponent = entity.GetComponent<TaskComponent>();
-	ARGUS_RETURN_ON_NULL(taskComponent, ArgusUnrealObjectsLog);
+	if (!taskComponent || taskComponent->m_spawnedFromArgusActorRecordId == 0u)
+	{
+		return;
+	}
 
 	if (taskComponent->m_baseState == EBaseState::SpawnedWaitingForActorTake)
 	{

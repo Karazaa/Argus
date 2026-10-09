@@ -6,6 +6,11 @@
 #include "ArgusMacros.h"
 #include "Systems/RelativeGeometrySystems.h"
 
+#if !UE_BUILD_SHIPPING
+#include "ArgusECSDebugger.h"
+#include "DrawDebugHelpers.h"
+#endif //!UE_BUILD_SHIPPING
+
 void TriggerSystems::RunSystems(float deltaTime)
 {
 	ARGUS_TRACE(TriggerSystems::RunSystems);
@@ -19,7 +24,12 @@ void TriggerSystems::RunSystems(float deltaTime)
 		{
 			return;
 		}
-		components.m_triggerComponent->m_removalStagedEntityIds = components.m_triggerComponent->m_overlappingEntityIds;
+
+		components.m_triggerComponent->m_removalStagedEntityIds.Reset();
+		for (uint16 entityId : components.m_triggerComponent->m_overlappingEntityIds)
+		{
+			components.m_triggerComponent->m_removalStagedEntityIds.Add(entityId);
+		}
 
 		if (components.m_relativeCircleComponent)
 		{
@@ -47,8 +57,15 @@ void TriggerSystems::UpdateCircleTriggerOverlaps(const TriggerSystemsArgs& compo
 	ARGUS_RETURN_ON_NULL(components.m_relativeCircleComponent, ArgusECSLog);
 	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
 
-	const FVector center = RelativeGeometrySystems::GetWorldSpaceRelativeCircleCenter(components.m_relativeCircleComponent, components.m_facingComponent, components.m_transformComponent);
+	FVector center = RelativeGeometrySystems::GetWorldSpaceRelativeCircleCenter(components.m_relativeCircleComponent, components.m_facingComponent, components.m_transformComponent);
 	const float radius = components.m_relativeCircleComponent->m_radius;
+
+#if !UE_BUILD_SHIPPING
+	if (WorldReferenceComponent* worldReferenceComponent = ArgusEntity::GetSingletonEntity().GetComponent<WorldReferenceComponent>())
+	{
+		DrawDebugCircle(worldReferenceComponent->m_worldPointer, center, radius, 20, FColor::Green, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth, FVector::RightVector, FVector::ForwardVector, false);
+	}
+#endif //!UE_BUILD_SHIPPING
 
 	if (components.m_triggerComponent->m_triggerPlanarOverlaps == EFlightCapability::BothGroundedAndFlying ||
 		components.m_triggerComponent->m_triggerPlanarOverlaps == EFlightCapability::OnlyGrounded)
@@ -59,6 +76,7 @@ void TriggerSystems::UpdateCircleTriggerOverlaps(const TriggerSystemsArgs& compo
 	if (components.m_triggerComponent->m_triggerPlanarOverlaps == EFlightCapability::BothGroundedAndFlying ||
 		components.m_triggerComponent->m_triggerPlanarOverlaps == EFlightCapability::OnlyFlying)
 	{
+		center.Z = spatialPartitioningComponent->m_flyingPlaneHeight;
 		const TArray<uint16, ArgusContainerAllocator<20u> >& foundEntityIds = spatialPartitioningComponent->m_flyingArgusEntityKDTree.FindArgusEntityIdsWithinRangeOfLocation(center, radius, components.m_entity);
 		UpdateOverlappingEntities(foundEntityIds, components);
 	}
@@ -86,6 +104,7 @@ void TriggerSystems::UpdatePolygonTriggerOverlaps(const TriggerSystemsArgs& comp
 	if (components.m_triggerComponent->m_triggerPlanarOverlaps == EFlightCapability::BothGroundedAndFlying ||
 		components.m_triggerComponent->m_triggerPlanarOverlaps == EFlightCapability::OnlyFlying)
 	{
+		// TODO JAMES: Adjust polygon point height to the flying plane height.
 		const TArray<uint16, ArgusContainerAllocator<20u> >& foundEntityIds = spatialPartitioningComponent->m_flyingArgusEntityKDTree.FindArgusEntityIdsWithinConvexPoly(polygonPoints, components.m_entity);
 		UpdateOverlappingEntities(foundEntityIds, components);
 	}
@@ -122,8 +141,11 @@ void TriggerSystems::ProcessStagedRemovalEntityIds(const TriggerSystemsArgs& com
 
 	for (uint16 entityId : components.m_triggerComponent->m_removalStagedEntityIds)
 	{
+		components.m_triggerComponent->m_overlappingEntityIds.Remove(entityId);
 		ExitedTriggerThisFrame(entityId, components);
 	}
+
+	components.m_triggerComponent->m_removalStagedEntityIds.Reset();
 }
 
 void TriggerSystems::EnteredTriggerThisFrame(uint16 entityId, const TriggerSystemsArgs& components)

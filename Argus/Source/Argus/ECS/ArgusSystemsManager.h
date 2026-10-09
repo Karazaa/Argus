@@ -26,4 +26,8 @@ private:
 	static void InitializeTeamComponents();
 	static void UpdateSingletonComponents(UWorld* worldPointer);
 	static void IncrementFrameCounter();
+
+#if !UE_BUILD_SHIPPING
+	static void PopulateTestEntities();
+#endif // !UE_BUILD_SHIPPING
 };
