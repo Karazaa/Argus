@@ -95,6 +95,17 @@ void TriggerSystems::UpdatePolygonTriggerOverlaps(const TriggerSystemsArgs& comp
 	TArray<FVector> polygonPoints;
 	RelativeGeometrySystems::GetWorldSpaceRelativePolygonPoints(components.m_relativePolygonComponent, components.m_facingComponent, components.m_transformComponent, polygonPoints);
 
+#if !UE_BUILD_SHIPPING
+	if (WorldReferenceComponent* worldReferenceComponent = ArgusEntity::GetSingletonEntity().GetComponent<WorldReferenceComponent>())
+	{
+		for (int32 i = 1; i < polygonPoints.Num(); ++i)
+		{
+			DrawDebugLine(worldReferenceComponent->m_worldPointer, polygonPoints[i - 1], polygonPoints[i], FColor::Green, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth);
+		}
+		DrawDebugLine(worldReferenceComponent->m_worldPointer, polygonPoints[polygonPoints.Num() - 1], polygonPoints[0], FColor::Green, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth);
+	}
+#endif //!UE_BUILD_SHIPPING
+
 	if (components.m_triggerComponent->m_triggerPlanarOverlaps == EFlightCapability::BothGroundedAndFlying ||
 		components.m_triggerComponent->m_triggerPlanarOverlaps == EFlightCapability::OnlyGrounded)
 	{
@@ -104,7 +115,10 @@ void TriggerSystems::UpdatePolygonTriggerOverlaps(const TriggerSystemsArgs& comp
 	if (components.m_triggerComponent->m_triggerPlanarOverlaps == EFlightCapability::BothGroundedAndFlying ||
 		components.m_triggerComponent->m_triggerPlanarOverlaps == EFlightCapability::OnlyFlying)
 	{
-		// TODO JAMES: Adjust polygon point height to the flying plane height.
+		for (int32 i = 0; i < polygonPoints.Num(); ++i)
+		{
+			polygonPoints[i].Z = spatialPartitioningComponent->m_flyingPlaneHeight;
+		}
 		const TArray<uint16, ArgusContainerAllocator<20u> >& foundEntityIds = spatialPartitioningComponent->m_flyingArgusEntityKDTree.FindArgusEntityIdsWithinConvexPoly(polygonPoints, components.m_entity);
 		UpdateOverlappingEntities(foundEntityIds, components);
 	}

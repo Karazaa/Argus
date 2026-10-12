@@ -509,7 +509,28 @@ const TArray<uint16, ArgusContainerAllocator<20u> >& ArgusEntityKDTree::FindArgu
 		return m_queryScratchData.GetEntityIdsInSightRange();
 	}
 
-	FindNodesWithinConvexPolyRecursive(m_queryScratchData, ArgusEntityKDTreeQueryRangeThresholds(0.0f, 0.0f, 0.0f, ArgusECSConstants::k_maxEntities), m_rootNode, convexPolygonPoints, nullptr, 0u);
+	uint16 entityIdToIgnore = entityToIgnore.GetId();
+	TFunction<bool(const ArgusEntityKDTreeNode*)> predicate = nullptr;
+	if (entityIdToIgnore != ArgusECSConstants::k_maxEntities)
+	{
+		predicate = [entityIdToIgnore](const ArgusEntityKDTreeNode* nodeToSkip)
+		{
+			if (!nodeToSkip)
+			{
+				return false;
+			}
+
+			ArgusEntity nodeEntity = ArgusEntity::RetrieveEntity(nodeToSkip->m_entityId);
+			if (!nodeEntity || !nodeEntity.IsAlive())
+			{
+				return false;
+			}
+
+			return nodeToSkip->m_entityId != entityIdToIgnore;
+		};
+	}
+
+	FindNodesWithinConvexPolyRecursive(m_queryScratchData, ArgusEntityKDTreeQueryRangeThresholds(0.0f, 0.0f, 0.0f, ArgusECSConstants::k_maxEntities), m_rootNode, convexPolygonPoints, predicate, 0u);
 
 	return m_queryScratchData.GetEntityIdsInSightRange();
 }

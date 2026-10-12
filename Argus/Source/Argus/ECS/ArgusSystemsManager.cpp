@@ -224,24 +224,41 @@ void ArgusSystemsManager::PopulateTeamComponents(const UArgusEntityTemplate* tea
 #if !UE_BUILD_SHIPPING
 void ArgusSystemsManager::PopulateTestEntities()
 {
-	// Test Circle Trigger.
-	//ArgusEntity triggerEntity = ArgusEntity::CreateEntity();
-	//RelativeCircleComponent* relativeCircleComponent = triggerEntity.GetOrAddComponent<RelativeCircleComponent>();
-	//TransformComponent* transformComponent = triggerEntity.GetOrAddComponent<TransformComponent>();
-	//FacingComponent* facingComponent = triggerEntity.GetOrAddComponent<FacingComponent>();
-	//TriggerComponent* triggerComponent = triggerEntity.GetOrAddComponent<TriggerComponent>();
+	// Test Circle Trigger
+	//ArgusEntity circleTriggerEntity = ArgusEntity::CreateEntity();
+	//RelativeCircleComponent* relativeCircleComponent = circleTriggerEntity.GetOrAddComponent<RelativeCircleComponent>();
+	//TransformComponent* circleTransformComponent = circleTriggerEntity.GetOrAddComponent<TransformComponent>();
+	//FacingComponent* circleFacingComponent = circleTriggerEntity.GetOrAddComponent<FacingComponent>();
+	//TriggerComponent* circleTriggerComponent = circleTriggerEntity.GetOrAddComponent<TriggerComponent>();
 	//ARGUS_RETURN_ON_NULL(relativeCircleComponent, ArgusECSLog);
-	//ARGUS_RETURN_ON_NULL(transformComponent, ArgusECSLog);
-	//ARGUS_RETURN_ON_NULL(facingComponent, ArgusECSLog);
-	//ARGUS_RETURN_ON_NULL(triggerComponent, ArgusECSLog);
+	//ARGUS_RETURN_ON_NULL(circleTransformComponent, ArgusECSLog);
+	//ARGUS_RETURN_ON_NULL(circleFacingComponent, ArgusECSLog);
+	//ARGUS_RETURN_ON_NULL(circleTriggerComponent, ArgusECSLog);
 
 	//relativeCircleComponent->m_radius = 300.0f;
 	//relativeCircleComponent->m_relativeCenter = FVector2D(300.0f, 0.0f);
-	//transformComponent->m_radius = 1.0f;
-	//facingComponent->m_smoothedFacing.Reset(1.57f);
-	//triggerComponent->m_triggerPlanarOverlaps = EFlightCapability::BothGroundedAndFlying;
+	//circleTransformComponent->m_radius = 1.0f;
+	//circleFacingComponent->m_smoothedFacing.Reset(1.57f);
+	//circleTriggerComponent->m_triggerPlanarOverlaps = EFlightCapability::BothGroundedAndFlying;
 
 	// Test Polygon Trigger
+	//ArgusEntity polyTriggerEntity = ArgusEntity::CreateEntity();
+	//RelativePolygonComponent* relativePolygonComponent = polyTriggerEntity.GetOrAddComponent<RelativePolygonComponent>();
+	//TransformComponent* polyTransformComponent = polyTriggerEntity.GetOrAddComponent<TransformComponent>();
+	//FacingComponent* polyFacingComponent = polyTriggerEntity.GetOrAddComponent<FacingComponent>();
+	//TriggerComponent* polyTriggerComponent = polyTriggerEntity.GetOrAddComponent<TriggerComponent>();
+	//ARGUS_RETURN_ON_NULL(relativePolygonComponent, ArgusECSLog);
+	//ARGUS_RETURN_ON_NULL(polyTransformComponent, ArgusECSLog);
+	//ARGUS_RETURN_ON_NULL(polyFacingComponent, ArgusECSLog);
+	//ARGUS_RETURN_ON_NULL(polyTriggerComponent, ArgusECSLog);
+
+	//relativePolygonComponent->m_relativeUnrealVerticies.Add(FVector2D(0.0f, -300.0f));
+	//relativePolygonComponent->m_relativeUnrealVerticies.Add(FVector2D(200.0f, -300.0f));
+	//relativePolygonComponent->m_relativeUnrealVerticies.Add(FVector2D(200.0f, 300.0f));
+	//relativePolygonComponent->m_relativeUnrealVerticies.Add(FVector2D(0.0f, 300.0f));
+	//polyTransformComponent->m_radius = 1.0f;
+	//polyFacingComponent->m_smoothedFacing.Reset(-0.75f);
+	//polyTriggerComponent->m_triggerPlanarOverlaps = EFlightCapability::BothGroundedAndFlying;
 }
 #endif // !UE_BUILD_SHIPPING
 
