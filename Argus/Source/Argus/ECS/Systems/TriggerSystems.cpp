@@ -115,10 +115,6 @@ void TriggerSystems::UpdatePolygonTriggerOverlaps(const TriggerSystemsArgs& comp
 	if (components.m_triggerComponent->m_triggerPlanarOverlaps == EFlightCapability::BothGroundedAndFlying ||
 		components.m_triggerComponent->m_triggerPlanarOverlaps == EFlightCapability::OnlyFlying)
 	{
-		for (int32 i = 0; i < polygonPoints.Num(); ++i)
-		{
-			polygonPoints[i].Z = spatialPartitioningComponent->m_flyingPlaneHeight;
-		}
 		const TArray<uint16, ArgusContainerAllocator<20u> >& foundEntityIds = spatialPartitioningComponent->m_flyingArgusEntityKDTree.FindArgusEntityIdsWithinConvexPoly(polygonPoints, components.m_entity);
 		UpdateOverlappingEntities(foundEntityIds, components);
 	}

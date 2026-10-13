@@ -38,7 +38,9 @@ protected:
 	const NodeType* ChooseNodeCloserToTarget(const NodeType* node0, const NodeType* node1, const FVector& targetLocation, TFunction<bool(const NodeType*)> queryFilter) const;
 
 	void FindNodesWithinRangeOfLocationRecursive(OutputDataStructure& outNearbyNodes, const OutputQueryThresholds& thresholds, const NodeType* iterationNode, const FVector& targetLocation, const float rangeSquared, TFunction<bool(const NodeType*)> queryFilter, uint16 depth) const;
-	void FindNodesWithinConvexPolyRecursive(OutputDataStructure& outOverlappingNodes, const OutputQueryThresholds& thresholds, const NodeType* iterationNode, const TArray<FVector>& convexPolygonPoints, TFunction<bool(const NodeType*)> queryFilter, uint16 depth) const;
+	
+	template <typename Array>
+	void FindNodesWithinConvexPolyRecursive(OutputDataStructure& outOverlappingNodes, const OutputQueryThresholds& thresholds, const NodeType* iterationNode, const Array& convexPolygonPoints, TFunction<bool(const NodeType*)> queryFilter, uint16 depth) const;
 
 	NodeType* m_rootNode = nullptr;
 	ArgusObjectPool<NodeType, ArgusContainerAllocator<NumPreAllocatedNodes> > m_nodePool;
@@ -303,7 +305,8 @@ void ArgusKDTree<NodeType, OutputDataStructure, OutputQueryThresholds, NumPreAll
 }
 
 template <typename NodeType, typename OutputDataStructure, typename OutputQueryThresholds, uint32 NumPreAllocatedNodes>
-void ArgusKDTree<NodeType, OutputDataStructure, OutputQueryThresholds, NumPreAllocatedNodes>::FindNodesWithinConvexPolyRecursive(OutputDataStructure& outNearbyNodes, const OutputQueryThresholds& thresholds, const NodeType* iterationNode, const TArray<FVector>& convexPolygonPoints, TFunction<bool(const NodeType*)> queryFilter, uint16 depth) const
+template <typename Array>
+void ArgusKDTree<NodeType, OutputDataStructure, OutputQueryThresholds, NumPreAllocatedNodes>::FindNodesWithinConvexPolyRecursive(OutputDataStructure& outNearbyNodes, const OutputQueryThresholds& thresholds, const NodeType* iterationNode, const Array& convexPolygonPoints, TFunction<bool(const NodeType*)> queryFilter, uint16 depth) const
 {
 	if (!iterationNode)
 	{
