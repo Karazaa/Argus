@@ -15,6 +15,7 @@
 void RelativePolygonComponent::Reset()
 {
 	m_relativeUnrealVerticies.Reset();
+	m_worldSpaceUnrealVerticies.Reset();
 }
 
 void RelativePolygonComponent::Serialize(FArchive& archive)
@@ -48,6 +49,25 @@ void RelativePolygonComponent::DrawComponentDebug() const
 			{
 				if (i != 0) ImGui::Separator();
 				ImGui::Text("(%.2f, %.2f)", m_relativeUnrealVerticies[i].X, m_relativeUnrealVerticies[i].Y);
+			}
+			ImGui::Unindent();
+		}
+		ImGui::TableNextColumn();
+		ImGui::Text("m_worldSpaceUnrealVerticies");
+		ImGui::TableNextColumn();
+		ImGui::Text("Array max is currently = %d", m_worldSpaceUnrealVerticies.Max());
+		if (m_worldSpaceUnrealVerticies.IsEmpty())
+		{
+			ImGui::Text("Array is empty");
+		}
+		else
+		{
+			ImGui::Text("Size of array = %d", m_worldSpaceUnrealVerticies.Num());
+			ImGui::Indent();
+			for (int32 i = 0; i < m_worldSpaceUnrealVerticies.Num(); ++i)
+			{
+				if (i != 0) ImGui::Separator();
+				ImGui::Text("(%.2f, %.2f, %.2f)", m_worldSpaceUnrealVerticies[i].X, m_worldSpaceUnrealVerticies[i].Y, m_worldSpaceUnrealVerticies[i].Z);
 			}
 			ImGui::Unindent();
 		}

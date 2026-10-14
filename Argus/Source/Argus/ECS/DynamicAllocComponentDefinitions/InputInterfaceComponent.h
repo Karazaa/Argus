@@ -32,6 +32,15 @@ struct InputInterfaceComponent
 	TArray<ControlGroup, ArgusContainerAllocator<12u> > m_controlGroups;
 
 	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT
+	TArray<uint16, ArgusContainerAllocator<50u> > m_marqueeQueryScratch;
+
+	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT
+	TArray<FVector2D, ArgusContainerAllocator<4u> > m_marqueeGroundConvexPolygon;
+
+	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT
+	TArray<FVector2D, ArgusContainerAllocator<4u> > m_marqueeFlyingConvexPolygon;
+
+	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT
 	ESelectedActorsDisplayState m_selectedActorsDisplayState = ESelectedActorsDisplayState::NotChanged;
 
 	ARGUS_COMP_NO_DATA

@@ -805,19 +805,17 @@ void UArgusInputManager::ProcessMarqueeSelectInputEvent(const AArgusCameraActor*
 	{
 		return;
 	}
-	m_marqueeQueryScratch.Reset();
 
 	ArgusEntity singletonEntity = ArgusEntity::GetSingletonEntity();
-	if (!singletonEntity)
-	{
-		return;
-	}
+	ARGUS_RETURN_ON_INVALID_ENTITY(singletonEntity, ArgusInputLog);
 
 	SpatialPartitioningComponent* spatialPartitioningComponent = singletonEntity.GetComponent<SpatialPartitioningComponent>();
-	if (!spatialPartitioningComponent)
-	{
-		return;
-	}
+	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusInputLog);
+
+	InputInterfaceComponent* inputInterfaceComponent = singletonEntity.GetComponent<InputInterfaceComponent>();
+	ARGUS_RETURN_ON_NULL(inputInterfaceComponent, ArgusInputLog);
+
+	inputInterfaceComponent->m_marqueeQueryScratch.Reset();
 
 	FHitResult hitResult;
 	if (!m_owningPlayerController->GetMouseProjectionLocation(ECC_WorldStatic, hitResult))
@@ -840,33 +838,33 @@ void UArgusInputManager::ProcessMarqueeSelectInputEvent(const AArgusCameraActor*
 		return;
 	}
 
-	TArray<FVector2D> groundConvexPolygon;
-	TArray<FVector2D> flyingConvexPolygon;
-	groundConvexPolygon.SetNumZeroed(4);
-	flyingConvexPolygon.SetNumZeroed(4);
-	groundConvexPolygon[0] = FVector2D(m_cachedLastSelectInputWorldSpaceLocation);
-	groundConvexPolygon[2] = FVector2D(hitResult.Location);
+	inputInterfaceComponent->m_marqueeGroundConvexPolygon.Reset();
+	inputInterfaceComponent->m_marqueeFlyingConvexPolygon.Reset();
+	inputInterfaceComponent->m_marqueeGroundConvexPolygon.SetNumZeroed(4);
+	inputInterfaceComponent->m_marqueeFlyingConvexPolygon.SetNumZeroed(4);
+	inputInterfaceComponent->m_marqueeGroundConvexPolygon[0] = FVector2D(m_cachedLastSelectInputWorldSpaceLocation);
+	inputInterfaceComponent->m_marqueeGroundConvexPolygon[2] = FVector2D(hitResult.Location);
 
 	FVector direction0 = argusCamera->GetActorLocation() - m_cachedLastSelectInputWorldSpaceLocation;
 	FVector direction2 = argusCamera->GetActorLocation() - hitResult.Location;
 	direction0 *= ArgusMath::SafeDivide(1.0f, direction0.Z, 0.0f) * spatialPartitioningComponent->m_flyingPlaneHeight;
 	direction2 *= ArgusMath::SafeDivide(1.0f, direction2.Z, 0.0f) * spatialPartitioningComponent->m_flyingPlaneHeight;
-	flyingConvexPolygon[0] = FVector2D(m_cachedLastSelectInputWorldSpaceLocation + direction0);
-	flyingConvexPolygon[2] = FVector2D(hitResult.Location + direction2);
+	inputInterfaceComponent->m_marqueeFlyingConvexPolygon[0] = FVector2D(m_cachedLastSelectInputWorldSpaceLocation + direction0);
+	inputInterfaceComponent->m_marqueeFlyingConvexPolygon[2] = FVector2D(hitResult.Location + direction2);
 
-	PopulateMarqueeSelectPolygon(argusCamera, groundConvexPolygon);
-	PopulateMarqueeSelectPolygon(argusCamera, flyingConvexPolygon);
+	PopulateMarqueeSelectPolygon(argusCamera, inputInterfaceComponent->m_marqueeGroundConvexPolygon);
+	PopulateMarqueeSelectPolygon(argusCamera, inputInterfaceComponent->m_marqueeFlyingConvexPolygon);
 
-	const TArray<uint16, ArgusContainerAllocator<20u> >& groundEntityIds = spatialPartitioningComponent->m_argusEntityKDTree.FindArgusEntityIdsWithinConvexPoly(groundConvexPolygon, ArgusEntity::k_emptyEntity);
-	const TArray<uint16, ArgusContainerAllocator<20u> >& flyingEntityIds = spatialPartitioningComponent->m_flyingArgusEntityKDTree.FindArgusEntityIdsWithinConvexPoly(flyingConvexPolygon, ArgusEntity::k_emptyEntity);
+	const TArray<uint16, ArgusContainerAllocator<20u> >& groundEntityIds = spatialPartitioningComponent->m_argusEntityKDTree.FindArgusEntityIdsWithinConvexPoly(inputInterfaceComponent->m_marqueeGroundConvexPolygon, ArgusEntity::k_emptyEntity);
+	const TArray<uint16, ArgusContainerAllocator<20u> >& flyingEntityIds = spatialPartitioningComponent->m_flyingArgusEntityKDTree.FindArgusEntityIdsWithinConvexPoly(inputInterfaceComponent->m_marqueeFlyingConvexPolygon, ArgusEntity::k_emptyEntity);
 
 	for (int32 i = 0; i < groundEntityIds.Num(); ++i)
 	{
-		m_marqueeQueryScratch.Add(groundEntityIds[i]);
+		inputInterfaceComponent->m_marqueeQueryScratch.Add(groundEntityIds[i]);
 	}
 	for (int32 i = 0; i < flyingEntityIds.Num(); ++i)
 	{
-		m_marqueeQueryScratch.Add(flyingEntityIds[i]);
+		inputInterfaceComponent->m_marqueeQueryScratch.Add(flyingEntityIds[i]);
 	}
 
 	bool shouldIgnoreTeamRequirement = false;
@@ -877,18 +875,18 @@ void UArgusInputManager::ProcessMarqueeSelectInputEvent(const AArgusCameraActor*
 
 	if (!shouldIgnoreTeamRequirement)
 	{
-		m_owningPlayerController->FilterArgusEntityIdsToPlayerTeam(m_marqueeQueryScratch);
+		m_owningPlayerController->FilterArgusEntityIdsToPlayerTeam(inputInterfaceComponent->m_marqueeQueryScratch);
 	}
 	
-	const int numFoundEntities = m_marqueeQueryScratch.Num();
+	const int numFoundEntities = inputInterfaceComponent->m_marqueeQueryScratch.Num();
 	if (ArgusCVars::CVarEnableVerboseArgusInputLogging.GetValueOnGameThread())
 	{
 		ARGUS_LOG
 		(
 			ArgusInputLog, Display, TEXT("[%s] Did a Marquee Select from {%f, %f} to {%f, %f}. Found %d entities. Is additive? %s"),
 			ARGUS_FUNCNAME,
-			groundConvexPolygon[0].X, groundConvexPolygon[0].Y,
-			groundConvexPolygon[2].X, groundConvexPolygon[2].Y,
+			inputInterfaceComponent->m_marqueeGroundConvexPolygon[0].X, inputInterfaceComponent->m_marqueeGroundConvexPolygon[0].Y,
+			inputInterfaceComponent->m_marqueeGroundConvexPolygon[2].X, inputInterfaceComponent->m_marqueeGroundConvexPolygon[2].Y,
 			numFoundEntities,
 			isAdditive ? TEXT("Yes") : TEXT("No")
 		);
@@ -896,15 +894,15 @@ void UArgusInputManager::ProcessMarqueeSelectInputEvent(const AArgusCameraActor*
 
 	if (!isAdditive && numFoundEntities > 0)
 	{
-		InputInterfaceSystems::AddMultipleSelectedEntitiesExclusive(m_marqueeQueryScratch, m_owningPlayerController->GetMoveToLocationDecalActorRecord());
+		InputInterfaceSystems::AddMultipleSelectedEntitiesExclusive(inputInterfaceComponent->m_marqueeQueryScratch, m_owningPlayerController->GetMoveToLocationDecalActorRecord());
 	}
 	else
 	{
-		InputInterfaceSystems::AddMultipleSelectedEntitiesAdditive(m_marqueeQueryScratch, m_owningPlayerController->GetMoveToLocationDecalActorRecord());
+		InputInterfaceSystems::AddMultipleSelectedEntitiesAdditive(inputInterfaceComponent->m_marqueeQueryScratch, m_owningPlayerController->GetMoveToLocationDecalActorRecord());
 	}
 }
 
-void UArgusInputManager::PopulateMarqueeSelectPolygon(const AArgusCameraActor* argusCamera, TArray<FVector2D>& convexPolygon)
+void UArgusInputManager::PopulateMarqueeSelectPolygon(const AArgusCameraActor* argusCamera, TArray<FVector2D, ArgusContainerAllocator<4u> >& convexPolygon)
 {
 	ARGUS_RETURN_ON_NULL(argusCamera, ArgusInputLog);
 	if (convexPolygon.Num() < 4)

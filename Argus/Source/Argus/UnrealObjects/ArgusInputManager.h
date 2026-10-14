@@ -140,7 +140,6 @@ private:
 	TWeakObjectPtr<AArgusPlayerController> m_owningPlayerController = nullptr;
 	TSet<TWeakObjectPtr<AArgusActor>> m_controlGroupActors[6];
 	TArray<InputCache> m_inputEventsThisFrame;
-	TArray<uint16, ArgusContainerAllocator<50u> > m_marqueeQueryScratch;
 
 	void BindActions(TSoftObjectPtr<UArgusInputActionSet>& argusInputActionSet, UEnhancedInputComponent* enhancedInputComponent, UEnhancedPlayerInput* enhancedInput);
 	bool ValidateOwningPlayerController();
@@ -148,7 +147,7 @@ private:
 	void ProcessInputEvent(AArgusCameraActor* argusCamera, const InputCache& inputEvent);
 	void ProcessSelectInputEvent(bool isAdditive);
 	void ProcessMarqueeSelectInputEvent(const AArgusCameraActor* argusCamera, bool isAdditive);
-	void PopulateMarqueeSelectPolygon(const AArgusCameraActor* argusCamera, TArray<FVector2D>& convexPolygon);
+	void PopulateMarqueeSelectPolygon(const AArgusCameraActor* argusCamera, TArray<FVector2D, ArgusContainerAllocator<4u> >& convexPolygon);
 	void ProcessMoveToInputEvent(bool onAttackMove = false);
 	void ProcessSetWaypointInputEvent();
 	void ProcessZoomInputEvent(AArgusCameraActor* argusCamera, const FInputActionValue& value);

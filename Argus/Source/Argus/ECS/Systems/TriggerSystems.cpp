@@ -92,30 +92,31 @@ void TriggerSystems::UpdatePolygonTriggerOverlaps(const TriggerSystemsArgs& comp
 	ARGUS_RETURN_ON_NULL(components.m_relativePolygonComponent, ArgusECSLog);
 	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
 
-	TArray<FVector> polygonPoints;
-	RelativeGeometrySystems::GetWorldSpaceRelativePolygonPoints(components.m_relativePolygonComponent, components.m_facingComponent, components.m_transformComponent, polygonPoints);
+	components.m_relativePolygonComponent->m_worldSpaceUnrealVerticies.Reset();
+	components.m_relativePolygonComponent->m_worldSpaceUnrealVerticies.Reserve(components.m_relativePolygonComponent->m_relativeUnrealVerticies.Num());
+	RelativeGeometrySystems::GetWorldSpaceRelativePolygonPoints(components.m_relativePolygonComponent, components.m_facingComponent, components.m_transformComponent, components.m_relativePolygonComponent->m_worldSpaceUnrealVerticies);
 
 #if !UE_BUILD_SHIPPING
 	if (WorldReferenceComponent* worldReferenceComponent = ArgusEntity::GetSingletonEntity().GetComponent<WorldReferenceComponent>())
 	{
-		for (int32 i = 1; i < polygonPoints.Num(); ++i)
+		for (int32 i = 1; i < components.m_relativePolygonComponent->m_worldSpaceUnrealVerticies.Num(); ++i)
 		{
-			DrawDebugLine(worldReferenceComponent->m_worldPointer, polygonPoints[i - 1], polygonPoints[i], FColor::Green, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth);
+			DrawDebugLine(worldReferenceComponent->m_worldPointer, components.m_relativePolygonComponent->m_worldSpaceUnrealVerticies[i - 1], components.m_relativePolygonComponent->m_worldSpaceUnrealVerticies[i], FColor::Green, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth);
 		}
-		DrawDebugLine(worldReferenceComponent->m_worldPointer, polygonPoints[polygonPoints.Num() - 1], polygonPoints[0], FColor::Green, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth);
+		DrawDebugLine(worldReferenceComponent->m_worldPointer, components.m_relativePolygonComponent->m_worldSpaceUnrealVerticies[components.m_relativePolygonComponent->m_worldSpaceUnrealVerticies.Num() - 1], components.m_relativePolygonComponent->m_worldSpaceUnrealVerticies[0], FColor::Green, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth);
 	}
 #endif //!UE_BUILD_SHIPPING
 
 	if (components.m_triggerComponent->m_triggerPlanarOverlaps == EFlightCapability::BothGroundedAndFlying ||
 		components.m_triggerComponent->m_triggerPlanarOverlaps == EFlightCapability::OnlyGrounded)
 	{
-		const TArray<uint16, ArgusContainerAllocator<20u> >& foundEntityIds = spatialPartitioningComponent->m_argusEntityKDTree.FindArgusEntityIdsWithinConvexPoly(polygonPoints, components.m_entity);
+		const TArray<uint16, ArgusContainerAllocator<20u> >& foundEntityIds = spatialPartitioningComponent->m_argusEntityKDTree.FindArgusEntityIdsWithinConvexPoly(components.m_relativePolygonComponent->m_worldSpaceUnrealVerticies, components.m_entity);
 		UpdateOverlappingEntities(foundEntityIds, components);
 	}
 	if (components.m_triggerComponent->m_triggerPlanarOverlaps == EFlightCapability::BothGroundedAndFlying ||
 		components.m_triggerComponent->m_triggerPlanarOverlaps == EFlightCapability::OnlyFlying)
 	{
-		const TArray<uint16, ArgusContainerAllocator<20u> >& foundEntityIds = spatialPartitioningComponent->m_flyingArgusEntityKDTree.FindArgusEntityIdsWithinConvexPoly(polygonPoints, components.m_entity);
+		const TArray<uint16, ArgusContainerAllocator<20u> >& foundEntityIds = spatialPartitioningComponent->m_flyingArgusEntityKDTree.FindArgusEntityIdsWithinConvexPoly(components.m_relativePolygonComponent->m_worldSpaceUnrealVerticies, components.m_entity);
 		UpdateOverlappingEntities(foundEntityIds, components);
 	}
 }

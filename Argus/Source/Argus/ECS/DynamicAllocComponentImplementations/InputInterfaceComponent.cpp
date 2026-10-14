@@ -17,6 +17,9 @@ void InputInterfaceComponent::Reset()
 	m_selectedArgusEntityIds.Reset();
 	m_activeAbilityGroupArgusEntityIds.Reset();
 	m_controlGroups.Reset();
+	m_marqueeQueryScratch.Reset();
+	m_marqueeGroundConvexPolygon.Reset();
+	m_marqueeFlyingConvexPolygon.Reset();
 	m_selectedActorsDisplayState = ESelectedActorsDisplayState::NotChanged;
 	m_indexOfActiveAbilityGroup = 0;
 	m_activePlayerTeam = ETeam::TeamA;
@@ -104,6 +107,63 @@ void InputInterfaceComponent::DrawComponentDebug() const
 			{
 				if (i != 0) ImGui::Separator();
 				m_controlGroups[i].DrawImGuiDebug();
+			}
+			ImGui::Unindent();
+		}
+		ImGui::TableNextColumn();
+		ImGui::Text("m_marqueeQueryScratch");
+		ImGui::TableNextColumn();
+		ImGui::Text("Array max is currently = %d", m_marqueeQueryScratch.Max());
+		if (m_marqueeQueryScratch.IsEmpty())
+		{
+			ImGui::Text("Array is empty");
+		}
+		else
+		{
+			ImGui::Text("Size of array = %d", m_marqueeQueryScratch.Num());
+			ImGui::Indent();
+			for (int32 i = 0; i < m_marqueeQueryScratch.Num(); ++i)
+			{
+				if (i != 0) ImGui::Separator();
+				ImGui::Text("%d", m_marqueeQueryScratch[i]);
+			}
+			ImGui::Unindent();
+		}
+		ImGui::TableNextColumn();
+		ImGui::Text("m_marqueeGroundConvexPolygon");
+		ImGui::TableNextColumn();
+		ImGui::Text("Array max is currently = %d", m_marqueeGroundConvexPolygon.Max());
+		if (m_marqueeGroundConvexPolygon.IsEmpty())
+		{
+			ImGui::Text("Array is empty");
+		}
+		else
+		{
+			ImGui::Text("Size of array = %d", m_marqueeGroundConvexPolygon.Num());
+			ImGui::Indent();
+			for (int32 i = 0; i < m_marqueeGroundConvexPolygon.Num(); ++i)
+			{
+				if (i != 0) ImGui::Separator();
+				ImGui::Text("(%.2f, %.2f)", m_marqueeGroundConvexPolygon[i].X, m_marqueeGroundConvexPolygon[i].Y);
+			}
+			ImGui::Unindent();
+		}
+		ImGui::TableNextColumn();
+		ImGui::Text("m_marqueeFlyingConvexPolygon");
+		ImGui::TableNextColumn();
+		ImGui::Text("Array max is currently = %d", m_marqueeFlyingConvexPolygon.Max());
+		if (m_marqueeFlyingConvexPolygon.IsEmpty())
+		{
+			ImGui::Text("Array is empty");
+		}
+		else
+		{
+			ImGui::Text("Size of array = %d", m_marqueeFlyingConvexPolygon.Num());
+			ImGui::Indent();
+			for (int32 i = 0; i < m_marqueeFlyingConvexPolygon.Num(); ++i)
+			{
+				if (i != 0) ImGui::Separator();
+				ImGui::Text("(%.2f, %.2f)", m_marqueeFlyingConvexPolygon[i].X, m_marqueeFlyingConvexPolygon[i].Y);
 			}
 			ImGui::Unindent();
 		}
