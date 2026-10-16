@@ -224,7 +224,7 @@ void ArgusSystemsManager::PopulateTeamComponents(const UArgusEntityTemplate* tea
 #if !UE_BUILD_SHIPPING
 void ArgusSystemsManager::PopulateTestEntities()
 {
-	// Test Circle Trigger
+	//// Test Circle Trigger
 	//ArgusEntity circleTriggerEntity = ArgusEntity::CreateEntity();
 	//RelativeCircleComponent* relativeCircleComponent = circleTriggerEntity.GetOrAddComponent<RelativeCircleComponent>();
 	//TransformComponent* circleTransformComponent = circleTriggerEntity.GetOrAddComponent<TransformComponent>();
@@ -241,7 +241,7 @@ void ArgusSystemsManager::PopulateTestEntities()
 	//circleFacingComponent->m_smoothedFacing.Reset(1.57f);
 	//circleTriggerComponent->m_triggerPlanarOverlaps = EFlightCapability::BothGroundedAndFlying;
 
-	// Test Polygon Trigger
+	//// Test Polygon Trigger
 	//ArgusEntity polyTriggerEntity = ArgusEntity::CreateEntity();
 	//RelativePolygonComponent* relativePolygonComponent = polyTriggerEntity.GetOrAddComponent<RelativePolygonComponent>();
 	//TransformComponent* polyTransformComponent = polyTriggerEntity.GetOrAddComponent<TransformComponent>();
