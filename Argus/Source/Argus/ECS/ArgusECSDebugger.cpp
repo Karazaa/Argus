@@ -242,6 +242,7 @@ void ArgusECSDebugger::DrawEntityDockSpace()
 			UnsetEntityDebugFlag(i, EntityDebugFlag::ShowNavigationDebug);
 			UnsetEntityDebugFlag(i, EntityDebugFlag::ShowFlockingDebug);
 			UnsetEntityDebugFlag(i, EntityDebugFlag::ShowIdDebug);
+			UnsetEntityDebugFlag(i, EntityDebugFlag::ShowTriggerDebug);
 			continue;
 		}
 
@@ -306,13 +307,31 @@ void ArgusECSDebugger::DrawWindowForEntity(uint16 entityId)
 	if (isSelectableEntity)
 	{
 		EntityDebugFlagCheckbox("Show ID", entityId, EntityDebugFlag::ShowIdDebug);
-		ImGui::SameLine();
-		EntityDebugFlagCheckbox("Show Group debug", entityId, EntityDebugFlag::ShowGroupDebug);
-		ImGui::SameLine();
-		EntityDebugFlagCheckbox("Show Avoidance debug", entityId, EntityDebugFlag::ShowAvoidanceDebug);
-		EntityDebugFlagCheckbox("Show Navigation debug", entityId, EntityDebugFlag::ShowNavigationDebug);
-		ImGui::SameLine();
-		EntityDebugFlagCheckbox("Show Flocking debug", entityId, EntityDebugFlag::ShowFlockingDebug);
+		if (AvoidanceGroupingComponent* avoidanceGroupingComponent = entity.GetComponent<AvoidanceGroupingComponent>())
+		{
+			ImGui::SameLine();
+			EntityDebugFlagCheckbox("Show Group debug", entityId, EntityDebugFlag::ShowGroupDebug);
+		}
+		if (VelocityComponent* velocityComponent = entity.GetComponent<VelocityComponent>())
+		{
+			ImGui::SameLine();
+			EntityDebugFlagCheckbox("Show Avoidance debug", entityId, EntityDebugFlag::ShowAvoidanceDebug);
+		}
+		
+		if (NavigationComponent* navigationComponent = entity.GetComponent<NavigationComponent>())
+		{
+			EntityDebugFlagCheckbox("Show Navigation debug", entityId, EntityDebugFlag::ShowNavigationDebug);
+		}
+		if (FlockingComponent* flockingComponent = entity.GetComponent<FlockingComponent>())
+		{
+			ImGui::SameLine();
+			EntityDebugFlagCheckbox("Show Flocking debug", entityId, EntityDebugFlag::ShowFlockingDebug);
+		}
+		if (TriggerComponent* triggerComponent = entity.GetComponent<TriggerComponent>())
+		{
+			ImGui::SameLine();
+			EntityDebugFlagCheckbox("Show Trigger debug", entityId, EntityDebugFlag::ShowTriggerDebug);
+		}
 	}
 
 	if (hasRevealedAreas)

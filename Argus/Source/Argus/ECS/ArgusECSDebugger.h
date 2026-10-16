@@ -23,6 +23,7 @@ public:
 	static bool ShouldShowNavigationDebugForEntity(uint16 entityId) { return HasEntityDebugFlag(entityId, EntityDebugFlag::ShowNavigationDebug); }
 	static bool ShouldShowFlockingDebugForEntity(uint16 entityId) { return HasEntityDebugFlag(entityId, EntityDebugFlag::ShowGroupLeaderFlockingDisplay); }
 	static bool ShouldShowIdDebugForEntity(uint16 entityId) { return HasEntityDebugFlag(entityId, EntityDebugFlag::ShowIdDebug); };
+	static bool ShouldShowTriggerDebugForEntity(uint16 entityId) { return HasEntityDebugFlag(entityId, EntityDebugFlag::ShowTriggerDebug); }
 	static bool ShouldIgnoreTeamRequirementsForSelectingEntities() { return s_ignoreTeamRequirementsForSelectingEntities; };
 	static bool ShouldDrawFogOfWar() { return s_shouldDrawFogOfWar; }
 	static bool IsTeamAIEnabled() { return s_isTeamAIEnabled; }
@@ -38,7 +39,8 @@ private:
 		ShowNavigationDebug = 1 << 3,
 		ShowFlockingDebug = 1 << 4,
 		ShowGroupLeaderFlockingDisplay = 1 << 5,
-		ShowIdDebug = 1 << 6
+		ShowIdDebug = 1 << 6,
+		ShowTriggerDebug = 1 << 7
 	};
 
 	static bool s_shouldDrawFogOfWar;
