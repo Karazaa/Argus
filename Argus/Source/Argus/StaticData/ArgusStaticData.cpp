@@ -8,6 +8,7 @@
 #include "RecordDatabases/AbilityRecordDatabase.h"
 #include "RecordDatabases/ArgusActorRecordDatabase.h"
 #include "RecordDatabases/FactionRecordDatabase.h"
+#include "RecordDatabases/HeadlessEntityRecordDatabase.h"
 #include "RecordDatabases/MaterialRecordDatabase.h"
 #include "RecordDatabases/ObstaclesRecordDatabase.h"
 #include "RecordDatabases/PersistentWorldTranslationRecordDatabase.h"
@@ -38,6 +39,10 @@ uint32 ArgusStaticData::AddRecordToDatabase(UArgusStaticRecord* record)
 	if (UFactionRecord* UFactionRecordInstance = Cast<UFactionRecord>(record))
 	{
 		return staticDatabase->AddUFactionRecordToDatabase(UFactionRecordInstance);
+	}
+	if (UHeadlessEntityRecord* UHeadlessEntityRecordInstance = Cast<UHeadlessEntityRecord>(record))
+	{
+		return staticDatabase->AddUHeadlessEntityRecordToDatabase(UHeadlessEntityRecordInstance);
 	}
 	if (UMaterialRecord* UMaterialRecordInstance = Cast<UMaterialRecord>(record))
 	{

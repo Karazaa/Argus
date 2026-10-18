@@ -12,6 +12,8 @@ class UArgusActorRecord;
 class UArgusActorRecordDatabase;
 class UFactionRecord;
 class UFactionRecordDatabase;
+class UHeadlessEntityRecord;
+class UHeadlessEntityRecordDatabase;
 class UMaterialRecord;
 class UMaterialRecordDatabase;
 class UObstaclesRecord;
@@ -103,6 +105,25 @@ protected:
 	TObjectPtr<UFactionRecordDatabase> m_UFactionRecordDatabasePersistent;
 
 	void LazyLoadUFactionRecordDatabase();
+#pragma endregion
+#pragma region UHeadlessEntityRecord
+public:
+	const UHeadlessEntityRecord* GetUHeadlessEntityRecord(uint32 id);
+	const bool AsyncPreLoadUHeadlessEntityRecord(uint32 id, TFunction<void(const UHeadlessEntityRecord*)> callback = nullptr);
+	void ResetLoadedUHeadlessEntityRecordPointerArray();
+#if WITH_EDITOR
+	uint32 AddUHeadlessEntityRecordToDatabase(UHeadlessEntityRecord* record);
+	void IterateAllUHeadlessEntityRecords(const TFunctionRef<void(UHeadlessEntityRecord*)>& function);
+	void RegisterNewUHeadlessEntityRecordDatabase(UHeadlessEntityRecordDatabase* database);
+#endif //WITH_EDITOR
+
+protected:
+	UPROPERTY(EditAnywhere)
+	TSoftObjectPtr<UHeadlessEntityRecordDatabase> m_UHeadlessEntityRecordDatabase;
+	UPROPERTY(Transient)
+	TObjectPtr<UHeadlessEntityRecordDatabase> m_UHeadlessEntityRecordDatabasePersistent;
+
+	void LazyLoadUHeadlessEntityRecordDatabase();
 #pragma endregion
 #pragma region UMaterialRecord
 public:

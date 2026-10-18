@@ -5,7 +5,9 @@
 #include "ArgusLogging.h"
 #include "ArgusStaticData.h"
 #include "Engine/World.h"
+#include "RecordDefinitions/HeadlessEntityRecord.h"
 #include "RecordDefinitions/TeamAlignmentRecord.h"
+#include "RecordDefinitions/WorldCellRecord.h"
 #include "Systems/AbilitySystems.h"
 #include "Systems/AvoidanceSystems.h"
 #include "Systems/CombatSystems.h"
@@ -36,6 +38,7 @@ void ArgusSystemsManager::Initialize(UWorld* worldPointer, const UArgusEntityTem
 
 	PopulateSingletonComponents(worldPointer, singletonEntityTemplate);
 	PopulateTeamComponents(teamEntityTemplate, teamAlignmentRecord);
+	PopulateHeadlessEntities();
 #if !UE_BUILD_SHIPPING
 	PopulateTestEntities();
 #endif // !UE_BUILD_SHIPPING
@@ -221,6 +224,88 @@ void ArgusSystemsManager::PopulateTeamComponents(const UArgusEntityTemplate* tea
 	}
 }
 
+void ArgusSystemsManager::InitializeTeamComponents()
+{
+	for (uint8 i = 1u; i <= NUM_TEAMS; ++i)
+	{
+		ArgusEntity teamEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId - i);
+		TeamCommanderComponent* teamCommanderComponent = teamEntity.GetOrAddComponent<TeamCommanderComponent>();
+		ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
+
+		TeamCommanderSystems::InitializeRevealedAreas(teamCommanderComponent);
+	}
+
+	TeamCommanderSystems::PerformInitialUpdate();
+}
+
+void ArgusSystemsManager::PopulateHeadlessEntities()
+{
+	ARGUS_TRACE(ArgusSystemsManager::PopulateHeadlessEntities);
+
+	SpatialPartitioningComponent* spatialPartitioningComponent = ArgusEntity::GetSingletonEntity().GetComponent<SpatialPartitioningComponent>();
+	ARGUS_RETURN_ON_NULL(spatialPartitioningComponent, ArgusECSLog);
+
+	const UWorldCellRecord* worldCellRecord = ArgusStaticData::GetRecord<UWorldCellRecord>(spatialPartitioningComponent->m_initialWorldCell.GetId());
+	ARGUS_RETURN_ON_NULL(worldCellRecord, ArgusECSLog);
+
+	for (int32 i = 0; i < worldCellRecord->m_headlessEntities.Num(); ++i)
+	{
+		const UHeadlessEntityRecord* headlessEntityRecord = ArgusStaticData::GetRecord<UHeadlessEntityRecord>(worldCellRecord->m_headlessEntities[i].GetId());
+		if (!headlessEntityRecord)
+		{
+			continue;
+		}
+
+		UArgusEntityTemplate* headlessEntityTemplate = headlessEntityRecord->m_entityTemplate.LoadAndStorePtr();
+		if (!headlessEntityTemplate)
+		{
+			continue;
+		}
+
+		ArgusEntity headlessEntity = headlessEntityTemplate->MakeEntity();
+		TransformComponent* transformComponent = headlessEntity.GetOrAddComponent<TransformComponent>();
+		if (!transformComponent)
+		{
+			continue;
+		}
+
+		transformComponent->m_location = headlessEntityRecord->m_initialLocation;
+	}
+}
+
+void ArgusSystemsManager::UpdateSingletonComponents(UWorld* worldPointer)
+{
+	ARGUS_TRACE(ArgusSystemsManager::UpdateSingletonComponents);
+
+	ARGUS_RETURN_ON_NULL(worldPointer, ArgusECSLog);
+
+	ArgusEntity singletonEntity = ArgusEntity::GetSingletonEntity();
+	WorldReferenceComponent* worldReferenceComponent = singletonEntity.GetComponent<WorldReferenceComponent>();
+	ARGUS_RETURN_ON_NULL(worldReferenceComponent, ArgusECSLog);
+
+	worldReferenceComponent->m_worldPointer = worldPointer;
+	if (worldReferenceComponent->m_persistentWorldSoftObjectPath.IsNull())
+	{
+		const UPackage* package = worldReferenceComponent->m_worldPointer->GetPackage();
+		ARGUS_RETURN_ON_NULL(package, ArgusECSLog);
+
+		FString pathName = worldReferenceComponent->m_worldPointer->GetPathName();
+#if WITH_EDITOR
+		pathName = UWorld::RemovePIEPrefix(pathName);
+#endif // WITH_EDITOR
+
+		worldReferenceComponent->m_persistentWorldSoftObjectPath = FSoftObjectPath(pathName);
+	}
+}
+
+void ArgusSystemsManager::IncrementFrameCounter()
+{
+	WorldReferenceComponent* worldReferenceComponent = ArgusEntity::GetSingletonEntity().GetComponent<WorldReferenceComponent>();
+	ARGUS_RETURN_ON_NULL(worldReferenceComponent, ArgusECSLog);
+
+	worldReferenceComponent->IncrementFrameCounter();
+}
+
 #if !UE_BUILD_SHIPPING
 void ArgusSystemsManager::PopulateTestEntities()
 {
@@ -261,50 +346,3 @@ void ArgusSystemsManager::PopulateTestEntities()
 	//polyTriggerComponent->m_triggerPlanarOverlaps = EFlightCapability::BothGroundedAndFlying;
 }
 #endif // !UE_BUILD_SHIPPING
-
-void ArgusSystemsManager::InitializeTeamComponents()
-{
-	for (uint8 i = 1u; i <= NUM_TEAMS; ++i)
-	{
-		ArgusEntity teamEntity = ArgusEntity::RetrieveEntity(ArgusECSConstants::k_singletonEntityId - i);
-		TeamCommanderComponent* teamCommanderComponent = teamEntity.GetOrAddComponent<TeamCommanderComponent>();
-		ARGUS_RETURN_ON_NULL(teamCommanderComponent, ArgusECSLog);
-
-		TeamCommanderSystems::InitializeRevealedAreas(teamCommanderComponent);
-	}
-
-	TeamCommanderSystems::PerformInitialUpdate();
-}
-
-void ArgusSystemsManager::UpdateSingletonComponents(UWorld* worldPointer)
-{
-	ARGUS_TRACE(ArgusSystemsManager::UpdateSingletonComponents);
-
-	ARGUS_RETURN_ON_NULL(worldPointer, ArgusECSLog);
-
-	ArgusEntity singletonEntity = ArgusEntity::GetSingletonEntity();
-	WorldReferenceComponent* worldReferenceComponent = singletonEntity.GetComponent<WorldReferenceComponent>();
-	ARGUS_RETURN_ON_NULL(worldReferenceComponent, ArgusECSLog);
-
-	worldReferenceComponent->m_worldPointer = worldPointer;
-	if (worldReferenceComponent->m_persistentWorldSoftObjectPath.IsNull())
-	{
-		const UPackage* package = worldReferenceComponent->m_worldPointer->GetPackage();
-		ARGUS_RETURN_ON_NULL(package, ArgusECSLog);
-
-		FString pathName = worldReferenceComponent->m_worldPointer->GetPathName();
-#if WITH_EDITOR
-		pathName = UWorld::RemovePIEPrefix(pathName);
-#endif // WITH_EDITOR
-
-		worldReferenceComponent->m_persistentWorldSoftObjectPath = FSoftObjectPath(pathName);
-	}
-}
-
-void ArgusSystemsManager::IncrementFrameCounter()
-{
-	WorldReferenceComponent* worldReferenceComponent = ArgusEntity::GetSingletonEntity().GetComponent<WorldReferenceComponent>();
-	ARGUS_RETURN_ON_NULL(worldReferenceComponent, ArgusECSLog);
-
-	worldReferenceComponent->IncrementFrameCounter();
-}

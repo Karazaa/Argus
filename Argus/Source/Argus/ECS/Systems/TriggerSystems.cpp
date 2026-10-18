@@ -65,7 +65,8 @@ void TriggerSystems::UpdateCircleTriggerOverlaps(const TriggerSystemsArgs& compo
 	{
 		if (ArgusECSDebugger::ShouldShowTriggerDebugForEntity(components.m_entity.GetId()))
 		{
-			DrawDebugCircle(worldReferenceComponent->m_worldPointer, center, radius, 20, FColor::Green, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth, FVector::RightVector, FVector::ForwardVector, false);
+			const FVector heightAdjustment = FVector(0.0f, 0.0f, ArgusECSConstants::k_debugDrawHeightAdjustment);
+			DrawDebugCircle(worldReferenceComponent->m_worldPointer, center + heightAdjustment, radius, 20, FColor::Green, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth, FVector::RightVector, FVector::ForwardVector, false);
 		}
 	}
 #endif //!UE_BUILD_SHIPPING
@@ -104,11 +105,14 @@ void TriggerSystems::UpdatePolygonTriggerOverlaps(const TriggerSystemsArgs& comp
 	{
 		if (ArgusECSDebugger::ShouldShowTriggerDebugForEntity(components.m_entity.GetId()))
 		{
+			const FVector heightAdjustment = FVector(0.0f, 0.0f, ArgusECSConstants::k_debugDrawHeightAdjustment);
 			for (int32 i = 1; i < components.m_relativePolygonComponent->m_worldSpaceUnrealVerticies.Num(); ++i)
 			{
-				DrawDebugLine(worldReferenceComponent->m_worldPointer, components.m_relativePolygonComponent->m_worldSpaceUnrealVerticies[i - 1], components.m_relativePolygonComponent->m_worldSpaceUnrealVerticies[i], FColor::Green, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth);
+				DrawDebugLine(worldReferenceComponent->m_worldPointer, components.m_relativePolygonComponent->m_worldSpaceUnrealVerticies[i - 1] + heightAdjustment, 
+								components.m_relativePolygonComponent->m_worldSpaceUnrealVerticies[i] + heightAdjustment, FColor::Green, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth);
 			}
-			DrawDebugLine(worldReferenceComponent->m_worldPointer, components.m_relativePolygonComponent->m_worldSpaceUnrealVerticies[components.m_relativePolygonComponent->m_worldSpaceUnrealVerticies.Num() - 1], components.m_relativePolygonComponent->m_worldSpaceUnrealVerticies[0], FColor::Green, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth);
+			DrawDebugLine(worldReferenceComponent->m_worldPointer, components.m_relativePolygonComponent->m_worldSpaceUnrealVerticies[components.m_relativePolygonComponent->m_worldSpaceUnrealVerticies.Num() - 1] + heightAdjustment, 
+							components.m_relativePolygonComponent->m_worldSpaceUnrealVerticies[0] + heightAdjustment, FColor::Green, false, -1.0f, 0, ArgusECSConstants::k_debugDrawLineWidth);
 		}
 	}
 #endif //!UE_BUILD_SHIPPING

@@ -6,6 +6,7 @@
 #include "RecordDatabases/AbilityRecordDatabase.h"
 #include "RecordDatabases/ArgusActorRecordDatabase.h"
 #include "RecordDatabases/FactionRecordDatabase.h"
+#include "RecordDatabases/HeadlessEntityRecordDatabase.h"
 #include "RecordDatabases/MaterialRecordDatabase.h"
 #include "RecordDatabases/ObstaclesRecordDatabase.h"
 #include "RecordDatabases/PersistentWorldTranslationRecordDatabase.h"
@@ -391,6 +392,125 @@ void UArgusStaticDatabase::LazyLoadUFactionRecordDatabase()
 			ARGUS_FUNCNAME,
 			ARGUS_NAMEOF(m_UFactionRecordDatabasePersistent),
 			ARGUS_NAMEOF(m_UFactionRecordDatabase)
+		);
+		return;
+	}
+}
+#pragma endregion
+#pragma region UHeadlessEntityRecord
+const UHeadlessEntityRecord* UArgusStaticDatabase::GetUHeadlessEntityRecord(uint32 id)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUHeadlessEntityRecordDatabase();
+
+	if (!m_UHeadlessEntityRecordDatabasePersistent)
+	{
+		return nullptr;
+	}
+
+	return m_UHeadlessEntityRecordDatabasePersistent->GetRecord(id);
+}
+
+const bool UArgusStaticDatabase::AsyncPreLoadUHeadlessEntityRecord(uint32 id, TFunction<void(const UHeadlessEntityRecord*)> callback)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUHeadlessEntityRecordDatabase();
+
+	if (!m_UHeadlessEntityRecordDatabasePersistent)
+	{
+		return false;
+	}
+
+	return m_UHeadlessEntityRecordDatabasePersistent->AsyncPreLoadRecord(id);
+}
+
+void UArgusStaticDatabase::ResetLoadedUHeadlessEntityRecordPointerArray()
+{
+	if (!m_UHeadlessEntityRecordDatabasePersistent)
+	{
+		return;
+	}
+
+	m_UHeadlessEntityRecordDatabasePersistent->ResetPersistentObjectPointerArray();
+}
+
+#if WITH_EDITOR
+uint32 UArgusStaticDatabase::AddUHeadlessEntityRecordToDatabase(UHeadlessEntityRecord* record)
+{
+	LazyLoadUHeadlessEntityRecordDatabase();
+
+	if (!m_UHeadlessEntityRecordDatabasePersistent)
+	{
+		return 0u;
+	}
+
+	m_UHeadlessEntityRecordDatabasePersistent->AddUHeadlessEntityRecordToDatabase(record);
+	
+	return record->m_id;
+}
+
+void UArgusStaticDatabase::IterateAllUHeadlessEntityRecords(const TFunctionRef<void(UHeadlessEntityRecord*)>& function)
+{
+	LazyLoadUHeadlessEntityRecordDatabase();
+
+	if (!m_UHeadlessEntityRecordDatabasePersistent)
+	{
+		return;
+	}
+
+	m_UHeadlessEntityRecordDatabasePersistent->IterateAllUHeadlessEntityRecords(function);
+}
+
+void UArgusStaticDatabase::RegisterNewUHeadlessEntityRecordDatabase(UHeadlessEntityRecordDatabase* database)
+{
+	if (!database)
+	{
+		return;
+	}
+
+	if (!m_UHeadlessEntityRecordDatabase.IsNull())
+	{
+		ARGUS_LOG
+		(
+			ArgusStaticDataLog,
+			Error,
+			TEXT("[%s] Trying to assign to %s. Potential duplicate databases."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(m_UHeadlessEntityRecordDatabase)
+		);
+		return;
+	}
+
+	m_UHeadlessEntityRecordDatabase = database;
+	SaveDatabase();
+}
+#endif //WITH_EDITOR
+
+void UArgusStaticDatabase::LazyLoadUHeadlessEntityRecordDatabase()
+{
+	if (!m_UHeadlessEntityRecordDatabasePersistent)
+	{
+		m_UHeadlessEntityRecordDatabasePersistent = m_UHeadlessEntityRecordDatabase.LoadSynchronous();
+		if (!m_UHeadlessEntityRecordDatabasePersistent)
+		{
+			ARGUS_LOG(ArgusStaticDataLog, Error, TEXT("[%s] Could not find %s reference. Need to set reference in %s."), ARGUS_FUNCNAME, ARGUS_NAMEOF(m_UHeadlessEntityRecordDatabase), ARGUS_NAMEOF(UArgusStaticDatabase));
+			return;
+		}
+
+		m_UHeadlessEntityRecordDatabasePersistent->ResizePersistentObjectPointerArrayToFitRecord(0u);
+	}
+
+	if (!m_UHeadlessEntityRecordDatabasePersistent)
+	{
+		ARGUS_LOG
+		(
+			ArgusStaticDataLog, Error,
+			TEXT("[%s] Could not retrieve %s. %s might not be properly assigned."),
+			ARGUS_FUNCNAME,
+			ARGUS_NAMEOF(m_UHeadlessEntityRecordDatabasePersistent),
+			ARGUS_NAMEOF(m_UHeadlessEntityRecordDatabase)
 		);
 		return;
 	}
@@ -1592,6 +1712,7 @@ void UArgusStaticDatabase::ResetLoadedPointerArrays()
 	ResetLoadedUAbilityRecordPointerArray();
 	ResetLoadedUArgusActorRecordPointerArray();
 	ResetLoadedUFactionRecordPointerArray();
+	ResetLoadedUHeadlessEntityRecordPointerArray();
 	ResetLoadedUMaterialRecordPointerArray();
 	ResetLoadedUObstaclesRecordPointerArray();
 	ResetLoadedUPersistentWorldTranslationRecordPointerArray();

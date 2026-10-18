@@ -3,6 +3,7 @@
 #pragma once
 
 #include "ArgusStaticRecord.h"
+#include "RecordReferences/HeadlessEntityRecordReference.h"
 #include "RecordReferences/ObstaclesRecordReference.h"
 #include "WorldCellRecord.generated.h"
 
@@ -19,6 +20,9 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	FUObstaclesRecordReference m_obstaclesRecord;
+
+	UPROPERTY(EditAnywhere)
+	TArray<FUHeadlessEntityRecordReference> m_headlessEntities;
 
 	UPROPERTY(EditAnywhere)
 	int32 m_cellXCoordinate = 0;

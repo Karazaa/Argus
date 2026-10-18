@@ -166,6 +166,48 @@ public:
 #endif //WITH_EDITOR
 #pragma endregion
 
+#pragma region UHeadlessEntityRecord
+	template<>
+	ARGUS_API inline const UHeadlessEntityRecord* GetRecord(uint32 id)
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->GetUHeadlessEntityRecord(id);
+		}
+
+		return nullptr;
+	}
+
+	template<>
+	ARGUS_API inline bool AsyncPreLoadRecord<UHeadlessEntityRecord>(uint32 id, TFunction<void(const UHeadlessEntityRecord*)> callback)
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->AsyncPreLoadUHeadlessEntityRecord(id, callback);
+		}
+
+		return false;
+	}
+
+#if WITH_EDITOR
+	template<>
+	ARGUS_API inline void IterateAllRecordsOfType<UHeadlessEntityRecord>(const TFunctionRef<void(UHeadlessEntityRecord*)>& function)
+	{
+		if (UArgusStaticDatabase* staticDatabase = GetParentDatabase())
+		{
+			staticDatabase->IterateAllUHeadlessEntityRecords(function);
+		}
+	}
+
+	static void RegisterNewUHeadlessEntityRecordDatabase(UHeadlessEntityRecordDatabase* database)
+	{
+		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
+		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
+		staticDatabase->RegisterNewUHeadlessEntityRecordDatabase(database);
+	}
+#endif //WITH_EDITOR
+#pragma endregion
+
 #pragma region UMaterialRecord
 	template<>
 	ARGUS_API inline const UMaterialRecord* GetRecord(uint32 id)

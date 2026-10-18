@@ -24,6 +24,7 @@ private:
 	static void SetInitialSingletonState(UWorld* worldPointer, ETeam activePlayerTeam);
 	static void PopulateTeamComponents(const UArgusEntityTemplate* teamEntityTemplate, const UTeamAlignmentRecord* teamAlignmentRecord);
 	static void InitializeTeamComponents();
+	static void PopulateHeadlessEntities();
 	static void UpdateSingletonComponents(UWorld* worldPointer);
 	static void IncrementFrameCounter();
 

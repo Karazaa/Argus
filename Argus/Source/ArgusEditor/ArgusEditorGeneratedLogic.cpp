@@ -53,6 +53,7 @@
 #include "AssetFactories/StaticRecordFactories/AbilityRecordFactory.h"
 #include "AssetFactories/StaticRecordFactories/ArgusActorRecordFactory.h"
 #include "AssetFactories/StaticRecordFactories/FactionRecordFactory.h"
+#include "AssetFactories/StaticRecordFactories/HeadlessEntityRecordFactory.h"
 #include "AssetFactories/StaticRecordFactories/MaterialRecordFactory.h"
 #include "AssetFactories/StaticRecordFactories/ObstaclesRecordFactory.h"
 #include "AssetFactories/StaticRecordFactories/PersistentWorldTranslationRecordFactory.h"
@@ -162,6 +163,8 @@ void ArgusEditorModule::RegisterAssetActions(IAssetTools& assetTools) const
 	assetTools.RegisterAssetTypeActions(actionsArgusActorRecord);
 	TSharedRef<IAssetTypeActions> actionsFactionRecord = MakeShareable(new FAssetTypeActions_FactionRecord);
 	assetTools.RegisterAssetTypeActions(actionsFactionRecord);
+	TSharedRef<IAssetTypeActions> actionsHeadlessEntityRecord = MakeShareable(new FAssetTypeActions_HeadlessEntityRecord);
+	assetTools.RegisterAssetTypeActions(actionsHeadlessEntityRecord);
 	TSharedRef<IAssetTypeActions> actionsMaterialRecord = MakeShareable(new FAssetTypeActions_MaterialRecord);
 	assetTools.RegisterAssetTypeActions(actionsMaterialRecord);
 	TSharedRef<IAssetTypeActions> actionsObstaclesRecord = MakeShareable(new FAssetTypeActions_ObstaclesRecord);
