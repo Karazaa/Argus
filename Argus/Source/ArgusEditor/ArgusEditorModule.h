@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "ArgusHeadlessActorManager.h"
 #include "AssetTypeCategories.h"
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
@@ -28,4 +29,5 @@ private:
 	void RegisterAssetActions(class IAssetTools& assetTools) const;
 
 	FDelegateHandle m_propertyChangedHandle;
+	ArgusHeadlessActorManager m_argusHeadlessActorManager;
 };

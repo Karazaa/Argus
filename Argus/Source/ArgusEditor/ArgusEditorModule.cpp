@@ -46,11 +46,15 @@ void ArgusEditorModule::StartupModule()
 
 	s_argusAssetCategory = assetTools.RegisterAdvancedAssetCategory(FName(TEXT("Argus")), LOCTEXT("Argus", "Argus"));
 	RegisterAssetActions(assetTools);
+
+	m_argusHeadlessActorManager.Initialize();
 }
 
 void ArgusEditorModule::ShutdownModule()
 {
 	FCoreUObjectDelegates::OnObjectPropertyChanged.Remove(m_propertyChangedHandle);
+
+	m_argusHeadlessActorManager.Teardown();
 }
 
 void ArgusEditorModule::OnObjectPropertyChanged(UObject* object, FPropertyChangedEvent& propertyChangedEvent) const

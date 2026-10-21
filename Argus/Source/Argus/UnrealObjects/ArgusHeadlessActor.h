@@ -6,7 +6,7 @@
 #include "ArgusHeadlessActor.generated.h"
 
 UCLASS(meta = (DisableNativeTick))
-class AArgusHeadlessActor : public AActor
+class ARGUS_API AArgusHeadlessActor : public AActor
 {
 	GENERATED_BODY()
 
