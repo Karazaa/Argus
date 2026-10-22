@@ -8,12 +8,13 @@
 
 void ArgusHeadlessActorManager::Initialize()
 {
-	if (!GEngine)
+	if (!GEngine || !GEditor)
 	{
 		return;
 	}
 
 	GEngine->OnLevelActorAdded().AddRaw(this, &ArgusHeadlessActorManager::OnLevelActorAdded);
+	GEditor->OnActorsMoved().AddRaw(this, &ArgusHeadlessActorManager::OnActorsMoved);
 	FEditorDelegates::OnDuplicateActorsBegin.AddRaw(this, &ArgusHeadlessActorManager::OnDuplicateActorsBegin);
 	FEditorDelegates::OnDuplicateActorsEnd.AddRaw(this, &ArgusHeadlessActorManager::OnDuplicateActorsEnd);
 }
@@ -23,12 +24,14 @@ void ArgusHeadlessActorManager::Teardown()
 	FEditorDelegates::OnDuplicateActorsBegin.RemoveAll(this);
 	FEditorDelegates::OnDuplicateActorsEnd.RemoveAll(this);
 
-	if (!GEngine)
+	if (GEngine)
 	{
-		return;
+		GEngine->OnLevelActorAdded().RemoveAll(this);
 	}
-
-	GEngine->OnLevelActorAdded().RemoveAll(this);
+	if (GEditor)
+	{
+		GEditor->OnActorsMoved().RemoveAll(this);
+	}
 }
 
 void ArgusHeadlessActorManager::OnLevelActorAdded(AActor* actor)
@@ -49,7 +52,7 @@ void ArgusHeadlessActorManager::OnLevelActorAdded(AActor* actor)
 		return;
 	}
 
-	// TODO JAMES: Process request
+	argusHeadlessActor->OnHeadlessActorUpdated();
 }
 
 void ArgusHeadlessActorManager::OnDuplicateActorsBegin()
@@ -62,4 +65,15 @@ void ArgusHeadlessActorManager::OnDuplicateActorsEnd()
 	m_isDuplicatingActors = false;
 
 	// TODO JAMES: Process request and empty queue
+}
+
+void ArgusHeadlessActorManager::OnActorsMoved(TArray<AActor*>& actors) const
+{
+	for (int32 i = 0; i < actors.Num(); ++i)
+	{
+		if (AArgusHeadlessActor* argusHeadlessActor = Cast<AArgusHeadlessActor>(actors[i]))
+		{
+			argusHeadlessActor->OnHeadlessActorUpdated();
+		}
+	}
 }

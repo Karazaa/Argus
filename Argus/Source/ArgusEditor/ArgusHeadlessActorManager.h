@@ -15,6 +15,7 @@ private:
 	void OnLevelActorAdded(AActor* actor);
 	void OnDuplicateActorsBegin();
 	void OnDuplicateActorsEnd();
+	void OnActorsMoved(TArray<AActor*>&) const;
 
 	bool m_isDuplicatingActors = false;
 };

@@ -1,7 +1,7 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "ArgusHeadlessActor.h"
-#include "Components/HeadlessComponentInterface.h"
+#include "Components/HeadlessEntityComponent.h"
 
 AArgusHeadlessActor::AArgusHeadlessActor()
 {
@@ -22,7 +22,7 @@ void AArgusHeadlessActor::OnHeadlessActorUpdated() const
 			continue;
 		}
 
-		if (IHeadlessComponentInterface* headlessComponent = Cast<IHeadlessComponentInterface>(actorComponent))
+		if (UHeadlessEntityComponent* headlessComponent = Cast<UHeadlessEntityComponent>(actorComponent))
 		{
 			headlessComponent->OnHeadlessActorUpdated(actorTransform);
 		}
