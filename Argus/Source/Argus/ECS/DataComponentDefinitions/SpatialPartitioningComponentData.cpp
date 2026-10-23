@@ -20,6 +20,7 @@ void USpatialPartitioningComponentData::ReinitializeComponentForEntityPostLoad(A
 {
 	SpatialPartitioningComponent* SpatialPartitioningComponentRef = entity.GetComponent<SpatialPartitioningComponent>();
 	ARGUS_RETURN_ON_NULL(SpatialPartitioningComponentRef, ArgusECSLog);
+
 }
 
 void USpatialPartitioningComponentData::OnComponentDataLoaded() const

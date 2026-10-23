@@ -12,6 +12,7 @@ void UTransformComponentData::InstantiateComponentForEntity(ArgusEntity entity) 
 
 	TransformComponentRef->m_radius = m_radius;
 	TransformComponentRef->m_flightCapability = m_flightCapability;
+	TransformComponentRef->m_isAvoidanceExcluded = m_isAvoidanceExcluded;
 }
 
 void UTransformComponentData::ReinitializeComponentForEntityPostLoad(ArgusEntity entity) const

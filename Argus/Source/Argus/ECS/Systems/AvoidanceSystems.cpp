@@ -419,7 +419,7 @@ void AvoidanceSystems::CreateEntityORCALines(const CreateEntityORCALinesParams& 
 		}
 
 		const TransformComponent* foundTransformComponent = foundEntity.GetComponent<TransformComponent>();
-		if (!foundTransformComponent)
+		if (!foundTransformComponent || foundTransformComponent->m_isAvoidanceExcluded)
 		{
 			continue;
 		}

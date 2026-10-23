@@ -23,6 +23,8 @@ void TransformComponent::Reset()
 {
 	m_location = FVector::ZeroVector;
 	m_radius = 45.0f;
+	m_flightCapability = EFlightCapability::OnlyGrounded;
+	m_isAvoidanceExcluded = false;
 	m_movedThisFrame = true;
 }
 
@@ -31,6 +33,7 @@ void TransformComponent::Serialize(FArchive& archive)
 	archive << m_location;
 	archive << m_radius;
 	archive << m_flightCapability;
+	archive << m_isAvoidanceExcluded;
 }
 
 void TransformComponent::DrawComponentDebug() const
@@ -56,6 +59,10 @@ void TransformComponent::DrawComponentDebug() const
 		ImGui::TableNextColumn();
 		const char* valueName_m_flightCapability = ARGUS_FSTRING_TO_CHAR(StaticEnum<EFlightCapability>()->GetNameStringByValue(static_cast<uint8>(m_flightCapability)));
 		ImGui::Text(valueName_m_flightCapability);
+		ImGui::TableNextColumn();
+		ImGui::Text("m_isAvoidanceExcluded");
+		ImGui::TableNextColumn();
+		ImGui::Text(m_isAvoidanceExcluded ? "true" : "false");
 		ImGui::TableNextColumn();
 		ImGui::Text("m_movedThisFrame");
 		ImGui::TableNextColumn();

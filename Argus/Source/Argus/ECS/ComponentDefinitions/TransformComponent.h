@@ -15,7 +15,9 @@ struct TransformComponent
 
 	float m_radius = 45.0f;
 	
-	EFlightCapability m_flightCapability;
+	EFlightCapability m_flightCapability = EFlightCapability::OnlyGrounded;
+
+	bool m_isAvoidanceExcluded = false;
 
 	// m_movedThisFrame defaults to true since instantiation effectively counts as a movement.
 	ARGUS_COMP_NO_DATA ARGUS_COMP_TRANSIENT

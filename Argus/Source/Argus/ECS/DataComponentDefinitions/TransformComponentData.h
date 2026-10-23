@@ -16,7 +16,10 @@ public:
 	float m_radius = 45.0f;
 
 	UPROPERTY(EditAnywhere)
-	EFlightCapability m_flightCapability;
+	EFlightCapability m_flightCapability = EFlightCapability::OnlyGrounded;
+
+	UPROPERTY(EditAnywhere)
+	bool m_isAvoidanceExcluded = false;
 
 
 	void InstantiateComponentForEntity(ArgusEntity entity) const override;
