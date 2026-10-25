@@ -135,6 +135,16 @@ void UPersistentWorldTranslationRecordDatabase::ResetPersistentObjectPointerArra
 }
 
 #if WITH_EDITOR
+UPersistentWorldTranslationRecord* UPersistentWorldTranslationRecordDatabase::GetMutableRecord(uint32 id)
+{
+	if (const UPersistentWorldTranslationRecord* record = GetRecord(id))
+	{
+		return const_cast<UPersistentWorldTranslationRecord*>(record);
+	}
+
+	return nullptr;
+}
+
 void UPersistentWorldTranslationRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
 {
 	Super::PreSave(saveContext);

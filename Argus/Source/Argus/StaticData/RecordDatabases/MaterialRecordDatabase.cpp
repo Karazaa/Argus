@@ -135,6 +135,16 @@ void UMaterialRecordDatabase::ResetPersistentObjectPointerArray()
 }
 
 #if WITH_EDITOR
+UMaterialRecord* UMaterialRecordDatabase::GetMutableRecord(uint32 id)
+{
+	if (const UMaterialRecord* record = GetRecord(id))
+	{
+		return const_cast<UMaterialRecord*>(record);
+	}
+
+	return nullptr;
+}
+
 void UMaterialRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
 {
 	Super::PreSave(saveContext);

@@ -27,6 +27,7 @@ protected:
 
 public:
 #if WITH_EDITOR
+	UTeamAlignmentRecord* GetMutableRecord(uint32 id);
 	virtual void PreSave(FObjectPreSaveContext saveContext) override;
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent) override;
 	void AddUTeamAlignmentRecordToDatabase(UTeamAlignmentRecord* record);

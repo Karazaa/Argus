@@ -135,6 +135,16 @@ void UWorldCellIndexTranslationRecordDatabase::ResetPersistentObjectPointerArray
 }
 
 #if WITH_EDITOR
+UWorldCellIndexTranslationRecord* UWorldCellIndexTranslationRecordDatabase::GetMutableRecord(uint32 id)
+{
+	if (const UWorldCellIndexTranslationRecord* record = GetRecord(id))
+	{
+		return const_cast<UWorldCellIndexTranslationRecord*>(record);
+	}
+
+	return nullptr;
+}
+
 void UWorldCellIndexTranslationRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
 {
 	Super::PreSave(saveContext);

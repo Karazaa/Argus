@@ -135,6 +135,16 @@ void UTeamAlignmentRecordDatabase::ResetPersistentObjectPointerArray()
 }
 
 #if WITH_EDITOR
+UTeamAlignmentRecord* UTeamAlignmentRecordDatabase::GetMutableRecord(uint32 id)
+{
+	if (const UTeamAlignmentRecord* record = GetRecord(id))
+	{
+		return const_cast<UTeamAlignmentRecord*>(record);
+	}
+
+	return nullptr;
+}
+
 void UTeamAlignmentRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
 {
 	Super::PreSave(saveContext);

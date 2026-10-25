@@ -135,6 +135,16 @@ void UObstaclesRecordDatabase::ResetPersistentObjectPointerArray()
 }
 
 #if WITH_EDITOR
+UObstaclesRecord* UObstaclesRecordDatabase::GetMutableRecord(uint32 id)
+{
+	if (const UObstaclesRecord* record = GetRecord(id))
+	{
+		return const_cast<UObstaclesRecord*>(record);
+	}
+
+	return nullptr;
+}
+
 void UObstaclesRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
 {
 	Super::PreSave(saveContext);

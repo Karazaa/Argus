@@ -135,6 +135,16 @@ void UFactionRecordDatabase::ResetPersistentObjectPointerArray()
 }
 
 #if WITH_EDITOR
+UFactionRecord* UFactionRecordDatabase::GetMutableRecord(uint32 id)
+{
+	if (const UFactionRecord* record = GetRecord(id))
+	{
+		return const_cast<UFactionRecord*>(record);
+	}
+
+	return nullptr;
+}
+
 void UFactionRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
 {
 	Super::PreSave(saveContext);

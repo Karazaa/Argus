@@ -135,6 +135,16 @@ void UWorldCellRecordDatabase::ResetPersistentObjectPointerArray()
 }
 
 #if WITH_EDITOR
+UWorldCellRecord* UWorldCellRecordDatabase::GetMutableRecord(uint32 id)
+{
+	if (const UWorldCellRecord* record = GetRecord(id))
+	{
+		return const_cast<UWorldCellRecord*>(record);
+	}
+
+	return nullptr;
+}
+
 void UWorldCellRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
 {
 	Super::PreSave(saveContext);

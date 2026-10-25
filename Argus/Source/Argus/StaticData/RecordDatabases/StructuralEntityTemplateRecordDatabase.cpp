@@ -135,6 +135,16 @@ void UStructuralEntityTemplateRecordDatabase::ResetPersistentObjectPointerArray(
 }
 
 #if WITH_EDITOR
+UStructuralEntityTemplateRecord* UStructuralEntityTemplateRecordDatabase::GetMutableRecord(uint32 id)
+{
+	if (const UStructuralEntityTemplateRecord* record = GetRecord(id))
+	{
+		return const_cast<UStructuralEntityTemplateRecord*>(record);
+	}
+
+	return nullptr;
+}
+
 void UStructuralEntityTemplateRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
 {
 	Super::PreSave(saveContext);

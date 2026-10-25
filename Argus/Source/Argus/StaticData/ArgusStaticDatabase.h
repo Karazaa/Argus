@@ -55,6 +55,7 @@ public:
 	const bool AsyncPreLoadUAbilityRecord(uint32 id, TFunction<void(const UAbilityRecord*)> callback = nullptr);
 	void ResetLoadedUAbilityRecordPointerArray();
 #if WITH_EDITOR
+	UAbilityRecord* GetMutableUAbilityRecord(uint32 id);
 	uint32 AddUAbilityRecordToDatabase(UAbilityRecord* record);
 	void IterateAllUAbilityRecords(const TFunctionRef<void(UAbilityRecord*)>& function);
 	void RegisterNewUAbilityRecordDatabase(UAbilityRecordDatabase* database);
@@ -74,6 +75,7 @@ public:
 	const bool AsyncPreLoadUArgusActorRecord(uint32 id, TFunction<void(const UArgusActorRecord*)> callback = nullptr);
 	void ResetLoadedUArgusActorRecordPointerArray();
 #if WITH_EDITOR
+	UArgusActorRecord* GetMutableUArgusActorRecord(uint32 id);
 	uint32 AddUArgusActorRecordToDatabase(UArgusActorRecord* record);
 	void IterateAllUArgusActorRecords(const TFunctionRef<void(UArgusActorRecord*)>& function);
 	void RegisterNewUArgusActorRecordDatabase(UArgusActorRecordDatabase* database);
@@ -93,6 +95,7 @@ public:
 	const bool AsyncPreLoadUFactionRecord(uint32 id, TFunction<void(const UFactionRecord*)> callback = nullptr);
 	void ResetLoadedUFactionRecordPointerArray();
 #if WITH_EDITOR
+	UFactionRecord* GetMutableUFactionRecord(uint32 id);
 	uint32 AddUFactionRecordToDatabase(UFactionRecord* record);
 	void IterateAllUFactionRecords(const TFunctionRef<void(UFactionRecord*)>& function);
 	void RegisterNewUFactionRecordDatabase(UFactionRecordDatabase* database);
@@ -112,6 +115,7 @@ public:
 	const bool AsyncPreLoadUHeadlessEntityRecord(uint32 id, TFunction<void(const UHeadlessEntityRecord*)> callback = nullptr);
 	void ResetLoadedUHeadlessEntityRecordPointerArray();
 #if WITH_EDITOR
+	UHeadlessEntityRecord* GetMutableUHeadlessEntityRecord(uint32 id);
 	uint32 AddUHeadlessEntityRecordToDatabase(UHeadlessEntityRecord* record);
 	void IterateAllUHeadlessEntityRecords(const TFunctionRef<void(UHeadlessEntityRecord*)>& function);
 	void RegisterNewUHeadlessEntityRecordDatabase(UHeadlessEntityRecordDatabase* database);
@@ -131,6 +135,7 @@ public:
 	const bool AsyncPreLoadUMaterialRecord(uint32 id, TFunction<void(const UMaterialRecord*)> callback = nullptr);
 	void ResetLoadedUMaterialRecordPointerArray();
 #if WITH_EDITOR
+	UMaterialRecord* GetMutableUMaterialRecord(uint32 id);
 	uint32 AddUMaterialRecordToDatabase(UMaterialRecord* record);
 	void IterateAllUMaterialRecords(const TFunctionRef<void(UMaterialRecord*)>& function);
 	void RegisterNewUMaterialRecordDatabase(UMaterialRecordDatabase* database);
@@ -150,6 +155,7 @@ public:
 	const bool AsyncPreLoadUObstaclesRecord(uint32 id, TFunction<void(const UObstaclesRecord*)> callback = nullptr);
 	void ResetLoadedUObstaclesRecordPointerArray();
 #if WITH_EDITOR
+	UObstaclesRecord* GetMutableUObstaclesRecord(uint32 id);
 	uint32 AddUObstaclesRecordToDatabase(UObstaclesRecord* record);
 	void IterateAllUObstaclesRecords(const TFunctionRef<void(UObstaclesRecord*)>& function);
 	void RegisterNewUObstaclesRecordDatabase(UObstaclesRecordDatabase* database);
@@ -169,6 +175,7 @@ public:
 	const bool AsyncPreLoadUPersistentWorldTranslationRecord(uint32 id, TFunction<void(const UPersistentWorldTranslationRecord*)> callback = nullptr);
 	void ResetLoadedUPersistentWorldTranslationRecordPointerArray();
 #if WITH_EDITOR
+	UPersistentWorldTranslationRecord* GetMutableUPersistentWorldTranslationRecord(uint32 id);
 	uint32 AddUPersistentWorldTranslationRecordToDatabase(UPersistentWorldTranslationRecord* record);
 	void IterateAllUPersistentWorldTranslationRecords(const TFunctionRef<void(UPersistentWorldTranslationRecord*)>& function);
 	void RegisterNewUPersistentWorldTranslationRecordDatabase(UPersistentWorldTranslationRecordDatabase* database);
@@ -188,6 +195,7 @@ public:
 	const bool AsyncPreLoadUPlacedArgusActorTeamInfoRecord(uint32 id, TFunction<void(const UPlacedArgusActorTeamInfoRecord*)> callback = nullptr);
 	void ResetLoadedUPlacedArgusActorTeamInfoRecordPointerArray();
 #if WITH_EDITOR
+	UPlacedArgusActorTeamInfoRecord* GetMutableUPlacedArgusActorTeamInfoRecord(uint32 id);
 	uint32 AddUPlacedArgusActorTeamInfoRecordToDatabase(UPlacedArgusActorTeamInfoRecord* record);
 	void IterateAllUPlacedArgusActorTeamInfoRecords(const TFunctionRef<void(UPlacedArgusActorTeamInfoRecord*)>& function);
 	void RegisterNewUPlacedArgusActorTeamInfoRecordDatabase(UPlacedArgusActorTeamInfoRecordDatabase* database);
@@ -207,6 +215,7 @@ public:
 	const bool AsyncPreLoadUResourceSetRecord(uint32 id, TFunction<void(const UResourceSetRecord*)> callback = nullptr);
 	void ResetLoadedUResourceSetRecordPointerArray();
 #if WITH_EDITOR
+	UResourceSetRecord* GetMutableUResourceSetRecord(uint32 id);
 	uint32 AddUResourceSetRecordToDatabase(UResourceSetRecord* record);
 	void IterateAllUResourceSetRecords(const TFunctionRef<void(UResourceSetRecord*)>& function);
 	void RegisterNewUResourceSetRecordDatabase(UResourceSetRecordDatabase* database);
@@ -226,6 +235,7 @@ public:
 	const bool AsyncPreLoadUStructuralEntityTemplateRecord(uint32 id, TFunction<void(const UStructuralEntityTemplateRecord*)> callback = nullptr);
 	void ResetLoadedUStructuralEntityTemplateRecordPointerArray();
 #if WITH_EDITOR
+	UStructuralEntityTemplateRecord* GetMutableUStructuralEntityTemplateRecord(uint32 id);
 	uint32 AddUStructuralEntityTemplateRecordToDatabase(UStructuralEntityTemplateRecord* record);
 	void IterateAllUStructuralEntityTemplateRecords(const TFunctionRef<void(UStructuralEntityTemplateRecord*)>& function);
 	void RegisterNewUStructuralEntityTemplateRecordDatabase(UStructuralEntityTemplateRecordDatabase* database);
@@ -245,6 +255,7 @@ public:
 	const bool AsyncPreLoadUTeamAlignmentRecord(uint32 id, TFunction<void(const UTeamAlignmentRecord*)> callback = nullptr);
 	void ResetLoadedUTeamAlignmentRecordPointerArray();
 #if WITH_EDITOR
+	UTeamAlignmentRecord* GetMutableUTeamAlignmentRecord(uint32 id);
 	uint32 AddUTeamAlignmentRecordToDatabase(UTeamAlignmentRecord* record);
 	void IterateAllUTeamAlignmentRecords(const TFunctionRef<void(UTeamAlignmentRecord*)>& function);
 	void RegisterNewUTeamAlignmentRecordDatabase(UTeamAlignmentRecordDatabase* database);
@@ -264,6 +275,7 @@ public:
 	const bool AsyncPreLoadUTeamColorRecord(uint32 id, TFunction<void(const UTeamColorRecord*)> callback = nullptr);
 	void ResetLoadedUTeamColorRecordPointerArray();
 #if WITH_EDITOR
+	UTeamColorRecord* GetMutableUTeamColorRecord(uint32 id);
 	uint32 AddUTeamColorRecordToDatabase(UTeamColorRecord* record);
 	void IterateAllUTeamColorRecords(const TFunctionRef<void(UTeamColorRecord*)>& function);
 	void RegisterNewUTeamColorRecordDatabase(UTeamColorRecordDatabase* database);
@@ -283,6 +295,7 @@ public:
 	const bool AsyncPreLoadUWorldCellIndexTranslationRecord(uint32 id, TFunction<void(const UWorldCellIndexTranslationRecord*)> callback = nullptr);
 	void ResetLoadedUWorldCellIndexTranslationRecordPointerArray();
 #if WITH_EDITOR
+	UWorldCellIndexTranslationRecord* GetMutableUWorldCellIndexTranslationRecord(uint32 id);
 	uint32 AddUWorldCellIndexTranslationRecordToDatabase(UWorldCellIndexTranslationRecord* record);
 	void IterateAllUWorldCellIndexTranslationRecords(const TFunctionRef<void(UWorldCellIndexTranslationRecord*)>& function);
 	void RegisterNewUWorldCellIndexTranslationRecordDatabase(UWorldCellIndexTranslationRecordDatabase* database);
@@ -302,6 +315,7 @@ public:
 	const bool AsyncPreLoadUWorldCellRecord(uint32 id, TFunction<void(const UWorldCellRecord*)> callback = nullptr);
 	void ResetLoadedUWorldCellRecordPointerArray();
 #if WITH_EDITOR
+	UWorldCellRecord* GetMutableUWorldCellRecord(uint32 id);
 	uint32 AddUWorldCellRecordToDatabase(UWorldCellRecord* record);
 	void IterateAllUWorldCellRecords(const TFunctionRef<void(UWorldCellRecord*)>& function);
 	void RegisterNewUWorldCellRecordDatabase(UWorldCellRecordDatabase* database);

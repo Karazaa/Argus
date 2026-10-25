@@ -135,6 +135,16 @@ void UTeamColorRecordDatabase::ResetPersistentObjectPointerArray()
 }
 
 #if WITH_EDITOR
+UTeamColorRecord* UTeamColorRecordDatabase::GetMutableRecord(uint32 id)
+{
+	if (const UTeamColorRecord* record = GetRecord(id))
+	{
+		return const_cast<UTeamColorRecord*>(record);
+	}
+
+	return nullptr;
+}
+
 void UTeamColorRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
 {
 	Super::PreSave(saveContext);

@@ -135,6 +135,16 @@ void UHeadlessEntityRecordDatabase::ResetPersistentObjectPointerArray()
 }
 
 #if WITH_EDITOR
+UHeadlessEntityRecord* UHeadlessEntityRecordDatabase::GetMutableRecord(uint32 id)
+{
+	if (const UHeadlessEntityRecord* record = GetRecord(id))
+	{
+		return const_cast<UHeadlessEntityRecord*>(record);
+	}
+
+	return nullptr;
+}
+
 void UHeadlessEntityRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
 {
 	Super::PreSave(saveContext);

@@ -135,6 +135,16 @@ void UResourceSetRecordDatabase::ResetPersistentObjectPointerArray()
 }
 
 #if WITH_EDITOR
+UResourceSetRecord* UResourceSetRecordDatabase::GetMutableRecord(uint32 id)
+{
+	if (const UResourceSetRecord* record = GetRecord(id))
+	{
+		return const_cast<UResourceSetRecord*>(record);
+	}
+
+	return nullptr;
+}
+
 void UResourceSetRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
 {
 	Super::PreSave(saveContext);

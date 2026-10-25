@@ -135,6 +135,16 @@ void UArgusActorRecordDatabase::ResetPersistentObjectPointerArray()
 }
 
 #if WITH_EDITOR
+UArgusActorRecord* UArgusActorRecordDatabase::GetMutableRecord(uint32 id)
+{
+	if (const UArgusActorRecord* record = GetRecord(id))
+	{
+		return const_cast<UArgusActorRecord*>(record);
+	}
+
+	return nullptr;
+}
+
 void UArgusActorRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
 {
 	Super::PreSave(saveContext);

@@ -135,6 +135,16 @@ void UPlacedArgusActorTeamInfoRecordDatabase::ResetPersistentObjectPointerArray(
 }
 
 #if WITH_EDITOR
+UPlacedArgusActorTeamInfoRecord* UPlacedArgusActorTeamInfoRecordDatabase::GetMutableRecord(uint32 id)
+{
+	if (const UPlacedArgusActorTeamInfoRecord* record = GetRecord(id))
+	{
+		return const_cast<UPlacedArgusActorTeamInfoRecord*>(record);
+	}
+
+	return nullptr;
+}
+
 void UPlacedArgusActorTeamInfoRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
 {
 	Super::PreSave(saveContext);

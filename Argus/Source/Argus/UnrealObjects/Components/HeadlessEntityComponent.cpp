@@ -38,7 +38,7 @@ void UHeadlessEntityComponent::UpdateExistingHeadlessEntityRecord(uint32 headles
 {
 	ArgusStaticData::LoadStaticDatabaseSynchronous();
 
-	const UHeadlessEntityRecord* headlessEntityRecord = ArgusStaticData::GetRecord<UHeadlessEntityRecord>(headlessEntityId);
+	UHeadlessEntityRecord* headlessEntityRecord = ArgusStaticData::GetMutableRecord<UHeadlessEntityRecord>(headlessEntityId);
 	ARGUS_RETURN_ON_NULL(headlessEntityRecord, ArgusUnrealObjectsLog);
 }
 #endif // WITH_EDITOR

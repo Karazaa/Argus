@@ -62,6 +62,17 @@ public:
 
 #if WITH_EDITOR
 	template<>
+	ARGUS_API inline UAbilityRecord* GetMutableRecord(uint32 id)
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->GetMutableUAbilityRecord(id);
+		}
+
+		return nullptr;
+	}
+
+	template<>
 	ARGUS_API inline void IterateAllRecordsOfType<UAbilityRecord>(const TFunctionRef<void(UAbilityRecord*)>& function)
 	{
 		if (UArgusStaticDatabase* staticDatabase = LoadStaticDatabaseSynchronous())
@@ -103,6 +114,17 @@ public:
 	}
 
 #if WITH_EDITOR
+	template<>
+	ARGUS_API inline UArgusActorRecord* GetMutableRecord(uint32 id)
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->GetMutableUArgusActorRecord(id);
+		}
+
+		return nullptr;
+	}
+
 	template<>
 	ARGUS_API inline void IterateAllRecordsOfType<UArgusActorRecord>(const TFunctionRef<void(UArgusActorRecord*)>& function)
 	{
@@ -146,6 +168,17 @@ public:
 
 #if WITH_EDITOR
 	template<>
+	ARGUS_API inline UFactionRecord* GetMutableRecord(uint32 id)
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->GetMutableUFactionRecord(id);
+		}
+
+		return nullptr;
+	}
+
+	template<>
 	ARGUS_API inline void IterateAllRecordsOfType<UFactionRecord>(const TFunctionRef<void(UFactionRecord*)>& function)
 	{
 		if (UArgusStaticDatabase* staticDatabase = LoadStaticDatabaseSynchronous())
@@ -187,6 +220,17 @@ public:
 	}
 
 #if WITH_EDITOR
+	template<>
+	ARGUS_API inline UHeadlessEntityRecord* GetMutableRecord(uint32 id)
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->GetMutableUHeadlessEntityRecord(id);
+		}
+
+		return nullptr;
+	}
+
 	template<>
 	ARGUS_API inline void IterateAllRecordsOfType<UHeadlessEntityRecord>(const TFunctionRef<void(UHeadlessEntityRecord*)>& function)
 	{
@@ -230,6 +274,17 @@ public:
 
 #if WITH_EDITOR
 	template<>
+	ARGUS_API inline UMaterialRecord* GetMutableRecord(uint32 id)
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->GetMutableUMaterialRecord(id);
+		}
+
+		return nullptr;
+	}
+
+	template<>
 	ARGUS_API inline void IterateAllRecordsOfType<UMaterialRecord>(const TFunctionRef<void(UMaterialRecord*)>& function)
 	{
 		if (UArgusStaticDatabase* staticDatabase = LoadStaticDatabaseSynchronous())
@@ -271,6 +326,17 @@ public:
 	}
 
 #if WITH_EDITOR
+	template<>
+	ARGUS_API inline UObstaclesRecord* GetMutableRecord(uint32 id)
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->GetMutableUObstaclesRecord(id);
+		}
+
+		return nullptr;
+	}
+
 	template<>
 	ARGUS_API inline void IterateAllRecordsOfType<UObstaclesRecord>(const TFunctionRef<void(UObstaclesRecord*)>& function)
 	{
@@ -314,6 +380,17 @@ public:
 
 #if WITH_EDITOR
 	template<>
+	ARGUS_API inline UPersistentWorldTranslationRecord* GetMutableRecord(uint32 id)
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->GetMutableUPersistentWorldTranslationRecord(id);
+		}
+
+		return nullptr;
+	}
+
+	template<>
 	ARGUS_API inline void IterateAllRecordsOfType<UPersistentWorldTranslationRecord>(const TFunctionRef<void(UPersistentWorldTranslationRecord*)>& function)
 	{
 		if (UArgusStaticDatabase* staticDatabase = LoadStaticDatabaseSynchronous())
@@ -355,6 +432,17 @@ public:
 	}
 
 #if WITH_EDITOR
+	template<>
+	ARGUS_API inline UPlacedArgusActorTeamInfoRecord* GetMutableRecord(uint32 id)
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->GetMutableUPlacedArgusActorTeamInfoRecord(id);
+		}
+
+		return nullptr;
+	}
+
 	template<>
 	ARGUS_API inline void IterateAllRecordsOfType<UPlacedArgusActorTeamInfoRecord>(const TFunctionRef<void(UPlacedArgusActorTeamInfoRecord*)>& function)
 	{
@@ -398,6 +486,17 @@ public:
 
 #if WITH_EDITOR
 	template<>
+	ARGUS_API inline UResourceSetRecord* GetMutableRecord(uint32 id)
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->GetMutableUResourceSetRecord(id);
+		}
+
+		return nullptr;
+	}
+
+	template<>
 	ARGUS_API inline void IterateAllRecordsOfType<UResourceSetRecord>(const TFunctionRef<void(UResourceSetRecord*)>& function)
 	{
 		if (UArgusStaticDatabase* staticDatabase = LoadStaticDatabaseSynchronous())
@@ -439,6 +538,17 @@ public:
 	}
 
 #if WITH_EDITOR
+	template<>
+	ARGUS_API inline UStructuralEntityTemplateRecord* GetMutableRecord(uint32 id)
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->GetMutableUStructuralEntityTemplateRecord(id);
+		}
+
+		return nullptr;
+	}
+
 	template<>
 	ARGUS_API inline void IterateAllRecordsOfType<UStructuralEntityTemplateRecord>(const TFunctionRef<void(UStructuralEntityTemplateRecord*)>& function)
 	{
@@ -482,6 +592,17 @@ public:
 
 #if WITH_EDITOR
 	template<>
+	ARGUS_API inline UTeamAlignmentRecord* GetMutableRecord(uint32 id)
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->GetMutableUTeamAlignmentRecord(id);
+		}
+
+		return nullptr;
+	}
+
+	template<>
 	ARGUS_API inline void IterateAllRecordsOfType<UTeamAlignmentRecord>(const TFunctionRef<void(UTeamAlignmentRecord*)>& function)
 	{
 		if (UArgusStaticDatabase* staticDatabase = LoadStaticDatabaseSynchronous())
@@ -523,6 +644,17 @@ public:
 	}
 
 #if WITH_EDITOR
+	template<>
+	ARGUS_API inline UTeamColorRecord* GetMutableRecord(uint32 id)
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->GetMutableUTeamColorRecord(id);
+		}
+
+		return nullptr;
+	}
+
 	template<>
 	ARGUS_API inline void IterateAllRecordsOfType<UTeamColorRecord>(const TFunctionRef<void(UTeamColorRecord*)>& function)
 	{
@@ -566,6 +698,17 @@ public:
 
 #if WITH_EDITOR
 	template<>
+	ARGUS_API inline UWorldCellIndexTranslationRecord* GetMutableRecord(uint32 id)
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->GetMutableUWorldCellIndexTranslationRecord(id);
+		}
+
+		return nullptr;
+	}
+
+	template<>
 	ARGUS_API inline void IterateAllRecordsOfType<UWorldCellIndexTranslationRecord>(const TFunctionRef<void(UWorldCellIndexTranslationRecord*)>& function)
 	{
 		if (UArgusStaticDatabase* staticDatabase = LoadStaticDatabaseSynchronous())
@@ -607,6 +750,17 @@ public:
 	}
 
 #if WITH_EDITOR
+	template<>
+	ARGUS_API inline UWorldCellRecord* GetMutableRecord(uint32 id)
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->GetMutableUWorldCellRecord(id);
+		}
+
+		return nullptr;
+	}
+
 	template<>
 	ARGUS_API inline void IterateAllRecordsOfType<UWorldCellRecord>(const TFunctionRef<void(UWorldCellRecord*)>& function)
 	{

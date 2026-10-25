@@ -80,6 +80,20 @@ void UArgusStaticDatabase::ResetLoadedUAbilityRecordPointerArray()
 }
 
 #if WITH_EDITOR
+UAbilityRecord* UArgusStaticDatabase::GetMutableUAbilityRecord(uint32 id)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUAbilityRecordDatabase();
+
+	if (!m_UAbilityRecordDatabasePersistent)
+	{
+		return nullptr;
+	}
+
+	return m_UAbilityRecordDatabasePersistent->GetMutableRecord(id);
+}
+
 uint32 UArgusStaticDatabase::AddUAbilityRecordToDatabase(UAbilityRecord* record)
 {
 	LazyLoadUAbilityRecordDatabase();
@@ -199,6 +213,20 @@ void UArgusStaticDatabase::ResetLoadedUArgusActorRecordPointerArray()
 }
 
 #if WITH_EDITOR
+UArgusActorRecord* UArgusStaticDatabase::GetMutableUArgusActorRecord(uint32 id)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUArgusActorRecordDatabase();
+
+	if (!m_UArgusActorRecordDatabasePersistent)
+	{
+		return nullptr;
+	}
+
+	return m_UArgusActorRecordDatabasePersistent->GetMutableRecord(id);
+}
+
 uint32 UArgusStaticDatabase::AddUArgusActorRecordToDatabase(UArgusActorRecord* record)
 {
 	LazyLoadUArgusActorRecordDatabase();
@@ -318,6 +346,20 @@ void UArgusStaticDatabase::ResetLoadedUFactionRecordPointerArray()
 }
 
 #if WITH_EDITOR
+UFactionRecord* UArgusStaticDatabase::GetMutableUFactionRecord(uint32 id)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUFactionRecordDatabase();
+
+	if (!m_UFactionRecordDatabasePersistent)
+	{
+		return nullptr;
+	}
+
+	return m_UFactionRecordDatabasePersistent->GetMutableRecord(id);
+}
+
 uint32 UArgusStaticDatabase::AddUFactionRecordToDatabase(UFactionRecord* record)
 {
 	LazyLoadUFactionRecordDatabase();
@@ -437,6 +479,20 @@ void UArgusStaticDatabase::ResetLoadedUHeadlessEntityRecordPointerArray()
 }
 
 #if WITH_EDITOR
+UHeadlessEntityRecord* UArgusStaticDatabase::GetMutableUHeadlessEntityRecord(uint32 id)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUHeadlessEntityRecordDatabase();
+
+	if (!m_UHeadlessEntityRecordDatabasePersistent)
+	{
+		return nullptr;
+	}
+
+	return m_UHeadlessEntityRecordDatabasePersistent->GetMutableRecord(id);
+}
+
 uint32 UArgusStaticDatabase::AddUHeadlessEntityRecordToDatabase(UHeadlessEntityRecord* record)
 {
 	LazyLoadUHeadlessEntityRecordDatabase();
@@ -556,6 +612,20 @@ void UArgusStaticDatabase::ResetLoadedUMaterialRecordPointerArray()
 }
 
 #if WITH_EDITOR
+UMaterialRecord* UArgusStaticDatabase::GetMutableUMaterialRecord(uint32 id)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUMaterialRecordDatabase();
+
+	if (!m_UMaterialRecordDatabasePersistent)
+	{
+		return nullptr;
+	}
+
+	return m_UMaterialRecordDatabasePersistent->GetMutableRecord(id);
+}
+
 uint32 UArgusStaticDatabase::AddUMaterialRecordToDatabase(UMaterialRecord* record)
 {
 	LazyLoadUMaterialRecordDatabase();
@@ -675,6 +745,20 @@ void UArgusStaticDatabase::ResetLoadedUObstaclesRecordPointerArray()
 }
 
 #if WITH_EDITOR
+UObstaclesRecord* UArgusStaticDatabase::GetMutableUObstaclesRecord(uint32 id)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUObstaclesRecordDatabase();
+
+	if (!m_UObstaclesRecordDatabasePersistent)
+	{
+		return nullptr;
+	}
+
+	return m_UObstaclesRecordDatabasePersistent->GetMutableRecord(id);
+}
+
 uint32 UArgusStaticDatabase::AddUObstaclesRecordToDatabase(UObstaclesRecord* record)
 {
 	LazyLoadUObstaclesRecordDatabase();
@@ -794,6 +878,20 @@ void UArgusStaticDatabase::ResetLoadedUPersistentWorldTranslationRecordPointerAr
 }
 
 #if WITH_EDITOR
+UPersistentWorldTranslationRecord* UArgusStaticDatabase::GetMutableUPersistentWorldTranslationRecord(uint32 id)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUPersistentWorldTranslationRecordDatabase();
+
+	if (!m_UPersistentWorldTranslationRecordDatabasePersistent)
+	{
+		return nullptr;
+	}
+
+	return m_UPersistentWorldTranslationRecordDatabasePersistent->GetMutableRecord(id);
+}
+
 uint32 UArgusStaticDatabase::AddUPersistentWorldTranslationRecordToDatabase(UPersistentWorldTranslationRecord* record)
 {
 	LazyLoadUPersistentWorldTranslationRecordDatabase();
@@ -913,6 +1011,20 @@ void UArgusStaticDatabase::ResetLoadedUPlacedArgusActorTeamInfoRecordPointerArra
 }
 
 #if WITH_EDITOR
+UPlacedArgusActorTeamInfoRecord* UArgusStaticDatabase::GetMutableUPlacedArgusActorTeamInfoRecord(uint32 id)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUPlacedArgusActorTeamInfoRecordDatabase();
+
+	if (!m_UPlacedArgusActorTeamInfoRecordDatabasePersistent)
+	{
+		return nullptr;
+	}
+
+	return m_UPlacedArgusActorTeamInfoRecordDatabasePersistent->GetMutableRecord(id);
+}
+
 uint32 UArgusStaticDatabase::AddUPlacedArgusActorTeamInfoRecordToDatabase(UPlacedArgusActorTeamInfoRecord* record)
 {
 	LazyLoadUPlacedArgusActorTeamInfoRecordDatabase();
@@ -1032,6 +1144,20 @@ void UArgusStaticDatabase::ResetLoadedUResourceSetRecordPointerArray()
 }
 
 #if WITH_EDITOR
+UResourceSetRecord* UArgusStaticDatabase::GetMutableUResourceSetRecord(uint32 id)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUResourceSetRecordDatabase();
+
+	if (!m_UResourceSetRecordDatabasePersistent)
+	{
+		return nullptr;
+	}
+
+	return m_UResourceSetRecordDatabasePersistent->GetMutableRecord(id);
+}
+
 uint32 UArgusStaticDatabase::AddUResourceSetRecordToDatabase(UResourceSetRecord* record)
 {
 	LazyLoadUResourceSetRecordDatabase();
@@ -1151,6 +1277,20 @@ void UArgusStaticDatabase::ResetLoadedUStructuralEntityTemplateRecordPointerArra
 }
 
 #if WITH_EDITOR
+UStructuralEntityTemplateRecord* UArgusStaticDatabase::GetMutableUStructuralEntityTemplateRecord(uint32 id)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUStructuralEntityTemplateRecordDatabase();
+
+	if (!m_UStructuralEntityTemplateRecordDatabasePersistent)
+	{
+		return nullptr;
+	}
+
+	return m_UStructuralEntityTemplateRecordDatabasePersistent->GetMutableRecord(id);
+}
+
 uint32 UArgusStaticDatabase::AddUStructuralEntityTemplateRecordToDatabase(UStructuralEntityTemplateRecord* record)
 {
 	LazyLoadUStructuralEntityTemplateRecordDatabase();
@@ -1270,6 +1410,20 @@ void UArgusStaticDatabase::ResetLoadedUTeamAlignmentRecordPointerArray()
 }
 
 #if WITH_EDITOR
+UTeamAlignmentRecord* UArgusStaticDatabase::GetMutableUTeamAlignmentRecord(uint32 id)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUTeamAlignmentRecordDatabase();
+
+	if (!m_UTeamAlignmentRecordDatabasePersistent)
+	{
+		return nullptr;
+	}
+
+	return m_UTeamAlignmentRecordDatabasePersistent->GetMutableRecord(id);
+}
+
 uint32 UArgusStaticDatabase::AddUTeamAlignmentRecordToDatabase(UTeamAlignmentRecord* record)
 {
 	LazyLoadUTeamAlignmentRecordDatabase();
@@ -1389,6 +1543,20 @@ void UArgusStaticDatabase::ResetLoadedUTeamColorRecordPointerArray()
 }
 
 #if WITH_EDITOR
+UTeamColorRecord* UArgusStaticDatabase::GetMutableUTeamColorRecord(uint32 id)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUTeamColorRecordDatabase();
+
+	if (!m_UTeamColorRecordDatabasePersistent)
+	{
+		return nullptr;
+	}
+
+	return m_UTeamColorRecordDatabasePersistent->GetMutableRecord(id);
+}
+
 uint32 UArgusStaticDatabase::AddUTeamColorRecordToDatabase(UTeamColorRecord* record)
 {
 	LazyLoadUTeamColorRecordDatabase();
@@ -1508,6 +1676,20 @@ void UArgusStaticDatabase::ResetLoadedUWorldCellIndexTranslationRecordPointerArr
 }
 
 #if WITH_EDITOR
+UWorldCellIndexTranslationRecord* UArgusStaticDatabase::GetMutableUWorldCellIndexTranslationRecord(uint32 id)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUWorldCellIndexTranslationRecordDatabase();
+
+	if (!m_UWorldCellIndexTranslationRecordDatabasePersistent)
+	{
+		return nullptr;
+	}
+
+	return m_UWorldCellIndexTranslationRecordDatabasePersistent->GetMutableRecord(id);
+}
+
 uint32 UArgusStaticDatabase::AddUWorldCellIndexTranslationRecordToDatabase(UWorldCellIndexTranslationRecord* record)
 {
 	LazyLoadUWorldCellIndexTranslationRecordDatabase();
@@ -1627,6 +1809,20 @@ void UArgusStaticDatabase::ResetLoadedUWorldCellRecordPointerArray()
 }
 
 #if WITH_EDITOR
+UWorldCellRecord* UArgusStaticDatabase::GetMutableUWorldCellRecord(uint32 id)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUWorldCellRecordDatabase();
+
+	if (!m_UWorldCellRecordDatabasePersistent)
+	{
+		return nullptr;
+	}
+
+	return m_UWorldCellRecordDatabasePersistent->GetMutableRecord(id);
+}
+
 uint32 UArgusStaticDatabase::AddUWorldCellRecordToDatabase(UWorldCellRecord* record)
 {
 	LazyLoadUWorldCellRecordDatabase();

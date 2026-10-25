@@ -135,6 +135,16 @@ void UAbilityRecordDatabase::ResetPersistentObjectPointerArray()
 }
 
 #if WITH_EDITOR
+UAbilityRecord* UAbilityRecordDatabase::GetMutableRecord(uint32 id)
+{
+	if (const UAbilityRecord* record = GetRecord(id))
+	{
+		return const_cast<UAbilityRecord*>(record);
+	}
+
+	return nullptr;
+}
+
 void UAbilityRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
 {
 	Super::PreSave(saveContext);
