@@ -36,9 +36,14 @@ void UHeadlessEntityComponent::CreateNewHeadlessEntityRecord(uint32 headlessEnti
 
 void UHeadlessEntityComponent::UpdateExistingHeadlessEntityRecord(uint32 headlessEntityId)
 {
+	const AActor* owningActor = GetOwner();
+	ARGUS_RETURN_ON_NULL(owningActor, ArgusUnrealObjectsLog);
+
 	ArgusStaticData::LoadStaticDatabaseSynchronous();
 
 	UHeadlessEntityRecord* headlessEntityRecord = ArgusStaticData::GetMutableRecord<UHeadlessEntityRecord>(headlessEntityId);
 	ARGUS_RETURN_ON_NULL(headlessEntityRecord, ArgusUnrealObjectsLog);
+
+	headlessEntityRecord->UpdateRecord(owningActor->GetActorLocation(), m_entityTemplate);
 }
 #endif // WITH_EDITOR

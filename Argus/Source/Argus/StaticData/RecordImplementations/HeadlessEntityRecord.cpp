@@ -12,3 +12,13 @@ void UHeadlessEntityRecord::ResetSoftPtrLoadStores()
 {
 	m_entityTemplate.ResetHardPtr();
 }
+
+#if WITH_EDITOR
+bool UHeadlessEntityRecord::UpdateRecord(const FVector& initialLocation, const FSoftObjectLoadStore_UArgusEntityTemplate& entityTemplate)
+{
+	m_initialLocation = initialLocation;
+	m_entityTemplate = entityTemplate;
+	Modify(true);
+	return SaveRecord();
+}
+#endif // WITH_EDITOR

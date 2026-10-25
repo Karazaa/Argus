@@ -21,5 +21,6 @@ public:
 
 #if WITH_EDITOR
 	virtual void PreSave(FObjectPreSaveContext SaveContext) override;
+	ARGUS_API bool SaveRecord() const;
 #endif //WITH_EDITOR
 };

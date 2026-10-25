@@ -25,7 +25,7 @@ int32 UUpdateAbilityRecordsCommandlet::DoWork()
 		{
 			abilityRecord->UpdateEntityCategoriesSpawnedByAbility();
 			abilityRecord->Modify(true);
-			SaveDataAsset(abilityRecord);
+			abilityRecord->SaveRecord();
 		}
 	});
 

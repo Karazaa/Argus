@@ -45,7 +45,7 @@ int32 UUpdatePersistentWorldTranslationRecordCommandlet::DoWork()
 		});
 
 		persistentWorldTranslationRecord->Modify(true);
-		SaveDataAsset(persistentWorldTranslationRecord);
+		persistentWorldTranslationRecord->SaveRecord();
 	});
 
 	return 0;

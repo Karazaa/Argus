@@ -51,7 +51,7 @@ int32 UUpdateWorldCellIndexTranslationRecordCommandlet::DoWork()
 		});
 
 		worldCellTranslationRecord->Modify(true);
-		SaveDataAsset(worldCellTranslationRecord);
+		worldCellTranslationRecord->SaveRecord();
 	});
 
 	return 0u;

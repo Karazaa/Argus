@@ -20,4 +20,10 @@ public:
 
 	void OnAsyncLoaded() const override;
 	void ResetSoftPtrLoadStores() override;
+
+#if WITH_EDITOR
+private:
+	bool UpdateRecord(const FVector& initialLocation, const FSoftObjectLoadStore_UArgusEntityTemplate& entityTemplate);
+	friend class UHeadlessEntityComponent;
+#endif // WITH_EDITOR
 };

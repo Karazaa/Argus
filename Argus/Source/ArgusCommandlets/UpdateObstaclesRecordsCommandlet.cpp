@@ -54,7 +54,7 @@ int32 UUpdateObstaclesRecordsCommandlet::DoWork()
 		}
 
 		obstaclesRecord->Modify(true);
-		SaveDataAsset(obstaclesRecord);
+		obstaclesRecord->SaveRecord();
 	});
 
 	return 0;
