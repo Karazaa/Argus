@@ -17,13 +17,16 @@ public:
 
 #if WITH_EDITOR
 	virtual void OnHeadlessActorUpdated(const FTransform& actorTransform);
+protected:
+	virtual void CreateNewHeadlessEntityRecord(uint32 headlessEntityRecordId);
+	virtual void UpdateExistingHeadlessEntityRecord(uint32 headlessEntityRecordId);
 #endif // WITH_EDITOR
 
 #if WITH_EDITORONLY_DATA
+
 	UPROPERTY(EditAnywhere)
 	FSoftObjectLoadStore_UArgusEntityTemplate m_entityTemplate;
 
-protected:
 	UPROPERTY(VisibleAnywhere)
 	FUHeadlessEntityRecordReference m_headlessEntityRecordReference;
 #endif // WITH_EDITORONLY_DATA

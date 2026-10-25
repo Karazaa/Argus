@@ -20,24 +20,21 @@ public:
 	}
 
 	template<typename ArgusStaticRecord>
-	static const ArgusStaticRecord* GetRecord(uint32 id)
-	{
-		return nullptr;
-	}
+	static const ArgusStaticRecord* GetRecord(uint32 id) { return nullptr; }
 
 	template<typename ArgusStaticRecord>
-	static bool AsyncPreLoadRecord(uint32 id, TFunction<void(const ArgusStaticRecord*)> callback = nullptr)
-	{
-		return false;
-	}
+	static bool AsyncPreLoadRecord(uint32 id, TFunction<void(const ArgusStaticRecord*)> callback = nullptr) { return false; }
 
 #if WITH_EDITOR
 	template<typename ArgusStaticRecord>
-	static void IterateAllRecordsOfType(const TFunctionRef<void(ArgusStaticRecord*)>& function)
-	{
-	}
+	static ArgusStaticRecord* GetMutableRecord(uint32 id) { return nullptr; }
+
+	template<typename ArgusStaticRecord>
+	static void IterateAllRecordsOfType(const TFunctionRef<void(ArgusStaticRecord*)>& function) {}
 
 	static uint32 AddRecordToDatabase(UArgusStaticRecord* record);
+	static bool IsDatabaseLoaded() { return UArgusStaticDatabase::GetInstance() != nullptr; }
+	static UArgusStaticDatabase* LoadStaticDatabaseSynchronous();
 #endif //WITH_EDITOR
 &&&&&
 

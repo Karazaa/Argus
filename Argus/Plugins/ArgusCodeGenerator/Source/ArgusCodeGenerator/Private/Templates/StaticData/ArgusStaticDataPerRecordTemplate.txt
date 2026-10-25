@@ -24,9 +24,20 @@
 
 #if WITH_EDITOR
 	template<>
+	ARGUS_API inline #####* GetMutableRecord(uint32 id)
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->GetMutable#####(id);
+		}
+
+		return nullptr;
+	}
+
+	template<>
 	ARGUS_API inline void IterateAllRecordsOfType<#####>(const TFunctionRef<void(#####*)>& function)
 	{
-		if (UArgusStaticDatabase* staticDatabase = GetParentDatabase())
+		if (UArgusStaticDatabase* staticDatabase = LoadStaticDatabaseSynchronous())
 		{
 			staticDatabase->IterateAll#####s(function);
 		}
@@ -34,7 +45,7 @@
 
 	static void RegisterNew#####Database(#####Database* database)
 	{
-		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
+		UArgusStaticDatabase* staticDatabase = LoadStaticDatabaseSynchronous();
 		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
 		staticDatabase->RegisterNew#####Database(database);
 	}

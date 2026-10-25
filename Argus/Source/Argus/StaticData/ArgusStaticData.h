@@ -20,24 +20,21 @@ public:
 	}
 
 	template<typename ArgusStaticRecord>
-	static const ArgusStaticRecord* GetRecord(uint32 id)
-	{
-		return nullptr;
-	}
+	static const ArgusStaticRecord* GetRecord(uint32 id) { return nullptr; }
 
 	template<typename ArgusStaticRecord>
-	static bool AsyncPreLoadRecord(uint32 id, TFunction<void(const ArgusStaticRecord*)> callback = nullptr)
-	{
-		return false;
-	}
+	static bool AsyncPreLoadRecord(uint32 id, TFunction<void(const ArgusStaticRecord*)> callback = nullptr) { return false; }
 
 #if WITH_EDITOR
 	template<typename ArgusStaticRecord>
-	static void IterateAllRecordsOfType(const TFunctionRef<void(ArgusStaticRecord*)>& function)
-	{
-	}
+	static ArgusStaticRecord* GetMutableRecord(uint32 id) { return nullptr; }
+
+	template<typename ArgusStaticRecord>
+	static void IterateAllRecordsOfType(const TFunctionRef<void(ArgusStaticRecord*)>& function) {}
 
 	static uint32 AddRecordToDatabase(UArgusStaticRecord* record);
+	static bool IsDatabaseLoaded() { return UArgusStaticDatabase::GetInstance() != nullptr; }
+	static UArgusStaticDatabase* LoadStaticDatabaseSynchronous();
 #endif //WITH_EDITOR
 
 #pragma region UAbilityRecord
@@ -67,7 +64,7 @@ public:
 	template<>
 	ARGUS_API inline void IterateAllRecordsOfType<UAbilityRecord>(const TFunctionRef<void(UAbilityRecord*)>& function)
 	{
-		if (UArgusStaticDatabase* staticDatabase = GetParentDatabase())
+		if (UArgusStaticDatabase* staticDatabase = LoadStaticDatabaseSynchronous())
 		{
 			staticDatabase->IterateAllUAbilityRecords(function);
 		}
@@ -75,7 +72,7 @@ public:
 
 	static void RegisterNewUAbilityRecordDatabase(UAbilityRecordDatabase* database)
 	{
-		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
+		UArgusStaticDatabase* staticDatabase = LoadStaticDatabaseSynchronous();
 		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
 		staticDatabase->RegisterNewUAbilityRecordDatabase(database);
 	}
@@ -109,7 +106,7 @@ public:
 	template<>
 	ARGUS_API inline void IterateAllRecordsOfType<UArgusActorRecord>(const TFunctionRef<void(UArgusActorRecord*)>& function)
 	{
-		if (UArgusStaticDatabase* staticDatabase = GetParentDatabase())
+		if (UArgusStaticDatabase* staticDatabase = LoadStaticDatabaseSynchronous())
 		{
 			staticDatabase->IterateAllUArgusActorRecords(function);
 		}
@@ -117,7 +114,7 @@ public:
 
 	static void RegisterNewUArgusActorRecordDatabase(UArgusActorRecordDatabase* database)
 	{
-		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
+		UArgusStaticDatabase* staticDatabase = LoadStaticDatabaseSynchronous();
 		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
 		staticDatabase->RegisterNewUArgusActorRecordDatabase(database);
 	}
@@ -151,7 +148,7 @@ public:
 	template<>
 	ARGUS_API inline void IterateAllRecordsOfType<UFactionRecord>(const TFunctionRef<void(UFactionRecord*)>& function)
 	{
-		if (UArgusStaticDatabase* staticDatabase = GetParentDatabase())
+		if (UArgusStaticDatabase* staticDatabase = LoadStaticDatabaseSynchronous())
 		{
 			staticDatabase->IterateAllUFactionRecords(function);
 		}
@@ -159,7 +156,7 @@ public:
 
 	static void RegisterNewUFactionRecordDatabase(UFactionRecordDatabase* database)
 	{
-		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
+		UArgusStaticDatabase* staticDatabase = LoadStaticDatabaseSynchronous();
 		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
 		staticDatabase->RegisterNewUFactionRecordDatabase(database);
 	}
@@ -193,7 +190,7 @@ public:
 	template<>
 	ARGUS_API inline void IterateAllRecordsOfType<UHeadlessEntityRecord>(const TFunctionRef<void(UHeadlessEntityRecord*)>& function)
 	{
-		if (UArgusStaticDatabase* staticDatabase = GetParentDatabase())
+		if (UArgusStaticDatabase* staticDatabase = LoadStaticDatabaseSynchronous())
 		{
 			staticDatabase->IterateAllUHeadlessEntityRecords(function);
 		}
@@ -201,7 +198,7 @@ public:
 
 	static void RegisterNewUHeadlessEntityRecordDatabase(UHeadlessEntityRecordDatabase* database)
 	{
-		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
+		UArgusStaticDatabase* staticDatabase = LoadStaticDatabaseSynchronous();
 		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
 		staticDatabase->RegisterNewUHeadlessEntityRecordDatabase(database);
 	}
@@ -235,7 +232,7 @@ public:
 	template<>
 	ARGUS_API inline void IterateAllRecordsOfType<UMaterialRecord>(const TFunctionRef<void(UMaterialRecord*)>& function)
 	{
-		if (UArgusStaticDatabase* staticDatabase = GetParentDatabase())
+		if (UArgusStaticDatabase* staticDatabase = LoadStaticDatabaseSynchronous())
 		{
 			staticDatabase->IterateAllUMaterialRecords(function);
 		}
@@ -243,7 +240,7 @@ public:
 
 	static void RegisterNewUMaterialRecordDatabase(UMaterialRecordDatabase* database)
 	{
-		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
+		UArgusStaticDatabase* staticDatabase = LoadStaticDatabaseSynchronous();
 		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
 		staticDatabase->RegisterNewUMaterialRecordDatabase(database);
 	}
@@ -277,7 +274,7 @@ public:
 	template<>
 	ARGUS_API inline void IterateAllRecordsOfType<UObstaclesRecord>(const TFunctionRef<void(UObstaclesRecord*)>& function)
 	{
-		if (UArgusStaticDatabase* staticDatabase = GetParentDatabase())
+		if (UArgusStaticDatabase* staticDatabase = LoadStaticDatabaseSynchronous())
 		{
 			staticDatabase->IterateAllUObstaclesRecords(function);
 		}
@@ -285,7 +282,7 @@ public:
 
 	static void RegisterNewUObstaclesRecordDatabase(UObstaclesRecordDatabase* database)
 	{
-		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
+		UArgusStaticDatabase* staticDatabase = LoadStaticDatabaseSynchronous();
 		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
 		staticDatabase->RegisterNewUObstaclesRecordDatabase(database);
 	}
@@ -319,7 +316,7 @@ public:
 	template<>
 	ARGUS_API inline void IterateAllRecordsOfType<UPersistentWorldTranslationRecord>(const TFunctionRef<void(UPersistentWorldTranslationRecord*)>& function)
 	{
-		if (UArgusStaticDatabase* staticDatabase = GetParentDatabase())
+		if (UArgusStaticDatabase* staticDatabase = LoadStaticDatabaseSynchronous())
 		{
 			staticDatabase->IterateAllUPersistentWorldTranslationRecords(function);
 		}
@@ -327,7 +324,7 @@ public:
 
 	static void RegisterNewUPersistentWorldTranslationRecordDatabase(UPersistentWorldTranslationRecordDatabase* database)
 	{
-		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
+		UArgusStaticDatabase* staticDatabase = LoadStaticDatabaseSynchronous();
 		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
 		staticDatabase->RegisterNewUPersistentWorldTranslationRecordDatabase(database);
 	}
@@ -361,7 +358,7 @@ public:
 	template<>
 	ARGUS_API inline void IterateAllRecordsOfType<UPlacedArgusActorTeamInfoRecord>(const TFunctionRef<void(UPlacedArgusActorTeamInfoRecord*)>& function)
 	{
-		if (UArgusStaticDatabase* staticDatabase = GetParentDatabase())
+		if (UArgusStaticDatabase* staticDatabase = LoadStaticDatabaseSynchronous())
 		{
 			staticDatabase->IterateAllUPlacedArgusActorTeamInfoRecords(function);
 		}
@@ -369,7 +366,7 @@ public:
 
 	static void RegisterNewUPlacedArgusActorTeamInfoRecordDatabase(UPlacedArgusActorTeamInfoRecordDatabase* database)
 	{
-		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
+		UArgusStaticDatabase* staticDatabase = LoadStaticDatabaseSynchronous();
 		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
 		staticDatabase->RegisterNewUPlacedArgusActorTeamInfoRecordDatabase(database);
 	}
@@ -403,7 +400,7 @@ public:
 	template<>
 	ARGUS_API inline void IterateAllRecordsOfType<UResourceSetRecord>(const TFunctionRef<void(UResourceSetRecord*)>& function)
 	{
-		if (UArgusStaticDatabase* staticDatabase = GetParentDatabase())
+		if (UArgusStaticDatabase* staticDatabase = LoadStaticDatabaseSynchronous())
 		{
 			staticDatabase->IterateAllUResourceSetRecords(function);
 		}
@@ -411,7 +408,7 @@ public:
 
 	static void RegisterNewUResourceSetRecordDatabase(UResourceSetRecordDatabase* database)
 	{
-		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
+		UArgusStaticDatabase* staticDatabase = LoadStaticDatabaseSynchronous();
 		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
 		staticDatabase->RegisterNewUResourceSetRecordDatabase(database);
 	}
@@ -445,7 +442,7 @@ public:
 	template<>
 	ARGUS_API inline void IterateAllRecordsOfType<UStructuralEntityTemplateRecord>(const TFunctionRef<void(UStructuralEntityTemplateRecord*)>& function)
 	{
-		if (UArgusStaticDatabase* staticDatabase = GetParentDatabase())
+		if (UArgusStaticDatabase* staticDatabase = LoadStaticDatabaseSynchronous())
 		{
 			staticDatabase->IterateAllUStructuralEntityTemplateRecords(function);
 		}
@@ -453,7 +450,7 @@ public:
 
 	static void RegisterNewUStructuralEntityTemplateRecordDatabase(UStructuralEntityTemplateRecordDatabase* database)
 	{
-		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
+		UArgusStaticDatabase* staticDatabase = LoadStaticDatabaseSynchronous();
 		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
 		staticDatabase->RegisterNewUStructuralEntityTemplateRecordDatabase(database);
 	}
@@ -487,7 +484,7 @@ public:
 	template<>
 	ARGUS_API inline void IterateAllRecordsOfType<UTeamAlignmentRecord>(const TFunctionRef<void(UTeamAlignmentRecord*)>& function)
 	{
-		if (UArgusStaticDatabase* staticDatabase = GetParentDatabase())
+		if (UArgusStaticDatabase* staticDatabase = LoadStaticDatabaseSynchronous())
 		{
 			staticDatabase->IterateAllUTeamAlignmentRecords(function);
 		}
@@ -495,7 +492,7 @@ public:
 
 	static void RegisterNewUTeamAlignmentRecordDatabase(UTeamAlignmentRecordDatabase* database)
 	{
-		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
+		UArgusStaticDatabase* staticDatabase = LoadStaticDatabaseSynchronous();
 		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
 		staticDatabase->RegisterNewUTeamAlignmentRecordDatabase(database);
 	}
@@ -529,7 +526,7 @@ public:
 	template<>
 	ARGUS_API inline void IterateAllRecordsOfType<UTeamColorRecord>(const TFunctionRef<void(UTeamColorRecord*)>& function)
 	{
-		if (UArgusStaticDatabase* staticDatabase = GetParentDatabase())
+		if (UArgusStaticDatabase* staticDatabase = LoadStaticDatabaseSynchronous())
 		{
 			staticDatabase->IterateAllUTeamColorRecords(function);
 		}
@@ -537,7 +534,7 @@ public:
 
 	static void RegisterNewUTeamColorRecordDatabase(UTeamColorRecordDatabase* database)
 	{
-		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
+		UArgusStaticDatabase* staticDatabase = LoadStaticDatabaseSynchronous();
 		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
 		staticDatabase->RegisterNewUTeamColorRecordDatabase(database);
 	}
@@ -571,7 +568,7 @@ public:
 	template<>
 	ARGUS_API inline void IterateAllRecordsOfType<UWorldCellIndexTranslationRecord>(const TFunctionRef<void(UWorldCellIndexTranslationRecord*)>& function)
 	{
-		if (UArgusStaticDatabase* staticDatabase = GetParentDatabase())
+		if (UArgusStaticDatabase* staticDatabase = LoadStaticDatabaseSynchronous())
 		{
 			staticDatabase->IterateAllUWorldCellIndexTranslationRecords(function);
 		}
@@ -579,7 +576,7 @@ public:
 
 	static void RegisterNewUWorldCellIndexTranslationRecordDatabase(UWorldCellIndexTranslationRecordDatabase* database)
 	{
-		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
+		UArgusStaticDatabase* staticDatabase = LoadStaticDatabaseSynchronous();
 		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
 		staticDatabase->RegisterNewUWorldCellIndexTranslationRecordDatabase(database);
 	}
@@ -613,7 +610,7 @@ public:
 	template<>
 	ARGUS_API inline void IterateAllRecordsOfType<UWorldCellRecord>(const TFunctionRef<void(UWorldCellRecord*)>& function)
 	{
-		if (UArgusStaticDatabase* staticDatabase = GetParentDatabase())
+		if (UArgusStaticDatabase* staticDatabase = LoadStaticDatabaseSynchronous())
 		{
 			staticDatabase->IterateAllUWorldCellRecords(function);
 		}
@@ -621,7 +618,7 @@ public:
 
 	static void RegisterNewUWorldCellRecordDatabase(UWorldCellRecordDatabase* database)
 	{
-		UArgusStaticDatabase* staticDatabase = GetParentDatabase();
+		UArgusStaticDatabase* staticDatabase = LoadStaticDatabaseSynchronous();
 		ARGUS_RETURN_ON_NULL(staticDatabase, ArgusStaticDataLog);
 		staticDatabase->RegisterNewUWorldCellRecordDatabase(database);
 	}

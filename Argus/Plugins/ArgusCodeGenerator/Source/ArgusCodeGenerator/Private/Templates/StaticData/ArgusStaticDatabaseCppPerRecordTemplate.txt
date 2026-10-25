@@ -38,6 +38,20 @@ void UArgusStaticDatabase::ResetLoaded#####PointerArray()
 }
 
 #if WITH_EDITOR
+#####* UArgusStaticDatabase::GetMutable#####(uint32 id)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoad#####Database();
+
+	if (!m_#####DatabasePersistent)
+	{
+		return nullptr;
+	}
+
+	return m_#####DatabasePersistent->GetMutableRecord(id);
+}
+
 uint32 UArgusStaticDatabase::Add#####ToDatabase(#####* record)
 {
 	LazyLoad#####Database();

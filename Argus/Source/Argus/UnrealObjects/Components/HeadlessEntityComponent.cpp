@@ -1,6 +1,8 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "HeadlessEntityComponent.h"
+#include "ArgusStaticData.h"
+#include "RecordDefinitions/HeadlessEntityRecord.h"
 
 UHeadlessEntityComponent::UHeadlessEntityComponent()
 {
@@ -19,11 +21,24 @@ void UHeadlessEntityComponent::OnHeadlessActorUpdated(const FTransform& actorTra
 	const uint32 recordId = m_headlessEntityRecordReference.GetId();
 	if (recordId == 0u)
 	{
-		// TODO JAMES: Create new record.
+		CreateNewHeadlessEntityRecord(recordId);
 	}
 	else
 	{
-		// TODO JAMES: Update existing record.
+		UpdateExistingHeadlessEntityRecord(recordId);
 	}
+}
+
+void UHeadlessEntityComponent::CreateNewHeadlessEntityRecord(uint32 headlessEntityId)
+{
+	// TODO JAMES: Create new record.
+}
+
+void UHeadlessEntityComponent::UpdateExistingHeadlessEntityRecord(uint32 headlessEntityId)
+{
+	ArgusStaticData::LoadStaticDatabaseSynchronous();
+
+	const UHeadlessEntityRecord* headlessEntityRecord = ArgusStaticData::GetRecord<UHeadlessEntityRecord>(headlessEntityId);
+	ARGUS_RETURN_ON_NULL(headlessEntityRecord, ArgusUnrealObjectsLog);
 }
 #endif // WITH_EDITOR
