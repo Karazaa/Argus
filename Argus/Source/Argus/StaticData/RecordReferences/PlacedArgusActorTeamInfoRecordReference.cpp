@@ -23,4 +23,11 @@ void FUPlacedArgusActorTeamInfoRecordReference::StoreId() const
 		ARGUS_ERROR_NULL(ArgusStaticDataLog, record);
 	}
 }
+
+void FUPlacedArgusActorTeamInfoRecordReference::CacheRecordAsReference(UPlacedArgusActorTeamInfoRecord* record)
+{
+	ARGUS_RETURN_ON_NULL(record, ArgusStaticDataLog);
+	m_softObjectPtr = TSoftObjectPtr<UPlacedArgusActorTeamInfoRecord>(record);
+	StoreId();
+}
 #endif

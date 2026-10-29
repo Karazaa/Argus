@@ -3,6 +3,11 @@
 #include "RecordDefinitions/HeadlessEntityRecord.h"
 #include "ArgusStaticData.h"
 
+FString UHeadlessEntityRecord::GetPackagePath(const FString& assetName)
+{
+	return FString::Printf(TEXT("/Game/StaticData/HeadlessEntityRecords/%s"), *assetName);
+}
+
 void UHeadlessEntityRecord::OnAsyncLoaded() const
 {
 	m_entityTemplate.AsyncPreLoadAndStorePtr();

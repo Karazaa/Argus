@@ -23,4 +23,11 @@ void FUAbilityRecordReference::StoreId() const
 		ARGUS_ERROR_NULL(ArgusStaticDataLog, record);
 	}
 }
+
+void FUAbilityRecordReference::CacheRecordAsReference(UAbilityRecord* record)
+{
+	ARGUS_RETURN_ON_NULL(record, ArgusStaticDataLog);
+	m_softObjectPtr = TSoftObjectPtr<UAbilityRecord>(record);
+	StoreId();
+}
 #endif

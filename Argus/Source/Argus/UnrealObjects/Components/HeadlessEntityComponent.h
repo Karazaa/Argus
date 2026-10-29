@@ -18,7 +18,7 @@ public:
 #if WITH_EDITOR
 	virtual void OnHeadlessActorUpdated(const FTransform& actorTransform);
 protected:
-	virtual void CreateNewHeadlessEntityRecord(uint32 headlessEntityRecordId);
+	virtual void CreateNewHeadlessEntityRecord();
 	virtual void UpdateExistingHeadlessEntityRecord(uint32 headlessEntityRecordId);
 #endif // WITH_EDITOR
 

@@ -23,4 +23,11 @@ void FUTeamAlignmentRecordReference::StoreId() const
 		ARGUS_ERROR_NULL(ArgusStaticDataLog, record);
 	}
 }
+
+void FUTeamAlignmentRecordReference::CacheRecordAsReference(UTeamAlignmentRecord* record)
+{
+	ARGUS_RETURN_ON_NULL(record, ArgusStaticDataLog);
+	m_softObjectPtr = TSoftObjectPtr<UTeamAlignmentRecord>(record);
+	StoreId();
+}
 #endif

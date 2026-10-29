@@ -23,4 +23,11 @@ void FUStructuralEntityTemplateRecordReference::StoreId() const
 		ARGUS_ERROR_NULL(ArgusStaticDataLog, record);
 	}
 }
+
+void FUStructuralEntityTemplateRecordReference::CacheRecordAsReference(UStructuralEntityTemplateRecord* record)
+{
+	ARGUS_RETURN_ON_NULL(record, ArgusStaticDataLog);
+	m_softObjectPtr = TSoftObjectPtr<UStructuralEntityTemplateRecord>(record);
+	StoreId();
+}
 #endif

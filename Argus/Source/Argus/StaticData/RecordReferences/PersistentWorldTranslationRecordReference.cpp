@@ -23,4 +23,11 @@ void FUPersistentWorldTranslationRecordReference::StoreId() const
 		ARGUS_ERROR_NULL(ArgusStaticDataLog, record);
 	}
 }
+
+void FUPersistentWorldTranslationRecordReference::CacheRecordAsReference(UPersistentWorldTranslationRecord* record)
+{
+	ARGUS_RETURN_ON_NULL(record, ArgusStaticDataLog);
+	m_softObjectPtr = TSoftObjectPtr<UPersistentWorldTranslationRecord>(record);
+	StoreId();
+}
 #endif

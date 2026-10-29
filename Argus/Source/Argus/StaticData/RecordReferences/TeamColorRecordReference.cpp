@@ -23,4 +23,11 @@ void FUTeamColorRecordReference::StoreId() const
 		ARGUS_ERROR_NULL(ArgusStaticDataLog, record);
 	}
 }
+
+void FUTeamColorRecordReference::CacheRecordAsReference(UTeamColorRecord* record)
+{
+	ARGUS_RETURN_ON_NULL(record, ArgusStaticDataLog);
+	m_softObjectPtr = TSoftObjectPtr<UTeamColorRecord>(record);
+	StoreId();
+}
 #endif

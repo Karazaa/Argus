@@ -23,4 +23,11 @@ void FUResourceSetRecordReference::StoreId() const
 		ARGUS_ERROR_NULL(ArgusStaticDataLog, record);
 	}
 }
+
+void FUResourceSetRecordReference::CacheRecordAsReference(UResourceSetRecord* record)
+{
+	ARGUS_RETURN_ON_NULL(record, ArgusStaticDataLog);
+	m_softObjectPtr = TSoftObjectPtr<UResourceSetRecord>(record);
+	StoreId();
+}
 #endif

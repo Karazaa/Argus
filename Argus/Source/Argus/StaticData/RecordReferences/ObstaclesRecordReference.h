@@ -16,6 +16,7 @@ struct FUObstaclesRecordReference : public FArgusStaticRecordReference
 public:
 #if WITH_EDITOR && WITH_EDITORONLY_DATA
 	void StoreId() const override;
+	void CacheRecordAsReference(UObstaclesRecord* record);
 #endif
 
 private:

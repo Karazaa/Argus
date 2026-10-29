@@ -16,6 +16,7 @@ struct FUStructuralEntityTemplateRecordReference : public FArgusStaticRecordRefe
 public:
 #if WITH_EDITOR && WITH_EDITORONLY_DATA
 	void StoreId() const override;
+	void CacheRecordAsReference(UStructuralEntityTemplateRecord* record);
 #endif
 
 private:

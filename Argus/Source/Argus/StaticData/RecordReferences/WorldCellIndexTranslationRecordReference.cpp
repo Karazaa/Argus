@@ -23,4 +23,11 @@ void FUWorldCellIndexTranslationRecordReference::StoreId() const
 		ARGUS_ERROR_NULL(ArgusStaticDataLog, record);
 	}
 }
+
+void FUWorldCellIndexTranslationRecordReference::CacheRecordAsReference(UWorldCellIndexTranslationRecord* record)
+{
+	ARGUS_RETURN_ON_NULL(record, ArgusStaticDataLog);
+	m_softObjectPtr = TSoftObjectPtr<UWorldCellIndexTranslationRecord>(record);
+	StoreId();
+}
 #endif

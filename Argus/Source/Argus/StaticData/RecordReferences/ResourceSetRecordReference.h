@@ -16,6 +16,7 @@ struct FUResourceSetRecordReference : public FArgusStaticRecordReference
 public:
 #if WITH_EDITOR && WITH_EDITORONLY_DATA
 	void StoreId() const override;
+	void CacheRecordAsReference(UResourceSetRecord* record);
 #endif
 
 private:

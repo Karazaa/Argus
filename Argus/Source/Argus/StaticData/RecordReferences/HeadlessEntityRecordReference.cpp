@@ -23,4 +23,11 @@ void FUHeadlessEntityRecordReference::StoreId() const
 		ARGUS_ERROR_NULL(ArgusStaticDataLog, record);
 	}
 }
+
+void FUHeadlessEntityRecordReference::CacheRecordAsReference(UHeadlessEntityRecord* record)
+{
+	ARGUS_RETURN_ON_NULL(record, ArgusStaticDataLog);
+	m_softObjectPtr = TSoftObjectPtr<UHeadlessEntityRecord>(record);
+	StoreId();
+}
 #endif

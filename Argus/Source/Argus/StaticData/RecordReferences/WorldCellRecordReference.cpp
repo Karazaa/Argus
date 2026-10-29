@@ -23,4 +23,11 @@ void FUWorldCellRecordReference::StoreId() const
 		ARGUS_ERROR_NULL(ArgusStaticDataLog, record);
 	}
 }
+
+void FUWorldCellRecordReference::CacheRecordAsReference(UWorldCellRecord* record)
+{
+	ARGUS_RETURN_ON_NULL(record, ArgusStaticDataLog);
+	m_softObjectPtr = TSoftObjectPtr<UWorldCellRecord>(record);
+	StoreId();
+}
 #endif

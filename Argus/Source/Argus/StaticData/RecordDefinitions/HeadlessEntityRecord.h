@@ -12,6 +12,8 @@ class ARGUS_API UHeadlessEntityRecord : public UArgusStaticRecord
 	GENERATED_BODY()
 
 public:
+	static FString GetPackagePath(const FString& assetName);
+
 	UPROPERTY(EditAnywhere)
 	FVector m_initialLocation = FVector::ZeroVector;
 
