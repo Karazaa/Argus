@@ -12,7 +12,7 @@
 	}
 
 	template<>
-	ARGUS_API inline uint32 GetNumRecords()
+	ARGUS_API inline uint32 GetNumRecords<#####>()
 	{
 		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
 		{

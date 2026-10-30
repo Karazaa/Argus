@@ -47,7 +47,7 @@ const #####* #####Database::GetRecord(uint32 id)
 	return m_#####sPersistent[id];
 }
 
-uint32 #####Database::GetNumRecords() const
+uint32 #####Database::GetNumRecords()
 {
 	return static_cast<uint32>(m_#####s.Num());
 }
