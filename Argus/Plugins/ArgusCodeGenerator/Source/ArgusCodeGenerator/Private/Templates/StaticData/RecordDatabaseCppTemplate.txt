@@ -47,6 +47,11 @@ const #####* #####Database::GetRecord(uint32 id)
 	return m_#####sPersistent[id];
 }
 
+uint32 #####Database::GetNumRecords() const
+{
+	return static_cast<uint32>(m_#####s.Num());
+}
+
 const bool #####Database::AsyncPreLoadRecord(uint32 id, TFunction<void(const #####*)> callback)
 {
 	ARGUS_TRACE(#####Database::AsyncPreLoadRecord);

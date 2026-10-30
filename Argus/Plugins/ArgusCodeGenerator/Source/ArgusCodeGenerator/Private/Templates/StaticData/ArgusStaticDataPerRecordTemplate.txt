@@ -12,6 +12,17 @@
 	}
 
 	template<>
+	ARGUS_API inline uint32 GetNumRecords()
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->GetNum#####s();
+		}
+
+		return 0u;
+	}
+
+	template<>
 	ARGUS_API inline bool AsyncPreLoadRecord<#####>(uint32 id, TFunction<void(const #####*)> callback)
 	{
 		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())

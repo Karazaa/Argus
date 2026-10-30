@@ -23,6 +23,9 @@ public:
 	static const ArgusStaticRecord* GetRecord(uint32 id) { return nullptr; }
 
 	template<typename ArgusStaticRecord>
+	static uint32 GetNumRecords() { return 0u; }
+
+	template<typename ArgusStaticRecord>
 	static bool AsyncPreLoadRecord(uint32 id, TFunction<void(const ArgusStaticRecord*)> callback = nullptr) { return false; }
 
 #if WITH_EDITOR
