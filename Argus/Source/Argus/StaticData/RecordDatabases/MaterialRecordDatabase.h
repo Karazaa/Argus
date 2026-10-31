@@ -14,6 +14,7 @@ class UMaterialRecordDatabase : public UDataAsset
 
 public:
 	const UMaterialRecord* GetRecord(uint32 id);
+	uint32 GetNumRecords();
 	const bool AsyncPreLoadRecord(uint32 id, TFunction<void(const UMaterialRecord*)> callback = nullptr);
 	bool ResizePersistentObjectPointerArrayToFitRecord(uint32 id);
 	void ResetPersistentObjectPointerArray();

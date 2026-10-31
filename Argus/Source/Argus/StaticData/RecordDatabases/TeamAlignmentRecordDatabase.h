@@ -14,6 +14,7 @@ class UTeamAlignmentRecordDatabase : public UDataAsset
 
 public:
 	const UTeamAlignmentRecord* GetRecord(uint32 id);
+	uint32 GetNumRecords();
 	const bool AsyncPreLoadRecord(uint32 id, TFunction<void(const UTeamAlignmentRecord*)> callback = nullptr);
 	bool ResizePersistentObjectPointerArrayToFitRecord(uint32 id);
 	void ResetPersistentObjectPointerArray();

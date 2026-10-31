@@ -47,6 +47,11 @@ const UPlacedArgusActorTeamInfoRecord* UPlacedArgusActorTeamInfoRecordDatabase::
 	return m_UPlacedArgusActorTeamInfoRecordsPersistent[id];
 }
 
+uint32 UPlacedArgusActorTeamInfoRecordDatabase::GetNumRecords()
+{
+	return static_cast<uint32>(m_UPlacedArgusActorTeamInfoRecords.Num());
+}
+
 const bool UPlacedArgusActorTeamInfoRecordDatabase::AsyncPreLoadRecord(uint32 id, TFunction<void(const UPlacedArgusActorTeamInfoRecord*)> callback)
 {
 	ARGUS_TRACE(UPlacedArgusActorTeamInfoRecordDatabase::AsyncPreLoadRecord);

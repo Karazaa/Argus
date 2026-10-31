@@ -47,6 +47,11 @@ const UMaterialRecord* UMaterialRecordDatabase::GetRecord(uint32 id)
 	return m_UMaterialRecordsPersistent[id];
 }
 
+uint32 UMaterialRecordDatabase::GetNumRecords()
+{
+	return static_cast<uint32>(m_UMaterialRecords.Num());
+}
+
 const bool UMaterialRecordDatabase::AsyncPreLoadRecord(uint32 id, TFunction<void(const UMaterialRecord*)> callback)
 {
 	ARGUS_TRACE(UMaterialRecordDatabase::AsyncPreLoadRecord);

@@ -52,6 +52,7 @@ private:
 #pragma region UAbilityRecord
 public:
 	const UAbilityRecord* GetUAbilityRecord(uint32 id);
+	uint32 GetNumUAbilityRecords();
 	const bool AsyncPreLoadUAbilityRecord(uint32 id, TFunction<void(const UAbilityRecord*)> callback = nullptr);
 	void ResetLoadedUAbilityRecordPointerArray();
 #if WITH_EDITOR
@@ -72,6 +73,7 @@ protected:
 #pragma region UArgusActorRecord
 public:
 	const UArgusActorRecord* GetUArgusActorRecord(uint32 id);
+	uint32 GetNumUArgusActorRecords();
 	const bool AsyncPreLoadUArgusActorRecord(uint32 id, TFunction<void(const UArgusActorRecord*)> callback = nullptr);
 	void ResetLoadedUArgusActorRecordPointerArray();
 #if WITH_EDITOR
@@ -92,6 +94,7 @@ protected:
 #pragma region UFactionRecord
 public:
 	const UFactionRecord* GetUFactionRecord(uint32 id);
+	uint32 GetNumUFactionRecords();
 	const bool AsyncPreLoadUFactionRecord(uint32 id, TFunction<void(const UFactionRecord*)> callback = nullptr);
 	void ResetLoadedUFactionRecordPointerArray();
 #if WITH_EDITOR
@@ -112,6 +115,7 @@ protected:
 #pragma region UHeadlessEntityRecord
 public:
 	const UHeadlessEntityRecord* GetUHeadlessEntityRecord(uint32 id);
+	uint32 GetNumUHeadlessEntityRecords();
 	const bool AsyncPreLoadUHeadlessEntityRecord(uint32 id, TFunction<void(const UHeadlessEntityRecord*)> callback = nullptr);
 	void ResetLoadedUHeadlessEntityRecordPointerArray();
 #if WITH_EDITOR
@@ -132,6 +136,7 @@ protected:
 #pragma region UMaterialRecord
 public:
 	const UMaterialRecord* GetUMaterialRecord(uint32 id);
+	uint32 GetNumUMaterialRecords();
 	const bool AsyncPreLoadUMaterialRecord(uint32 id, TFunction<void(const UMaterialRecord*)> callback = nullptr);
 	void ResetLoadedUMaterialRecordPointerArray();
 #if WITH_EDITOR
@@ -152,6 +157,7 @@ protected:
 #pragma region UObstaclesRecord
 public:
 	const UObstaclesRecord* GetUObstaclesRecord(uint32 id);
+	uint32 GetNumUObstaclesRecords();
 	const bool AsyncPreLoadUObstaclesRecord(uint32 id, TFunction<void(const UObstaclesRecord*)> callback = nullptr);
 	void ResetLoadedUObstaclesRecordPointerArray();
 #if WITH_EDITOR
@@ -172,6 +178,7 @@ protected:
 #pragma region UPersistentWorldTranslationRecord
 public:
 	const UPersistentWorldTranslationRecord* GetUPersistentWorldTranslationRecord(uint32 id);
+	uint32 GetNumUPersistentWorldTranslationRecords();
 	const bool AsyncPreLoadUPersistentWorldTranslationRecord(uint32 id, TFunction<void(const UPersistentWorldTranslationRecord*)> callback = nullptr);
 	void ResetLoadedUPersistentWorldTranslationRecordPointerArray();
 #if WITH_EDITOR
@@ -192,6 +199,7 @@ protected:
 #pragma region UPlacedArgusActorTeamInfoRecord
 public:
 	const UPlacedArgusActorTeamInfoRecord* GetUPlacedArgusActorTeamInfoRecord(uint32 id);
+	uint32 GetNumUPlacedArgusActorTeamInfoRecords();
 	const bool AsyncPreLoadUPlacedArgusActorTeamInfoRecord(uint32 id, TFunction<void(const UPlacedArgusActorTeamInfoRecord*)> callback = nullptr);
 	void ResetLoadedUPlacedArgusActorTeamInfoRecordPointerArray();
 #if WITH_EDITOR
@@ -212,6 +220,7 @@ protected:
 #pragma region UResourceSetRecord
 public:
 	const UResourceSetRecord* GetUResourceSetRecord(uint32 id);
+	uint32 GetNumUResourceSetRecords();
 	const bool AsyncPreLoadUResourceSetRecord(uint32 id, TFunction<void(const UResourceSetRecord*)> callback = nullptr);
 	void ResetLoadedUResourceSetRecordPointerArray();
 #if WITH_EDITOR
@@ -232,6 +241,7 @@ protected:
 #pragma region UStructuralEntityTemplateRecord
 public:
 	const UStructuralEntityTemplateRecord* GetUStructuralEntityTemplateRecord(uint32 id);
+	uint32 GetNumUStructuralEntityTemplateRecords();
 	const bool AsyncPreLoadUStructuralEntityTemplateRecord(uint32 id, TFunction<void(const UStructuralEntityTemplateRecord*)> callback = nullptr);
 	void ResetLoadedUStructuralEntityTemplateRecordPointerArray();
 #if WITH_EDITOR
@@ -252,6 +262,7 @@ protected:
 #pragma region UTeamAlignmentRecord
 public:
 	const UTeamAlignmentRecord* GetUTeamAlignmentRecord(uint32 id);
+	uint32 GetNumUTeamAlignmentRecords();
 	const bool AsyncPreLoadUTeamAlignmentRecord(uint32 id, TFunction<void(const UTeamAlignmentRecord*)> callback = nullptr);
 	void ResetLoadedUTeamAlignmentRecordPointerArray();
 #if WITH_EDITOR
@@ -272,6 +283,7 @@ protected:
 #pragma region UTeamColorRecord
 public:
 	const UTeamColorRecord* GetUTeamColorRecord(uint32 id);
+	uint32 GetNumUTeamColorRecords();
 	const bool AsyncPreLoadUTeamColorRecord(uint32 id, TFunction<void(const UTeamColorRecord*)> callback = nullptr);
 	void ResetLoadedUTeamColorRecordPointerArray();
 #if WITH_EDITOR
@@ -292,6 +304,7 @@ protected:
 #pragma region UWorldCellIndexTranslationRecord
 public:
 	const UWorldCellIndexTranslationRecord* GetUWorldCellIndexTranslationRecord(uint32 id);
+	uint32 GetNumUWorldCellIndexTranslationRecords();
 	const bool AsyncPreLoadUWorldCellIndexTranslationRecord(uint32 id, TFunction<void(const UWorldCellIndexTranslationRecord*)> callback = nullptr);
 	void ResetLoadedUWorldCellIndexTranslationRecordPointerArray();
 #if WITH_EDITOR
@@ -312,6 +325,7 @@ protected:
 #pragma region UWorldCellRecord
 public:
 	const UWorldCellRecord* GetUWorldCellRecord(uint32 id);
+	uint32 GetNumUWorldCellRecords();
 	const bool AsyncPreLoadUWorldCellRecord(uint32 id, TFunction<void(const UWorldCellRecord*)> callback = nullptr);
 	void ResetLoadedUWorldCellRecordPointerArray();
 #if WITH_EDITOR

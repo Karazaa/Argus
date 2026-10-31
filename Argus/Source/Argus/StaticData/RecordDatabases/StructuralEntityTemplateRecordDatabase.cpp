@@ -47,6 +47,11 @@ const UStructuralEntityTemplateRecord* UStructuralEntityTemplateRecordDatabase::
 	return m_UStructuralEntityTemplateRecordsPersistent[id];
 }
 
+uint32 UStructuralEntityTemplateRecordDatabase::GetNumRecords()
+{
+	return static_cast<uint32>(m_UStructuralEntityTemplateRecords.Num());
+}
+
 const bool UStructuralEntityTemplateRecordDatabase::AsyncPreLoadRecord(uint32 id, TFunction<void(const UStructuralEntityTemplateRecord*)> callback)
 {
 	ARGUS_TRACE(UStructuralEntityTemplateRecordDatabase::AsyncPreLoadRecord);

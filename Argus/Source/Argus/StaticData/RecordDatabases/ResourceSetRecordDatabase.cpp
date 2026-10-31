@@ -47,6 +47,11 @@ const UResourceSetRecord* UResourceSetRecordDatabase::GetRecord(uint32 id)
 	return m_UResourceSetRecordsPersistent[id];
 }
 
+uint32 UResourceSetRecordDatabase::GetNumRecords()
+{
+	return static_cast<uint32>(m_UResourceSetRecords.Num());
+}
+
 const bool UResourceSetRecordDatabase::AsyncPreLoadRecord(uint32 id, TFunction<void(const UResourceSetRecord*)> callback)
 {
 	ARGUS_TRACE(UResourceSetRecordDatabase::AsyncPreLoadRecord);

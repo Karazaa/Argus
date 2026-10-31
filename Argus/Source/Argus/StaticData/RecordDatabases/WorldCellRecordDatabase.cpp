@@ -47,6 +47,11 @@ const UWorldCellRecord* UWorldCellRecordDatabase::GetRecord(uint32 id)
 	return m_UWorldCellRecordsPersistent[id];
 }
 
+uint32 UWorldCellRecordDatabase::GetNumRecords()
+{
+	return static_cast<uint32>(m_UWorldCellRecords.Num());
+}
+
 const bool UWorldCellRecordDatabase::AsyncPreLoadRecord(uint32 id, TFunction<void(const UWorldCellRecord*)> callback)
 {
 	ARGUS_TRACE(UWorldCellRecordDatabase::AsyncPreLoadRecord);

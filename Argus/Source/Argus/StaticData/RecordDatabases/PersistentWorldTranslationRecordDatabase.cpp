@@ -47,6 +47,11 @@ const UPersistentWorldTranslationRecord* UPersistentWorldTranslationRecordDataba
 	return m_UPersistentWorldTranslationRecordsPersistent[id];
 }
 
+uint32 UPersistentWorldTranslationRecordDatabase::GetNumRecords()
+{
+	return static_cast<uint32>(m_UPersistentWorldTranslationRecords.Num());
+}
+
 const bool UPersistentWorldTranslationRecordDatabase::AsyncPreLoadRecord(uint32 id, TFunction<void(const UPersistentWorldTranslationRecord*)> callback)
 {
 	ARGUS_TRACE(UPersistentWorldTranslationRecordDatabase::AsyncPreLoadRecord);

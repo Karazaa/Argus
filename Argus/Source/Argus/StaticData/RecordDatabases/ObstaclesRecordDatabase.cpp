@@ -47,6 +47,11 @@ const UObstaclesRecord* UObstaclesRecordDatabase::GetRecord(uint32 id)
 	return m_UObstaclesRecordsPersistent[id];
 }
 
+uint32 UObstaclesRecordDatabase::GetNumRecords()
+{
+	return static_cast<uint32>(m_UObstaclesRecords.Num());
+}
+
 const bool UObstaclesRecordDatabase::AsyncPreLoadRecord(uint32 id, TFunction<void(const UObstaclesRecord*)> callback)
 {
 	ARGUS_TRACE(UObstaclesRecordDatabase::AsyncPreLoadRecord);

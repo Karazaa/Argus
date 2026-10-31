@@ -14,6 +14,7 @@ class UStructuralEntityTemplateRecordDatabase : public UDataAsset
 
 public:
 	const UStructuralEntityTemplateRecord* GetRecord(uint32 id);
+	uint32 GetNumRecords();
 	const bool AsyncPreLoadRecord(uint32 id, TFunction<void(const UStructuralEntityTemplateRecord*)> callback = nullptr);
 	bool ResizePersistentObjectPointerArrayToFitRecord(uint32 id);
 	void ResetPersistentObjectPointerArray();

@@ -23,6 +23,9 @@ public:
 	static const ArgusStaticRecord* GetRecord(uint32 id) { return nullptr; }
 
 	template<typename ArgusStaticRecord>
+	static uint32 GetNumRecords() { return 0u; }
+
+	template<typename ArgusStaticRecord>
 	static bool AsyncPreLoadRecord(uint32 id, TFunction<void(const ArgusStaticRecord*)> callback = nullptr) { return false; }
 
 #if WITH_EDITOR
@@ -47,6 +50,17 @@ public:
 		}
 
 		return nullptr;
+	}
+
+	template<>
+	ARGUS_API inline uint32 GetNumRecords<UAbilityRecord>()
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->GetNumUAbilityRecords();
+		}
+
+		return 0u;
 	}
 
 	template<>
@@ -103,6 +117,17 @@ public:
 	}
 
 	template<>
+	ARGUS_API inline uint32 GetNumRecords<UArgusActorRecord>()
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->GetNumUArgusActorRecords();
+		}
+
+		return 0u;
+	}
+
+	template<>
 	ARGUS_API inline bool AsyncPreLoadRecord<UArgusActorRecord>(uint32 id, TFunction<void(const UArgusActorRecord*)> callback)
 	{
 		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
@@ -153,6 +178,17 @@ public:
 		}
 
 		return nullptr;
+	}
+
+	template<>
+	ARGUS_API inline uint32 GetNumRecords<UFactionRecord>()
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->GetNumUFactionRecords();
+		}
+
+		return 0u;
 	}
 
 	template<>
@@ -209,6 +245,17 @@ public:
 	}
 
 	template<>
+	ARGUS_API inline uint32 GetNumRecords<UHeadlessEntityRecord>()
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->GetNumUHeadlessEntityRecords();
+		}
+
+		return 0u;
+	}
+
+	template<>
 	ARGUS_API inline bool AsyncPreLoadRecord<UHeadlessEntityRecord>(uint32 id, TFunction<void(const UHeadlessEntityRecord*)> callback)
 	{
 		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
@@ -259,6 +306,17 @@ public:
 		}
 
 		return nullptr;
+	}
+
+	template<>
+	ARGUS_API inline uint32 GetNumRecords<UMaterialRecord>()
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->GetNumUMaterialRecords();
+		}
+
+		return 0u;
 	}
 
 	template<>
@@ -315,6 +373,17 @@ public:
 	}
 
 	template<>
+	ARGUS_API inline uint32 GetNumRecords<UObstaclesRecord>()
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->GetNumUObstaclesRecords();
+		}
+
+		return 0u;
+	}
+
+	template<>
 	ARGUS_API inline bool AsyncPreLoadRecord<UObstaclesRecord>(uint32 id, TFunction<void(const UObstaclesRecord*)> callback)
 	{
 		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
@@ -365,6 +434,17 @@ public:
 		}
 
 		return nullptr;
+	}
+
+	template<>
+	ARGUS_API inline uint32 GetNumRecords<UPersistentWorldTranslationRecord>()
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->GetNumUPersistentWorldTranslationRecords();
+		}
+
+		return 0u;
 	}
 
 	template<>
@@ -421,6 +501,17 @@ public:
 	}
 
 	template<>
+	ARGUS_API inline uint32 GetNumRecords<UPlacedArgusActorTeamInfoRecord>()
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->GetNumUPlacedArgusActorTeamInfoRecords();
+		}
+
+		return 0u;
+	}
+
+	template<>
 	ARGUS_API inline bool AsyncPreLoadRecord<UPlacedArgusActorTeamInfoRecord>(uint32 id, TFunction<void(const UPlacedArgusActorTeamInfoRecord*)> callback)
 	{
 		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
@@ -471,6 +562,17 @@ public:
 		}
 
 		return nullptr;
+	}
+
+	template<>
+	ARGUS_API inline uint32 GetNumRecords<UResourceSetRecord>()
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->GetNumUResourceSetRecords();
+		}
+
+		return 0u;
 	}
 
 	template<>
@@ -527,6 +629,17 @@ public:
 	}
 
 	template<>
+	ARGUS_API inline uint32 GetNumRecords<UStructuralEntityTemplateRecord>()
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->GetNumUStructuralEntityTemplateRecords();
+		}
+
+		return 0u;
+	}
+
+	template<>
 	ARGUS_API inline bool AsyncPreLoadRecord<UStructuralEntityTemplateRecord>(uint32 id, TFunction<void(const UStructuralEntityTemplateRecord*)> callback)
 	{
 		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
@@ -577,6 +690,17 @@ public:
 		}
 
 		return nullptr;
+	}
+
+	template<>
+	ARGUS_API inline uint32 GetNumRecords<UTeamAlignmentRecord>()
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->GetNumUTeamAlignmentRecords();
+		}
+
+		return 0u;
 	}
 
 	template<>
@@ -633,6 +757,17 @@ public:
 	}
 
 	template<>
+	ARGUS_API inline uint32 GetNumRecords<UTeamColorRecord>()
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->GetNumUTeamColorRecords();
+		}
+
+		return 0u;
+	}
+
+	template<>
 	ARGUS_API inline bool AsyncPreLoadRecord<UTeamColorRecord>(uint32 id, TFunction<void(const UTeamColorRecord*)> callback)
 	{
 		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
@@ -686,6 +821,17 @@ public:
 	}
 
 	template<>
+	ARGUS_API inline uint32 GetNumRecords<UWorldCellIndexTranslationRecord>()
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->GetNumUWorldCellIndexTranslationRecords();
+		}
+
+		return 0u;
+	}
+
+	template<>
 	ARGUS_API inline bool AsyncPreLoadRecord<UWorldCellIndexTranslationRecord>(uint32 id, TFunction<void(const UWorldCellIndexTranslationRecord*)> callback)
 	{
 		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
@@ -736,6 +882,17 @@ public:
 		}
 
 		return nullptr;
+	}
+
+	template<>
+	ARGUS_API inline uint32 GetNumRecords<UWorldCellRecord>()
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			return staticDatabase->GetNumUWorldCellRecords();
+		}
+
+		return 0u;
 	}
 
 	template<>

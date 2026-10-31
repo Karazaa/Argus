@@ -47,6 +47,11 @@ const UFactionRecord* UFactionRecordDatabase::GetRecord(uint32 id)
 	return m_UFactionRecordsPersistent[id];
 }
 
+uint32 UFactionRecordDatabase::GetNumRecords()
+{
+	return static_cast<uint32>(m_UFactionRecords.Num());
+}
+
 const bool UFactionRecordDatabase::AsyncPreLoadRecord(uint32 id, TFunction<void(const UFactionRecord*)> callback)
 {
 	ARGUS_TRACE(UFactionRecordDatabase::AsyncPreLoadRecord);

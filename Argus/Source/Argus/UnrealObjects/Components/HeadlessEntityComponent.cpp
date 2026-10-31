@@ -37,7 +37,7 @@ void UHeadlessEntityComponent::CreateNewHeadlessEntityRecord()
 
 	ArgusStaticData::LoadStaticDatabaseSynchronous();
 
-	const FString recordName = FString::Printf(TEXT("HeadlessEntity_%s"), *owningActor->GetActorNameOrLabel());
+	const FString recordName = FString::Printf(TEXT("HeadlessEntity_%d"), ArgusStaticData::GetNumRecords<UHeadlessEntityRecord>());
 	UPackage* package = CreatePackage(*UHeadlessEntityRecord::GetPackagePath(recordName));
 	ARGUS_RETURN_ON_NULL(package, ArgusUnrealObjectsLog);
 

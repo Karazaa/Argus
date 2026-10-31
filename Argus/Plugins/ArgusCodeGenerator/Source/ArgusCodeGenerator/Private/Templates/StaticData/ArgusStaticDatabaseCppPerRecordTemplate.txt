@@ -21,7 +21,7 @@ uint32 UArgusStaticDatabase::GetNum#####s()
 
 	if (!m_#####DatabasePersistent)
 	{
-		return nullptr;
+		return 0u;
 	}
 
 	return m_#####DatabasePersistent->GetNumRecords();

@@ -14,6 +14,7 @@ class UObstaclesRecordDatabase : public UDataAsset
 
 public:
 	const UObstaclesRecord* GetRecord(uint32 id);
+	uint32 GetNumRecords();
 	const bool AsyncPreLoadRecord(uint32 id, TFunction<void(const UObstaclesRecord*)> callback = nullptr);
 	bool ResizePersistentObjectPointerArrayToFitRecord(uint32 id);
 	void ResetPersistentObjectPointerArray();

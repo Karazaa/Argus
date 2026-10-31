@@ -14,6 +14,7 @@ class UPersistentWorldTranslationRecordDatabase : public UDataAsset
 
 public:
 	const UPersistentWorldTranslationRecord* GetRecord(uint32 id);
+	uint32 GetNumRecords();
 	const bool AsyncPreLoadRecord(uint32 id, TFunction<void(const UPersistentWorldTranslationRecord*)> callback = nullptr);
 	bool ResizePersistentObjectPointerArrayToFitRecord(uint32 id);
 	void ResetPersistentObjectPointerArray();

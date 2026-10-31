@@ -47,6 +47,11 @@ const UArgusActorRecord* UArgusActorRecordDatabase::GetRecord(uint32 id)
 	return m_UArgusActorRecordsPersistent[id];
 }
 
+uint32 UArgusActorRecordDatabase::GetNumRecords()
+{
+	return static_cast<uint32>(m_UArgusActorRecords.Num());
+}
+
 const bool UArgusActorRecordDatabase::AsyncPreLoadRecord(uint32 id, TFunction<void(const UArgusActorRecord*)> callback)
 {
 	ARGUS_TRACE(UArgusActorRecordDatabase::AsyncPreLoadRecord);

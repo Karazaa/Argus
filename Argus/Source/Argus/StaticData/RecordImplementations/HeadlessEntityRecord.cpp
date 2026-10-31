@@ -3,6 +3,11 @@
 #include "RecordDefinitions/HeadlessEntityRecord.h"
 #include "ArgusStaticData.h"
 
+#if WITH_EDITOR
+#include "Editor.h"
+#include "Engine/World.h"
+#endif // WITH_EDITOR
+
 FString UHeadlessEntityRecord::GetPackagePath(const FString& assetName)
 {
 	return FString::Printf(TEXT("/Game/StaticData/HeadlessEntityRecords/%s"), *assetName);
@@ -10,7 +15,18 @@ FString UHeadlessEntityRecord::GetPackagePath(const FString& assetName)
 
 void UHeadlessEntityRecord::OnAsyncLoaded() const
 {
+#if WITH_EDITOR
+	if (GEditor->bIsSimulatingInEditor || GEditor->PlayWorld != nullptr)
+	{
+		m_entityTemplate.AsyncPreLoadAndStorePtr();
+	}
+	else
+	{
+		m_entityTemplate.LoadAndStorePtr();
+	}
+#else
 	m_entityTemplate.AsyncPreLoadAndStorePtr();
+#endif // WITH_EDITOR
 }
 
 void UHeadlessEntityRecord::ResetSoftPtrLoadStores()

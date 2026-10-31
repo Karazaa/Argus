@@ -47,6 +47,11 @@ const UHeadlessEntityRecord* UHeadlessEntityRecordDatabase::GetRecord(uint32 id)
 	return m_UHeadlessEntityRecordsPersistent[id];
 }
 
+uint32 UHeadlessEntityRecordDatabase::GetNumRecords()
+{
+	return static_cast<uint32>(m_UHeadlessEntityRecords.Num());
+}
+
 const bool UHeadlessEntityRecordDatabase::AsyncPreLoadRecord(uint32 id, TFunction<void(const UHeadlessEntityRecord*)> callback)
 {
 	ARGUS_TRACE(UHeadlessEntityRecordDatabase::AsyncPreLoadRecord);

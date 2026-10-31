@@ -47,6 +47,11 @@ const UWorldCellIndexTranslationRecord* UWorldCellIndexTranslationRecordDatabase
 	return m_UWorldCellIndexTranslationRecordsPersistent[id];
 }
 
+uint32 UWorldCellIndexTranslationRecordDatabase::GetNumRecords()
+{
+	return static_cast<uint32>(m_UWorldCellIndexTranslationRecords.Num());
+}
+
 const bool UWorldCellIndexTranslationRecordDatabase::AsyncPreLoadRecord(uint32 id, TFunction<void(const UWorldCellIndexTranslationRecord*)> callback)
 {
 	ARGUS_TRACE(UWorldCellIndexTranslationRecordDatabase::AsyncPreLoadRecord);

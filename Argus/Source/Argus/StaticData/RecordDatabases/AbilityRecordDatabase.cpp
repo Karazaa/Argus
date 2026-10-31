@@ -47,6 +47,11 @@ const UAbilityRecord* UAbilityRecordDatabase::GetRecord(uint32 id)
 	return m_UAbilityRecordsPersistent[id];
 }
 
+uint32 UAbilityRecordDatabase::GetNumRecords()
+{
+	return static_cast<uint32>(m_UAbilityRecords.Num());
+}
+
 const bool UAbilityRecordDatabase::AsyncPreLoadRecord(uint32 id, TFunction<void(const UAbilityRecord*)> callback)
 {
 	ARGUS_TRACE(UAbilityRecordDatabase::AsyncPreLoadRecord);

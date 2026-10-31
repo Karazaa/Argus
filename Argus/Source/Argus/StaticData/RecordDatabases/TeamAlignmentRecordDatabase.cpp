@@ -47,6 +47,11 @@ const UTeamAlignmentRecord* UTeamAlignmentRecordDatabase::GetRecord(uint32 id)
 	return m_UTeamAlignmentRecordsPersistent[id];
 }
 
+uint32 UTeamAlignmentRecordDatabase::GetNumRecords()
+{
+	return static_cast<uint32>(m_UTeamAlignmentRecords.Num());
+}
+
 const bool UTeamAlignmentRecordDatabase::AsyncPreLoadRecord(uint32 id, TFunction<void(const UTeamAlignmentRecord*)> callback)
 {
 	ARGUS_TRACE(UTeamAlignmentRecordDatabase::AsyncPreLoadRecord);

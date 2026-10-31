@@ -47,6 +47,11 @@ const UTeamColorRecord* UTeamColorRecordDatabase::GetRecord(uint32 id)
 	return m_UTeamColorRecordsPersistent[id];
 }
 
+uint32 UTeamColorRecordDatabase::GetNumRecords()
+{
+	return static_cast<uint32>(m_UTeamColorRecords.Num());
+}
+
 const bool UTeamColorRecordDatabase::AsyncPreLoadRecord(uint32 id, TFunction<void(const UTeamColorRecord*)> callback)
 {
 	ARGUS_TRACE(UTeamColorRecordDatabase::AsyncPreLoadRecord);

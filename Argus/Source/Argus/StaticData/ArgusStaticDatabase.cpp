@@ -55,6 +55,20 @@ const UAbilityRecord* UArgusStaticDatabase::GetUAbilityRecord(uint32 id)
 	return m_UAbilityRecordDatabasePersistent->GetRecord(id);
 }
 
+uint32 UArgusStaticDatabase::GetNumUAbilityRecords()
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUAbilityRecordDatabase();
+
+	if (!m_UAbilityRecordDatabasePersistent)
+	{
+		return 0u;
+	}
+
+	return m_UAbilityRecordDatabasePersistent->GetNumRecords();
+}
+
 const bool UArgusStaticDatabase::AsyncPreLoadUAbilityRecord(uint32 id, TFunction<void(const UAbilityRecord*)> callback)
 {
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
@@ -186,6 +200,20 @@ const UArgusActorRecord* UArgusStaticDatabase::GetUArgusActorRecord(uint32 id)
 	}
 
 	return m_UArgusActorRecordDatabasePersistent->GetRecord(id);
+}
+
+uint32 UArgusStaticDatabase::GetNumUArgusActorRecords()
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUArgusActorRecordDatabase();
+
+	if (!m_UArgusActorRecordDatabasePersistent)
+	{
+		return 0u;
+	}
+
+	return m_UArgusActorRecordDatabasePersistent->GetNumRecords();
 }
 
 const bool UArgusStaticDatabase::AsyncPreLoadUArgusActorRecord(uint32 id, TFunction<void(const UArgusActorRecord*)> callback)
@@ -321,6 +349,20 @@ const UFactionRecord* UArgusStaticDatabase::GetUFactionRecord(uint32 id)
 	return m_UFactionRecordDatabasePersistent->GetRecord(id);
 }
 
+uint32 UArgusStaticDatabase::GetNumUFactionRecords()
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUFactionRecordDatabase();
+
+	if (!m_UFactionRecordDatabasePersistent)
+	{
+		return 0u;
+	}
+
+	return m_UFactionRecordDatabasePersistent->GetNumRecords();
+}
+
 const bool UArgusStaticDatabase::AsyncPreLoadUFactionRecord(uint32 id, TFunction<void(const UFactionRecord*)> callback)
 {
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
@@ -452,6 +494,20 @@ const UHeadlessEntityRecord* UArgusStaticDatabase::GetUHeadlessEntityRecord(uint
 	}
 
 	return m_UHeadlessEntityRecordDatabasePersistent->GetRecord(id);
+}
+
+uint32 UArgusStaticDatabase::GetNumUHeadlessEntityRecords()
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUHeadlessEntityRecordDatabase();
+
+	if (!m_UHeadlessEntityRecordDatabasePersistent)
+	{
+		return 0u;
+	}
+
+	return m_UHeadlessEntityRecordDatabasePersistent->GetNumRecords();
 }
 
 const bool UArgusStaticDatabase::AsyncPreLoadUHeadlessEntityRecord(uint32 id, TFunction<void(const UHeadlessEntityRecord*)> callback)
@@ -587,6 +643,20 @@ const UMaterialRecord* UArgusStaticDatabase::GetUMaterialRecord(uint32 id)
 	return m_UMaterialRecordDatabasePersistent->GetRecord(id);
 }
 
+uint32 UArgusStaticDatabase::GetNumUMaterialRecords()
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUMaterialRecordDatabase();
+
+	if (!m_UMaterialRecordDatabasePersistent)
+	{
+		return 0u;
+	}
+
+	return m_UMaterialRecordDatabasePersistent->GetNumRecords();
+}
+
 const bool UArgusStaticDatabase::AsyncPreLoadUMaterialRecord(uint32 id, TFunction<void(const UMaterialRecord*)> callback)
 {
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
@@ -718,6 +788,20 @@ const UObstaclesRecord* UArgusStaticDatabase::GetUObstaclesRecord(uint32 id)
 	}
 
 	return m_UObstaclesRecordDatabasePersistent->GetRecord(id);
+}
+
+uint32 UArgusStaticDatabase::GetNumUObstaclesRecords()
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUObstaclesRecordDatabase();
+
+	if (!m_UObstaclesRecordDatabasePersistent)
+	{
+		return 0u;
+	}
+
+	return m_UObstaclesRecordDatabasePersistent->GetNumRecords();
 }
 
 const bool UArgusStaticDatabase::AsyncPreLoadUObstaclesRecord(uint32 id, TFunction<void(const UObstaclesRecord*)> callback)
@@ -853,6 +937,20 @@ const UPersistentWorldTranslationRecord* UArgusStaticDatabase::GetUPersistentWor
 	return m_UPersistentWorldTranslationRecordDatabasePersistent->GetRecord(id);
 }
 
+uint32 UArgusStaticDatabase::GetNumUPersistentWorldTranslationRecords()
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUPersistentWorldTranslationRecordDatabase();
+
+	if (!m_UPersistentWorldTranslationRecordDatabasePersistent)
+	{
+		return 0u;
+	}
+
+	return m_UPersistentWorldTranslationRecordDatabasePersistent->GetNumRecords();
+}
+
 const bool UArgusStaticDatabase::AsyncPreLoadUPersistentWorldTranslationRecord(uint32 id, TFunction<void(const UPersistentWorldTranslationRecord*)> callback)
 {
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
@@ -984,6 +1082,20 @@ const UPlacedArgusActorTeamInfoRecord* UArgusStaticDatabase::GetUPlacedArgusActo
 	}
 
 	return m_UPlacedArgusActorTeamInfoRecordDatabasePersistent->GetRecord(id);
+}
+
+uint32 UArgusStaticDatabase::GetNumUPlacedArgusActorTeamInfoRecords()
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUPlacedArgusActorTeamInfoRecordDatabase();
+
+	if (!m_UPlacedArgusActorTeamInfoRecordDatabasePersistent)
+	{
+		return 0u;
+	}
+
+	return m_UPlacedArgusActorTeamInfoRecordDatabasePersistent->GetNumRecords();
 }
 
 const bool UArgusStaticDatabase::AsyncPreLoadUPlacedArgusActorTeamInfoRecord(uint32 id, TFunction<void(const UPlacedArgusActorTeamInfoRecord*)> callback)
@@ -1119,6 +1231,20 @@ const UResourceSetRecord* UArgusStaticDatabase::GetUResourceSetRecord(uint32 id)
 	return m_UResourceSetRecordDatabasePersistent->GetRecord(id);
 }
 
+uint32 UArgusStaticDatabase::GetNumUResourceSetRecords()
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUResourceSetRecordDatabase();
+
+	if (!m_UResourceSetRecordDatabasePersistent)
+	{
+		return 0u;
+	}
+
+	return m_UResourceSetRecordDatabasePersistent->GetNumRecords();
+}
+
 const bool UArgusStaticDatabase::AsyncPreLoadUResourceSetRecord(uint32 id, TFunction<void(const UResourceSetRecord*)> callback)
 {
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
@@ -1250,6 +1376,20 @@ const UStructuralEntityTemplateRecord* UArgusStaticDatabase::GetUStructuralEntit
 	}
 
 	return m_UStructuralEntityTemplateRecordDatabasePersistent->GetRecord(id);
+}
+
+uint32 UArgusStaticDatabase::GetNumUStructuralEntityTemplateRecords()
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUStructuralEntityTemplateRecordDatabase();
+
+	if (!m_UStructuralEntityTemplateRecordDatabasePersistent)
+	{
+		return 0u;
+	}
+
+	return m_UStructuralEntityTemplateRecordDatabasePersistent->GetNumRecords();
 }
 
 const bool UArgusStaticDatabase::AsyncPreLoadUStructuralEntityTemplateRecord(uint32 id, TFunction<void(const UStructuralEntityTemplateRecord*)> callback)
@@ -1385,6 +1525,20 @@ const UTeamAlignmentRecord* UArgusStaticDatabase::GetUTeamAlignmentRecord(uint32
 	return m_UTeamAlignmentRecordDatabasePersistent->GetRecord(id);
 }
 
+uint32 UArgusStaticDatabase::GetNumUTeamAlignmentRecords()
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUTeamAlignmentRecordDatabase();
+
+	if (!m_UTeamAlignmentRecordDatabasePersistent)
+	{
+		return 0u;
+	}
+
+	return m_UTeamAlignmentRecordDatabasePersistent->GetNumRecords();
+}
+
 const bool UArgusStaticDatabase::AsyncPreLoadUTeamAlignmentRecord(uint32 id, TFunction<void(const UTeamAlignmentRecord*)> callback)
 {
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
@@ -1516,6 +1670,20 @@ const UTeamColorRecord* UArgusStaticDatabase::GetUTeamColorRecord(uint32 id)
 	}
 
 	return m_UTeamColorRecordDatabasePersistent->GetRecord(id);
+}
+
+uint32 UArgusStaticDatabase::GetNumUTeamColorRecords()
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUTeamColorRecordDatabase();
+
+	if (!m_UTeamColorRecordDatabasePersistent)
+	{
+		return 0u;
+	}
+
+	return m_UTeamColorRecordDatabasePersistent->GetNumRecords();
 }
 
 const bool UArgusStaticDatabase::AsyncPreLoadUTeamColorRecord(uint32 id, TFunction<void(const UTeamColorRecord*)> callback)
@@ -1651,6 +1819,20 @@ const UWorldCellIndexTranslationRecord* UArgusStaticDatabase::GetUWorldCellIndex
 	return m_UWorldCellIndexTranslationRecordDatabasePersistent->GetRecord(id);
 }
 
+uint32 UArgusStaticDatabase::GetNumUWorldCellIndexTranslationRecords()
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUWorldCellIndexTranslationRecordDatabase();
+
+	if (!m_UWorldCellIndexTranslationRecordDatabasePersistent)
+	{
+		return 0u;
+	}
+
+	return m_UWorldCellIndexTranslationRecordDatabasePersistent->GetNumRecords();
+}
+
 const bool UArgusStaticDatabase::AsyncPreLoadUWorldCellIndexTranslationRecord(uint32 id, TFunction<void(const UWorldCellIndexTranslationRecord*)> callback)
 {
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
@@ -1782,6 +1964,20 @@ const UWorldCellRecord* UArgusStaticDatabase::GetUWorldCellRecord(uint32 id)
 	}
 
 	return m_UWorldCellRecordDatabasePersistent->GetRecord(id);
+}
+
+uint32 UArgusStaticDatabase::GetNumUWorldCellRecords()
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUWorldCellRecordDatabase();
+
+	if (!m_UWorldCellRecordDatabasePersistent)
+	{
+		return 0u;
+	}
+
+	return m_UWorldCellRecordDatabasePersistent->GetNumRecords();
 }
 
 const bool UArgusStaticDatabase::AsyncPreLoadUWorldCellRecord(uint32 id, TFunction<void(const UWorldCellRecord*)> callback)
