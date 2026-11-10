@@ -44,7 +44,7 @@ void UHeadlessEntityComponent::CreateNewHeadlessEntityRecord()
 	UHeadlessEntityRecord* headlessEntityRecord = NewObject<UHeadlessEntityRecord>(package, UHeadlessEntityRecord::StaticClass(), *recordName, RF_Public | RF_Standalone);
 	ARGUS_RETURN_ON_NULL(headlessEntityRecord, ArgusUnrealObjectsLog);
 
-	headlessEntityRecord->UpdateRecord(owningActor->GetActorLocation(), m_entityTemplate);
+	headlessEntityRecord->UpdateRecord(owningActor->GetWorld(), owningActor->GetActorLocation(), m_entityTemplate);
 	headlessEntityRecord->SaveRecord();
 	m_headlessEntityRecordReference.CacheRecordAsReference(headlessEntityRecord);
 
@@ -64,7 +64,7 @@ void UHeadlessEntityComponent::UpdateExistingHeadlessEntityRecord(uint32 headles
 	UHeadlessEntityRecord* headlessEntityRecord = ArgusStaticData::GetMutableRecord<UHeadlessEntityRecord>(headlessEntityId);
 	ARGUS_RETURN_ON_NULL(headlessEntityRecord, ArgusUnrealObjectsLog);
 
-	headlessEntityRecord->UpdateRecord(owningActor->GetActorLocation(), m_entityTemplate);
+	headlessEntityRecord->UpdateRecord(owningActor->GetWorld(), owningActor->GetActorLocation(), m_entityTemplate);
 	headlessEntityRecord->SaveRecord();
 }
 #endif // WITH_EDITOR

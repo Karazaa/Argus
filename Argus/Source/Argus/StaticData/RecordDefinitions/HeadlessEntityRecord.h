@@ -6,6 +6,10 @@
 #include "SoftPtrLoadStore.h"
 #include "HeadlessEntityRecord.generated.h"
 
+#if WITH_EDITOR
+class UWorld;
+#endif // WITH_EDITOR
+
 UCLASS(BlueprintType)
 class ARGUS_API UHeadlessEntityRecord : public UArgusStaticRecord
 {
@@ -25,7 +29,7 @@ public:
 
 #if WITH_EDITOR
 private:
-	bool UpdateRecord(const FVector& initialLocation, const FSoftObjectLoadStore_UArgusEntityTemplate& entityTemplate);
+	bool UpdateRecord(UWorld* world, const FVector& initialLocation, const FSoftObjectLoadStore_UArgusEntityTemplate& entityTemplate);
 	friend class UHeadlessEntityComponent;
 #endif // WITH_EDITOR
 };

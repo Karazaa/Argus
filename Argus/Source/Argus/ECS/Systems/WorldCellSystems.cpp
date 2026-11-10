@@ -23,7 +23,6 @@ void WorldCellSystems::RunSystems(float deltaTime)
 	ArgusIterators::IterateSystemsArgs<WorldCellSystemsArgs>([spatialPartitioningComponent, worldReferenceComponent](const WorldCellSystemsArgs& components)
 	{
 		UpdateWorldCellLocationPerEntity(components, spatialPartitioningComponent);
-		// GetWorldCellRecordPerEntity(components.m_worldCellComponent, worldReferenceComponent);
 	});
 }
 
