@@ -40,12 +40,23 @@ void UHeadlessEntityRecord::ResetSoftPtrLoadStores()
 bool UHeadlessEntityRecord::UpdateRecord(UWorld* world, const FVector& initialLocation, const FSoftObjectLoadStore_UArgusEntityTemplate& entityTemplate)
 {
 	ARGUS_RETURN_ON_NULL_BOOL(world, ArgusStaticDataLog);
+	TSoftObjectPtr<UWorld> worldSoftPtr = TSoftObjectPtr<UWorld>(world);
+
+	// TODO JAMES: We eventually need to get the indices of the world cell record from initialLocation. We don't have a path to do that at edit time however.
+	UWorldCellRecord* newWorldCellRecord = const_cast<UWorldCellRecord*>(WorldCellSystems::GetWorldCellRecordForIndicies(worldSoftPtr, 0, 0));
+	ARGUS_RETURN_ON_NULL_BOOL(newWorldCellRecord, ArgusStaticDataLog);
 
 	bool needsAddWorldCell = true;
 	if (m_entityTemplate)
 	{
-		// TODO JAMES: Remove world cell record instance of headless entity record.
-		needsAddWorldCell = false;
+		UWorldCellRecord* existingWorldCell = const_cast<UWorldCellRecord*>(WorldCellSystems::GetWorldCellRecordForIndicies(worldSoftPtr, 0, 0));
+		ARGUS_RETURN_ON_NULL_BOOL(existingWorldCell, ArgusStaticDataLog);
+
+		if (newWorldCellRecord != existingWorldCell)
+		{
+			// TODO JAMES: Remove this from existingWorldCell->m_headlessEntities.
+			needsAddWorldCell = true;
+		}
 	}
 
 	m_initialLocation = initialLocation;
@@ -56,17 +67,13 @@ bool UHeadlessEntityRecord::UpdateRecord(UWorld* world, const FVector& initialLo
 
 	if (saveResult && needsAddWorldCell)
 	{
-		TSoftObjectPtr<UWorld> worldSoftPtr = TSoftObjectPtr<UWorld>(world);
+		
 
-		// TODO JAMES: We eventually need to get the indices of the world cell record from initialLocation. We don't have a path to do that at edit time however.
-		UWorldCellRecord* worldCellRecord = const_cast<UWorldCellRecord*>(WorldCellSystems::GetWorldCellRecordForIndicies(worldSoftPtr, 0, 0));
-		ARGUS_RETURN_ON_NULL_BOOL(worldCellRecord, ArgusStaticDataLog);
-
-		FUHeadlessEntityRecordReference& headlessEntityRecordReference = worldCellRecord->m_headlessEntities.AddDefaulted_GetRef();
+		FUHeadlessEntityRecordReference& headlessEntityRecordReference = newWorldCellRecord->m_headlessEntities.AddDefaulted_GetRef();
 		headlessEntityRecordReference.CacheRecordAsReference(this);
 
-		worldCellRecord->Modify(true);
-		saveResult = worldCellRecord->SaveRecord();
+		newWorldCellRecord->Modify(true);
+		saveResult = newWorldCellRecord->SaveRecord();
 	}
 
 	return saveResult;
