@@ -45,18 +45,14 @@ bool UHeadlessEntityRecord::UpdateRecord(UWorld* world, const FVector& initialLo
 	// TODO JAMES: We eventually need to get the indices of the world cell record from initialLocation. We don't have a path to do that at edit time however.
 	UWorldCellRecord* newWorldCellRecord = const_cast<UWorldCellRecord*>(WorldCellSystems::GetWorldCellRecordForIndicies(worldSoftPtr, 0, 0));
 	ARGUS_RETURN_ON_NULL_BOOL(newWorldCellRecord, ArgusStaticDataLog);
-
+	UWorldCellRecord* existingWorldCell = nullptr;
 	bool needsAddWorldCell = true;
+
 	if (m_entityTemplate)
 	{
-		UWorldCellRecord* existingWorldCell = const_cast<UWorldCellRecord*>(WorldCellSystems::GetWorldCellRecordForIndicies(worldSoftPtr, 0, 0));
+		existingWorldCell = const_cast<UWorldCellRecord*>(WorldCellSystems::GetWorldCellRecordForIndicies(worldSoftPtr, 0, 0));
 		ARGUS_RETURN_ON_NULL_BOOL(existingWorldCell, ArgusStaticDataLog);
-
-		if (newWorldCellRecord != existingWorldCell)
-		{
-			// TODO JAMES: Remove this from existingWorldCell->m_headlessEntities.
-			needsAddWorldCell = true;
-		}
+		needsAddWorldCell = newWorldCellRecord != existingWorldCell;
 	}
 
 	m_initialLocation = initialLocation;
@@ -67,13 +63,25 @@ bool UHeadlessEntityRecord::UpdateRecord(UWorld* world, const FVector& initialLo
 
 	if (saveResult && needsAddWorldCell)
 	{
-		
-
 		FUHeadlessEntityRecordReference& headlessEntityRecordReference = newWorldCellRecord->m_headlessEntities.AddDefaulted_GetRef();
 		headlessEntityRecordReference.CacheRecordAsReference(this);
 
 		newWorldCellRecord->Modify(true);
 		saveResult = newWorldCellRecord->SaveRecord();
+
+		if (existingWorldCell)
+		{
+			const int32 numRemoved = existingWorldCell->m_headlessEntities.RemoveAll([id = m_id](const FUHeadlessEntityRecordReference& entry)
+			{
+				return entry.GetId() == id;
+			});
+
+			if (numRemoved > 0)
+			{
+				existingWorldCell->Modify(true);
+				saveResult = existingWorldCell->SaveRecord();
+			}
+		}
 	}
 
 	return saveResult;
