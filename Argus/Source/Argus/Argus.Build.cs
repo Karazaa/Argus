@@ -8,7 +8,22 @@ public class Argus : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "EnhancedInput", "ImGui", "InputCore", "NavigationSystem", "Navmesh", "RHI", "RenderCore", "SourceControl", "UMG" });
+		PublicDependencyModuleNames.AddRange(new string[] 
+        { 
+            "Core", 
+            "CoreUObject", 
+            "DeveloperSettings", 
+            "Engine", 
+            "EnhancedInput", 
+            "ImGui", 
+            "InputCore", 
+            "NavigationSystem", 
+            "Navmesh", 
+            "RHI", 
+            "RenderCore", 
+            "SourceControl", 
+            "UMG" 
+        });
 
         PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
 
@@ -18,6 +33,16 @@ public class Argus : ModuleRules
             PrivateDependencyModuleNames.AddRange(new string[] { "UnrealEd" });
         }
 
-        PublicIncludePaths.AddRange(new string[] { "Argus/ECS/", "Argus/FunctionalTesting/", "Argus/Memory/", "Argus/Persistence/", "Argus/StaticData/", "Argus/UI/", "Argus/UnrealObjects/", "Argus/Utilities/", });
+        PublicIncludePaths.AddRange(new string[] 
+        { 
+            "Argus/ECS/", 
+            "Argus/FunctionalTesting/", 
+            "Argus/Memory/", 
+            "Argus/Persistence/", 
+            "Argus/StaticData/", 
+            "Argus/UI/", 
+            "Argus/UnrealObjects/", 
+            "Argus/Utilities/", 
+        });
     }
 }
