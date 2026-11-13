@@ -18,6 +18,10 @@ public:
 	static const UWorldCellRecord* GetWorldCellRecordForIndicies(TSoftObjectPtr<UWorld>& persistentWorld, int32 worldCellX, int32 worldCellY);
 	static const UWorldCellRecord* GetWorldCellRecordPerEntity(const WorldCellComponent* worldCellComponent, const WorldReferenceComponent* worldReferenceComponent);
 
+#if WITH_EDITOR
+	static UWorldCellRecord* GetWorldCellRecordForLocation(UWorld* world, const FVector& location);
+#endif // WITH_EDITOR
+
 private:
 	static void UpdateWorldCellLocationPerEntity(const WorldCellSystemsArgs& components, const SpatialPartitioningComponent* spatialPartitioningComponent);
 };

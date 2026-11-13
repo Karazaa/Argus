@@ -11,6 +11,12 @@
 #include "RecordDefinitions/WorldCellRecord.h"
 #include "SystemArgumentDefinitions/WorldCellSystemsArgs.h"
 
+#if WITH_EDITOR
+#include "ArgusSettings.h"
+#include "ArgusEditorDataLookups.h"
+#include "DataComponentDefinitions/SpatialPartitioningComponentData.h"
+#endif // WITH_EDITOR
+
 void WorldCellSystems::RunSystems(float deltaTime)
 {
 	ARGUS_TRACE(WorldCellSystems::RunSystems);
@@ -65,6 +71,29 @@ const UWorldCellRecord* WorldCellSystems::GetWorldCellRecordPerEntity(const Worl
 
 	return worldCellRecord;
 }
+
+#if WITH_EDITOR
+UWorldCellRecord* WorldCellSystems::GetWorldCellRecordForLocation(UWorld* world, const FVector& location)
+{
+	const UArgusSettings* argusSettings = GetDefault<UArgusSettings>();
+	ARGUS_RETURN_ON_NULL_POINTER(argusSettings, ArgusECSLog);
+
+	const UArgusEditorDataLookups* argusEditorDataLookup = argusSettings->m_argusEditorDataLookups.LoadSynchronous();
+	ARGUS_RETURN_ON_NULL_POINTER(argusEditorDataLookup, ArgusECSLog);
+
+	const USpatialPartitioningComponentData* spatialParitioningComponentData = argusEditorDataLookup->m_spatialPartitioningComponentData.LoadSynchronous();
+	ARGUS_RETURN_ON_NULL_POINTER(spatialParitioningComponentData, ArgusECSLog);
+
+	const float cellX = ArgusMath::SafeDivide(location.Y, spatialParitioningComponentData->m_worldCellExtent);
+	const float cellY = ArgusMath::SafeDivide(location.X, spatialParitioningComponentData->m_worldCellExtent);
+
+	const int32 cellXCoordinate = cellX < 0.0f ? FMath::CeilToInt32(cellX) : FMath::FloorToInt32(cellX);
+	const int32 cellYCoordinate = cellY < 0.0f ? FMath::CeilToInt32(cellY) : FMath::FloorToInt32(cellY);
+	
+	TSoftObjectPtr<UWorld> worldSoftPtr = TSoftObjectPtr<UWorld>(world);
+	return const_cast<UWorldCellRecord*>(GetWorldCellRecordForIndicies(worldSoftPtr, cellXCoordinate, cellYCoordinate));
+}
+#endif // WITH_EDITOR
 
 void WorldCellSystems::UpdateWorldCellLocationPerEntity(const WorldCellSystemsArgs& components, const SpatialPartitioningComponent* spatialPartitioningComponent)
 {

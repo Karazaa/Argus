@@ -19,7 +19,6 @@ public:
 #endif // WITH_EDITOR
 
 #if WITH_EDITORONLY_DATA
-protected:
 	UPROPERTY(Config, EditAnywhere)
 	TSoftObjectPtr<UArgusEditorDataLookups> m_argusEditorDataLookups = nullptr;
 #endif // WITH_EDITORONLY_DATA
