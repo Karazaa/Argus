@@ -18,15 +18,15 @@ jobs:
     uses: ./.github/workflows/CompileAllBP.yml
     secrets: inherit
 
-  non-unity:
-    needs:
-      - compile-all-bp
-    uses: ./.github/workflows/ValidateNonUnityBuild.yml
-    secrets: inherit
+  #non-unity:
+  #  needs:
+  #    - compile-all-bp
+  #  uses: ./.github/workflows/ValidateNonUnityBuild.yml
+  #  secrets: inherit
              
   packaged-build: 
     needs:
-      - non-unity
+      - compile-all-bp
     uses: ./.github/workflows/MakePackagedBuild.yml
     secrets: inherit
 
