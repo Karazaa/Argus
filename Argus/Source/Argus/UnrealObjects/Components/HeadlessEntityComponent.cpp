@@ -3,6 +3,7 @@
 #include "HeadlessEntityComponent.h"
 #include "ArgusStaticData.h"
 #include "FileHelpers.h"
+#include "GameFramework/Actor.h"
 #include "RecordDefinitions/HeadlessEntityRecord.h"
 
 UHeadlessEntityComponent::UHeadlessEntityComponent()

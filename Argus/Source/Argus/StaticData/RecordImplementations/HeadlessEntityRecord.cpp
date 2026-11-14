@@ -40,17 +40,15 @@ void UHeadlessEntityRecord::ResetSoftPtrLoadStores()
 bool UHeadlessEntityRecord::UpdateRecord(UWorld* world, const FVector& initialLocation, const FSoftObjectLoadStore_UArgusEntityTemplate& entityTemplate)
 {
 	ARGUS_RETURN_ON_NULL_BOOL(world, ArgusStaticDataLog);
-	TSoftObjectPtr<UWorld> worldSoftPtr = TSoftObjectPtr<UWorld>(world);
 
-	// TODO JAMES: We eventually need to get the indices of the world cell record from initialLocation. We don't have a path to do that at edit time however.
-	UWorldCellRecord* newWorldCellRecord = const_cast<UWorldCellRecord*>(WorldCellSystems::GetWorldCellRecordForIndicies(worldSoftPtr, 0, 0));
+	UWorldCellRecord* newWorldCellRecord = WorldCellSystems::GetWorldCellRecordForLocation(world, initialLocation);
 	ARGUS_RETURN_ON_NULL_BOOL(newWorldCellRecord, ArgusStaticDataLog);
 	UWorldCellRecord* existingWorldCell = nullptr;
 	bool needsAddWorldCell = true;
 
 	if (m_entityTemplate)
 	{
-		existingWorldCell = const_cast<UWorldCellRecord*>(WorldCellSystems::GetWorldCellRecordForIndicies(worldSoftPtr, 0, 0));
+		existingWorldCell = WorldCellSystems::GetWorldCellRecordForLocation(world, m_initialLocation);
 		ARGUS_RETURN_ON_NULL_BOOL(existingWorldCell, ArgusStaticDataLog);
 		needsAddWorldCell = newWorldCellRecord != existingWorldCell;
 	}
