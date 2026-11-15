@@ -1,10 +1,13 @@
 // Copyright Karazaa. This is a part of an RTS project called Argus.
 
 #include "HeadlessEntityComponent.h"
+
+#if WITH_EDITOR
 #include "ArgusStaticData.h"
 #include "FileHelpers.h"
 #include "GameFramework/Actor.h"
 #include "RecordDefinitions/HeadlessEntityRecord.h"
+#endif // WITH_EDITOR
 
 UHeadlessEntityComponent::UHeadlessEntityComponent()
 {
