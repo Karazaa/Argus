@@ -5,6 +5,10 @@
 #include "GameFramework/Actor.h"
 #include "ArgusHeadlessActor.generated.h"
 
+#if WITH_EDITOR
+class UHeadlessEntityComponent;
+#endif // WITH_EDITOR
+
 UCLASS(meta = (DisableNativeTick))
 class ARGUS_API AArgusHeadlessActor : public AActor
 {
@@ -14,6 +18,12 @@ public:
 	AArgusHeadlessActor();
 
 #if WITH_EDITOR
-	void OnHeadlessActorUpdated() const;
+	virtual void Destroyed() override;
+
+	bool IsInValidContextForRecordEditing() const;
+	void OnHeadlessActorUpdated(bool initialUpdate) const;
+
+private:
+	void IterateHeadlessEntityComponents(const TFunctionRef<void(UHeadlessEntityComponent*)>& function) const;
 #endif // WITH_EDITOR
 };

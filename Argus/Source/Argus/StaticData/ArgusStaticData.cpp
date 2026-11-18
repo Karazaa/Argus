@@ -89,6 +89,17 @@ uint32 ArgusStaticData::AddRecordToDatabase(UArgusStaticRecord* record)
 	return 0u;
 }
 
+bool ArgusStaticData::IsDatabaseLoaded()
+{
+	const UArgusStaticDatabase* instance = UArgusStaticDatabase::GetInstance();
+	if (!instance)
+	{
+		return false;
+	}
+
+	return instance != GetDefault<UArgusStaticDatabase>();
+}
+
 UArgusStaticDatabase* ArgusStaticData::LoadStaticDatabaseSynchronous()
 {
 	ARGUS_TRACE(ArgusStaticData::LoadStaticDatabaseSynchronous);

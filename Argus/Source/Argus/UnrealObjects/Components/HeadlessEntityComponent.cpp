@@ -16,6 +16,10 @@ UHeadlessEntityComponent::UHeadlessEntityComponent()
 }
 
 #if WITH_EDITOR
+void UHeadlessEntityComponent::OnHeadlessActorAdded()
+{
+}
+
 void UHeadlessEntityComponent::OnHeadlessActorUpdated(const FTransform& actorTransform)
 {
 	if (!m_entityTemplate)
@@ -32,6 +36,10 @@ void UHeadlessEntityComponent::OnHeadlessActorUpdated(const FTransform& actorTra
 	{
 		UpdateExistingHeadlessEntityRecord(recordId);
 	}
+}
+
+void UHeadlessEntityComponent::OnHeadlessActorDestroyed()
+{
 }
 
 void UHeadlessEntityComponent::CreateNewHeadlessEntityRecord()

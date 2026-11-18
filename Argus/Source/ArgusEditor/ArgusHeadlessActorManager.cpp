@@ -52,7 +52,7 @@ void ArgusHeadlessActorManager::OnLevelActorAdded(AActor* actor)
 		return;
 	}
 
-	argusHeadlessActor->OnHeadlessActorUpdated();
+	argusHeadlessActor->OnHeadlessActorUpdated(true);
 }
 
 void ArgusHeadlessActorManager::OnDuplicateActorsBegin()
@@ -73,7 +73,7 @@ void ArgusHeadlessActorManager::OnActorsMoved(TArray<AActor*>& actors) const
 	{
 		if (AArgusHeadlessActor* argusHeadlessActor = Cast<AArgusHeadlessActor>(actors[i]))
 		{
-			argusHeadlessActor->OnHeadlessActorUpdated();
+			argusHeadlessActor->OnHeadlessActorUpdated(false);
 		}
 	}
 }

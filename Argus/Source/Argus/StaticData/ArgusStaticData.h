@@ -36,7 +36,7 @@ public:
 	static void IterateAllRecordsOfType(const TFunctionRef<void(ArgusStaticRecord*)>& function) {}
 
 	static uint32 AddRecordToDatabase(UArgusStaticRecord* record);
-	static bool IsDatabaseLoaded() { return UArgusStaticDatabase::GetInstance() != nullptr; }
+	static bool IsDatabaseLoaded();
 	static UArgusStaticDatabase* LoadStaticDatabaseSynchronous();
 #endif //WITH_EDITOR
 

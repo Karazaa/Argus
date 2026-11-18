@@ -16,14 +16,15 @@ public:
 	UHeadlessEntityComponent();
 
 #if WITH_EDITOR
-	virtual void OnHeadlessActorUpdated(const FTransform& actorTransform);
+	void OnHeadlessActorAdded();
+	void OnHeadlessActorUpdated(const FTransform& actorTransform);
+	void OnHeadlessActorDestroyed();
 protected:
-	virtual void CreateNewHeadlessEntityRecord();
-	virtual void UpdateExistingHeadlessEntityRecord(uint32 headlessEntityRecordId);
+	void CreateNewHeadlessEntityRecord();
+	void UpdateExistingHeadlessEntityRecord(uint32 headlessEntityRecordId);
 #endif // WITH_EDITOR
 
 #if WITH_EDITORONLY_DATA
-
 	UPROPERTY(EditAnywhere)
 	FSoftObjectLoadStore_UArgusEntityTemplate m_entityTemplate;
 
