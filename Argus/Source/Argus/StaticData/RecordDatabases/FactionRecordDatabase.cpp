@@ -150,6 +150,10 @@ UFactionRecord* UFactionRecordDatabase::GetMutableRecord(uint32 id)
 	return nullptr;
 }
 
+void UFactionRecordDatabase::DeleteRecord(uint32 id)
+{
+}
+
 void UFactionRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
 {
 	Super::PreSave(saveContext);

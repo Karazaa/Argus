@@ -33,6 +33,9 @@ public:
 	static ArgusStaticRecord* GetMutableRecord(uint32 id) { return nullptr; }
 
 	template<typename ArgusStaticRecord>
+	static void DeleteRecord(uint32 id) {}
+
+	template<typename ArgusStaticRecord>
 	static void IterateAllRecordsOfType(const TFunctionRef<void(ArgusStaticRecord*)>& function) {}
 
 	static uint32 AddRecordToDatabase(UArgusStaticRecord* record);
@@ -84,6 +87,15 @@ public:
 		}
 
 		return nullptr;
+	}
+
+	template<>
+	ARGUS_API inline void DeleteRecord<UAbilityRecord>(uint32 id)
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			staticDatabase->DeleteUAbilityRecord(id);
+		}
 	}
 
 	template<>
@@ -151,6 +163,15 @@ public:
 	}
 
 	template<>
+	ARGUS_API inline void DeleteRecord<UArgusActorRecord>(uint32 id)
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			staticDatabase->DeleteUArgusActorRecord(id);
+		}
+	}
+
+	template<>
 	ARGUS_API inline void IterateAllRecordsOfType<UArgusActorRecord>(const TFunctionRef<void(UArgusActorRecord*)>& function)
 	{
 		if (UArgusStaticDatabase* staticDatabase = LoadStaticDatabaseSynchronous())
@@ -212,6 +233,15 @@ public:
 		}
 
 		return nullptr;
+	}
+
+	template<>
+	ARGUS_API inline void DeleteRecord<UFactionRecord>(uint32 id)
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			staticDatabase->DeleteUFactionRecord(id);
+		}
 	}
 
 	template<>
@@ -279,6 +309,15 @@ public:
 	}
 
 	template<>
+	ARGUS_API inline void DeleteRecord<UHeadlessEntityRecord>(uint32 id)
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			staticDatabase->DeleteUHeadlessEntityRecord(id);
+		}
+	}
+
+	template<>
 	ARGUS_API inline void IterateAllRecordsOfType<UHeadlessEntityRecord>(const TFunctionRef<void(UHeadlessEntityRecord*)>& function)
 	{
 		if (UArgusStaticDatabase* staticDatabase = LoadStaticDatabaseSynchronous())
@@ -340,6 +379,15 @@ public:
 		}
 
 		return nullptr;
+	}
+
+	template<>
+	ARGUS_API inline void DeleteRecord<UMaterialRecord>(uint32 id)
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			staticDatabase->DeleteUMaterialRecord(id);
+		}
 	}
 
 	template<>
@@ -407,6 +455,15 @@ public:
 	}
 
 	template<>
+	ARGUS_API inline void DeleteRecord<UObstaclesRecord>(uint32 id)
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			staticDatabase->DeleteUObstaclesRecord(id);
+		}
+	}
+
+	template<>
 	ARGUS_API inline void IterateAllRecordsOfType<UObstaclesRecord>(const TFunctionRef<void(UObstaclesRecord*)>& function)
 	{
 		if (UArgusStaticDatabase* staticDatabase = LoadStaticDatabaseSynchronous())
@@ -468,6 +525,15 @@ public:
 		}
 
 		return nullptr;
+	}
+
+	template<>
+	ARGUS_API inline void DeleteRecord<UPersistentWorldTranslationRecord>(uint32 id)
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			staticDatabase->DeleteUPersistentWorldTranslationRecord(id);
+		}
 	}
 
 	template<>
@@ -535,6 +601,15 @@ public:
 	}
 
 	template<>
+	ARGUS_API inline void DeleteRecord<UPlacedArgusActorTeamInfoRecord>(uint32 id)
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			staticDatabase->DeleteUPlacedArgusActorTeamInfoRecord(id);
+		}
+	}
+
+	template<>
 	ARGUS_API inline void IterateAllRecordsOfType<UPlacedArgusActorTeamInfoRecord>(const TFunctionRef<void(UPlacedArgusActorTeamInfoRecord*)>& function)
 	{
 		if (UArgusStaticDatabase* staticDatabase = LoadStaticDatabaseSynchronous())
@@ -596,6 +671,15 @@ public:
 		}
 
 		return nullptr;
+	}
+
+	template<>
+	ARGUS_API inline void DeleteRecord<UResourceSetRecord>(uint32 id)
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			staticDatabase->DeleteUResourceSetRecord(id);
+		}
 	}
 
 	template<>
@@ -663,6 +747,15 @@ public:
 	}
 
 	template<>
+	ARGUS_API inline void DeleteRecord<UStructuralEntityTemplateRecord>(uint32 id)
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			staticDatabase->DeleteUStructuralEntityTemplateRecord(id);
+		}
+	}
+
+	template<>
 	ARGUS_API inline void IterateAllRecordsOfType<UStructuralEntityTemplateRecord>(const TFunctionRef<void(UStructuralEntityTemplateRecord*)>& function)
 	{
 		if (UArgusStaticDatabase* staticDatabase = LoadStaticDatabaseSynchronous())
@@ -724,6 +817,15 @@ public:
 		}
 
 		return nullptr;
+	}
+
+	template<>
+	ARGUS_API inline void DeleteRecord<UTeamAlignmentRecord>(uint32 id)
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			staticDatabase->DeleteUTeamAlignmentRecord(id);
+		}
 	}
 
 	template<>
@@ -791,6 +893,15 @@ public:
 	}
 
 	template<>
+	ARGUS_API inline void DeleteRecord<UTeamColorRecord>(uint32 id)
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			staticDatabase->DeleteUTeamColorRecord(id);
+		}
+	}
+
+	template<>
 	ARGUS_API inline void IterateAllRecordsOfType<UTeamColorRecord>(const TFunctionRef<void(UTeamColorRecord*)>& function)
 	{
 		if (UArgusStaticDatabase* staticDatabase = LoadStaticDatabaseSynchronous())
@@ -855,6 +966,15 @@ public:
 	}
 
 	template<>
+	ARGUS_API inline void DeleteRecord<UWorldCellIndexTranslationRecord>(uint32 id)
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			staticDatabase->DeleteUWorldCellIndexTranslationRecord(id);
+		}
+	}
+
+	template<>
 	ARGUS_API inline void IterateAllRecordsOfType<UWorldCellIndexTranslationRecord>(const TFunctionRef<void(UWorldCellIndexTranslationRecord*)>& function)
 	{
 		if (UArgusStaticDatabase* staticDatabase = LoadStaticDatabaseSynchronous())
@@ -916,6 +1036,15 @@ public:
 		}
 
 		return nullptr;
+	}
+
+	template<>
+	ARGUS_API inline void DeleteRecord<UWorldCellRecord>(uint32 id)
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			staticDatabase->DeleteUWorldCellRecord(id);
+		}
 	}
 
 	template<>

@@ -150,6 +150,10 @@ UTeamColorRecord* UTeamColorRecordDatabase::GetMutableRecord(uint32 id)
 	return nullptr;
 }
 
+void UTeamColorRecordDatabase::DeleteRecord(uint32 id)
+{
+}
+
 void UTeamColorRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
 {
 	Super::PreSave(saveContext);

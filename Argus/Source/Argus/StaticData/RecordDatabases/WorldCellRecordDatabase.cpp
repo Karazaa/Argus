@@ -150,6 +150,10 @@ UWorldCellRecord* UWorldCellRecordDatabase::GetMutableRecord(uint32 id)
 	return nullptr;
 }
 
+void UWorldCellRecordDatabase::DeleteRecord(uint32 id)
+{
+}
+
 void UWorldCellRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
 {
 	Super::PreSave(saveContext);

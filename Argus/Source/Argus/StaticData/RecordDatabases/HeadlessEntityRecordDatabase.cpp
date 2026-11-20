@@ -150,6 +150,10 @@ UHeadlessEntityRecord* UHeadlessEntityRecordDatabase::GetMutableRecord(uint32 id
 	return nullptr;
 }
 
+void UHeadlessEntityRecordDatabase::DeleteRecord(uint32 id)
+{
+}
+
 void UHeadlessEntityRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
 {
 	Super::PreSave(saveContext);

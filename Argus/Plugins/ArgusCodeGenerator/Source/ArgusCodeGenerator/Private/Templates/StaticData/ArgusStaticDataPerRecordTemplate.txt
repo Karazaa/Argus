@@ -46,7 +46,7 @@
 	}
 
 	template<>
-	ARGUS_API inline void DeleteRecord(uint32 id)
+	ARGUS_API inline void DeleteRecord<#####>(uint32 id)
 	{
 		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
 		{

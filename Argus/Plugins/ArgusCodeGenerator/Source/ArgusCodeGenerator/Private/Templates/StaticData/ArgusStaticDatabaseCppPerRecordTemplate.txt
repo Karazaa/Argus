@@ -58,6 +58,7 @@ void UArgusStaticDatabase::ResetLoaded#####PointerArray()
 
 	LazyLoad#####Database();
 
+	ARGUS_RETURN_ON_NULL_POINTER(m_#####DatabasePersistent, ArgusStaticDataLog);
 	if (!m_#####DatabasePersistent)
 	{
 		return nullptr;

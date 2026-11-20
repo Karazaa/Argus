@@ -150,6 +150,10 @@ UTeamAlignmentRecord* UTeamAlignmentRecordDatabase::GetMutableRecord(uint32 id)
 	return nullptr;
 }
 
+void UTeamAlignmentRecordDatabase::DeleteRecord(uint32 id)
+{
+}
+
 void UTeamAlignmentRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
 {
 	Super::PreSave(saveContext);

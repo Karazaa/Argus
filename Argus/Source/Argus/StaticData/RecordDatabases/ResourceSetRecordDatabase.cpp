@@ -150,6 +150,10 @@ UResourceSetRecord* UResourceSetRecordDatabase::GetMutableRecord(uint32 id)
 	return nullptr;
 }
 
+void UResourceSetRecordDatabase::DeleteRecord(uint32 id)
+{
+}
+
 void UResourceSetRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
 {
 	Super::PreSave(saveContext);

@@ -108,6 +108,20 @@ UAbilityRecord* UArgusStaticDatabase::GetMutableUAbilityRecord(uint32 id)
 	return m_UAbilityRecordDatabasePersistent->GetMutableRecord(id);
 }
 
+void UArgusStaticDatabase::DeleteUAbilityRecord(uint32 id)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUAbilityRecordDatabase();
+
+	if (!m_UAbilityRecordDatabasePersistent)
+	{
+		return;
+	}
+
+	m_UAbilityRecordDatabasePersistent->DeleteRecord(id);
+}
+
 uint32 UArgusStaticDatabase::AddUAbilityRecordToDatabase(UAbilityRecord* record)
 {
 	LazyLoadUAbilityRecordDatabase();
@@ -253,6 +267,20 @@ UArgusActorRecord* UArgusStaticDatabase::GetMutableUArgusActorRecord(uint32 id)
 	}
 
 	return m_UArgusActorRecordDatabasePersistent->GetMutableRecord(id);
+}
+
+void UArgusStaticDatabase::DeleteUArgusActorRecord(uint32 id)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUArgusActorRecordDatabase();
+
+	if (!m_UArgusActorRecordDatabasePersistent)
+	{
+		return;
+	}
+
+	m_UArgusActorRecordDatabasePersistent->DeleteRecord(id);
 }
 
 uint32 UArgusStaticDatabase::AddUArgusActorRecordToDatabase(UArgusActorRecord* record)
@@ -402,6 +430,20 @@ UFactionRecord* UArgusStaticDatabase::GetMutableUFactionRecord(uint32 id)
 	return m_UFactionRecordDatabasePersistent->GetMutableRecord(id);
 }
 
+void UArgusStaticDatabase::DeleteUFactionRecord(uint32 id)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUFactionRecordDatabase();
+
+	if (!m_UFactionRecordDatabasePersistent)
+	{
+		return;
+	}
+
+	m_UFactionRecordDatabasePersistent->DeleteRecord(id);
+}
+
 uint32 UArgusStaticDatabase::AddUFactionRecordToDatabase(UFactionRecord* record)
 {
 	LazyLoadUFactionRecordDatabase();
@@ -547,6 +589,20 @@ UHeadlessEntityRecord* UArgusStaticDatabase::GetMutableUHeadlessEntityRecord(uin
 	}
 
 	return m_UHeadlessEntityRecordDatabasePersistent->GetMutableRecord(id);
+}
+
+void UArgusStaticDatabase::DeleteUHeadlessEntityRecord(uint32 id)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUHeadlessEntityRecordDatabase();
+
+	if (!m_UHeadlessEntityRecordDatabasePersistent)
+	{
+		return;
+	}
+
+	m_UHeadlessEntityRecordDatabasePersistent->DeleteRecord(id);
 }
 
 uint32 UArgusStaticDatabase::AddUHeadlessEntityRecordToDatabase(UHeadlessEntityRecord* record)
@@ -696,6 +752,20 @@ UMaterialRecord* UArgusStaticDatabase::GetMutableUMaterialRecord(uint32 id)
 	return m_UMaterialRecordDatabasePersistent->GetMutableRecord(id);
 }
 
+void UArgusStaticDatabase::DeleteUMaterialRecord(uint32 id)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUMaterialRecordDatabase();
+
+	if (!m_UMaterialRecordDatabasePersistent)
+	{
+		return;
+	}
+
+	m_UMaterialRecordDatabasePersistent->DeleteRecord(id);
+}
+
 uint32 UArgusStaticDatabase::AddUMaterialRecordToDatabase(UMaterialRecord* record)
 {
 	LazyLoadUMaterialRecordDatabase();
@@ -841,6 +911,20 @@ UObstaclesRecord* UArgusStaticDatabase::GetMutableUObstaclesRecord(uint32 id)
 	}
 
 	return m_UObstaclesRecordDatabasePersistent->GetMutableRecord(id);
+}
+
+void UArgusStaticDatabase::DeleteUObstaclesRecord(uint32 id)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUObstaclesRecordDatabase();
+
+	if (!m_UObstaclesRecordDatabasePersistent)
+	{
+		return;
+	}
+
+	m_UObstaclesRecordDatabasePersistent->DeleteRecord(id);
 }
 
 uint32 UArgusStaticDatabase::AddUObstaclesRecordToDatabase(UObstaclesRecord* record)
@@ -990,6 +1074,20 @@ UPersistentWorldTranslationRecord* UArgusStaticDatabase::GetMutableUPersistentWo
 	return m_UPersistentWorldTranslationRecordDatabasePersistent->GetMutableRecord(id);
 }
 
+void UArgusStaticDatabase::DeleteUPersistentWorldTranslationRecord(uint32 id)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUPersistentWorldTranslationRecordDatabase();
+
+	if (!m_UPersistentWorldTranslationRecordDatabasePersistent)
+	{
+		return;
+	}
+
+	m_UPersistentWorldTranslationRecordDatabasePersistent->DeleteRecord(id);
+}
+
 uint32 UArgusStaticDatabase::AddUPersistentWorldTranslationRecordToDatabase(UPersistentWorldTranslationRecord* record)
 {
 	LazyLoadUPersistentWorldTranslationRecordDatabase();
@@ -1135,6 +1233,20 @@ UPlacedArgusActorTeamInfoRecord* UArgusStaticDatabase::GetMutableUPlacedArgusAct
 	}
 
 	return m_UPlacedArgusActorTeamInfoRecordDatabasePersistent->GetMutableRecord(id);
+}
+
+void UArgusStaticDatabase::DeleteUPlacedArgusActorTeamInfoRecord(uint32 id)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUPlacedArgusActorTeamInfoRecordDatabase();
+
+	if (!m_UPlacedArgusActorTeamInfoRecordDatabasePersistent)
+	{
+		return;
+	}
+
+	m_UPlacedArgusActorTeamInfoRecordDatabasePersistent->DeleteRecord(id);
 }
 
 uint32 UArgusStaticDatabase::AddUPlacedArgusActorTeamInfoRecordToDatabase(UPlacedArgusActorTeamInfoRecord* record)
@@ -1284,6 +1396,20 @@ UResourceSetRecord* UArgusStaticDatabase::GetMutableUResourceSetRecord(uint32 id
 	return m_UResourceSetRecordDatabasePersistent->GetMutableRecord(id);
 }
 
+void UArgusStaticDatabase::DeleteUResourceSetRecord(uint32 id)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUResourceSetRecordDatabase();
+
+	if (!m_UResourceSetRecordDatabasePersistent)
+	{
+		return;
+	}
+
+	m_UResourceSetRecordDatabasePersistent->DeleteRecord(id);
+}
+
 uint32 UArgusStaticDatabase::AddUResourceSetRecordToDatabase(UResourceSetRecord* record)
 {
 	LazyLoadUResourceSetRecordDatabase();
@@ -1429,6 +1555,20 @@ UStructuralEntityTemplateRecord* UArgusStaticDatabase::GetMutableUStructuralEnti
 	}
 
 	return m_UStructuralEntityTemplateRecordDatabasePersistent->GetMutableRecord(id);
+}
+
+void UArgusStaticDatabase::DeleteUStructuralEntityTemplateRecord(uint32 id)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUStructuralEntityTemplateRecordDatabase();
+
+	if (!m_UStructuralEntityTemplateRecordDatabasePersistent)
+	{
+		return;
+	}
+
+	m_UStructuralEntityTemplateRecordDatabasePersistent->DeleteRecord(id);
 }
 
 uint32 UArgusStaticDatabase::AddUStructuralEntityTemplateRecordToDatabase(UStructuralEntityTemplateRecord* record)
@@ -1578,6 +1718,20 @@ UTeamAlignmentRecord* UArgusStaticDatabase::GetMutableUTeamAlignmentRecord(uint3
 	return m_UTeamAlignmentRecordDatabasePersistent->GetMutableRecord(id);
 }
 
+void UArgusStaticDatabase::DeleteUTeamAlignmentRecord(uint32 id)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUTeamAlignmentRecordDatabase();
+
+	if (!m_UTeamAlignmentRecordDatabasePersistent)
+	{
+		return;
+	}
+
+	m_UTeamAlignmentRecordDatabasePersistent->DeleteRecord(id);
+}
+
 uint32 UArgusStaticDatabase::AddUTeamAlignmentRecordToDatabase(UTeamAlignmentRecord* record)
 {
 	LazyLoadUTeamAlignmentRecordDatabase();
@@ -1723,6 +1877,20 @@ UTeamColorRecord* UArgusStaticDatabase::GetMutableUTeamColorRecord(uint32 id)
 	}
 
 	return m_UTeamColorRecordDatabasePersistent->GetMutableRecord(id);
+}
+
+void UArgusStaticDatabase::DeleteUTeamColorRecord(uint32 id)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUTeamColorRecordDatabase();
+
+	if (!m_UTeamColorRecordDatabasePersistent)
+	{
+		return;
+	}
+
+	m_UTeamColorRecordDatabasePersistent->DeleteRecord(id);
 }
 
 uint32 UArgusStaticDatabase::AddUTeamColorRecordToDatabase(UTeamColorRecord* record)
@@ -1872,6 +2040,20 @@ UWorldCellIndexTranslationRecord* UArgusStaticDatabase::GetMutableUWorldCellInde
 	return m_UWorldCellIndexTranslationRecordDatabasePersistent->GetMutableRecord(id);
 }
 
+void UArgusStaticDatabase::DeleteUWorldCellIndexTranslationRecord(uint32 id)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUWorldCellIndexTranslationRecordDatabase();
+
+	if (!m_UWorldCellIndexTranslationRecordDatabasePersistent)
+	{
+		return;
+	}
+
+	m_UWorldCellIndexTranslationRecordDatabasePersistent->DeleteRecord(id);
+}
+
 uint32 UArgusStaticDatabase::AddUWorldCellIndexTranslationRecordToDatabase(UWorldCellIndexTranslationRecord* record)
 {
 	LazyLoadUWorldCellIndexTranslationRecordDatabase();
@@ -2017,6 +2199,20 @@ UWorldCellRecord* UArgusStaticDatabase::GetMutableUWorldCellRecord(uint32 id)
 	}
 
 	return m_UWorldCellRecordDatabasePersistent->GetMutableRecord(id);
+}
+
+void UArgusStaticDatabase::DeleteUWorldCellRecord(uint32 id)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoadUWorldCellRecordDatabase();
+
+	if (!m_UWorldCellRecordDatabasePersistent)
+	{
+		return;
+	}
+
+	m_UWorldCellRecordDatabasePersistent->DeleteRecord(id);
 }
 
 uint32 UArgusStaticDatabase::AddUWorldCellRecordToDatabase(UWorldCellRecord* record)

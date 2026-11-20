@@ -150,6 +150,10 @@ UPersistentWorldTranslationRecord* UPersistentWorldTranslationRecordDatabase::Ge
 	return nullptr;
 }
 
+void UPersistentWorldTranslationRecordDatabase::DeleteRecord(uint32 id)
+{
+}
+
 void UPersistentWorldTranslationRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
 {
 	Super::PreSave(saveContext);

@@ -150,6 +150,10 @@ UPlacedArgusActorTeamInfoRecord* UPlacedArgusActorTeamInfoRecordDatabase::GetMut
 	return nullptr;
 }
 
+void UPlacedArgusActorTeamInfoRecordDatabase::DeleteRecord(uint32 id)
+{
+}
+
 void UPlacedArgusActorTeamInfoRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
 {
 	Super::PreSave(saveContext);

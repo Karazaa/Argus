@@ -150,6 +150,10 @@ UMaterialRecord* UMaterialRecordDatabase::GetMutableRecord(uint32 id)
 	return nullptr;
 }
 
+void UMaterialRecordDatabase::DeleteRecord(uint32 id)
+{
+}
+
 void UMaterialRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
 {
 	Super::PreSave(saveContext);

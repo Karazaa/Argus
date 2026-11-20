@@ -150,6 +150,10 @@ UArgusActorRecord* UArgusActorRecordDatabase::GetMutableRecord(uint32 id)
 	return nullptr;
 }
 
+void UArgusActorRecordDatabase::DeleteRecord(uint32 id)
+{
+}
+
 void UArgusActorRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
 {
 	Super::PreSave(saveContext);

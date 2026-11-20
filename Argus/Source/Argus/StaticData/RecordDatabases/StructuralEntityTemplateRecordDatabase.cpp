@@ -150,6 +150,10 @@ UStructuralEntityTemplateRecord* UStructuralEntityTemplateRecordDatabase::GetMut
 	return nullptr;
 }
 
+void UStructuralEntityTemplateRecordDatabase::DeleteRecord(uint32 id)
+{
+}
+
 void UStructuralEntityTemplateRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
 {
 	Super::PreSave(saveContext);

@@ -150,6 +150,10 @@ UObstaclesRecord* UObstaclesRecordDatabase::GetMutableRecord(uint32 id)
 	return nullptr;
 }
 
+void UObstaclesRecordDatabase::DeleteRecord(uint32 id)
+{
+}
+
 void UObstaclesRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
 {
 	Super::PreSave(saveContext);

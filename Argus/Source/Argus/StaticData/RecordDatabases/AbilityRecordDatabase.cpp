@@ -150,6 +150,10 @@ UAbilityRecord* UAbilityRecordDatabase::GetMutableRecord(uint32 id)
 	return nullptr;
 }
 
+void UAbilityRecordDatabase::DeleteRecord(uint32 id)
+{
+}
+
 void UAbilityRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
 {
 	Super::PreSave(saveContext);

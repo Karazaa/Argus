@@ -29,6 +29,7 @@ protected:
 public:
 #if WITH_EDITOR
 	UPlacedArgusActorTeamInfoRecord* GetMutableRecord(uint32 id);
+	void DeleteRecord(uint32 id);
 	virtual void PreSave(FObjectPreSaveContext saveContext) override;
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent) override;
 	void AddUPlacedArgusActorTeamInfoRecordToDatabase(UPlacedArgusActorTeamInfoRecord* record);

@@ -150,6 +150,10 @@ UWorldCellIndexTranslationRecord* UWorldCellIndexTranslationRecordDatabase::GetM
 	return nullptr;
 }
 
+void UWorldCellIndexTranslationRecordDatabase::DeleteRecord(uint32 id)
+{
+}
+
 void UWorldCellIndexTranslationRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
 {
 	Super::PreSave(saveContext);
