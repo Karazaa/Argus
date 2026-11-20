@@ -46,6 +46,15 @@
 	}
 
 	template<>
+	ARGUS_API inline void DeleteRecord(uint32 id)
+	{
+		if (UArgusStaticDatabase* staticDatabase = UArgusStaticDatabase::GetInstance())
+		{
+			staticDatabase->Delete#####(id);
+		}
+	}
+
+	template<>
 	ARGUS_API inline void IterateAllRecordsOfType<#####>(const TFunctionRef<void(#####*)>& function)
 	{
 		if (UArgusStaticDatabase* staticDatabase = LoadStaticDatabaseSynchronous())

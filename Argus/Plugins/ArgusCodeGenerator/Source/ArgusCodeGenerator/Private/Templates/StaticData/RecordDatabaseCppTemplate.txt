@@ -150,6 +150,10 @@ void #####Database::ResetPersistentObjectPointerArray()
 	return nullptr;
 }
 
+void #####Database::DeleteRecord(uint32 id)
+{
+}
+
 void #####Database::PreSave(FObjectPreSaveContext saveContext)
 {
 	Super::PreSave(saveContext);

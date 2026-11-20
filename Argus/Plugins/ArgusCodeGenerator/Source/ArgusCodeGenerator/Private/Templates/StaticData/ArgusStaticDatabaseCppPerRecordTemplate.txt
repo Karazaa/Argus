@@ -66,6 +66,20 @@ void UArgusStaticDatabase::ResetLoaded#####PointerArray()
 	return m_#####DatabasePersistent->GetMutableRecord(id);
 }
 
+void UArgusStaticDatabase::Delete#####(uint32 id)
+{
+	ARGUS_MEMORY_TRACE(ArgusStaticData);
+
+	LazyLoad#####Database();
+
+	if (!m_#####DatabasePersistent)
+	{
+		return;
+	}
+
+	m_#####DatabasePersistent->DeleteRecord(id);
+}
+
 uint32 UArgusStaticDatabase::Add#####ToDatabase(#####* record)
 {
 	LazyLoad#####Database();

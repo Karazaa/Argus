@@ -6,6 +6,7 @@ public:
 	void ResetLoaded#####PointerArray();
 #if WITH_EDITOR
 	#####* GetMutable#####(uint32 id);
+	void Delete#####(uint32 id);
 	uint32 Add#####ToDatabase(#####* record);
 	void IterateAll#####s(const TFunctionRef<void(#####*)>& function);
 	void RegisterNew#####Database(#####Database* database);

@@ -33,6 +33,9 @@ public:
 	static ArgusStaticRecord* GetMutableRecord(uint32 id) { return nullptr; }
 
 	template<typename ArgusStaticRecord>
+	static void DeleteRecord(uint32 id) {}
+
+	template<typename ArgusStaticRecord>
 	static void IterateAllRecordsOfType(const TFunctionRef<void(ArgusStaticRecord*)>& function) {}
 
 	static uint32 AddRecordToDatabase(UArgusStaticRecord* record);
