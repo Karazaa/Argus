@@ -4,12 +4,7 @@ const #####* UArgusStaticDatabase::Get#####(uint32 id)
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoad#####Database();
-
-	if (!m_#####DatabasePersistent)
-	{
-		return nullptr;
-	}
-
+	ARGUS_RETURN_ON_NULL_POINTER(m_#####DatabasePersistent, ArgusStaticDataLog);
 	return m_#####DatabasePersistent->GetRecord(id);
 }
 
@@ -18,12 +13,7 @@ uint32 UArgusStaticDatabase::GetNum#####s()
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoad#####Database();
-
-	if (!m_#####DatabasePersistent)
-	{
-		return 0u;
-	}
-
+	ARGUS_RETURN_ON_NULL_VALUE(m_#####DatabasePersistent, ArgusStaticDataLog, 0u);
 	return m_#####DatabasePersistent->GetNumRecords();
 }
 
@@ -32,12 +22,7 @@ const bool UArgusStaticDatabase::AsyncPreLoad#####(uint32 id, TFunction<void(con
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoad#####Database();
-
-	if (!m_#####DatabasePersistent)
-	{
-		return false;
-	}
-
+	ARGUS_RETURN_ON_NULL_BOOL(m_#####DatabasePersistent, ArgusStaticDataLog);
 	return m_#####DatabasePersistent->AsyncPreLoadRecord(id);
 }
 
@@ -47,7 +32,6 @@ void UArgusStaticDatabase::ResetLoaded#####PointerArray()
 	{
 		return;
 	}
-
 	m_#####DatabasePersistent->ResetPersistentObjectPointerArray();
 }
 
@@ -57,13 +41,7 @@ void UArgusStaticDatabase::ResetLoaded#####PointerArray()
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoad#####Database();
-
 	ARGUS_RETURN_ON_NULL_POINTER(m_#####DatabasePersistent, ArgusStaticDataLog);
-	if (!m_#####DatabasePersistent)
-	{
-		return nullptr;
-	}
-
 	return m_#####DatabasePersistent->GetMutableRecord(id);
 }
 
@@ -72,47 +50,28 @@ void UArgusStaticDatabase::Delete#####(uint32 id)
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoad#####Database();
-
-	if (!m_#####DatabasePersistent)
-	{
-		return;
-	}
-
+	ARGUS_RETURN_ON_NULL(m_#####DatabasePersistent, ArgusStaticDataLog);
 	m_#####DatabasePersistent->DeleteRecord(id);
 }
 
 uint32 UArgusStaticDatabase::Add#####ToDatabase(#####* record)
 {
 	LazyLoad#####Database();
-
-	if (!m_#####DatabasePersistent)
-	{
-		return 0u;
-	}
-
+	ARGUS_RETURN_ON_NULL_VALUE(m_#####DatabasePersistent, ArgusStaticDataLog, 0u);
 	m_#####DatabasePersistent->Add#####ToDatabase(record);
-	
 	return record->m_id;
 }
 
 void UArgusStaticDatabase::IterateAll#####s(const TFunctionRef<void(#####*)>& function)
 {
 	LazyLoad#####Database();
-
-	if (!m_#####DatabasePersistent)
-	{
-		return;
-	}
-
+	ARGUS_RETURN_ON_NULL(m_#####DatabasePersistent, ArgusStaticDataLog);
 	m_#####DatabasePersistent->IterateAll#####s(function);
 }
 
 void UArgusStaticDatabase::RegisterNew#####Database(#####Database* database)
 {
-	if (!database)
-	{
-		return;
-	}
+	ARGUS_RETURN_ON_NULL(database, ArgusStaticDataLog);
 
 	if (!m_#####Database.IsNull())
 	{

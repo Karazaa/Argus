@@ -46,12 +46,7 @@ const UAbilityRecord* UArgusStaticDatabase::GetUAbilityRecord(uint32 id)
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUAbilityRecordDatabase();
-
-	if (!m_UAbilityRecordDatabasePersistent)
-	{
-		return nullptr;
-	}
-
+	ARGUS_RETURN_ON_NULL_POINTER(m_UAbilityRecordDatabasePersistent, ArgusStaticDataLog);
 	return m_UAbilityRecordDatabasePersistent->GetRecord(id);
 }
 
@@ -60,12 +55,7 @@ uint32 UArgusStaticDatabase::GetNumUAbilityRecords()
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUAbilityRecordDatabase();
-
-	if (!m_UAbilityRecordDatabasePersistent)
-	{
-		return 0u;
-	}
-
+	ARGUS_RETURN_ON_NULL_VALUE(m_UAbilityRecordDatabasePersistent, ArgusStaticDataLog, 0u);
 	return m_UAbilityRecordDatabasePersistent->GetNumRecords();
 }
 
@@ -74,12 +64,7 @@ const bool UArgusStaticDatabase::AsyncPreLoadUAbilityRecord(uint32 id, TFunction
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUAbilityRecordDatabase();
-
-	if (!m_UAbilityRecordDatabasePersistent)
-	{
-		return false;
-	}
-
+	ARGUS_RETURN_ON_NULL_BOOL(m_UAbilityRecordDatabasePersistent, ArgusStaticDataLog);
 	return m_UAbilityRecordDatabasePersistent->AsyncPreLoadRecord(id);
 }
 
@@ -89,7 +74,6 @@ void UArgusStaticDatabase::ResetLoadedUAbilityRecordPointerArray()
 	{
 		return;
 	}
-
 	m_UAbilityRecordDatabasePersistent->ResetPersistentObjectPointerArray();
 }
 
@@ -99,12 +83,7 @@ UAbilityRecord* UArgusStaticDatabase::GetMutableUAbilityRecord(uint32 id)
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUAbilityRecordDatabase();
-
-	if (!m_UAbilityRecordDatabasePersistent)
-	{
-		return nullptr;
-	}
-
+	ARGUS_RETURN_ON_NULL_POINTER(m_UAbilityRecordDatabasePersistent, ArgusStaticDataLog);
 	return m_UAbilityRecordDatabasePersistent->GetMutableRecord(id);
 }
 
@@ -113,47 +92,28 @@ void UArgusStaticDatabase::DeleteUAbilityRecord(uint32 id)
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUAbilityRecordDatabase();
-
-	if (!m_UAbilityRecordDatabasePersistent)
-	{
-		return;
-	}
-
+	ARGUS_RETURN_ON_NULL(m_UAbilityRecordDatabasePersistent, ArgusStaticDataLog);
 	m_UAbilityRecordDatabasePersistent->DeleteRecord(id);
 }
 
 uint32 UArgusStaticDatabase::AddUAbilityRecordToDatabase(UAbilityRecord* record)
 {
 	LazyLoadUAbilityRecordDatabase();
-
-	if (!m_UAbilityRecordDatabasePersistent)
-	{
-		return 0u;
-	}
-
+	ARGUS_RETURN_ON_NULL_VALUE(m_UAbilityRecordDatabasePersistent, ArgusStaticDataLog, 0u);
 	m_UAbilityRecordDatabasePersistent->AddUAbilityRecordToDatabase(record);
-	
 	return record->m_id;
 }
 
 void UArgusStaticDatabase::IterateAllUAbilityRecords(const TFunctionRef<void(UAbilityRecord*)>& function)
 {
 	LazyLoadUAbilityRecordDatabase();
-
-	if (!m_UAbilityRecordDatabasePersistent)
-	{
-		return;
-	}
-
+	ARGUS_RETURN_ON_NULL(m_UAbilityRecordDatabasePersistent, ArgusStaticDataLog);
 	m_UAbilityRecordDatabasePersistent->IterateAllUAbilityRecords(function);
 }
 
 void UArgusStaticDatabase::RegisterNewUAbilityRecordDatabase(UAbilityRecordDatabase* database)
 {
-	if (!database)
-	{
-		return;
-	}
+	ARGUS_RETURN_ON_NULL(database, ArgusStaticDataLog);
 
 	if (!m_UAbilityRecordDatabase.IsNull())
 	{
@@ -207,12 +167,7 @@ const UArgusActorRecord* UArgusStaticDatabase::GetUArgusActorRecord(uint32 id)
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUArgusActorRecordDatabase();
-
-	if (!m_UArgusActorRecordDatabasePersistent)
-	{
-		return nullptr;
-	}
-
+	ARGUS_RETURN_ON_NULL_POINTER(m_UArgusActorRecordDatabasePersistent, ArgusStaticDataLog);
 	return m_UArgusActorRecordDatabasePersistent->GetRecord(id);
 }
 
@@ -221,12 +176,7 @@ uint32 UArgusStaticDatabase::GetNumUArgusActorRecords()
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUArgusActorRecordDatabase();
-
-	if (!m_UArgusActorRecordDatabasePersistent)
-	{
-		return 0u;
-	}
-
+	ARGUS_RETURN_ON_NULL_VALUE(m_UArgusActorRecordDatabasePersistent, ArgusStaticDataLog, 0u);
 	return m_UArgusActorRecordDatabasePersistent->GetNumRecords();
 }
 
@@ -235,12 +185,7 @@ const bool UArgusStaticDatabase::AsyncPreLoadUArgusActorRecord(uint32 id, TFunct
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUArgusActorRecordDatabase();
-
-	if (!m_UArgusActorRecordDatabasePersistent)
-	{
-		return false;
-	}
-
+	ARGUS_RETURN_ON_NULL_BOOL(m_UArgusActorRecordDatabasePersistent, ArgusStaticDataLog);
 	return m_UArgusActorRecordDatabasePersistent->AsyncPreLoadRecord(id);
 }
 
@@ -250,7 +195,6 @@ void UArgusStaticDatabase::ResetLoadedUArgusActorRecordPointerArray()
 	{
 		return;
 	}
-
 	m_UArgusActorRecordDatabasePersistent->ResetPersistentObjectPointerArray();
 }
 
@@ -260,12 +204,7 @@ UArgusActorRecord* UArgusStaticDatabase::GetMutableUArgusActorRecord(uint32 id)
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUArgusActorRecordDatabase();
-
-	if (!m_UArgusActorRecordDatabasePersistent)
-	{
-		return nullptr;
-	}
-
+	ARGUS_RETURN_ON_NULL_POINTER(m_UArgusActorRecordDatabasePersistent, ArgusStaticDataLog);
 	return m_UArgusActorRecordDatabasePersistent->GetMutableRecord(id);
 }
 
@@ -274,47 +213,28 @@ void UArgusStaticDatabase::DeleteUArgusActorRecord(uint32 id)
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUArgusActorRecordDatabase();
-
-	if (!m_UArgusActorRecordDatabasePersistent)
-	{
-		return;
-	}
-
+	ARGUS_RETURN_ON_NULL(m_UArgusActorRecordDatabasePersistent, ArgusStaticDataLog);
 	m_UArgusActorRecordDatabasePersistent->DeleteRecord(id);
 }
 
 uint32 UArgusStaticDatabase::AddUArgusActorRecordToDatabase(UArgusActorRecord* record)
 {
 	LazyLoadUArgusActorRecordDatabase();
-
-	if (!m_UArgusActorRecordDatabasePersistent)
-	{
-		return 0u;
-	}
-
+	ARGUS_RETURN_ON_NULL_VALUE(m_UArgusActorRecordDatabasePersistent, ArgusStaticDataLog, 0u);
 	m_UArgusActorRecordDatabasePersistent->AddUArgusActorRecordToDatabase(record);
-	
 	return record->m_id;
 }
 
 void UArgusStaticDatabase::IterateAllUArgusActorRecords(const TFunctionRef<void(UArgusActorRecord*)>& function)
 {
 	LazyLoadUArgusActorRecordDatabase();
-
-	if (!m_UArgusActorRecordDatabasePersistent)
-	{
-		return;
-	}
-
+	ARGUS_RETURN_ON_NULL(m_UArgusActorRecordDatabasePersistent, ArgusStaticDataLog);
 	m_UArgusActorRecordDatabasePersistent->IterateAllUArgusActorRecords(function);
 }
 
 void UArgusStaticDatabase::RegisterNewUArgusActorRecordDatabase(UArgusActorRecordDatabase* database)
 {
-	if (!database)
-	{
-		return;
-	}
+	ARGUS_RETURN_ON_NULL(database, ArgusStaticDataLog);
 
 	if (!m_UArgusActorRecordDatabase.IsNull())
 	{
@@ -368,12 +288,7 @@ const UFactionRecord* UArgusStaticDatabase::GetUFactionRecord(uint32 id)
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUFactionRecordDatabase();
-
-	if (!m_UFactionRecordDatabasePersistent)
-	{
-		return nullptr;
-	}
-
+	ARGUS_RETURN_ON_NULL_POINTER(m_UFactionRecordDatabasePersistent, ArgusStaticDataLog);
 	return m_UFactionRecordDatabasePersistent->GetRecord(id);
 }
 
@@ -382,12 +297,7 @@ uint32 UArgusStaticDatabase::GetNumUFactionRecords()
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUFactionRecordDatabase();
-
-	if (!m_UFactionRecordDatabasePersistent)
-	{
-		return 0u;
-	}
-
+	ARGUS_RETURN_ON_NULL_VALUE(m_UFactionRecordDatabasePersistent, ArgusStaticDataLog, 0u);
 	return m_UFactionRecordDatabasePersistent->GetNumRecords();
 }
 
@@ -396,12 +306,7 @@ const bool UArgusStaticDatabase::AsyncPreLoadUFactionRecord(uint32 id, TFunction
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUFactionRecordDatabase();
-
-	if (!m_UFactionRecordDatabasePersistent)
-	{
-		return false;
-	}
-
+	ARGUS_RETURN_ON_NULL_BOOL(m_UFactionRecordDatabasePersistent, ArgusStaticDataLog);
 	return m_UFactionRecordDatabasePersistent->AsyncPreLoadRecord(id);
 }
 
@@ -411,7 +316,6 @@ void UArgusStaticDatabase::ResetLoadedUFactionRecordPointerArray()
 	{
 		return;
 	}
-
 	m_UFactionRecordDatabasePersistent->ResetPersistentObjectPointerArray();
 }
 
@@ -421,12 +325,7 @@ UFactionRecord* UArgusStaticDatabase::GetMutableUFactionRecord(uint32 id)
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUFactionRecordDatabase();
-
-	if (!m_UFactionRecordDatabasePersistent)
-	{
-		return nullptr;
-	}
-
+	ARGUS_RETURN_ON_NULL_POINTER(m_UFactionRecordDatabasePersistent, ArgusStaticDataLog);
 	return m_UFactionRecordDatabasePersistent->GetMutableRecord(id);
 }
 
@@ -435,47 +334,28 @@ void UArgusStaticDatabase::DeleteUFactionRecord(uint32 id)
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUFactionRecordDatabase();
-
-	if (!m_UFactionRecordDatabasePersistent)
-	{
-		return;
-	}
-
+	ARGUS_RETURN_ON_NULL(m_UFactionRecordDatabasePersistent, ArgusStaticDataLog);
 	m_UFactionRecordDatabasePersistent->DeleteRecord(id);
 }
 
 uint32 UArgusStaticDatabase::AddUFactionRecordToDatabase(UFactionRecord* record)
 {
 	LazyLoadUFactionRecordDatabase();
-
-	if (!m_UFactionRecordDatabasePersistent)
-	{
-		return 0u;
-	}
-
+	ARGUS_RETURN_ON_NULL_VALUE(m_UFactionRecordDatabasePersistent, ArgusStaticDataLog, 0u);
 	m_UFactionRecordDatabasePersistent->AddUFactionRecordToDatabase(record);
-	
 	return record->m_id;
 }
 
 void UArgusStaticDatabase::IterateAllUFactionRecords(const TFunctionRef<void(UFactionRecord*)>& function)
 {
 	LazyLoadUFactionRecordDatabase();
-
-	if (!m_UFactionRecordDatabasePersistent)
-	{
-		return;
-	}
-
+	ARGUS_RETURN_ON_NULL(m_UFactionRecordDatabasePersistent, ArgusStaticDataLog);
 	m_UFactionRecordDatabasePersistent->IterateAllUFactionRecords(function);
 }
 
 void UArgusStaticDatabase::RegisterNewUFactionRecordDatabase(UFactionRecordDatabase* database)
 {
-	if (!database)
-	{
-		return;
-	}
+	ARGUS_RETURN_ON_NULL(database, ArgusStaticDataLog);
 
 	if (!m_UFactionRecordDatabase.IsNull())
 	{
@@ -529,12 +409,7 @@ const UHeadlessEntityRecord* UArgusStaticDatabase::GetUHeadlessEntityRecord(uint
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUHeadlessEntityRecordDatabase();
-
-	if (!m_UHeadlessEntityRecordDatabasePersistent)
-	{
-		return nullptr;
-	}
-
+	ARGUS_RETURN_ON_NULL_POINTER(m_UHeadlessEntityRecordDatabasePersistent, ArgusStaticDataLog);
 	return m_UHeadlessEntityRecordDatabasePersistent->GetRecord(id);
 }
 
@@ -543,12 +418,7 @@ uint32 UArgusStaticDatabase::GetNumUHeadlessEntityRecords()
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUHeadlessEntityRecordDatabase();
-
-	if (!m_UHeadlessEntityRecordDatabasePersistent)
-	{
-		return 0u;
-	}
-
+	ARGUS_RETURN_ON_NULL_VALUE(m_UHeadlessEntityRecordDatabasePersistent, ArgusStaticDataLog, 0u);
 	return m_UHeadlessEntityRecordDatabasePersistent->GetNumRecords();
 }
 
@@ -557,12 +427,7 @@ const bool UArgusStaticDatabase::AsyncPreLoadUHeadlessEntityRecord(uint32 id, TF
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUHeadlessEntityRecordDatabase();
-
-	if (!m_UHeadlessEntityRecordDatabasePersistent)
-	{
-		return false;
-	}
-
+	ARGUS_RETURN_ON_NULL_BOOL(m_UHeadlessEntityRecordDatabasePersistent, ArgusStaticDataLog);
 	return m_UHeadlessEntityRecordDatabasePersistent->AsyncPreLoadRecord(id);
 }
 
@@ -572,7 +437,6 @@ void UArgusStaticDatabase::ResetLoadedUHeadlessEntityRecordPointerArray()
 	{
 		return;
 	}
-
 	m_UHeadlessEntityRecordDatabasePersistent->ResetPersistentObjectPointerArray();
 }
 
@@ -582,12 +446,7 @@ UHeadlessEntityRecord* UArgusStaticDatabase::GetMutableUHeadlessEntityRecord(uin
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUHeadlessEntityRecordDatabase();
-
-	if (!m_UHeadlessEntityRecordDatabasePersistent)
-	{
-		return nullptr;
-	}
-
+	ARGUS_RETURN_ON_NULL_POINTER(m_UHeadlessEntityRecordDatabasePersistent, ArgusStaticDataLog);
 	return m_UHeadlessEntityRecordDatabasePersistent->GetMutableRecord(id);
 }
 
@@ -596,47 +455,28 @@ void UArgusStaticDatabase::DeleteUHeadlessEntityRecord(uint32 id)
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUHeadlessEntityRecordDatabase();
-
-	if (!m_UHeadlessEntityRecordDatabasePersistent)
-	{
-		return;
-	}
-
+	ARGUS_RETURN_ON_NULL(m_UHeadlessEntityRecordDatabasePersistent, ArgusStaticDataLog);
 	m_UHeadlessEntityRecordDatabasePersistent->DeleteRecord(id);
 }
 
 uint32 UArgusStaticDatabase::AddUHeadlessEntityRecordToDatabase(UHeadlessEntityRecord* record)
 {
 	LazyLoadUHeadlessEntityRecordDatabase();
-
-	if (!m_UHeadlessEntityRecordDatabasePersistent)
-	{
-		return 0u;
-	}
-
+	ARGUS_RETURN_ON_NULL_VALUE(m_UHeadlessEntityRecordDatabasePersistent, ArgusStaticDataLog, 0u);
 	m_UHeadlessEntityRecordDatabasePersistent->AddUHeadlessEntityRecordToDatabase(record);
-	
 	return record->m_id;
 }
 
 void UArgusStaticDatabase::IterateAllUHeadlessEntityRecords(const TFunctionRef<void(UHeadlessEntityRecord*)>& function)
 {
 	LazyLoadUHeadlessEntityRecordDatabase();
-
-	if (!m_UHeadlessEntityRecordDatabasePersistent)
-	{
-		return;
-	}
-
+	ARGUS_RETURN_ON_NULL(m_UHeadlessEntityRecordDatabasePersistent, ArgusStaticDataLog);
 	m_UHeadlessEntityRecordDatabasePersistent->IterateAllUHeadlessEntityRecords(function);
 }
 
 void UArgusStaticDatabase::RegisterNewUHeadlessEntityRecordDatabase(UHeadlessEntityRecordDatabase* database)
 {
-	if (!database)
-	{
-		return;
-	}
+	ARGUS_RETURN_ON_NULL(database, ArgusStaticDataLog);
 
 	if (!m_UHeadlessEntityRecordDatabase.IsNull())
 	{
@@ -690,12 +530,7 @@ const UMaterialRecord* UArgusStaticDatabase::GetUMaterialRecord(uint32 id)
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUMaterialRecordDatabase();
-
-	if (!m_UMaterialRecordDatabasePersistent)
-	{
-		return nullptr;
-	}
-
+	ARGUS_RETURN_ON_NULL_POINTER(m_UMaterialRecordDatabasePersistent, ArgusStaticDataLog);
 	return m_UMaterialRecordDatabasePersistent->GetRecord(id);
 }
 
@@ -704,12 +539,7 @@ uint32 UArgusStaticDatabase::GetNumUMaterialRecords()
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUMaterialRecordDatabase();
-
-	if (!m_UMaterialRecordDatabasePersistent)
-	{
-		return 0u;
-	}
-
+	ARGUS_RETURN_ON_NULL_VALUE(m_UMaterialRecordDatabasePersistent, ArgusStaticDataLog, 0u);
 	return m_UMaterialRecordDatabasePersistent->GetNumRecords();
 }
 
@@ -718,12 +548,7 @@ const bool UArgusStaticDatabase::AsyncPreLoadUMaterialRecord(uint32 id, TFunctio
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUMaterialRecordDatabase();
-
-	if (!m_UMaterialRecordDatabasePersistent)
-	{
-		return false;
-	}
-
+	ARGUS_RETURN_ON_NULL_BOOL(m_UMaterialRecordDatabasePersistent, ArgusStaticDataLog);
 	return m_UMaterialRecordDatabasePersistent->AsyncPreLoadRecord(id);
 }
 
@@ -733,7 +558,6 @@ void UArgusStaticDatabase::ResetLoadedUMaterialRecordPointerArray()
 	{
 		return;
 	}
-
 	m_UMaterialRecordDatabasePersistent->ResetPersistentObjectPointerArray();
 }
 
@@ -743,12 +567,7 @@ UMaterialRecord* UArgusStaticDatabase::GetMutableUMaterialRecord(uint32 id)
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUMaterialRecordDatabase();
-
-	if (!m_UMaterialRecordDatabasePersistent)
-	{
-		return nullptr;
-	}
-
+	ARGUS_RETURN_ON_NULL_POINTER(m_UMaterialRecordDatabasePersistent, ArgusStaticDataLog);
 	return m_UMaterialRecordDatabasePersistent->GetMutableRecord(id);
 }
 
@@ -757,47 +576,28 @@ void UArgusStaticDatabase::DeleteUMaterialRecord(uint32 id)
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUMaterialRecordDatabase();
-
-	if (!m_UMaterialRecordDatabasePersistent)
-	{
-		return;
-	}
-
+	ARGUS_RETURN_ON_NULL(m_UMaterialRecordDatabasePersistent, ArgusStaticDataLog);
 	m_UMaterialRecordDatabasePersistent->DeleteRecord(id);
 }
 
 uint32 UArgusStaticDatabase::AddUMaterialRecordToDatabase(UMaterialRecord* record)
 {
 	LazyLoadUMaterialRecordDatabase();
-
-	if (!m_UMaterialRecordDatabasePersistent)
-	{
-		return 0u;
-	}
-
+	ARGUS_RETURN_ON_NULL_VALUE(m_UMaterialRecordDatabasePersistent, ArgusStaticDataLog, 0u);
 	m_UMaterialRecordDatabasePersistent->AddUMaterialRecordToDatabase(record);
-	
 	return record->m_id;
 }
 
 void UArgusStaticDatabase::IterateAllUMaterialRecords(const TFunctionRef<void(UMaterialRecord*)>& function)
 {
 	LazyLoadUMaterialRecordDatabase();
-
-	if (!m_UMaterialRecordDatabasePersistent)
-	{
-		return;
-	}
-
+	ARGUS_RETURN_ON_NULL(m_UMaterialRecordDatabasePersistent, ArgusStaticDataLog);
 	m_UMaterialRecordDatabasePersistent->IterateAllUMaterialRecords(function);
 }
 
 void UArgusStaticDatabase::RegisterNewUMaterialRecordDatabase(UMaterialRecordDatabase* database)
 {
-	if (!database)
-	{
-		return;
-	}
+	ARGUS_RETURN_ON_NULL(database, ArgusStaticDataLog);
 
 	if (!m_UMaterialRecordDatabase.IsNull())
 	{
@@ -851,12 +651,7 @@ const UObstaclesRecord* UArgusStaticDatabase::GetUObstaclesRecord(uint32 id)
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUObstaclesRecordDatabase();
-
-	if (!m_UObstaclesRecordDatabasePersistent)
-	{
-		return nullptr;
-	}
-
+	ARGUS_RETURN_ON_NULL_POINTER(m_UObstaclesRecordDatabasePersistent, ArgusStaticDataLog);
 	return m_UObstaclesRecordDatabasePersistent->GetRecord(id);
 }
 
@@ -865,12 +660,7 @@ uint32 UArgusStaticDatabase::GetNumUObstaclesRecords()
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUObstaclesRecordDatabase();
-
-	if (!m_UObstaclesRecordDatabasePersistent)
-	{
-		return 0u;
-	}
-
+	ARGUS_RETURN_ON_NULL_VALUE(m_UObstaclesRecordDatabasePersistent, ArgusStaticDataLog, 0u);
 	return m_UObstaclesRecordDatabasePersistent->GetNumRecords();
 }
 
@@ -879,12 +669,7 @@ const bool UArgusStaticDatabase::AsyncPreLoadUObstaclesRecord(uint32 id, TFuncti
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUObstaclesRecordDatabase();
-
-	if (!m_UObstaclesRecordDatabasePersistent)
-	{
-		return false;
-	}
-
+	ARGUS_RETURN_ON_NULL_BOOL(m_UObstaclesRecordDatabasePersistent, ArgusStaticDataLog);
 	return m_UObstaclesRecordDatabasePersistent->AsyncPreLoadRecord(id);
 }
 
@@ -894,7 +679,6 @@ void UArgusStaticDatabase::ResetLoadedUObstaclesRecordPointerArray()
 	{
 		return;
 	}
-
 	m_UObstaclesRecordDatabasePersistent->ResetPersistentObjectPointerArray();
 }
 
@@ -904,12 +688,7 @@ UObstaclesRecord* UArgusStaticDatabase::GetMutableUObstaclesRecord(uint32 id)
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUObstaclesRecordDatabase();
-
-	if (!m_UObstaclesRecordDatabasePersistent)
-	{
-		return nullptr;
-	}
-
+	ARGUS_RETURN_ON_NULL_POINTER(m_UObstaclesRecordDatabasePersistent, ArgusStaticDataLog);
 	return m_UObstaclesRecordDatabasePersistent->GetMutableRecord(id);
 }
 
@@ -918,47 +697,28 @@ void UArgusStaticDatabase::DeleteUObstaclesRecord(uint32 id)
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUObstaclesRecordDatabase();
-
-	if (!m_UObstaclesRecordDatabasePersistent)
-	{
-		return;
-	}
-
+	ARGUS_RETURN_ON_NULL(m_UObstaclesRecordDatabasePersistent, ArgusStaticDataLog);
 	m_UObstaclesRecordDatabasePersistent->DeleteRecord(id);
 }
 
 uint32 UArgusStaticDatabase::AddUObstaclesRecordToDatabase(UObstaclesRecord* record)
 {
 	LazyLoadUObstaclesRecordDatabase();
-
-	if (!m_UObstaclesRecordDatabasePersistent)
-	{
-		return 0u;
-	}
-
+	ARGUS_RETURN_ON_NULL_VALUE(m_UObstaclesRecordDatabasePersistent, ArgusStaticDataLog, 0u);
 	m_UObstaclesRecordDatabasePersistent->AddUObstaclesRecordToDatabase(record);
-	
 	return record->m_id;
 }
 
 void UArgusStaticDatabase::IterateAllUObstaclesRecords(const TFunctionRef<void(UObstaclesRecord*)>& function)
 {
 	LazyLoadUObstaclesRecordDatabase();
-
-	if (!m_UObstaclesRecordDatabasePersistent)
-	{
-		return;
-	}
-
+	ARGUS_RETURN_ON_NULL(m_UObstaclesRecordDatabasePersistent, ArgusStaticDataLog);
 	m_UObstaclesRecordDatabasePersistent->IterateAllUObstaclesRecords(function);
 }
 
 void UArgusStaticDatabase::RegisterNewUObstaclesRecordDatabase(UObstaclesRecordDatabase* database)
 {
-	if (!database)
-	{
-		return;
-	}
+	ARGUS_RETURN_ON_NULL(database, ArgusStaticDataLog);
 
 	if (!m_UObstaclesRecordDatabase.IsNull())
 	{
@@ -1012,12 +772,7 @@ const UPersistentWorldTranslationRecord* UArgusStaticDatabase::GetUPersistentWor
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUPersistentWorldTranslationRecordDatabase();
-
-	if (!m_UPersistentWorldTranslationRecordDatabasePersistent)
-	{
-		return nullptr;
-	}
-
+	ARGUS_RETURN_ON_NULL_POINTER(m_UPersistentWorldTranslationRecordDatabasePersistent, ArgusStaticDataLog);
 	return m_UPersistentWorldTranslationRecordDatabasePersistent->GetRecord(id);
 }
 
@@ -1026,12 +781,7 @@ uint32 UArgusStaticDatabase::GetNumUPersistentWorldTranslationRecords()
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUPersistentWorldTranslationRecordDatabase();
-
-	if (!m_UPersistentWorldTranslationRecordDatabasePersistent)
-	{
-		return 0u;
-	}
-
+	ARGUS_RETURN_ON_NULL_VALUE(m_UPersistentWorldTranslationRecordDatabasePersistent, ArgusStaticDataLog, 0u);
 	return m_UPersistentWorldTranslationRecordDatabasePersistent->GetNumRecords();
 }
 
@@ -1040,12 +790,7 @@ const bool UArgusStaticDatabase::AsyncPreLoadUPersistentWorldTranslationRecord(u
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUPersistentWorldTranslationRecordDatabase();
-
-	if (!m_UPersistentWorldTranslationRecordDatabasePersistent)
-	{
-		return false;
-	}
-
+	ARGUS_RETURN_ON_NULL_BOOL(m_UPersistentWorldTranslationRecordDatabasePersistent, ArgusStaticDataLog);
 	return m_UPersistentWorldTranslationRecordDatabasePersistent->AsyncPreLoadRecord(id);
 }
 
@@ -1055,7 +800,6 @@ void UArgusStaticDatabase::ResetLoadedUPersistentWorldTranslationRecordPointerAr
 	{
 		return;
 	}
-
 	m_UPersistentWorldTranslationRecordDatabasePersistent->ResetPersistentObjectPointerArray();
 }
 
@@ -1065,12 +809,7 @@ UPersistentWorldTranslationRecord* UArgusStaticDatabase::GetMutableUPersistentWo
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUPersistentWorldTranslationRecordDatabase();
-
-	if (!m_UPersistentWorldTranslationRecordDatabasePersistent)
-	{
-		return nullptr;
-	}
-
+	ARGUS_RETURN_ON_NULL_POINTER(m_UPersistentWorldTranslationRecordDatabasePersistent, ArgusStaticDataLog);
 	return m_UPersistentWorldTranslationRecordDatabasePersistent->GetMutableRecord(id);
 }
 
@@ -1079,47 +818,28 @@ void UArgusStaticDatabase::DeleteUPersistentWorldTranslationRecord(uint32 id)
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUPersistentWorldTranslationRecordDatabase();
-
-	if (!m_UPersistentWorldTranslationRecordDatabasePersistent)
-	{
-		return;
-	}
-
+	ARGUS_RETURN_ON_NULL(m_UPersistentWorldTranslationRecordDatabasePersistent, ArgusStaticDataLog);
 	m_UPersistentWorldTranslationRecordDatabasePersistent->DeleteRecord(id);
 }
 
 uint32 UArgusStaticDatabase::AddUPersistentWorldTranslationRecordToDatabase(UPersistentWorldTranslationRecord* record)
 {
 	LazyLoadUPersistentWorldTranslationRecordDatabase();
-
-	if (!m_UPersistentWorldTranslationRecordDatabasePersistent)
-	{
-		return 0u;
-	}
-
+	ARGUS_RETURN_ON_NULL_VALUE(m_UPersistentWorldTranslationRecordDatabasePersistent, ArgusStaticDataLog, 0u);
 	m_UPersistentWorldTranslationRecordDatabasePersistent->AddUPersistentWorldTranslationRecordToDatabase(record);
-	
 	return record->m_id;
 }
 
 void UArgusStaticDatabase::IterateAllUPersistentWorldTranslationRecords(const TFunctionRef<void(UPersistentWorldTranslationRecord*)>& function)
 {
 	LazyLoadUPersistentWorldTranslationRecordDatabase();
-
-	if (!m_UPersistentWorldTranslationRecordDatabasePersistent)
-	{
-		return;
-	}
-
+	ARGUS_RETURN_ON_NULL(m_UPersistentWorldTranslationRecordDatabasePersistent, ArgusStaticDataLog);
 	m_UPersistentWorldTranslationRecordDatabasePersistent->IterateAllUPersistentWorldTranslationRecords(function);
 }
 
 void UArgusStaticDatabase::RegisterNewUPersistentWorldTranslationRecordDatabase(UPersistentWorldTranslationRecordDatabase* database)
 {
-	if (!database)
-	{
-		return;
-	}
+	ARGUS_RETURN_ON_NULL(database, ArgusStaticDataLog);
 
 	if (!m_UPersistentWorldTranslationRecordDatabase.IsNull())
 	{
@@ -1173,12 +893,7 @@ const UPlacedArgusActorTeamInfoRecord* UArgusStaticDatabase::GetUPlacedArgusActo
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUPlacedArgusActorTeamInfoRecordDatabase();
-
-	if (!m_UPlacedArgusActorTeamInfoRecordDatabasePersistent)
-	{
-		return nullptr;
-	}
-
+	ARGUS_RETURN_ON_NULL_POINTER(m_UPlacedArgusActorTeamInfoRecordDatabasePersistent, ArgusStaticDataLog);
 	return m_UPlacedArgusActorTeamInfoRecordDatabasePersistent->GetRecord(id);
 }
 
@@ -1187,12 +902,7 @@ uint32 UArgusStaticDatabase::GetNumUPlacedArgusActorTeamInfoRecords()
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUPlacedArgusActorTeamInfoRecordDatabase();
-
-	if (!m_UPlacedArgusActorTeamInfoRecordDatabasePersistent)
-	{
-		return 0u;
-	}
-
+	ARGUS_RETURN_ON_NULL_VALUE(m_UPlacedArgusActorTeamInfoRecordDatabasePersistent, ArgusStaticDataLog, 0u);
 	return m_UPlacedArgusActorTeamInfoRecordDatabasePersistent->GetNumRecords();
 }
 
@@ -1201,12 +911,7 @@ const bool UArgusStaticDatabase::AsyncPreLoadUPlacedArgusActorTeamInfoRecord(uin
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUPlacedArgusActorTeamInfoRecordDatabase();
-
-	if (!m_UPlacedArgusActorTeamInfoRecordDatabasePersistent)
-	{
-		return false;
-	}
-
+	ARGUS_RETURN_ON_NULL_BOOL(m_UPlacedArgusActorTeamInfoRecordDatabasePersistent, ArgusStaticDataLog);
 	return m_UPlacedArgusActorTeamInfoRecordDatabasePersistent->AsyncPreLoadRecord(id);
 }
 
@@ -1216,7 +921,6 @@ void UArgusStaticDatabase::ResetLoadedUPlacedArgusActorTeamInfoRecordPointerArra
 	{
 		return;
 	}
-
 	m_UPlacedArgusActorTeamInfoRecordDatabasePersistent->ResetPersistentObjectPointerArray();
 }
 
@@ -1226,12 +930,7 @@ UPlacedArgusActorTeamInfoRecord* UArgusStaticDatabase::GetMutableUPlacedArgusAct
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUPlacedArgusActorTeamInfoRecordDatabase();
-
-	if (!m_UPlacedArgusActorTeamInfoRecordDatabasePersistent)
-	{
-		return nullptr;
-	}
-
+	ARGUS_RETURN_ON_NULL_POINTER(m_UPlacedArgusActorTeamInfoRecordDatabasePersistent, ArgusStaticDataLog);
 	return m_UPlacedArgusActorTeamInfoRecordDatabasePersistent->GetMutableRecord(id);
 }
 
@@ -1240,47 +939,28 @@ void UArgusStaticDatabase::DeleteUPlacedArgusActorTeamInfoRecord(uint32 id)
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUPlacedArgusActorTeamInfoRecordDatabase();
-
-	if (!m_UPlacedArgusActorTeamInfoRecordDatabasePersistent)
-	{
-		return;
-	}
-
+	ARGUS_RETURN_ON_NULL(m_UPlacedArgusActorTeamInfoRecordDatabasePersistent, ArgusStaticDataLog);
 	m_UPlacedArgusActorTeamInfoRecordDatabasePersistent->DeleteRecord(id);
 }
 
 uint32 UArgusStaticDatabase::AddUPlacedArgusActorTeamInfoRecordToDatabase(UPlacedArgusActorTeamInfoRecord* record)
 {
 	LazyLoadUPlacedArgusActorTeamInfoRecordDatabase();
-
-	if (!m_UPlacedArgusActorTeamInfoRecordDatabasePersistent)
-	{
-		return 0u;
-	}
-
+	ARGUS_RETURN_ON_NULL_VALUE(m_UPlacedArgusActorTeamInfoRecordDatabasePersistent, ArgusStaticDataLog, 0u);
 	m_UPlacedArgusActorTeamInfoRecordDatabasePersistent->AddUPlacedArgusActorTeamInfoRecordToDatabase(record);
-	
 	return record->m_id;
 }
 
 void UArgusStaticDatabase::IterateAllUPlacedArgusActorTeamInfoRecords(const TFunctionRef<void(UPlacedArgusActorTeamInfoRecord*)>& function)
 {
 	LazyLoadUPlacedArgusActorTeamInfoRecordDatabase();
-
-	if (!m_UPlacedArgusActorTeamInfoRecordDatabasePersistent)
-	{
-		return;
-	}
-
+	ARGUS_RETURN_ON_NULL(m_UPlacedArgusActorTeamInfoRecordDatabasePersistent, ArgusStaticDataLog);
 	m_UPlacedArgusActorTeamInfoRecordDatabasePersistent->IterateAllUPlacedArgusActorTeamInfoRecords(function);
 }
 
 void UArgusStaticDatabase::RegisterNewUPlacedArgusActorTeamInfoRecordDatabase(UPlacedArgusActorTeamInfoRecordDatabase* database)
 {
-	if (!database)
-	{
-		return;
-	}
+	ARGUS_RETURN_ON_NULL(database, ArgusStaticDataLog);
 
 	if (!m_UPlacedArgusActorTeamInfoRecordDatabase.IsNull())
 	{
@@ -1334,12 +1014,7 @@ const UResourceSetRecord* UArgusStaticDatabase::GetUResourceSetRecord(uint32 id)
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUResourceSetRecordDatabase();
-
-	if (!m_UResourceSetRecordDatabasePersistent)
-	{
-		return nullptr;
-	}
-
+	ARGUS_RETURN_ON_NULL_POINTER(m_UResourceSetRecordDatabasePersistent, ArgusStaticDataLog);
 	return m_UResourceSetRecordDatabasePersistent->GetRecord(id);
 }
 
@@ -1348,12 +1023,7 @@ uint32 UArgusStaticDatabase::GetNumUResourceSetRecords()
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUResourceSetRecordDatabase();
-
-	if (!m_UResourceSetRecordDatabasePersistent)
-	{
-		return 0u;
-	}
-
+	ARGUS_RETURN_ON_NULL_VALUE(m_UResourceSetRecordDatabasePersistent, ArgusStaticDataLog, 0u);
 	return m_UResourceSetRecordDatabasePersistent->GetNumRecords();
 }
 
@@ -1362,12 +1032,7 @@ const bool UArgusStaticDatabase::AsyncPreLoadUResourceSetRecord(uint32 id, TFunc
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUResourceSetRecordDatabase();
-
-	if (!m_UResourceSetRecordDatabasePersistent)
-	{
-		return false;
-	}
-
+	ARGUS_RETURN_ON_NULL_BOOL(m_UResourceSetRecordDatabasePersistent, ArgusStaticDataLog);
 	return m_UResourceSetRecordDatabasePersistent->AsyncPreLoadRecord(id);
 }
 
@@ -1377,7 +1042,6 @@ void UArgusStaticDatabase::ResetLoadedUResourceSetRecordPointerArray()
 	{
 		return;
 	}
-
 	m_UResourceSetRecordDatabasePersistent->ResetPersistentObjectPointerArray();
 }
 
@@ -1387,12 +1051,7 @@ UResourceSetRecord* UArgusStaticDatabase::GetMutableUResourceSetRecord(uint32 id
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUResourceSetRecordDatabase();
-
-	if (!m_UResourceSetRecordDatabasePersistent)
-	{
-		return nullptr;
-	}
-
+	ARGUS_RETURN_ON_NULL_POINTER(m_UResourceSetRecordDatabasePersistent, ArgusStaticDataLog);
 	return m_UResourceSetRecordDatabasePersistent->GetMutableRecord(id);
 }
 
@@ -1401,47 +1060,28 @@ void UArgusStaticDatabase::DeleteUResourceSetRecord(uint32 id)
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUResourceSetRecordDatabase();
-
-	if (!m_UResourceSetRecordDatabasePersistent)
-	{
-		return;
-	}
-
+	ARGUS_RETURN_ON_NULL(m_UResourceSetRecordDatabasePersistent, ArgusStaticDataLog);
 	m_UResourceSetRecordDatabasePersistent->DeleteRecord(id);
 }
 
 uint32 UArgusStaticDatabase::AddUResourceSetRecordToDatabase(UResourceSetRecord* record)
 {
 	LazyLoadUResourceSetRecordDatabase();
-
-	if (!m_UResourceSetRecordDatabasePersistent)
-	{
-		return 0u;
-	}
-
+	ARGUS_RETURN_ON_NULL_VALUE(m_UResourceSetRecordDatabasePersistent, ArgusStaticDataLog, 0u);
 	m_UResourceSetRecordDatabasePersistent->AddUResourceSetRecordToDatabase(record);
-	
 	return record->m_id;
 }
 
 void UArgusStaticDatabase::IterateAllUResourceSetRecords(const TFunctionRef<void(UResourceSetRecord*)>& function)
 {
 	LazyLoadUResourceSetRecordDatabase();
-
-	if (!m_UResourceSetRecordDatabasePersistent)
-	{
-		return;
-	}
-
+	ARGUS_RETURN_ON_NULL(m_UResourceSetRecordDatabasePersistent, ArgusStaticDataLog);
 	m_UResourceSetRecordDatabasePersistent->IterateAllUResourceSetRecords(function);
 }
 
 void UArgusStaticDatabase::RegisterNewUResourceSetRecordDatabase(UResourceSetRecordDatabase* database)
 {
-	if (!database)
-	{
-		return;
-	}
+	ARGUS_RETURN_ON_NULL(database, ArgusStaticDataLog);
 
 	if (!m_UResourceSetRecordDatabase.IsNull())
 	{
@@ -1495,12 +1135,7 @@ const UStructuralEntityTemplateRecord* UArgusStaticDatabase::GetUStructuralEntit
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUStructuralEntityTemplateRecordDatabase();
-
-	if (!m_UStructuralEntityTemplateRecordDatabasePersistent)
-	{
-		return nullptr;
-	}
-
+	ARGUS_RETURN_ON_NULL_POINTER(m_UStructuralEntityTemplateRecordDatabasePersistent, ArgusStaticDataLog);
 	return m_UStructuralEntityTemplateRecordDatabasePersistent->GetRecord(id);
 }
 
@@ -1509,12 +1144,7 @@ uint32 UArgusStaticDatabase::GetNumUStructuralEntityTemplateRecords()
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUStructuralEntityTemplateRecordDatabase();
-
-	if (!m_UStructuralEntityTemplateRecordDatabasePersistent)
-	{
-		return 0u;
-	}
-
+	ARGUS_RETURN_ON_NULL_VALUE(m_UStructuralEntityTemplateRecordDatabasePersistent, ArgusStaticDataLog, 0u);
 	return m_UStructuralEntityTemplateRecordDatabasePersistent->GetNumRecords();
 }
 
@@ -1523,12 +1153,7 @@ const bool UArgusStaticDatabase::AsyncPreLoadUStructuralEntityTemplateRecord(uin
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUStructuralEntityTemplateRecordDatabase();
-
-	if (!m_UStructuralEntityTemplateRecordDatabasePersistent)
-	{
-		return false;
-	}
-
+	ARGUS_RETURN_ON_NULL_BOOL(m_UStructuralEntityTemplateRecordDatabasePersistent, ArgusStaticDataLog);
 	return m_UStructuralEntityTemplateRecordDatabasePersistent->AsyncPreLoadRecord(id);
 }
 
@@ -1538,7 +1163,6 @@ void UArgusStaticDatabase::ResetLoadedUStructuralEntityTemplateRecordPointerArra
 	{
 		return;
 	}
-
 	m_UStructuralEntityTemplateRecordDatabasePersistent->ResetPersistentObjectPointerArray();
 }
 
@@ -1548,12 +1172,7 @@ UStructuralEntityTemplateRecord* UArgusStaticDatabase::GetMutableUStructuralEnti
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUStructuralEntityTemplateRecordDatabase();
-
-	if (!m_UStructuralEntityTemplateRecordDatabasePersistent)
-	{
-		return nullptr;
-	}
-
+	ARGUS_RETURN_ON_NULL_POINTER(m_UStructuralEntityTemplateRecordDatabasePersistent, ArgusStaticDataLog);
 	return m_UStructuralEntityTemplateRecordDatabasePersistent->GetMutableRecord(id);
 }
 
@@ -1562,47 +1181,28 @@ void UArgusStaticDatabase::DeleteUStructuralEntityTemplateRecord(uint32 id)
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUStructuralEntityTemplateRecordDatabase();
-
-	if (!m_UStructuralEntityTemplateRecordDatabasePersistent)
-	{
-		return;
-	}
-
+	ARGUS_RETURN_ON_NULL(m_UStructuralEntityTemplateRecordDatabasePersistent, ArgusStaticDataLog);
 	m_UStructuralEntityTemplateRecordDatabasePersistent->DeleteRecord(id);
 }
 
 uint32 UArgusStaticDatabase::AddUStructuralEntityTemplateRecordToDatabase(UStructuralEntityTemplateRecord* record)
 {
 	LazyLoadUStructuralEntityTemplateRecordDatabase();
-
-	if (!m_UStructuralEntityTemplateRecordDatabasePersistent)
-	{
-		return 0u;
-	}
-
+	ARGUS_RETURN_ON_NULL_VALUE(m_UStructuralEntityTemplateRecordDatabasePersistent, ArgusStaticDataLog, 0u);
 	m_UStructuralEntityTemplateRecordDatabasePersistent->AddUStructuralEntityTemplateRecordToDatabase(record);
-	
 	return record->m_id;
 }
 
 void UArgusStaticDatabase::IterateAllUStructuralEntityTemplateRecords(const TFunctionRef<void(UStructuralEntityTemplateRecord*)>& function)
 {
 	LazyLoadUStructuralEntityTemplateRecordDatabase();
-
-	if (!m_UStructuralEntityTemplateRecordDatabasePersistent)
-	{
-		return;
-	}
-
+	ARGUS_RETURN_ON_NULL(m_UStructuralEntityTemplateRecordDatabasePersistent, ArgusStaticDataLog);
 	m_UStructuralEntityTemplateRecordDatabasePersistent->IterateAllUStructuralEntityTemplateRecords(function);
 }
 
 void UArgusStaticDatabase::RegisterNewUStructuralEntityTemplateRecordDatabase(UStructuralEntityTemplateRecordDatabase* database)
 {
-	if (!database)
-	{
-		return;
-	}
+	ARGUS_RETURN_ON_NULL(database, ArgusStaticDataLog);
 
 	if (!m_UStructuralEntityTemplateRecordDatabase.IsNull())
 	{
@@ -1656,12 +1256,7 @@ const UTeamAlignmentRecord* UArgusStaticDatabase::GetUTeamAlignmentRecord(uint32
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUTeamAlignmentRecordDatabase();
-
-	if (!m_UTeamAlignmentRecordDatabasePersistent)
-	{
-		return nullptr;
-	}
-
+	ARGUS_RETURN_ON_NULL_POINTER(m_UTeamAlignmentRecordDatabasePersistent, ArgusStaticDataLog);
 	return m_UTeamAlignmentRecordDatabasePersistent->GetRecord(id);
 }
 
@@ -1670,12 +1265,7 @@ uint32 UArgusStaticDatabase::GetNumUTeamAlignmentRecords()
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUTeamAlignmentRecordDatabase();
-
-	if (!m_UTeamAlignmentRecordDatabasePersistent)
-	{
-		return 0u;
-	}
-
+	ARGUS_RETURN_ON_NULL_VALUE(m_UTeamAlignmentRecordDatabasePersistent, ArgusStaticDataLog, 0u);
 	return m_UTeamAlignmentRecordDatabasePersistent->GetNumRecords();
 }
 
@@ -1684,12 +1274,7 @@ const bool UArgusStaticDatabase::AsyncPreLoadUTeamAlignmentRecord(uint32 id, TFu
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUTeamAlignmentRecordDatabase();
-
-	if (!m_UTeamAlignmentRecordDatabasePersistent)
-	{
-		return false;
-	}
-
+	ARGUS_RETURN_ON_NULL_BOOL(m_UTeamAlignmentRecordDatabasePersistent, ArgusStaticDataLog);
 	return m_UTeamAlignmentRecordDatabasePersistent->AsyncPreLoadRecord(id);
 }
 
@@ -1699,7 +1284,6 @@ void UArgusStaticDatabase::ResetLoadedUTeamAlignmentRecordPointerArray()
 	{
 		return;
 	}
-
 	m_UTeamAlignmentRecordDatabasePersistent->ResetPersistentObjectPointerArray();
 }
 
@@ -1709,12 +1293,7 @@ UTeamAlignmentRecord* UArgusStaticDatabase::GetMutableUTeamAlignmentRecord(uint3
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUTeamAlignmentRecordDatabase();
-
-	if (!m_UTeamAlignmentRecordDatabasePersistent)
-	{
-		return nullptr;
-	}
-
+	ARGUS_RETURN_ON_NULL_POINTER(m_UTeamAlignmentRecordDatabasePersistent, ArgusStaticDataLog);
 	return m_UTeamAlignmentRecordDatabasePersistent->GetMutableRecord(id);
 }
 
@@ -1723,47 +1302,28 @@ void UArgusStaticDatabase::DeleteUTeamAlignmentRecord(uint32 id)
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUTeamAlignmentRecordDatabase();
-
-	if (!m_UTeamAlignmentRecordDatabasePersistent)
-	{
-		return;
-	}
-
+	ARGUS_RETURN_ON_NULL(m_UTeamAlignmentRecordDatabasePersistent, ArgusStaticDataLog);
 	m_UTeamAlignmentRecordDatabasePersistent->DeleteRecord(id);
 }
 
 uint32 UArgusStaticDatabase::AddUTeamAlignmentRecordToDatabase(UTeamAlignmentRecord* record)
 {
 	LazyLoadUTeamAlignmentRecordDatabase();
-
-	if (!m_UTeamAlignmentRecordDatabasePersistent)
-	{
-		return 0u;
-	}
-
+	ARGUS_RETURN_ON_NULL_VALUE(m_UTeamAlignmentRecordDatabasePersistent, ArgusStaticDataLog, 0u);
 	m_UTeamAlignmentRecordDatabasePersistent->AddUTeamAlignmentRecordToDatabase(record);
-	
 	return record->m_id;
 }
 
 void UArgusStaticDatabase::IterateAllUTeamAlignmentRecords(const TFunctionRef<void(UTeamAlignmentRecord*)>& function)
 {
 	LazyLoadUTeamAlignmentRecordDatabase();
-
-	if (!m_UTeamAlignmentRecordDatabasePersistent)
-	{
-		return;
-	}
-
+	ARGUS_RETURN_ON_NULL(m_UTeamAlignmentRecordDatabasePersistent, ArgusStaticDataLog);
 	m_UTeamAlignmentRecordDatabasePersistent->IterateAllUTeamAlignmentRecords(function);
 }
 
 void UArgusStaticDatabase::RegisterNewUTeamAlignmentRecordDatabase(UTeamAlignmentRecordDatabase* database)
 {
-	if (!database)
-	{
-		return;
-	}
+	ARGUS_RETURN_ON_NULL(database, ArgusStaticDataLog);
 
 	if (!m_UTeamAlignmentRecordDatabase.IsNull())
 	{
@@ -1817,12 +1377,7 @@ const UTeamColorRecord* UArgusStaticDatabase::GetUTeamColorRecord(uint32 id)
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUTeamColorRecordDatabase();
-
-	if (!m_UTeamColorRecordDatabasePersistent)
-	{
-		return nullptr;
-	}
-
+	ARGUS_RETURN_ON_NULL_POINTER(m_UTeamColorRecordDatabasePersistent, ArgusStaticDataLog);
 	return m_UTeamColorRecordDatabasePersistent->GetRecord(id);
 }
 
@@ -1831,12 +1386,7 @@ uint32 UArgusStaticDatabase::GetNumUTeamColorRecords()
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUTeamColorRecordDatabase();
-
-	if (!m_UTeamColorRecordDatabasePersistent)
-	{
-		return 0u;
-	}
-
+	ARGUS_RETURN_ON_NULL_VALUE(m_UTeamColorRecordDatabasePersistent, ArgusStaticDataLog, 0u);
 	return m_UTeamColorRecordDatabasePersistent->GetNumRecords();
 }
 
@@ -1845,12 +1395,7 @@ const bool UArgusStaticDatabase::AsyncPreLoadUTeamColorRecord(uint32 id, TFuncti
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUTeamColorRecordDatabase();
-
-	if (!m_UTeamColorRecordDatabasePersistent)
-	{
-		return false;
-	}
-
+	ARGUS_RETURN_ON_NULL_BOOL(m_UTeamColorRecordDatabasePersistent, ArgusStaticDataLog);
 	return m_UTeamColorRecordDatabasePersistent->AsyncPreLoadRecord(id);
 }
 
@@ -1860,7 +1405,6 @@ void UArgusStaticDatabase::ResetLoadedUTeamColorRecordPointerArray()
 	{
 		return;
 	}
-
 	m_UTeamColorRecordDatabasePersistent->ResetPersistentObjectPointerArray();
 }
 
@@ -1870,12 +1414,7 @@ UTeamColorRecord* UArgusStaticDatabase::GetMutableUTeamColorRecord(uint32 id)
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUTeamColorRecordDatabase();
-
-	if (!m_UTeamColorRecordDatabasePersistent)
-	{
-		return nullptr;
-	}
-
+	ARGUS_RETURN_ON_NULL_POINTER(m_UTeamColorRecordDatabasePersistent, ArgusStaticDataLog);
 	return m_UTeamColorRecordDatabasePersistent->GetMutableRecord(id);
 }
 
@@ -1884,47 +1423,28 @@ void UArgusStaticDatabase::DeleteUTeamColorRecord(uint32 id)
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUTeamColorRecordDatabase();
-
-	if (!m_UTeamColorRecordDatabasePersistent)
-	{
-		return;
-	}
-
+	ARGUS_RETURN_ON_NULL(m_UTeamColorRecordDatabasePersistent, ArgusStaticDataLog);
 	m_UTeamColorRecordDatabasePersistent->DeleteRecord(id);
 }
 
 uint32 UArgusStaticDatabase::AddUTeamColorRecordToDatabase(UTeamColorRecord* record)
 {
 	LazyLoadUTeamColorRecordDatabase();
-
-	if (!m_UTeamColorRecordDatabasePersistent)
-	{
-		return 0u;
-	}
-
+	ARGUS_RETURN_ON_NULL_VALUE(m_UTeamColorRecordDatabasePersistent, ArgusStaticDataLog, 0u);
 	m_UTeamColorRecordDatabasePersistent->AddUTeamColorRecordToDatabase(record);
-	
 	return record->m_id;
 }
 
 void UArgusStaticDatabase::IterateAllUTeamColorRecords(const TFunctionRef<void(UTeamColorRecord*)>& function)
 {
 	LazyLoadUTeamColorRecordDatabase();
-
-	if (!m_UTeamColorRecordDatabasePersistent)
-	{
-		return;
-	}
-
+	ARGUS_RETURN_ON_NULL(m_UTeamColorRecordDatabasePersistent, ArgusStaticDataLog);
 	m_UTeamColorRecordDatabasePersistent->IterateAllUTeamColorRecords(function);
 }
 
 void UArgusStaticDatabase::RegisterNewUTeamColorRecordDatabase(UTeamColorRecordDatabase* database)
 {
-	if (!database)
-	{
-		return;
-	}
+	ARGUS_RETURN_ON_NULL(database, ArgusStaticDataLog);
 
 	if (!m_UTeamColorRecordDatabase.IsNull())
 	{
@@ -1978,12 +1498,7 @@ const UWorldCellIndexTranslationRecord* UArgusStaticDatabase::GetUWorldCellIndex
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUWorldCellIndexTranslationRecordDatabase();
-
-	if (!m_UWorldCellIndexTranslationRecordDatabasePersistent)
-	{
-		return nullptr;
-	}
-
+	ARGUS_RETURN_ON_NULL_POINTER(m_UWorldCellIndexTranslationRecordDatabasePersistent, ArgusStaticDataLog);
 	return m_UWorldCellIndexTranslationRecordDatabasePersistent->GetRecord(id);
 }
 
@@ -1992,12 +1507,7 @@ uint32 UArgusStaticDatabase::GetNumUWorldCellIndexTranslationRecords()
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUWorldCellIndexTranslationRecordDatabase();
-
-	if (!m_UWorldCellIndexTranslationRecordDatabasePersistent)
-	{
-		return 0u;
-	}
-
+	ARGUS_RETURN_ON_NULL_VALUE(m_UWorldCellIndexTranslationRecordDatabasePersistent, ArgusStaticDataLog, 0u);
 	return m_UWorldCellIndexTranslationRecordDatabasePersistent->GetNumRecords();
 }
 
@@ -2006,12 +1516,7 @@ const bool UArgusStaticDatabase::AsyncPreLoadUWorldCellIndexTranslationRecord(ui
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUWorldCellIndexTranslationRecordDatabase();
-
-	if (!m_UWorldCellIndexTranslationRecordDatabasePersistent)
-	{
-		return false;
-	}
-
+	ARGUS_RETURN_ON_NULL_BOOL(m_UWorldCellIndexTranslationRecordDatabasePersistent, ArgusStaticDataLog);
 	return m_UWorldCellIndexTranslationRecordDatabasePersistent->AsyncPreLoadRecord(id);
 }
 
@@ -2021,7 +1526,6 @@ void UArgusStaticDatabase::ResetLoadedUWorldCellIndexTranslationRecordPointerArr
 	{
 		return;
 	}
-
 	m_UWorldCellIndexTranslationRecordDatabasePersistent->ResetPersistentObjectPointerArray();
 }
 
@@ -2031,12 +1535,7 @@ UWorldCellIndexTranslationRecord* UArgusStaticDatabase::GetMutableUWorldCellInde
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUWorldCellIndexTranslationRecordDatabase();
-
-	if (!m_UWorldCellIndexTranslationRecordDatabasePersistent)
-	{
-		return nullptr;
-	}
-
+	ARGUS_RETURN_ON_NULL_POINTER(m_UWorldCellIndexTranslationRecordDatabasePersistent, ArgusStaticDataLog);
 	return m_UWorldCellIndexTranslationRecordDatabasePersistent->GetMutableRecord(id);
 }
 
@@ -2045,47 +1544,28 @@ void UArgusStaticDatabase::DeleteUWorldCellIndexTranslationRecord(uint32 id)
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUWorldCellIndexTranslationRecordDatabase();
-
-	if (!m_UWorldCellIndexTranslationRecordDatabasePersistent)
-	{
-		return;
-	}
-
+	ARGUS_RETURN_ON_NULL(m_UWorldCellIndexTranslationRecordDatabasePersistent, ArgusStaticDataLog);
 	m_UWorldCellIndexTranslationRecordDatabasePersistent->DeleteRecord(id);
 }
 
 uint32 UArgusStaticDatabase::AddUWorldCellIndexTranslationRecordToDatabase(UWorldCellIndexTranslationRecord* record)
 {
 	LazyLoadUWorldCellIndexTranslationRecordDatabase();
-
-	if (!m_UWorldCellIndexTranslationRecordDatabasePersistent)
-	{
-		return 0u;
-	}
-
+	ARGUS_RETURN_ON_NULL_VALUE(m_UWorldCellIndexTranslationRecordDatabasePersistent, ArgusStaticDataLog, 0u);
 	m_UWorldCellIndexTranslationRecordDatabasePersistent->AddUWorldCellIndexTranslationRecordToDatabase(record);
-	
 	return record->m_id;
 }
 
 void UArgusStaticDatabase::IterateAllUWorldCellIndexTranslationRecords(const TFunctionRef<void(UWorldCellIndexTranslationRecord*)>& function)
 {
 	LazyLoadUWorldCellIndexTranslationRecordDatabase();
-
-	if (!m_UWorldCellIndexTranslationRecordDatabasePersistent)
-	{
-		return;
-	}
-
+	ARGUS_RETURN_ON_NULL(m_UWorldCellIndexTranslationRecordDatabasePersistent, ArgusStaticDataLog);
 	m_UWorldCellIndexTranslationRecordDatabasePersistent->IterateAllUWorldCellIndexTranslationRecords(function);
 }
 
 void UArgusStaticDatabase::RegisterNewUWorldCellIndexTranslationRecordDatabase(UWorldCellIndexTranslationRecordDatabase* database)
 {
-	if (!database)
-	{
-		return;
-	}
+	ARGUS_RETURN_ON_NULL(database, ArgusStaticDataLog);
 
 	if (!m_UWorldCellIndexTranslationRecordDatabase.IsNull())
 	{
@@ -2139,12 +1619,7 @@ const UWorldCellRecord* UArgusStaticDatabase::GetUWorldCellRecord(uint32 id)
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUWorldCellRecordDatabase();
-
-	if (!m_UWorldCellRecordDatabasePersistent)
-	{
-		return nullptr;
-	}
-
+	ARGUS_RETURN_ON_NULL_POINTER(m_UWorldCellRecordDatabasePersistent, ArgusStaticDataLog);
 	return m_UWorldCellRecordDatabasePersistent->GetRecord(id);
 }
 
@@ -2153,12 +1628,7 @@ uint32 UArgusStaticDatabase::GetNumUWorldCellRecords()
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUWorldCellRecordDatabase();
-
-	if (!m_UWorldCellRecordDatabasePersistent)
-	{
-		return 0u;
-	}
-
+	ARGUS_RETURN_ON_NULL_VALUE(m_UWorldCellRecordDatabasePersistent, ArgusStaticDataLog, 0u);
 	return m_UWorldCellRecordDatabasePersistent->GetNumRecords();
 }
 
@@ -2167,12 +1637,7 @@ const bool UArgusStaticDatabase::AsyncPreLoadUWorldCellRecord(uint32 id, TFuncti
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUWorldCellRecordDatabase();
-
-	if (!m_UWorldCellRecordDatabasePersistent)
-	{
-		return false;
-	}
-
+	ARGUS_RETURN_ON_NULL_BOOL(m_UWorldCellRecordDatabasePersistent, ArgusStaticDataLog);
 	return m_UWorldCellRecordDatabasePersistent->AsyncPreLoadRecord(id);
 }
 
@@ -2182,7 +1647,6 @@ void UArgusStaticDatabase::ResetLoadedUWorldCellRecordPointerArray()
 	{
 		return;
 	}
-
 	m_UWorldCellRecordDatabasePersistent->ResetPersistentObjectPointerArray();
 }
 
@@ -2192,12 +1656,7 @@ UWorldCellRecord* UArgusStaticDatabase::GetMutableUWorldCellRecord(uint32 id)
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUWorldCellRecordDatabase();
-
-	if (!m_UWorldCellRecordDatabasePersistent)
-	{
-		return nullptr;
-	}
-
+	ARGUS_RETURN_ON_NULL_POINTER(m_UWorldCellRecordDatabasePersistent, ArgusStaticDataLog);
 	return m_UWorldCellRecordDatabasePersistent->GetMutableRecord(id);
 }
 
@@ -2206,47 +1665,28 @@ void UArgusStaticDatabase::DeleteUWorldCellRecord(uint32 id)
 	ARGUS_MEMORY_TRACE(ArgusStaticData);
 
 	LazyLoadUWorldCellRecordDatabase();
-
-	if (!m_UWorldCellRecordDatabasePersistent)
-	{
-		return;
-	}
-
+	ARGUS_RETURN_ON_NULL(m_UWorldCellRecordDatabasePersistent, ArgusStaticDataLog);
 	m_UWorldCellRecordDatabasePersistent->DeleteRecord(id);
 }
 
 uint32 UArgusStaticDatabase::AddUWorldCellRecordToDatabase(UWorldCellRecord* record)
 {
 	LazyLoadUWorldCellRecordDatabase();
-
-	if (!m_UWorldCellRecordDatabasePersistent)
-	{
-		return 0u;
-	}
-
+	ARGUS_RETURN_ON_NULL_VALUE(m_UWorldCellRecordDatabasePersistent, ArgusStaticDataLog, 0u);
 	m_UWorldCellRecordDatabasePersistent->AddUWorldCellRecordToDatabase(record);
-	
 	return record->m_id;
 }
 
 void UArgusStaticDatabase::IterateAllUWorldCellRecords(const TFunctionRef<void(UWorldCellRecord*)>& function)
 {
 	LazyLoadUWorldCellRecordDatabase();
-
-	if (!m_UWorldCellRecordDatabasePersistent)
-	{
-		return;
-	}
-
+	ARGUS_RETURN_ON_NULL(m_UWorldCellRecordDatabasePersistent, ArgusStaticDataLog);
 	m_UWorldCellRecordDatabasePersistent->IterateAllUWorldCellRecords(function);
 }
 
 void UArgusStaticDatabase::RegisterNewUWorldCellRecordDatabase(UWorldCellRecordDatabase* database)
 {
-	if (!database)
-	{
-		return;
-	}
+	ARGUS_RETURN_ON_NULL(database, ArgusStaticDataLog);
 
 	if (!m_UWorldCellRecordDatabase.IsNull())
 	{
