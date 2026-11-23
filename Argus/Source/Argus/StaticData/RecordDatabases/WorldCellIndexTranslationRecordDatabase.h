@@ -34,5 +34,6 @@ public:
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent) override;
 	void AddUWorldCellIndexTranslationRecordToDatabase(UWorldCellIndexTranslationRecord* record);
 	void IterateAllUWorldCellIndexTranslationRecords(const TFunctionRef<void(UWorldCellIndexTranslationRecord*)>& function);
+	bool SaveDatabase();
 #endif //WITH_EDITOR
 };

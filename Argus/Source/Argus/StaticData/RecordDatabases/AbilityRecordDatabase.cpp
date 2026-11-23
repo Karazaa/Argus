@@ -9,6 +9,9 @@
 #include "ArgusStaticData.h"
 #include "Editor.h"
 #include "Misc/Paths.h"
+#include "ObjectTools.h"
+#include "PackageHelperFunctions.h"
+#include "SourceControlHelpers.h"
 #include "Subsystems/EditorAssetSubsystem.h"
 #include "UObject/ObjectSaveContext.h"
 #include <filesystem>
@@ -152,6 +155,18 @@ UAbilityRecord* UAbilityRecordDatabase::GetMutableRecord(uint32 id)
 
 void UAbilityRecordDatabase::DeleteRecord(uint32 id)
 {
+	UAbilityRecord* record = GetMutableRecord(id);
+	if (!record)
+	{
+		return;
+	}
+
+	m_UAbilityRecordsPersistent[id] = nullptr;
+	m_UAbilityRecords[id].Reset();
+
+	ObjectTools::DeleteSingleObject(record);
+	Modify();
+	SaveDatabase();
 }
 
 void UAbilityRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
@@ -244,5 +259,14 @@ void UAbilityRecordDatabase::IterateAllUAbilityRecords(const TFunctionRef<void(U
 	{
 		function(const_cast<UAbilityRecord*>(GetRecord(i)));
 	}
+}
+
+bool UAbilityRecordDatabase::SaveDatabase()
+{
+	UPackage* package = GetPackage();
+	ARGUS_RETURN_ON_NULL_BOOL(package, ArgusStaticDataLog);
+
+	const FString packageFilename = SourceControlHelpers::PackageFilename(package);
+	return SavePackageHelper(package, packageFilename);
 }
 #endif //WITH_EDITOR

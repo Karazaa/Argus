@@ -9,6 +9,9 @@
 #include "ArgusStaticData.h"
 #include "Editor.h"
 #include "Misc/Paths.h"
+#include "ObjectTools.h"
+#include "PackageHelperFunctions.h"
+#include "SourceControlHelpers.h"
 #include "Subsystems/EditorAssetSubsystem.h"
 #include "UObject/ObjectSaveContext.h"
 #include <filesystem>
@@ -152,6 +155,18 @@ UResourceSetRecord* UResourceSetRecordDatabase::GetMutableRecord(uint32 id)
 
 void UResourceSetRecordDatabase::DeleteRecord(uint32 id)
 {
+	UResourceSetRecord* record = GetMutableRecord(id);
+	if (!record)
+	{
+		return;
+	}
+
+	m_UResourceSetRecordsPersistent[id] = nullptr;
+	m_UResourceSetRecords[id].Reset();
+
+	ObjectTools::DeleteSingleObject(record);
+	Modify();
+	SaveDatabase();
 }
 
 void UResourceSetRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
@@ -244,5 +259,14 @@ void UResourceSetRecordDatabase::IterateAllUResourceSetRecords(const TFunctionRe
 	{
 		function(const_cast<UResourceSetRecord*>(GetRecord(i)));
 	}
+}
+
+bool UResourceSetRecordDatabase::SaveDatabase()
+{
+	UPackage* package = GetPackage();
+	ARGUS_RETURN_ON_NULL_BOOL(package, ArgusStaticDataLog);
+
+	const FString packageFilename = SourceControlHelpers::PackageFilename(package);
+	return SavePackageHelper(package, packageFilename);
 }
 #endif //WITH_EDITOR

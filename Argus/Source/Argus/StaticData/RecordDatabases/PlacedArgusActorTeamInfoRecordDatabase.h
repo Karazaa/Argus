@@ -34,5 +34,6 @@ public:
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent) override;
 	void AddUPlacedArgusActorTeamInfoRecordToDatabase(UPlacedArgusActorTeamInfoRecord* record);
 	void IterateAllUPlacedArgusActorTeamInfoRecords(const TFunctionRef<void(UPlacedArgusActorTeamInfoRecord*)>& function);
+	bool SaveDatabase();
 #endif //WITH_EDITOR
 };

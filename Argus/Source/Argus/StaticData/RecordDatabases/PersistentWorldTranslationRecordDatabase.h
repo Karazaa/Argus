@@ -34,5 +34,6 @@ public:
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent) override;
 	void AddUPersistentWorldTranslationRecordToDatabase(UPersistentWorldTranslationRecord* record);
 	void IterateAllUPersistentWorldTranslationRecords(const TFunctionRef<void(UPersistentWorldTranslationRecord*)>& function);
+	bool SaveDatabase();
 #endif //WITH_EDITOR
 };

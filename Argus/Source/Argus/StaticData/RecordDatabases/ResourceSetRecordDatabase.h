@@ -34,5 +34,6 @@ public:
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent) override;
 	void AddUResourceSetRecordToDatabase(UResourceSetRecord* record);
 	void IterateAllUResourceSetRecords(const TFunctionRef<void(UResourceSetRecord*)>& function);
+	bool SaveDatabase();
 #endif //WITH_EDITOR
 };

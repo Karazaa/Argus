@@ -34,5 +34,6 @@ public:
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent) override;
 	void AddUArgusActorRecordToDatabase(UArgusActorRecord* record);
 	void IterateAllUArgusActorRecords(const TFunctionRef<void(UArgusActorRecord*)>& function);
+	bool SaveDatabase();
 #endif //WITH_EDITOR
 };

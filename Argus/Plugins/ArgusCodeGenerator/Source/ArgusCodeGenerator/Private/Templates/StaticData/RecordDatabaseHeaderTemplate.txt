@@ -34,5 +34,6 @@ public:
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent) override;
 	void Add#####ToDatabase(#####* record);
 	void IterateAll#####s(const TFunctionRef<void(#####*)>& function);
+	bool SaveDatabase();
 #endif //WITH_EDITOR
 };

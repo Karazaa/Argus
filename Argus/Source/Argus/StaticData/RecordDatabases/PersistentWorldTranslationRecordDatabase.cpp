@@ -9,6 +9,9 @@
 #include "ArgusStaticData.h"
 #include "Editor.h"
 #include "Misc/Paths.h"
+#include "ObjectTools.h"
+#include "PackageHelperFunctions.h"
+#include "SourceControlHelpers.h"
 #include "Subsystems/EditorAssetSubsystem.h"
 #include "UObject/ObjectSaveContext.h"
 #include <filesystem>
@@ -152,6 +155,18 @@ UPersistentWorldTranslationRecord* UPersistentWorldTranslationRecordDatabase::Ge
 
 void UPersistentWorldTranslationRecordDatabase::DeleteRecord(uint32 id)
 {
+	UPersistentWorldTranslationRecord* record = GetMutableRecord(id);
+	if (!record)
+	{
+		return;
+	}
+
+	m_UPersistentWorldTranslationRecordsPersistent[id] = nullptr;
+	m_UPersistentWorldTranslationRecords[id].Reset();
+
+	ObjectTools::DeleteSingleObject(record);
+	Modify();
+	SaveDatabase();
 }
 
 void UPersistentWorldTranslationRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
@@ -244,5 +259,14 @@ void UPersistentWorldTranslationRecordDatabase::IterateAllUPersistentWorldTransl
 	{
 		function(const_cast<UPersistentWorldTranslationRecord*>(GetRecord(i)));
 	}
+}
+
+bool UPersistentWorldTranslationRecordDatabase::SaveDatabase()
+{
+	UPackage* package = GetPackage();
+	ARGUS_RETURN_ON_NULL_BOOL(package, ArgusStaticDataLog);
+
+	const FString packageFilename = SourceControlHelpers::PackageFilename(package);
+	return SavePackageHelper(package, packageFilename);
 }
 #endif //WITH_EDITOR

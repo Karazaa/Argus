@@ -34,5 +34,6 @@ public:
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent) override;
 	void AddUTeamColorRecordToDatabase(UTeamColorRecord* record);
 	void IterateAllUTeamColorRecords(const TFunctionRef<void(UTeamColorRecord*)>& function);
+	bool SaveDatabase();
 #endif //WITH_EDITOR
 };

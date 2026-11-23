@@ -34,5 +34,6 @@ public:
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent) override;
 	void AddUMaterialRecordToDatabase(UMaterialRecord* record);
 	void IterateAllUMaterialRecords(const TFunctionRef<void(UMaterialRecord*)>& function);
+	bool SaveDatabase();
 #endif //WITH_EDITOR
 };

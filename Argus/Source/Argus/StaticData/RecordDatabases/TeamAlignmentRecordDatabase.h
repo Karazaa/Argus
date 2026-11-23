@@ -34,5 +34,6 @@ public:
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent) override;
 	void AddUTeamAlignmentRecordToDatabase(UTeamAlignmentRecord* record);
 	void IterateAllUTeamAlignmentRecords(const TFunctionRef<void(UTeamAlignmentRecord*)>& function);
+	bool SaveDatabase();
 #endif //WITH_EDITOR
 };

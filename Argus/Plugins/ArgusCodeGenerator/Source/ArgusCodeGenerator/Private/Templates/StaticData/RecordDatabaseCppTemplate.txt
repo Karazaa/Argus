@@ -9,6 +9,9 @@ $$$$$
 #include "ArgusStaticData.h"
 #include "Editor.h"
 #include "Misc/Paths.h"
+#include "ObjectTools.h"
+#include "PackageHelperFunctions.h"
+#include "SourceControlHelpers.h"
 #include "Subsystems/EditorAssetSubsystem.h"
 #include "UObject/ObjectSaveContext.h"
 #include <filesystem>
@@ -152,6 +155,18 @@ void #####Database::ResetPersistentObjectPointerArray()
 
 void #####Database::DeleteRecord(uint32 id)
 {
+	#####* record = GetMutableRecord(id);
+	if (!record)
+	{
+		return;
+	}
+
+	m_#####sPersistent[id] = nullptr;
+	m_#####s[id].Reset();
+
+	ObjectTools::DeleteSingleObject(record);
+	Modify();
+	SaveDatabase();
 }
 
 void #####Database::PreSave(FObjectPreSaveContext saveContext)
@@ -244,5 +259,14 @@ void #####Database::IterateAll#####s(const TFunctionRef<void(#####*)>& function)
 	{
 		function(const_cast<#####*>(GetRecord(i)));
 	}
+}
+
+bool #####Database::SaveDatabase()
+{
+	UPackage* package = GetPackage();
+	ARGUS_RETURN_ON_NULL_BOOL(package, ArgusStaticDataLog);
+
+	const FString packageFilename = SourceControlHelpers::PackageFilename(package);
+	return SavePackageHelper(package, packageFilename);
 }
 #endif //WITH_EDITOR

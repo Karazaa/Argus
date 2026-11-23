@@ -34,5 +34,6 @@ public:
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent) override;
 	void AddUHeadlessEntityRecordToDatabase(UHeadlessEntityRecord* record);
 	void IterateAllUHeadlessEntityRecords(const TFunctionRef<void(UHeadlessEntityRecord*)>& function);
+	bool SaveDatabase();
 #endif //WITH_EDITOR
 };

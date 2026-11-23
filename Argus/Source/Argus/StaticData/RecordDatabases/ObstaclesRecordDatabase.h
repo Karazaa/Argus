@@ -34,5 +34,6 @@ public:
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent) override;
 	void AddUObstaclesRecordToDatabase(UObstaclesRecord* record);
 	void IterateAllUObstaclesRecords(const TFunctionRef<void(UObstaclesRecord*)>& function);
+	bool SaveDatabase();
 #endif //WITH_EDITOR
 };

@@ -9,6 +9,9 @@
 #include "ArgusStaticData.h"
 #include "Editor.h"
 #include "Misc/Paths.h"
+#include "ObjectTools.h"
+#include "PackageHelperFunctions.h"
+#include "SourceControlHelpers.h"
 #include "Subsystems/EditorAssetSubsystem.h"
 #include "UObject/ObjectSaveContext.h"
 #include <filesystem>
@@ -152,6 +155,18 @@ UWorldCellRecord* UWorldCellRecordDatabase::GetMutableRecord(uint32 id)
 
 void UWorldCellRecordDatabase::DeleteRecord(uint32 id)
 {
+	UWorldCellRecord* record = GetMutableRecord(id);
+	if (!record)
+	{
+		return;
+	}
+
+	m_UWorldCellRecordsPersistent[id] = nullptr;
+	m_UWorldCellRecords[id].Reset();
+
+	ObjectTools::DeleteSingleObject(record);
+	Modify();
+	SaveDatabase();
 }
 
 void UWorldCellRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
@@ -244,5 +259,14 @@ void UWorldCellRecordDatabase::IterateAllUWorldCellRecords(const TFunctionRef<vo
 	{
 		function(const_cast<UWorldCellRecord*>(GetRecord(i)));
 	}
+}
+
+bool UWorldCellRecordDatabase::SaveDatabase()
+{
+	UPackage* package = GetPackage();
+	ARGUS_RETURN_ON_NULL_BOOL(package, ArgusStaticDataLog);
+
+	const FString packageFilename = SourceControlHelpers::PackageFilename(package);
+	return SavePackageHelper(package, packageFilename);
 }
 #endif //WITH_EDITOR

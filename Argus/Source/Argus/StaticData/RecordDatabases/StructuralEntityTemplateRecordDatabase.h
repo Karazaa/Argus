@@ -34,5 +34,6 @@ public:
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent) override;
 	void AddUStructuralEntityTemplateRecordToDatabase(UStructuralEntityTemplateRecord* record);
 	void IterateAllUStructuralEntityTemplateRecords(const TFunctionRef<void(UStructuralEntityTemplateRecord*)>& function);
+	bool SaveDatabase();
 #endif //WITH_EDITOR
 };

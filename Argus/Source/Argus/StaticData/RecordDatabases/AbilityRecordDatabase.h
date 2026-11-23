@@ -34,5 +34,6 @@ public:
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent) override;
 	void AddUAbilityRecordToDatabase(UAbilityRecord* record);
 	void IterateAllUAbilityRecords(const TFunctionRef<void(UAbilityRecord*)>& function);
+	bool SaveDatabase();
 #endif //WITH_EDITOR
 };

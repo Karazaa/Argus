@@ -9,6 +9,9 @@
 #include "ArgusStaticData.h"
 #include "Editor.h"
 #include "Misc/Paths.h"
+#include "ObjectTools.h"
+#include "PackageHelperFunctions.h"
+#include "SourceControlHelpers.h"
 #include "Subsystems/EditorAssetSubsystem.h"
 #include "UObject/ObjectSaveContext.h"
 #include <filesystem>
@@ -152,6 +155,18 @@ UObstaclesRecord* UObstaclesRecordDatabase::GetMutableRecord(uint32 id)
 
 void UObstaclesRecordDatabase::DeleteRecord(uint32 id)
 {
+	UObstaclesRecord* record = GetMutableRecord(id);
+	if (!record)
+	{
+		return;
+	}
+
+	m_UObstaclesRecordsPersistent[id] = nullptr;
+	m_UObstaclesRecords[id].Reset();
+
+	ObjectTools::DeleteSingleObject(record);
+	Modify();
+	SaveDatabase();
 }
 
 void UObstaclesRecordDatabase::PreSave(FObjectPreSaveContext saveContext)
@@ -244,5 +259,14 @@ void UObstaclesRecordDatabase::IterateAllUObstaclesRecords(const TFunctionRef<vo
 	{
 		function(const_cast<UObstaclesRecord*>(GetRecord(i)));
 	}
+}
+
+bool UObstaclesRecordDatabase::SaveDatabase()
+{
+	UPackage* package = GetPackage();
+	ARGUS_RETURN_ON_NULL_BOOL(package, ArgusStaticDataLog);
+
+	const FString packageFilename = SourceControlHelpers::PackageFilename(package);
+	return SavePackageHelper(package, packageFilename);
 }
 #endif //WITH_EDITOR
