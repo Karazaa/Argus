@@ -19,6 +19,12 @@ UHeadlessEntityComponent::UHeadlessEntityComponent()
 #if WITH_EDITOR
 void UHeadlessEntityComponent::PreSave(FObjectPreSaveContext SaveContext)
 {
+	Super::PreSave(SaveContext);
+	if (SaveContext.IsCooking() || SaveContext.GetTargetPlatform())
+	{
+		return;
+	}
+
 	const AActor* owningActor = GetOwner();
 	ARGUS_RETURN_ON_NULL(owningActor, ArgusUnrealObjectsLog);
 
