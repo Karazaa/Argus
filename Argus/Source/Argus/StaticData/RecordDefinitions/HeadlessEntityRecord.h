@@ -30,6 +30,7 @@ public:
 #if WITH_EDITOR
 private:
 	bool UpdateRecord(UWorld* world, const FVector& initialLocation, const FSoftObjectLoadStore_UArgusEntityTemplate& entityTemplate);
+	bool UnregisterSelfFromWorldCell(UWorld* world) const;
 	friend class UHeadlessEntityComponent;
 #endif // WITH_EDITOR
 };

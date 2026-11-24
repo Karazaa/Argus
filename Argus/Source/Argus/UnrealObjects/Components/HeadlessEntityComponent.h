@@ -16,6 +16,7 @@ public:
 	UHeadlessEntityComponent();
 
 #if WITH_EDITOR
+	virtual void PreSave(FObjectPreSaveContext SaveContext) override;
 	void OnHeadlessActorAdded();
 	void OnHeadlessActorUpdated(const FTransform& actorTransform);
 	void OnHeadlessActorDestroyed();

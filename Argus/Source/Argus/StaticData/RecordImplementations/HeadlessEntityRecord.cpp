@@ -84,4 +84,24 @@ bool UHeadlessEntityRecord::UpdateRecord(UWorld* world, const FVector& initialLo
 
 	return saveResult;
 }
+
+bool UHeadlessEntityRecord::UnregisterSelfFromWorldCell(UWorld* world) const
+{
+	UWorldCellRecord* existingWorldCell = WorldCellSystems::GetWorldCellRecordForLocation(world, m_initialLocation);
+	ARGUS_RETURN_ON_NULL_BOOL(existingWorldCell, ArgusStaticDataLog);
+
+	const int32 numRemoved = existingWorldCell->m_headlessEntities.RemoveAll([id = m_id](const FUHeadlessEntityRecordReference& entry)
+	{
+		return entry.GetId() == id;
+	});
+
+	bool saveResult = true;
+	if (numRemoved > 0)
+	{
+		existingWorldCell->Modify(true);
+		saveResult = existingWorldCell->SaveRecord();
+	}
+
+	return saveResult;
+}
 #endif // WITH_EDITOR
